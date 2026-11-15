@@ -1,5 +1,5 @@
 {
- "added_at": "2026-11-15T04:38:12Z",
+ "added_at": "2026-11-15T05:06:09Z",
  "category": "procgen",
  "code_files": 76,
  "commit": "e31670e9d074",
@@ -9,11 +9,11 @@
   "src/mapgen"
  ],
  "language": "c++",
- "license": "GPL-3.0",
+ "license": "LGPL-2.1",
  "license_verdict": "copyleft-reference",
  "name": "freeminer \u2014 mapgen",
  "path_in_upstream": "src/mapgen",
- "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "reference_reason": "licence: LGPL-2.1 (copyleft-reference)",
  "size_bytes": 1118799,
  "slug": "freeminer-src-mapgen",
  "source": "corpus:cloned-free-games/freeminer@e31670e9d074",

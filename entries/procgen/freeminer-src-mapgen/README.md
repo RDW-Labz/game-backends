@@ -2,7 +2,7 @@
 
 - **Category:** procgen — voxel map generation (biomes, caves, ores)
 - **Language:** c++
-- **Licence:** `GPL-3.0` (copyleft-reference)
+- **Licence:** `LGPL-2.1` (copyleft-reference)
 - **Delivery:** reference
 - **Upstream:** https://github.com/freeminer/freeminer @ `e31670e9d074`
 - **Discovered via:** corpus:cloned-free-games/freeminer@e31670e9d074
@@ -15,4 +15,4 @@
 
 - `src/mapgen`
 
-> REFERENCE ONLY — the code is not copied into this repository. Fetch it from the upstream URL at the pinned commit. Reason: licence: GPL-3.0 (copyleft-reference).
+> REFERENCE ONLY — the code is not copied into this repository. Fetch it from the upstream URL at the pinned commit. Reason: licence: LGPL-2.1 (copyleft-reference).

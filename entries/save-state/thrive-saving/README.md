@@ -2,11 +2,10 @@
 
 - **Category:** save-state — persistence: save/load, snapshot or state serialisation
 - **Language:** cs
-- **Licence:** `Apache-2.0` (clean)
-- **Delivery:** vendored
+- **Licence:** `GPL-3.0` (copyleft-reference)
+- **Delivery:** reference
 - **Upstream:** https://github.com/Revolutionary-Games/Thrive @ `bb9189f`
 - **Discovered via:** corpus:cloned-free-games/thrive@bb9189f
-- **Code:** `src/`
 
 `src/saving` inside thrive: 23 source files.
 
@@ -15,3 +14,5 @@
 **Entry points:**
 
 - `src/saving/`
+
+> REFERENCE ONLY — the code is not copied into this repository. Fetch it from the upstream URL at the pinned commit. Reason: licence: GPL-3.0.

@@ -1,24 +1,23 @@
 {
- "added_at": "2026-11-15T04:36:21Z",
+ "added_at": "2026-11-15T05:04:11Z",
  "category": "save-state",
  "code_files": 23,
  "commit": "bb9189f",
- "delivery": "vendored",
+ "delivery": "reference",
  "description": "`src/saving` inside thrive: 23 source files.",
  "entry_points": [
   "src/saving/"
  ],
  "language": "cs",
- "license": "Apache-2.0",
- "license_file": "LICENSE.txt",
- "license_verdict": "clean",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
  "name": "thrive \u2014 saving",
  "path_in_upstream": "src/saving",
+ "reference_reason": "licence: GPL-3.0",
  "slug": "thrive-saving",
  "source": "corpus:cloned-free-games/thrive@bb9189f",
  "source_bytes": 305971,
  "system": "persistence: save/load, snapshot or state serialisation",
  "upstream": "https://github.com/Revolutionary-Games/Thrive",
- "vendored_path": "src/",
  "why": "Backend material for persistence: save/load, snapshot or state serialisation, taken from a pinned clone (23 files at that path)."
 }

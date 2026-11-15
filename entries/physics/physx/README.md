@@ -2,7 +2,7 @@
 
 - **Category:** physics — GPU/CPU 3D rigid body, cloth, particles, vehicles
 - **Language:** c++
-- **Licence:** `Apache-2.0` (clean)
+- **Licence:** `BSD-3-Clause` (clean)
 - **Delivery:** reference
 - **Upstream:** https://github.com/NVIDIA-Omniverse/PhysX @ `7d6f6ac8b83e`
 - **Discovered via:** github-api

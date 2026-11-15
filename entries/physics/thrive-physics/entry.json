@@ -1,24 +1,23 @@
 {
- "added_at": "2026-11-15T04:36:21Z",
+ "added_at": "2026-11-15T05:04:11Z",
  "category": "physics",
  "code_files": 26,
  "commit": "bb9189f",
- "delivery": "vendored",
+ "delivery": "reference",
  "description": "`src/native/physics` inside thrive: 26 source files.",
  "entry_points": [
   "src/native/physics/"
  ],
  "language": "cs",
- "license": "Apache-2.0",
- "license_file": "LICENSE.txt",
- "license_verdict": "clean",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
  "name": "thrive \u2014 physics",
  "path_in_upstream": "src/native/physics",
+ "reference_reason": "licence: GPL-3.0",
  "slug": "thrive-physics",
  "source": "corpus:cloned-free-games/thrive@bb9189f",
  "source_bytes": 166372,
  "system": "rigid-body collision and dynamics",
  "upstream": "https://github.com/Revolutionary-Games/Thrive",
- "vendored_path": "src/",
  "why": "Backend material for rigid-body collision and dynamics, taken from a pinned clone (26 files at that path)."
 }

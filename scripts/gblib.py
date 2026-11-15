@@ -142,18 +142,32 @@ def find_license(root, max_depth=1):
             seen.append((i, p))
     if not seen:
         return "none", (cands[0] if cands else None)
+    repo = os.path.basename(os.path.abspath(root)).lower()
+    repo_tokens = [t for t in re.split(r"[-_.]", repo) if len(t) > 3]
+
+    def names_project(p):
+        b = os.path.basename(p).lower()
+        return bool(repo_tokens) and any(t in b for t in repo_tokens)
+
+    # 1. a plain root LICEN[CS]E / COPYING file is the project's own licence;
+    #    third-party notices beside it must not outrank it
+    for want in (r"licen[cs]e([-_.](md|txt|rst))?",
+                 r"(copying|copyright)([-_.](md|txt|rst))?"):
+        for i, p in seen:
+            if os.path.dirname(os.path.abspath(p)) == os.path.abspath(root) and \
+                    re.fullmatch(want, os.path.basename(p).lower()):
+                return i, p
+    # 2. a licences/ file named after the project (cocos2d-x, urho3d)
+    for i, p in seen:
+        if names_project(p):
+            return i, p
+    # 3. nothing project-specific: most restrictive wins, then the majority
     for i, p in seen:
         if i in RESTRICTIVE:
             return i, p
     from collections import Counter
-    # Prefer the project's own LICEN[CS]E* file over COPYING/COPYRIGHT side
-    # files: a root COPYRIGHT.txt lists third-party components and would
-    # otherwise outvote the real licence.
-    primary = [(i, p) for i, p in seen
-               if os.path.basename(p).lower().startswith(("license", "licence"))]
-    pool = primary or seen
-    best = Counter(i for i, _ in pool).most_common(1)[0][0]
-    return best, next(p for i, p in pool if i == best)
+    best = Counter(i for i, _ in seen).most_common(1)[0][0]
+    return best, next(p for i, p in seen if i == best)
 
 
 def token():
