@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 21:11 UTC · 283 entries · 103 vendored, 180 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 21:27 UTC · 284 entries · 104 vendored, 180 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-15 21:11 UTC · 283 entries · 103 vendored, 180 reference-on
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 37 | 15 | 22 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
-| [procgen](#procgen) — Procedural generation | 39 | 14 | 25 |
+| [procgen](#procgen) — Procedural generation | 40 | 15 | 25 |
 
 
 ## engines
@@ -309,7 +309,7 @@ _Generated 2026-11-15 21:11 UTC · 283 entries · 103 vendored, 180 reference-on
 
 ## procgen
 
-**Procedural generation** — 39 entries
+**Procedural generation** — 40 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -347,6 +347,7 @@ _Generated 2026-11-15 21:11 UTC · 283 entries · 103 vendored, 180 reference-on
 | [urizen](entries/procgen/vurmux-urizen/README.md) | Roguelike dungeon generation library written on Python3 | python | Apache-2.0 | vendored | [vurmux/urizen](https://github.com/vurmux/urizen) @ `28b1e60cf8fa` |
 | [utymap](entries/procgen/reinterpretcat-utymap/README.md) | Highly customizable library for procedural world generation based on real map data | c++ | Apache-2.0 | reference | [reinterpretcat/utymap](https://github.com/reinterpretcat/utymap) @ `2019-05-16 (branch tip at catalogue time)` |
 | [veloren — world](entries/procgen/veloren-world/README.md) | world generation (terrain, biomes, caves, structures) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
+| [VoxModSynth](entries/procgen/sylefeb-voxmodsynth/README.md) | A simple, efficient, easily hackable C++ implementation of 3d model synthesis / wave function collapse | c++ | MIT | vendored | [sylefeb/VoxModSynth](https://github.com/sylefeb/VoxModSynth) @ `007203eca947` |
 | [Wave-Function-Collapse](entries/procgen/codingtrain-wave-function-collapse/README.md) | see upstream | javascript | unknown | reference | [CodingTrain/Wave-Function-Collapse](https://github.com/CodingTrain/Wave-Function-Collapse) @ `2025-06-10 (branch tip at catalogue time)` |
 | [WaveFunctionCollapse](entries/procgen/wavefunctioncollapse/README.md) | constraint-based tile/bitmap generation | c# | MIT | vendored | [mxgmn/WaveFunctionCollapse](https://github.com/mxgmn/WaveFunctionCollapse) @ `de7d22e705e8` |
 | [wfc](entries/procgen/emilk-wfc/README.md) | A C++ port of Wave Function Collapse Tiling | c | unknown | reference | [emilk/wfc](https://github.com/emilk/wfc) @ `2022-12-07 (branch tip at catalogue time)` |

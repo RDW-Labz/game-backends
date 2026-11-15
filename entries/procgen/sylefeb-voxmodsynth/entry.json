@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T21:27:41Z",
+ "category": "procgen",
+ "commit": "007203eca947",
+ "delivery": "vendored",
+ "description": "sylefeb/VoxModSynth \u2014 A simple, efficient, easily hackable C++ implementation of 3d model synthesis / wave function collapse",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "VoxModSynth",
+ "size_bytes": 27497,
+ "slug": "sylefeb-voxmodsynth",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 211,
+ "system": "A simple, efficient, easily hackable C++ implementation of 3d model synthesis / wave function collapse",
+ "upstream": "https://github.com/sylefeb/VoxModSynth",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
