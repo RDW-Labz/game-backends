@@ -216,3 +216,8 @@ One line per 15-minute extension tick, newest last.
   - added engines/zulfajuniadi-unity-ecs-navmesh (MIT, vendored)
   - reference engines/vittorioromeo-ecst
   - reference engines/ukendio-jecs
+
+- **2026-11-15 16:55 UTC** — tick 47: +2 screened, +1 reference, 17 skipped, catalogue=274
+  - added physics/bytearena-box2d (Zlib, vendored)
+  - added physics/codingben-box2d-netstandard (MIT, vendored)
+  - reference physics/erayzesen-quarkphysics

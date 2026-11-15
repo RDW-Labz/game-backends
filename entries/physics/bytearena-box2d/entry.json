@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T16:55:43Z",
+ "category": "physics",
+ "commit": "acbde413692f",
+ "delivery": "vendored",
+ "description": "ByteArena/box2d \u2014 Box2D.go - Go port of Box2D - a 2D Physics Engine for Games.",
+ "language": "go",
+ "license": "Zlib",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "box2d",
+ "size_bytes": 478448,
+ "slug": "bytearena-box2d",
+ "source": "github-search:physics engine 2d stars:>100",
+ "stars": 313,
+ "system": "Box2D.go - Go port of Box2D - a 2D Physics Engine for Games.",
+ "upstream": "https://github.com/ByteArena/box2d",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

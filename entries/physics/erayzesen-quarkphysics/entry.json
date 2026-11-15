@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T16:55:47Z",
+ "category": "physics",
+ "commit": "2025-10-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "erayzesen/QuarkPhysics \u2014 A 2D Soft Body and Rigid Body Physics Engine.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "QuarkPhysics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "erayzesen-quarkphysics",
+ "source": "github-search:physics engine 2d stars:>100",
+ "stars": 301,
+ "system": "A 2D Soft Body and Rigid Body Physics Engine.",
+ "upstream": "https://github.com/erayzesen/QuarkPhysics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T16:55:45Z",
+ "category": "physics",
+ "commit": "b34d6238011a",
+ "delivery": "vendored",
+ "description": "codingben/box2d-netstandard \u2014 C# port of Box2D - Erin Catto's 2D Physics Engine",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "box2d-netstandard",
+ "size_bytes": 847575,
+ "slug": "codingben-box2d-netstandard",
+ "source": "github-search:physics engine 2d stars:>100",
+ "stars": 310,
+ "system": "C# port of Box2D - Erin Catto's 2D Physics Engine",
+ "upstream": "https://github.com/codingben/box2d-netstandard",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
