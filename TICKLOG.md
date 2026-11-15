@@ -56,3 +56,6 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/jiepengtan-lockstepengine
   - reference gameplay/yonaba-jumper
   - reference gameplay/faronbracy-roguesharp
+
+- **2026-11-15 07:20 UTC** — tick 11: +1 screened, +0 reference, 0 skipped, catalogue=184
+  - added gameplay/nikkorn-mistreevous (MIT, vendored)

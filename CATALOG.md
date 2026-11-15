@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 07:04 UTC · 183 entries · 68 vendored, 115 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 07:20 UTC · 184 entries · 69 vendored, 115 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-15 07:04 UTC · 183 entries · 68 vendored, 115 reference-onl
 | [physics](#physics) — Physics | 22 | 7 | 15 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 30 | 10 | 20 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 31 | 11 | 20 |
 | [netcode](#netcode) — Networking / netcode | 34 | 13 | 21 |
 | [save-state](#save-state) — Save / state systems | 9 | 5 | 4 |
 | [procgen](#procgen) — Procedural generation | 13 | 6 | 7 |
@@ -141,7 +141,7 @@ _Generated 2026-11-15 07:04 UTC · 183 entries · 68 vendored, 115 reference-onl
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 30 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 31 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -159,6 +159,7 @@ _Generated 2026-11-15 07:04 UTC · 183 entries · 68 vendored, 115 reference-onl
 | [Mindustry — abilities](entries/gameplay/mindustry-abilities/README.md) | combat, AI, pathing, quest or inventory logic | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [Mindustry — ai](entries/gameplay/mindustry-core-src-mindustry-ai/README.md) | unit AI and pathfinding | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01ed559` |
 | [Mindustry — entities](entries/gameplay/mindustry-core-src-mindustry-entities/README.md) | entity/unit/bullet systems for a shipped RTS | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01ed559` |
+| [mistreevous](entries/gameplay/nikkorn-mistreevous/README.md) | A tool to build and execute behaviour trees in JavaScript and TypeScript | typescript | MIT | vendored | [nikkorn/mistreevous](https://github.com/nikkorn/mistreevous) @ `026f1ffe0623` |
 | [naev — ai](entries/gameplay/naev-ai/README.md) | combat, AI, pathing, quest or inventory logic | lua | BSD-2-Clause | vendored | [naev/naev.git](https://github.com/naev/naev.git) @ `7f58510` |
 | [OpenDungeons — spells](entries/gameplay/opendungeons-spells/README.md) | combat, AI, pathing, quest or inventory logic | cpp | GPL-3.0 | reference | [OpenDungeons/OpenDungeons.git](https://github.com/OpenDungeons/OpenDungeons.git) @ `a9efe49` |
 | [openmu — GameLogic](entries/gameplay/openmu-src-gamelogic/README.md) | MMO gameplay logic: combat, skills, inventory, quests | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |

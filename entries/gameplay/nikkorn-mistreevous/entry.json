@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T07:20:20Z",
+ "category": "gameplay",
+ "commit": "026f1ffe0623",
+ "delivery": "vendored",
+ "description": "nikkorn/mistreevous \u2014 A tool to build and execute behaviour trees in JavaScript and TypeScript",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "mistreevous",
+ "size_bytes": 1069290,
+ "slug": "nikkorn-mistreevous",
+ "source": "github-search:behaviour tree game ai stars:>80",
+ "stars": 147,
+ "system": "A tool to build and execute behaviour trees in JavaScript and TypeScript",
+ "upstream": "https://github.com/nikkorn/mistreevous",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
