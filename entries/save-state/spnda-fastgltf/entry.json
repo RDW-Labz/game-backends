@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T14:47:45Z",
+ "category": "save-state",
+ "commit": "2026-11-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "spnda/fastgltf \u2014 A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "fastgltf",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "spnda-fastgltf",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 625,
+ "system": "A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability",
+ "upstream": "https://github.com/spnda/fastgltf",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

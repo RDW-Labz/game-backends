@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T14:47:45Z",
+ "category": "save-state",
+ "commit": "2020-01-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "thekvs/cpp-serializers \u2014 Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "cpp-serializers",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "thekvs-cpp-serializers",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 751,
+ "system": "Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++",
+ "upstream": "https://github.com/thekvs/cpp-serializers",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

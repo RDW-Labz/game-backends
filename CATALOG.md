@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 14:31 UTC · 248 entries · 90 vendored, 158 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 14:47 UTC · 254 entries · 92 vendored, 162 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-15 14:31 UTC · 248 entries · 90 vendored, 158 reference-onl
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 37 | 15 | 22 |
 | [netcode](#netcode) — Networking / netcode | 48 | 17 | 31 |
-| [save-state](#save-state) — Save / state systems | 16 | 8 | 8 |
+| [save-state](#save-state) — Save / state systems | 22 | 10 | 12 |
 | [procgen](#procgen) — Procedural generation | 32 | 12 | 20 |
 
 
@@ -258,7 +258,7 @@ _Generated 2026-11-15 14:31 UTC · 248 entries · 90 vendored, 158 reference-onl
 
 ## save-state
 
-**Save / state systems** — 16 entries
+**Save / state systems** — 22 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -267,17 +267,23 @@ _Generated 2026-11-15 14:31 UTC · 248 entries · 90 vendored, 158 reference-onl
 | [cereal](entries/save-state/cereal/README.md) | C++11 serialization: JSON/binary/XML archives, versioning | c++ | BSD-3-Clause | vendored | [USCiLab/cereal](https://github.com/USCiLab/cereal) @ `22a1b369f39b` |
 | [cista](entries/save-state/felixguendling-cista/README.md) | Cista is a simple, high-performance, zero-copy C++ serialization & reflection library. | c++ | MIT | reference | [felixguendling/cista](https://github.com/felixguendling/cista) @ `2026-11-06 (branch tip at catalogue time)` |
 | [cJSON](entries/save-state/cjson/README.md) | ultralight JSON parser/writer | c | MIT | vendored | [DaveGamble/cJSON](https://github.com/DaveGamble/cJSON) @ `6d9f2443ab07` |
+| [cpp-serializers](entries/save-state/thekvs-cpp-serializers/README.md) | Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++ | c++ | unknown | reference | [thekvs/cpp-serializers](https://github.com/thekvs/cpp-serializers) @ `2020-01-28 (branch tip at catalogue time)` |
+| [fastgltf](entries/save-state/spnda-fastgltf/README.md) | A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability | c++ | MIT | reference | [spnda/fastgltf](https://github.com/spnda/fastgltf) @ `2026-11-11 (branch tip at catalogue time)` |
 | [FlatBuffers](entries/save-state/flatbuffers/README.md) | zero-copy serialization, schema-driven | c++ | Apache-2.0 | vendored | [google/flatbuffers](https://github.com/google/flatbuffers) @ `5eb190f00005` |
+| [flatcc](entries/save-state/dvidelabs-flatcc/README.md) | FlatBuffers Compiler and Library in C for C | c | Apache-2.0 | vendored | [dvidelabs/flatcc](https://github.com/dvidelabs/flatcc) @ `0df9c097a19b` |
 | [Freeciv — savegame](entries/save-state/freeciv-savegame/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [FTC-Skystone-Dark-Angels-Romania-2020](entries/save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020/README.md) | NOTICE This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season. If you are looking for the current season's FTC SDK software | java | BSD-3-Clause | vendored | [chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020](https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020) @ `b5132793582a` |
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
+| [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
 | [SQLite](entries/save-state/sqlite/README.md) | embedded SQL database engine (single-file world saves) | c | Public-Domain | reference | [sqlite/sqlite](https://github.com/sqlite/sqlite) @ `e5cb4b09573a` |
+| [struct2json](entries/save-state/armink-struct2json/README.md) | A fast convert library between the JSON and C structure. Implement structure serialization and deserialization for C. / C 结构体与 JSON 快速互转库，快速实现 C 结构体的序列化及反序列化 | c | MIT | reference | [armink/struct2json](https://github.com/armink/struct2json) @ `2022-01-07 (branch tip at catalogue time)` |
 | [thrive — saving](entries/save-state/thrive-saving/README.md) | persistence: save/load, snapshot or state serialisation | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [VCMI — serializer](entries/save-state/vcmi-serializer/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [yyjson](entries/save-state/yyjson/README.md) | high-performance JSON library (read/write/mutate) | c | MIT | vendored | [ibireme/yyjson](https://github.com/ibireme/yyjson) @ `ebb8d7e5aaa5` |
+| [zpp_bits](entries/save-state/eyalz800-zpp-bits/README.md) | A lightweight C++20 serialization and RPC library | c++ | MIT | vendored | [eyalz800/zpp_bits](https://github.com/eyalz800/zpp_bits) @ `4ccf2a773d61` |
 
 ## procgen
 

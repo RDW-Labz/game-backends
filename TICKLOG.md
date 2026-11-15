@@ -177,3 +177,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/bestogames-bestonet
 
 - **2026-11-15 14:31 UTC** — tick 38: +0 screened, +0 reference, 0 skipped, catalogue=248
+
+- **2026-11-15 14:47 UTC** — tick 39: +2 screened, +4 reference, 8 skipped, catalogue=254
+  - added save-state/eyalz800-zpp-bits (MIT, vendored)
+  - added save-state/dvidelabs-flatcc (Apache-2.0, vendored)
+  - reference save-state/thekvs-cpp-serializers
+  - reference save-state/armink-struct2json
+  - reference save-state/spnda-fastgltf
+  - reference save-state/qxorm-qxorm

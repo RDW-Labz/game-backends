@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T14:47:45Z",
+ "category": "save-state",
+ "commit": "2022-01-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "armink/struct2json \u2014 A fast convert library between the JSON and C structure. Implement structure serialization and deserialization for C. | C \u7ed3\u6784\u4f53\u4e0e JSON \u5feb\u901f\u4e92\u8f6c\u5e93\uff0c\u5feb\u901f\u5b9e\u73b0 C \u7ed3\u6784\u4f53\u7684\u5e8f\u5217\u5316\u53ca\u53cd\u5e8f\u5217\u5316",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "struct2json",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "armink-struct2json",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 719,
+ "system": "A fast convert library between the JSON and C structure. Implement structure serialization and deserialization for C. | C \u7ed3\u6784\u4f53\u4e0e JSON \u5feb\u901f\u4e92\u8f6c\u5e93\uff0c\u5feb\u901f\u5b9e\u73b0 C \u7ed3\u6784\u4f53\u7684\u5e8f\u5217\u5316\u53ca\u53cd\u5e8f\u5217\u5316",
+ "upstream": "https://github.com/armink/struct2json",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

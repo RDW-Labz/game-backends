@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T14:47:41Z",
+ "category": "save-state",
+ "commit": "4ccf2a773d61",
+ "delivery": "vendored",
+ "description": "eyalz800/zpp_bits \u2014 A lightweight C++20 serialization and RPC library",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "zpp_bits",
+ "size_bytes": 1443759,
+ "slug": "eyalz800-zpp-bits",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 1020,
+ "system": "A lightweight C++20 serialization and RPC library",
+ "upstream": "https://github.com/eyalz800/zpp_bits",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

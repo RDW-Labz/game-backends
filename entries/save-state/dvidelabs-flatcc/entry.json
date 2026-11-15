@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T14:47:43Z",
+ "category": "save-state",
+ "commit": "0df9c097a19b",
+ "delivery": "vendored",
+ "description": "dvidelabs/flatcc \u2014 FlatBuffers Compiler and Library in C for C",
+ "language": "c",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "flatcc",
+ "size_bytes": 2160646,
+ "slug": "dvidelabs-flatcc",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 772,
+ "system": "FlatBuffers Compiler and Library in C for C",
+ "upstream": "https://github.com/dvidelabs/flatcc",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
