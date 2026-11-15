@@ -2,7 +2,7 @@
 
 - **Category:** engines — A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading.
 - **Language:** c#
-- **Licence:** `APACHE-2.0` (gated-reference)
+- **Licence:** `Apache-2.0` (clean)
 - **Delivery:** reference
 - **Upstream:** https://github.com/genaray/Arch @ `2026-11-09 (branch tip at catalogue time)`
 - **Discovered via:** github-search:ecs entity component system stars:>150

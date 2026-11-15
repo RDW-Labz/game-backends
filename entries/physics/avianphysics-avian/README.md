@@ -2,7 +2,7 @@
 
 - **Category:** physics — ECS-driven 2D and 3D physics engine for the Bevy game engine.
 - **Language:** rust
-- **Licence:** `APACHE-2.0` (gated-reference)
+- **Licence:** `Apache-2.0` (clean)
 - **Delivery:** reference
 - **Upstream:** https://github.com/avianphysics/avian @ `2026-11-04 (branch tip at catalogue time)`
 - **Discovered via:** github-search:physics engine 2d stars:>100

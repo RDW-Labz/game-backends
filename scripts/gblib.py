@@ -67,6 +67,21 @@ def license_from_file(path):
         return "unknown"
 
 
+CANON = {"APACHE-2.0": "Apache-2.0", "MIT": "MIT", "BSD-3-CLAUSE": "BSD-3-Clause",
+         "BSD-2-CLAUSE": "BSD-2-Clause", "GPL-2.0": "GPL-2.0", "GPL-3.0": "GPL-3.0",
+         "AGPL-3.0": "AGPL-3.0", "LGPL-2.1": "LGPL-2.1", "LGPL-3.0": "LGPL-3.0",
+         "MPL-2.0": "MPL-2.0", "MS-PL": "MS-PL", "CC0-1.0": "CC0-1.0",
+         "CC-BY-4.0": "CC-BY-4.0", "CC-BY-SA-4.0": "CC-BY-SA-4.0", "ISC": "ISC",
+         "ZLIB": "Zlib", "UNLICENSE": "Unlicense", "NOASSERTION": "unknown", "NONE": "none"}
+
+
+def canon(lic):
+    """Normalise an SPDX id from API metadata to the ids used here."""
+    if not lic:
+        return "unknown"
+    return CANON.get(lic.upper(), lic)
+
+
 def verdict(lic):
     if lic in CLEAN:
         return "clean"

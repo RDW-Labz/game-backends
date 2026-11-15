@@ -186,7 +186,8 @@ def main():
             time.sleep(1.5)   # be polite between clones
         else:
             # API-only reference row: no clone, no code, still catalogued
-            lic = lic_meta or "unknown"
+            from gblib import canon
+            lic = canon(lic_meta)
             dest = entry_path(cat, slug)
             os.makedirs(dest, exist_ok=True)
             rec = {
