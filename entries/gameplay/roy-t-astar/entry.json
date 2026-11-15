@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T12:55:39Z",
+ "category": "gameplay",
+ "commit": "3d57efaa83c8",
+ "delivery": "vendored",
+ "description": "roy-t/AStar \u2014 A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher. This library has no external dependencies. The library is licensed under the MIT license.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "AStar",
+ "size_bytes": 76838,
+ "slug": "roy-t-astar",
+ "source": "github-search:pathfinding library stars:>200",
+ "stars": 369,
+ "system": "A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher. ",
+ "upstream": "https://github.com/roy-t/AStar",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
