@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 09:12 UTC · 204 entries · 78 vendored, 126 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 09:28 UTC · 210 entries · 80 vendored, 130 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-15 09:12 UTC · 204 entries · 78 vendored, 126 reference-onl
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 36 | 14 | 22 |
 | [netcode](#netcode) — Networking / netcode | 42 | 16 | 26 |
 | [save-state](#save-state) — Save / state systems | 16 | 8 | 8 |
-| [procgen](#procgen) — Procedural generation | 13 | 6 | 7 |
+| [procgen](#procgen) — Procedural generation | 19 | 8 | 11 |
 
 
 ## engines
@@ -256,7 +256,7 @@ _Generated 2026-11-15 09:12 UTC · 204 entries · 78 vendored, 126 reference-onl
 
 ## procgen
 
-**Procedural generation** — 13 entries
+**Procedural generation** — 19 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -265,11 +265,17 @@ _Generated 2026-11-15 09:12 UTC · 204 entries · 78 vendored, 126 reference-onl
 | [crawl — des](entries/procgen/crawl-crawl-ref-source-dat-des/README.md) | vault/branch layout definitions (DES) | text | GPL-2.0 | reference | [crawl/crawl.git](https://github.com/crawl/crawl.git) @ `cf8c9bca9065` |
 | [cubyz — noise](entries/procgen/cubyz-noise/README.md) | procedural map/world/level generation | zig | GPL-3.0 | reference | [PixelGuys/Cubyz](https://github.com/PixelGuys/Cubyz) @ `74b6814` |
 | [Dungeon-Generator (BSP)](entries/procgen/dungeon-generator-bsp/README.md) | BSP dungeon generation (C#/Unity) | c# | MIT | vendored | [Adrian104/Dungeon-Generator](https://github.com/Adrian104/Dungeon-Generator) @ `8dfa5d23f848` |
+| [DungeonTemplateLibrary](entries/procgen/aspjt-dungeontemplatelibrary/README.md) | 🌏: Dungeon free resources (terrain & roguelike generation) | c++ | MIT | vendored | [AsPJT/DungeonTemplateLibrary](https://github.com/AsPJT/DungeonTemplateLibrary) @ `7819dcd58dc2` |
 | [FastNoise2](entries/procgen/fastnoise2/README.md) | SIMD noise generation library with node graphs | c++ | MIT | vendored | [Auburn/FastNoise2](https://github.com/Auburn/FastNoise2) @ `c35d6041ce7e` |
 | [FastNoiseLite](entries/procgen/fastnoiselite/README.md) | single-header noise (perlin/simplex/cellular/fractal) | c | MIT | vendored | [Auburn/FastNoiseLite](https://github.com/Auburn/FastNoiseLite) @ `785f37a9ad76` |
 | [freeminer — mapgen](entries/procgen/freeminer-mapgen/README.md) | procedural map/world/level generation | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
 | [freeminer — mapgen](entries/procgen/freeminer-src-mapgen/README.md) | voxel map generation (biomes, caves, ores) | c++ | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e9d074` |
+| [generator](entries/procgen/ilmola-generator/README.md) | A procedural geometry generation library for C++11 | c++ | LGPL-2.1 | reference | [ilmola/generator](https://github.com/ilmola/generator) @ `2023-01-02 (branch tip at catalogue time)` |
+| [noise-rs](entries/procgen/razaekel-noise-rs/README.md) | Procedural noise generation library for Rust. | rust | Apache-2.0 | reference | [Razaekel/noise-rs](https://github.com/Razaekel/noise-rs) @ `2025-02-14 (branch tip at catalogue time)` |
+| [ProceduralToolkit](entries/procgen/syomus-proceduraltoolkit/README.md) | Procedural generation library for Unity | c# | MIT | vendored | [Syomus/ProceduralToolkit](https://github.com/Syomus/ProceduralToolkit) @ `984a1e69b8ac` |
 | [space-station-14 — Procedural](entries/procgen/space-station-14-content-shared-procedural/README.md) | procedural station/AI content generation | c# | MIT | vendored | [space-wizards/space-station-14](https://github.com/space-wizards/space-station-14) @ `33a1d0e32d63` |
+| [THREE.Terrain](entries/procgen/icecreamyou-three-terrain/README.md) | A procedural terrain generation engine for use with the Three.js 3D graphics library for the web. | javascript | MIT | reference | [IceCreamYou/THREE.Terrain](https://github.com/IceCreamYou/THREE.Terrain) @ `2026-11-12 (branch tip at catalogue time)` |
 | [Tracery](entries/procgen/tracery/README.md) | grammar-based generative text/structure | javascript | Apache-2.0 | vendored | [galaxykate/tracery](https://github.com/galaxykate/tracery) @ `11db07cb8e35` |
+| [utymap](entries/procgen/reinterpretcat-utymap/README.md) | Highly customizable library for procedural world generation based on real map data | c++ | Apache-2.0 | reference | [reinterpretcat/utymap](https://github.com/reinterpretcat/utymap) @ `2019-05-16 (branch tip at catalogue time)` |
 | [veloren — world](entries/procgen/veloren-world/README.md) | world generation (terrain, biomes, caves, structures) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
 | [WaveFunctionCollapse](entries/procgen/wavefunctioncollapse/README.md) | constraint-based tile/bitmap generation | c# | MIT | vendored | [mxgmn/WaveFunctionCollapse](https://github.com/mxgmn/WaveFunctionCollapse) @ `de7d22e705e8` |

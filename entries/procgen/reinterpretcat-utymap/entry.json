@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T09:28:24Z",
+ "category": "procgen",
+ "commit": "2019-05-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "reinterpretcat/utymap \u2014 Highly customizable library for procedural world generation based on real map data",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "utymap",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "reinterpretcat-utymap",
+ "source": "github-search:procedural generation library stars:>80",
+ "stars": 998,
+ "system": "Highly customizable library for procedural world generation based on real map data",
+ "upstream": "https://github.com/reinterpretcat/utymap",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
