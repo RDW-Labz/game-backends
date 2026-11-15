@@ -1,0 +1,262 @@
+cmake_minimum_required (VERSION 3.21)
+
+project (
+    sf4e
+    VERSION 1.2.1
+    DESCRIPTION "A process-inspection and modification tool for the Steam release of Ultra Street Fighter 4."
+    HOMEPAGE_URL "https://gitlab.com/adanducci/sf4e"
+)
+
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+add_compile_definitions(WIN32_LEAN_AND_MEAN)
+# The build version, available to every target: the launcher stamps it, the
+# lobby compares it against the server's to offer an update, the server
+# reports it on a ping.
+add_compile_definitions(SF4E_VERSION="${PROJECT_VERSION}")
+
+# Always needed -- these three are all the lobby server depends on, which is
+# what lets it build for a cheap Linux VPS.
+find_package(GameNetworkingSockets CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
+
+# Everything below is for the game-side build only: it hooks a Windows game
+# binary, so Detours, Direct3D, the overlay and the launcher have no meaning on
+# Linux and their packages are not expected to be installed there.
+if(WIN32)
+    find_library(LIB_DETOURS "detours")
+    find_package(CLI11 CONFIG REQUIRED)
+    find_package(ggpo CONFIG REQUIRED)
+    find_package(imgui CONFIG REQUIRED)
+    find_package(protobuf CONFIG REQUIRED)
+
+    find_path(VALVEFILEVDF_INCLUDE_DIRS "vdf_parser.hpp")
+endif()
+
+# --- Game-side targets: Windows only -----------------------------------------
+# These exist to inject into and reverse the Windows game binary. The lobby
+# server below is deliberately independent of all of them.
+if(WIN32)
+
+add_library(Dimps STATIC
+    "src/Dimps/Dimps.hxx"
+    "src/Dimps/Dimps.cxx"
+    "src/Dimps/Dimps__Eva.hxx"
+    "src/Dimps/Dimps__Eva.cxx"
+    "src/Dimps/Dimps__Event.hxx"
+    "src/Dimps/Dimps__Event.cxx"
+    "src/Dimps/Dimps__Game.hxx"
+    "src/Dimps/Dimps__Game.cxx"
+    "src/Dimps/Dimps__Game__Battle.hxx"
+    "src/Dimps/Dimps__Game__Battle.cxx"
+    "src/Dimps/Dimps__Game__Battle__Action.hxx"
+    "src/Dimps/Dimps__Game__Battle__Action.cxx"
+    "src/Dimps/Dimps__Game__Battle__Camera.hxx"
+    "src/Dimps/Dimps__Game__Battle__Camera.cxx"
+    "src/Dimps/Dimps__Game__Battle__Chara.hxx"
+    "src/Dimps/Dimps__Game__Battle__Chara.cxx"
+    "src/Dimps/Dimps__Game__Battle__Command.hxx"
+    "src/Dimps/Dimps__Game__Battle__Command.cxx"
+    "src/Dimps/Dimps__Game__Battle__Effect.hxx"
+    "src/Dimps/Dimps__Game__Battle__Effect.cxx"
+    "src/Dimps/Dimps__Game__Battle__Hud.hxx"
+    "src/Dimps/Dimps__Game__Battle__Hud.cxx"
+    "src/Dimps/Dimps__Game__Battle__System.hxx"
+    "src/Dimps/Dimps__Game__Battle__System.cxx"
+    "src/Dimps/Dimps__Game__Battle__Training.hxx"
+    "src/Dimps/Dimps__Game__Battle__Training.cxx"
+    "src/Dimps/Dimps__Game__Battle__Vfx.hxx"
+    "src/Dimps/Dimps__Game__Battle__Vfx.cxx"
+    "src/Dimps/Dimps__GameEvents.hxx"
+    "src/Dimps/Dimps__GameEvents.cxx"
+    "src/Dimps/Dimps__Math.hxx"
+    "src/Dimps/Dimps__Math.cxx"
+    "src/Dimps/Dimps__Pad.hxx"
+    "src/Dimps/Dimps__Pad.cxx"
+    "src/Dimps/Dimps__Platform.hxx"
+    "src/Dimps/Dimps__Platform.cxx"
+    "src/Dimps/Dimps__UserApp.hxx"
+    "src/Dimps/Dimps__UserApp.cxx"
+)
+target_link_libraries(
+    Dimps
+    PUBLIC nlohmann_json::nlohmann_json
+)
+
+add_library(sf4e STATIC
+    "src/sf4e/sf4e.hxx"
+    "src/sf4e/sf4e.cxx"
+    "src/sf4e/sf4e__Crash.hxx"
+    "src/sf4e/sf4e__Crash.cxx"
+    "src/sf4e/sf4e__Event.hxx"
+    "src/sf4e/sf4e__Event.cxx"
+    "src/sf4e/sf4e__Game.hxx"
+    "src/sf4e/sf4e__Game.cxx"
+    "src/sf4e/sf4e__Game__Battle.hxx"
+    "src/sf4e/sf4e__Game__Battle.cxx"
+    "src/sf4e/sf4e__Pacing.hxx"
+    "src/sf4e/sf4e__Game__Battle__Chara.hxx"
+    "src/sf4e/sf4e__Game__Battle__Chara.cxx"
+    "src/sf4e/sf4e__Game__Battle__Effect.hxx"
+    "src/sf4e/sf4e__Game__Battle__Effect.cxx"
+    "src/sf4e/sf4e__Game__Battle__Hud.hxx"
+    "src/sf4e/sf4e__Game__Battle__Hud.cxx"
+    "src/sf4e/sf4e__Game__Battle__System.hxx"
+    "src/sf4e/sf4e__Game__Battle__System.cxx"
+    "src/sf4e/sf4e__Game__Battle__Vfx.hxx"
+    "src/sf4e/sf4e__Game__Battle__Vfx.cxx"
+    "src/sf4e/sf4e__GameEvents.hxx"
+    "src/sf4e/sf4e__GameEvents.cxx"
+    "src/sf4e/sf4e__Lobby.hxx"
+    "src/sf4e/sf4e__Lobby.cxx"
+    "src/sf4e/sf4e__Matchmaker.hxx"
+    "src/sf4e/sf4e__Matchmaker.cxx"
+    "src/sf4e/sf4e__MatchHud.hxx"
+    "src/sf4e/sf4e__MatchHud.cxx"
+    "src/sf4e/sf4e__UiStyle.hxx"
+    "src/sf4e/sf4e__Overlay.hxx"
+    "src/sf4e/sf4e__Overlay.cxx"
+    "src/sf4e/sf4e__Pad.hxx"
+    "src/sf4e/sf4e__Pad.cxx"
+    "src/sf4e/sf4e__Rtti.hxx"
+    "src/sf4e/sf4e__Rtti.cxx"
+    "src/sf4e/sf4e__Platform.hxx"
+    "src/sf4e/sf4e__Platform.cxx"
+    "src/sf4e/sf4e__UserApp.hxx"
+    "src/sf4e/sf4e__UserApp.cxx"
+)
+target_link_libraries(
+    sf4e
+    PRIVATE ${LIB_DETOURS} Session "Kernel32" "ws2_32" "Mswsock" "AdvApi32" "Shlwapi" "Bcrypt" "Xinput9_1_0" "Dbghelp" "Shell32"
+    PUBLIC imgui::imgui nlohmann_json::nlohmann_json spdlog::spdlog GameNetworkingSockets::shared ggpo::GGPO
+)
+
+endif() # WIN32: end of the game-side targets
+
+# --- Session library: builds everywhere --------------------------------------
+# Shared by the game client and the lobby server. It uses only two PODs from the
+# Dimps headers (FixedPoint and the chara conditions), and calls no Dimps code,
+# so off Windows it compiles without that library at all.
+set(SESSION_SOURCES
+    "src/session/sf4e__SessionProtocol.hxx"
+    "src/session/sf4e__SessionProtocol.cxx"
+    "src/session/sf4e__SessionServer.hxx"
+    "src/session/sf4e__SessionServer.cxx"
+)
+if(WIN32)
+    # The client half drives the game: it pulls in the Dimps headers, the battle
+    # system and GGPO, none of which exist on the server. The lobby server never
+    # references it, so it simply is not part of a Linux build.
+    list(APPEND SESSION_SOURCES
+        "src/session/sf4e__HolePunch.hxx"
+        "src/session/sf4e__HolePunch.cxx"
+        "src/session/sf4e__Upnp.hxx"
+        "src/session/sf4e__Upnp.cxx"
+        "src/session/sf4e__SessionClient.hxx"
+        "src/session/sf4e__SessionClient.cxx"
+    )
+endif()
+
+add_library(Session STATIC ${SESSION_SOURCES})
+target_link_libraries(
+    Session
+    PUBLIC nlohmann_json::nlohmann_json spdlog::spdlog GameNetworkingSockets::shared
+)
+if(WIN32)
+    target_link_libraries(Session PRIVATE Dimps)
+endif()
+
+if(WIN32)
+    add_executable(SessionInteractiveTest "src/session/interactive_test.cxx")
+    target_link_libraries(SessionInteractiveTest PRIVATE nlohmann_json::nlohmann_json imgui::imgui spdlog::spdlog Dimps sf4e Session "d3d9")
+    # target_link_options(SessionInteractiveTest PRIVATE "/entry:wWinMainCRTStartup")
+endif()
+
+# --- Lobby server: builds everywhere -----------------------------------------
+add_executable(LobbyServer src/server/lobby_server.cxx)
+target_link_libraries(LobbyServer PRIVATE Session spdlog::spdlog nlohmann_json::nlohmann_json GameNetworkingSockets::shared)
+if(WIN32)
+    target_link_libraries(LobbyServer PRIVATE "ws2_32")
+else()
+    # GameNetworkingSockets spins its own threads.
+    find_package(Threads REQUIRED)
+    target_link_libraries(LobbyServer PRIVATE Threads::Threads)
+endif()
+
+# --- Launcher, sidecar and packaging: Windows only ---------------------------
+if(WIN32)
+
+# The lobby server address baked into the launcher. Kept out of the tree:
+# deploy/pack-all.cmd reads deploy/server.private (gitignored) and passes it
+# here. Empty means no default; server.txt or --server then has to supply it.
+set(SF4E_BAKED_SERVER "" CACHE STRING "Lobby server (host[:port]) baked into the launcher")
+set(SF4E_BAKED_OUT "${CMAKE_BINARY_DIR}/generated/baked_server.h")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/bake-server.cmake")
+
+add_executable(Launcher WIN32 src/launcher/launcher.cxx src/launcher/app.rc)
+set_target_properties(Launcher PROPERTIES OUTPUT_NAME "SF4Enhanced")
+target_include_directories(Launcher PRIVATE ${VALVEFILEVDF_INCLUDE_DIRS} "${CMAKE_BINARY_DIR}/generated")
+target_link_libraries(Launcher PRIVATE ${LIB_DETOURS} CLI11::CLI11 spdlog::spdlog "shlwapi" "pathcch")
+
+add_library(Sidecar SHARED src/sidecar/sidecar.cxx)
+target_include_directories(Sidecar PRIVATE ${VALVEFILEVDF_INCLUDE_DIRS})
+target_link_libraries(Sidecar PRIVATE ${LIB_DETOURS} Dimps sf4e)
+
+target_compile_definitions(Launcher PRIVATE -D_UNICODE -DUNICODE)
+
+install(
+  TARGETS Launcher Sidecar
+  RUNTIME DESTINATION "."
+  LIBRARY DESTINATION "."
+)
+
+# Ship the dependency DLLs alongside the launcher. Without these the package
+# only runs on a machine that already has them, which is to say on a developer's
+# machine, and the whole point of a release is that a player can unzip it.
+#
+# Sweep the build directory rather than using TARGET_RUNTIME_DLLS: that only
+# reports DLLs belonging to linked imported targets, so it silently omitted
+# OpenSSL, which GameNetworkingSockets loads underneath. vcpkg has already
+# deployed the full transitive set next to the binaries, so copy that.
+install(
+  DIRECTORY "${CMAKE_BINARY_DIR}/"
+  DESTINATION "."
+  FILES_MATCHING
+    PATTERN "*.dll"
+    PATTERN "CMakeFiles" EXCLUDE
+    PATTERN "vcpkg_installed" EXCLUDE
+    PATTERN "_CPack_Packages" EXCLUDE
+    PATTERN "sf4e-server" EXCLUDE
+)
+
+install(
+  FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/INSTALL.md"
+    "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
+  DESTINATION "."
+)
+
+# License texts of the bundled dependencies, as their licenses require.
+file(GLOB _copyrights "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/share/*/copyright")
+foreach(_c ${_copyrights})
+  get_filename_component(_port "${_c}" DIRECTORY)
+  get_filename_component(_port "${_port}" NAME)
+  if(NOT _port MATCHES "^vcpkg-|^pkgconfig$")
+    install(FILES "${_c}" DESTINATION "licenses" RENAME "${_port}.txt")
+  endif()
+endforeach()
+
+set(CPACK_PACKAGE_NAME "${PROJECT_NAME}")
+set(CPACK_PACKAGE_VENDOR "The ${PROJECT_NAME} Dev Team")
+set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_NAME} ${PROJECT_DESCRIPTION}")
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_PACKAGE_FILE_NAME "${PROJECT_NAME}-${PROJECT_VERSION}-win32")
+# One folder in the zip, so extracting never scatters loose files.
+set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON)
+include(CPack)
+
+endif() # WIN32: end of launcher, sidecar and packaging

@@ -1,0 +1,14 @@
+/build
+/msvc-build
+/.vs
+/.vscode
+/CMakeSettings.json
+/CMakeUserPresets.json
+/deploy/server.private
+/.claude/
+
+# Code-signing certificate and its password must never be committed.
+/deploy/codesign.pfx
+/deploy/server.private*
+/deploy/testing/
+/*.zip

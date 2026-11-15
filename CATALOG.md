@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 19:51 UTC · 274 entries · 99 vendored, 175 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 20:07 UTC · 277 entries · 101 vendored, 176 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-15 19:51 UTC · 274 entries · 99 vendored, 175 reference-onl
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 37 | 15 | 22 |
-| [netcode](#netcode) — Networking / netcode | 48 | 17 | 31 |
+| [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 22 | 10 | 12 |
 | [procgen](#procgen) — Procedural generation | 39 | 14 | 25 |
 
@@ -216,7 +216,7 @@ _Generated 2026-11-15 19:51 UTC · 274 entries · 99 vendored, 175 reference-onl
 
 ## netcode
 
-**Networking / netcode** — 48 entries
+**Networking / netcode** — 51 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -236,8 +236,10 @@ _Generated 2026-11-15 19:51 UTC · 274 entries · 99 vendored, 175 reference-onl
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
 | [GameNetworkingSockets](entries/netcode/gamenetworkingsockets/README.md) | reliable/unreliable encrypted message transport (Valve) | c++ | BSD-3-Clause | vendored | [ValveSoftware/GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) @ `d534c19aa760` |
+| [GekkoNet](entries/netcode/heatxd-gekkonet/README.md) | P2P Rollback Game Networking SDK | c++ | BSD-2-Clause | vendored | [HeatXD/GekkoNet](https://github.com/HeatXD/GekkoNet) @ `45dac7e50fd3` |
 | [GGRS](entries/netcode/ggrs/README.md) | rollback netcode (GGPO-style) in Rust with WASM support | rust | Apache-2.0 | vendored | [gschup/ggrs](https://github.com/gschup/ggrs) @ `25bd9983dee3` |
 | [godot-rocket-league](entries/netcode/albertok-godot-rocket-league/README.md) | Network physics with rollback test using Godot and netfox | gdscript | MIT | vendored | [albertok/godot-rocket-league](https://github.com/albertok/godot-rocket-league) @ `78b28ce495fa` |
+| [Godot-Rollback-Fighter-Demo](entries/netcode/blast-harbour-godot-rollback-fighter-demo/README.md) | An example project built on Bimdav's "Delta Rollback" Fork of David Snopek's "Godot Rollback Netcode" Addon  | gdscript | MIT | reference | [blast-harbour/Godot-Rollback-Fighter-Demo](https://github.com/blast-harbour/Godot-Rollback-Fighter-Demo) @ `2024-07-10 (branch tip at catalogue time)` |
 | [hypersomnia — network](entries/netcode/hypersomnia-network/README.md) | network transport, protocol, replication or server loop | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [KCP](entries/netcode/kcp/README.md) | fast reliable ARQ protocol (TCP-like over UDP) | c | MIT | vendored | [skywind3000/kcp](https://github.com/skywind3000/kcp) @ `b1a7a2101dcb` |
 | [megaglest — network](entries/netcode/megaglest-network/README.md) | network transport, protocol, replication or server loop | h | none | reference | [megaglest/megaglest-source.git](https://github.com/megaglest/megaglest-source.git) @ `4ab09c6` |
@@ -257,6 +259,7 @@ _Generated 2026-11-15 19:51 UTC · 274 entries · 99 vendored, 175 reference-onl
 | [openrct2 — network](entries/netcode/openrct2-network/README.md) | network transport, protocol, replication or server loop | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
 | [PlayHex — server](entries/netcode/playhex-server/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [playhex/playhex](https://github.com/playhex/playhex) @ `5750af4` |
 | [rigs-of-rods — server](entries/netcode/rigs-of-rods-server/README.md) | network transport, protocol, replication or server loop | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
+| [sf4e](entries/netcode/fabeloper-sf4e/README.md) | Rollback netcode mod for Ultra Street Fighter IV (Steam). Fork of sf4e by Anthony Danducci (adanducci), codeberg.org/adanducci/sf4e | c++ | MIT | vendored | [fabeloper/sf4e](https://github.com/fabeloper/sf4e) @ `e01d5ab3a4ac` |
 | [stronghold-protocol — server](entries/netcode/stronghold-protocol-server/README.md) | network transport, protocol, replication or server loop | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
 | [suroi — packets](entries/netcode/suroi-packets/README.md) | network transport, protocol, replication or server loop | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
 | [tango](entries/netcode/tangobattle-tango/README.md) | Play Mega Man Battle Network online with rollback netcode! | rust | GPL-3.0 | reference | [tangobattle/tango](https://github.com/tangobattle/tango) @ `2026-11-08 (branch tip at catalogue time)` |

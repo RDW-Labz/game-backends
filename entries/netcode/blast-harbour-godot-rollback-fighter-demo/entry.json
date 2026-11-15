@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T20:07:46Z",
+ "category": "netcode",
+ "commit": "2024-07-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "blast-harbour/Godot-Rollback-Fighter-Demo \u2014 An example project built on Bimdav's \"Delta Rollback\" Fork of David Snopek's \"Godot Rollback Netcode\" Addon",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Godot-Rollback-Fighter-Demo",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "blast-harbour-godot-rollback-fighter-demo",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 58,
+ "system": "An example project built on Bimdav's \"Delta Rollback\" Fork of David Snopek's \"Godot Rollback Netcode\" Addon ",
+ "upstream": "https://github.com/blast-harbour/Godot-Rollback-Fighter-Demo",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,90 @@
+#pragma once
+
+#include <string>
+#include <vector>
+#include <cstdint>
+
+#include <winsock2.h>
+#include <GameNetworkingSockets/steam/steamnetworkingtypes.h>
+
+namespace sf4e {
+	// Talks to the lobby server's matchmaker port to create a lobby or look
+	// one up by code. Everything is non-blocking: call Poll() every frame and
+	// read `state`. One request at a time.
+	struct Matchmaker {
+		enum class State {
+			Idle,
+			Waiting,
+			Done,
+			Failed,
+		};
+
+		State state = State::Idle;
+		std::string error;
+
+		// Filled in on Done.
+		std::string code;
+		uint16_t sessionPort = 0;
+		std::string secret;
+
+		// The server as resolved by Configure(); the session client connects
+		// to this address on `sessionPort`.
+		SteamNetworkingIPAddr serverAddr;
+		std::string serverHost;
+
+		// Resolves "host:port" (or "host", using the default matchmaker port).
+		// Returns false and sets `error` if it cannot be resolved.
+		bool Configure(const std::string& hostPort);
+		bool IsConfigured() const;
+
+		void Create(const std::string& sidecarHash, const std::string& name, bool isPublic = false);
+		// One open public lobby as the server lists it. No addresses.
+		struct PublicLobby {
+			std::string code;
+			std::string title;
+			int players = 0;
+			int spectators = 0;
+			int age = 0;
+			bool full = false;      // both seats taken: watch only
+			int spectatorsMax = 0;
+			int serverIdx = -1;     // client-side: which entry of the baked server list answered
+		};
+		// Asks for the open public lobbies. Done with publicLobbies filled.
+		void List();
+		std::vector<PublicLobby> publicLobbies;
+		void Join(const std::string& lobbyCode, const std::string& sidecarHash, const std::string& name, bool spectate = false);
+		// Asks the server whether it is there. Done with `code` empty on
+		// success; `lobbiesInUse` and `capacity` are filled in.
+		void Ping();
+		void Cancel();
+		void Poll();
+
+		int lobbiesInUse = 0;
+		int capacity = 0;
+
+		int serverPingMs = -1;
+		ULONGLONG _pingSentAt = 0;
+	
+		// Players connected to a lobby, and people who looked in the last minute.
+		int playersOnline = 0;
+		int browsing = 0;
+		// The build the server reports on a ping ("a.b.c"), for the update
+		// notice. Empty if the server is too old to report it.
+		std::string serverVersion;
+
+		// "a.b.c.d:port" for the resolved session endpoint, for StartSession.
+		std::string SessionAddress() const;
+
+		~Matchmaker();
+
+	private:
+		void Send(const std::string& payload);
+
+		SOCKET _sock = INVALID_SOCKET;
+		sockaddr_in _server = { 0 };
+		bool _configured = false;
+		std::string _pending;
+		unsigned long long _sentAt = 0;
+		int _attempts = 0;
+	};
+}

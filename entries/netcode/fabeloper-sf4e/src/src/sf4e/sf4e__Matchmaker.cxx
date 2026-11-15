@@ -1,0 +1,238 @@
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
+
+#include <string>
+
+#include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
+
+#include "sf4e__Matchmaker.hxx"
+
+using nlohmann::json;
+using sf4e::Matchmaker;
+
+namespace {
+	const uint16_t DEFAULT_MATCHMAKER_PORT = 23400;
+	const unsigned long long RETRY_MS = 700;
+	const int MAX_ATTEMPTS = 5;
+}
+
+Matchmaker::~Matchmaker() {
+	if (_sock != INVALID_SOCKET) {
+		closesocket(_sock);
+	}
+}
+
+bool Matchmaker::IsConfigured() const {
+	return _configured;
+}
+
+bool Matchmaker::Configure(const std::string& hostPort) {
+	_configured = false;
+	error.clear();
+
+	std::string host = hostPort;
+	uint16_t port = DEFAULT_MATCHMAKER_PORT;
+	size_t colon = hostPort.rfind(':');
+	if (colon != std::string::npos) {
+		host = hostPort.substr(0, colon);
+		port = (uint16_t)atoi(hostPort.c_str() + colon + 1);
+		if (port == 0) {
+			port = DEFAULT_MATCHMAKER_PORT;
+		}
+	}
+	if (host.empty()) {
+		error = "no server configured";
+		return false;
+	}
+
+	WSADATA wsa;
+	WSAStartup(MAKEWORD(2, 2), &wsa);
+
+	addrinfo hints = { 0 };
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_DGRAM;
+	addrinfo* result = nullptr;
+	if (getaddrinfo(host.c_str(), nullptr, &hints, &result) != 0 || result == nullptr) {
+		error = "could not resolve " + host;
+		return false;
+	}
+	_server = *(sockaddr_in*)result->ai_addr;
+	_server.sin_port = htons(port);
+	freeaddrinfo(result);
+
+	serverAddr.Clear();
+	serverAddr.SetIPv4(ntohl(_server.sin_addr.s_addr), port);
+	serverHost = host;
+
+	if (_sock == INVALID_SOCKET) {
+		_sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		if (_sock == INVALID_SOCKET) {
+			error = "could not open a socket";
+			return false;
+		}
+		u_long nonBlocking = 1;
+		ioctlsocket(_sock, FIONBIO, &nonBlocking);
+	}
+
+	_configured = true;
+	return true;
+}
+
+std::string Matchmaker::SessionAddress() const {
+	char ip[INET_ADDRSTRLEN] = { 0 };
+	inet_ntop(AF_INET, &_server.sin_addr, ip, sizeof(ip));
+	return std::string(ip) + ":" + std::to_string(sessionPort);
+}
+
+void Matchmaker::Send(const std::string& payload) {
+	_pending = payload;
+	_attempts = 0;
+	_sentAt = 0;
+	state = State::Waiting;
+	error.clear();
+	code.clear();
+	sessionPort = 0;
+	Poll();
+}
+
+void Matchmaker::Create(const std::string& sidecarHash, const std::string& name, bool isPublic) {
+	if (!_configured) {
+		state = State::Failed;
+		error = "no server configured";
+		return;
+	}
+	json req = { {"op", "create"}, {"hash", sidecarHash}, {"name", name}, {"public", isPublic}, {"title", "lobby by " + name} };
+	Send(req.dump());
+}
+
+void Matchmaker::Join(const std::string& lobbyCode, const std::string& sidecarHash, const std::string& name, bool spectate) {
+	if (!_configured) {
+		state = State::Failed;
+		error = "no server configured";
+		return;
+	}
+	json req = { {"op", "join"}, {"code", lobbyCode}, {"hash", sidecarHash}, {"name", name}, {"spectate", spectate} };
+	Send(req.dump());
+}
+
+void Matchmaker::List() {
+	if (!_configured) {
+		state = State::Failed;
+		error = "no server configured";
+		return;
+	}
+	json req = { {"op", "list"} };
+	Send(req.dump());
+}
+
+void Matchmaker::Ping() {
+	if (!_configured) {
+		state = State::Failed;
+		error = "no server configured";
+		return;
+	}
+	json req = { {"op", "ping"} };
+	_pingSentAt = GetTickCount64();
+	Send(req.dump());
+}
+
+void Matchmaker::Cancel() {
+	state = State::Idle;
+	_pending.clear();
+}
+
+void Matchmaker::Poll() {
+	if (state != State::Waiting) {
+		return;
+	}
+
+	unsigned long long now = GetTickCount64();
+	if (_sentAt == 0 || now - _sentAt > RETRY_MS) {
+		if (_attempts >= MAX_ATTEMPTS) {
+			state = State::Failed;
+			error = "no answer from the lobby server (is it running?)";
+			return;
+		}
+		sendto(_sock, _pending.c_str(), (int)_pending.size(), 0, (sockaddr*)&_server, sizeof(_server));
+		_sentAt = now;
+		_attempts++;
+	}
+
+	char buf[1500];
+	sockaddr_in from = { 0 };
+	int fromLen = sizeof(from);
+	int n = recvfrom(_sock, buf, sizeof(buf) - 1, 0, (sockaddr*)&from, &fromLen);
+	if (n <= 0) {
+		return;
+	}
+	if (from.sin_addr.s_addr != _server.sin_addr.s_addr || from.sin_port != _server.sin_port) {
+		return;
+	}
+	buf[n] = 0;
+
+	try {
+		json reply = json::parse(buf);
+		if (reply.value("ok", false)) {
+			code = reply.value("code", "");
+			sessionPort = (uint16_t)reply.value("session_port", 0);
+			secret = reply.value("secret", "");
+			lobbiesInUse = reply.value("lobbies", lobbiesInUse);
+			capacity = reply.value("capacity", capacity);
+
+			if(_pingSentAt != 0) {
+				serverPingMs = (int)(GetTickCount64() - _pingSentAt);
+				_pingSentAt = 0;
+			}
+
+			playersOnline = reply.value("players", playersOnline);
+			browsing = reply.value("browsing", browsing);
+			serverVersion = reply.value("version", serverVersion);
+			if (reply.contains("list") && reply["list"].is_array()) {
+				publicLobbies.clear();
+				for (const auto& e : reply["list"]) {
+					PublicLobby p;
+					p.code = e.value("code", "");
+					p.title = e.value("title", "");
+					p.players = e.value("players", 0);
+					p.spectators = e.value("spectators", 0);
+					p.age = e.value("age", 0);
+					p.full = e.value("full", false);
+					p.spectatorsMax = e.value("spectators_max", 0);
+					if (p.code.size() == 6) publicLobbies.push_back(p);
+				}
+			}
+			state = State::Done;
+			if (!code.empty()) {
+				spdlog::info("Matchmaker: lobby {} on session port {}", code, sessionPort);
+			}
+		}
+		else {
+			std::string reason = reply.value("error", "unknown");
+			if (reason == "not_found") {
+				error = "no lobby with that code";
+			}
+			else if (reason == "lobby_full") {
+				error = "that lobby already has two players";
+			}
+			else if (reason == "spectators_full") {
+				error = "that lobby has no spectator seats left";
+			}
+			else if (reason == "version_mismatch") {
+				error = "the other player runs a different sf4e build";
+			}
+			else if (reason == "server_full") {
+				error = "the server has no free lobbies right now";
+			}
+			else {
+				error = reason;
+			}
+			state = State::Failed;
+		}
+	}
+	catch (const std::exception&) {
+		error = "bad reply from server";
+		state = State::Failed;
+	}
+}

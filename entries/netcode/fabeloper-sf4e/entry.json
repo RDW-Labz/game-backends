@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T20:07:45Z",
+ "category": "netcode",
+ "commit": "e01d5ab3a4ac",
+ "delivery": "vendored",
+ "description": "fabeloper/sf4e \u2014 Rollback netcode mod for Ultra Street Fighter IV (Steam). Fork of sf4e by Anthony Danducci (adanducci), codeberg.org/adanducci/sf4e",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "sf4e",
+ "size_bytes": 826685,
+ "slug": "fabeloper-sf4e",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 63,
+ "system": "Rollback netcode mod for Ultra Street Fighter IV (Steam). Fork of sf4e by Anthony Danducci (adanducci), codeberg.org/adanducci/sf4e",
+ "upstream": "https://github.com/fabeloper/sf4e",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

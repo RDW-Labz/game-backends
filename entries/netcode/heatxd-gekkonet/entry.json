@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T20:07:42Z",
+ "category": "netcode",
+ "commit": "45dac7e50fd3",
+ "delivery": "vendored",
+ "description": "HeatXD/GekkoNet \u2014 P2P Rollback Game Networking SDK",
+ "language": "c++",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "GekkoNet",
+ "size_bytes": 5185887,
+ "slug": "heatxd-gekkonet",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 67,
+ "system": "P2P Rollback Game Networking SDK",
+ "upstream": "https://github.com/HeatXD/GekkoNet",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
