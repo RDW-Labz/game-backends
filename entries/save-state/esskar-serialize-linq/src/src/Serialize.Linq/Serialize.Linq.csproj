@@ -1,0 +1,204 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>C# library to serialize LINQ expressions</Description>
+    <AssemblyTitle>Serialize.Linq</AssemblyTitle>
+    <AssemblyName>Serialize.Linq</AssemblyName>
+    <Authors>Sascha Kiefer</Authors>
+    <Copyright>Copyright © 2012-2026</Copyright>
+    <AssemblyOriginatorKeyFile>Serialize.Linq Signing Key.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <PackageTags>linq;serialize</PackageTags>
+    <PackageReleaseNotes>
+	  - restrict types allowed during deserialization via ITypeFilter on ExpressionContext
+	</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/esskar/Serialize.Linq</PackageProjectUrl>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/esskar/Serialize.Linq</RepositoryUrl>
+    <DefaultLanguage>en-us</DefaultLanguage>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Configurations>Debug;Release;Debug Optimize Size;Release Optimize Size</Configurations>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFrameworks>net48;net481;net6.0;net7.0;net8.0;net9.0;net10.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <Version>4.4.1</Version>
+    <AssemblyVersion>4.4.1.0</AssemblyVersion>
+    <FileVersion>4.4.1.0</FileVersion>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)' == 'Debug Optimize Size' or '$(Configuration)' == 'Release Optimize Size'">
+    <DefineConstants>$(DefineConstants);SERIALIZE_LINQ_OPTIMIZE_SIZE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Optimize Size|net48|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release Optimize Size|net48|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net481|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net481|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Optimize Size|net481|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release Optimize Size|net481|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Optimize Size|net6.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release Optimize Size|net6.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Optimize Size|net7.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release Optimize Size|net7.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Optimize Size|net8.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release Optimize Size|net8.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
+	<WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+	Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Optimize Size|net9.0|AnyCPU'">
+	<WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+	Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release Optimize Size|net9.0|AnyCPU'">
+	<WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+    Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net10.0|AnyCPU'">
+	<WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+	Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug Optimize Size|net10.0|AnyCPU'">
+	<WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup
+	Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release Optimize Size|net10.0|AnyCPU'">
+	<WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <!--
+    Reference the .NET Framework reference assemblies explicitly for the
+    net48/net481 targets. On non-Windows build hosts the SDK pulls this package
+    in implicitly (the reference assemblies aren't installed), but on Windows
+    they come from the OS and no package is added. Declaring it explicitly keeps
+    packages.lock.json identical across build operating systems so locked-mode
+    restores don't fail in CI. PrivateAssets="all" keeps it build-only and out
+    of the published package's dependencies.
+  -->
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net48' or '$(TargetFramework)' == 'net481' ">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

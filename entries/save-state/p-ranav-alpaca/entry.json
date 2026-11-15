@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T20:39:42Z",
+ "category": "save-state",
+ "commit": "8f022bdb5106",
+ "delivery": "vendored",
+ "description": "p-ranav/alpaca \u2014 Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "alpaca",
+ "size_bytes": 2152040,
+ "slug": "p-ranav-alpaca",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 564,
+ "system": "Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code",
+ "upstream": "https://github.com/p-ranav/alpaca",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

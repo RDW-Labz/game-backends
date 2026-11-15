@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T20:39:44Z",
+ "category": "save-state",
+ "commit": "44b715ffbea5",
+ "delivery": "vendored",
+ "description": "esskar/Serialize.Linq \u2014 C# library to serialize LINQ expressions",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Serialize.Linq",
+ "size_bytes": 266085,
+ "slug": "esskar-serialize-linq",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 546,
+ "system": "C# library to serialize LINQ expressions",
+ "upstream": "https://github.com/esskar/Serialize.Linq",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

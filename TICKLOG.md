@@ -250,3 +250,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/blast-harbour-godot-rollback-fighter-demo
 
 - **2026-11-15 20:23 UTC** — tick 60: +0 screened, +0 reference, 0 skipped, catalogue=277
+
+- **2026-11-15 20:39 UTC** — tick 61: +2 screened, +4 reference, 14 skipped, catalogue=283
+  - added save-state/p-ranav-alpaca (MIT, vendored)
+  - added save-state/esskar-serialize-linq (MIT, vendored)
+  - reference save-state/yandex-yaff
+  - reference save-state/hadashia-vyaml
+  - reference save-state/boostorg-json
+  - reference save-state/jorgen-json-struct

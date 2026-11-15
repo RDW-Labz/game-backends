@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T20:39:46Z",
+ "category": "save-state",
+ "commit": "2026-11-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "yandex/yaff \u2014 YaFF is a high-performance C++ serialization library that provides a zero-copy wire format for the Protobuf ecosystem.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "yaff",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "yandex-yaff",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 539,
+ "system": "YaFF is a high-performance C++ serialization library that provides a zero-copy wire format for the Protobuf ecosystem.",
+ "upstream": "https://github.com/yandex/yaff",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

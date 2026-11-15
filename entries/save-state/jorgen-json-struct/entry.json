@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T20:39:46Z",
+ "category": "save-state",
+ "commit": "2026-08-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jorgen/json_struct \u2014 json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "json_struct",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "jorgen-json-struct",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 473,
+ "system": "json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa",
+ "upstream": "https://github.com/jorgen/json_struct",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

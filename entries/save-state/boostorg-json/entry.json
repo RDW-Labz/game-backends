@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T20:39:46Z",
+ "category": "save-state",
+ "commit": "2026-11-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "boostorg/json \u2014 A C++11 library for parsing and serializing JSON to and from a DOM container in memory.",
+ "language": "c++",
+ "license": "BSL-1.0",
+ "license_verdict": "gated-reference",
+ "name": "json",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSL-1.0)",
+ "slug": "boostorg-json",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 481,
+ "system": "A C++11 library for parsing and serializing JSON to and from a DOM container in memory.",
+ "upstream": "https://github.com/boostorg/json",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

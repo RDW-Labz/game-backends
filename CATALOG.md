@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 20:23 UTC · 277 entries · 101 vendored, 176 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 20:39 UTC · 283 entries · 103 vendored, 180 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-15 20:23 UTC · 277 entries · 101 vendored, 176 reference-on
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 37 | 15 | 22 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
-| [save-state](#save-state) — Save / state systems | 22 | 10 | 12 |
+| [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 39 | 14 | 25 |
 
 
@@ -274,10 +274,11 @@ _Generated 2026-11-15 20:23 UTC · 277 entries · 101 vendored, 176 reference-on
 
 ## save-state
 
-**Save / state systems** — 22 entries
+**Save / state systems** — 28 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
+| [alpaca](entries/save-state/p-ranav-alpaca/README.md) | Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code | c++ | MIT | vendored | [p-ranav/alpaca](https://github.com/p-ranav/alpaca) @ `8f022bdb5106` |
 | [biomes-game — storage](entries/save-state/biomes-game-storage/README.md) | persistence: save/load, snapshot or state serialisation | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [capnproto](entries/save-state/capnproto-capnproto/README.md) | Cap'n Proto serialization/RPC system - core tools and C++ library | c++ | MIT | vendored | [capnproto/capnproto](https://github.com/capnproto/capnproto) @ `5f160ba386e6` |
 | [cereal](entries/save-state/cereal/README.md) | C++11 serialization: JSON/binary/XML archives, versioning | c++ | BSD-3-Clause | vendored | [USCiLab/cereal](https://github.com/USCiLab/cereal) @ `22a1b369f39b` |
@@ -290,14 +291,19 @@ _Generated 2026-11-15 20:23 UTC · 277 entries · 101 vendored, 176 reference-on
 | [Freeciv — savegame](entries/save-state/freeciv-savegame/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [FTC-Skystone-Dark-Angels-Romania-2020](entries/save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020/README.md) | NOTICE This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season. If you are looking for the current season's FTC SDK software | java | BSD-3-Clause | vendored | [chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020](https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020) @ `b5132793582a` |
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
+| [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
+| [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
+| [Serialize.Linq](entries/save-state/esskar-serialize-linq/README.md) | C# library to serialize LINQ expressions | c# | MIT | vendored | [esskar/Serialize.Linq](https://github.com/esskar/Serialize.Linq) @ `44b715ffbea5` |
 | [SQLite](entries/save-state/sqlite/README.md) | embedded SQL database engine (single-file world saves) | c | Public-Domain | reference | [sqlite/sqlite](https://github.com/sqlite/sqlite) @ `e5cb4b09573a` |
 | [struct2json](entries/save-state/armink-struct2json/README.md) | A fast convert library between the JSON and C structure. Implement structure serialization and deserialization for C. / C 结构体与 JSON 快速互转库，快速实现 C 结构体的序列化及反序列化 | c | MIT | reference | [armink/struct2json](https://github.com/armink/struct2json) @ `2022-01-07 (branch tip at catalogue time)` |
 | [thrive — saving](entries/save-state/thrive-saving/README.md) | persistence: save/load, snapshot or state serialisation | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [VCMI — serializer](entries/save-state/vcmi-serializer/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
+| [VYaml](entries/save-state/hadashia-vyaml/README.md) | The extra fast, low memory footprint YAML library for C#,  focued on .NET and Unity. | c# | MIT | reference | [hadashiA/VYaml](https://github.com/hadashiA/VYaml) @ `2026-11-05 (branch tip at catalogue time)` |
+| [yaff](entries/save-state/yandex-yaff/README.md) | YaFF is a high-performance C++ serialization library that provides a zero-copy wire format for the Protobuf ecosystem. | c++ | unknown | reference | [yandex/yaff](https://github.com/yandex/yaff) @ `2026-11-02 (branch tip at catalogue time)` |
 | [yyjson](entries/save-state/yyjson/README.md) | high-performance JSON library (read/write/mutate) | c | MIT | vendored | [ibireme/yyjson](https://github.com/ibireme/yyjson) @ `ebb8d7e5aaa5` |
 | [zpp_bits](entries/save-state/eyalz800-zpp-bits/README.md) | A lightweight C++20 serialization and RPC library | c++ | MIT | vendored | [eyalz800/zpp_bits](https://github.com/eyalz800/zpp_bits) @ `4ccf2a773d61` |
 

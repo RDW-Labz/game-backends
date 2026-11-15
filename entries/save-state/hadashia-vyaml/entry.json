@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T20:39:46Z",
+ "category": "save-state",
+ "commit": "2026-11-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hadashiA/VYaml \u2014 The extra fast, low memory footprint YAML library for C#,  focued on .NET and Unity.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "VYaml",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hadashia-vyaml",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 482,
+ "system": "The extra fast, low memory footprint YAML library for C#,  focued on .NET and Unity.",
+ "upstream": "https://github.com/hadashiA/VYaml",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
