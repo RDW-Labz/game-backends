@@ -17,3 +17,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/genaray-arch
   - reference engines/sebas77-svelto-ecs
   - reference engines/doriaxengine-doriax
+
+- **2026-11-15 05:12 UTC** — tick 3: +2 screened, +4 reference, 3 skipped, catalogue=166
+  - added physics/liabru-matter-js (MIT, vendored)
+  - added physics/melonjs-melonjs (MIT, reference)
+  - reference physics/galacean-engine
+  - reference physics/piqnt-planck-js
+  - reference physics/avianphysics-avian
+  - reference physics/layabox-layaair

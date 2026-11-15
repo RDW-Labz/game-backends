@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T05:12:22Z",
+ "category": "physics",
+ "commit": "2026-11-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "avianphysics/avian \u2014 ECS-driven 2D and 3D physics engine for the Bevy game engine.",
+ "language": "rust",
+ "license": "APACHE-2.0",
+ "license_verdict": "gated-reference",
+ "name": "avian",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (APACHE-2.0)",
+ "slug": "avianphysics-avian",
+ "source": "github-search:physics engine 2d stars:>100",
+ "stars": 3292,
+ "system": "ECS-driven 2D and 3D physics engine for the Bevy game engine.",
+ "upstream": "https://github.com/avianphysics/avian",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

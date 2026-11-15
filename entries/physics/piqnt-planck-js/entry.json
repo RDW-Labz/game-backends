@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T05:12:22Z",
+ "category": "physics",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "piqnt/planck.js \u2014 2D JavaScript Physics Engine",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "planck.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "piqnt-planck-js",
+ "source": "github-search:physics engine 2d stars:>100",
+ "stars": 5321,
+ "system": "2D JavaScript Physics Engine",
+ "upstream": "https://github.com/piqnt/planck.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

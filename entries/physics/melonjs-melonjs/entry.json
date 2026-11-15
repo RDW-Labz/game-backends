@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T05:12:21Z",
+ "category": "physics",
+ "commit": "91f4396452e0",
+ "delivery": "reference",
+ "description": "melonjs/melonJS \u2014 A modern & fully featured HTML5 game engine (2D & 3D) for JavaScript/TypeScript, with WebGL/WebGPU rendering, built-in physics, Tiled map & glTF support and WebAudio.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "melonJS",
+ "reference_reason": "size gate: 15 MB",
+ "size_bytes": 16020034,
+ "slug": "melonjs-melonjs",
+ "source": "github-search:physics engine 2d stars:>100",
+ "stars": 6506,
+ "system": "A modern & fully featured HTML5 game engine (2D & 3D) for JavaScript/TypeScript, with WebGL/WebGPU rendering, built-in physics, Tiled map & glTF support and Web",
+ "upstream": "https://github.com/melonjs/melonJS",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
