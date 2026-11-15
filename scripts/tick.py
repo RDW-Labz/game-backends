@@ -226,9 +226,12 @@ def main():
         sh("git", "-c", "user.name=library-tick", "-c", "user.email=tick@rdw-labz.local",
            "commit", "-q", "-m", msg)
         if sh("git", "remote").stdout.strip():
-            p = sh("git", "-c", "credential.helper=", "push", "-q", "origin", "HEAD")
+            # push_all.sh handles both remotes with a throwaway askpass helper
+            p = subprocess.run(["bash", os.path.join(ROOT, "scripts", "push_all.sh")],
+                               cwd=ROOT, capture_output=True, text=True, timeout=600)
             if p.returncode != 0:
-                msg += f" [push failed: {p.stderr.strip().splitlines()[-1][:120] if p.stderr else ''}]"
+                tail = (p.stdout or p.stderr).strip().splitlines()[-1:] or [""]
+                msg += f" [push issue: {tail[0][:120]}]"
     else:
         msg += " [no changes]"
     st["last"] = {"at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),

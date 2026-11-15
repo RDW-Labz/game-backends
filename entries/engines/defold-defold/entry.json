@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T04:46:58Z",
+ "category": "engines",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "defold/defold \u2014 Defold is a completely free to use game engine for development of desktop, console, mobile and web games.",
+ "language": "c++",
+ "license": "NOASSERTION",
+ "license_verdict": "gated-reference",
+ "name": "defold",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (NOASSERTION)",
+ "slug": "defold-defold",
+ "source": "github-search:game engine language:c++ stars:>200",
+ "stars": 6462,
+ "system": "Defold is a completely free to use game engine for development of desktop, console, mobile and web games.",
+ "upstream": "https://github.com/defold/defold",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

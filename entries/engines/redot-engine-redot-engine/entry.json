@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T04:46:58Z",
+ "category": "engines",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Redot-Engine/redot-engine \u2014 Redot Engine \u2013 Multi-platform 2D and 3D game engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "redot-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "redot-engine-redot-engine",
+ "source": "github-search:game engine language:c++ stars:>200",
+ "stars": 6193,
+ "system": "Redot Engine \u2013 Multi-platform 2D and 3D game engine",
+ "upstream": "https://github.com/Redot-Engine/redot-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
