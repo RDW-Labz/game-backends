@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T16:24:24Z",
+ "category": "engines",
+ "commit": "2023-02-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ketoo/NoahGameFrame \u2014 A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game engine ( MMO RPG/MOBA ), which support C#/Lua script/ Unity3d, Cocos2dx and plan to support Unreal.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "NoahGameFrame",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "ketoo-noahgameframe",
+ "source": "github-search:game engine language:c++ stars:>200",
+ "stars": 4169,
+ "system": "A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng",
+ "upstream": "https://github.com/ketoo/NoahGameFrame",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

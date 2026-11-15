@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T16:24:22Z",
+ "category": "engines",
+ "commit": "257469ce0ed7",
+ "delivery": "vendored",
+ "description": "OneLoneCoder/olcPixelGameEngine \u2014 The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENCE.md",
+ "license_verdict": "clean",
+ "name": "olcPixelGameEngine",
+ "size_bytes": 781406,
+ "slug": "onelonecoder-olcpixelgameengine",
+ "source": "github-search:game engine language:c++ stars:>200",
+ "stars": 4255,
+ "system": "The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects",
+ "upstream": "https://github.com/OneLoneCoder/olcPixelGameEngine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

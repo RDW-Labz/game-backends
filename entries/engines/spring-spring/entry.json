@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T16:24:24Z",
+ "category": "engines",
+ "commit": "2024-03-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "spring/spring \u2014 A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "spring",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "spring-spring",
+ "source": "github-search:game engine language:c++ stars:>200",
+ "stars": 4037,
+ "system": "A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/",
+ "upstream": "https://github.com/spring/spring",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

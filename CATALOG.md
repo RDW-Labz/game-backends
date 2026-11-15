@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 16:07 UTC · 261 entries · 94 vendored, 167 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 16:24 UTC · 267 entries · 95 vendored, 172 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 56 | 14 | 42 |
+| [engines](#engines) — Game engines and engine subsystems | 62 | 15 | 47 |
 | [physics](#physics) — Physics | 28 | 9 | 19 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,11 +16,12 @@ _Generated 2026-11-15 16:07 UTC · 261 entries · 94 vendored, 167 reference-onl
 
 ## engines
 
-**Game engines and engine subsystems** — 56 entries
+**Game engines and engine subsystems** — 62 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [AAAAXY — engine](entries/engines/aaaaxy-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | go | Apache-2.0 | vendored | [divVerent/aaaaxy](https://github.com/divVerent/aaaaxy) @ `07d7252` |
+| [ActionRoguelike](entries/engines/tomlooman-actionroguelike/README.md) | Project Orion - Co-op Action Roguelike in Unreal Engine C++ | c++ | none | reference | [tomlooman/ActionRoguelike](https://github.com/tomlooman/ActionRoguelike) @ `b7aef7d0f8ef` |
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
@@ -39,6 +40,7 @@ _Generated 2026-11-15 16:07 UTC · 261 entries · 94 vendored, 167 reference-onl
 | [EntityComponentSystemSamples](entries/engines/unity-technologies-entitycomponentsystemsamples/README.md) | see upstream | c# | none | reference | [Unity-Technologies/EntityComponentSystemSamples](https://github.com/Unity-Technologies/EntityComponentSystemSamples) @ `6786a741ee1f` |
 | [EnTT](entries/engines/entt/README.md) | header-only ECS: registry, views, groups, signals | c++ | MIT | vendored | [skypjack/entt](https://github.com/skypjack/entt) @ `1dcd7aab6548` |
 | [esper](entries/engines/benmoran56-esper/README.md) | An ECS (Entity Component System) for Python | python | MIT | reference | [benmoran56/esper](https://github.com/benmoran56/esper) @ `2026-09-20 (branch tip at catalogue time)` |
+| [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
 | [Flecs](entries/engines/flecs/README.md) | ECS with prefabs, pipelines, hierarchies, REST explorer | c | MIT | reference | [SanderMertens/flecs](https://github.com/SanderMertens/flecs) @ `fa6554710d0d` |
 | [gameplay](entries/engines/gameplay3d-gameplay/README.md) | Open-source, cross-platform, C++ game engine for creating 2D/3D games. | c++ | unknown | reference | [gameplay3d/gameplay](https://github.com/gameplay3d/gameplay) @ `2025-02-25 (branch tip at catalogue time)` |
@@ -50,8 +52,11 @@ _Generated 2026-11-15 16:07 UTC · 261 entries · 94 vendored, 167 reference-onl
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
+| [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
+| [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
+| [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
 | [open_spiel — core](entries/engines/open-spiel-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
 | [openmw](entries/engines/openmw-openmw/README.md) | OpenMW is an open-source open-world RPG game engine that supports playing Morrowind. Main repo and issue tracker can be found here: https://gitlab.com/OpenMW/op | c++ | GPL-3.0 | reference | [OpenMW/openmw](https://github.com/OpenMW/openmw) @ `77eec0471802` |
@@ -68,6 +73,7 @@ _Generated 2026-11-15 16:07 UTC · 261 entries · 94 vendored, 167 reference-onl
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
+| [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |

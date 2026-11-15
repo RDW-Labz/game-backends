@@ -202,3 +202,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-15 15:51 UTC** — tick 43: +0 screened, +0 reference, 6 skipped, catalogue=261
 
 - **2026-11-15 16:07 UTC** — tick 44: +0 screened, +0 reference, 5 skipped, catalogue=261
+
+- **2026-11-15 16:24 UTC** — tick 45: +2 screened, +4 reference, 11 skipped, catalogue=267
+  - added engines/tomlooman-actionroguelike (none, reference)
+  - added engines/onelonecoder-olcpixelgameengine (BSD-3-Clause, vendored)
+  - reference engines/ketoo-noahgameframe
+  - reference engines/spring-spring
+  - reference engines/nem0-lumixengine
+  - reference engines/ihhub-fheroes2
