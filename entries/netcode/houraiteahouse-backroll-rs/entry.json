@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T08:24:26Z",
+ "category": "netcode",
+ "commit": "2023-03-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "HouraiTeahouse/backroll-rs \u2014 A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode.",
+ "language": "rust",
+ "license": "ISC",
+ "license_verdict": "clean",
+ "name": "backroll-rs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (ISC)",
+ "slug": "houraiteahouse-backroll-rs",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 371,
+ "system": "A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode.",
+ "upstream": "https://github.com/HouraiTeahouse/backroll-rs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

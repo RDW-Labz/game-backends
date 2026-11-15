@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T08:24:26Z",
+ "category": "netcode",
+ "commit": "2023-11-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "genxium/DelayNoMore \u2014 A Multiplayer Platformer game demo on websocket with delayed-input Rollback Netcode inspired by GGPO",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "DelayNoMore",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "genxium-delaynomore",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 162,
+ "system": "A Multiplayer Platformer game demo on websocket with delayed-input Rollback Netcode inspired by GGPO",
+ "upstream": "https://github.com/genxium/DelayNoMore",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

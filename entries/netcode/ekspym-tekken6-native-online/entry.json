@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T08:24:24Z",
+ "category": "netcode",
+ "commit": "f68b65b253d8",
+ "delivery": "reference",
+ "description": "Ekspym/Tekken6-native-online \u2014 Tekken 6 (Xbox 360) native on Windows with rollback netcode - build from your own ISO",
+ "language": "n/a",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Tekken6-native-online",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "ekspym-tekken6-native-online",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 470,
+ "system": "Tekken 6 (Xbox 360) native on Windows with rollback netcode - build from your own ISO",
+ "upstream": "https://github.com/Ekspym/Tekken6-native-online",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

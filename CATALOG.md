@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 08:08 UTC · 191 entries · 74 vendored, 117 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 08:24 UTC · 197 entries · 75 vendored, 122 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-15 08:08 UTC · 191 entries · 74 vendored, 117 reference-onl
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 36 | 14 | 22 |
-| [netcode](#netcode) — Networking / netcode | 36 | 15 | 21 |
+| [netcode](#netcode) — Networking / netcode | 42 | 16 | 26 |
 | [save-state](#save-state) — Save / state systems | 9 | 5 | 4 |
 | [procgen](#procgen) — Procedural generation | 13 | 6 | 7 |
 
@@ -184,14 +184,18 @@ _Generated 2026-11-15 08:08 UTC · 191 entries · 74 vendored, 117 reference-onl
 
 ## netcode
 
-**Networking / netcode** — 36 entries
+**Networking / netcode** — 42 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [ancientbeast — multiplayer](entries/netcode/ancientbeast-multiplayer/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
+| [Backdash](entries/netcode/delta3-studio-backdash/README.md) | C# Rollback network SDK | c# | MIT | reference | [Delta3-Studio/Backdash](https://github.com/Delta3-Studio/Backdash) @ `2026-11-10 (branch tip at catalogue time)` |
+| [backroll-rs](entries/netcode/houraiteahouse-backroll-rs/README.md) | A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode. | rust | ISC | reference | [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) @ `2023-03-13 (branch tip at catalogue time)` |
 | [Colyseus](entries/netcode/colyseus/README.md) | authoritative room-based multiplayer framework with state sync | typescript | MIT | vendored | [colyseus/colyseus](https://github.com/colyseus/colyseus) @ `ce781b98bfc5` |
 | [Cubit — server](entries/netcode/cubit-server/README.md) | network transport, protocol, replication or server loop | go | MIT | vendored | [taynotfound/cubit](https://github.com/taynotfound/cubit) @ `0bd4518` |
 | [cubyz — server](entries/netcode/cubyz-server/README.md) | network transport, protocol, replication or server loop | zig | GPL-3.0 | reference | [PixelGuys/Cubyz](https://github.com/PixelGuys/Cubyz) @ `74b6814` |
+| [Darklings-FightingGame](entries/netcode/kidagine-darklings-fightinggame/README.md) | DARKLINGS is an accessible F2P 2D fighting game with periodic updates (using Rollback Netcode). | shaderlab | unknown | reference | [kidagine/Darklings-FightingGame](https://github.com/kidagine/Darklings-FightingGame) @ `2024-09-12 (branch tip at catalogue time)` |
+| [DelayNoMore](entries/netcode/genxium-delaynomore/README.md) | A Multiplayer Platformer game demo on websocket with delayed-input Rollback Netcode inspired by GGPO | javascript | unknown | reference | [genxium/DelayNoMore](https://github.com/genxium/DelayNoMore) @ `2023-11-28 (branch tip at catalogue time)` |
 | [ENet](entries/netcode/enet/README.md) | reliable UDP networking for games | c | MIT | vendored | [lsalzman/enet](https://github.com/lsalzman/enet) @ `5a9c537fd464` |
 | [Freeciv — networking](entries/netcode/freeciv-common-networking/README.md) | turn-based client/server protocol and packet layer | c | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756d5b07` |
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
@@ -206,6 +210,7 @@ _Generated 2026-11-15 08:08 UTC · 191 entries · 74 vendored, 117 reference-onl
 | [Nakama](entries/netcode/nakama/README.md) | game backend server: matchmaking, realtime, leaderboards, storage | go | Apache-2.0 | reference | [heroiclabs/nakama](https://github.com/heroiclabs/nakama) @ `37618ad4b927` |
 | [nakama — server](entries/netcode/nakama-server/README.md) | network transport, protocol, replication or server loop | go | Apache-2.0 | vendored | [heroiclabs/nakama](https://github.com/heroiclabs/nakama) @ `4833594` |
 | [netcode.io](entries/netcode/netcode-io/README.md) | secure UDP connection protocol with token auth | c | BSD-3-Clause | vendored | [mas-bandwidth/netcode](https://github.com/mas-bandwidth/netcode) @ `2d9df60853a6` |
+| [netplayjs](entries/netcode/rameshvarun-netplayjs/README.md) | Make P2P multiplayer browser games, no server hosting or synchronization code required. Powered by rollback netcode + WebRTC. | typescript | ISC | vendored | [rameshvarun/netplayjs](https://github.com/rameshvarun/netplayjs) @ `c6f888a65d49` |
 | [open_spiel — session](entries/netcode/open-spiel-session/README.md) | network transport, protocol, replication or server loop | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
 | [OpenArena — server](entries/netcode/openarena-server/README.md) | network transport, protocol, replication or server loop | c | GPL-2.0 | reference | [OpenArena/engine.git](https://github.com/OpenArena/engine.git) @ `fd74931` |
 | [openclonk — network](entries/netcode/openclonk-network/README.md) | network transport, protocol, replication or server loop | c | ISC | vendored | [openclonk/openclonk.git](https://github.com/openclonk/openclonk.git) @ `36de799` |
@@ -219,6 +224,7 @@ _Generated 2026-11-15 08:08 UTC · 191 entries · 74 vendored, 117 reference-onl
 | [stronghold-protocol — server](entries/netcode/stronghold-protocol-server/README.md) | network transport, protocol, replication or server loop | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
 | [suroi — packets](entries/netcode/suroi-packets/README.md) | network transport, protocol, replication or server loop | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
 | [teeworlds — server](entries/netcode/teeworlds-server/README.md) | network transport, protocol, replication or server loop | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
+| [Tekken6-native-online](entries/netcode/ekspym-tekken6-native-online/README.md) | Tekken 6 (Xbox 360) native on Windows with rollback netcode - build from your own ISO | n/a | none | reference | [Ekspym/Tekken6-native-online](https://github.com/Ekspym/Tekken6-native-online) @ `f68b65b253d8` |
 | [VCMI — server](entries/netcode/vcmi-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [warzone2100 — netplay](entries/netcode/warzone2100-lib-netplay/README.md) | RTS netplay: sync, desync detection, rejoin | c++ | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e14614` |
 | [widelands — network](entries/netcode/widelands-network/README.md) | network transport, protocol, replication or server loop | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |

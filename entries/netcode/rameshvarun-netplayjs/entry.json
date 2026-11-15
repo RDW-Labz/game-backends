@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T08:24:23Z",
+ "category": "netcode",
+ "commit": "c6f888a65d49",
+ "delivery": "vendored",
+ "description": "rameshvarun/netplayjs \u2014 Make P2P multiplayer browser games, no server hosting or synchronization code required. Powered by rollback netcode + WebRTC.",
+ "language": "typescript",
+ "license": "ISC",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "netplayjs",
+ "size_bytes": 3409318,
+ "slug": "rameshvarun-netplayjs",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 577,
+ "system": "Make P2P multiplayer browser games, no server hosting or synchronization code required. Powered by rollback netcode + WebRTC.",
+ "upstream": "https://github.com/rameshvarun/netplayjs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

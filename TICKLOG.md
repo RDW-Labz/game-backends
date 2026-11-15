@@ -72,3 +72,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-15 08:08 UTC** — tick 14: +2 screened, +0 reference, 0 skipped, catalogue=191
   - added netcode/mas-bandwidth-yojimbo (BSD-3-Clause, vendored)
   - added netcode/miragenet-mirage (MIT, vendored)
+
+- **2026-11-15 08:24 UTC** — tick 15: +2 screened, +4 reference, 0 skipped, catalogue=197
+  - added netcode/rameshvarun-netplayjs (ISC, vendored)
+  - added netcode/ekspym-tekken6-native-online (none, reference)
+  - reference netcode/houraiteahouse-backroll-rs
+  - reference netcode/kidagine-darklings-fightinggame
+  - reference netcode/delta3-studio-backdash
+  - reference netcode/genxium-delaynomore
