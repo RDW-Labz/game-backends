@@ -59,3 +59,6 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-15 07:20 UTC** — tick 11: +1 screened, +0 reference, 0 skipped, catalogue=184
   - added gameplay/nikkorn-mistreevous (MIT, vendored)
+
+- **2026-11-15 07:36 UTC** — tick 12: +1 screened, +0 reference, 1 skipped, catalogue=185
+  - added gameplay/midgen-uesvon (MIT, vendored)

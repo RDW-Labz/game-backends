@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T07:36:21Z",
+ "category": "gameplay",
+ "commit": "ca9f9ebf7b14",
+ "delivery": "vendored",
+ "description": "midgen/uesvon \u2014 3D navmesh generation and pathfinding plugin for UnrealEngine",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "uesvon",
+ "size_bytes": 165753,
+ "slug": "midgen-uesvon",
+ "source": "github-search:navmesh generation stars:>80",
+ "stars": 263,
+ "system": "3D navmesh generation and pathfinding plugin for UnrealEngine",
+ "upstream": "https://github.com/midgen/uesvon",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
