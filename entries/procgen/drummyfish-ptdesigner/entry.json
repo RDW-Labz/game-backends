@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T15:19:45Z",
+ "category": "procgen",
+ "commit": "a2532e9ddc4b",
+ "delivery": "reference",
+ "description": "drummyfish/ptdesigner \u2014 Library and GUI tool for designing and generation of procedural textures, made as a part of my Bachelor thesis.",
+ "language": "c++",
+ "license": "GPL-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "ptdesigner",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 5924613,
+ "slug": "drummyfish-ptdesigner",
+ "source": "github-search:procedural generation library stars:>80",
+ "stars": 90,
+ "system": "Library and GUI tool for designing and generation of procedural textures, made as a part of my Bachelor thesis.",
+ "upstream": "https://github.com/drummyfish/ptdesigner",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

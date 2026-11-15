@@ -187,3 +187,6 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/qxorm-qxorm
 
 - **2026-11-15 15:03 UTC** — tick 40: +0 screened, +0 reference, 2 skipped, catalogue=254
+
+- **2026-11-15 15:19 UTC** — tick 41: +1 screened, +0 reference, 6 skipped, catalogue=255
+  - added procgen/drummyfish-ptdesigner (GPL-2.0, reference)
