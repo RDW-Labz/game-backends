@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T16:39:46Z",
+ "category": "engines",
+ "commit": "2026-10-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Ukendio/jecs \u2014 A fast, portable Entity Component System for Luau",
+ "language": "luau",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "jecs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ukendio-jecs",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 486,
+ "system": "A fast, portable Entity Component System for Luau",
+ "upstream": "https://github.com/Ukendio/jecs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

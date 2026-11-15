@@ -1,0 +1,6 @@
+project(kengine)
+
+kengine_library_link_private_libraries(kengine_glm)
+
+find_package(unofficial-recast CONFIG REQUIRED)
+kengine_library_link_public_libraries(recast)

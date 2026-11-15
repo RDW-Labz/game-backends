@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T16:39:44Z",
+ "category": "engines",
+ "commit": "bb4fe6ed2f84",
+ "delivery": "vendored",
+ "description": "zulfajuniadi/unity-ecs-navmesh \u2014 A demo implementation of Unity Entity Component System with NavMesh",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "README.md",
+ "license_verdict": "clean",
+ "name": "unity-ecs-navmesh",
+ "size_bytes": 486192,
+ "slug": "zulfajuniadi-unity-ecs-navmesh",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 489,
+ "system": "A demo implementation of Unity Entity Component System with NavMesh",
+ "upstream": "https://github.com/zulfajuniadi/unity-ecs-navmesh",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,12 @@
+#pragma once
+
+#include "putils/reflection.hpp"
+
+#define refltype kengine::scripting::lua::scripts
+putils_reflection_info {
+	putils_reflection_custom_class_name(lua_scripts);
+	putils_reflection_parents(
+		putils_reflection_type(kengine::scripting::scripts)
+	);
+};
+#undef refltype

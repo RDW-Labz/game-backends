@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T16:39:42Z",
+ "category": "engines",
+ "commit": "5a0ad085cdef",
+ "delivery": "vendored",
+ "description": "phisko/kengine \u2014 Game engine with an Entity-Component-System (ECS) architecture. Focus on ease-of-use, runtime extensibility and compile-time type safety.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "kengine",
+ "size_bytes": 904221,
+ "slug": "phisko-kengine",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 619,
+ "system": "Game engine with an Entity-Component-System (ECS) architecture. Focus on ease-of-use, runtime extensibility and compile-time type safety.",
+ "upstream": "https://github.com/phisko/kengine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

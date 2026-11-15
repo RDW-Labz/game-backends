@@ -210,3 +210,9 @@ One line per 15-minute extension tick, newest last.
   - reference engines/spring-spring
   - reference engines/nem0-lumixengine
   - reference engines/ihhub-fheroes2
+
+- **2026-11-15 16:39 UTC** — tick 46: +2 screened, +2 reference, 16 skipped, catalogue=271
+  - added engines/phisko-kengine (MIT, vendored)
+  - added engines/zulfajuniadi-unity-ecs-navmesh (MIT, vendored)
+  - reference engines/vittorioromeo-ecst
+  - reference engines/ukendio-jecs

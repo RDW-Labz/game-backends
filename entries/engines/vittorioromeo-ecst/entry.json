@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T16:39:46Z",
+ "category": "engines",
+ "commit": "2019-09-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vittorioromeo/ecst \u2014 [WIP] Experimental C++14 multithreaded compile-time entity-component-system library.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ecst",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "vittorioromeo-ecst",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 489,
+ "system": "[WIP] Experimental C++14 multithreaded compile-time entity-component-system library.",
+ "upstream": "https://github.com/vittorioromeo/ecst",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

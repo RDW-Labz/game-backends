@@ -1,0 +1,15 @@
+#pragma once
+
+#include "putils/reflection.hpp"
+
+#define refltype kengine::core::log::on_log
+putils_reflection_info {
+	putils_reflection_class_name;
+	putils_reflection_parents(
+		putils_reflection_type(refltype::base)
+	);
+	putils_reflection_used_types(
+		putils_reflection_type(kengine::core::log::event)
+	);
+};
+#undef refltype

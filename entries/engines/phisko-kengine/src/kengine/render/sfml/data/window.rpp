@@ -1,0 +1,9 @@
+#pragma once
+
+#include "putils/reflection.hpp"
+
+#define refltype kengine::render::sfml::window
+putils_reflection_info {
+	putils_reflection_custom_class_name(sfml_window);
+};
+#undef refltype
