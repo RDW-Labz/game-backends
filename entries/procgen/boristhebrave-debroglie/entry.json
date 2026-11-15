@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T09:44:20Z",
+ "category": "procgen",
+ "commit": "27b37fa7a54f",
+ "delivery": "vendored",
+ "description": "BorisTheBrave/DeBroglie \u2014 DeBroglie is a C# library implementing the Wave Function Collapse algorithm with support for additional non-local constraints, and other useful features.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "DeBroglie",
+ "size_bytes": 1453796,
+ "slug": "boristhebrave-debroglie",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 532,
+ "system": "DeBroglie is a C# library implementing the Wave Function Collapse algorithm with support for additional non-local constraints, and other useful features.",
+ "upstream": "https://github.com/BorisTheBrave/DeBroglie",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -101,3 +101,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/reinterpretcat-utymap
   - reference procgen/icecreamyou-three-terrain
   - reference procgen/ilmola-generator
+
+- **2026-11-15 09:44 UTC** — tick 20: +2 screened, +4 reference, 1 skipped, catalogue=216
+  - added procgen/boristhebrave-debroglie (MIT, vendored)
+  - added procgen/alexeybond-godot-constraint-solving (MIT, vendored)
+  - reference procgen/math-fehr-fast-wfc
+  - reference procgen/krychu-wfc
+  - reference procgen/keijiro-wfcmaze
+  - reference procgen/emilk-wfc

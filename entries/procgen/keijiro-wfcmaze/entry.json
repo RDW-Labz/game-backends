@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T09:44:24Z",
+ "category": "procgen",
+ "commit": "2021-10-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "keijiro/WfcMaze \u2014 WFC (Wave Function Collapse) with Unity",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "WfcMaze",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "keijiro-wfcmaze",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 344,
+ "system": "WFC (Wave Function Collapse) with Unity",
+ "upstream": "https://github.com/keijiro/WfcMaze",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

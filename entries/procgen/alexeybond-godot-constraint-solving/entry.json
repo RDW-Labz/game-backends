@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T09:44:23Z",
+ "category": "procgen",
+ "commit": "45e3edd8ea12",
+ "delivery": "vendored",
+ "description": "AlexeyBond/godot-constraint-solving \u2014 WFC (Wave Function Collapse) and generic constraint satisfaction problem solver implementation for Godot 4",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-constraint-solving",
+ "size_bytes": 517670,
+ "slug": "alexeybond-godot-constraint-solving",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 466,
+ "system": "WFC (Wave Function Collapse) and generic constraint satisfaction problem solver implementation for Godot 4",
+ "upstream": "https://github.com/AlexeyBond/godot-constraint-solving",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T09:44:24Z",
+ "category": "procgen",
+ "commit": "2022-12-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "emilk/wfc \u2014 A C++ port of Wave Function Collapse Tiling",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "wfc",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "emilk-wfc",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 341,
+ "system": "A C++ port of Wave Function Collapse Tiling",
+ "upstream": "https://github.com/emilk/wfc",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

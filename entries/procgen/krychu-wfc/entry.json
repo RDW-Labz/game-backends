@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T09:44:24Z",
+ "category": "procgen",
+ "commit": "2026-02-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "krychu/wfc \u2014 Wave Function Collapse library in C, plus a command-line tool",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "wfc",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "krychu-wfc",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 366,
+ "system": "Wave Function Collapse library in C, plus a command-line tool",
+ "upstream": "https://github.com/krychu/wfc",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

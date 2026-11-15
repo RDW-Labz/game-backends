@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T09:44:24Z",
+ "category": "procgen",
+ "commit": "2024-10-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "math-fehr/fast-wfc \u2014 An implementation of Wave Function Collapse with a focus on performance.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "fast-wfc",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "math-fehr-fast-wfc",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 442,
+ "system": "An implementation of Wave Function Collapse with a focus on performance.",
+ "upstream": "https://github.com/math-fehr/fast-wfc",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
