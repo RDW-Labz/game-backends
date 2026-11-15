@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T07:52:21Z",
+ "category": "gameplay",
+ "commit": "6b09b87ac07a",
+ "delivery": "vendored",
+ "description": "peter-kish/gloot \u2014 A universal inventory system for the Godot game engine.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "gloot",
+ "size_bytes": 300257,
+ "slug": "peter-kish-gloot",
+ "source": "github-search:inventory system game stars:>50",
+ "stars": 994,
+ "system": "A universal inventory system for the Godot game engine.",
+ "upstream": "https://github.com/peter-kish/gloot",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

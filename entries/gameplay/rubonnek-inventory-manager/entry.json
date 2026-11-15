@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T07:52:25Z",
+ "category": "gameplay",
+ "commit": "2026-06-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Rubonnek/inventory-manager \u2014 A comprehensive inventory management system for the Godot Game Engine",
+ "language": "gdscript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "inventory-manager",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "rubonnek-inventory-manager",
+ "source": "github-search:inventory system game stars:>50",
+ "stars": 76,
+ "system": "A comprehensive inventory management system for the Godot Game Engine",
+ "upstream": "https://github.com/Rubonnek/inventory-manager",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

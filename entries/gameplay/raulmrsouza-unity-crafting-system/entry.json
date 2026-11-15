@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T07:52:25Z",
+ "category": "gameplay",
+ "commit": "2018-10-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RaulMrSouza/Unity-Crafting-System \u2014 Crafting System and Building placement for unity3D",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Unity-Crafting-System",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "raulmrsouza-unity-crafting-system",
+ "source": "github-search:inventory system game stars:>50",
+ "stars": 59,
+ "system": "Crafting System and Building placement for unity3D",
+ "upstream": "https://github.com/RaulMrSouza/Unity-Crafting-System",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

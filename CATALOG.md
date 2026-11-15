@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 07:36 UTC · 185 entries · 70 vendored, 115 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 07:52 UTC · 189 entries · 72 vendored, 117 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-15 07:36 UTC · 185 entries · 70 vendored, 115 reference-onl
 | [physics](#physics) — Physics | 22 | 7 | 15 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 32 | 12 | 20 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 36 | 14 | 22 |
 | [netcode](#netcode) — Networking / netcode | 34 | 13 | 21 |
 | [save-state](#save-state) — Save / state systems | 9 | 5 | 4 |
 | [procgen](#procgen) — Procedural generation | 13 | 6 | 7 |
@@ -141,7 +141,7 @@ _Generated 2026-11-15 07:36 UTC · 185 entries · 70 vendored, 115 reference-onl
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 32 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 36 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -149,9 +149,12 @@ _Generated 2026-11-15 07:36 UTC · 185 entries · 70 vendored, 115 reference-onl
 | [ancientbeast — abilities](entries/gameplay/ancientbeast-abilities/README.md) | combat, AI, pathing, quest or inventory logic | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [BehaviorTree.CPP](entries/gameplay/behaviortree-cpp/README.md) | behaviour trees for AI agents with blackboards | c++ | MIT | vendored | [BehaviorTree/BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP) @ `365b2e499d34` |
 | [biomes-game — items](entries/gameplay/biomes-game-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
+| [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
 | [graphhopper](entries/gameplay/graphhopper-graphhopper/README.md) | Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server. | java | Apache-2.0 | vendored | [graphhopper/graphhopper](https://github.com/graphhopper/graphhopper) @ `9df847473a5e` |
 | [hypersomnia — inventory](entries/gameplay/hypersomnia-inventory/README.md) | combat, AI, pathing, quest or inventory logic | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
+| [inventory-manager](entries/gameplay/rubonnek-inventory-manager/README.md) | A comprehensive inventory management system for the Godot Game Engine | gdscript | unknown | reference | [Rubonnek/inventory-manager](https://github.com/Rubonnek/inventory-manager) @ `2026-06-05 (branch tip at catalogue time)` |
+| [InventorySystem](entries/gameplay/benolimits-inventorysystem/README.md) | Easy to use Hotbar and Inventory system for Unreal Engine 5 | n/a | MIT | vendored | [benolimits/InventorySystem](https://github.com/benolimits/InventorySystem) @ `ff320f8f87fb` |
 | [Jumper](entries/gameplay/yonaba-jumper/README.md) | Fast, lightweight and easy-to-use pathfinding library for grid-based games | lua | MIT | reference | [Yonaba/Jumper](https://github.com/Yonaba/Jumper) @ `2022-10-21 (branch tip at catalogue time)` |
 | [libtcod](entries/gameplay/libtcod/README.md) | roguelike toolkit: FOV, pathfinding, RNG, line drawing, console | c++ | BSD-3-Clause | vendored | [libtcod/libtcod](https://github.com/libtcod/libtcod) @ `de16289cd50e` |
 | [LockstepEngine](entries/gameplay/jiepengtan-lockstepengine/README.md) | A lockstep solution include lots of deterministic library (Math,Collision,Navmesh,BehaviorTree,Serialization ...) | c# | unknown | reference | [JiepengTan/LockstepEngine](https://github.com/JiepengTan/LockstepEngine) @ `2020-03-23 (branch tip at catalogue time)` |
@@ -171,6 +174,7 @@ _Generated 2026-11-15 07:36 UTC · 185 entries · 70 vendored, 115 reference-onl
 | [stronghold-protocol — ai](entries/gameplay/stronghold-protocol-ai/README.md) | combat, AI, pathing, quest or inventory logic | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
 | [suroi — items](entries/gameplay/suroi-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
 | [uesvon](entries/gameplay/midgen-uesvon/README.md) | 3D navmesh generation and pathfinding plugin for UnrealEngine | c++ | MIT | vendored | [midgen/uesvon](https://github.com/midgen/uesvon) @ `ca9f9ebf7b14` |
+| [Unity-Crafting-System](entries/gameplay/raulmrsouza-unity-crafting-system/README.md) | Crafting System and Building placement for unity3D | c# | MIT | reference | [RaulMrSouza/Unity-Crafting-System](https://github.com/RaulMrSouza/Unity-Crafting-System) @ `2018-10-05 (branch tip at catalogue time)` |
 | [Unity-Script-Collection](entries/gameplay/michidk-unity-script-collection/README.md) | A maintained collection of useful & free unity scripts / library's / plugins and extensions | css | GPL-3.0 | reference | [michidk/Unity-Script-Collection](https://github.com/michidk/Unity-Script-Collection) @ `479da93a9da3` |
 | [VCMI — spells](entries/gameplay/vcmi-spells/README.md) | combat, AI, pathing, quest or inventory logic | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [veloren — comp](entries/gameplay/veloren-common-src-comp/README.md) | ECS gameplay components (combat, inventory, stats, buffs) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |

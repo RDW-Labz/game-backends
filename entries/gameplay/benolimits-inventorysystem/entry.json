@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T07:52:23Z",
+ "category": "gameplay",
+ "commit": "ff320f8f87fb",
+ "delivery": "vendored",
+ "description": "benolimits/InventorySystem \u2014 Easy to use Hotbar and Inventory system for Unreal Engine 5",
+ "language": "n/a",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "InventorySystem",
+ "size_bytes": 0,
+ "slug": "benolimits-inventorysystem",
+ "source": "github-search:inventory system game stars:>50",
+ "stars": 80,
+ "system": "Easy to use Hotbar and Inventory system for Unreal Engine 5",
+ "upstream": "https://github.com/benolimits/InventorySystem",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
