@@ -120,3 +120,11 @@ One line per 15-minute extension tick, newest last.
   - added procgen/vurmux-urizen (Apache-2.0, vendored)
   - reference procgen/sitryo-dungeontemplatelibraryunity
   - reference procgen/krazyjakee-dungeontemplatelibrary-godot
+
+- **2026-11-15 10:32 UTC** — tick 23: +2 screened, +4 reference, 4 skipped, catalogue=229
+  - added engines/cocos-cocos-engine (MIT, reference)
+  - added engines/openmw-openmw (GPL-3.0, reference)
+  - reference engines/boomingtech-piccolo
+  - reference engines/defold-defold
+  - reference engines/redot-engine-redot-engine
+  - reference engines/gameplay3d-gameplay

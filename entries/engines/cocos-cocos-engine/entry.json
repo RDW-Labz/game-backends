@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T10:32:25Z",
+ "category": "engines",
+ "commit": "90ad7072a332",
+ "delivery": "reference",
+ "description": "cocos/cocos-engine \u2014 Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create high-performance, engaging 2D/3D games and instant web entertainment.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "cocos-engine",
+ "reference_reason": "size gate: 37 MB",
+ "size_bytes": 39741574,
+ "slug": "cocos-cocos-engine",
+ "source": "github-search:game engine language:c++ stars:>200",
+ "stars": 9931,
+ "system": "Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create",
+ "upstream": "https://github.com/cocos/cocos-engine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T10:32:30Z",
+ "category": "engines",
+ "commit": "2024-09-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BoomingTech/Piccolo \u2014 Piccolo (formerly Pilot) \u2013 mini game engine for games104",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Piccolo",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "boomingtech-piccolo",
+ "source": "github-search:game engine language:c++ stars:>200",
+ "stars": 6753,
+ "system": "Piccolo (formerly Pilot) \u2013 mini game engine for games104",
+ "upstream": "https://github.com/BoomingTech/Piccolo",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
