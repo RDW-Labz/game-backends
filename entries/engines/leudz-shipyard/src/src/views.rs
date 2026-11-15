@@ -1,0 +1,25 @@
+/// Serialization implementations for all view types.
+#[cfg(feature = "serde1")]
+pub mod serde;
+
+mod all_storages;
+mod entities;
+mod unique_or_default;
+mod unique_or_default_mut;
+mod unique_or_init;
+mod unique_or_init_mut;
+mod unique_view;
+mod unique_view_mut;
+mod view;
+mod view_mut;
+
+pub use all_storages::{AllStoragesView, AllStoragesViewMut};
+pub use entities::{EntitiesView, EntitiesViewMut};
+pub use unique_or_default::UniqueOrDefaultView;
+pub use unique_or_default_mut::UniqueOrDefaultViewMut;
+pub use unique_or_init::UniqueOrInitView;
+pub use unique_or_init_mut::UniqueOrInitViewMut;
+pub use unique_view::UniqueView;
+pub use unique_view_mut::UniqueViewMut;
+pub use view::View;
+pub use view_mut::ViewMut;

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T10:48:24Z",
+ "category": "engines",
+ "commit": "2026-09-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "benmoran56/esper \u2014 An ECS (Entity Component System) for Python",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "esper",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "benmoran56-esper",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 703,
+ "system": "An ECS (Entity Component System) for Python",
+ "upstream": "https://github.com/benmoran56/esper",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

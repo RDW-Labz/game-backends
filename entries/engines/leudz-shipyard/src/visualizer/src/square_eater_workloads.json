@@ -1,0 +1,965 @@
+{
+    "Workload(square_eater::floor_loop)": {
+        "name": "Workload(square_eater::floor_loop)",
+        "batches_info": [
+            {
+                "systems": [
+                    null,
+                    [
+                        {
+                            "name": "System(square_eater::counters)",
+                            "borrow": [
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                }
+                            ],
+                            "conflict": null,
+                            "after": [],
+                            "after_all": [],
+                            "before_all": [],
+                            "unique_id": 0,
+                            "occurrence": {
+                                "id": 0,
+                                "conditions": [],
+                                "footprint": [
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    }
+                                ],
+                                "thread_bound": false,
+                                "after": []
+                            }
+                        }
+                    ]
+                ],
+                "regroups": []
+            },
+            {
+                "systems": [
+                    null,
+                    [
+                        {
+                            "name": "System(square_eater::move_player)",
+                            "borrow": [
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                }
+                            ],
+                            "conflict": {
+                                "Borrow": {
+                                    "type_info": {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    "other_system": 0,
+                                    "other_type_info": {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                }
+                            },
+                            "after": [
+                                0
+                            ],
+                            "after_all": [],
+                            "before_all": [],
+                            "unique_id": 1,
+                            "occurrence": {
+                                "id": 1,
+                                "conditions": [],
+                                "footprint": [
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                ],
+                                "thread_bound": false,
+                                "after": [
+                                    {
+                                        "occurrence": {
+                                            "System": 0
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                ],
+                "regroups": []
+            },
+            {
+                "systems": [
+                    null,
+                    [
+                        {
+                            "name": "System(square_eater::move_square)",
+                            "borrow": [
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Acceleration>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                }
+                            ],
+                            "conflict": {
+                                "Borrow": {
+                                    "type_info": {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    "other_system": 1,
+                                    "other_type_info": {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                }
+                            },
+                            "after": [
+                                0,
+                                1
+                            ],
+                            "after_all": [],
+                            "before_all": [],
+                            "unique_id": 2,
+                            "occurrence": {
+                                "id": 2,
+                                "conditions": [],
+                                "footprint": [
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Acceleration>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                ],
+                                "thread_bound": false,
+                                "after": [
+                                    {
+                                        "occurrence": {
+                                            "System": 0
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 1
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                ],
+                "regroups": []
+            },
+            {
+                "systems": [
+                    null,
+                    [
+                        {
+                            "name": "System(square_eater::grow_square)",
+                            "borrow": [
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                }
+                            ],
+                            "conflict": {
+                                "Borrow": {
+                                    "type_info": {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    "other_system": 2,
+                                    "other_type_info": {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                }
+                            },
+                            "after": [
+                                2
+                            ],
+                            "after_all": [],
+                            "before_all": [],
+                            "unique_id": 3,
+                            "occurrence": {
+                                "id": 3,
+                                "conditions": [],
+                                "footprint": [
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                ],
+                                "thread_bound": false,
+                                "after": [
+                                    {
+                                        "occurrence": {
+                                            "System": 2
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                ],
+                "regroups": []
+            },
+            {
+                "systems": [
+                    null,
+                    [
+                        {
+                            "name": "System(square_eater::spawn)",
+                            "borrow": [
+                                {
+                                    "name": "shipyard::entities::Entities",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::FloorCounter>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::SpawnedOnFloor>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Acceleration>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Squagum>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                }
+                            ],
+                            "conflict": {
+                                "Borrow": {
+                                    "type_info": {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    "other_system": 3,
+                                    "other_type_info": {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                }
+                            },
+                            "after": [
+                                2,
+                                3
+                            ],
+                            "after_all": [],
+                            "before_all": [],
+                            "unique_id": 4,
+                            "occurrence": {
+                                "id": 4,
+                                "conditions": [],
+                                "footprint": [
+                                    {
+                                        "name": "shipyard::entities::Entities",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::FloorCounter>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::SpawnedOnFloor>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Acceleration>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Squagum>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                ],
+                                "thread_bound": false,
+                                "after": [
+                                    {
+                                        "occurrence": {
+                                            "System": 2
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 3
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                ],
+                "regroups": []
+            },
+            {
+                "systems": [
+                    null,
+                    [
+                        {
+                            "name": "System(square_eater::collision)",
+                            "borrow": [
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Squagum>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::ToDelete>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                }
+                            ],
+                            "conflict": {
+                                "Borrow": {
+                                    "type_info": {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    "other_system": 4,
+                                    "other_type_info": {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                }
+                            },
+                            "after": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4
+                            ],
+                            "after_all": [],
+                            "before_all": [],
+                            "unique_id": 5,
+                            "occurrence": {
+                                "id": 5,
+                                "conditions": [],
+                                "footprint": [
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Squagum>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::ToDelete>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                ],
+                                "thread_bound": false,
+                                "after": [
+                                    {
+                                        "occurrence": {
+                                            "System": 0
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 1
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 2
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 3
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 4
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                ],
+                "regroups": []
+            },
+            {
+                "systems": [
+                    {
+                        "name": "System(square_eater::clean_up)",
+                        "borrow": [
+                            {
+                                "name": "shipyard::all_storages::AllStorages",
+                                "mutability": "Exclusive",
+                                "thread_safe": true
+                            }
+                        ],
+                        "conflict": {
+                            "Borrow": {
+                                "type_info": {
+                                    "name": "shipyard::all_storages::AllStorages",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                },
+                                "other_system": 5,
+                                "other_type_info": {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                }
+                            }
+                        },
+                        "after": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                        ],
+                        "after_all": [],
+                        "before_all": [],
+                        "unique_id": 6,
+                        "occurrence": {
+                            "id": 6,
+                            "conditions": [],
+                            "footprint": [
+                                {
+                                    "name": "shipyard::all_storages::AllStorages",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                }
+                            ],
+                            "thread_bound": true,
+                            "after": [
+                                {
+                                    "occurrence": {
+                                        "System": 0
+                                    },
+                                    "origins": [
+                                        "Implicit"
+                                    ]
+                                },
+                                {
+                                    "occurrence": {
+                                        "System": 1
+                                    },
+                                    "origins": [
+                                        "Implicit"
+                                    ]
+                                },
+                                {
+                                    "occurrence": {
+                                        "System": 2
+                                    },
+                                    "origins": [
+                                        "Implicit"
+                                    ]
+                                },
+                                {
+                                    "occurrence": {
+                                        "System": 3
+                                    },
+                                    "origins": [
+                                        "Implicit"
+                                    ]
+                                },
+                                {
+                                    "occurrence": {
+                                        "System": 4
+                                    },
+                                    "origins": [
+                                        "Implicit"
+                                    ]
+                                },
+                                {
+                                    "occurrence": {
+                                        "System": 5
+                                    },
+                                    "origins": [
+                                        "Implicit"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    []
+                ],
+                "regroups": []
+            },
+            {
+                "systems": [
+                    null,
+                    [
+                        {
+                            "name": "System(square_eater::check_end_floor)",
+                            "borrow": [
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::FloorCounter>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::SpawnedOnFloor>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                    "mutability": "Exclusive",
+                                    "thread_safe": true
+                                }
+                            ],
+                            "conflict": {
+                                "Borrow": {
+                                    "type_info": {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::FloorCounter>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    "other_system": 6,
+                                    "other_type_info": {
+                                        "name": "shipyard::all_storages::AllStorages",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                }
+                            },
+                            "after": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4,
+                                5,
+                                6
+                            ],
+                            "after_all": [],
+                            "before_all": [],
+                            "unique_id": 7,
+                            "occurrence": {
+                                "id": 7,
+                                "conditions": [],
+                                "footprint": [
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::FloorCounter>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::PowerUps>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::SpawnedOnFloor>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                ],
+                                "thread_bound": false,
+                                "after": [
+                                    {
+                                        "occurrence": {
+                                            "System": 0
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 1
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 2
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 3
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 4
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 5
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 6
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                ],
+                "regroups": []
+            },
+            {
+                "systems": [
+                    null,
+                    [
+                        {
+                            "name": "System(square_eater::render)",
+                            "borrow": [
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::sparse_set::SparseSet<square_eater::Squagum>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                },
+                                {
+                                    "name": "shipyard::unique::UniqueStorage<square_eater::FloorCounter>",
+                                    "mutability": "Shared",
+                                    "thread_safe": true
+                                }
+                            ],
+                            "conflict": {
+                                "Borrow": {
+                                    "type_info": {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    "other_system": 7,
+                                    "other_type_info": {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Exclusive",
+                                        "thread_safe": true
+                                    }
+                                }
+                            },
+                            "after": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4,
+                                5,
+                                6,
+                                7
+                            ],
+                            "after_all": [],
+                            "before_all": [],
+                            "unique_id": 8,
+                            "occurrence": {
+                                "id": 8,
+                                "conditions": [],
+                                "footprint": [
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::Player>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Square>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::sparse_set::SparseSet<square_eater::Squagum>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    },
+                                    {
+                                        "name": "shipyard::unique::UniqueStorage<square_eater::FloorCounter>",
+                                        "mutability": "Shared",
+                                        "thread_safe": true
+                                    }
+                                ],
+                                "thread_bound": false,
+                                "after": [
+                                    {
+                                        "occurrence": {
+                                            "System": 0
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 1
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 2
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 3
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 4
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 5
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 6
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    },
+                                    {
+                                        "occurrence": {
+                                            "System": 7
+                                        },
+                                        "origins": [
+                                            "Implicit"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                ],
+                "regroups": []
+            }
+        ]
+    }
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T10:48:24Z",
+ "category": "engines",
+ "commit": "2026-11-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jslee02/awesome-entity-component-system \u2014 :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources",
+ "language": "python",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "awesome-entity-component-system",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "jslee02-awesome-entity-component-system",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 702,
+ "system": ":sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources",
+ "upstream": "https://github.com/jslee02/awesome-entity-component-system",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

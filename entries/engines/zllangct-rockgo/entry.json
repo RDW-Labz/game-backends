@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T10:48:24Z",
+ "category": "engines",
+ "commit": "2022-09-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "zllangct/rockgo \u2014 A developing game server framework,based on Entity Component System(ECS).",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "rockgo",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "zllangct-rockgo",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 692,
+ "system": "A developing game server framework,based on Entity Component System(ECS).",
+ "upstream": "https://github.com/zllangct/rockgo",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

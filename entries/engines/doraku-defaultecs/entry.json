@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T10:48:22Z",
+ "category": "engines",
+ "commit": "508033cfa22d",
+ "delivery": "vendored",
+ "description": "Doraku/DefaultEcs \u2014 Entity Component System framework aiming for syntax and usage simplicity with maximum performance for game development.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "DefaultEcs",
+ "size_bytes": 833027,
+ "slug": "doraku-defaultecs",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 765,
+ "system": "Entity Component System framework aiming for syntax and usage simplicity with maximum performance for game development.",
+ "upstream": "https://github.com/Doraku/DefaultEcs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

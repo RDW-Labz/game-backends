@@ -128,3 +128,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/defold-defold
   - reference engines/redot-engine-redot-engine
   - reference engines/gameplay3d-gameplay
+
+- **2026-11-15 10:48 UTC** — tick 24: +2 screened, +4 reference, 9 skipped, catalogue=235
+  - added engines/leudz-shipyard (Apache-2.0, vendored)
+  - added engines/doraku-defaultecs (MIT, vendored)
+  - reference engines/benmoran56-esper
+  - reference engines/jslee02-awesome-entity-component-system
+  - reference engines/zllangct-rockgo
+  - reference engines/csprance-gecs

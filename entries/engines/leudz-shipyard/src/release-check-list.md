@@ -1,0 +1,11 @@
+- make sure there is no debugging left
+- make sure the bunny demo and square eater are working
+- duplicate the guide (3 edits in the GH action)
+- change link to the guide in README.md
+- bump version
+- create new branch
+- change link to the guide in lib.rs
+- swap shipyard_proc version to latest crates.io
+- release the version
+- make a git tag and release
+- check the doc publishing went ok

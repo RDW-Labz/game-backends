@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T10:48:20Z",
+ "category": "engines",
+ "commit": "340caeac8e7f",
+ "delivery": "vendored",
+ "description": "leudz/shipyard \u2014 Entity Component System focused on usability and flexibility.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "shipyard",
+ "size_bytes": 3767310,
+ "slug": "leudz-shipyard",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 895,
+ "system": "Entity Component System focused on usability and flexibility.",
+ "upstream": "https://github.com/leudz/shipyard",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

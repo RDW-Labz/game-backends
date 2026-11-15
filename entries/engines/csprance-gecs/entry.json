@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T10:48:24Z",
+ "category": "engines",
+ "commit": "2026-09-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "csprance/gecs \u2014 Godot Entity Component System - GECS",
+ "language": "gdscript",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "gecs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "csprance-gecs",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 625,
+ "system": "Godot Entity Component System - GECS",
+ "upstream": "https://github.com/csprance/gecs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
