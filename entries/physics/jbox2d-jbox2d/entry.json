@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T11:04:20Z",
+ "category": "physics",
+ "commit": "2f56e93d99a6",
+ "delivery": "vendored",
+ "description": "jbox2d/jbox2d \u2014 a 2d Java physics engine, native java port of the C++ physics engines Box2D and LiquidFun",
+ "language": "java",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "jbox2d",
+ "size_bytes": 2092847,
+ "slug": "jbox2d-jbox2d",
+ "source": "github-search:physics engine 2d stars:>100",
+ "stars": 1152,
+ "system": "a 2d Java physics engine, native java port of the C++ physics engines Box2D and LiquidFun ",
+ "upstream": "https://github.com/jbox2d/jbox2d",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

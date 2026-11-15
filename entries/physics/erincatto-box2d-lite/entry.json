@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T11:04:23Z",
+ "category": "physics",
+ "commit": "227b71b6974e",
+ "delivery": "vendored",
+ "description": "erincatto/box2d-lite \u2014 A small 2D physics engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "box2d-lite",
+ "size_bytes": 3114881,
+ "slug": "erincatto-box2d-lite",
+ "source": "github-search:physics engine 2d stars:>100",
+ "stars": 1081,
+ "system": "A small 2D physics engine",
+ "upstream": "https://github.com/erincatto/box2d-lite",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

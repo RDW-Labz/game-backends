@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T11:04:24Z",
+ "category": "physics",
+ "commit": "2026-11-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "appsinacup/godot-rapier-physics \u2014 Godot Rapier Physics \u2013 2D and 3D physics engine for the Godot game engine. with better stability, performance, liquids, determinism, state serialization and no ghost collisions.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-rapier-physics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "appsinacup-godot-rapier-physics",
+ "source": "github-search:physics engine 2d stars:>100",
+ "stars": 1043,
+ "system": "Godot Rapier Physics \u2013 2D and 3D physics engine for the Godot game engine. with better stability, performance, liquids, determinism, state serialization and no ",
+ "upstream": "https://github.com/appsinacup/godot-rapier-physics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

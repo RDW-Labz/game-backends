@@ -136,3 +136,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/jslee02-awesome-entity-component-system
   - reference engines/zllangct-rockgo
   - reference engines/csprance-gecs
+
+- **2026-11-15 11:04 UTC** — tick 25: +2 screened, +4 reference, 10 skipped, catalogue=241
+  - added physics/jbox2d-jbox2d (BSD-2-Clause, vendored)
+  - added physics/erincatto-box2d-lite (MIT, vendored)
+  - reference physics/appsinacup-godot-rapier-physics
+  - reference physics/proroklab-vectorizedmultiagentsimulator
+  - reference physics/renzora-engine
+  - reference physics/randygaul-impulseengine
