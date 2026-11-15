@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T06:48:21Z",
+ "category": "loot-economy",
+ "commit": "6c521ec46378",
+ "delivery": "reference",
+ "description": "Nashet/Prosperity-Wars \u2014 Game-like agent based economy simulator",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Prosperity-Wars",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 2131946,
+ "slug": "nashet-prosperity-wars",
+ "source": "github-search:game economy simulation stars:>20",
+ "stars": 321,
+ "system": "Game-like agent based economy simulator",
+ "upstream": "https://github.com/Nashet/Prosperity-Wars",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T06:48:23Z",
+ "category": "loot-economy",
+ "commit": "cd2585927609",
+ "delivery": "vendored",
+ "description": "stateless-minds/cyber-stasis \u2014 Post-money economy simulator in the form of a free fictional game based on gift economy that tests the hypothesis of having a market system without any exchange be it barters or money.",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cyber-stasis",
+ "size_bytes": 75117,
+ "slug": "stateless-minds-cyber-stasis",
+ "source": "github-search:game economy simulation stars:>20",
+ "stars": 136,
+ "system": "Post-money economy simulator in the form of a free fictional game based on gift economy that tests the hypothesis of having a market system without any exchange",
+ "upstream": "https://github.com/stateless-minds/cyber-stasis",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

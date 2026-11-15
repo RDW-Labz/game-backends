@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T06:48:25Z",
+ "category": "loot-economy",
+ "commit": "2025-03-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "europa1400-community/die-gulde \u2014 A middle age economy simulation game made with Unity. Based on the classic medieval economy simulation game Europa 1400 - The Guild.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "die-gulde",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "europa1400-community-die-gulde",
+ "source": "github-search:game economy simulation stars:>20",
+ "stars": 34,
+ "system": "A middle age economy simulation game made with Unity. Based on the classic medieval economy simulation game Europa 1400 - The Guild.",
+ "upstream": "https://github.com/europa1400-community/die-gulde",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

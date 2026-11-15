@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T06:48:25Z",
+ "category": "loot-economy",
+ "commit": "2024-12-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "stateless-minds/cyber-acid \u2014 Liquid democracy political simulator based on the automated data feed from the moneyless economy simulator Cyber Stasis.",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "cyber-acid",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "stateless-minds-cyber-acid",
+ "source": "github-search:game economy simulation stars:>20",
+ "stars": 23,
+ "system": "Liquid democracy political simulator based on the automated data feed from the moneyless economy simulator Cyber Stasis.",
+ "upstream": "https://github.com/stateless-minds/cyber-acid",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
