@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 05:23 UTC · 166 entries · 63 vendored, 103 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 05:28 UTC · 167 entries · 63 vendored, 104 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 44 | 12 | 32 |
-| [physics](#physics) — Physics | 21 | 7 | 14 |
+| [physics](#physics) — Physics | 22 | 7 | 15 |
 | [math](#math) — Math libraries | 13 | 9 | 4 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 8 | 2 | 6 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 24 | 9 | 15 |
@@ -67,7 +67,7 @@ _Generated 2026-11-15 05:23 UTC · 166 entries · 63 vendored, 103 reference-onl
 
 ## physics
 
-**Physics** — 21 entries
+**Physics** — 22 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -85,6 +85,7 @@ _Generated 2026-11-15 05:23 UTC · 166 entries · 63 vendored, 103 reference-onl
 | [NVIDIA PhysX](entries/physics/physx/README.md) | GPU/CPU 3D rigid body, cloth, particles, vehicles | c++ | BSD-3-Clause | reference | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX) @ `7d6f6ac8b83e` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [planck.js](entries/physics/piqnt-planck-js/README.md) | 2D JavaScript Physics Engine | typescript | MIT | reference | [piqnt/planck.js](https://github.com/piqnt/planck.js) @ `2026-11-14 (branch tip at catalogue time)` |
+| [PositionBasedDynamics](entries/physics/interactivecomputergraphics-positionbaseddynamics/README.md) | PositionBasedDynamics is a library for the physically-based simulation of rigid bodies, deformable solids and fluids. | c++ | MIT | reference | [InteractiveComputerGraphics/PositionBasedDynamics](https://github.com/InteractiveComputerGraphics/PositionBasedDynamics) @ `10a70bc146a9` |
 | [Principia — lib](entries/physics/principia-lib/README.md) | Box2D-derived 2D physics with custom collision handling | c++ | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b127c2` |
 | [Rapier](entries/physics/rapier/README.md) | Rust 2D/3D physics with deterministic solver + WASM build | rust | Apache-2.0 | reference | [dimforge/rapier](https://github.com/dimforge/rapier) @ `475caa3ff464` |
 | [ReactPhysics3D](entries/physics/reactphysics3d/README.md) | 3D physics: broadphase, constraints, raycast | c++ | Zlib | vendored | [DanielChappuis/reactphysics3d](https://github.com/DanielChappuis/reactphysics3d) @ `7000610a244e` |

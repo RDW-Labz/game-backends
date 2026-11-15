@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T05:28:18Z",
+ "category": "physics",
+ "commit": "10a70bc146a9",
+ "delivery": "reference",
+ "description": "InteractiveComputerGraphics/PositionBasedDynamics \u2014 PositionBasedDynamics is a library for the physically-based simulation of rigid bodies, deformable solids and fluids.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "PositionBasedDynamics",
+ "reference_reason": "size gate: 14 MB",
+ "size_bytes": 15653096,
+ "slug": "interactivecomputergraphics-positionbaseddynamics",
+ "source": "github-search:rigid body simulation library stars:>100",
+ "stars": 2294,
+ "system": "PositionBasedDynamics is a library for the physically-based simulation of rigid bodies, deformable solids and fluids.",
+ "upstream": "https://github.com/InteractiveComputerGraphics/PositionBasedDynamics",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

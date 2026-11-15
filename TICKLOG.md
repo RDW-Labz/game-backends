@@ -25,3 +25,6 @@ One line per 15-minute extension tick, newest last.
   - reference physics/piqnt-planck-js
   - reference physics/avianphysics-avian
   - reference physics/layabox-layaair
+
+- **2026-11-15 05:28 UTC** — tick 4: +1 screened, +0 reference, 1 skipped, catalogue=167
+  - added physics/interactivecomputergraphics-positionbaseddynamics (MIT, reference)
