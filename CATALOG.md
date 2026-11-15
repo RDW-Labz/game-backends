@@ -1,13 +1,13 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 06:16 UTC · 170 entries · 65 vendored, 105 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 06:32 UTC · 173 entries · 66 vendored, 107 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 44 | 12 | 32 |
 | [physics](#physics) — Physics | 22 | 7 | 15 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
-| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 8 | 2 | 6 |
+| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 11 | 3 | 8 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 24 | 9 | 15 |
 | [netcode](#netcode) — Networking / netcode | 34 | 13 | 21 |
 | [save-state](#save-state) — Save / state systems | 9 | 5 | 4 |
@@ -119,16 +119,19 @@ _Generated 2026-11-15 06:16 UTC · 170 entries · 65 vendored, 105 reference-onl
 
 ## loot-economy
 
-**Loot / drop and economy rolls** — 8 entries
+**Loot / drop and economy rolls** — 11 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [Cataclysm-DDA — itemgroups](entries/loot-economy/cataclysm-dda-data-json-itemgroups/README.md) | item group / loot tables (JSON) | json | CC-BY-SA-3.0 | reference | [CleverRaven/Cataclysm-DDA.git](https://github.com/CleverRaven/Cataclysm-DDA.git) @ `2599825ebb8c` |
 | [crawl — source](entries/loot-economy/crawl-crawl-ref-source/README.md) | item generation (makeitem) and drop logic | c++ | GPL-2.0 | reference | [crawl/crawl.git](https://github.com/crawl/crawl.git) @ `cf8c9bca9065` |
 | [DevilutionX — Source](entries/loot-economy/devilutionx-source/README.md) | Diablo item generation, affixes, quest drops | c++ | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996a89c5` |
+| [konzole](entries/loot-economy/marostcs-konzole/README.md) | 09:17:02 Steam Console Client (c) Valve Corporation 09:17:02 -- type 'quit' to exit -- 09:17:02 Loading Steam API...OK. 09:17:02  09:17:03 Connecting anonymousl | n/a | unknown | reference | [marostcs/konzole](https://github.com/marostcs/konzole) @ `2021-01-15 (branch tip at catalogue time)` |
 | [loot-table (rue-williams)](entries/loot-economy/loot-table-gpl/README.md) | loot table random generator | typescript | GPL-3.0 | reference | [rue-williams/loot-table](https://github.com/rue-williams/loot-table) @ `586ff23677ae` |
 | [Loot-Tables (JS)](entries/loot-economy/loot-tables-js/README.md) | declarative weighted loot tables with nested rolls | javascript | MIT | vendored | [Mopolo/Loot-Tables](https://github.com/Mopolo/Loot-Tables) @ `8de49aeab208` |
+| [Major-project-list](entries/loot-economy/manojkumarpatnaik-major-project-list/README.md) | A list of practical projects that anyone can solve in any programming language (See solutions). These projects are divided into multiple categories, and each ca | n/a | MIT | vendored | [ManojKumarPatnaik/Major-project-list](https://github.com/ManojKumarPatnaik/Major-project-list) @ `1bc6f5724b21` |
 | [openmu — Trade](entries/loot-economy/openmu-src-gamelogic-views-trade/README.md) | player trade/market views and pricing | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
+| [Surviv.io](entries/loot-economy/ronald106-surviv-io/README.md) |  <!doctype html> <html lang='en'>   <head>     <!-- Meta Properties -->     <meta charset='UTF-8'>     <title>surviv.io - 2d battle royale game</title>     <met | n/a | none | reference | [Ronald106/Surviv.io](https://github.com/Ronald106/Surviv.io) @ `HEAD` |
 | [widelands — economy](entries/loot-economy/widelands-economy/README.md) | loot, drop-rate, trade or economy simulation | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
 | [widelands — economy](entries/loot-economy/widelands-src-economy/README.md) | economy simulation: production chains, ware routing, markets | c++ | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `29753773d9c1` |
 
