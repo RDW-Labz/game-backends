@@ -1,0 +1,35 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Solution
+obj
+bin
+*.userprefs
+*.user
+TestResults
+
+# IDEs
+.idea
+.vs
+.vscode
+**/Assets/Plugins/Editor/JetBrains
+**/Assets/Plugins/Editor/JetBrains.meta
+
+# Unity
+Library
+Temp
+Logs
+UserSettings
+*.unitypackage
+
+# Custom
+*.userproperties
+build
+samples/Unity/.sln.dotsettings
+samples/Unity/*.sln*
+samples/Unity/*.csproj
+samples/Unity/Assets/Plugins
+samples/Unity/Assets/Generated
+coverage
+dist

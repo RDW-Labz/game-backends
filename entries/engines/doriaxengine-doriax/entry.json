@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T05:11:55Z",
+ "category": "engines",
+ "commit": "2026-11-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "doriaxengine/doriax \u2014 Game engine for 2D and 3D projects with entity component system (ECS) and data-oriented design",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "doriax",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "doriaxengine-doriax",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 924,
+ "system": "Game engine for 2D and 3D projects with entity component system (ECS) and data-oriented design",
+ "upstream": "https://github.com/doriaxengine/doriax",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

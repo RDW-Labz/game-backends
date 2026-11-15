@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T05:11:55Z",
+ "category": "engines",
+ "commit": "2026-07-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SanderMertens/ecs-faq \u2014 Frequently asked questions about Entity Component Systems",
+ "language": "n/a",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ecs-faq",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "sandermertens-ecs-faq",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 2781,
+ "system": "Frequently asked questions about Entity Component Systems",
+ "upstream": "https://github.com/SanderMertens/ecs-faq",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T05:11:53Z",
+ "category": "engines",
+ "commit": "37547d1bd280",
+ "delivery": "vendored",
+ "description": "sschmid/Entitas \u2014 Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "Entitas",
+ "size_bytes": 687885,
+ "slug": "sschmid-entitas",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 7687,
+ "system": "Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity",
+ "upstream": "https://github.com/sschmid/Entitas",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

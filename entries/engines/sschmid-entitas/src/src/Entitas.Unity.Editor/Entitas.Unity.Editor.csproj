@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(DefaultTargetFramework)</TargetFramework>
+    <Version>2.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DesperateDevs.Reflection" Version="1.*" />
+    <PackageReference Include="DesperateDevs.Unity.Editor" Version="2.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Entitas/Entitas.csproj" />
+    <ProjectReference Include="../Entitas.Generators.Attributes/Entitas.Generators.Attributes.csproj" />
+    <ProjectReference Include="../Entitas.Unity/Entitas.Unity.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(UnityEditor)" />
+    <Reference Include="$(UnityEngine)" />
+  </ItemGroup>
+
+</Project>

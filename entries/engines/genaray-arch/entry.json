@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T05:11:55Z",
+ "category": "engines",
+ "commit": "2026-11-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "genaray/Arch \u2014 A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading.",
+ "language": "c#",
+ "license": "APACHE-2.0",
+ "license_verdict": "gated-reference",
+ "name": "Arch",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (APACHE-2.0)",
+ "slug": "genaray-arch",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 1876,
+ "system": "A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading.",
+ "upstream": "https://github.com/genaray/Arch",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

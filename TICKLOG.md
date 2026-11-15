@@ -9,3 +9,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/defold-defold
   - reference engines/redot-engine-redot-engine
   - reference engines/gameplay3d-gameplay
+
+- **2026-11-15 05:11 UTC** — tick 2: +2 screened, +4 reference, 3 skipped, catalogue=160
+  - added engines/unity-technologies-entitycomponentsystemsamples (none, reference)
+  - added engines/sschmid-entitas (MIT, vendored)
+  - reference engines/sandermertens-ecs-faq
+  - reference engines/genaray-arch
+  - reference engines/sebas77-svelto-ecs
+  - reference engines/doriaxengine-doriax

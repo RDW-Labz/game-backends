@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T05:11:51Z",
+ "category": "engines",
+ "commit": "6786a741ee1f",
+ "delivery": "reference",
+ "description": "Unity-Technologies/EntityComponentSystemSamples",
+ "language": "c#",
+ "license": "none",
+ "license_file": "LICENSE.md",
+ "license_verdict": "unlicensed-reference",
+ "name": "EntityComponentSystemSamples",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 3379651,
+ "slug": "unity-technologies-entitycomponentsystemsamples",
+ "source": "github-search:ecs entity component system stars:>150",
+ "stars": 8221,
+ "system": "see upstream",
+ "upstream": "https://github.com/Unity-Technologies/EntityComponentSystemSamples",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
