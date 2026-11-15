@@ -190,3 +190,11 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-15 15:19 UTC** — tick 41: +1 screened, +0 reference, 6 skipped, catalogue=255
   - added procgen/drummyfish-ptdesigner (GPL-2.0, reference)
+
+- **2026-11-15 15:35 UTC** — tick 42: +2 screened, +4 reference, 7 skipped, catalogue=261
+  - added procgen/lingdong-ndwfc (MIT, vendored)
+  - added procgen/selfsame-unity-wave-function-collapse (MIT, vendored)
+  - reference procgen/mewo2-oisin
+  - reference procgen/oddmax-unity-wave-function-collapse-3d
+  - reference procgen/danderfer-comp-sci-sem-2
+  - reference procgen/codingtrain-wave-function-collapse

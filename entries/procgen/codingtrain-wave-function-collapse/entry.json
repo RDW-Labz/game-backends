@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T15:35:47Z",
+ "category": "procgen",
+ "commit": "2025-06-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "CodingTrain/Wave-Function-Collapse",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Wave-Function-Collapse",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "codingtrain-wave-function-collapse",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 219,
+ "system": "see upstream",
+ "upstream": "https://github.com/CodingTrain/Wave-Function-Collapse",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

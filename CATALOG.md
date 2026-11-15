@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 15:19 UTC · 255 entries · 92 vendored, 163 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 15:35 UTC · 261 entries · 94 vendored, 167 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-15 15:19 UTC · 255 entries · 92 vendored, 163 reference-onl
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 37 | 15 | 22 |
 | [netcode](#netcode) — Networking / netcode | 48 | 17 | 31 |
 | [save-state](#save-state) — Save / state systems | 22 | 10 | 12 |
-| [procgen](#procgen) — Procedural generation | 33 | 12 | 21 |
+| [procgen](#procgen) — Procedural generation | 39 | 14 | 25 |
 
 
 ## engines
@@ -287,7 +287,7 @@ _Generated 2026-11-15 15:19 UTC · 255 entries · 92 vendored, 163 reference-onl
 
 ## procgen
 
-**Procedural generation** — 33 entries
+**Procedural generation** — 39 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -295,6 +295,7 @@ _Generated 2026-11-15 15:19 UTC · 255 entries · 92 vendored, 163 reference-onl
 | [astray](entries/procgen/sience-astray/README.md) | Astray is a lua based maze, room and dungeon generation library for dungeon crawlers and rougelike video games | lua | Zlib | vendored | [SiENcE/astray](https://github.com/SiENcE/astray) @ `1a557a8281a8` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-mapgen/README.md) | procedural map/world/level generation | cpp | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300f` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-src-mapgen/README.md) | map and city generation | c++ | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300fd2353` |
+| [Comp_Sci_Sem_2](entries/procgen/danderfer-comp-sci-sem-2/README.md) | According to all known laws of aviation, there is no way that a bee should be able to fly. Its wings are too small to get its fat little body off the ground. Th | python | unknown | reference | [danderfer/Comp_Sci_Sem_2](https://github.com/danderfer/Comp_Sci_Sem_2) @ `2023-04-03 (branch tip at catalogue time)` |
 | [crawl — des](entries/procgen/crawl-crawl-ref-source-dat-des/README.md) | vault/branch layout definitions (DES) | text | GPL-2.0 | reference | [crawl/crawl.git](https://github.com/crawl/crawl.git) @ `cf8c9bca9065` |
 | [cubyz — noise](entries/procgen/cubyz-noise/README.md) | procedural map/world/level generation | zig | GPL-3.0 | reference | [PixelGuys/Cubyz](https://github.com/PixelGuys/Cubyz) @ `74b6814` |
 | [DeBroglie](entries/procgen/boristhebrave-debroglie/README.md) | DeBroglie is a C# library implementing the Wave Function Collapse algorithm with support for additional non-local constraints, and other useful features. | c# | MIT | vendored | [BorisTheBrave/DeBroglie](https://github.com/BorisTheBrave/DeBroglie) @ `27b37fa7a54f` |
@@ -309,17 +310,22 @@ _Generated 2026-11-15 15:19 UTC · 255 entries · 92 vendored, 163 reference-onl
 | [freeminer — mapgen](entries/procgen/freeminer-src-mapgen/README.md) | voxel map generation (biomes, caves, ores) | c++ | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e9d074` |
 | [generator](entries/procgen/ilmola-generator/README.md) | A procedural geometry generation library for C++11 | c++ | LGPL-2.1 | reference | [ilmola/generator](https://github.com/ilmola/generator) @ `2023-01-02 (branch tip at catalogue time)` |
 | [godot-constraint-solving](entries/procgen/alexeybond-godot-constraint-solving/README.md) | WFC (Wave Function Collapse) and generic constraint satisfaction problem solver implementation for Godot 4 | gdscript | MIT | vendored | [AlexeyBond/godot-constraint-solving](https://github.com/AlexeyBond/godot-constraint-solving) @ `45e3edd8ea12` |
+| [ndwfc](entries/procgen/lingdong-ndwfc/README.md) | 🌊💥 N-dimensional Wave Function Collapse with infinite canvas | javascript | MIT | vendored | [LingDong-/ndwfc](https://github.com/LingDong-/ndwfc) @ `3479af8ee855` |
 | [noise](entries/procgen/spongepowered-noise/README.md) | Noise generation library for Java, based on the libnoise C++ library. It is used to generate coherent noise, a type of smoothly-changing noise. It can also gene | java | MIT | reference | [SpongePowered/noise](https://github.com/SpongePowered/noise) @ `2026-11-11 (branch tip at catalogue time)` |
 | [noise-rs](entries/procgen/razaekel-noise-rs/README.md) | Procedural noise generation library for Rust. | rust | Apache-2.0 | reference | [Razaekel/noise-rs](https://github.com/Razaekel/noise-rs) @ `2025-02-14 (branch tip at catalogue time)` |
+| [oisin](entries/procgen/mewo2-oisin/README.md) | Oisín: Wave Function Collapse for poetry | python | unknown | reference | [mewo2/oisin](https://github.com/mewo2/oisin) @ `2017-05-23 (branch tip at catalogue time)` |
 | [perlin](entries/procgen/joeiddon-perlin/README.md) | A JavaScript library for Perlin Noise generation | javascript | none | reference | [joeiddon/perlin](https://github.com/joeiddon/perlin) @ `5941e2b52507` |
 | [ProceduralToolkit](entries/procgen/syomus-proceduraltoolkit/README.md) | Procedural generation library for Unity | c# | MIT | vendored | [Syomus/ProceduralToolkit](https://github.com/Syomus/ProceduralToolkit) @ `984a1e69b8ac` |
 | [ptdesigner](entries/procgen/drummyfish-ptdesigner/README.md) | Library and GUI tool for designing and generation of procedural textures, made as a part of my Bachelor thesis. | c++ | GPL-2.0 | reference | [drummyfish/ptdesigner](https://github.com/drummyfish/ptdesigner) @ `a2532e9ddc4b` |
 | [space-station-14 — Procedural](entries/procgen/space-station-14-content-shared-procedural/README.md) | procedural station/AI content generation | c# | MIT | vendored | [space-wizards/space-station-14](https://github.com/space-wizards/space-station-14) @ `33a1d0e32d63` |
 | [THREE.Terrain](entries/procgen/icecreamyou-three-terrain/README.md) | A procedural terrain generation engine for use with the Three.js 3D graphics library for the web. | javascript | MIT | reference | [IceCreamYou/THREE.Terrain](https://github.com/IceCreamYou/THREE.Terrain) @ `2026-11-12 (branch tip at catalogue time)` |
 | [Tracery](entries/procgen/tracery/README.md) | grammar-based generative text/structure | javascript | Apache-2.0 | vendored | [galaxykate/tracery](https://github.com/galaxykate/tracery) @ `11db07cb8e35` |
+| [unity-wave-function-collapse](entries/procgen/selfsame-unity-wave-function-collapse/README.md) | see upstream | c# | MIT | vendored | [selfsame/unity-wave-function-collapse](https://github.com/selfsame/unity-wave-function-collapse) @ `d1b28923ff38` |
+| [unity-wave-function-collapse-3d](entries/procgen/oddmax-unity-wave-function-collapse-3d/README.md) | Implementation of wave function collapse approach for Unity in 3d space | c# | unknown | reference | [oddmax/unity-wave-function-collapse-3d](https://github.com/oddmax/unity-wave-function-collapse-3d) @ `2022-06-21 (branch tip at catalogue time)` |
 | [urizen](entries/procgen/vurmux-urizen/README.md) | Roguelike dungeon generation library written on Python3 | python | Apache-2.0 | vendored | [vurmux/urizen](https://github.com/vurmux/urizen) @ `28b1e60cf8fa` |
 | [utymap](entries/procgen/reinterpretcat-utymap/README.md) | Highly customizable library for procedural world generation based on real map data | c++ | Apache-2.0 | reference | [reinterpretcat/utymap](https://github.com/reinterpretcat/utymap) @ `2019-05-16 (branch tip at catalogue time)` |
 | [veloren — world](entries/procgen/veloren-world/README.md) | world generation (terrain, biomes, caves, structures) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
+| [Wave-Function-Collapse](entries/procgen/codingtrain-wave-function-collapse/README.md) | see upstream | javascript | unknown | reference | [CodingTrain/Wave-Function-Collapse](https://github.com/CodingTrain/Wave-Function-Collapse) @ `2025-06-10 (branch tip at catalogue time)` |
 | [WaveFunctionCollapse](entries/procgen/wavefunctioncollapse/README.md) | constraint-based tile/bitmap generation | c# | MIT | vendored | [mxgmn/WaveFunctionCollapse](https://github.com/mxgmn/WaveFunctionCollapse) @ `de7d22e705e8` |
 | [wfc](entries/procgen/emilk-wfc/README.md) | A C++ port of Wave Function Collapse Tiling | c | unknown | reference | [emilk/wfc](https://github.com/emilk/wfc) @ `2022-12-07 (branch tip at catalogue time)` |
 | [wfc](entries/procgen/krychu-wfc/README.md) | Wave Function Collapse library in C, plus a command-line tool | c | unknown | reference | [krychu/wfc](https://github.com/krychu/wfc) @ `2026-02-23 (branch tip at catalogue time)` |

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T15:35:43Z",
+ "category": "procgen",
+ "commit": "3479af8ee855",
+ "delivery": "vendored",
+ "description": "LingDong-/ndwfc \u2014 \ud83c\udf0a\ud83d\udca5 N-dimensional Wave Function Collapse with infinite canvas",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ndwfc",
+ "size_bytes": 27371,
+ "slug": "lingdong-ndwfc",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 339,
+ "system": "\ud83c\udf0a\ud83d\udca5 N-dimensional Wave Function Collapse with infinite canvas",
+ "upstream": "https://github.com/LingDong-/ndwfc",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

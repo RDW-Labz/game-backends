@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T15:35:47Z",
+ "category": "procgen",
+ "commit": "2017-05-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mewo2/oisin \u2014 Ois\u00edn: Wave Function Collapse for poetry",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "oisin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mewo2-oisin",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 268,
+ "system": "Ois\u00edn: Wave Function Collapse for poetry",
+ "upstream": "https://github.com/mewo2/oisin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

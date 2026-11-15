@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T15:35:45Z",
+ "category": "procgen",
+ "commit": "d1b28923ff38",
+ "delivery": "vendored",
+ "description": "selfsame/unity-wave-function-collapse",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "unity-wave-function-collapse",
+ "size_bytes": 45356,
+ "slug": "selfsame-unity-wave-function-collapse",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 319,
+ "system": "see upstream",
+ "upstream": "https://github.com/selfsame/unity-wave-function-collapse",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

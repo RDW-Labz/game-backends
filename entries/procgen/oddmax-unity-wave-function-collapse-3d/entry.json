@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T15:35:47Z",
+ "category": "procgen",
+ "commit": "2022-06-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "oddmax/unity-wave-function-collapse-3d \u2014 Implementation of wave function collapse approach for Unity in 3d space",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "unity-wave-function-collapse-3d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "oddmax-unity-wave-function-collapse-3d",
+ "source": "github-search:wave function collapse stars:>200",
+ "stars": 234,
+ "system": "Implementation of wave function collapse approach for Unity in 3d space",
+ "upstream": "https://github.com/oddmax/unity-wave-function-collapse-3d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
