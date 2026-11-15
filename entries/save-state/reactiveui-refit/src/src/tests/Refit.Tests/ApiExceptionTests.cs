@@ -1,0 +1,495 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Text.Json;
+
+namespace Refit.Tests;
+
+/// <summary>Tests for API exception factory and validation exception edge cases.</summary>
+public sealed partial class ApiExceptionTests
+{
+    /// <summary>The example request URI reused across the exception tests.</summary>
+    private const string ExampleUri = "https://example.test";
+
+    /// <summary>The problem-details media type reused across the validation tests.</summary>
+    private const string ProblemJsonMediaType = "application/problem+json";
+
+    /// <summary>The message literal reused across the constructor tests.</summary>
+    private const string MessageText = "message";
+
+    /// <summary>The redaction placeholder value.</summary>
+    private const string RedactedText = "[redacted]";
+
+    /// <summary>A JSON error body that deserializes to <see cref="ResponseModel"/>.</summary>
+    private const string ValueJson = "{\"Value\":42}";
+
+    /// <summary>The custom exception message reused across the constructor tests.</summary>
+    private const string CustomMessage = "custom";
+
+    /// <summary>The deserialized value asserted by the content-helper tests.</summary>
+    private const int ExpectedValue = 42;
+
+    /// <summary>The problem-details status code asserted by the validation tests.</summary>
+    private const int ExpectedStatusCode = 400;
+
+    /// <summary>The integer extension value asserted by the validation tests.</summary>
+    private const int ExpectedIntegerExtension = 123;
+
+    /// <summary>The fractional extension value asserted by the validation tests.</summary>
+    private const double ExpectedFractionExtension = 12.5;
+
+    /// <summary>The configured maximum exception content length.</summary>
+    private const int MaxContentLength = 128;
+
+    /// <summary>The length of the oversized error body used by the truncation tests.</summary>
+    private const int LongBodyLength = 10_000;
+
+    /// <summary>Verifies ApiException factory guard clauses.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task CreateRejectsSuccessfulOrMissingResponses()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, ExampleUri);
+        using var success = new HttpResponseMessage(HttpStatusCode.OK) { RequestMessage = request };
+
+        await Assert.That(() => (Task)ApiException.Create(request, HttpMethod.Get, success, new()))
+            .ThrowsExactly<ArgumentException>();
+        await Assert.That(() => (Task)ApiException.Create(MessageText, request, HttpMethod.Get, null!, new()))
+            .ThrowsExactly<ArgumentNullException>();
+        await Assert.That(() => (Task)ApiException.Create(request, HttpMethod.Get, null!, new(), null))
+            .ThrowsExactly<ArgumentNullException>();
+    }
+
+    /// <summary>Verifies ApiException factory handles absent and unreadable content without hiding the original response error.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task CreateHandlesMissingAndUnreadableContent()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, ExampleUri);
+        using var noContentResponse = new HttpResponseMessage(HttpStatusCode.BadGateway) { RequestMessage = request, Content = null, };
+        using var throwingContentResponse = new HttpResponseMessage(HttpStatusCode.BadRequest) { RequestMessage = request, Content = new ThrowingReadContent(), };
+
+        var noContentException = await ApiException.Create(request, HttpMethod.Get, noContentResponse, new());
+        var throwingContentException = await ApiException.Create(
+            CustomMessage,
+            request,
+            HttpMethod.Get,
+            throwingContentResponse,
+            new(),
+            new InvalidOperationException("inner"));
+
+        await Assert.That(noContentException.Content).IsEqualTo(string.Empty);
+        await Assert.That(noContentException.ContentHeaders).IsNotNull();
+        await Assert.That(throwingContentException.Content).IsNull();
+        await Assert.That(throwingContentException.InnerException).IsTypeOf<InvalidOperationException>();
+    }
+
+    /// <summary>Verifies protected constructors and content deserialization helpers.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ConstructorsAndContentHelpersPreserveContext()
+    {
+        using var response = CreateErrorResponse(ValueJson);
+        var settings = new RefitSettings();
+        var exception = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            settings);
+        var derived = new DerivedApiException(
+            CustomMessage,
+            response.RequestMessage!,
+            HttpMethod.Get,
+            "content",
+            HttpStatusCode.Conflict,
+            "Conflict",
+            response.Headers,
+            settings);
+        var emptyDerived = new DerivedApiException(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            null,
+            HttpStatusCode.BadRequest,
+            "Bad Request",
+            response.Headers,
+            settings);
+
+        var model = await exception.GetContentAsAsync<ResponseModel>();
+        var missing = await emptyDerived.GetContentAsAsync<ResponseModel>();
+
+        await Assert.That(model!.Value).IsEqualTo(ExpectedValue);
+        await Assert.That(missing).IsNull();
+        await Assert.That(derived.Message).IsEqualTo(CustomMessage);
+        await Assert.That(derived.StatusCode).IsEqualTo(HttpStatusCode.Conflict);
+        await Assert.That(emptyDerived.HasContent).IsFalse();
+    }
+
+    /// <summary>Verifies ValidationApiException constructors and creation guards.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ValidationApiExceptionConstructorsAndCreateGuards()
+    {
+        var inner = new InvalidOperationException("inner");
+        var messageOnly = new ValidationApiException(MessageText);
+        var withInner = new ValidationApiException(MessageText, inner);
+
+        await Assert.That(messageOnly.Message).IsEqualTo(MessageText);
+        await Assert.That(withInner.InnerException).IsSameReferenceAs(inner);
+        await Assert.That(static () => ValidationApiException.Create(null!))
+            .ThrowsExactly<ArgumentNullException>();
+
+        using var emptyResponse = CreateErrorResponse(" ");
+        var emptyException = await ApiException.Create(
+            emptyResponse.RequestMessage!,
+            HttpMethod.Get,
+            emptyResponse,
+            new());
+        await Assert.That(() => ValidationApiException.Create(emptyException))
+            .ThrowsExactly<ArgumentException>();
+    }
+
+    /// <summary>Verifies the synchronous ValidationApiException factory deserializes problem details.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ValidationApiExceptionCreateDeserializesProblemDetails()
+    {
+        using var response = CreateErrorResponse(
+            "{\"title\":\"invalid\",\"status\":400,\"errors\":{\"Name\":[\"Required\"]}}",
+            ProblemJsonMediaType);
+        var apiException = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            new());
+
+        var validationException = SynchronousCompatibility.CreateValidation(apiException);
+
+        await Assert.That(validationException.Content).IsNotNull();
+        await Assert.That(validationException.Content!.Title).IsEqualTo("invalid");
+        await Assert.That(validationException.Content.Status).IsEqualTo(ExpectedStatusCode);
+        await Assert.That(validationException.Content.Errors["Name"][0]).IsEqualTo("Required");
+    }
+
+    /// <summary>Verifies the synchronous ValidationApiException factory hydrates problem detail extensions and scalar errors.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ValidationApiExceptionCreateReadsExtensionsAndScalarErrors()
+    {
+        using var response = CreateErrorResponse(
+            """
+            {
+              "TYPE": null,
+              "title": "invalid",
+              "status": 400,
+              "detail": null,
+              "instance": null,
+              "errors": {
+                "Name": null,
+                "Count": 42
+              },
+              "enabled": true,
+              "disabled": false,
+              "integer": 123,
+              "fraction": 12.5,
+              "timestamp": "2024-02-03T04:05:06Z",
+              "message": "hello",
+              "metadata": { "nested": "value" }
+            }
+            """,
+            ProblemJsonMediaType);
+        var apiException = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            new());
+
+        var validationException = SynchronousCompatibility.CreateValidation(apiException);
+
+        await Assert.That(validationException.Content).IsNotNull();
+        await Assert.That(validationException.Content!.Type).IsNull();
+        await Assert.That(validationException.Content.Detail).IsNull();
+        await Assert.That(validationException.Content.Instance).IsNull();
+        await Assert.That(validationException.Content.Errors["Name"]).IsEmpty();
+        await Assert.That(validationException.Content.Errors["Count"][0]).IsEqualTo("42");
+        await Assert.That((bool)validationException.Content.Extensions["enabled"]).IsTrue();
+        await Assert.That((bool)validationException.Content.Extensions["disabled"]).IsFalse();
+        await Assert.That(validationException.Content.Extensions["integer"]).IsEqualTo((long)ExpectedIntegerExtension);
+        await Assert.That(validationException.Content.Extensions["fraction"]).IsEqualTo(ExpectedFractionExtension);
+        await Assert.That(validationException.Content.Extensions["timestamp"]).IsTypeOf<DateTime>();
+        await Assert.That(validationException.Content.Extensions[MessageText]).IsEqualTo("hello");
+        await Assert.That(validationException.Content.Extensions["metadata"]).IsTypeOf<JsonElement>();
+    }
+
+    /// <summary>Verifies the synchronous ValidationApiException factory ignores malformed validation error bags.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ValidationApiExceptionCreateIgnoresNonObjectErrors()
+    {
+        using var response = CreateErrorResponse(
+            "{\"title\":\"invalid\",\"errors\":\"not-an-object\"}",
+            ProblemJsonMediaType);
+        var apiException = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            new());
+
+        var validationException = SynchronousCompatibility.CreateValidation(apiException);
+
+        await Assert.That(validationException.Content).IsNotNull();
+        await Assert.That(validationException.Content!.Errors).IsEmpty();
+    }
+
+    /// <summary>Verifies the synchronous ValidationApiException factory rejects non-object problem details.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ValidationApiExceptionCreateRejectsNonObjectProblemDetails()
+    {
+        using var response = CreateErrorResponse("[1,2,3]", ProblemJsonMediaType);
+        var apiException = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            new());
+
+        await Assert.That(() => ValidationApiException.Create(apiException))
+            .ThrowsExactly<JsonException>();
+    }
+
+    /// <summary>Verifies the ValidationApiException inner-exception constructor rejects null inner exceptions.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ValidationApiExceptionInnerConstructorRejectsNullInnerException() =>
+        await Assert.That(static () => new ValidationApiException(MessageText, null!))
+            .ThrowsExactly<ArgumentNullException>();
+
+    /// <summary>Verifies the inner-exception request constructor rejects a null inner exception, since its message
+    /// seeds the base exception message.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ApiRequestExceptionInnerConstructorRejectsNullInnerException()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, ExampleUri);
+
+        await Assert.That(() => new ApiRequestException(request, HttpMethod.Post, new(), null!))
+            .ThrowsExactly<ArgumentNullException>();
+    }
+
+    /// <summary>Verifies the problem+json media type is detected case-insensitively per RFC 7231.</summary>
+    /// <param name="mediaType">The problem details media type with varied casing.</param>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [Arguments(ProblemJsonMediaType)]
+    [Arguments("application/PROBLEM+JSON")]
+    [Arguments("Application/Problem+Json")]
+    public async Task CreateDetectsProblemJsonMediaTypeCaseInsensitively(string mediaType)
+    {
+        using var response = CreateErrorResponse(
+            "{\"type\":\"about:blank\",\"title\":\"Bad Request\",\"status\":400}",
+            mediaType);
+
+        var exception = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            new());
+
+        await Assert.That(exception).IsTypeOf<ValidationApiException>();
+    }
+
+    /// <summary>Verifies opt-in request content capture is surfaced on the exception.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task RequestContentCapturedWhenOptionPresent()
+    {
+        using var response = CreateErrorResponse("{}");
+        GeneratedRequestRunner.AddRequestProperty(
+            response.RequestMessage!,
+            HttpRequestMessageOptions.RequestContent,
+            "{\"sent\":true}");
+
+        var exception = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            new());
+
+        await Assert.That(exception.HasRequestContent).IsTrue();
+        await Assert.That(exception.RequestContent).IsEqualTo("{\"sent\":true}");
+    }
+
+    /// <summary>Verifies request content is absent when capture was not requested.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task RequestContentAbsentWhenNotCaptured()
+    {
+        using var response = CreateErrorResponse("{}");
+        var exception = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            new());
+
+        await Assert.That(exception.HasRequestContent).IsFalse();
+        await Assert.That(exception.RequestContent).IsNull();
+    }
+
+    /// <summary>Verifies a problem+json body is built into a validation exception even when the serializer suspends asynchronously.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task CreateBuildsValidationExceptionWhenSerializerCompletesAsynchronously()
+    {
+        using var response = CreateErrorResponse("{\"title\":\"invalid\"}", ProblemJsonMediaType);
+        var settings = new RefitSettings(new AsyncYieldingSerializer());
+
+        var exception = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            settings);
+
+        await Assert.That(exception).IsTypeOf<ValidationApiException>();
+    }
+
+    /// <summary>Verifies the redaction hook can scrub credentials and bodies before the exception propagates.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ExceptionRedactorScrubsSensitiveData()
+    {
+        using var response = CreateErrorResponse("{\"secret\":\"value\"}");
+        response.RequestMessage!.Headers.Authorization = new("Bearer", "super-secret-token");
+        GeneratedRequestRunner.AddRequestProperty(
+            response.RequestMessage!,
+            HttpRequestMessageOptions.RequestContent,
+            "{\"password\":\"hunter2\"}");
+        var settings = new RefitSettings
+        {
+            ExceptionRedactor = static ex =>
+            {
+                ex.RequestMessage.Headers.Authorization = null;
+                ex.RequestContent = RedactedText;
+                ((ApiException)ex).Content = RedactedText;
+            },
+        };
+
+        var exception = await ApiException.Create(
+            response.RequestMessage!,
+            HttpMethod.Get,
+            response,
+            settings);
+
+        await Assert.That(exception.RequestMessage.Headers.Authorization).IsNull();
+        await Assert.That(exception.RequestContent).IsEqualTo(RedactedText);
+        await Assert.That(exception.Content).IsEqualTo(RedactedText);
+    }
+
+    /// <summary>Creates an error response with an attached request.</summary>
+    /// <param name="content">The response content.</param>
+    /// <param name="mediaType">The optional media type.</param>
+    /// <returns>The response message.</returns>
+    private static HttpResponseMessage CreateErrorResponse(string content, string? mediaType = null)
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.BadRequest) { RequestMessage = new(HttpMethod.Get, ExampleUri), Content = new StringContent(content), };
+
+        if (mediaType is not null)
+        {
+            response.Content.Headers.ContentType = new(mediaType);
+        }
+
+        return response;
+    }
+
+    /// <summary>Content that throws when read as a string.</summary>
+    private sealed class ThrowingReadContent : HttpContent
+    {
+        /// <inheritdoc />
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context) =>
+            throw new InvalidOperationException("read failed");
+
+        /// <inheritdoc />
+        protected override bool TryComputeLength(out long length)
+        {
+            length = 1;
+            return true;
+        }
+    }
+
+    /// <summary>Derived exception exposing protected constructors for coverage.</summary>
+    [SuppressMessage(
+        "Design",
+        "SST1488:An exception type does not declare the standard constructors",
+        Justification = "This test fixture exposes only the protected ApiException constructors under test.")]
+    [SuppressMessage(
+        "Design",
+        "CA1032",
+        Justification = "ApiException has no context-free base constructor; this fixture exercises protected constructors with real request/response/settings rather than fabricating context.")]
+    private sealed class DerivedApiException : ApiException
+    {
+        /// <inheritdoc />
+        [SuppressMessage(
+            "Design",
+            "SST1472:Signatures should not declare too many parameters",
+            Justification = "Mirrors the shipped protected ApiException constructor under test; grouping parameters would stop exercising the real 8-parameter surface.")]
+        public DerivedApiException(
+            string exceptionMessage,
+            HttpRequestMessage message,
+            HttpMethod httpMethod,
+            string? content,
+            HttpStatusCode statusCode,
+            string? reasonPhrase,
+            System.Net.Http.Headers.HttpResponseHeaders headers,
+            RefitSettings refitSettings)
+            : base(
+                exceptionMessage,
+                message,
+                httpMethod,
+                content,
+                statusCode,
+                reasonPhrase,
+                headers,
+                refitSettings)
+        {
+        }
+
+        /// <inheritdoc />
+        public DerivedApiException(
+            HttpRequestMessage message,
+            HttpMethod httpMethod,
+            string? content,
+            HttpStatusCode statusCode,
+            string? reasonPhrase,
+            System.Net.Http.Headers.HttpResponseHeaders headers,
+            RefitSettings refitSettings)
+            : base(message, httpMethod, content, statusCode, reasonPhrase, headers, refitSettings)
+        {
+        }
+    }
+
+    /// <summary>A serializer that genuinely suspends before delegating, forcing the async deserialization path.</summary>
+    [SuppressMessage(
+        "Design",
+        "SST2307:Generic method type parameters should be inferable from the parameters",
+        Justification = "Mirrors the explicit type parameters of the wrapped IHttpContentSerializer contract.")]
+    private sealed class AsyncYieldingSerializer : IHttpContentSerializer
+    {
+        /// <summary>The wrapped serializer that does the real work.</summary>
+        private readonly SystemTextJsonContentSerializer _inner = new();
+
+        /// <inheritdoc />
+        public HttpContent ToHttpContent<T>(T item) => _inner.ToHttpContent(item);
+
+        /// <inheritdoc />
+        public async Task<T?> FromHttpContentAsync<T>(HttpContent content, CancellationToken cancellationToken = default)
+        {
+            await Task.Yield();
+            return await _inner.FromHttpContentAsync<T>(content, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>Response model used by content deserialization tests.</summary>
+    /// <param name="Value">The deserialized value.</param>
+    private sealed record ResponseModel(int Value);
+}

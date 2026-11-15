@@ -1,0 +1,540 @@
+# Breaking changes and release notes
+
+Every breaking change and notable addition, newest first. Each major version links back to the feature documentation
+in the [main README](../README.md).
+
+* [V17.x.x](#v17xx)
+* [V16.x.x](#v16xx)
+* [V15.x.x](#v15xx)
+* [V14.x.x](#v14xx)
+* [V13.x.x](#v13xx)
+* [V12.x.x](#v12xx)
+* [V11.x.x](#v11xx)
+* [Updates in 8.0.x](#updates-in-80x)
+* [V6.x.x](#v6xx)
+
+## V17.x.x
+
+### Breaking changes in V17.x
+
+Refit 17 makes the `Refit` package free of reflection. Everything that needs reflection now lives in `Refit.Reflection`
+(and `Refit.HttpClientFactory.Reflection` for dependency injection), and the default JSON options no longer add
+converters, so the System.Text.Json fast path stays available. If your interfaces are all source generated and you use
+`ForGenerated` with a `JsonSerializerContext`, most of this does not touch you. If you call `RestService.For` or
+`AddRefitClient`, start with items 2 to 4.
+
+**Packages and targets**
+
+1. **.NET 8 and .NET 9 are no longer targeted.** Microsoft ends support for both on 10 November 2026 (see the
+   [.NET support policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core)). Refit now ships `net462` to `net481`, `net10.0` and `net11.0`.
+   Every .NET Framework target from `net462` to `net481` (`net462`, `net470`, `net471`, `net472`, `net48`, `net481`)
+   is still supported. A `net8.0` or `net9.0` project cannot restore Refit 17. Move the project to `net10.0` or later, or stay on Refit 16.
+2. **`RestService.For` moved to the `Refit.Reflection` package.** Every `For<T>` and `For(Type, ...)` overload is gone
+   from `Refit.dll`, even for fully generated interfaces. Pick one:
+   * Keep `RestService.For<T>(...)`: add a reference to [`Refit.Reflection`](https://www.nuget.org/packages/Refit.Reflection)
+     and rebuild. The call syntax and the `using Refit;` stay the same. The methods are C# 14 extension members, so the
+     project needs the .NET 10 SDK or later to compile them.
+   * Drop reflection: call `RestService.ForGenerated<T>(...)`, ideally with a `JsonSerializerContext`. This is the
+     only choice for trimmed and Native AOT apps.
+3. **`RequestBuilder.ForType` moved to `Refit.Reflection`.** Add the package and rebuild. Code that builds an
+   `IRequestBuilder` by hand needs the reference too.
+4. **`AddRefitClient` and `AddKeyedRefitClient` moved to a new package, `Refit.HttpClientFactory.Reflection`.** Install
+   it next to `Refit.HttpClientFactory` and rebuild; the call sites do not change. To avoid reflection, use
+   `AddRefitGeneratedClient<T>(context)` or `AddKeyedRefitGeneratedClient<T>(serviceKey, context)`, which stay in
+   `Refit.HttpClientFactory`.
+5. **`RestMethodInfo`, `RestMethodParameterInfo` and `RestMethodParameterProperty` moved to `Refit.Reflection`.** The
+   namespace is still `Refit`, so only code that uses these types (custom request builders, method metadata
+   inspection) needs the package reference.
+
+**JSON defaults**
+
+6. **Enums are written and read as numbers by default.** The default options no longer include the camelCase string
+   enum converter. A client that sent `"pending"` now sends `0`, and a reply of `"pending"` fails to read. Fix it where
+   you build the options: on a source-generated context use `[JsonSourceGenerationOptions(UseStringEnumConverter = true)]`
+   or `[JsonConverter(typeof(JsonStringEnumConverter<MyEnum>))]` on the enum. Those write the member names as declared
+   (`Pending`); the old converter wrote camelCase (`pending`), so pass `JsonNamingPolicy.CamelCase` to keep the wire
+   format. In a reflection app call `options.AddReflectionConverters()` from `Refit.Reflection`, which keeps camelCase
+   (see item 8).
+7. **Numbers in JSON strings are no longer accepted.** The default options dropped
+   `JsonNumberHandling.AllowReadingFromString`, so `{"id":"42"}` no longer reads into an `int`. If your API does this,
+   set `NumberHandling = JsonNumberHandling.AllowReadingFromString` on your `JsonSerializerOptions`, or add
+   `[JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]` to the property.
+8. **`object` values read as `JsonElement`, not as CLR values.** `ObjectToInferredTypesConverter` is no longer in the
+   defaults and moved to `Refit.Reflection`. A property typed `object` or a `Dictionary<string, object>` now holds
+   `JsonElement`s instead of `string`, `long`, `double`, `bool` and so on. Either read the `JsonElement`, or call
+   `options.AddReflectionConverters()` from `Refit.Reflection`, which adds the inferred-types converter and the camelCase
+   enum converter (items 6 and 8 in one call). Any converter turns off the System.Text.Json fast path, which is why
+   Refit no longer adds them for you.
+9. **Options with no type metadata no longer fall back to reflection on their own.** `new SystemTextJsonContentSerializer()`
+   and options you build without a resolver used to switch to reflection-based JSON silently. Now the first request
+   throws a `NotSupportedException` that explains the choices. Either give the options a source-generated context
+   (`RefitSettings.ForJsonContext(context)` or `ForGenerated<T>(client, context)`), or reference `Refit.Reflection` and call
+   `ReflectionSupport.EnsureRegistered()` once at startup. `RestService.For` and `AddRefitClient` call it for you.
+   Streaming JSON arrays (`IAsyncEnumerable<T>` replies) follow the same rule.
+10. **`ProblemDetails.Extensions` is no longer filled by the serializer.** `[JsonExtensionData]` is gone from the
+    property, and `ValidationApiException` reads problem details with Refit's own reader. This means validation
+    errors parse under Native AOT and with any serializer, including Newtonsoft, but a custom
+    `ProblemDetails` subclass or serializer setting no longer takes part. `ValidationApiException.Content.Extensions`
+    still holds the extra members. If you deserialize `ProblemDetails` yourself with a serializer, `Extensions` stays empty;
+    read the extra members from the raw JSON, or use `ValidationApiException.Create(apiException)`.
+
+**Contracts you may implement**
+
+11. **`IUrlParameterFormatter.Format` takes `IParameterAttributeProvider` instead of `ICustomAttributeProvider`.**
+    The same change applies to `DefaultUrlParameterFormatter.Format` (virtual). Change the parameter type in your
+    formatter. The new interface has the same three members (`GetCustomAttributes(bool)`, `GetCustomAttributes(Type, bool)`
+    and `IsDefined`), so the body usually needs no edit. It no longer inherits from `System.Reflection`, which is what lets
+    generated code call the formatter without reflection.
+12. **`IHttpContentSerializer.GetFieldNameForProperty` is removed.** The method took a `PropertyInfo`, so it could not
+    work without reflection. Delete it from your custom serializer (and remove any `override` or explicit interface
+    implementation of it). To control form field names:
+    * Implement `IContentSerializerNameStyle` and return `ContentSerializerNameStyle.SystemTextJson`, `Newtonsoft` or
+      `Xml`, so the generator uses the matching attribute (`[JsonPropertyName]`, `[JsonProperty]`, `[XmlElement]`).
+    * Or, for reflection clients, implement `IReflectionFieldNameProvider` from `Refit.Reflection`.
+
+    A custom serializer that does neither is treated as having no name attributes: field names come from the property
+    name and Refit's key formatter, and generated form bodies use the run-time flattener instead of the generated field list.
+
+**Behavior that now needs `Refit.Reflection`**
+
+13. **Nested and run-time-typed objects in form bodies need `Refit.Reflection`.** Core Refit still flattens simple
+    values, collections and dictionaries. A `[FormObject]` or `Dictionary<string, object>` holding a complex object
+    now throws a `NotSupportedException` unless the package is referenced and registered
+    (`ReflectionSupport.EnsureRegistered()`). To avoid it, flatten the model to simple properties or type the body so the
+    generator sees every member at compile time.
+14. **`[EnumMember]` values on run-time-typed enums need `Refit.Reflection`.** When the generator can see the enum type
+    it still generates the `[EnumMember]` names. An enum that only appears as `object` or a generic argument now formats
+    as its plain name unless the package is registered.
+
+**Generated code and trimming**
+
+15. **Rebuild every project that contains Refit-generated clients.** `GeneratedRequestRunner`, `FormField<TBody>`
+    (`ExplicitName` became `Names`, and `ResolveFieldName` takes a `ContentSerializerNameStyle`), and the generated
+    attribute providers changed shape. Code generated by Refit 16 does not link against the 17 runtime. Update the
+    `Refit` package and rebuild; do not mix a Refit 16 generator output with the Refit 17 `Refit.dll`.
+16. **`Refit.Newtonsoft.Json` and `Refit.Xml` are no longer marked trimmable or AOT compatible.** They wrap libraries that
+    use reflection (`Newtonsoft.Json`, `XmlSerializer`), so the old trim and AOT suppressions were wrong. A trimmed or
+    Native AOT app that references them now gets trim and AOT warnings, and the serializers can fail at run time. Use
+    the System.Text.Json serializer with a `JsonSerializerContext` for those apps.
+17. **`Refit.Reflection` and `Refit.HttpClientFactory.Reflection` are not trimmable, and the trimmer root file is gone.**
+    The `Refit.Reflection.targets` file that rooted the assembly no longer ships, and `IRequestBuilder` no longer carries
+    `RequiresUnreferencedCode` or `RequiresDynamicCode`, so the reflection builder no longer warns at the call sites that
+    use `IRequestBuilder`. Apps that publish trimmed with reflection clients must keep the types they send and receive
+    themselves (for example with `TrimmerRootDescriptor` or `DynamicDependency`), or move to generated clients.
+
+## V16.x.x
+
+### Breaking changes in V16.x
+
+* **The .NET 11 assemblies are built without runtime-async.** Refit 12.0.0 to 15.2.0 built the .NET 11 assemblies with
+  the runtime-async compiler feature on. The feature needs a runtime that supports it: CoreCLR does and Mono does not, so
+  a Refit built with it can fail in every app that runs on Mono, which includes Blazor WebAssembly unless it opts into
+  CoreCLR, WASI, Android API levels 21 to 23, and apps that set `UseMonoRuntime=true`. A NuGet package ships one build
+  for every runtime, so Refit leaves the feature off. The public API is unchanged. Apps that target .NET 10 or older are
+  unaffected because only the .NET 11 assemblies used the feature. Apps on .NET 11 that run on CoreCLR do not get the
+  speed gain inside Refit's own async code, and can turn runtime-async on in their own app when it runs only on CoreCLR.
+
+## V15.x.x
+
+### Breaking changes in V15.x
+
+* **Response buffering now propagates caller cancellation.** If a caller cancels while Refit buffers response content,
+  Refit throws `OperationCanceledException` instead of continuing with partially consumed content. Other buffering
+  failures remain best-effort.
+
+## V14.x.x
+
+### Breaking changes in V14.x
+
+Refit 14 finishes the move to generated request building. Interfaces whose methods all generate inline no longer touch
+the reflection request builder at any point, which is what makes them trim and Native AOT clean — and that shift is
+visible in three places.
+
+* **Some hot-path async members now return `ValueTask` instead of `Task`** (allocation reductions for the breaking
+  release). `ApiResponse<T>.EnsureSuccessStatusCodeAsync()`/`EnsureSuccessfulAsync()` (and the matching
+  `IApiResponse<T>` extension methods) and `DefaultApiExceptionFactory.CreateAsync` now return `ValueTask<...>`, making
+  their common success path allocation-free. The `RefitSettings` async delegates `ExceptionFactory`,
+  `DeserializationExceptionFactory`, and `AuthorizationHeaderValueGetter` now use `ValueTask`-returning `Func` shapes,
+  removing a per-request `Task` allocation from the default (synchronously-completing) exception factory. `async`
+  lambdas assigned to these delegates need no change; a delegate that returned `Task.FromResult(x)` should return
+  `new ValueTask<T>(x)`, and a caller that stored an `EnsureSuccess...Async()` result as a `Task` should `await` it or
+  call `.AsTask()`. `TransportExceptionFactory` is unaffected (it was already synchronous).
+* **The reflection request builder is now an opt-in package.** The `Refit` package no longer carries it. If any of
+  your interface methods cannot generate inline — the RF006 diagnostic reports exactly which — add a reference to the
+  [`Refit.Reflection`](https://www.nuget.org/packages/Refit.Reflection) package and everything works as before, with
+  no code changes. Without it, `RestService.For` and `AddRefitClient` throw a `NotSupportedException` naming the
+  package when they reach a method that needs reflection. Applications whose interfaces all generate inline should not
+  install it: that is what keeps a client trimmable and Native AOT clean.
+* **Interface validation for fully generated interfaces happens when a request is built, not when the client is
+  created.** `RestService.For<T>` still validates reflection-backed interfaces eagerly, but an interface whose methods
+  all generate inline never touches the reflection request builder — an invalid route template (for example a
+  placeholder with no matching parameter) now throws the same `ArgumentException` on the first call instead of inside
+  `RestService.For`.
+* **`ApiException` stack traces no longer contain the generated method frame** for methods that construct requests
+  inline (they return the runner task directly instead of awaiting inside an async wrapper). Use
+  `ApiException.HttpMethod`/`ApiException.Uri` to identify the failing request.
+* **Query objects are flattened by their declared type, not their runtime type.** A complex parameter whose public
+  properties become query pairs is now flattened at compile time, the same way the `System.Text.Json` source generator
+  treats a declared type. The reflection request builder called `value.GetType()`, so passing a *derived* instance
+  through a base-typed parameter also contributed the derived type's extra properties. Generated request building emits
+  only the properties declared on the parameter's type:
+
+  ```csharp
+  public record BaseRecord(string Value);
+  public sealed record DerivedRecord(string Name) : BaseRecord("value");
+
+  [Get("/search")]
+  Task<string> Search(BaseRecord query);
+
+  Search(new DerivedRecord("ada"))
+  >>> "/search?Value=value"                 // V14, generated: declared type only
+  >>> "/search?Name=ada&Value=value"        // V13, reflection: runtime type
+  ```
+
+  Only polymorphic query objects are affected; a parameter whose declared type is the type you actually pass is
+  unchanged. If you rely on the old behavior, declare the parameter as the derived type.
+
+* **Flattened query-object keys honor the content serializer's property names.** A query object's property keys now
+  resolve with the same precedence form-encoded field names already used: `[AliasAs]` first, then the configured
+  content serializer's field name (`[JsonPropertyName]` for the default `System.Text.Json` serializer, `[JsonProperty]`
+  for `Refit.Newtonsoft.Json`), then the URL parameter key formatter. Previously query keys consulted only `[AliasAs]`
+  and the key formatter, so a `[JsonPropertyName]` on a flattened property had no effect on the query string.
+
+  ```csharp
+  public sealed class Filter
+  {
+      [JsonPropertyName("created_after")]
+      public DateTimeOffset? CreatedAfter { get; set; }
+  }
+
+  [Get("/search")]
+  Task<string> Search([Query] Filter filter);
+
+  Search(new Filter { CreatedAfter = ... })
+  >>> "/search?created_after=..."   // V14: serializer field name
+  >>> "/search?CreatedAfter=..."    // V13: CLR name
+  ```
+
+  Both request builders apply this. The generated path bakes the `[JsonPropertyName]` name at compile time (matching
+  the generated form path); the reflection path resolves it through the configured serializer, so it also picks up
+  `[JsonProperty]` when `Refit.Newtonsoft.Json` is installed. To keep the pre-V14 behavior, set
+  `RefitSettings.HonorContentSerializerPropertyNamesInQuery = false`; `[AliasAs]` still takes precedence in either mode.
+
+* **Refit no longer disposes a request-body stream you supply.** Refit disposes each request message after sending,
+  which disposes its content and any stream that content holds. Previously that reached a caller-owned stream: a
+  `StreamPart`, or a `Stream` passed as a `[Body]` or multipart parameter, was closed once the request completed, so a
+  second call with the same stream failed. Refit now wraps caller-supplied streams so disposal stops at the wrapper and
+  the stream you passed stays open — you own it and are responsible for disposing it. Streams Refit opens itself are
+  unchanged: a `FileInfoPart` (or a `FileInfo` multipart parameter) still has the file stream Refit opened closed for
+  you. Both request builders apply this. If you relied on Refit closing your stream, dispose it yourself after the call.
+* **URL-encoded bodies flatten nested objects, dictionaries, and collections instead of emitting the type name.** A
+  `[Body(BodySerializationMethod.UrlEncoded)]` model whose property is a nested object, an `IDictionary`, or a plain
+  collection under the default collection format previously serialized the property's `ToString()` — the type name for
+  a complex object or dictionary. Those properties now flatten exactly like a flattened `[Query]` object: a nested
+  object contributes `parent.child=...` pairs, a dictionary contributes `parent.key=value` pairs, and a collection
+  joins its elements (comma-separated under the default format). Field naming keeps the existing precedence (`[AliasAs]`,
+  then the content serializer's property name, then the key formatter), and a nested property's `[Query(delimiter,
+  prefix)]` composes its keys.
+
+  ```csharp
+  public sealed class SignupForm
+  {
+      public string Name { get; set; }
+      public Address Detail { get; set; }
+      public Dictionary<string, string> Extra { get; set; }
+  }
+
+  Submit(new SignupForm { Name = "ada", Detail = new() { City = "Wien" }, Extra = new() { ["k"] = "v" } })
+  >>> "Name=ada&Detail.City=Wien&Extra.k=v"                       // V14: flattened
+  >>> "Name=ada&Detail=RefitGeneratorTest.Address&Extra=System..." // pre-V14: ToString
+  ```
+
+  This is a behavior change to previously unusable output, so it is extremely unlikely anyone depended on it. Complex
+  elements of a collection are still `ToString()`-ed per element (the same limitation as the query path).
+* **An empty token from `AuthorizationHeaderValueGetter` now omits the `Authorization` header instead of sending a
+  blank one** (#1688). Previously a getter that returned `null`, an empty string, or whitespace produced a blank
+  `Authorization: <scheme>` header (and could throw for some scheme/value combinations). Refit now clears the header for
+  that request, so a single client can mix authenticated and anonymous calls by returning a token or an empty string. If
+  you relied on a blank header being sent, return a non-empty value.
+
+### New in V14.x
+
+* **`[PathPrefix]` shared route prefix.** Put `[PathPrefix("/api/v2")]` on an interface to prepend a common prefix to
+  every method's relative path, instead of repeating it in each route or baking it into `HttpClient.BaseAddress`. The
+  join uses exactly one slash (leading/trailing slashes are normalized, an empty prefix is a no-op) and runs before the
+  base-address merge, preserving placeholders and query strings. The prefix declared on the client interface (the `T` in
+  `RestService.For<T>`/`AddRefitClient<T>`) applies to every method it exposes, including inherited ones; prefixes are
+  not concatenated across interface inheritance. Both the source generator and the reflection request builder honor it.
+  See [Shared route prefix with `[PathPrefix]`](../README.md#shared-route-prefix-with-pathprefix).
+* **Per-method `[Timeout]` attribute.** Decorate a method with `[Timeout(milliseconds)]` to give that single call its
+  own deadline; when it elapses the request is canceled and surfaces as an `OperationCanceledException` (typically a
+  `TaskCanceledException`), the same way a lapsed `HttpClient.Timeout` reports. It is additive and layers onto the
+  request's effective cancellation token, so a caller-supplied `CancellationToken` still works alongside it and the
+  per-call deadline composes with `HttpClient.Timeout` and any Polly/`DelegatingHandler` timeout — whichever fires first
+  wins. Methods without `[Timeout]` are unaffected. Both request paths honor it (reflection and source-generated). See
+  [Per-request timeouts](../README.md#per-request-timeouts).
+* **`[FormObject]` flattens a model into individual multipart fields.** In a `[Multipart]` method, decorating a
+  complex-object parameter with `[FormObject]` sends each of its public properties as its own `multipart/form-data` text
+  field instead of the default single serialized part, so a server model bound from the form (such as an ASP.NET
+  `[FromForm]` model) binds field by field. Field names resolve with the form-encoded precedence (`[AliasAs]`, then the
+  content serializer's property name, then the key formatter), values render through the `FormUrlEncodedParameterFormatter`,
+  collections honor `CollectionFormat`, and nested objects compose `parent.child` field names. File-typed members are
+  left as separate part parameters. The default (no attribute) single-part behavior is unchanged. See
+  [Flattening a model into form fields with `[FormObject]`](../README.md#flattening-a-model-into-form-fields-with-formobject).
+* **Inline query-string generation.** Query parameters — auto-appended parameters, `[AliasAs]`, `[Query(Format = ...)]`,
+  and scalar collections with every `CollectionFormat` — now generate reflection-free request construction, so the most
+  common Refit method shapes work with generated-only clients (`AddRefitGeneratedClient`, `RestService.ForGenerated`)
+  and under Native AOT. Implicit body detection (a complex parameter on POST/PUT/PATCH without `[Body]`) generates
+  inline too, and value formatting for statically-known types (numbers, dates, GUIDs, enums with `[EnumMember]`) is
+  resolved at compile time while still honoring a custom `IUrlParameterFormatter` when one is configured.
+* **Reflection-free query-object flattening.** A complex query parameter's public readable properties are now walked at
+  compile time and emitted as straight-line code — no reflection, no delegates, and no per-request descriptor array —
+  honoring `[AliasAs]`, the content serializer's property name (`[JsonPropertyName]`), `[Query]`
+  prefix/delimiter/format/`SerializeNull`, and the `IgnoreDataMember`/`JsonIgnore` attributes. Value-typed properties
+  are formatted without boxing. A property that is itself a collection of simple elements (for example `int[]`,
+  `List<TEnum>`, `IReadOnlyList<string>`) flattens too, honoring its `CollectionFormat`; a customized
+  `IUrlParameterFormatter` still gets the reflection builder's two formatting passes. A property that is itself a
+  concrete nested object flattens recursively under a dotted key (`Address.City=...`), composing each level through the
+  key formatter and honoring per-level `[Query(Prefix)]`; a self-referential (cyclic) type keeps using the reflection
+  builder. See the declared-type and property-name notes above.
+* **Reflection-free dictionary query parameters.** `IDictionary<TKey, TValue>` and `Dictionary<TKey, TValue>` with
+  simple keys and values expand inline, one query pair per entry, with the same semantics as before: entries with a
+  null value are omitted, blank keys drop the pair, enum keys render through `[EnumMember]`, and a parameter-level
+  `[Query(Prefix)]` is prepended to every key. Dictionaries with `object` values still use the reflection request
+  builder, because the value's runtime type decides whether it is recursed into — unless you attach an
+  `[QueryConverter]` (below).
+* **`[QueryConverter]` for shapes only known at runtime.** Attach `[QueryConverter(typeof(MyConverter))]` to a query
+  parameter whose shape the generator cannot flatten from the declared type — an `object` value, a polymorphic base
+  type, a `Dictionary<string, object>`. The converter (`IQueryConverter<T>`) writes query pairs directly into the
+  pooled `GeneratedQueryStringBuilder`, so the parameter generates inline and stays reflection- and allocation-free.
+  It is a source-generation-only feature (like `[QueryName]`/`[Encoded]`): a method that carries it but cannot generate
+  inline for another reason reports `RF007`. The reflection request builder is unaffected; it keeps walking the runtime
+  type. `Refit` ships `SystemTextJsonQueryConverter<T>`, which flattens any type registered in your configured
+  `System.Text.Json` context by walking its `JsonTypeInfo`.
+* **`[QueryName]` valueless query flags.** The equivalent of Retrofit's `@QueryName`: the parameter's value becomes a
+  bare `?flag` segment with no `=value`; collections render one flag per element. See
+  [Valueless query flags](../README.md#valueless-query-flags).
+* **`[Encoded]` per-parameter encoding opt-out.** The equivalent of Retrofit's `encoded = true`: a query or path value
+  (including round-tripping `{**param}` segments) passes through verbatim so pre-encoded values are not double-encoded.
+  See [Unescape Querystring parameters](../README.md#unescape-querystring-parameters).
+* **RF006 fallback analyzer.** Methods that must use the reflection request builder are reported at compile time, so
+  generated-only and Native AOT clients fail the build instead of throwing at runtime. RF007 reports the use of
+  source-generation-only attributes (`[QueryName]`, `[Encoded]`) on methods that cannot generate inline.
+* **Generated fallback methods no longer leak IL2026/IL3050.** Projects with `EnableTrimAnalyzer` and warnings as
+  errors build cleanly; the compile-time RF006 diagnostic is the signal that a method still needs reflection.
+* **Hot-path allocation reductions.** The response pipeline avoids a per-stream linked `CancellationTokenSource` when a
+  token can't cancel, uses `HttpHeaders.NonValidated` for generated header checks (no value re-parsing), and returns
+  `ValueTask` from the internal deserialization chain so empty/`204` responses complete without a `Task` allocation —
+  alongside the public `ValueTask` moves noted in the breaking changes above.
+* **Generic interface methods generate inline.** A generic Refit method (for example `Task<T> Get<T>(string id)` or
+  `Task<TResponse> Post<TRequest, TResponse>([Body] TRequest body)`) no longer falls back to the reflection request
+  builder — the type parameter flows straight through to the generated runner (`SendAsync<T, TBody>`), so generic
+  methods are reflection-free and Native AOT clean, with their generic constraints preserved. The narrow exceptions that
+  still require the reflection builder are the ones an *open* type parameter genuinely can't generate: a complex query
+  object (its query pairs are only known per value) and a form-url-encoded `[Body]` (its `[DynamicallyAccessedMembers]`
+  contract can't be satisfied by an open type parameter). RF006 continues to report exactly which methods still fall
+  back.
+* **Pluggable return-type adapters (`IReturnTypeAdapter<TReturn, TResult>`).** Surface any custom return type (for
+  example `IObservable<T>` or a `Result<T>` wrapper) from an interface method by implementing the interface. The source
+  generator discovers adapters declared in your project at compile time and emits a direct `Adapt` call — no reflection,
+  so adapter-backed methods stay trim and Native AOT clean; the reflection request builder resolves adapters registered
+  in `RefitSettings.ReturnTypeAdapters`. See [Custom return types](../README.md#custom-return-types-ireturntypeadapter).
+* **Opt-in header validation (`RefitSettings.ValidateHeaders`).** Header values are still added verbatim by default
+  (`TryAddWithoutValidation`), so nothing changes unless you ask for it. Set `ValidateHeaders = true` to have Refit apply
+  headers with `HttpHeaders.Add` instead, validating each value against its header parser and throwing a
+  `FormatException` at request-build time when a value is malformed. CR/LF stripping still applies in both modes. Both
+  request builders honor the flag identically. See [Validating header values](../README.md#validating-header-values).
+* **`[Url]` for absolute per-call URLs.** The equivalent of Retrofit's `@Url`: mark a `string` or `System.Uri`
+  parameter with `[Url]` to dispatch the call to that absolute URL — often a different host — bypassing the client's
+  base address. The route template must be empty (`[Url]` provides the full URL), the value must be absolute (a relative
+  or invalid value throws an `ArgumentException`), and `[Query]` parameters are still appended to the URL's query string.
+  It generates inline (reflection-free, Native AOT clean) and behaves identically through the reflection request
+  builder. See [Absolute URLs per call with `[Url]`](../README.md#absolute-urls-per-call-with-url).
+* **Server-Sent Events as a streaming format.** A `text/event-stream` response returned to an `IAsyncEnumerable<T>`
+  method now streams one deserialized `T` per SSE `data` event, live and unbuffered, through the same seam as JSON
+  arrays and JSON Lines — no generator or reflection change, so both generated and reflection clients inherit it. This
+  adds the `StreamingContentFormat.ServerSentEvents` enum member and takes a new `System.Net.ServerSentEvents` package
+  reference on the targets that lack it in-box (net4x/netstandard2.0/net8.0/net9.0; it is a framework reference on
+  net10.0+). Each event's payload is deserialized through the configured `System.Text.Json` metadata path, so it stays
+  trim and Native AOT clean. See [Consuming Server-Sent Events](../README.md#consuming-server-sent-events).
+* **Obtain the built request without sending it.** A method declared to return `Task<HttpRequestMessage>` builds the
+  full request (method, URL, headers, and body/multipart content) and hands it back to the caller instead of dispatching
+  it — the equivalent of Retrofit's `Call.request()`, useful for inspection, signing, logging, or manual dispatch. Both
+  the generated and reflection paths build byte-identical requests. The caller owns the returned request and its content
+  and is responsible for disposing it; the request is not disposed for you and its content stays readable. A configured
+  async `AuthorizationHeaderValueGetter` runs at dispatch time and is therefore not applied to a request obtained this
+  way. See [Obtaining the built request without sending](../README.md#obtaining-the-built-request-without-sending).
+* **Optional URL path segments (`{name?}`).** Append `?` to a placeholder name (matching ASP.NET routing) to make the
+  segment optional. When the bound argument is `null` the segment and its preceding `/` are dropped, so a route such as
+  `[Get("/push/notifMsg/{deviceId}/{notifMsgId?}")]` produces `/push/notifMsg/device1` (not a 404-prone
+  `/push/notifMsg/device1/`) when `notifMsgId` is null. This is additive syntax: existing `{name}` placeholders are
+  unchanged, a non-null (or empty-string) value formats exactly as before, and the behaviour is identical on the
+  reflection and source-generated request paths. See [API Attributes](../README.md#api-attributes).
+* **Per-type URL parameter formatters (`RefitSettings.UrlParameterFormatterMap`).** Register an `IUrlParameterFormatter`
+  for a specific CLR type instead of hand-rolling a type switch inside a single custom formatter. When a value is
+  rendered into a path or query string, its runtime type is looked up in the map first (exact type only, no base-class or
+  interface walking); a registered formatter wins, and every other type falls back to `UrlParameterFormatter`. Both the
+  reflection and source-generated request builders consult the map identically. This is a purely additive, opt-in setting
+  — an empty map (the default) changes no behavior. See
+  [Formatting URL Parameter Values](../README.md#formatting-url-parameter-values-with-the-urlparameterformatter).
+* **Exposing the current call's arguments (`RefitSettings.CaptureMethodArguments`).** Opt in and a `DelegatingHandler`
+  can read the call's argument values from `HttpRequestMessageOptions.MethodArguments` — an `object?[]` in declared
+  parameter order (including any `CancellationToken`), the equivalent of Retrofit's `Invocation.arguments`. It is off by
+  default because it boxes and retains the arguments on every request, the same allocation/retention/PII trade-off as
+  `CaptureRequestContent`. The values are positional; the generated path supplies the bare array while the reflection
+  path also exposes `RestMethodInfo` for parameter names. See
+  [Inspecting the current call's arguments](../README.md#inspecting-the-current-calls-arguments).
+* **Scoped (per-request) authorization tokens via DI (`AddAuthorizationHeaderValueProvider`).** A new
+  `IHttpClientBuilder` extension in `Refit.HttpClientFactory` resolves the `Authorization` token from dependency
+  injection per request. Because `IHttpClientFactory` pools message handlers, it creates a fresh DI scope for every
+  request and resolves your delegate `(IServiceProvider, HttpRequestMessage, CancellationToken) -> ValueTask<string>`
+  from that scope, disposing it when the request completes — no `Microsoft.AspNetCore.*` dependency required (#1679). See
+  [Scoped (per-request) authorization tokens with dependency injection](../README.md#scoped-per-request-authorization-tokens-with-dependency-injection).
+* **Method name and route template in request options.** Every request now carries two additional string options —
+  `HttpRequestMessageOptions.MethodName` (the interface method's name) and
+  `HttpRequestMessageOptions.RelativePathTemplate` (the raw route template with its `{placeholders}`, not the filled
+  URL). Both are populated identically on the source-generated path and the reflection path, with no runtime
+  reflection, so a `DelegatingHandler` can read them for logging, metrics, and tracing. `RelativePathTemplate` is the
+  stable, low-cardinality label to use for OpenTelemetry spans and metrics instead of the per-id `RequestUri`. This is
+  purely additive and does not change the existing `InterfaceType` or `RestMethodInfo` options. See
+  [Target Interface Type and method info](../README.md#target-interface-type-and-method-info).
+
+## V13.x.x
+
+### Breaking changes in V13.x
+
+Refit 13 hardens the default security posture from a security audit. The new behavior is safe by default; the changes
+below only affect code that previously relied on the less-secure defaults.
+
+* **XML responses no longer process DTDs.** `XmlContentSerializer` now forces `DtdProcessing.Prohibit` and clears the
+  `XmlResolver` on every read, blocking XML External Entity (XXE) and entity-expansion ("billion laughs") attacks. If
+  you were deserializing trusted XML that depends on a DTD or external entities, that content will now throw. We
+  **strongly recommend against re-enabling DTD processing**, but if your XML comes from a fully trusted source you can
+  opt out via the obsolete `XmlReaderWriterSettings.AllowDtdProcessing` flag (marked `[Obsolete]` deliberately, so it
+  surfaces a compiler warning) - you must also configure `DtdProcessing`/`XmlResolver` yourself on `ReaderSettings`.
+  Prefer pre-processing untrusted documents instead.
+* **Newtonsoft.Json no longer inherits an unsafe global `TypeNameHandling`.** When you do not pass explicit
+  `JsonSerializerSettings`, `NewtonsoftJsonContentSerializer` now forces `TypeNameHandling.None` even if
+  `JsonConvert.DefaultSettings` configured a different value, closing a known remote-code-execution gadget vector on
+  response bodies. If you genuinely need polymorphic (`$type`) deserialization, opt in explicitly by passing your own
+  `JsonSerializerSettings` (ideally constrained with a `SerializationBinder`).
+
+The release also adds two opt-in, non-breaking knobs on `RefitSettings` for hardening exception handling:
+
+* `RefitSettings.ExceptionRedactor` — a hook invoked before an `ApiException` propagates, so you can scrub the
+  `Authorization` header, request/response bodies, and `Set-Cookie` before they reach logging or telemetry pipelines
+  that serialize exceptions.
+* `RefitSettings.MaxExceptionContentLength` — caps how many characters of an error response body are read into
+  `ApiException.Content`, bounding memory use against hostile or oversized error responses. Defaults to unbounded.
+
+### New in V13.x
+
+* **`Refit.Testing`** — a new first-party package for testing Refit clients without a mocking library or a live
+  server. You describe expected calls as a route table (`Route` → `Reply`) and point a real client at it via
+  `StubHttp.CreateClient<T>(...)`. Route templates mirror your interface attributes, typed replies (`Reply.With<T>`)
+  are serialized with the client's own serializer, and the sent request body can be read back as a typed object with
+  `LastRequestBodyAsync<T>()`. It also includes `NetworkBehavior` for seeded latency/fault injection and
+  `StubApiResponse<T>` for unit-testing code that consumes `IApiResponse<T>`. See
+  [Testing your Refit clients](../README.md#testing-your-refit-clients).
+## V12.x.x
+
+### Breaking changes in V12.x
+
+Refit 12.0 is a large release centered on a near-complete rewrite of request building. The source generator now builds
+eligible HTTP requests inline at compile time instead of going through the reflection request-builder pipeline, with the
+reflection path kept as a fallback for shapes that cannot be generated inline.
+
+Two breaking changes are called out for migration:
+
+* `IApiResponse<T>` no longer shadows base interface members. The `new`-shadowed `Error`, `ContentHeaders`,
+  `IsSuccessStatusCode`, and `IsSuccessful` members were removed from the generic interface. Source that reads these
+  members still binds to the inherited base members, but assemblies compiled against v8-v11 should be recompiled.
+  If you used `IsSuccessful` to narrow `Content` to non-null on an `IApiResponse<T>` value, use `HasContent` or
+  `IsSuccessfulWithContent` instead.
+
+  Because the shadow is gone, `Error` is now typed as `ApiExceptionBase?`, which exposes only request-side context
+  (`RequestContent`, `HttpMethod`, `Uri`, `RequestMessage`). The response body lives on the derived `ApiException`, so
+  `response.Error.Content` no longer compiles. The feature was not removed; the body simply moved to the derived type.
+  Migrate like this:
+
+  ```csharp
+  // Before (v8-v11)
+  var content = response.Error.Content;
+
+  // After (v12+) - null-safe typed access to the response body
+  if (response.HasResponseError(out var apiException))
+      logger.LogError(apiException, apiException.Content);
+
+  // Or, as a shorthand cast when you just want the body
+  var content = (response.Error as ApiException)?.Content;
+  ```
+* The default `System.Text.Json` serializer now reads numbers from JSON strings by setting
+  `JsonNumberHandling.AllowReadingFromString`. To opt back out, set `NumberHandling = JsonNumberHandling.Strict` on
+  your `JsonSerializerOptions`.
+
+See the [Refit 12.0.0 release notes](https://github.com/reactiveui/refit/releases/tag/v12.0.0) for the full release
+details.
+
+## V11.x.x
+
+### Breaking changes in 11.x
+
+Refit 11 introduces `ApiRequestException` to represent requests that fail before receiving a response from the server.
+This exception will now wrap previous exceptions such as `HttpRequestException` and `TaskCanceledException` when they
+occur during request execution.
+
+* If you were not wrapping responses with `IApiResponse` and were catching these exceptions directly, you will need to
+  update your code to catch `ApiRequestException` instead.
+* If you were wrapping responses with `IApiResponse`, these exceptions will no longer be thrown and will instead be
+  captured in the `IApiResponse.Error` property.
+  You can use the new `IApiResponse.HasRequestError(out var apiRequestException)` method to safely check and retrieve
+  the `ApiRequestException` instance.
+
+The `IApiResponse.Error` property's type has also changed to `ApiExceptionBase`, which is the new base class for
+`ApiException` and `ApiRequestException`.
+If your code accessed members specific to `ApiException` (i.e. anything related to the response from the server), you
+can use the new `IApiResponse.HasResponseError(out var apiException)` method to safely check and retrieve the
+`ApiException` instance.
+
+All response-related properties of `IApiResponse` are now nullable.
+The new `IApiResponse.IsReceived` property can be used to check if a response was received from the server, and will
+mark those properties as non-null.
+The original `IApiResponse.IsSuccessful` and `IApiResponse.IsSuccessStatusCode` properties can still be used to check if
+the response was received and is successful.
+
+## Updates in 8.0.x
+
+Fixes for some issues experienced, this led to some breaking changes.
+See [Releases](https://github.com/reactiveui/refit/releases) for full details.
+
+## V6.x.x
+
+Refit 6 requires Visual Studio 16.8 or higher, or the .NET SDK 5.0.100 or higher. It can target any .NET Standard 2.0
+platform.
+
+Refit 6 does not support the old `packages.config` format for NuGet references (as they do not support analyzers/source
+generators). You must
+[migrate to PackageReference](https://devblogs.microsoft.com/nuget/migrate-packages-config-to-package-reference/) to use
+Refit v6 and later.
+
+### Breaking changes in 6.x
+
+Refit 6
+makes [System.Text.Json](https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-overview) the
+default JSON serializer. If you'd like to continue to use `Newtonsoft.Json`, add the `Refit.Newtonsoft.Json` NuGet
+package and set your `ContentSerializer` to `NewtonsoftJsonContentSerializer` on your `RefitSettings` instance.
+`System.Text.Json` is faster and uses less memory, though not all features are supported.
+The [migration guide](https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-migrate-from-newtonsoft-how-to?pivots=dotnet-5-0)
+contains more details.
+
+`IContentSerializer` was renamed to `IHttpContentSerializer` to better reflect its purpose. Additionally, two of its
+methods were renamed, `SerializeAsync<T>` -> `ToHttpContent<T>` and `DeserializeAsync<T>` -> `FromHttpContentAsync<T>`.
+Any existing implementations of these will need to be updated, though the changes should be minor.
+
+##### Updates in 6.3
+
+Refit 6.3 splits out the XML serialization via `XmlContentSerializer` into a separate package, `Refit.Xml`. This
+is to reduce the dependency size when using Refit with Web Assembly (WASM) applications. If you require XML, add a
+reference
+to `Refit.Xml`.
+

@@ -1,0 +1,34 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+
+namespace Refit;
+
+/// <summary>
+/// An optional capability for an <see cref="IHttpContentSerializer"/> that can deserialize a response body
+/// incrementally into an <see cref="IAsyncEnumerable{T}"/>. Refit uses this for interface methods that return
+/// <see cref="IAsyncEnumerable{T}"/>, reading items as they arrive instead of buffering the whole response.
+/// </summary>
+public interface IStreamingContentSerializer
+{
+    /// <summary>Deserializes a response <paramref name="stream"/> into a sequence of <typeparamref name="T"/> values.</summary>
+    /// <typeparam name="T">The element type to deserialize.</typeparam>
+    /// <param name="stream">The response body stream to read.</param>
+    /// <param name="format">The body framing: a JSON array, JSON Lines, or JSON data payloads in server-sent events.</param>
+    /// <param name="cancellationToken">A token to cancel enumeration.</param>
+    /// <returns>An asynchronous sequence of deserialized values.</returns>
+    [SuppressMessage(
+        "Design",
+        "SST2307:Generic method type parameters should be inferable from the parameters",
+        Justification = "Type parameter intentionally specified explicitly by callers.")]
+    [SuppressMessage(
+        "Design",
+        "SST2309:An externally visible member declares an optional parameter, so callers bake in the default",
+        Justification = "Optional CancellationToken is part of the published interface contract; overloads need default interface methods unavailable on netstandard2.0/net4x.")]
+    IAsyncEnumerable<T?> DeserializeStreamAsync<T>(
+        Stream stream,
+        StreamingContentFormat format,
+        CancellationToken cancellationToken = default);
+}

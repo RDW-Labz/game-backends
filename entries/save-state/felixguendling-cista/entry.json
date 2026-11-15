@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T08:56:26Z",
+ "category": "save-state",
+ "commit": "2026-11-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "felixguendling/cista \u2014 Cista is a simple, high-performance, zero-copy C++ serialization & reflection library.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "cista",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "felixguendling-cista",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 2255,
+ "system": "Cista is a simple, high-performance, zero-copy C++ serialization & reflection library.",
+ "upstream": "https://github.com/felixguendling/cista",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

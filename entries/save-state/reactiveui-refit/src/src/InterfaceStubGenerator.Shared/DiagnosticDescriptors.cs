@@ -1,0 +1,58 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+using Microsoft.CodeAnalysis;
+
+namespace Refit.Generator;
+
+/// <summary>Diagnostic descriptors reported by the Refit source generator.</summary>
+internal static class DiagnosticDescriptors
+{
+    /// <summary>Diagnostic reported when the Refit assembly is not referenced.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "RS2008", Justification = "Diagnostic IDs are stable and intentionally not tracked in an analyzer release-tracking file.")]
+    internal static readonly DiagnosticDescriptor RefitNotReferenced =
+        new(
+            "RF002",
+            "Refit must be referenced",
+            "Refit is not referenced. Add a reference to Refit.",
+            Category,
+            DiagnosticSeverity.Error,
+            true);
+
+    /// <summary>Diagnostic reported when a source-generation-only attribute is used on a method that cannot generate inline.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "RS2008", Justification = "Diagnostic IDs are stable and intentionally not tracked in an analyzer release-tracking file.")]
+    internal static readonly DiagnosticDescriptor SourceGenOnlyAttributeRequiresInlineRequest =
+        new(
+            "RF007",
+            "Attribute requires generated request building",
+            "Method '{0}' uses [{1}], which is only honored by generated request building, but its request cannot be "
+            + "generated inline. Make the method compatible with inline generation or remove the attribute.",
+            Category,
+            DiagnosticSeverity.Error,
+            true);
+
+    /// <summary>Diagnostic reported when a method that returns <c>PagedEnumerable</c> is not configured in a way the generator can emit.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "RS2008", Justification = "Diagnostic IDs are stable and intentionally not tracked in an analyzer release-tracking file.")]
+    internal static readonly DiagnosticDescriptor InvalidPagedMethod =
+        new(
+            "RF013",
+            "Paged method is not configured correctly",
+            "Method '{0}' cannot be generated as a paged method: {1}",
+            Category,
+            DiagnosticSeverity.Error,
+            true);
+
+    /// <summary>Diagnostic reported when a <c>JsonTypeInfo&lt;T&gt;</c> parameter cannot supply metadata the generator can pass on.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "RS2008", Justification = "Diagnostic IDs are stable and intentionally not tracked in an analyzer release-tracking file.")]
+    internal static readonly DiagnosticDescriptor InvalidJsonTypeInfoParameter =
+        new(
+            "RF014",
+            "JsonTypeInfo parameter is not usable",
+            "Method '{0}' cannot use its JsonTypeInfo parameter: {1}",
+            Category,
+            DiagnosticSeverity.Error,
+            true);
+
+    /// <summary>The diagnostic category for Refit generator diagnostics.</summary>
+    private const string Category = "Refit";
+}

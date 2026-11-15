@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Product>Refit HTTP Client Factory Extensions</Product>
+    <PackageDescription>Microsoft.Extensions.Http integration for Refit, adding AddRefitClient support for typed HttpClientFactory clients, dependency injection, handlers, and Polly-style HTTP pipelines.</PackageDescription>
+    <PackageTags>refit;rest;http;httpclient;httpclientfactory;ihttpclientfactory;dependency-injection;microsoft-extensions-http;typed-client;api-client</PackageTags>
+    <TargetFrameworks>$(RefitTargets)</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\AuthenticatedHttpClientHandler.cs" Link="Shared\AuthenticatedHttpClientHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Refit.HttpClientFactory.Tests" />
+    <InternalsVisibleTo Include="Refit.HttpClientFactory.Reflection" />
+    <ProjectReference Include="..\Refit\Refit.csproj" PrivateAssets="Analyzers" />
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+</Project>

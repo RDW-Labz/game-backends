@@ -1,0 +1,35 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.Net.Http;
+
+namespace Refit;
+
+/// <summary>Allows the use of a generic <see cref="Stream"/> in a multipart form body.</summary>
+/// <param name="value">The value.</param>
+/// <param name="fileName">Name of the file.</param>
+/// <param name="contentType">Type of the content.</param>
+/// <param name="name">The name.</param>
+/// <exception cref="System.ArgumentNullException">value</exception>
+/// <remarks>
+/// Initializes a new instance of the <see cref="StreamPart"/> class.
+/// </remarks>
+[System.Diagnostics.DebuggerDisplay("{Value}")]
+public class StreamPart(
+    Stream value,
+    string fileName,
+    string? contentType = null,
+    string? name = null) : MultipartItem(fileName, contentType, name)
+{
+    /// <summary>Gets the stream value.</summary>
+    public Stream Value { get; } = value ?? throw new ArgumentNullException(nameof(value));
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// The stream is supplied by the caller, so it is wrapped in non-disposing content: disposing the request
+    /// (and its content) never closes the caller's stream. Contrast <see cref="FileInfoPart"/>, whose stream
+    /// Refit opens and therefore owns and disposes.
+    /// </remarks>
+    protected override HttpContent CreateContent() => GeneratedRequestRunner.CreateStreamContent(Value);
+}

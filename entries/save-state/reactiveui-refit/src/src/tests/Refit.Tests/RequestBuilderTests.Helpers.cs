@@ -1,0 +1,397 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.Collections;
+using System.Collections.Generic;
+
+namespace Refit.Tests;
+
+/// <summary>Tests for the reflection request builder's query and header helpers.</summary>
+public partial class RequestBuilderTests
+{
+    /// <summary>The header name used by the header-replacement tests.</summary>
+    private const string ReplacedHeaderName = "X-Refit-Test";
+
+    /// <summary>The original header value written before a replacement.</summary>
+    private const string OriginalHeaderValue = "first";
+
+    /// <summary>The header value written by a replacement.</summary>
+    private const string ReplacementHeaderValue = "second";
+
+    /// <summary>A strictly-parsed header used by the end-to-end header-validation tests.</summary>
+    private const string ValidatedHeaderName = "If-Modified-Since";
+
+    /// <summary>A value that fails the <see cref="ValidatedHeaderName"/> parser but is accepted verbatim without validation.</summary>
+    private const string MalformedHeaderValue = "not a date";
+
+    /// <summary>The dictionary key the test formatter renders as blank.</summary>
+    private const string BlankDictionaryKey = "blank";
+
+    /// <summary>The query value the test formatter renders as null.</summary>
+    private const string NullFormattedQueryValue = "nulled";
+
+    /// <summary>The byte array {1, 2} used as sample multipart byte-array-part content.</summary>
+    private static readonly byte[] _byteArray12 = [1, 2];
+
+    /// <summary>The integer array {1, 2} wrapped in a non-generic collection for the query-map guard test.</summary>
+    private static readonly int[] _intArray12 = [1, 2];
+
+    /// <summary>Skips dictionary entries whose value is null.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task QueryDictionarySkipsNullValues()
+    {
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.QueryWithObjectDictionary));
+
+        var output = await factory([new Dictionary<string, object?> { ["skipped"] = null, ["kept"] = "yes" }]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestUri!);
+        await Assert.That(uri.PathAndQuery).IsEqualTo("/foo?kept=yes");
+    }
+
+    /// <summary>Expands a dictionary value that is itself a complex object into nested query keys.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task QueryDictionaryExpandsComplexValuesIntoNestedKeys()
+    {
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.QueryWithObjectDictionary));
+
+        var output = await factory([new Dictionary<string, object?> { ["outer"] = new NestedQueryValue { Inner = "v" } }]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestUri!);
+        await Assert.That(uri.PathAndQuery).IsEqualTo("/foo?outer.Inner=v");
+    }
+
+    /// <summary>Skips dictionary entries whose formatted key is blank.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task QueryDictionarySkipsBlankFormattedKeys()
+    {
+        var settings = new RefitSettings { UrlParameterFormatter = new BlankKeyUrlParameterFormatter() };
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>(settings);
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.QueryWithObjectDictionary));
+
+        var output = await factory([new Dictionary<string, object?> { [BlankDictionaryKey] = "v" }]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestUri!);
+        await Assert.That(uri.PathAndQuery).IsEqualTo("/foo");
+    }
+
+    /// <summary>Omits a query parameter whose formatted value is null.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task QueryParameterIsOmittedWhenTheFormattedValueIsNull()
+    {
+        var settings = new RefitSettings { UrlParameterFormatter = new NullValueUrlParameterFormatter() };
+        var scoped = new RequestBuilderImplementation<IDummyHttpApi>(settings);
+        var scopedFactory = scoped.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.UnescapedQueryParams));
+
+        var output = await scopedFactory([NullFormattedQueryValue]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestUri!);
+        await Assert.That(uri.PathAndQuery).IsEqualTo("/query");
+    }
+
+    /// <summary>Emits a null property when it opts in via Query(SerializeNull = true).</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task QueryPropertyIsEmittedWhenSerializeNullIsSet()
+    {
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.QueryWithSerializationObject));
+
+        var output = await factory([new QuerySerializationObject()]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestUri!);
+        await Assert.That(uri.PathAndQuery).IsEqualTo("/foo?SerializedNull=");
+    }
+
+    /// <summary>Omits a formatted query property when the formatter renders it as null.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task QueryPropertyIsOmittedWhenTheFormatterReturnsNull()
+    {
+        var settings = new RefitSettings { FormUrlEncodedParameterFormatter = new NullFormUrlEncodedParameterFormatter(), };
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>(settings);
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.QueryWithSerializationObject));
+
+        var output = await factory([new QuerySerializationObject { Formatted = "value" }]);
+
+        // SerializedNull still opts in; only the formatted property is dropped.
+        var uri = new Uri(new(ApiBaseUrl), output.RequestUri!);
+        await Assert.That(uri.PathAndQuery).IsEqualTo("/foo?SerializedNull=");
+    }
+
+    /// <summary>Serializes a string body through the obsolete JSON serialization method.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task ObsoleteJsonBodySerializationMethodStillSerializes()
+    {
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+        var factory = fixture.RunRequest(nameof(IDummyHttpApi.PostWithObsoleteJsonBody));
+
+        var output = await factory(["raw"]);
+
+        // The legacy value serializes rather than sending the string as raw text.
+        await Assert.That(output.SendContent).IsEqualTo("\"raw\"");
+    }
+
+    /// <summary>Sends a string body through the url-encoded serialization method.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task UrlEncodedBodyAcceptsAStringPayload()
+    {
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+        var factory = fixture.RunRequest(nameof(IDummyHttpApi.PostSomeUrlEncodedStuff));
+
+        var output = await factory([1, "a b"]);
+
+        await Assert.That(output.SendContent).IsEqualTo("a%20b");
+    }
+
+    /// <summary>Substitutes an empty path segment when the formatter renders an object property as null.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task PathBoundObjectPropertyUsesEmptyWhenTheFormatterReturnsNull()
+    {
+        var settings = new RefitSettings { UrlParameterFormatter = new AlwaysNullUrlParameterFormatter() };
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>(settings);
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.QueryWithOptionalParametersPathBoundObject));
+
+        var output = await factory([new PathBoundObject { SomeProperty = 1 }, null!, null!, null!]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestUri!);
+        await Assert.That(uri.AbsolutePath).IsEqualTo("/api/");
+    }
+
+    /// <summary>Substitutes empty segments when the formatter renders round-tripping path sections as null.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task RoundTrippingPathSectionsUseEmptyWhenTheFormatterReturnsNull()
+    {
+        var settings = new RefitSettings { UrlParameterFormatter = new AlwaysNullUrlParameterFormatter() };
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>(settings);
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.FetchSomeStuffWithRoundTrippingParam));
+
+        var output = await factory(["a/b", 1]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestUri!);
+        await Assert.That(uri.AbsolutePath).IsEqualTo("/foo/bar///");
+    }
+
+    /// <summary>Renders a round-tripping path placeholder as an empty segment when the bound value itself is null,
+    /// rather than splitting a string form that does not exist.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task RoundTrippingPathWithNullValueFormatsAnEmptySegment()
+    {
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.FetchSomeStuffWithRoundTrippingParam));
+
+        var output = await factory([null!, 1]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestUri!);
+        await Assert.That(uri.AbsolutePath).IsEqualTo("/foo/bar//1");
+    }
+
+    /// <summary>Falls back to the derived file name when a multipart item supplies an empty one.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task MultipartItemWithAnExplicitNameAndEmptyFileNameUsesTheDerivedFileName()
+    {
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+        var factory = fixture.RunRequest(nameof(IDummyHttpApi.Blob_Post_Byte));
+
+        var output = await factory(["dir/file", new ByteArrayPart(_byteArray12, string.Empty, name: "custom")]);
+
+        await Assert.That(output.SendContent).Contains("custom");
+    }
+
+    /// <summary>Leaves the body unserialized when the serialization method is not a declared enum value.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task UndeclaredBodySerializationMethodLeavesTheBodyUnserialized()
+    {
+        var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IDummyHttpApi.PostWithUndeclaredBodySerializationMethod));
+
+        var output = await factory(["raw"]);
+
+        // The body is dropped; what remains is the empty placeholder content Refit attaches for header carrying.
+        await Assert.That(output.Content!.Headers.ContentLength).IsEqualTo(0);
+    }
+
+    /// <summary>Treats a non-generic enumerable as a query map because its element type is unknown.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task DoNotConvertToQueryMapIsFalseForANonGenericEnumerable()
+    {
+        var nonGenericSequence = new ArrayList(_intArray12);
+
+        await Assert.That(RequestBuilderImplementation.DoNotConvertToQueryMap(nonGenericSequence)).IsFalse();
+    }
+
+    /// <summary>Emits a scalar directly rather than expanding it into a query map.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task DoNotConvertToQueryMapIsTrueForAScalar() =>
+        await Assert.That(RequestBuilderImplementation.DoNotConvertToQueryMap("scalar")).IsTrue();
+
+    /// <summary>Replaces an existing request header rather than duplicating it.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task SetHeaderReplacesAnExistingRequestHeader()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, ApiBaseUrlWithSlash);
+        _ = request.Headers.TryAddWithoutValidation(ReplacedHeaderName, OriginalHeaderValue);
+
+        RequestBuilderImplementation.SetHeader(request, ReplacedHeaderName, ReplacementHeaderValue, validateHeaders: false);
+
+        await Assert.That(request.Headers.GetValues(ReplacedHeaderName)).IsEquivalentTo([ReplacementHeaderValue]);
+    }
+
+    /// <summary>Removes an existing request header when a null value is supplied.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task SetHeaderRemovesAnExistingRequestHeaderWhenTheValueIsNull()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, ApiBaseUrlWithSlash);
+        _ = request.Headers.TryAddWithoutValidation(ReplacedHeaderName, OriginalHeaderValue);
+
+        RequestBuilderImplementation.SetHeader(request, ReplacedHeaderName, null, validateHeaders: false);
+
+        await Assert.That(request.Headers.Contains(ReplacedHeaderName)).IsFalse();
+    }
+
+    /// <summary>Replaces a header that was set on the request content.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task SetHeaderReplacesAnExistingContentHeader()
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, ApiBaseUrlWithSlash);
+        using var content = new StringContent("body");
+        _ = content.Headers.TryAddWithoutValidation(ReplacedHeaderName, OriginalHeaderValue);
+        request.Content = content;
+
+        RequestBuilderImplementation.SetHeader(request, ReplacedHeaderName, ReplacementHeaderValue, validateHeaders: false);
+
+        await Assert.That(request.Headers.GetValues(ReplacedHeaderName)).IsEquivalentTo([ReplacementHeaderValue]);
+        await Assert.That(request.Content.Headers.Contains(ReplacedHeaderName)).IsFalse();
+    }
+
+    /// <summary>Adding a header verbatim (validation disabled) keeps a value the framework parser would reject.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public Task SetHeaderWithoutValidationSendsMalformedValueVerbatim() =>
+        HeaderValidationScenarios.SendsMalformedValueVerbatimWithoutValidation(RequestBuilderImplementation.SetHeader, ApiBaseUrlWithSlash);
+
+    /// <summary>Enabling validation surfaces a malformed header value as a <see cref="FormatException"/>.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public Task SetHeaderWithValidationThrowsForMalformedValue() =>
+        HeaderValidationScenarios.ThrowsForMalformedValueWithValidation(RequestBuilderImplementation.SetHeader, ApiBaseUrlWithSlash);
+
+    /// <summary>Enabling validation stores a well-formed value on the request header collection.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public Task SetHeaderWithValidationAddsWellFormedRequestHeader() =>
+        HeaderValidationScenarios.AddsWellFormedRequestHeaderWithValidation(RequestBuilderImplementation.SetHeader, ApiBaseUrlWithSlash);
+
+    /// <summary>Enabling validation applies a content header to the request's content collection when it is misused on the request headers.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public Task SetHeaderWithValidationFallsBackToContentHeader() =>
+        HeaderValidationScenarios.FallsBackToContentHeaderWithValidation(RequestBuilderImplementation.SetHeader, ApiBaseUrlWithSlash);
+
+    /// <summary>Enabling validation drops a content header when there is no content collection to receive it.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public Task SetHeaderWithValidationDropsContentHeaderWithoutContent() =>
+        HeaderValidationScenarios.DropsContentHeaderWithoutContentWithValidation(RequestBuilderImplementation.SetHeader, ApiBaseUrlWithSlash);
+
+    /// <summary>Without validation a content header is dropped when there is no content collection to receive it.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public Task SetHeaderWithoutValidationDropsContentHeaderWithoutContent() =>
+        HeaderValidationScenarios.DropsContentHeaderWithoutContentWithoutValidation(RequestBuilderImplementation.SetHeader, ApiBaseUrlWithSlash);
+
+    /// <summary>Applying a later header leaves an earlier verbatim value byte for byte as it was supplied.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public Task SetHeaderKeepsEarlierRawValueWhenALaterHeaderIsApplied() =>
+        RawHeaderValueScenarios.KeepsEarlierRawValueWhenALaterHeaderIsApplied(RequestBuilderImplementation.SetHeader, ApiBaseUrlWithSlash);
+
+    /// <summary>Replacing a header leaves the other headers already applied untouched.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public Task SetHeaderKeepsEarlierRawValueWhenALaterHeaderIsReplaced() =>
+        RawHeaderValueScenarios.KeepsEarlierRawValueWhenALaterHeaderIsReplaced(RequestBuilderImplementation.SetHeader, ApiBaseUrlWithSlash);
+
+    /// <summary>Verifies indexed query maps format null and populated property values through their runtime types.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task IndexedQueryMapFormatsNullAndPopulatedValues()
+    {
+        const string populated = "populated";
+        var builder = new RequestBuilderImplementation<IDummyHttpApi>();
+        var entries = new List<QueryParameterEntry>();
+        var values = new[]
+        {
+            new QuerySerializationObject(),
+            new QuerySerializationObject { SerializedNull = populated },
+        };
+
+        builder.AppendIndexedCollectionParameters(
+            entries,
+            values,
+            new(CollectionFormat.Indexed),
+            "items");
+
+        await Assert.That(entries.Exists(static entry => entry.Value is null or "")).IsTrue();
+        await Assert.That(entries.Exists(static entry => entry.Value == populated)).IsTrue();
+    }
+
+    /// <summary>A complex query value expanded into nested query-string keys.</summary>
+    private sealed class NestedQueryValue
+    {
+        /// <summary>Gets or sets the inner value.</summary>
+        public string? Inner { get; set; }
+    }
+
+    /// <summary>A URL parameter formatter that renders every dictionary key as blank.</summary>
+    private sealed class BlankKeyUrlParameterFormatter : DefaultUrlParameterFormatter
+    {
+        /// <inheritdoc/>
+        public override string? Format(object? value, IParameterAttributeProvider attributeProvider, Type type) =>
+            value is string text && text == BlankDictionaryKey
+                ? " "
+                : base.Format(value, attributeProvider, type);
+    }
+
+    /// <summary>A URL parameter formatter that renders a sentinel value as null.</summary>
+    private sealed class NullValueUrlParameterFormatter : DefaultUrlParameterFormatter
+    {
+        /// <inheritdoc/>
+        public override string? Format(object? value, IParameterAttributeProvider attributeProvider, Type type) =>
+            value is string text && text == NullFormattedQueryValue
+                ? null
+                : base.Format(value, attributeProvider, type);
+    }
+
+    /// <summary>A form-url-encoded formatter that renders every formatted value as null.</summary>
+    private sealed class NullFormUrlEncodedParameterFormatter : IFormUrlEncodedParameterFormatter
+    {
+        /// <inheritdoc/>
+        public string? Format(object? value, string? formatString) => null;
+    }
+
+    /// <summary>A URL parameter formatter that renders every value as null.</summary>
+    private sealed class AlwaysNullUrlParameterFormatter : DefaultUrlParameterFormatter
+    {
+        /// <inheritdoc/>
+        public override string? Format(object? value, IParameterAttributeProvider attributeProvider, Type type) => null;
+    }
+}

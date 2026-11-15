@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T08:56:25Z",
+ "category": "save-state",
+ "commit": "f61f15a444d5",
+ "delivery": "vendored",
+ "description": "reactiveui/refit \u2014 The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClientFactory, pluggable serializers and a testing package.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "refit",
+ "size_bytes": 6971314,
+ "slug": "reactiveui-refit",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 9585,
+ "system": "The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie",
+ "upstream": "https://github.com/reactiveui/refit",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

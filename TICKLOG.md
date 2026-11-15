@@ -82,3 +82,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/genxium-delaynomore
 
 - **2026-11-15 08:40 UTC** — tick 16: +0 screened, +0 reference, 0 skipped, catalogue=197
+
+- **2026-11-15 08:56 UTC** — tick 17: +2 screened, +4 reference, 2 skipped, catalogue=203
+  - added save-state/capnproto-capnproto (MIT, vendored)
+  - added save-state/reactiveui-refit (MIT, vendored)
+  - reference save-state/rttrorg-rttr
+  - reference save-state/stephenberry-glaze
+  - reference save-state/felixguendling-cista
+  - reference save-state/munich-data-engineering-reflect-cpp

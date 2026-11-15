@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Product>Refit Serializer for Newtonsoft.Json ($(TargetFramework))</Product>
+    <PackageDescription>Newtonsoft.Json content serializer for Refit clients that need Json.NET converters, settings, or compatibility behavior instead of the default System.Text.Json serializer.</PackageDescription>
+    <PackageTags>refit;rest;http;api-client;json;newtonsoft-json;json-net;serializer;content-serializer</PackageTags>
+    <TargetFrameworks>$(RefitShippingTargets)</TargetFrameworks>
+    <IsTrimmable>false</IsTrimmable>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <Reference Include="System.Web"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\HttpContentExtensions.cs" Link="Shared\HttpContentExtensions.cs"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Refit\Refit.csproj"/>
+  </ItemGroup>
+
+</Project>

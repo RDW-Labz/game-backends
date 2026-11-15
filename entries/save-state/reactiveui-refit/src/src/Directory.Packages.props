@@ -1,0 +1,129 @@
+<Project>
+  <PropertyGroup Label="Central Package Management">
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Shared Version Variables">
+    <!-- StyleSharp and PerformanceSharp ship from the same repo on a single version line. -->
+    <SharpAnalyzersVersion>5.2.0</SharpAnalyzersVersion>
+    <NetFrameworkReferenceAssembliesVersion>1.0.3</NetFrameworkReferenceAssembliesVersion>
+  </PropertyGroup>
+
+  <ItemGroup Label="Core Runtime And Serialization">
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.4"/>
+  </ItemGroup>
+
+
+  <ItemGroup Label="ReactiveUI Primitives">
+    <PackageVersion Include="ReactiveUI.Primitives" Version="9.0.0"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Build And Versioning">
+    <PackageVersion Include="MinVer" Version="8.0.0"/>
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="11.0.100"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Analyzers">
+    <PackageVersion Include="StyleSharp.Analyzers" Version="$(SharpAnalyzersVersion)"/>
+    <PackageVersion Include="PerformanceSharp.Analyzers" Version="$(SharpAnalyzersVersion)"/>
+    <PackageVersion Include="SecuritySharp.Analyzers" Version="$(SharpAnalyzersVersion)"/>
+    <PackageVersion Include="PublicApiSharp.Analyzers" Version="2.2.0"/>
+  </ItemGroup>
+
+  <!-- Roslyn toolchain. Versions are intentionally held at their current bands: the source
+       generator, analyzers and code fixes all build against Roslyn 4.8 (pinned per project via
+       the $(MsCACSharpVersion) VersionOverride) and ship in a single analyzer slot, so this
+       version is the minimum compiler consumers need. The test tooling is deliberately clamped to
+       the 4.14.0 line (required by Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing).
+       Renovate is configured to hold these back (see .github/renovate.json). -->
+  <ItemGroup Label="Roslyn Toolchain">
+    <!-- Deliberately clamped to 4.14.0; do not bump globally (held back in .github/renovate.json). -->
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.14.0"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.12.0"/>
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing" Version="1.1.4"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Microsoft Runtime And Extensions">
+  </ItemGroup>
+
+  <ItemGroup Label="Test Stack">
+    <PackageVersion Include="TUnit" Version="1.84.0"/>
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0"/>
+    <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.11.0"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Benchmarks">
+    <PackageVersion Include="BenchmarkDotNet" Version="0.16.0-preview.2"/>
+    <!-- BenchmarkDotNet 0.16.0-preview.2 pulls in Microsoft.CodeAnalysis.CSharp 5.6.0; override the
+         transitive Workspaces pin only for benchmark projects (including .bdn generated runners). -->
+    <PackageVersion Update="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.12.0" Condition="$(MSBuildProjectDirectory.Contains('benchmarks'))"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Examples">
+    <PackageVersion Include="Serilog" Version="4.4.0"/>
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1"/>
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.11.0"/>
+    <PackageVersion Include="OpenTelemetry" Version="1.21.0"/>
+    <PackageVersion Include="OpenTelemetry.Exporter.InMemory" Version="1.21.0"/>
+    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.21.0"/>
+  </ItemGroup>
+
+  <!-- Legacy System.* compatibility packages, scoped to the net4*/netstandard targets.
+       Pinned to their 4.3.x line; Renovate caps these below 5.0.0 (see renovate.json). -->
+  <ItemGroup Label="Legacy Compatibility">
+    <PackageVersion Include="System.Net.Http" Version="4.3.4"/>
+    <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1"/>
+  </ItemGroup>
+
+  <!-- Keep the literal framework-aligned versions visible to Renovate. Choose evaluates one
+       mutually exclusive item group for each inner target-framework build.
+       Roslyn test tooling needs a patched transitive PKCS version, with RCs only on net11.0. -->
+  <Choose>
+    <When Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">
+      <ItemGroup Label="Microsoft ASP.NET">
+        <PackageVersion Include="Microsoft.Extensions.Http" Version="11.0.0"/>
+        <PackageVersion Include="System.Net.Http.Json" Version="11.0.0"/>
+        <PackageVersion Include="System.Net.ServerSentEvents" Version="11.0.0"/>
+        <PackageVersion Include="System.Text.Json" Version="11.0.0"/>
+        <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="11.0.0" Condition="'$(MSBuildProjectName)' == 'Refit.GeneratorTests'"/>
+      </ItemGroup>
+    </When>
+    <When Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))">
+      <ItemGroup Label="Microsoft ASP.NET">
+        <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.15"/>
+        <PackageVersion Include="System.Net.Http.Json" Version="10.0.15"/>
+        <PackageVersion Include="System.Net.ServerSentEvents" Version="10.0.15"/>
+        <PackageVersion Include="System.Text.Json" Version="10.0.15"/>
+        <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.15" Condition="'$(MSBuildProjectName)' == 'Refit.GeneratorTests'"/>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup Label="Microsoft ASP.NET">
+        <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.15"/>
+        <PackageVersion Include="System.Net.Http.Json" Version="10.0.15"/>
+        <PackageVersion Include="System.Net.ServerSentEvents" Version="10.0.15"/>
+        <PackageVersion Include="System.Text.Json" Version="10.0.15"/>
+        <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.15" Condition="'$(MSBuildProjectName)' == 'Refit.GeneratorTests'"/>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+
+  <Choose>
+    <When Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net11.0'))">
+      <ItemGroup Label="Microsoft ASP.NET">
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="11.0.0"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="11.0.0"/>
+        <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="11.0.0"/>
+      </ItemGroup>
+    </When>
+    <When Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))">
+      <ItemGroup Label="Microsoft ASP.NET">
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.15"/>
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.15"/>
+        <PackageVersion Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.15"/>
+      </ItemGroup>
+    </When>
+  </Choose>
+
+</Project>

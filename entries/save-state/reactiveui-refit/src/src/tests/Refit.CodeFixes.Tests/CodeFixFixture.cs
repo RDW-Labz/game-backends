@@ -1,0 +1,227 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+using System.Collections.Immutable;
+using System.Composition.Hosting;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CodeActions;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
+using Refit.Analyzers;
+
+namespace Refit.CodeFixes.Tests;
+
+/// <summary>Helpers for applying Refit code fixes to in-memory source.</summary>
+[UnconditionalSuppressMessage(
+    "SingleFile",
+    "IL3000:Avoid accessing Assembly file path when publishing as a single file",
+    Justification = "Compiles code-fix inputs against on-disk assemblies; never run as a single-file app.")]
+internal static class CodeFixFixture
+{
+    /// <summary>The runtime data key containing framework assemblies available to the current test host.</summary>
+    private const string TrustedPlatformAssemblies = "TRUSTED_PLATFORM_ASSEMBLIES";
+
+    /// <summary>The in-memory document name used for code-fix test compilations.</summary>
+    private const string DefaultTestFileName = "Test.cs";
+
+    /// <summary>The MEF host that creates the shared Refit code-fix provider.</summary>
+    private static readonly CompositionHost CodeFixProviderHost = new ContainerConfiguration()
+        .WithPart<RefitInterfaceCodeFixProvider>()
+        .CreateContainer();
+
+    /// <summary>Applies the first available code fix for a diagnostic ID.</summary>
+    /// <param name="source">The source to fix.</param>
+    /// <param name="diagnosticId">The diagnostic ID to fix.</param>
+    /// <returns>The updated source.</returns>
+    /// <exception cref="InvalidOperationException"><paramref name="source"/> did not compile, did not report exactly one
+    /// <paramref name="diagnosticId"/>, registered no code fix, or the fix dropped the document.</exception>
+    internal static async Task<string> ApplyFirstFix(string source, string diagnosticId)
+    {
+        using var workspace = new AdhocWorkspace();
+        var project = workspace
+            .AddProject("CodeFixTest", LanguageNames.CSharp)
+            .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+            .WithParseOptions(CSharpParseOptions.Default)
+            .AddMetadataReferences(GetMetadataReferences());
+        var document = project.AddDocument(DefaultTestFileName, SourceText.From(source));
+
+        var compilation = await document.Project.GetCompilationAsync()
+                          ?? throw new InvalidOperationException("Could not create compilation for code fix test.");
+
+        var diagnostics = await compilation
+            .WithAnalyzers([new RefitInterfaceAnalyzer()])
+            .GetAnalyzerDiagnosticsAsync();
+        var compilerDiagnostics = string.Join(", ", compilation.GetDiagnostics().Select(static x => x.ToString()));
+        var analyzerDiagnostics = string.Join(", ", diagnostics.Select(static x => x.ToString()));
+        var diagnostic = diagnostics.SingleOrDefault(x => x.Id == diagnosticId)
+                         ?? throw new InvalidOperationException(
+                             $"Expected diagnostic was not produced. Compiler diagnostics: {compilerDiagnostics}. Analyzer diagnostics: {analyzerDiagnostics}");
+
+        var actions = new List<CodeAction>();
+        var provider = GetCodeFixProvider();
+        var context = new CodeFixContext(
+            document,
+            diagnostic,
+            (action, _) => actions.Add(action),
+            CancellationToken.None);
+        await provider.RegisterCodeFixesAsync(context);
+
+        if (actions.Count == 0)
+        {
+            throw new InvalidOperationException($"No code fix was registered for {diagnosticId}.");
+        }
+
+        var operations = await actions[0].GetOperationsAsync(CancellationToken.None);
+        var changedSolution = operations
+            .OfType<ApplyChangesOperation>()
+            .Single()
+            .ChangedSolution;
+        var changedDocument = changedSolution.GetDocument(document.Id)
+                              ?? throw new InvalidOperationException("Code fix did not preserve the document.");
+        var changedText = await changedDocument.GetTextAsync();
+        return changedText.ToString();
+    }
+
+    /// <summary>Gets the fix-all provider from the Refit code-fix provider.</summary>
+    /// <returns>The fix-all provider.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static FixAllProvider? GetFixAllProvider() =>
+        GetCodeFixProvider().GetFixAllProvider();
+
+    /// <summary>Applies the forward-slash helper directly at the first occurrence of the marker.</summary>
+    /// <param name="source">The source to update.</param>
+    /// <param name="marker">The source marker used to create the diagnostic span.</param>
+    /// <returns>The updated source.</returns>
+    internal static async Task<string> UseForwardSlashesDirectly(string source, string marker)
+    {
+        var document = CreateDocument(source);
+        var diagnostic = CreateDiagnostic("RF003", source, marker);
+        var changedDocument = await RefitInterfaceCodeFixProvider
+            .UseForwardSlashesAsync(document, diagnostic, CancellationToken.None);
+        return (await changedDocument.GetTextAsync()).ToString();
+    }
+
+    /// <summary>Applies the header-collection helper directly at the first occurrence of the marker.</summary>
+    /// <param name="source">The source to update.</param>
+    /// <param name="marker">The source marker used to create the diagnostic span.</param>
+    /// <returns>The updated source.</returns>
+    internal static async Task<string> UseHeaderCollectionTypeDirectly(string source, string marker)
+    {
+        var document = CreateDocument(source);
+        var diagnostic = CreateDiagnostic("RF005", source, marker);
+        var changedDocument = await RefitInterfaceCodeFixProvider
+            .UseHeaderCollectionTypeAsync(document, diagnostic, CancellationToken.None);
+        return (await changedDocument.GetTextAsync()).ToString();
+    }
+
+    /// <summary>Gets metadata references for code-fix test compilations.</summary>
+    /// <returns>The metadata references.</returns>
+    private static List<MetadataReference> GetMetadataReferences()
+    {
+        var referencePaths = new HashSet<string>(StringComparer.Ordinal);
+        AddTrustedPlatformAssemblies(referencePaths);
+
+        foreach (var assembly in GetAssemblyReferences())
+        {
+            if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location))
+            {
+                _ = referencePaths.Add(assembly.Location);
+            }
+        }
+
+        var references = new List<MetadataReference>(referencePaths.Count);
+        foreach (var referencePath in referencePaths)
+        {
+            references.Add(MetadataReference.CreateFromFile(referencePath));
+        }
+
+        return references;
+    }
+
+    /// <summary>Creates a Roslyn document for direct code-fix helper tests.</summary>
+    /// <param name="source">The source text.</param>
+    /// <returns>The created document.</returns>
+    private static Document CreateDocument(string source)
+    {
+        var workspace = new AdhocWorkspace();
+        return workspace
+            .AddProject("DirectCodeFixTest", LanguageNames.CSharp)
+            .WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+            .WithParseOptions(CSharpParseOptions.Default)
+            .AddMetadataReferences(GetMetadataReferences())
+            .AddDocument(DefaultTestFileName, SourceText.From(source));
+    }
+
+    /// <summary>Gets the code-fix provider through its configured MEF shared export.</summary>
+    /// <returns>The Refit code-fix provider.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static CodeFixProvider GetCodeFixProvider() =>
+        CodeFixProviderHost.GetExport<CodeFixProvider>();
+
+    /// <summary>Creates a diagnostic over the first occurrence of a marker string.</summary>
+    /// <param name="diagnosticId">The diagnostic ID.</param>
+    /// <param name="source">The source text.</param>
+    /// <param name="marker">The marker text.</param>
+    /// <returns>The created diagnostic.</returns>
+    /// <exception cref="InvalidOperationException"><paramref name="marker"/> does not occur in <paramref name="source"/>.</exception>
+    private static Diagnostic CreateDiagnostic(string diagnosticId, string source, string marker)
+    {
+        var start = source.IndexOf(marker, StringComparison.Ordinal);
+        if (start < 0)
+        {
+            throw new InvalidOperationException($"Marker '{marker}' was not found.");
+        }
+
+        var span = new TextSpan(start, marker.Length);
+        var lineSpan = new LinePositionSpan(new(0, 0), new(0, marker.Length));
+        var descriptor = new DiagnosticDescriptor(
+            diagnosticId,
+            "Test diagnostic",
+            "Test diagnostic",
+            "Refit",
+            DiagnosticSeverity.Warning,
+            isEnabledByDefault: true);
+        return Diagnostic.Create(descriptor, Location.Create(DefaultTestFileName, span, lineSpan));
+    }
+
+    /// <summary>Gets the assemblies referenced when compiling code-fix test input.</summary>
+    /// <returns>The distinct, non-dynamic assemblies to reference.</returns>
+    private static Assembly[] GetAssemblyReferences() =>
+    [
+        .. AppDomain.CurrentDomain
+            .GetAssemblies()
+            .Concat(
+            [
+                typeof(GetAttribute).Assembly,
+                typeof(Task).Assembly,
+                typeof(Dictionary<string, string>).Assembly,
+                typeof(IDisposable).Assembly
+            ])
+            .Distinct()
+            .Where(static a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
+    ];
+
+    /// <summary>Adds runtime framework references used by Roslyn in-memory compilations.</summary>
+    /// <param name="referencePaths">The reference path set to populate.</param>
+    private static void AddTrustedPlatformAssemblies(HashSet<string> referencePaths)
+    {
+        var trustedPlatformAssemblies = (string?)AppContext.GetData(TrustedPlatformAssemblies);
+        if (string.IsNullOrEmpty(trustedPlatformAssemblies))
+        {
+            return;
+        }
+
+        foreach (var referencePath in trustedPlatformAssemblies.Split(Path.PathSeparator))
+        {
+            if (!string.IsNullOrEmpty(referencePath))
+            {
+                _ = referencePaths.Add(referencePath);
+            }
+        }
+    }
+}

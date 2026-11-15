@@ -1,0 +1,257 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+namespace Refit.Tests;
+
+/// <summary>
+/// Verifies that a <c>[Url]</c> parameter dispatches a request to an arbitrary absolute URL, bypassing the client base
+/// address, and that the source generator produces exactly the same request URI as the reflection request builder.
+/// </summary>
+public class AbsoluteUrlDispatchTests
+{
+    /// <summary>The base address of the client under test, which a <c>[Url]</c> request ignores.</summary>
+    private const string BaseAddress = "http://api/";
+
+    /// <summary>The absolute URL, on a different host, dispatched by the <c>[Url]</c> parameter.</summary>
+    private const string AbsoluteUrl = "https://cdn.example.com/files/data.bin";
+
+    /// <summary>The serialized JSON body shared by the POST fixtures.</summary>
+    private const string SerializedBody = "{\"name\":\"x\"}";
+
+    /// <summary>A relative value rejected by both builders because <c>[Url]</c> requires an absolute URI.</summary>
+    private const string RelativePath = "relative/path";
+
+    /// <summary>Checks opt-in relative URI resolution and query aliases in both builders.</summary>
+    /// <param name="target">The redirect target.</param>
+    /// <param name="expected">The resolved URL.</param>
+    /// <param name="token">The additional query value.</param>
+    /// <returns>A task representing the test.</returns>
+    [Test]
+    [Arguments("callback?code=a%2Fb%3D&state=x%20y", "http://api/callback?code=a%2Fb%3D&state=x%20y&access_token=abc", "abc")]
+    [Arguments("/callback?code=a%2Fb%3D", "http://api/callback?code=a%2Fb%3D&access_token=abc", "abc")]
+    [Arguments("https://cdn.example/callback?code=a%2Fb", "https://cdn.example/callback?code=a%2Fb&access_token=abc", "abc")]
+    [Arguments("/callback?code=a%2Fb#section", "http://api/callback?code=a%2Fb&access_token=abc#section", "abc")]
+    public async Task RelativeRedirectTargetPreservesEncodedQuery(string target, string expected, string token)
+    {
+        var generated = await SendGeneratedAsync(api => api.GetRelative(target, token));
+        using var reflected = await ReflectAsync(nameof(IUrlDispatchApi.GetRelative), target, token);
+        await Assert.That(generated.RequestMessage!.RequestUri!.AbsoluteUri).IsEqualTo(expected);
+        await Assert.That(new Uri(new Uri(BaseAddress), reflected.RequestUri!).AbsoluteUri).IsEqualTo(expected);
+    }
+
+    /// <summary>Preserves relative URI objects when returning a request without sending it.</summary>
+    /// <param name="target">The URI reference.</param>
+    /// <param name="cancellationToken">The test cancellation token.</param>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [Arguments("callback?code=a%2Fb#section")]
+    [Arguments("/callback?code=a%2Fb")]
+    [Arguments("https://cdn.example/callback?code=a%2Fb")]
+    public async Task RelativeUriRequestPreservesOriginalText(string target, CancellationToken cancellationToken)
+    {
+        using var client = HttpClientTestFactory.Create(new TestHttpMessageHandler(), new(BaseAddress));
+        var api = RestService.ForGenerated<IUrlDispatchApi>(client, new());
+        var uri = new Uri(target, UriKind.RelativeOrAbsolute);
+        using var generated = await api.BuildRelative(uri).WaitAsync(cancellationToken);
+        using var reflected = await ReflectAsync(nameof(IUrlDispatchApi.BuildRelative), uri).WaitAsync(cancellationToken);
+        await Assert.That(generated.RequestUri!.OriginalString).IsEqualTo(target);
+        await Assert.That(reflected.RequestUri!.OriginalString).IsEqualTo(target);
+    }
+
+    /// <summary>Appends converter queries before fragments without double-escaping keys.</summary>
+    /// <param name="cancellationToken">The test cancellation token.</param>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task RelativeUriConverterPreservesEncodedKeys(CancellationToken cancellationToken)
+    {
+        using var client = HttpClientTestFactory.Create(new TestHttpMessageHandler(), new(BaseAddress));
+        var api = RestService.ForGenerated<IUrlDispatchApi>(client, new());
+        var uri = new Uri("callback?code=a%2Fb#section", UriKind.Relative);
+        Dictionary<string, object> filter = new() { ["filter key"] = "value /" };
+        using var generated = await api.BuildRelativeWithConverter(uri, filter).WaitAsync(cancellationToken);
+        using var reflected = await ReflectAsync(nameof(IUrlDispatchApi.BuildRelativeWithConverter), uri, filter).WaitAsync(cancellationToken);
+        const string expected = "callback?code=a%2Fb&filter%20key=value%20%2F#section";
+        await Assert.That(generated.RequestUri!.OriginalString).IsEqualTo(expected);
+        await Assert.That(reflected.RequestUri!.OriginalString).IsEqualTo(expected);
+    }
+
+    /// <summary>Rejects values that cannot supply a non-empty URI reference.</summary>
+    /// <param name="target">The invalid URL value.</param>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [Arguments(null)]
+    [Arguments("")]
+    [Arguments("http://[invalid")]
+    [Arguments(1)]
+    public async Task RelativeUrlValidationRejectsInvalidValues(object? target) =>
+        await Assert.That(() => GeneratedRequestRunner.RequireRelativeOrAbsoluteUrl(target)).Throws<ArgumentException>();
+
+    /// <summary>Verifies a string <c>[Url]</c> value is dispatched verbatim, ignoring the base address, in both builders.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task StringUrlDispatchesToAbsoluteUrlIgnoringBaseAddress()
+    {
+        var generated = await SendGeneratedAsync(static api => api.GetAbsolute(AbsoluteUrl));
+        var reflected = await ReflectAsync(nameof(IUrlDispatchApi.GetAbsolute), AbsoluteUrl);
+
+        await Assert.That(generated.RequestMessage!.RequestUri!.AbsoluteUri).IsEqualTo(AbsoluteUrl);
+        await Assert.That(reflected.RequestUri!.AbsoluteUri).IsEqualTo(AbsoluteUrl);
+    }
+
+    /// <summary>Verifies a <c>[Query]</c> parameter is appended to the absolute URL in both builders.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task QueryParametersAppendToAbsoluteUrl()
+    {
+        const string token = "abc";
+        const string expected = $"{AbsoluteUrl}?token={token}";
+
+        var generated = await SendGeneratedAsync(static api => api.GetAbsoluteWithQuery(AbsoluteUrl, token));
+        var reflected = await ReflectAsync(nameof(IUrlDispatchApi.GetAbsoluteWithQuery), AbsoluteUrl, token);
+
+        await Assert.That(generated.RequestMessage!.RequestUri!.AbsoluteUri).IsEqualTo(expected);
+        await Assert.That(reflected.RequestUri!.AbsoluteUri).IsEqualTo(expected);
+    }
+
+    /// <summary>Verifies a <c>[Url]</c> value that already carries a query string appends further parameters with <c>&amp;</c>.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task QueryParametersAppendToAbsoluteUrlThatAlreadyHasAQuery()
+    {
+        const string token = "abc";
+        const string urlWithQuery = $"{AbsoluteUrl}?existing=1";
+        const string expected = $"{urlWithQuery}&token={token}";
+
+        var generated = await SendGeneratedAsync(static api => api.GetAbsoluteWithQuery(urlWithQuery, token));
+        var reflected = await ReflectAsync(nameof(IUrlDispatchApi.GetAbsoluteWithQuery), urlWithQuery, token);
+
+        await Assert.That(generated.RequestMessage!.RequestUri!.AbsoluteUri).IsEqualTo(expected);
+        await Assert.That(reflected.RequestUri!.AbsoluteUri).IsEqualTo(expected);
+    }
+
+    /// <summary>Verifies a <see cref="Uri"/> <c>[Url]</c> value is dispatched as its absolute URI in both builders.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task UriUrlDispatchesToAbsoluteUrl()
+    {
+        var uri = new Uri(AbsoluteUrl);
+
+        var generated = await SendGeneratedAsync(api => api.GetAbsoluteFromUri(uri));
+        var reflected = await ReflectAsync(nameof(IUrlDispatchApi.GetAbsoluteFromUri), uri);
+
+        await Assert.That(generated.RequestMessage!.RequestUri!.AbsoluteUri).IsEqualTo(AbsoluteUrl);
+        await Assert.That(reflected.RequestUri!.AbsoluteUri).IsEqualTo(AbsoluteUrl);
+    }
+
+    /// <summary>Verifies a resolved redirect target keeps its encoded query in both request builders.</summary>
+    /// <param name="target">The relative Location value.</param>
+    /// <param name="cancellationToken">The test cancellation token.</param>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [Arguments("callback?code=a%2Fb%3D&state=x%20y")]
+    [Arguments("/callback?code=a%2Fb%3D&state=x%20y")]
+    public async Task ResolvedRedirectTargetPreservesEncodedQuery(string target, CancellationToken cancellationToken)
+    {
+        var destination = new Uri(new Uri(BaseAddress), target);
+        const string expected = "http://api/callback?code=a%2Fb%3D&state=x%20y";
+
+        var generated = await SendGeneratedAsync(api => api.GetAbsoluteFromUri(destination)).WaitAsync(cancellationToken);
+        var reflected = await ReflectAsync(nameof(IUrlDispatchApi.GetAbsoluteFromUri), destination).WaitAsync(cancellationToken);
+
+        await Assert.That(generated.RequestMessage!.RequestUri!.AbsoluteUri).IsEqualTo(expected);
+        await Assert.That(reflected.RequestUri!.AbsoluteUri).IsEqualTo(expected);
+    }
+
+    /// <summary>Verifies a POST to a <see cref="Uri"/> <c>[Url]</c> still binds the remaining parameter as the body.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task AbsoluteUrlOnPostCarriesImplicitBody()
+    {
+        var uri = new Uri(AbsoluteUrl);
+        var body = new BodyPayload { Name = "x" };
+
+        var generated = await SendGeneratedAsync(api => api.PostAbsolute(uri, body));
+        var reflected = await ReflectAsync(nameof(IUrlDispatchApi.PostAbsolute), uri, body);
+
+        await Assert.That(generated.RequestMessage!.RequestUri!.AbsoluteUri).IsEqualTo(AbsoluteUrl);
+        await Assert.That(generated.SendContent).IsEqualTo(SerializedBody);
+        await Assert.That(reflected.RequestUri!.AbsoluteUri).IsEqualTo(AbsoluteUrl);
+    }
+
+    /// <summary>Verifies a relative string <c>[Url]</c> value throws an <see cref="ArgumentException"/> in both builders.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task RelativeStringUrlThrowsArgumentException()
+    {
+        await Assert
+            .That(static () => (Task)SendGeneratedAsync(static api => api.GetAbsolute(RelativePath)))
+            .Throws<ArgumentException>();
+
+        var factory = new RequestBuilderImplementation<IUrlDispatchApi>()
+            .BuildRequestFactoryForMethod(nameof(IUrlDispatchApi.GetAbsolute));
+        await Assert.That(() => (Task)factory([RelativePath])).Throws<ArgumentException>();
+    }
+
+    /// <summary>Verifies a relative <see cref="Uri"/> <c>[Url]</c> value throws an <see cref="ArgumentException"/> in both builders.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task RelativeUriUrlThrowsArgumentException()
+    {
+        var relativeUri = new Uri(RelativePath, UriKind.Relative);
+
+        await Assert
+            .That(() => (Task)SendGeneratedAsync(api => api.GetAbsoluteFromUri(relativeUri)))
+            .Throws<ArgumentException>();
+
+        var factory = new RequestBuilderImplementation<IUrlDispatchApi>()
+            .BuildRequestFactoryForMethod(nameof(IUrlDispatchApi.GetAbsoluteFromUri));
+        await Assert.That(() => (Task)factory([relativeUri])).Throws<ArgumentException>();
+    }
+
+    /// <summary>Verifies the reflection builder rejects a <c>[Url]</c> method that also declares a path template.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task UrlMethodWithPathTemplateThrows() =>
+        await Assert
+            .That(static () => new RequestBuilderImplementation<IUrlWithTemplateApi>())
+            .Throws<ArgumentException>();
+
+    /// <summary>Verifies the reflection builder rejects a method with more than one <c>[Url]</c> parameter.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task MultipleUrlParametersThrow() =>
+        await Assert
+            .That(static () => new RequestBuilderImplementation<IMultipleUrlApi>())
+            .Throws<ArgumentException>();
+
+    /// <summary>Verifies the reflection builder rejects a <c>[Url]</c> parameter that is neither a string nor a <see cref="Uri"/>.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task NonStringOrUriUrlParameterThrows() =>
+        await Assert
+            .That(static () => new RequestBuilderImplementation<IUrlWrongTypeApi>())
+            .Throws<ArgumentException>();
+
+    /// <summary>Sends one request through the source-generated client and returns the handler that observed it.</summary>
+    /// <param name="call">The interface method to invoke on the generated client.</param>
+    /// <returns>The handler that captured the request.</returns>
+    private static async Task<TestHttpMessageHandler> SendGeneratedAsync(Func<IUrlDispatchApi, Task<string>> call)
+    {
+        TestHttpMessageHandler handler = new();
+        using var client = HttpClientTestFactory.Create(handler, new(BaseAddress));
+        var api = RestService.ForGenerated<IUrlDispatchApi>(client, new());
+
+        _ = await call(api);
+
+        return handler;
+    }
+
+    /// <summary>Builds a request through the reflection request builder and returns the produced request message.</summary>
+    /// <param name="method">The interface method to build a request for.</param>
+    /// <param name="args">The argument values for the call.</param>
+    /// <returns>The produced request message.</returns>
+    private static Task<HttpRequestMessage> ReflectAsync(string method, params object[] args) =>
+        new RequestBuilderImplementation<IUrlDispatchApi>()
+            .BuildRequestFactoryForMethod(method)(args);
+}

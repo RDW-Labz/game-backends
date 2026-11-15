@@ -1,0 +1,62 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+using Microsoft.CodeAnalysis;
+
+namespace Refit.Generator;
+
+/// <summary>Extension methods for working with <see cref="ITypeSymbol"/> instances.</summary>
+internal static class ITypeSymbolExtensions
+{
+    /// <summary>Extensions for a non-nullable <see cref="ITypeSymbol"/> receiver.</summary>
+    /// <param name="type">The type symbol to operate on.</param>
+    extension(ITypeSymbol type)
+    {
+        /// <summary>Determines whether the type inherits from or equals the base type, optionally including interfaces.</summary>
+        /// <param name="baseType">The base type to look for.</param>
+        /// <param name="includeInterfaces">True to also consider implemented interfaces.</param>
+        /// <returns>True if the type inherits from or equals the base type.</returns>
+        internal bool InheritsFromOrEquals(ITypeSymbol baseType, bool includeInterfaces)
+        {
+            if (type.InheritsFromOrEquals(baseType))
+            {
+                return true;
+            }
+
+            if (!includeInterfaces)
+            {
+                return false;
+            }
+
+            var interfaces = type.AllInterfaces;
+            for (var i = 0; i < interfaces.Length; i++)
+            {
+                if (interfaces[i].Equals(baseType, SymbolEqualityComparer.Default))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Determines whether the type inherits from or equals the base type, ignoring interfaces.</summary>
+        /// <param name="baseType">The base type to look for.</param>
+        /// <returns>True if the type inherits from or equals the base type.</returns>
+        internal bool InheritsFromOrEquals(ITypeSymbol baseType)
+        {
+            var current = type;
+            while (current is not null)
+            {
+                if (current.Equals(baseType, SymbolEqualityComparer.Default))
+                {
+                    return true;
+                }
+
+                current = current.BaseType;
+            }
+
+            return false;
+        }
+    }
+}

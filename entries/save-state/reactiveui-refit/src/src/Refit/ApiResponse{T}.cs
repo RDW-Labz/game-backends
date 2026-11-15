@@ -1,0 +1,227 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
+
+namespace Refit;
+
+/// <summary>Implementation of <see cref="IApiResponse{T}"/> that provides additional functionalities.</summary>
+/// <typeparam name="T">The deserialized response content type.</typeparam>
+/// <param name="request">Original HTTP Request.</param>
+/// <param name="response">Original HTTP Response message.</param>
+/// <param name="content">Response content.</param>
+/// <param name="settings">Refit settings used to send the request.</param>
+/// <param name="error">The exception, if the request failed.</param>
+/// <remarks>
+/// Create an instance of <see cref="ApiResponse{T}"/> with type <typeparamref name="T"/>.
+/// </remarks>
+[System.Diagnostics.DebuggerDisplay("ApiResponse: {StatusCode}, Content = {Content}")]
+public sealed class ApiResponse<T>(
+    HttpRequestMessage request,
+    HttpResponseMessage? response,
+    T? content,
+    RefitSettings settings,
+    ApiExceptionBase? error = null) : IApiResponse<T>
+{
+    /// <summary>Tracks whether this instance has already been disposed.</summary>
+    private int _disposed;
+
+    /// <summary>Initializes a new instance of the <see cref="ApiResponse{T}"/> class.</summary>
+    /// <param name="response">Original HTTP Response message.</param>
+    /// <param name="content">Response content.</param>
+    /// <param name="settings">Refit settings used to send the request.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="response"/> is <c>null</c>.</exception>
+    public ApiResponse(
+        HttpResponseMessage response,
+        T? content,
+        RefitSettings settings)
+        : this(response, content, settings, null)
+    {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="ApiResponse{T}"/> class.</summary>
+    /// <param name="response">Original HTTP Response message.</param>
+    /// <param name="content">Response content.</param>
+    /// <param name="settings">Refit settings used to send the request.</param>
+    /// <param name="error">The exception, if the request failed.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="response"/> is <c>null</c>.</exception>
+    public ApiResponse(
+        HttpResponseMessage response,
+        T? content,
+        RefitSettings settings,
+        ApiExceptionBase? error)
+        : this(
+            (response ?? throw new ArgumentNullException(nameof(response))).RequestMessage
+            ?? throw new ArgumentException(
+                "Response must have an associated request message.",
+                nameof(response)),
+            response,
+            content,
+            settings,
+            error)
+    {
+    }
+
+    /// <summary>Gets the deserialized response content as <typeparamref name="T"/>.</summary>
+    public T? Content { get; } = content;
+
+    /// <summary>Gets a value indicating whether deserialized <see cref="Content"/> is available.</summary>
+    [MemberNotNullWhen(true, nameof(Content))]
+    public bool HasContent => Content is not null;
+
+    /// <summary>Gets a value indicating whether the request was successful and deserialized <see cref="Content"/> is available.</summary>
+    [MemberNotNullWhen(true, nameof(Content))]
+    public bool IsSuccessfulWithContent => IsSuccessful && HasContent;
+
+    /// <summary>Gets the Refit settings used to send the request.</summary>
+    public RefitSettings Settings { get; } = settings;
+
+    /// <summary>Gets the HTTP response headers.</summary>
+    public HttpResponseHeaders? Headers => response?.Headers;
+
+    /// <summary>Gets the HTTP response content headers as defined in RFC 2616.</summary>
+    [ExcludeFromCodeCoverage] // Content is nullable in the BCL contract, but HttpClient always sets it, so the null-defensive branch is unreachable.
+    public HttpContentHeaders? ContentHeaders => response?.Content?.Headers;
+
+    /// <inheritdoc />
+    [MemberNotNullWhen(true, nameof(Headers))]
+    [MemberNotNullWhen(true, nameof(StatusCode))]
+    [MemberNotNullWhen(true, nameof(Version))]
+    public bool IsSuccessStatusCode => response?.IsSuccessStatusCode ?? false;
+
+    /// <inheritdoc />
+    [MemberNotNullWhen(true, nameof(Headers))]
+    [MemberNotNullWhen(true, nameof(StatusCode))]
+    [MemberNotNullWhen(true, nameof(Version))]
+    public bool IsSuccessful => IsSuccessStatusCode && Error is null;
+
+    /// <inheritdoc />
+    [MemberNotNullWhen(true, nameof(Headers))]
+    [MemberNotNullWhen(true, nameof(StatusCode))]
+    [MemberNotNullWhen(true, nameof(Version))]
+    public bool IsReceived => response is not null;
+
+    /// <summary>Gets the reason phrase which typically is sent by the server together with the status code.</summary>
+    public string? ReasonPhrase => response?.ReasonPhrase;
+
+    /// <summary>Gets the HTTP Request message which led to this response.</summary>
+    public HttpRequestMessage RequestMessage => request;
+
+    /// <summary>Gets the HTTP response status code.</summary>
+    public HttpStatusCode? StatusCode => response?.StatusCode;
+
+    /// <summary>Gets the HTTP Message version.</summary>
+    public Version? Version => response?.Version;
+
+    /// <summary>Gets the <see cref="ApiExceptionBase" /> object in case of unsuccessful request or response.</summary>
+    /// <remarks>
+    /// The <see cref="HasRequestError"/> and <see cref="HasResponseError"/> methods can be
+    /// used to check the type of error.
+    /// </remarks>
+    public ApiExceptionBase? Error { get; } = error;
+
+    /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Dispose() => Dispose(true);
+
+    /// <summary>Ensures the request was successful by throwing an exception in case of failure.</summary>
+    /// <returns>The current <see cref="ApiResponse{T}"/></returns>
+    /// <exception cref="ApiException">Thrown when an unsuccessful response was received from the server.</exception>
+    /// <exception cref="ApiRequestException">Thrown when the request failed before receiving a response from the server.</exception>
+    public ValueTask<ApiResponse<T>> EnsureSuccessStatusCodeAsync() =>
+        IsSuccessStatusCode
+            ? new(this)
+            : EnsureSlowAsync();
+
+    /// <summary>Ensures the request was successful and without any other error by throwing an exception in case of failure.</summary>
+    /// <returns>The current <see cref="ApiResponse{T}"/></returns>
+    /// <exception cref="ApiException">Thrown when an unsuccessful response was received from the server.</exception>
+    /// <exception cref="ApiRequestException">Thrown when the request failed before receiving a response from the server.</exception>
+    public ValueTask<ApiResponse<T>> EnsureSuccessfulAsync() =>
+        IsSuccessful
+            ? new(this)
+            : EnsureSlowAsync();
+
+    /// <inheritdoc/>
+    [SuppressMessage(
+        "Naming",
+        "CA1716:Identifiers should not match keywords",
+        Justification = "By Design")]
+    public bool HasRequestError(
+        [NotNullWhen(true)] out ApiRequestException? error)
+    {
+        error = Error as ApiRequestException;
+        return error is not null;
+    }
+
+    /// <inheritdoc/>
+    [SuppressMessage(
+        "Naming",
+        "CA1716:Identifiers should not match keywords",
+        Justification = "By Design")]
+    public bool HasResponseError(
+        [NotNullWhen(true)]
+        out ApiException? error)
+    {
+        error = Error as ApiException;
+        return error is not null;
+    }
+
+    /// <summary>Releases the underlying response when disposing.</summary>
+    /// <param name="disposing">Whether the method is being called from <see cref="Dispose()"/>.</param>
+    [ExcludeFromCodeCoverage] // There is no finalizer, so Dispose(false) never runs and the !disposing guard is unreachable.
+    internal void Dispose(bool disposing)
+    {
+        if (!disposing)
+        {
+            return;
+        }
+
+        DisposeResponse();
+    }
+
+    /// <summary>Disposes the underlying response once, guarding against repeated disposal.</summary>
+    internal void DisposeResponse()
+    {
+        // An interlocked latch, so two threads racing to dispose cannot both reach the response.
+        if (Interlocked.Exchange(ref _disposed, 1) == 1)
+        {
+            return;
+        }
+
+        RequestExecutionHelpers.MaterializeContentLength(response?.Content);
+        response?.Dispose();
+    }
+
+    /// <summary>Throws the appropriate API exception for an unsuccessful response.</summary>
+    /// <returns>A task that represents the asynchronous validation operation.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal ValueTask<ApiResponse<T>> EnsureSlowAsync() => ThrowsApiExceptionAsync();
+
+    /// <summary>Throws the appropriate API exception for an unsuccessful response.</summary>
+    /// <returns>A task that represents the asynchronous throw operation.</returns>
+    /// <exception cref="InvalidOperationException">No HTTP response was ever received, so there is nothing to build an API exception from.</exception>
+    internal async ValueTask<ApiResponse<T>> ThrowsApiExceptionAsync()
+    {
+        var responseMessage = response
+                              ?? throw new InvalidOperationException(
+                                  "The response is unavailable for this API response.");
+
+        var exception =
+            Error
+            ?? await ApiException
+                .Create(
+                    request,
+                    request.Method,
+                    responseMessage,
+                    Settings)
+                .ConfigureAwait(false);
+
+        Dispose();
+
+        throw exception;
+    }
+}

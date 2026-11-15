@@ -1,0 +1,644 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+namespace Refit.Analyzers.Tests;
+
+/// <summary>Tests for Refit interface contract diagnostics.</summary>
+[System.Diagnostics.DebuggerDisplay("{ToString(),nq}")]
+public sealed class RefitInterfaceAnalyzerTests
+{
+    /// <summary>The diagnostic identifier for non-Refit interface members.</summary>
+    private const string NonRefitMemberDiagnosticId = "RF001";
+
+    /// <summary>The diagnostic identifier for routes containing a backslash.</summary>
+    private const string InvalidRouteBackslashDiagnosticId = "RF003";
+
+    /// <summary>The diagnostic identifier for methods that fall back to the reflection request builder.</summary>
+    private const string GeneratedRequestBuildingFallbackDiagnosticId = "RF006";
+
+    /// <summary>The diagnostic identifier for route placeholders that bind no parameter.</summary>
+    private const string UnboundRoutePlaceholderDiagnosticId = "RF015";
+
+    /// <summary>A Refit method shape that the generator cannot build inline, so it falls back to reflection (RF006).</summary>
+    private const string ReflectionFallbackMethodBody =
+        """
+        [Get("/query-map")]
+        Task<string> Search(object filters);
+        """;
+
+    /// <summary>Verifies analysis exits when the compilation does not reference Refit.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DoesNotRunWithoutRefitReference()
+    {
+        var diagnostics = await AnalyzerFixture.RunWithoutRefitReference(
+            """
+            public interface IGeneratedClient
+            {
+            }
+            """);
+
+        await Assert.That(diagnostics).IsEmpty();
+    }
+
+    /// <summary>Verifies non-interface named types are ignored.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task IgnoresNonInterfaceTypes()
+    {
+        var diagnostics = await AnalyzerFixture.Run(
+            """
+            using Refit;
+
+            namespace RefitAnalyzerTest;
+
+            public sealed class GeneratedClient
+            {
+            }
+            """);
+
+        await Assert.That(diagnostics).IsEmpty();
+    }
+
+    /// <summary>Verifies interfaces without Refit methods are ignored.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task IgnoresInterfacesWithoutRefitMethods()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            void NonRefitMethod();
+            """);
+
+        await Assert.That(diagnostics).IsEmpty();
+    }
+
+    /// <summary>Verifies request shape diagnostics are reported outside the generator path.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ReportsInvalidRequestShapeDiagnostics()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Obsolete]
+            [Get("/bad\\route")]
+            Task<string> BadRoute();
+
+            [Get("/tokens")]
+            Task<string> MultipleTokens(CancellationToken first, CancellationToken second);
+
+            [Get("/headers")]
+            Task<string> InvalidHeaders([HeaderCollection] IDictionary<string, object> headers);
+            """);
+
+        var diagnosticIds = diagnostics.Select(static diagnostic => diagnostic.Id).ToArray();
+
+        await Assert.That(diagnosticIds).Contains(InvalidRouteBackslashDiagnosticId);
+        await Assert.That(diagnosticIds).Contains("RF004");
+        await Assert.That(diagnosticIds).Contains("RF005");
+    }
+
+    /// <summary>Verifies duplicate HeaderCollection and Authorize parameters are reported.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ReportsDuplicateSpecialParameterDiagnostics()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Get("/headers")]
+            Task<string> TwoHeaderCollections([HeaderCollection] IDictionary<string, string> a, [HeaderCollection] IDictionary<string, string> b);
+
+            [Get("/auth")]
+            Task<string> TwoAuthorize([Authorize] string a, [Authorize] string b);
+            """);
+
+        var diagnosticIds = diagnostics.Select(static diagnostic => diagnostic.Id).ToArray();
+
+        await Assert.That(diagnosticIds).Contains("RF008");
+        await Assert.That(diagnosticIds).Contains("RF009");
+    }
+
+    /// <summary>Verifies multiple Body parameters and multipart methods with a Body parameter are reported.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ReportsBodyParameterShapeDiagnostics()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Post("/users")]
+            Task<string> TwoBodies([Body] string first, [Body] string second);
+
+            [Multipart]
+            [Post("/upload")]
+            Task<string> MultipartWithBody([Body] string payload);
+            """);
+
+        var diagnosticIds = diagnostics.Select(static diagnostic => diagnostic.Id).ToArray();
+
+        await Assert.That(diagnosticIds).Contains("RF011");
+        await Assert.That(diagnosticIds).Contains("RF012");
+    }
+
+    /// <summary>Verifies a single Body parameter and a multipart method without a Body parameter are not reported.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DoesNotReportValidBodyAndMultipartShapes()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Post("/users")]
+            Task<string> SingleBody([Body] string payload);
+
+            [Multipart]
+            [Post("/upload")]
+            Task<string> MultipartWithoutBody([AliasAs("file")] StreamPart stream);
+            """);
+
+        var diagnosticIds = diagnostics.Select(static diagnostic => diagnostic.Id).ToArray();
+
+        await Assert.That(diagnosticIds).DoesNotContain("RF011");
+        await Assert.That(diagnosticIds).DoesNotContain("RF012");
+    }
+
+    /// <summary>Verifies non-Refit members on Refit interfaces are reported.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ReportsDirectNonRefitMembers()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Get("/users")]
+            Task<string> Get();
+
+            void NonRefitMethod();
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .Contains(NonRefitMemberDiagnosticId);
+    }
+
+    /// <summary>Verifies inherited non-Refit members on Refit interfaces are reported.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ReportsInheritedNonRefitMembers()
+    {
+        var diagnostics = await AnalyzerFixture.Run(
+            """
+            using System.Threading.Tasks;
+            using Refit;
+
+            namespace RefitAnalyzerTest;
+
+            public interface IBaseInterface
+            {
+                void NonRefitMethod();
+            }
+
+            public interface IGeneratedClient : IBaseInterface
+            {
+                [Get("/users")]
+                Task<string> Get();
+            }
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .Contains(NonRefitMemberDiagnosticId);
+    }
+
+    /// <summary>Verifies interfaces with inherited Refit methods still validate their own non-Refit members.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ReportsNonRefitMembersWhenRefitMethodIsInherited()
+    {
+        var diagnostics = await AnalyzerFixture.Run(
+            """
+            using System.Threading.Tasks;
+            using Refit;
+
+            namespace RefitAnalyzerTest;
+
+            public interface IBaseInterface
+            {
+                [Get("/users")]
+                Task<string> Get();
+            }
+
+            public interface IGeneratedClient : IBaseInterface
+            {
+                void NonRefitMethod();
+            }
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .Contains(NonRefitMemberDiagnosticId);
+    }
+
+    /// <summary>Verifies reflection-only method shapes are flagged as incompatible with generated-only clients.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [Arguments(ReflectionFallbackMethodBody)]
+    [Arguments("""
+        [Post("/form")]
+        Task<string> PostForm<T>([Body(BodySerializationMethod.UrlEncoded)] T form);
+        """)]
+    [Arguments("""
+        [Multipart]
+        [Post("/upload")]
+        Task<string> Upload(object payload);
+        """)]
+    public async Task ReportsReflectionFallbackShapes(string body)
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(body);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .Contains(GeneratedRequestBuildingFallbackDiagnosticId);
+    }
+
+    /// <summary>Verifies inline-eligible methods - including query and route parameters - are not flagged.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DoesNotReportInlineSupportedMethods()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            public sealed class Filter
+            {
+                [AliasAs("n")] public string? Name { get; set; }
+                public int Count { get; set; }
+            }
+
+            [Get("/users")]
+            Task<string> List();
+
+            [Get("/signin")]
+            Task<string> SignIn([AliasAs("login")] string login, [AliasAs("code")] string code);
+
+            [Get("/users/{id}")]
+            Task<string> GetUser(string id);
+
+            [Get("/items")]
+            Task<string> Items([Query(CollectionFormat.Multi)] int[] ids);
+
+            [Post("/users")]
+            Task<string> Create([Body] string payload);
+
+            [Get("/ping")]
+            Task Ping([Header("X-Trace")] string trace, CancellationToken cancellationToken);
+
+            [Get("/values")]
+            Task<T> GetValue<T>();
+
+            [Post("/echo")]
+            Task<T> Echo<T>([Body] T payload);
+
+            [Multipart]
+            [Post("/upload")]
+            Task<string> Upload([AliasAs("file")] StreamPart stream);
+
+            [Get("/stream")]
+            IObservable<string> Observe();
+
+            [Get("/filters")]
+            Task<string> Search([Query(CollectionFormat.Indexed)] List<Filter>? filters);
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain(GeneratedRequestBuildingFallbackDiagnosticId);
+    }
+
+    /// <summary>Verifies the fallback diagnostic is suppressed when generated request building is disabled.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DoesNotReportFallbackWhenGeneratedRequestBuildingDisabled()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            ReflectionFallbackMethodBody,
+            generatedRequestBuilding: false);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain(GeneratedRequestBuildingFallbackDiagnosticId);
+    }
+
+    /// <summary>Verifies a bare <c>.editorconfig</c> toggle disabling generated request building suppresses the fallback diagnostic.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DoesNotReportFallbackWhenEditorConfigDisablesGeneratedRequestBuilding()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBodyWithAnalyzerConfigOption(
+            ReflectionFallbackMethodBody,
+            "RefitGeneratedRequestBuilding",
+            "false");
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain(GeneratedRequestBuildingFallbackDiagnosticId);
+    }
+
+    /// <summary>Verifies disabling generation suppresses generation diagnostics but keeps request validation.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DisabledSourceGenerator_KeepsRequestShapeDiagnostics()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBodyWithAnalyzerConfigOption(
+            """
+            [Get("/query-map")]
+            Task<string> Search(object filters);
+
+            [Get("/bad\\route")]
+            Task<string> BadRoute();
+
+            [Get("/users/{id}")]
+            Task<string> Get(string userId);
+            """,
+            "build_property.DisableRefitSourceGenerator",
+            "true");
+
+        var diagnosticIds = diagnostics.Select(static diagnostic => diagnostic.Id).ToArray();
+        await Assert.That(diagnosticIds).Contains(InvalidRouteBackslashDiagnosticId);
+        await Assert.That(diagnosticIds).DoesNotContain(GeneratedRequestBuildingFallbackDiagnosticId);
+        await Assert.That(diagnosticIds).DoesNotContain(UnboundRoutePlaceholderDiagnosticId);
+    }
+
+    /// <summary>Verifies an unparsable bare <c>.editorconfig</c> toggle is ignored and the default (fallback reported) behavior applies.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ReportsFallbackWhenEditorConfigToggleIsUnparsable()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBodyWithAnalyzerConfigOption(
+            ReflectionFallbackMethodBody,
+            "RefitGeneratedRequestBuilding",
+            "notabool");
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .Contains(GeneratedRequestBuildingFallbackDiagnosticId);
+    }
+
+    /// <summary>Verifies IDisposable inheritance does not produce RF001.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DoesNotReportDisposeMethod()
+    {
+        var diagnostics = await AnalyzerFixture.Run(
+            """
+            using System;
+            using System.Threading.Tasks;
+            using Refit;
+
+            namespace RefitAnalyzerTest;
+
+            public interface IGeneratedClient : IDisposable
+            {
+                [Get("/users")]
+                Task<string> Get();
+            }
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain(NonRefitMemberDiagnosticId);
+    }
+
+    /// <summary>Verifies custom HTTP method attributes without a string path literal are treated as empty.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task CustomHttpMethodAttributesWithoutStringPathAreTreatedAsEmpty()
+    {
+        var diagnostics = await AnalyzerFixture.Run(
+            """
+            using System.Net.Http;
+            using System.Threading.Tasks;
+            using Refit;
+
+            namespace RefitAnalyzerTest;
+
+            public sealed class NoPathAttribute : HttpMethodAttribute
+            {
+                public NoPathAttribute() : base("/x") { }
+                public override HttpMethod Method => HttpMethod.Get;
+            }
+
+            public sealed class IntPathAttribute : HttpMethodAttribute
+            {
+                public IntPathAttribute(int code) : base("/x") { }
+                public override HttpMethod Method => HttpMethod.Get;
+            }
+
+            public interface IGeneratedClient
+            {
+                [NoPath]
+                Task<string> NoArguments();
+
+                [IntPath(5)]
+                Task<string> NonStringArgument();
+            }
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain(InvalidRouteBackslashDiagnosticId);
+    }
+
+    /// <summary>Verifies properties and their accessors on a Refit interface are ignored.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task PropertiesAndAccessorsAreIgnored()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Get("/users")]
+            Task<string> Get();
+
+            string Name { get; set; }
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain(NonRefitMemberDiagnosticId);
+    }
+
+    /// <summary>Verifies static and default interface methods are not treated as emittable non-Refit members.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task StaticAndDefaultMethodsAreNotEmittable()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Get("/users")]
+            Task<string> Get();
+
+            static string Helper() => string.Empty;
+
+            void DefaultMethod() { }
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain(NonRefitMemberDiagnosticId);
+    }
+
+    /// <summary>Verifies inherited non-method members are ignored when detecting inherited Refit methods.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task InheritedNonMethodMembersAreIgnored()
+    {
+        var diagnostics = await AnalyzerFixture.Run(
+            """
+            using System.Threading.Tasks;
+            using Refit;
+
+            namespace RefitAnalyzerTest;
+
+            public interface IBaseWithProperty
+            {
+                string SomeProperty { get; }
+
+                [Get("/base")]
+                Task<string> BaseGet();
+            }
+
+            public interface IGeneratedClient : IBaseWithProperty
+            {
+                [Get("/derived")]
+                Task<string> DerivedGet();
+            }
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain(NonRefitMemberDiagnosticId);
+    }
+
+    /// <summary>Verifies nullable, non-cancellation, and generic parameter types are classified correctly.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task CancellationTokenClassificationHandlesNullableAndGenericParameters()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Get("/a")]
+            Task<string> NullableToken(CancellationToken? token);
+
+            [Get("/b")]
+            Task<string> NullableValue(int? value);
+
+            [Get("/c")]
+            Task<string> Generic<T>(T value);
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain("RF004");
+    }
+
+    /// <summary>Verifies parameters carrying a non-header-collection attribute are handled.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ParameterWithNonHeaderCollectionAttributeIsIgnored()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Get("/users")]
+            Task<string> Get([Query] string filter);
+            """);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id))
+            .DoesNotContain("RF005");
+    }
+
+    /// <summary>Verifies a route placeholder no parameter binds is reported on the placeholder itself.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ReportsUnboundRoutePlaceholderAtThePlaceholder()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Get("/users/{id}/posts")]
+            Task<string> GetPosts(string userId);
+            """);
+
+        var unbound = diagnostics.Single(static diagnostic => diagnostic.Id == UnboundRoutePlaceholderDiagnosticId);
+        var text = await unbound.Location.SourceTree!.GetTextAsync();
+        var message = unbound.GetMessage(System.Globalization.CultureInfo.InvariantCulture);
+
+        await Assert.That(text.ToString(unbound.Location.SourceSpan)).IsEqualTo("{id}");
+        await Assert.That(message).Contains("'{id}'");
+        await Assert.That(message).Contains("[AliasAs(\"id\")]");
+        await Assert.That(message).Contains("AllowUnmatchedRouteParameters");
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id)).DoesNotContain(GeneratedRequestBuildingFallbackDiagnosticId);
+    }
+
+    /// <summary>Verifies a placeholder written with an escape sequence is reported on the whole path argument.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ReportsEscapedUnboundRoutePlaceholderOnThePathArgument()
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            """
+            [Get("/users/\x7bid}/posts")]
+            Task<string> GetPosts(string userId);
+            """);
+
+        var unbound = diagnostics.Single(static diagnostic => diagnostic.Id == UnboundRoutePlaceholderDiagnosticId);
+        var text = await unbound.Location.SourceTree!.GetTextAsync();
+
+        await Assert.That(text.ToString(unbound.Location.SourceSpan)).IsEqualTo("\"/users/\\x7bid}/posts\"");
+    }
+
+    /// <summary>Verifies the suggested parameter name drops the round-trip prefix and any dotted property path.</summary>
+    /// <param name="path">The route template.</param>
+    /// <param name="suggestion">The expected suggested parameter name.</param>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [Arguments("/files/{**path}", "path")]
+    [Arguments("/orders/{order.Id}", "order")]
+    [Arguments("/items/{item?}", "item")]
+    public async Task UnboundRoutePlaceholderSuggestsTheParameterName(string path, string suggestion)
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(
+            $$"""
+            [Get("{{path}}")]
+            Task<string> Fetch();
+            """);
+
+        var unbound = diagnostics.Single(static diagnostic => diagnostic.Id == UnboundRoutePlaceholderDiagnosticId);
+        await Assert.That(unbound.GetMessage(System.Globalization.CultureInfo.InvariantCulture))
+            .Contains($"Add a parameter named '{suggestion}'");
+    }
+
+    /// <summary>Verifies placeholders bound by name, alias, round trip, optional marker, dotted property, header or query are not reported.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    [Arguments("[Get(\"/users/{id}\")] Task<string> Get(string id);")]
+    [Arguments("[Get(\"/users/{ID}\")] Task<string> Get(string id);")]
+    [Arguments("[Get(\"/users/{id}\")] Task<string> Get([AliasAs(\"id\")] string userId);")]
+    [Arguments("[Get(\"/files/{**path}\")] Task<string> Get(string path);")]
+    [Arguments("[Get(\"/items/{item?}\")] Task<string> Get(int? item);")]
+    [Arguments("[Get(\"/users/{id}\")] Task<string> Get([Header(\"X-Id\")] string id);")]
+    [Arguments("[Get(\"/search?q={q}\")] Task<string> Search(string q);")]
+    [Arguments("[Get(\"/pairs/{pair.Key}\")] Task<string> Get(System.Collections.Generic.KeyValuePair<string, int> pair);")]
+    [Arguments("[Get(\"/users/{id}/posts/{postId}\")] Task<string> Get(string id, string postId);")]
+    [Arguments("[Get(\"/pairs/{pair.Key}/{pair.Value}\")] Task<string> Get(System.Collections.Generic.KeyValuePair<string, int> pair);")]
+    [Arguments("[Get(\"/pairs/{pair.Key}/users/{id}\")] Task<string> Get(System.Collections.Generic.KeyValuePair<string, int> pair, string id);")]
+    public async Task DoesNotReportBoundRoutePlaceholders(string body)
+    {
+        var diagnostics = await AnalyzerFixture.RunForBody(body);
+
+        await Assert.That(diagnostics.Select(static diagnostic => diagnostic.Id)).DoesNotContain(UnboundRoutePlaceholderDiagnosticId);
+    }
+
+    /// <summary>Verifies the placeholder check stays off where the reflection builder binds and validates the route itself.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task DoesNotReportUnboundRoutePlaceholderWithoutGeneratedRequests()
+    {
+        const string body =
+            """
+            [Get("/users/{id}")]
+            Task<string> Get(string userId);
+
+            [Get("/query/{id}")]
+            Task<string> Search(object filters);
+            """;
+
+        var reflectionOnly = await AnalyzerFixture.RunForBody(body, generatedRequestBuilding: false);
+        var generated = await AnalyzerFixture.RunForBody(body);
+
+        await Assert.That(reflectionOnly.Select(static diagnostic => diagnostic.Id)).DoesNotContain(UnboundRoutePlaceholderDiagnosticId);
+        await Assert.That(generated.Count(static diagnostic => diagnostic.Id == UnboundRoutePlaceholderDiagnosticId)).IsEqualTo(1);
+    }
+}

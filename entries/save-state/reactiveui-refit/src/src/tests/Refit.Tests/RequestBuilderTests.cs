@@ -1,0 +1,597 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+
+namespace Refit.Tests;
+
+/// <summary>Tests for <see cref="RequestBuilderImplementation{T}"/> request construction.</summary>
+public partial class RequestBuilderTests
+{
+    /// <summary>The base API address without a trailing slash used to resolve relative request URIs.</summary>
+    private const string ApiBaseUrl = "http://api";
+
+    /// <summary>The base API address with a trailing slash used as an <see cref="HttpClient.BaseAddress"/>.</summary>
+    private const string ApiBaseUrlWithSlash = $"{ApiBaseUrl}/";
+
+    /// <summary>The name of the cancellable GET method exercised by the cancellation tests.</summary>
+    private const string GetWithCancellationMethod = "GetWithCancellation";
+
+    /// <summary>The single positional argument reused by the dynamic-invocation tests.</summary>
+    private const string ValueArgument = "value";
+
+    /// <summary>The name of the void method with a query alias exercised by the escaping tests.</summary>
+    private const string FetchVoidQueryAliasMethodName = "FetchSomeStuffWithVoidAndQueryAlias";
+
+    /// <summary>A sample email query argument exercised by the escaping tests.</summary>
+    private const string ExampleEmailValue = "test@example.com";
+
+    /// <summary>A sample query argument containing reserved characters exercised by the escaping tests.</summary>
+    private const string PushNotPullValue = "push!=pull";
+
+    /// <summary>The canonical sample route id passed as the first argument to most request-builder tests.</summary>
+    private const int SampleId = 6;
+
+    /// <summary>An alternate sample route id used where a test needs an id distinct from <see cref="SampleId"/>.</summary>
+    private const int AlternateSampleId = 42;
+
+    /// <summary>The integer array {1, 2, 3} used as query test data.</summary>
+    private static readonly int[] _intArray123 = [1, 2, 3];
+
+    /// <summary>The byte array {1, 2, 3} used as sample stream request-body content.</summary>
+    private static readonly byte[] _byteArray123 = [1, 2, 3];
+
+    /// <summary>The integer array {5, 7} used as query test data.</summary>
+    private static readonly int[] _intArray57 = [5, 7];
+
+    /// <summary>The string array {"A", "B"} used as query test data.</summary>
+    private static readonly string[] _stringArrayAb = ["A", "B"];
+
+    /// <summary>Rejects non-interface request-builder targets.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task ConstructorRejectsNonInterfaceTargets() =>
+        await Assert.That(static () => new RequestBuilderImplementation(typeof(string)))
+            .ThrowsExactly<ArgumentException>();
+
+    /// <summary>Verifies the public request-builder factory entry points create usable builders.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    [SuppressMessage("Usage", "CA2263:Prefer generic overloads", Justification = "This test intentionally covers the Type-based overloads.")]
+    public async Task RequestBuilderFactoryEntryPointsCreateBuilders()
+    {
+        var genericBuilder = RequestBuilder.ForType<IDummyHttpApi>();
+        var genericBuilderWithSettings = RequestBuilder.ForType<IDummyHttpApi>(new());
+        var typeBuilder = RequestBuilder.ForType(typeof(IDummyHttpApi));
+        var typeBuilderWithSettings = RequestBuilder.ForType(typeof(IDummyHttpApi), new());
+        var factoryGenericBuilder = RequestBuilderFactory.Create<IDummyHttpApi>(new());
+        var factoryTypeBuilder = RequestBuilderFactory.Create(typeof(IDummyHttpApi), new());
+
+        await Assert.That(genericBuilder).IsNotNull();
+        await Assert.That(genericBuilderWithSettings).IsNotNull();
+        await Assert.That(typeBuilder).IsNotNull();
+        await Assert.That(typeBuilderWithSettings).IsNotNull();
+        await Assert.That(factoryGenericBuilder).IsNotNull();
+        await Assert.That(factoryTypeBuilder).IsNotNull();
+    }
+
+    /// <summary>Rejects methods that are missing or ambiguous without parameter metadata.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task BuildRestResultFuncRejectsMissingAndAmbiguousMethods()
+    {
+        var fixture = new RequestBuilderImplementation<IOverloadedApi>();
+
+        await Assert.That(() => fixture.BuildRestResultFuncForMethod("Missing"))
+            .ThrowsExactly<ArgumentException>();
+        await Assert.That(() => fixture.BuildRestResultFuncForMethod(nameof(IOverloadedApi.Overloaded)))
+            .ThrowsExactly<ArgumentException>();
+    }
+
+    /// <summary>Builds a request when no cancellation token is supplied.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task MethodsShouldBeCancellableDefault()
+    {
+        var fixture = new RequestBuilderImplementation<ICancellableMethods>();
+        var factory = fixture.RunRequest(GetWithCancellationMethod);
+        var output = await factory([]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestMessage!.RequestUri!);
+        await Assert.That(uri.PathAndQuery).IsEqualTo("/foo");
+        await Assert.That(output.CancellationToken.IsCancellationRequested).IsFalse();
+    }
+
+    /// <summary>Builds a request when a nullable cancellation token is supplied.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task MethodsWithNullableCancellationTokenShouldBuildRequest()
+    {
+        var fixture = new RequestBuilderImplementation<ICancellableMethods>();
+        var factory = fixture.RunRequest("GetWithNullableCancellation");
+
+        using var cts = new CancellationTokenSource();
+        var output = await factory([AlternateSampleId, cts.Token]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestMessage!.RequestUri!);
+        await Assert.That(uri.PathAndQuery).IsEqualTo("/foo/42");
+        await Assert.That(output.CancellationToken.IsCancellationRequested).IsFalse();
+    }
+
+    /// <summary>Cancels the request when a nullable cancellation token is cancelled.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task MethodsWithNullableCancellationTokenShouldCancelWhenRequested()
+    {
+        var fixture = new RequestBuilderImplementation<ICancellableMethods>();
+        var factory = fixture.RunRequest("GetWithNullableCancellation");
+
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        var output = await factory([AlternateSampleId, cts.Token]);
+
+        await Assert.That(output.CancellationToken.IsCancellationRequested).IsTrue();
+    }
+
+    /// <summary>Builds a request when a cancellation token is supplied.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task MethodsShouldBeCancellableWithToken()
+    {
+        var fixture = new RequestBuilderImplementation<ICancellableMethods>();
+        var factory = fixture.RunRequest(GetWithCancellationMethod);
+
+        using var cts = new CancellationTokenSource();
+
+        var output = await factory([cts.Token]);
+
+        var uri = new Uri(new(ApiBaseUrl), output.RequestMessage!.RequestUri!);
+        await Assert.That(uri.PathAndQuery).IsEqualTo("/foo");
+        await Assert.That(output.CancellationToken.IsCancellationRequested).IsFalse();
+    }
+
+    /// <summary>Cancels the request when the supplied token is cancelled.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task MethodsShouldBeCancellableWithTokenDoesCancel()
+    {
+        var fixture = new RequestBuilderImplementation<ICancellableMethods>();
+        var factory = fixture.RunRequest(GetWithCancellationMethod);
+
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        var output = await factory([cts.Token]);
+        await Assert.That(output.CancellationToken.IsCancellationRequested).IsTrue();
+    }
+
+    /// <summary>The authorization header value getter receives the method cancellation token.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task AuthorizationHeaderValueGetterReceivesMethodCancellationToken()
+    {
+        var observedCancellationToken = CancellationToken.None;
+        Func<HttpRequestMessage, CancellationToken, ValueTask<string>> captureToken = (_, cancellationToken) =>
+        {
+            observedCancellationToken = cancellationToken;
+            return new("tokenValue");
+        };
+
+        var settings = new RefitSettings { AuthorizationHeaderValueGetter = captureToken };
+
+        var fixture = new RequestBuilderImplementation<IAuthenticatedCancellableMethods>(settings);
+        var factory = fixture.RunRequest("GetWithAuthorizationAndCancellation");
+        using var cts = new CancellationTokenSource();
+
+        var output = await factory([cts.Token]);
+
+        await Assert.That(observedCancellationToken).IsEqualTo(cts.Token);
+        await Assert.That(output.RequestMessage!.Headers.Authorization?.ToString()).IsEqualTo("Bearer tokenValue");
+    }
+
+    /// <summary>An HttpContent response is wrapped in an ApiResponse.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task HttpContentAsApiResponseTest()
+    {
+        var fixture = new RequestBuilderImplementation<IHttpContentApi>();
+        var factory = fixture.BuildRestResultFuncForMethod("PostFileUploadWithMetadata");
+        var testHttpMessageHandler = new TestHttpMessageHandler();
+        var retContent = new StreamContent(new MemoryStream());
+        testHttpMessageHandler.Content = retContent;
+
+        var mpc = new MultipartContent("foosubtype");
+
+        var task =
+            (Task<ApiResponse<HttpContent>>)
+                factory(
+                    new(testHttpMessageHandler) { BaseAddress = new(ApiBaseUrlWithSlash), },
+                    [mpc])!;
+        var result = await task;
+
+        await Assert.That(result.Headers).IsNotNull();
+        await Assert.That(result.IsSuccessStatusCode).IsTrue();
+        await Assert.That(result.ReasonPhrase).IsNotNull();
+        await Assert.That(result.StatusCode == default).IsFalse();
+        await Assert.That(result.Version).IsNotNull();
+
+        await Assert.That(testHttpMessageHandler.RequestMessage!.Content).IsEqualTo(mpc);
+        await Assert.That(result.Content).IsEqualTo(retContent);
+    }
+
+    /// <summary>An HttpContent response is returned directly.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task HttpContentTest()
+    {
+        var fixture = new RequestBuilderImplementation<IHttpContentApi>();
+        var factory = fixture.BuildRestResultFuncForMethod("PostFileUpload");
+        var testHttpMessageHandler = new TestHttpMessageHandler();
+        var retContent = new StreamContent(new MemoryStream());
+        testHttpMessageHandler.Content = retContent;
+
+        var mpc = new MultipartContent("foosubtype");
+
+        var task =
+            (Task<HttpContent>)
+                factory(
+                    new(testHttpMessageHandler) { BaseAddress = new(ApiBaseUrlWithSlash), },
+                    [mpc])!;
+        var result = await task;
+
+        await Assert.That(testHttpMessageHandler.RequestMessage!.Content).IsEqualTo(mpc);
+        await Assert.That(result).IsEqualTo(retContent);
+    }
+
+    /// <summary>A stream body is wrapped directly in stream content.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task StreamRequestBodyUsesStreamContent()
+    {
+        var fixture = new RequestBuilderImplementation<IStreamApi>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IStreamApi.PostStream));
+
+        await using var stream = new MemoryStream(_byteArray123);
+        var request = await factory([stream]);
+
+        await Assert.That(request.Content).IsTypeOf<StreamContent>();
+    }
+
+    /// <summary>A caller-supplied stream body is not disposed when the reflection-built request is disposed.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task ReflectionStreamRequestBodyDoesNotDisposeCallerStream()
+    {
+        var fixture = new RequestBuilderImplementation<IStreamApi>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IStreamApi.PostStream));
+
+        await using var stream = new MemoryStream(_byteArray123);
+        var request = await factory([stream]);
+        request.Dispose();
+
+        await Assert.That(stream.CanRead).IsTrue();
+    }
+
+    /// <summary>A JSON Lines body parameter is routed to JSON Lines content via the reflection path.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task JsonLinesRequestBodyUsesJsonLinesContent()
+    {
+        var fixture = new RequestBuilderImplementation<IRequestBin>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IRequestBin.PostJsonLines));
+
+        var request = await factory(
+        [
+            new[]
+            {
+                new JsonLineRecord { Id = "124", Name = "Stark Industries" },
+                new JsonLineRecord { Id = "125", Name = "Acme Corp" },
+            }
+        ]);
+
+        await Assert.That(request.Content).IsTypeOf<JsonLinesContent>();
+    }
+
+    /// <summary>A single (non-enumerable) JSON Lines body is wrapped as a one-line JSON Lines content.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task JsonLinesSingleBodyUsesJsonLinesContent()
+    {
+        var fixture = new RequestBuilderImplementation<IRequestBin>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IRequestBin.PostJsonLinesSingle));
+
+        var request = await factory([new JsonLineRecord { Id = "1", Name = "single" }]);
+
+        await Assert.That(request.Content).IsTypeOf<JsonLinesContent>();
+    }
+
+    /// <summary>A string JSON Lines body is treated as a single line, not enumerated by character.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task JsonLinesStringBodyUsesJsonLinesContent()
+    {
+        var fixture = new RequestBuilderImplementation<IRequestBin>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IRequestBin.PostJsonLinesString));
+
+        var request = await factory(["a line"]);
+
+        await Assert.That(request.Content).IsTypeOf<JsonLinesContent>();
+    }
+
+    /// <summary>An <see cref="IAsyncEnumerable{T}"/> JSON Lines body is routed to the typed JSON Lines content via the reflection path, keeping the declared element type.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    /// <remarks>
+    /// <see cref="RequestBuilderTestExtensions.BuildRequestFactoryForMethod"/> awaits the whole send before returning,
+    /// so the request (and its content) may already be disposed by the time this test runs; the exact serialized
+    /// output of <see cref="JsonLinesContent{T}"/> is covered directly by <c>JsonLinesContentTypedTests</c>.
+    /// </remarks>
+    [Test]
+    public async Task JsonLinesAsyncRequestBodyUsesTypedJsonLinesContent()
+    {
+        var fixture = new RequestBuilderImplementation<IRequestBin>();
+        var factory = fixture.BuildRequestFactoryForMethod(nameof(IRequestBin.PostJsonLinesAsync));
+
+        var request = await factory([ProduceAsync()]);
+
+        await Assert.That(request.Content).IsTypeOf<JsonLinesContent<JsonLineRecord>>();
+
+        static async IAsyncEnumerable<JsonLineRecord> ProduceAsync()
+        {
+            await Task.Yield();
+            yield return new JsonLineRecord { Id = "1", Name = "a" };
+            yield return new JsonLineRecord { Id = "2", Name = "b" };
+        }
+    }
+
+    /// <summary>Verifies a class implementing <see cref="IAsyncEnumerable{T}"/> (rather than being that interface
+    /// itself) is recognized as an asynchronous JSON Lines body through its declared interfaces.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task FindAsyncJsonLinesElementTypeFindsTheElementTypeOfAnImplementingClass() =>
+        await Assert
+            .That(RequestBuilderImplementation.FindAsyncJsonLinesElementType(typeof(AsyncEnumerableClassBody)))
+            .IsEqualTo(typeof(JsonLineRecord));
+
+    /// <summary>Verifies a type implementing two distinct <see cref="IAsyncEnumerable{T}"/> interfaces is ambiguous
+    /// and is not treated as an asynchronous JSON Lines body.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task FindAsyncJsonLinesElementTypeReturnsNullForAnAmbiguousImplementer() =>
+        await Assert
+            .That(RequestBuilderImplementation.FindAsyncJsonLinesElementType(typeof(AmbiguousAsyncEnumerableBody)))
+            .IsNull();
+
+    /// <summary>A stream response is wrapped in an ApiResponse.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task StreamResponseAsApiResponseTest()
+    {
+        var fixture = new RequestBuilderImplementation<IStreamApi>();
+        var factory = fixture.BuildRestResultFuncForMethod("GetRemoteFileWithMetadata");
+        var testHttpMessageHandler = new TestHttpMessageHandler();
+        var streamResponse = new MemoryStream();
+        const string reponseContent = "A remote file";
+        testHttpMessageHandler.Content = new StreamContent(streamResponse);
+
+        var writer = new StreamWriter(streamResponse);
+        await writer.WriteAsync(reponseContent);
+        await writer.FlushAsync();
+        _ = streamResponse.Seek(0L, SeekOrigin.Begin);
+
+        var task =
+            (Task<ApiResponse<Stream>>)
+                factory(
+                    new(testHttpMessageHandler) { BaseAddress = new(ApiBaseUrlWithSlash), },
+                    ["test-file"])!;
+        var result = await task;
+
+        await Assert.That(result.Headers).IsNotNull();
+        await Assert.That(result.IsSuccessStatusCode).IsTrue();
+        await Assert.That(result.ReasonPhrase).IsNotNull();
+        await Assert.That(result.StatusCode == default).IsFalse();
+        await Assert.That(result.Version).IsNotNull();
+
+        using var reader = new StreamReader(result.Content!);
+        await Assert.That(await reader.ReadToEndAsync()).IsEqualTo(reponseContent);
+    }
+
+    /// <summary>The generated sync ApiResponse preserves the request message.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task GeneratedSyncApiResponseShouldPreserveRequestMessage()
+    {
+        var fixture = new RequestBuilderImplementation<ExplicitInterfaceRefitTests.ISyncPipelineApi>();
+        var factory = fixture.BuildRestResultFuncForMethod("GetApiResponse");
+        var testHttpMessageHandler = new TestHttpMessageHandler();
+
+        var response = (IApiResponse<string>)
+            factory(
+                new(testHttpMessageHandler) { BaseAddress = new(ApiBaseUrlWithSlash), },
+                [])!;
+
+        await Assert.That(response.RequestMessage).IsSameReferenceAs(testHttpMessageHandler.RequestMessage);
+        await Assert.That(response.RequestMessage!.RequestUri).IsEqualTo(testHttpMessageHandler.RequestMessage!.RequestUri);
+    }
+
+    /// <summary>A stream response is returned directly.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task StreamResponseTest()
+    {
+        var fixture = new RequestBuilderImplementation<IStreamApi>();
+        var factory = fixture.BuildRestResultFuncForMethod("GetRemoteFile");
+        var testHttpMessageHandler = new TestHttpMessageHandler();
+        var streamResponse = new MemoryStream();
+        const string reponseContent = "A remote file";
+        testHttpMessageHandler.Content = new StreamContent(streamResponse);
+
+        var writer = new StreamWriter(streamResponse);
+        await writer.WriteAsync(reponseContent);
+        await writer.FlushAsync();
+        _ = streamResponse.Seek(0L, SeekOrigin.Begin);
+
+        var task =
+            (Task<Stream>)
+                factory(
+                    new(testHttpMessageHandler) { BaseAddress = new(ApiBaseUrlWithSlash), },
+                    ["test-file"])!;
+        var result = await task;
+
+        using var reader = new StreamReader(result);
+        await Assert.That(await reader.ReadToEndAsync()).IsEqualTo(reponseContent);
+    }
+
+    /// <summary>ValueTask returning methods build and execute requests.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task ValueTaskMethodsShouldWork()
+    {
+        var fixture = new RequestBuilderImplementation<IValueTaskApi>();
+        var factory = fixture.BuildRestResultFuncForMethod("GetValue");
+        var testHttpMessageHandler = new TestHttpMessageHandler();
+
+        var valueTask = (ValueTask<string>)
+            factory(
+                new(testHttpMessageHandler) { BaseAddress = new(ApiBaseUrlWithSlash), },
+                [ValueArgument])!;
+
+        var result = await valueTask;
+
+        await Assert.That(result).IsEqualTo("test");
+        await Assert.That(testHttpMessageHandler.RequestMessage!.RequestUri!.ToString()).IsEqualTo("http://api/value");
+    }
+
+    /// <summary>ValueTask of ApiResponse returning methods build and execute requests.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task ValueTaskApiResponseMethodsShouldWork()
+    {
+        var fixture = new RequestBuilderImplementation<IValueTaskApiResponseApi>();
+        var factory = fixture.BuildRestResultFuncForMethod("GetValue");
+        var testHttpMessageHandler = new TestHttpMessageHandler();
+
+        var valueTask = (ValueTask<ApiResponse<string>>)
+            factory(
+                new(testHttpMessageHandler) { BaseAddress = new(ApiBaseUrlWithSlash), },
+                [ValueArgument])!;
+
+        using var response = await valueTask;
+
+        await Assert.That(response.IsSuccessStatusCode).IsTrue();
+        await Assert.That(response.Content).IsEqualTo("test");
+        await Assert.That(response.RequestMessage).IsSameReferenceAs(testHttpMessageHandler.RequestMessage);
+        await Assert.That(response.RequestMessage!.RequestUri!.ToString()).IsEqualTo("http://api/value");
+    }
+
+    /// <summary>Observable methods cancel when the supplied token is cancelled.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task ObservableMethodsWithCancellationTokenShouldCancelWhenRequested()
+    {
+        var fixture = new RequestBuilderImplementation<IObservableCancellableMethods>();
+        var factory = fixture.BuildRestResultFuncForMethod(GetWithCancellationMethod);
+        var testHttpMessageHandler = new TestHttpMessageHandler();
+
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        var observable = (IObservable<string>)
+            factory(
+                new(testHttpMessageHandler) { BaseAddress = new(ApiBaseUrlWithSlash), },
+                [ValueArgument, cts.Token])!;
+
+        await Assert.That(() => (Task)ObservableTestHelpers.Await(observable)).ThrowsExactly<TaskCanceledException>();
+        await Assert.That(testHttpMessageHandler.RequestMessage!.RequestUri!.ToString()).IsEqualTo("http://api/value/value");
+        await Assert.That(testHttpMessageHandler.CancellationToken.IsCancellationRequested).IsTrue();
+    }
+
+    /// <summary>Throws while analyzing an invalid public synchronous method.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task ConstructorThrowsForInvalidPublicSyncMethod()
+    {
+        var exception = await Assert.That(
+            static () => new RequestBuilderImplementation<IInvalidReturnTypeIApiResponse>()).ThrowsExactly<ArgumentException>();
+
+        await Assert.That(exception!.Message).Contains(
+            "All REST Methods must return either Task<T> or ValueTask<T> or IObservable<T>");
+    }
+
+    /// <summary>Methods that do not specify an HTTP method fail to build.</summary>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    [Test]
+    public async Task MethodsThatDontHaveAnHttpMethodShouldFail()
+    {
+        var failureMethods = new[] { "SomeOtherMethod", "weofjwoeijfwe", null };
+
+        var successMethods = new[] { "FetchSomeStuff" };
+
+        foreach (var v in failureMethods)
+        {
+            var shouldDie = true;
+
+            try
+            {
+                var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+                _ = fixture.BuildRequestFactoryForMethod(v!);
+            }
+            catch (Exception)
+            {
+                shouldDie = false;
+            }
+
+            await Assert.That(shouldDie).IsFalse();
+        }
+
+        foreach (var v in successMethods)
+        {
+            var shouldDie = false;
+
+            try
+            {
+                var fixture = new RequestBuilderImplementation<IDummyHttpApi>();
+                _ = fixture.BuildRequestFactoryForMethod(v);
+            }
+            catch (Exception)
+            {
+                shouldDie = true;
+            }
+
+            await Assert.That(shouldDie).IsFalse();
+        }
+    }
+
+    /// <summary>A class implementing <see cref="IAsyncEnumerable{T}"/> alongside an unrelated interface, used to
+    /// exercise the branch of <see cref="RequestBuilderImplementation.FindAsyncJsonLinesElementType"/> that finds the
+    /// element type through <see cref="Type.GetInterfaces"/> rather than the declared type itself.</summary>
+    private sealed class AsyncEnumerableClassBody : IAsyncEnumerable<JsonLineRecord>, IDisposable
+    {
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+        }
+
+        /// <inheritdoc/>
+        public async IAsyncEnumerator<JsonLineRecord> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        {
+            await Task.Yield();
+            yield return new JsonLineRecord { Id = "1", Name = "a" };
+        }
+    }
+
+    /// <summary>A type implementing two distinct closed <see cref="IAsyncEnumerable{T}"/> interfaces, used to
+    /// exercise the ambiguous-implementer branch of
+    /// <see cref="RequestBuilderImplementation.FindAsyncJsonLinesElementType"/>.</summary>
+    private sealed class AmbiguousAsyncEnumerableBody : IAsyncEnumerable<JsonLineRecord>, IAsyncEnumerable<string>
+    {
+        /// <inheritdoc/>
+        IAsyncEnumerator<JsonLineRecord> IAsyncEnumerable<JsonLineRecord>.GetAsyncEnumerator(CancellationToken cancellationToken) =>
+            throw new NotSupportedException("Not used: this type only exercises the ambiguous-implementer branch of FindAsyncJsonLinesElementType.");
+
+        /// <inheritdoc/>
+        IAsyncEnumerator<string> IAsyncEnumerable<string>.GetAsyncEnumerator(CancellationToken cancellationToken) =>
+            throw new NotSupportedException("Not used: this type only exercises the ambiguous-implementer branch of FindAsyncJsonLinesElementType.");
+    }
+}

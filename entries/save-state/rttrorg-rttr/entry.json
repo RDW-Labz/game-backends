@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T08:56:26Z",
+ "category": "save-state",
+ "commit": "2024-04-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rttrorg/rttr \u2014 C++ Reflection Library",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "rttr",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rttrorg-rttr",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 3484,
+ "system": "C++ Reflection Library",
+ "upstream": "https://github.com/rttrorg/rttr",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

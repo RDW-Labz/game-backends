@@ -1,0 +1,599 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+extern alias RefitAnalyzers;
+
+using System.Collections.Concurrent;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Refit.Generator;
+
+namespace Refit.GeneratorTests;
+
+/// <summary>Helpers for compiling sources and verifying the Refit source generator output.</summary>
+[UnconditionalSuppressMessage(
+    "SingleFile",
+    "IL3000:Avoid accessing Assembly file path when publishing as a single file",
+    Justification = "Compiles generator inputs against on-disk assemblies; never run as a single-file app.")]
+public static class Fixture
+{
+    /// <summary>The runtime data key containing framework assemblies available to the current test host.</summary>
+    private const string TrustedPlatformAssemblies = "TRUSTED_PLATFORM_ASSEMBLIES";
+
+    /// <summary>
+    /// Caches metadata references by assembly path. The framework reference closure (~169 assemblies) is
+    /// identical for every test, so materializing it once per process — instead of per test — keeps a single
+    /// shared copy of the metadata in memory and avoids re-reading every PE file on each call.
+    /// </summary>
+    private static readonly ConcurrentDictionary<string, MetadataReference> _metadataReferenceCache =
+        new(StringComparer.Ordinal);
+
+    /// <summary>The metadata reference for the Refit assembly with documentation.</summary>
+    private static readonly MetadataReference _refitAssembly = MetadataReference.CreateFromFile(
+        typeof(GetAttribute).Assembly.Location,
+        documentation: XmlDocumentationProvider.CreateFromFile(
+            Path.ChangeExtension(typeof(GetAttribute).Assembly.Location, ".xml")));
+
+    /// <summary>Types whose assemblies must be referenced during code generation.</summary>
+    private static readonly Type[] _importantAssemblies =
+    [
+        typeof(Binder),
+        typeof(GetAttribute),
+        typeof(ReactiveUI.Primitives.RxVoid),
+        typeof(Enumerable),
+        typeof(Newtonsoft.Json.JsonConvert),
+        typeof(TestAttribute),
+        typeof(HttpContent),
+        typeof(Attribute)
+    ];
+
+    /// <summary>Verifies generator output for an interface body snippet, ignoring non-interface results.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <param name="memberName">The calling test member name used to derive the snapshot name.</param>
+    /// <param name="filePath">The calling test source path used to derive the snapshot type name.</param>
+    /// <returns>A task representing the verification.</returns>
+    public static Task VerifyForBody(
+        string body,
+        [CallerMemberName] string memberName = "",
+        [CallerFilePath] string filePath = "") =>
+        VerifyForBody(body, true, memberName, filePath);
+
+    /// <summary>Verifies generator output for an interface body snippet.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <param name="ignoreNonInterfaces">Whether to ignore non-interface generated results.</param>
+    /// <param name="memberName">The calling test member name used to derive the snapshot name.</param>
+    /// <param name="filePath">The calling test source path used to derive the snapshot type name.</param>
+    /// <returns>A task representing the verification.</returns>
+    public static Task VerifyForBody(
+        string body,
+        bool ignoreNonInterfaces,
+        [CallerMemberName] string memberName = "",
+        [CallerFilePath] string filePath = "")
+    {
+        var source =
+            $$"""
+              using System;
+              using System.Collections.Generic;
+              using System.Linq;
+              using System.Net.Http;
+              using System.Text;
+              using System.Threading;
+              using System.Threading.Tasks;
+              using Refit;
+
+              namespace RefitGeneratorTest;
+
+              public interface IGeneratedClient
+              {
+              {{body}}
+              }
+              """;
+
+        return VerifyGenerator(source, ignoreNonInterfaces, filePath, memberName);
+    }
+
+    /// <summary>Generates output for an interface body snippet and returns the requested generated file.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <param name="hintName">The generated source hint name.</param>
+    /// <returns>The generated source text.</returns>
+    public static string GenerateForBody(string body, string hintName) =>
+        GenerateForBody(body, hintName, null);
+
+    /// <summary>Generates output for an interface body snippet and returns the requested generated file.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <param name="hintName">The generated source hint name.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <returns>The generated source text.</returns>
+    public static string GenerateForBody(string body, string hintName, bool? generatedRequestBuilding)
+    {
+        var source = BuildBodySource(body);
+
+        return Generate(source, hintName, generatedRequestBuilding);
+    }
+
+    /// <summary>Generates output for an interface body snippet, compiles it, and returns error diagnostics.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <returns>The compiler and generator errors produced by the generated output.</returns>
+    public static ImmutableArray<Diagnostic> GenerateErrorsForBody(
+        string body,
+        bool? generatedRequestBuilding)
+    {
+        var result = RunGenerator(BuildBodySource(body), generatedRequestBuilding);
+
+        return
+        [
+            .. result.GeneratorDiagnostics
+            .Concat(result.OutputCompilation.GetDiagnostics())
+            .Where(IsGeneratedOutputError)
+        ];
+    }
+
+    /// <summary>Runs the generator over an interface body snippet and returns the output compilation.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <returns>The generator result.</returns>
+    public static GeneratorTestResult RunGeneratorForBody(
+        string body,
+        bool? generatedRequestBuilding) =>
+        RunGeneratorForBody(body, generatedRequestBuilding, false);
+
+    /// <summary>Runs the generator over an interface body snippet and returns the output compilation.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <param name="disableSourceGenerator">Whether source generation is disabled.</param>
+    /// <returns>The generator result.</returns>
+    public static GeneratorTestResult RunGeneratorForBody(
+        string body,
+        bool? generatedRequestBuilding,
+        bool disableSourceGenerator) =>
+        RunGenerator(BuildBodySource(body), generatedRequestBuilding, disableSourceGenerator);
+
+    /// <summary>Runs the generator over the source and returns the output compilation.</summary>
+    /// <param name="source">The source to compile and generate from.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <returns>The generator result.</returns>
+    public static GeneratorTestResult RunGenerator(
+        string source,
+        bool? generatedRequestBuilding) =>
+        RunGenerator(source, generatedRequestBuilding, false);
+
+    /// <summary>Runs the generator over the source and returns the output compilation.</summary>
+    /// <param name="source">The source to compile and generate from.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <param name="disableSourceGenerator">Whether source generation is disabled.</param>
+    /// <returns>The generator result.</returns>
+    public static GeneratorTestResult RunGenerator(
+        string source,
+        bool? generatedRequestBuilding,
+        bool disableSourceGenerator)
+    {
+        var compilation = CreateLibrary(source);
+        return RunGenerator(compilation, generatedRequestBuilding, disableSourceGenerator, null);
+    }
+
+    /// <summary>Runs the generator over the source with a specific language version and returns the output compilation.</summary>
+    /// <param name="source">The source to compile and generate from.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <param name="languageVersion">The language version to use for input and generated syntax trees.</param>
+    /// <returns>The generator result.</returns>
+    public static GeneratorTestResult RunGenerator(
+        string source,
+        bool? generatedRequestBuilding,
+        LanguageVersion languageVersion)
+    {
+        var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(languageVersion);
+        var compilation = CreateLibrary(CSharpSyntaxTree.ParseText(source, parseOptions));
+        return RunGenerator(compilation, generatedRequestBuilding, false, parseOptions);
+    }
+
+    /// <summary>Runs the generator over the compilation and returns the output compilation.</summary>
+    /// <param name="compilation">The compilation to run generation against.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <param name="disableSourceGenerator">Whether source generation is disabled.</param>
+    /// <param name="parseOptions">The parse options to use for generated syntax trees.</param>
+    /// <returns>The generator result.</returns>
+    public static GeneratorTestResult RunGenerator(
+        CSharpCompilation compilation,
+        bool? generatedRequestBuilding,
+        bool disableSourceGenerator,
+        CSharpParseOptions? parseOptions)
+    {
+        AssertInlineEligibilityParsersAgree(compilation);
+
+        var generator = new InterfaceStubGeneratorV2();
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(
+            [generator.AsSourceGenerator()],
+            parseOptions: parseOptions,
+            optionsProvider: new TestAnalyzerConfigOptionsProvider(
+                generatedRequestBuilding,
+                disableSourceGenerator));
+
+        driver = driver.RunGeneratorsAndUpdateCompilation(
+            compilation,
+            out var outputCompilation,
+            out var generatorDiagnostics);
+
+        return new(driver, outputCompilation, generatorDiagnostics);
+    }
+
+    /// <summary>Runs contract validation independently of source generation.</summary>
+    /// <param name="result">The compilation containing the generated client.</param>
+    /// <param name="generatedRequestBuilding">The consumer's inline request option.</param>
+    /// <param name="disableSourceGenerator">Whether source generation is disabled.</param>
+    /// <param name="cancellationToken">The analysis cancellation token.</param>
+    /// <returns>The diagnostics produced by the analyzer.</returns>
+    public static Task<ImmutableArray<Diagnostic>> AnalyzeAsync(
+        GeneratorTestResult result,
+        bool? generatedRequestBuilding,
+        bool disableSourceGenerator,
+        CancellationToken cancellationToken) =>
+        result.OutputCompilation.WithAnalyzers(
+            [new RefitAnalyzers::Refit.Analyzers.RefitInterfaceAnalyzer()],
+            new AnalyzerOptions([], new TestAnalyzerConfigOptionsProvider(generatedRequestBuilding, disableSourceGenerator)))
+            .GetAnalyzerDiagnosticsAsync(cancellationToken);
+
+    /// <summary>Verifies generator output for type declarations within a namespace.</summary>
+    /// <param name="declarations">The type declarations source.</param>
+    /// <param name="memberName">The calling test member name used to derive the snapshot name.</param>
+    /// <param name="filePath">The calling test source path used to derive the snapshot type name.</param>
+    /// <returns>A task representing the verification.</returns>
+    public static Task VerifyForType(
+        string declarations,
+        [CallerMemberName] string memberName = "",
+        [CallerFilePath] string filePath = "")
+    {
+        var source =
+            $$"""
+              using System;
+              using System.Collections.Generic;
+              using System.Linq;
+              using System.Net.Http;
+              using System.Text;
+              using System.Threading;
+              using System.Threading.Tasks;
+              using Refit;
+
+              namespace RefitGeneratorTest;
+
+              {{declarations}}
+              """;
+
+        return VerifyGenerator(source, true, filePath, memberName);
+    }
+
+    /// <summary>Verifies generator output for top-level declarations.</summary>
+    /// <param name="declarations">The declarations source.</param>
+    /// <param name="memberName">The calling test member name used to derive the snapshot name.</param>
+    /// <param name="filePath">The calling test source path used to derive the snapshot type name.</param>
+    /// <returns>A task representing the verification.</returns>
+    public static Task VerifyForDeclaration(
+        string declarations,
+        [CallerMemberName] string memberName = "",
+        [CallerFilePath] string filePath = "")
+    {
+        var source =
+            $$"""
+              using System;
+              using System.Collections.Generic;
+              using System.Linq;
+              using System.Net.Http;
+              using System.Text;
+              using System.Threading;
+              using System.Threading.Tasks;
+              using Refit;
+
+              {{declarations}}
+              """;
+
+        return VerifyGenerator(source, true, filePath, memberName);
+    }
+
+    /// <summary>Generates output for top-level declarations and returns the requested generated file.</summary>
+    /// <param name="declarations">The declarations source.</param>
+    /// <param name="hintName">The generated source hint name.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <returns>The generated source text.</returns>
+    public static string GenerateForDeclaration(
+        string declarations,
+        string hintName,
+        bool? generatedRequestBuilding)
+    {
+        var source =
+            $$"""
+              using System;
+              using System.Collections.Generic;
+              using System.Linq;
+              using System.Net.Http;
+              using System.Text;
+              using System.Threading;
+              using System.Threading.Tasks;
+              using Refit;
+
+              {{declarations}}
+              """;
+
+        return Generate(source, hintName, generatedRequestBuilding);
+    }
+
+    /// <summary>Creates a compilation from the given syntax trees with the required references.</summary>
+    /// <param name="source">The syntax trees to compile.</param>
+    /// <returns>The created compilation.</returns>
+    public static CSharpCompilation CreateLibrary(params SyntaxTree[] source) =>
+        CreateNamedLibrary(nameof(Compilation), source);
+
+    /// <summary>Creates a named compilation from the given syntax trees with the required references.</summary>
+    /// <param name="assemblyName">The assembly name for the compilation, so distinct libraries get distinct identities;
+    /// <see langword="null"/> produces an unnamed compilation.</param>
+    /// <param name="source">The syntax trees to compile.</param>
+    /// <returns>The created compilation.</returns>
+    public static CSharpCompilation CreateNamedLibrary(string? assemblyName, params SyntaxTree[] source)
+    {
+        var referencePaths = new HashSet<string>(StringComparer.Ordinal);
+        AddTrustedPlatformAssemblies(referencePaths);
+
+        foreach (var assembly in GetAssemblyReferencesForCodegen())
+        {
+            if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location))
+            {
+                _ = referencePaths.Add(assembly.Location);
+            }
+        }
+
+        var references = new List<MetadataReference>(referencePaths.Count + 1);
+        foreach (var referencePath in referencePaths)
+        {
+            references.Add(GetMetadataReference(referencePath));
+        }
+
+        references.Add(_refitAssembly);
+        return CSharpCompilation.Create(
+            assemblyName,
+            source,
+            references,
+            new(OutputKind.DynamicallyLinkedLibrary));
+    }
+
+    /// <summary>Returns a process-wide cached metadata reference for the assembly at the given path.</summary>
+    /// <param name="path">The assembly file path.</param>
+    /// <returns>A shared <see cref="MetadataReference"/> for the path, created once and reused across tests.</returns>
+    public static MetadataReference GetMetadataReference(string path) =>
+        _metadataReferenceCache.GetOrAdd(path, static p => MetadataReference.CreateFromFile(p));
+
+    /// <summary>Checks the generator and analyzer copies of request classification against every source method.</summary>
+    /// <param name="compilation">The compilation containing the request-shape corpus.</param>
+    /// <exception cref="InvalidOperationException"><paramref name="compilation"/> lacks <c>Refit.HttpMethodAttribute</c>, or the two parser copies classify a method differently.</exception>
+    private static void AssertInlineEligibilityParsersAgree(CSharpCompilation compilation)
+    {
+        var httpMethodAttribute = compilation.GetTypeByMetadataName("Refit.HttpMethodAttribute")
+            ?? throw new InvalidOperationException("The test compilation does not reference Refit.HttpMethodAttribute.");
+        var formattable = compilation.GetTypeByMetadataName("System.IFormattable");
+
+        var generatorAdapterInterface = ReturnTypeAdapterParsing.ResolveReturnTypeAdapterInterface(compilation);
+        var generatorAdapters = ReturnTypeAdapterParsing.DiscoverReturnTypeAdapters(
+            compilation,
+            generatorAdapterInterface,
+            CancellationToken.None);
+        var generatorIndexedFormat = QueryParameterParsing.ResolveIndexedCollectionFormatValue(compilation);
+
+        var analyzerAdapterInterface = ReturnTypeAdapterParsing.ResolveReturnTypeAdapterInterface(compilation);
+        var analyzerAdapters = ReturnTypeAdapterParsing.DiscoverReturnTypeAdapters(
+            compilation,
+            analyzerAdapterInterface,
+            CancellationToken.None);
+        var analyzerIndexedFormat = QueryParameterParsing.ResolveIndexedCollectionFormatValue(compilation);
+
+        foreach (var syntaxTree in compilation.SyntaxTrees)
+        {
+            var semanticModel = compilation.GetSemanticModel(syntaxTree);
+            foreach (var declaration in syntaxTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>())
+            {
+                if (semanticModel.GetDeclaredSymbol(declaration) is not IMethodSymbol method)
+                {
+                    continue;
+                }
+
+                var generatorResult = InlineRequestClassification.CanBuildRequestInline(
+                    method,
+                    httpMethodAttribute,
+                    formattable,
+                    generatorAdapterInterface,
+                    generatorAdapters,
+                    generatorIndexedFormat);
+                var analyzerResult = InlineRequestClassification.CanBuildRequestInline(
+                    method,
+                    httpMethodAttribute,
+                    formattable,
+                    analyzerAdapterInterface,
+                    analyzerAdapters,
+                    analyzerIndexedFormat);
+
+                if (generatorResult != analyzerResult)
+                {
+                    throw new InvalidOperationException($"Generator and analyzer request classification disagree for '{method.ToDisplayString()}'.");
+                }
+            }
+        }
+    }
+
+    /// <summary>Gets the assemblies referenced when compiling generated code.</summary>
+    /// <returns>The distinct, non-dynamic assemblies to reference.</returns>
+    private static Assembly[] GetAssemblyReferencesForCodegen() =>
+        [
+            .. AppDomain.CurrentDomain
+                .GetAssemblies()
+                .Concat(_importantAssemblies.Select(static x => x.Assembly))
+                .Distinct()
+                .Where(static a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
+        ];
+
+    /// <summary>Creates a compilation by parsing the given source strings.</summary>
+    /// <param name="source">The source strings to parse and compile.</param>
+    /// <returns>The created compilation.</returns>
+    private static CSharpCompilation CreateLibrary(params string[] source) =>
+        CreateLibrary(source.Select(static s => CSharpSyntaxTree.ParseText(s)).ToArray());
+
+    /// <summary>Adds runtime framework references used by Roslyn in-memory compilations.</summary>
+    /// <param name="referencePaths">The reference path set to populate.</param>
+    private static void AddTrustedPlatformAssemblies(HashSet<string> referencePaths)
+    {
+        var trustedPlatformAssemblies = (string?)AppContext.GetData(TrustedPlatformAssemblies);
+        if (string.IsNullOrEmpty(trustedPlatformAssemblies))
+        {
+            return;
+        }
+
+        // CI hosts can type-forward BCL types, such as Uri, to implementation assemblies
+        // that are not loaded yet. The trusted platform assembly list gives Roslyn the
+        // complete runtime framework closure for generated-output compilation tests.
+        foreach (var referencePath in trustedPlatformAssemblies.Split(Path.PathSeparator))
+        {
+            if (!string.IsNullOrEmpty(referencePath))
+            {
+                _ = referencePaths.Add(referencePath);
+            }
+        }
+    }
+
+    /// <summary>Determines whether a diagnostic represents an error in generator output.</summary>
+    /// <param name="diagnostic">The diagnostic to inspect.</param>
+    /// <returns><see langword="true"/> when the diagnostic should fail generated-output compilation tests.</returns>
+    private static bool IsGeneratedOutputError(Diagnostic diagnostic) =>
+        diagnostic is { Severity: DiagnosticSeverity.Error }
+        && diagnostic.Id != "CS5001";
+
+    /// <summary>Builds a source file containing a generated-client interface body.</summary>
+    /// <param name="body">The interface member body source.</param>
+    /// <returns>The complete source file.</returns>
+    private static string BuildBodySource(string body) =>
+        $$"""
+          using System;
+          using System.Collections.Generic;
+          using System.Linq;
+          using System.Net.Http;
+          using System.Text;
+          using System.Threading;
+          using System.Threading.Tasks;
+          using Refit;
+
+          namespace RefitGeneratorTest;
+
+          public interface IGeneratedClient
+          {
+          {{body}}
+          }
+          """;
+
+    /// <summary>Runs the generator over the source and returns the verification result.</summary>
+    /// <param name="source">The source to compile and generate from.</param>
+    /// <param name="ignoreNonInterfaces">Whether to ignore non-interface generated results.</param>
+    /// <param name="filePath">The caller source file path used to derive the snapshot type name.</param>
+    /// <param name="memberName">The caller member name used to derive the snapshot method name.</param>
+    /// <returns>A task that completes once the generated output has been verified.</returns>
+    private static Task VerifyGenerator(
+        string source,
+        bool ignoreNonInterfaces,
+        string filePath,
+        string memberName)
+    {
+        var compilation = CreateLibrary(source);
+
+        var generator = new InterfaceStubGeneratorV2();
+        var driver = CSharpGeneratorDriver.Create(generator);
+
+        var ranDriver = driver.RunGenerators(compilation);
+        return GeneratorSnapshot.VerifyAsync(
+            ranDriver,
+            Path.GetFileNameWithoutExtension(filePath),
+            memberName,
+            ignoreNonInterfaces
+                ? static x => x.HintName.Contains("PreserveAttribute.g.cs", StringComparison.Ordinal)
+                    || x.HintName.Contains("Generated.g.cs", StringComparison.Ordinal)
+                : null);
+    }
+
+    /// <summary>Runs the generator and returns a generated source by hint name.</summary>
+    /// <param name="source">The source to compile and generate from.</param>
+    /// <param name="hintName">The generated source hint name.</param>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <returns>The generated source text.</returns>
+    /// <exception cref="InvalidOperationException">The generator did not produce a file named <paramref name="hintName"/>.</exception>
+    private static string Generate(
+        string source,
+        string hintName,
+        bool? generatedRequestBuilding)
+    {
+        var compilation = CreateLibrary(source);
+        var generator = new InterfaceStubGeneratorV2();
+        var driver = CSharpGeneratorDriver.Create(
+            [generator.AsSourceGenerator()],
+            optionsProvider: new TestAnalyzerConfigOptionsProvider(generatedRequestBuilding));
+
+        var ranDriver = driver.RunGenerators(compilation);
+        foreach (var syntaxTree in ranDriver.GetRunResult().GeneratedTrees)
+        {
+            if (Path.GetFileName(syntaxTree.FilePath) == hintName)
+            {
+                return syntaxTree.GetText().ToString();
+            }
+        }
+
+        throw new InvalidOperationException($"Generated file '{hintName}' was not produced.");
+    }
+
+    /// <summary>Analyzer-config options used by source-generator tests.</summary>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <param name="disableSourceGenerator">Whether source generation is disabled.</param>
+    private sealed class TestAnalyzerConfigOptionsProvider(
+        bool? generatedRequestBuilding,
+        bool disableSourceGenerator = false) : AnalyzerConfigOptionsProvider
+    {
+        /// <inheritdoc/>
+        public override AnalyzerConfigOptions GlobalOptions { get; } =
+            new TestAnalyzerConfigOptions(generatedRequestBuilding, disableSourceGenerator);
+
+        /// <inheritdoc/>
+        public override AnalyzerConfigOptions GetOptions(SyntaxTree tree) =>
+            TestAnalyzerConfigOptions.Empty;
+
+        /// <inheritdoc/>
+        public override AnalyzerConfigOptions GetOptions(AdditionalText textFile) =>
+            TestAnalyzerConfigOptions.Empty;
+    }
+
+    /// <summary>Analyzer-config options used by source-generator tests.</summary>
+    /// <param name="generatedRequestBuilding">Whether generated request construction is explicitly configured.</param>
+    /// <param name="disableSourceGenerator">Whether source generation is disabled.</param>
+    private sealed class TestAnalyzerConfigOptions(
+        bool? generatedRequestBuilding,
+        bool disableSourceGenerator) : AnalyzerConfigOptions
+    {
+        /// <summary>Gets empty analyzer-config options.</summary>
+        public static TestAnalyzerConfigOptions Empty { get; } = new(null, false);
+
+        /// <inheritdoc/>
+        public override bool TryGetValue(string key, out string value)
+        {
+            if (key == "build_property.RefitGeneratedRequestBuilding" && generatedRequestBuilding.HasValue)
+            {
+                value = generatedRequestBuilding.Value ? "true" : "false";
+                return true;
+            }
+
+            if (key == "build_property.DisableRefitSourceGenerator" && disableSourceGenerator)
+            {
+                value = "true";
+                return true;
+            }
+
+            value = string.Empty;
+            return false;
+        }
+    }
+}

@@ -1,0 +1,123 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+namespace Refit;
+
+/// <summary>
+/// Controls query or form names, value formats and collection formats. The delimiter joins nested property names (default: '.').
+/// </summary>
+[System.Diagnostics.DebuggerDisplay("{TreatAsString}")]
+[AttributeUsage(AttributeTargets.Parameter
+                | AttributeTargets.Property)] // Property is to allow for form url encoded data
+public sealed class QueryAttribute : Attribute
+{
+    /// <summary>The collection format, or <see langword="null"/> when not explicitly specified.</summary>
+    private CollectionFormat? _collectionFormat;
+
+    /// <summary>Initializes a new instance of the <see cref="QueryAttribute"/> class.</summary>
+    public QueryAttribute()
+    {
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="QueryAttribute"/> class.</summary>
+    /// <param name="delimiter">The delimiter.</param>
+    public QueryAttribute(string delimiter) => Delimiter = delimiter;
+
+    /// <summary>Initializes a new instance of the <see cref="QueryAttribute"/> class.</summary>
+    /// <param name="delimiter">The delimiter.</param>
+    /// <param name="prefix">The prefix.</param>
+    public QueryAttribute(string delimiter, string prefix)
+    {
+        Delimiter = delimiter;
+        Prefix = prefix;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="QueryAttribute"/> class.</summary>
+    /// <param name="delimiter">The delimiter.</param>
+    /// <param name="prefix">The prefix.</param>
+    /// <param name="format">The format.</param>
+    public QueryAttribute(string delimiter, string prefix, string format)
+    {
+        Delimiter = delimiter;
+        Prefix = prefix;
+        Format = format;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="QueryAttribute"/> class.</summary>
+    /// <param name="collectionFormat">The collection format.</param>
+    public QueryAttribute(CollectionFormat collectionFormat) => CollectionFormat = collectionFormat;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the value should be treated as a string.
+    /// Set to true if you want to call ToString() on the object before adding it to the query string.
+    /// </summary>
+    public bool TreatAsString { get; set; }
+
+    /// <summary>Gets or sets the query parameter or form field name. AliasAs takes precedence; null keeps the existing name.</summary>
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether a <see langword="null"/> property value should still be
+    /// serialized (as an empty value, e.g. <c>key=</c>) instead of being omitted. By default null
+    /// properties are skipped; set this to <see langword="true"/> on a property whose null must be sent.
+    /// </summary>
+    public bool SerializeNull { get; set; }
+
+    /// <summary>Gets the value used to customize the name of either the query parameter pair or of the form field when form encoding.</summary>
+    /// <seealso cref="Prefix"/>
+    public string Delimiter { get; } = ".";
+
+    /// <summary>Gets the value used to customize the name of the encoded value.</summary>
+    /// <remarks>
+    /// Gets combined with <see cref="Delimiter"/> in the format <c>var name = $"{Prefix}{Delimiter}{originalFieldName}"</c>
+    /// where <c>originalFieldName</c> is the name of a flattened object property.
+    /// Scalar query arguments keep their parameter or alias name without this prefix or delimiter.
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// class Form
+    /// {
+    ///   [Query("-", "dontlog")]
+    ///   public string password { get; }
+    /// }
+    /// </code>
+    /// will result in the encoded form having a field named <c>dontlog-password</c>.
+    /// </example>
+    public string? Prefix { get; }
+
+    /// <summary>Gets or sets the value used to customize the formatting of the encoded value.</summary>
+    /// <example>
+    /// <code>
+    /// interface IServerApi
+    /// {
+    ///   [Get("/expenses")]
+    ///   Task addExpense([Query(Format="0.00")] double expense);
+    /// }
+    /// </code>
+    /// Calling <c>serverApi.addExpense(5)</c> will result in a URI of <c>{baseUri}/expenses?expense=5.00</c>.
+    /// </example>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1019",
+        Justification = "The shipped attribute supports positional and named Format arguments; removing the setter would break existing declarations.")]
+    public string? Format { get; set; }
+
+    /// <summary>Gets or sets how the collection should be encoded.</summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage(
+        "Design",
+        "CA1019",
+        Justification = "The shipped attribute supports positional and named CollectionFormat arguments; removing the setter would break existing declarations.")]
+    public CollectionFormat CollectionFormat
+    {
+        // Cannot make property nullable due to Attribute restrictions
+        get => _collectionFormat.GetValueOrDefault();
+        set => _collectionFormat = value;
+    }
+
+    /// <summary>Gets a value indicating whether this instance is collection format specified.</summary>
+    /// <value>
+    ///   <c>true</c> if this instance is collection format specified; otherwise, <c>false</c>.
+    /// </value>
+    public bool IsCollectionFormatSpecified => _collectionFormat.HasValue;
+}

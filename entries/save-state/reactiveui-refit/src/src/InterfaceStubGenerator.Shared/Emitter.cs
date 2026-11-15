@@ -1,0 +1,729 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.Runtime.CompilerServices;
+using System.Text;
+using Microsoft.CodeAnalysis.Text;
+
+namespace Refit.Generator;
+
+/// <summary>Emits the generated source code for Refit interface implementations.</summary>
+internal static class Emitter
+{
+    /// <summary>The generated literal for <see langword="false"/>.</summary>
+    internal const string FalseLiteral = "false";
+
+    /// <summary>The C# null keyword literal.</summary>
+    internal const string NullLiteral = "null";
+
+    /// <summary>The number of quote characters wrapping a C# string literal.</summary>
+    internal const int StringLiteralQuoteLength = 2;
+
+    /// <summary>The rendered length of the <c>", "</c> separator emitted between joined items.</summary>
+    internal const int ListSeparatorLength = 2;
+
+    /// <summary>The radix used when rendering decimal integers.</summary>
+    internal const int DecimalRadix = 10;
+
+    /// <summary>The generated literal for <see langword="true"/>.</summary>
+    internal const string TrueLiteral = "true";
+
+    /// <summary>The C# global namespace alias prefix.</summary>
+    internal const string GlobalPrefix = "global::";
+
+    /// <summary>The variable name used for the cached type parameter array field.</summary>
+    internal const string TypeParameterVariableName = "______typeParameters";
+
+    /// <summary>The exception message emitted for interface methods without usable Refit metadata.</summary>
+    internal const string NonRefitMethodExceptionMessage =
+        "Either this method has no Refit HTTP method attribute or you've used something other than a string literal for the 'path' argument.";
+
+    /// <summary>The generated prefix for type expressions.</summary>
+    internal const string TypeOfPrefix = "typeof(";
+
+    /// <summary>The fully qualified namespace prefix that precedes the assembly-scoped generated implementation container type.</summary>
+    internal const string GeneratedNamespacePrefix = "global::Refit.Implementation.";
+
+    /// <summary>The number of spaces in one generated indentation level.</summary>
+    internal const int CharsPerIndentation = 4;
+
+    /// <summary>The highest indentation level kept in the shared <see cref="SpanBufferEmission.IndentCache"/>; deeper levels allocate.</summary>
+    internal const int MaxCachedIndentLevel = 8;
+
+    /// <summary>Indentation level for generated nested implementation classes.</summary>
+    internal const int ClassMemberIndentation = 2;
+
+    /// <summary>Indentation level for generated method members.</summary>
+    internal const int MethodMemberIndentation = 3;
+
+    /// <summary>Indentation level for generated method constraints and statements.</summary>
+    internal const int MethodBodyIndentation = 4;
+
+    /// <summary>Indentation level for generated BuildRelativeUri relative to <see cref="Emitter.MethodBodyIndentation"/>.</summary>
+    internal const int HttpAdditionalBuildRelativeUriIndentation = 2;
+
+    /// <summary>Indentation level for generated BuildRequestPath relative to <see cref="Emitter.MethodBodyIndentation"/>.</summary>
+    internal const int HttpAdditionalBuildRequestPathIndentation = 3;
+
+    /// <summary>The generated attribute that identifies source produced by this generator.</summary>
+    internal static readonly string GeneratedCodeAttribute = BuildGeneratedCodeAttribute();
+
+    /// <summary>The XML metacharacters that force <see cref="Emitter.ToXmlDocumentationText"/> onto its escaping path.</summary>
+    private static readonly char[] XmlEscapeChars = ['&', '<', '>'];
+
+    /// <summary>Emits the shared preserve attribute and factory registration code.</summary>
+    /// <param name="model">The context generation model describing the interfaces.</param>
+    /// <param name="addSource">Callback used to add generated source files.</param>
+    /// <param name="support">How the registration is hooked to assembly load in the consumer compilation.</param>
+    internal static void EmitSharedCode(
+        ContextGenerationModel model,
+        Action<string, SourceText> addSource,
+        ModuleInitializerSupport support = ModuleInitializerSupport.Guarded)
+    {
+        if (model.Interfaces.Length == 0)
+        {
+            return;
+        }
+
+        var generatedFileHeader = BuildSharedGeneratedFileHeader(model.Interfaces, model.EmitGeneratedCodeMarkers);
+        SharedInfrastructureEmission.EmitPreserveAttribute(model, generatedFileHeader, addSource);
+        SharedInfrastructureEmission.EmitGeneratedFactoryModule(model, generatedFileHeader, addSource, support);
+    }
+
+    /// <summary>Emits the generated implementation source for a single interface.</summary>
+    /// <param name="model">The interface model to emit.</param>
+    /// <returns>The generated source text for the interface implementation.</returns>
+    internal static SourceText EmitInterface(
+        InterfaceModel model)
+    {
+        var uniqueNames = new UniqueNameBuilder();
+        uniqueNames.Reserve(model.Members.MemberNames);
+        var requestBuilderFieldName = uniqueNames.New("_requestBuilder");
+        var settingsFieldName = uniqueNames.New("_settings");
+
+        // Assemble the interface source in one pooled buffer: the fixed wrapper (header, type declaration, fields, and
+        // constructors up to the settings constructor), then the member blocks appended straight in, then the closing
+        // braces. Neither the wrapper nor the member blocks materialize as their own string before the source is built.
+        var builder = new PooledStringBuilder();
+        AppendInterfacePrefix(builder, model, requestBuilderFieldName, settingsFieldName);
+        AppendInterfaceMemberSource(builder, model, uniqueNames, requestBuilderFieldName, settingsFieldName);
+
+        // Close the implementation class, the Generated partial class, and the Refit.Implementation namespace.
+        _ = builder.AppendLine("        }").AppendLine("    }").AppendLine("}");
+        return ToSourceText(builder.ToString());
+    }
+
+    /// <summary>Appends the fixed class wrapper up to the settings constructor straight into the interface buffer.</summary>
+    /// <param name="builder">The buffer accumulating the interface source.</param>
+    /// <param name="model">The interface model being emitted.</param>
+    /// <param name="requestBuilderFieldName">The unique generated field name that stores the request builder.</param>
+    /// <param name="settingsFieldName">The unique generated field name that stores Refit settings.</param>
+    internal static void AppendInterfacePrefix(
+        PooledStringBuilder builder,
+        InterfaceModel model,
+        string requestBuilderFieldName,
+        string settingsFieldName)
+    {
+        var requestBuilderFieldType = model.Options.SupportsNullable
+            ? "global::Refit.IRequestBuilder?"
+            : "global::Refit.IRequestBuilder";
+        var settingsConstructorSource = BuildSettingsConstructor(model, settingsFieldName);
+
+        _ = builder
+            .Append(BuildGeneratedFileHeader(model.Nullability, model.Options.EmitGeneratedCodeMarkers))
+            .Append(BuildExternAliasDirectives(model.ExternAliases)).AppendLine()
+            .AppendLine("namespace Refit.Implementation")
+            .AppendLine("{")
+            .AppendLine("    /// <summary>Contains generated Refit implementation types.</summary>")
+            .Append("    internal partial class ").Append(model.Names.GeneratedClassName).AppendLine()
+            .AppendLine("    {")
+            .Append("        /// <summary>Generated Refit implementation for ").Append(ToXmlDocumentationText(model.Names.InterfaceDisplayName)).AppendLine(".</summary>");
+        AppendTypeParameterDocumentation(builder, model.Members.Constraints, ClassMemberIndentation);
+        _ = builder
+            .Append("        ").Append(GeneratedCodeAttribute).AppendLine()
+            .AppendLine("        [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]")
+            .AppendLine("        [global::System.Diagnostics.DebuggerNonUserCode]")
+            .Append("        [").Append(model.Options.PreserveAttributeDisplayName).AppendLine("]")
+            .AppendLine("        [global::System.Reflection.Obfuscation(Exclude=true)]")
+            .AppendLine("        [global::System.ComponentModel.EditorBrowsable(global::System.ComponentModel.EditorBrowsableState.Never)]")
+            .Append("        private sealed class ").Append(model.Names.Ns).Append(model.Names.ClassDeclaration).AppendLine()
+            .Append("            : ").Append(model.Names.InterfaceDisplayName).AppendLine();
+        TypeConstraintEmission.AppendConstraints(builder, model.Members.Constraints, false, ClassMemberIndentation);
+        _ = builder
+            .AppendLine("        {")
+            .AppendLine("            /// <summary>The request builder used to create Refit method delegates.</summary>")
+            .Append("            private readonly ")
+            .Append(requestBuilderFieldType)
+            .Append(" ")
+            .Append(requestBuilderFieldName)
+            .AppendLine(";")
+            .AppendLine();
+        AppendInterfaceConstructor(builder, model, requestBuilderFieldName, settingsFieldName, settingsConstructorSource);
+    }
+
+    /// <summary>Appends the generated property, method, and dispose member blocks for an interface into the buffer.</summary>
+    /// <param name="builder">The buffer accumulating the interface source.</param>
+    /// <param name="model">The interface model being emitted.</param>
+    /// <param name="uniqueNames">Contains the unique member names in the interface scope.</param>
+    /// <param name="requestBuilderFieldName">The unique generated field name that stores the request builder.</param>
+    /// <param name="settingsFieldName">The unique generated field name that stores Refit settings.</param>
+    internal static void AppendInterfaceMemberSource(
+        PooledStringBuilder builder,
+        InterfaceModel model,
+        UniqueNameBuilder uniqueNames,
+        string requestBuilderFieldName,
+        string settingsFieldName)
+    {
+        var enumFormatterScope = new QueryParameterEmission.EnumFormatterScope(uniqueNames);
+        var fieldNames = new GeneratedFieldNames(requestBuilderFieldName, settingsFieldName);
+
+        // Append the five member blocks (properties, top-level and derived Refit methods, non-Refit stubs, and dispose)
+        // straight into the interface buffer so none of the block strings materialize before the source is built.
+        AppendInterfaceProperties(builder, model.Members.Properties, model.Options.SupportsNullable);
+        AppendRefitMethods(builder, model.Members.RefitMethods, true, model, uniqueNames, fieldNames, enumFormatterScope);
+        AppendRefitMethods(builder, model.Members.DerivedRefitMethods, false, model, uniqueNames, fieldNames, enumFormatterScope);
+        AppendNonRefitMethods(builder, model.Members.NonRefitMethods, model.Options.SupportsNullable);
+        AppendDisposableMethod(builder, model.DisposeMethod);
+    }
+
+    /// <summary>Creates source text from generated source.</summary>
+    /// <param name="source">The generated source.</param>
+    /// <returns>The generated source text.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static SourceText ToSourceText(string source) => SourceText.From(source, Encoding.UTF8);
+
+    /// <summary>Builds the generated code attribute using this generator assembly identity.</summary>
+    /// <returns>The generated attribute source.</returns>
+    internal static string BuildGeneratedCodeAttribute()
+    {
+        // This generator assembly always carries a name and version, so no placeholder fallback is reachable.
+        var assemblyName = typeof(Emitter).Assembly.GetName();
+        return
+            $"[global::System.CodeDom.Compiler.GeneratedCodeAttribute({ToCSharpStringLiteral(assemblyName.Name!)}, {ToCSharpStringLiteral(assemblyName.Version!.ToString())})]";
+    }
+
+    /// <summary>Escapes text for generated XML documentation comments.</summary>
+    /// <param name="value">The text to escape.</param>
+    /// <returns>The escaped XML documentation text.</returns>
+    internal static string ToXmlDocumentationText(
+        string value)
+    {
+        // Most identifiers and type names contain none of the XML metacharacters, so return them untouched
+        // instead of allocating a builder and copying character by character.
+        if (value.IndexOfAny(XmlEscapeChars) < 0)
+        {
+            return value;
+        }
+
+        var builder = new PooledStringBuilder(value.Length);
+        foreach (var c in value)
+        {
+            switch (c)
+            {
+                case '&':
+                    {
+                        _ = builder.Append("&amp;");
+                        break;
+                    }
+
+                case '<':
+                    {
+                        _ = builder.Append("&lt;");
+                        break;
+                    }
+
+                case '>':
+                    {
+                        _ = builder.Append("&gt;");
+                        break;
+                    }
+
+                default:
+                    {
+                        _ = builder.Append(c);
+                        break;
+                    }
+            }
+        }
+
+        return builder.ToString();
+    }
+
+    /// <summary>Builds the <c>extern alias</c> directives an interface's types require, if any.</summary>
+    /// <param name="aliases">The extern aliases the interface's types reference.</param>
+    /// <returns>The directives, or an empty string when none are needed.</returns>
+    internal static string BuildExternAliasDirectives(
+        string[] aliases)
+    {
+        if (aliases.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        var builder = new PooledStringBuilder();
+        foreach (var alias in aliases)
+        {
+            _ = builder.Append("extern alias ").Append(alias).AppendLine(";");
+        }
+
+        return builder.ToString();
+    }
+
+    /// <summary>Builds the generated file header for an interface implementation.</summary>
+    /// <param name="nullability">The nullable context for the generated source.</param>
+    /// <param name="emitGeneratedCodeMarkers">Whether generated-code markers should be emitted.</param>
+    /// <returns>The generated file header.</returns>
+    internal static string BuildGeneratedFileHeader(
+        Nullability nullability,
+        bool emitGeneratedCodeMarkers)
+    {
+        if (!emitGeneratedCodeMarkers)
+        {
+            return nullability == Nullability.None
+                ? """
+                  // Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+                  // ReactiveUI and Contributors licenses this file to you under the MIT license.
+                  // See the LICENSE file in the project root for full license information.
+
+                  """
+                : """
+                  // Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+                  // ReactiveUI and Contributors licenses this file to you under the MIT license.
+                  // See the LICENSE file in the project root for full license information.
+
+                  #nullable enable annotations
+                  #nullable disable warnings
+
+                  """;
+        }
+
+        return nullability == Nullability.None
+            ? "// <auto-generated/>\n"
+            : """
+              // <auto-generated/>
+
+              #nullable enable annotations
+              #nullable disable warnings
+
+              """;
+    }
+
+    /// <summary>Builds the generated file header for shared generated files.</summary>
+    /// <param name="interfaces">The parsed interface models.</param>
+    /// <param name="emitGeneratedCodeMarkers">Whether generated-code markers should be emitted.</param>
+    /// <returns>The generated file header.</returns>
+    internal static string BuildSharedGeneratedFileHeader(
+        InterfaceModel[] interfaces,
+        bool emitGeneratedCodeMarkers)
+    {
+        for (var i = 0; i < interfaces.Length; i++)
+        {
+            if (interfaces[i].Nullability != Nullability.None)
+            {
+                return BuildGeneratedFileHeader(interfaces[i].Nullability, emitGeneratedCodeMarkers);
+            }
+        }
+
+        return BuildGeneratedFileHeader(Nullability.None, emitGeneratedCodeMarkers);
+    }
+
+    /// <summary>Builds the generated factory registrations for non-generic interfaces.</summary>
+    /// <param name="interfaces">The parsed interface models.</param>
+    /// <returns>The generated factory registrations.</returns>
+    internal static string BuildGeneratedFactoryRegistrations(
+        InterfaceModel[] interfaces)
+    {
+        // Append each registration straight into one pooled buffer instead of a per-registration string array joined by
+        // ConcatParts, so the array and the trimmed join result never materialize.
+        var builder = new PooledStringBuilder();
+        for (var i = 0; i < interfaces.Length; i++)
+        {
+            var interfaceModel = interfaces[i];
+            if (interfaceModel.Names.ClassDeclaration.Contains("<"))
+            {
+                continue;
+            }
+
+            // The static modifier on a lambda is C# 9; older consumers must not see it.
+            var lambdaModifier = interfaceModel.Options.SupportsStaticLambdas ? "static " : string.Empty;
+            _ = builder
+                .Append("            global::Refit.RestService.RegisterGeneratedFactory<").Append(interfaceModel.Names.InterfaceDisplayName).AppendLine(">(")
+                .Append("                ").Append(lambdaModifier).AppendLine("(client, requestBuilder) =>")
+                .Append("                    new ").Append(GeneratedNamespacePrefix).Append(interfaceModel.Names.GeneratedClassName).Append('.')
+                .Append(interfaceModel.Names.Ns).Append(interfaceModel.Names.ClassSuffix).AppendLine("(client, requestBuilder));");
+
+            if (CanUseGeneratedSettingsFactory(interfaceModel))
+            {
+                _ = builder
+                    .Append("            global::Refit.RestService.RegisterGeneratedSettingsFactory<").Append(interfaceModel.Names.InterfaceDisplayName).AppendLine(">(")
+                    .Append("                ").Append(lambdaModifier).AppendLine("(client, settings) =>")
+                    .Append("                    new ").Append(GeneratedNamespacePrefix).Append(interfaceModel.Names.GeneratedClassName).Append('.')
+                    .Append(interfaceModel.Names.Ns).Append(interfaceModel.Names.ClassSuffix).AppendLine("(client, settings));");
+            }
+        }
+
+        return builder.ToString();
+    }
+
+    /// <summary>Builds the settings-only constructor when the generated implementation can avoid request-builder reflection.</summary>
+    /// <param name="model">The interface model being emitted.</param>
+    /// <param name="settingsFieldName">The unique generated field name that stores Refit settings.</param>
+    /// <returns>The generated constructor source, or an empty string.</returns>
+    internal static string BuildSettingsConstructor(InterfaceModel model, string settingsFieldName) =>
+        !CanUseGeneratedSettingsFactory(model)
+            ? string.Empty
+            : $$"""
+
+                            /// <summary>Initializes a new instance of the {{model.Names.Ns}}{{model.Names.ClassSuffix}} class for generated-only execution.</summary>
+                            /// <param name="client">The HTTP client used by the generated implementation.</param>
+                            /// <param name="settings">The settings used by the generated implementation.</param>
+                            public {{model.Names.Ns}}{{model.Names.ClassSuffix}}(global::System.Net.Http.HttpClient client, global::Refit.RefitSettings settings)
+                            {
+                                Client = client;
+                                {{settingsFieldName}} = settings;
+                            }
+                """;
+
+    /// <summary>Determines whether an interface can be constructed without a reflection request builder.</summary>
+    /// <param name="model">The interface model being emitted.</param>
+    /// <returns><see langword="true"/> when all Refit methods use generated request construction.</returns>
+    internal static bool CanUseGeneratedSettingsFactory(InterfaceModel model) =>
+        (model.Members.RefitMethods.Length != 0 || model.Members.DerivedRefitMethods.Length != 0)
+        && AllRequestsCanGenerateInline(model.Members.RefitMethods)
+        && AllRequestsCanGenerateInline(model.Members.DerivedRefitMethods);
+
+    /// <summary>Determines whether all methods in a collection use generated request construction.</summary>
+    /// <param name="methods">The methods to inspect.</param>
+    /// <returns><see langword="true"/> when each method can be emitted inline.</returns>
+    internal static bool AllRequestsCanGenerateInline(
+        MethodModel[] methods)
+    {
+        for (var i = 0; i < methods.Length; i++)
+        {
+            if (!methods[i].Request.Generation.CanGenerateInline)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>Appends documentation for generated type parameters.</summary>
+    /// <param name="builder">The buffer accumulating the interface's generated member source.</param>
+    /// <param name="typeParameters">The parsed type parameter constraints.</param>
+    /// <param name="indentationLevel">The generated indentation level.</param>
+    internal static void AppendTypeParameterDocumentation(
+        PooledStringBuilder builder,
+        TypeConstraint[] typeParameters,
+        int indentationLevel)
+    {
+        if (typeParameters.Length == 0)
+        {
+            return;
+        }
+
+        var indentation = SpanBufferEmission.Indent(indentationLevel);
+        for (var i = 0; i < typeParameters.Length; i++)
+        {
+            _ = builder.Append(indentation)
+                .Append("/// <typeparam name=\"")
+                .Append(typeParameters[i].DeclaredName)
+                .AppendLine("\">The generated interface type parameter.</typeparam>");
+        }
+    }
+
+    /// <summary>Appends the generated interface property implementations into the member buffer.</summary>
+    /// <param name="builder">The buffer accumulating the interface's generated member source.</param>
+    /// <param name="properties">The property models to emit.</param>
+    /// <param name="supportsNullable">Whether the consumer compilation supports nullable reference type syntax.</param>
+    internal static void AppendInterfaceProperties(
+        PooledStringBuilder builder,
+        InterfacePropertyModel[] properties,
+        bool supportsNullable)
+    {
+        for (var i = 0; i < properties.Length; i++)
+        {
+            // A satisfied member emits an empty string, which appends as a no-op.
+            _ = builder.Append(BuildInterfaceProperty(properties[i], supportsNullable));
+        }
+    }
+
+    /// <summary>Appends the generated Refit method implementations into the member buffer.</summary>
+    /// <param name="builder">The buffer accumulating the interface's generated member source.</param>
+    /// <param name="methods">The method models to emit.</param>
+    /// <param name="isTopLevel">True if directly from the type we're generating for, false for methods found on base interfaces.</param>
+    /// <param name="interfaceModel">The interface model being emitted.</param>
+    /// <param name="uniqueNames">Contains the unique member names in the interface scope.</param>
+    /// <param name="fieldNames">The generated request-builder and settings backing-field names.</param>
+    /// <param name="enumFormatterScope">The enum formatter scope for the interface.</param>
+    internal static void AppendRefitMethods(
+        PooledStringBuilder builder,
+        MethodModel[] methods,
+        bool isTopLevel,
+        InterfaceModel interfaceModel,
+        UniqueNameBuilder uniqueNames,
+        GeneratedFieldNames fieldNames,
+        QueryParameterEmission.EnumFormatterScope enumFormatterScope)
+    {
+        for (var i = 0; i < methods.Length; i++)
+        {
+            InlineRequestEmission.BuildRefitMethod(
+                builder,
+                methods[i],
+                isTopLevel,
+                interfaceModel,
+                uniqueNames,
+                fieldNames,
+                enumFormatterScope);
+        }
+    }
+
+    /// <summary>Appends the generated non-Refit method stubs into the member buffer.</summary>
+    /// <param name="builder">The buffer accumulating the interface's generated member source.</param>
+    /// <param name="methods">The non-Refit method models to emit.</param>
+    /// <param name="supportsNullable">Whether the consumer compilation supports nullable reference type syntax.</param>
+    internal static void AppendNonRefitMethods(
+        PooledStringBuilder builder,
+        MethodModel[] methods,
+        bool supportsNullable)
+    {
+        for (var i = 0; i < methods.Length; i++)
+        {
+            _ = builder.Append(BuildNonRefitMethod(methods[i], supportsNullable));
+        }
+    }
+
+    /// <summary>Converts a bool to a lowercase C# literal.</summary>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>The lowercase bool literal.</returns>
+    internal static string ToLowerInvariantString(bool value) => value ? TrueLiteral : FalseLiteral;
+
+    /// <summary>Converts a string into a C# string literal.</summary>
+    /// <param name="value">The value to quote.</param>
+    /// <returns>The escaped C# string literal.</returns>
+    internal static string ToCSharpStringLiteral(
+        string value)
+    {
+        // The vast majority of emitted literals (query keys, header names, paths) need no escaping, so wrap them in
+        // quotes with a single concat instead of allocating a builder and appending each character.
+        if (!NeedsCSharpEscaping(value))
+        {
+            return $"\"{value}\"";
+        }
+
+        var builder = new PooledStringBuilder(value.Length + StringLiteralQuoteLength);
+        _ = builder.Append('"');
+        foreach (var c in value)
+        {
+            LiteralEmissionHelpers.AppendEscapedCharacter(builder, c, false);
+        }
+
+        _ = builder.Append('"');
+        return builder.ToString();
+    }
+
+    /// <summary>Determines whether any character in a value requires C# string-literal escaping.</summary>
+    /// <param name="value">The value to inspect.</param>
+    /// <returns><see langword="true"/> when at least one character needs an escape sequence.</returns>
+    internal static bool NeedsCSharpEscaping(
+        string value)
+    {
+        foreach (var c in value)
+        {
+            if (LiteralEmissionHelpers.EscapeSequence(c) is not null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Builds a stub body for a non-Refit method that throws at runtime.</summary>
+    /// <param name="methodModel">The method model being emitted.</param>
+    /// <param name="supportsNullable">Whether the consumer compilation supports nullable reference type syntax.</param>
+    /// <returns>The generated method stub.</returns>
+    internal static string BuildNonRefitMethod(
+        in MethodModel methodModel,
+        bool supportsNullable)
+    {
+        var isExplicit = methodModel.Annotations.IsExplicitInterface;
+        var messageLiteral = ToCSharpStringLiteral(NonRefitMethodExceptionMessage);
+        var methodIndent = SpanBufferEmission.Indent(MethodMemberIndentation);
+        var bodyIndent = SpanBufferEmission.Indent(MethodBodyIndentation);
+
+        return $$"""
+            {{LiteralEmissionHelpers.BuildMethodOpening(methodModel, isExplicit, isExplicit, supportsNullable)}}{{bodyIndent}}throw new global::System.NotImplementedException({{messageLiteral}});
+            {{methodIndent}}}
+
+            """;
+    }
+
+    /// <summary>Builds an interface property implementation.</summary>
+    /// <param name="property">The property model being emitted.</param>
+    /// <param name="supportsNullable">Whether the consumer compilation supports nullable reference type syntax.</param>
+    /// <returns>The generated property implementation, or an empty string.</returns>
+    internal static string BuildInterfaceProperty(
+        InterfacePropertyModel property,
+        bool supportsNullable)
+    {
+        if (property.IsSatisfiedByGeneratedMember)
+        {
+            return string.Empty;
+        }
+
+        var methodIndent = SpanBufferEmission.Indent(MethodMemberIndentation);
+        var visibility = property.IsExplicitInterface ? string.Empty : "public ";
+        var annotation = supportsNullable && property.Annotation ? "?" : string.Empty;
+        var explicitInterface = property.IsExplicitInterface
+            ? $"{LiteralEmissionHelpers.EnsureGlobalPrefix(property.ContainingType)}."
+            : string.Empty;
+        var getter = property.HasGetter ? " get;" : string.Empty;
+        var setter = property.HasSetter ? " set;" : string.Empty;
+
+        return $$"""
+
+            {{methodIndent}}/// <inheritdoc />
+            {{methodIndent}}{{visibility}}{{property.Type}}{{annotation}} {{explicitInterface}}{{property.Name}} { {{getter}}{{setter}} }
+
+            """;
+    }
+
+    /// <summary>Appends the explicit IDisposable.Dispose implementation into the member buffer.</summary>
+    /// <param name="builder">The buffer accumulating the interface's generated member source.</param>
+    /// <param name="shouldEmit">True when the dispose method should be emitted.</param>
+    internal static void AppendDisposableMethod(
+        PooledStringBuilder builder,
+        bool shouldEmit)
+    {
+        if (!shouldEmit)
+        {
+            return;
+        }
+
+        var methodIndent = SpanBufferEmission.Indent(MethodMemberIndentation);
+        var bodyIndent = SpanBufferEmission.Indent(MethodBodyIndentation);
+        _ = builder.Append($$"""
+
+            {{methodIndent}}/// <inheritdoc />
+            {{methodIndent}}void global::System.IDisposable.Dispose()
+            {{methodIndent}}{
+            {{bodyIndent}}Client?.Dispose();
+            {{methodIndent}}}
+
+            """);
+    }
+
+    /// <summary>Appends the client property and generated implementation constructors.</summary>
+    /// <param name="builder">The interface source buffer.</param>
+    /// <param name="model">The interface metadata.</param>
+    /// <param name="requestBuilderFieldName">The request builder field name.</param>
+    /// <param name="settingsFieldName">The settings field name.</param>
+    /// <param name="settingsConstructorSource">The settings constructor source.</param>
+    internal static void AppendInterfaceConstructor(
+        PooledStringBuilder builder,
+        InterfaceModel model,
+        string requestBuilderFieldName,
+        string settingsFieldName,
+        string settingsConstructorSource) =>
+        _ = builder
+            .AppendLine("            /// <summary>The settings used by this generated Refit implementation.</summary>")
+            .Append("            private readonly global::Refit.RefitSettings ")
+            .Append(settingsFieldName)
+            .AppendLine(";")
+            .AppendLine()
+            .AppendLine("            /// <summary>Gets the HTTP client used by this generated Refit implementation.</summary>")
+            .AppendLine("            public global::System.Net.Http.HttpClient Client { get; }")
+            .AppendLine()
+            .Append("            /// <summary>Initializes a new instance of the ")
+            .Append(model.Names.Ns)
+            .Append(model.Names.ClassSuffix)
+            .AppendLine(" class.</summary>")
+            .AppendLine("            /// <param name=\"client\">The HTTP client used by the generated implementation.</param>")
+            .AppendLine("            /// <param name=\"requestBuilder\">The request builder used to create Refit method delegates.</param>")
+            .Append("            public ")
+            .Append(model.Names.Ns)
+            .Append(model.Names.ClassSuffix)
+            .AppendLine("(global::System.Net.Http.HttpClient client, global::Refit.IRequestBuilder requestBuilder)")
+            .AppendLine("            {")
+            .AppendLine("                Client = client;")
+            .Append("                ")
+            .Append(requestBuilderFieldName)
+            .AppendLine(" = requestBuilder;")
+            .Append("                ")
+            .Append(settingsFieldName)
+            .AppendLine(" = requestBuilder.Settings;")
+            .AppendLine("            }")
+            .Append(settingsConstructorSource);
+
+    /// <summary>Represents a builder for interpolated strings.</summary>
+    internal sealed class InterpolatedStringBuilder
+    {
+        /// <summary>The internal string builder used to accumulate the interpolated string content.</summary>
+        private readonly PooledStringBuilder _builder;
+
+        /// <summary>Initializes a new instance of the <see cref="Emitter.InterpolatedStringBuilder"/> class.</summary>
+        internal InterpolatedStringBuilder() => _builder = new();
+
+        /// <summary>Appends a c# expression to the interpolated string.</summary>
+        /// <param name="expression">The C# expression.</param>
+        /// <returns>The interpolated string builder.</returns>
+        internal InterpolatedStringBuilder AppendExpression(
+            string expression)
+        {
+            Initialize();
+            _ = _builder.Append('{').Append(expression).Append('}');
+            return this;
+        }
+
+        /// <summary>Appends a literal.</summary>
+        /// <param name="literal">The literal string.</param>
+        /// <returns>The interpolated string builder.</returns>
+        internal InterpolatedStringBuilder AppendLiteral(
+            string literal)
+        {
+            Initialize();
+            foreach (var c in literal)
+            {
+                LiteralEmissionHelpers.AppendEscapedCharacter(_builder, c, true);
+            }
+
+            return this;
+        }
+
+        /// <summary>Builds the final interpolated string representation.</summary>
+        /// <returns>The interpolated string.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal string Build() => _builder.Append('"').ToString();
+
+        /// <summary>Builds the final raw string representation without the final quote.</summary>
+        /// <returns>The raw string.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal string BuildRaw() => _builder.ToString();
+
+        /// <summary>Appends the specified raw string to the builder.</summary>
+        /// <param name="raw">The raw string.</param>
+        /// <returns>The interpolated string builder.</returns>
+        internal InterpolatedStringBuilder FromRaw(
+            string raw)
+        {
+            _ = _builder.Append(raw);
+            return this;
+        }
+
+        /// <summary>Writes the interpolated-string prefix the first time anything is appended.</summary>
+        /// <remarks>A non-empty builder has already been opened, either by this method or by
+        /// <see cref="FromRaw"/>, so the buffer length is the initialization flag.</remarks>
+        private void Initialize()
+        {
+            if (_builder.Length != 0)
+            {
+                return;
+            }
+
+            _ = _builder.Append('$').Append('"');
+        }
+    }
+}

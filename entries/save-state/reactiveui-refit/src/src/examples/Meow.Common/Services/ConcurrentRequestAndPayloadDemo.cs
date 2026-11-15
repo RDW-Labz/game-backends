@@ -1,0 +1,93 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+using System.Security.Cryptography;
+using System.Text;
+using Refit;
+
+namespace Meow;
+
+/// <summary>Demonstrates and validates per-request header isolation across concurrent requests and large async payload deserialization.</summary>
+public static class ConcurrentRequestAndPayloadDemo
+{
+    /// <summary>The number of items requested in the large payload validation.</summary>
+    private const int LargePayloadItemCount = 2000;
+
+    /// <summary>The shared HTTP client used by the in-memory demonstration.</summary>
+    private static readonly HttpClient _httpClient = new(
+        new CustomerIdHeaderHandler(new DemoBackendHandler()))
+    { BaseAddress = new("https://demo.local") };
+
+    /// <summary>The shared Refit API backed by <see cref="_httpClient"/>.</summary>
+    private static readonly IConcurrentRequestDemoApi _api = RestService.For<IConcurrentRequestDemoApi>(
+        _httpClient,
+        new RefitSettings { ContentSerializer = new NewtonsoftJsonContentSerializer() });
+
+    /// <summary>Runs both validations against an in-memory backend.</summary>
+    /// <returns>A task that completes when both validations have run.</returns>
+    public static async Task RunAsync()
+    {
+        await ValidateConcurrentCustomerHeadersAsync(_api).ConfigureAwait(false);
+        await ValidateLargePayloadDeserializationAsync(_api).ConfigureAwait(false);
+    }
+
+    /// <summary>Validates that per-request customer id headers are not shared across concurrent requests.</summary>
+    /// <param name="api">The demo API client.</param>
+    /// <returns>A task that completes when the validation has finished.</returns>
+    /// <exception cref="InvalidOperationException">Any concurrent response echoed a customer id header that does not match the one its request sent.</exception>
+    private static async Task ValidateConcurrentCustomerHeadersAsync(IConcurrentRequestDemoApi api)
+    {
+        const int firstCustomerId = 1000;
+        const int customerCount = 50;
+
+        var requests = new Task<(int Expected, string? Actual)>[customerCount];
+        for (var i = 0; i < requests.Length; i++)
+        {
+            requests[i] = EchoCustomerAsync(api, firstCustomerId + i);
+        }
+
+        var responses = await Task.WhenAll(requests).ConfigureAwait(false);
+        var mismatchCount = 0;
+        for (var i = 0; i < responses.Length; i++)
+        {
+            if (!CryptographicOperations.FixedTimeEquals(
+                Encoding.UTF8.GetBytes(responses[i].Expected.ToString()),
+                Encoding.UTF8.GetBytes(responses[i].Actual ?? string.Empty)))
+            {
+                mismatchCount++;
+            }
+        }
+
+        if (mismatchCount == 0)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"Concurrent customer header check failed. Found {mismatchCount} mismatched CustomerId headers.");
+
+        static async Task<(int Expected, string? Actual)> EchoCustomerAsync(
+            IConcurrentRequestDemoApi api,
+            int customerId)
+        {
+            var echo = await api.EchoCustomerAsync(customerId).ConfigureAwait(false);
+            return (customerId, echo.CustomerIdHeader);
+        }
+    }
+
+    /// <summary>Validates that a large async-only payload is fully read and deserialized.</summary>
+    /// <param name="api">The demo API client.</param>
+    /// <returns>A task that completes when the validation has finished.</returns>
+    /// <exception cref="InvalidOperationException">The deserialized payload does not contain every item the request asked for.</exception>
+    private static async Task ValidateLargePayloadDeserializationAsync(IConcurrentRequestDemoApi api)
+    {
+        var payload = await api.GetLargePayloadAsync(LargePayloadItemCount).ConfigureAwait(false);
+        if (payload.Items.Count == LargePayloadItemCount)
+        {
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"Large payload check failed. Expected {LargePayloadItemCount} items but got {payload.Items.Count}.");
+    }
+}

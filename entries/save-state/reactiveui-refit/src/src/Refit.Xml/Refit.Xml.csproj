@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Product>Refit Xml Serializer ($(TargetFramework))</Product>
+    <PackageDescription>XML content serializer for Refit clients that send or receive XML payloads through System.Xml.Serialization.XmlSerializer.</PackageDescription>
+    <PackageTags>refit;rest;http;api-client;xml;xmlserializer;serializer;content-serializer</PackageTags>
+    <TargetFrameworks>$(RefitShippingTargets)</TargetFrameworks>
+    <IsTrimmable>false</IsTrimmable>
+    <IsAotCompatible>false</IsAotCompatible>
+    <EnableAotAnalyzer>false</EnableAotAnalyzer>
+    <EnableTrimAnalyzer>false</EnableTrimAnalyzer>
+  </PropertyGroup>
+  <ItemGroup Condition="$(TargetFramework.StartsWith('net4'))">
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\HttpContentExtensions.cs" Link="Shared\HttpContentExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Refit\Refit.csproj" />
+  </ItemGroup>
+</Project>

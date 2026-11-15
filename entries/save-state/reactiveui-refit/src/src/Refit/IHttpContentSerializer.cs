@@ -1,0 +1,42 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using System.Diagnostics.CodeAnalysis;
+
+namespace Refit;
+
+/// <summary>Provides content serialization to <see cref="HttpContent"/>.</summary>
+public interface IHttpContentSerializer
+{
+    /// <summary>Serializes an object of type <typeparamref name="T"/> to <see cref="HttpContent"/>.</summary>
+    /// <typeparam name="T">Type of the object to serialize from.</typeparam>
+    /// <param name="item">Object to serialize.</param>
+    /// <returns><see cref="HttpContent"/> that contains the serialized <typeparamref name="T"/> object.</returns>
+#if !NET8_0_OR_GREATER
+#endif
+    [SuppressMessage(
+        "Design",
+        "SST2307:Generic method type parameters should be inferable from the parameters",
+        Justification = "Type parameter intentionally specified explicitly by callers.")]
+    HttpContent ToHttpContent<T>(T item);
+
+    /// <summary>Deserializes an object of type <typeparamref name="T"/> from an <see cref="HttpContent"/> object.</summary>
+    /// <typeparam name="T">Type of the object to serialize to.</typeparam>
+    /// <param name="content">HttpContent object to deserialize.</param>
+    /// <param name="cancellationToken">CancellationToken to abort the deserialization.</param>
+    /// <returns>The deserialized object of type <typeparamref name="T"/>.</returns>
+#if !NET8_0_OR_GREATER
+#endif
+    [SuppressMessage(
+        "Design",
+        "SST2307:Generic method type parameters should be inferable from the parameters",
+        Justification = "Type parameter intentionally specified explicitly by callers.")]
+    [SuppressMessage(
+        "Design",
+        "SST2309:An externally visible member declares an optional parameter, so callers bake in the default",
+        Justification = "Optional CancellationToken is part of the published interface contract; overloads need default interface methods unavailable on netstandard2.0/net4x.")]
+    Task<T?> FromHttpContentAsync<T>(
+        HttpContent content,
+        CancellationToken cancellationToken = default);
+}

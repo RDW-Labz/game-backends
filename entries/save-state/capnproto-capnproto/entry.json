@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T08:56:22Z",
+ "category": "save-state",
+ "commit": "5f160ba386e6",
+ "delivery": "vendored",
+ "description": "capnproto/capnproto \u2014 Cap'n Proto serialization/RPC system - core tools and C++ library",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "capnproto",
+ "size_bytes": 2988479,
+ "slug": "capnproto-capnproto",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 13251,
+ "system": "Cap'n Proto serialization/RPC system - core tools and C++ library",
+ "upstream": "https://github.com/capnproto/capnproto",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

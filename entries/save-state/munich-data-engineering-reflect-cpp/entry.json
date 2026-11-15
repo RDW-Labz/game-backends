@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T08:56:26Z",
+ "category": "save-state",
+ "commit": "2026-11-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "munich-data-engineering/reflect-cpp \u2014 A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cereal, Command line interfaces, CSV, Environment variables, flexbuffers, msgpack, parquet, TOML, UBJSON, XML, YAML, yas / msgpack.org[C++20]",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "reflect-cpp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "munich-data-engineering-reflect-cpp",
+ "source": "github-search:serialization library c++ stars:>200",
+ "stars": 1969,
+ "system": "A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere",
+ "upstream": "https://github.com/munich-data-engineering/reflect-cpp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

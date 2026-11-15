@@ -1,0 +1,586 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Refit.Generator;
+
+namespace Refit.GeneratorTests;
+
+/// <summary>Direct unit tests for the source generator emitter formatting helpers.</summary>
+public static partial class GeneratorComponentTests
+{
+    /// <summary>Tests for direct emitter formatting helpers.</summary>
+    public class EmitterHelperTests
+    {
+        /// <summary>The default body serialization method name.</summary>
+        private const string DefaultSerializationMethod = "Default";
+
+        /// <summary>The property name used to test explicit and public property access expressions.</summary>
+        private const string TenantPropertyName = "Tenant";
+
+        /// <summary>The non-standard HTTP method attribute name used by candidate-combining tests.</summary>
+        private const string CustomMethodName = "Custom";
+
+        /// <summary>The generated return statement prefix.</summary>
+        private const string ReturnPrefix = "return ";
+
+        /// <summary>The generated false literal.</summary>
+        private const string FalseLiteral = "false";
+
+        /// <summary>The generated true literal.</summary>
+        private const string TrueLiteral = "true";
+
+        /// <summary>The generated fully-qualified task type name.</summary>
+        private const string TaskTypeName = "global::System.Threading.Tasks.Task";
+
+        /// <summary>The generated string type name.</summary>
+        private const string StringTypeName = "string";
+
+        /// <summary>The populated part count used by join helper tests.</summary>
+        private const int PopulatedPartCount = 2;
+
+        /// <summary>The generated parameter attribute-provider field name used by emitter helper tests.</summary>
+        private const string ParameterInfoFieldName = "parameterInfo";
+
+        /// <summary>Verifies escaping every special C# string-literal character.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task AppendEscapedCharacter_HandlesSpecialCharacters()
+        {
+            var builder = new PooledStringBuilder();
+            foreach (var value in
+                     (char[]) [
+                         '\\',
+                         '"',
+                         '\0',
+                         '\a',
+                         '\b',
+                         '\f',
+                         '\n',
+                         '\r',
+                         '\t',
+                         '\v',
+                         '\u0085',
+                         '\u2028',
+                         '\u2029',
+                         '{',
+                         '}',
+                         'x'
+                     ]
+                    )
+            {
+                LiteralEmissionHelpers.AppendEscapedCharacter(builder, value, false);
+            }
+
+            await Assert.That(builder.ToString()).IsEqualTo("""\\\"\0\a\b\f\n\r\t\v\u0085\u2028\u2029{}x""");
+        }
+
+        /// <summary>Verifies characters across the whole range are either escaped or emitted unchanged.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task AppendEscapedCharacter_HandlesTheWholeCharacterRange()
+        {
+            var builder = new PooledStringBuilder();
+            const int lastCharacter = char.MaxValue;
+            for (var value = 0; value <= lastCharacter; value++)
+            {
+                LiteralEmissionHelpers.AppendEscapedCharacter(builder, (char)value, (value & 1) == 0);
+            }
+
+            await Assert.That(builder.ToString().Length).IsGreaterThan(lastCharacter);
+        }
+
+        /// <summary>Verifies braces are doubled in interpolated strings and left alone otherwise.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task AppendEscapedCharacter_DoublesBracesWhenInterpolated()
+        {
+            var builder = new PooledStringBuilder();
+            LiteralEmissionHelpers.AppendEscapedCharacter(builder, '{', true);
+            LiteralEmissionHelpers.AppendEscapedCharacter(builder, '}', true);
+            LiteralEmissionHelpers.AppendEscapedCharacter(builder, 'x', true);
+
+            await Assert.That(builder.ToString()).IsEqualTo("{{}}x");
+        }
+
+        /// <summary>Verifies unguarded indexed query emission and the shared empty parameter provider.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task InlineEmitterHandlesNonNullableIndexedCollectionsAndAttributeFreeParameters()
+        {
+            var parameter = new RequestParameterModel(
+                new RequestParameterIdentityModel("items", "global::System.Collections.Generic.List<string>", false),
+                new RequestParameterPathModel(null, default, default, default, default),
+                [],
+                RequestParameterKind.Query,
+                new RequestParameterHeaderModel(string.Empty, default),
+                string.Empty,
+                new RequestParameterBodyModel(string.Empty, BodyBufferMode.None, default, default, default, default, default, default));
+            var valueFormat = new InlineValueFormatModel(InlineFormatKind.String, null, StringTypeName, false, null);
+            var query = new QueryParameterModel("items", QueryParameterShape.IndexedCollection, new QueryValueRenderingModel(false, false, null, false, valueFormat), []);
+            var members = new PooledStringBuilder();
+            var emission = new QueryParameterEmission.InlineValueEmission("query", "item", "settings", "defaultFormat", "defaultFormFormat", new(new()), members, true);
+            var source = new PooledStringBuilder();
+            ParameterMetadataEmission.BuildParameterInfoField(parameter, "Get", ParameterInfoFieldName, source);
+            QueryObjectEmission.AppendIndexedCollectionQueryStatements(source, parameter, query, ParameterInfoFieldName, emission);
+            var generated = source.ToString();
+            await Assert.That(generated).Contains("GeneratedParameterAttributeProvider.Empty");
+            await Assert.That(generated).Contains("foreach (var item in @items)");
+        }
+
+        /// <summary>Verifies parameter attributes are grouped by type without changing their declaration order.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task BuildParameterInfoFieldGroupsRepeatedAttributeTypes()
+        {
+            const string QueryAttributeType = "global::Refit.QueryAttribute";
+            const string AliasAttributeType = "global::Refit.AliasAsAttribute";
+            string[] emptyArguments = [];
+            NamedAttributeArgument[] emptyNamedArguments = [];
+            ParameterAttributeModel[] attributes =
+            [
+                new ParameterAttributeModel(QueryAttributeType, emptyArguments, emptyNamedArguments), new ParameterAttributeModel(AliasAttributeType, emptyArguments, emptyNamedArguments),
+                new ParameterAttributeModel(QueryAttributeType, emptyArguments, emptyNamedArguments)
+            ];
+            var parameter = new RequestParameterModel(
+                new RequestParameterIdentityModel("id", "int", false),
+                new RequestParameterPathModel(null, default, default, default, default),
+                attributes,
+                RequestParameterKind.Path,
+                new RequestParameterHeaderModel(string.Empty, default),
+                string.Empty,
+                new RequestParameterBodyModel(string.Empty, BodyBufferMode.None, default, default, default, default, default, default));
+            var source = new PooledStringBuilder();
+            ParameterMetadataEmission.BuildParameterInfoField(parameter, "Get", ParameterInfoFieldName, source);
+            await Assert.That(source.ToString())
+                .Contains("{ typeof(global::Refit.QueryAttribute), new object[] { new global::Refit.QueryAttribute(), new global::Refit.QueryAttribute()} }, "
+                          + "{ typeof(global::Refit.AliasAsAttribute), new object[] { new global::Refit.AliasAsAttribute()} }");
+        }
+
+        /// <summary>Verifies a parameter carrying attributes of one type is emitted without a keyed dictionary.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task BuildParameterInfoFieldEmitsSingleTypeProviderForOneAttributeType()
+        {
+            const string QueryAttributeType = "global::Refit.QueryAttribute";
+            string[] emptyArguments = [];
+            NamedAttributeArgument[] emptyNamedArguments = [];
+            ParameterAttributeModel[] attributes =
+                [new ParameterAttributeModel(QueryAttributeType, emptyArguments, emptyNamedArguments), new ParameterAttributeModel(QueryAttributeType, emptyArguments, emptyNamedArguments)];
+            var parameter = new RequestParameterModel(
+                new RequestParameterIdentityModel("id", "int", false),
+                new RequestParameterPathModel(null, default, default, default, default),
+                attributes,
+                RequestParameterKind.Path,
+                new RequestParameterHeaderModel(string.Empty, default),
+                string.Empty,
+                new RequestParameterBodyModel(string.Empty, BodyBufferMode.None, default, default, default, default, default, default));
+            var source = new PooledStringBuilder();
+            ParameterMetadataEmission.BuildParameterInfoField(parameter, "Get", ParameterInfoFieldName, source);
+            var generated = source.ToString();
+            await Assert.That(generated)
+                .Contains("new global::Refit.GeneratedSingleTypeParameterAttributeProvider(typeof(global::Refit.QueryAttribute), "
+                          + "new object[] { new global::Refit.QueryAttribute(), new global::Refit.QueryAttribute() });");
+            await Assert.That(generated).DoesNotContain("Dictionary");
+        }
+
+        /// <summary>Verifies the string-literal escape lookup for special, line-terminator, and verbatim characters.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task EscapeSequence_ReturnsEscapesForSpecialCharactersAndNullOtherwise()
+        {
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\\')).IsEqualTo(@"\\");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('"')).IsEqualTo("\\\"");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\0')).IsEqualTo(@"\0");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\a')).IsEqualTo(@"\a");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\b')).IsEqualTo(@"\b");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\f')).IsEqualTo(@"\f");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\n')).IsEqualTo(@"\n");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\r')).IsEqualTo(@"\r");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\t')).IsEqualTo(@"\t");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\v')).IsEqualTo(@"\v");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\u0085')).IsEqualTo(@"\u0085");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\u2028')).IsEqualTo(@"\u2028");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('\u2029')).IsEqualTo(@"\u2029");
+            await Assert.That(LiteralEmissionHelpers.EscapeSequence('x')).IsNull();
+        }
+
+        /// <summary>Verifies the rendered length of a quoted literal accounts for escapes and the null keyword.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task LiteralOrNullLength_AccountsForEscapesAndNull()
+        {
+            const int NullLength = 4;
+            const int PlainQuotedLength = 5;
+
+            // '"' wrapper (2) + 'a' (1) + '"' escape (2) + U+2028 escape (6) = 11.
+            const int EscapedLength = 11;
+            await Assert.That(LiteralEmissionHelpers.LiteralOrNullLength(null)).IsEqualTo(NullLength);
+            await Assert.That(LiteralEmissionHelpers.LiteralOrNullLength("abc")).IsEqualTo(PlainQuotedLength);
+            await Assert.That(LiteralEmissionHelpers.LiteralOrNullLength("a\"\u2028")).IsEqualTo(EscapedLength);
+        }
+
+        /// <summary>Verifies the decimal length helper for zero, single-digit, and multi-digit values.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task Int32Length_HandlesZeroAndMultipleDigits()
+        {
+            const int SingleDigit = 1;
+            const int ThreeDigits = 3;
+            const int PositiveThreeDigitValue = 123;
+            await Assert.That(LiteralEmissionHelpers.Int32Length(0)).IsEqualTo(SingleDigit);
+            await Assert.That(LiteralEmissionHelpers.Int32Length(SingleDigit)).IsEqualTo(SingleDigit);
+            await Assert.That(LiteralEmissionHelpers.Int32Length(PositiveThreeDigitValue)).IsEqualTo(ThreeDigits);
+        }
+
+        /// <summary>Verifies body buffering and streaming expressions for all supported modes.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task BodyExpressionHelpers_HandleBufferModes()
+        {
+            const string settings = "refitSettings";
+            var settingsBody = CreateBody(DefaultSerializationMethod, BodyBufferMode.Settings);
+            var bufferedBody = CreateBody(DefaultSerializationMethod, BodyBufferMode.Buffered);
+            var streamingBody = CreateBody(DefaultSerializationMethod, BodyBufferMode.Streaming);
+            var noneBody = CreateBody(DefaultSerializationMethod, BodyBufferMode.None);
+            var urlEncodedBody = CreateBody(UrlEncodedSerializationMethod, BodyBufferMode.Streaming);
+            await Assert.That(LiteralEmissionHelpers.BuildBufferBodyExpression(null, settings)).IsEqualTo(FalseLiteral);
+            await Assert.That(LiteralEmissionHelpers.BuildBufferBodyExpression(settingsBody, settings)).IsEqualTo($"{settings}.Buffered");
+            await Assert.That(LiteralEmissionHelpers.BuildBufferBodyExpression(bufferedBody, settings)).IsEqualTo(TrueLiteral);
+            await Assert.That(LiteralEmissionHelpers.BuildBufferBodyExpression(streamingBody, settings)).IsEqualTo(FalseLiteral);
+            await Assert.That(LiteralEmissionHelpers.BuildBufferBodyExpression(noneBody, settings)).IsEqualTo(FalseLiteral);
+            await Assert.That(LiteralEmissionHelpers.BuildStreamBodyExpression(settingsBody, settings)).IsEqualTo($"!{settings}.Buffered");
+            await Assert.That(LiteralEmissionHelpers.BuildStreamBodyExpression(bufferedBody, settings)).IsEqualTo(FalseLiteral);
+            await Assert.That(LiteralEmissionHelpers.BuildStreamBodyExpression(streamingBody, settings)).IsEqualTo(TrueLiteral);
+            await Assert.That(LiteralEmissionHelpers.BuildStreamBodyExpression(noneBody, settings)).IsEqualTo(FalseLiteral);
+            await Assert.That(LiteralEmissionHelpers.BuildStreamBodyExpression(urlEncodedBody, settings)).IsEqualTo(FalseLiteral);
+
+            // With a different settings local name, the expression follows it (collision-avoidance threading).
+            await Assert.That(LiteralEmissionHelpers.BuildBufferBodyExpression(settingsBody, "renamed")).IsEqualTo("renamed.Buffered");
+            await Assert.That(LiteralEmissionHelpers.BuildStreamBodyExpression(settingsBody, "renamed")).IsEqualTo("!renamed.Buffered");
+        }
+
+        /// <summary>Verifies property access and global-prefix helpers.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task PropertyAccessHelpers_HandleGeneratedExplicitAndPublicProperties()
+        {
+            const string TenantInterface = "RefitGeneratorTest.ITenant";
+            const string GlobalTenantInterface = "global::RefitGeneratorTest.ITenant";
+            var generatedProperty = CreateProperty("Client", "global::System.Net.Http.HttpClient", "RefitGeneratorTest.IClient", true, false);
+            var explicitProperty = CreateProperty(TenantPropertyName, "int", TenantInterface, false, true);
+            var prefixedExplicitProperty = CreateProperty(TenantPropertyName, "int", GlobalTenantInterface, false, true);
+            var publicProperty = CreateProperty(TenantPropertyName, "int", TenantInterface, false, false);
+            await Assert.That(LiteralEmissionHelpers.BuildPropertyAccessExpression(generatedProperty)).IsEqualTo("this.Client");
+            await Assert.That(LiteralEmissionHelpers.BuildPropertyAccessExpression(explicitProperty)).IsEqualTo($"(({GlobalTenantInterface})this).Tenant");
+            await Assert.That(LiteralEmissionHelpers.BuildPropertyAccessExpression(prefixedExplicitProperty)).IsEqualTo($"(({GlobalTenantInterface})this).Tenant");
+            await Assert.That(LiteralEmissionHelpers.BuildPropertyAccessExpression(publicProperty)).IsEqualTo("this.Tenant");
+            await Assert.That(LiteralEmissionHelpers.EnsureGlobalPrefix(TenantInterface)).IsEqualTo(GlobalTenantInterface);
+            await Assert.That(LiteralEmissionHelpers.EnsureGlobalPrefix(GlobalTenantInterface)).IsEqualTo(GlobalTenantInterface);
+        }
+
+        /// <summary>Verifies HTTP method, literal, and explicit-prefix formatting helpers.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task LiteralAndHttpMethodHelpers_HandleKnownAndInvalidValues()
+        {
+            await Assert.That(LiteralEmissionHelpers.ToNullableCSharpStringLiteral(null)).IsEqualTo("null");
+            await Assert.That(LiteralEmissionHelpers.ToNullableCSharpStringLiteral("value")).IsEqualTo("\"value\"");
+            await Assert.That(LiteralEmissionHelpers.ToHttpMethodExpression("DELETE")).IsEqualTo("global::System.Net.Http.HttpMethod.Delete");
+            await Assert.That(LiteralEmissionHelpers.ToHttpMethodExpression("GET")).IsEqualTo("global::System.Net.Http.HttpMethod.Get");
+            await Assert.That(LiteralEmissionHelpers.ToHttpMethodExpression("HEAD")).IsEqualTo("global::System.Net.Http.HttpMethod.Head");
+            await Assert.That(LiteralEmissionHelpers.ToHttpMethodExpression("OPTIONS")).IsEqualTo("global::System.Net.Http.HttpMethod.Options");
+            await Assert.That(LiteralEmissionHelpers.ToHttpMethodExpression("POST")).IsEqualTo("global::System.Net.Http.HttpMethod.Post");
+            await Assert.That(LiteralEmissionHelpers.ToHttpMethodExpression("PUT")).IsEqualTo("global::System.Net.Http.HttpMethod.Put");
+            await Assert.That(LiteralEmissionHelpers.ToHttpMethodExpression("PATCH")).IsEqualTo("new global::System.Net.Http.HttpMethod(\"PATCH\")");
+            await Assert.That(LiteralEmissionHelpers.StripExplicitInterfacePrefix("IFoo.Bar")).IsEqualTo("Bar");
+            await Assert.That(LiteralEmissionHelpers.StripExplicitInterfacePrefix("IFoo.")).IsEqualTo("IFoo.");
+            await Assert.That(LiteralEmissionHelpers.StripExplicitInterfacePrefix("Bar")).IsEqualTo("Bar");
+
+            // A verb outside the cached singletons (a custom HTTP method attribute's verb) constructs an HttpMethod.
+            await Assert.That(LiteralEmissionHelpers.ToHttpMethodExpression("TRACE")).IsEqualTo("new global::System.Net.Http.HttpMethod(\"TRACE\")");
+        }
+
+        /// <summary>Verifies the generated return statement prefix for every return type shape, including that an
+        /// awaitable shape returns its task rather than awaiting it.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task ReturnStatementPrefix_HandlesKnownAndInvalidValues()
+        {
+            await Assert.That(LiteralEmissionHelpers.GetReturnStatementPrefix(ReturnTypeInfo.AsyncVoid)).IsEqualTo(ReturnPrefix);
+            await Assert.That(LiteralEmissionHelpers.GetReturnStatementPrefix(ReturnTypeInfo.AsyncResult)).IsEqualTo(ReturnPrefix);
+            await Assert.That(LiteralEmissionHelpers.GetReturnStatementPrefix(ReturnTypeInfo.AsyncEnumerable)).IsEqualTo(ReturnPrefix);
+            await Assert.That(LiteralEmissionHelpers.GetReturnStatementPrefix(ReturnTypeInfo.Observable)).IsEqualTo(ReturnPrefix);
+            await Assert.That(LiteralEmissionHelpers.GetReturnStatementPrefix(ReturnTypeInfo.RequestMessage)).IsEqualTo(ReturnPrefix);
+            await Assert.That(LiteralEmissionHelpers.GetReturnStatementPrefix(ReturnTypeInfo.Return)).IsEqualTo(ReturnPrefix);
+            await Assert.That(LiteralEmissionHelpers.GetReturnStatementPrefix(ReturnTypeInfo.SyncVoid)).IsEqualTo(string.Empty);
+            await Assert.That(static () => LiteralEmissionHelpers.GetReturnStatementPrefix((ReturnTypeInfo)int.MaxValue)).ThrowsExactly<ArgumentOutOfRangeException>();
+        }
+
+        /// <summary>Verifies explicit method openings receive a global interface qualifier.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task BuildMethodOpening_QualifiesExplicitInterfaceMethods()
+        {
+            var method = new MethodModel(
+                "Ping",
+                TaskTypeName,
+                "RefitGeneratorTest.IBase",
+                "Ping",
+                ReturnTypeInfo.AsyncVoid,
+                RequestModel.Empty,
+                [],
+                [],
+                new MethodAnnotationsModel(false, false, false));
+            var source = LiteralEmissionHelpers.BuildMethodOpening(method, true, true, supportsNullable: true);
+            await Assert.That(source).Contains("global::System.Threading.Tasks.Task global::RefitGeneratorTest.IBase.Ping(");
+
+            // A task-returning method hands its task back, so no generated method is emitted async.
+            await Assert.That(source).DoesNotContain("async ");
+        }
+
+        /// <summary>Verifies emitted XML documentation text escapes special characters.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task ToXmlDocumentationText_EscapesSpecialCharacters() => await Assert.That(EmitterTesting.ToXmlDocumentationTextForTesting("A&B<C>")).IsEqualTo("A&amp;B&lt;C&gt;");
+
+        /// <summary>Verifies generated file headers for analyzer-enabled generated code tests.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task BuildGeneratedFileHeader_SupportsNonGeneratedMarkers()
+        {
+            var noneHeader = EmitterTesting.BuildGeneratedFileHeaderForTesting(Nullability.None, emitGeneratedCodeMarkers: false);
+            var nullableHeader = EmitterTesting.BuildGeneratedFileHeaderForTesting(Nullability.Enabled, emitGeneratedCodeMarkers: false);
+            await Assert.That(noneHeader).Contains("ReactiveUI and Contributors");
+            await Assert.That(noneHeader).DoesNotContain("#nullable");
+            await Assert.That(nullableHeader).Contains("#nullable enable annotations");
+        }
+
+        /// <summary>Verifies generated settings factories require at least one inline-capable Refit method.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task CanUseGeneratedSettingsFactory_RejectsEmptyInterfaces()
+        {
+            var emptyModel = CreateInterfaceModel([], []);
+            var inlineModel = CreateInterfaceModel([CreateRefitMethod(canGenerateInline: true)], []);
+            await Assert.That(EmitterTesting.CanUseGeneratedSettingsFactoryForTesting(emptyModel)).IsFalse();
+            await Assert.That(EmitterTesting.CanUseGeneratedSettingsFactoryForTesting(inlineModel)).IsTrue();
+        }
+
+        /// <summary>Verifies parameter type-list helpers handle empty and populated parameter lists.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task BuildParameterTypeList_HandlesEmptyAndPopulatedParameters()
+        {
+            var parameters = (ParameterModel[])[new("first", StringTypeName, false, false), new("second", "global::System.Int32", false, false)];
+            await Assert.That(EmitterTesting.BuildParameterTypeListForTesting([])).IsEqualTo(string.Empty);
+            await Assert.That(EmitterTesting.BuildParameterTypeListForTesting(parameters)).IsEqualTo("typeof(string), typeof(global::System.Int32)");
+        }
+
+        /// <summary>Verifies candidate method combining preserves standard and custom methods.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task CombineCandidateMethods_CombinesStandardAndCustomMethods()
+        {
+            var standard = ParseMethod("Standard", "[Get(\"/standard\")]");
+            var custom = ParseMethod(CustomMethodName, "[Custom(\"CUSTOM\", \"/custom\")]");
+            var result = InterfaceStubGeneratorV2.CombineCandidateMethodsForTesting(([standard], [custom]));
+            var names = result.Select(static method => method.Identifier.ValueText).ToArray();
+            await Assert.That(names.Length).IsEqualTo(PopulatedPartCount);
+            await Assert.That(names[0]).IsEqualTo("Standard");
+            await Assert.That(names[1]).IsEqualTo(CustomMethodName);
+        }
+
+        /// <summary>Verifies standard HTTP method attribute detection handles suffixes and qualified names.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task IsStandardHttpMethodAttributeName_HandlesQualifiedAndAliasNames()
+        {
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName(nameof(GetAttribute)))).IsTrue();
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName("Refit.Post"))).IsTrue();
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName("global::PutAttribute"))).IsTrue();
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName("global::Refit.PutAttribute"))).IsTrue();
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName("Delete"))).IsTrue();
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName(nameof(HeadAttribute)))).IsTrue();
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName("Options"))).IsTrue();
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName(nameof(PatchAttribute)))).IsTrue();
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName("GetAttribute<string>"))).IsFalse();
+            await Assert.That(InterfaceStubGeneratorV2.IsStandardHttpMethodAttributeNameForTesting(ParseName(CustomMethodName))).IsFalse();
+        }
+
+        /// <summary>Verifies an explicitly-implemented Refit method emits an explicit interface prefix on both paths.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task BuildRefitMethod_EmitsExplicitInterfaceForExplicitMethod()
+        {
+            var explicitReflective = CreateRefitMethod(canGenerateInline: false) switch
+            {
+                var binding1 => binding1 with { Annotations = binding1.Annotations with { IsExplicitInterface = true } }
+            };
+            var explicitInline = CreateRefitMethod(canGenerateInline: true) switch
+            {
+                var binding2 => binding2 with { Annotations = binding2.Annotations with { IsExplicitInterface = true } }
+            };
+            var model = CreateInterfaceModel([explicitReflective], []);
+            var reflective = EmitterTesting.BuildRefitMethodForTesting(explicitReflective, isTopLevel: true, model, new(), "_requestBuilder", "_settings");
+            var inline = EmitterTesting.BuildRefitMethodForTesting(explicitInline, isTopLevel: true, model, new(), "_requestBuilder", "_settings");
+            await Assert.That(reflective).Contains("global::RefitGeneratorTest.IGeneratedClient.Get");
+            await Assert.That(inline).Contains("global::RefitGeneratorTest.IGeneratedClient.Get");
+        }
+
+        /// <summary>Verifies constraint emission suppresses override-incompatible keywords for explicit implementations.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task HasConstraintKeywords_HandlesOverrideAndNonOverridePaths()
+        {
+            // class/struct are always emitted; unmanaged/notnull/new/textual are suppressed on overrides/explicit impls.
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.Class), true)).IsTrue();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.Struct), true)).IsTrue();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.Unmanaged), true)).IsFalse();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.NotNull), true)).IsFalse();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.New), true)).IsFalse();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.None, "global::System.IDisposable"), true)).IsFalse();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.Unmanaged), false)).IsTrue();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.NotNull), false)).IsTrue();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.New), false)).IsTrue();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.None, "global::System.IDisposable"), false)).IsTrue();
+            await Assert.That(EmitterTesting.HasConstraintKeywordsForTesting(Constraint(KnownTypeConstraint.None), false)).IsFalse();
+        }
+
+        /// <summary>Creates a type-parameter constraint model.</summary>
+        /// <param name = "known">The well-known constraint flags.</param>
+        /// <param name = "extra">Additional textual constraints.</param>
+        /// <returns>The type constraint.</returns>
+        private static TypeConstraint Constraint(KnownTypeConstraint known, params string[] extra)
+        {
+            string[] textual = extra.Length == 0 ? [] : [.. extra];
+            return new("T", "T", known, textual);
+        }
+
+        /// <summary>Creates a body request parameter model.</summary>
+        /// <param name = "serializationMethod">The serialization method name.</param>
+        /// <param name = "bufferMode">The body buffer mode.</param>
+        /// <returns>The request parameter model.</returns>
+        private static RequestParameterModel CreateBody(string serializationMethod, BodyBufferMode bufferMode) => new(
+            new RequestParameterIdentityModel("body", StringTypeName, false),
+            new RequestParameterPathModel(null, default, default, default, default),
+            [],
+            RequestParameterKind.Body,
+            new RequestParameterHeaderModel(string.Empty, default),
+            string.Empty,
+            new RequestParameterBodyModel(serializationMethod, bufferMode, default, default, default, default, default, default),
+            false);
+
+        /// <summary>Creates an interface property model.</summary>
+        /// <param name = "name">The property name.</param>
+        /// <param name = "type">The property type.</param>
+        /// <param name = "containingType">The containing type display name.</param>
+        /// <param name = "generated">Whether it is satisfied by a generated member.</param>
+        /// <param name = "explicitInterface">Whether it is implemented explicitly.</param>
+        /// <returns>The interface property model.</returns>
+        private static InterfacePropertyModel CreateProperty(string name, string type, string containingType, bool generated, bool explicitInterface) =>
+            new(name, type, false, containingType, string.Empty, true, true, generated, explicitInterface);
+
+        /// <summary>Creates an interface model for direct emitter helper tests.</summary>
+        /// <param name = "refitMethods">The directly declared Refit methods.</param>
+        /// <param name = "derivedRefitMethods">The inherited Refit methods.</param>
+        /// <returns>The interface model.</returns>
+        private static InterfaceModel CreateInterfaceModel(MethodModel[] refitMethods, MethodModel[] derivedRefitMethods) => new(
+            "IGeneratedClient.g.cs",
+            new InterfaceNamesModel("Generated", "IGeneratedClient", "RefitGeneratorTest", "public partial class IGeneratedClient", "RefitGeneratorTest.IGeneratedClient", string.Empty),
+            new InterfaceOptionsModel("RefitInternalGenerated.PreserveAttribute", true, true, true, true, true),
+            new InterfaceMembersModel([], [], [], [], refitMethods, derivedRefitMethods),
+            Nullability.Enabled,
+            false,
+            []);
+
+        /// <summary>Creates a Refit method model for direct emitter helper tests.</summary>
+        /// <param name = "canGenerateInline">Whether the request can be generated inline.</param>
+        /// <returns>The method model.</returns>
+        private static MethodModel CreateRefitMethod(bool canGenerateInline) => new(
+            "Get",
+            TaskTypeName,
+            "RefitGeneratorTest.IGeneratedClient",
+            "Get",
+            ReturnTypeInfo.AsyncVoid,
+            new(
+                "GET",
+                "/",
+                new RequestReturnModel(TaskTypeName, "global::System.Threading.Tasks.Task", false, true),
+                new RequestGenerationModel(canGenerateInline, null, default),
+                new RequestBindingsModel([], []),
+                new RequestBodyModel(default, string.Empty)),
+            [],
+            [],
+            new MethodAnnotationsModel(false, false, false));
+
+        /// <summary>Parses a method declaration for syntax helper tests.</summary>
+        /// <param name = "name">The method name.</param>
+        /// <param name = "attribute">The attribute source.</param>
+        /// <returns>The method declaration syntax.</returns>
+        private static MethodDeclarationSyntax ParseMethod(string name, string attribute)
+        {
+            var compilationUnit = SyntaxFactory.ParseCompilationUnit($"public interface I {{ {attribute} void {name}(); }}");
+            return compilationUnit.DescendantNodes().OfType<MethodDeclarationSyntax>().Single();
+        }
+
+        /// <summary>Parses an attribute name for syntax helper tests.</summary>
+        /// <param name = "name">The name source.</param>
+        /// <returns>The parsed name syntax.</returns>
+        private static NameSyntax ParseName(string name) => SyntaxFactory.ParseName(name);
+    }
+
+    /// <summary>Tests for <see cref = "PooledStringBuilder"/> buffer pooling.</summary>
+    public class PooledStringBuilderTests
+    {
+        /// <summary>The number of builders returned in one batch; chosen above the per-thread free-list capacity so the
+        /// surplus exercises the drop path.</summary>
+        private const int OverflowingBuilderCount = 20;
+
+        /// <summary>The content appended to and expected back from every builder.</summary>
+        private const string Content = "x";
+
+        /// <summary>Verifies returning more builders than the per-thread free list holds drops the surplus without error.</summary>
+        /// <returns>A task representing the asynchronous test.</returns>
+        [Test]
+        public async Task ReturnBuffer_DropsSurplusBuffers_WhenFreeListIsFull()
+        {
+            var results = new string[OverflowingBuilderCount];
+            Exception? failure = null;
+
+            // A dedicated thread starts with an empty thread-local free list, so the buffers rented during
+            // construction are all returned in one batch below: once the list fills, the remainder is dropped.
+            var thread = new Thread(() =>
+            {
+                try
+                {
+                    List<PooledStringBuilder> builders = [with(OverflowingBuilderCount)];
+                    for (var i = 0; i < OverflowingBuilderCount; i++)
+                    {
+                        var builder = new PooledStringBuilder();
+                        _ = builder.Append(Content);
+                        builders.Add(builder);
+                    }
+
+                    for (var i = 0; i < builders.Count; i++)
+                    {
+                        results[i] = builders[i].ToString();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    failure = ex;
+                }
+            });
+            thread.Start();
+            thread.Join();
+            await Assert.That(failure).IsNull();
+            foreach (var result in results)
+            {
+                await Assert.That(result).IsEqualTo(Content);
+            }
+        }
+    }
+}

@@ -1,0 +1,207 @@
+// Copyright (c) 2019-2026 ReactiveUI and Contributors. All rights reserved.
+// ReactiveUI and Contributors licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for full license information.
+
+namespace Refit.Tests;
+
+/// <summary>Tests that <see cref="RestService"/> throws for interfaces with invalid Refit definitions.</summary>
+public class RestServiceExceptions
+{
+    /// <summary>The base address supplied to each invalid interface under test.</summary>
+    private const string BaseAddress = "https://api.github.com";
+
+    /// <summary>Verifies that declaring multiple cancellation tokens throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ManyCancellationTokensShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IManyCancellationTokens>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("only contain a single CancellationToken", exception!);
+    }
+
+    /// <summary>Verifies that declaring multiple header collections throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ManyHeaderCollectionShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IManyHeaderCollections>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("Only one parameter can be a HeaderCollection parameter", exception!);
+    }
+
+    /// <summary>Verifies that a header collection with an unsupported value type throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task InvalidHeaderCollectionTypeShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IHeaderCollectionWrongType>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("HeaderCollection parameter of type", exception!);
+    }
+
+    /// <summary>Verifies that a URL not starting with a slash throws under legacy resolution. Generated request building
+    /// validates the leading slash when the request is built rather than when the client is created, so the throw
+    /// surfaces on the first call instead of from <see cref="RestService.For{T}(string, RefitSettings)"/>.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task UrlDoesntStartWithSlashShouldThrow()
+    {
+        var api = RestService.For<IDoesNotStartSlash>(BaseAddress);
+        Func<Task> call = () => api.GetValue();
+        var exception = await Assert.That(call).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("must start with '/' and be of the form", exception!);
+    }
+
+    /// <summary>Verifies that a URL containing CR or LF characters throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task UrlContainsCrlfShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IUrlContainsCrlf>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("must not contain CR or LF characters", exception!);
+    }
+
+    /// <summary>Verifies that a non-string round-tripping parameter is formatted via <c>ToString</c>, preserving its
+    /// <c>/</c> separators as path structure.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task RoundTripParameterNotStringFormatsAndPreservesSlashes()
+    {
+        var request = await new RequestBuilderImplementation<IRoundTripNotString>()
+            .BuildRequestFactoryForMethod(nameof(IRoundTripNotString.GetValue))([new RepoPath("some/repo")]);
+
+        await Assert.That(request.RequestUri!.PathAndQuery).IsEqualTo("/repos/some/repo/contents");
+    }
+
+    /// <summary>Verifies the source-generated non-string round-trip path matches the reflection builder, escaping
+    /// each segment while preserving the separators.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task RoundTripNotStringGeneratedMatchesReflection()
+    {
+        var repoPath = new RepoPath("some/repo dir");
+        using var handler = new TestHttpMessageHandler();
+        using var client = HttpClientTestFactory.Create(handler, new(BaseAddress));
+        _ = await RestService.ForGenerated<IRoundTripNotString>(client).GetValue(repoPath);
+        var generatedUri = handler.RequestMessage!.RequestUri!.PathAndQuery;
+
+        var reflected = await new RequestBuilderImplementation<IRoundTripNotString>()
+            .BuildRequestFactoryForMethod(nameof(IRoundTripNotString.GetValue))([repoPath]);
+
+        await Assert.That(generatedUri).IsEqualTo(reflected.RequestUri!.PathAndQuery);
+    }
+
+    /// <summary>Verifies that a round-tripping parameter name with leading whitespace throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task RoundTripWithLeadingWhitespaceShouldThrow()
+    {
+        // The whitespace-damaged placeholder binds no parameter, so the interface generates inline and the
+        // unmatched-placeholder check now runs when the request is built rather than at client creation.
+        var service = RestService.For<IRoundTrippingLeadingWhitespace>(BaseAddress);
+        var exception = await Assert.That(() => (Task)service.GetValue("value")).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("has parameter { **path}, but no method parameter matches", exception!);
+    }
+
+    /// <summary>Verifies that a round-tripping parameter name with trailing whitespace throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task RoundTripWithTrailingWhitespaceShouldThrow()
+    {
+        // The whitespace-damaged placeholder binds no parameter, so the interface generates inline and the
+        // unmatched-placeholder check now runs when the request is built rather than at client creation.
+        var service = RestService.For<IRoundTrippingTrailingWhitespace>(BaseAddress);
+        var exception = await Assert.That(() => (Task)service.GetValue("value")).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("has parameter {** path}, but no method parameter matches", exception!);
+    }
+
+    /// <summary>Verifies that an invalid parameter substitution token throws when invoked.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task InvalidParamSubstitutionShouldThrow()
+    {
+        var service = RestService.For<IInvalidParamSubstitution>(BaseAddress);
+        await Assert.That(service).IsNotNull();
+
+        await Assert.That(() => (Task)service.GetValue("throws")).ThrowsExactly<ApiException>();
+    }
+
+    /// <summary>Verifies that an invalid fragment parameter substitution token throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task InvalidFragmentParamSubstitutionShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IInvalidFragmentParamSubstitution>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("but no method parameter matches", exception!);
+    }
+
+    /// <summary>Verifies that a URL parameter with no matching method argument throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task UrlNoMatchingParameterShouldThrow()
+    {
+        // With no parameters at all the interface generates inline, so the unmatched-placeholder check
+        // now runs when the request is built rather than at client creation.
+        var service = RestService.For<IUrlNoMatchingParameters>(BaseAddress);
+        var exception = await Assert.That(() => (Task)service.GetValue()).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("but no method parameter matches", exception!);
+    }
+
+    /// <summary>Verifies that combining multipart with a body parameter throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task MultipartAndBodyShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IMultipartAndBody>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("Multipart requests may not contain a Body parameter", exception!);
+    }
+
+    /// <summary>Verifies that declaring multiple body parameters throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ManyBodyShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IManyBody>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("Only one parameter can be a Body parameter", exception!);
+    }
+
+    /// <summary>Verifies that multiple complex-type parameters without a body marker throw.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ManyComplexTypesShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IManyComplexTypes>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("Multiple complex types found. Specify one parameter as the body using BodyAttribute", exception!);
+    }
+
+    /// <summary>Verifies that declaring multiple authorize parameters throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task ManyAuthorizeAttributesShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IManyAuthorize>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("Only one parameter can be an Authorize parameter", exception!);
+    }
+
+    /// <summary>Verifies that an unsupported synchronous return type throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task InvalidReturnTypeShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IInvalidReturnType>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("is invalid. All REST Methods must return either Task<T> or ValueTask<T> or IObservable<T>", exception!);
+    }
+
+    /// <summary>Verifies that a raw non-generic IApiResponse return type throws.</summary>
+    /// <returns>A task representing the asynchronous test.</returns>
+    [Test]
+    public async Task InvalidRawApiResponseReturnTypeShouldThrow()
+    {
+        var exception = await Assert.That(static () => RestService.For<IInvalidReturnTypeIApiResponse>(BaseAddress)).ThrowsExactly<ArgumentException>();
+        await AssertExceptionContains("is invalid. All REST Methods must return either Task<T> or ValueTask<T> or IObservable<T>", exception!);
+    }
+
+    /// <summary>Asserts that the exception message contains the expected substring.</summary>
+    /// <param name="expectedSubstring">The substring expected within the exception message.</param>
+    /// <param name="exception">The exception whose message is inspected.</param>
+    /// <returns>A task that completes when the assertion has run.</returns>
+    private static async Task AssertExceptionContains(string expectedSubstring, Exception exception) => await Assert.That(exception.Message!).Contains(expectedSubstring, StringComparison.Ordinal);
+}
