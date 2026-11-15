@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 10:00 UTC · 219 entries · 82 vendored, 137 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 10:16 UTC · 223 entries · 84 vendored, 139 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-15 10:00 UTC · 219 entries · 82 vendored, 137 reference-onl
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 36 | 14 | 22 |
 | [netcode](#netcode) — Networking / netcode | 42 | 16 | 26 |
 | [save-state](#save-state) — Save / state systems | 16 | 8 | 8 |
-| [procgen](#procgen) — Procedural generation | 28 | 10 | 18 |
+| [procgen](#procgen) — Procedural generation | 32 | 12 | 20 |
 
 
 ## engines
@@ -256,11 +256,12 @@ _Generated 2026-11-15 10:00 UTC · 219 entries · 82 vendored, 137 reference-onl
 
 ## procgen
 
-**Procedural generation** — 28 entries
+**Procedural generation** — 32 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [ArduTouch](entries/procgen/maltman23-ardutouch/README.md) | ==> ARDUTOUCH KITS ARE AVAILABLE at CornfieldElectronics.com <==  ArduTouch is an Arduino-compatible music synthesizer kit with a built-in touch keyboard, and w | c++ | CC-BY-SA-3.0 | reference | [maltman23/ArduTouch](https://github.com/maltman23/ArduTouch) @ `8b6c6f74e6ca` |
+| [astray](entries/procgen/sience-astray/README.md) | Astray is a lua based maze, room and dungeon generation library for dungeon crawlers and rougelike video games | lua | Zlib | vendored | [SiENcE/astray](https://github.com/SiENcE/astray) @ `1a557a8281a8` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-mapgen/README.md) | procedural map/world/level generation | cpp | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300f` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-src-mapgen/README.md) | map and city generation | c++ | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300fd2353` |
 | [crawl — des](entries/procgen/crawl-crawl-ref-source-dat-des/README.md) | vault/branch layout definitions (DES) | text | GPL-2.0 | reference | [crawl/crawl.git](https://github.com/crawl/crawl.git) @ `cf8c9bca9065` |
@@ -268,6 +269,8 @@ _Generated 2026-11-15 10:00 UTC · 219 entries · 82 vendored, 137 reference-onl
 | [DeBroglie](entries/procgen/boristhebrave-debroglie/README.md) | DeBroglie is a C# library implementing the Wave Function Collapse algorithm with support for additional non-local constraints, and other useful features. | c# | MIT | vendored | [BorisTheBrave/DeBroglie](https://github.com/BorisTheBrave/DeBroglie) @ `27b37fa7a54f` |
 | [Dungeon-Generator (BSP)](entries/procgen/dungeon-generator-bsp/README.md) | BSP dungeon generation (C#/Unity) | c# | MIT | vendored | [Adrian104/Dungeon-Generator](https://github.com/Adrian104/Dungeon-Generator) @ `8dfa5d23f848` |
 | [DungeonTemplateLibrary](entries/procgen/aspjt-dungeontemplatelibrary/README.md) | 🌏: Dungeon free resources (terrain & roguelike generation) | c++ | MIT | vendored | [AsPJT/DungeonTemplateLibrary](https://github.com/AsPJT/DungeonTemplateLibrary) @ `7819dcd58dc2` |
+| [DungeonTemplateLibrary-Godot](entries/procgen/krazyjakee-dungeontemplatelibrary-godot/README.md) | 🌏: Godot Dungeon free resources (terrain & roguelike generation) | c++ | MIT | reference | [krazyjakee/DungeonTemplateLibrary-Godot](https://github.com/krazyjakee/DungeonTemplateLibrary-Godot) @ `2026-06-11 (branch tip at catalogue time)` |
+| [DungeonTemplateLibraryUnity](entries/procgen/sitryo-dungeontemplatelibraryunity/README.md) | 🌏: Dungeon free resources (terrain & roguelike generation) | c# | BSL-1.0 | reference | [sitRyo/DungeonTemplateLibraryUnity](https://github.com/sitRyo/DungeonTemplateLibraryUnity) @ `2021-01-28 (branch tip at catalogue time)` |
 | [fast-wfc](entries/procgen/math-fehr-fast-wfc/README.md) | An implementation of Wave Function Collapse with a focus on performance. | c++ | unknown | reference | [math-fehr/fast-wfc](https://github.com/math-fehr/fast-wfc) @ `2024-10-19 (branch tip at catalogue time)` |
 | [FastNoise2](entries/procgen/fastnoise2/README.md) | SIMD noise generation library with node graphs | c++ | MIT | vendored | [Auburn/FastNoise2](https://github.com/Auburn/FastNoise2) @ `c35d6041ce7e` |
 | [FastNoiseLite](entries/procgen/fastnoiselite/README.md) | single-header noise (perlin/simplex/cellular/fractal) | c | MIT | vendored | [Auburn/FastNoiseLite](https://github.com/Auburn/FastNoiseLite) @ `785f37a9ad76` |
@@ -282,6 +285,7 @@ _Generated 2026-11-15 10:00 UTC · 219 entries · 82 vendored, 137 reference-onl
 | [space-station-14 — Procedural](entries/procgen/space-station-14-content-shared-procedural/README.md) | procedural station/AI content generation | c# | MIT | vendored | [space-wizards/space-station-14](https://github.com/space-wizards/space-station-14) @ `33a1d0e32d63` |
 | [THREE.Terrain](entries/procgen/icecreamyou-three-terrain/README.md) | A procedural terrain generation engine for use with the Three.js 3D graphics library for the web. | javascript | MIT | reference | [IceCreamYou/THREE.Terrain](https://github.com/IceCreamYou/THREE.Terrain) @ `2026-11-12 (branch tip at catalogue time)` |
 | [Tracery](entries/procgen/tracery/README.md) | grammar-based generative text/structure | javascript | Apache-2.0 | vendored | [galaxykate/tracery](https://github.com/galaxykate/tracery) @ `11db07cb8e35` |
+| [urizen](entries/procgen/vurmux-urizen/README.md) | Roguelike dungeon generation library written on Python3 | python | Apache-2.0 | vendored | [vurmux/urizen](https://github.com/vurmux/urizen) @ `28b1e60cf8fa` |
 | [utymap](entries/procgen/reinterpretcat-utymap/README.md) | Highly customizable library for procedural world generation based on real map data | c++ | Apache-2.0 | reference | [reinterpretcat/utymap](https://github.com/reinterpretcat/utymap) @ `2019-05-16 (branch tip at catalogue time)` |
 | [veloren — world](entries/procgen/veloren-world/README.md) | world generation (terrain, biomes, caves, structures) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
 | [WaveFunctionCollapse](entries/procgen/wavefunctioncollapse/README.md) | constraint-based tile/bitmap generation | c# | MIT | vendored | [mxgmn/WaveFunctionCollapse](https://github.com/mxgmn/WaveFunctionCollapse) @ `de7d22e705e8` |

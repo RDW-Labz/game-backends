@@ -114,3 +114,9 @@ One line per 15-minute extension tick, newest last.
   - added procgen/maltman23-ardutouch (CC-BY-SA-3.0, reference)
   - added procgen/joeiddon-perlin (none, reference)
   - reference procgen/spongepowered-noise
+
+- **2026-11-15 10:16 UTC** — tick 22: +2 screened, +2 reference, 1 skipped, catalogue=223
+  - added procgen/sience-astray (Zlib, vendored)
+  - added procgen/vurmux-urizen (Apache-2.0, vendored)
+  - reference procgen/sitryo-dungeontemplatelibraryunity
+  - reference procgen/krazyjakee-dungeontemplatelibrary-godot

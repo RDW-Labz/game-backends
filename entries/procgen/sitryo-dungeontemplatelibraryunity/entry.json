@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T10:16:23Z",
+ "category": "procgen",
+ "commit": "2021-01-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sitRyo/DungeonTemplateLibraryUnity \u2014 \ud83c\udf0f: Dungeon free resources (terrain & roguelike generation)",
+ "language": "c#",
+ "license": "BSL-1.0",
+ "license_verdict": "gated-reference",
+ "name": "DungeonTemplateLibraryUnity",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSL-1.0)",
+ "slug": "sitryo-dungeontemplatelibraryunity",
+ "source": "github-search:dungeon generation library stars:>50",
+ "stars": 78,
+ "system": "\ud83c\udf0f: Dungeon free resources (terrain & roguelike generation)",
+ "upstream": "https://github.com/sitRyo/DungeonTemplateLibraryUnity",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

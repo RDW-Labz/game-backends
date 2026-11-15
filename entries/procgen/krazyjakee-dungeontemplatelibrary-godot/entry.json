@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T10:16:23Z",
+ "category": "procgen",
+ "commit": "2026-06-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "krazyjakee/DungeonTemplateLibrary-Godot \u2014 \ud83c\udf0f: Godot Dungeon free resources (terrain & roguelike generation)",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "DungeonTemplateLibrary-Godot",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "krazyjakee-dungeontemplatelibrary-godot",
+ "source": "github-search:dungeon generation library stars:>50",
+ "stars": 55,
+ "system": "\ud83c\udf0f: Godot Dungeon free resources (terrain & roguelike generation)",
+ "upstream": "https://github.com/krazyjakee/DungeonTemplateLibrary-Godot",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

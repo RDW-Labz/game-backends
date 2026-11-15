@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T10:16:22Z",
+ "category": "procgen",
+ "commit": "28b1e60cf8fa",
+ "delivery": "vendored",
+ "description": "vurmux/urizen \u2014 Roguelike dungeon generation library written on Python3",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "urizen",
+ "size_bytes": 1079762,
+ "slug": "vurmux-urizen",
+ "source": "github-search:dungeon generation library stars:>50",
+ "stars": 140,
+ "system": "Roguelike dungeon generation library written on Python3",
+ "upstream": "https://github.com/vurmux/urizen",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

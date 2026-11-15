@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T10:16:20Z",
+ "category": "procgen",
+ "commit": "1a557a8281a8",
+ "delivery": "vendored",
+ "description": "SiENcE/astray \u2014 Astray is a lua based maze, room and dungeon generation library for dungeon crawlers and rougelike video games",
+ "language": "lua",
+ "license": "Zlib",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "astray",
+ "size_bytes": 52024,
+ "slug": "sience-astray",
+ "source": "github-search:dungeon generation library stars:>50",
+ "stars": 181,
+ "system": "Astray is a lua based maze, room and dungeon generation library for dungeon crawlers and rougelike video games",
+ "upstream": "https://github.com/SiENcE/astray",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
