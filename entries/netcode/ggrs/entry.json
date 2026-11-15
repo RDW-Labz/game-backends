@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:57Z",
+ "category": "netcode",
+ "commit": "25bd9983dee3",
+ "delivery": "vendored",
+ "description": "GGRS \u2014 rollback netcode (GGPO-style) in Rust with WASM support. Upstream `gschup/ggrs`.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "GGRS",
+ "size_bytes": 334192,
+ "slug": "ggrs",
+ "source": "github-api",
+ "system": "rollback netcode (GGPO-style) in Rust with WASM support",
+ "upstream": "https://github.com/gschup/ggrs",
+ "vendored_path": "src/",
+ "why": "Rollback for fighting-game style netcode; deterministic-sim friendly."
+}

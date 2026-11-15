@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:38Z",
+ "category": "physics",
+ "commit": "7d6f6ac8b83e",
+ "delivery": "reference",
+ "description": "NVIDIA PhysX \u2014 GPU/CPU 3D rigid body, cloth, particles, vehicles. Upstream `NVIDIA-Omniverse/PhysX`.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "NVIDIA PhysX",
+ "reference_reason": "size gate: 58 MB of source > 12 MB cap",
+ "size_bytes": 61190065,
+ "slug": "physx",
+ "source": "github-api",
+ "system": "GPU/CPU 3D rigid body, cloth, particles, vehicles",
+ "upstream": "https://github.com/NVIDIA-Omniverse/PhysX",
+ "why": "Shipping AAA physics (Unreal/Unity lineage) released BSD-3."
+}

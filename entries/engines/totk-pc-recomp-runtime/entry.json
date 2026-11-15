@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 172,
+ "commit": "ae30a61",
+ "delivery": "reference",
+ "description": "`runtime` inside totk-pc-recomp: 172 source files.",
+ "entry_points": [
+  "runtime/"
+ ],
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "totk-pc-recomp \u2014 runtime",
+ "path_in_upstream": "runtime",
+ "reference_reason": "licence: MIT",
+ "slug": "totk-pc-recomp-runtime",
+ "source": "corpus:cloned-free-games/totk-pc-recomp@ae30a61",
+ "source_bytes": 7841514,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/valentderah/totk-pc-recomp",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (172 files at that path)."
+}

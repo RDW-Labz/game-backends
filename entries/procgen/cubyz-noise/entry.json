@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "procgen",
+ "code_files": 10,
+ "commit": "74b6814",
+ "delivery": "reference",
+ "description": "`src/server/terrain/noise` inside cubyz: 10 source files.",
+ "entry_points": [
+  "src/server/terrain/noise/"
+ ],
+ "language": "zig",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "cubyz \u2014 noise",
+ "path_in_upstream": "src/server/terrain/noise",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "cubyz-noise",
+ "source": "corpus:cloned-free-games/cubyz@74b6814",
+ "source_bytes": 43962,
+ "system": "procedural map/world/level generation",
+ "upstream": "https://github.com/PixelGuys/Cubyz",
+ "why": "Backend material for procedural map/world/level generation, taken from a pinned clone (10 files at that path)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:11Z",
+ "category": "engines",
+ "commit": "38d0eded78d3",
+ "delivery": "reference",
+ "description": "raylib \u2014 minimal game programming framework (platform, gfx, audio). Upstream `raysan5/raylib`.",
+ "language": "c",
+ "license": "Zlib",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "raylib",
+ "reference_reason": "size gate: 20 MB of source > 12 MB cap",
+ "size_bytes": 21584145,
+ "slug": "raylib",
+ "source": "github-api",
+ "system": "minimal game programming framework (platform, gfx, audio)",
+ "upstream": "https://github.com/raysan5/raylib",
+ "why": "The canonical 'little engine you can actually read' \u2014 good for embedders."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:24Z",
+ "category": "engines",
+ "commit": "2a4c066e1e8c",
+ "delivery": "reference",
+ "description": "godot-cpp (GDExtension bindings) \u2014 C++ bindings/extension ABI for Godot. Upstream `godotengine/godot-cpp`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "godot-cpp (GDExtension bindings)",
+ "reference_reason": "size gate: 39 MB of source > 12 MB cap",
+ "size_bytes": 41459463,
+ "slug": "godot-cpp",
+ "source": "github-api",
+ "system": "C++ bindings/extension ABI for Godot",
+ "upstream": "https://github.com/godotengine/godot-cpp",
+ "why": "The engine-extension boundary: how a real engine exposes gameplay code to C++."
+}

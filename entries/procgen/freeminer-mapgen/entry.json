@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "procgen",
+ "code_files": 48,
+ "commit": "e31670e",
+ "delivery": "reference",
+ "description": "`src/mapgen` inside freeminer: 48 source files.",
+ "entry_points": [
+  "src/mapgen/"
+ ],
+ "language": "h",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "freeminer \u2014 mapgen",
+ "path_in_upstream": "src/mapgen",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "freeminer-mapgen",
+ "source": "corpus:cloned-free-games/freeminer@e31670e",
+ "source_bytes": 1118799,
+ "system": "procedural map/world/level generation",
+ "upstream": "https://github.com/freeminer/freeminer",
+ "why": "Backend material for procedural map/world/level generation, taken from a pinned clone (48 files at that path)."
+}

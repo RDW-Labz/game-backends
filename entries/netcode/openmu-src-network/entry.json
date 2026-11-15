@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "netcode",
+ "code_files": 204,
+ "commit": "00f737374d07",
+ "delivery": "vendored",
+ "description": "`src/Network` inside openmu (237 files).",
+ "entry_points": [
+  "src/Network"
+ ],
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "openmu \u2014 Network",
+ "path_in_upstream": "src/Network",
+ "size_bytes": 6724036,
+ "slug": "openmu-src-network",
+ "source": "corpus:cloned-free-games/openmu@00f737374d07",
+ "system": "MMO network protocol, packet handlers, encryption",
+ "upstream": "https://github.com/MUnique/OpenMU",
+ "vendored_path": "src/",
+ "why": "Complete game-client wire protocol from a running server (MIT \u2014 vendored)."
+}

@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 10,
+ "commit": "f07b896",
+ "delivery": "reference",
+ "description": "`server` inside stronghold-protocol: 10 source files.",
+ "entry_points": [
+  "server/"
+ ],
+ "language": "js",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "stronghold-protocol \u2014 server",
+ "path_in_upstream": "server",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "stronghold-protocol-server",
+ "source": "corpus:cloned-free-games/stronghold-protocol@f07b896",
+ "source_bytes": 6369015,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/sganggs/Stronghold-Protocol",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (10 files at that path)."
+}

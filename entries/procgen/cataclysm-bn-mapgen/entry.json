@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "procgen",
+ "code_files": 17,
+ "commit": "73b300f",
+ "delivery": "vendored",
+ "description": "`src/mapgen` inside cataclysm-bn: 17 source files.",
+ "entry_points": [
+  "src/mapgen/"
+ ],
+ "language": "cpp",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "cataclysm-bn \u2014 mapgen",
+ "path_in_upstream": "src/mapgen",
+ "slug": "cataclysm-bn-mapgen",
+ "source": "corpus:cloned-free-games/cataclysm-bn@73b300f",
+ "source_bytes": 629832,
+ "system": "procedural map/world/level generation",
+ "upstream": "https://github.com/cataclysmbn/Cataclysm-BN",
+ "vendored_path": "src/",
+ "why": "Backend material for procedural map/world/level generation, taken from a pinned clone (17 files at that path)."
+}

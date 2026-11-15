@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 15,
+ "commit": "ac4ce20",
+ "delivery": "vendored",
+ "description": "`Games/ArmorAlley/script/core` inside gamezone: 15 source files.",
+ "entry_points": [
+  "Games/ArmorAlley/script/core/"
+ ],
+ "language": "js",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "gamezone \u2014 core",
+ "path_in_upstream": "Games/ArmorAlley/script/core",
+ "slug": "gamezone-core",
+ "source": "corpus:cloned-free-games/gamezone@ac4ce20",
+ "source_bytes": 268503,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/kunjgit/GameZone",
+ "vendored_path": "src/",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (15 files at that path)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "procgen",
+ "commit": "11db07cb8e35",
+ "delivery": "vendored",
+ "description": "Tracery \u2014 grammar-based generative text/structure. Upstream `galaxykate/tracery`.",
+ "language": "javascript",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.MD",
+ "license_verdict": "clean",
+ "name": "Tracery",
+ "size_bytes": 217026,
+ "slug": "tracery",
+ "source": "github-api",
+ "system": "grammar-based generative text/structure",
+ "upstream": "https://github.com/galaxykate/tracery",
+ "vendored_path": "src/",
+ "why": "Grammar generation for quests, names and content; Apache-2.0."
+}

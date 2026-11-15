@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:44:15Z",
+ "category": "engines",
+ "code_files": 56,
+ "commit": "b325996",
+ "delivery": "reference",
+ "description": "`Source/engine` inside DevilutionX: 56 source files.",
+ "entry_points": [
+  "Source/engine/"
+ ],
+ "language": "cpp",
+ "license": "Sustainable-Use-1.0",
+ "license_verdict": "gated-reference",
+ "name": "DevilutionX \u2014 engine",
+ "path_in_upstream": "Source/engine",
+ "reference_reason": "licence: Sustainable-Use-1.0",
+ "slug": "devilutionx-engine",
+ "source": "corpus:cloned-free-games/DevilutionX@b325996",
+ "source_bytes": 518087,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/diasurgical/devilutionX.git",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (56 files at that path)."
+}

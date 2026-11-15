@@ -1,0 +1,209 @@
+(load "Color.carp")
+
+(doc Test "is the standard test framework.
+
+Example:
+```
+(load-and-use Test)
+
+(deftest test
+  (assert-equal test
+                2
+                (+ 1 1)
+                \"addition works\"
+  )
+)
+```")
+(defmodule Test
+  (deftype State [passed Int, failed Int])
+  (hidden State)
+  (use Color.Id)
+  (hidden display-test)
+  (defn display-test [state expected actual descr what is-success]
+    (if is-success
+      (do
+        (IO.colorize (Green) &(str* @"Test '" @descr @"' passed\n"))
+        (State.update-passed (State.copy state) &Int.inc))
+      (do
+        (IO.color (Red))
+        (IO.println &(str* @"Test '" @descr @"' failed:"))
+        (IO.print &(str* @"\tExpected " @what @": '"))
+        (IO.print &(str expected))
+        (IO.println &(str* @"', actual value: '" (str actual) @"'"))
+        (IO.color (Reset))
+        (State.update-failed (State.copy state) &Int.inc))))
+
+  (hidden handler)
+  (defn handler [state expected actual descr what op]
+    (display-test state expected actual descr what (op expected actual)))
+
+  (hidden dynhandler)
+  (defndynamic dynhandler [state expected actual descr what op]
+    (list 'Test.display-test state (str expected) (str actual) descr what (op expected actual)))
+
+  (doc assert-op "Assert that op returns true when given x and y.")
+  (defn assert-op [state x y descr op]
+    (handler state x y descr "value" op))
+
+  (doc assert-equal "Assert that x and y are equal. Equality needs to be implemented for their type.")
+  (defn assert-equal [state x y descr]
+    (handler state x y descr "value" =))
+
+  (doc assert-not-equal "Assert that x and y are not equal. Equality needs to be implemented for their type.")
+  (defn assert-not-equal [state x y descr]
+    (handler state x y descr "not value" /=))
+
+  (doc assert-true "Assert that x is true.")
+  (defn assert-true [state x descr]
+    (assert-equal state true x descr))
+
+  (doc assert-false "Assert that x is false.")
+  (defn assert-false [state x descr]
+    (assert-equal state false x descr))
+
+  (doc assert-ref-equal "Assert that x and y are equal by reference. Reference equality needs to be implemented for their type.")
+  (defn assert-ref-equal [state x y descr]
+    (handler state &x &y descr "value" =))
+
+  (doc assert-near "Assert that x and y are approximately equal within a specified margin.")
+  (defn assert-near [state x y margin descr]
+    (assert-op state x y descr (fn [a b] (Generics.approx-margin a b margin))))
+
+  (doc assert-just "Assert that x is a `Just`.")
+  (defn assert-just [state x descr]
+    (assert-true state (Maybe.just? x) descr))
+
+  (doc assert-nothing "Assert that x is a `Nothing`.")
+  (defn assert-nothing [state x descr]
+    (assert-true state (Maybe.nothing? x) descr))
+
+  (doc assert-success "Assert that x is a `Success`.")
+  (defn assert-success [state x descr]
+    (assert-true state (Result.success? x) descr))
+
+  (doc assert-error "Assert that x is an `Error`.")
+  (defn assert-error [state x descr]
+    (assert-true state (Result.error? x) descr))
+
+  (doc assert-dynamic-op "Assert that the dynamic expressions `x` and `y` are equal.")
+  (defmacro assert-dynamic-op [state x y descr op]
+    (dynhandler state (eval x) (eval y) descr "value" op))
+
+  (doc assert-dynamic-equal "Assert that the dynamic expressions `x` and `y` are equal.")
+  (defmacro assert-dynamic-equal [state x y descr]
+    (dynhandler state (eval x) (eval y) descr "value" =))
+
+  (doc reset "Reset test state.")
+  (defn reset [state]
+    (State.set-failed (State.set-passed state 0) 0))
+
+  (posix-only
+    (hidden run-child)
+    (defn run-child [x]
+      (let [pid (System.fork)
+            status 0]
+        (if (= pid 0)
+          (do
+            (x)
+            0)
+          (do
+            (ignore (System.wait (Pointer.address &status)))
+            (System.get-exit-status status)))))
+
+    (hidden handle-signal)
+    (defn handle-signal [x] (System.exit x))
+
+    (hidden run-child-signals)
+    (defn run-child-signals [x]
+      (let [pid (System.fork)
+            status 0]
+        (if (= pid 0)
+          (do
+            (System.signal System.signal-abort handle-signal)
+            (System.signal System.signal-fpe handle-signal)
+            (System.signal System.signal-ill handle-signal)
+            (System.signal System.signal-segv handle-signal)
+            (System.signal System.signal-term handle-signal)
+            (x)
+            0)
+          (do
+            (ignore (System.wait (Pointer.address &status)))
+            (System.get-exit-status status)))))
+
+    (doc assert-exit "Assert that function f exits with exit code exit-code.")
+    (defn assert-exit [state exit-code f descr]
+      (assert-equal state exit-code (run-child f) descr))
+
+    (doc assert-signal "Assert that function f aborts with OS signal signal.")
+    (defn assert-signal [state signal x descr]
+      (assert-equal state signal (run-child-signals x) descr)))
+
+  (windows-only
+    (defndynamic assert-exit [state exit-code f descr]
+      (macro-error "assert-exit is not implemented on Windows."))
+
+    (defndynamic assert-signal [state signal x descr]
+      (macro-error "assert-signal is not implemented on Windows.")))
+
+  (doc print-test-results "Print test results.")
+  (defn print-test-results [state]
+    (let [passed @(State.passed state)
+          failed @(State.failed state)]
+      (do
+        (IO.println "Results:")
+        (if (Int.> (Int.+ passed failed) 0)
+          (do
+            (IO.color (Green))
+            (when (Int.> passed 0) (IO.print &(String.append "\t|" &(String.allocate passed \=))))
+            (when (Int.= failed 0) (IO.print "|"))
+            (IO.color (Red))
+            (when (Int.= passed 0) (IO.print "\t|"))
+            (when (Int.> failed 0) (IO.print &(String.append &(String.allocate failed \=) "|")))
+            (IO.println ""))
+          ())
+        (IO.color (Green))
+        (IO.print "\tPassed: ")
+        (IO.print &(Int.str passed))
+        (IO.color (Red))
+        (IO.print "\tFailed: ")
+        (IO.println &(Int.str failed))
+        (IO.color (Reset))))))
+
+(defndynamic with-test-internal [name forms]
+  (if (= (length forms) 1)
+    `((set! %name &%(car forms)))
+    (cons `(set! %name &%(car forms))
+          (with-test-internal name (cdr forms)))))
+
+
+(defmacro with-test [name :rest forms]
+  `(let [%name &(Test.State.init 0 0)]
+    %(cons-last
+      `@(Test.State.failed %name)
+      (cons-last
+        `(Test.print-test-results %name)
+        `(do %@(with-test-internal name forms))))))
+
+(doc subtest "allows grouping tests within a larger test suite.
+
+Example:
+```
+(deftest test
+  (subtest test \"Arithmetic\"
+    (assert-equal test 4 (+ 2 2) \"2 + 2 = 4\")))
+```")
+(defmacro subtest [parent descr :rest forms]
+  `(do
+     (IO.println &(str* ">>> Subtest: " %descr))
+     %@(with-test-internal parent forms)
+     (IO.println &(str* "<<< Finished Subtest: " %descr "\n"))
+     @(the (Ref Test.State) %parent)))
+
+(defmacro deftest [name :rest forms]
+  `(defn main []
+    (let [%name &(Test.State.init 0 0)]
+      %(cons-last
+        `@(Test.State.failed %name)
+        (cons-last
+          `(Test.print-test-results %name)
+          `(do %@(with-test-internal name forms)))))))

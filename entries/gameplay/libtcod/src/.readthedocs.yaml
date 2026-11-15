@@ -1,0 +1,28 @@
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+version: 2
+
+submodules:
+  include:
+    - docs/doxygen-awesome-css
+
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "mambaforge-latest"
+
+sphinx:
+  configuration: docs/conf.py
+
+#formats:
+#  - htmlzip
+#  - epub
+
+python:
+  install:
+    - requirements: docs/requirements.txt
+
+conda:
+  environment: docs/environment.yml

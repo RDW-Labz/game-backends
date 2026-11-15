@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 26,
+ "commit": "a9efe49",
+ "delivery": "reference",
+ "description": "`source/spells` inside OpenDungeons: 26 source files.",
+ "entry_points": [
+  "source/spells/"
+ ],
+ "language": "cpp",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "OpenDungeons \u2014 spells",
+ "path_in_upstream": "source/spells",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "opendungeons-spells",
+ "source": "corpus:cloned-free-games/OpenDungeons@a9efe49",
+ "source_bytes": 118374,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/OpenDungeons/OpenDungeons.git",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (26 files at that path)."
+}

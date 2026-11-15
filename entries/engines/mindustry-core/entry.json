@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 13,
+ "commit": "b873c01",
+ "delivery": "reference",
+ "description": "`core/src/mindustry/core` inside Mindustry: 13 source files.",
+ "entry_points": [
+  "core/src/mindustry/core/"
+ ],
+ "language": "java",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Mindustry \u2014 core",
+ "path_in_upstream": "core/src/mindustry/core",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "mindustry-core",
+ "source": "corpus:cloned-free-games/Mindustry@b873c01",
+ "source_bytes": 242573,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/Anuken/Mindustry.git",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (13 files at that path)."
+}

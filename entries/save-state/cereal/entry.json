@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:01Z",
+ "category": "save-state",
+ "commit": "22a1b369f39b",
+ "delivery": "vendored",
+ "description": "cereal \u2014 C++11 serialization: JSON/binary/XML archives, versioning. Upstream `USCiLab/cereal`.",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cereal",
+ "size_bytes": 1975723,
+ "slug": "cereal",
+ "source": "github-api",
+ "system": "C++11 serialization: JSON/binary/XML archives, versioning",
+ "upstream": "https://github.com/USCiLab/cereal",
+ "vendored_path": "src/",
+ "why": "Save-game serialisation with schema versioning \u2014 BSD-3."
+}

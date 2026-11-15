@@ -1,0 +1,387 @@
+(system-include "math.h")
+
+(relative-include "SDLHelper.h")
+
+(posix-only
+  (add-pkg "sdl2"))
+
+;; Only define these if they're not already defined (allows the user to pre-define them before including SDL.carp)
+;; Tip: Set them in your profile.carp which is located at ```C:/Users/USERNAME/AppData/Roaming/carp/profile.carp``` on Windows.
+;; If you do, please use `defdynamic`, since `defdynamic-once` will not be
+;; defined when your profile is loaded.
+(defdynamic-once sdl-windows-header-path "C:\\REDACTED\vcpkg\installed\x86-windows\include\SDL2\\")
+(defdynamic-once sdl-windows-library-path "C:\\REDACTED\vcpkg\installed\x86-windows\lib\\")
+
+(windows-only
+  ;; Note - you'll still need the SDL2.dll to be able to run the executable
+  (add-cflag "-DSDL_MAIN_HANDLED")
+  (add-cflag "-Wno-pragma-pack")
+  (add-cflag (str "-I" sdl-windows-header-path))
+  (add-lib (str "/link " sdl-windows-library-path "SDL2.lib " sdl-windows-library-path "manual-link\SDL2main.lib")))
+
+;; Types
+(register-type SDL_Keycode)
+(register-type SDL_Rect [x Int, y Int, w Int, h Int])
+(register-type SDL_Point [x Int, y Int])
+(register-type SDL_EventType)
+(register-type SDL_Texture)
+(register-type SDL_Renderer)
+(register-type SDL_BlendMode)
+(register-type SDL_RendererFlip)
+(register-type SDL_Window)
+(register-type SDL_WindowEventID)
+(register-type SDL_WindowEvent)
+(register-type SDL_Event)
+(register-type Uint8)
+(register-type SDL_Color)
+
+(defmodule SDL_Color
+  (register r (Fn [&SDL_Color] Int))
+  (register g (Fn [&SDL_Color] Int))
+  (register b (Fn [&SDL_Color] Int))
+  (register a (Fn [&SDL_Color] Int)))
+
+(doc SDL "is a thin wrapper around the [SDL
+framework](https://www.libsdl.org/).")
+(defmodule SDL
+  ;; Setup and teardown
+  (register INIT_EVERYTHING Int)
+  (register init                       (Fn [Int] ()) "SDL_Init")
+  (register create-window-and-renderer (Fn [Int Int Int (Ptr (Ptr SDL_Window)) (Ptr (Ptr SDL_Renderer))] ()) "SDL_CreateWindowAndRenderer")
+  (register set-window-title           (Fn [(Ptr SDL_Window) (Ptr CChar)] ()) "SDL_SetWindowTitle")
+  (register set-window-size            (Fn [(Ptr SDL_Window) Int Int] ()) "SDL_SetWindowSize")
+  (register delay                      (Fn [Int] ()) "SDL_Delay")
+  (register destroy-window             (Fn [(Ptr SDL_Window)] ()) "SDL_DestroyWindow")
+  (register quit                       (Fn [] ()) "SDL_Quit")
+
+  (defmodule Hint
+    (register set (Fn [(Ptr CChar) (Ptr CChar)] ()) "SDL_SetHint")
+    (register render-vsync (Ptr CChar) "SDL_HINT_RENDER_VSYNC")
+    (register video-mac-fullscreen-spaces (Ptr CChar) "SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES"))
+
+  (defmodule Event
+    (register init (Fn [] SDL_Event))
+    (register type (Fn [(Ref SDL_Event)] SDL_EventType))
+    (register keycode (Fn [(Ref SDL_Event)] SDL_Keycode))
+    ;This is intentionally left here to note that in the future we shouldn't need deftemplate for this.
+    ;(register window (Fn [(Ref SDL_Event)] SDL_WindowEvent))
+    (deftemplate window (Fn [(Ref SDL_Event)] SDL_WindowEvent)
+      "SDL_WindowEvent $NAME(SDL_Event* event)"
+      "$DECL {
+         return event->window;
+       }")
+    (register poll (Fn [(Ptr SDL_Event)] Bool) "SDL_PollEvent")
+    (register = (Fn [SDL_EventType SDL_EventType] Bool))
+    (register copy (Fn [&SDL_Event] SDL_Event))
+
+    ;; Event types
+    (register quit              SDL_EventType "SDL_QUIT")
+    (register key-down          SDL_EventType "SDL_KEYDOWN")
+    (register key-up            SDL_EventType "SDL_KEYUP")
+    (register mouse-motion      SDL_EventType "SDL_MOUSEMOTION")
+    (register mouse-button-down SDL_EventType "SDL_MOUSEBUTTONDOWN")
+    (register mouse-button-up   SDL_EventType "SDL_MOUSEBUTTONUP")
+    (register mouse-wheel       SDL_EventType "SDL_MOUSEWHEEL")
+    (register window-event      SDL_EventType "SDL_WINDOWEVENT")
+
+    (defn all []
+      (let-do [events []
+               e (SDL.Event.init)]
+        (while (poll (Pointer.address &e))
+          (set! events (Array.push-back events e)))
+        events))
+
+    (implements = SDL.Event.=)
+    (implements copy SDL.Event.copy)
+    )
+
+  ;; Rendering
+  (register render-present (Fn [(Ptr SDL_Renderer)] ()) "SDL_RenderPresent")
+  (register render-clear (Fn [(Ptr SDL_Renderer)] ()) "SDL_RenderClear")
+  (register render-copy (Fn [(Ptr SDL_Renderer) (Ptr SDL_Texture) (Ptr SDL_Rect) (Ptr SDL_Rect)] ()) "SDL_RenderCopy") ;; src-rect & dest-rect
+  (register render-copy-ex (Fn [(Ptr SDL_Renderer) (Ptr SDL_Texture) (Ptr SDL_Rect) (Ptr SDL_Rect) Double (Ptr SDL_Point) SDL_RendererFlip] ()) "SDL_RenderCopyEx") ;; src-rect, dest-rect, angle, center, flip
+  (register set-render-draw-color (Fn [(Ptr SDL_Renderer) Int Int Int Int] ()) "SDL_SetRenderDrawColor") ;; rgba
+  (register render-fill-rect (Fn [(Ptr SDL_Renderer) (Ptr SDL_Rect)] ()) "SDL_RenderFillRect")
+  (register render-fill-rects (Fn [(Ptr SDL_Renderer) (Ptr SDL_Rect) Int] ()) "SDL_RenderFillRects") ;; rects, count
+  (register render-draw-line (Fn [(Ptr SDL_Renderer) Int Int Int Int] ()) "SDL_RenderDrawLine") ;; x1 y1 x2 y2
+  (register render-draw-lines (Fn [(Ptr SDL_Renderer) (Ptr SDL_Point) Int] ()) "SDL_RenderDrawLines")
+  (register render-draw-point (Fn [(Ptr SDL_Renderer) Int Int] ()) "SDL_RenderDrawPoint")
+  (register render-read-pixels (Fn [(Ptr SDL_Renderer) (Ptr SDL_Rect) Int (Ptr ()) Int] Int) "SDL_RenderReadPixels")
+  (register destroy-texture (Fn [(Ptr SDL_Texture)] ()) "SDL_DestroyTexture")
+  (register set-render-draw-blend-mode (Fn [(Ptr SDL_Renderer) SDL_BlendMode] ()) "SDL_SetRenderDrawBlendMode")
+  (register create-rgb-surface (Fn [Int Int Int Int Int Int Int Int] (Ptr SDL_Surface)) "SDL_CreateRGBSurface")
+  (register blit-surface (Fn [(Ptr SDL_Surface) (Ptr SDL_Rect) (Ptr SDL_Surface) (Ptr SDL_Rect)] ()) "SDL_BlitSurface") ;; src, srcrect, dst, dstrect
+  (register query-texture (Fn [(Ptr SDL_Texture) (Ptr Int) (Ptr Int) (Ptr Int) (Ptr Int)] ()) "SDL_QueryTexture") ;; ? ? w h
+  (register create-texture-from-surface (Fn [(Ptr SDL_Renderer) (Ptr SDL_Surface)] (Ptr SDL_Texture)) "SDL_CreateTextureFromSurface")
+  (register free-surface (Fn [(Ptr SDL_Surface)] ()) "SDL_FreeSurface")
+  (register surface-pixels (Fn [(Ptr SDL_Surface)] (Ptr ())) "SDL_SurfacePixels")
+  (register surface-pitch (Fn [(Ptr SDL_Surface)] Int) "SDL_SurfacePitch")
+  (register get-window-pixel-format (Fn [(Ptr SDL_Window)] Int) "SDL_GetWindowPixelFormat")
+  (register save-bmp (Fn [(Ptr SDL_Surface) String] Int) "SDL_SaveBMP")
+
+  ;; Blend modes
+  (register blend-mode-none SDL_BlendMode "SDL_BLENDMODE_NONE")
+  (register blend-mode-blend SDL_BlendMode "SDL_BLENDMODE_BLEND")
+  (register blend-mode-add SDL_BlendMode "SDL_BLENDMODE_ADD")
+  (register blend-mode-mod SDL_BlendMode "SDL_BLENDMODE_MOD")
+
+  ;; SDL_RendererFlip
+  (register flip-none SDL_RendererFlip "SDL_FLIP_NONE")
+  (register flip-horizontal SDL_RendererFlip "SDL_FLIP_HORIZONTAL")
+  (register flip-vertical SDL_RendererFlip "SDL_FLIP_VERTICAL")
+
+  (defmodule Keycode
+    (defn = [a b]
+      (Int.= (enum-to-int (the SDL_Keycode a))
+             (enum-to-int (the SDL_Keycode b))))
+    (implements = SDL.Keycode.=)
+    (register copy (Fn [(Ref SDL_Keycode)] SDL_Keycode))
+    (implements copy SDL.Keycode.copy)
+    (register str (Fn [SDL_Keycode] String))
+    (implements str SDL.Keycode.str)
+    (defn prn [x]
+      (SDL.Keycode.str x))
+    (implements prn SDL.Keycode.prn)
+
+    (register return SDL_Keycode "SDLK_RETURN")
+    (register space SDL_Keycode "SDLK_SPACE")
+    (register escape SDL_Keycode "SDLK_ESCAPE")
+    (register left SDL_Keycode "SDLK_LEFT")
+    (register right SDL_Keycode "SDLK_RIGHT")
+    (register up SDL_Keycode "SDLK_UP")
+    (register down SDL_Keycode "SDLK_DOWN")
+
+    (register num-1 SDL_Keycode "SDLK_1")
+    (register num-2 SDL_Keycode "SDLK_2")
+    (register num-3 SDL_Keycode "SDLK_3")
+    (register num-4 SDL_Keycode "SDLK_4")
+    (register num-5 SDL_Keycode "SDLK_5")
+    (register num-6 SDL_Keycode "SDLK_6")
+    (register num-7 SDL_Keycode "SDLK_7")
+    (register num-8 SDL_Keycode "SDLK_8")
+    (register num-9 SDL_Keycode "SDLK_9")
+    (register num-0 SDL_Keycode "SDLK_0")
+
+    (register a SDL_Keycode "SDLK_a")
+    (register b SDL_Keycode "SDLK_b")
+    (register c SDL_Keycode "SDLK_c")
+    (register d SDL_Keycode "SDLK_d")
+    (register e SDL_Keycode "SDLK_e")
+    (register f SDL_Keycode "SDLK_f")
+    (register g SDL_Keycode "SDLK_g")
+    (register h SDL_Keycode "SDLK_h")
+    (register i SDL_Keycode "SDLK_i")
+    (register j SDL_Keycode "SDLK_j")
+    (register k SDL_Keycode "SDLK_k")
+    (register l SDL_Keycode "SDLK_l")
+    (register m SDL_Keycode "SDLK_m")
+    (register n SDL_Keycode "SDLK_n")
+    (register o SDL_Keycode "SDLK_o")
+    (register p SDL_Keycode "SDLK_p")
+    (register q SDL_Keycode "SDLK_q")
+    (register r SDL_Keycode "SDLK_r")
+    (register s SDL_Keycode "SDLK_s")
+    (register t SDL_Keycode "SDLK_t")
+    (register u SDL_Keycode "SDLK_u")
+    (register v SDL_Keycode "SDLK_v")
+    (register w SDL_Keycode "SDLK_w")
+    (register x SDL_Keycode "SDLK_x")
+    (register y SDL_Keycode "SDLK_y")
+    (register z SDL_Keycode "SDLK_z")
+
+    (register period SDL_Keycode "SDLK_PERIOD")
+    (register comma SDL_Keycode "SDLK_COMMA")
+    (register plus SDL_Keycode "SDLK_PLUS")
+    (register minus SDL_Keycode "SDLK_MINUS")
+    (register less SDL_Keycode "SDLK_LESS")
+    (register tab SDL_Keycode "SDLK_TAB")
+    (register backspace SDL_Keycode "SDLK_BACKSPACE")
+
+    )
+
+  ;; Mouse
+  (defmodule Mouse
+    (register get-mouse-state (Fn [(Ptr Int) (Ptr Int)] Int) "SDL_GetMouseState")
+    (register button (Fn [Int] Int) "SDL_BUTTON")
+    (register button-left Int "SDL_BUTTON_LEFT")
+    (register button-right Int "SDL_BUTTON_RIGHT"))
+
+  (deftype MouseState [x Int
+                       y Int
+                       left Bool
+                       right Bool])
+
+  (defmodule MouseState
+    (defn get []
+      (let [x 0
+            y 0
+            state (SDL.Mouse.get-mouse-state (Pointer.address &x) (Pointer.address &y))
+            l (/= 0 (Int.bit-and state (SDL.Mouse.button SDL.Mouse.button-left)))
+            r (/= 0 (Int.bit-and state (SDL.Mouse.button SDL.Mouse.button-right)))]
+        (SDL.MouseState.init x y l r))))
+
+  ;; Window Event
+  (defmodule WindowEvent
+    (defmodule WindowEventID
+      (register window-shown        SDL_WindowEventID "SDL_WINDOWEVENT_SHOWN")
+      (register window-exposed      SDL_WindowEventID "SDL_WINDOWEVENT_EXPOSED")
+      (register window-hidden       SDL_WindowEventID "SDL_WINDOWEVENT_HIDDEN")
+      (register window-moved        SDL_WindowEventID "SDL_WINDOWEVENT_MOVED")
+      (register window-resized      SDL_WindowEventID "SDL_WINDOWEVENT_RESIZED")
+      (register window-size-changed SDL_WindowEventID "SDL_WINDOWEVENT_SIZE_CHANGED")
+      (register window-minimized    SDL_WindowEventID "SDL_WINDOWEVENT_MINIMIZED")
+      (register window-mximized     SDL_WindowEventID "SDL_WINDOWEVENT_MAXIMIZED")
+      (register window-restored     SDL_WindowEventID "SDL_WINDOWEVENT_RESTORED")
+      (register window-enter        SDL_WindowEventID "SDL_WINDOWEVENT_ENTER")
+      (register window-leave        SDL_WindowEventID "SDL_WINDOWEVENT_LEAVE")
+      (register window-focus-gained SDL_WindowEventID "SDL_WINDOWEVENT_FOCUS_GAINED")
+      (register window-focus-lost   SDL_WindowEventID "SDL_WINDOWEVENT_FOCUS_LOST")
+      (register window-close        SDL_WindowEventID "SDL_WINDOWEVENT_CLOSE")
+      (register window-take-focus   SDL_WindowEventID "SDL_WINDOWEVENT_TAKE_FOCUS")
+      (register window-hit-test     SDL_WindowEventID "SDL_WINDOWEVENT_HIT_TEST")
+
+      (defn = [a b]
+        (Int.= (enum-to-int (the SDL_WindowEventID a))
+               (enum-to-int (the SDL_WindowEventID b))))
+      (implements = SDL.WindowEvent.WindowEventID.=)
+      (register copy (Fn [(Ref SDL_WindowEventID)] SDL_WindowEventID))
+      (implements copy SDL.WindowEvent.WindowEventID.copy))
+    ;This is intentionally left here to note that in the future we shouldn't need deftemplate for this.
+    ;(register event (Fn [SDL_WindowEvent] SDL_WindowEventID))
+    (deftemplate event (Fn [SDL_WindowEvent] SDL_WindowEventID)
+      "SDL_WindowEventID $NAME(SDL_WindowEvent window_event)"
+      "$DECL {
+         return window_event.event;
+       }")
+    (register = (Fn [SDL_WindowEvent SDL_WindowEvent] Bool))
+    (implements = SDL.WindowEvent.=))
+
+  ;; Window manager flags
+  (defmodule WindowFlags
+   (register window-fullscreen          Int "SDL_WINDOW_FULLSCREEN")
+   (register window-fullscreen-desktop  Int "SDL_WINDOW_FULLSCREEN_DESKTOP")
+   (register window-opengl              Int "SDL_WINDOW_OPENGL")
+   (register window-vulkan              Int "SDL_WINDOW_VULKAN")
+   (register window-shown               Int "SDL_WINDOW_SHOWN")
+   (register window-hidden              Int "SDL_WINDOW_HIDDEN")
+   (register window-borderless          Int "SDL_WINDOW_BORDERLESS")
+   (register window-resizable           Int "SDL_WINDOW_RESIZABLE")
+   (register window-minimized           Int "SDL_WINDOW_MINIMIZED")
+   (register window-maximized           Int "SDL_WINDOW_MAXIMIZED")
+   (register window-input-grabbed       Int "SDL_WINDOW_INPUT_GRABBED")
+   (register window-input-focus         Int "SDL_WINDOW_INPUT_FOCUS")
+   (register window-mouse-focus         Int "SDL_WINDOW_MOUSE_FOCUS")
+   (register window-foreign             Int "SDL_WINDOW_FOREIGN")
+   (register window-allow-highdpi       Int "SDL_WINDOW_ALLOW_HIGHDPI")
+   (register window-mouse-capture       Int "SDL_WINDOW_MOUSE_CAPTURE")
+   (register window-always-on-top       Int "SDL_WINDOW_ALWAYS_ON_TOP")
+   (register window-skip-taskbar        Int "SDL_WINDOW_SKIP_TASKBAR")
+   (register window-utility             Int "SDL_WINDOW_UTILITY")
+   (register window-tooltip             Int "SDL_WINDOW_TOOLTIP")
+   (register window-popup-menu          Int "SDL_WINDOW_POPUP_MENU"))
+
+  ;; Time
+  (register get-ticks (Fn [] Int) "SDL_GetTicks")
+
+  ;; Helpers (not part of SDL)
+  (register rect (Fn [Int Int Int Int] SDL_Rect)) ;; x y w h
+  (register point (Fn [Int Int] SDL_Point)) ;; x y
+  (register rgb (Fn [Int Int Int] SDL_Color)) ;; x y
+  (register rgba (Fn [Int Int Int] SDL_Color)) ;; x y
+
+  (defn dimensions [texture]
+    (let-do [w 0 h 0]
+      (SDL.query-texture texture NULL NULL (Pointer.address &w) (Pointer.address &h)) ;; TODO: Can't qualify 'query-texture' ??!
+      (SDL.rect 0 0 w h)))
+
+  (defn draw-texture [rend texture point]
+    (let [dims (SDL.dimensions texture)
+          dest (SDL.rect @(SDL_Point.x point)
+                         @(SDL_Point.y point)
+                         @(SDL_Rect.w &dims)
+                         @(SDL_Rect.h &dims))]
+      (SDL.render-copy rend texture (Pointer.address &dims) (Pointer.address &dest))))
+
+  (defn draw-texture-centered [rend texture point]
+    (let [dims (SDL.dimensions texture)
+          w @(SDL_Rect.w &dims)
+          h @(SDL_Rect.h &dims)
+          dest (SDL.rect (- @(SDL_Point.x point) (/ w 2))
+                         (- @(SDL_Point.y point) (/ h 2))
+                         w
+                         h)]
+      (SDL.render-copy rend texture (Pointer.address &dims) (Pointer.address &dest))))
+
+  (defn-do bg [rend color]
+    (with Int
+          (set-render-draw-color rend
+                                 (SDL_Color.r color)
+                                 (SDL_Color.g color)
+                                 (SDL_Color.b color)
+                                 255))
+    (render-clear rend))
+
+  )
+
+;; App helper
+(deftype SDLApp
+    [window (Ptr SDL_Window)
+     renderer (Ptr SDL_Renderer)
+     fps Int])
+
+(defmodule SDLApp
+  (doc create "creates an SDLApp instance that can then be used by `run-with-callbacks`.")
+  (defn create [title width height]
+    (let [win NULL
+          ren NULL]
+      (do (SDL.init SDL.INIT_EVERYTHING)
+          (SDL.Hint.set SDL.Hint.render-vsync (cstr "1"))
+          (SDL.create-window-and-renderer width height (bit-or SDL.WindowFlags.window-shown SDL.WindowFlags.window-resizable) (Pointer.address &win) (Pointer.address &ren))
+          (SDL.set-window-title win (cstr title))
+          (SDLApp.init win ren 60))))
+
+  (hidden reduce-events)
+  (defn reduce-events [app f state-to-reduce-over]
+    (Array.reduce &(fn [s e] (~f app s e)) ;; Note, this will malloc an environment that captures the 'app' variable.
+                  state-to-reduce-over
+                  &(SDL.Event.all)))
+
+  (doc run-with-callbacks "starts the SDLApp and uses three callbacks to handle events, update state and render graphics.")
+  (defn run-with-callbacks [app event-fn update-fn draw-fn initial-state]
+    (let-do [rend @(SDLApp.renderer app)
+             state initial-state
+             last-t (SDL.get-ticks)
+             target-dt (/ 1000 @(SDLApp.fps app))]
+      (while true
+        (do
+          (set! state (reduce-events app &event-fn state))
+          (set! state (update-fn state))
+          (let-do [dt (- (SDL.get-ticks) last-t)
+                time-left (- target-dt dt)]
+            ;;(println* "dt: " dt ", time left: " time-left)
+            (when (pos? time-left)
+              (SDL.delay time-left)))
+          (set! last-t (SDL.get-ticks))
+          (draw-fn app rend &state)
+          (SDL.render-present rend)))))
+
+  (doc stop "stops the app. This function return 'a' to enable it to be called from anywhere.")
+  (defn stop [app]
+    (do (SDL.destroy-window @(window app))
+        (SDL.quit)
+        (System.exit 0)))
+
+  (doc default-draw "is a default rendering function that can be passed to `run-with-callbacks`.")
+  (defn default-draw [app rend state-ref]
+    (do (SDL.set-render-draw-color rend 0 0 0 255)
+        (SDL.render-clear rend)))
+
+  (doc quit-on-esc "is a default event handling function that can be passed to `run-with-callbacks`. Allows the application to quit if the player presses the escape key.")
+  (defn quit-on-esc [app state event]
+    (case (SDL.Event.type event)
+      SDL.Event.quit (SDLApp.stop app)
+      SDL.Event.key-down (let [key (SDL.Event.keycode event)]
+                           (if (= key SDL.Keycode.escape)
+                             (SDLApp.stop app)
+                             state))
+      state)))

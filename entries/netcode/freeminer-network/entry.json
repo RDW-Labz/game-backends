@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 29,
+ "commit": "e31670e",
+ "delivery": "reference",
+ "description": "`src/network` inside freeminer: 29 source files.",
+ "entry_points": [
+  "src/network/"
+ ],
+ "language": "h",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "freeminer \u2014 network",
+ "path_in_upstream": "src/network",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "freeminer-network",
+ "source": "corpus:cloned-free-games/freeminer@e31670e",
+ "source_bytes": 759319,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/freeminer/freeminer",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (29 files at that path)."
+}

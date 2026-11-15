@@ -1,0 +1,114 @@
+(doc Random "is a simple, non-cryptographic random number generator.")
+(defmodule Random
+
+  (def- a 69069.0)
+  (def- c 1.0)
+  (def- m 4294967296.0)
+  (def- s 19380110.0)
+
+  (doc seed "seed resets the seed of the random number generator.")
+  (defn seed []
+    (set! s (Double.from-uint64 (System.nanotime))))
+
+  (doc seed-from "seed-from resets the seed of the random number generator to `new-seed`.")
+  (defn seed-from [new-seed]
+    (set! s new-seed))
+
+  (doc random "random returns a float from 0 to 1.")
+  (defn random []
+    (do
+      (set! s (mod (+ (* s a) c) m))
+      (/ s m)))
+
+  (hidden _)
+  (doc _ "forces reseeding based on the current time at program start")
+  (def _ (do (seed) true))
+
+  (doc gen-seed-at-startup "toggles reseeding the random number generator at startup.")
+  (defmacro gen-seed-at-startup [toggle]
+    (if toggle
+      '(defmodule Random (def _ (do (seed) true)))
+      '(defmodule Random (def _ (do false)))))
+
+   (doc gen-seed-at-startup? "checks whether the random number generator was reseeded at startup.
+
+Use `Dynamic.Random.gen-seed-at-startup?` to check this in dynamic code.")
+  (defn gen-seed-at-startup? [] _)
+)
+
+(defmodule Dynamic
+  (defmodule Random
+    (doc gen-seed-at-startup? "checks whether the random number generator will be reseeded at startup.")
+    (defmacro gen-seed-at-startup? []
+      (last (last (s-expr Random._))))))
+
+(defmodule Int
+  (defn random-between [lower upper]
+    (let [diff (- upper lower)]
+      (+ (Double.to-int (* (Double.from-int diff) (Random.random))) lower)))
+  (implements random-between Int.random-between)
+
+  (defn random []
+    (random-between 0 MAX))
+
+  (implements random Int.random)
+)
+
+(defmodule Float
+  (defn random-between [lower upper]
+    (let [diff (- upper lower)]
+      (+ (Double.to-float (* (Double.from-float diff) (Random.random))) lower)))
+
+  (implements random-between Float.random-between)
+
+  (defn random []
+    (random-between 0.0f (from-int Int.MAX)))
+  (implements random Float.random)
+)
+
+(defmodule Long
+  (defn random-between [lower upper]
+    (let [diff (- upper lower)]
+      (+ (Double.to-long (* (Double.from-long diff) (Random.random))) lower)))
+  (implements random-between Long.random-between)
+
+  (defn random []
+    (random-between 0l (from-int Int.MAX)))
+  (implements random Long.random)
+)
+
+(defmodule Double
+  (defn random-between [lower upper]
+    (let [diff (- upper lower)]
+      (+ (* diff (Random.random)) lower)))
+  (implements random-between Double.random-between)
+
+  (defn random []
+    (random-between 0.0 (from-int Int.MAX)))
+  (implements random Double.random)
+)
+
+(defmodule Char
+  (defn random []
+    (Char.from-int (Int.random)))
+  (implements random Char.random)
+
+  (defn random-between [a b]
+    (Char.from-int (Int.random-between (Char.to-int a) (Char.to-int b))))
+  (implements random-between Char.random-between)
+)
+
+(defmodule String
+  (defn random-sized [n]
+    (from-chars &(Array.repeat n &Char.random)))
+)
+
+(defmodule Byte
+  (defn random-between [lower upper]
+    (Byte.from-int (Int.random-between (Byte.to-int lower) (Byte.to-int upper))))
+  (implements random-between Byte.random-between)
+
+  (defn random []
+    (Byte.from-int (Int.random)))
+  (implements random Byte.random)
+)

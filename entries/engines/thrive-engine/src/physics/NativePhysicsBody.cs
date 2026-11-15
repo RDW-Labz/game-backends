@@ -1,0 +1,262 @@
+﻿using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Arch.Core;
+using Godot;
+
+/// <summary>
+///   Physics body implemented by the Thrive native code library (this is a wrapper around that native handle)
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+public class NativePhysicsBody : IDisposable, IEquatable<NativePhysicsBody>
+{
+    public static readonly int EntityDataSize = Marshal.SizeOf<Entity>();
+
+    /// <summary>
+    ///   This is only used by external code, not this class at all, to know which bodies are in use without having to
+    ///   allocate extra memory.
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     This being the first field makes the memory layout non-optimal, but some of the private fields have been
+    ///     juggled around a bit for better layout.
+    ///   </para>
+    /// </remarks>
+    public bool Marked = true;
+
+    // TODO: re-add pooling here?
+    /*private static readonly ArrayPool<PhysicsCollision> CollisionDataBufferPool =
+        ArrayPool<PhysicsCollision>.Create(Constants.MAX_COLLISION_CACHE_BUFFER_RETURN_SIZE,
+            Constants.MAX_COLLISION_CACHE_BUFFERS_OF_SIMILAR_LENGTH);*/
+
+    private bool disposed;
+
+    /// <summary>
+    ///   Storage variable for collision recording, when this is active, the pin handle is used to pin down this
+    ///   piece of memory to ensure the native code side can directly write here with pointers
+    /// </summary>
+    private PhysicsCollision[]? activeCollisions;
+
+    private IntPtr nativeInstance;
+
+    internal NativePhysicsBody(IntPtr nativeInstance)
+    {
+        this.nativeInstance = nativeInstance;
+
+        if (this.nativeInstance.ToInt64() == 0)
+        {
+            // TODO: should this crash the game?
+            GD.PrintErr(
+                "Physics body can't be created from null native pointer, we probably ran out of physics bodies");
+        }
+
+#if DEBUG
+
+        // This can trigger if the allocation returned null, but that's not the worst thing to catch during debugging
+        // as that means we are using way too many physics bodies.
+        CheckIfDisposedAfterNativeCall();
+#endif
+    }
+
+    ~NativePhysicsBody()
+    {
+        Dispose(false);
+    }
+
+    /// <summary>
+    ///   Active collisions for this body. Only updated if started through
+    ///   <see cref="PhysicalWorld.BodyStartCollisionRecording"/>. For entities prefer
+    ///   <see cref="Components.CollisionManagementHelpers.GetActiveCollisions"/>
+    /// </summary>
+    public PhysicsCollision[]? ActiveCollisions => activeCollisions;
+
+    /// <summary>
+    ///   C# side tracking for physics bodies with microbe control being enabled
+    /// </summary>
+    public bool MicrobeControlEnabled { get; set; }
+
+    public bool IsDisposed => disposed;
+
+    public bool IsDetached
+    {
+        get
+        {
+            var result = NativeMethods.PhysicsBodyIsDetached(AccessBodyInternal());
+#if DEBUG
+            CheckIfDisposedAfterNativeCall();
+#endif
+            return result;
+        }
+    }
+
+    public static bool operator ==(NativePhysicsBody? left, NativePhysicsBody? right)
+    {
+        return Equals(left, right);
+    }
+
+    public static bool operator !=(NativePhysicsBody? left, NativePhysicsBody? right)
+    {
+        return !Equals(left, right);
+    }
+
+    /// <summary>
+    ///   Stores an entity in this body's user data for use in collision callbacks
+    /// </summary>
+    /// <param name="entity">The entity data to store</param>
+    public void SetEntityReference(in Entity entity)
+    {
+#if DEBUG
+        if (entity.Id < 0 && entity != Entity.Null)
+            throw new InvalidOperationException("Entity ID to set on physics is invalid (negative and not Null)");
+#endif
+
+        NativeMethods.PhysicsBodySetUserData(AccessBodyInternal(), entity, EntityDataSize);
+
+#if DEBUG
+        CheckIfDisposedAfterNativeCall();
+#endif
+    }
+
+    public bool Equals(NativePhysicsBody? other)
+    {
+        if (other == null)
+            return false;
+
+        return nativeInstance.ToInt64() != 0 && nativeInstance == other.nativeInstance;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (ReferenceEquals(null, obj))
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        if (obj.GetType() != GetType())
+            return false;
+
+        return Equals((NativePhysicsBody)obj);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    public override int GetHashCode()
+    {
+        return nativeInstance.GetHashCode();
+    }
+
+    internal (PhysicsCollision[] CollisionsArray, IntPtr ArrayAddress)
+        SetupCollisionRecording(int maxCollisions)
+    {
+        // Can re-use the collision recording array if the max count is still low enough
+        if (activeCollisions == null || activeCollisions.Length < maxCollisions)
+        {
+            // Ensure no previous state. This is safe as each physics body can only be recording one set of collisions
+            // at once, so all of our very briefly dangling pointers will be fixed very soon.
+            NotifyCollisionRecordingStopped();
+
+            // TODO: could always round this up to next 1 KiB of memory use as the pinned object heap rounds up the
+            // sizes anyway
+            activeCollisions = GC.AllocateUninitializedArray<PhysicsCollision>(maxCollisions, true);
+        }
+
+        return (activeCollisions, Marshal.UnsafeAddrOfPinnedArrayElement(activeCollisions, 0));
+    }
+
+    internal void NotifyCollisionRecordingStopped()
+    {
+        // ReSharper disable once RedundantCheckBeforeAssignment
+        if (activeCollisions != null)
+        {
+            // TODO: return to pool?
+            // CollisionDataBufferPool.Return(activeCollisions);
+            activeCollisions = null;
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal IntPtr AccessBodyInternal()
+    {
+        if (disposed)
+            throw new ObjectDisposedException(nameof(NativePhysicsBody));
+
+        return nativeInstance;
+    }
+
+#if DEBUG
+    /// <summary>
+    ///   Checks for disposal or an invalid handle after a native call. This keeps the wrapper alive in debug builds,
+    ///   so it cannot diagnose premature finalization in release builds or a native call that crashes before returning
+    ///   but should help catch any underlying problems during debugging.
+    /// </summary>
+    internal void CheckIfDisposedAfterNativeCall([CallerMemberName] string caller = "")
+    {
+        if (disposed || nativeInstance == IntPtr.Zero)
+        {
+            GD.PrintErr("PhysicsBody is destroyed while it is being used!");
+            throw new InvalidOperationException($"NativePhysicsBody native handle is invalid after {caller}");
+        }
+    }
+#endif
+
+    protected virtual void Dispose(bool disposing)
+    {
+        ReleaseUnmanagedResources();
+        if (disposing)
+        {
+            disposed = true;
+        }
+    }
+
+    private void ReleaseUnmanagedResources()
+    {
+        if (nativeInstance.ToInt64() != 0)
+        {
+            ForceStopCollisionRecording();
+
+            NativeMethods.ReleasePhysicsBodyReference(nativeInstance);
+            nativeInstance = new IntPtr(0);
+        }
+    }
+
+    /// <summary>
+    ///   Ensures that no pointers are left given to the native side that will become invalid after this object is
+    ///   disposed
+    /// </summary>
+    private void ForceStopCollisionRecording()
+    {
+        if (activeCollisions == null)
+            return;
+
+        GD.PrintErr("Force stopping collision reporting! This should not happen when properly destroying bodies");
+
+        NativeMethods.PhysicsBodyForceClearRecordingTargets(nativeInstance);
+#if DEBUG
+        CheckIfDisposedAfterNativeCall();
+#endif
+
+        NotifyCollisionRecordingStopped();
+    }
+}
+
+/// <summary>
+///   Thrive native library methods related to bodies
+/// </summary>
+internal static partial class NativeMethods
+{
+    [DllImport("thrive_native")]
+    internal static extern void ReleasePhysicsBodyReference(IntPtr body);
+
+    [DllImport("thrive_native")]
+    [return: MarshalAs(UnmanagedType.U1)]
+    internal static extern bool PhysicsBodyIsDetached(IntPtr body);
+
+    [DllImport("thrive_native")]
+    internal static extern void PhysicsBodySetUserData(IntPtr body, in Entity userData, int userDataSize);
+
+    [DllImport("thrive_native")]
+    internal static extern void PhysicsBodyForceClearRecordingTargets(IntPtr body);
+}

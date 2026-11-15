@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 13,
+ "commit": "85df506",
+ "delivery": "reference",
+ "description": "`common/src/packets` inside suroi: 13 source files.",
+ "entry_points": [
+  "common/src/packets/"
+ ],
+ "language": "ts",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "suroi \u2014 packets",
+ "path_in_upstream": "common/src/packets",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "suroi-packets",
+ "source": "corpus:cloned-free-games/suroi@85df506",
+ "source_bytes": 69367,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/HasangerGames/suroi.git",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (13 files at that path)."
+}

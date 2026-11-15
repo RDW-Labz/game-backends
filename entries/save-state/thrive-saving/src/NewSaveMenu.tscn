@@ -1,0 +1,126 @@
+[gd_scene format=3 uid="uid://u27aqj8gq4ep"]
+
+[ext_resource type="Theme" uid="uid://b4cx0o110g4b6" path="res://src/gui_common/thrive_theme.tres" id="1"]
+[ext_resource type="Script" uid="uid://dh0ic3eupgf0q" path="res://src/saving/NewSaveMenu.cs" id="2"]
+[ext_resource type="PackedScene" uid="uid://cl64wvnxs6ivs" path="res://src/gui_common/dialogs/CustomConfirmationDialog.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://ddi31qylscfyh" path="res://src/saving/SaveList.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bgeijgq7runaw" path="res://src/gui_common/FocusGrabber.tscn" id="5"]
+
+[node name="NewSaveMenu" type="Control" unique_id=263810565 node_paths=PackedStringArray("saveList", "saveNameBox", "saveButton", "overwriteConfirm", "attemptWriteFailAccept")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource("1")
+script = ExtResource("2")
+saveList = NodePath("VBoxContainer/VBoxContainer/SaveList")
+saveNameBox = NodePath("VBoxContainer/VBoxContainer/HBoxContainer/SaveName")
+saveButton = NodePath("VBoxContainer/VBoxContainer/HBoxContainer/Save")
+overwriteConfirm = NodePath("OverwriteConfirm")
+attemptWriteFailAccept = NodePath("AttemptWriteFailAccept")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1094413216]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=1973055040]
+layout_mode = 2
+text = "CREATE_NEW_SAVE"
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=593046524]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/VBoxContainer" unique_id=625760515]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer/HBoxContainer" unique_id=113481942]
+layout_mode = 2
+text = "NAME"
+
+[node name="SaveName" type="LineEdit" parent="VBoxContainer/VBoxContainer/HBoxContainer" unique_id=1758066913]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_neighbor_right = NodePath("../Save")
+focus_neighbor_bottom = NodePath("../../../CenterContainer/Back")
+focus_next = NodePath("../Save")
+focus_previous = NodePath(".")
+caret_blink = true
+
+[node name="ExtraOptions" type="MenuButton" parent="VBoxContainer/VBoxContainer/HBoxContainer" unique_id=1231144080]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(1, 1, 1, 1)
+disabled = true
+text = "EXTRA_OPTIONS"
+
+[node name="Save" type="Button" parent="VBoxContainer/VBoxContainer/HBoxContainer" unique_id=596937250]
+custom_minimum_size = Vector2(100, 37)
+layout_mode = 2
+focus_neighbor_left = NodePath("../SaveName")
+focus_neighbor_bottom = NodePath("../../../CenterContainer/Back")
+focus_next = NodePath("../../../CenterContainer/Back")
+focus_previous = NodePath("../SaveName")
+text = "SAVE"
+
+[node name="VSeparator" type="HSeparator" parent="VBoxContainer/VBoxContainer" unique_id=1220109389]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/VBoxContainer" unique_id=245189101]
+layout_mode = 2
+text = "OVERWRITE_EXISTING_SAVE"
+
+[node name="SaveList" parent="VBoxContainer/VBoxContainer" unique_id=2079893266 instance=ExtResource("4")]
+layout_mode = 2
+size_flags_vertical = 3
+AutoRefreshOnFirstVisible = false
+SelectableItems = true
+LoadableItems = false
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer" unique_id=1227779964]
+layout_mode = 2
+
+[node name="Back" type="Button" parent="VBoxContainer/CenterContainer" unique_id=938095403]
+custom_minimum_size = Vector2(100, 37)
+layout_mode = 2
+size_flags_horizontal = 0
+focus_neighbor_left = NodePath("../../VBoxContainer/HBoxContainer/SaveName")
+focus_neighbor_top = NodePath("../../VBoxContainer/HBoxContainer/Save")
+focus_neighbor_right = NodePath("../../VBoxContainer/HBoxContainer/Save")
+focus_neighbor_bottom = NodePath(".")
+focus_next = NodePath(".")
+focus_previous = NodePath("../../VBoxContainer/HBoxContainer/Save")
+theme = ExtResource("1")
+text = "BACK"
+
+[node name="FocusGrabber" parent="VBoxContainer/CenterContainer" unique_id=540889315 instance=ExtResource("5")]
+layout_mode = 2
+Priority = 3
+NodeToGiveFocusTo = NodePath("../../VBoxContainer/HBoxContainer/Save")
+AlwaysOverrideFocus = true
+SkipOverridingFocusForElements = [NodePath("../../..")]
+
+[node name="OverwriteConfirm" parent="." unique_id=130538502 instance=ExtResource("3")]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 0
+WindowTitle = "OVERWRITE_EXISTING_SAVE_PROMPT"
+
+[node name="AttemptWriteFailAccept" parent="." unique_id=1606707 instance=ExtResource("3")]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 0
+HideCancelButton = true
+DialogText = "ATTEMPT_TO_WRITE_SAVE_FAILED"
+WindowTitle = "CANNOT_WRITE_SAVE"
+Movable = false
+
+[connection signal="text_changed" from="VBoxContainer/VBoxContainer/HBoxContainer/SaveName" to="." method="OnSaveNameTextChanged"]
+[connection signal="text_submitted" from="VBoxContainer/VBoxContainer/HBoxContainer/SaveName" to="." method="OnSaveNameTextEntered"]
+[connection signal="pressed" from="VBoxContainer/VBoxContainer/HBoxContainer/Save" to="." method="SaveButtonPressed"]
+[connection signal="OnConfirmed" from="VBoxContainer/VBoxContainer/SaveList" to="." method="OnSaveListItemConfirmed"]
+[connection signal="OnSelectedChanged" from="VBoxContainer/VBoxContainer/SaveList" to="." method="OnSelectedChanged"]
+[connection signal="pressed" from="VBoxContainer/CenterContainer/Back" to="." method="ClosePressed"]
+[connection signal="Confirmed" from="OverwriteConfirm" to="." method="OnConfirmSaveName"]

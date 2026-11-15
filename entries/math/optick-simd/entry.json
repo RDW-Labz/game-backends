@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "math",
+ "code_files": 9,
+ "commit": "8abd28d",
+ "delivery": "vendored",
+ "description": "`samples/WindowsVulkan/glm/simd` inside optick: 9 source files.",
+ "entry_points": [
+  "samples/WindowsVulkan/glm/simd/"
+ ],
+ "language": "hpp",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "optick \u2014 simd",
+ "path_in_upstream": "samples/WindowsVulkan/glm/simd",
+ "slug": "optick-simd",
+ "source": "corpus:cloned-free-games/optick@8abd28d",
+ "source_bytes": 68470,
+ "system": "vector/matrix/quaternion math substrate",
+ "upstream": "https://github.com/bombomby/optick",
+ "vendored_path": "src/",
+ "why": "Backend material for vector/matrix/quaternion math substrate, taken from a pinned clone (9 files at that path)."
+}

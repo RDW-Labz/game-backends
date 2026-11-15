@@ -1,0 +1,158 @@
+﻿namespace Components;
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Arch.Core;
+using SharedBase.Archive;
+
+/// <summary>
+///   Physics object that detects objects inside it (similar to Godot <see cref="Godot.Area3D"/>)
+/// </summary>
+public struct PhysicsSensor : IArchivableComponent
+{
+    public const ushort SERIALIZATION_VERSION = 1;
+
+    /// <summary>
+    ///   The shape this sensor has. Must be non-null to activate the sensor functionality. Changing this after
+    ///   the sensor is created only applies when <see cref="ApplyNewShape"/> is set.
+    /// </summary>
+    public PhysicsShape? ActiveArea;
+
+    /// <summary>
+    ///   Set to a valid body by the sensor system while a shape is set and this is not disabled
+    /// </summary>
+    public NativePhysicsBody? SensorBody;
+
+    /// <summary>
+    ///   Collisions detected by this sensor. Count of valid entries is in <see cref="ActiveCollisionCountPtr"/>.
+    ///   Use the special helper
+    /// </summary>
+    public PhysicsCollision[]? ActiveCollisions;
+
+    /// <summary>
+    ///   Pointer to the detected bodies count variable
+    /// </summary>
+    public IntPtr ActiveCollisionCountPtr;
+
+    /// <summary>
+    ///   Sets the maximum number of simultaneous contacts this sensor can detect. Note changing this after the
+    ///   sensor has been created has no effect.
+    /// </summary>
+    public int MaxActiveContacts;
+
+    /// <summary>
+    ///   If set to true, then this sensor will not detect anything (gets disabled)
+    /// </summary>
+    public bool Disabled;
+
+    /// <summary>
+    ///   When set to true, the sensor body uses the kinematic movement type and detects sleeping bodies. If this is
+    ///   false, this only detects active bodies within the sensor. Must be set before the sensor is created,
+    ///   doesn't apply retroactively.
+    /// </summary>
+    public bool DetectSleepingBodies;
+
+    /// <summary>
+    ///   If true, then this detects static bodies. Should be left off unless explicitly needed as static body
+    ///   detection has quite many caveats (and performance concerns). Doesn't apply retroactively after sensor
+    ///   creation.
+    /// </summary>
+    public bool DetectStaticBodies;
+
+    /// <summary>
+    ///   If set to true on sensor creation, allows detecting collisions with the entity that has this sensor.
+    ///   Otherwise, such collisions are ignored (which is usually desired). Note that this applies on creation so
+    ///   if the body is not yet created or this value is later changes that has no effect.
+    /// </summary>
+    public bool DetectSelfEntityCollision;
+
+    // TODO: for purely sensor type entities implement a bool here for automatically retrieving the shape from
+    // PhysicsShapeHolder component
+
+    /// <summary>
+    ///   Set to true to re-apply <see cref="ActiveArea"/>
+    /// </summary>
+    public bool ApplyNewShape;
+
+    /// <summary>
+    ///   Internal variable, don't modify
+    /// </summary>
+    public bool InternalDisabledState;
+
+    public PhysicsSensor(int maxActiveContacts = Constants.MAX_SIMULTANEOUS_COLLISIONS_SENSOR)
+    {
+        MaxActiveContacts = maxActiveContacts;
+
+        ActiveArea = null;
+        SensorBody = null;
+        Disabled = false;
+        DetectSleepingBodies = false;
+        DetectStaticBodies = false;
+
+        ActiveCollisions = null;
+        ActiveCollisionCountPtr = IntPtr.Zero;
+        ApplyNewShape = false;
+        InternalDisabledState = false;
+    }
+
+    public ushort CurrentArchiveVersion => SERIALIZATION_VERSION;
+    public ThriveArchiveObjectType ArchiveObjectType => ThriveArchiveObjectType.ComponentPhysicsSensor;
+
+    public void WriteToArchive(ISArchiveWriter writer)
+    {
+        writer.Write(MaxActiveContacts);
+        writer.Write(Disabled);
+        writer.Write(DetectSleepingBodies);
+        writer.Write(DetectStaticBodies);
+        writer.Write(DetectSelfEntityCollision);
+        writer.Write(ApplyNewShape);
+    }
+}
+
+public static class PhysicsSensorHelpers
+{
+    public static PhysicsSensor ReadFromArchive(ISArchiveReader reader, ushort version)
+    {
+        if (version is > PhysicsSensor.SERIALIZATION_VERSION or <= 0)
+            throw new InvalidArchiveVersionException(version, PhysicsSensor.SERIALIZATION_VERSION);
+
+        var result = new PhysicsSensor
+        {
+            MaxActiveContacts = reader.ReadInt32(),
+            Disabled = reader.ReadBool(),
+            DetectSleepingBodies = reader.ReadBool(),
+            DetectStaticBodies = reader.ReadBool(),
+            DetectSelfEntityCollision = reader.ReadBool(),
+            ApplyNewShape = reader.ReadBool(),
+        };
+
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetActiveCollisions(this ref PhysicsSensor physicsSensor, out PhysicsCollision[]? collisions)
+    {
+        // If state is not correct for reading
+        collisions = physicsSensor.ActiveCollisions;
+        if (collisions == null || physicsSensor.ActiveCollisionCountPtr.ToInt64() == 0 || physicsSensor.Disabled)
+        {
+            return 0;
+        }
+
+        return Marshal.ReadInt32(physicsSensor.ActiveCollisionCountPtr);
+    }
+
+    public static void GetDetectedBodies(this ref PhysicsSensor physicsSensor, HashSet<Entity> resultEntities)
+    {
+        var count = physicsSensor.GetActiveCollisions(out var collisions);
+
+        for (int i = 0; i < count; ++i)
+        {
+            ref var collision = ref collisions![i];
+
+            resultEntities.Add(collision.SecondEntity);
+        }
+    }
+}

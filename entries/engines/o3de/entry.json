@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:36:56Z",
+ "category": "engines",
+ "commit": "32d6eddc51f9",
+ "delivery": "reference",
+ "description": "Open 3D Engine (O3DE) \u2014 AAA engine: ECS, gems, asset processor, multiplayer. Upstream `o3de/o3de`.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "Open 3D Engine (O3DE)",
+ "reference_reason": "size gate: 140 MB of source > 12 MB cap",
+ "size_bytes": 147622671,
+ "slug": "o3de",
+ "source": "github-api",
+ "system": "AAA engine: ECS, gems, asset processor, multiplayer",
+ "upstream": "https://github.com/o3de/o3de",
+ "why": "Amazon's Apache-licensed AAA engine \u2014 the clearest free AAA architecture reference."
+}

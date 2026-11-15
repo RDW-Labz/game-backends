@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 44,
+ "commit": "c26ce2e",
+ "delivery": "reference",
+ "description": "`src/common/engine` inside gzdoom: 44 source files.",
+ "entry_points": [
+  "src/common/engine/"
+ ],
+ "language": "h",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "gzdoom \u2014 engine",
+ "path_in_upstream": "src/common/engine",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "gzdoom-engine",
+ "source": "corpus:cloned-free-games/gzdoom@c26ce2e",
+ "source_bytes": 329412,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/ZDoom/gzdoom.git",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (44 files at that path)."
+}

@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 8,
+ "commit": "cd75076",
+ "delivery": "reference",
+ "description": "`common/src/comp/inventory` inside veloren: 8 source files.",
+ "entry_points": [
+  "common/src/comp/inventory/"
+ ],
+ "language": "rs",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "veloren \u2014 inventory",
+ "path_in_upstream": "common/src/comp/inventory",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "veloren-inventory",
+ "source": "corpus:cloned-free-games/veloren@cd75076",
+ "source_bytes": 348050,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/veloren/veloren.git",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (8 files at that path)."
+}

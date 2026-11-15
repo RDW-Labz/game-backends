@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:45Z",
+ "category": "math",
+ "commit": "6f14f4792a0c",
+ "delivery": "vendored",
+ "description": "GLM \u2014 header-only GLSL-style vector/matrix/quaternion math. Upstream `g-truc/glm`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "copying.txt",
+ "license_verdict": "clean",
+ "name": "GLM",
+ "size_bytes": 3075907,
+ "slug": "glm",
+ "source": "github-api",
+ "system": "header-only GLSL-style vector/matrix/quaternion math",
+ "upstream": "https://github.com/g-truc/glm",
+ "vendored_path": "src/",
+ "why": "De-facto C++ graphics math library; MIT."
+}

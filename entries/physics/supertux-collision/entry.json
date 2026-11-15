@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "physics",
+ "code_files": 10,
+ "commit": "c7cceeb",
+ "delivery": "reference",
+ "description": "`src/collision` inside supertux: 10 source files.",
+ "entry_points": [
+  "src/collision/"
+ ],
+ "language": "hpp",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "supertux \u2014 collision",
+ "path_in_upstream": "src/collision",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "supertux-collision",
+ "source": "corpus:cloned-free-games/supertux@c7cceeb",
+ "source_bytes": 62912,
+ "system": "rigid-body collision and dynamics",
+ "upstream": "https://github.com/SuperTux/supertux.git",
+ "why": "Backend material for rigid-body collision and dynamics, taken from a pinned clone (10 files at that path)."
+}

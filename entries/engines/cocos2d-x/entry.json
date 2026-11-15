@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:02Z",
+ "category": "engines",
+ "commit": "7a5282a301a1",
+ "delivery": "reference",
+ "description": "Cocos2d-x \u2014 mobile-first 2D/3D engine core. Upstream `cocos2d/cocos2d-x`.",
+ "language": "c++",
+ "license": "LGPL-2.1",
+ "license_file": "LICENSE_libwebsockets.txt",
+ "license_verdict": "copyleft-reference",
+ "name": "Cocos2d-x",
+ "reference_reason": "licence: LGPL-2.1 (copyleft-reference)",
+ "size_bytes": 27073778,
+ "slug": "cocos2d-x",
+ "source": "github-api",
+ "system": "mobile-first 2D/3D engine core",
+ "upstream": "https://github.com/cocos2d/cocos2d-x",
+ "why": "Shipping engine for a decade of mobile titles; clean scene/action model."
+}

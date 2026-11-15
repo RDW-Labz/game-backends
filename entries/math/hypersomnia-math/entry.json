@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "math",
+ "code_files": 30,
+ "commit": "0049839",
+ "delivery": "reference",
+ "description": "`src/augs/math` inside hypersomnia: 30 source files.",
+ "entry_points": [
+  "src/augs/math/"
+ ],
+ "language": "h",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "hypersomnia \u2014 math",
+ "path_in_upstream": "src/augs/math",
+ "reference_reason": "licence: AGPL-3.0",
+ "slug": "hypersomnia-math",
+ "source": "corpus:cloned-free-games/hypersomnia@0049839",
+ "source_bytes": 93635,
+ "system": "vector/matrix/quaternion math substrate",
+ "upstream": "https://github.com/TeamHypersomnia/Hypersomnia",
+ "why": "Backend material for vector/matrix/quaternion math substrate, taken from a pinned clone (30 files at that path)."
+}

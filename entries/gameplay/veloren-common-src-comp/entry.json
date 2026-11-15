@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "gameplay",
+ "code_files": 76,
+ "commit": "cd75076cf157",
+ "delivery": "reference",
+ "description": "`common/src/comp` inside veloren (76 files).",
+ "entry_points": [
+  "common/src/comp"
+ ],
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "veloren \u2014 comp",
+ "path_in_upstream": "common/src/comp",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 1136182,
+ "slug": "veloren-common-src-comp",
+ "source": "corpus:cloned-free-games/veloren@cd75076cf157",
+ "system": "ECS gameplay components (combat, inventory, stats, buffs)",
+ "upstream": "https://github.com/veloren/veloren.git",
+ "why": "Veloren's component design for a shipped multiplayer RPG."
+}

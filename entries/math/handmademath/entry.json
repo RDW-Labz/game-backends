@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:47Z",
+ "category": "math",
+ "commit": "661fef0893bc",
+ "delivery": "vendored",
+ "description": "Handmade Math \u2014 single-header 3D math for games. Upstream `HandmadeMath/HandmadeMath`.",
+ "language": "c",
+ "license": "CC0-1.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Handmade Math",
+ "size_bytes": 245888,
+ "slug": "handmademath",
+ "source": "github-api",
+ "system": "single-header 3D math for games",
+ "upstream": "https://github.com/HandmadeMath/HandmadeMath",
+ "vendored_path": "src/",
+ "why": "Public-domain single header \u2014 the drop-in maths for small engines."
+}

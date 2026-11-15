@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 12,
+ "commit": "ad6b2ee",
+ "delivery": "reference",
+ "description": "`src/combat` inside Revengate: 12 source files.",
+ "entry_points": [
+  "src/combat/"
+ ],
+ "language": "gd",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Revengate \u2014 combat",
+ "path_in_upstream": "src/combat",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "revengate-combat",
+ "source": "corpus:cloned-free-games/Revengate@ad6b2ee",
+ "source_bytes": 83356,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://gitlab.com/ygingras/revengate",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (12 files at that path)."
+}

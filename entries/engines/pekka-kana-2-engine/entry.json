@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 26,
+ "commit": "b1c5597",
+ "delivery": "vendored",
+ "description": "`src/engine` inside Pekka-Kana-2: 26 source files.",
+ "entry_points": [
+  "src/engine/"
+ ],
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Pekka-Kana-2 \u2014 engine",
+ "path_in_upstream": "src/engine",
+ "slug": "pekka-kana-2-engine",
+ "source": "corpus:cloned-free-games/Pekka-Kana-2@b1c5597",
+ "source_bytes": 295229,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/danilolc/pk2",
+ "vendored_path": "src/",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (26 files at that path)."
+}

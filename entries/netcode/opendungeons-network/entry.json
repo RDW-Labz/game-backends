@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 18,
+ "commit": "a9efe49",
+ "delivery": "reference",
+ "description": "`source/network` inside OpenDungeons: 18 source files.",
+ "entry_points": [
+  "source/network/"
+ ],
+ "language": "cpp",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "OpenDungeons \u2014 network",
+ "path_in_upstream": "source/network",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "opendungeons-network",
+ "source": "corpus:cloned-free-games/OpenDungeons@a9efe49",
+ "source_bytes": 176910,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/OpenDungeons/OpenDungeons.git",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (18 files at that path)."
+}

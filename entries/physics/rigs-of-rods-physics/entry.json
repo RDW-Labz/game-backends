@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "physics",
+ "code_files": 21,
+ "commit": "ebf31a2",
+ "delivery": "reference",
+ "description": "`source/main/physics` inside rigs-of-rods: 21 source files.",
+ "entry_points": [
+  "source/main/physics/"
+ ],
+ "language": "h",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "rigs-of-rods \u2014 physics",
+ "path_in_upstream": "source/main/physics",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "rigs-of-rods-physics",
+ "source": "corpus:cloned-free-games/rigs-of-rods@ebf31a2",
+ "source_bytes": 1254815,
+ "system": "rigid-body collision and dynamics",
+ "upstream": "https://github.com/RigsOfRods/rigs-of-rods",
+ "why": "Backend material for rigid-body collision and dynamics, taken from a pinned clone (21 files at that path)."
+}

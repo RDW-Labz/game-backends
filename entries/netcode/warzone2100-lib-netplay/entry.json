@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "netcode",
+ "code_files": 88,
+ "commit": "ceda97e14614",
+ "delivery": "reference",
+ "description": "`lib/netplay` inside warzone2100 (92 files).",
+ "entry_points": [
+  "lib/netplay"
+ ],
+ "language": "c++",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "warzone2100 \u2014 netplay",
+ "path_in_upstream": "lib/netplay",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 764111,
+ "slug": "warzone2100-lib-netplay",
+ "source": "corpus:cloned-free-games/warzone2100@ceda97e14614",
+ "system": "RTS netplay: sync, desync detection, rejoin",
+ "upstream": "https://github.com/Warzone2100/warzone2100.git",
+ "why": "Rejoinable RTS netcode with desync detection."
+}

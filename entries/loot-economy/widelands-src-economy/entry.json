@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "loot-economy",
+ "code_files": 60,
+ "commit": "29753773d9c1",
+ "delivery": "reference",
+ "description": "`src/economy` inside widelands (62 files).",
+ "entry_points": [
+  "src/economy"
+ ],
+ "language": "c++",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "widelands \u2014 economy",
+ "path_in_upstream": "src/economy",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 483455,
+ "slug": "widelands-src-economy",
+ "source": "corpus:cloned-free-games/widelands@29753773d9c1",
+ "system": "economy simulation: production chains, ware routing, markets",
+ "upstream": "https://github.com/widelands/widelands.git",
+ "why": "A real economy sim: production sites, ware queues, transport scheduling."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:07Z",
+ "category": "save-state",
+ "commit": "6d9f2443ab07",
+ "delivery": "vendored",
+ "description": "cJSON \u2014 ultralight JSON parser/writer. Upstream `DaveGamble/cJSON`.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cJSON",
+ "size_bytes": 762006,
+ "slug": "cjson",
+ "source": "github-api",
+ "system": "ultralight JSON parser/writer",
+ "upstream": "https://github.com/DaveGamble/cJSON",
+ "vendored_path": "src/",
+ "why": "The smallest sane JSON layer for save files (MIT)."
+}

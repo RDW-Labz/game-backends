@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 21,
+ "commit": "3c53616",
+ "delivery": "vendored",
+ "description": "`open_spiel/python/scale/core` inside open_spiel: 21 source files.",
+ "entry_points": [
+  "open_spiel/python/scale/core/"
+ ],
+ "language": "py",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "open_spiel \u2014 core",
+ "path_in_upstream": "open_spiel/python/scale/core",
+ "slug": "open-spiel-core",
+ "source": "corpus:cloned-free-games/open_spiel@3c53616",
+ "source_bytes": 484783,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/google-deepmind/open_spiel",
+ "vendored_path": "src/",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (21 files at that path)."
+}

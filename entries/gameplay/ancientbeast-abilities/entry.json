@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 24,
+ "commit": "1b45dc2",
+ "delivery": "reference",
+ "description": "`src/abilities` inside ancientbeast: 24 source files.",
+ "entry_points": [
+  "src/abilities/"
+ ],
+ "language": "ts",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "ancientbeast \u2014 abilities",
+ "path_in_upstream": "src/abilities",
+ "reference_reason": "licence: AGPL-3.0",
+ "slug": "ancientbeast-abilities",
+ "source": "corpus:cloned-free-games/ancientbeast@1b45dc2",
+ "source_bytes": 477962,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/FreezingMoon/AncientBeast",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (24 files at that path)."
+}

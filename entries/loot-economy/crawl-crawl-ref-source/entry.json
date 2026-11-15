@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "loot-economy",
+ "code_files": 1001,
+ "commit": "cf8c9bca9065",
+ "delivery": "reference",
+ "description": "`crawl-ref/source` inside crawl (11389 files).",
+ "entry_points": [
+  "crawl-ref/source"
+ ],
+ "language": "c++",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "crawl \u2014 source",
+ "path_in_upstream": "crawl-ref/source",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 18064588,
+ "slug": "crawl-crawl-ref-source",
+ "source": "corpus:cloned-free-games/crawl@cf8c9bca9065",
+ "system": "item generation (makeitem) and drop logic",
+ "upstream": "https://github.com/crawl/crawl.git",
+ "why": "Dungeon Crawl's item-generation and drop tables: the roguelike loot gold standard."
+}

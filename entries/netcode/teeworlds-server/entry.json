@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 13,
+ "commit": "5d68273",
+ "delivery": "vendored",
+ "description": "`src/game/server` inside teeworlds: 13 source files.",
+ "entry_points": [
+  "src/game/server/"
+ ],
+ "language": "h",
+ "license": "Zlib",
+ "license_verdict": "clean",
+ "name": "teeworlds \u2014 server",
+ "path_in_upstream": "src/game/server",
+ "slug": "teeworlds-server",
+ "source": "corpus:cloned-free-games/teeworlds@5d68273",
+ "source_bytes": 194059,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/teeworlds/teeworlds.git",
+ "vendored_path": "src/",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (13 files at that path)."
+}

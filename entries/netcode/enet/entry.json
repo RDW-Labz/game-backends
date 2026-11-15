@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:56Z",
+ "category": "netcode",
+ "commit": "5a9c537fd464",
+ "delivery": "vendored",
+ "description": "ENet \u2014 reliable UDP networking for games. Upstream `lsalzman/enet`.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ENet",
+ "size_bytes": 224538,
+ "slug": "enet",
+ "source": "github-api",
+ "system": "reliable UDP networking for games",
+ "upstream": "https://github.com/lsalzman/enet",
+ "vendored_path": "src/",
+ "why": "The classic MIT reliable-UDP library behind countless indie netcode stacks."
+}

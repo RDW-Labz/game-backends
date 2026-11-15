@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 8,
+ "commit": "0bd4518",
+ "delivery": "vendored",
+ "description": "`server` inside Cubit: 8 source files.",
+ "entry_points": [
+  "server/"
+ ],
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Cubit \u2014 server",
+ "path_in_upstream": "server",
+ "slug": "cubit-server",
+ "source": "corpus:cloned-free-games/Cubit@0bd4518",
+ "source_bytes": 68612,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/taynotfound/cubit",
+ "vendored_path": "src/",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (8 files at that path)."
+}

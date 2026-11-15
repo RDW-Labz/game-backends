@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:27Z",
+ "category": "engines",
+ "commit": "fa6554710d0d",
+ "delivery": "reference",
+ "description": "Flecs \u2014 ECS with prefabs, pipelines, hierarchies, REST explorer. Upstream `SanderMertens/flecs`.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Flecs",
+ "reference_reason": "size gate: 30 MB of source > 12 MB cap",
+ "size_bytes": 31495046,
+ "slug": "flecs",
+ "source": "github-api",
+ "system": "ECS with prefabs, pipelines, hierarchies, REST explorer",
+ "upstream": "https://github.com/SanderMertens/flecs",
+ "why": "Batteries-included ECS: relationship traits and system pipelines out of the box."
+}

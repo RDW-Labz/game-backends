@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:29Z",
+ "category": "physics",
+ "commit": "cf16769bb0ed",
+ "delivery": "vendored",
+ "description": "Jolt Physics \u2014 3D rigid bodies, constraints, character controller, vehicles. Upstream `jrouwe/JoltPhysics`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Jolt Physics",
+ "size_bytes": 7338704,
+ "slug": "joltphysics",
+ "source": "github-api",
+ "system": "3D rigid bodies, constraints, character controller, vehicles",
+ "upstream": "https://github.com/jrouwe/JoltPhysics",
+ "vendored_path": "src/",
+ "why": "The physics engine behind Horizon Forbidden West \u2014 MIT, active, AAA-proven."
+}

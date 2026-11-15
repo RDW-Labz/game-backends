@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:44:16Z",
+ "category": "engines",
+ "code_files": 78,
+ "commit": "65d4132",
+ "delivery": "reference",
+ "description": "`src/engine` inside Red-Eclipse: 78 source files.",
+ "entry_points": [
+  "src/engine/"
+ ],
+ "language": "h",
+ "license": "CC-BY-SA-4.0",
+ "license_verdict": "gated-reference",
+ "name": "Red-Eclipse \u2014 engine",
+ "path_in_upstream": "src/engine",
+ "reference_reason": "licence: CC-BY-SA-4.0",
+ "slug": "red-eclipse-engine",
+ "source": "corpus:cloned-free-games/Red-Eclipse@65d4132",
+ "source_bytes": 3303861,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/redeclipse/base.git",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (78 files at that path)."
+}

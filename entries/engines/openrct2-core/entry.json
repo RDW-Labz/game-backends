@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 90,
+ "commit": "3b7114c",
+ "delivery": "reference",
+ "description": "`src/openrct2/core` inside openrct2: 90 source files.",
+ "entry_points": [
+  "src/openrct2/core/"
+ ],
+ "language": "cpp",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "openrct2 \u2014 core",
+ "path_in_upstream": "src/openrct2/core",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "openrct2-core",
+ "source": "corpus:cloned-free-games/openrct2@3b7114c",
+ "source_bytes": 432399,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/OpenRCT2/OpenRCT2.git",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (90 files at that path)."
+}

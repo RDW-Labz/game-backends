@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:34Z",
+ "category": "physics",
+ "commit": "d3afe76132fc",
+ "delivery": "reference",
+ "description": "Bullet Physics \u2014 3D collision/dynamics + soft body + ML. Upstream `bulletphysics/bullet3`.",
+ "language": "c++",
+ "license": "Zlib",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "Bullet Physics",
+ "reference_reason": "size gate: 43 MB of source > 12 MB cap",
+ "size_bytes": 45715589,
+ "slug": "bullet3",
+ "source": "github-api",
+ "system": "3D collision/dynamics + soft body + ML",
+ "upstream": "https://github.com/bulletphysics/bullet3",
+ "why": "Long-standing open physics used in AAA and robotics (zlib)."
+}

@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "math",
+ "code_files": 33,
+ "commit": "716d931",
+ "delivery": "vendored",
+ "description": "`src/as/math` inside glas: 33 source files.",
+ "entry_points": [
+  "src/as/math/"
+ ],
+ "language": "js",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "glas \u2014 math",
+ "path_in_upstream": "src/as/math",
+ "slug": "glas-math",
+ "source": "corpus:cloned-free-games/glas@716d931",
+ "source_bytes": 351346,
+ "system": "vector/matrix/quaternion math substrate",
+ "upstream": "https://github.com/lume/glas",
+ "vendored_path": "src/",
+ "why": "Backend material for vector/matrix/quaternion math substrate, taken from a pinned clone (33 files at that path)."
+}

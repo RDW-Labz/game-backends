@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:44:21Z",
+ "category": "engines",
+ "commit": "4d0d43b77dd2",
+ "delivery": "reference",
+ "description": "Godot Engine \u2014 full 2D/3D engine: scene tree, physics, net, script VMs. Upstream `godotengine/godot`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "Godot Engine",
+ "reference_reason": "size gate: 182 MB of source > 12 MB cap",
+ "size_bytes": 191118578,
+ "slug": "godot",
+ "source": "github-api",
+ "system": "full 2D/3D engine: scene tree, physics, net, script VMs",
+ "upstream": "https://github.com/godotengine/godot",
+ "why": "Reference open-source AAA-adjacent engine; the whole runtime is the backend."
+}

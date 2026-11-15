@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 17,
+ "commit": "669da23",
+ "delivery": "vendored",
+ "description": "`src/client/game/interact/items` inside biomes-game: 17 source files.",
+ "entry_points": [
+  "src/client/game/interact/items/"
+ ],
+ "language": "ts",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "biomes-game \u2014 items",
+ "path_in_upstream": "src/client/game/interact/items",
+ "slug": "biomes-game-items",
+ "source": "corpus:cloned-free-games/biomes-game@669da23",
+ "source_bytes": 77452,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/ill-inc/biomes-game",
+ "vendored_path": "src/",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (17 files at that path)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:00Z",
+ "category": "netcode",
+ "commit": "37618ad4b927",
+ "delivery": "reference",
+ "description": "Nakama \u2014 game backend server: matchmaking, realtime, leaderboards, storage. Upstream `heroiclabs/nakama`.",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Nakama",
+ "reference_reason": "size gate: 48 MB of source > 12 MB cap",
+ "size_bytes": 50638150,
+ "slug": "nakama",
+ "source": "github-api",
+ "system": "game backend server: matchmaking, realtime, leaderboards, storage",
+ "upstream": "https://github.com/heroiclabs/nakama",
+ "why": "Full scalable game backend (Apache-2.0): the server side of netcode."
+}

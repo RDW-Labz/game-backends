@@ -1,0 +1,81 @@
+(doc Color "provides ANSI color operations.")
+(defmodule Color
+  (hidden table)
+  (deftype Id
+     Black
+     Red
+     Green
+     Yellow
+     Blue
+     Magenta
+     Cyan
+     White
+     Reset
+     None
+     Bold
+     Italic
+     Underline
+     BlinkSlow
+     BlinkRapid
+     BgBlack
+     BgRed
+     BgGreen
+     BgYellow
+     BgBlue
+     BgMagenta
+     BgCyan
+     BgWhite)
+  (use Id)
+  (defn hash [k]
+    (get-tag k))
+  (implements hash Color.hash)
+  (defn = [a b]
+    (= (hash (the (Ref Color.Id) a)) (hash b)))
+  (implements = Color.=)
+
+  (def table
+    {(Black) @"30"
+     (Red) @"31"
+     (Green) @"32"
+     (Yellow) @"33"
+     (Blue) @"34"
+     (Magenta) @"35"
+     (Cyan) @"36"
+     (White) @"37"
+     (Reset) @"0"
+     (None) @"0"
+     (Bold) @"1"
+     (Italic) @"3"
+     (Underline) @"4"
+     (BlinkSlow) @"5"
+     (BlinkRapid) @"6"
+     (BgBlack) @"40"
+     (BgRed) @"41"
+     (BgGreen) @"42"
+     (BgYellow) @"43"
+     (BgBlue) @"44"
+     (BgMagenta) @"45"
+     (BgCyan) @"46"
+     (BgWhite) @"47"})
+
+  (doc color "generates ANSI coloration based on a color name `cname`.")
+  (defn color [cid]
+    (let [n (Map.get &table &cid)]
+      (String.append "\x1b[" &(String.append &n "m"))))
+
+  (doc colorize "wraps a string `s` in ANSI coloration based on a color id `cid` and prints it.
+
+It will reset the color afterwards.")
+  (defn colorize [cid s]
+    (String.append &(color cid) &(String.append s &(color (Reset)))))
+)
+
+(defmodule IO
+  (doc color "sets the output color using ANSI coloration based on a color id `cid`.")
+  (defn color [cid]
+    (print &(Color.color cid)))
+
+  (doc colorize "wraps a string in ANSI coloration based on a color id `cid` and prints it.")
+  (defn colorize [cid s]
+    (print &(Color.colorize cid s)))
+)

@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 9,
+ "commit": "1b45dc2",
+ "delivery": "reference",
+ "description": "`src/multiplayer` inside ancientbeast: 9 source files.",
+ "entry_points": [
+  "src/multiplayer/"
+ ],
+ "language": "ts",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "ancientbeast \u2014 multiplayer",
+ "path_in_upstream": "src/multiplayer",
+ "reference_reason": "licence: AGPL-3.0",
+ "slug": "ancientbeast-multiplayer",
+ "source": "corpus:cloned-free-games/ancientbeast@1b45dc2",
+ "source_bytes": 52282,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/FreezingMoon/AncientBeast",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (9 files at that path)."
+}

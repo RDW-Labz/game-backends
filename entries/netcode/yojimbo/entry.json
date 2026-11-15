@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:55Z",
+ "category": "netcode",
+ "commit": "ae64e145c993",
+ "delivery": "vendored",
+ "description": "yojimbo \u2014 client/server game protocol: encryption, reliability, connection tags. Upstream `networkprotocol/yojimbo`.",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENCE",
+ "license_verdict": "clean",
+ "name": "yojimbo",
+ "size_bytes": 2392591,
+ "slug": "yojimbo",
+ "source": "github-api",
+ "system": "client/server game protocol: encryption, reliability, connection tags",
+ "upstream": "https://github.com/networkprotocol/yojimbo",
+ "vendored_path": "src/",
+ "why": "Glenn Fiedler's production netcode library on top of reliable.io."
+}

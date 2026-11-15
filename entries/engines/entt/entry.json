@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:24Z",
+ "category": "engines",
+ "commit": "1dcd7aab6548",
+ "delivery": "vendored",
+ "description": "EnTT \u2014 header-only ECS: registry, views, groups, signals. Upstream `skypjack/entt`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "EnTT",
+ "size_bytes": 5692105,
+ "slug": "entt",
+ "source": "github-api",
+ "system": "header-only ECS: registry, views, groups, signals",
+ "upstream": "https://github.com/skypjack/entt",
+ "vendored_path": "src/",
+ "why": "The reference C++ ECS used across indie and commercial engines."
+}

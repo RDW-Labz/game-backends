@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:44:17Z",
+ "category": "gameplay",
+ "code_files": 59,
+ "commit": "7f58510",
+ "delivery": "vendored",
+ "description": "`dat/ai` inside naev: 59 source files.",
+ "entry_points": [
+  "dat/ai/"
+ ],
+ "language": "lua",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "naev \u2014 ai",
+ "path_in_upstream": "dat/ai",
+ "slug": "naev-ai",
+ "source": "corpus:cloned-free-games/naev@7f58510",
+ "source_bytes": 246120,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/naev/naev.git",
+ "vendored_path": "src/",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (59 files at that path)."
+}

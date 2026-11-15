@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 48,
+ "commit": "34d1ecd",
+ "delivery": "reference",
+ "description": "`src/core` inside julius: 48 source files.",
+ "entry_points": [
+  "src/core/"
+ ],
+ "language": "c",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "julius \u2014 core",
+ "path_in_upstream": "src/core",
+ "reference_reason": "licence: AGPL-3.0",
+ "slug": "julius-core",
+ "source": "corpus:cloned-free-games/julius@34d1ecd",
+ "source_bytes": 708491,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/bvschaik/julius",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (48 files at that path)."
+}

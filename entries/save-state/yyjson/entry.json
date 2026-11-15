@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:08Z",
+ "category": "save-state",
+ "commit": "ebb8d7e5aaa5",
+ "delivery": "vendored",
+ "description": "yyjson \u2014 high-performance JSON library (read/write/mutate). Upstream `ibireme/yyjson`.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "yyjson",
+ "size_bytes": 2604445,
+ "slug": "yyjson",
+ "source": "github-api",
+ "system": "high-performance JSON library (read/write/mutate)",
+ "upstream": "https://github.com/ibireme/yyjson",
+ "vendored_path": "src/",
+ "why": "Fast JSON for large save blobs and save-format tooling (MIT)."
+}

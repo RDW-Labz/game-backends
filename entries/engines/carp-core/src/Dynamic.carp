@@ -1,0 +1,125 @@
+(doc Dynamic "This module contains dynamic functions which are used in the Carp repl and during compilation. They are not available in compiled code. Read more about dynamic functions in the [Language Guide](https://github.com/carp-lang/Carp/blob/master/docs/LanguageGuide.md#dynamic-functions).")
+
+(defmodule Dynamic
+  ;; Functions for doing things at the REPL and during compile time.
+  (doc proc? "checks whether `x` is callable.")
+  (defndynamic proc? [x]
+    (or
+      (List.in? (dynamic-type x) '(fn closure))
+      (let [s (s-expr x)]
+        (and (not (empty? s)) (= 'dynamic (dynamic-type (car s)))))))
+
+  (doc nil "is the value `nil`, i.e. the empty list.")
+  (defdynamic nil '())
+
+  (doc nil? "checks whether a value is nil, i.e. the empty list.")
+  (defndynamic nil? [value]
+    (= value nil))
+
+  (doc inc "increments a number.")
+  (defndynamic inc [x]
+    (+ x 1))
+
+  (doc dec "decrements a number.")
+  (defndynamic dec [x]
+    (- x 1))
+
+  (doc neg "negates a number.")
+  (defndynamic neg [x]
+    (* -1 x))
+
+  (doc mod "implements modulo, is slower than modulo specialized on
+integers [`imod`](#imod).")
+  (defndynamic mod [x y]
+    (let-do [a (if (< x 0) (neg x) x)
+             b (if (< y 0) (neg y) y)
+             m a]
+      (while (or (> m b) (= m b))
+        (set! m (- m b)))
+      (if (< a 0) (neg m) m)))
+
+  (doc imod "implements modulo on integers, and is much faster than
+[`mod](#mod).")
+  (defndynamic imod [x y]
+    (- x (* y (/ x y))))
+
+  (doc even? "checks whether the number `n` is even.")
+  (defndynamic even? [n] (= 0 (mod n 2)))
+
+  (doc odd? "checks whether the number `n` is odd.")
+  (defndynamic odd? [n] (= 1 (mod n 2)))
+
+  (defmodule Project
+    (doc no-echo "Turn off debug printing in the compiler.")
+    (defndynamic no-echo []
+      (do
+        (Project.config "print-ast" false)
+        (Project.config "echo-compiler-cmd" false))))
+
+  (defmodule String
+    (doc prefix "takes the prefix of the string `s` up to the index `to`.")
+    (defndynamic prefix [s to]
+      (String.slice s 0 to))
+
+    (doc suffix "takes the suffix of the string `s` from the index `from`.")
+    (defndynamic suffix [s from]
+      (String.slice s from (String.length s)))
+
+    (doc head "takes the head of the string `s` as a one-character string.")
+    (defndynamic head [s]
+      (String.prefix s 1))
+
+    (doc tail "takes the tail of the string `s`.")
+    (defndynamic tail [s]
+      (String.suffix s 1))
+  )
+
+  (defmodule Debug
+    (doc trace "prints the value of an expression to `stdout`, then returns its value.")
+    (defmacro trace [x]
+      (let [sym (gensym)]
+        `(let-do [%sym %x]
+          ; we use eval here to ensure we resolve the symbol before putting it
+          ; into file, line, and column
+          (macro-log
+            %(eval `(file %x)) ":"
+            %(eval `(line %x)) ":"
+            %(eval `(column %x)) ": "
+            %sym)
+          %sym))
+      )
+    )
+)
+
+
+;; The following functions are not put into a module for now:
+
+(defndynamic add-cflag [flag]
+  (Project.config "cflag" (cons flag (Project.get-config "cflag"))))
+
+(defndynamic add-lib [lib]
+  (Project.config "libflag" (cons lib (Project.get-config "libflag"))))
+
+(defndynamic pkg-config [pkg flags]
+  (Dynamic.String.concat (Dynamic.append
+                          (Dynamic.append
+                           ["`pkg-config " pkg " "]
+                           (Project.get-config "pkgconfigflag")
+                           )
+                          [flags "`"])))
+
+(defndynamic add-pkg [pkg]
+  (do
+    (add-cflag (pkg-config pkg "--cflags"))
+    (add-lib (pkg-config pkg "--libs"))))
+
+(defndynamic current-file []
+  (car (Project.get-config "load-stack")))
+
+(defndynamic relative-to [path relpath]
+  (Dynamic.String.concat [(Dynamic.Path.directory path)
+                          "/"
+                          relpath]))
+
+(defndynamic add-c [relpath]
+  (Project.config "cmod" (relative-to (current-file) relpath)))

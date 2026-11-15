@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:57Z",
+ "category": "netcode",
+ "commit": "b1a7a2101dcb",
+ "delivery": "vendored",
+ "description": "KCP \u2014 fast reliable ARQ protocol (TCP-like over UDP). Upstream `skywind3000/kcp`.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "KCP",
+ "size_bytes": 60395,
+ "slug": "kcp",
+ "source": "github-api",
+ "system": "fast reliable ARQ protocol (TCP-like over UDP)",
+ "upstream": "https://github.com/skywind3000/kcp",
+ "vendored_path": "src/",
+ "why": "Low-latency reliable transport used by Chinese MMOs and realtime servers."
+}

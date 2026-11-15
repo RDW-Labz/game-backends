@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 86,
+ "commit": "ceda97e",
+ "delivery": "reference",
+ "description": "`lib/framework` inside warzone2100: 86 source files.",
+ "entry_points": [
+  "lib/framework/"
+ ],
+ "language": "h",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "warzone2100 \u2014 framework",
+ "path_in_upstream": "lib/framework",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "warzone2100-framework",
+ "source": "corpus:cloned-free-games/warzone2100@ceda97e",
+ "source_bytes": 737392,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/Warzone2100/warzone2100.git",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (86 files at that path)."
+}

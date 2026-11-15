@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 66,
+ "commit": "6202857",
+ "delivery": "reference",
+ "description": "`engine-core` inside CBG----Clavierhaus-BackGammon: 66 source files.",
+ "entry_points": [
+  "engine-core/"
+ ],
+ "language": "c",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "CBG----Clavierhaus-BackGammon \u2014 engine-core",
+ "path_in_upstream": "engine-core",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "cbg-clavierhaus-backgammon-engine-core",
+ "source": "corpus:cloned-free-games/CBG----Clavierhaus-BackGammon@6202857",
+ "source_bytes": 1539437,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/clavierhaus/gnubg-android",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (66 files at that path)."
+}

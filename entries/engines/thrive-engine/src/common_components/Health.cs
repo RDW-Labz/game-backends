@@ -1,0 +1,438 @@
+﻿namespace Components;
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Arch.Core;
+using Arch.Core.Extensions;
+using Godot;
+using SharedBase.Archive;
+
+/// <summary>
+///   Things that have a health statistic and can be damaged
+/// </summary>
+/// <remarks>
+///   <para>
+///     This component type is designed for concurrent access by many systems, as such this can be marked
+///     <see cref="ReadsComponentAttribute"/> often when "slight" writes are done to this component.
+///   </para>
+/// </remarks>
+[ComponentIsReadByDefault]
+public struct Health : IArchivableComponent
+{
+    public const ushort SERIALIZATION_VERSION = 1;
+
+    public List<DamageEventNotice>? RecentDamageReceived;
+
+    public float CurrentHealth;
+    public float MaxHealth;
+
+    /// <summary>
+    ///   Time until can regen again;
+    /// </summary>
+    public float HealthRegenCooldown;
+
+    // TODO: an invulnerability duration to automatically turn of invulnerability? (needed to reimplement pilus
+    // damage cooldown)
+
+    public bool Invulnerable;
+
+    /// <summary>
+    ///   Simple flag to check if this entity has died. A stage-specific death system will set this flag when
+    ///   an entity runs out of health (or some other condition is fulfilled for death)
+    /// </summary>
+    public bool Dead;
+
+    /// <summary>
+    ///   This health class is stage agnostic, so each stage needs its own entity death system to handle dying.
+    ///   To at least make that easier, this flag exists for such a system to store the info on if it has already
+    ///   handled a dead entity or not.
+    /// </summary>
+    public bool DeathProcessed;
+
+    public Health(float defaultHealth)
+    {
+        MaxHealth = defaultHealth;
+        CurrentHealth = MaxHealth;
+
+        Invulnerable = false;
+        Dead = false;
+        DeathProcessed = false;
+        RecentDamageReceived = null;
+    }
+
+    public ushort CurrentArchiveVersion => SERIALIZATION_VERSION;
+    public ThriveArchiveObjectType ArchiveObjectType => ThriveArchiveObjectType.ComponentHealth;
+
+    public void WriteToArchive(ISArchiveWriter writer)
+    {
+        if (RecentDamageReceived == null)
+        {
+            writer.WriteNullObject();
+        }
+        else
+        {
+            writer.WriteObject(RecentDamageReceived);
+        }
+
+        writer.Write(CurrentHealth);
+        writer.Write(MaxHealth);
+        writer.Write(HealthRegenCooldown);
+        writer.Write(Invulnerable);
+        writer.Write(Dead);
+        writer.Write(DeathProcessed);
+    }
+}
+
+public static class HealthHelpers
+{
+    private static bool instantKillProtection = true;
+
+    public static void SetWorld(GameWorld world)
+    {
+        instantKillProtection = world.WorldSettings.Difficulty.InstantKillProtection;
+    }
+
+    public static Health ReadFromArchive(ISArchiveReader reader, ushort version)
+    {
+        if (version is > Health.SERIALIZATION_VERSION or <= 0)
+            throw new InvalidArchiveVersionException(version, Health.SERIALIZATION_VERSION);
+
+        return new Health
+        {
+            RecentDamageReceived = reader.ReadObjectOrNull<List<DamageEventNotice>>(),
+            CurrentHealth = reader.ReadFloat(),
+            MaxHealth = reader.ReadFloat(),
+            HealthRegenCooldown = reader.ReadFloat(),
+            Invulnerable = reader.ReadBool(),
+            Dead = reader.ReadBool(),
+            DeathProcessed = reader.ReadBool(),
+        };
+    }
+
+    public static float CalculateMicrobeHealth(MembraneType membraneType, float membraneRigidity,
+        ref readonly MicrobeEnvironmentalEffects environmentalEffects)
+    {
+        float healthMultiplier = environmentalEffects.HealthMultiplier;
+
+        // TODO: remove this safety check once no longer necessary
+        // https://github.com/Revolutionary-Games/Thrive/issues/5928
+        if (healthMultiplier is <= MathUtils.EPSILON or float.NaN)
+        {
+            GD.PrintErr("Invalid health multiplier for a microbe: ", healthMultiplier);
+            healthMultiplier = 1.0f;
+        }
+
+        return (membraneType.Hitpoints + membraneRigidity * Constants.MEMBRANE_RIGIDITY_HITPOINTS_MODIFIER) *
+            healthMultiplier;
+    }
+
+    /// <summary>
+    ///   A general damage dealing method that doesn't apply any damage reductions or anything like that
+    /// </summary>
+    /// <param name="health">The health structure to cause damage to</param>
+    /// <param name="entity">Entity that is being damaged (needed only when mod callbacks are registered)</param>
+    /// <param name="damage">The amount of damage to apply</param>
+    /// <param name="damageSource">The name of the damage source</param>
+    /// <param name="instantKillProtectionThreshold">
+    ///   A threshold above which, if the current health is, the damage is not allowed to instantly kill the entity.
+    ///   Pass in a negative value to disable the protection.
+    /// </param>
+    /// <param name="playSound">Whether a damage sound should be played for this damage event.</param>
+    public static void DealDamage(this ref Health health, in Entity entity, float damage, string damageSource,
+        float instantKillProtectionThreshold, bool playSound = true)
+    {
+        if (health.Invulnerable)
+        {
+            // Just consume this damage event if the target is not taking damage
+            return;
+        }
+
+        if (string.IsNullOrEmpty(damageSource))
+            throw new ArgumentException("damage source is empty");
+
+        // This is probably no longer needed, but just for safety this makes sure no negative damage is applied
+        if (damage < 0)
+        {
+            GD.PrintErr("Trying to deal negative damage");
+            return;
+        }
+
+        // Can't damage dead things (or deal no damage)
+        if (health.Dead || damage == 0)
+            return;
+
+        var previousHealth = health.CurrentHealth;
+
+        // This should result in at least reasonable health even if thread race conditions hit here
+        health.CurrentHealth = Math.Max(0, health.CurrentHealth - damage);
+
+        if (instantKillProtectionThreshold > 0 && health.CurrentHealth <= 0 &&
+            previousHealth >= instantKillProtectionThreshold)
+        {
+            // Apply instant kill prevention to this damage event
+            var targetHealth = Math.Max(0.1f, health.MaxHealth * 0.01f);
+            health.CurrentHealth = targetHealth;
+            damage = Math.Max(0, previousHealth - targetHealth);
+        }
+
+        // TODO: should there be a minimum damage, like 0.01 after which the cooldown is only triggered?
+        // Only trigger cooldown once enough damage is taken to make sure really small trickle damage doesn't cause
+        // the health regen to stop for apparently no reason
+        if (damage > Constants.HEALTH_REGEN_STOP_DAMAGE_THRESHOLD)
+            health.HealthRegenCooldown = Constants.HEALTH_REGENERATION_COOLDOWN;
+
+        var damageEvent = new DamageEventNotice(damageSource, damage, playSound);
+        var damageList = health.RecentDamageReceived;
+
+        if (damageList == null)
+        {
+            // Create a new damage list, don't really care if due to data race some info is lost here, so we don't
+            // immediately set the list here and lock it
+            damageList = [damageEvent];
+
+            health.RecentDamageReceived = damageList;
+        }
+        else
+        {
+            lock (damageList)
+            {
+                // Skip tracking damage after max number of events
+                if (damageList.Count >= Constants.MAX_DAMAGE_EVENTS)
+                    return;
+
+                damageList.Add(damageEvent);
+
+                if (damageList.Count == Constants.MAX_DAMAGE_EVENTS)
+                {
+                    // Print an error once per entity
+                    GD.PrintErr("Damage event overflow for an entity, all entities should always have " +
+                        "a system clearing their damage events");
+                }
+            }
+        }
+
+        // Note can be triggered by multiple threads!
+        ModLoader.ModInterface.TriggerOnDamageReceived(entity, damage, damageSource);
+    }
+
+    /// <summary>
+    ///   Applies damage but takes microbe damage resistances into account. This should (almost always) be used
+    ///   for microbes to calculate the right damage rather than <see cref="DealDamage"/>
+    /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     TODO: would it be cleaner design to bake in resistances / a damage callback into the base Health type
+    ///     so that no more entity type specific methods like this would be needed?
+    ///   </para>
+    /// </remarks>
+    public static void DealMicrobeDamage(this ref Health health, ref CellProperties cellProperties, in Entity entity,
+        float damage, string damageSource, float instantKillProtectionThreshold, bool playSound = true)
+    {
+        // TODO: reimplement this (probably better to use the invulnerable health property and also make engulf
+        // check that to prevent engulfing of the player)
+        // if (IsPlayerMicrobe && CheatManager.GodMode)
+        //    return;
+
+        // Damage reduction is only wanted for non-starving damage
+        bool canApplyDamageReduction = true;
+
+        if (IsDamageToxinType(damageSource))
+        {
+            // Divide damage by toxin resistance
+            damage /= cellProperties.MembraneType.ToxinResistance;
+        }
+        else if (damageSource is "pilus" or "chunk" or "ice")
+        {
+            // Divide damage by physical resistance
+            damage /= cellProperties.MembraneType.PhysicalResistance;
+        }
+        else if (damageSource == "atpDamage")
+        {
+            canApplyDamageReduction = false;
+        }
+
+        if (!cellProperties.IsBacteria && canApplyDamageReduction)
+        {
+            damage /= 2;
+        }
+
+        health.DealDamage(entity, damage, damageSource, instantKillProtectionThreshold, playSound);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsDamageToxinType(string damageSource)
+    {
+        return damageSource is "toxin" or "oxytoxy" or "injectisome";
+    }
+
+    /// <summary>
+    ///   This variant of damage-dealing will automatically find if the entity is in a colony, and if so, it will share
+    ///   the total damage across all members to make the damage to individual members smaller.
+    /// </summary>
+    /// <param name="entity">Entity to damage (must at least have a health component)</param>
+    /// <param name="damage">Raw damage amount to do in total</param>
+    /// <param name="damageSource">Damage type</param>
+    /// <param name="instantKillProtectionThreshold">Instant kill protection</param>
+    /// <param name="soundTarget">The colony member that should play the damage sound.</param>
+    public static void DealDistributedMicrobeDamage(in Entity entity, float damage, string damageSource,
+        float instantKillProtectionThreshold, in Entity soundTarget)
+    {
+        if (entity.Has<MicrobeColony>())
+        {
+            ref var microbeColony = ref entity.Get<MicrobeColony>();
+
+            var members = microbeColony.ColonyMembers;
+
+            var perEntityDamage = Math.Max(MathUtils.EPSILON, damage / members.Length);
+            foreach (var member in members)
+            {
+                if (member.IsAliveAndHas<Health>())
+                {
+                    ref var health = ref member.Get<Health>();
+
+                    // TODO: this now plays sound on each colony member, rather than the center cell.
+                    // For player colony this makes any damage sound a bit quiet. Using "member == entity" would play
+                    // on the player itself, which might be preferable.
+
+                    health.DealMicrobeDamage(ref entity.Get<CellProperties>(), member, perEntityDamage,
+                        damageSource, instantKillProtectionThreshold, member == soundTarget);
+                }
+                else
+                {
+                    GD.PrintErr("Tried to deal distributed damage to a dead member of a colony: ", member);
+                }
+            }
+        }
+        else if (entity.Has<Health>())
+        {
+            // Not in a colony, deal damage normally
+            ref var health = ref entity.Get<Health>();
+            health.DealMicrobeDamage(ref entity.Get<CellProperties>(), entity, damage, damageSource,
+                instantKillProtectionThreshold, entity == soundTarget);
+        }
+        else
+        {
+            GD.PrintErr("Tried to deal distributed damage to an entity that didn't have a colony " +
+                "or health components");
+        }
+    }
+
+    /// <summary>
+    ///   Returns instant kill protection damage threshold for an entity. This is only active for the player.
+    /// </summary>
+    /// <param name="entity">Entity to check</param>
+    /// <returns>The damage protection threshold or -1 if protection is disabled</returns>
+    public static float GetInstantKillProtectionThreshold(in Entity entity)
+    {
+        return GetInstantKillProtectionThreshold(entity.Has<PlayerMarker>());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float GetInstantKillProtectionThreshold(bool isPlayer)
+    {
+        return instantKillProtection && isPlayer ?
+            Constants.PLAYER_INSTANT_KILL_PROTECTION_HEALTH_THRESHOLD :
+            -1;
+    }
+
+    /// <summary>
+    ///   Immediately kills this entity
+    /// </summary>
+    /// <param name="health">The health to mark dead</param>
+    /// <param name="goesThroughInvulnerability">If true also kills invulnerable entities</param>
+    public static void Kill(this ref Health health, bool goesThroughInvulnerability = true)
+    {
+        if (health.Invulnerable && !goesThroughInvulnerability)
+            return;
+
+        health.Dead = true;
+        health.CurrentHealth = 0;
+        health.Invulnerable = false;
+    }
+
+    /// <summary>
+    ///   Modifies the max health and rescales remaining health percentage to be the same with the new value than
+    ///   it currently is
+    /// </summary>
+    /// <param name="health">Health to update max health for</param>
+    /// <param name="newMaxHealth">New max health value to set</param>
+    public static void RescaleMaxHealth(this ref Health health, float newMaxHealth)
+    {
+        // Safety check against bad data
+        if (newMaxHealth <= 0)
+        {
+            GD.PrintErr("Trying to set new max health to 0, setting it to 1 instead");
+            newMaxHealth = 1;
+        }
+
+        // If max health wasn't updated before, cannot scale the health
+        if (health.MaxHealth <= 0)
+        {
+            health.MaxHealth = newMaxHealth;
+            return;
+        }
+
+        float currentFraction = health.CurrentHealth / health.MaxHealth;
+
+        health.MaxHealth = newMaxHealth;
+
+        health.CurrentHealth = health.MaxHealth * currentFraction;
+    }
+
+    public static bool GetMicrobeInvulnerabilityState(bool isPlayer, bool isMucocystActive)
+    {
+        if (isPlayer && CheatManager.GodMode)
+            return true;
+
+        return isMucocystActive;
+    }
+}
+
+/// <summary>
+///   Notice to an entity that it took damage. Used, for example, to play sounds or other feedback about taking
+///   damage
+/// </summary>
+public class DamageEventNotice : IArchivable
+{
+    public const ushort SERIALIZATION_VERSION = 2;
+
+    public string DamageSource;
+    public float Amount;
+    public bool PlaySound;
+
+    public DamageEventNotice(string damageSource, float amount, bool playSound = true)
+    {
+        DamageSource = damageSource;
+        Amount = amount;
+        PlaySound = playSound;
+    }
+
+    public ushort CurrentArchiveVersion => SERIALIZATION_VERSION;
+    public ArchiveObjectType ArchiveObjectType => (ArchiveObjectType)ThriveArchiveObjectType.DamageEventNotice;
+    public bool CanBeReferencedInArchive => false;
+
+    public static void WriteToArchive(ISArchiveWriter writer, ArchiveObjectType type, object obj)
+    {
+        if (type != (ArchiveObjectType)ThriveArchiveObjectType.DamageEventNotice)
+            throw new NotSupportedException();
+
+        writer.WriteObject((DamageEventNotice)obj);
+    }
+
+    public static DamageEventNotice ReadFromArchive(ISArchiveReader reader, ushort version, int referenceId)
+    {
+        if (version is > SERIALIZATION_VERSION or <= 0)
+            throw new InvalidArchiveVersionException(version, SERIALIZATION_VERSION);
+
+        return new DamageEventNotice(reader.ReadString() ?? throw new NullArchiveObjectException(), reader.ReadFloat(),
+            version < 2 || reader.ReadBool());
+    }
+
+    public void WriteToArchive(ISArchiveWriter writer)
+    {
+        writer.Write(DamageSource);
+        writer.Write(Amount);
+        writer.Write(PlaySound);
+    }
+}

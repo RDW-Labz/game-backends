@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:09Z",
+ "category": "save-state",
+ "commit": "5eb190f00005",
+ "delivery": "vendored",
+ "description": "FlatBuffers \u2014 zero-copy serialization, schema-driven. Upstream `google/flatbuffers`.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "FlatBuffers",
+ "size_bytes": 9631131,
+ "slug": "flatbuffers",
+ "source": "github-api",
+ "system": "zero-copy serialization, schema-driven",
+ "upstream": "https://github.com/google/flatbuffers",
+ "vendored_path": "src/",
+ "why": "Zero-copy state/save format used in shipped engines (Apache-2.0)."
+}

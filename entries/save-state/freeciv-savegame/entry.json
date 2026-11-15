@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "save-state",
+ "code_files": 8,
+ "commit": "af90756",
+ "delivery": "reference",
+ "description": "`server/savegame` inside Freeciv: 8 source files.",
+ "entry_points": [
+  "server/savegame/"
+ ],
+ "language": "h",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Freeciv \u2014 savegame",
+ "path_in_upstream": "server/savegame",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "freeciv-savegame",
+ "source": "corpus:cloned-free-games/Freeciv@af90756",
+ "source_bytes": 646793,
+ "system": "persistence: save/load, snapshot or state serialisation",
+ "upstream": "https://github.com/freeciv/freeciv",
+ "why": "Backend material for persistence: save/load, snapshot or state serialisation, taken from a pinned clone (8 files at that path)."
+}

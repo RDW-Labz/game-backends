@@ -1,0 +1,194 @@
+(use Int)
+(use Double)
+(use Array)
+
+(doc Statistics "is a module for providing various statistical analyses on a
+collection of values.")
+(defmodule Statistics
+  (deftype Summary [
+    sum Double,
+    min Double,
+    max Double,
+    mean Double,
+    median Double,
+    var Double,
+    stdev Double,
+    stdev-pct Double,
+    median-abs-dev Double,
+    median-abs-dev-pct Double,
+    quartiles (Array Double),
+    iqr Double
+  ])
+  (hidden Summary)
+
+  (doc mean "Compute the mean of the samples data.")
+  (defn mean [data]
+    (/ (Array.sum data) (from-int (Array.length data))))
+
+  (hidden _pp)
+  (defn _pp [a mean]
+    (let [sum 0.0]
+      (do
+        (for [i 0 (Array.length a)]
+          (let [tmp (Double.- (Double.copy (Array.unsafe-nth a i)) mean)]
+            (set! sum (Double.* tmp tmp))))
+        sum)))
+
+  (hidden _xx)
+  (defn _xx [a mean]
+    (let [sum 0.0]
+      (do
+        (for [i 0 (Array.length a)]
+          (set! sum (Double.- (Double.copy (Array.unsafe-nth a i)) mean)))
+        sum)))
+
+  (hidden _ss)
+  (defn _ss [data]
+    (let [m (mean data)
+          tmp (_xx data m)]
+      (Double.- (_pp data m)
+                (Double./ (Double.* tmp tmp)
+                          (Double.from-int (Array.length data))))))
+
+  (doc median "Compute the median of the samples data.")
+  (defn median [data]
+    (let [n (Array.length data)
+          sorted (Array.sorted data)]
+      (cond (= n 0) 0.0
+            (= (mod n 2) 1) @(Array.unsafe-nth data (/ n 2))
+            (let [mid (/ n 2)] ; else
+              (/ (+ (the Double @(Array.unsafe-nth data (dec mid)))
+                    @(Array.unsafe-nth data mid))
+                  2.0)))))
+
+  (doc low-median "Compute the low median of the samples data.")
+  (defn low-median [data]
+    (let [n (Array.length data)
+          sorted (Array.sorted data)]
+      (cond (= n 0) 0.0
+            (= (mod n 2) 1) @(Array.unsafe-nth data (/ n 2))
+            @(Array.unsafe-nth data (dec (/ n 2)))))) ; else
+
+  (doc high-median "Compute the high median of the samples data.")
+  (defn high-median [data]
+    (let [n (Array.length data)
+          sorted (Array.sorted data)]
+      (if (= n 0)
+        0.0
+        @(Array.unsafe-nth data (/ n 2)))))
+
+  (doc grouped-median "Compute the grouped median of the samples data.")
+  (defn grouped-median [data interval]
+    (let [n (Array.length data)
+          sorted (Array.sorted data)]
+      (cond (= n 0) 0.0
+            (= n 1) @(Array.unsafe-nth data 0)
+            (let [x @(Array.unsafe-nth data (/ n 2)) ; else
+                  l (- x (/ (from-int interval) 2.0))
+                  cf (Maybe.from (Array.index-of data &x) -1)
+                  f (Array.element-count data &x)]
+              (+ l (/ (* (from-int interval) (- (/ (from-int n) 2.0) (from-int cf)))
+                      (from-int f)))))))
+
+  (doc variance "Compute the variance of the samples data.")
+  (defn variance [data]
+    (let [n (Array.length data)
+          ss (_ss data)]
+      (/ ss (from-int (dec n)))))
+
+  (doc pvariance "Compute the population variance of the samples data.")
+  (defn pvariance [data]
+    (let [n (Array.length data)
+          ss (_ss data)]
+      (/ ss (from-int n))))
+
+  (doc stdev "Compute the standard deviation of the samples data.")
+  (defn stdev [data]
+    (Double.sqrt (variance data)))
+
+  (doc pstdev "Compute the population standard deviation of the samples data.")
+  (defn pstdev [data]
+    (Double.sqrt (pvariance data)))
+
+  (doc pstdev-pct "Compute the standard deviation of the samples data as a percentile.")
+  (defn stdev-pct [data]
+    (* (/ (stdev data) (mean data)) 100.0))
+
+  (hidden median-abs-dev)
+  (defn median-abs-dev [data]
+    (let [med (median data)
+          zero 0.0
+          abs-devs (Array.replicate (Array.length data) &zero)
+          n 1.4826] ; taken from Rust and R, because that’s how it’s done apparently
+      (do
+        (for [i 0 (Array.length data)]
+          (Array.aset! &abs-devs i (abs (- med @(Array.unsafe-nth data i)))))
+        (* (median &abs-devs) n))))
+
+  (hidden median-abs-dev-pct)
+  (defn median-abs-dev-pct [data]
+    (* (/ (median-abs-dev data) (median data)) 100.0))
+
+  (hidden percentile-of-sorted)
+  (defn percentile-of-sorted [sorted pct]
+    (cond
+      (Int.= 0 (Array.length sorted)) -1.0 ; should abort here
+      (Double.< pct 0.0) -1.0 ; should abort here
+      (Double.> pct 100.0) -1.0 ; should abort here
+      (Int.= 1 (Array.length sorted)) @(Array.unsafe-nth sorted 0)
+      (Double.= 100.0 pct) @(Array.unsafe-nth sorted (Int.dec (Array.length sorted)))
+      (let [len (Int.dec (Array.length sorted))
+            rank (Double.* (Double./ pct 100.0) (Double.from-int len))
+            lrank (Double.floor rank)
+            d (Double.- rank lrank)
+            n (Double.to-int lrank)
+            lo @(Array.unsafe-nth sorted n)
+            hi @(Array.unsafe-nth sorted (Int.inc n))]
+        (Double.+ lo (Double.* d (Double.- hi lo))))))
+
+  (doc quartiles "Compute the quartiles of the samples data.")
+  (defn quartiles [data]
+    (let [tmp (Array.sorted data)
+          first 25.0
+          second 50.0
+          third 75.0
+          a (percentile-of-sorted &tmp first)
+          b (percentile-of-sorted &tmp second)
+          c (percentile-of-sorted &tmp third)]
+      [a b c]))
+
+  (doc iqr "Compute the interquartile range.")
+  (defn iqr [data]
+    (let [s &(quartiles data)]
+      (the Double (- @(Array.unsafe-nth s 2) @(Array.unsafe-nth s 0)))))
+
+  (hidden winsorize)
+  (defn winsorize [samples pct]
+    (let [tmp &(Array.sorted samples)
+          lo (Statistics.percentile-of-sorted tmp pct)
+          hi (Statistics.percentile-of-sorted tmp (Double.- 100.0 pct))]
+      (do
+        (for [i 0 (Array.length tmp)]
+          (let [samp @(Array.unsafe-nth tmp i)]
+            (cond
+              (> samp hi) (Array.aset! tmp i hi)
+              (< samp lo) (Array.aset! tmp i lo)
+              ())))
+        (Array.copy tmp))))
+
+  (doc summary "Compute a variety of statistical values from a list of samples.")
+  (defn summary [samples]
+    (Summary.init
+      (Array.sum samples)
+      (Maybe.from (Array.minimum samples) 0.0)
+      (Maybe.from (Array.maximum samples) 0.0)
+      (mean samples)
+      (median samples)
+      (variance samples)
+      (stdev samples)
+      (stdev-pct samples)
+      (median-abs-dev samples)
+      (median-abs-dev-pct samples)
+      (quartiles samples)
+      (iqr samples)))
+)

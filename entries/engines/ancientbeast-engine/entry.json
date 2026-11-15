@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 12,
+ "commit": "1b45dc2",
+ "delivery": "reference",
+ "description": "`src/engine` inside ancientbeast: 12 source files.",
+ "entry_points": [
+  "src/engine/"
+ ],
+ "language": "ts",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "ancientbeast \u2014 engine",
+ "path_in_upstream": "src/engine",
+ "reference_reason": "licence: AGPL-3.0",
+ "slug": "ancientbeast-engine",
+ "source": "corpus:cloned-free-games/ancientbeast@1b45dc2",
+ "source_bytes": 107611,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/FreezingMoon/AncientBeast",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (12 files at that path)."
+}

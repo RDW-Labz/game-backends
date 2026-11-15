@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 11,
+ "commit": "85df506",
+ "delivery": "reference",
+ "description": "`common/src/definitions/items` inside suroi: 11 source files.",
+ "entry_points": [
+  "common/src/definitions/items/"
+ ],
+ "language": "ts",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "suroi \u2014 items",
+ "path_in_upstream": "common/src/definitions/items",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "suroi-items",
+ "source": "corpus:cloned-free-games/suroi@85df506",
+ "source_bytes": 185290,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/HasangerGames/suroi.git",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (11 files at that path)."
+}

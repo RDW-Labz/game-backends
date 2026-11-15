@@ -1,0 +1,947 @@
+(definterface hash (Fn [(Ref a)] Int))
+
+(defmodule String
+  (defn hash [k]
+    (let-do [h 5381
+             l (length k)]
+      (for [x 0 l]
+        (set! h (+ (* h 33) (Char.to-int (char-at k x)))))
+      (Int.abs h)))
+   (implements hash String.hash)
+)
+
+(defmodule Int
+  (defn hash [k] (the Int @k))
+   (implements hash Int.hash)
+)
+
+(defmodule Long
+  (defn hash [k] (to-int (the Long @k)))
+   (implements hash Long.hash)
+)
+
+(defmodule Bool
+  (defn hash [k] (if (the Bool @k) 1 0))
+  (implements hash Bool.hash)
+)
+
+(defmodule Char
+  (defn hash [k] (to-int (the Char @k)))
+  (implements hash Char.hash)
+)
+
+(defmodule Byte
+  (defn hash [k] (to-int (the Byte @k)))
+  (implements hash Byte.hash)
+)
+
+(defmodule Float
+  (defn hash [k] (Float.to-bytes @k))
+  (implements hash Float.hash)
+)
+
+(defmodule Double
+  (defn hash [k] (Long.to-int (Double.to-bytes @k)))
+  (implements hash Double.hash)
+)
+
+(defmodule Int8
+  (defn hash [k] (Long.to-int (Int8.to-long @k)))
+  (implements hash Int8.hash)
+)
+
+(defmodule Int16
+  (defn hash [k] (Long.to-int (Int16.to-long @k)))
+  (implements hash Int16.hash)
+)
+
+(defmodule Int32
+  (defn hash [k] (Long.to-int (Int32.to-long @k)))
+  (implements hash Int32.hash)
+)
+
+(defmodule Int64
+  (defn hash [k] (Long.to-int (Int64.to-long @k)))
+  (implements hash Int64.hash)
+)
+
+(defmodule Uint8
+  (defn hash [k] (Long.to-int (Uint8.to-long @k)))
+  (implements hash Uint8.hash)
+)
+
+(defmodule Uint16
+  (defn hash [k] (Long.to-int (Uint16.to-long @k)))
+  (implements hash Uint16.hash)
+)
+
+(defmodule Uint32
+  (defn hash [k] (Long.to-int (Uint32.to-long @k)))
+  (implements hash Uint32.hash)
+)
+
+(defmodule Uint64
+  (defn hash [k] (Long.to-int (Uint64.to-long @k)))
+  (implements hash Uint64.hash)
+)
+
+(defmodule Pair
+  (defn hash [pair]
+    (let-do [code 17]
+      (set! code (+ (* 31 code) (hash (Pair.a pair))))
+      (set! code (+ (* 31 code) (hash (Pair.b pair))))
+      code))
+  (implements hash Pair.hash)
+)
+
+(doc HashTable "holds the slot logic that `Map` and `Set` share. A table is a
+column of stored hashes next to a column of `Maybe` entries; a slot is empty
+when its hash is [`empty-slot`](#empty-slot) and its entry is `Nothing`.")
+(defmodule HashTable
+  (hidden empty-slot)
+  (def empty-slot -1)
+
+  ; the hash of `k` as stored in a table; never negative, so it cannot be
+  ; mistaken for an empty slot
+  (hidden slot-hash)
+  (defn slot-hash [k]
+    (bit-and (hash k) 2147483647))
+
+  ; the slot a stored hash prefers. this is fibonacci hashing: multiplying
+  ; by 2^32/phi spreads keys that only differ in a few bits, and the slot is
+  ; taken from the high bits of the 32-bit product, which mix best.
+  (hidden home)
+  (defn home [h mask]
+    (let [p (Long.bit-and (Long.* (Long.from-int h) 2654435769l) 4294967295l)]
+      (Long.to-int (Long.bit-shift-right (Long.* p (Long.from-int (Int.inc mask))) 32l))))
+
+  (hidden next)
+  (defn next [i mask]
+    (bit-and (Int.inc i) mask))
+
+  ; moves every entry of `hs`/`es` into the empty table `nh`/`ne`, leaving
+  ; `es` all `Nothing`
+  (hidden move-all!)
+  (defn move-all! [hs es nh ne]
+    (let [mask (Int.dec (Array.length nh))]
+      (for [i 0 (Array.length hs)]
+        (let [h @(Array.unsafe-nth hs i)]
+          (when (/= h empty-slot)
+            (let-do [j (home h mask)]
+              (while (/= @(Array.unsafe-nth nh j) empty-slot)
+                (set! j (next j mask)))
+              (Array.aset! nh j h)
+              (Array.aset! ne j (Array.unsafe-nth-value es i))
+              (Array.aset-uninitialized! es i (Maybe.Nothing))))))))
+
+  ; empties slot `i` and shifts every following entry that may live there
+  ; back into it, so that probing never needs tombstones
+  (hidden clear-slot!)
+  (defn clear-slot! [hs es i]
+    (let-do [mask (Int.dec (Array.length hs))
+             hole i
+             j (next i mask)]
+      (Array.aset! es hole (Maybe.Nothing))
+      (Array.aset! hs hole empty-slot)
+      (while (/= @(Array.unsafe-nth hs j) empty-slot)
+        (let-do [h @(Array.unsafe-nth hs j)]
+          (when (>= (bit-and (- j (home h mask)) mask) (bit-and (- j hole) mask))
+            (do
+              (Array.aset-uninitialized! es hole (Array.unsafe-nth-value es j))
+              (Array.aset-uninitialized! es j (Maybe.Nothing))
+              (Array.aset! hs hole h)
+              (Array.aset! hs j empty-slot)
+              (set! hole j)))
+          (set! j (next j mask))))))
+)
+
+(deftype (Map a b) [len Int n-buckets Int hashes (Array Int) entries (Array (Maybe (Pair a b)))])
+
+(doc Map
+  "is a hashmap datatype, i.e. a key-value structure. It allows you to put in "
+  "pairs of keys and values and look them up by key."
+  ""
+  "Implementation notes: it is an open-addressing table with linear probing."
+  "Each slot keeps its key’s hash next to the entry, so probing compares"
+  "integers and only compares keys when the hashes match. Removal shifts"
+  "later entries back instead of leaving tombstones. The table grows and"
+  "shrinks based on load, and its capacity is always a power of two.")
+(defmodule Map
+  (hidden dflt-len)
+  (def dflt-len 16)
+
+  (doc min-load "The load a map needs to reach in order to shrink.")
+  (def min-load 20)
+  (doc max-load "The load a map needs to reach in order to grow.")
+  (def max-load 80)
+
+  (doc create "Create an empty map.")
+  (defn create []
+    (init 0
+          dflt-len
+          (Array.replicate dflt-len &HashTable.empty-slot)
+          (Array.repeat dflt-len &Maybe.Nothing)))
+
+  ; returns the slot holding `k`, or the empty slot where it would go
+  (defn- probe [m k h]
+    (let-do [mask (Int.dec @(n-buckets m))
+             hs (hashes m)
+             es (entries m)
+             i (HashTable.home h mask)]
+      (while (let [sh @(Array.unsafe-nth hs i)]
+               (and (/= sh HashTable.empty-slot)
+                    (not (and (= sh h)
+                              (match-ref (Array.unsafe-nth es i)
+                                (Maybe.Just e) (= (Pair.a e) k)
+                                _ false)))))
+        (set! i (HashTable.next i mask)))
+      i))
+
+  (defn- empty-at? [m i]
+    (= @(Array.unsafe-nth (hashes m) i) HashTable.empty-slot))
+
+  ; returns the slot holding `k`, or -1
+  (defn- find [m k]
+    (let [i (probe m k (HashTable.slot-hash k))]
+      (if (empty-at? m i) -1 i)))
+
+  (defn- resize! [m s]
+    (let-do [nh (Array.replicate s &HashTable.empty-slot)
+             ne (Array.repeat s &Maybe.Nothing)]
+      (HashTable.move-all! (hashes m) (entries m) &nh &ne)
+      (set-n-buckets! m s)
+      (set-hashes! m nh)
+      (set-entries! m ne)))
+
+  (defn- grow! [m]
+    (when (> (/ (* @(len m) 100) @(n-buckets m)) max-load)
+      (resize! m (* @(n-buckets m) 2))))
+
+  (defn- shrink! [m]
+    (when (and (< (/ (* @(len m) 100) @(n-buckets m)) min-load)
+               (>= @(n-buckets m) (* 2 dflt-len)))
+      (resize! m (/ @(n-buckets m) 2))))
+
+  (doc resize "Resize a map `m` to size `s`, which has to be a power of two that can hold all of its entries.")
+  (defn resize [m s]
+    (do
+      (resize! &m s)
+      m))
+
+  (doc grow "Grow a map `m`. Should usually be handled automatically.")
+  (defn grow [m] (resize m (* @(n-buckets &m) 2)))
+  (doc shrink "Shrink a map `m`. Should usually be handled automatically.")
+  (defn shrink [m]
+    (let [new-size (/ @(n-buckets &m) 2)]
+      (if (< new-size dflt-len)
+        m
+        (resize m new-size))))
+
+  (doc contains? "Check whether the map m contains the key k.")
+  (defn contains? [m k]
+    (<= 0 (find m k)))
+
+  (doc put! "Put a value v into map m, using the key k, in place.")
+  (defn put! [m k v]
+    (do
+      (grow! m)
+      (let [h (HashTable.slot-hash k)
+            i (probe m k h)]
+        (if (empty-at? m i)
+          (do
+            (Array.aset! (hashes m) i h)
+            (Array.aset! (entries m) i (Maybe.Just (Pair.init-from-refs k v)))
+            (set-len! m (Int.inc @(len m))))
+          (match-ref (Array.unsafe-nth (entries m) i)
+            (Maybe.Just e) (Pair.set-b! e @v)
+            _ ())))))
+
+  (doc put "Put a value v into map m, using the key k.")
+  (defn put [m k v]
+    (do
+      (put! &m k v)
+      m))
+
+  (doc get-with-default "Get the value for the key k from map m. If it isn’t found, the default is returned.")
+  (defn get-with-default [m k default-value]
+    (let [i (find m k)]
+      (if (< i 0)
+        @default-value
+        (match-ref (Array.unsafe-nth (entries m) i)
+          (Maybe.Just e) @(Pair.b e)
+          _ @default-value))))
+
+  (doc get "Get the value for the key k from map m. If it isn’t found, a zero element for the value type is returned.")
+  (defn get [m k]
+    (get-with-default m k &(zero)))
+
+  (doc get-maybe "Get the value for the key k from map m. It returns a Maybe type, meaning that if nothing is found, Nothing is returned.")
+  (defn get-maybe [m k]
+    (let [i (find m k)]
+      (if (< i 0)
+        (Maybe.Nothing)
+        (match-ref (Array.unsafe-nth (entries m) i)
+          (Maybe.Just e) (Maybe.Just @(Pair.b e))
+          _ (Maybe.Nothing)))))
+
+  (doc update-value! "calls `f` with a reference to the value at key `k`.
+Does nothing if the key is not found. The reference allows mutation through
+FFI functions (e.g. reading into a stream's buffer).")
+  (defn update-value! [m k f]
+    (let [i (find m k)]
+      (when (<= 0 i)
+        (match-ref (Array.unsafe-nth (entries m) i)
+          (Maybe.Just e) (~f (Pair.b e))
+          _ ()))))
+
+  (doc value-ref! "calls `f` with a reference to the value at key `k` and
+returns whatever `f` returns. If the key is missing, returns `default`.")
+  (defn value-ref! [m k f default]
+    (let [i (find m k)]
+      (if (< i 0)
+        default
+        (match-ref (Array.unsafe-nth (entries m) i)
+          (Maybe.Just e) (~f (Pair.b e))
+          _ default))))
+
+  (doc update "Update value at key k in map with function f, if it exists.")
+  (defn update [m k f]
+    (let [i (find &m k)]
+      (do
+        (when (<= 0 i)
+          (match-ref (Array.unsafe-nth (entries &m) i)
+            (Maybe.Just e) (Pair.set-b! e (~f @(Pair.b e)))
+            _ ()))
+        m)))
+
+  (doc update-with-default! "Update value at key k in map with function f, in-place. If k doesn't exist in map, set k to (f v).")
+  (defn update-with-default! [m k f v]
+    (do
+      (grow! m)
+      (let [h (HashTable.slot-hash k)
+            i (probe m k h)]
+        (if (empty-at? m i)
+          (do
+            (Array.aset! (hashes m) i h)
+            (Array.aset! (entries m) i (Maybe.Just (Pair.init @k (~f v))))
+            (set-len! m (Int.inc @(len m))))
+          (match-ref (Array.unsafe-nth (entries m) i)
+            (Maybe.Just e) (Pair.set-b! e (~f @(Pair.b e)))
+            _ ())))))
+
+  (doc update-with-default "Update value at key k in map with function f. If k doesn't exist in map, set k to (f v).")
+  (defn update-with-default [m k f v]
+    (do
+      (update-with-default! &m k f v)
+      m))
+
+  (doc length "Get the length of the map m.")
+  (defn length [m]
+    @(len m))
+
+  (doc empty? "Check whether the map m is empty.")
+  (defn empty? [m]
+    (= (Map.length m) 0))
+  (implements empty? Map.empty?)
+
+  (doc remove! "Remove the value under the key k from the map m, in place.")
+  (defn remove! [m k]
+    (let [i (find m k)]
+      (when (<= 0 i)
+        (do
+          (HashTable.clear-slot! (hashes m) (entries m) i)
+          (set-len! m (Int.dec @(len m)))
+          (shrink! m)))))
+
+  (doc remove "Remove the value under the key k from the map m.")
+  (defn remove [m k]
+    (do
+      (remove! &m k)
+      m))
+
+  (doc all? "Do all key-value pairs pass the given predicate (of two arguments)?")
+  (defn all? [pred m]
+    (let-do [ret true]
+      (foreach [slot (entries m)]
+        (match-ref slot
+          (Maybe.Just e) (unless (~pred (Pair.a e) (Pair.b e))
+                           (do
+                             (set! ret false)
+                             (break)))
+          _ ()))
+      ret))
+
+  (defn = [m1 m2]
+    (and (= (length m1) (length m2))
+         (all? &(fn [k v] (value-ref! m2 k &(fn [v2] (= v v2)) false)) m1)))
+  (implements = Map.=)
+
+  (doc for-each "Execute the binary function f for all keys and values in the map m.")
+  (defn for-each [m f]
+    (foreach [slot (entries m)]
+      (match-ref slot
+        (Maybe.Just e) (~f (Pair.a e) (Pair.b e))
+        _ ())))
+
+  (doc endo-map "Transform values of the given map in place. f gets two arguments, key and value, and should return new value")
+  (defn endo-map [f m]
+    (do
+      (foreach [slot (entries &m)]
+        (match-ref slot
+          (Maybe.Just e) (Pair.set-b! e (~f (Pair.a e) (Pair.b e)))
+          _ ()))
+      m))
+
+  (doc kv-reduce "Reduce a map with a function of three arguments: state, key and value. Reduction order is not guaranteed.")
+  (defn kv-reduce [f init m]
+    (do
+      (foreach [slot (entries m)]
+        (match-ref slot
+          (Maybe.Just e) (set! init (~f init (Pair.a e) (Pair.b e)))
+          _ ()))
+      init))
+
+  (doc merge "Merge two maps `m1` and `m2`. On collision the value from `m2` is preferred.")
+  (defn merge [m1 m2]
+    (kv-reduce &(fn [m k v] (put m k v)) m1 m2))
+
+  (doc vals "Return an array of the values of the map. Order corresponds to order of (keys m)")
+  (defn vals [m]
+    (kv-reduce &(fn [arr _ v] (Array.push-back arr @v))
+               []
+               m))
+
+  (doc keys "Return an array of the keys of the map. Order corresponds to order of (vals m)")
+  (defn keys [m]
+    (kv-reduce &(fn [arr k _] (Array.push-back arr @k))
+               []
+               m))
+
+  (doc from-array "Create a map from the array a containing key-value pairs.")
+  (defn from-array [a]
+    (let-do [m (create)]
+      (for [i 0 (Array.length &a)]
+        (let [e (Array.unsafe-nth &a i)
+              k (Pair.a e)
+              v (Pair.b e)]
+          (put! &m k v)))
+      m))
+
+  (doc to-array "Convert Map to Array of Pairs")
+  (defn to-array [m]
+    (kv-reduce &(fn [arr k v] (Array.push-back arr (Pair.init-from-refs k v)))
+               []
+               m))
+
+  (defn str [m]
+    ; collects the pieces and joins them once, instead of copying the
+    ; growing string for every entry
+    (let-do [parts (kv-reduce &(fn [parts k v]
+                                 (do
+                                   (Array.push-back! &parts @" ")
+                                   (Array.push-back! &parts (prn @k))
+                                   (Array.push-back! &parts @" ")
+                                   (Array.push-back! &parts (prn @v))
+                                   parts))
+                              [@"{"]
+                              m)]
+      (Array.push-back! &parts @" }")
+      (String.concat &parts)))
+
+  (doc reverse "reverses they keys and values in a given map `m`.")
+  (defn reverse [m]
+    (from-array (Array.copy-map &Pair.reverse &(to-array m))))
+)
+
+(deftype (Set a) [len Int n-buckets Int hashes (Array Int) entries (Array (Maybe a))])
+
+(doc Set
+  "is a hashset datatype, i.e. a unique list structure. It allows you to put "
+  "in values and guarantees uniqueness."
+  ""
+  "Implementation notes: it is an open-addressing table with linear probing,"
+  "laid out like `Map`.")
+(defmodule Set
+  (hidden dflt-len)
+  (def dflt-len 16)
+
+  (doc min-load "The load a set needs to reach in order to shrink.")
+  (def min-load 20)
+  (doc max-load "The load a set needs to reach in order to grow.")
+  (def max-load 80)
+
+  (doc create "Create an empty set.")
+  (defn create []
+    (init 0
+          dflt-len
+          (Array.replicate dflt-len &HashTable.empty-slot)
+          (Array.repeat dflt-len &Maybe.Nothing)))
+
+  ; returns the slot holding `v`, or the empty slot where it would go
+  (defn- probe [s v h]
+    (let-do [mask (Int.dec @(n-buckets s))
+             hs (hashes s)
+             es (entries s)
+             i (HashTable.home h mask)]
+      (while (let [sh @(Array.unsafe-nth hs i)]
+               (and (/= sh HashTable.empty-slot)
+                    (not (and (= sh h)
+                              (match-ref (Array.unsafe-nth es i)
+                                (Maybe.Just e) (= e v)
+                                _ false)))))
+        (set! i (HashTable.next i mask)))
+      i))
+
+  (defn- empty-at? [s i]
+    (= @(Array.unsafe-nth (hashes s) i) HashTable.empty-slot))
+
+  ; returns the slot holding `v`, or -1
+  (defn- find [s v]
+    (let [i (probe s v (HashTable.slot-hash v))]
+      (if (empty-at? s i) -1 i)))
+
+  (defn- resize! [s size]
+    (let-do [nh (Array.replicate size &HashTable.empty-slot)
+             ne (Array.repeat size &Maybe.Nothing)]
+      (HashTable.move-all! (hashes s) (entries s) &nh &ne)
+      (set-n-buckets! s size)
+      (set-hashes! s nh)
+      (set-entries! s ne)))
+
+  (defn- grow! [s]
+    (when (> (/ (* @(len s) 100) @(n-buckets s)) max-load)
+      (resize! s (* @(n-buckets s) 2))))
+
+  (defn- shrink! [s]
+    (when (and (< (/ (* @(len s) 100) @(n-buckets s)) min-load)
+               (>= @(n-buckets s) (* 2 dflt-len)))
+      (resize! s (/ @(n-buckets s) 2))))
+
+  (doc resize "Resize a set `s` to size `size`, which has to be a power of two that can hold all of its values.")
+  (defn resize [s size]
+    (do
+      (resize! &s size)
+      s))
+
+  (doc grow "Grow a set `s`. Should usually be handled automatically.")
+  (defn grow [s] (resize s (* @(n-buckets &s) 2)))
+  (doc shrink "Shrink a set `s`. Should usually be handled automatically.")
+  (defn shrink [s]
+    (let [new-size (/ @(n-buckets &s) 2)]
+      (if (< new-size dflt-len)
+        s
+        (resize s new-size))))
+
+  (doc contains? "Check whether the set `s` contains the value `v`.")
+  (defn contains? [s v]
+    (<= 0 (find s v)))
+
+  (doc put! "Put a value `v` into the set `s`, in place.")
+  (defn put! [s v]
+    (do
+      (grow! s)
+      (let [h (HashTable.slot-hash v)
+            i (probe s v h)]
+        (when (empty-at? s i)
+          (do
+            (Array.aset! (hashes s) i h)
+            (Array.aset! (entries s) i (Maybe.Just @v))
+            (set-len! s (Int.inc @(len s))))))))
+
+  (doc put "Put a value `v` into the set `s`.")
+  (defn put [s v]
+    (do
+      (put! &s v)
+      s))
+
+  (doc length "Get the length of set s.")
+  (defn length [s]
+    @(len s))
+
+  (doc empty? "Check whether the set s is empty.")
+  (defn empty? [s]
+    (= (Set.length s) 0))
+  (implements empty? Set.empty?)
+
+  (doc remove! "Remove the value `v` from the set `s`, in place.")
+  (defn remove! [s v]
+    (let [i (find s v)]
+      (when (<= 0 i)
+        (do
+          (HashTable.clear-slot! (hashes s) (entries s) i)
+          (set-len! s (Int.dec @(len s)))
+          (shrink! s)))))
+
+  (doc remove "Remove the value `v` from the set `s`.")
+  (defn remove [s v]
+    (do
+      (remove! &s v)
+      s))
+
+  (doc all? "Does the predicate hold for all values in this set?")
+  (defn all? [pred set]
+    (let-do [ret true]
+      (foreach [slot (entries set)]
+        (match-ref slot
+          (Maybe.Just e) (unless (~pred e)
+                           (do
+                             (set! ret false)
+                             (break)))
+          _ ()))
+      ret))
+
+  (doc subset? "Is set-a a subset of set-b?")
+  (defn subset? [set-a set-b]
+    (all? &(fn [e] (Set.contains? set-b e)) set-a))
+
+  (defn = [set-a set-b]
+    (and (= (Set.length set-a) (Set.length set-b))
+         (subset? set-a set-b)))
+  (implements = Set.=)
+
+  (doc for-each "Execute the unary function f for each element in the set s.")
+  (defn for-each [s f]
+    (foreach [slot (entries s)]
+      (match-ref slot
+        (Maybe.Just e) (~f e)
+        _ ())))
+
+  (doc from-array "Create a set from the values in array a.")
+  (defn from-array [a]
+    (let-do [s (create)]
+      (for [i 0 (Array.length a)]
+        (let [e (Array.unsafe-nth a i)]
+          (put! &s e)))
+      s))
+
+  (doc reduce "Reduce values of the set with function f. Order of reduction is not guaranteed")
+  (defn reduce [f init s]
+    (do
+      (foreach [slot (entries s)]
+        (match-ref slot
+          (Maybe.Just e) (set! init (~f init e))
+          _ ()))
+      init))
+
+  (doc intersection "Set of elements that are in both set-a and set-b")
+  (defn intersection [set-a set-b]
+    (reduce &(fn [s a] (if (Set.contains? set-b a) (Set.put s a) s))
+            (Set.create)
+            set-a))
+
+  (doc union "Set of elements that are in either set-a or set-b (or both)")
+  (defn union [set-a set-b]
+    (reduce &Set.put
+            @set-a
+            set-b))
+
+  (doc difference "Set of elements that are in set-a but not set-b")
+  (defn difference [set-a set-b]
+    (reduce &Set.remove
+            @set-a
+            set-b))
+
+  (doc to-array "Convert Set to Array of elements")
+  (defn to-array [s]
+    (reduce &(fn [arr elt] (Array.push-back arr @elt)) [] s))
+
+  (defn str [set]
+    (let-do [parts (reduce &(fn [parts e]
+                              (do
+                                (Array.push-back! &parts @" ")
+                                (Array.push-back! &parts (prn e))
+                                parts))
+                           [@"{"]
+                           set)]
+      (Array.push-back! &parts @" }")
+      (String.concat &parts)))
+  (implements str Set.str)
+)
+
+
+; Dynamic maps:
+
+(defmodule Dynamic
+  (doc n-times "make a list by executing `f` `n` times.")
+  (defndynamic n-times [n f]
+    (if (= n 0)
+      '()
+      (cons (f) (n-times (dec n) f))))
+
+  (defmodule Pair
+    (doc init "creates a dynamic pair, i.e. a list with two elements.")
+    (defndynamic init [k v] (list k v)))
+
+  (defmodule Map
+    (hidden dflt-len)
+    (defdynamic dflt-len 16)
+
+    (hidden min-load)
+    (defdynamic min-load 20)
+    (hidden max-load)
+    (defdynamic max-load 80)
+
+    (doc create "makes a dynamic map.")
+    (defndynamic create []
+      (n-times Map.dflt-len list))
+
+    (hidden resize-bucket)
+    (defndynamic resize-bucket [n m]
+      (if (empty? m)
+        n
+        (Map.resize-bucket (Map.put n (caar m) (cadar m)) (cdr m))))
+
+    (hidden resize-)
+    (defndynamic resize- [n m]
+      (if (empty? m)
+        n
+        (do
+          (Map.resize- (Map.resize-bucket n (car m)) (cdr m)))))
+
+    (doc resize "resizes a dynamic map to size `s`.")
+    (defndynamic resize [m s]
+      (let-do [n (n-times s list)]
+        (Map.resize- n m )))
+
+    (doc grow "grows a dynamic map.")
+    (defndynamic grow [m] (Map.resize m (* (length m) 2)))
+    (doc shrink "shrinks dynamic map.")
+    (defndynamic shrink [m]
+      (let [new-size (/ (length m) 2)]
+        (if (< new-size Map.dflt-len)
+          m
+          (Map.resize m new-size))))
+
+    (doc contains? "checks whether the dynamic map `m` contains the key `k`.")
+    (defndynamic contains? [m k]
+      (let [idx (Dynamic.imod (hash k) (length m))]
+        (List.in? k (map car (List.nth m idx)))))
+
+    (doc put "adds a value `v` under the key `k` into the map. If `k` already
+exists in the map, it is updated.")
+    (defndynamic put [m k v]
+      (if (> (/ (* (Map.len m) 100) (length m)) Map.max-load)
+        (Map.put (Map.grow m) k v)
+        (if (Map.contains? m k)
+          (Map.update m k (fn [_] v))
+          (let [idx (Dynamic.imod (hash k) (length m))]
+            (List.update-nth m idx (fn [l] (cons (list k v) l)))))))
+
+    (doc get-with-default "gets the value under the key `k`. If `k` doesn’t
+exist in the map, the default value is returned.")
+    (defndynamic get-with-default [m k default-value]
+      (let [idx (Dynamic.imod (hash k) (length m))
+            pair (List.find (List.nth m idx) (fn [pair] (= (car pair) k)))]
+        (if (empty? pair)
+          default-value
+          (cadr pair))))
+
+    (doc get "gets the value under the key `k`. If `k` doesn’t exist in the
+map, `nil` is returned.")
+    (defndynamic get [m k]
+      (Map.get-with-default m k nil))
+
+    (doc update "updates the value under the key `k` using the function `f`. If
+`k` doesn’t exist in the map, it is returned unchanged.")
+    (defndynamic update [m k f]
+      (if (Map.contains? m k)
+        (let [idx (Dynamic.imod (hash k) (length m))]
+          (List.update-nth m idx
+            (curry
+                map
+                (fn [pair] (if (= (car pair) k) (list k (f (cadr pair))) pair)))))
+        m))
+
+    (doc update-with-default "updates the value under the key `k` using the
+function `f`. If `k` doesn’t exist in the map, it is set to `(f v)`.")
+    (defndynamic update-with-default [m k f v]
+      (if (Map.contains? m k)
+        (let [idx (Dynamic.imod (hash k) (length m))]
+          (List.update-nth m idx
+            (curry
+                map
+                (fn [pair] (if (= (car pair) k) (list k (f (cadr pair))) pair)))))
+        (Map.put m k (f v))))
+
+    (doc len "returns the length of the map `m`.")
+    (defndynamic len [m]
+      (reduce (fn [acc l] (+ acc (length l))) 0 m))
+
+    (doc empty? "checks whether the map `m` is empty.")
+    (defndynamic empty? [m]
+      (= (Map.len m) 0))
+
+    (doc keys "returns the key in the map `m`.")
+    (defndynamic keys [m]
+      (reduce (fn [acc l] (append acc (map car l))) '() m))
+
+    (doc vals "returns the values in the map `m`.")
+    (defndynamic vals [m]
+      (reduce (fn [acc l] (append acc (map cadr l))) '() m))
+
+    (doc reverse "reverses the key-value pairs in the map `m`.")
+    (defndynamic reverse [m]
+      (reduce
+        (fn [acc l] (reduce (fn [n p] (Map.put n (cadr p) (car p))) acc l))
+        (Map.create) m))
+
+    (defndynamic str [m]
+      (String.concat [
+        "{ "
+        (reduce
+          (fn [acc l]
+            (String.concat [
+              acc
+              (reduce
+                (fn [a pair] (String.concat [a (str (car pair)) " " (str (cadr pair)) " "]))
+                ""
+                l)
+              ]))
+          ""
+          m)
+        "}"]))
+
+    (doc remove "removes the pair under the key `k` from the map `m`. If it
+doesn’t exist, the map is returned unchanged.")
+    (defndynamic remove [m k]
+      (if (Map.contains? m k)
+        (let [idx (Dynamic.imod (hash k) (length m))
+              removed (List.update-nth m idx (fn [l] (filter (fn [pair] (/= (car pair) k)) l)))]
+          (if (< (/ (* (Map.len removed) 100) (length removed)) Map.min-load)
+            (Map.shrink removed)
+            removed))
+        m))
+
+    (doc all? "checks whether all key value pairs in `m` satisfy the predicate
+`pred`. `pred` takes the pair `(k v)` as its sole argument.")
+    (defndynamic all? [pred m]
+      ; TODO: using (curry all? pred) doesn’t work here, i suppose it’s an env
+      ; problem
+      (all? (fn [l] (all? pred l)) m))
+
+    (doc = "checks whether two maps `m1` and `m2` are equal.")
+    (defndynamic = [m1 m2]
+      (and (= (Map.len m1) (Map.len m2))
+           (Map.all? (fn [pair] (= (cadr pair) (Map.get m2 (car pair)))) m1)))
+
+    (doc map "maps the function `f` over all pairs in the map `m`. `f` takes
+the pair `(k v)` as its sole argument and is expected to return a new value
+under `v`.")
+    (defndynamic map [f m]
+      (map (fn [l] (map (fn [pair] (list (car pair) (f pair))) l)) m))
+
+    (doc kv-reduce "reduces the map `m` using the function `f` and the initial
+value `init`. `f` takes the accumulator and the pair `(k v)` as its arguments
+and is expected to return a new accumulator.")
+    (defndynamic kv-reduce [f init m]
+      (reduce (fn [acc l] (reduce f acc l)) init m))
+
+    (doc merge "merges to maps `m1` and `m2`. Values in `m1` are preferred on
+collision.")
+    (defndynamic merge [m1 m2]
+      (Map.kv-reduce (fn [m pair] (Map.put m (car pair) (cadr pair))) m1 m2))
+
+    (doc from-array "creates a map from an array of key-value pairs `a`.")
+    (defndynamic from-array [a]
+      (reduce (fn [m pair] (Map.put m (car pair) (cadr pair))) (Map.create) a))
+
+    (doc to-array "creates an array of key-value pairs from the map `m`.")
+    (defndynamic to-array [m] (collect-into (reduce append '() m) array))
+  )
+)
+
+(deftype (Bag a) [
+  internal (Map a Int)
+])
+
+(doc Bag
+  "is an unordered datatype that only stores all its equal elements once while preserving size by storing the count of each element."
+  ""
+  "Implementation notes: it is a map from elements to number of occurrences"
+  "under the hood.")
+(defmodule Bag
+  (private internal)
+  (hidden internal)
+  (private set-internal)
+  (hidden set-internal)
+  (private update-internal)
+  (hidden internal)
+
+  (doc create "Create an empty bag.")
+  (defn create []
+    (init (Map.create)))
+
+  (doc contains? "Check whether the bag `b` contains the value `v`.")
+  (defn contains? [b v]
+    (Map.contains? (internal b) v))
+
+  (doc put "Put a value `v` into the bag `b`.")
+  (defn put [b v]
+    (update-internal b &(fn [m] (Map.update-with-default m v &Int.inc 0))))
+
+  (doc put! "Put a value `v` into the bag `b` in-place.")
+  (defn put! [b v]
+    (Map.update-with-default! (internal b) v &Int.inc 0))
+
+  (doc length "Get the length of bag `b`.")
+  (defn length [b]
+    (Map.kv-reduce &(fn [acc _ v] (+ acc @v)) 0 (internal b)))
+
+  (doc empty? "Check whether the bag `b` is empty.")
+  (defn empty? [b]
+    (Map.empty? (internal b)))
+  (implements empty? Bag.empty?)
+
+  (doc remove "Remove the value `v` from the bag `b`.")
+  (defn remove [b v]
+    (if (not (contains? &b v))
+      b
+      (update-internal b &(fn [m]
+        (let [cnt (Map.get &m v)]
+          (if (= cnt 1)
+            (Map.remove m v)
+            (Map.update m v &Int.dec)))))))
+
+  (doc all? "Does the predicate hold for all values in this bag?")
+  (defn all? [pred bag]
+    (Array.all? pred &(Map.keys (internal bag))))
+
+  (defn = [a b]
+    (= (internal a) (internal b)))
+  (implements = Bag.=)
+
+  (doc for-each "Execute the unary function f for each element in the bag b.")
+  (defn for-each [b f]
+    (doall f (Map.keys (internal b))))
+
+  (doc from-array "Create a bag from the values in array a.")
+  (defn from-array [a]
+    (let-do [b (create)]
+      (for [i 0 (Array.length a)]
+        (let [e (Array.unsafe-nth a i)]
+          (put! &b e)))
+      b))
+
+  (doc reduce "Reduce values of the bag b with function f. Order of reduction is not guaranteed")
+  (defn reduce [f init b]
+    (Map.kv-reduce
+      &(fn [r k cnt] (Array.reduce f r &(Array.replicate @cnt k)))
+      init
+      (internal b)))
+
+  (doc to-array "Convert bag to Array of elements")
+  (defn to-array [b]
+    (reduce &(fn [arr elt] (Array.push-back arr @elt)) [] b))
+
+  (defn str [set]
+    (let-do [parts (reduce &(fn [parts e]
+                              (do
+                                (Array.push-back! &parts @" ")
+                                (Array.push-back! &parts (prn e))
+                                parts))
+                           [@"(Bag"]
+                           set)]
+      (Array.push-back! &parts @")")
+      (String.concat &parts)))
+  (implements str Bag.str)
+)

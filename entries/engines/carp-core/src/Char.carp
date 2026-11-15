@@ -1,0 +1,82 @@
+(system-include "carp_char.h")
+
+(doc Char "is the single character data type.")
+(defmodule Char
+  (register = (Fn [Char Char] Bool))
+  (register < (Fn [Char Char] Bool))
+  (register > (Fn [Char Char] Bool))
+  (register to-int (Fn [Char] Int))
+  (register from-int (Fn [Int] Char))
+  (register to-byte (Fn [Char] Byte))
+  (register from-byte (Fn [Byte] Char))
+  (register copy (Fn [&Char] Char))
+
+  (implements < Char.<)
+  (implements > Char.>)
+  (implements = Char.=)
+  (implements copy Char.copy)
+  (implements to-int Char.to-int)
+  (implements from-int Char.from-int)
+
+  (doc meaning "converts a numerical char into the appropriate number (e.g. from `\1` to `1`).")
+  (defn meaning [char-ref]
+    (let [c @char-ref]
+      (case c
+        \0 0
+        \1 1
+        \2 2
+        \3 3
+        \4 4
+        \5 5
+        \6 6
+        \7 7
+        \8 8
+        \9 9
+        -1)))
+
+  (doc lower-case? "tests whether a character is lower case.")
+  (defn lower-case? [c]
+    (and (<= \a c) (<= c \z)))
+
+  (doc upper-case? "tests whether a character is upper case.")
+  (defn upper-case? [c]
+    (and (<= \A c) (<= c \Z)))
+
+  (doc alpha? "tests whether a character is alphabetical.")
+  (defn alpha? [c]
+    (or (lower-case? c) (upper-case? c)))
+
+  (doc num? "tests whether a character is numerical.")
+  (defn num? [c]
+    (and (<= \0 c) (<= c \9)))
+
+  (doc alphanum? "tests whether a character is alphanumerical.")
+  (defn alphanum? [c]
+    (or (alpha? c) (num? c)))
+
+  (doc whitespace? "tests whether a character is a whitespace character.")
+  (defn whitespace? [c]
+    (let [i (to-int c)]
+      (or (= i 32)    ; space
+          (or (and (>= i 9) (<= i 13)) ; \t, \n, \v, \f, \r
+              (= i 160)))))            ; non-breaking space
+
+  (defn zero [] (the Char (from-int 0)))
+  (implements zero Char.zero)
+)
+
+(defmodule CharRef
+  (defn = [a b]
+    (Char.= @a @b))
+  (implements = CharRef.=)
+  (defn < [a b]
+    (Char.< @a @b))
+  (implements < CharRef.<)
+  (defn > [a b]
+    (Char.> @a @b))
+  (implements > CharRef.>)
+)
+
+(defmodule PtrChar
+  (register str (Fn [(Ptr Char)] String))
+  (implements str PtrChar.str))

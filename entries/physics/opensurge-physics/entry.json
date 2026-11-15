@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "physics",
+ "code_files": 12,
+ "commit": "61975c2",
+ "delivery": "reference",
+ "description": "`src/physics` inside OpenSurge: 12 source files.",
+ "entry_points": [
+  "src/physics/"
+ ],
+ "language": "c",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "OpenSurge \u2014 physics",
+ "path_in_upstream": "src/physics",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "opensurge-physics",
+ "source": "corpus:cloned-free-games/OpenSurge@61975c2",
+ "source_bytes": 207099,
+ "system": "rigid-body collision and dynamics",
+ "upstream": "https://github.com/alemart/opensurge.git",
+ "why": "Backend material for rigid-body collision and dynamics, taken from a pinned clone (12 files at that path)."
+}

@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 59,
+ "commit": "61975c2",
+ "delivery": "reference",
+ "description": "`src/core` inside OpenSurge: 59 source files.",
+ "entry_points": [
+  "src/core/"
+ ],
+ "language": "c",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "OpenSurge \u2014 core",
+ "path_in_upstream": "src/core",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "opensurge-core",
+ "source": "corpus:cloned-free-games/OpenSurge@61975c2",
+ "source_bytes": 710893,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/alemart/opensurge.git",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (59 files at that path)."
+}

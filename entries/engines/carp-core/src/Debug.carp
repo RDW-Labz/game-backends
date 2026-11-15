@@ -1,0 +1,69 @@
+(system-include "carp_debug.h")
+
+(doc Debug "is a module that provides functions and commands to debug faulty
+programs and functions.")
+(defmodule Debug
+
+  (doc sanitize-addresses "instructs the compiler to sanitize addresses.
+
+This might not work on all compilers, but reasonably new versions of GCC and Clang are supported.
+On Windows, this is disabled by default due to runtime library issues.")
+  (defndynamic sanitize-addresses []
+    (if windows-target?
+      (macro-log "Warning: AddressSanitizer is disabled on Windows (runtime library not available)")
+      (add-cflag "-fsanitize=address -Wno-macro-redefined")))
+
+  (doc check-allocations "will check the allocations made by the program
+immediately, raising a `SIGABRT` if it fails.")
+  (defndynamic check-allocations []
+    (add-cflag "-DCHECK_ALLOCATIONS"))
+
+  (register memory-balance (Fn [] Long))
+  (register reset-memory-balance! (Fn [] ()))
+  (register log-memory-balance! (Fn [Bool] ()))
+
+  (doc memory-logged "logs all calls to memory allocation within the form. Requires the flag `--log-memory` to be passed during compilation.")
+  (defmacro memory-logged [form]
+    `(do
+       (Debug.log-memory-balance! true)
+       %form
+       (Debug.log-memory-balance! false)))
+
+  (doc assert-balanced "raises an error if the memory balance (number of `alloc`s - number of `free`s) isn't `0`. Requires the flag `--log-memory` to be passed durng compilation.")
+  (defmacro assert-balanced [form]
+    `(let [balance (Debug.memory-balance)]
+       (do
+         (let [] %form)
+         (unless (= balance (Debug.memory-balance))
+           (do
+             (IO.println &(fmt "Invalid memory balance: %d" (Debug.memory-balance)))
+             (ignore (System.exit 1)))))))
+
+  (doc trace "prints the value of an expression to `stdout`, then returns its value.")
+  (defmacro trace [x]
+    (let [sym (gensym)]
+      `(let-do [%sym %x]
+        ; we use eval here to ensure we resolve the symbol before putting it
+        ; into file, line, and column
+        (IO.println
+          (ref
+            (fmt "%s:%d:%d: %s"
+              %(eval `(file %x))
+              %(eval `(line %x))
+              %(eval `(column %x))
+              &(str %sym))))
+        %sym)
+    )
+  )
+
+  (doc leak-array "leaks some memory. This function is useful for testing tools that detect leaks.")
+  (register leak-array (Fn [a] ()) "Debug_leak_MINUS_array")
+
+)
+
+;; Crash the program with an error message unless the expression evaluates to 'true'.
+(defmacro assert [expr]
+  `(unless (= true %expr)
+     (do
+       (println* (fmt "Assertion '%s' failed at line %d, column %d in file %s" %(str expr) %(line) %(column) %(file)))
+       (System.abort))))

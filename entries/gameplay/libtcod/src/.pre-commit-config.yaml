@@ -1,0 +1,38 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+ci:
+  autoupdate_schedule: quarterly
+fail_fast: false
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude_types: [diff]
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-xml
+      - id: debug-statements
+      - id: detect-private-key
+      - id: fix-byte-order-marker
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v23.1.2
+    hooks:
+      - id: clang-format
+        exclude_types: [json]
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.30.1
+    hooks:
+      - id: zizmor
+  - repo: local
+    hooks:
+      - id: scripts-update-sources-py
+        name: run scripts/update_sources.py
+        entry: python scripts/update_sources.py
+        language: python
+        types_or: [c, c++, cmake]
+        pass_filenames: false

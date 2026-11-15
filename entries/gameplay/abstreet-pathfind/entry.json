@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 9,
+ "commit": "0964f29",
+ "delivery": "vendored",
+ "description": "`map_model/src/pathfind` inside abstreet: 9 source files.",
+ "entry_points": [
+  "map_model/src/pathfind/"
+ ],
+ "language": "rs",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "abstreet \u2014 pathfind",
+ "path_in_upstream": "map_model/src/pathfind",
+ "slug": "abstreet-pathfind",
+ "source": "corpus:cloned-free-games/abstreet@0964f29",
+ "source_bytes": 124838,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/a-b-street/abstreet",
+ "vendored_path": "src/",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (9 files at that path)."
+}

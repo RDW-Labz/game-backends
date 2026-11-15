@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 9,
+ "commit": "f07b896",
+ "delivery": "reference",
+ "description": "`tools/ai` inside stronghold-protocol: 9 source files.",
+ "entry_points": [
+  "tools/ai/"
+ ],
+ "language": "js",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "stronghold-protocol \u2014 ai",
+ "path_in_upstream": "tools/ai",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "stronghold-protocol-ai",
+ "source": "corpus:cloned-free-games/stronghold-protocol@f07b896",
+ "source_bytes": 52957,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/sganggs/Stronghold-Protocol",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (9 files at that path)."
+}

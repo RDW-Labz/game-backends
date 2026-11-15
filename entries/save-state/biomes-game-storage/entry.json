@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "save-state",
+ "code_files": 10,
+ "commit": "669da23",
+ "delivery": "vendored",
+ "description": "`src/server/shared/storage` inside biomes-game: 10 source files.",
+ "entry_points": [
+  "src/server/shared/storage/"
+ ],
+ "language": "ts",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "biomes-game \u2014 storage",
+ "path_in_upstream": "src/server/shared/storage",
+ "slug": "biomes-game-storage",
+ "source": "corpus:cloned-free-games/biomes-game@669da23",
+ "source_bytes": 106965,
+ "system": "persistence: save/load, snapshot or state serialisation",
+ "upstream": "https://github.com/ill-inc/biomes-game",
+ "vendored_path": "src/",
+ "why": "Backend material for persistence: save/load, snapshot or state serialisation, taken from a pinned clone (10 files at that path)."
+}

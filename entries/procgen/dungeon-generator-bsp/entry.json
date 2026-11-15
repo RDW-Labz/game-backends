@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "procgen",
+ "commit": "8dfa5d23f848",
+ "delivery": "vendored",
+ "description": "Dungeon-Generator (BSP) \u2014 BSP dungeon generation (C#/Unity). Upstream `Adrian104/Dungeon-Generator`.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "Dungeon-Generator (BSP)",
+ "size_bytes": 79033,
+ "slug": "dungeon-generator-bsp",
+ "source": "github-api",
+ "system": "BSP dungeon generation (C#/Unity)",
+ "upstream": "https://github.com/Adrian104/Dungeon-Generator",
+ "vendored_path": "src/",
+ "why": "Readable BSP room/corridor generator, MIT."
+}

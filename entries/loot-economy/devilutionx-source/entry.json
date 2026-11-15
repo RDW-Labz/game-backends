@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "loot-economy",
+ "code_files": 618,
+ "commit": "b325996a89c5",
+ "delivery": "reference",
+ "description": "`Source` inside DevilutionX (629 files).",
+ "entry_points": [
+  "Source"
+ ],
+ "language": "c++",
+ "license": "Sustainable-Use-1.0",
+ "license_verdict": "gated-reference",
+ "name": "DevilutionX \u2014 Source",
+ "path_in_upstream": "Source",
+ "reference_reason": "licence: Sustainable-Use-1.0 (gated-reference)",
+ "size_bytes": 4521966,
+ "slug": "devilutionx-source",
+ "source": "corpus:cloned-free-games/DevilutionX@b325996a89c5",
+ "system": "Diablo item generation, affixes, quest drops",
+ "upstream": "https://github.com/diasurgical/devilutionX.git",
+ "why": "Diablo 1 item/affix generation made readable \u2014 loot design from a shipped AAA title."
+}

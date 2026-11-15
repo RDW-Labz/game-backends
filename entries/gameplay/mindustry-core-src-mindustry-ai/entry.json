@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "gameplay",
+ "code_files": 30,
+ "commit": "b873c01ed559",
+ "delivery": "reference",
+ "description": "`core/src/mindustry/ai` inside Mindustry (30 files).",
+ "entry_points": [
+  "core/src/mindustry/ai"
+ ],
+ "language": "java",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Mindustry \u2014 ai",
+ "path_in_upstream": "core/src/mindustry/ai",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 263995,
+ "slug": "mindustry-core-src-mindustry-ai",
+ "source": "corpus:cloned-free-games/Mindustry@b873c01ed559",
+ "system": "unit AI and pathfinding",
+ "upstream": "https://github.com/Anuken/Mindustry.git",
+ "why": "Practical RTS unit AI and pathing at scale."
+}

@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 11,
+ "commit": "74b6814",
+ "delivery": "reference",
+ "description": "`src/server` inside cubyz: 11 source files.",
+ "entry_points": [
+  "src/server/"
+ ],
+ "language": "zig",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "cubyz \u2014 server",
+ "path_in_upstream": "src/server",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "cubyz-server",
+ "source": "corpus:cloned-free-games/cubyz@74b6814",
+ "source_bytes": 545527,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/PixelGuys/Cubyz",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (11 files at that path)."
+}

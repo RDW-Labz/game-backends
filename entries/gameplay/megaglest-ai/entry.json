@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:44:32Z",
+ "category": "gameplay",
+ "code_files": 8,
+ "commit": "4ab09c6",
+ "delivery": "reference",
+ "description": "`source/glest_game/ai` inside megaglest: 8 source files.",
+ "entry_points": [
+  "source/glest_game/ai/"
+ ],
+ "language": "h",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "megaglest \u2014 ai",
+ "path_in_upstream": "source/glest_game/ai",
+ "reference_reason": "licence: none",
+ "slug": "megaglest-ai",
+ "source": "corpus:cloned-free-games/megaglest@4ab09c6",
+ "source_bytes": 317852,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/megaglest/megaglest-source.git",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (8 files at that path)."
+}

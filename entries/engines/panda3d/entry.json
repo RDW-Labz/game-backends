@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:14Z",
+ "category": "engines",
+ "commit": "ec9ea0a93a7d",
+ "delivery": "reference",
+ "description": "Panda3D \u2014 engine with scene graph, panda3d net (distributed objects). Upstream `panda3d/panda3d`.",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Panda3D",
+ "reference_reason": "size gate: 34 MB of source > 12 MB cap",
+ "size_bytes": 35845650,
+ "slug": "panda3d",
+ "source": "github-api",
+ "system": "engine with scene graph, panda3d net (distributed objects)",
+ "upstream": "https://github.com/panda3d/panda3d",
+ "why": "Disney/CMU engine; notable for its built-in distributed-object networking."
+}

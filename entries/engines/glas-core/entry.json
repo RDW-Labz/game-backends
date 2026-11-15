@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 25,
+ "commit": "716d931",
+ "delivery": "vendored",
+ "description": "`src/as/core` inside glas: 25 source files.",
+ "entry_points": [
+  "src/as/core/"
+ ],
+ "language": "js",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "glas \u2014 core",
+ "path_in_upstream": "src/as/core",
+ "slug": "glas-core",
+ "source": "corpus:cloned-free-games/glas@716d931",
+ "source_bytes": 215870,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/lume/glas",
+ "vendored_path": "src/",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (25 files at that path)."
+}

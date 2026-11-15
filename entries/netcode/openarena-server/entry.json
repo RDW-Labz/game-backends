@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 11,
+ "commit": "fd74931",
+ "delivery": "reference",
+ "description": "`code/server` inside OpenArena: 11 source files.",
+ "entry_points": [
+  "code/server/"
+ ],
+ "language": "c",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "OpenArena \u2014 server",
+ "path_in_upstream": "code/server",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "openarena-server",
+ "source": "corpus:cloned-free-games/OpenArena@fd74931",
+ "source_bytes": 281445,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/OpenArena/engine.git",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (11 files at that path)."
+}

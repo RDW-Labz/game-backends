@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:11Z",
+ "category": "procgen",
+ "commit": "de7d22e705e8",
+ "delivery": "vendored",
+ "description": "WaveFunctionCollapse \u2014 constraint-based tile/bitmap generation. Upstream `mxgmn/WaveFunctionCollapse`.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "WaveFunctionCollapse",
+ "size_bytes": 28179,
+ "slug": "wavefunctioncollapse",
+ "source": "github-api",
+ "system": "constraint-based tile/bitmap generation",
+ "upstream": "https://github.com/mxgmn/WaveFunctionCollapse",
+ "vendored_path": "src/",
+ "why": "The WFC reference implementation that spawned a generation technique family."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:22Z",
+ "category": "engines",
+ "commit": "93aa187b5d38",
+ "delivery": "vendored",
+ "description": "sokol \u2014 single-header platform/gfx/audio/app layer. Upstream `floooh/sokol`.",
+ "language": "c",
+ "license": "Zlib",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "sokol",
+ "size_bytes": 7718398,
+ "slug": "sokol",
+ "source": "github-api",
+ "system": "single-header platform/gfx/audio/app layer",
+ "upstream": "https://github.com/floooh/sokol",
+ "vendored_path": "src/",
+ "why": "Header-only app/GFX substrate used to bootstrap engines and tools; zlib, tiny."
+}

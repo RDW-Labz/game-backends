@@ -1,0 +1,75 @@
+;; The 'copy' and 'str' interfaces are defined internally:
+;;(definterface copy (λ [&a] a))
+;;(definterface str (λ [a] String))
+
+(definterface = (λ [a a] Bool))
+
+(definterface add-ref (λ [&a &a] a))
+(definterface sub-ref (λ [&a &a] a))
+(definterface mul-ref (λ [&a &a] a))
+(definterface div-ref (λ [&a &a] a))
+
+(definterface + (λ [a a] a))
+(definterface - (λ [a a] a))
+(definterface * (λ [a a] a))
+(definterface / (λ [a a] a))
+(definterface mod (λ [a a] a))
+
+(definterface bit-and (λ [a a] a))
+(definterface bit-or (λ [a a] a))
+(definterface bit-xor (λ [a a] a))
+(definterface bit-not (λ [a] a))
+(definterface bit-shift-left (λ [a a] a))
+(definterface bit-shift-right (λ [a a] a))
+
+(definterface < (λ [a a] Bool))
+(definterface > (λ [a a] Bool))
+
+(definterface zero (λ [] a))
+(definterface inc (λ [a] a))
+(definterface dec (λ [a] a))
+(definterface neg (λ [a] a))
+
+(definterface to-int (λ [a] Int))
+(definterface from-int (λ [Int] a))
+
+(definterface unsafe-format (λ [&String a] String))
+(definterface from-string (λ [&String] a))
+
+(definterface random (Fn [] a))
+(definterface random-between (Fn [a a] a))
+
+(definterface pi a)
+
+(definterface abs (λ [a] a))
+(definterface acos (λ [a] a))
+(definterface asin (λ [a] a))
+(definterface atan (λ [a] a))
+(definterface atan2 (λ [a a] a))
+(definterface ceil (λ [a] a))
+(definterface cos (λ [a] a))
+(definterface cosh (λ [a] a))
+(definterface exp (λ [a] a))
+(definterface floor (λ [a] a))
+(definterface frexp (λ [a (Ref Int)] a))
+(definterface ldexp (λ [a Int] a))
+(definterface log (λ [a] a))
+(definterface log10 (λ [a] a))
+(definterface mod (λ [a a] a))
+(definterface modf (λ [a (Ref a)] a))
+(definterface pow (λ [a a] a))
+(definterface sin (λ [a] a))
+(definterface sinh (λ [a] a))
+(definterface sqrt (λ [a] a))
+(definterface tan (λ [a] a))
+(definterface tanh (λ [a] a))
+(definterface MAX a)
+(definterface MIN a)
+
+(definterface slice (Fn [&a Int Int] a))
+
+(definterface blit (Fn [a] a)) ; For types that can be freely memcopied -- exact name is up for discussion
+
+(definterface empty? (Fn [&a] Bool))
+
+(definterface sign (Fn [a] a))

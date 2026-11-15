@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:46Z",
+ "category": "math",
+ "commit": "da23a1227bb6",
+ "delivery": "vendored",
+ "description": "MathFu \u2014 vector/matrix/quaternion math with SIMD backends. Upstream `google/mathfu`.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "MathFu",
+ "size_bytes": 338285,
+ "slug": "mathfu",
+ "source": "github-api",
+ "system": "vector/matrix/quaternion math with SIMD backends",
+ "upstream": "https://github.com/google/mathfu",
+ "vendored_path": "src/",
+ "why": "Google's game math; Apache-2.0, portable SIMD."
+}

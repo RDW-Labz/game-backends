@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:08Z",
+ "category": "engines",
+ "commit": "e0ce107356b2",
+ "delivery": "reference",
+ "description": "Urho3D \u2014 compact 3D engine: scene graph, renderer, physics, net. Upstream `urho3d/urho3d`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "other.txt",
+ "license_verdict": "clean",
+ "name": "Urho3D",
+ "reference_reason": "size gate: 69 MB of source > 12 MB cap",
+ "size_bytes": 73183209,
+ "slug": "urho3d",
+ "source": "github-api",
+ "system": "compact 3D engine: scene graph, renderer, physics, net",
+ "upstream": "https://github.com/urho3d/urho3d",
+ "why": "Small enough to read end-to-end, complete enough to ship."
+}

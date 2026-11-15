@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 15,
+ "commit": "b873c01",
+ "delivery": "reference",
+ "description": "`core/src/mindustry/net` inside Mindustry: 15 source files.",
+ "entry_points": [
+  "core/src/mindustry/net/"
+ ],
+ "language": "java",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Mindustry \u2014 net",
+ "path_in_upstream": "core/src/mindustry/net",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "mindustry-net",
+ "source": "corpus:cloned-free-games/Mindustry@b873c01",
+ "source_bytes": 115037,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/Anuken/Mindustry.git",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (15 files at that path)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:17Z",
+ "category": "engines",
+ "commit": "76ed1c24f7db",
+ "delivery": "reference",
+ "description": "MonoGame \u2014 XNA-compatible framework: content pipeline, gfx, input. Upstream `MonoGame/MonoGame`.",
+ "language": "c#",
+ "license": "MS-PL",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "gated-reference",
+ "name": "MonoGame",
+ "reference_reason": "licence: MS-PL (gated-reference)",
+ "size_bytes": 10069941,
+ "slug": "monogame",
+ "source": "github-api",
+ "system": "XNA-compatible framework: content pipeline, gfx, input",
+ "upstream": "https://github.com/MonoGame/MonoGame",
+ "why": "Microsoft XNA lineage; strong content pipeline and platform abstraction (MS-PL, not vendored)."
+}

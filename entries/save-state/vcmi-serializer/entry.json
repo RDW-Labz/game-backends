@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "save-state",
+ "code_files": 31,
+ "commit": "0e44409",
+ "delivery": "reference",
+ "description": "`lib/serializer` inside VCMI: 31 source files.",
+ "entry_points": [
+  "lib/serializer/"
+ ],
+ "language": "h",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "VCMI \u2014 serializer",
+ "path_in_upstream": "lib/serializer",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "vcmi-serializer",
+ "source": "corpus:cloned-free-games/VCMI@0e44409",
+ "source_bytes": 114298,
+ "system": "persistence: save/load, snapshot or state serialisation",
+ "upstream": "https://github.com/vcmi/vcmi",
+ "why": "Backend material for persistence: save/load, snapshot or state serialisation, taken from a pinned clone (31 files at that path)."
+}

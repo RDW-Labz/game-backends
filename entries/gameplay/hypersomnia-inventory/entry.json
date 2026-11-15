@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 41,
+ "commit": "0049839",
+ "delivery": "reference",
+ "description": "`src/game/detail/inventory` inside hypersomnia: 41 source files.",
+ "entry_points": [
+  "src/game/detail/inventory/"
+ ],
+ "language": "h",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "hypersomnia \u2014 inventory",
+ "path_in_upstream": "src/game/detail/inventory",
+ "reference_reason": "licence: AGPL-3.0",
+ "slug": "hypersomnia-inventory",
+ "source": "corpus:cloned-free-games/hypersomnia@0049839",
+ "source_bytes": 165344,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/TeamHypersomnia/Hypersomnia",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (41 files at that path)."
+}

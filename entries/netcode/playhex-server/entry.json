@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 10,
+ "commit": "5750af4",
+ "delivery": "reference",
+ "description": "`src/server` inside PlayHex: 10 source files.",
+ "entry_points": [
+  "src/server/"
+ ],
+ "language": "ts",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "PlayHex \u2014 server",
+ "path_in_upstream": "src/server",
+ "reference_reason": "licence: AGPL-3.0",
+ "slug": "playhex-server",
+ "source": "corpus:cloned-free-games/PlayHex@5750af4",
+ "source_bytes": 1471081,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/playhex/playhex",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (10 files at that path)."
+}

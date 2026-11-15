@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "gameplay",
+ "code_files": 139,
+ "commit": "b873c01ed559",
+ "delivery": "reference",
+ "description": "`core/src/mindustry/entities` inside Mindustry (139 files).",
+ "entry_points": [
+  "core/src/mindustry/entities"
+ ],
+ "language": "java",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Mindustry \u2014 entities",
+ "path_in_upstream": "core/src/mindustry/entities",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 578438,
+ "slug": "mindustry-core-src-mindustry-entities",
+ "source": "corpus:cloned-free-games/Mindustry@b873c01ed559",
+ "system": "entity/unit/bullet systems for a shipped RTS",
+ "upstream": "https://github.com/Anuken/Mindustry.git",
+ "why": "High-performance entity and bullet handling in a commercial indie RTS."
+}

@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "procgen",
+ "code_files": 119,
+ "commit": "cd75076cf157",
+ "delivery": "reference",
+ "description": "`world` inside veloren (121 files).",
+ "entry_points": [
+  "world"
+ ],
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "veloren \u2014 world",
+ "path_in_upstream": "world",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 3055063,
+ "slug": "veloren-world",
+ "source": "corpus:cloned-free-games/veloren@cd75076cf157",
+ "system": "world generation (terrain, biomes, caves, structures)",
+ "upstream": "https://github.com/veloren/veloren.git",
+ "why": "Full procedural worldgen pipeline for an open-world multiplayer RPG."
+}

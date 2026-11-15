@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "loot-economy",
+ "code_files": 57,
+ "commit": "2975377",
+ "delivery": "reference",
+ "description": "`src/economy` inside widelands: 57 source files.",
+ "entry_points": [
+  "src/economy/"
+ ],
+ "language": "lua",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "widelands \u2014 economy",
+ "path_in_upstream": "src/economy",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "widelands-economy",
+ "source": "corpus:cloned-free-games/widelands@2975377",
+ "source_bytes": 483455,
+ "system": "loot, drop-rate, trade or economy simulation",
+ "upstream": "https://github.com/widelands/widelands.git",
+ "why": "Backend material for loot, drop-rate, trade or economy simulation, taken from a pinned clone (57 files at that path)."
+}

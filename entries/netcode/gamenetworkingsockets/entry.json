@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:55Z",
+ "category": "netcode",
+ "commit": "d534c19aa760",
+ "delivery": "vendored",
+ "description": "GameNetworkingSockets \u2014 reliable/unreliable encrypted message transport (Valve). Upstream `ValveSoftware/GameNetworkingSockets`.",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "GameNetworkingSockets",
+ "size_bytes": 6356187,
+ "slug": "gamenetworkingsockets",
+ "source": "github-api",
+ "system": "reliable/unreliable encrypted message transport (Valve)",
+ "upstream": "https://github.com/ValveSoftware/GameNetworkingSockets",
+ "vendored_path": "src/",
+ "why": "Valve's shipping transport layer (CS:GO/Dota lineage), BSD-3."
+}

@@ -1,0 +1,442 @@
+;; Defining the meta data macros early so that they can be used by all the other code.
+;; Defined early so that `doc` can accept a rest arg
+(meta-set! map-internal "hidden" true)
+(defndynamic map-internal [f xs acc]
+    (if (= 0 (length xs))
+        acc
+        (map-internal f (cdr xs) (cons-last (f (car xs)) acc))))
+
+(meta-set! list-to-array-internal "hidden" true)
+(defndynamic list-to-array-internal [xs acc]
+    (if (= 0 (length xs))
+        acc
+        (list-to-array-internal (cdr xs) (append acc (array (car xs))))))
+
+(defmodule Dynamic
+  (defndynamic quoted [x]
+    (list 'quote x))
+
+  (defndynamic /= [a b] (not (= a b)))
+
+  (defndynamic caar [pair] (car (car pair)))
+  (defndynamic cadr [pair] (car (cdr pair)))
+  (defndynamic cdar [pair] (cdr (car pair)))
+  (defndynamic cddr [pair] (cdr (cdr pair)))
+  (defndynamic caaar [pair] (car (car (car pair))))
+  (defndynamic caadr [pair] (car (car (cdr pair))))
+  (defndynamic cadar [pair] (car (cdr (car pair))))
+  (defndynamic cdaar [pair] (cdr (car (car pair))))
+  (defndynamic caddr [pair] (car (cdr (cdr pair))))
+  (defndynamic cdadr [pair] (cdr (car (cdr pair))))
+  (defndynamic cddar [pair] (cdr (cdr (car pair))))
+  (defndynamic cdddr [pair] (cdr (cdr (cdr pair))))
+  (defndynamic caaaar [pair] (car (car (car (car pair)))))
+  (defndynamic caaadr [pair] (car (car (car (cdr pair)))))
+  (defndynamic caadar [pair] (car (car (cdr (car pair)))))
+  (defndynamic caaddr [pair] (car (car (cdr (cdr pair)))))
+  (defndynamic cadaar [pair] (car (cdr (car (car pair)))))
+  (defndynamic cadadr [pair] (car (cdr (car (cdr pair)))))
+  (defndynamic caddar [pair] (car (cdr (cdr (car pair)))))
+  (defndynamic cadddr [pair] (car (cdr (cdr (cdr pair)))))
+  (defndynamic cdaaar [pair] (cdr (car (car (car pair)))))
+  (defndynamic cdaadr [pair] (cdr (car (car (cdr pair)))))
+  (defndynamic cdadar [pair] (cdr (car (cdr (car pair)))))
+  (defndynamic cdaddr [pair] (cdr (car (cdr (cdr pair)))))
+  (defndynamic cddaar [pair] (cdr (cdr (car (car pair)))))
+  (defndynamic cddadr [pair] (cdr (cdr (car (cdr pair)))))
+  (defndynamic cdddar [pair] (cdr (cdr (cdr (car pair)))))
+  (defndynamic cddddr [pair] (cdr (cdr (cdr (cdr pair)))))
+
+  (defmodule List
+    ; this should be defined using cond, but is defined before cond
+    (defndynamic in? [elem l]
+      (if (empty? l)
+        false
+        (if (= elem (car l))
+          true
+          (List.in? elem (cdr l))))))
+
+  (defndynamic string? [s]
+    (= (dynamic-type s) 'string))
+
+  (defndynamic symbol? [s]
+    (= (dynamic-type s) 'symbol))
+
+  (defndynamic list? [s]
+    (= (dynamic-type s) 'list))
+
+  (defndynamic array? [s]
+    (= (dynamic-type s) 'array))
+
+  (defndynamic number? [s]
+    (List.in? (dynamic-type s) '(int long double float byte))))
+
+(meta-set! doc "doc" "Set documentation for a binding.")
+(defmacro doc [name :rest strings]
+  (let [newline "
+" ;; Looks a bit odd but the newline literal is important here! (str \newline) currently results in unwanted escapes
+        separated (map-internal (fn [x] (if (list? x)
+                                            (if (cadr x)
+                                                (Dynamic.String.concat [(car x) newline])
+                                                (car x))
+                                            (Dynamic.String.concat [x newline])))
+                                strings
+                                ())]
+    (list 'meta-set! name "doc" (Dynamic.String.concat (list-to-array-internal separated [])))))
+
+(doc print-doc "Print the documentation for a binding.")
+(defmacro print-doc [name]
+  (list 'macro-log (list 'meta name "doc")))
+
+(doc sig "Annotate a binding with the desired signature.")
+(defmacro sig [name signature]
+  (list 'meta-set! name "sig" signature))
+
+(doc print-sig "Print the annotated signature for a binding.")
+(defmacro print-sig [name]
+  (list 'macro-log (list 'meta name "sig")))
+
+(doc docexample "Annotate a binding with a code example.")
+(defmacro docexample [name example-string]
+  (list 'meta-set! name "docexample" example-string))
+
+(doc print-docexample "Print the annotated example for a binding.")
+(defmacro print-docexample [name]
+  (list 'macro-log (list 'meta name "docexample")))
+
+(doc hidden "Mark a binding as hidden, this will make it not print with the 'info' command.")
+(defmacro hidden [name]
+  (list 'meta-set! name "hidden" true))
+
+(doc private "Mark a binding as private, this will make it inaccessible from other modules.")
+(defmacro private [name]
+  (list 'meta-set! name "private" true))
+
+(doc c-name
+  "Override the identifiers Carp generates for a given symbol in C output."
+  ""
+  "```"
+  "(defn foo-bar [] 1)"
+  "(c-name foo-bar \"foo_bar\")"
+  "```")
+(defmacro c-name [sym cname]
+  (list 'meta-set! sym "c-name" cname))
+
+(hidden      and-)
+(defndynamic and- [xs]
+; (defndynamic and- [xs]   ; shorter but currently not entirely stable
+;   (if (= 0 (length xs))
+;      true
+;      (list 'if (car xs) (and- (cdr xs)) false) ))
+  (if (= 0 (length xs))
+    true
+    (if (= 1 (length xs))
+      (car xs)
+      (list 'if (car xs) (and- (cdr xs)) false) )))
+(doc and "evaluates the forms `xs` one at a time, from left to right. If a form
+evaluates to `false`, `and` returns that value and doesn't evaluate any of the
+other expressions, otherwise it returns the value of the last form in `xs`.
+`(and)` returns `true`.")
+(defmacro and [:rest xs]
+  (and- xs))
+
+(hidden      or-)
+(defndynamic or- [xs]
+;    (if (= 0 (length xs))  ; shorter but currently not entirely stable
+;      false
+;      (list 'if (car xs) true (or- (cdr xs))) ))
+  (if (= 0 (length xs))
+    false
+    (if (= 1 (length xs))
+      (car xs)
+      (list 'if (car xs) true (or- (cdr xs))) )))
+(doc or "evaluates the forms `xs` one at a time, from left to right. If a form
+evaluates to `true`, `or` returns that value and doesn't evaluate any of the
+other expressions, otherwise it returns the value of the last form in `xs`.
+`(or)` returns `false`.")
+(defmacro or [:rest xs]
+  (or- xs))
+
+
+(doc todo "sets the todo property for a binding.")
+(defmacro todo [name value]
+  (list 'meta-set! name "todo" value))
+
+(doc private? "Is this binding private?")
+(defmacro private? [name]
+  (list 'not (list 'list? (list 'meta name "private"))))
+
+(doc hidden? "Is this binding hidden?")
+(defmacro hidden? [name]
+  (list 'not (list 'list? (list 'meta name "hidden"))))
+
+(hidden annotate-helper)
+(defndynamic annotate-helper [name annotation]
+  (list 'cons annotation (list 'meta name "annotations")))
+
+(doc annotate "Add an annotation to this binding.")
+(defmacro annotate [name annotation]
+  (list 'meta-set! name "annotations" (annotate-helper name annotation)))
+
+(doc deprecated "Declares that a binding is deprecated, using an optional explanation.")
+(defmacro deprecated [name :rest explanation]
+  (let [v (if (= (length explanation) 0) true (car explanation))]
+    (list 'meta-set! name "deprecated" v)))
+
+(doc defn- "Declares a function while marking it as private and hidden.")
+(defmacro defn- [name args form]
+  (list 'do
+        (list 'private name)
+        (list 'hidden name)
+        (list 'defn name args form)))
+
+(doc def- "Declares a variable while marking it as private and hidden.")
+(defmacro def- [name value]
+  (list 'do
+        (list 'private name)
+        (list 'hidden name)
+        (list 'def name value)))
+
+(hidden cond-internal)
+(defndynamic cond-internal [xs]
+  (if (= (length xs) 0)
+    (list)
+    (if (= (length xs) 2)
+      (macro-error "cond has even number of branches; add an else branch")
+      (if (= (length xs) 1)
+        (car xs)
+        (list
+         'if
+         (car xs)
+         (cadr xs)
+         (cond-internal (cddr xs)))))))
+
+(doc cond
+     "Executes a block of code if a specified condition is true. Multiple"
+     "such blocks can be chained."
+     ""
+     "```"
+     "(cond"
+     "  (< 10 1) (println \"Condition 1 is true\")"
+     "  (> 10 1) (println \"Condition 2 is true\")"
+     "  (println \"Else branch\"))"
+     "```")
+(defmacro cond [:rest xs]
+  (cond-internal xs))
+
+(doc refstr "stringifies `x` and takes the reference of that string.")
+(defmacro refstr [x]
+  (list 'ref
+        (list 'str x)))
+
+(doc swap! "swaps its arguments `x` and `y` in place.
+
+*Note*: Unhygienic!")
+(defmacro swap! [x y]
+  (list 'let (array 'tmp y) (list 'do (list 'set! y x) (list 'set! x 'tmp))))
+
+(doc update! "updates `x` in place using the function `f`.")
+(defmacro update! [x f]
+  (list 'set! x (list f x)))
+
+(hidden use-all-fn)
+(defndynamic use-all-fn [names]
+  (if (= (length names) 0)
+    (macro-error "Trying to call use-all without arguments")
+    (if (= (length names) 1)
+      (list 'use (car names))
+      (list 'do
+            (list 'use (car names))
+            (use-all-fn (cdr names))))))
+
+(doc use-all "is a variadic version of `use`.")
+(defmacro use-all [:rest names]
+  (use-all-fn names))
+
+(doc load-and-use "loads a file and uses the module with in it. Assumes that
+the filename and module name are the same.")
+(defmacro load-and-use [name]
+  (list 'do
+        (list 'load (str name ".carp"))
+        (list 'use name)))
+
+(doc comment "ignores `forms`.")
+(defmacro comment [:rest forms]
+  ())
+
+(hidden build-vararg)
+(defndynamic build-vararg [func forms]
+  (if (= (length forms) 0)
+    (macro-error "vararg macro needs at least one argument")
+    (if (= (length forms) 1)
+      (car forms)
+      (list func (car forms) (build-vararg func (cdr forms))))))
+
+(doc ignore "ignores the return value of the expression `form`.")
+(defmacro ignore [form]
+  (list 'let (array '_ form) (list)))
+
+(doc ignore* "Wraps all forms passed as an argument in a call to [`ignore`](#ignore).")
+(defmacro ignore* [:rest forms]
+   (map (fn [x] (cons-last x (list 'ignore))) forms))
+
+(doc const-assert
+     "Asserts that the expression `expr` is true at compile time."
+     "Otherwise it will fail with the message `msg`."
+     ""
+     "The expression must be evaluable at compile time.")
+(defndynamic const-assert [expr msg]
+  (if expr () (macro-error msg)))
+
+(doc defdynamic-once "Creates a dynamic variable and sets its value if it's not already defined.")
+(defmacro defdynamic-once [var expr]
+  (list 'if (list 'defined? var)
+        ()
+        (list 'defdynamic var expr)))
+
+(doc inline-c "Inlines some custom C code.")
+(defmacro inline-c [name defcode :rest declcode]
+  (list 'deftemplate name (list) defcode (if (empty? declcode) "" (car declcode))))
+
+(doc bottom "aborts the program if reached.")
+(deftemplate bottom (Fn [] a) "$a $NAME()" "$DECL { abort(); }")
+
+(doc unreachable
+     "Asserts that a block of code will never be reached. If it is"
+     "the program will be aborted with an error message.")
+(defmacro unreachable [msg]
+  (list 'do
+    (list 'IO.println
+      (list 'ref
+        (list 'fmt "%s:%d:%d: %s"
+          (eval (list 'file msg))
+          (eval (list 'line msg))
+          (eval (list 'column msg))
+          msg)))
+    (list 'System.abort)
+    (list 'bottom)))
+
+(hidden implement-declaration)
+(defndynamic implement-declaration [mod interface]
+  (list 'implements interface (Symbol.prefix mod interface)))
+
+(doc implements-all
+     "Declares functions in mod with names matching `interfaces` as implementations"
+     "of those interfaces.")
+(defmacro implements-all [mod :rest interfaces]
+  (cons 'do (map (curry implement-declaration mod) interfaces)))
+
+(doc ++
+  "Sets the value of a variable to its current value incremented by one.")
+(defmacro ++ [var]
+  (list 'set! var (list 'inc var)))
+
+(doc --
+  "Sets the value of a variable to its current value decremented by one.")
+(defmacro -- [var]
+  (list 'set! var (list 'dec var)))
+
+(doc +=
+  "Sets the value of a variable to its current value plus `val`.")
+(defmacro += [var val]
+  (list 'set! var (list '+ var val)))
+
+(doc -=
+  "Sets the value of a variable to its current value minus `val`.")
+(defmacro -= [var val]
+  (list 'set! var (list '- var val)))
+
+(doc *=
+  "Sets the value of a variable to its current value multiplied by `val`.")
+(defmacro *= [var val]
+  (list 'set! var (list '* var val)))
+
+(defmodule Unsafe
+  (defmodule C
+    (defndynamic emit-c-line [append-strings args]
+      (let [strs (map (fn [x] (String.concat [x " "])) (map str args))
+            arr (collect-into strs array)
+            code (String.concat (append append-strings arr))]
+      (list 'Unsafe.preproc (list 'Unsafe.emit-c code))))
+
+    (doc pragma
+       "Emits a #pragma compiler directive in Carp's c output.")
+    (defmacro pragma [:rest args]
+      (Unsafe.C.emit-c-line ["#pragma "] args))
+
+    (doc define
+      "Emits a #define compiler directive in Carp's c output.")
+    (defmacro define [name value]
+      (Unsafe.C.emit-c-line ["#define "] [name value]))
+
+    (doc undef
+      "Emits a #undef compiler directive in Carp's c output.")
+    (defmacro undef [name]
+      (Unsafe.C.emit-c-line ["#undef "] [name]))
+
+    (defndynamic if- [if-pre name then else]
+      (if (empty? else)
+          (list 'do
+                (Unsafe.C.emit-c-line [if-pre] [name])
+                (Unsafe.C.emit-c-line ["  "] [then])
+                (Unsafe.C.emit-c-line ["#endif"] []))
+          (list 'do
+                (Unsafe.C.emit-c-line [if-pre] [name])
+                (Unsafe.C.emit-c-line ["  "] [then])
+                (Unsafe.C.emit-c-line ["#else"] [])
+                (Unsafe.C.emit-c-line ["  "] else)
+                (Unsafe.C.emit-c-line ["#endif"] []))))
+
+    (doc ifpre
+      "Emits a #if compiler directive in Carp's c output.")
+    (defmacro ifpre [name then :rest else]
+      (Unsafe.C.if- "#if " name then else))
+
+    (doc ifdef
+      "Emits a #ifdef compiler directive in Carp's c output.")
+    (defmacro ifdef [name then :rest else]
+      (Unsafe.C.if- "#ifdef " name then else))
+
+    (doc ifndef
+      "Emits a #ifndef compiler directive in Carp's c output.")
+    (defmacro ifndef [name then :rest else]
+      (Unsafe.C.if- "#ifndef " name then else))
+
+    (doc warning
+      "Emits a #warning compiler directive in Carp's c output.")
+    (defmacro warning [message]
+      (Unsafe.C.emit-c-line ["#warning "] [message]))
+
+    (doc error
+      "Emits a #error compiler directive in Carp's c output.")
+    (defmacro error [message]
+    (Unsafe.C.emit-c-line ["#error "] [message]))
+
+    (hidden asmify)
+    (defndynamic asmify [instruction]
+      (if (string? instruction)
+        (String.concat ["\"" instruction "\" "])
+        (str instruction)))
+
+    (doc asm
+      "Allows to define a named ASM construct. It allows both simple and "
+      "extended ASM."
+      ""
+      "Example:"
+      "```"
+      "; exits with eit code 5, uses macOS syscalls"
+      "(Unsafe.C.asm exit5 \"mov $0x2000001, %rax\\n\" \"mov $5, %rdi\\n\" \"syscall\")"
+      ""
+      "; writes from a variable called src into a variable dst and then adds 1 to dst"
+      "(Unsafe.C.asm addr \"mov %1, %0\\n\" \"add $1, %0\\n\" : \"=r\" (dst) : \"r\" (src))"
+      "```")
+    (defmacro asm [name :rest instructions]
+      (list 'do
+            (list 'Unsafe.C.define (String.concat [(str name) "()"])
+                  (String.concat [
+                    "__asm__("
+                    (String.concat (collect-into (Dynamic.map Unsafe.C.asmify instructions) array))
+                    ");"]))
+            (list 'register name '(Fn [] ()))))
+  )
+)

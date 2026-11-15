@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 12,
+ "commit": "07d7252",
+ "delivery": "vendored",
+ "description": "`internal/engine` inside AAAAXY: 12 source files.",
+ "entry_points": [
+  "internal/engine/"
+ ],
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "AAAAXY \u2014 engine",
+ "path_in_upstream": "internal/engine",
+ "slug": "aaaaxy-engine",
+ "source": "corpus:cloned-free-games/AAAAXY@07d7252",
+ "source_bytes": 115440,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/divVerent/aaaaxy",
+ "vendored_path": "src/",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (12 files at that path)."
+}

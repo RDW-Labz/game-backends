@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:47Z",
+ "category": "math",
+ "commit": "46e89b748b1f",
+ "delivery": "vendored",
+ "description": "libfixmath \u2014 fixed-point math for deterministic simulation. Upstream `PetteriAimonen/libfixmath`.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "libfixmath",
+ "size_bytes": 852746,
+ "slug": "libfixmath",
+ "source": "github-api",
+ "system": "fixed-point math for deterministic simulation",
+ "upstream": "https://github.com/PetteriAimonen/libfixmath",
+ "vendored_path": "src/",
+ "why": "Determinism substrate for lockstep netcode where floats are not allowed."
+}

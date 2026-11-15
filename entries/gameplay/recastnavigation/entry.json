@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:50Z",
+ "category": "gameplay",
+ "commit": "9f4ce64458df",
+ "delivery": "vendored",
+ "description": "Recast & Detour \u2014 navmesh generation + pathfinding + crowd steering. Upstream `recastnavigation/recastnavigation`.",
+ "language": "c++",
+ "license": "Zlib",
+ "license_file": "License.txt",
+ "license_verdict": "clean",
+ "name": "Recast & Detour",
+ "size_bytes": 6922624,
+ "slug": "recastnavigation",
+ "source": "github-api",
+ "system": "navmesh generation + pathfinding + crowd steering",
+ "upstream": "https://github.com/recastnavigation/recastnavigation",
+ "vendored_path": "src/",
+ "why": "The navmesh pipeline nearly every 3D game uses; zlib."
+}

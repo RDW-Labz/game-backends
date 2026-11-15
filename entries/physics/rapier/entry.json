@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:41Z",
+ "category": "physics",
+ "commit": "475caa3ff464",
+ "delivery": "reference",
+ "description": "Rapier \u2014 Rust 2D/3D physics with deterministic solver + WASM build. Upstream `dimforge/rapier`.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Rapier",
+ "reference_reason": "size gate: 23 MB of source > 12 MB cap",
+ "size_bytes": 24769622,
+ "slug": "rapier",
+ "source": "github-api",
+ "system": "Rust 2D/3D physics with deterministic solver + WASM build",
+ "upstream": "https://github.com/dimforge/rapier",
+ "why": "Deterministic physics for rollback netcode and server-authoritative sims."
+}

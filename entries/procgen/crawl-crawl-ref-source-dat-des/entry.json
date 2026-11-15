@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "procgen",
+ "code_files": 0,
+ "commit": "cf8c9bca9065",
+ "delivery": "reference",
+ "description": "`crawl-ref/source/dat/des` inside crawl (147 files).",
+ "entry_points": [
+  "crawl-ref/source/dat/des"
+ ],
+ "language": "text",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "crawl \u2014 des",
+ "path_in_upstream": "crawl-ref/source/dat/des",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 0,
+ "slug": "crawl-crawl-ref-source-dat-des",
+ "source": "corpus:cloned-free-games/crawl@cf8c9bca9065",
+ "system": "vault/branch layout definitions (DES)",
+ "upstream": "https://github.com/crawl/crawl.git",
+ "why": "Crawl's vault language \u2014 hand-authored procgen constraints at scale."
+}

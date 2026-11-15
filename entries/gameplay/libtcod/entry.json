@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:51Z",
+ "category": "gameplay",
+ "commit": "de16289cd50e",
+ "delivery": "vendored",
+ "description": "libtcod \u2014 roguelike toolkit: FOV, pathfinding, RNG, line drawing, console. Upstream `libtcod/libtcod`.",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "libtcod",
+ "size_bytes": 2894356,
+ "slug": "libtcod",
+ "source": "github-api",
+ "system": "roguelike toolkit: FOV, pathfinding, RNG, line drawing, console",
+ "upstream": "https://github.com/libtcod/libtcod",
+ "vendored_path": "src/",
+ "why": "Tactical/roguelike gameplay substrate: field of view, A*, scheduling."
+}

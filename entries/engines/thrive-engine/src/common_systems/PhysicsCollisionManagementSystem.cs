@@ -1,0 +1,243 @@
+﻿namespace Systems;
+
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Arch.Core;
+using Arch.Core.Extensions;
+using Arch.System;
+using Components;
+using Godot;
+using World = Arch.Core.World;
+
+/// <summary>
+///   Applies <see cref="CollisionManagement"/> to physics bodies
+/// </summary>
+[RunsAfter(typeof(PhysicsBodyCreationSystem))]
+[RuntimeCost(1)]
+public partial class PhysicsCollisionManagementSystem : BaseSystem<World, float>
+{
+    private readonly PhysicalWorld physicalWorld;
+
+    // This doesn't actually need to be accessed, just needs to hold data so that callback objects that are given to
+    // the native side cannot be garbage collected
+    // ReSharper disable once CollectionNeverQueried.Local
+    private readonly Dictionary<Entity, PhysicalWorld.OnCollisionFilterCallback> activeCollisionFilterCallbacks = new();
+
+    /// <summary>
+    ///   Used for temporary storage during an update
+    /// </summary>
+    private readonly List<NativePhysicsBody> resolvedBodyReferences = new();
+
+    public PhysicsCollisionManagementSystem(PhysicalWorld physicalWorld, World world) : base(world)
+    {
+        this.physicalWorld = physicalWorld;
+    }
+
+    /// <summary>
+    ///   Handles physics destroy actions for an entity that has done collision management
+    /// </summary>
+    public void OnEntityDestroyed(in Entity entity)
+    {
+        if (!entity.Has<CollisionManagement>())
+            return;
+
+        lock (activeCollisionFilterCallbacks)
+        {
+            activeCollisionFilterCallbacks.Remove(entity);
+        }
+
+        ref var collisionManagement = ref entity.Get<CollisionManagement>();
+
+        if (collisionManagement.ActiveCollisions != null)
+        {
+            collisionManagement.ActiveCollisions = null;
+            collisionManagement.ActiveCollisionCountPtr = IntPtr.Zero;
+
+            // Note the other systems handle destroying the physics body, which will also force disable the collision
+            // recording, so that is not required to be done here
+            /*ref var physics = ref entity.Get<Physics>();
+
+            if (physics.Body != null)
+                physicalWorld.BodyStopCollisionRecording(physics.Body);*/
+        }
+    }
+
+    [Query]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void Update(ref Physics physics, ref CollisionManagement collisionManagement, in Entity entity)
+    {
+        if (collisionManagement.StateApplied)
+            return;
+
+        var physicsBody = physics.Body;
+
+        if (physicsBody == null)
+        {
+            // Body not initialized yet
+            return;
+        }
+
+        collisionManagement.StateApplied = true;
+
+        // All-collision-disable-flag is now in Physics directly and applied by PhysicsUpdateAndPositionSystem
+
+        // Apply collision disabling against specific bodies
+        try
+        {
+            ref var ignoreCollisions = ref collisionManagement.IgnoredCollisionsWith;
+            ref var removeIgnoreCollisions = ref collisionManagement.RemoveIgnoredCollisions;
+
+            // Check if any ignores can be removed.
+            if (removeIgnoreCollisions != null && ignoreCollisions != null)
+            {
+                if (removeIgnoreCollisions.Count > 0)
+                {
+                    for (int i = 0; i < removeIgnoreCollisions.Count; ++i)
+                    {
+                        var ignoreRemoveEntity = removeIgnoreCollisions[i];
+
+                        // If the ignore list still has the entity, physics ignore will not be removed
+                        if (ignoreCollisions.Contains(ignoreRemoveEntity))
+                            continue;
+
+                        var ignoreWith = GetPhysicsForEntity(ignoreRemoveEntity, ref collisionManagement);
+
+                        if (ignoreWith != null)
+                            physicalWorld.BodyRemoveCollisionIgnoreWith(physicsBody, ignoreWith);
+
+                        removeIgnoreCollisions.Remove(ignoreRemoveEntity);
+
+                        // One step back
+                        --i;
+                    }
+                }
+            }
+
+            // Actual applying of collision ignores. Ignores are only set here, not removed.
+            if (ignoreCollisions == null)
+            {
+                if (collisionManagement.CollisionIgnoresUsed)
+                {
+                    collisionManagement.CollisionIgnoresUsed = false;
+                    physicalWorld.BodyClearCollisionsIgnores(physicsBody);
+                }
+            }
+            else if (ignoreCollisions.Count > 0)
+            {
+                collisionManagement.CollisionIgnoresUsed = true;
+
+                if (ignoreCollisions.Count < 2)
+                {
+                    // When ignoring just one collision, use the single body API as that doesn't need to allocate
+                    // any lists
+                    var ignoreWith = GetPhysicsForEntity(ignoreCollisions[0], ref collisionManagement);
+                    if (ignoreWith != null)
+                        physicalWorld.BodySetCollisionIgnores(physicsBody, ignoreWith);
+                }
+                else
+                {
+                    foreach (var ignoredEntity in ignoreCollisions)
+                    {
+                        var ignoreWith = GetPhysicsForEntity(ignoredEntity, ref collisionManagement);
+
+                        if (ignoreWith != null)
+                            resolvedBodyReferences.Add(ignoreWith);
+                    }
+
+                    physicalWorld.BodySetCollisionIgnores(physicsBody, resolvedBodyReferences);
+
+                    resolvedBodyReferences.Clear();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr("Failed to apply body collision ignores: ", e);
+        }
+
+        if (collisionManagement.RecordActiveCollisions > 0)
+        {
+            if (collisionManagement.ActiveCollisions == null || collisionManagement.ActiveCollisions.Length !=
+                collisionManagement.RecordActiveCollisions)
+            {
+                // Start recording collisions
+                collisionManagement.ActiveCollisions = physicalWorld.BodyStartCollisionRecording(physicsBody,
+                    collisionManagement.RecordActiveCollisions, out collisionManagement.ActiveCollisionCountPtr);
+            }
+        }
+        else if (collisionManagement.ActiveCollisions != null)
+        {
+            // Stop recording collisions
+            collisionManagement.ActiveCollisions = null;
+            collisionManagement.ActiveCollisionCountPtr = IntPtr.Zero;
+
+            physicalWorld.BodyStopCollisionRecording(physicsBody);
+        }
+
+        bool wantedFilterState = collisionManagement.CollisionFilter != null;
+
+        if (wantedFilterState != collisionManagement.CollisionFilterCallbackRegistered)
+        {
+            collisionManagement.CollisionFilterCallbackRegistered = wantedFilterState;
+
+            lock (activeCollisionFilterCallbacks)
+            {
+                if (wantedFilterState)
+                {
+                    var filter = collisionManagement.CollisionFilter!;
+
+                    // Make sure the filter delegate stays alive for the duration of the registration
+                    activeCollisionFilterCallbacks[entity] = filter;
+
+                    physicalWorld.BodyAddCollisionFilter(physicsBody, filter);
+                }
+                else
+                {
+                    physicalWorld.BodyDisableCollisionFilter(physicsBody);
+
+                    // No longer need to keep this callback object alive
+                    activeCollisionFilterCallbacks.Remove(entity);
+                }
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private NativePhysicsBody? GetPhysicsForEntity(Entity entity, ref CollisionManagement management)
+    {
+        NativePhysicsBody? body;
+
+        try
+        {
+            if (entity == Entity.Null || !entity.IsAlive())
+                throw new Exception("Entity is dead");
+
+            if (!entity.Has<Physics>())
+                throw new Exception($"Entity {entity} has no Physics component");
+
+            ref var physics = ref entity.Get<Physics>();
+            body = physics.Body;
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr("Collision management refers to another entity that doesn't have the physics component: ",
+                e);
+            return null;
+        }
+
+        // In case the body we don't want to collide with is not ready yet, we return null here to skip it, but
+        // make sure we will try again next update until we get it
+
+        if (body == null)
+        {
+            management.StateApplied = false;
+
+            // TODO: could show an error after some time if still failing?
+
+            return null;
+        }
+
+        return body;
+    }
+}

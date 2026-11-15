@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:10Z",
+ "category": "procgen",
+ "commit": "c35d6041ce7e",
+ "delivery": "vendored",
+ "description": "FastNoise2 \u2014 SIMD noise generation library with node graphs. Upstream `Auburn/FastNoise2`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "FastNoise2",
+ "size_bytes": 417425,
+ "slug": "fastnoise2",
+ "source": "github-api",
+ "system": "SIMD noise generation library with node graphs",
+ "upstream": "https://github.com/Auburn/FastNoise2",
+ "vendored_path": "src/",
+ "why": "Production-grade deterministic noise with SIMD \u2014 the upgrade path from FastNoiseLite."
+}

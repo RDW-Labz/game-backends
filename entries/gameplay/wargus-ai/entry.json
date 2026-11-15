@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 12,
+ "commit": "57f9d4d",
+ "delivery": "reference",
+ "description": "`scripts/ai` inside wargus: 12 source files.",
+ "entry_points": [
+  "scripts/ai/"
+ ],
+ "language": "c",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "wargus \u2014 ai",
+ "path_in_upstream": "scripts/ai",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "wargus-ai",
+ "source": "corpus:cloned-free-games/wargus@57f9d4d",
+ "source_bytes": 308669,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/Wargus/wargus.git",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (12 files at that path)."
+}

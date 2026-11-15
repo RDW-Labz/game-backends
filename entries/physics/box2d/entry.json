@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:28Z",
+ "category": "physics",
+ "commit": "dd8bd3fb525f",
+ "delivery": "vendored",
+ "description": "Box2D \u2014 2D rigid-body collision + dynamics solver. Upstream `erincatto/box2d`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Box2D",
+ "size_bytes": 4160053,
+ "slug": "box2d",
+ "source": "github-api",
+ "system": "2D rigid-body collision + dynamics solver",
+ "upstream": "https://github.com/erincatto/box2d",
+ "vendored_path": "src/",
+ "why": "The 2D physics standard (Angry Birds, Crayon Physics) \u2014 MIT."
+}

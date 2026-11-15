@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:49Z",
+ "category": "loot-economy",
+ "commit": "586ff23677ae",
+ "delivery": "reference",
+ "description": "loot-table (rue-williams) \u2014 loot table random generator. Upstream `rue-williams/loot-table`.",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "loot-table (rue-williams)",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 83,
+ "slug": "loot-table-gpl",
+ "source": "github-api",
+ "system": "loot table random generator",
+ "upstream": "https://github.com/rue-williams/loot-table",
+ "why": "Drop-table implementation catalogued for reference (GPL-3.0, not vendored)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:53Z",
+ "category": "gameplay",
+ "commit": "2904a9afba48",
+ "delivery": "vendored",
+ "description": "PathFinding.js \u2014 A*, IDA*, JPS, Dijkstra, BiA* on grids. Upstream `qiao/PathFinding.js`.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "README.md",
+ "license_verdict": "clean",
+ "name": "PathFinding.js",
+ "size_bytes": 392447,
+ "slug": "pathfinding-js",
+ "source": "github-api",
+ "system": "A*, IDA*, JPS, Dijkstra, BiA* on grids",
+ "upstream": "https://github.com/qiao/PathFinding.js",
+ "vendored_path": "src/",
+ "why": "Grid pathfinding algorithms in one readable package (MIT)."
+}

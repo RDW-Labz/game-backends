@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "netcode",
+ "code_files": 12,
+ "commit": "af90756d5b07",
+ "delivery": "reference",
+ "description": "`common/networking` inside Freeciv (15 files).",
+ "entry_points": [
+  "common/networking"
+ ],
+ "language": "c",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Freeciv \u2014 networking",
+ "path_in_upstream": "common/networking",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 198660,
+ "slug": "freeciv-common-networking",
+ "source": "corpus:cloned-free-games/Freeciv@af90756d5b07",
+ "system": "turn-based client/server protocol and packet layer",
+ "upstream": "https://github.com/freeciv/freeciv",
+ "why": "Long-lived packet protocol for a 4X game with AI/observer clients."
+}

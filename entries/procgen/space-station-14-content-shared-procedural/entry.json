@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "procgen",
+ "code_files": 48,
+ "commit": "33a1d0e32d63",
+ "delivery": "vendored",
+ "description": "`Content.Shared/Procedural` inside space-station-14 (48 files).",
+ "entry_points": [
+  "Content.Shared/Procedural"
+ ],
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.TXT",
+ "license_verdict": "clean",
+ "name": "space-station-14 \u2014 Procedural",
+ "path_in_upstream": "Content.Shared/Procedural",
+ "size_bytes": 29570,
+ "slug": "space-station-14-content-shared-procedural",
+ "source": "corpus:cloned-free-games/space-station-14@33a1d0e32d63",
+ "system": "procedural station/AI content generation",
+ "upstream": "https://github.com/space-wizards/space-station-14",
+ "vendored_path": "src/",
+ "why": "Procedural generation inside a live multiplayer C# game."
+}

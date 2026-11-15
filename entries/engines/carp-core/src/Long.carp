@@ -1,0 +1,111 @@
+(system-include "carp_long.h")
+
+(doc Long "is a bigger integral data type (its size is 64 bits). Its suffix is
+`l`.")
+(defmodule Long
+  (register MAX Long "INT64_MAX")
+  (implements MAX MAX)
+  (register MIN Long "INT64_MIN")
+  (implements MIN MIN)
+  (register + (λ [Long Long] Long))
+  (register - (λ [Long Long] Long))
+  (register * (λ [Long Long] Long))
+  (register / (λ [Long Long] Long))
+  (register < (λ [Long Long] Bool))
+  (register > (λ [Long Long] Bool))
+  (register = (λ [Long Long] Bool))
+  (register neg (λ [Long] Long))
+  (register mod (λ [Long Long] Long))
+  (register seed (λ [Long] ()))
+  (register bit-shift-left (λ [Long Long] Long))
+  (register bit-shift-right (λ [Long Long] Long))
+  (register bit-and (λ [Long Long] Long))
+  (register bit-or (λ [Long Long] Long))
+  (register bit-xor (λ [Long Long] Long))
+  (register bit-not (λ [Long] Long))
+  (register inc (λ [Long] Long))
+  (register dec (λ [Long] Long))
+  (register to-int (λ [Long] Int))
+  (register from-int (λ [Int] Long))
+  (todo copy "Should not be needed when refs to value types are auto-converted
+to non-refs.")
+  (register copy (λ [&Long] Long))
+
+  (implements + Long.+)
+  (implements - Long.-)
+  (implements * Long.*)
+  (implements / Long./)
+  (implements < Long.<)
+  (implements > Long.>)
+  (implements = Long.=)
+  (implements copy Long.copy)
+  (implements inc Long.inc)
+  (implements dec Long.dec)
+  (implements neg Long.neg)
+  (implements mod Long.mod)
+  (implements to-int Long.to-int)
+  (implements from-int Long.from-int)
+  (implements bit-shift-left Long.bit-shift-left)
+  (implements bit-shift-right Long.bit-shift-right)
+  (implements bit-and Long.bit-and)
+  (implements bit-or Long.bit-or)
+  (implements bit-xor Long.bit-xor)
+  (implements bit-not Long.bit-not)
+
+  (posix-only ; this seems to generate invalid code on some windows machines
+    (register safe-add (λ [Long Long (Ref Long)] Bool))
+    (register safe-sub (λ [Long Long (Ref Long)] Bool))
+    (register safe-mul (λ [Long Long (Ref Long)] Bool))
+  )
+
+  (doc abs "The absolute value (removes the negative sign) of a Long.")
+  (register abs (λ [Long] Long))
+
+  (doc even? "returns true if `a` is even.")
+  (defn even? [a] (= (mod a 2l) 0l))
+  (doc odd? "returns true if `a` is odd.")
+  (defn odd? [a] (not (even? a)))
+
+  (doc positive? "returns true if `a` is positive.")
+  (defn positive? [a] (> a 0l))
+  (doc negative? "returns true if `a` is negative.")
+  (defn negative? [a] (< a 0l))
+
+  (doc zero "returns the zero value for Long (0l), used to implement the `zero` interface.")
+  (defn zero [] 0l)
+
+  (doc add-ref "adds two Long values passed as references.")
+  (defn add-ref [x y]
+    (Long.+ @x @y))
+
+  (doc clamp "clamps `val` to the range [`min`, `max`].")
+  (defn clamp [min, max, val]
+    (if (> val max)
+      max
+      (if (< val min)
+        min
+        val)))
+
+  (doc sign "Returns `-1l` if `n` is negative, `0l` if zero, or `1l` if positive.")
+  (defn sign [n]
+    (if (> n 0l) 1l (if (< n 0l) -1l 0l)))
+
+  (implements abs Long.abs)
+  (implements zero Long.zero)
+  (implements add-ref Long.add-ref)
+  (implements sign Long.sign)
+)
+
+(defmodule LongRef
+  (defn = [a b]
+    (Long.= @a @b))
+  (implements = LongRef.=)
+
+  (defn < [a b]
+    (Long.< @a @b))
+  (implements < LongRef.<)
+
+  (defn > [a b]
+    (Long.> @a @b))
+  (implements > LongRef.>)
+)

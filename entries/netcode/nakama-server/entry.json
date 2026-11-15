@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 160,
+ "commit": "4833594",
+ "delivery": "vendored",
+ "description": "`server` inside nakama: 160 source files.",
+ "entry_points": [
+  "server/"
+ ],
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "nakama \u2014 server",
+ "path_in_upstream": "server",
+ "slug": "nakama-server",
+ "source": "corpus:cloned-free-games/nakama@4833594",
+ "source_bytes": 4136722,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/heroiclabs/nakama",
+ "vendored_path": "src/",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (160 files at that path)."
+}

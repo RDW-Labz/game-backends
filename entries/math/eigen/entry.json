@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:48Z",
+ "category": "math",
+ "commit": "36b95962756c",
+ "delivery": "reference",
+ "description": "Eigen \u2014 dense/sparse linear algebra (MPL-2.0). Upstream `eigenteam/eigen-git-mirror`.",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "COPYING.GPL",
+ "license_verdict": "copyleft-reference",
+ "name": "Eigen",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 11825645,
+ "slug": "eigen",
+ "source": "github-api",
+ "system": "dense/sparse linear algebra (MPL-2.0)",
+ "upstream": "https://github.com/eigenteam/eigen-git-mirror",
+ "why": "The linear-algebra workhorse behind physics and ML code \u2014 copyleft, reference only."
+}

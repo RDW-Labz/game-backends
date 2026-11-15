@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:45Z",
+ "category": "math",
+ "commit": "b9b570b78d58",
+ "delivery": "vendored",
+ "description": "cglm \u2014 SIMD-accelerated C math (vec/mat/quat/affine/euler). Upstream `recp/cglm`.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cglm",
+ "size_bytes": 1554192,
+ "slug": "cglm",
+ "source": "github-api",
+ "system": "SIMD-accelerated C math (vec/mat/quat/affine/euler)",
+ "upstream": "https://github.com/recp/cglm",
+ "vendored_path": "src/",
+ "why": "Fast, C-friendly maths with SIMD paths \u2014 good for engines written in C."
+}

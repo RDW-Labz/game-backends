@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 13,
+ "commit": "ebf31a2",
+ "delivery": "reference",
+ "description": "`source/main/scripting/server` inside rigs-of-rods: 13 source files.",
+ "entry_points": [
+  "source/main/scripting/server/"
+ ],
+ "language": "h",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "rigs-of-rods \u2014 server",
+ "path_in_upstream": "source/main/scripting/server",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "rigs-of-rods-server",
+ "source": "corpus:cloned-free-games/rigs-of-rods@ebf31a2",
+ "source_bytes": 102697,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/RigsOfRods/rigs-of-rods",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (13 files at that path)."
+}

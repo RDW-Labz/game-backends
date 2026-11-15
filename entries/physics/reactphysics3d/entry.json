@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:43Z",
+ "category": "physics",
+ "commit": "7000610a244e",
+ "delivery": "vendored",
+ "description": "ReactPhysics3D \u2014 3D physics: broadphase, constraints, raycast. Upstream `DanielChappuis/reactphysics3d`.",
+ "language": "c++",
+ "license": "Zlib",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ReactPhysics3D",
+ "size_bytes": 3734166,
+ "slug": "reactphysics3d",
+ "source": "github-api",
+ "system": "3D physics: broadphase, constraints, raycast",
+ "upstream": "https://github.com/DanielChappuis/reactphysics3d",
+ "vendored_path": "src/",
+ "why": "Clean zlib 3D physics \u2014 the readable alternative to Bullet."
+}

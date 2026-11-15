@@ -1,0 +1,94 @@
+(defmodule Dynamic
+  (private deftuple-type-)
+  (hidden deftuple-type-)
+  (defndynamic deftuple-type- [name props]
+    `(deftype (%name %@props)
+      %(collect-into (flatten (map (fn [x] `(%x %x)) props)) array)))
+
+  (private deftuple-lt-)
+  (hidden deftuple-lt-)
+  (defndynamic deftuple-lt- [name props]
+    (if (empty? props)
+      'false
+      (let [fst (Symbol.prefix name (car props))]
+        (if (= (length props) 1)
+          `(< (%fst t1) (%fst t2))
+          `(if (= (%fst t1) (%fst t2))
+            %(deftuple-lt- name (cdr props))
+            (< (%fst t1) (%fst t2)))))))
+
+  ; this is basically just a giant template
+  (private deftuple-module-)
+  (hidden deftuple-module-)
+  (defndynamic deftuple-module- [name props]
+    (let [module-name (Symbol.concat [name 'Ref])]
+      `(do
+        (defmodule %module-name
+          (defn < [t1 t2] %(deftuple-lt- name props))
+          (implements < %(Symbol.prefix module-name '<))
+
+          (defn > [t1 t2] (%(Symbol.prefix module-name '<) t2 t1))
+          (implements > %(Symbol.prefix module-name '>)))
+
+        (doc %name %(str "is a tuple of length " (length props) "."))
+        (defmodule %name
+          (doc init-from-refs
+            %(str "initializes a `" name "` from member references."))
+          %(let [prop-vars (map (fn [x] (Symbol.concat [x '-val])) props)]
+            `(defn init-from-refs %(collect-into prop-vars array)
+              (init %@(map (fn [x] `(copy %x)) prop-vars))))
+
+          (defn < [t1 t2]
+            (%(Symbol.prefix module-name '<) &t1 &t2))
+          (implements < %(Symbol.prefix name '<))
+
+          (defn > [t1 t2]
+            (%(Symbol.prefix module-name '>) &t1 &t2))
+          (implements > %(Symbol.prefix name '>))
+
+          (doc reverse
+            %(str "reverses a `" name "` by reversing its member positions."))
+          (defn reverse [t]
+            (init %@(map (fn [x] `(copy (%x t))) (reverse props))))))))
+
+  (private deftuple-derive-zero-)
+  (hidden deftuple-derive-zero-)
+  (defndynamic deftuple-derive-zero- [name props]
+    (list 'defmodule name
+      (list 'defn 'zero (array)
+        (cons 'init (map (fn [_] '(zero)) props)))
+      (list 'implements 'zero (Symbol.prefix name 'zero))))
+
+  (private deftuple-derive-eq-)
+  (hidden deftuple-derive-eq-)
+  (defndynamic deftuple-derive-eq- [name props]
+    (list 'defmodule name
+      (list 'defn '= (array 'o1 'o2)
+        (reduce
+          (fn [acc p]
+            (list 'and (list '= (list p 'o1) (list p 'o2)) acc))
+          true
+          props))
+      (list 'implements '= (Symbol.prefix name '=))))
+
+  (doc deftuple "defines a tuple type.
+
+For example:
+```
+; is the definition of Pair in the stdlib
+(deftuple Pair a b)
+```")
+  (defmacro deftuple [name :rest props]
+    (list 'do
+          (deftuple-type- name props)
+          (deftuple-derive-zero- name props)
+          (deftuple-derive-eq- name props)
+          (deftuple-module- name props)))
+)
+
+(doc Pair "is a 2-tuple, i.e. a datatype with two members.")
+(deftuple Pair a b)
+(doc Triple "is a 3-tuple, i.e. a datatype with three members.")
+(deftuple Triple a b c)
+(doc Quadruple "is a 4-tuple, i.e. a datatype with four members.")
+(deftuple Quadruple a b c d)

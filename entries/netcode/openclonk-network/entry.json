@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 41,
+ "commit": "36de799",
+ "delivery": "vendored",
+ "description": "`src/network` inside openclonk: 41 source files.",
+ "entry_points": [
+  "src/network/"
+ ],
+ "language": "c",
+ "license": "ISC",
+ "license_file": "COPYING",
+ "license_verdict": "clean",
+ "name": "openclonk \u2014 network",
+ "path_in_upstream": "src/network",
+ "slug": "openclonk-network",
+ "source": "corpus:cloned-free-games/openclonk@36de799",
+ "source_bytes": 669112,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/openclonk/openclonk.git",
+ "vendored_path": "src/",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (41 files at that path)."
+}

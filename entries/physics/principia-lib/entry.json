@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "physics",
+ "code_files": 193,
+ "commit": "a1af28b127c2",
+ "delivery": "vendored",
+ "description": "`lib` inside Principia (205 files).",
+ "entry_points": [
+  "lib"
+ ],
+ "language": "c++",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "Principia \u2014 lib",
+ "path_in_upstream": "lib",
+ "size_bytes": 7419133,
+ "slug": "principia-lib",
+ "source": "corpus:cloned-free-games/Principia@a1af28b127c2",
+ "system": "Box2D-derived 2D physics with custom collision handling",
+ "upstream": "https://github.com/Bithack/principia",
+ "vendored_path": "src/",
+ "why": "Box2D fork tuned for a sandbox physics game \u2014 see what games change in the solver."
+}

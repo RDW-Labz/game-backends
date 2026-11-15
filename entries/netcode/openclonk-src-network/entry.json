@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "netcode",
+ "code_files": 41,
+ "commit": "36de799544af",
+ "delivery": "reference",
+ "description": "`src/network` inside openclonk (41 files).",
+ "entry_points": [
+  "src/network"
+ ],
+ "language": "c++",
+ "license": "LGPL-2.1",
+ "license_verdict": "copyleft-reference",
+ "name": "openclonk \u2014 network",
+ "path_in_upstream": "src/network",
+ "reference_reason": "licence: LGPL-2.1 (copyleft-reference)",
+ "size_bytes": 669112,
+ "slug": "openclonk-src-network",
+ "source": "corpus:cloned-free-games/openclonk@36de799544af",
+ "system": "Clonk-style network sync and control queues",
+ "upstream": "https://github.com/openclonk/openclonk.git",
+ "why": "Old-school deterministic netcode with per-player control queues (ISC \u2014 vendored)."
+}

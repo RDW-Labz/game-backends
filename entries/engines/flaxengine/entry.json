@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:21Z",
+ "category": "engines",
+ "commit": "533d9332f34a",
+ "delivery": "reference",
+ "description": "Flax Engine \u2014 full C++/C# engine with editor. Upstream `FlaxEngine/FlaxEngine`.",
+ "language": "c++",
+ "license": "Flax-EULA",
+ "license_file": "LICENSE.md",
+ "license_verdict": "gated-reference",
+ "name": "Flax Engine",
+ "reference_reason": "licence: Flax-EULA (gated-reference)",
+ "size_bytes": 56316653,
+ "slug": "flaxengine",
+ "source": "github-api",
+ "system": "full C++/C# engine with editor",
+ "upstream": "https://github.com/FlaxEngine/FlaxEngine",
+ "why": "Gated: custom Flax licence \u2014 catalogued as a reference, never vendored."
+}

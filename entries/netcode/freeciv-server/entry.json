@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 80,
+ "commit": "af90756",
+ "delivery": "reference",
+ "description": "`server` inside Freeciv: 80 source files.",
+ "entry_points": [
+  "server/"
+ ],
+ "language": "h",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Freeciv \u2014 server",
+ "path_in_upstream": "server",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "freeciv-server",
+ "source": "corpus:cloned-free-games/Freeciv@af90756",
+ "source_bytes": 4237049,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/freeciv/freeciv",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (80 files at that path)."
+}

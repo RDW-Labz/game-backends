@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 55,
+ "commit": "a1af28b",
+ "delivery": "vendored",
+ "description": "`src/tms/core` inside Principia: 55 source files.",
+ "entry_points": [
+  "src/tms/core/"
+ ],
+ "language": "cc",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "Principia \u2014 core",
+ "path_in_upstream": "src/tms/core",
+ "slug": "principia-core",
+ "source": "corpus:cloned-free-games/Principia@a1af28b",
+ "source_bytes": 227674,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/Bithack/principia",
+ "vendored_path": "src/",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (55 files at that path)."
+}

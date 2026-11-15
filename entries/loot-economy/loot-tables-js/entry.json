@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:49Z",
+ "category": "loot-economy",
+ "commit": "8de49aeab208",
+ "delivery": "vendored",
+ "description": "Loot-Tables (JS) \u2014 declarative weighted loot tables with nested rolls. Upstream `Mopolo/Loot-Tables`.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Loot-Tables (JS)",
+ "size_bytes": 1156719,
+ "slug": "loot-tables-js",
+ "source": "github-api",
+ "system": "declarative weighted loot tables with nested rolls",
+ "upstream": "https://github.com/Mopolo/Loot-Tables",
+ "vendored_path": "src/",
+ "why": "Small MIT loot-table engine: weighted picks, nested tables, guaranteed drops."
+}

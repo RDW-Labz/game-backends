@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 13,
+ "commit": "8abd28d",
+ "delivery": "vendored",
+ "description": "`samples/WindowsVulkan/gli/core` inside optick: 13 source files.",
+ "entry_points": [
+  "samples/WindowsVulkan/gli/core/"
+ ],
+ "language": "hpp",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "optick \u2014 core",
+ "path_in_upstream": "samples/WindowsVulkan/gli/core",
+ "slug": "optick-core",
+ "source": "corpus:cloned-free-games/optick@8abd28d",
+ "source_bytes": 124482,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/bombomby/optick",
+ "vendored_path": "src/",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (13 files at that path)."
+}

@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "math",
+ "code_files": 12,
+ "commit": "6249857",
+ "delivery": "reference",
+ "description": "`src/geom` inside Tessel-A-tile-game: 12 source files.",
+ "entry_points": [
+  "src/geom/"
+ ],
+ "language": "ts",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Tessel-A-tile-game \u2014 geom",
+ "path_in_upstream": "src/geom",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "tessel-a-tile-game-geom",
+ "source": "corpus:cloned-free-games/Tessel-A-tile-game@6249857",
+ "source_bytes": 67392,
+ "system": "vector/matrix/quaternion math substrate",
+ "upstream": "https://github.com/gvtulder/tessel",
+ "why": "Backend material for vector/matrix/quaternion math substrate, taken from a pinned clone (12 files at that path)."
+}

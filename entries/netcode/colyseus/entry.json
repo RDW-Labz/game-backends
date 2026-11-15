@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:00Z",
+ "category": "netcode",
+ "commit": "ce781b98bfc5",
+ "delivery": "vendored",
+ "description": "Colyseus \u2014 authoritative room-based multiplayer framework with state sync. Upstream `colyseus/colyseus`.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Colyseus",
+ "size_bytes": 3752117,
+ "slug": "colyseus",
+ "source": "github-api",
+ "system": "authoritative room-based multiplayer framework with state sync",
+ "upstream": "https://github.com/colyseus/colyseus",
+ "vendored_path": "src/",
+ "why": "Room/state-sync server framework with schema-based delta encoding."
+}

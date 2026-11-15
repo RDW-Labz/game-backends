@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:38:07Z",
+ "category": "save-state",
+ "commit": "e5cb4b09573a",
+ "delivery": "reference",
+ "description": "SQLite \u2014 embedded SQL database engine (single-file world saves). Upstream `sqlite/sqlite`.",
+ "language": "c",
+ "license": "Public-Domain",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "SQLite",
+ "reference_reason": "size gate: 15 MB of source > 12 MB cap",
+ "size_bytes": 16742018,
+ "slug": "sqlite",
+ "source": "github-api",
+ "system": "embedded SQL database engine (single-file world saves)",
+ "upstream": "https://github.com/sqlite/sqlite",
+ "why": "Public domain: the durable store behind MMO/CRPG world state."
+}

@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 21,
+ "commit": "ad5a96e",
+ "delivery": "vendored",
+ "description": "`core` inside carp: 21 source files.",
+ "entry_points": [
+  "core/"
+ ],
+ "language": "h",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "carp \u2014 core",
+ "path_in_upstream": "core",
+ "slug": "carp-core",
+ "source": "corpus:cloned-free-games/carp@ad5a96e",
+ "source_bytes": 72519,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/carp-lang/Carp",
+ "vendored_path": "src/",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (21 files at that path)."
+}

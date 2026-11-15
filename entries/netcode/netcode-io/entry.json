@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:56Z",
+ "category": "netcode",
+ "commit": "2d9df60853a6",
+ "delivery": "vendored",
+ "description": "netcode.io \u2014 secure UDP connection protocol with token auth. Upstream `mas-bandwidth/netcode`.",
+ "language": "c",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENCE",
+ "license_verdict": "clean",
+ "name": "netcode.io",
+ "size_bytes": 883948,
+ "slug": "netcode-io",
+ "source": "github-api",
+ "system": "secure UDP connection protocol with token auth",
+ "upstream": "https://github.com/mas-bandwidth/netcode",
+ "vendored_path": "src/",
+ "why": "The connect-token handshake pattern that hardened game netcode."
+}

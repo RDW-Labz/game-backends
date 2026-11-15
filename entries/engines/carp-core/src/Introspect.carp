@@ -1,0 +1,200 @@
+(doc Introspect
+  "Dynamic functions that return information about the s-expressions associated
+  to a binding.")
+(defmodule Introspect
+  (doc module?
+    "Is this binding a module?")
+  (defndynamic module? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+          false
+          (Dynamic.= (Symbol.from "defmodule") (car s)))))
+
+  (doc function?
+    "Is this binding a function?")
+  (defndynamic function? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+          false
+          (Dynamic.= (Symbol.from "defn") (car s)))))
+
+  (doc command?
+    "Is this binding a command?")
+  (defndynamic command? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+          false
+          (Dynamic.= (Symbol.from "command") (car s)))))
+
+  (doc primitive?
+    "Is this binding a primitive?")
+  (defndynamic primitive? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+          false
+          (Dynamic.= (Symbol.from "primitive") (car s)))))
+
+  (doc external?
+       "Is this binding external?")
+  (defndynamic external? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+        false
+        (Dynamic.= (Symbol.from "external") (car s)))))
+
+  (doc variable?
+       "Is this binding a variable?")
+  (defndynamic variable? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+        false
+        (Dynamic.= (Symbol.from "def") (car s)))))
+
+  (doc type?
+       "Is this binding a type?")
+  (defndynamic type? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+          false
+          (Dynamic.= (Symbol.from "deftype") (car s)))))
+
+  (doc struct?
+    "Is this binding a struct?")
+  (defndynamic struct? [binding]
+    (let [s (s-expr binding)]
+      (if (or (empty? s) (< (length s) 3))
+          false
+          (array? (caddr s)))))
+
+  (doc sumtype?
+    "Is this binding a sumtype?")
+  (defndynamic sumtype? [binding]
+    (let [s (s-expr binding)]
+      (if (or (empty? s) (< (length s) 3))
+          false
+          (list? (caddr s)))))
+
+  (doc implements? "Does `function` implement `interface`?")
+  (defmacro implements? [interface function]
+    (list 'any?
+          (list 'fn (array 'x) (list '= 'x interface))
+          (list 'meta function "implements")))
+
+  (doc arity
+    "What's the arity of this binding?
+
+- When `binding` is a function, returns the number of arguments.
+- When `binding` is a command, returns the number of arguments.
+- When `binding` is a primitive, returns the number of arguments.
+- When `binding` is an interface, returns the number of arguments.
+- When `binding` is a struct, returns the number of fields.
+- When `binding` is a sumtype, returns a list of the number of type
+  arguments of each constructor.
+- Otherwise it returns 0.")
+  (defndynamic arity [binding]
+    (let [args (Introspect.arguments binding)]
+      (if (Introspect.sumtype? binding)
+        (map length args)
+        (length args))))
+
+  (doc arguments
+    "What are the arguments to this binding?
+
+- When `binding` is a function, returns the argument array.
+- When `binding` is a command, returns the argument array.
+- When `binding` is a primitive, returns the argument array.
+- When `binding` is an interface, returns the argument array.
+- When `binding` is a struct, returns the fields.
+- When `binding` is a sumtype, returns a list of the type arguments of each
+  constructor.
+- Otherwise it returns an empty list.")
+  (defndynamic arguments [binding]
+    (let [s (s-expr binding)]
+    (if (empty? s)
+        0
+    (cond
+        (Introspect.external? binding)
+          (if (list? (caddr s))
+              (car (cdaddr s))
+              '())
+        (Introspect.command? binding) (caddr s)
+        (Introspect.primitive? binding) (caddr s)
+        (Introspect.interface? binding) (car (cdaddr s))
+        (Introspect.function? binding) (caddr s)
+        (Introspect.dynamic? binding) (caddr s)
+        (Introspect.macro? binding) (caddr s)
+        (Introspect.struct? binding) (map car (List.pairs (caddr s)))
+        (Introspect.sumtype? binding) (map (fn [arr]
+        (cadr arr)) (cddr s))
+        '()))))
+
+  (doc macro?
+    "Is this binding a macro?")
+  (defndynamic macro? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+          false
+          (Dynamic.= (Symbol.from "defmacro") (car s)))))
+
+  (doc dynamic?
+    "Is this binding a dynamic binding?")
+  (defndynamic dynamic? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+          false
+          (or (Dynamic.= "defdynamic" (str (car s)))
+              (Dynamic.= "dynamic" (str (car s)))))))
+
+  (doc interface?
+    "Is this binding an interface?")
+  (defndynamic interface? [binding]
+    (let [s (s-expr binding)]
+      (if (empty? s)
+          false
+          (Dynamic.= (Symbol.from "definterface") (car s)))))
+
+  (doc with-copy
+    "Returns a reference to an anonymous 'proxied' variant of `function` in
+  which the argument in position `arg` (indexed from 0) is *copied* from a
+  reference before being passed to `function`:
+
+  ```
+  ;; Array.reduce expects a function that takes a *ref* in its second argument:
+  ;;   (Fn [a (Ref b c)] ...)
+  ;; so we can't use a function like `+` directly; enter proxy
+  (reduce (with-copy + 2) 0 &[1 2 3])
+  => 6
+  ;; compare this with an inline anonymous function that achieves the same thing:
+  (reduce &(fn [x y] (+ x @y)) 0 &[1 2 3]) === (reduce (with-copy + 2) 0 &[1 2 3])
+  ```
+
+  This is useful when using higher-order functions that operate over structures that
+  return *references* to their inhabitants, such as arrays or structs. It allows
+  you to use a function over values without writing a custom anonymous function
+  to handle copying.
+
+  Furthermore, one can define bespoke variants for working with particular
+  higher-order functions. For instace, `reduce` always expacts a reference in the
+  second positon:
+
+  ```
+  (defmacro reducer [function]
+    (eval (list with-copy function 2)))
+  (reduce (reducer +) 0 &[1 2 3])
+  => 6
+  ```
+  ")
+  (defmacro with-copy [function arg]
+    ;; The calls to `eval` around `function` are necessary to ensure we can execute arity.
+    (let [arg-arr (Dynamic.unreduce inc 0 (Introspect.arity (eval function)) (array))
+         ;; increment arg by 1 to simulate indexing from 0--since the
+         ;; functions we rely on here return counts
+          pos (+ arg 1)
+          local-names (list-to-array-internal (map gensym-local (map Symbol.from arg-arr)) [])
+          target (gensym-local (Symbol.from pos))
+          prox (list 'copy target)
+          call (cons function (map (fn [x] (if (= target x) prox x)) local-names))]
+      (if (> pos (Introspect.arity (eval function)))
+          (macro-error "with-copy error: the specified argument position is greater than the given function's arity.")
+          (list 'ref (list 'fn local-names call)))))
+)

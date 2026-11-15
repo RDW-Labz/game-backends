@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 13,
+ "commit": "260c59c",
+ "delivery": "reference",
+ "description": "`codemp/server` inside OpenJK: 13 source files.",
+ "entry_points": [
+  "codemp/server/"
+ ],
+ "language": "cpp",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "OpenJK \u2014 server",
+ "path_in_upstream": "codemp/server",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "openjk-server",
+ "source": "corpus:cloned-free-games/OpenJK@260c59c",
+ "source_bytes": 438375,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/JACoders/OpenJK.git",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (13 files at that path)."
+}

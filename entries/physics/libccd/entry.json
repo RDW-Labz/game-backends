@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:44Z",
+ "category": "physics",
+ "commit": "7931e764a19e",
+ "delivery": "vendored",
+ "description": "libccd \u2014 convex collision detection (GJK/EPA) library. Upstream `danfis/libccd`.",
+ "language": "c",
+ "license": "BSD-3-Clause",
+ "license_file": "BSD-LICENSE",
+ "license_verdict": "clean",
+ "name": "libccd",
+ "size_bytes": 225170,
+ "slug": "libccd",
+ "source": "github-api",
+ "system": "convex collision detection (GJK/EPA) library",
+ "upstream": "https://github.com/danfis/libccd",
+ "vendored_path": "src/",
+ "why": "The collision-detection kernel other engines embed."
+}

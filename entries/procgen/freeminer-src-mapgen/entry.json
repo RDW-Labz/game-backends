@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "procgen",
+ "code_files": 76,
+ "commit": "e31670e9d074",
+ "delivery": "reference",
+ "description": "`src/mapgen` inside freeminer (79 files).",
+ "entry_points": [
+  "src/mapgen"
+ ],
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "freeminer \u2014 mapgen",
+ "path_in_upstream": "src/mapgen",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 1118799,
+ "slug": "freeminer-src-mapgen",
+ "source": "corpus:cloned-free-games/freeminer@e31670e9d074",
+ "system": "voxel map generation (biomes, caves, ores)",
+ "upstream": "https://github.com/freeminer/freeminer",
+ "why": "The voxel worldgen pipeline: mapgen stages, biome noise, cave carving."
+}

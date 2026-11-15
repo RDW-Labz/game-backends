@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:53Z",
+ "category": "gameplay",
+ "commit": "7fb29cfe59dc",
+ "delivery": "vendored",
+ "description": "GOAP (crashkonijn) \u2014 goal-oriented action planning for game AI (Unity/C#). Upstream `crashkonijn/GOAP`.",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "GOAP (crashkonijn)",
+ "size_bytes": 859453,
+ "slug": "goap-crashkonijn",
+ "source": "github-api",
+ "system": "goal-oriented action planning for game AI (Unity/C#)",
+ "upstream": "https://github.com/crashkonijn/GOAP",
+ "vendored_path": "src/",
+ "why": "Planning AI rather than scripted FSMs \u2014 drop-in for Unity agents."
+}

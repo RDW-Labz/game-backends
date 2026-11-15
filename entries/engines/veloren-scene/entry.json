@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 10,
+ "commit": "cd75076",
+ "delivery": "reference",
+ "description": "`voxygen/src/scene` inside veloren: 10 source files.",
+ "entry_points": [
+  "voxygen/src/scene/"
+ ],
+ "language": "rs",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "veloren \u2014 scene",
+ "path_in_upstream": "voxygen/src/scene",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "veloren-scene",
+ "source": "corpus:cloned-free-games/veloren@cd75076",
+ "source_bytes": 1172311,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/veloren/veloren.git",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (10 files at that path)."
+}

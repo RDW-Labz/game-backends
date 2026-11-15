@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "engines",
+ "code_files": 20,
+ "commit": "5d68273",
+ "delivery": "vendored",
+ "description": "`src/engine` inside teeworlds: 20 source files.",
+ "entry_points": [
+  "src/engine/"
+ ],
+ "language": "h",
+ "license": "Zlib",
+ "license_verdict": "clean",
+ "name": "teeworlds \u2014 engine",
+ "path_in_upstream": "src/engine",
+ "slug": "teeworlds-engine",
+ "source": "corpus:cloned-free-games/teeworlds@5d68273",
+ "source_bytes": 1955155,
+ "system": "engine core / runtime shell (main loop, scene or ECS plumbing)",
+ "upstream": "https://github.com/teeworlds/teeworlds.git",
+ "vendored_path": "src/",
+ "why": "Backend material for engine core / runtime shell (main loop, scene or ECS plumbing), taken from a pinned clone (20 files at that path)."
+}

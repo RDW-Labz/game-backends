@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 17,
+ "commit": "b873c01",
+ "delivery": "reference",
+ "description": "`core/src/mindustry/entities/abilities` inside Mindustry: 17 source files.",
+ "entry_points": [
+  "core/src/mindustry/entities/abilities/"
+ ],
+ "language": "java",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Mindustry \u2014 abilities",
+ "path_in_upstream": "core/src/mindustry/entities/abilities",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "mindustry-abilities",
+ "source": "corpus:cloned-free-games/Mindustry@b873c01",
+ "source_bytes": 55335,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/Anuken/Mindustry.git",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (17 files at that path)."
+}

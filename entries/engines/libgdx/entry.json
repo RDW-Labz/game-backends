@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:00Z",
+ "category": "engines",
+ "commit": "b5494c47d9ae",
+ "delivery": "reference",
+ "description": "libGDX \u2014 cross-platform game framework, scene2d, asset manager. Upstream `libgdx/libgdx`.",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "libGDX",
+ "reference_reason": "size gate: 27 MB of source > 12 MB cap",
+ "size_bytes": 28355349,
+ "slug": "libgdx",
+ "source": "github-api",
+ "system": "cross-platform game framework, scene2d, asset manager",
+ "upstream": "https://github.com/libgdx/libgdx",
+ "why": "Battle-tested framework used by shipped commercial 2D/3D titles."
+}

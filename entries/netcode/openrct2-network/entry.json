@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 30,
+ "commit": "3b7114c",
+ "delivery": "reference",
+ "description": "`src/openrct2/network` inside openrct2: 30 source files.",
+ "entry_points": [
+  "src/openrct2/network/"
+ ],
+ "language": "cpp",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "openrct2 \u2014 network",
+ "path_in_upstream": "src/openrct2/network",
+ "reference_reason": "licence: GPL-3.0",
+ "slug": "openrct2-network",
+ "source": "corpus:cloned-free-games/openrct2@3b7114c",
+ "source_bytes": 290925,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/OpenRCT2/OpenRCT2.git",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (30 files at that path)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:46Z",
+ "category": "math",
+ "commit": "fef99048e3da",
+ "delivery": "vendored",
+ "description": "DirectXMath \u2014 SIMD math library (SSE/AVX/NEON) for games. Upstream `microsoft/DirectXMath`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "DirectXMath",
+ "size_bytes": 741569,
+ "slug": "directxmath",
+ "source": "github-api",
+ "system": "SIMD math library (SSE/AVX/NEON) for games",
+ "upstream": "https://github.com/microsoft/DirectXMath",
+ "vendored_path": "src/",
+ "why": "Microsoft's game math: the SIMD reference implementation."
+}

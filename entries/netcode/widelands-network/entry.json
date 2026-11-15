@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "netcode",
+ "code_files": 38,
+ "commit": "2975377",
+ "delivery": "reference",
+ "description": "`src/network` inside widelands: 38 source files.",
+ "entry_points": [
+  "src/network/"
+ ],
+ "language": "lua",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "widelands \u2014 network",
+ "path_in_upstream": "src/network",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "widelands-network",
+ "source": "corpus:cloned-free-games/widelands@2975377",
+ "source_bytes": 413474,
+ "system": "network transport, protocol, replication or server loop",
+ "upstream": "https://github.com/widelands/widelands.git",
+ "why": "Backend material for network transport, protocol, replication or server loop, taken from a pinned clone (38 files at that path)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:36:44Z",
+ "category": "engines",
+ "commit": "7ea4827e16d5",
+ "delivery": "reference",
+ "description": "Bevy \u2014 ECS-first engine: schedules, asset pipeline, render graph. Upstream `bevyengine/bevy`.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "Bevy",
+ "reference_reason": "size gate: 25 MB of source > 12 MB cap",
+ "size_bytes": 26237277,
+ "slug": "bevy",
+ "source": "github-api",
+ "system": "ECS-first engine: schedules, asset pipeline, render graph",
+ "upstream": "https://github.com/bevyengine/bevy",
+ "why": "Modern ECS engine architecture worth reading for scheduling and system design."
+}

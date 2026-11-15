@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "physics",
+ "code_files": 20,
+ "commit": "0049839",
+ "delivery": "reference",
+ "description": "`src/game/detail/physics` inside hypersomnia: 20 source files.",
+ "entry_points": [
+  "src/game/detail/physics/"
+ ],
+ "language": "h",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "hypersomnia \u2014 physics",
+ "path_in_upstream": "src/game/detail/physics",
+ "reference_reason": "licence: AGPL-3.0",
+ "slug": "hypersomnia-physics",
+ "source": "corpus:cloned-free-games/hypersomnia@0049839",
+ "source_bytes": 60610,
+ "system": "rigid-body collision and dynamics",
+ "upstream": "https://github.com/TeamHypersomnia/Hypersomnia",
+ "why": "Backend material for rigid-body collision and dynamics, taken from a pinned clone (20 files at that path)."
+}

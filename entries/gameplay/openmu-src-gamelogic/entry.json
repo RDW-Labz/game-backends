@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "gameplay",
+ "code_files": 1278,
+ "commit": "00f737374d07",
+ "delivery": "vendored",
+ "description": "`src/GameLogic` inside openmu (1288 files).",
+ "entry_points": [
+  "src/GameLogic"
+ ],
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "openmu \u2014 GameLogic",
+ "path_in_upstream": "src/GameLogic",
+ "size_bytes": 5213550,
+ "slug": "openmu-src-gamelogic",
+ "source": "corpus:cloned-free-games/openmu@00f737374d07",
+ "system": "MMO gameplay logic: combat, skills, inventory, quests",
+ "upstream": "https://github.com/MUnique/OpenMU",
+ "vendored_path": "src/",
+ "why": "Server-authoritative gameplay systems from a running MMO (MIT)."
+}

@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:36:21Z",
+ "category": "gameplay",
+ "code_files": 27,
+ "commit": "0e44409",
+ "delivery": "reference",
+ "description": "`lib/spells` inside VCMI: 27 source files.",
+ "entry_points": [
+  "lib/spells/"
+ ],
+ "language": "h",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "VCMI \u2014 spells",
+ "path_in_upstream": "lib/spells",
+ "reference_reason": "licence: GPL-2.0",
+ "slug": "vcmi-spells",
+ "source": "corpus:cloned-free-games/VCMI@0e44409",
+ "source_bytes": 193669,
+ "system": "combat, AI, pathing, quest or inventory logic",
+ "upstream": "https://github.com/vcmi/vcmi",
+ "why": "Backend material for combat, AI, pathing, quest or inventory logic, taken from a pinned clone (27 files at that path)."
+}

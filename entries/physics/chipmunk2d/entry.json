@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:42Z",
+ "category": "physics",
+ "commit": "f2f3d66220b8",
+ "delivery": "vendored",
+ "description": "Chipmunk2D \u2014 2D rigid bodies, constraints, spatial index. Upstream `slembcke/Chipmunk2D`.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "Chipmunk2D",
+ "size_bytes": 1552529,
+ "slug": "chipmunk2d",
+ "source": "github-api",
+ "system": "2D rigid bodies, constraints, spatial index",
+ "upstream": "https://github.com/slembcke/Chipmunk2D",
+ "vendored_path": "src/",
+ "why": "Compact MIT 2D physics used in indie shipping titles."
+}

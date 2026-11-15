@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T04:37:51Z",
+ "category": "gameplay",
+ "commit": "365b2e499d34",
+ "delivery": "vendored",
+ "description": "BehaviorTree.CPP \u2014 behaviour trees for AI agents with blackboards. Upstream `BehaviorTree/BehaviorTree.CPP`.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "BehaviorTree.CPP",
+ "size_bytes": 2971624,
+ "slug": "behaviortree-cpp",
+ "source": "github-api",
+ "system": "behaviour trees for AI agents with blackboards",
+ "upstream": "https://github.com/BehaviorTree/BehaviorTree.CPP",
+ "vendored_path": "src/",
+ "why": "Industry behaviour-tree implementation (MIT) with a visual editor."
+}

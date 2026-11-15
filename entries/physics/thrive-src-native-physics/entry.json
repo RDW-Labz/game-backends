@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:13Z",
+ "category": "physics",
+ "code_files": 26,
+ "commit": "bb9189f4f2e0",
+ "delivery": "reference",
+ "description": "`src/native/physics` inside thrive (26 files).",
+ "entry_points": [
+  "src/native/physics"
+ ],
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "thrive \u2014 physics",
+ "path_in_upstream": "src/native/physics",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 166372,
+ "slug": "thrive-src-native-physics",
+ "source": "corpus:cloned-free-games/thrive@bb9189f4f2e0",
+ "system": "custom rigid-body physics for a sim game",
+ "upstream": "https://github.com/Revolutionary-Games/Thrive",
+ "why": "A hand-rolled physics layer inside a shipping simulation game (Apache-2.0)."
+}

@@ -1,0 +1,24 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "loot-economy",
+ "code_files": 10,
+ "commit": "00f737374d07",
+ "delivery": "vendored",
+ "description": "`src/GameLogic/Views/Trade` inside openmu (10 files).",
+ "entry_points": [
+  "src/GameLogic/Views/Trade"
+ ],
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "openmu \u2014 Trade",
+ "path_in_upstream": "src/GameLogic/Views/Trade",
+ "size_bytes": 7683,
+ "slug": "openmu-src-gamelogic-views-trade",
+ "source": "corpus:cloned-free-games/openmu@00f737374d07",
+ "system": "player trade/market views and pricing",
+ "upstream": "https://github.com/MUnique/OpenMU",
+ "vendored_path": "src/",
+ "why": "Trade and pricing logic from a running MMO server (MIT)."
+}

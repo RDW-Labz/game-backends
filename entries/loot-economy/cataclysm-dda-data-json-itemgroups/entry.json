@@ -1,0 +1,23 @@
+{
+ "added_at": "2026-11-15T04:38:12Z",
+ "category": "loot-economy",
+ "code_files": 165,
+ "commit": "2599825ebb8c",
+ "delivery": "reference",
+ "description": "`data/json/itemgroups` inside Cataclysm-DDA (165 files).",
+ "entry_points": [
+  "data/json/itemgroups"
+ ],
+ "language": "json",
+ "license": "CC-BY-SA-3.0",
+ "license_verdict": "gated-reference",
+ "name": "Cataclysm-DDA \u2014 itemgroups",
+ "path_in_upstream": "data/json/itemgroups",
+ "reference_reason": "licence: CC-BY-SA-3.0 (gated-reference)",
+ "size_bytes": 2322143,
+ "slug": "cataclysm-dda-data-json-itemgroups",
+ "source": "corpus:cloned-free-games/Cataclysm-DDA@2599825ebb8c",
+ "system": "item group / loot tables (JSON)",
+ "upstream": "https://github.com/CleverRaven/Cataclysm-DDA.git",
+ "why": "DDA's hand-tuned loot weight tables: item groups, distributions, spawn odds."
+}
