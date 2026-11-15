@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 08:56 UTC · 203 entries · 77 vendored, 126 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 09:12 UTC · 204 entries · 78 vendored, 126 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-15 08:56 UTC · 203 entries · 77 vendored, 126 reference-onl
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 36 | 14 | 22 |
 | [netcode](#netcode) — Networking / netcode | 42 | 16 | 26 |
-| [save-state](#save-state) — Save / state systems | 15 | 7 | 8 |
+| [save-state](#save-state) — Save / state systems | 16 | 8 | 8 |
 | [procgen](#procgen) — Procedural generation | 13 | 6 | 7 |
 
 
@@ -233,7 +233,7 @@ _Generated 2026-11-15 08:56 UTC · 203 entries · 77 vendored, 126 reference-onl
 
 ## save-state
 
-**Save / state systems** — 15 entries
+**Save / state systems** — 16 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -244,6 +244,7 @@ _Generated 2026-11-15 08:56 UTC · 203 entries · 77 vendored, 126 reference-onl
 | [cJSON](entries/save-state/cjson/README.md) | ultralight JSON parser/writer | c | MIT | vendored | [DaveGamble/cJSON](https://github.com/DaveGamble/cJSON) @ `6d9f2443ab07` |
 | [FlatBuffers](entries/save-state/flatbuffers/README.md) | zero-copy serialization, schema-driven | c++ | Apache-2.0 | vendored | [google/flatbuffers](https://github.com/google/flatbuffers) @ `5eb190f00005` |
 | [Freeciv — savegame](entries/save-state/freeciv-savegame/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
+| [FTC-Skystone-Dark-Angels-Romania-2020](entries/save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020/README.md) | NOTICE This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season. If you are looking for the current season's FTC SDK software | java | BSD-3-Clause | vendored | [chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020](https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020) @ `b5132793582a` |
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |

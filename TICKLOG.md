@@ -90,3 +90,6 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/stephenberry-glaze
   - reference save-state/felixguendling-cista
   - reference save-state/munich-data-engineering-reflect-cpp
+
+- **2026-11-15 09:12 UTC** — tick 18: +1 screened, +0 reference, 1 skipped, catalogue=204
+  - added save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020 (BSD-3-Clause, vendored)
