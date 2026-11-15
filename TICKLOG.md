@@ -109,3 +109,8 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/krychu-wfc
   - reference procgen/keijiro-wfcmaze
   - reference procgen/emilk-wfc
+
+- **2026-11-15 10:00 UTC** — tick 21: +2 screened, +1 reference, 3 skipped, catalogue=219
+  - added procgen/maltman23-ardutouch (CC-BY-SA-3.0, reference)
+  - added procgen/joeiddon-perlin (none, reference)
+  - reference procgen/spongepowered-noise

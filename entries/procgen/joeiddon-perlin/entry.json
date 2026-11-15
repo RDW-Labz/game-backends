@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T10:00:37Z",
+ "category": "procgen",
+ "commit": "5941e2b52507",
+ "delivery": "reference",
+ "description": "joeiddon/perlin \u2014 A JavaScript library for Perlin Noise generation",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "perlin",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 2447,
+ "slug": "joeiddon-perlin",
+ "source": "github-search:noise generation library stars:>100",
+ "stars": 128,
+ "system": "A JavaScript library for Perlin Noise generation",
+ "upstream": "https://github.com/joeiddon/perlin",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
