@@ -23,13 +23,34 @@ that does not permit it.
 
 ## Why the classifier is ordered the way it is
 
-`scripts/gblib.py` tests copyleft and source-available markers **before**
-permissive ones, and prefers a real `LICEN[CS]E` file over `COPYING` or
-`COPYRIGHT`. Both rules exist because the naive version got it wrong in
-practice: Dungeon Crawl's `LICENSE` mentions CC0 for its tiles and was read as
-public domain, and Godot's root `COPYRIGHT.txt` lists third-party components
-and was read as CC0. A GPL project mis-read as permissive would have had its
-code vendored into this repo — that is the failure mode this ordering prevents.
+`scripts/gblib.py` resolves a project's licence in this order, and the order is
+the whole point:
+
+1. a plain `LICEN[CS]E*` file at the repo root — this **is** the project licence
+2. the root `COPYING` / `COPYRIGHT` file
+3. a file inside a root `licenses/` directory whose name matches the project
+4. otherwise the most restrictive classification found, then the majority
+
+Each step exists because the naive version got it wrong in practice:
+
+- **Dungeon Crawl**'s `LICENSE` mentions CC0 for its tiles; matching the first
+  marker anywhere read the whole GPL-2.0 project as public domain. Copyleft
+  markers are now tested before permissive ones, and the project's own file
+  decides.
+- **Godot**'s root `COPYRIGHT.txt` lists third-party components and read as
+  CC0; the real licence is `LICENSE.md` (MIT). Rule 1 before rule 2 fixes it.
+- **Cocos2d-x** ships 30 `licenses/*.txt` files for bundled libraries and no
+  root licence; the restrictive-first rule read the whole engine as LGPL
+  because of `libwebsockets`. Rule 3 (its own `LICENSE_cocos2d-x.txt`, MIT)
+  fixes it.
+- **MonoGame** is MS-PL and **Flax** ships a vendor EULA — both are gated, and
+  both used to land in "unknown" until those ids were added.
+- **libccd** keeps its BSD-3 text in `BSD-LICENSE`; matching `licen` anywhere in
+  the filename finds it.
+
+A GPL project mis-read as permissive would have had its code vendored into this
+repo. That is the failure mode this ordering prevents, and it is worth more than
+any single entry in the catalogue.
 
 ## Provenance
 

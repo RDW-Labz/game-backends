@@ -7,12 +7,15 @@ gameplay systems, networking, save/state, and procedural generation.
 Not a game dump. No front-end games, no asset packs: every entry is a system
 another game could be built on.
 
-154 entries seeded 2026-11-14, of which 65 have their source vendored here.
-The rest are **reference-only** rows (name, upstream, pinned commit, licence
-flag, no code) because their licence does not permit copying code into this
-repository — see [POLICY.md](POLICY.md).
+154 entries were seeded on 2026-11-14 from the clone corpus and curated
+upstreams; the 15-minute tick has been extending it since. Live counts, per
+category, are at the top of **[CATALOG.md](CATALOG.md)** — that file is
+regenerated every tick, so it is the only honest source for numbers.
 
-Browse the library: **[CATALOG.md](CATALOG.md)**.
+Each entry is either **vendored** (clean licence, under the source cap, code in
+`src/`) or **reference-only** (name, upstream, pinned commit, licence flag, no
+code) when the licence does not permit copying code in — see
+[POLICY.md](POLICY.md).
 
 ## Layout
 
