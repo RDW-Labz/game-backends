@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T14:15:47Z",
+ "category": "netcode",
+ "commit": "2021-05-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rcmagic/DemoFighterWithNetcode \u2014 An example fighting game demonstrating how to implement rollback based netcode.",
+ "language": "lua",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "DemoFighterWithNetcode",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rcmagic-demofighterwithnetcode",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 90,
+ "system": "An example fighting game demonstrating how to implement rollback based netcode.",
+ "upstream": "https://github.com/rcmagic/DemoFighterWithNetcode",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -167,3 +167,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-15 13:43 UTC** — tick 35: +0 screened, +0 reference, 5 skipped, catalogue=242
 
 - **2026-11-15 13:59 UTC** — tick 36: +0 screened, +0 reference, 2 skipped, catalogue=242
+
+- **2026-11-15 14:15 UTC** — tick 37: +2 screened, +4 reference, 6 skipped, catalogue=248
+  - added netcode/genxium-delaynomoreunity (none, reference)
+  - added netcode/albertok-godot-rocket-league (MIT, vendored)
+  - reference netcode/tangobattle-tango
+  - reference netcode/enrique363-voldorium
+  - reference netcode/rcmagic-demofighterwithnetcode
+  - reference netcode/bestogames-bestonet

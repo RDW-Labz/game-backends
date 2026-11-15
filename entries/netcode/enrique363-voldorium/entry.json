@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T14:15:47Z",
+ "category": "netcode",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "enrique363/voldorium \u2014 Native Windows and Linux port of SoulCalibur (Dreamcast) by static recompilation: 16:9, online versus with rollback netcode (Windows and Linux play together). Requires your own legal disc dump; no game files included.",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "voldorium",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "enrique363-voldorium",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 91,
+ "system": "Native Windows and Linux port of SoulCalibur (Dreamcast) by static recompilation: 16:9, online versus with rollback netcode (Windows and Linux play together). R",
+ "upstream": "https://github.com/enrique363/voldorium",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

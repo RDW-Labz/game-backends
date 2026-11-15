@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-15T14:15:42Z",
+ "category": "netcode",
+ "commit": "4e18b0f15947",
+ "delivery": "reference",
+ "description": "genxium/DelayNoMoreUnity \u2014 A Multiplayer Platformer game demo on websocket+UDP peer-to-peer with delayed-input Rollback Netcode inspired by GGPO",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "DelayNoMoreUnity",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 4314546,
+ "slug": "genxium-delaynomoreunity",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 137,
+ "system": "A Multiplayer Platformer game demo on websocket+UDP peer-to-peer with delayed-input Rollback Netcode inspired by GGPO",
+ "upstream": "https://github.com/genxium/DelayNoMoreUnity",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

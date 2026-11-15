@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T14:15:47Z",
+ "category": "netcode",
+ "commit": "2026-06-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BestoGames/BestoNet \u2014 BestoNet is a custom rollback networking solution developed for the fighting game Idol Showdown. Built in C# for Unity, it integrates with Facepunch Steamworks to provide a robust and efficient rollback implementation.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "BestoNet",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "bestogames-bestonet",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 70,
+ "system": "BestoNet is a custom rollback networking solution developed for the fighting game Idol Showdown. Built in C# for Unity, it integrates with Facepunch Steamworks ",
+ "upstream": "https://github.com/BestoGames/BestoNet",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T14:15:47Z",
+ "category": "netcode",
+ "commit": "2026-11-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tangobattle/tango \u2014 Play Mega Man Battle Network online with rollback netcode!",
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "tango",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "tangobattle-tango",
+ "source": "github-search:rollback netcode stars:>40",
+ "stars": 106,
+ "system": "Play Mega Man Battle Network online with rollback netcode!",
+ "upstream": "https://github.com/tangobattle/tango",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

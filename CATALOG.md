@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 13:59 UTC · 242 entries · 89 vendored, 153 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 14:15 UTC · 248 entries · 90 vendored, 158 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-15 13:59 UTC · 242 entries · 89 vendored, 153 reference-onl
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 37 | 15 | 22 |
-| [netcode](#netcode) — Networking / netcode | 42 | 16 | 26 |
+| [netcode](#netcode) — Networking / netcode | 48 | 17 | 31 |
 | [save-state](#save-state) — Save / state systems | 16 | 8 | 8 |
 | [procgen](#procgen) — Procedural generation | 32 | 12 | 20 |
 
@@ -203,24 +203,28 @@ _Generated 2026-11-15 13:59 UTC · 242 entries · 89 vendored, 153 reference-onl
 
 ## netcode
 
-**Networking / netcode** — 42 entries
+**Networking / netcode** — 48 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [ancientbeast — multiplayer](entries/netcode/ancientbeast-multiplayer/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [Backdash](entries/netcode/delta3-studio-backdash/README.md) | C# Rollback network SDK | c# | MIT | reference | [Delta3-Studio/Backdash](https://github.com/Delta3-Studio/Backdash) @ `2026-11-10 (branch tip at catalogue time)` |
 | [backroll-rs](entries/netcode/houraiteahouse-backroll-rs/README.md) | A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode. | rust | ISC | reference | [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) @ `2023-03-13 (branch tip at catalogue time)` |
+| [BestoNet](entries/netcode/bestogames-bestonet/README.md) | BestoNet is a custom rollback networking solution developed for the fighting game Idol Showdown. Built in C# for Unity, it integrates with Facepunch Steamworks  | c# | MIT | reference | [BestoGames/BestoNet](https://github.com/BestoGames/BestoNet) @ `2026-06-02 (branch tip at catalogue time)` |
 | [Colyseus](entries/netcode/colyseus/README.md) | authoritative room-based multiplayer framework with state sync | typescript | MIT | vendored | [colyseus/colyseus](https://github.com/colyseus/colyseus) @ `ce781b98bfc5` |
 | [Cubit — server](entries/netcode/cubit-server/README.md) | network transport, protocol, replication or server loop | go | MIT | vendored | [taynotfound/cubit](https://github.com/taynotfound/cubit) @ `0bd4518` |
 | [cubyz — server](entries/netcode/cubyz-server/README.md) | network transport, protocol, replication or server loop | zig | GPL-3.0 | reference | [PixelGuys/Cubyz](https://github.com/PixelGuys/Cubyz) @ `74b6814` |
 | [Darklings-FightingGame](entries/netcode/kidagine-darklings-fightinggame/README.md) | DARKLINGS is an accessible F2P 2D fighting game with periodic updates (using Rollback Netcode). | shaderlab | unknown | reference | [kidagine/Darklings-FightingGame](https://github.com/kidagine/Darklings-FightingGame) @ `2024-09-12 (branch tip at catalogue time)` |
 | [DelayNoMore](entries/netcode/genxium-delaynomore/README.md) | A Multiplayer Platformer game demo on websocket with delayed-input Rollback Netcode inspired by GGPO | javascript | unknown | reference | [genxium/DelayNoMore](https://github.com/genxium/DelayNoMore) @ `2023-11-28 (branch tip at catalogue time)` |
+| [DelayNoMoreUnity](entries/netcode/genxium-delaynomoreunity/README.md) | A Multiplayer Platformer game demo on websocket+UDP peer-to-peer with delayed-input Rollback Netcode inspired by GGPO | c# | none | reference | [genxium/DelayNoMoreUnity](https://github.com/genxium/DelayNoMoreUnity) @ `4e18b0f15947` |
+| [DemoFighterWithNetcode](entries/netcode/rcmagic-demofighterwithnetcode/README.md) | An example fighting game demonstrating how to implement rollback based netcode. | lua | MIT | reference | [rcmagic/DemoFighterWithNetcode](https://github.com/rcmagic/DemoFighterWithNetcode) @ `2021-05-21 (branch tip at catalogue time)` |
 | [ENet](entries/netcode/enet/README.md) | reliable UDP networking for games | c | MIT | vendored | [lsalzman/enet](https://github.com/lsalzman/enet) @ `5a9c537fd464` |
 | [Freeciv — networking](entries/netcode/freeciv-common-networking/README.md) | turn-based client/server protocol and packet layer | c | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756d5b07` |
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
 | [GameNetworkingSockets](entries/netcode/gamenetworkingsockets/README.md) | reliable/unreliable encrypted message transport (Valve) | c++ | BSD-3-Clause | vendored | [ValveSoftware/GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) @ `d534c19aa760` |
 | [GGRS](entries/netcode/ggrs/README.md) | rollback netcode (GGPO-style) in Rust with WASM support | rust | Apache-2.0 | vendored | [gschup/ggrs](https://github.com/gschup/ggrs) @ `25bd9983dee3` |
+| [godot-rocket-league](entries/netcode/albertok-godot-rocket-league/README.md) | Network physics with rollback test using Godot and netfox | gdscript | MIT | vendored | [albertok/godot-rocket-league](https://github.com/albertok/godot-rocket-league) @ `78b28ce495fa` |
 | [hypersomnia — network](entries/netcode/hypersomnia-network/README.md) | network transport, protocol, replication or server loop | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [KCP](entries/netcode/kcp/README.md) | fast reliable ARQ protocol (TCP-like over UDP) | c | MIT | vendored | [skywind3000/kcp](https://github.com/skywind3000/kcp) @ `b1a7a2101dcb` |
 | [megaglest — network](entries/netcode/megaglest-network/README.md) | network transport, protocol, replication or server loop | h | none | reference | [megaglest/megaglest-source.git](https://github.com/megaglest/megaglest-source.git) @ `4ab09c6` |
@@ -242,9 +246,11 @@ _Generated 2026-11-15 13:59 UTC · 242 entries · 89 vendored, 153 reference-onl
 | [rigs-of-rods — server](entries/netcode/rigs-of-rods-server/README.md) | network transport, protocol, replication or server loop | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
 | [stronghold-protocol — server](entries/netcode/stronghold-protocol-server/README.md) | network transport, protocol, replication or server loop | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
 | [suroi — packets](entries/netcode/suroi-packets/README.md) | network transport, protocol, replication or server loop | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
+| [tango](entries/netcode/tangobattle-tango/README.md) | Play Mega Man Battle Network online with rollback netcode! | rust | GPL-3.0 | reference | [tangobattle/tango](https://github.com/tangobattle/tango) @ `2026-11-08 (branch tip at catalogue time)` |
 | [teeworlds — server](entries/netcode/teeworlds-server/README.md) | network transport, protocol, replication or server loop | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
 | [Tekken6-native-online](entries/netcode/ekspym-tekken6-native-online/README.md) | Tekken 6 (Xbox 360) native on Windows with rollback netcode - build from your own ISO | n/a | none | reference | [Ekspym/Tekken6-native-online](https://github.com/Ekspym/Tekken6-native-online) @ `f68b65b253d8` |
 | [VCMI — server](entries/netcode/vcmi-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
+| [voldorium](entries/netcode/enrique363-voldorium/README.md) | Native Windows and Linux port of SoulCalibur (Dreamcast) by static recompilation: 16:9, online versus with rollback netcode (Windows and Linux play together). R | c | unknown | reference | [enrique363/voldorium](https://github.com/enrique363/voldorium) @ `2026-11-14 (branch tip at catalogue time)` |
 | [warzone2100 — netplay](entries/netcode/warzone2100-lib-netplay/README.md) | RTS netplay: sync, desync detection, rejoin | c++ | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e14614` |
 | [widelands — network](entries/netcode/widelands-network/README.md) | network transport, protocol, replication or server loop | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
 | [yojimbo](entries/netcode/mas-bandwidth-yojimbo/README.md) | A network library for client/server games written in C++ | c++ | BSD-3-Clause | vendored | [mas-bandwidth/yojimbo](https://github.com/mas-bandwidth/yojimbo) @ `ae64e145c993` |
