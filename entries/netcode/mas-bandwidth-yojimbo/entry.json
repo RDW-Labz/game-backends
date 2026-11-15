@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T08:08:21Z",
+ "category": "netcode",
+ "commit": "ae64e145c993",
+ "delivery": "vendored",
+ "description": "mas-bandwidth/yojimbo \u2014 A network library for client/server games written in C++",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENCE",
+ "license_verdict": "clean",
+ "name": "yojimbo",
+ "size_bytes": 2392591,
+ "slug": "mas-bandwidth-yojimbo",
+ "source": "github-search:game networking library udp stars:>80",
+ "stars": 2756,
+ "system": "A network library for client/server games written in C++",
+ "upstream": "https://github.com/mas-bandwidth/yojimbo",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T08:08:26Z",
+ "category": "netcode",
+ "commit": "527d0b0f5d18",
+ "delivery": "vendored",
+ "description": "MirageNet/Mirage \u2014 Easy to use high performance Network library for Unity 3d",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Mirage",
+ "size_bytes": 5142451,
+ "slug": "miragenet-mirage",
+ "source": "github-search:game networking library udp stars:>80",
+ "stars": 574,
+ "system": "Easy to use high performance Network library for Unity 3d",
+ "upstream": "https://github.com/MirageNet/Mirage",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

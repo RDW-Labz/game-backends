@@ -1,0 +1,285 @@
+using System;
+using Mirage.SocketLayer.ConnectionTrackers;
+using Unity.Profiling;
+using UnityEngine;
+
+namespace Mirage.SocketLayer
+{
+    internal abstract class Connection : IConnection, ISocketLayerConnection
+    {
+        private static readonly ProfilerMarker handleReliableBatchedMarker = new ProfilerMarker("Mirage.SocketLayer.Connection.HandleReliableBatched");
+
+        protected readonly ILogger _logger;
+        protected readonly int _maxPacketSize;
+        protected readonly Peer _peer;
+        protected readonly IDataHandler _dataHandler;
+
+        public readonly IConnectionHandle Handle;
+
+        protected readonly ConnectingTracker _connectingTracker;
+        protected readonly TimeoutTracker _timeoutTracker;
+        protected readonly KeepAliveTracker _keepAliveTracker;
+        protected internal readonly DisconnectedTracker _disconnectedTracker;
+
+        protected readonly Metrics _metrics;
+
+        protected ConnectionState _state;
+        public ConnectionState State
+        {
+            get => _state;
+            set
+            {
+                // check new state is allowed for current state
+                switch (value)
+                {
+                    case ConnectionState.Connected:
+                        _logger?.Assert(_state == ConnectionState.Created || _state == ConnectionState.Connecting);
+                        break;
+
+                    case ConnectionState.Connecting:
+                        _logger?.Assert(_state == ConnectionState.Created);
+                        break;
+
+                    case ConnectionState.Disconnected:
+                        _logger?.Assert(_state == ConnectionState.Connected);
+                        break;
+
+                    case ConnectionState.Destroyed:
+                        _logger?.Assert(_state == ConnectionState.Removing);
+                        break;
+                }
+
+                if (_logger.Enabled(LogType.Log)) _logger.Log($"{Handle} changed state from {_state} to {value}");
+                _state = value;
+            }
+        }
+
+        IConnectionHandle IConnection.Handle => Handle;
+
+        public bool Connected => State == ConnectionState.Connected;
+
+        protected Connection(Peer peer, IConnectionHandle handle, IDataHandler dataHandler, Config config, int maxPacketSize, Time time, ILogger logger, Metrics metrics)
+        {
+            _peer = peer;
+            _logger = logger;
+            _maxPacketSize = maxPacketSize;
+
+            Handle = handle ?? throw new ArgumentNullException(nameof(handle));
+            _dataHandler = dataHandler ?? throw new ArgumentNullException(nameof(dataHandler));
+            State = ConnectionState.Created;
+
+            _connectingTracker = new ConnectingTracker(config, time);
+            _timeoutTracker = new TimeoutTracker(config, time);
+            _keepAliveTracker = new KeepAliveTracker(config, time);
+            _disconnectedTracker = new DisconnectedTracker(config, time);
+
+            _metrics = metrics;
+        }
+
+        public override string ToString()
+        {
+            return $"[{Handle}]";
+        }
+
+        /// <summary>
+        /// Checks if new message need to be sent using its <see cref="State"/>
+        /// <para>Call this at end of frame to send new batches</para>
+        /// </summary>
+        public void Update()
+        {
+            switch (State)
+            {
+                case ConnectionState.Connecting:
+                    UpdateConnecting();
+                    break;
+
+                case ConnectionState.Connected:
+                    UpdateConnected();
+                    break;
+
+                case ConnectionState.Disconnected:
+                    UpdateDisconnected();
+                    break;
+            }
+        }
+
+        public void SetReceiveTime()
+        {
+            _timeoutTracker.SetReceiveTime();
+        }
+        public void SetSendTime()
+        {
+            _keepAliveTracker.SetSendTime();
+        }
+
+        protected void ThrowIfNotConnectedOrConnecting()
+        {
+            // sending to Connecting is also valid
+            if (_state != ConnectionState.Connected && _state != ConnectionState.Connecting)
+                throw new NoConnectionException($"Connection is not connected, ConnectionState: {_state}");
+        }
+
+
+        /// <summary>
+        /// starts disconnecting this connection
+        /// </summary>
+        public void Disconnect()
+        {
+            DisconnectInternal(DisconnectReason.RequestedByLocalPeer);
+        }
+        /// <summary>
+        /// starts disconnecting this connection
+        /// </summary>
+        public void Disconnect(DisconnectReason reason)
+        {
+            DisconnectInternal(reason);
+        }
+        internal void DisconnectInternal(DisconnectReason reason, bool sendToOther = true)
+        {
+            switch (State)
+            {
+                // ignore if already disconnected
+                default:
+                case ConnectionState.Disconnected:
+                case ConnectionState.Removing:
+                case ConnectionState.Destroyed:
+                    return;
+
+
+                case ConnectionState.Connecting:
+                    if (_logger.Enabled(LogType.Log)) _logger.Log($"Disconnect while connecting, with reason: {reason}");
+                    _peer.FailedToConnect(this, RejectReason.ClosedByPeer);
+                    return;
+
+
+                case ConnectionState.Connected:
+                    if (_logger.Enabled(LogType.Log)) _logger.Log($"Disconnect with reason: {reason}");
+                    _peer.FinishDisconnect(this, reason, sendToOther);
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// client connecting attempts
+        /// </summary>
+        private void UpdateConnecting()
+        {
+            if (_connectingTracker.TimeAttempt())
+            {
+                if (_connectingTracker.MaxAttempts())
+                {
+                    _peer.FailedToConnect(this, RejectReason.Timeout);
+                }
+                else
+                {
+                    _connectingTracker.OnAttempt();
+                    _peer.SendConnectRequest(this);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Used to remove connection after it has been disconnected
+        /// </summary>
+        private void UpdateDisconnected()
+        {
+            if (_disconnectedTracker.TimeToRemove())
+            {
+                _peer.RemoveConnection(this);
+            }
+        }
+
+        /// <summary>
+        /// Used to keep connection alive
+        /// </summary> 
+        private void UpdateConnected()
+        {
+            if (_timeoutTracker.TimeToDisconnect())
+            {
+                DisconnectInternal(DisconnectReason.Timeout);
+                return;
+            }
+
+            try
+            {
+                FlushBatch();
+            }
+            catch (BufferFullException e)
+            {
+                _logger?.LogException(e);
+                DisconnectInternal(DisconnectReason.SendBufferFull);
+                return;
+            }
+
+            if (_keepAliveTracker.TimeToSend())
+            {
+                _peer.SendKeepAlive(this);
+            }
+        }
+
+        public abstract void FlushBatch();
+
+        public abstract void SendReliable(byte[] message, int offset, int length);
+        public abstract INotifyToken SendNotify(byte[] packet, int offset, int length);
+        public abstract void SendNotify(byte[] packet, int offset, int length, INotifyCallBack callBacks);
+        public abstract void SendUnreliable(byte[] packet, int offset, int length);
+
+        internal abstract void ReceiveUnreliablePacket(Packet packet);
+        internal abstract void ReceiveNotifyPacket(Packet packet);
+        internal abstract void ReceiveReliablePacket(Packet packet);
+        internal abstract void ReceiveNotifyAck(Packet packet);
+        internal abstract void ReceiveReliableFragment(Packet packet);
+
+        protected void HandleReliableBatched(ReadOnlySpan<byte> span, PacketType packetType)
+        {
+            using var buffer = _peer._bufferPool.Take();
+            if (span.Length > buffer.array.Length)
+            {
+                _logger.Error("Received a packet that is larger than buffer pool");
+                return;
+            }
+            span.CopyTo(buffer.array);
+            HandleReliableBatched(buffer.array, 0, span.Length, packetType);
+        }
+        protected void HandleReliableBatched(byte[] array, int offset, int packetLength, PacketType packetType)
+        {
+            using var _ = handleReliableBatchedMarker.Auto();
+
+            while (offset < packetLength)
+            {
+                // Check if connection is still valid before processing next message
+                if (State != ConnectionState.Connected)
+                {
+                    if (_logger.Enabled(LogType.Warning)) _logger.Warn("Connection not connected, stopping message processing");
+                    return;
+                }
+
+                // check if enough bytes are left to read length
+                if (offset + 2 > packetLength)
+                {
+                    if (_logger.Enabled(LogType.Error)) _logger.Error($"Not enough bytes left to read message length. offset:{offset} packetLength:{packetLength}");
+                    DisconnectInternal(DisconnectReason.InvalidPacket);
+                    return;
+                }
+
+                var length = ByteUtils.ReadUShort(array, ref offset);
+
+                // check if length is valid
+                if (offset + length > packetLength)
+                {
+                    if (_logger.Enabled(LogType.Error)) _logger.Error($"Batched message length ({length}) exceeds packet length ({packetLength})");
+                    DisconnectInternal(DisconnectReason.InvalidPacket);
+                    return;
+                }
+
+                var message = new ArraySegment<byte>(array, offset, length);
+                offset += length;
+
+                _metrics?.OnReceiveMessage(packetType, length);
+                _dataHandler.ReceiveMessage(this, message);
+            }
+        }
+
+        internal abstract bool IsValidSize(Packet packet);
+    }
+}

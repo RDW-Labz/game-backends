@@ -1,0 +1,733 @@
+using System;
+using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
+using Mirage.Serialization;
+using Mirage.Tests.EnterRuntime;
+using NSubstitute;
+using NUnit.Framework;
+using UnityEngine;
+
+namespace Mirage.Tests.NetworkIdentityCallbacks
+{
+    internal class CheckObserverExceptionNetworkBehaviour : NetworkVisibility
+    {
+        public int called;
+        public INetworkPlayer valuePassed;
+        public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize) { }
+        public override bool OnCheckObserver(INetworkPlayer player)
+        {
+            ++called;
+            valuePassed = player;
+            throw new Exception("some exception");
+        }
+    }
+
+    internal class CheckObserverTrueNetworkBehaviour : NetworkVisibility
+    {
+        public int called;
+        public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize) { }
+        public override bool OnCheckObserver(INetworkPlayer player)
+        {
+            ++called;
+            return true;
+        }
+    }
+
+    internal class CheckObserverFalseNetworkBehaviour : NetworkVisibility
+    {
+        public int called;
+        public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize) { }
+        public override bool OnCheckObserver(INetworkPlayer player)
+        {
+            ++called;
+            return false;
+        }
+    }
+
+    internal class SerializeTest1NetworkBehaviour : NetworkBehaviour
+    {
+        public int value;
+        public override bool OnSerialize(NetworkWriter writer, bool initialState)
+        {
+            writer.WriteInt32(value);
+            return true;
+        }
+        public override void OnDeserialize(NetworkReader reader, bool initialState)
+        {
+            value = reader.ReadInt32();
+        }
+    }
+
+    internal class SerializeTest2NetworkBehaviour : NetworkBehaviour
+    {
+        public string value;
+        public override bool OnSerialize(NetworkWriter writer, bool initialState)
+        {
+            writer.WriteString(value);
+            return true;
+        }
+        public override void OnDeserialize(NetworkReader reader, bool initialState)
+        {
+            value = reader.ReadString();
+        }
+    }
+
+    internal class SerializeExceptionNetworkBehaviour : NetworkBehaviour
+    {
+        public const string MESSAGE = "some unique exception";
+        public override bool OnSerialize(NetworkWriter writer, bool initialState)
+        {
+            throw new Exception(MESSAGE);
+        }
+        public override void OnDeserialize(NetworkReader reader, bool initialState)
+        {
+            throw new Exception(MESSAGE);
+        }
+    }
+
+    internal class SerializeMismatchNetworkBehaviour : NetworkBehaviour
+    {
+        public int value;
+        public override bool OnSerialize(NetworkWriter writer, bool initialState)
+        {
+            writer.WriteInt32(value);
+            // one too many
+            writer.WriteInt32(value);
+            return true;
+        }
+        public override void OnDeserialize(NetworkReader reader, bool initialState)
+        {
+            value = reader.ReadInt32();
+        }
+    }
+
+    internal class RebuildObserversNetworkBehaviour : NetworkVisibility
+    {
+        public INetworkPlayer observer;
+        public override bool OnCheckObserver(INetworkPlayer player) { return true; }
+        public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize)
+        {
+            observers.Add(observer);
+        }
+    }
+
+    internal class RebuildEmptyObserversNetworkBehaviour : NetworkVisibility
+    {
+        public override bool OnCheckObserver(INetworkPlayer player) { return true; }
+        public override void OnRebuildObservers(HashSet<INetworkPlayer> observers, bool initialize) { }
+    }
+
+    public class NetworkIdentityCallbackTests : ClientServerSetup_EditorModeTest
+    {
+        private GameObject gameObject;
+        private NetworkIdentity identity;
+        private INetworkPlayer player1;
+        private INetworkPlayer player2;
+
+        protected override async UniTask ExtraSetup()
+        {
+            await base.ExtraSetup();
+            identity = CreateNetworkIdentity();
+            gameObject = identity.gameObject;
+            identity.Server = server;
+            identity.ServerObjectManager = serverObjectManager;
+
+            player1 = Substitute.For<INetworkPlayer>();
+            player2 = Substitute.For<INetworkPlayer>();
+        }
+
+        [Test]
+        public void OnStartServerTest()
+        {
+            // lets add a component to check OnStartserver
+            var func1 = Substitute.For<Action>();
+            var func2 = Substitute.For<Action>();
+
+            identity.OnStartServer.AddListener(func1);
+            identity.OnStartServer.AddListener(func2);
+
+            identity.StartServer();
+
+            func1.Received(1).Invoke();
+            func2.Received(1).Invoke();
+        }
+
+        [Test]
+        public void GetSetPrefabHash()
+        {
+            // assign a guid
+            var hash = 123456789;
+            identity.PrefabHash = hash;
+
+            // did it work?
+            Assert.That(identity.PrefabHash, Is.EqualTo(hash));
+        }
+
+        [Test]
+        public void CanReplacePrefabHash()
+        {
+            var hash1 = 123;
+            identity.PrefabHash = hash1;
+
+            // assign a guid
+            var hash2 = 1234;
+            identity.PrefabHash = hash2;
+
+            Assert.That(identity.PrefabHash, Is.EqualTo(hash2));
+        }
+
+        [Test]
+        public void ThrowsIfSettingZero()
+        {
+            var hash = 123;
+            identity.PrefabHash = hash;
+
+            var exception = Assert.Throws<ArgumentException>(() =>
+            {
+                identity.PrefabHash = 0;
+            });
+
+            Assert.That(exception.Message, Is.EqualTo($"Cannot set PrefabHash to 0 on '{identity.name}'. Old PrefabHash '{hash}'."));
+
+            // guid was NOT changed
+            Assert.That(identity.PrefabHash, Is.EqualTo(hash));
+        }
+
+        [Test]
+        public void SetClientOwner()
+        {
+            var player = Substitute.For<INetworkPlayer>();
+            identity.SetOwner(player);
+            Assert.That(identity.Owner, Is.EqualTo(player));
+        }
+
+        [Test]
+        public void SetOverrideClientOwner()
+        {
+            var player1 = Substitute.For<INetworkPlayer>();
+            identity.SetOwner(player1);
+
+            // setting it when it's already set shouldn't overwrite the original
+            var player2 = Substitute.For<INetworkPlayer>();
+            // will log a warning
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                identity.SetOwner(player2);
+            });
+
+            Assert.That(identity.Owner, Is.EqualTo(player1));
+        }
+
+        [Test]
+        public void RemoveObserverInternal()
+        {
+            // call OnStartServer so that observers dict is created
+            identity.StartServer();
+
+            // add an observer connection
+            var player = Substitute.For<INetworkPlayer>();
+            identity.observers.Add(player);
+
+            var player2 = Substitute.For<INetworkPlayer>();
+            // RemoveObserverInternal with invalid connection should do nothing
+            identity.RemoveObserverInternal(player2);
+            Assert.That(identity.observers, Is.EquivalentTo(new[] { player }));
+
+            // RemoveObserverInternal with existing connection should remove it
+            identity.RemoveObserverInternal(player);
+            Assert.That(identity.observers, Is.Empty);
+        }
+
+        [Test]
+        public void OnStartServerCallsComponentsAndCatchesExceptions()
+        {
+            // make mock delegates
+            var func = Substitute.For<Action>();
+            var func2 = Substitute.For<Action>();
+
+            // add them to the listener
+            identity.OnStartServer.AddListener(func);
+            identity.OnStartServer.AddListener(func2);
+
+            // When the mock is invoked, throw an exception 
+            func
+                .When(f => f.Invoke())
+                .Do(f => { throw new Exception("Some exception"); });
+
+            UnityEngine.TestTools.LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex(".*Some exception.*"));
+
+            // Make sure that the exception is caught, logged, and does not stop execution
+            Assert.DoesNotThrow(() =>
+            {
+                identity.StartServer();
+            });
+
+            func.Received(1).Invoke();
+            func2.Received(1).Invoke();
+        }
+
+        [Test]
+        public void OnStartClientCallsComponentsAndCatchesExceptions()
+        {
+            // add components
+            var func = Substitute.For<Action>();
+            var func2 = Substitute.For<Action>();
+            identity.OnStartClient.AddListener(func);
+            identity.OnStartClient.AddListener(func2);
+
+            func
+                .When(f => f.Invoke())
+                .Do(f => { throw new Exception("Some exception"); });
+
+            UnityEngine.TestTools.LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex(".*Some exception.*"));
+
+            // make sure exceptions are caught and logged
+            Assert.DoesNotThrow(() =>
+            {
+                identity.StartClient();
+            });
+            func.Received(1).Invoke();
+            func2.Received(1).Invoke();
+
+            // we have checks to make sure that it's only called once.
+            Assert.DoesNotThrow(() =>
+            {
+                identity.StartClient();
+            });
+            func.Received(1).Invoke();
+            func2.Received(1).Invoke();
+        }
+
+        [Test]
+        public void OnAuthorityChangedCallsComponentsAndCatchesExceptions()
+        {
+            // add components
+            var func = Substitute.For<Action<bool>>();
+            var func2 = Substitute.For<Action<bool>>();
+            identity.OnAuthorityChanged.AddListener(func);
+            identity.OnAuthorityChanged.AddListener(func2);
+
+            identity.World = new NetworkWorld();
+
+            func
+                .When(f => f.Invoke(Arg.Any<bool>()))
+                .Do(f => { throw new Exception("Some exception"); });
+
+            UnityEngine.TestTools.LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex(".*Some exception.*"));
+
+            // make sure exceptions are caught and logged
+            Assert.DoesNotThrow(() =>
+            {
+                identity.CallStartAuthority();
+            });
+            func.Received(1).Invoke(Arg.Any<bool>());
+            func2.Received(1).Invoke(Arg.Any<bool>());
+        }
+
+        [Test]
+        public void NotifyAuthorityCallsOnStartStopAuthority()
+        {
+            var startAuth = 0;
+            var stopAuth = 0;
+            // NotifyAuthority needs world to be set. this different than the owner case because world will always be set in the client's case
+            identity.World = new NetworkWorld();
+            identity.OnAuthorityChanged.AddListener(auth =>
+            {
+                if (auth) startAuth++;
+                else stopAuth++;
+            });
+
+            // set authority from false to true, which should call OnStartAuthority
+            identity.HasAuthority = true;
+            identity.NotifyAuthority();
+            // shouldn't be touched
+            Assert.That(identity.HasAuthority, Is.True);
+            // start should be called
+            Assert.That(startAuth, Is.EqualTo(1));
+            Assert.That(stopAuth, Is.EqualTo(0));
+
+            // set it to true again, should do nothing because already true
+            identity.HasAuthority = true;
+            identity.NotifyAuthority();
+            // shouldn't be touched
+            Assert.That(identity.HasAuthority, Is.True);
+            // same as before
+            Assert.That(startAuth, Is.EqualTo(1));
+            Assert.That(stopAuth, Is.EqualTo(0));
+
+            // set it to false, should call OnStopAuthority
+            identity.HasAuthority = false;
+            identity.NotifyAuthority();
+            // shouldn't be touched
+            Assert.That(identity.HasAuthority, Is.False);
+            // same as before
+            Assert.That(startAuth, Is.EqualTo(1));
+            Assert.That(stopAuth, Is.EqualTo(1));
+
+            // set it to false again, should do nothing because already false
+            identity.HasAuthority = false;
+            identity.NotifyAuthority();
+            // shouldn't be touched
+            Assert.That(identity.HasAuthority, Is.False);
+            // same as before
+            Assert.That(startAuth, Is.EqualTo(1));
+            Assert.That(stopAuth, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void OnCheckObserverCatchesException()
+        {
+            // add component
+            gameObject.AddComponent<CheckObserverExceptionNetworkBehaviour>();
+
+            // should catch the exception internally and not throw it
+            Assert.Throws<Exception>(() =>
+            {
+                identity.OnCheckObserver(player1);
+            });
+        }
+
+        [Test]
+        public void OnCheckObserverTrue()
+        {
+            // create a networkidentity with a component that returns true
+            // result should still be true.
+
+            var compTrue = CreateBehaviour<CheckObserverTrueNetworkBehaviour>();
+            Assert.That(compTrue.Identity.OnCheckObserver(player1), Is.True);
+            Assert.That(compTrue.called, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void OnCheckObserverFalse()
+        {
+            // create a networkidentity with a component that returns true and
+            // one component that returns false.
+            // result should still be false if any one returns false.
+            var compFalse = CreateBehaviour<CheckObserverFalseNetworkBehaviour>();
+            Assert.That(compFalse.Identity.OnCheckObserver(player1), Is.False);
+            Assert.That(compFalse.called, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void OnSerializeAllShouldPropagateExceptions()
+        {
+            // create a networkidentity with our test components
+            var comp1 = gameObject.AddComponent<SerializeTest1NetworkBehaviour>();
+            var compExc = gameObject.AddComponent<SerializeExceptionNetworkBehaviour>();
+            var comp2 = gameObject.AddComponent<SerializeTest2NetworkBehaviour>();
+
+            // object must be spawned for OnSerializeAll to work
+            // it will check for if server is active when using From.Server
+
+            // serialize should propagate exceptions
+            var exception = Assert.Throws<Exception>(() =>
+            {
+                // we can't call identity.OnSerializeAll(true,...) manually because server needs to be set for it to sync,
+                // but calling spawn will invoke OnSerializeAll(true,...), so we can call that to check for Exception
+                serverObjectManager.Spawn(identity);
+            });
+
+            // check that it was the exception from out bad test component 
+            Assert.That(exception, Has.Message.EqualTo(SerializeExceptionNetworkBehaviour.MESSAGE));
+        }
+
+        // OnSerializeAllSafely supports at max 64 components, because our
+        // dirty mask is ulong and can only handle so many bits.
+        [Test]
+        public void NoMoreThan64Components()
+        {
+            // add byte.MaxValue+1 components
+            for (var i = 0; i < byte.MaxValue + 1; ++i)
+            {
+                gameObject.AddComponent<SerializeTest1NetworkBehaviour>();
+            }
+            // ingore error from creating cache (has its own test)
+            Assert.Throws<InvalidOperationException>(() =>
+            {
+                _ = identity.NetworkBehaviours;
+            });
+        }
+
+        // OnDeserializeSafely should be able to detect and handle serialization
+        // mismatches (= if compA writes 10 bytes but only reads 8 or 12, it
+        // shouldn't break compB's serialization. otherwise we end up with
+        // insane runtime errors like monsters that look like npcs. that's what
+        // happened back in the day with UNET).
+        [Test]
+        public void OnDeserializeSafelyShouldDetectAndHandleDeSerializationMismatch()
+        {
+            // add components
+            var comp1 = gameObject.AddComponent<SerializeTest1NetworkBehaviour>();
+            gameObject.AddComponent<SerializeMismatchNetworkBehaviour>();
+            var comp2 = gameObject.AddComponent<SerializeTest2NetworkBehaviour>();
+
+            // object must be spawned for OnSerializeAll to work
+            // it will check for if server is active when using From.Server
+            serverObjectManager.Spawn(identity);
+
+            // set some unique values to serialize
+            comp1.value = 12345;
+            comp2.value = "67890";
+
+            // serialize
+            var ownerWriter = new NetworkWriter(1300);
+            var observersWriter = new NetworkWriter(1300);
+            var (ownerWritten, observersWritten) = identity.OnSerializeInitial(ownerWriter, observersWriter);
+
+            Assert.That(ownerWritten, Is.EqualTo(0), "no owner, should have only written to observersWriter");
+            Assert.That(observersWritten, Is.GreaterThanOrEqualTo(1), "should have written to observer writer");
+
+            // reset component values
+            comp1.value = 0;
+            comp2.value = null;
+
+            // deserialize all
+            var reader = new NetworkReader();
+            reader.Reset(observersWriter.ToArraySegment());
+            Assert.Throws<DeserializeFailedException>(() =>
+            {
+                identity.OnDeserializeAll(reader, true);
+            });
+            reader.Dispose();
+        }
+
+        [Test]
+        public void OnStartLocalPlayer()
+        {
+            // add components
+            var funcEx = Substitute.For<Action>();
+            var func = Substitute.For<Action>();
+
+            identity.OnStartLocalPlayer.AddListener(funcEx);
+            identity.OnStartLocalPlayer.AddListener(func);
+
+            funcEx
+                .When(f => f.Invoke())
+                .Do(f => { throw new Exception("Some exception"); });
+
+            UnityEngine.TestTools.LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex(".*Some exception.*"));
+
+            // make sure that comp.OnStartServer was called
+            // the exception was caught and not thrown in here.
+            Assert.DoesNotThrow(() =>
+            {
+                identity.StartLocalPlayer();
+            });
+
+            funcEx.Received(1).Invoke();
+            // Under the new try/catch behavior, the exception does not stop the loop
+            func.Received(1).Invoke();
+
+            // we have checks to make sure that it's only called once.
+            // let's see if they work.
+            Assert.DoesNotThrow(() =>
+            {
+                identity.StartLocalPlayer();
+            });
+            // same as before (still only called once)
+            funcEx.Received(1).Invoke();
+            func.Received(1).Invoke();
+        }
+
+        [Test]
+        public void OnStopClient()
+        {
+            var mockCallback = Substitute.For<Action>();
+            identity.OnStopClient.AddListener(mockCallback);
+
+            identity.StopClient();
+
+            mockCallback.Received().Invoke();
+        }
+
+        [Test]
+        public void OnStopServer()
+        {
+            var mockCallback = Substitute.For<Action>();
+            identity.OnStopServer.AddListener(mockCallback);
+
+            identity.StopServer();
+
+            mockCallback.Received().Invoke();
+        }
+
+        [Test]
+        public void OnStopServerEx()
+        {
+            var mockCallback = Substitute.For<Action>();
+            var mockCallback2 = Substitute.For<Action>();
+            mockCallback
+                .When(f => f.Invoke())
+                .Do(f => { throw new Exception("Some exception"); });
+
+            identity.OnStopServer.AddListener(mockCallback);
+            identity.OnStopServer.AddListener(mockCallback2);
+
+            UnityEngine.TestTools.LogAssert.Expect(LogType.Exception, new System.Text.RegularExpressions.Regex(".*Some exception.*"));
+
+            Assert.DoesNotThrow(() =>
+            {
+                identity.StopServer();
+            });
+
+            mockCallback.Received(1).Invoke();
+            mockCallback2.Received(1).Invoke();
+        }
+
+        [Test]
+        public void AddObserver()
+        {
+            identity.Server = server;
+
+            // call OnStartServer so that observers dict is created
+            identity.StartServer();
+
+            // call AddObservers
+            identity.AddObserver(player1);
+            identity.AddObserver(player2);
+            Assert.That(identity.observers, Is.EquivalentTo(new[] { player1, player2 }));
+
+            // adding a duplicate connectionId shouldn't overwrite the original
+            identity.AddObserver(player1);
+            Assert.That(identity.observers, Is.EquivalentTo(new[] { player1, player2 }));
+        }
+
+        [Test]
+        public void ClearObservers()
+        {
+            // call OnStartServer so that observers dict is created
+            identity.StartServer();
+
+            // add some observers
+            identity.observers.Add(player1);
+            identity.observers.Add(player2);
+
+            // call ClearObservers
+            identity.ClearObservers();
+            Assert.That(identity.observers.Count, Is.EqualTo(0));
+        }
+
+
+        [Test]
+        public void Reset()
+        {
+            // creates .observers and generates a netId
+            identity.StartServer();
+            identity.SetOwner(player1);
+            identity.observers.Add(player1);
+
+            // mark for reset and reset
+            identity.NetworkReset();
+            Assert.That(identity.NetId, Is.EqualTo(0));
+            Assert.That(identity.Owner, Is.Null);
+        }
+
+        [Test]
+        public void GetNewObservers()
+        {
+            // add components
+            var comp = gameObject.AddComponent<RebuildObserversNetworkBehaviour>();
+            comp.observer = player1;
+
+            // get new observers
+            var observers = new HashSet<INetworkPlayer>();
+            identity.GetNewObservers(observers, true);
+            Assert.That(observers.Count, Is.EqualTo(1));
+            Assert.That(observers.Contains(comp.observer), Is.True);
+        }
+
+        [Test]
+        public void GetNewObserversClearsHashSet()
+        {
+            var sub1 = Substitute.For<INetworkPlayer>();
+            var sub2 = Substitute.For<INetworkPlayer>();
+
+            // get new observers. no observer components so it should just clear
+            // it and not do anything else
+            var observers = new HashSet<INetworkPlayer>
+            {
+                // add values that GetNewObservers wont add itself
+               sub1, sub2
+            };
+
+            identity.GetNewObservers(observers, true);
+            Assert.That(observers, Does.Not.Contains(sub1));
+            Assert.That(observers, Does.Not.Contains(sub2));
+        }
+
+        // RebuildObservers should always add the own ready connection
+        // (if any). fixes https://github.com/vis2k/Mirror/issues/692
+        [Test]
+        public void RebuildObserversDoesNotAddPlayerIfNotReady()
+        {
+            // add at least one observers component, otherwise it will just add
+            // all server connections
+            gameObject.AddComponent<RebuildEmptyObserversNetworkBehaviour>();
+
+            // add own player connection that isn't ready
+            var player = Substitute.For<INetworkPlayer>();
+            // set not ready (ready is default true now)
+            player.SceneIsReady = false;
+
+            identity.SetOwner(player);
+
+            // call OnStartServer so that observers dict is created
+            identity.StartServer();
+
+            // rebuild shouldn't add own player because conn wasn't set ready
+            identity.RebuildObservers(true);
+            Assert.That(identity.observers, Does.Not.Contains(identity.Owner));
+        }
+
+        [Test]
+        public void RebuildObserversAddsReadyConnectionsIfImplemented()
+        {
+
+            // add a proximity checker
+            // one with a ready connection, one with no ready connection, one with null connection
+            var comp = gameObject.AddComponent<RebuildObserversNetworkBehaviour>();
+            comp.observer = Substitute.For<INetworkPlayer>();
+            comp.observer.SceneIsReady.Returns(true);
+
+            // rebuild observers should add all component's ready observers
+            identity.RebuildObservers(true);
+            Assert.That(identity.observers, Is.EquivalentTo(new[] { comp.observer }));
+        }
+
+
+        [Test]
+        public void RebuildObserversDoesntAddNotReadyConnectionsIfImplemented()
+        {
+            // add a proximity checker
+            // one with a ready connection, one with no ready connection, one with null connection
+            var comp = gameObject.AddComponent<RebuildObserversNetworkBehaviour>();
+            comp.observer = Substitute.For<INetworkPlayer>();
+            comp.observer.SceneIsReady.Returns(false);
+
+            // rebuild observers should add all component's ready observers
+            identity.RebuildObservers(true);
+            Assert.That(identity.observers, Is.Empty);
+        }
+
+        [Test]
+        public void RebuildObserversAddsReadyServerConnectionsIfNotImplemented()
+        {
+            var readyConnection = Substitute.For<INetworkPlayer>();
+            readyConnection.SceneIsReady.Returns(true);
+            var notReadyConnection = Substitute.For<INetworkPlayer>();
+            notReadyConnection.SceneIsReady.Returns(false);
+
+            // add some server connections
+            server.AddTestPlayer(readyConnection);
+            server.AddTestPlayer(notReadyConnection);
+
+            // rebuild observers should add all ready server connections
+            // because no component implements OnRebuildObservers
+            identity.RebuildObservers(true);
+            // should also include the serverPlayer that was added by test base
+            Assert.That(identity.observers, Is.EquivalentTo(new[] { serverPlayer, readyConnection }));
+        }
+
+    }
+}

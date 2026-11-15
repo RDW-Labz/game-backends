@@ -1,0 +1,18 @@
+{
+    "name": "GitTools",
+    "rootNamespace": "",
+    "references": [
+        "GUID:8b845b123ab418448a8be2935fa804e0"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

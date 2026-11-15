@@ -68,3 +68,7 @@ One line per 15-minute extension tick, newest last.
   - added gameplay/benolimits-inventorysystem (MIT, vendored)
   - reference gameplay/rubonnek-inventory-manager
   - reference gameplay/raulmrsouza-unity-crafting-system
+
+- **2026-11-15 08:08 UTC** — tick 14: +2 screened, +0 reference, 0 skipped, catalogue=191
+  - added netcode/mas-bandwidth-yojimbo (BSD-3-Clause, vendored)
+  - added netcode/miragenet-mirage (MIT, vendored)

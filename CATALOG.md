@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 07:52 UTC · 189 entries · 72 vendored, 117 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 08:08 UTC · 191 entries · 74 vendored, 117 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-15 07:52 UTC · 189 entries · 72 vendored, 117 reference-onl
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 36 | 14 | 22 |
-| [netcode](#netcode) — Networking / netcode | 34 | 13 | 21 |
+| [netcode](#netcode) — Networking / netcode | 36 | 15 | 21 |
 | [save-state](#save-state) — Save / state systems | 9 | 5 | 4 |
 | [procgen](#procgen) — Procedural generation | 13 | 6 | 7 |
 
@@ -184,7 +184,7 @@ _Generated 2026-11-15 07:52 UTC · 189 entries · 72 vendored, 117 reference-onl
 
 ## netcode
 
-**Networking / netcode** — 34 entries
+**Networking / netcode** — 36 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -202,6 +202,7 @@ _Generated 2026-11-15 07:52 UTC · 189 entries · 72 vendored, 117 reference-onl
 | [KCP](entries/netcode/kcp/README.md) | fast reliable ARQ protocol (TCP-like over UDP) | c | MIT | vendored | [skywind3000/kcp](https://github.com/skywind3000/kcp) @ `b1a7a2101dcb` |
 | [megaglest — network](entries/netcode/megaglest-network/README.md) | network transport, protocol, replication or server loop | h | none | reference | [megaglest/megaglest-source.git](https://github.com/megaglest/megaglest-source.git) @ `4ab09c6` |
 | [Mindustry — net](entries/netcode/mindustry-net/README.md) | network transport, protocol, replication or server loop | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
+| [Mirage](entries/netcode/miragenet-mirage/README.md) | Easy to use high performance Network library for Unity 3d | c# | MIT | vendored | [MirageNet/Mirage](https://github.com/MirageNet/Mirage) @ `527d0b0f5d18` |
 | [Nakama](entries/netcode/nakama/README.md) | game backend server: matchmaking, realtime, leaderboards, storage | go | Apache-2.0 | reference | [heroiclabs/nakama](https://github.com/heroiclabs/nakama) @ `37618ad4b927` |
 | [nakama — server](entries/netcode/nakama-server/README.md) | network transport, protocol, replication or server loop | go | Apache-2.0 | vendored | [heroiclabs/nakama](https://github.com/heroiclabs/nakama) @ `4833594` |
 | [netcode.io](entries/netcode/netcode-io/README.md) | secure UDP connection protocol with token auth | c | BSD-3-Clause | vendored | [mas-bandwidth/netcode](https://github.com/mas-bandwidth/netcode) @ `2d9df60853a6` |
@@ -221,6 +222,7 @@ _Generated 2026-11-15 07:52 UTC · 189 entries · 72 vendored, 117 reference-onl
 | [VCMI — server](entries/netcode/vcmi-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [warzone2100 — netplay](entries/netcode/warzone2100-lib-netplay/README.md) | RTS netplay: sync, desync detection, rejoin | c++ | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e14614` |
 | [widelands — network](entries/netcode/widelands-network/README.md) | network transport, protocol, replication or server loop | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
+| [yojimbo](entries/netcode/mas-bandwidth-yojimbo/README.md) | A network library for client/server games written in C++ | c++ | BSD-3-Clause | vendored | [mas-bandwidth/yojimbo](https://github.com/mas-bandwidth/yojimbo) @ `ae64e145c993` |
 | [yojimbo](entries/netcode/yojimbo/README.md) | client/server game protocol: encryption, reliability, connection tags | c++ | BSD-3-Clause | vendored | [networkprotocol/yojimbo](https://github.com/networkprotocol/yojimbo) @ `ae64e145c993` |
 
 ## save-state

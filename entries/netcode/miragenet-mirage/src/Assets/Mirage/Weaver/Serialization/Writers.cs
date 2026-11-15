@@ -1,0 +1,311 @@
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using Mirage.CodeGen;
+using Mirage.Serialization;
+using Mirage.Weaver.Serialization;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
+using Mono.Cecil.Rocks;
+
+namespace Mirage.Weaver
+{
+    public class Writers : SerializeFunctionBase
+    {
+        public Writers(ModuleDefinition module, IWeaverLogger logger, EnumBitPackLookup enumBitPackLookup) : base(module, logger, enumBitPackLookup) { }
+
+        protected override string FunctionTypeLog => "write function";
+        protected override string FunctionTypeWithLengthLog => "write function with length";
+        protected override Expression<Action> ArrayExpression => () => Mirage.Serialization.CollectionExtensions.WriteArray<byte>(default(NetworkWriter), default);
+        protected override Expression<Action> ArrayExpressionWithLength => () => Mirage.Serialization.CollectionExtensions.WriteArray<byte>(default(NetworkWriter), default, default(int));
+
+        protected override MethodReference GetGenericFunction()
+        {
+            var genericType = module.ImportReference(typeof(GenericTypesSerializationExtensions)).Resolve();
+            var method = genericType.GetMethod(nameof(GenericTypesSerializationExtensions.Write));
+            return module.ImportReference(method);
+        }
+
+        protected override MethodReference GetGenericFunctionWithLength()
+        {
+            var genericType = module.ImportReference(typeof(GenericTypesSerializationExtensions)).Resolve();
+            var method = genericType.GetMethod(nameof(GenericTypesSerializationExtensions.WriteWithLength));
+            return module.ImportReference(method);
+        }
+
+        protected override MethodReference GetNetworkBehaviourFunction(TypeReference typeReference)
+        {
+            var writeMethod = GenerateWriterFunc(typeReference);
+            var worker = writeMethod.worker;
+
+            worker.Append(worker.Create(OpCodes.Ldarg_0));
+            worker.Append(worker.Create(OpCodes.Ldarg_1));
+            worker.Append(worker.Create(OpCodes.Call, (NetworkWriter writer) => writer.WriteNetworkBehaviour(default)));
+            worker.Append(worker.Create(OpCodes.Ret));
+
+            return writeMethod.definition;
+        }
+
+        protected override MethodReference GenerateEnumFunction(TypeReference typeReference)
+        {
+            var writerMethod = GenerateWriterFunc(typeReference);
+
+            var worker = writerMethod.worker;
+
+            // packing in the enum function means collections and Writer<T> also use it, not just fields with attributes
+            var bitPackSerializer = enumBitPackLookup.GetSerializer(typeReference);
+            if (bitPackSerializer != null)
+            {
+                bitPackSerializer.AppendWriteArgument(module, worker, writerMethod.writerParameter, writerMethod.typeParameter);
+                worker.Append(worker.Create(OpCodes.Ret));
+                return writerMethod.definition;
+            }
+
+            var underlyingWriter = TryGetFunction(typeReference.Resolve().GetEnumUnderlyingType(), null);
+
+            worker.Append(worker.Create(OpCodes.Ldarg_0));
+            worker.Append(worker.Create(OpCodes.Ldarg_1));
+            worker.Append(worker.Create(OpCodes.Call, underlyingWriter));
+
+            worker.Append(worker.Create(OpCodes.Ret));
+            return writerMethod.definition;
+        }
+
+        private struct WriteMethod
+        {
+            public readonly MethodDefinition definition;
+            public readonly ParameterDefinition writerParameter;
+            public readonly ParameterDefinition typeParameter;
+            public readonly ILProcessor worker;
+
+            public WriteMethod(MethodDefinition definition, ParameterDefinition writerParameter, ParameterDefinition typeParameter, ILProcessor worker)
+            {
+                this.definition = definition;
+                this.writerParameter = writerParameter;
+                this.typeParameter = typeParameter;
+                this.worker = worker;
+            }
+        }
+
+        private WriteMethod GenerateWriterFunc(TypeReference typeReference)
+        {
+            var functionName = "_Write_" + typeReference.FullName;
+            // create new writer for this type
+            var definition = module.GeneratedClass().AddMethod(functionName,
+                    MethodAttributes.Public |
+                    MethodAttributes.Static |
+                    MethodAttributes.HideBySig);
+
+            var writerParameter = definition.AddParam<NetworkWriter>("writer");
+            var typeParameter = definition.AddParam(typeReference, "value");
+            definition.Body.InitLocals = true;
+
+            Register(typeReference, definition);
+
+            var worker = definition.Body.GetILProcessor();
+            return new WriteMethod(definition, writerParameter, typeParameter, worker);
+        }
+
+        protected override MethodReference GenerateClassOrStructFunction(TypeReference typeReference)
+        {
+            var writerFunc = GenerateWriterFunc(typeReference);
+
+            var worker = writerFunc.definition.Body.GetILProcessor();
+
+            if (!typeReference.Resolve().IsValueType)
+                WriteNullCheck(worker);
+
+            WriteAllFields(typeReference, writerFunc);
+
+            worker.Append(worker.Create(OpCodes.Ret));
+            return writerFunc.definition;
+        }
+
+        private void WriteNullCheck(ILProcessor worker)
+        {
+            // if (value == null)
+            // {
+            //     writer.WriteBoolean(false);
+            //     return;
+            // }
+            //
+
+            var labelNotNull = worker.Create(OpCodes.Nop);
+            worker.Append(worker.Create(OpCodes.Ldarg_1));
+            worker.Append(worker.Create(OpCodes.Brtrue, labelNotNull));
+            worker.Append(worker.Create(OpCodes.Ldarg_0));
+            worker.Append(worker.Create(OpCodes.Ldc_I4_0));
+            worker.Append(worker.Create(OpCodes.Call, TryGetFunction<bool>(null)));
+            worker.Append(worker.Create(OpCodes.Ret));
+            worker.Append(labelNotNull);
+
+            // write.WriteBoolean(true);
+            worker.Append(worker.Create(OpCodes.Ldarg_0));
+            worker.Append(worker.Create(OpCodes.Ldc_I4_1));
+            worker.Append(worker.Create(OpCodes.Call, TryGetFunction<bool>(null)));
+        }
+
+        /// <summary>
+        /// Find all fields in type and write them
+        /// </summary>
+        /// <param name="type"></param>
+        /// <par
+        /// <returns>false if fail</returns>
+        private void WriteAllFields(TypeReference type, WriteMethod writerFunc)
+        {
+            // create copy here because we might add static packer field
+            var fields = type.FindAllPublicFields();
+            foreach (var fieldDef in fields)
+            {
+                // note:
+                // - fieldDef to get attributes
+                // - fieldType (made non-generic if possible) used to get type (eg if MyMessage<int> and field `T Value` then get writer for int)
+                // - fieldRef (imported) to emit IL codes
+
+                var fieldType = fieldDef.GetFieldTypeIncludingGeneric(type);
+                var fieldRef = module.ImportField(fieldDef, type);
+
+                var valueSerialize = ValueSerializerFinder.GetSerializer(module, fieldDef, fieldType, this, null);
+                valueSerialize.AppendWriteField(module, writerFunc.worker, writerFunc.writerParameter, writerFunc.typeParameter, fieldRef);
+            }
+        }
+
+        protected override MethodReference GenerateCollectionFunction(TypeReference typeReference, List<TypeReference> elementTypes, MethodReference collectionMethod)
+        {
+            // make sure element has a writer
+            // collection writers use the generic writer, so this will make sure one exists
+            foreach (var elementType in elementTypes)
+                _ = GetFunction_Throws(elementType);
+
+            var writerMethod = GenerateWriterFunc(typeReference);
+            var collectionWriter = collectionMethod.GetElementMethod();
+
+            var methodRef = new GenericInstanceMethod(collectionWriter);
+            foreach (var elementType in elementTypes)
+                methodRef.GenericArguments.Add(elementType);
+
+            // generates
+            // reader.WriteArray<T>(array);
+
+            var worker = writerMethod.worker;
+            worker.Append(worker.Create(OpCodes.Ldarg_0)); // writer
+            worker.Append(worker.Create(OpCodes.Ldarg_1)); // collection
+
+            worker.Append(worker.Create(OpCodes.Call, methodRef)); // WriteArray
+
+            worker.Append(worker.Create(OpCodes.Ret));
+
+            return writerMethod.definition;
+        }
+
+        private WriteMethod GenerateWriterFuncWithLength(TypeReference typeReference)
+        {
+            var functionName = "_Write_" + typeReference.FullName + "_WithLength";
+            // create new writer for this type
+            var definition = module.GeneratedClass().AddMethod(functionName,
+                    MethodAttributes.Public |
+                    MethodAttributes.Static |
+                    MethodAttributes.HideBySig);
+
+            var writerParameter = definition.AddParam<NetworkWriter>("writer");
+            var typeParameter = definition.AddParam(typeReference, "value");
+            definition.AddParam<int>("maxLength");
+            definition.Body.InitLocals = true;
+
+            RegisterWithLength(typeReference, definition);
+
+            var worker = definition.Body.GetILProcessor();
+            return new WriteMethod(definition, writerParameter, typeParameter, worker);
+        }
+
+        protected override MethodReference GenerateCollectionFunctionWithLength(TypeReference typeReference, List<TypeReference> elementTypes, MethodReference collectionMethod)
+        {
+            // make sure element has a writer
+            foreach (var elementType in elementTypes)
+                _ = GetFunction_Throws(elementType);
+
+            var writerMethod = GenerateWriterFuncWithLength(typeReference);
+            var collectionWriter = collectionMethod.GetElementMethod();
+
+            var methodRef = new GenericInstanceMethod(collectionWriter);
+            foreach (var elementType in elementTypes)
+                methodRef.GenericArguments.Add(elementType);
+
+            // generates
+            // writer.WriteArray<T>(array, maxLength);
+
+            var worker = writerMethod.worker;
+            worker.Append(worker.Create(OpCodes.Ldarg_0)); // writer
+            worker.Append(worker.Create(OpCodes.Ldarg_1)); // collection
+            worker.Append(worker.Create(OpCodes.Ldarg_2)); // maxLength
+
+            worker.Append(worker.Create(OpCodes.Call, methodRef)); // WriteArray
+
+            worker.Append(worker.Create(OpCodes.Ret));
+
+            return writerMethod.definition;
+        }
+
+        /// <summary>
+        /// Save a delegate for each one of the writers into <see cref="Writer{T}.Write"/>
+        /// </summary>
+        /// <param name="worker"></param>
+        internal void InitializeWriters(ILProcessor worker)
+        {
+            var genericWriterClassRef = module.ImportReference(typeof(Writer<>));
+            var networkWriterRef = module.ImportReference(typeof(NetworkWriter));
+
+            // add set all normal writers
+            {
+                var writerProperty = typeof(Writer<>).GetProperty(nameof(Writer<int>.Write));
+                var fieldRef = module.ImportReference(writerProperty.GetSetMethod());
+                var actionRef = module.ImportReference(typeof(Action<,>));
+                var actionConstructorRef = module.ImportReference(typeof(Action<,>).GetConstructors()[0]);
+
+                foreach (var writerMethod in functionLookup.Values)
+                {
+
+                    var dataType = writerMethod.Parameters[1].ParameterType;
+
+                    // create a Action<NetworkWriter, T> delegate
+                    worker.Append(worker.Create(OpCodes.Ldnull));
+                    worker.Append(worker.Create(OpCodes.Ldftn, writerMethod));
+                    var actionGenericInstance = actionRef.MakeGenericInstanceType(networkWriterRef, dataType);
+                    var actionRefInstance = actionConstructorRef.MakeHostInstanceGeneric(module, actionGenericInstance);
+                    worker.Append(worker.Create(OpCodes.Newobj, actionRefInstance));
+
+                    // save it in Writer<T>.write
+                    var genericInstance = genericWriterClassRef.MakeGenericInstanceType(dataType);
+                    var specializedField = fieldRef.MakeHostInstanceGeneric(module, genericInstance);
+                    worker.Append(worker.Create(OpCodes.Call, specializedField));
+                }
+            }
+
+            // add set all writers with length
+            {
+                var writeWithLengthProperty = typeof(Writer<>).GetProperty(nameof(Writer<int>.WriteWithLength));
+                var fieldWithLengthRef = module.ImportReference(writeWithLengthProperty.GetSetMethod());
+                var action3Ref = module.ImportReference(typeof(Action<,,>));
+                var action3ConstructorRef = module.ImportReference(typeof(Action<,,>).GetConstructors()[0]);
+                var intRef = module.ImportReference(typeof(int));
+
+                foreach (var writerMethod in functionWithLengthLookup.Values)
+                {
+                    var dataType = writerMethod.Parameters[1].ParameterType;
+
+                    // create a Action<NetworkWriter, T, int> delegate
+                    worker.Append(worker.Create(OpCodes.Ldnull));
+                    worker.Append(worker.Create(OpCodes.Ldftn, writerMethod));
+                    var actionGenericInstance = action3Ref.MakeGenericInstanceType(networkWriterRef, dataType, intRef);
+                    var actionRefInstance = action3ConstructorRef.MakeHostInstanceGeneric(module, actionGenericInstance);
+                    worker.Append(worker.Create(OpCodes.Newobj, actionRefInstance));
+
+                    // save it in Writer<T>.WriteWithLength
+                    var genericInstance = genericWriterClassRef.MakeGenericInstanceType(dataType);
+                    var specializedField = fieldWithLengthRef.MakeHostInstanceGeneric(module, genericInstance);
+                    worker.Append(worker.Create(OpCodes.Call, specializedField));
+                }
+            }
+        }
+    }
+}
