@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T06:00:19Z",
+ "category": "math",
+ "commit": "3d9af2e77a89",
+ "delivery": "vendored",
+ "description": "redorav/hlslpp \u2014 Math library using HLSL syntax with multiplatform SIMD support",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "hlslpp",
+ "size_bytes": 1502933,
+ "slug": "redorav-hlslpp",
+ "source": "github-search:simd math library quaternion stars:>50",
+ "stars": 1167,
+ "system": "Math library using HLSL syntax with multiplatform SIMD support",
+ "upstream": "https://github.com/redorav/hlslpp",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

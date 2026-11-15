@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 05:44 UTC · 167 entries · 63 vendored, 104 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 06:00 UTC · 170 entries · 65 vendored, 105 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 44 | 12 | 32 |
 | [physics](#physics) — Physics | 22 | 7 | 15 |
-| [math](#math) — Math libraries | 13 | 9 | 4 |
+| [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 8 | 2 | 6 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 24 | 9 | 15 |
 | [netcode](#netcode) — Networking / netcode | 34 | 13 | 21 |
@@ -96,7 +96,7 @@ _Generated 2026-11-15 05:44 UTC · 167 entries · 63 vendored, 104 reference-onl
 
 ## math
 
-**Math libraries** — 13 entries
+**Math libraries** — 16 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -107,10 +107,13 @@ _Generated 2026-11-15 05:44 UTC · 167 entries · 63 vendored, 104 reference-onl
 | [glas — math](entries/math/glas-math/README.md) | vector/matrix/quaternion math substrate | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
 | [GLM](entries/math/glm/README.md) | header-only GLSL-style vector/matrix/quaternion math | c++ | MIT | vendored | [g-truc/glm](https://github.com/g-truc/glm) @ `6f14f4792a0c` |
 | [Handmade Math](entries/math/handmademath/README.md) | single-header 3D math for games | c | CC0-1.0 | vendored | [HandmadeMath/HandmadeMath](https://github.com/HandmadeMath/HandmadeMath) @ `661fef0893bc` |
+| [hlslpp](entries/math/redorav-hlslpp/README.md) | Math library using HLSL syntax with multiplatform SIMD support | c++ | MIT | vendored | [redorav/hlslpp](https://github.com/redorav/hlslpp) @ `3d9af2e77a89` |
 | [hypersomnia — math](entries/math/hypersomnia-math/README.md) | vector/matrix/quaternion math substrate | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [libfixmath](entries/math/libfixmath/README.md) | fixed-point math for deterministic simulation | c | MIT | vendored | [PetteriAimonen/libfixmath](https://github.com/PetteriAimonen/libfixmath) @ `46e89b748b1f` |
+| [math](entries/math/fireblade-engine-math/README.md) | A dependency free, lightweight, fast math library for 2D and 3D vectors, quaternions and matrices in Swift with (optional) SIMD support. | swift | MIT | reference | [fireblade-engine/math](https://github.com/fireblade-engine/math) @ `2026-11-14 (branch tip at catalogue time)` |
 | [MathFu](entries/math/mathfu/README.md) | vector/matrix/quaternion math with SIMD backends | c++ | Apache-2.0 | vendored | [google/mathfu](https://github.com/google/mathfu) @ `da23a1227bb6` |
 | [optick — simd](entries/math/optick-simd/README.md) | vector/matrix/quaternion math substrate | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
+| [sh4zam](entries/math/gyrovorbis-sh4zam/README.md) | Fast linear algebra and math library for the Hitachi SuperH4 Processor (used by the Sega Dreamcast). | c | MIT | vendored | [gyrovorbis/sh4zam](https://github.com/gyrovorbis/sh4zam) @ `5b7dfc22a91f` |
 | [supertux — math](entries/math/supertux-math/README.md) | vector/matrix/quaternion math substrate | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [Tessel-A-tile-game — geom](entries/math/tessel-a-tile-game-geom/README.md) | vector/matrix/quaternion math substrate | ts | GPL-3.0 | reference | [gvtulder/tessel](https://github.com/gvtulder/tessel) @ `6249857` |
 

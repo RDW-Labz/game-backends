@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T06:00:22Z",
+ "category": "math",
+ "commit": "5b7dfc22a91f",
+ "delivery": "vendored",
+ "description": "gyrovorbis/sh4zam \u2014 Fast linear algebra and math library for the Hitachi SuperH4 Processor (used by the Sega Dreamcast).",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "sh4zam",
+ "size_bytes": 1877191,
+ "slug": "gyrovorbis-sh4zam",
+ "source": "github-search:simd math library quaternion stars:>50",
+ "stars": 258,
+ "system": "Fast linear algebra and math library for the Hitachi SuperH4 Processor (used by the Sega Dreamcast).",
+ "upstream": "https://github.com/gyrovorbis/sh4zam",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

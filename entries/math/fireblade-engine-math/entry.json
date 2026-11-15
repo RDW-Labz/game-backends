@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T06:00:23Z",
+ "category": "math",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fireblade-engine/math \u2014 A dependency free, lightweight, fast math library for 2D and 3D vectors, quaternions and matrices in Swift with (optional) SIMD support.",
+ "language": "swift",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "math",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "fireblade-engine-math",
+ "source": "github-search:simd math library quaternion stars:>50",
+ "stars": 52,
+ "system": "A dependency free, lightweight, fast math library for 2D and 3D vectors, quaternions and matrices in Swift with (optional) SIMD support.",
+ "upstream": "https://github.com/fireblade-engine/math",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

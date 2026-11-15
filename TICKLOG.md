@@ -30,3 +30,8 @@ One line per 15-minute extension tick, newest last.
   - added physics/interactivecomputergraphics-positionbaseddynamics (MIT, reference)
 
 - **2026-11-15 05:44 UTC** — tick 5: +0 screened, +0 reference, 0 skipped, catalogue=167
+
+- **2026-11-15 06:00 UTC** — tick 6: +2 screened, +1 reference, 0 skipped, catalogue=170
+  - added math/redorav-hlslpp (MIT, vendored)
+  - added math/gyrovorbis-sh4zam (MIT, vendored)
+  - reference math/fireblade-engine-math
