@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T07:04:25Z",
+ "category": "gameplay",
+ "commit": "2024-08-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "FaronBracy/RogueSharp \u2014 A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired by libtcod",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "RogueSharp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "faronbracy-roguesharp",
+ "source": "github-search:pathfinding library stars:>200",
+ "stars": 637,
+ "system": "A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired",
+ "upstream": "https://github.com/FaronBracy/RogueSharp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T07:04:23Z",
+ "category": "gameplay",
+ "commit": "479da93a9da3",
+ "delivery": "reference",
+ "description": "michidk/Unity-Script-Collection \u2014 A maintained collection of useful & free unity scripts / library's / plugins and extensions",
+ "language": "css",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Unity-Script-Collection",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 8522,
+ "slug": "michidk-unity-script-collection",
+ "source": "github-search:pathfinding library stars:>200",
+ "stars": 6403,
+ "system": "A maintained collection of useful & free unity scripts / library's / plugins and extensions",
+ "upstream": "https://github.com/michidk/Unity-Script-Collection",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

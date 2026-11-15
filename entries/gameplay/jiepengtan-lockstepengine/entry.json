@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T07:04:25Z",
+ "category": "gameplay",
+ "commit": "2020-03-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JiepengTan/LockstepEngine \u2014 A lockstep solution include lots of deterministic library (Math,Collision,Navmesh,BehaviorTree,Serialization ...)",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "LockstepEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "jiepengtan-lockstepengine",
+ "source": "github-search:pathfinding library stars:>200",
+ "stars": 970,
+ "system": "A lockstep solution include lots of deterministic library (Math,Collision,Navmesh,BehaviorTree,Serialization ...)",
+ "upstream": "https://github.com/JiepengTan/LockstepEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

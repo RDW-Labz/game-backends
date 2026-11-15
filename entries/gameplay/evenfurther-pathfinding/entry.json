@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T07:04:25Z",
+ "category": "gameplay",
+ "commit": "2026-10-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "evenfurther/pathfinding \u2014 Pathfinding library for rust",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "evenfurther-pathfinding",
+ "source": "github-search:pathfinding library stars:>200",
+ "stars": 1085,
+ "system": "Pathfinding library for rust",
+ "upstream": "https://github.com/evenfurther/pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

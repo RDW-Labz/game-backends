@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-15T07:04:25Z",
+ "category": "gameplay",
+ "commit": "2022-10-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Yonaba/Jumper \u2014 Fast, lightweight and easy-to-use pathfinding library for grid-based games",
+ "language": "lua",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Jumper",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "yonaba-jumper",
+ "source": "github-search:pathfinding library stars:>200",
+ "stars": 652,
+ "system": "Fast, lightweight and easy-to-use pathfinding library for grid-based games",
+ "upstream": "https://github.com/Yonaba/Jumper",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

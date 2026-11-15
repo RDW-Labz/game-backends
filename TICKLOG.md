@@ -48,3 +48,11 @@ One line per 15-minute extension tick, newest last.
   - added loot-economy/stateless-minds-cyber-stasis (MIT, vendored)
   - reference loot-economy/europa1400-community-die-gulde
   - reference loot-economy/stateless-minds-cyber-acid
+
+- **2026-11-15 07:04 UTC** — tick 10: +2 screened, +4 reference, 1 skipped, catalogue=183
+  - added gameplay/graphhopper-graphhopper (Apache-2.0, vendored)
+  - added gameplay/michidk-unity-script-collection (GPL-3.0, reference)
+  - reference gameplay/evenfurther-pathfinding
+  - reference gameplay/jiepengtan-lockstepengine
+  - reference gameplay/yonaba-jumper
+  - reference gameplay/faronbracy-roguesharp

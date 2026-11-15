@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T07:04:21Z",
+ "category": "gameplay",
+ "commit": "9df847473a5e",
+ "delivery": "vendored",
+ "description": "graphhopper/graphhopper \u2014 Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server.",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "graphhopper",
+ "size_bytes": 7293234,
+ "slug": "graphhopper-graphhopper",
+ "source": "github-search:pathfinding library stars:>200",
+ "stars": 6816,
+ "system": "Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server.",
+ "upstream": "https://github.com/graphhopper/graphhopper",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
