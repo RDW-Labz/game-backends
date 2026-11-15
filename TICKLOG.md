@@ -269,3 +269,7 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-15 21:43 UTC** — tick 65: +0 screened, +0 reference, 6 skipped, catalogue=284
 
 - **2026-11-15 21:59 UTC** — tick 66: +0 screened, +0 reference, 5 skipped, catalogue=284
+
+- **2026-11-15 22:16 UTC** — tick 67: +2 screened, +0 reference, 18 skipped, catalogue=286
+  - added engines/thisisgame-cpp-game-engine-book (GPL-3.0, reference)
+  - added engines/openxray-xray-16 (MIT, reference)

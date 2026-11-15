@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T22:16:10Z",
+ "category": "engines",
+ "commit": "22226b7ff225",
+ "delivery": "reference",
+ "description": "OpenXRay/xray-16 \u2014 Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;)",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "License.txt",
+ "license_verdict": "clean",
+ "name": "xray-16",
+ "reference_reason": "size gate: 32 MB",
+ "size_bytes": 34077495,
+ "slug": "openxray-xray-16",
+ "source": "github-search:game engine language:c++ stars:>200",
+ "stars": 3610,
+ "system": "Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;)",
+ "upstream": "https://github.com/OpenXRay/xray-16",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

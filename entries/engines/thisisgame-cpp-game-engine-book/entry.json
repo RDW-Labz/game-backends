@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-15T22:16:04Z",
+ "category": "engines",
+ "commit": "c7f9f8095274",
+ "delivery": "reference",
+ "description": "ThisisGame/cpp-game-engine-book \u2014 \u4ece\u96f6\u7f16\u5199\u6e38\u620f\u5f15\u64ce\u6559\u7a0b Writing a game engine tutorial from scratch",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "cpp-game-engine-book",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 65745321,
+ "slug": "thisisgame-cpp-game-engine-book",
+ "source": "github-search:game engine language:c++ stars:>200",
+ "stars": 3626,
+ "system": "\u4ece\u96f6\u7f16\u5199\u6e38\u620f\u5f15\u64ce\u6559\u7a0b Writing a game engine tutorial from scratch",
+ "upstream": "https://github.com/ThisisGame/cpp-game-engine-book",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

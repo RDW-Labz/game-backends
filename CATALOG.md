@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-15 21:59 UTC · 284 entries · 104 vendored, 180 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-15 22:16 UTC · 286 entries · 104 vendored, 182 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 66 | 17 | 49 |
+| [engines](#engines) — Game engines and engine subsystems | 68 | 17 | 51 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-15 21:59 UTC · 284 entries · 104 vendored, 180 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 66 entries
+**Game engines and engine subsystems** — 68 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -31,6 +31,7 @@ _Generated 2026-11-15 21:59 UTC · 284 entries · 104 vendored, 180 reference-on
 | [CBG----Clavierhaus-BackGammon — engine-core](entries/engines/cbg-clavierhaus-backgammon-engine-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [clavierhaus/gnubg-android](https://github.com/clavierhaus/gnubg-android) @ `6202857` |
 | [cocos-engine](entries/engines/cocos-cocos-engine/README.md) | Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create | c++ | MIT | reference | [cocos/cocos-engine](https://github.com/cocos/cocos-engine) @ `90ad7072a332` |
 | [Cocos2d-x](entries/engines/cocos2d-x/README.md) | mobile-first 2D/3D engine core | c++ | MIT | reference | [cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x) @ `7a5282a301a1` |
+| [cpp-game-engine-book](entries/engines/thisisgame-cpp-game-engine-book/README.md) | 从零编写游戏引擎教程 Writing a game engine tutorial from scratch | c++ | GPL-3.0 | reference | [ThisisGame/cpp-game-engine-book](https://github.com/ThisisGame/cpp-game-engine-book) @ `c7f9f8095274` |
 | [DefaultEcs](entries/engines/doraku-defaultecs/README.md) | Entity Component System framework aiming for syntax and usage simplicity with maximum performance for game development. | c# | MIT | vendored | [Doraku/DefaultEcs](https://github.com/Doraku/DefaultEcs) @ `508033cfa22d` |
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
@@ -86,6 +87,7 @@ _Generated 2026-11-15 21:59 UTC · 284 entries · 104 vendored, 180 reference-on
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |
+| [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 
 ## physics
 
