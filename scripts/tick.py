@@ -219,7 +219,8 @@ def main():
         for r_ in refs:
             f.write(f"  - reference {r_}\n")
 
-    # commit (and push when a remote exists)
+    # commit (and push when a remote exists). push_all.sh pushes Gitea every tick
+    # and batches GitHub to GITHUB_MIN_INTERVAL_H hours (default 12 h = 2/day).
     def sh(*a):
         return subprocess.run(a, cwd=ROOT, capture_output=True, text=True)
     sh("git", "add", "-A")
