@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:40:15Z",
+ "category": "gameplay",
+ "commit": "2026-06-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Rubonnek/quest-manager \u2014 A powerful and flexible quest management system for the Godot Game Engine",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "quest-manager",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rubonnek-quest-manager",
+ "source": "github-search:quest system game stars:>15",
+ "stars": 200,
+ "system": "A powerful and flexible quest management system for the Godot Game Engine",
+ "upstream": "https://github.com/Rubonnek/quest-manager",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:40:15Z",
+ "category": "gameplay",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SproutyLabs/SproutyDialogs \u2014 A graph-based visual dialogue system plugin for Godot, to create dialogues in your games incredibly easy! \ud83c\udf31",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SproutyDialogs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sproutylabs-sproutydialogs",
+ "source": "github-search:dialogue system game stars:>40",
+ "stars": 184,
+ "system": "A graph-based visual dialogue system plugin for Godot, to create dialogues in your games incredibly easy! \ud83c\udf31",
+ "upstream": "https://github.com/SproutyLabs/SproutyDialogs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

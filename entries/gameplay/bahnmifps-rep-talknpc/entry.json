@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:40:15Z",
+ "category": "gameplay",
+ "commit": "2024-09-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BahnMiFPS/rep-talkNPC \u2014 A versatile and customizable NPC Dialogue system for FiveM servers, offering fresh UI designs and highly configurable elements for a richer gaming experience. Built for the QBCore and ESX frameworks.",
+ "language": "lua",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "rep-talkNPC",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "bahnmifps-rep-talknpc",
+ "source": "github-search:dialogue system game stars:>40",
+ "stars": 60,
+ "system": "A versatile and customizable NPC Dialogue system for FiveM servers, offering fresh UI designs and highly configurable elements for a richer gaming experience. B",
+ "upstream": "https://github.com/BahnMiFPS/rep-talkNPC",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

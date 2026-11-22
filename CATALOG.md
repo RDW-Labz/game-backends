@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 17:24 UTC · 336 entries · 114 vendored, 222 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 17:40 UTC · 342 entries · 116 vendored, 226 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-22 17:24 UTC · 336 entries · 114 vendored, 222 reference-on
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 85 | 25 | 60 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 91 | 27 | 64 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
@@ -174,7 +174,7 @@ _Generated 2026-11-22 17:24 UTC · 336 entries · 114 vendored, 222 reference-on
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 85 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 91 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -234,15 +234,21 @@ _Generated 2026-11-22 17:24 UTC · 336 entries · 114 vendored, 222 reference-on
 | [PokemonTacticalRolePlay](entries/gameplay/sinlessdevil-pokemontacticalroleplay/README.md) | Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI. | c# | none | reference | [SinlessDevil/PokemonTacticalRolePlay](https://github.com/SinlessDevil/PokemonTacticalRolePlay) @ `764123cd5354` |
 | [PonyBehaviourTrees](entries/gameplay/ands-ponybehaviourtrees/README.md) | A set of C# libraries for runtime behaviour tree editing, scripting and inspection | c# | unknown | reference | [ands/PonyBehaviourTrees](https://github.com/ands/PonyBehaviourTrees) @ `2015-12-02 (branch tip at catalogue time)` |
 | [py_trees](entries/gameplay/splintered-reality-py-trees/README.md) | Python implementation of behaviour trees. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees](https://github.com/splintered-reality/py_trees) @ `49bcffd069af` |
+| [quest-manager](entries/gameplay/rubonnek-quest-manager/README.md) | A powerful and flexible quest management system for the Godot Game Engine | gdscript | MIT | reference | [Rubonnek/quest-manager](https://github.com/Rubonnek/quest-manager) @ `2026-06-07 (branch tip at catalogue time)` |
+| [Rakugo-Dialogue-System](entries/gameplay/rakugoteam-rakugo-dialogue-system/README.md) | Inspired by Ren'Py, Rakugo is a project aiming to provide a way to make narrative-based games on Godot easily. Simplify your project, if it is a visual novel, p | gdscript | MIT | vendored | [rakugoteam/Rakugo-Dialogue-System](https://github.com/rakugoteam/Rakugo-Dialogue-System) @ `8cb205634c3c` |
 | [Recast & Detour](entries/gameplay/recastnavigation/README.md) | navmesh generation + pathfinding + crowd steering | c++ | Zlib | vendored | [recastnavigation/recastnavigation](https://github.com/recastnavigation/recastnavigation) @ `9f4ce64458df` |
 | [References](entries/gameplay/aryia-behroziuan-references/README.md) |  Poole, Mackworth & Goebel 1998, p. 1.  Russell & Norvig 2003, p. 55.  Definition of AI as the study of intelligent agents: Poole, Mackworth & Goebel (1998), wh | n/a | none | reference | [Aryia-Behroziuan/References](https://github.com/Aryia-Behroziuan/References) @ `1f0e5ca1f05a` |
+| [rep-talkNPC](entries/gameplay/bahnmifps-rep-talknpc/README.md) | A versatile and customizable NPC Dialogue system for FiveM servers, offering fresh UI designs and highly configurable elements for a richer gaming experience. B | lua | GPL-3.0 | reference | [BahnMiFPS/rep-talkNPC](https://github.com/BahnMiFPS/rep-talkNPC) @ `2024-09-09 (branch tip at catalogue time)` |
 | [Restaurant-Management-System](entries/gameplay/harismuneer-restaurant-management-system/README.md) | 👨‍🍳  An Android based RMS that aims to digitalize the day to day processes of various restaurant operations including ordering, billing, kitchen, hall and inven | java | MIT | vendored | [harismuneer/Restaurant-Management-System](https://github.com/harismuneer/Restaurant-Management-System) @ `0946070cde2f` |
 | [Restaurant_POS_System](entries/gameplay/amritmaurya1504-restaurant-pos-system/README.md) | A full-featured Restaurant POS System built using the MERN Stack to streamline restaurant operations, enhance customer experience, and manage orders, payments,  | javascript | unknown | reference | [amritmaurya1504/Restaurant_POS_System](https://github.com/amritmaurya1504/Restaurant_POS_System) @ `2025-03-02 (branch tip at catalogue time)` |
 | [Revengate — combat](entries/gameplay/revengate-combat/README.md) | combat, AI, pathing, quest or inventory logic | gd | GPL-3.0 | reference | [https://gitlab.com/ygingras/revengate](https://gitlab.com/ygingras/revengate) @ `ad6b2ee` |
 | [RogueSharp](entries/gameplay/faronbracy-roguesharp/README.md) | A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired | c# | MIT | reference | [FaronBracy/RogueSharp](https://github.com/FaronBracy/RogueSharp) @ `2024-08-03 (branch tip at catalogue time)` |
+| [RoseWish](entries/gameplay/ahmadhassan-bted-rosewish/README.md) | A heartfelt, interactive narrative mini-game built in Python for Rose Day. Features custom entities, a dynamic dialogue system, animated particle effects, and i | python | MIT | vendored | [AhmadHassan-BTed/RoseWish](https://github.com/AhmadHassan-BTed/RoseWish) @ `6d3e9e155ba5` |
 | [SAE-based-representation-engineering](entries/gameplay/yuzhaouoe-sae-based-representation-engineering/README.md) | [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering | python | MIT | reference | [yuzhaouoe/SAE-based-representation-engineering](https://github.com/yuzhaouoe/SAE-based-representation-engineering) @ `2026-06-20 (branch tip at catalogue time)` |
 | [seldom_map_nav](entries/gameplay/seldom-se-seldom-map-nav/README.md) | Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency. | rust | Apache-2.0 | vendored | [Seldom-SE/seldom_map_nav](https://github.com/Seldom-SE/seldom_map_nav) @ `5586a0e6ad1f` |
+| [spark-arc-studio](entries/gameplay/1deaaa-spark-arc-studio/README.md) | An autonomous multi-agent IDE for screenplays🎮 & novels📖. One-click to share web performances or drive Unity dialogue systems. Empowering vibe game dev with AI! | python | AGPL-3.0 | reference | [1deaaa/spark-arc-studio](https://github.com/1deaaa/spark-arc-studio) @ `2026-10-14 (branch tip at catalogue time)` |
 | [Spotlight_Storage](entries/gameplay/firemarshmellow-spotlight-storage/README.md) | MIMOSA - short for "Mellow_Labs Inventory Management and Organization System Apparatus". Just like a refreshing mimosa, this system will make your life brighter | javascript | MIT | vendored | [FireMarshmellow/Spotlight_Storage](https://github.com/FireMarshmellow/Spotlight_Storage) @ `4fe8fdafdd45` |
+| [SproutyDialogs](entries/gameplay/sproutylabs-sproutydialogs/README.md) | A graph-based visual dialogue system plugin for Godot, to create dialogues in your games incredibly easy! 🌱 | gdscript | MIT | reference | [SproutyLabs/SproutyDialogs](https://github.com/SproutyLabs/SproutyDialogs) @ `2026-11-19 (branch tip at catalogue time)` |
 | [storaji](entries/gameplay/indomaximtechid-storaji/README.md) | :ledger: The light/responsive inventory management system available on Windows, macOS and Linux. | php | MIT | reference | [IndomaximTechID/storaji](https://github.com/IndomaximTechID/storaji) @ `2023-08-09 (branch tip at catalogue time)` |
 | [StoreDown](entries/gameplay/jliscom-storedown/README.md) | An inventory system that is hopefully simple enough for everyone! | javascript | MIT | vendored | [JLiscom/StoreDown](https://github.com/JLiscom/StoreDown) @ `cb2746330760` |
 | [stronghold-protocol — ai](entries/gameplay/stronghold-protocol-ai/README.md) | combat, AI, pathing, quest or inventory logic | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |

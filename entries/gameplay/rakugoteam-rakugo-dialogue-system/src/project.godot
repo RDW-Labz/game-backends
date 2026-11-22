@@ -1,0 +1,54 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[addons]
+
+rakugo/rollback_steps=10
+
+[application]
+
+config/name="Rakugo Dialogue System"
+config/tags=PackedStringArray("addon", "rakugo")
+config/features=PackedStringArray("4.4")
+config/icon="res://WindowIcon.png"
+addons/rakugo/game_version=1.0
+addons/rakugo/narrator_name="narrator"
+addons/rakugo/debug=false
+addons/rakugo/save_folder="user://saves"
+
+[autoload]
+
+Rakugo="*res://addons/Rakugo/Rakugo.gd"
+
+[debug]
+
+gdscript/warnings/return_value_discarded=false
+gdscript/warnings/unused_argument=false
+
+[editor]
+
+script/search_in_file_extensions=PackedStringArray("gd", "gdshader", "rk")
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/RakuScript_Color/plugin.cfg", "res://addons/Rakugo/plugin.cfg", "res://addons/gut/plugin.cfg", "res://addons/rakugo_regex_lab/plugin.cfg")
+
+[filesystem]
+
+import/blender/enabled=false
+import/fbx/enabled=false
+
+[physics]
+
+common/enable_pause_aware_picking=true
+
+[rendering]
+
+environment/defaults/default_environment="res://default_env.tres"

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:40:15Z",
+ "category": "gameplay",
+ "commit": "2026-10-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "1deaaa/spark-arc-studio \u2014 An autonomous multi-agent IDE for screenplays\ud83c\udfae & novels\ud83d\udcd6. One-click to share web performances or drive Unity dialogue systems. Empowering vibe game dev with AI!",
+ "language": "python",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "spark-arc-studio",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "1deaaa-spark-arc-studio",
+ "source": "github-search:dialogue system game stars:>40",
+ "stars": 69,
+ "system": "An autonomous multi-agent IDE for screenplays\ud83c\udfae & novels\ud83d\udcd6. One-click to share web performances or drive Unity dialogue systems. Empowering vibe game dev with AI!",
+ "upstream": "https://github.com/1deaaa/spark-arc-studio",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

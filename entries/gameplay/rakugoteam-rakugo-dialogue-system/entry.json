@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T17:40:13Z",
+ "category": "gameplay",
+ "commit": "8cb205634c3c",
+ "delivery": "vendored",
+ "description": "rakugoteam/Rakugo-Dialogue-System \u2014 Inspired by Ren'Py, Rakugo is a project aiming to provide a way to make narrative-based games on Godot easily. Simplify your project, if it is a visual novel, point and click, RPG, interactive text game or many other styles and blends of styles.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Rakugo-Dialogue-System",
+ "size_bytes": 443860,
+ "slug": "rakugoteam-rakugo-dialogue-system",
+ "source": "github-search:dialogue system game stars:>40",
+ "stars": 280,
+ "system": "Inspired by Ren'Py, Rakugo is a project aiming to provide a way to make narrative-based games on Godot easily. Simplify your project, if it is a visual novel, p",
+ "upstream": "https://github.com/rakugoteam/Rakugo-Dialogue-System",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

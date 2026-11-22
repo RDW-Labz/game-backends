@@ -1439,3 +1439,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/kryptonb-inventory-management-system
   - reference gameplay/mhy20401-inventory-management-system-mern-crud-app
   - reference gameplay/kinjaldas-inventory-management-system-django
+
+- **2026-11-22 17:40 UTC** — tick 626: +2 screened, +4 reference, 1 skipped, catalogue=342
+  - added gameplay/ahmadhassan-bted-rosewish (MIT, vendored)
+  - added gameplay/rakugoteam-rakugo-dialogue-system (MIT, vendored)
+  - reference gameplay/sproutylabs-sproutydialogs
+  - reference gameplay/1deaaa-spark-arc-studio
+  - reference gameplay/bahnmifps-rep-talknpc
+  - reference gameplay/rubonnek-quest-manager

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T17:40:10Z",
+ "category": "gameplay",
+ "commit": "6d3e9e155ba5",
+ "delivery": "vendored",
+ "description": "AhmadHassan-BTed/RoseWish \u2014 A heartfelt, interactive narrative mini-game built in Python for Rose Day. Features custom entities, a dynamic dialogue system, animated particle effects, and integrated audio to deliver a unique, romantic digital experience.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "RoseWish",
+ "size_bytes": 66932,
+ "slug": "ahmadhassan-bted-rosewish",
+ "source": "github-search:dialogue system game stars:>40",
+ "stars": 4800,
+ "system": "A heartfelt, interactive narrative mini-game built in Python for Rose Day. Features custom entities, a dynamic dialogue system, animated particle effects, and i",
+ "upstream": "https://github.com/AhmadHassan-BTed/RoseWish",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
