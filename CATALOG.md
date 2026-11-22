@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 22:28 UTC · 446 entries · 140 vendored, 306 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 22:44 UTC · 452 entries · 141 vendored, 311 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,8 +10,8 @@ _Generated 2026-11-22 22:28 UTC · 446 entries · 140 vendored, 306 reference-on
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
-| [save-state](#save-state) — Save / state systems | 61 | 17 | 44 |
-| [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
+| [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
+| [procgen](#procgen) — Procedural generation | 43 | 15 | 28 |
 
 
 ## engines
@@ -401,7 +401,7 @@ _Generated 2026-11-22 22:28 UTC · 446 entries · 140 vendored, 306 reference-on
 
 ## save-state
 
-**Save / state systems** — 61 entries
+**Save / state systems** — 66 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -417,6 +417,8 @@ _Generated 2026-11-22 22:28 UTC · 446 entries · 140 vendored, 306 reference-on
 | [COFFI](entries/save-state/serge1-coffi/README.md) | A header-only C++ library for accessing files in COFF binary format. (Including Windows PE/PE+ formats) | c++ | MIT | reference | [serge1/COFFI](https://github.com/serge1/COFFI) @ `2026-04-19 (branch tip at catalogue time)` |
 | [cornflakes](entries/save-state/deeptir18-cornflakes/README.md) | A zero-copy serialization library and networking stack. | rust | unknown | reference | [deeptir18/cornflakes](https://github.com/deeptir18/cornflakes) @ `2024-01-19 (branch tip at catalogue time)` |
 | [cpp-serializers](entries/save-state/thekvs-cpp-serializers/README.md) | Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++ | c++ | unknown | reference | [thekvs/cpp-serializers](https://github.com/thekvs/cpp-serializers) @ `2020-01-28 (branch tip at catalogue time)` |
+| [Daedalus](entries/save-state/auties00-daedalus/README.md) | Daedalus is a general-purpose library for working with text and binary data formats. Its ambition is to bring exceptional performance and a natural Java API to  | java | none | reference | [Auties00/Daedalus](https://github.com/Auties00/Daedalus) @ `6bded314bae9` |
+| [DataKit](entries/save-state/quickbirdeng-datakit/README.md) | A Swift library to easily read and write binary formatted data using a modern, declarative interface. | swift | MIT | vendored | [QuickBirdEng/DataKit](https://github.com/QuickBirdEng/DataKit) @ `37d845d584c3` |
 | [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
 | [evolu](entries/save-state/evoluhq-evolu/README.md) | Local-first platform and TypeScript library | typescript | MIT | reference | [evoluhq/evolu](https://github.com/evoluhq/evolu) @ `4eedb2272841` |
 | [fastgltf](entries/save-state/spnda-fastgltf/README.md) | A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability | c++ | MIT | reference | [spnda/fastgltf](https://github.com/spnda/fastgltf) @ `2026-11-11 (branch tip at catalogue time)` |
@@ -430,6 +432,7 @@ _Generated 2026-11-22 22:28 UTC · 446 entries · 140 vendored, 306 reference-on
 | [geojson](entries/save-state/georust-geojson/README.md) | Library for serializing the GeoJSON vector GIS file format | rust | Apache-2.0 | reference | [georust/geojson](https://github.com/georust/geojson) @ `2026-11-18 (branch tip at catalogue time)` |
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
 | [Hexi](entries/save-state/emberemu-hexi/README.md) | Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy! | c++ | Apache-2.0 | reference | [EmberEmu/Hexi](https://github.com/EmberEmu/Hexi) @ `2026-04-19 (branch tip at catalogue time)` |
+| [houio](entries/save-state/dkoerner-houio/README.md) | C++ library for reading and writing of houdini geometry file format (json/binary json) | objective-c | unknown | reference | [dkoerner/houio](https://github.com/dkoerner/houio) @ `2020-08-10 (branch tip at catalogue time)` |
 | [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
 | [json-joy](entries/save-state/streamich-json-joy/README.md) | json-joy is a library that implements cutting-edge real-time and collaborative editing algorithms and utilities for JSON data models, with a focus on developing | typescript | unknown | reference | [streamich/json-joy](https://github.com/streamich/json-joy) @ `2026-09-08 (branch tip at catalogue time)` |
 | [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
@@ -455,8 +458,10 @@ _Generated 2026-11-22 22:28 UTC · 446 entries · 140 vendored, 306 reference-on
 | [SaveState](entries/save-state/matteo842-savestate/README.md) | Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ e | python | GPL-3.0 | reference | [Matteo842/SaveState](https://github.com/Matteo842/SaveState) @ `7557b3c5a788` |
 | [Serialize.Linq](entries/save-state/esskar-serialize-linq/README.md) | C# library to serialize LINQ expressions | c# | MIT | vendored | [esskar/Serialize.Linq](https://github.com/esskar/Serialize.Linq) @ `44b715ffbea5` |
 | [Server-crashes-on-player-connect](entries/save-state/teehee123123-server-crashes-on-player-connect/README.md) | ---- Minecraft Crash Report ---- // Ooh. Shiny.  Time: 7/4/13 11:37 PM Description: Ticking entity  java.lang.OutOfMemoryError: Java heap space 	at net.minecraf | n/a | unknown | reference | [Teehee123123/Server-crashes-on-player-connect](https://github.com/Teehee123123/Server-crashes-on-player-connect) @ `2022-08-31 (branch tip at catalogue time)` |
+| [space_packet_parser](entries/save-state/lasp-space-packet-parser/README.md) | A CCSDS telemetry packet decoding library based on the XTCE packet format description standard. | python | unknown | reference | [lasp/space_packet_parser](https://github.com/lasp/space_packet_parser) @ `2026-11-04 (branch tip at catalogue time)` |
 | [SQLite](entries/save-state/sqlite/README.md) | embedded SQL database engine (single-file world saves) | c | Public-Domain | reference | [sqlite/sqlite](https://github.com/sqlite/sqlite) @ `e5cb4b09573a` |
 | [struct2json](entries/save-state/armink-struct2json/README.md) | A fast convert library between the JSON and C structure. Implement structure serialization and deserialization for C. / C 结构体与 JSON 快速互转库，快速实现 C 结构体的序列化及反序列化 | c | MIT | reference | [armink/struct2json](https://github.com/armink/struct2json) @ `2022-01-07 (branch tip at catalogue time)` |
+| [SuperBMD](entries/save-state/sage-of-mirrors-superbmd/README.md) | A library to import and export various 3D model formats into the Binary Model (BMD) format. | c# | unknown | reference | [Sage-of-Mirrors/SuperBMD](https://github.com/Sage-of-Mirrors/SuperBMD) @ `2022-12-08 (branch tip at catalogue time)` |
 | [SyncedStore](entries/save-state/yousefed-syncedstore/README.md) | SyncedStore CRDT is an easy-to-use library for building live, collaborative applications that sync automatically. | typescript | MIT | reference | [YousefED/SyncedStore](https://github.com/YousefED/SyncedStore) @ `2024-03-01 (branch tip at catalogue time)` |
 | [thrive — saving](entries/save-state/thrive-saving/README.md) | persistence: save/load, snapshot or state serialisation | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [VCMI — serializer](entries/save-state/vcmi-serializer/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
@@ -469,7 +474,7 @@ _Generated 2026-11-22 22:28 UTC · 446 entries · 140 vendored, 306 reference-on
 
 ## procgen
 
-**Procedural generation** — 42 entries
+**Procedural generation** — 43 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -492,6 +497,7 @@ _Generated 2026-11-22 22:28 UTC · 446 entries · 140 vendored, 306 reference-on
 | [freeminer — mapgen](entries/procgen/freeminer-src-mapgen/README.md) | voxel map generation (biomes, caves, ores) | c++ | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e9d074` |
 | [generator](entries/procgen/ilmola-generator/README.md) | A procedural geometry generation library for C++11 | c++ | LGPL-2.1 | reference | [ilmola/generator](https://github.com/ilmola/generator) @ `2023-01-02 (branch tip at catalogue time)` |
 | [godot-constraint-solving](entries/procgen/alexeybond-godot-constraint-solving/README.md) | WFC (Wave Function Collapse) and generic constraint satisfaction problem solver implementation for Godot 4 | gdscript | MIT | vendored | [AlexeyBond/godot-constraint-solving](https://github.com/AlexeyBond/godot-constraint-solving) @ `45e3edd8ea12` |
+| [infinigen](entries/procgen/princeton-vl-infinigen/README.md) | Infinite Photorealistic Worlds using Procedural Generation | python | BSD-3-Clause | reference | [princeton-vl/infinigen](https://github.com/princeton-vl/infinigen) @ `2026-11-11 (branch tip at catalogue time)` |
 | [ndwfc](entries/procgen/lingdong-ndwfc/README.md) | 🌊💥 N-dimensional Wave Function Collapse with infinite canvas | javascript | MIT | vendored | [LingDong-/ndwfc](https://github.com/LingDong-/ndwfc) @ `3479af8ee855` |
 | [noise](entries/procgen/spongepowered-noise/README.md) | Noise generation library for Java, based on the libnoise C++ library. It is used to generate coherent noise, a type of smoothly-changing noise. It can also gene | java | MIT | reference | [SpongePowered/noise](https://github.com/SpongePowered/noise) @ `2026-11-11 (branch tip at catalogue time)` |
 | [noise-rs](entries/procgen/razaekel-noise-rs/README.md) | Procedural noise generation library for Rust. | rust | Apache-2.0 | reference | [Razaekel/noise-rs](https://github.com/Razaekel/noise-rs) @ `2025-02-14 (branch tip at catalogue time)` |

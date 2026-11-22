@@ -1587,3 +1587,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/openhft-chronicle-wire
   - reference save-state/serge1-coffi
   - reference save-state/j3pic-lisp-binary
+
+- **2026-11-22 22:44 UTC** — tick 645: +2 screened, +4 reference, 1 skipped, catalogue=452
+  - added save-state/auties00-daedalus (none, reference)
+  - added save-state/quickbirdeng-datakit (MIT, vendored)
+  - reference save-state/sage-of-mirrors-superbmd
+  - reference save-state/dkoerner-houio
+  - reference save-state/lasp-space-packet-parser
+  - reference procgen/princeton-vl-infinigen

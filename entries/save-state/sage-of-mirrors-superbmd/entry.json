@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:44:07Z",
+ "category": "save-state",
+ "commit": "2022-12-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Sage-of-Mirrors/SuperBMD \u2014 A library to import and export various 3D model formats into the Binary Model (BMD) format.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "SuperBMD",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "sage-of-mirrors-superbmd",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 42,
+ "system": "A library to import and export various 3D model formats into the Binary Model (BMD) format.",
+ "upstream": "https://github.com/Sage-of-Mirrors/SuperBMD",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

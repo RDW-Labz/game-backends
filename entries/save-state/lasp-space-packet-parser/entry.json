@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:44:07Z",
+ "category": "save-state",
+ "commit": "2026-11-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "lasp/space_packet_parser \u2014 A CCSDS telemetry packet decoding library based on the XTCE packet format description standard.",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "space_packet_parser",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "lasp-space-packet-parser",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 41,
+ "system": "A CCSDS telemetry packet decoding library based on the XTCE packet format description standard.",
+ "upstream": "https://github.com/lasp/space_packet_parser",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-22T22:44:04Z",
+ "category": "save-state",
+ "commit": "6bded314bae9",
+ "delivery": "reference",
+ "description": "Auties00/Daedalus \u2014 Daedalus is a general-purpose library for working with text and binary data formats. Its ambition is to bring exceptional performance and a natural Java API to every format it supports. You write the models. Daedalus generates the code that reads, writes, and measures them.",
+ "language": "java",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Daedalus",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 4148017,
+ "slug": "auties00-daedalus",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 46,
+ "system": "Daedalus is a general-purpose library for working with text and binary data formats. Its ambition is to bring exceptional performance and a natural Java API to ",
+ "upstream": "https://github.com/Auties00/Daedalus",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

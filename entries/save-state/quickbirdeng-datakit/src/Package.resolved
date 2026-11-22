@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "CRC",
+        "repositoryURL": "https://github.com/QuickBirdEng/crc-swift.git",
+        "state": {
+          "branch": null,
+          "revision": "0616be13dec7b6dc4b55e266cba39c1772902b08",
+          "version": "0.1.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

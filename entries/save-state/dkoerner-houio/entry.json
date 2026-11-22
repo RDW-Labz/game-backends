@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:44:07Z",
+ "category": "save-state",
+ "commit": "2020-08-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dkoerner/houio \u2014 C++ library for reading and writing of houdini geometry file format (json/binary json)",
+ "language": "objective-c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "houio",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "dkoerner-houio",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 42,
+ "system": "C++ library for reading and writing of houdini geometry file format (json/binary json)",
+ "upstream": "https://github.com/dkoerner/houio",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

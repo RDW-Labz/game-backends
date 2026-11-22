@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T22:44:06Z",
+ "category": "save-state",
+ "commit": "37d845d584c3",
+ "delivery": "vendored",
+ "description": "QuickBirdEng/DataKit \u2014 A Swift library to easily read and write binary formatted data using a modern, declarative interface.",
+ "language": "swift",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "DataKit",
+ "size_bytes": 0,
+ "slug": "quickbirdeng-datakit",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 46,
+ "system": "A Swift library to easily read and write binary formatted data using a modern, declarative interface.",
+ "upstream": "https://github.com/QuickBirdEng/DataKit",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
