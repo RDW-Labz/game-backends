@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-22T23:16:05Z",
+ "category": "procgen",
+ "commit": "559456457530",
+ "delivery": "reference",
+ "description": "SRombauts/UE4ProceduralMesh \u2014 UE4.7 Procedural Mesh Generation plugin",
+ "language": "c++",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "UE4ProceduralMesh",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 32352,
+ "slug": "srombauts-ue4proceduralmesh",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 173,
+ "system": "UE4.7 Procedural Mesh Generation plugin",
+ "upstream": "https://github.com/SRombauts/UE4ProceduralMesh",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

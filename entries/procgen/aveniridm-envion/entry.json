@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:16:06Z",
+ "category": "procgen",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "aveniridm/envion \u2014 Ecosystem in Pure Data designed for algorithmic and procedural composition, musique concr\u00e8te, and experimental sound processing. It includes tools for slicing, dynamic envelopes, texture generation, and multi-channel management.",
+ "language": "html",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "envion",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "aveniridm-envion",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 166,
+ "system": "Ecosystem in Pure Data designed for algorithmic and procedural composition, musique concr\u00e8te, and experimental sound processing. It includes tools for slicing, ",
+ "upstream": "https://github.com/aveniridm/envion",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

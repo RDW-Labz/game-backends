@@ -1603,3 +1603,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/siggig-proceduralmeshdemos
   - reference procgen/r2e-gym-r2e-gym
   - reference procgen/weigert-soilmachine
+
+- **2026-11-22 23:16 UTC** — tick 647: +2 screened, +4 reference, 1 skipped, catalogue=464
+  - added procgen/phiresky-procedural-cities (AGPL-3.0, reference)
+  - added procgen/srombauts-ue4proceduralmesh (none, reference)
+  - reference procgen/kidscancode-godot3-procgen-demos
+  - reference procgen/redblobgames-1843-planet-generation
+  - reference procgen/aveniridm-envion
+  - reference procgen/wwwtyro-space-2d

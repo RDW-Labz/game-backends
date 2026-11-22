@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:16:06Z",
+ "category": "procgen",
+ "commit": "2016-10-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "wwwtyro/space-2d \u2014 Fast procedural 2D space scene generation on the GPU.",
+ "language": "javascript",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "space-2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "wwwtyro-space-2d",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 145,
+ "system": "Fast procedural 2D space scene generation on the GPU.",
+ "upstream": "https://github.com/wwwtyro/space-2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

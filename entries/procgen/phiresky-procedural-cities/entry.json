@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T23:16:03Z",
+ "category": "procgen",
+ "commit": "f0c2c86e4289",
+ "delivery": "reference",
+ "description": "phiresky/procedural-cities \u2014 Information about procedural city generation",
+ "language": "tex",
+ "license": "AGPL-3.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "copyleft-reference",
+ "name": "procedural-cities",
+ "reference_reason": "licence: AGPL-3.0 (copyleft-reference)",
+ "size_bytes": 40252,
+ "slug": "phiresky-procedural-cities",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 177,
+ "system": "Information about procedural city generation",
+ "upstream": "https://github.com/phiresky/procedural-cities",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:16:06Z",
+ "category": "procgen",
+ "commit": "2020-07-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kidscancode/godot3_procgen_demos \u2014 Exploring Procedural Generation algorithms in Godot",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot3_procgen_demos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kidscancode-godot3-procgen-demos",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 173,
+ "system": "Exploring Procedural Generation algorithms in Godot",
+ "upstream": "https://github.com/kidscancode/godot3_procgen_demos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

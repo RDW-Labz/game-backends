@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:16:06Z",
+ "category": "procgen",
+ "commit": "2026-06-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "redblobgames/1843-planet-generation \u2014 One week experiment: learn how to procedurally generate maps on a sphere. Code is messy but it runs.",
+ "language": "javascript",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "1843-planet-generation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "redblobgames-1843-planet-generation",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 168,
+ "system": "One week experiment: learn how to procedurally generate maps on a sphere. Code is messy but it runs.",
+ "upstream": "https://github.com/redblobgames/1843-planet-generation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
