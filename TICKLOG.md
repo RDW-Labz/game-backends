@@ -1539,3 +1539,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/dapucita-haxbotron
   - reference netcode/jjclark1982-factorio-control-panel
   - reference netcode/xen2-xenko-clientserversample
+
+- **2026-11-22 21:08 UTC** — tick 639: +2 screened, +4 reference, 22 skipped, catalogue=416
+  - added netcode/genasg-unityunetmovement (MIT, vendored)
+  - added netcode/relic-authoritativemovementexample (MIT, vendored)
+  - reference netcode/thepie88-fo4-wrld
+  - reference save-state/jessey-git-fx-gltf
+  - reference save-state/emberemu-hexi
+  - reference save-state/neobrain-blobify

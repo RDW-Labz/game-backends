@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T21:08:09Z",
+ "category": "netcode",
+ "commit": "927f772cfb1a",
+ "delivery": "vendored",
+ "description": "GenaSG/UnityUnetMovement \u2014 This repository contains Unity3d unet based server-authoritative movement script with client-side prediction and reconciliation",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "UnityUnetMovement",
+ "size_bytes": 39850,
+ "slug": "genasg-unityunetmovement",
+ "source": "github-search:server authoritative movement stars:>5",
+ "stars": 174,
+ "system": "This repository contains Unity3d unet based server-authoritative movement script with client-side prediction and reconciliation  ",
+ "upstream": "https://github.com/GenaSG/UnityUnetMovement",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

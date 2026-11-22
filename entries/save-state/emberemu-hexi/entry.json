@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:08:13Z",
+ "category": "save-state",
+ "commit": "2026-04-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "EmberEmu/Hexi \u2014 Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy!",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "Hexi",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "emberemu-hexi",
+ "source": "github-search:serialization library c++ stars:>150",
+ "stars": 291,
+ "system": "Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy!",
+ "upstream": "https://github.com/EmberEmu/Hexi",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

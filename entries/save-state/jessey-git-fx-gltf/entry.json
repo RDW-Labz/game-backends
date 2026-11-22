@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:08:13Z",
+ "category": "save-state",
+ "commit": "2022-01-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jessey-git/fx-gltf \u2014 A C++14/C++17 header-only library for simple, efficient, and robust serialization/deserialization of glTF 2.0",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "fx-gltf",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jessey-git-fx-gltf",
+ "source": "github-search:serialization library c++ stars:>150",
+ "stars": 361,
+ "system": "A C++14/C++17 header-only library for simple, efficient, and robust serialization/deserialization of glTF 2.0",
+ "upstream": "https://github.com/jessey-git/fx-gltf",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

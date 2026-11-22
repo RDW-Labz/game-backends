@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 20:52 UTC · 410 entries · 133 vendored, 277 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 21:08 UTC · 416 entries · 135 vendored, 281 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,8 +9,8 @@ _Generated 2026-11-22 20:52 UTC · 410 entries · 133 vendored, 277 reference-on
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
-| [netcode](#netcode) — Networking / netcode | 111 | 33 | 78 |
-| [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
+| [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
+| [save-state](#save-state) — Save / state systems | 31 | 12 | 19 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
 
@@ -280,7 +280,7 @@ _Generated 2026-11-22 20:52 UTC · 410 entries · 133 vendored, 277 reference-on
 
 ## netcode
 
-**Networking / netcode** — 111 entries
+**Networking / netcode** — 114 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -288,6 +288,7 @@ _Generated 2026-11-22 20:52 UTC · 410 entries · 133 vendored, 277 reference-on
 | [agones](entries/netcode/agones-dev-agones/README.md) | Dedicated Game Server Hosting and Scaling for Multiplayer Games on Kubernetes | go | Apache-2.0 | reference | [agones-dev/agones](https://github.com/agones-dev/agones) @ `a71420b2b34a` |
 | [ancientbeast — multiplayer](entries/netcode/ancientbeast-multiplayer/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [arcomage-hd](entries/netcode/arcomage-arcomage-hd/README.md) | Web-based, free and open source, remastered 3D clone of 3DO/NWC's 2000 card game Arcomage. 16 languages. Desktop or mobile Android iOS. Online or offline PWA. A | typescript | MIT | reference | [arcomage/arcomage-hd](https://github.com/arcomage/arcomage-hd) @ `2025-11-15 (branch tip at catalogue time)` |
+| [AuthoritativeMovementExample](entries/netcode/relic-authoritativemovementexample/README.md) | An example of authoritative server movement using Forge Networking Remastered for Unity. | c# | MIT | vendored | [Relic/AuthoritativeMovementExample](https://github.com/Relic/AuthoritativeMovementExample) @ `e4922771b2a7` |
 | [Backdash](entries/netcode/delta3-studio-backdash/README.md) | C# Rollback network SDK | c# | MIT | reference | [Delta3-Studio/Backdash](https://github.com/Delta3-Studio/Backdash) @ `2026-11-10 (branch tip at catalogue time)` |
 | [backroll-rs](entries/netcode/houraiteahouse-backroll-rs/README.md) | A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode. | rust | ISC | reference | [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) @ `2023-03-13 (branch tip at catalogue time)` |
 | [BeamMP-Server](entries/netcode/beammp-beammp-server/README.md) | Server for the multiplayer mod BeamMP for BeamNG.drive | c++ | AGPL-3.0 | reference | [BeamMP/BeamMP-Server](https://github.com/BeamMP/BeamMP-Server) @ `2026-09-23 (branch tip at catalogue time)` |
@@ -311,6 +312,7 @@ _Generated 2026-11-22 20:52 UTC · 410 entries · 133 vendored, 277 reference-on
 | [factorio-control-panel](entries/netcode/jjclark1982-factorio-control-panel/README.md) | Web admin interface for Factorio headless game server | javascript | unknown | reference | [jjclark1982/factorio-control-panel](https://github.com/jjclark1982/factorio-control-panel) @ `2016-11-22 (branch tip at catalogue time)` |
 | [fifa-api](entries/netcode/sauravhiremath-fifa-api/README.md) | React + Node.js + socket.io -- Multiplayer Game server | javascript | MIT | reference | [sauravhiremath/fifa-api](https://github.com/sauravhiremath/fifa-api) @ `2023-03-05 (branch tip at catalogue time)` |
 | [fMath](entries/netcode/8izips-fmath/README.md) | fixed point math library for deterministic lockstep network game in Unity | c# | MIT | reference | [8izips/fMath](https://github.com/8izips/fMath) @ `2026-11-21 (branch tip at catalogue time)` |
+| [FO4_Wrld](entries/netcode/thepie88-fo4-wrld/README.md) | Fallout 4 1.11.191 multiplayer mod (solo-dev). Sync over authoritative UDP server (SACK-reliable, JSON persistence): movement, full-body skeleton animation, con | c++ | unknown | reference | [ThePie88/FO4_Wrld](https://github.com/ThePie88/FO4_Wrld) @ `2026-10-20 (branch tip at catalogue time)` |
 | [Freeciv — networking](entries/netcode/freeciv-common-networking/README.md) | turn-based client/server protocol and packet layer | c | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756d5b07` |
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
@@ -384,6 +386,7 @@ _Generated 2026-11-22 20:52 UTC · 410 entries · 133 vendored, 277 reference-on
 | [tenio](entries/netcode/congcoi123-tenio/README.md) | TenIO is an open-source project for making online games that includes a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games and | java | MIT | vendored | [congcoi123/tenio](https://github.com/congcoi123/tenio) @ `5df792294b31` |
 | [TF.EX](entries/netcode/fcornaire-tf-ex/README.md) | Rollback netcode for TowerFall | c# | GPL-3.0 | reference | [Fcornaire/TF.EX](https://github.com/Fcornaire/TF.EX) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Tolmachev-Netcode-SDK](entries/netcode/billionerleha-111-tolmachev-netcode-sdk/README.md) | Official TolmachЁv Netcode SDK v36.0.0. Deterministic synchronization, Zero Client-Side Prediction, and topological mathematics for MFT, GameDev, and IoT. | n/a | none | reference | [billionerleha-111/Tolmachev-Netcode-SDK](https://github.com/billionerleha-111/Tolmachev-Netcode-SDK) @ `e7bc77856fb7` |
+| [UnityUnetMovement](entries/netcode/genasg-unityunetmovement/README.md) | This repository contains Unity3d unet based server-authoritative movement script with client-side prediction and reconciliation   | c# | MIT | vendored | [GenaSG/UnityUnetMovement](https://github.com/GenaSG/UnityUnetMovement) @ `927f772cfb1a` |
 | [VCMI — server](entries/netcode/vcmi-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [voidstrike](entries/netcode/braedonsaunders-voidstrike/README.md) | Multiplayer real-time strategy game running entirely in the browser. WebGPU graphics, serverless P2P networking via WebRTC/Nostr, deterministic lockstep simulat | typescript | MIT | reference | [braedonsaunders/voidstrike](https://github.com/braedonsaunders/voidstrike) @ `4df0235116b7` |
 | [voldorium](entries/netcode/enrique363-voldorium/README.md) | Native Windows and Linux port of SoulCalibur (Dreamcast) by static recompilation: 16:9, online versus with rollback netcode (Windows and Linux play together). R | c | unknown | reference | [enrique363/voldorium](https://github.com/enrique363/voldorium) @ `2026-11-14 (branch tip at catalogue time)` |
@@ -398,12 +401,13 @@ _Generated 2026-11-22 20:52 UTC · 410 entries · 133 vendored, 277 reference-on
 
 ## save-state
 
-**Save / state systems** — 28 entries
+**Save / state systems** — 31 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [alpaca](entries/save-state/p-ranav-alpaca/README.md) | Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code | c++ | MIT | vendored | [p-ranav/alpaca](https://github.com/p-ranav/alpaca) @ `8f022bdb5106` |
 | [biomes-game — storage](entries/save-state/biomes-game-storage/README.md) | persistence: save/load, snapshot or state serialisation | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
+| [blobify](entries/save-state/neobrain-blobify/README.md) | C++17 library for all your binary de-/serialization needs | c++ | BSL-1.0 | reference | [neobrain/blobify](https://github.com/neobrain/blobify) @ `2023-12-11 (branch tip at catalogue time)` |
 | [capnproto](entries/save-state/capnproto-capnproto/README.md) | Cap'n Proto serialization/RPC system - core tools and C++ library | c++ | MIT | vendored | [capnproto/capnproto](https://github.com/capnproto/capnproto) @ `5f160ba386e6` |
 | [cereal](entries/save-state/cereal/README.md) | C++11 serialization: JSON/binary/XML archives, versioning | c++ | BSD-3-Clause | vendored | [USCiLab/cereal](https://github.com/USCiLab/cereal) @ `22a1b369f39b` |
 | [cista](entries/save-state/felixguendling-cista/README.md) | Cista is a simple, high-performance, zero-copy C++ serialization & reflection library. | c++ | MIT | reference | [felixguendling/cista](https://github.com/felixguendling/cista) @ `2026-11-06 (branch tip at catalogue time)` |
@@ -414,7 +418,9 @@ _Generated 2026-11-22 20:52 UTC · 410 entries · 133 vendored, 277 reference-on
 | [flatcc](entries/save-state/dvidelabs-flatcc/README.md) | FlatBuffers Compiler and Library in C for C | c | Apache-2.0 | vendored | [dvidelabs/flatcc](https://github.com/dvidelabs/flatcc) @ `0df9c097a19b` |
 | [Freeciv — savegame](entries/save-state/freeciv-savegame/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [FTC-Skystone-Dark-Angels-Romania-2020](entries/save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020/README.md) | NOTICE This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season. If you are looking for the current season's FTC SDK software | java | BSD-3-Clause | vendored | [chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020](https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020) @ `b5132793582a` |
+| [fx-gltf](entries/save-state/jessey-git-fx-gltf/README.md) | A C++14/C++17 header-only library for simple, efficient, and robust serialization/deserialization of glTF 2.0 | c++ | MIT | reference | [jessey-git/fx-gltf](https://github.com/jessey-git/fx-gltf) @ `2022-01-01 (branch tip at catalogue time)` |
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
+| [Hexi](entries/save-state/emberemu-hexi/README.md) | Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy! | c++ | Apache-2.0 | reference | [EmberEmu/Hexi](https://github.com/EmberEmu/Hexi) @ `2026-04-19 (branch tip at catalogue time)` |
 | [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
 | [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |

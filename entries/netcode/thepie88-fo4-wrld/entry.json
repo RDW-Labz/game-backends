@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:08:13Z",
+ "category": "netcode",
+ "commit": "2026-10-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ThePie88/FO4_Wrld \u2014 Fallout 4 1.11.191 multiplayer mod (solo-dev). Sync over authoritative UDP server (SACK-reliable, JSON persistence): movement, full-body skeleton animation, container ops with anti-dupe, kills, worldstate. C++ DLL clients via DXGI proxy + Creation Engine scene-graph injection.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "FO4_Wrld",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "thepie88-fo4-wrld",
+ "source": "github-search:server authoritative movement stars:>5",
+ "stars": 18,
+ "system": "Fallout 4 1.11.191 multiplayer mod (solo-dev). Sync over authoritative UDP server (SACK-reliable, JSON persistence): movement, full-body skeleton animation, con",
+ "upstream": "https://github.com/ThePie88/FO4_Wrld",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

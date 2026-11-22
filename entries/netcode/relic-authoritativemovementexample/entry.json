@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T21:08:12Z",
+ "category": "netcode",
+ "commit": "e4922771b2a7",
+ "delivery": "vendored",
+ "description": "Relic/AuthoritativeMovementExample \u2014 An example of authoritative server movement using Forge Networking Remastered for Unity.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "AuthoritativeMovementExample",
+ "size_bytes": 229658,
+ "slug": "relic-authoritativemovementexample",
+ "source": "github-search:server authoritative movement stars:>5",
+ "stars": 62,
+ "system": "An example of authoritative server movement using Forge Networking Remastered for Unity.",
+ "upstream": "https://github.com/Relic/AuthoritativeMovementExample",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
