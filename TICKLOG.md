@@ -1579,3 +1579,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/streamich-json-joy
   - reference save-state/inditextech-weavejs
   - reference save-state/asonge-loom
+
+- **2026-11-22 22:28 UTC** — tick 644: +2 screened, +4 reference, 4 skipped, catalogue=446
+  - added save-state/mapbox-pbf (BSD-3-Clause, vendored)
+  - added save-state/kaitai-io-kaitai-struct-formats (none, reference)
+  - reference save-state/libimobiledevice-libplist
+  - reference save-state/openhft-chronicle-wire
+  - reference save-state/serge1-coffi
+  - reference save-state/j3pic-lisp-binary

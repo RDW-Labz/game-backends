@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:28:06Z",
+ "category": "save-state",
+ "commit": "2026-04-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "serge1/COFFI \u2014 A header-only C++ library for accessing files in COFF binary format. (Including Windows PE/PE+ formats)",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "COFFI",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "serge1-coffi",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 222,
+ "system": "A header-only C++ library for accessing files in COFF binary format. (Including Windows PE/PE+ formats)",
+ "upstream": "https://github.com/serge1/COFFI",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

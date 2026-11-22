@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:28:06Z",
+ "category": "save-state",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OpenHFT/Chronicle-Wire \u2014 A Low Garbage Java Serialisation Library that supports multiple formats",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "Chronicle-Wire",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "openhft-chronicle-wire",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 606,
+ "system": "A Low Garbage Java Serialisation Library that supports multiple formats",
+ "upstream": "https://github.com/OpenHFT/Chronicle-Wire",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

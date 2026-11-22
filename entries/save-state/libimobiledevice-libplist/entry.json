@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:28:06Z",
+ "category": "save-state",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "libimobiledevice/libplist \u2014 A library to handle Apple Property List format in binary or XML",
+ "language": "c",
+ "license": "LGPL-2.1",
+ "license_verdict": "copyleft-reference",
+ "name": "libplist",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-2.1)",
+ "slug": "libimobiledevice-libplist",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 644,
+ "system": "A library to handle Apple Property List format in binary or XML",
+ "upstream": "https://github.com/libimobiledevice/libplist",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

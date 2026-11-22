@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T22:28:02Z",
+ "category": "save-state",
+ "commit": "c5f57ace5bba",
+ "delivery": "vendored",
+ "description": "mapbox/pbf \u2014 A low-level, lightweight protocol buffers implementation in JavaScript.",
+ "language": "javascript",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "pbf",
+ "size_bytes": 196829,
+ "slug": "mapbox-pbf",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 886,
+ "system": "A low-level, lightweight protocol buffers implementation in JavaScript.",
+ "upstream": "https://github.com/mapbox/pbf",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

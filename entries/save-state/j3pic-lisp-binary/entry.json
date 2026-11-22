@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:28:06Z",
+ "category": "save-state",
+ "commit": "2026-07-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "j3pic/lisp-binary \u2014 A library to easily read and write complex binary formats.",
+ "language": "common lisp",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "lisp-binary",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "j3pic-lisp-binary",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 103,
+ "system": "A library to easily read and write complex binary formats.",
+ "upstream": "https://github.com/j3pic/lisp-binary",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

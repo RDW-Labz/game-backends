@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 22:12 UTC · 440 entries · 139 vendored, 301 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 22:28 UTC · 446 entries · 140 vendored, 306 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-22 22:12 UTC · 440 entries · 139 vendored, 301 reference-on
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
-| [save-state](#save-state) — Save / state systems | 55 | 16 | 39 |
+| [save-state](#save-state) — Save / state systems | 61 | 17 | 44 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
 
@@ -401,7 +401,7 @@ _Generated 2026-11-22 22:12 UTC · 440 entries · 139 vendored, 301 reference-on
 
 ## save-state
 
-**Save / state systems** — 55 entries
+**Save / state systems** — 61 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -411,8 +411,10 @@ _Generated 2026-11-22 22:12 UTC · 440 entries · 139 vendored, 301 reference-on
 | [blobify](entries/save-state/neobrain-blobify/README.md) | C++17 library for all your binary de-/serialization needs | c++ | BSL-1.0 | reference | [neobrain/blobify](https://github.com/neobrain/blobify) @ `2023-12-11 (branch tip at catalogue time)` |
 | [capnproto](entries/save-state/capnproto-capnproto/README.md) | Cap'n Proto serialization/RPC system - core tools and C++ library | c++ | MIT | vendored | [capnproto/capnproto](https://github.com/capnproto/capnproto) @ `5f160ba386e6` |
 | [cereal](entries/save-state/cereal/README.md) | C++11 serialization: JSON/binary/XML archives, versioning | c++ | BSD-3-Clause | vendored | [USCiLab/cereal](https://github.com/USCiLab/cereal) @ `22a1b369f39b` |
+| [Chronicle-Wire](entries/save-state/openhft-chronicle-wire/README.md) | A Low Garbage Java Serialisation Library that supports multiple formats | java | Apache-2.0 | reference | [OpenHFT/Chronicle-Wire](https://github.com/OpenHFT/Chronicle-Wire) @ `2026-11-22 (branch tip at catalogue time)` |
 | [cista](entries/save-state/felixguendling-cista/README.md) | Cista is a simple, high-performance, zero-copy C++ serialization & reflection library. | c++ | MIT | reference | [felixguendling/cista](https://github.com/felixguendling/cista) @ `2026-11-06 (branch tip at catalogue time)` |
 | [cJSON](entries/save-state/cjson/README.md) | ultralight JSON parser/writer | c | MIT | vendored | [DaveGamble/cJSON](https://github.com/DaveGamble/cJSON) @ `6d9f2443ab07` |
+| [COFFI](entries/save-state/serge1-coffi/README.md) | A header-only C++ library for accessing files in COFF binary format. (Including Windows PE/PE+ formats) | c++ | MIT | reference | [serge1/COFFI](https://github.com/serge1/COFFI) @ `2026-04-19 (branch tip at catalogue time)` |
 | [cornflakes](entries/save-state/deeptir18-cornflakes/README.md) | A zero-copy serialization library and networking stack. | rust | unknown | reference | [deeptir18/cornflakes](https://github.com/deeptir18/cornflakes) @ `2024-01-19 (branch tip at catalogue time)` |
 | [cpp-serializers](entries/save-state/thekvs-cpp-serializers/README.md) | Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++ | c++ | unknown | reference | [thekvs/cpp-serializers](https://github.com/thekvs/cpp-serializers) @ `2020-01-28 (branch tip at catalogue time)` |
 | [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
@@ -431,13 +433,17 @@ _Generated 2026-11-22 22:12 UTC · 440 entries · 139 vendored, 301 reference-on
 | [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
 | [json-joy](entries/save-state/streamich-json-joy/README.md) | json-joy is a library that implements cutting-edge real-time and collaborative editing algorithms and utilities for JSON data models, with a focus on developing | typescript | unknown | reference | [streamich/json-joy](https://github.com/streamich/json-joy) @ `2026-09-08 (branch tip at catalogue time)` |
 | [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
+| [kaitai_struct_formats](entries/save-state/kaitai-io-kaitai-struct-formats/README.md) | Kaitai Struct: library of binary file formats (.ksy) | kaitai struct | none | reference | [kaitai-io/kaitai_struct_formats](https://github.com/kaitai-io/kaitai_struct_formats) @ `8d8353c5059e` |
 | [kura](entries/save-state/nookieai-kura/README.md) | Scan, identify, organize, and transfer your PS1-PS5 & Vita game library (Windows, macOS, Linux), with a bundled PS5 payload for installs, cheats, saves, and fan | n/a | unknown | reference | [NookieAI/kura](https://github.com/NookieAI/kura) @ `2026-11-22 (branch tip at catalogue time)` |
+| [libplist](entries/save-state/libimobiledevice-libplist/README.md) | A library to handle Apple Property List format in binary or XML | c | LGPL-2.1 | reference | [libimobiledevice/libplist](https://github.com/libimobiledevice/libplist) @ `2026-11-16 (branch tip at catalogue time)` |
+| [lisp-binary](entries/save-state/j3pic-lisp-binary/README.md) | A library to easily read and write complex binary formats. | common lisp | GPL-3.0 | reference | [j3pic/lisp-binary](https://github.com/j3pic/lisp-binary) @ `2026-07-09 (branch tip at catalogue time)` |
 | [loom](entries/save-state/asonge-loom/README.md) | A CRDT library with δ-CRDT support. | elixir | unknown | reference | [asonge/loom](https://github.com/asonge/loom) @ `2017-05-30 (branch tip at catalogue time)` |
 | [miniserde](entries/save-state/dtolnay-miniserde/README.md) | Data structure serialization library with several opposite design goals from Serde | rust | Apache-2.0 | vendored | [dtolnay/miniserde](https://github.com/dtolnay/miniserde) @ `6dfa4fa395f3` |
 | [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
 | [nes-emulator](entries/save-state/nicolfo-nes-emulator/README.md) | Cycle-accurate NES emulator in Rust - CPU/PPU/APU, 43 mappers with expansion audio (incl. VRC7 FM), NTSC/PAL auto-detect, gamepad + savestates. | rust | GPL-3.0 | reference | [Nicolfo/nes-emulator](https://github.com/Nicolfo/nes-emulator) @ `2026-11-13 (branch tip at catalogue time)` |
 | [NxLibrary](entries/save-state/bium23-nxlibrary/README.md) | A console-style macOS game library and launcher in SwiftUI. Features guided setup, assisted local builds for nxnative, save backup/import, and controller naviga | swift | MIT | reference | [Bium23/NxLibrary](https://github.com/Bium23/NxLibrary) @ `2026-11-20 (branch tip at catalogue time)` |
 | [ormsgpack](entries/save-state/ormsgpack-ormsgpack/README.md) | MessagePack serialization library for Python derived from orjson, written in Rust using PyO3 | rust | Apache-2.0 | reference | [ormsgpack/ormsgpack](https://github.com/ormsgpack/ormsgpack) @ `2026-11-21 (branch tip at catalogue time)` |
+| [pbf](entries/save-state/mapbox-pbf/README.md) | A low-level, lightweight protocol buffers implementation in JavaScript. | javascript | BSD-3-Clause | vendored | [mapbox/pbf](https://github.com/mapbox/pbf) @ `c5f57ace5bba` |
 | [PenguinBurner](entries/save-state/jpietek-penguinburner/README.md) | Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play | python | GPL-3.0 | reference | [jpietek/PenguinBurner](https://github.com/jpietek/PenguinBurner) @ `2026-11-17 (branch tip at catalogue time)` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |

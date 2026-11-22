@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-22T22:28:05Z",
+ "category": "save-state",
+ "commit": "8d8353c5059e",
+ "delivery": "reference",
+ "description": "kaitai-io/kaitai_struct_formats \u2014 Kaitai Struct: library of binary file formats (.ksy)",
+ "language": "kaitai struct",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "kaitai_struct_formats",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 111,
+ "slug": "kaitai-io-kaitai-struct-formats",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 796,
+ "system": "Kaitai Struct: library of binary file formats (.ksy)",
+ "upstream": "https://github.com/kaitai-io/kaitai_struct_formats",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

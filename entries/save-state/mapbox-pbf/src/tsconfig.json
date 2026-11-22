@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "strict": true,
+        "emitDeclarationOnly": true,
+        "declaration": true,
+        "target": "es2020",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "types": ["node"]
+    },
+    "files": [
+        "index.js",
+        "compile.js",
+        "resolve.js"
+    ]
+}
