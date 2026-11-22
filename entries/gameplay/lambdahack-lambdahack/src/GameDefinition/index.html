@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="theme-color" content="#ffffff">
+
+    <meta name="description" content="LambdaHack (wasm): a small dungeon crawler illustrating the roguelike game engine of the same name" />
+
+    <title>LambdaHack (wasm)</title>
+    <style>
+      @font-face {
+        font-family: lambdaHackFont;
+        src: url("./16x16xw.woff");
+      }
+
+      :root {
+        --fg: #c4beb1; /* AltWhite -- matches master's body default fg */
+      }
+      html, body {
+        margin: 0;
+        background: #000000;
+        color: var(--fg);
+        font-family: lambdaHackFont, monospace;
+      }
+      a:link           { color: #ffffff; }    /* unvisited links       */
+      a:visited        { color: var(--fg); }  /* visited links         */
+      a:hover, a:focus { color: #ffffff; }    /* user hovers, or focus */
+      a:active         { color: #ffffff; }    /* active links          */
+      #banner { table-layout: fixed; border-collapse: collapse; }
+      #fsToggle {
+        background: #000000;
+        color: var(--fg);
+        border: 1px solid var(--fg);
+        font-family: lambdaHackFont, monospace;
+        font-size: 16px;
+        padding: 4px 8px;
+        cursor: pointer;
+      }
+      #fsToggle:hover, #fsToggle:focus { color: #ffffff; border-color: #ffffff; }
+      #screen {
+        /* As wide as its canvas, which terminal.ts sizes from the engine's
+           frame and the map font's cell on first paint. */
+        margin: 0 auto;
+        width: max-content;
+      }
+      #screen > canvas { display: block; }
+      /* In fullscreen the grid is centred in the viewport and scaled by
+         --fit, which fullscreen.ts sets to the scale that fits it, and
+         the toggle floats over the letterbox. */
+      :root:fullscreen #screen {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%) scale(var(--fit, 1));
+      }
+      :root:fullscreen #fsToggle {
+        position: fixed;
+        top: 4px;
+        right: 8px;
+      }
+      /* Visible only for keyboard-triggered focus (Tab), not mouse clicks --
+         #screen is tabindex=0 and was previously outline:none, meaning a
+         keyboard-only user tabbing here got no visible indicator at all. */
+      #screen:focus-visible {
+        outline: 2px solid var(--fg);
+      }
+      #status {
+        text-align: left;
+        font-size: 16px;
+        padding: 4px 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <table id="banner">
+      <tr>
+        <td>
+          <h1 style="letter-spacing:1px">&nbsp;LambdaHack&nbsp;</h1>
+        </td>
+        <td>
+          <h4 id="bannerText" style="line-height:130%">
+            This is the experimental wasm build.
+            If the game window is too large, zoom out
+            (Control-minus). Press NumLock if the numpad is erratic, or use
+            another key scheme or mouse. In a window the browser keeps a few
+            Control keys, such as Control-Tab; Fullscreen hands them to the
+            game, and holding Escape or pressing F11 leaves it. Press '?'
+            for help or read
+            <a href="https://github.com/LambdaHack/LambdaHack/blob/master/GameDefinition/PLAYING.md">PLAYING</a>.
+          </h4>
+        </td>
+      </tr>
+    </table>
+    <div id="controls" style="text-align:right; padding:0 8px">
+      <button id="fsToggle" type="button">Fullscreen</button>
+    </div>
+    <div id="status">
+      <p>
+        Please wait. Bleeding edge experimental technology of the future is being loaded, <br>
+        which may take 10 or 20 seconds with no apparent progress. <br>
+        Be patient. Do not make hasty keystrokes. Breathtaking letters <br>
+        in sixteen brilliant colors and HD resolution beckon from the other shore.
+      <p>
+      from README: <br>
+      The game runs rather slowly in the browser (fastest on Chrome). <br>
+      Savefiles are prone to corruption on the browser, <br>
+      e.g., when it's closed while the game is still saving progress. <br>
+      Hence, after trying out the game, you may prefer to use a native <br>
+      binary for your architecture, if it exists.
+      <p>
+      Copyright (c) 2008--2021 Andres Loeh, Mikolaj Konarski and others (see git history)
+    </div>
+    <div id="screen" tabindex="0"></div>
+    <script src="./lz-string.min.js"></script>
+    <script type="module" src="./bundle.js"></script>
+  </body>
+</html>

@@ -1,0 +1,295 @@
+"""The mutants of tools/: each checker broken on purpose, and its self-test red.
+
+Read by `selftest-mutants.py tools`, which makes a shared clone of this
+repository, applies each mutant to the clone and requires the judge -- the
+tool's own self-test -- to FAIL on it; a mutant whose anchor has moved is
+LOST, not caught. These replace the proofs that were dated sentences in each
+tool's docstring, "proved non-vacuous by breaking the checker in a copy
+(2026-08-14)", which expire the moment the code under them moves, with
+nothing to say so. Each is a mutant of this repository's own tools,
+documents or code a check reads, watched failing before it was written down;
+the shared document checkers' are in ~/slop/tools/mutants.py, with
+the checkers.
+
+The clone is what lets the judges run: every tool finds the repository from
+its own path and asks git about it.
+"""
+
+import functools
+import importlib.util
+import pathlib
+
+COPY = 'clone'
+SIBLINGS = []
+TIMEOUT = 600
+
+ST = ['python3', '{file}', '--self-test']
+# The probe runner is the doc-verification skill's, user-scope, outside this
+# tree; a judge over a document rather than over a tool. It judges directly
+# rather than through the doc-probes step of checks.py: in a judge `{root}`
+# names the real tools/, so the step's cd ran the probes on the unmutated tree
+# and the mutant survived.
+PROBES = ['python3', str(pathlib.Path.home() / '.claude/skills/doc-verification/run-probes.py'), '{file}']
+
+
+@functools.cache
+def checks_steps():
+    spec = importlib.util.spec_from_file_location(
+        'checks', pathlib.Path(__file__).with_name('checks.py'))
+    checks = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checks)
+    return checks.STEPS
+
+
+def step(name):
+    """The argv of a checks.py step, so that a mutant of what the step checks
+    is judged by the step as check-all runs it, not by a copy of it."""
+    return next(s[1] for s in checks_steps() if s[0] == name)
+
+
+MUTANTS = [
+    # A document probe with its expectation moved: the probe runner over that
+    # document, which the doc-probes step of checks.py runs, must fail.
+    ('doc probe expectation moved', '../docs/leader-desync-migration.md',
+     "':!docs/leader-desync-migration.md' | wc -l :: 12 -->",
+     "':!docs/leader-desync-migration.md' | wc -l :: 99 -->",
+     PROBES),
+    # check-plan-crossrefs: one break per assertion, each proved caught the day
+    # the checker was written (2026-09-04), plus the disclaimer window and the
+    # grammar gates it rests on
+    ('check-plan-crossrefs A1 claim vocabulary blanked', 'check-plan-crossrefs.py',
+     'CLAIM_RE = re.compile(r"\\b(?:entry|entries|deletion)\\b")\n',
+     'CLAIM_RE = re.compile(r"(?!x)x")\n', ST),
+    ('check-plan-crossrefs A1 allowlist-in-Owns check disabled', 'check-plan-crossrefs.py',
+     "                    if x in self.items and doc.allow_key not in self.owns(x):\n",
+     "                    if False:\n", ST),
+    ('check-plan-crossrefs A1 counts a landed row as a claimant', 'check-plan-crossrefs.py',
+     "        for iid in doc.items:\n            if self.historical(iid):\n                continue\n",
+     "        for iid in doc.items:\n", ST),
+    ('check-plan-crossrefs A3 counts a landed row as a writer', 'check-plan-crossrefs.py',
+     "            if self.historical(x):\n                continue\n            reach",
+     "            reach", ST),
+    # check-plan-crossrefs-13, 2026-10-23
+    ('check-plan-crossrefs A3 counts a landed row as a creator', 'check-plan-crossrefs.py',
+     "        for iid in self.items:\n            if self.historical(iid):\n                continue\n",
+     "        for iid in self.items:\n", ST),
+    ('check-plan-crossrefs A3 closure reaches every item', 'check-plan-crossrefs.py',
+     "        seen, todo = set(), [iid]\n", "        seen, todo = set(self.items), [iid]\n", ST),
+    ('check-plan-crossrefs A3 closure no longer transitive', 'check-plan-crossrefs.py',
+     "                    seen.add(d)\n                    todo.append(d)\n",
+     "                    seen.add(d)\n", ST),
+    ('check-plan-crossrefs A4 gate check disabled', 'check-plan-crossrefs.py',
+     '                if k in owned and f"`{DOCS_GATE}`" not in self.field(x, "Done"):\n',
+     '                if False:\n', ST),
+    ('check-plan-crossrefs A5 list count never compared', 'check-plan-crossrefs.py',
+     "                    if k != n:\n", "                    if False:\n", ST),
+    ('check-plan-crossrefs A5 commit count never compared', 'check-plan-crossrefs.py',
+     "                    markers[-1] != NUMBERS[m.group(1)]:\n",
+     "                    False:\n", ST),
+    # check-plan-crossrefs-12, 2026-10-23
+    ('check-plan-crossrefs A5 step markers of one digit', 'check-plan-crossrefs.py',
+     'MARKER_RE = re.compile(r"\\((\\d+)\\)")\n', 'MARKER_RE = re.compile(r"\\((\\d)\\)")\n', ST),
+    # check-plan-crossrefs-14, 2026-10-26
+    ('check-plan-crossrefs a related goal of one digit', 'check-plan-crossrefs.py',
+     '                    re.compile(r"^\\*\\*(R\\d+) --- ")),\n',
+     '                    re.compile(r"^\\*\\*(R\\d) --- ")),\n', ST),
+    ('check-plan-crossrefs commentary after the first sentence read as a list', 'check-plan-crossrefs.py',
+     '        return FIRST_SENTENCE_RE.split(self.field(iid, "Owns"), 1)[0]\n',
+     '        return self.field(iid, "Owns")\n', ST),
+    ('check-plan-crossrefs absolute path to the configured document read as a copy', 'check-plan-crossrefs.py',
+     "    return p == d or p.endswith(os.sep + d)\n", "    return p == d\n", ST),
+    # check-plan-crossrefs: the bare-extension guard in is_file (`cabal`, `ts`
+    # read as files) had A2 as its only witness and lost it when A2 retired on
+    # 2026-09-14; the guard stays, and no assertion can now see it break, so it
+    # carries no mutant.
+    ('check-plan-crossrefs citation by a text anchor names no file', 'check-plan-crossrefs.py',
+     '    return head if head != t and is_file(head.rsplit("/", 1)[-1]) else t\n',
+     '    return t\n', ST),
+    ('check-plan-crossrefs missing label not a finding', 'check-plan-crossrefs.py',
+     '                if label not in self.items[iid]["fields"]:\n',
+     '                if False:\n', ST),
+    ('check-plan-crossrefs document without the grammar read as clean', 'check-plan-crossrefs.py',
+     "    if not doc.order or not doc.items:\n", "    if False:\n", ST),
+    # check-plan-crossrefs: the second grammar and the joint run (2026-09-04),
+    # one break per branch the pointman document added
+    ('check-plan-crossrefs grammar chosen by position, never by fit', 'check-plan-crossrefs.py',
+     "    return fits[0] if len(fits) == 1 else None\n", "    return GRAMMARS[0]\n", ST),
+    ('check-plan-crossrefs A1 silent over a document with no allowlist block', 'check-plan-crossrefs.py',
+     '                notes.append(f"A1 not run over {doc.path}: no allowlist block"\n',
+     '                str(f"A1 not run over {doc.path}: no allowlist block"\n', ST),
+    ('check-plan-crossrefs joint run keeps the first document\'s items only', 'check-plan-crossrefs.py',
+     "            self.items.update(d.items)\n",
+     "            self.items.update(d.items) if not self.items else None\n", ST),
+    ('check-plan-crossrefs depends-on range no longer expanded', 'check-plan-crossrefs.py',
+     "        for a, b in self.range_re.findall(cell):\n", "        for a, b in []:\n", ST),
+    # The alone-quiet control on the work list's name, which named the
+    # wasm record until 2026-10-23, a name no scratch item carries
+    # (check-plan-crossrefs-11): the gate list taken from the configuration
+    # rather than from the documents read.
+    ('check-plan-crossrefs A4 gates the work list in every run', 'check-plan-crossrefs.py',
+     '                      for k, name in ((d.doc_key, d.g["doc"]),\n',
+     '                      for k, name in ((path_key(GRAMMARS[0]["doc"], set()), GRAMMARS[0]["doc"]), (d.doc_key, d.g["doc"]),\n', ST),
+    ('check-plan-crossrefs A4 asks only the item\'s own document', 'check-plan-crossrefs.py',
+     "            for k, name in self.gated:\n",
+     "            for k, name in [(self.doc_of(x).doc_key, self.doc_of(x).path)]:\n", ST),
+    ('check-plan-crossrefs two documents sharing an id read as one', 'check-plan-crossrefs.py',
+     "            if shared:\n", "            if False:\n", ST),
+    ('check-plan-crossrefs a ledger row with no item crashes the closure', 'check-plan-crossrefs.py',
+     '        return it["doc"] if it else self.row_doc.get(iid)\n',
+     '        return it["doc"]\n', ST),
+    # The ledger keyed on its header's `depends on` and `state` (2026-11-20):
+    # taken by cell count again, the self-test's five-cell table that is no
+    # ledger is read as one; and a short ledger row skipped in silence.
+    ('check-plan-crossrefs a ledger taken by its cell count', 'check-plan-crossrefs.py',
+     '                cols = ((cells.index("depends on"), cells.index("state"))\n'
+     '                        if "depends on" in cells and "state" in cells else ())\n',
+     '                cols = (3, 4) if len(cells) == 5 else ()\n', ST),
+    ('check-plan-crossrefs a short ledger row skipped in silence', 'check-plan-crossrefs.py',
+     '                self.findings.append(f"A0 {iid} --- ledger row short of"\n',
+     '                str(f"A0 {iid} --- ledger row short of"\n', ST),
+    # check-sync-exports: one break per finding and per control it rests on,
+    # each watched failing the day the checker was written (2026-10-21)
+    ('check-sync-exports comments read as code', 'check-sync-exports.py',
+     '    return "".join(out) + text[kept:]\n', "    return text\n", ST),
+    ('check-sync-exports a dash operator read as a comment', 'check-sync-exports.py',
+     'LINE_COMMENT = rf"(?<![{SYM}-])--+(?![{SYM}-])[^\\n]*"\n',
+     'LINE_COMMENT = rf"(?<![{SYM}-])--+[^\\n]*"\n', ST),
+    # The four shapes hssource.py had fixed and this copy had not
+    # (check-sync-exports-02 to -05), one break each, 2026-10-23
+    ('check-sync-exports block comments do not nest', 'check-sync-exports.py',
+     'INSIDE = re.compile(r"\\{-|-\\}")\n', 'INSIDE = re.compile(r"-\\}")\n', ST),
+    ('check-sync-exports a comment opens inside a literal', 'check-sync-exports.py',
+     'OUTSIDE = re.compile(rf"{LITERALS}|\\{{-|{LINE_COMMENT}", re.S)\n',
+     'OUTSIDE = re.compile(rf"\\{{-|{LINE_COMMENT}", re.S)\n', ST),
+    ('check-sync-exports a symbol before the dashes not looked at', 'check-sync-exports.py',
+     'LINE_COMMENT = rf"(?<![{SYM}-])--+(?![{SYM}-])[^\\n]*"\n',
+     'LINE_COMMENT = rf"--+(?![{SYM}-])[^\\n]*"\n', ST),
+    ('check-sync-exports a line comment ends at a block opening', 'check-sync-exports.py',
+     'LINE_COMMENT = rf"(?<![{SYM}-])--+(?![{SYM}-])[^\\n]*"\n',
+     'LINE_COMMENT = rf"(?<![{SYM}-])--+(?![{SYM}-])(?:(?!\\{{-)[^\\n])*"\n', ST),
+    ('check-sync-exports an async export read as sync', 'check-sync-exports.py',
+     "    r'foreign\\s+export\\s+javascript\\s+\"(\\w+)\\s+sync\"\\s+(\\w+)\\s*::')\n",
+     "    r'foreign\\s+export\\s+javascript\\s+\"(\\w+)(?:\\s+sync)?\"\\s+(\\w+)\\s*::')\n", ST),
+    ('check-sync-exports a signature read as an equation', 'check-sync-exports.py',
+     "    start_re = re.compile(rf\"(?m)^{re.escape(hs)}(?![\\w'])(?![ \\t]*::)\")\n",
+     "    start_re = re.compile(rf\"(?m)^{re.escape(hs)}(?![\\w'])\")\n", ST),
+    ('check-sync-exports an equation it cannot read passes', 'check-sync-exports.py',
+     "            if rhs is None:\n                fails.append(",
+     "            if rhs is None:\n                str(", ST),
+    ('check-sync-exports a missing equation passes', 'check-sync-exports.py',
+     "        if not eqs:\n", "        if False:\n", ST),
+    ('check-sync-exports every equation passes', 'check-sync-exports.py',
+     "            elif not built_on(code, rhs, js):\n",
+     "            elif False:\n", ST),
+    ('check-sync-exports the JS name not compared', 'check-sync-exports.py',
+     "rf'syncExport\\s+\"{re.escape(js)}\"(?![\\w\"])\\s*'",
+     "rf'syncExport\\s+\"\\w+\"(?![\\w\"])\\s*'", ST),
+    ('check-sync-exports code after the argument passes', 'check-sync-exports.py',
+     '    if arg.startswith("$"):\n        return True\n', '    return True\n', ST),
+    ('check-sync-exports syncExport for no sync export passes', 'check-sync-exports.py',
+     "            if m.group(1) not in first:\n", "            if False:\n", ST),
+    ('check-sync-exports a wrapper sync import passes', 'check-sync-exports.py',
+     "        for m in WRAPPER_RE.finditer(code):\n", "        for m in []:\n", ST),
+    ('check-sync-exports a JS name exported twice passes', 'check-sync-exports.py',
+     "        if js in first:\n", "        if False:\n", ST),
+    ('check-sync-exports silent over a tree with none', 'check-sync-exports.py',
+     "    if not found:\n", "    if False:\n", ST),
+    ('check-sync-exports no source read as a clean tree', 'check-sync-exports.py',
+     "    if not hs:\n", "    if False:\n", ST),
+    # The file reads (check-sync-exports-07, -08), 2026-10-23
+    ('check-sync-exports a file not UTF-8 ends in a traceback', 'check-sync-exports.py',
+     "        except UnicodeDecodeError as e:\n", "        except ZeroDivisionError as e:\n", ST),
+    ('check-sync-exports a file it cannot read ends in a traceback', 'check-sync-exports.py',
+     "        except OSError as e:\n", "        except ZeroDivisionError as e:\n", ST),
+    # The comparison of the exports with the cabal file's --export= flags,
+    # 2026-10-23
+    ('check-sync-exports no cabal file read as a clean tree', 'check-sync-exports.py',
+     "    if not cabals:\n", "    if False:\n", ST),
+    ('check-sync-exports an export no flag names passes', 'check-sync-exports.py',
+     "             for js, path, line in exports if js not in flagged]\n",
+     "             for js, path, line in exports if False]\n", ST),
+    ('check-sync-exports a flag naming no export passes', 'check-sync-exports.py',
+     "              for js, path, line in flags if js not in exported]\n",
+     "              for js, path, line in flags if False]\n", ST),
+    ('check-sync-exports a commented-out flag read as one', 'check-sync-exports.py',
+     '                   for code in [CABAL_COMMENT_RE.sub("", text)]\n',
+     '                   for code in [text]\n', ST),
+    ('check-sync-exports a commented-out export read as one', 'check-sync-exports.py',
+     "    link_oks, link_fails = linked(codes, cabals)\n",
+     "    link_oks, link_fails = linked(files, cabals)\n", ST),
+    ('check-sync-exports the agreeing names not printed', 'check-sync-exports.py',
+     "    return [f\"ok   every foreign export is named", "    return [], fails\n    return [f\"ok   every foreign export is named", ST),
+    # bench-sdl: one break per judged quantity, per bar, per guard on the two
+    # sides having played one game, and per branch of the escalation to
+    # rounds, each watched failing the day the bench was written (2026-11-21)
+    ('bench-sdl instructions not judged', 'bench-sdl.py',
+     '            if ins is not None and ins > INS_BAR:\n',
+     '            if False:\n', ST),
+    ('bench-sdl allocation not judged', 'bench-sdl.py',
+     '            if alloc > ALLOC_BAR:\n', '            if False:\n', ST),
+    ('bench-sdl allocation at the instructions bar', 'bench-sdl.py',
+     'ALLOC_BAR = 1.0002\n', 'ALLOC_BAR = 1.002\n', ST),
+    ('bench-sdl FPS not judged', 'bench-sdl.py',
+     '            if rounds_mode and fps < FPS_BAR:\n', '            if False:\n', ST),
+    ('bench-sdl FPS judged by default', 'bench-sdl.py',
+     '            if rounds_mode and fps < FPS_BAR:\n',
+     '            if fps < FPS_BAR:\n', ST),
+    ('bench-sdl the control judged', 'bench-sdl.py',
+     '        if judged:\n', '        if True:\n', ST),
+    ('bench-sdl the worst round, not the median', 'bench-sdl.py',
+     '            return statistics.median(x[k] / a[k] for a, x in pairs)\n',
+     '            return max(x[k] / a[k] for a, x in pairs)\n', ST),
+    ('bench-sdl frames not compared', 'bench-sdl.py',
+     '            if a["frames"] != x["frames"] or a["clips"] != x["clips"]:\n',
+     '            if a["clips"] != x["clips"]:\n', ST),
+    ('bench-sdl game clips not compared', 'bench-sdl.py',
+     '            if a["frames"] != x["frames"] or a["clips"] != x["clips"]:\n',
+     '            if a["frames"] != x["frames"]:\n', ST),
+    ('bench-sdl a missing side read as a round', 'bench-sdl.py',
+     '            if (r, bench, "BASE") not in rows or (r, bench, "X") not in rows:\n',
+     '            if False:\n', ST),
+    ('bench-sdl perf not counting read as no perf', 'bench-sdl.py',
+     '            raise NotRun("no instruction count in perf\'s output")\n',
+     '            return row\n', ST),
+    ('bench-sdl an endless recipe accepted', 'bench-sdl.py',
+     '    if "--stopAfterFrames" not in args:\n', '    if False:\n', ST),
+    ('bench-sdl flagged counts not escalated', 'bench-sdl.py',
+     '    return ESCALATE_ROUNDS - 1 if status == 1 and not forced else 0\n',
+     '    return 0\n', ST),
+    ('bench-sdl passing counts escalated', 'bench-sdl.py',
+     '    return ESCALATE_ROUNDS - 1 if status == 1 and not forced else 0\n',
+     '    return ESCALATE_ROUNDS - 1 if not forced else 0\n', ST),
+    ('bench-sdl escalated under --rounds', 'bench-sdl.py',
+     '    return ESCALATE_ROUNDS - 1 if status == 1 and not forced else 0\n',
+     '    return ESCALATE_ROUNDS - 1 if status == 1 else 0\n', ST),
+    ('bench-sdl X defaults to HEAD', 'bench-sdl.py',
+     '        x = git(root, "log", "-1", "--format=%H", "HEAD", "--", *UI_DIRS)\n',
+     '        x = commit(root, "HEAD")\n', ST),
+    ('bench-sdl BASE the parent, not the previous UI commit', 'bench-sdl.py',
+     '    base = git(root, "log", "-1", "--format=%H", x + "^", "--", *UI_DIRS)\n',
+     '    base = commit(root, x + "^")\n', ST),
+    ("bench-sdl the game's Client/UI not searched", 'bench-sdl.py',
+     '           "GameDefinition/game-src/Client/UI/")\n', ')\n', ST),
+    # The explicit-widths step of checks.py, judged by that step: the decode by
+    # the Enum instance it exists to catch, put back into Sdl.hs.
+    ('explicit widths toEnum decode restored',
+     '../engine-src/Game/LambdaHack/Client/UI/Frontend/Sdl.hs',
+     '          let Point{..} = punindex (rwidth coscreen) i\n',
+     '          let Point{..} = toEnum i\n', step('explicit widths')),
+    # The same decode spelt with white space (checks-07), and the step's guard
+    # against a pathspec matching no file (checks-06), which a mutant of
+    # checks.py itself leaves step() unable to see, so its case judges.
+    ('explicit widths spaced toEnum decode restored',
+     '../engine-src/Game/LambdaHack/Client/UI/Frontend/Sdl.hs',
+     '          let Point{..} = punindex (rwidth coscreen) i\n',
+     '          let Point {..} = toEnum i\n', step('explicit widths')),
+    ('explicit widths empty pathspec read as a pass', 'checks.py',
+     """                                '[ -n "$files" ] || { echo "no tracked file matches the frontend pathspec, so nothing was checked"; exit 2; }; '\n""",
+     '', ['python3', '{bin}/defect-run.py', '-k', 'checks-06', '{dir}']),
+    # The deep list's anchors, tested by the step of checks.py that check-all
+    # runs: overlaidCells's fill test reworded, the anchor of a deep mutant,
+    # which is then lost.
+    ('deep mutants anchors: an anchor reworded', '../ts-src/src/overlay-core.ts',
+     '    if (op.kind !== "fill") continue;\n',
+     '    if (op.kind != "fill") continue;\n', step('deep mutants anchors')),
+]

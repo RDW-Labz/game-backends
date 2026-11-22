@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T17:56:06Z",
+ "category": "gameplay",
+ "commit": "46782e248c2d",
+ "delivery": "vendored",
+ "description": "ondras/rot.js \u2014 ROguelike Toolkit in JavaScript. Cool dungeon-related stuff, interactive manual, documentation, tests!",
+ "language": "javascript",
+ "license": "BSD-3-Clause",
+ "license_file": "license.txt",
+ "license_verdict": "clean",
+ "name": "rot.js",
+ "size_bytes": 1127108,
+ "slug": "ondras-rot-js",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 2733,
+ "system": "ROguelike Toolkit in JavaScript. Cool dungeon-related stuff, interactive manual, documentation, tests!",
+ "upstream": "https://github.com/ondras/rot.js",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

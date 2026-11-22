@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:56:10Z",
+ "category": "gameplay",
+ "commit": "2024-03-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jice-nospam/yendor.ts \u2014 A roguelike library inspired by libtcod written in TypeScript",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "yendor.ts",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "jice-nospam-yendor-ts",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 118,
+ "system": "A roguelike library inspired by libtcod written in TypeScript",
+ "upstream": "https://github.com/jice-nospam/yendor.ts",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

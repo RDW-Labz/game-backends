@@ -1,0 +1,555 @@
+cabal-version: 2.4
+name:          LambdaHack
+-- The package version. See the Haskell package versioning policy (PVP)
+-- for standards guiding when and how versions should be incremented.
+-- http://www.haskell.org/haskellwiki/Package_versioning_policy
+-- PVP summary:+-+------- breaking API changes
+--             | |  +----- minor or non-breaking API additions
+--             | |  | +--- code changes with no API change
+version:       0.12.0.0
+synopsis:      A game engine library for tactical squad ASCII roguelike dungeon crawlers
+description: LambdaHack is a Haskell game engine library for ASCII roguelike
+             games of arbitrary theme, size and complexity, with optional
+             tactical squad combat. It's packaged together with a sample
+             dungeon crawler in a quirky fantasy setting. The sample game can be
+             tried out in the browser at <http://lambdahack.github.io>.
+             .
+             Please see the changelog file for recent improvements
+             and the issue tracker for short-term plans. Long term goals
+             include multiplayer tactical squad combat, in-game content
+             creation, auto-balancing and persistent content modification
+             based on player behaviour. Contributions are welcome.
+             .
+             Other games known to use the LambdaHack library:
+             .
+             * Allure of the Stars, a near-future Sci-Fi game,
+             <http://hackage.haskell.org/package/Allure>
+             .
+             Note: All modules in this library are kept visible,
+             to let games override and reuse them.
+             OTOH, to reflect that some modules are implementation details
+             relative to others, the source code adheres to the following
+             convention. If a module has the same name as a directory,
+             the module is the exclusive interface to the directory.
+             No references to the modules in the directory are allowed
+             except from the interface module. This policy is only binding
+             when developing the library --- library users are free
+             to access any modules, since the library authors are in
+             no position to guess their particular needs.
+homepage:      https://lambdahack.github.io
+bug-reports:   http://github.com/LambdaHack/LambdaHack/issues
+license:       BSD-3-Clause
+license-file:  COPYLEFT
+tested-with:   GHC ==9.10.3 || ==9.12.4 || ==9.14.1
+
+-- Enough files is included in the Hackage package to run CI and manual tests
+-- off it, to be presentable on Hackage and to create user-friendly binary
+-- packages.
+extra-source-files: GameDefinition/config.ui.default,
+                    GameDefinition/PLAYING.md,
+                    GameDefinition/fonts/16x16xw.woff,
+                    GameDefinition/fonts/16x16xw.bdf,
+                    GameDefinition/fonts/16x16x.fnt,
+                    GameDefinition/fonts/8x8xb.fnt,
+                    GameDefinition/fonts/8x8x.fnt,
+                    GameDefinition/fonts/BinarySansProLH-Regular.ttf.woff,
+                    GameDefinition/fonts/BinarySansProLH-Semibold.ttf.woff,
+                    GameDefinition/fonts/BinaryCodeProLH-Bold.ttf.woff,
+                    GameDefinition/fonts/DejaVuLGCSans.ttf.woff,
+                    GameDefinition/fonts/DejaVuLGCSans-Bold.ttf.woff,
+                    GameDefinition/fonts/Hack-Bold.ttf.woff,
+                    ts-src/src/generated/palette.ts,
+                    ts-src/src/generated/fixtures.json,
+                    ts-src/src/generated/cursor.ts,
+                    ts-src/src/generated/prop-fit.json,
+                    ts-src/src/generated/overlay-wire.json
+extra-doc-files:    GameDefinition/InGameHelp.txt,
+                    README.md,
+                    CHANGELOG.md,
+                    LICENSE,
+                    COPYLEFT,
+                    CREDITS,
+                    cabal.project,
+                    Makefile
+author:        Andres Loeh, Mikolaj Konarski and others
+maintainer:    Mikolaj Konarski <mikolaj.konarski@funktory.com>
+category:      Game Engine, Game
+build-type:    Simple
+
+source-repository head
+  type:               git
+  location:           https://github.com/LambdaHack/LambdaHack.git
+
+flag with_expensive_assertions
+  description:        turn on expensive assertions of well-tested code
+  default:            False
+  manual:             True
+
+flag release
+  description:        prepare for a release (expose internal functions and types, etc.)
+  default:            False
+  manual:             True
+
+flag supportNodeJS
+  description:        compile so that the JS blob works in terminal with NodeJS
+  default:            True
+  manual:             True
+
+common options
+  default-language:   GHC2024
+  default-extensions: StrictData TypeFamilies TypeFamilyDependencies
+                      FunctionalDependencies RecordWildCards MultiWayIf
+                      DefaultSignatures PatternSynonyms NoStarIsType
+                      TypeData TypeAbstractions
+                      CPP OverloadedStrings
+                      -- to molify stylish-haskell, until it's fixed
+                      LambdaCase
+  other-extensions:   UnboxedTuples ViewPatterns
+                      DeriveAnyClass QuantifiedConstraints TemplateHaskell
+                      DerivingVia ImpredicativeTypes
+                      UndecidableInstances UndecidableSuperClasses
+                      AllowAmbiguousTypes
+  -- * Warnings and similar.
+  ghc-options:        -Wall -Wcompat -Wimplicit-prelude -Widentities -Wredundant-constraints -Wmissing-export-lists -Wpartial-fields -Wunused-packages -Wredundant-bang-patterns -Wredundant-strictness-flags -Wterm-variable-capture -Wmissed-specialisations
+  ghc-options:        -Wno-unticked-promoted-constructors
+  -- Disables a warning we can't yet fix:
+  if impl(ghc >= 9.14)
+    ghc-options:      -Wno-pattern-namespace-specifier
+  ghc-options:        -fprint-explicit-kinds -fsimpl-tick-factor=200
+
+  -- * Performance.
+  -- This is supposedly risky, but prevents STG from creating thunks, #23848:
+  ghc-options:        -fworker-wrapper-cbv
+  -- These improve performance, but slow down compilation:
+  if impl(ghc >= 9.12)
+    ghc-options:      -fexpose-overloaded-unfoldings
+  ghc-options:        -fspecialise-aggressively
+  if impl(ghc >= 9.14)
+    ghc-options:      -fpolymorphic-specialisation
+  -- This one improves both performance and compilation speed:
+  ghc-options:        -fkeep-auto-rules
+  -- These improve performance to some extent:
+  ghc-options:        -fdicts-cheap -flate-dmd-anal
+
+  -- turn off complaints about head, tail, etc.:
+  ghc-options:        -Wno-x-partial
+
+  if flag(with_expensive_assertions)
+    cpp-options:      -DWITH_EXPENSIVE_ASSERTIONS
+
+  if flag(release)
+    cpp-options:      -DEXPOSE_INTERNAL
+
+  -- Backend detection, shared by every component (library, executable,
+  -- test-suite), since cpp-options set inside one stanza's own os(wasi)/
+  -- impl(ghcjs) conditionals aren't inherited by any other stanza, even though
+  -- os(wasi)/impl(ghcjs) themselves evaluate the same way everywhere (it's the
+  -- same compiler building every component in a given invocation). Stanzas
+  -- below only need to vary exposed-modules/ other-modules/build-depends --
+  -- which frontend and file backend get compiled in -- not these flags.
+  if os(wasi)
+    cpp-options:      -DUSE_BROWSER -DUSE_WASM -DUSE_WASMFILE
+  if impl(ghcjs)
+    cpp-options:      -DUSE_BROWSER -DUSE_GHCJS -DUSE_JSFILE
+
+  if !flag(supportNodeJS)
+    ghcjs-options:    -DREMOVE_TELETYPE
+
+  -- This needs to be after -O2.
+  ghc-options:        -fno-ignore-asserts
+
+common exe-options
+  ghc-options:        -rtsopts
+-- (Ignored by GHCJS) Minimize median lag at the cost of occasional bigger GC
+-- lag, which fortunately sometimes fits into idle time between turns):
+-- (Ignored by GHCJS) Avoid frequent GCs. Only idle-GC during a break in
+-- gameplay (5s), not between slow keystrokes.
+  ghc-options:        "-with-rtsopts=-A99m -I5"
+
+-- Haskell GC in GHCJS every 10s.
+  ghcjs-options:      -DGHCJS_GC_INTERVAL=10000
+-- This is the largest GHCJS_BUSY_YIELD value that does not cause dropped frames
+-- on my machine with default --maxFps.
+  ghcjs-options:      -DGHCJS_BUSY_YIELD=50
+  ghcjs-options:      -dedupe
+
+  if !flag(supportNodeJS)
+    ghcjs-options:    -DGHCJS_BROWSER
+
+library definition
+  import: options
+  hs-source-dirs:     definition-src
+  exposed-modules:    Game.LambdaHack.Content.CaveKind
+                      Game.LambdaHack.Content.FactionKind
+                      Game.LambdaHack.Content.ItemKind
+                      Game.LambdaHack.Content.ModeKind
+                      Game.LambdaHack.Content.PlaceKind
+                      Game.LambdaHack.Content.RuleKind
+                      Game.LambdaHack.Content.TileKind
+                      Game.LambdaHack.Core.Dice
+                      Game.LambdaHack.Core.Frequency
+                      Game.LambdaHack.Core.Prelude
+                      Game.LambdaHack.Core.Random
+                      Game.LambdaHack.Definition.Ability
+                      Game.LambdaHack.Definition.Color
+                      Game.LambdaHack.Definition.ContentData
+                      Game.LambdaHack.Definition.Defs
+                      Game.LambdaHack.Definition.DefsInternal
+                      Game.LambdaHack.Definition.Flavour
+  build-depends:      ,assert-failure >= 0.1.2 && < 0.2
+                      ,base       >= 4.10 && < 99
+                      ,base-compat >= 0.10.0
+                      ,binary     >= 0.8
+                      ,containers >= 0.5.3.0
+                      ,deepseq    >= 1.3
+                      ,enummapset >= 0.5.2.2
+                      ,hashable   >= 1.4
+                      ,hsini      >= 0.2 && < 0.5.2 || >= 0.5.2.2
+                      ,witch      >= 0.3
+                      ,keys       >= 3
+                      ,miniutter  >= 0.5.0.0
+                      ,splitmix   >= 0.0.3
+                      ,time       >= 1.4
+                      ,text       >= 0.11.2.3
+                      ,transformers >= 0.4
+                      ,unordered-containers >= 0.2.3
+                      ,vector     >= 0.11
+
+library
+  import: options
+  hs-source-dirs:     engine-src
+  exposed-modules:    Game.LambdaHack.Atomic
+                      Game.LambdaHack.Atomic.CmdAtomic
+                      Game.LambdaHack.Atomic.HandleAtomicWrite
+                      Game.LambdaHack.Atomic.MonadStateWrite
+                      Game.LambdaHack.Atomic.PosAtomicRead
+                      Game.LambdaHack.Client
+                      Game.LambdaHack.Client.AI
+                      Game.LambdaHack.Client.AI.ConditionM
+                      Game.LambdaHack.Client.AI.PickActionM
+                      Game.LambdaHack.Client.AI.PickActorM
+                      Game.LambdaHack.Client.AI.PickTargetM
+                      Game.LambdaHack.Client.AI.Strategy
+                      Game.LambdaHack.Client.Bfs
+                      Game.LambdaHack.Client.BfsM
+                      Game.LambdaHack.Client.CommonM
+                      Game.LambdaHack.Client.HandleAtomicM
+                      Game.LambdaHack.Client.HandleResponseM
+                      Game.LambdaHack.Client.LoopM
+                      Game.LambdaHack.Client.MonadClient
+                      Game.LambdaHack.Client.Preferences
+                      Game.LambdaHack.Client.Request
+                      Game.LambdaHack.Client.Response
+                      Game.LambdaHack.Client.State
+                      Game.LambdaHack.Client.UI
+                      Game.LambdaHack.Client.UI.ActorUI
+                      Game.LambdaHack.Client.UI.Animation
+                      Game.LambdaHack.Client.UI.Content.Input
+                      Game.LambdaHack.Client.UI.Content.Screen
+                      Game.LambdaHack.Client.UI.ContentClientUI
+                      Game.LambdaHack.Client.UI.DrawM
+                      Game.LambdaHack.Client.UI.EffectDescription
+                      Game.LambdaHack.Client.UI.Frame
+                      Game.LambdaHack.Client.UI.FrameM
+                      Game.LambdaHack.Client.UI.Frontend
+                      Game.LambdaHack.Client.UI.Frontend.CellStyle
+                      Game.LambdaHack.Client.UI.Frontend.Common
+                      Game.LambdaHack.Client.UI.Frontend.Fonts
+                      Game.LambdaHack.Client.UI.Frontend.InputDecision
+                      Game.LambdaHack.Client.UI.Frontend.MouseCursor
+                      Game.LambdaHack.Client.UI.Frontend.OverlayLayout
+                      Game.LambdaHack.Client.UI.Frontend.Screenshot
+                      Game.LambdaHack.Client.UI.Frontend.Teletype
+                      Game.LambdaHack.Client.UI.HandleHelperM
+                      Game.LambdaHack.Client.UI.HandleHumanGlobalM
+                      Game.LambdaHack.Client.UI.HandleHumanLocalM
+                      Game.LambdaHack.Client.UI.HandleHumanM
+                      Game.LambdaHack.Client.UI.HumanCmd
+                      Game.LambdaHack.Client.UI.InventoryM
+                      Game.LambdaHack.Client.UI.ItemDescription
+                      Game.LambdaHack.Client.UI.Key
+                      Game.LambdaHack.Client.UI.KeyBindings
+                      Game.LambdaHack.Client.UI.MonadClientUI
+                      Game.LambdaHack.Client.UI.Msg
+                      Game.LambdaHack.Client.UI.MsgM
+                      Game.LambdaHack.Client.UI.Overlay
+                      Game.LambdaHack.Client.UI.PointUI
+                      Game.LambdaHack.Client.UI.RunM
+                      Game.LambdaHack.Client.UI.SessionUI
+                      Game.LambdaHack.Client.UI.Slideshow
+                      Game.LambdaHack.Client.UI.SlideshowM
+                      Game.LambdaHack.Client.UI.TutorialHints
+                      Game.LambdaHack.Client.UI.UIOptions
+                      Game.LambdaHack.Client.UI.UIOptionsParse
+                      Game.LambdaHack.Client.UI.Watch
+                      Game.LambdaHack.Client.UI.Watch.WatchCommonM
+                      Game.LambdaHack.Client.UI.Watch.WatchQuitM
+                      Game.LambdaHack.Client.UI.Watch.WatchSfxAtomicM
+                      Game.LambdaHack.Client.UI.Watch.WatchUpdAtomicM
+                      Game.LambdaHack.Common.Actor
+                      Game.LambdaHack.Common.ActorState
+                      Game.LambdaHack.Common.Analytics
+                      Game.LambdaHack.Common.Area
+                      Game.LambdaHack.Common.ClientOptions
+                      Game.LambdaHack.Common.Faction
+                      Game.LambdaHack.Common.File
+                      Game.LambdaHack.Common.HighScore
+                      Game.LambdaHack.Common.Item
+                      Game.LambdaHack.Common.ItemAspect
+                      Game.LambdaHack.Common.Kind
+                      Game.LambdaHack.Common.Level
+                      Game.LambdaHack.Common.Misc
+                      Game.LambdaHack.Common.MonadStateRead
+                      Game.LambdaHack.Common.Perception
+                      Game.LambdaHack.Common.Point
+                      Game.LambdaHack.Common.PointArray
+                      Game.LambdaHack.Common.ReqFailure
+                      Game.LambdaHack.Common.RingBuffer
+                      Game.LambdaHack.Common.Save
+                      Game.LambdaHack.Common.State
+                      Game.LambdaHack.Common.Thread
+                      Game.LambdaHack.Common.Tile
+                      Game.LambdaHack.Common.Time
+                      Game.LambdaHack.Common.Types
+                      Game.LambdaHack.Common.Vector
+                      Game.LambdaHack.Server
+                      Game.LambdaHack.Server.BroadcastAtomic
+                      Game.LambdaHack.Server.Commandline
+                      Game.LambdaHack.Server.CommonM
+                      Game.LambdaHack.Server.DebugM
+                      Game.LambdaHack.Server.DungeonGen
+                      Game.LambdaHack.Server.DungeonGen.AreaRnd
+                      Game.LambdaHack.Server.DungeonGen.Cave
+                      Game.LambdaHack.Server.DungeonGen.Place
+                      Game.LambdaHack.Server.Fov
+                      Game.LambdaHack.Server.FovDigital
+                      Game.LambdaHack.Server.HandleAtomicM
+                      Game.LambdaHack.Server.HandleEffectM
+                      Game.LambdaHack.Server.HandleRequestM
+                      Game.LambdaHack.Server.ItemM
+                      Game.LambdaHack.Server.ItemRev
+                      Game.LambdaHack.Server.LoopM
+                      Game.LambdaHack.Server.MonadServer
+                      Game.LambdaHack.Server.PeriodicM
+                      Game.LambdaHack.Server.ProtocolM
+                      Game.LambdaHack.Server.ServerOptions
+                      Game.LambdaHack.Server.StartM
+                      Game.LambdaHack.Server.State
+  reexported-modules: ,Game.LambdaHack.Content.CaveKind
+                      ,Game.LambdaHack.Content.FactionKind
+                      ,Game.LambdaHack.Content.ItemKind
+                      ,Game.LambdaHack.Content.ModeKind
+                      ,Game.LambdaHack.Content.PlaceKind
+                      ,Game.LambdaHack.Content.RuleKind
+                      ,Game.LambdaHack.Content.TileKind
+                      ,Game.LambdaHack.Core.Dice
+                      ,Game.LambdaHack.Core.Frequency
+                      ,Game.LambdaHack.Core.Prelude
+                      ,Game.LambdaHack.Core.Random
+                      ,Game.LambdaHack.Definition.Ability
+                      ,Game.LambdaHack.Definition.Color
+                      ,Game.LambdaHack.Definition.ContentData
+                      ,Game.LambdaHack.Definition.Defs
+                      ,Game.LambdaHack.Definition.DefsInternal
+                      ,Game.LambdaHack.Definition.Flavour
+  other-modules:      Paths_LambdaHack
+  autogen-modules:    Paths_LambdaHack
+  build-depends:      ,definition
+                      ,async      >= 2.2.1
+                      ,base       >= 4.10 && < 99
+                      ,binary     >= 0.8
+                      ,bytestring >= 0.9.2
+                      ,containers >= 0.5.3.0
+                      ,deepseq    >= 1.3
+                      ,directory  >= 1.1.0.1
+                      ,enummapset >= 0.5.2.2
+                      ,filepath   >= 1.2.0.1
+                      ,hashable   >= 1.4
+                      ,hsini      >= 0.2 && < 0.5.2 || >= 0.5.2.2
+                      ,keys       >= 3
+                      ,miniutter  >= 0.5.0.0
+                      ,open-browser >= 0.5.1.0
+                      ,optparse-applicative >= 0.13
+                      ,pretty-show >= 1.6
+                      ,primitive  >= 0.6.1.0
+                      ,QuickCheck
+                      ,splitmix   >= 0.0.3
+                      ,stm        >= 2.4
+                      ,time       >= 1.4
+                      ,text       >= 0.11.2.3
+                      ,transformers >= 0.4
+                      ,unordered-containers >= 0.2.3
+                      ,vector     >= 0.11
+                      ,vector-binary-instances >= 0.2.3.1
+
+  if os(wasi) {
+    exposed-modules:    Game.LambdaHack.Client.UI.Frontend.Wasm
+    other-modules:      Game.LambdaHack.Common.WasmFile
+    build-depends:      ghc-experimental
+  }
+  elif impl(ghcjs) {
+    exposed-modules:    Game.LambdaHack.Client.UI.Frontend.Dom
+    other-modules:      Game.LambdaHack.Common.JSFile
+    build-depends:      ghcjs-dom >= 0.9.1.1,
+                        ghcjs-base
+  }
+  else {
+    exposed-modules:    Game.LambdaHack.Client.UI.Frontend.Sdl
+                        Game.LambdaHack.Client.UI.Frontend.ANSI
+    other-modules:      Game.LambdaHack.Common.HSFile
+    build-depends:      sdl2 >= 2,
+                        sdl2-ttf >= 2,
+                        ansi-terminal >= 0.10,
+                        zlib >= 0.5.3.1
+  }
+library this-game-content
+  import: options
+  hs-source-dirs:     GameDefinition
+  exposed-modules:    Content.CaveKind
+                      Content.FactionKind
+                      Content.ItemKind
+                      Content.ItemKindActor
+                      Content.ItemKindBlast
+                      Content.ItemKindEmbed
+                      Content.ItemKindOrgan
+                      Content.ItemKindTemporary
+                      Content.ModeKind
+                      Content.PlaceKind
+                      Content.RuleKind
+                      Content.TileKind
+  other-modules:      Paths_LambdaHack
+  autogen-modules:    Paths_LambdaHack
+  build-depends:      ,definition
+                      ,base
+                      ,enummapset
+                      ,filepath
+                      ,hsini
+                      ,template-haskell >= 2.6
+                      ,text
+                      ,th-lift-instances
+
+library this-game-src
+  import: options
+  hs-source-dirs:     GameDefinition/game-src
+  exposed-modules:    TieKnot
+                      Client.UI.Content.Input
+  other-modules:      Client.UI.Content.Screen
+                      Implementation.MonadClientImplementation
+                      Implementation.MonadServerImplementation
+  build-depends:      ,LambdaHack
+                      ,this-game-content
+                      ,async
+                      ,base
+                      ,enummapset
+                      ,ghc-compact
+                      ,optparse-applicative
+                      ,splitmix
+                      ,template-haskell
+                      ,text
+                      ,transformers
+  if !os(wasi)
+    build-depends:    ,file-embed >= 0.0.11
+
+executable LambdaHack
+  import: options, exe-options
+  if os(wasi)
+    -- A browser needs a wasm *reactor* (exported entry points callable from
+    -- JS), not a command (single _start). -no-hs-main drops the C main stub;
+    -- lhStart (Main) and lhKey/lhWheel/lhMouseUp (Frontend.Wasm) are the
+    -- JS-callable exports. Each needs its own --export=: a reactor has no
+    -- default entry point for the linker to anchor dead-code elimination
+    -- against, so any foreign-exported symbol that isn't explicitly requested
+    -- here gets dropped, not just kept-but-unreachable. (This stays here rather
+    -- than in common options: the test-suite also imports common options, and
+    -- it must not get the reactor treatment -- tasty's normal exitcode-stdio
+    -- main doesn't fit that model.)
+    ghc-options:      -no-hs-main
+                      -optl-mexec-model=reactor
+                      -optl-Wl,--export=lhStart
+                      -optl-Wl,--export=lhKey
+                      -optl-Wl,--export=lhWheel
+                      -optl-Wl,--export=lhMouseUp
+  main-is:            GameDefinition/Main.hs
+  build-depends:      ,LambdaHack
+                      ,this-game-src
+                      ,async
+                      ,base
+                      ,optparse-applicative
+  if !os(wasi)
+    build-depends:    ,filepath
+
+test-suite test
+  import: options, exe-options
+  type:               exitcode-stdio-1.0
+  hs-source-dirs:     test
+  main-is:            Spec.hs
+  other-modules:      ActorStateUnitTests
+                      CellStyleUnitTests
+                      CommonMUnitTests
+                      FfiCoverageUnitTests
+                      FontsUnitTests
+                      FrameMUnitTests
+                      FreshnessCase
+                      FrontendContractUnitTests
+                      HandleHelperMUnitTests
+                      HandleHumanGlobalMUnitTests
+                      HandleHumanLocalMUnitTests
+                      InputDecisionUnitTests
+                      InventoryMUnitTests
+                      ItemDescriptionUnitTests
+                      ItemKindUnitTests
+                      ItemRevUnitTests
+                      LevelUnitTests
+                      MonadClientUIUnitTests
+                      OverlayLayoutUnitTests
+                      ReqFailureUnitTests
+                      ScreenshotUnitTests
+                      SessionUIMock
+                      SessionUIUnitTests
+                      UnitTestHelpers
+  build-depends:      ,LambdaHack
+                      ,this-game-content
+                      ,this-game-src
+                      ,base
+                      ,containers
+                      ,enummapset
+                      ,splitmix
+                      ,stm
+                      ,tasty >= 1.0
+                      ,tasty-quickcheck
+                      ,tasty-hunit
+                      ,text
+                      ,time
+                      ,transformers
+                      ,vector
+  if os(wasi)
+    build-depends:    ,binary
+                      ,bytestring
+                      ,ghc-experimental
+  else
+    build-depends:    ,bytestring
+                      ,directory
+                      ,filepath
+
+-- The cases on the sample game's content, a process of their own for its Point
+-- width: see test/GameSpec.hs.
+test-suite test-game
+  import: options, exe-options
+  type:               exitcode-stdio-1.0
+  hs-source-dirs:     test
+  main-is:            GameSpec.hs
+  other-modules:      DeterminismGoldenUnitTests
+                      UnitTestHelpers
+  build-depends:      ,LambdaHack
+                      ,this-game-content
+                      ,this-game-src
+                      ,base
+                      ,binary
+                      ,bytestring
+                      ,enummapset
+                      ,optparse-applicative
+                      ,tasty >= 1.0
+                      ,tasty-hunit
+                      ,text
+                      ,transformers
+                      ,vector

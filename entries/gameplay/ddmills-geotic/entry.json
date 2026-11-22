@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:56:10Z",
+ "category": "gameplay",
+ "commit": "2025-03-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ddmills/geotic \u2014 Entity Component System library for javascript",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "geotic",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ddmills-geotic",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 198,
+ "system": "Entity Component System library for javascript",
+ "upstream": "https://github.com/ddmills/geotic",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

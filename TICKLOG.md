@@ -1447,3 +1447,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/1deaaa-spark-arc-studio
   - reference gameplay/bahnmifps-rep-talknpc
   - reference gameplay/rubonnek-quest-manager
+
+- **2026-11-22 17:56 UTC** — tick 627: +2 screened, +4 reference, 4 skipped, catalogue=348
+  - added gameplay/ondras-rot-js (BSD-3-Clause, vendored)
+  - added gameplay/lambdahack-lambdahack (BSD-3-Clause, vendored)
+  - reference gameplay/chris3606-gorogue
+  - reference gameplay/jice-nospam-doryen-rs
+  - reference gameplay/ddmills-geotic
+  - reference gameplay/jice-nospam-yendor-ts

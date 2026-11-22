@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:56:10Z",
+ "category": "gameplay",
+ "commit": "2023-10-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jice-nospam/doryen-rs \u2014 ascii roguelike library in rust with native and wasm support",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "doryen-rs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jice-nospam-doryen-rs",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 288,
+ "system": "ascii roguelike library in rust with native and wasm support",
+ "upstream": "https://github.com/jice-nospam/doryen-rs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

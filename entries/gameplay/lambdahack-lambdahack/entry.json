@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T17:56:08Z",
+ "category": "gameplay",
+ "commit": "62b978a3c880",
+ "delivery": "vendored",
+ "description": "LambdaHack/LambdaHack \u2014 Haskell game engine library for roguelike dungeon crawlers; please offer feedback, e.g., after trying out the sample game with the web frontend at",
+ "language": "haskell",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "LambdaHack",
+ "size_bytes": 500357,
+ "slug": "lambdahack-lambdahack",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 659,
+ "system": "Haskell game engine library for roguelike dungeon crawlers; please offer feedback, e.g., after trying out the sample game with the web frontend at",
+ "upstream": "https://github.com/LambdaHack/LambdaHack",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
