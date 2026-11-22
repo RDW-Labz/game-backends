@@ -1325,3 +1325,5 @@ One line per 15-minute extension tick, newest last.
   - added procgen/webro12-substance-designer-win (CC-BY-SA-4.0, reference)
 
 - **2026-11-22 08:52 UTC** — tick 592: +0 screened, +0 reference, 14 skipped, catalogue=288
+
+- **2026-11-22 09:08 UTC** — tick 593: +0 screened, +0 reference, 6 skipped, catalogue=288
