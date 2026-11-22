@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:16:07Z",
+ "category": "netcode",
+ "commit": "2022-12-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "johannes-do/multiplayer-babylon-js-game \u2014 Multiplayer BabylonJS game with Server and Client-Side physics engine synchronization",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "multiplayer-babylon-js-game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "johannes-do-multiplayer-babylon-js-game",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 110,
+ "system": "Multiplayer BabylonJS game with Server and Client-Side physics engine synchronization",
+ "upstream": "https://github.com/johannes-do/multiplayer-babylon-js-game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:16:07Z",
+ "category": "netcode",
+ "commit": "2023-03-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sauravhiremath/fifa-api \u2014 React + Node.js + socket.io -- Multiplayer Game server",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "fifa-api",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sauravhiremath-fifa-api",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 101,
+ "system": "React + Node.js + socket.io -- Multiplayer Game server",
+ "upstream": "https://github.com/sauravhiremath/fifa-api",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1483,3 +1483,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/arcomage-arcomage-hd
   - reference netcode/tltneon-lgsl
   - reference netcode/hewiefreeman-gophergameserver
+
+- **2026-11-22 19:16 UTC** — tick 632: +2 screened, +4 reference, 0 skipped, catalogue=374
+  - added netcode/congcoi123-tenio (MIT, vendored)
+  - added netcode/summerengine-summer (MIT, vendored)
+  - reference netcode/johannes-do-multiplayer-babylon-js-game
+  - reference netcode/huytd-node-js-game-server
+  - reference netcode/obastemur-cocos2dxmultiplayer
+  - reference netcode/sauravhiremath-fifa-api

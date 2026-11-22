@@ -1,0 +1,317 @@
+/*
+The MIT License
+
+Copyright (c) 2016-2026 kong <congcoi123@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+package com.tenio.core.bootstrap;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+
+import com.tenio.core.bootstrap.bean.TestBeanClass;
+import com.tenio.core.bootstrap.command.TestClientCommandHandler;
+import com.tenio.core.bootstrap.command.TestSystemCommandHandler;
+import com.tenio.core.bootstrap.eventhandler.TestEventHandlerClass;
+import com.tenio.core.bootstrap.injector.Injector;
+import com.tenio.core.bootstrap.setting.TestSettingClass;
+import com.tenio.core.bootstrap.test.BootstrapComponent;
+import com.tenio.core.bootstrap.test.impl.TestClassA;
+import com.tenio.core.bootstrap.test.impl.TestClassAlone;
+import com.tenio.core.bootstrap.test.impl.TestClassCCopy;
+import com.tenio.core.bootstrap.test.inf.TestInterfaceA;
+import com.tenio.core.bootstrap.test.inf.TestInterfaceC;
+import com.tenio.core.exception.DuplicatedBeanCreationException;
+import com.tenio.core.exception.MultipleImplementedClassForInterfaceException;
+import com.tenio.core.exception.NoImplementedClassFoundException;
+import jakarta.servlet.http.HttpServlet;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.Map;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+@DisplayName("Unit Test Cases For Injector")
+class InjectorTest {
+
+  private final Injector injector = Injector.newInstance();
+
+  @Test
+  @DisplayName("Throw an exception when the class's instance is attempted creating again")
+  void createNewInstanceShouldThrowException() throws NoSuchMethodException {
+    var constructor = Injector.class.getDeclaredConstructor();
+    assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+    assertThrows(InvocationTargetException.class, () -> {
+      constructor.setAccessible(true);
+      constructor.newInstance();
+    });
+  }
+
+  @Test
+  @DisplayName("Injector.newInstance() always returns singleton")
+  void testNewInstanceSingleton() {
+    Injector i1 = Injector.newInstance();
+    Injector i2 = Injector.newInstance();
+    assertSame(i1, i2);
+  }
+
+  @Test
+  @DisplayName("getClassesMap, getClassBeansMap, getServletBeansMap, getSystemCommandManager, getClientCommandManager should not be null")
+  void testGettersNotNull() {
+    Injector injector = Injector.newInstance();
+    assertNotNull(injector.getClassesMap());
+    assertNotNull(injector.getClassBeansMap());
+    assertNotNull(injector.getServletBeansMap());
+    assertNotNull(injector.getSystemCommandManager());
+    assertNotNull(injector.getClientCommandManager());
+  }
+
+  @Test
+  @DisplayName("getBean returns null for unknown class")
+  void testGetBeanReturnsNullForUnknownClass() {
+    Injector injector = Injector.newInstance();
+    assertNull(injector.getBean(String.class));
+  }
+
+  @Test
+  @DisplayName("getBean returns correct instance after scanPackages")
+  void testGetBeanAfterScanPackages() throws Exception {
+    Injector injector = Injector.newInstance();
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.core.bootstrap.bean");
+    Object bean = injector.getBean(BootstrapComponent.class);
+    assertNotNull(bean);
+  }
+
+  @Test
+  @DisplayName("getServletBeansMap returns map that can be modified")
+  void testServletBeansMapModifiable() {
+    Injector injector = Injector.newInstance();
+    Map<String, HttpServlet> map = injector.getServletBeansMap();
+    HttpServlet servlet = mock(HttpServlet.class);
+    map.put("test", servlet);
+    assertSame(servlet, injector.getServletBeansMap().get("test"));
+  }
+
+  @Test
+  @DisplayName("All variables in the BootstrapComponent class should have expected values")
+  void scanPackageShouldRetrieveExpectedValues()
+      throws ClassNotFoundException, InvocationTargetException, InstantiationException,
+      IllegalAccessException, NoSuchMethodException, DuplicatedBeanCreationException {
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.core.bootstrap.test.impl",
+        "com.tenio.core.bootstrap.test.inf", "com.tenio.core.bootstrap.test.factory",
+        "com.tenio.core.bootstrap.bean");
+    var bean = injector.getBean(BootstrapComponent.class);
+    assertAll("scanPackageShouldRetrieveExpectedValues",
+        () -> assertInstanceOf(TestClassA.class, bean.a),
+        () -> assertNull(bean.b),
+        () -> assertInstanceOf(TestClassCCopy.class, bean.c),
+        () -> assertInstanceOf(TestClassAlone.class, bean.alone),
+        () -> assertInstanceOf(TestBeanClass.class, bean.bean),
+        () -> assertEquals("common", bean.beanCommon.text()),
+        () -> assertEquals("common a", bean.beanCommonA.text()),
+        () -> assertEquals("common b", bean.beanCommonB.text())
+    );
+  }
+
+  @Test
+  @DisplayName("After scanning the package should retrieve an instance of A")
+  void scanPackageShouldRetrieveInstanceOfA()
+      throws ClassNotFoundException, InvocationTargetException, InstantiationException,
+      IllegalAccessException, NoSuchMethodException, DuplicatedBeanCreationException {
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.core.bootstrap.bean");
+
+    var bean = injector.getBean(BootstrapComponent.class).a;
+    assertAll("scanPackageShouldRetrieveInstanceOfA",
+        () -> assertInstanceOf(TestInterfaceA.class, bean),
+        () -> assertInstanceOf(TestClassA.class, bean)
+    );
+  }
+
+  @Test
+  @DisplayName("After scanning the package should not retrieve an instance of B (null)")
+  void scanPackageShouldRetrieveNullInstanceOfB()
+      throws ClassNotFoundException, InvocationTargetException, InstantiationException,
+      IllegalAccessException, NoSuchMethodException, DuplicatedBeanCreationException {
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.core.bootstrap.bean");
+
+    var bean = injector.getBean(BootstrapComponent.class).b;
+    assertNull(bean);
+  }
+
+  @Test
+  @DisplayName("After scanning the package should retrieve an instance of C because of using " +
+      "@AutowiredQualifier in BootstrapComponent class")
+  void scanPackageShouldRetrieveInstanceOfC()
+      throws ClassNotFoundException, InvocationTargetException, InstantiationException,
+      IllegalAccessException, NoSuchMethodException, DuplicatedBeanCreationException {
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.core.bootstrap.bean");
+
+    var bean = injector.getBean(BootstrapComponent.class).c;
+    assertAll("scanPackageShouldRetrieveInstanceOfC",
+        () -> assertInstanceOf(TestInterfaceC.class, bean),
+        () -> assertInstanceOf(TestClassCCopy.class, bean)
+    );
+  }
+
+  @Test
+  @DisplayName("After scanning the package should retrieve an instance of alone - a class with " +
+      "@Component and without implementing any interface")
+  void scanPackageShouldRetrieveInstanceOfAlone()
+      throws ClassNotFoundException, InvocationTargetException, InstantiationException,
+      IllegalAccessException, NoSuchMethodException, DuplicatedBeanCreationException {
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.core.bootstrap.bean");
+
+    var bean = injector.getBean(BootstrapComponent.class).alone;
+    assertInstanceOf(TestClassAlone.class, bean);
+  }
+
+  @Test
+  @DisplayName("After scanning the package should throw an exception because there are more than " +
+      "2 classes implement same interface without @AutowiredQualifier declaration")
+  void scanPackageShouldThrowExceptionInInstanceOfD() {
+    assertThrows(MultipleImplementedClassForInterfaceException.class,
+        () -> injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl", "com.tenio.core" +
+            ".bootstrap.test.inf", "com.tenio.core.bootstrap.exception.one"));
+  }
+
+  @Test
+  @DisplayName("After scanning the package should throw an exception because there is no class " +
+      "implement declared interface")
+  void scanPackageShouldThrowExceptionInInstanceOfE() {
+    assertThrows(NoImplementedClassFoundException.class,
+        () -> injector.scanPackages(null, "com.tenio.core.bootstrap.test.impl", "com.tenio.core" +
+            ".bootstrap.test.inf", "com.tenio.core.bootstrap.exception.two"));
+  }
+
+  @Test
+  @DisplayName("After scanning the package should retrieve an instance of bean class - a class " +
+      "declared by @Bean and @BeanFactory annotations")
+  void scanPackageShouldRetrieveInstanceOfBean()
+      throws ClassNotFoundException, InvocationTargetException, InstantiationException,
+      IllegalAccessException, NoSuchMethodException, DuplicatedBeanCreationException {
+    injector.scanPackages(BootstrapComponent.class, "com.tenio.core.bootstrap.bean");
+
+    var bean = injector.getBean(BootstrapComponent.class).bean;
+    assertAll("scanPackageShouldRetrieveInstanceOfBean",
+        () -> assertInstanceOf(TestBeanClass.class, bean),
+        () -> assertEquals(2022, bean.getValue()),
+        () -> assertEquals("This is a bean class", bean.toString())
+    );
+  }
+
+  @Test
+  @DisplayName("Attempt fetching null bean should return null")
+  void getNullBeanShouldReturnNull() {
+    assertNull(Injector.newInstance().getBean(null));
+  }
+
+  @Test
+  @DisplayName("scanPackages with @SystemCommand class registers it in system command manager")
+  void scanPackageWithSystemCommandRegistersCommand() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.command");
+    assertNotNull(injector.getSystemCommandManager().getHandler("test-sys"));
+  }
+
+  @Test
+  @DisplayName("scanPackages with @ClientCommand class registers it in client command manager")
+  void scanPackageWithClientCommandRegistersCommand() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.command");
+    assertNotNull(injector.getClientCommandManager().getHandler((short) 42));
+  }
+
+  @Test
+  @DisplayName("scanPackages with @SystemCommand class stores it in class beans map")
+  void scanPackageWithSystemCommandAddsToBeansMap() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.command");
+    boolean found = injector.getClassBeansMap().entrySet().stream()
+        .anyMatch(e -> e.getValue() instanceof TestSystemCommandHandler);
+    assertTrue(found);
+  }
+
+  @Test
+  @DisplayName("scanPackages with @ClientCommand class stores it in class beans map")
+  void scanPackageWithClientCommandAddsToBeansMap() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.command");
+    boolean found = injector.getClassBeansMap().entrySet().stream()
+        .anyMatch(e -> e.getValue() instanceof TestClientCommandHandler);
+    assertTrue(found);
+  }
+
+  @Test
+  @DisplayName("scanPackages with @RestController class registers its @RestMapping methods in servletBeansMap")
+  void scanPackageWithRestControllerRegistersServlets() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.network.jetty.controller");
+    assertFalse(injector.getServletBeansMap().isEmpty());
+  }
+
+  @Test
+  @DisplayName("scanPackages with @RestController adds the controller to classBeansMap")
+  void scanPackageWithRestControllerAddsToClassBeansMap() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.network.jetty.controller");
+    boolean found = injector.getClassBeansMap().entrySet().stream()
+        .anyMatch(e -> e.getValue().getClass().getSimpleName().equals("PingController"));
+    assertTrue(found);
+  }
+
+  @Test
+  @DisplayName("scanPackages with @EventHandler class creates bean and stores it in classBeansMap")
+  void scanPackageWithEventHandlerClassCreatesBean() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.eventhandler");
+    boolean found = injector.getClassBeansMap().entrySet().stream()
+        .anyMatch(e -> e.getValue() instanceof TestEventHandlerClass);
+    assertTrue(found);
+  }
+
+  @Test
+  @DisplayName("scanPackages with @Setting class creates bean and stores it in classBeansMap")
+  void scanPackageWithSettingClassCreatesBean() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.setting");
+    boolean found = injector.getClassBeansMap().entrySet().stream()
+        .anyMatch(e -> e.getValue() instanceof TestSettingClass);
+    assertTrue(found);
+  }
+
+  @Test
+  @DisplayName("getBean retrieves @EventHandler annotated class by its own class")
+  void getBeanReturnsEventHandlerClass() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.eventhandler");
+    Object bean = injector.getBean(TestEventHandlerClass.class);
+    assertNotNull(bean);
+    assertInstanceOf(TestEventHandlerClass.class, bean);
+  }
+
+  @Test
+  @DisplayName("getBean retrieves @Setting annotated class by its own class")
+  void getBeanReturnsSettingClass() throws Exception {
+    injector.scanPackages(null, "com.tenio.core.bootstrap.setting");
+    Object bean = injector.getBean(TestSettingClass.class);
+    assertNotNull(bean);
+    assertInstanceOf(TestSettingClass.class, bean);
+  }
+}

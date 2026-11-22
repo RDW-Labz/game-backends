@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T19:16:05Z",
+ "category": "netcode",
+ "commit": "74a5a9d7e823",
+ "delivery": "vendored",
+ "description": "SummerEngine/summer \u2014 The game engine built for AI. Includes MCP server, CLI and skills that let any agent build, test, publish, and grow full games with Summer Engine.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "summer",
+ "size_bytes": 8397432,
+ "slug": "summerengine-summer",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 111,
+ "system": "The game engine built for AI. Includes MCP server, CLI and skills that let any agent build, test, publish, and grow full games with Summer Engine.",
+ "upstream": "https://github.com/SummerEngine/summer",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:16:07Z",
+ "category": "netcode",
+ "commit": "2013-10-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "huytd/node-js-game-server \u2014 Easy to use Multiplayer Game Server based on Node.JS. Suitable with HTML5 Websocket, Unity3D (Web/PC, Android, iOS,...), Flash, C++/OpenGL/DirectX, XNA clients,...",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "node-js-game-server",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "huytd-node-js-game-server",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 109,
+ "system": "Easy to use Multiplayer Game Server based on Node.JS. Suitable with HTML5 Websocket, Unity3D (Web/PC, Android, iOS,...), Flash, C++/OpenGL/DirectX, XNA clients,",
+ "upstream": "https://github.com/huytd/node-js-game-server",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

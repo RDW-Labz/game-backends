@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:16:07Z",
+ "category": "netcode",
+ "commit": "2013-05-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "obastemur/cocos2dxMultiPlayer \u2014 Sample Cocos2d-x Multiplayer game with server side source codes",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "cocos2dxMultiPlayer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "obastemur-cocos2dxmultiplayer",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 101,
+ "system": "Sample Cocos2d-x Multiplayer game with server side source codes",
+ "upstream": "https://github.com/obastemur/cocos2dxMultiPlayer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
