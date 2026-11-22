@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:48:14Z",
+ "category": "netcode",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "8izips/fMath \u2014 fixed point math library for deterministic lockstep network game in Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "fMath",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "8izips-fmath",
+ "source": "github-search:lockstep networking stars:>5",
+ "stars": 13,
+ "system": "fixed point math library for deterministic lockstep network game in Unity",
+ "upstream": "https://github.com/8izips/fMath",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:48:14Z",
+ "category": "netcode",
+ "commit": "2025-01-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ELK-milu/LockStepECS \u2014 A ESC FrameWork\uff0cusing lockstep in networking",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "LockStepECS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "elk-milu-lockstepecs",
+ "source": "github-search:lockstep networking stars:>5",
+ "stars": 13,
+ "system": "A ESC FrameWork\uff0cusing lockstep in networking",
+ "upstream": "https://github.com/ELK-milu/LockStepECS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

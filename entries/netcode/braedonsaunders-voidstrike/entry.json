@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T19:48:10Z",
+ "category": "netcode",
+ "commit": "4df0235116b7",
+ "delivery": "reference",
+ "description": "braedonsaunders/voidstrike \u2014 Multiplayer real-time strategy game running entirely in the browser. WebGPU graphics, serverless P2P networking via WebRTC/Nostr, deterministic lockstep simulation, and three asymmetric factions.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "voidstrike",
+ "reference_reason": "size gate: 18 MB",
+ "size_bytes": 19904038,
+ "slug": "braedonsaunders-voidstrike",
+ "source": "github-search:lockstep networking stars:>5",
+ "stars": 28,
+ "system": "Multiplayer real-time strategy game running entirely in the browser. WebGPU graphics, serverless P2P networking via WebRTC/Nostr, deterministic lockstep simulat",
+ "upstream": "https://github.com/braedonsaunders/voidstrike",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

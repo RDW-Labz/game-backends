@@ -1499,3 +1499,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/thefiftguy-rollback-networking-shooter
   - reference netcode/fcornaire-tf-ex
   - reference netcode/gregorik-rollback-core
+
+- **2026-11-22 19:48 UTC** — tick 634: +2 screened, +4 reference, 4 skipped, catalogue=386
+  - added netcode/braedonsaunders-voidstrike (MIT, reference)
+  - added netcode/pietrobassi-deterministic-lockstep-demo (MIT, vendored)
+  - reference netcode/elk-milu-lockstepecs
+  - reference netcode/8izips-fmath
+  - reference netcode/eamonnmr-scandium-rts
+  - reference netcode/boomlulu-boomnetwork

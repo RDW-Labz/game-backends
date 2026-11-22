@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T19:48:12Z",
+ "category": "netcode",
+ "commit": "16feeaf3b200",
+ "delivery": "vendored",
+ "description": "pietrobassi/deterministic-lockstep-demo \u2014 Deterministic lockstep networking demo running locally in the browser",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "deterministic-lockstep-demo",
+ "size_bytes": 203383,
+ "slug": "pietrobassi-deterministic-lockstep-demo",
+ "source": "github-search:lockstep networking stars:>5",
+ "stars": 18,
+ "system": "Deterministic lockstep networking demo running locally in the browser",
+ "upstream": "https://github.com/pietrobassi/deterministic-lockstep-demo",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
