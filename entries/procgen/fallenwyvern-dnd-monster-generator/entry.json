@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:48:12Z",
+ "category": "procgen",
+ "commit": "2017-07-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "FallenWyvern/DnD-Monster-Generator \u2014 Monster Generation Tool for Dungeons and Dragons 5e",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "DnD-Monster-Generator",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "fallenwyvern-dnd-monster-generator",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 68,
+ "system": "Monster Generation Tool for Dungeons and Dragons 5e",
+ "upstream": "https://github.com/FallenWyvern/DnD-Monster-Generator",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

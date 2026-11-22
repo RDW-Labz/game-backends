@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:48:12Z",
+ "category": "procgen",
+ "commit": "2021-08-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AtTheMatinee/dungeon-generation \u2014 A simple demonstration of various roguelike dungeon generation algorithms.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "dungeon-generation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "atthematinee-dungeon-generation",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 227,
+ "system": "A simple demonstration of various roguelike dungeon generation algorithms.",
+ "upstream": "https://github.com/AtTheMatinee/dungeon-generation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

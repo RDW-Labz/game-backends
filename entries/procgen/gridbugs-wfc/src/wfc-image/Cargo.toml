@@ -1,0 +1,41 @@
+[package]
+name = "wfc_image"
+description = "Create patterns for wfc using image files"
+version = "0.12.1"
+authors = ["Stephen Sherratt <stephen@sherra.tt>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/gridbugs/wfc.git"
+repository = "https://github.com/gridbugs/wfc.git"
+documentation = "https://docs.rs/wfc_image"
+edition = "2021"
+
+[features]
+parallel = ["wfc/parallel"]
+
+[dependencies]
+wfc = { path = "../wfc", version = "0.10" }
+image = { version = "0.24", default-features = false, features = ["png"] }
+coord_2d = "0.3"
+grid_2d = "0.15"
+rand = "0.8"
+
+[dev-dependencies]
+rand_xorshift = "0.3"
+meap = "0.5"
+animation_helper = { path = "../animation-helper" }
+
+[[example]]
+name = "simple"
+
+[[example]]
+name = "very_simple"
+
+[[example]]
+name = "flowers"
+
+[[example]]
+name = "animate"
+
+[[example]]
+name = "anchor"

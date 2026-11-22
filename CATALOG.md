@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 23:32 UTC · 470 entries · 143 vendored, 327 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 23:48 UTC · 476 entries · 145 vendored, 331 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-22 23:32 UTC · 470 entries · 143 vendored, 327 reference-on
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
-| [procgen](#procgen) — Procedural generation | 61 | 17 | 44 |
+| [procgen](#procgen) — Procedural generation | 67 | 19 | 48 |
 
 
 ## engines
@@ -474,7 +474,7 @@ _Generated 2026-11-22 23:32 UTC · 470 entries · 143 vendored, 327 reference-on
 
 ## procgen
 
-**Procedural generation** — 61 entries
+**Procedural generation** — 67 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -490,7 +490,10 @@ _Generated 2026-11-22 23:32 UTC · 470 entries · 143 vendored, 327 reference-on
 | [crawl — des](entries/procgen/crawl-crawl-ref-source-dat-des/README.md) | vault/branch layout definitions (DES) | text | GPL-2.0 | reference | [crawl/crawl.git](https://github.com/crawl/crawl.git) @ `cf8c9bca9065` |
 | [cubyz — noise](entries/procgen/cubyz-noise/README.md) | procedural map/world/level generation | zig | GPL-3.0 | reference | [PixelGuys/Cubyz](https://github.com/PixelGuys/Cubyz) @ `74b6814` |
 | [DeBroglie](entries/procgen/boristhebrave-debroglie/README.md) | DeBroglie is a C# library implementing the Wave Function Collapse algorithm with support for additional non-local constraints, and other useful features. | c# | MIT | vendored | [BorisTheBrave/DeBroglie](https://github.com/BorisTheBrave/DeBroglie) @ `27b37fa7a54f` |
+| [DnD-Monster-Generator](entries/procgen/fallenwyvern-dnd-monster-generator/README.md) | Monster Generation Tool for Dungeons and Dragons 5e | c# | unknown | reference | [FallenWyvern/DnD-Monster-Generator](https://github.com/FallenWyvern/DnD-Monster-Generator) @ `2017-07-13 (branch tip at catalogue time)` |
+| [dungeon-generation](entries/procgen/atthematinee-dungeon-generation/README.md) | A simple demonstration of various roguelike dungeon generation algorithms. | python | MIT | reference | [AtTheMatinee/dungeon-generation](https://github.com/AtTheMatinee/dungeon-generation) @ `2021-08-23 (branch tip at catalogue time)` |
 | [Dungeon-Generator (BSP)](entries/procgen/dungeon-generator-bsp/README.md) | BSP dungeon generation (C#/Unity) | c# | MIT | vendored | [Adrian104/Dungeon-Generator](https://github.com/Adrian104/Dungeon-Generator) @ `8dfa5d23f848` |
+| [DungeonGenerator](entries/procgen/jnyjny-dungeongenerator/README.md) | Procedural Dungeon Generation with Python and Pygame | python | MIT | reference | [JnyJny/DungeonGenerator](https://github.com/JnyJny/DungeonGenerator) @ `2015-09-17 (branch tip at catalogue time)` |
 | [DungeonTemplateLibrary](entries/procgen/aspjt-dungeontemplatelibrary/README.md) | 🌏: Dungeon free resources (terrain & roguelike generation) | c++ | MIT | vendored | [AsPJT/DungeonTemplateLibrary](https://github.com/AsPJT/DungeonTemplateLibrary) @ `7819dcd58dc2` |
 | [DungeonTemplateLibrary-Godot](entries/procgen/krazyjakee-dungeontemplatelibrary-godot/README.md) | 🌏: Godot Dungeon free resources (terrain & roguelike generation) | c++ | MIT | reference | [krazyjakee/DungeonTemplateLibrary-Godot](https://github.com/krazyjakee/DungeonTemplateLibrary-Godot) @ `2026-06-11 (branch tip at catalogue time)` |
 | [DungeonTemplateLibraryUnity](entries/procgen/sitryo-dungeontemplatelibraryunity/README.md) | 🌏: Dungeon free resources (terrain & roguelike generation) | c# | BSL-1.0 | reference | [sitRyo/DungeonTemplateLibraryUnity](https://github.com/sitRyo/DungeonTemplateLibraryUnity) @ `2021-01-28 (branch tip at catalogue time)` |
@@ -526,6 +529,7 @@ _Generated 2026-11-22 23:32 UTC · 470 entries · 143 vendored, 327 reference-on
 | [THREE.Terrain](entries/procgen/icecreamyou-three-terrain/README.md) | A procedural terrain generation engine for use with the Three.js 3D graphics library for the web. | javascript | MIT | reference | [IceCreamYou/THREE.Terrain](https://github.com/IceCreamYou/THREE.Terrain) @ `2026-11-12 (branch tip at catalogue time)` |
 | [Tracery](entries/procgen/tracery/README.md) | grammar-based generative text/structure | javascript | Apache-2.0 | vendored | [galaxykate/tracery](https://github.com/galaxykate/tracery) @ `11db07cb8e35` |
 | [UE4ProceduralMesh](entries/procgen/srombauts-ue4proceduralmesh/README.md) | UE4.7 Procedural Mesh Generation plugin | c++ | none | reference | [SRombauts/UE4ProceduralMesh](https://github.com/SRombauts/UE4ProceduralMesh) @ `559456457530` |
+| [Unity-Dungeon-Generator](entries/procgen/damarindra-unity-dungeon-generator/README.md) | Unity Dungeon Generator is a Procedural Generation for dungeon creation. It will result a bunch of data for your needs. | c# | MIT | reference | [damarindra/Unity-Dungeon-Generator](https://github.com/damarindra/Unity-Dungeon-Generator) @ `2020-10-31 (branch tip at catalogue time)` |
 | [Unity-Procedural](entries/procgen/nickhall-unity-procedural/README.md) | Spline based mesh generation | c# | unknown | reference | [nickhall/Unity-Procedural](https://github.com/nickhall/Unity-Procedural) @ `2018-10-29 (branch tip at catalogue time)` |
 | [unity-wave-function-collapse](entries/procgen/selfsame-unity-wave-function-collapse/README.md) | see upstream | c# | MIT | vendored | [selfsame/unity-wave-function-collapse](https://github.com/selfsame/unity-wave-function-collapse) @ `d1b28923ff38` |
 | [unity-wave-function-collapse-3d](entries/procgen/oddmax-unity-wave-function-collapse-3d/README.md) | Implementation of wave function collapse approach for Unity in 3d space | c# | unknown | reference | [oddmax/unity-wave-function-collapse-3d](https://github.com/oddmax/unity-wave-function-collapse-3d) @ `2022-06-21 (branch tip at catalogue time)` |
@@ -535,7 +539,9 @@ _Generated 2026-11-22 23:32 UTC · 470 entries · 143 vendored, 327 reference-on
 | [veloren — world](entries/procgen/veloren-world/README.md) | world generation (terrain, biomes, caves, structures) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
 | [VoxModSynth](entries/procgen/sylefeb-voxmodsynth/README.md) | A simple, efficient, easily hackable C++ implementation of 3d model synthesis / wave function collapse | c++ | MIT | vendored | [sylefeb/VoxModSynth](https://github.com/sylefeb/VoxModSynth) @ `007203eca947` |
 | [Wave-Function-Collapse](entries/procgen/codingtrain-wave-function-collapse/README.md) | see upstream | javascript | unknown | reference | [CodingTrain/Wave-Function-Collapse](https://github.com/CodingTrain/Wave-Function-Collapse) @ `2025-06-10 (branch tip at catalogue time)` |
+| [WaveFunctionCollapse](entries/procgen/avihuxp-wavefunctioncollapse/README.md) | Implementation of the overlapping model of the Wave Function Collapse algorithm | python | MIT | vendored | [avihuxp/WaveFunctionCollapse](https://github.com/avihuxp/WaveFunctionCollapse) @ `00f3720cbe4d` |
 | [WaveFunctionCollapse](entries/procgen/wavefunctioncollapse/README.md) | constraint-based tile/bitmap generation | c# | MIT | vendored | [mxgmn/WaveFunctionCollapse](https://github.com/mxgmn/WaveFunctionCollapse) @ `de7d22e705e8` |
 | [wfc](entries/procgen/emilk-wfc/README.md) | A C++ port of Wave Function Collapse Tiling | c | unknown | reference | [emilk/wfc](https://github.com/emilk/wfc) @ `2022-12-07 (branch tip at catalogue time)` |
+| [wfc](entries/procgen/gridbugs-wfc/README.md) | Crates implementing the Wave Function Collapse algorithm | rust | MIT | vendored | [gridbugs/wfc](https://github.com/gridbugs/wfc) @ `4b03bf9f43b2` |
 | [wfc](entries/procgen/krychu-wfc/README.md) | Wave Function Collapse library in C, plus a command-line tool | c | unknown | reference | [krychu/wfc](https://github.com/krychu/wfc) @ `2026-02-23 (branch tip at catalogue time)` |
 | [WfcMaze](entries/procgen/keijiro-wfcmaze/README.md) | WFC (Wave Function Collapse) with Unity | c# | unknown | reference | [keijiro/WfcMaze](https://github.com/keijiro/WfcMaze) @ `2021-10-30 (branch tip at catalogue time)` |

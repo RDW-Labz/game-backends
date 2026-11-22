@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T23:48:11Z",
+ "category": "procgen",
+ "commit": "00f3720cbe4d",
+ "delivery": "vendored",
+ "description": "avihuxp/WaveFunctionCollapse \u2014 Implementation of the overlapping model of the Wave Function Collapse algorithm",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "WaveFunctionCollapse",
+ "size_bytes": 31463,
+ "slug": "avihuxp-wavefunctioncollapse",
+ "source": "github-search:wave function collapse stars:>100",
+ "stars": 123,
+ "system": "Implementation of the overlapping model of the Wave Function Collapse algorithm",
+ "upstream": "https://github.com/avihuxp/WaveFunctionCollapse",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

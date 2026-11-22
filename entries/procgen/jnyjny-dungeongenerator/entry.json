@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:48:12Z",
+ "category": "procgen",
+ "commit": "2015-09-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JnyJny/DungeonGenerator \u2014 Procedural Dungeon Generation with Python and Pygame",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "DungeonGenerator",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jnyjny-dungeongenerator",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 78,
+ "system": "Procedural Dungeon Generation with Python and Pygame",
+ "upstream": "https://github.com/JnyJny/DungeonGenerator",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

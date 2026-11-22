@@ -1619,3 +1619,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/erikmoczi-unity-proceduralcontentgeneration-terrain
   - reference procgen/martindevans-casualgodcomplex
   - reference procgen/nickhall-unity-procedural
+
+- **2026-11-22 23:48 UTC** — tick 649: +2 screened, +4 reference, 18 skipped, catalogue=476
+  - added procgen/gridbugs-wfc (MIT, vendored)
+  - added procgen/avihuxp-wavefunctioncollapse (MIT, vendored)
+  - reference procgen/atthematinee-dungeon-generation
+  - reference procgen/damarindra-unity-dungeon-generator
+  - reference procgen/jnyjny-dungeongenerator
+  - reference procgen/fallenwyvern-dnd-monster-generator

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:48:12Z",
+ "category": "procgen",
+ "commit": "2020-10-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "damarindra/Unity-Dungeon-Generator \u2014 Unity Dungeon Generator is a Procedural Generation for dungeon creation. It will result a bunch of data for your needs.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Unity-Dungeon-Generator",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "damarindra-unity-dungeon-generator",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 92,
+ "system": "Unity Dungeon Generator is a Procedural Generation for dungeon creation. It will result a bunch of data for your needs.",
+ "upstream": "https://github.com/damarindra/Unity-Dungeon-Generator",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

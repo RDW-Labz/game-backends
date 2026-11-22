@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T23:48:04Z",
+ "category": "procgen",
+ "commit": "4b03bf9f43b2",
+ "delivery": "vendored",
+ "description": "gridbugs/wfc \u2014 Crates implementing the Wave Function Collapse algorithm",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "wfc",
+ "size_bytes": 100828,
+ "slug": "gridbugs-wfc",
+ "source": "github-search:wave function collapse stars:>100",
+ "stars": 163,
+ "system": "Crates implementing the Wave Function Collapse algorithm",
+ "upstream": "https://github.com/gridbugs/wfc",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
