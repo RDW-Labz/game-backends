@@ -1351,3 +1351,5 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-22 12:04 UTC** — tick 604: +0 screened, +0 reference, 8 skipped, catalogue=288
 
 - **2026-11-22 12:20 UTC** — tick 605: +0 screened, +0 reference, 1 skipped, catalogue=288
+
+- **2026-11-22 12:36 UTC** — tick 606: +0 screened, +0 reference, 2 skipped, catalogue=288
