@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T15:39:30Z",
+ "category": "gameplay",
+ "commit": "49bcffd069af",
+ "delivery": "vendored",
+ "description": "splintered-reality/py_trees \u2014 Python implementation of behaviour trees.",
+ "language": "python",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "py_trees",
+ "size_bytes": 874219,
+ "slug": "splintered-reality-py-trees",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 655,
+ "system": "Python implementation of behaviour trees.",
+ "upstream": "https://github.com/splintered-reality/py_trees",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

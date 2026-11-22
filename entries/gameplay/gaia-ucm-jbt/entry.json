@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T15:39:34Z",
+ "category": "gameplay",
+ "commit": "2014-07-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gaia-ucm/jbt \u2014 Java Behaviour Trees is a Java framework for easily building and running generic behaviour trees. Here, \"behaviour tree\" refers to the technique used to control the behaviour of characters in video games.",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "jbt",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "gaia-ucm-jbt",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 262,
+ "system": "Java Behaviour Trees is a Java framework for easily building and running generic behaviour trees. Here, \"behaviour tree\" refers to the technique used to control",
+ "upstream": "https://github.com/gaia-ucm/jbt",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

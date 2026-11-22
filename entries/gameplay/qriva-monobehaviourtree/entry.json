@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T15:39:34Z",
+ "category": "gameplay",
+ "commit": "2024-09-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Qriva/MonoBehaviourTree \u2014 Simple event driven Behaviour tree for Unity projects",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "MonoBehaviourTree",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "qriva-monobehaviourtree",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 332,
+ "system": "Simple event driven Behaviour tree for Unity projects",
+ "upstream": "https://github.com/Qriva/MonoBehaviourTree",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

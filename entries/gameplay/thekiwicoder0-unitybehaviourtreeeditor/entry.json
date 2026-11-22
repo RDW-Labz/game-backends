@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T15:39:34Z",
+ "category": "gameplay",
+ "commit": "2026-05-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "thekiwicoder0/UnityBehaviourTreeEditor \u2014 Behaviour Tree Editor for Unity built with UIToolkit",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "UnityBehaviourTreeEditor",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "thekiwicoder0-unitybehaviourtreeeditor",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 334,
+ "system": "Behaviour Tree Editor for Unity built with UIToolkit",
+ "upstream": "https://github.com/thekiwicoder0/UnityBehaviourTreeEditor",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

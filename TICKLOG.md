@@ -1375,3 +1375,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-22 15:16 UTC** — tick 616: +0 screened, +0 reference, 5 skipped, catalogue=288
 
 - **2026-11-22 15:32 UTC** — tick 617: +0 screened, +0 reference, 20 skipped, catalogue=288
+
+- **2026-11-22 15:39 UTC** — tick 618: +2 screened, +4 reference, 2 skipped, catalogue=294
+  - added gameplay/splintered-reality-py-trees (BSD-3-Clause, vendored)
+  - added gameplay/luis-l-bonsaibehaviourtree (MIT, vendored)
+  - reference gameplay/thekiwicoder0-unitybehaviourtreeeditor
+  - reference gameplay/qriva-monobehaviourtree
+  - reference gameplay/gaia-ucm-jbt
+  - reference gameplay/daedalicentertainment-ue4-orders-abilities

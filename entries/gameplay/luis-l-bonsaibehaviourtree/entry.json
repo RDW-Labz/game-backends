@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T15:39:32Z",
+ "category": "gameplay",
+ "commit": "6aa41f3006e9",
+ "delivery": "vendored",
+ "description": "luis-l/BonsaiBehaviourTree \u2014 An advanced behaviour tree solution for the Unity game engine",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "BonsaiBehaviourTree",
+ "size_bytes": 222229,
+ "slug": "luis-l-bonsaibehaviourtree",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 433,
+ "system": "An advanced behaviour tree solution for the Unity game engine",
+ "upstream": "https://github.com/luis-l/BonsaiBehaviourTree",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

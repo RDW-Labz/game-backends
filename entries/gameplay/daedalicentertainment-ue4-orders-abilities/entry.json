@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T15:39:34Z",
+ "category": "gameplay",
+ "commit": "2020-10-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "DaedalicEntertainment/ue4-orders-abilities \u2014 Sample code of the talk \"Hero AI: Gameplay Abilities Meet Behaviour Trees\" at Unreal Fest Europe 2019.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ue4-orders-abilities",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "daedalicentertainment-ue4-orders-abilities",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 205,
+ "system": "Sample code of the talk \"Hero AI: Gameplay Abilities Meet Behaviour Trees\" at Unreal Fest Europe 2019.",
+ "upstream": "https://github.com/DaedalicEntertainment/ue4-orders-abilities",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
