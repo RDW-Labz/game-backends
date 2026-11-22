@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-22T18:12:33Z",
+ "category": "gameplay",
+ "commit": "863b32640d48",
+ "delivery": "reference",
+ "description": "DennisBoon/Procedural_Planet_Generation \u2014 Procedural planet generation application made in Unity for the Oculus Quest.",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Procedural_Planet_Generation",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 2974996,
+ "slug": "dennisboon-procedural-planet-generation",
+ "source": "github-search:procedural quest generation stars:>5",
+ "stars": 6,
+ "system": "Procedural planet generation application made in Unity for the Oculus Quest.",
+ "upstream": "https://github.com/DennisBoon/Procedural_Planet_Generation",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

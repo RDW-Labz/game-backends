@@ -1455,3 +1455,7 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/jice-nospam-doryen-rs
   - reference gameplay/ddmills-geotic
   - reference gameplay/jice-nospam-yendor-ts
+
+- **2026-11-22 18:12 UTC** — tick 628: +2 screened, +0 reference, 0 skipped, catalogue=350
+  - added gameplay/science-of-imagination-conan-procedural-quest-generation (MIT, vendored)
+  - added gameplay/dennisboon-procedural-planet-generation (none, reference)

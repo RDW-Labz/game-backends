@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T18:12:05Z",
+ "category": "gameplay",
+ "commit": "8751d05c8ac8",
+ "delivery": "vendored",
+ "description": "science-of-imagination/conan-procedural-quest-generation \u2014 Let CONAN tell you a story: Procedural quest generation",
+ "language": "sas",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "conan-procedural-quest-generation",
+ "size_bytes": 488452,
+ "slug": "science-of-imagination-conan-procedural-quest-generation",
+ "source": "github-search:procedural quest generation stars:>5",
+ "stars": 7,
+ "system": "Let CONAN tell you a story: Procedural quest generation",
+ "upstream": "https://github.com/science-of-imagination/conan-procedural-quest-generation",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
