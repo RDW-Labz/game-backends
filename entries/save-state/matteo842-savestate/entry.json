@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T21:56:03Z",
+ "category": "save-state",
+ "commit": "7557b3c5a788",
+ "delivery": "reference",
+ "description": "Matteo842/SaveState \u2014 Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ emulators (RetroArch, Dolphin, Yuzu...). Desktop shortcuts for one-click backup, zip rotation, optional cloud sync.",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "SaveState",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 4491666,
+ "slug": "matteo842-savestate",
+ "source": "github-search:savestate emulator stars:>5",
+ "stars": 531,
+ "system": "Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ e",
+ "upstream": "https://github.com/Matteo842/SaveState",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

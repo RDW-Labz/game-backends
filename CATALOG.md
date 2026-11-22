@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 21:40 UTC · 428 entries · 139 vendored, 289 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 21:56 UTC · 434 entries · 139 vendored, 295 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-22 21:40 UTC · 428 entries · 139 vendored, 289 reference-on
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
-| [save-state](#save-state) — Save / state systems | 43 | 16 | 27 |
+| [save-state](#save-state) — Save / state systems | 49 | 16 | 33 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
 
@@ -401,11 +401,12 @@ _Generated 2026-11-22 21:40 UTC · 428 entries · 139 vendored, 289 reference-on
 
 ## save-state
 
-**Save / state systems** — 43 entries
+**Save / state systems** — 49 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [alpaca](entries/save-state/p-ranav-alpaca/README.md) | Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code | c++ | MIT | vendored | [p-ranav/alpaca](https://github.com/p-ranav/alpaca) @ `8f022bdb5106` |
+| [bevy-prefabs](entries/save-state/zylkowski-bevy-prefabs/README.md) | Entity prefabs serialization plugin for Bevy game engine | rust | MIT | reference | [zylkowski/bevy-prefabs](https://github.com/zylkowski/bevy-prefabs) @ `2021-05-25 (branch tip at catalogue time)` |
 | [biomes-game — storage](entries/save-state/biomes-game-storage/README.md) | persistence: save/load, snapshot or state serialisation | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blobify](entries/save-state/neobrain-blobify/README.md) | C++17 library for all your binary de-/serialization needs | c++ | BSL-1.0 | reference | [neobrain/blobify](https://github.com/neobrain/blobify) @ `2023-12-11 (branch tip at catalogue time)` |
 | [capnproto](entries/save-state/capnproto-capnproto/README.md) | Cap'n Proto serialization/RPC system - core tools and C++ library | c++ | MIT | vendored | [capnproto/capnproto](https://github.com/capnproto/capnproto) @ `5f160ba386e6` |
@@ -421,6 +422,7 @@ _Generated 2026-11-22 21:40 UTC · 428 entries · 139 vendored, 289 reference-on
 | [Freeciv — savegame](entries/save-state/freeciv-savegame/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [FTC-Skystone-Dark-Angels-Romania-2020](entries/save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020/README.md) | NOTICE This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season. If you are looking for the current season's FTC SDK software | java | BSD-3-Clause | vendored | [chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020](https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020) @ `b5132793582a` |
 | [fx-gltf](entries/save-state/jessey-git-fx-gltf/README.md) | A C++14/C++17 header-only library for simple, efficient, and robust serialization/deserialization of glTF 2.0 | c++ | MIT | reference | [jessey-git/fx-gltf](https://github.com/jessey-git/fx-gltf) @ `2022-01-01 (branch tip at catalogue time)` |
+| [GameboyPrinterPaperSimulation](entries/save-state/raphael-boichot-gameboyprinterpapersimulation/README.md) | Overlay for Game Boy Printer emulator with e-paper feature and complete support, hints and savestates for the 110 compatible games ! | c++ | GPL-3.0 | reference | [Raphael-Boichot/GameboyPrinterPaperSimulation](https://github.com/Raphael-Boichot/GameboyPrinterPaperSimulation) @ `54273a1399ca` |
 | [geojson](entries/save-state/georust-geojson/README.md) | Library for serializing the GeoJSON vector GIS file format | rust | Apache-2.0 | reference | [georust/geojson](https://github.com/georust/geojson) @ `2026-11-18 (branch tip at catalogue time)` |
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
 | [Hexi](entries/save-state/emberemu-hexi/README.md) | Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy! | c++ | Apache-2.0 | reference | [EmberEmu/Hexi](https://github.com/EmberEmu/Hexi) @ `2026-04-19 (branch tip at catalogue time)` |
@@ -429,16 +431,20 @@ _Generated 2026-11-22 21:40 UTC · 428 entries · 139 vendored, 289 reference-on
 | [kura](entries/save-state/nookieai-kura/README.md) | Scan, identify, organize, and transfer your PS1-PS5 & Vita game library (Windows, macOS, Linux), with a bundled PS5 payload for installs, cheats, saves, and fan | n/a | unknown | reference | [NookieAI/kura](https://github.com/NookieAI/kura) @ `2026-11-22 (branch tip at catalogue time)` |
 | [miniserde](entries/save-state/dtolnay-miniserde/README.md) | Data structure serialization library with several opposite design goals from Serde | rust | Apache-2.0 | vendored | [dtolnay/miniserde](https://github.com/dtolnay/miniserde) @ `6dfa4fa395f3` |
 | [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
+| [nes-emulator](entries/save-state/nicolfo-nes-emulator/README.md) | Cycle-accurate NES emulator in Rust - CPU/PPU/APU, 43 mappers with expansion audio (incl. VRC7 FM), NTSC/PAL auto-detect, gamepad + savestates. | rust | GPL-3.0 | reference | [Nicolfo/nes-emulator](https://github.com/Nicolfo/nes-emulator) @ `2026-11-13 (branch tip at catalogue time)` |
 | [NxLibrary](entries/save-state/bium23-nxlibrary/README.md) | A console-style macOS game library and launcher in SwiftUI. Features guided setup, assisted local builds for nxnative, save backup/import, and controller naviga | swift | MIT | reference | [Bium23/NxLibrary](https://github.com/Bium23/NxLibrary) @ `2026-11-20 (branch tip at catalogue time)` |
 | [ormsgpack](entries/save-state/ormsgpack-ormsgpack/README.md) | MessagePack serialization library for Python derived from orjson, written in Rust using PyO3 | rust | Apache-2.0 | reference | [ormsgpack/ormsgpack](https://github.com/ormsgpack/ormsgpack) @ `2026-11-21 (branch tip at catalogue time)` |
 | [PenguinBurner](entries/save-state/jpietek-penguinburner/README.md) | Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play | python | GPL-3.0 | reference | [jpietek/PenguinBurner](https://github.com/jpietek/PenguinBurner) @ `2026-11-17 (branch tip at catalogue time)` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
+| [retro-go-tab5](entries/save-state/andjiang0083-retro-go-tab5/README.md) | A full-speed GBA emulator for the M5Stack Tab5 (ESP32-P4): a solid 60 FPS on the 720x1280 display, 11 classic consoles in one device, touch virtual gamepad, GBA | c | GPL-2.0 | reference | [andjiang0083/retro-go-tab5](https://github.com/andjiang0083/retro-go-tab5) @ `2026-10-22 (branch tip at catalogue time)` |
 | [revision](entries/save-state/surrealdb-revision/README.md) | A Rust library for revision-tolerant serialisation and deserialisation, with support for schema evolution over time | rust | Apache-2.0 | vendored | [surrealdb/revision](https://github.com/surrealdb/revision) @ `4671d9343099` |
 | [rss](entries/save-state/rust-syndication-rss/README.md) | Library for serializing the RSS web content syndication format | rust | Apache-2.0 | reference | [rust-syndication/rss](https://github.com/rust-syndication/rss) @ `2026-11-10 (branch tip at catalogue time)` |
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
+| [SaveState](entries/save-state/matteo842-savestate/README.md) | Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ e | python | GPL-3.0 | reference | [Matteo842/SaveState](https://github.com/Matteo842/SaveState) @ `7557b3c5a788` |
 | [Serialize.Linq](entries/save-state/esskar-serialize-linq/README.md) | C# library to serialize LINQ expressions | c# | MIT | vendored | [esskar/Serialize.Linq](https://github.com/esskar/Serialize.Linq) @ `44b715ffbea5` |
+| [Server-crashes-on-player-connect](entries/save-state/teehee123123-server-crashes-on-player-connect/README.md) | ---- Minecraft Crash Report ---- // Ooh. Shiny.  Time: 7/4/13 11:37 PM Description: Ticking entity  java.lang.OutOfMemoryError: Java heap space 	at net.minecraf | n/a | unknown | reference | [Teehee123123/Server-crashes-on-player-connect](https://github.com/Teehee123123/Server-crashes-on-player-connect) @ `2022-08-31 (branch tip at catalogue time)` |
 | [SQLite](entries/save-state/sqlite/README.md) | embedded SQL database engine (single-file world saves) | c | Public-Domain | reference | [sqlite/sqlite](https://github.com/sqlite/sqlite) @ `e5cb4b09573a` |
 | [struct2json](entries/save-state/armink-struct2json/README.md) | A fast convert library between the JSON and C structure. Implement structure serialization and deserialization for C. / C 结构体与 JSON 快速互转库，快速实现 C 结构体的序列化及反序列化 | c | MIT | reference | [armink/struct2json](https://github.com/armink/struct2json) @ `2022-01-07 (branch tip at catalogue time)` |
 | [thrive — saving](entries/save-state/thrive-saving/README.md) | persistence: save/load, snapshot or state serialisation | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |

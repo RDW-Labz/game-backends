@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:56:09Z",
+ "category": "save-state",
+ "commit": "2026-10-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "andjiang0083/retro-go-tab5 \u2014 A full-speed GBA emulator for the M5Stack Tab5 (ESP32-P4): a solid 60 FPS on the 720x1280 display, 11 classic consoles in one device, touch virtual gamepad, GBA .zip support, savestates, bilingual UI. \uff5c M5Stack Tab5\uff08ESP32-P4\uff09\u4e0a\u7684\u6ee1\u5e27 GBA \u6a21\u62df\u5668\uff1a720\u00d71280 \u5927\u5c4f\u7a33\u8dd1 60 \u5e27\uff1b\u4e00\u53f0\u673a\u5668 11 \u4e2a\u673a\u79cd\uff1b\u89e6\u6478\u865a\u62df\u624b\u67c4\u3001GBA \u652f\u6301 .zip\u3001\u5b58\u6863\u6301\u4e45\u5316\u3001\u4e2d\u82f1\u53cc\u8bed\u3002",
+ "language": "c",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "retro-go-tab5",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-2.0)",
+ "slug": "andjiang0083-retro-go-tab5",
+ "source": "github-search:savestate emulator stars:>5",
+ "stars": 6,
+ "system": "A full-speed GBA emulator for the M5Stack Tab5 (ESP32-P4): a solid 60 FPS on the 720x1280 display, 11 classic consoles in one device, touch virtual gamepad, GBA",
+ "upstream": "https://github.com/andjiang0083/retro-go-tab5",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

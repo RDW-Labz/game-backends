@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T21:56:08Z",
+ "category": "save-state",
+ "commit": "54273a1399ca",
+ "delivery": "reference",
+ "description": "Raphael-Boichot/GameboyPrinterPaperSimulation \u2014 Overlay for Game Boy Printer emulator with e-paper feature and complete support, hints and savestates for the 110 compatible games !",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "GameboyPrinterPaperSimulation",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 54453,
+ "slug": "raphael-boichot-gameboyprinterpapersimulation",
+ "source": "github-search:savestate emulator stars:>5",
+ "stars": 85,
+ "system": "Overlay for Game Boy Printer emulator with e-paper feature and complete support, hints and savestates for the 110 compatible games !",
+ "upstream": "https://github.com/Raphael-Boichot/GameboyPrinterPaperSimulation",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

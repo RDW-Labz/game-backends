@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:56:09Z",
+ "category": "save-state",
+ "commit": "2021-05-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "zylkowski/bevy-prefabs \u2014 Entity prefabs serialization plugin for Bevy game engine",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy-prefabs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "zylkowski-bevy-prefabs",
+ "source": "github-search:entity serialization game stars:>5",
+ "stars": 13,
+ "system": "Entity prefabs serialization plugin for Bevy game engine",
+ "upstream": "https://github.com/zylkowski/bevy-prefabs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
