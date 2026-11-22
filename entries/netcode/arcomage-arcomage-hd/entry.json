@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:00:08Z",
+ "category": "netcode",
+ "commit": "2025-11-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "arcomage/arcomage-hd \u2014 Web-based, free and open source, remastered 3D clone of 3DO/NWC's 2000 card game Arcomage. 16 languages. Desktop or mobile Android iOS. Online or offline PWA. Against AI or Multiplayer (P2P, no server). \ud83e\udddd\ud83d\udc7e\ud83c\udccf (ts+react+redux+rxjs, CSS-based anim, WebRTC)",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "arcomage-hd",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "arcomage-arcomage-hd",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 195,
+ "system": "Web-based, free and open source, remastered 3D clone of 3DO/NWC's 2000 card game Arcomage. 16 languages. Desktop or mobile Android iOS. Online or offline PWA. A",
+ "upstream": "https://github.com/arcomage/arcomage-hd",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

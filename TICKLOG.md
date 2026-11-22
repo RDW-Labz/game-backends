@@ -1475,3 +1475,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/ylmbtm-gameproject3
   - reference netcode/menacher-java-game-server
   - reference netcode/openkruise-kruise-game
+
+- **2026-11-22 19:00 UTC** — tick 631: +2 screened, +4 reference, 3 skipped, catalogue=368
+  - added netcode/slayhorizon-godot-tiny-mmo (MIT, vendored)
+  - added netcode/segs-segs (BSD-3-Clause, reference)
+  - reference netcode/beammp-beammp-server
+  - reference netcode/arcomage-arcomage-hd
+  - reference netcode/tltneon-lgsl
+  - reference netcode/hewiefreeman-gophergameserver

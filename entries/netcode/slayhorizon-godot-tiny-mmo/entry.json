@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T19:00:03Z",
+ "category": "netcode",
+ "commit": "f4ed04f20963",
+ "delivery": "vendored",
+ "description": "SlayHorizon/godot-tiny-mmo \u2014 Open-source cross-platform MMORPG built with Godot 4",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-tiny-mmo",
+ "size_bytes": 2127422,
+ "slug": "slayhorizon-godot-tiny-mmo",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 298,
+ "system": "Open-source cross-platform MMORPG built with Godot 4",
+ "upstream": "https://github.com/SlayHorizon/godot-tiny-mmo",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

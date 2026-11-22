@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:00:08Z",
+ "category": "netcode",
+ "commit": "2024-03-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hewiefreeman/GopherGameServer \u2014 :trophy: Feature packed, easy-to-use game server API for Go back-ends and Javascript clients. Tutorials and examples included!",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "GopherGameServer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "hewiefreeman-gophergameserver",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 191,
+ "system": ":trophy: Feature packed, easy-to-use game server API for Go back-ends and Javascript clients. Tutorials and examples included!",
+ "upstream": "https://github.com/hewiefreeman/GopherGameServer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

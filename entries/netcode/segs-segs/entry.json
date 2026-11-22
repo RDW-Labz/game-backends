@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T19:00:06Z",
+ "category": "netcode",
+ "commit": "73b2ccb9aa5b",
+ "delivery": "reference",
+ "description": "Segs/Segs \u2014 :muscle: SEGS - Super Entity Game Server",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "Segs",
+ "reference_reason": "size gate: 12 MB",
+ "size_bytes": 12968793,
+ "slug": "segs-segs",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 232,
+ "system": ":muscle: SEGS - Super Entity Game Server",
+ "upstream": "https://github.com/Segs/Segs",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
