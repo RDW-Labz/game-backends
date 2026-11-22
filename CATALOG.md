@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 16:36 UTC · 318 entries · 109 vendored, 209 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 16:52 UTC · 324 entries · 111 vendored, 213 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-22 16:36 UTC · 318 entries · 109 vendored, 209 reference-on
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 67 | 20 | 47 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 73 | 22 | 51 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
@@ -174,7 +174,7 @@ _Generated 2026-11-22 16:36 UTC · 318 entries · 109 vendored, 209 reference-on
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 67 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 73 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -197,6 +197,7 @@ _Generated 2026-11-22 16:36 UTC · 318 entries · 109 vendored, 209 reference-on
 | [horror-game-enemy-demo](entries/gameplay/bypell-horror-game-enemy-demo/README.md) | Demo project for a horror game enemy that tries to find and catch the player using 3D navigation and a node-based finite state machine. | gdscript | MIT | reference | [bypell/horror-game-enemy-demo](https://github.com/bypell/horror-game-enemy-demo) @ `2024-12-23 (branch tip at catalogue time)` |
 | [hypersomnia — inventory](entries/gameplay/hypersomnia-inventory/README.md) | combat, AI, pathing, quest or inventory logic | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [inventory-manager](entries/gameplay/rubonnek-inventory-manager/README.md) | A comprehensive inventory management system for the Godot Game Engine | gdscript | unknown | reference | [Rubonnek/inventory-manager](https://github.com/Rubonnek/inventory-manager) @ `2026-06-05 (branch tip at catalogue time)` |
+| [InventoryManagementSystem](entries/gameplay/sajxraj-inventorymanagementsystem/README.md) | A software developed using Java SE which provides as easy way to track the products, suppliers, customers as well as purchase and sales information. It also rec | java | unknown | reference | [sajxraj/InventoryManagementSystem](https://github.com/sajxraj/InventoryManagementSystem) @ `2024-05-30 (branch tip at catalogue time)` |
 | [InventorySystem](entries/gameplay/benolimits-inventorysystem/README.md) | Easy to use Hotbar and Inventory system for Unreal Engine 5 | n/a | MIT | vendored | [benolimits/InventorySystem](https://github.com/benolimits/InventorySystem) @ `ff320f8f87fb` |
 | [InvenTree](entries/gameplay/inventree-inventree/README.md) | Open Source Inventory Management System | python | MIT | reference | [inventree/InvenTree](https://github.com/inventree/InvenTree) @ `2026-11-22 (branch tip at catalogue time)` |
 | [jbt](entries/gameplay/gaia-ucm-jbt/README.md) | Java Behaviour Trees is a Java framework for easily building and running generic behaviour trees. Here, "behaviour tree" refers to the technique used to control | java | Apache-2.0 | reference | [gaia-ucm/jbt](https://github.com/gaia-ucm/jbt) @ `2014-07-25 (branch tip at catalogue time)` |
@@ -219,15 +220,20 @@ _Generated 2026-11-22 16:36 UTC · 318 entries · 109 vendored, 209 reference-on
 | [pacman](entries/gameplay/armin-reichert-pacman/README.md) | A Pac-Man game implementation using explicit finite-state machines (original AI, theming, integrated dashboard) | java | MIT | reference | [armin-reichert/pacman](https://github.com/armin-reichert/pacman) @ `2023-11-30 (branch tip at catalogue time)` |
 | [pathfinding](entries/gameplay/evenfurther-pathfinding/README.md) | Pathfinding library for rust | rust | unknown | reference | [evenfurther/pathfinding](https://github.com/evenfurther/pathfinding) @ `2026-10-23 (branch tip at catalogue time)` |
 | [PathFinding.js](entries/gameplay/pathfinding-js/README.md) | A*, IDA*, JPS, Dijkstra, BiA* on grids | javascript | MIT | vendored | [qiao/PathFinding.js](https://github.com/qiao/PathFinding.js) @ `2904a9afba48` |
+| [Point-of-Sales](entries/gameplay/sadatrafsanjani-point-of-sales/README.md) | Point of Sales with inventory management system  | java | MIT | reference | [sadatrafsanjani/Point-of-Sales](https://github.com/sadatrafsanjani/Point-of-Sales) @ `2026-09-08 (branch tip at catalogue time)` |
 | [PokemonTacticalRolePlay](entries/gameplay/sinlessdevil-pokemontacticalroleplay/README.md) | Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI. | c# | none | reference | [SinlessDevil/PokemonTacticalRolePlay](https://github.com/SinlessDevil/PokemonTacticalRolePlay) @ `764123cd5354` |
 | [PonyBehaviourTrees](entries/gameplay/ands-ponybehaviourtrees/README.md) | A set of C# libraries for runtime behaviour tree editing, scripting and inspection | c# | unknown | reference | [ands/PonyBehaviourTrees](https://github.com/ands/PonyBehaviourTrees) @ `2015-12-02 (branch tip at catalogue time)` |
 | [py_trees](entries/gameplay/splintered-reality-py-trees/README.md) | Python implementation of behaviour trees. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees](https://github.com/splintered-reality/py_trees) @ `49bcffd069af` |
 | [Recast & Detour](entries/gameplay/recastnavigation/README.md) | navmesh generation + pathfinding + crowd steering | c++ | Zlib | vendored | [recastnavigation/recastnavigation](https://github.com/recastnavigation/recastnavigation) @ `9f4ce64458df` |
 | [References](entries/gameplay/aryia-behroziuan-references/README.md) |  Poole, Mackworth & Goebel 1998, p. 1.  Russell & Norvig 2003, p. 55.  Definition of AI as the study of intelligent agents: Poole, Mackworth & Goebel (1998), wh | n/a | none | reference | [Aryia-Behroziuan/References](https://github.com/Aryia-Behroziuan/References) @ `1f0e5ca1f05a` |
+| [Restaurant-Management-System](entries/gameplay/harismuneer-restaurant-management-system/README.md) | 👨‍🍳  An Android based RMS that aims to digitalize the day to day processes of various restaurant operations including ordering, billing, kitchen, hall and inven | java | MIT | vendored | [harismuneer/Restaurant-Management-System](https://github.com/harismuneer/Restaurant-Management-System) @ `0946070cde2f` |
+| [Restaurant_POS_System](entries/gameplay/amritmaurya1504-restaurant-pos-system/README.md) | A full-featured Restaurant POS System built using the MERN Stack to streamline restaurant operations, enhance customer experience, and manage orders, payments,  | javascript | unknown | reference | [amritmaurya1504/Restaurant_POS_System](https://github.com/amritmaurya1504/Restaurant_POS_System) @ `2025-03-02 (branch tip at catalogue time)` |
 | [Revengate — combat](entries/gameplay/revengate-combat/README.md) | combat, AI, pathing, quest or inventory logic | gd | GPL-3.0 | reference | [https://gitlab.com/ygingras/revengate](https://gitlab.com/ygingras/revengate) @ `ad6b2ee` |
 | [RogueSharp](entries/gameplay/faronbracy-roguesharp/README.md) | A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired | c# | MIT | reference | [FaronBracy/RogueSharp](https://github.com/FaronBracy/RogueSharp) @ `2024-08-03 (branch tip at catalogue time)` |
 | [SAE-based-representation-engineering](entries/gameplay/yuzhaouoe-sae-based-representation-engineering/README.md) | [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering | python | MIT | reference | [yuzhaouoe/SAE-based-representation-engineering](https://github.com/yuzhaouoe/SAE-based-representation-engineering) @ `2026-06-20 (branch tip at catalogue time)` |
 | [seldom_map_nav](entries/gameplay/seldom-se-seldom-map-nav/README.md) | Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency. | rust | Apache-2.0 | vendored | [Seldom-SE/seldom_map_nav](https://github.com/Seldom-SE/seldom_map_nav) @ `5586a0e6ad1f` |
+| [storaji](entries/gameplay/indomaximtechid-storaji/README.md) | :ledger: The light/responsive inventory management system available on Windows, macOS and Linux. | php | MIT | reference | [IndomaximTechID/storaji](https://github.com/IndomaximTechID/storaji) @ `2023-08-09 (branch tip at catalogue time)` |
+| [StoreDown](entries/gameplay/jliscom-storedown/README.md) | An inventory system that is hopefully simple enough for everyone! | javascript | MIT | vendored | [JLiscom/StoreDown](https://github.com/JLiscom/StoreDown) @ `cb2746330760` |
 | [stronghold-protocol — ai](entries/gameplay/stronghold-protocol-ai/README.md) | combat, AI, pathing, quest or inventory logic | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
 | [suroi — items](entries/gameplay/suroi-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
 | [ue4-orders-abilities](entries/gameplay/daedalicentertainment-ue4-orders-abilities/README.md) | Sample code of the talk "Hero AI: Gameplay Abilities Meet Behaviour Trees" at Unreal Fest Europe 2019. | c++ | MIT | reference | [DaedalicEntertainment/ue4-orders-abilities](https://github.com/DaedalicEntertainment/ue4-orders-abilities) @ `2020-10-09 (branch tip at catalogue time)` |

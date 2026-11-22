@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T16:52:02Z",
+ "category": "gameplay",
+ "commit": "cb2746330760",
+ "delivery": "vendored",
+ "description": "JLiscom/StoreDown \u2014 An inventory system that is hopefully simple enough for everyone!",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "StoreDown",
+ "size_bytes": 1024163,
+ "slug": "jliscom-storedown",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 423,
+ "system": "An inventory system that is hopefully simple enough for everyone!",
+ "upstream": "https://github.com/JLiscom/StoreDown",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

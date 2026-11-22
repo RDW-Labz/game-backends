@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T16:52:05Z",
+ "category": "gameplay",
+ "commit": "0946070cde2f",
+ "delivery": "vendored",
+ "description": "harismuneer/Restaurant-Management-System \u2014 \ud83d\udc68\u200d\ud83c\udf73  An Android based RMS that aims to digitalize the day to day processes of various restaurant operations including ordering, billing, kitchen, hall and inventory management.",
+ "language": "java",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Restaurant-Management-System",
+ "size_bytes": 426811,
+ "slug": "harismuneer-restaurant-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 351,
+ "system": "\ud83d\udc68\u200d\ud83c\udf73  An Android based RMS that aims to digitalize the day to day processes of various restaurant operations including ordering, billing, kitchen, hall and inven",
+ "upstream": "https://github.com/harismuneer/Restaurant-Management-System",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

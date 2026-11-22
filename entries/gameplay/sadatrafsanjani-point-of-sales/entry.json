@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:52:06Z",
+ "category": "gameplay",
+ "commit": "2026-09-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sadatrafsanjani/Point-of-Sales \u2014 Point of Sales with inventory management system",
+ "language": "java",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Point-of-Sales",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sadatrafsanjani-point-of-sales",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 319,
+ "system": "Point of Sales with inventory management system ",
+ "upstream": "https://github.com/sadatrafsanjani/Point-of-Sales",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

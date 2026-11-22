@@ -1415,3 +1415,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/bypell-horror-game-enemy-demo
   - reference gameplay/sysadminsmedia-homebox
   - reference gameplay/inventree-inventree
+
+- **2026-11-22 16:52 UTC** — tick 623: +2 screened, +4 reference, 0 skipped, catalogue=324
+  - added gameplay/jliscom-storedown (MIT, vendored)
+  - added gameplay/harismuneer-restaurant-management-system (MIT, vendored)
+  - reference gameplay/sajxraj-inventorymanagementsystem
+  - reference gameplay/sadatrafsanjani-point-of-sales
+  - reference gameplay/amritmaurya1504-restaurant-pos-system
+  - reference gameplay/indomaximtechid-storaji

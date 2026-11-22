@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:52:06Z",
+ "category": "gameplay",
+ "commit": "2025-03-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "amritmaurya1504/Restaurant_POS_System \u2014 A full-featured Restaurant POS System built using the MERN Stack to streamline restaurant operations, enhance customer experience, and manage orders, payments, and inventory with ease.",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Restaurant_POS_System",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "amritmaurya1504-restaurant-pos-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 318,
+ "system": "A full-featured Restaurant POS System built using the MERN Stack to streamline restaurant operations, enhance customer experience, and manage orders, payments, ",
+ "upstream": "https://github.com/amritmaurya1504/Restaurant_POS_System",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

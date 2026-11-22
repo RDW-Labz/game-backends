@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:52:06Z",
+ "category": "gameplay",
+ "commit": "2024-05-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sajxraj/InventoryManagementSystem \u2014 A software developed using Java SE which provides as easy way to track the products, suppliers, customers as well as purchase and sales information. It also records the stock currently available in the store.",
+ "language": "java",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "InventoryManagementSystem",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "sajxraj-inventorymanagementsystem",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 346,
+ "system": "A software developed using Java SE which provides as easy way to track the products, suppliers, customers as well as purchase and sales information. It also rec",
+ "upstream": "https://github.com/sajxraj/InventoryManagementSystem",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
