@@ -1391,3 +1391,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/andrew-wilkes-godot-behaviour-tree
   - reference gameplay/ands-ponybehaviourtrees
   - reference gameplay/vadimburym-dodbt
+
+- **2026-11-22 16:04 UTC** — tick 620: +2 screened, +4 reference, 4 skipped, catalogue=306
+  - added gameplay/sinlessdevil-pokemontacticalroleplay (none, reference)
+  - added gameplay/aniskaram-unity-modular-game-architecture (none, reference)
+  - reference gameplay/zackanimates08-open-aimbot
+  - reference gameplay/mugen87-yuka
+  - reference gameplay/adam-mcdaniel-chess-engine
+  - reference gameplay/meshula-opensteer

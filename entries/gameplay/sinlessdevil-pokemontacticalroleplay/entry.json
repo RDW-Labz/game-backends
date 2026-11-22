@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-22T16:04:10Z",
+ "category": "gameplay",
+ "commit": "764123cd5354",
+ "delivery": "reference",
+ "description": "SinlessDevil/PokemonTacticalRolePlay \u2014 Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI.",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "PokemonTacticalRolePlay",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 7147702,
+ "slug": "sinlessdevil-pokemontacticalroleplay",
+ "source": "github-search:utility ai game stars:>15",
+ "stars": 22,
+ "system": "Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI.",
+ "upstream": "https://github.com/SinlessDevil/PokemonTacticalRolePlay",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

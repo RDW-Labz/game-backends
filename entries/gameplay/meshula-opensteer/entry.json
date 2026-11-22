@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:04:16Z",
+ "category": "gameplay",
+ "commit": "2023-03-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "meshula/OpenSteer \u2014 OpenSteer is a C++ library to help build steering behaviors for autonomous characters in games and animation.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "OpenSteer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "meshula-opensteer",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 376,
+ "system": "OpenSteer is a C++ library to help build steering behaviors for autonomous characters in games and animation.",
+ "upstream": "https://github.com/meshula/OpenSteer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

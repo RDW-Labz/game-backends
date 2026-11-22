@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 15:48 UTC · 300 entries · 107 vendored, 193 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 16:04 UTC · 306 entries · 107 vendored, 199 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-22 15:48 UTC · 300 entries · 107 vendored, 193 reference-on
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 49 | 18 | 31 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 55 | 18 | 37 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
@@ -174,7 +174,7 @@ _Generated 2026-11-22 15:48 UTC · 300 entries · 107 vendored, 193 reference-on
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 49 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 55 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -184,6 +184,7 @@ _Generated 2026-11-22 15:48 UTC · 300 entries · 107 vendored, 193 reference-on
 | [BehaviorTree.CPP](entries/gameplay/behaviortree-cpp/README.md) | behaviour trees for AI agents with blackboards | c++ | MIT | vendored | [BehaviorTree/BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP) @ `365b2e499d34` |
 | [biomes-game — items](entries/gameplay/biomes-game-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [BonsaiBehaviourTree](entries/gameplay/luis-l-bonsaibehaviourtree/README.md) | An advanced behaviour tree solution for the Unity game engine | c# | MIT | vendored | [luis-l/BonsaiBehaviourTree](https://github.com/luis-l/BonsaiBehaviourTree) @ `6aa41f3006e9` |
+| [chess-engine](entries/gameplay/adam-mcdaniel-chess-engine/README.md) | A dependency-free chess engine♟️ library built to run anywhere. | rust | MIT | reference | [adam-mcdaniel/chess-engine](https://github.com/adam-mcdaniel/chess-engine) @ `2024-04-18 (branch tip at catalogue time)` |
 | [DODBT](entries/gameplay/vadimburym-dodbt/README.md) | High-performance Behaviour Tree system inspired by Data-Oriented Design. Zero MonoBehaviour, zero runtime allocations, graph-to-runtime compilation, clean debug | c# | unknown | reference | [vadimburym/DODBT](https://github.com/vadimburym/DODBT) @ `2026-10-21 (branch tip at catalogue time)` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
@@ -205,10 +206,13 @@ _Generated 2026-11-22 15:48 UTC · 300 entries · 107 vendored, 193 reference-on
 | [MonoBehaviourTree](entries/gameplay/qriva-monobehaviourtree/README.md) | Simple event driven Behaviour tree for Unity projects | c# | MIT | reference | [Qriva/MonoBehaviourTree](https://github.com/Qriva/MonoBehaviourTree) @ `2024-09-25 (branch tip at catalogue time)` |
 | [MultiTree-Behavior](entries/gameplay/thomheymann-multitree-behavior/README.md) | MultiTree is a drop-in behaviour to CakePHP's Core Tree Behavior allowing for more advanced operations and better performance on large data sets | php | unknown | reference | [thomheymann/MultiTree-Behavior](https://github.com/thomheymann/MultiTree-Behavior) @ `2013-09-21 (branch tip at catalogue time)` |
 | [naev — ai](entries/gameplay/naev-ai/README.md) | combat, AI, pathing, quest or inventory logic | lua | BSD-2-Clause | vendored | [naev/naev.git](https://github.com/naev/naev.git) @ `7f58510` |
+| [Open-Aimbot](entries/gameplay/zackanimates08-open-aimbot/README.md) | Open Aimbot is a universal open source framework. It offers a wide selection of extensive functionality. We develop various utilities for Roblox, security syste | n/a | MIT | reference | [Zackanimates08/Open-Aimbot](https://github.com/Zackanimates08/Open-Aimbot) @ `2026-03-01 (branch tip at catalogue time)` |
 | [OpenDungeons — spells](entries/gameplay/opendungeons-spells/README.md) | combat, AI, pathing, quest or inventory logic | cpp | GPL-3.0 | reference | [OpenDungeons/OpenDungeons.git](https://github.com/OpenDungeons/OpenDungeons.git) @ `a9efe49` |
 | [openmu — GameLogic](entries/gameplay/openmu-src-gamelogic/README.md) | MMO gameplay logic: combat, skills, inventory, quests | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
+| [OpenSteer](entries/gameplay/meshula-opensteer/README.md) | OpenSteer is a C++ library to help build steering behaviors for autonomous characters in games and animation. | c++ | unknown | reference | [meshula/OpenSteer](https://github.com/meshula/OpenSteer) @ `2023-03-31 (branch tip at catalogue time)` |
 | [pathfinding](entries/gameplay/evenfurther-pathfinding/README.md) | Pathfinding library for rust | rust | unknown | reference | [evenfurther/pathfinding](https://github.com/evenfurther/pathfinding) @ `2026-10-23 (branch tip at catalogue time)` |
 | [PathFinding.js](entries/gameplay/pathfinding-js/README.md) | A*, IDA*, JPS, Dijkstra, BiA* on grids | javascript | MIT | vendored | [qiao/PathFinding.js](https://github.com/qiao/PathFinding.js) @ `2904a9afba48` |
+| [PokemonTacticalRolePlay](entries/gameplay/sinlessdevil-pokemontacticalroleplay/README.md) | Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI. | c# | none | reference | [SinlessDevil/PokemonTacticalRolePlay](https://github.com/SinlessDevil/PokemonTacticalRolePlay) @ `764123cd5354` |
 | [PonyBehaviourTrees](entries/gameplay/ands-ponybehaviourtrees/README.md) | A set of C# libraries for runtime behaviour tree editing, scripting and inspection | c# | unknown | reference | [ands/PonyBehaviourTrees](https://github.com/ands/PonyBehaviourTrees) @ `2015-12-02 (branch tip at catalogue time)` |
 | [py_trees](entries/gameplay/splintered-reality-py-trees/README.md) | Python implementation of behaviour trees. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees](https://github.com/splintered-reality/py_trees) @ `49bcffd069af` |
 | [Recast & Detour](entries/gameplay/recastnavigation/README.md) | navmesh generation + pathfinding + crowd steering | c++ | Zlib | vendored | [recastnavigation/recastnavigation](https://github.com/recastnavigation/recastnavigation) @ `9f4ce64458df` |
@@ -219,6 +223,7 @@ _Generated 2026-11-22 15:48 UTC · 300 entries · 107 vendored, 193 reference-on
 | [ue4-orders-abilities](entries/gameplay/daedalicentertainment-ue4-orders-abilities/README.md) | Sample code of the talk "Hero AI: Gameplay Abilities Meet Behaviour Trees" at Unreal Fest Europe 2019. | c++ | MIT | reference | [DaedalicEntertainment/ue4-orders-abilities](https://github.com/DaedalicEntertainment/ue4-orders-abilities) @ `2020-10-09 (branch tip at catalogue time)` |
 | [uesvon](entries/gameplay/midgen-uesvon/README.md) | 3D navmesh generation and pathfinding plugin for UnrealEngine | c++ | MIT | vendored | [midgen/uesvon](https://github.com/midgen/uesvon) @ `ca9f9ebf7b14` |
 | [Unity-Crafting-System](entries/gameplay/raulmrsouza-unity-crafting-system/README.md) | Crafting System and Building placement for unity3D | c# | MIT | reference | [RaulMrSouza/Unity-Crafting-System](https://github.com/RaulMrSouza/Unity-Crafting-System) @ `2018-10-05 (branch tip at catalogue time)` |
+| [Unity-Modular-Game-Architecture](entries/gameplay/aniskaram-unity-modular-game-architecture/README.md) | A modular Game Architecture framework in Unity 6. Features a Scalable Inventory (MVP), a Physics-based Character Controller (FSM), Dependency Injection (VContai | c# | none | reference | [AnisKaram/Unity-Modular-Game-Architecture](https://github.com/AnisKaram/Unity-Modular-Game-Architecture) @ `c9d56b38b3ef` |
 | [Unity-Script-Collection](entries/gameplay/michidk-unity-script-collection/README.md) | A maintained collection of useful & free unity scripts / library's / plugins and extensions | css | GPL-3.0 | reference | [michidk/Unity-Script-Collection](https://github.com/michidk/Unity-Script-Collection) @ `479da93a9da3` |
 | [UnityBehaviourTree](entries/gameplay/grymmyd-unitybehaviourtree/README.md) | A simple behaviour tree implementation for Unity | c# | Apache-2.0 | vendored | [GrymmyD/UnityBehaviourTree](https://github.com/GrymmyD/UnityBehaviourTree) @ `eae4a24ea5bd` |
 | [UnityBehaviourTreeEditor](entries/gameplay/thekiwicoder0-unitybehaviourtreeeditor/README.md) | Behaviour Tree Editor for Unity built with UIToolkit | c# | MIT | reference | [thekiwicoder0/UnityBehaviourTreeEditor](https://github.com/thekiwicoder0/UnityBehaviourTreeEditor) @ `2026-05-14 (branch tip at catalogue time)` |
@@ -227,6 +232,7 @@ _Generated 2026-11-22 15:48 UTC · 300 entries · 107 vendored, 193 reference-on
 | [veloren — inventory](entries/gameplay/veloren-inventory/README.md) | combat, AI, pathing, quest or inventory logic | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
 | [wargus — ai](entries/gameplay/wargus-ai/README.md) | combat, AI, pathing, quest or inventory logic | c | GPL-2.0 | reference | [Wargus/wargus.git](https://github.com/Wargus/wargus.git) @ `57f9d4d` |
 | [widelands — ai](entries/gameplay/widelands-ai/README.md) | combat, AI, pathing, quest or inventory logic | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
+| [yuka](entries/gameplay/mugen87-yuka/README.md) | JavaScript library for developing Game AI. | javascript | MIT | reference | [Mugen87/yuka](https://github.com/Mugen87/yuka) @ `2026-10-20 (branch tip at catalogue time)` |
 
 ## netcode
 

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:04:16Z",
+ "category": "gameplay",
+ "commit": "2026-03-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Zackanimates08/Open-Aimbot \u2014 Open Aimbot is a universal open source framework. It offers a wide selection of extensive functionality. We develop various utilities for Roblox, security systems, protection and scripts for specific games, and general scenarios.",
+ "language": "n/a",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Open-Aimbot",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "zackanimates08-open-aimbot",
+ "source": "github-search:utility ai game stars:>15",
+ "stars": 16,
+ "system": "Open Aimbot is a universal open source framework. It offers a wide selection of extensive functionality. We develop various utilities for Roblox, security syste",
+ "upstream": "https://github.com/Zackanimates08/Open-Aimbot",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

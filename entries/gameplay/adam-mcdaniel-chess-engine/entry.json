@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:04:16Z",
+ "category": "gameplay",
+ "commit": "2024-04-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "adam-mcdaniel/chess-engine \u2014 A dependency-free chess engine\u265f\ufe0f library built to run anywhere.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "chess-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "adam-mcdaniel-chess-engine",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 461,
+ "system": "A dependency-free chess engine\u265f\ufe0f library built to run anywhere.",
+ "upstream": "https://github.com/adam-mcdaniel/chess-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
