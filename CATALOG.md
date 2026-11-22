@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 18:12 UTC · 350 entries · 119 vendored, 231 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 18:28 UTC · 356 entries · 121 vendored, 235 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-22 18:12 UTC · 350 entries · 119 vendored, 231 reference-on
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
-| [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
+| [netcode](#netcode) — Networking / netcode | 57 | 21 | 36 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
@@ -280,7 +280,7 @@ _Generated 2026-11-22 18:12 UTC · 350 entries · 119 vendored, 231 reference-on
 
 ## netcode
 
-**Networking / netcode** — 51 entries
+**Networking / netcode** — 57 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -288,6 +288,7 @@ _Generated 2026-11-22 18:12 UTC · 350 entries · 119 vendored, 231 reference-on
 | [Backdash](entries/netcode/delta3-studio-backdash/README.md) | C# Rollback network SDK | c# | MIT | reference | [Delta3-Studio/Backdash](https://github.com/Delta3-Studio/Backdash) @ `2026-11-10 (branch tip at catalogue time)` |
 | [backroll-rs](entries/netcode/houraiteahouse-backroll-rs/README.md) | A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode. | rust | ISC | reference | [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) @ `2023-03-13 (branch tip at catalogue time)` |
 | [BestoNet](entries/netcode/bestogames-bestonet/README.md) | BestoNet is a custom rollback networking solution developed for the fighting game Idol Showdown. Built in C# for Unity, it integrates with Facepunch Steamworks  | c# | MIT | reference | [BestoGames/BestoNet](https://github.com/BestoGames/BestoNet) @ `2026-06-02 (branch tip at catalogue time)` |
+| [cellnet](entries/netcode/davyxu-cellnet/README.md) | High performance, simple, extensible golang open source network library | go | MIT | vendored | [davyxu/cellnet](https://github.com/davyxu/cellnet) @ `916a7eaabb30` |
 | [Colyseus](entries/netcode/colyseus/README.md) | authoritative room-based multiplayer framework with state sync | typescript | MIT | vendored | [colyseus/colyseus](https://github.com/colyseus/colyseus) @ `ce781b98bfc5` |
 | [Cubit — server](entries/netcode/cubit-server/README.md) | network transport, protocol, replication or server loop | go | MIT | vendored | [taynotfound/cubit](https://github.com/taynotfound/cubit) @ `0bd4518` |
 | [cubyz — server](entries/netcode/cubyz-server/README.md) | network transport, protocol, replication or server loop | zig | GPL-3.0 | reference | [PixelGuys/Cubyz](https://github.com/PixelGuys/Cubyz) @ `74b6814` |
@@ -306,9 +307,12 @@ _Generated 2026-11-22 18:12 UTC · 350 entries · 119 vendored, 231 reference-on
 | [Godot-Rollback-Fighter-Demo](entries/netcode/blast-harbour-godot-rollback-fighter-demo/README.md) | An example project built on Bimdav's "Delta Rollback" Fork of David Snopek's "Godot Rollback Netcode" Addon  | gdscript | MIT | reference | [blast-harbour/Godot-Rollback-Fighter-Demo](https://github.com/blast-harbour/Godot-Rollback-Fighter-Demo) @ `2024-07-10 (branch tip at catalogue time)` |
 | [hypersomnia — network](entries/netcode/hypersomnia-network/README.md) | network transport, protocol, replication or server loop | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [KCP](entries/netcode/kcp/README.md) | fast reliable ARQ protocol (TCP-like over UDP) | c | MIT | vendored | [skywind3000/kcp](https://github.com/skywind3000/kcp) @ `b1a7a2101dcb` |
+| [librg](entries/netcode/zpl-c-librg/README.md) | 🚀  Making multi-player gamedev simpler since 2017 | c | BSD-3-Clause | vendored | [zpl-c/librg](https://github.com/zpl-c/librg) @ `106c658620d8` |
+| [lightyear](entries/netcode/cbournhonesque-lightyear/README.md) | A networking library to make multiplayer games for the Bevy game engine | rust | Apache-2.0 | reference | [cBournhonesque/lightyear](https://github.com/cBournhonesque/lightyear) @ `2026-11-05 (branch tip at catalogue time)` |
 | [megaglest — network](entries/netcode/megaglest-network/README.md) | network transport, protocol, replication or server loop | h | none | reference | [megaglest/megaglest-source.git](https://github.com/megaglest/megaglest-source.git) @ `4ab09c6` |
 | [Mindustry — net](entries/netcode/mindustry-net/README.md) | network transport, protocol, replication or server loop | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [Mirage](entries/netcode/miragenet-mirage/README.md) | Easy to use high performance Network library for Unity 3d | c# | MIT | vendored | [MirageNet/Mirage](https://github.com/MirageNet/Mirage) @ `527d0b0f5d18` |
+| [naia](entries/netcode/naia-lib-naia/README.md) | a cross-platform (including Wasm!) networking library built in Rust. Intended to make multiplayer game development dead-simple & lightning-fast  | rust | Apache-2.0 | reference | [naia-lib/naia](https://github.com/naia-lib/naia) @ `2026-11-18 (branch tip at catalogue time)` |
 | [Nakama](entries/netcode/nakama/README.md) | game backend server: matchmaking, realtime, leaderboards, storage | go | Apache-2.0 | reference | [heroiclabs/nakama](https://github.com/heroiclabs/nakama) @ `37618ad4b927` |
 | [nakama — server](entries/netcode/nakama-server/README.md) | network transport, protocol, replication or server loop | go | Apache-2.0 | vendored | [heroiclabs/nakama](https://github.com/heroiclabs/nakama) @ `4833594` |
 | [netcode.io](entries/netcode/netcode-io/README.md) | secure UDP connection protocol with token auth | c | BSD-3-Clause | vendored | [mas-bandwidth/netcode](https://github.com/mas-bandwidth/netcode) @ `2d9df60853a6` |
@@ -322,6 +326,7 @@ _Generated 2026-11-22 18:12 UTC · 350 entries · 119 vendored, 231 reference-on
 | [openmu — Network](entries/netcode/openmu-src-network/README.md) | MMO network protocol, packet handlers, encryption | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
 | [openrct2 — network](entries/netcode/openrct2-network/README.md) | network transport, protocol, replication or server loop | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
 | [PlayHex — server](entries/netcode/playhex-server/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [playhex/playhex](https://github.com/playhex/playhex) @ `5750af4` |
+| [psn-api](entries/netcode/achievements-app-psn-api/README.md) | A JavaScript library that lets you get trophy, user, and game data from the PlayStation Network. | typescript | MIT | reference | [achievements-app/psn-api](https://github.com/achievements-app/psn-api) @ `2026-08-15 (branch tip at catalogue time)` |
 | [rigs-of-rods — server](entries/netcode/rigs-of-rods-server/README.md) | network transport, protocol, replication or server loop | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
 | [sf4e](entries/netcode/fabeloper-sf4e/README.md) | Rollback netcode mod for Ultra Street Fighter IV (Steam). Fork of sf4e by Anthony Danducci (adanducci), codeberg.org/adanducci/sf4e | c++ | MIT | vendored | [fabeloper/sf4e](https://github.com/fabeloper/sf4e) @ `e01d5ab3a4ac` |
 | [stronghold-protocol — server](entries/netcode/stronghold-protocol-server/README.md) | network transport, protocol, replication or server loop | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
@@ -333,6 +338,7 @@ _Generated 2026-11-22 18:12 UTC · 350 entries · 119 vendored, 231 reference-on
 | [voldorium](entries/netcode/enrique363-voldorium/README.md) | Native Windows and Linux port of SoulCalibur (Dreamcast) by static recompilation: 16:9, online versus with rollback netcode (Windows and Linux play together). R | c | unknown | reference | [enrique363/voldorium](https://github.com/enrique363/voldorium) @ `2026-11-14 (branch tip at catalogue time)` |
 | [warzone2100 — netplay](entries/netcode/warzone2100-lib-netplay/README.md) | RTS netplay: sync, desync detection, rejoin | c++ | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e14614` |
 | [widelands — network](entries/netcode/widelands-network/README.md) | network transport, protocol, replication or server loop | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
+| [WLANOptimizer](entries/netcode/catid-wlanoptimizer/README.md) | Single-header C library that fixes WiFi performance issues for online gaming and other low-latency real-time network traffic. | c++ | unknown | reference | [catid/WLANOptimizer](https://github.com/catid/WLANOptimizer) @ `2018-08-25 (branch tip at catalogue time)` |
 | [yojimbo](entries/netcode/mas-bandwidth-yojimbo/README.md) | A network library for client/server games written in C++ | c++ | BSD-3-Clause | vendored | [mas-bandwidth/yojimbo](https://github.com/mas-bandwidth/yojimbo) @ `ae64e145c993` |
 | [yojimbo](entries/netcode/yojimbo/README.md) | client/server game protocol: encryption, reliability, connection tags | c++ | BSD-3-Clause | vendored | [networkprotocol/yojimbo](https://github.com/networkprotocol/yojimbo) @ `ae64e145c993` |
 

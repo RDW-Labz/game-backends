@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T18:28:06Z",
+ "category": "netcode",
+ "commit": "106c658620d8",
+ "delivery": "vendored",
+ "description": "zpl-c/librg \u2014 \ud83d\ude80  Making multi-player gamedev simpler since 2017",
+ "language": "c",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "librg",
+ "size_bytes": 1245002,
+ "slug": "zpl-c-librg",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 1519,
+ "system": "\ud83d\ude80  Making multi-player gamedev simpler since 2017",
+ "upstream": "https://github.com/zpl-c/librg",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

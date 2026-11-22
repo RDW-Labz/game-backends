@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T18:28:08Z",
+ "category": "netcode",
+ "commit": "2018-08-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "catid/WLANOptimizer \u2014 Single-header C library that fixes WiFi performance issues for online gaming and other low-latency real-time network traffic.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "WLANOptimizer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "catid-wlanoptimizer",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 236,
+ "system": "Single-header C library that fixes WiFi performance issues for online gaming and other low-latency real-time network traffic.",
+ "upstream": "https://github.com/catid/WLANOptimizer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

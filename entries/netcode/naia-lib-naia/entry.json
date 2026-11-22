@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T18:28:08Z",
+ "category": "netcode",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "naia-lib/naia \u2014 a cross-platform (including Wasm!) networking library built in Rust. Intended to make multiplayer game development dead-simple & lightning-fast",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "naia",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "naia-lib-naia",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 1189,
+ "system": "a cross-platform (including Wasm!) networking library built in Rust. Intended to make multiplayer game development dead-simple & lightning-fast ",
+ "upstream": "https://github.com/naia-lib/naia",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1459,3 +1459,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-22 18:12 UTC** — tick 628: +2 screened, +0 reference, 0 skipped, catalogue=350
   - added gameplay/science-of-imagination-conan-procedural-quest-generation (MIT, vendored)
   - added gameplay/dennisboon-procedural-planet-generation (none, reference)
+
+- **2026-11-22 18:28 UTC** — tick 629: +2 screened, +4 reference, 5 skipped, catalogue=356
+  - added netcode/davyxu-cellnet (MIT, vendored)
+  - added netcode/zpl-c-librg (BSD-3-Clause, vendored)
+  - reference netcode/cbournhonesque-lightyear
+  - reference netcode/naia-lib-naia
+  - reference netcode/achievements-app-psn-api
+  - reference netcode/catid-wlanoptimizer

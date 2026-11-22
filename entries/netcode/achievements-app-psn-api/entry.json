@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T18:28:08Z",
+ "category": "netcode",
+ "commit": "2026-08-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "achievements-app/psn-api \u2014 A JavaScript library that lets you get trophy, user, and game data from the PlayStation Network.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "psn-api",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "achievements-app-psn-api",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 435,
+ "system": "A JavaScript library that lets you get trophy, user, and game data from the PlayStation Network.",
+ "upstream": "https://github.com/achievements-app/psn-api",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T18:28:04Z",
+ "category": "netcode",
+ "commit": "916a7eaabb30",
+ "delivery": "vendored",
+ "description": "davyxu/cellnet \u2014 High performance, simple, extensible golang open source network library",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cellnet",
+ "size_bytes": 203652,
+ "slug": "davyxu-cellnet",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 4052,
+ "system": "High performance, simple, extensible golang open source network library",
+ "upstream": "https://github.com/davyxu/cellnet",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T18:28:08Z",
+ "category": "netcode",
+ "commit": "2026-11-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "cBournhonesque/lightyear \u2014 A networking library to make multiplayer games for the Bevy game engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "lightyear",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "cbournhonesque-lightyear",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 1229,
+ "system": "A networking library to make multiplayer games for the Bevy game engine",
+ "upstream": "https://github.com/cBournhonesque/lightyear",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
