@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T18:44:07Z",
+ "category": "netcode",
+ "commit": "fd9bc5dce93f",
+ "delivery": "vendored",
+ "description": "lance-gg/lance \u2014 Multiplayer game server based on Node.JS",
+ "language": "typescript",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "lance",
+ "size_bytes": 552275,
+ "slug": "lance-gg-lance",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 1725,
+ "system": "Multiplayer game server based on Node.JS",
+ "upstream": "https://github.com/lance-gg/lance",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

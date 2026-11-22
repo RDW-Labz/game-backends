@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T18:44:05Z",
+ "category": "netcode",
+ "commit": "a71420b2b34a",
+ "delivery": "reference",
+ "description": "agones-dev/agones \u2014 Dedicated Game Server Hosting and Scaling for Multiplayer Games on Kubernetes",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "agones",
+ "reference_reason": "size gate: 66 MB",
+ "size_bytes": 69644766,
+ "slug": "agones-dev-agones",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 7107,
+ "system": "Dedicated Game Server Hosting and Scaling for Multiplayer Games on Kubernetes",
+ "upstream": "https://github.com/agones-dev/agones",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

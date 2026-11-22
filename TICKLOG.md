@@ -1467,3 +1467,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/naia-lib-naia
   - reference netcode/achievements-app-psn-api
   - reference netcode/catid-wlanoptimizer
+
+- **2026-11-22 18:44 UTC** — tick 630: +2 screened, +4 reference, 3 skipped, catalogue=362
+  - added netcode/agones-dev-agones (Apache-2.0, reference)
+  - added netcode/lance-gg-lance (Apache-2.0, vendored)
+  - reference netcode/embarkstudios-quilkin
+  - reference netcode/ylmbtm-gameproject3
+  - reference netcode/menacher-java-game-server
+  - reference netcode/openkruise-kruise-game

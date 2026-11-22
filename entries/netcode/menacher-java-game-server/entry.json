@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T18:44:09Z",
+ "category": "netcode",
+ "commit": "2025-11-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "menacher/java-game-server \u2014 Jetserver is a high speed nio socket based multiplayer java game server written using Netty and Mike Rettig's Jetlang.It is specifically tuned for network based multiplayer games and supports TCP and UDP network protocols.",
+ "language": "java",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "java-game-server",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "menacher-java-game-server",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 1295,
+ "system": "Jetserver is a high speed nio socket based multiplayer java game server written using Netty and Mike Rettig's Jetlang.It is specifically tuned for network based",
+ "upstream": "https://github.com/menacher/java-game-server",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

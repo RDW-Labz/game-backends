@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T18:44:09Z",
+ "category": "netcode",
+ "commit": "2026-07-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "openkruise/kruise-game \u2014 Game Servers Management on Kubernetes",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "kruise-game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "openkruise-kruise-game",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 1082,
+ "system": "Game Servers Management on Kubernetes",
+ "upstream": "https://github.com/openkruise/kruise-game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
