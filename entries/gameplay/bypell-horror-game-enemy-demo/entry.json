@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:36:07Z",
+ "category": "gameplay",
+ "commit": "2024-12-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bypell/horror-game-enemy-demo \u2014 Demo project for a horror game enemy that tries to find and catch the player using 3D navigation and a node-based finite state machine.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "horror-game-enemy-demo",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "bypell-horror-game-enemy-demo",
+ "source": "github-search:finite state machine game stars:>20",
+ "stars": 27,
+ "system": "Demo project for a horror game enemy that tries to find and catch the player using 3D navigation and a node-based finite state machine.",
+ "upstream": "https://github.com/bypell/horror-game-enemy-demo",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

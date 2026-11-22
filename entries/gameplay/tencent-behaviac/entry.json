@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T16:36:04Z",
+ "category": "gameplay",
+ "commit": "351442b36726",
+ "delivery": "reference",
+ "description": "Tencent/behaviac \u2014 behaviac is a framework of the game AI development, and it also can be used as a rapid game prototype design tool. behaviac supports the behavior tree, finite state machine and hierarchical task network(BT, FSM, HTN)",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "license.txt",
+ "license_verdict": "clean",
+ "name": "behaviac",
+ "reference_reason": "size gate: 15 MB",
+ "size_bytes": 15830349,
+ "slug": "tencent-behaviac",
+ "source": "github-search:finite state machine game stars:>20",
+ "stars": 3050,
+ "system": "behaviac is a framework of the game AI development, and it also can be used as a rapid game prototype design tool. behaviac supports the behavior tree, finite s",
+ "upstream": "https://github.com/Tencent/behaviac",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

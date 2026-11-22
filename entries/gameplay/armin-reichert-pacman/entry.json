@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:36:07Z",
+ "category": "gameplay",
+ "commit": "2023-11-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "armin-reichert/pacman \u2014 A Pac-Man game implementation using explicit finite-state machines (original AI, theming, integrated dashboard)",
+ "language": "java",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pacman",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "armin-reichert-pacman",
+ "source": "github-search:finite state machine game stars:>20",
+ "stars": 66,
+ "system": "A Pac-Man game implementation using explicit finite-state machines (original AI, theming, integrated dashboard)",
+ "upstream": "https://github.com/armin-reichert/pacman",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

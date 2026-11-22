@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:36:07Z",
+ "category": "gameplay",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sysadminsmedia/homebox \u2014 A continuation of HomeBox the inventory and organization system built for the Home User",
+ "language": "go",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "homebox",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "sysadminsmedia-homebox",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 7942,
+ "system": "A continuation of HomeBox the inventory and organization system built for the Home User",
+ "upstream": "https://github.com/sysadminsmedia/homebox",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

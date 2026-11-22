@@ -1407,3 +1407,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/anuraghazra-evolutionaquerium
   - reference gameplay/sunnyvalleystudio-unity-2d-context-steering-ai
   - reference gameplay/yuzhaouoe-sae-based-representation-engineering
+
+- **2026-11-22 16:36 UTC** — tick 622: +2 screened, +4 reference, 0 skipped, catalogue=318
+  - added gameplay/tencent-behaviac (MIT, reference)
+  - added gameplay/aryia-behroziuan-references (none, reference)
+  - reference gameplay/armin-reichert-pacman
+  - reference gameplay/bypell-horror-game-enemy-demo
+  - reference gameplay/sysadminsmedia-homebox
+  - reference gameplay/inventree-inventree

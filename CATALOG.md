@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 16:20 UTC · 312 entries · 109 vendored, 203 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 16:36 UTC · 318 entries · 109 vendored, 209 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-22 16:20 UTC · 312 entries · 109 vendored, 203 reference-on
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 61 | 20 | 41 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 67 | 20 | 47 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
@@ -174,13 +174,14 @@ _Generated 2026-11-22 16:20 UTC · 312 entries · 109 vendored, 203 reference-on
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 61 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 67 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [abstreet — pathfind](entries/gameplay/abstreet-pathfind/README.md) | combat, AI, pathing, quest or inventory logic | rs | Apache-2.0 | vendored | [a-b-street/abstreet](https://github.com/a-b-street/abstreet) @ `0964f29` |
 | [ancientbeast — abilities](entries/gameplay/ancientbeast-abilities/README.md) | combat, AI, pathing, quest or inventory logic | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AStar](entries/gameplay/roy-t-astar/README.md) | A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher.  | c# | MIT | vendored | [roy-t/AStar](https://github.com/roy-t/AStar) @ `3d57efaa83c8` |
+| [behaviac](entries/gameplay/tencent-behaviac/README.md) | behaviac is a framework of the game AI development, and it also can be used as a rapid game prototype design tool. behaviac supports the behavior tree, finite s | c# | MIT | reference | [Tencent/behaviac](https://github.com/Tencent/behaviac) @ `351442b36726` |
 | [BehaviorTree.CPP](entries/gameplay/behaviortree-cpp/README.md) | behaviour trees for AI agents with blackboards | c++ | MIT | vendored | [BehaviorTree/BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP) @ `365b2e499d34` |
 | [biomes-game — items](entries/gameplay/biomes-game-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [BlockMaps](entries/gameplay/p-svacha-blockmaps/README.md) | Unity framework to create detailed, 3D, grid-based worlds with real-time navmesh generation and integrated pathfinding, vision and movement systems. | c# | unknown | reference | [p-svacha/BlockMaps](https://github.com/p-svacha/BlockMaps) @ `2025-11-04 (branch tip at catalogue time)` |
@@ -192,9 +193,12 @@ _Generated 2026-11-22 16:20 UTC · 312 entries · 109 vendored, 203 reference-on
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
 | [godot-behaviour-tree](entries/gameplay/andrew-wilkes-godot-behaviour-tree/README.md) | Behaviour Tree framework for Godot coded in GDScript. | gdscript | MIT | reference | [andrew-wilkes/godot-behaviour-tree](https://github.com/andrew-wilkes/godot-behaviour-tree) @ `2023-12-13 (branch tip at catalogue time)` |
 | [graphhopper](entries/gameplay/graphhopper-graphhopper/README.md) | Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server. | java | Apache-2.0 | vendored | [graphhopper/graphhopper](https://github.com/graphhopper/graphhopper) @ `9df847473a5e` |
+| [homebox](entries/gameplay/sysadminsmedia-homebox/README.md) | A continuation of HomeBox the inventory and organization system built for the Home User | go | AGPL-3.0 | reference | [sysadminsmedia/homebox](https://github.com/sysadminsmedia/homebox) @ `2026-11-21 (branch tip at catalogue time)` |
+| [horror-game-enemy-demo](entries/gameplay/bypell-horror-game-enemy-demo/README.md) | Demo project for a horror game enemy that tries to find and catch the player using 3D navigation and a node-based finite state machine. | gdscript | MIT | reference | [bypell/horror-game-enemy-demo](https://github.com/bypell/horror-game-enemy-demo) @ `2024-12-23 (branch tip at catalogue time)` |
 | [hypersomnia — inventory](entries/gameplay/hypersomnia-inventory/README.md) | combat, AI, pathing, quest or inventory logic | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [inventory-manager](entries/gameplay/rubonnek-inventory-manager/README.md) | A comprehensive inventory management system for the Godot Game Engine | gdscript | unknown | reference | [Rubonnek/inventory-manager](https://github.com/Rubonnek/inventory-manager) @ `2026-06-05 (branch tip at catalogue time)` |
 | [InventorySystem](entries/gameplay/benolimits-inventorysystem/README.md) | Easy to use Hotbar and Inventory system for Unreal Engine 5 | n/a | MIT | vendored | [benolimits/InventorySystem](https://github.com/benolimits/InventorySystem) @ `ff320f8f87fb` |
+| [InvenTree](entries/gameplay/inventree-inventree/README.md) | Open Source Inventory Management System | python | MIT | reference | [inventree/InvenTree](https://github.com/inventree/InvenTree) @ `2026-11-22 (branch tip at catalogue time)` |
 | [jbt](entries/gameplay/gaia-ucm-jbt/README.md) | Java Behaviour Trees is a Java framework for easily building and running generic behaviour trees. Here, "behaviour tree" refers to the technique used to control | java | Apache-2.0 | reference | [gaia-ucm/jbt](https://github.com/gaia-ucm/jbt) @ `2014-07-25 (branch tip at catalogue time)` |
 | [Jumper](entries/gameplay/yonaba-jumper/README.md) | Fast, lightweight and easy-to-use pathfinding library for grid-based games | lua | MIT | reference | [Yonaba/Jumper](https://github.com/Yonaba/Jumper) @ `2022-10-21 (branch tip at catalogue time)` |
 | [libtcod](entries/gameplay/libtcod/README.md) | roguelike toolkit: FOV, pathfinding, RNG, line drawing, console | c++ | BSD-3-Clause | vendored | [libtcod/libtcod](https://github.com/libtcod/libtcod) @ `de16289cd50e` |
@@ -212,12 +216,14 @@ _Generated 2026-11-22 16:20 UTC · 312 entries · 109 vendored, 203 reference-on
 | [OpenDungeons — spells](entries/gameplay/opendungeons-spells/README.md) | combat, AI, pathing, quest or inventory logic | cpp | GPL-3.0 | reference | [OpenDungeons/OpenDungeons.git](https://github.com/OpenDungeons/OpenDungeons.git) @ `a9efe49` |
 | [openmu — GameLogic](entries/gameplay/openmu-src-gamelogic/README.md) | MMO gameplay logic: combat, skills, inventory, quests | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
 | [OpenSteer](entries/gameplay/meshula-opensteer/README.md) | OpenSteer is a C++ library to help build steering behaviors for autonomous characters in games and animation. | c++ | unknown | reference | [meshula/OpenSteer](https://github.com/meshula/OpenSteer) @ `2023-03-31 (branch tip at catalogue time)` |
+| [pacman](entries/gameplay/armin-reichert-pacman/README.md) | A Pac-Man game implementation using explicit finite-state machines (original AI, theming, integrated dashboard) | java | MIT | reference | [armin-reichert/pacman](https://github.com/armin-reichert/pacman) @ `2023-11-30 (branch tip at catalogue time)` |
 | [pathfinding](entries/gameplay/evenfurther-pathfinding/README.md) | Pathfinding library for rust | rust | unknown | reference | [evenfurther/pathfinding](https://github.com/evenfurther/pathfinding) @ `2026-10-23 (branch tip at catalogue time)` |
 | [PathFinding.js](entries/gameplay/pathfinding-js/README.md) | A*, IDA*, JPS, Dijkstra, BiA* on grids | javascript | MIT | vendored | [qiao/PathFinding.js](https://github.com/qiao/PathFinding.js) @ `2904a9afba48` |
 | [PokemonTacticalRolePlay](entries/gameplay/sinlessdevil-pokemontacticalroleplay/README.md) | Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI. | c# | none | reference | [SinlessDevil/PokemonTacticalRolePlay](https://github.com/SinlessDevil/PokemonTacticalRolePlay) @ `764123cd5354` |
 | [PonyBehaviourTrees](entries/gameplay/ands-ponybehaviourtrees/README.md) | A set of C# libraries for runtime behaviour tree editing, scripting and inspection | c# | unknown | reference | [ands/PonyBehaviourTrees](https://github.com/ands/PonyBehaviourTrees) @ `2015-12-02 (branch tip at catalogue time)` |
 | [py_trees](entries/gameplay/splintered-reality-py-trees/README.md) | Python implementation of behaviour trees. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees](https://github.com/splintered-reality/py_trees) @ `49bcffd069af` |
 | [Recast & Detour](entries/gameplay/recastnavigation/README.md) | navmesh generation + pathfinding + crowd steering | c++ | Zlib | vendored | [recastnavigation/recastnavigation](https://github.com/recastnavigation/recastnavigation) @ `9f4ce64458df` |
+| [References](entries/gameplay/aryia-behroziuan-references/README.md) |  Poole, Mackworth & Goebel 1998, p. 1.  Russell & Norvig 2003, p. 55.  Definition of AI as the study of intelligent agents: Poole, Mackworth & Goebel (1998), wh | n/a | none | reference | [Aryia-Behroziuan/References](https://github.com/Aryia-Behroziuan/References) @ `1f0e5ca1f05a` |
 | [Revengate — combat](entries/gameplay/revengate-combat/README.md) | combat, AI, pathing, quest or inventory logic | gd | GPL-3.0 | reference | [https://gitlab.com/ygingras/revengate](https://gitlab.com/ygingras/revengate) @ `ad6b2ee` |
 | [RogueSharp](entries/gameplay/faronbracy-roguesharp/README.md) | A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired | c# | MIT | reference | [FaronBracy/RogueSharp](https://github.com/FaronBracy/RogueSharp) @ `2024-08-03 (branch tip at catalogue time)` |
 | [SAE-based-representation-engineering](entries/gameplay/yuzhaouoe-sae-based-representation-engineering/README.md) | [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering | python | MIT | reference | [yuzhaouoe/SAE-based-representation-engineering](https://github.com/yuzhaouoe/SAE-based-representation-engineering) @ `2026-06-20 (branch tip at catalogue time)` |

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:36:07Z",
+ "category": "gameplay",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "inventree/InvenTree \u2014 Open Source Inventory Management System",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "InvenTree",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "inventree-inventree",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 7890,
+ "system": "Open Source Inventory Management System",
+ "upstream": "https://github.com/inventree/InvenTree",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
