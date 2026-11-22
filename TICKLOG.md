@@ -1399,3 +1399,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/mugen87-yuka
   - reference gameplay/adam-mcdaniel-chess-engine
   - reference gameplay/meshula-opensteer
+
+- **2026-11-22 16:20 UTC** — tick 621: +2 screened, +4 reference, 2 skipped, catalogue=312
+  - added gameplay/idbrii-unity-navgen (MIT, vendored)
+  - added gameplay/seldom-se-seldom-map-nav (Apache-2.0, vendored)
+  - reference gameplay/p-svacha-blockmaps
+  - reference gameplay/anuraghazra-evolutionaquerium
+  - reference gameplay/sunnyvalleystudio-unity-2d-context-steering-ai
+  - reference gameplay/yuzhaouoe-sae-based-representation-engineering

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T16:20:02Z",
+ "category": "gameplay",
+ "commit": "e6ebbb180615",
+ "delivery": "vendored",
+ "description": "idbrii/unity-navgen \u2014 Tools for working with Unity's NavMeshComponents and generating navmesh: link generation, mesh cleanup, etc",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "unity-navgen",
+ "size_bytes": 41480,
+ "slug": "idbrii-unity-navgen",
+ "source": "github-search:navmesh generation stars:>30",
+ "stars": 70,
+ "system": "Tools for working with Unity's NavMeshComponents and generating navmesh: link generation, mesh cleanup, etc",
+ "upstream": "https://github.com/idbrii/unity-navgen",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

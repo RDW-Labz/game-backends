@@ -1,0 +1,76 @@
+[package]
+name = "seldom_map_nav"
+version = "0.10.0"
+edition = "2021"
+categories = ["game-development"]
+description = "Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency."
+exclude = ["assets/"]
+keywords = ["gamedev", "bevy", "pathfinding", "navmesh", "tilemap"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/Seldom-SE/seldom_map_nav"
+autoexamples = false
+
+[features]
+bevy = [
+    "dep:bevy_app",
+    "dep:bevy_ecs",
+    "dep:bevy_math",
+    "dep:bevy_platform",
+    "dep:bevy_reflect",
+    "dep:bevy_time",
+    "dep:bevy_transform",
+]
+default = ["bevy"]
+log = ["bevy", "dep:bevy_log"]
+state = ["bevy", "dep:seldom_state"]
+wasm = ["typid/web"]
+
+[dependencies]
+bevy_app = { version = "0.17.2", default-features = false, optional = true }
+bevy_ecs = { version = "0.17.2", default-features = false, optional = true, features = [
+    "bevy_reflect",
+] }
+bevy_log = { version = "0.17.2", default-features = false, optional = true }
+bevy_math = { version = "0.17.2", default-features = false, features = [
+    "std",
+], optional = true }
+bevy_platform = { version = "0.17.2", default-features = false, optional = true }
+bevy_reflect = { version = "0.17.2", default-features = false, optional = true, features = [
+    "glam",
+] }
+bevy_time = { version = "0.17.2", default-features = false, optional = true }
+# TODO Give its own feature gate?
+bevy_transform = { version = "0.17.2", default-features = false, features = [
+    "bevy-support",
+], optional = true }
+cdt = "0.1.0"
+glam = { version = "0.30.8", features = ["mint"] }
+mint = "0.5.9"
+navmesh = { version = "0.12.1", features = ["mint"] }
+seldom_state = { version = "0.15.0", optional = true }
+typid = "1.1"
+
+[dev-dependencies]
+rand = "0.8.5"
+# bevy_entitiles = { git = "https://github.com/443eb9/bevy_entitiles", rev = "e2ff0d5" }
+
+[dev-dependencies.bevy]
+version = "0.17.2"
+default-features = false
+features = [
+    "bevy_sprite_render",
+    "png",
+    "x11",
+]
+
+[[example]]
+name = "nav"
+required-features = ["bevy"]
+
+[[example]]
+name = "no_bevy"
+
+[[example]]
+name = "state"
+required-features = ["bevy", "state"]

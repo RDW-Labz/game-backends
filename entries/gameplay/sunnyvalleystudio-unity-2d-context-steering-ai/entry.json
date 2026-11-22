@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:20:05Z",
+ "category": "gameplay",
+ "commit": "2023-10-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SunnyValleyStudio/Unity-2D-Context-steering-AI \u2014 How to implement context steering behaviours for a 2D top down Unity game",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Unity-2D-Context-steering-AI",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sunnyvalleystudio-unity-2d-context-steering-ai",
+ "source": "github-search:steering behaviours stars:>15",
+ "stars": 96,
+ "system": "How to implement context steering behaviours for a 2D top down Unity game",
+ "upstream": "https://github.com/SunnyValleyStudio/Unity-2D-Context-steering-AI",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

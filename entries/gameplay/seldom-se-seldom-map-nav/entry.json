@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T16:20:04Z",
+ "category": "gameplay",
+ "commit": "5586a0e6ad1f",
+ "delivery": "vendored",
+ "description": "Seldom-SE/seldom_map_nav \u2014 Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "seldom_map_nav",
+ "size_bytes": 44815,
+ "slug": "seldom-se-seldom-map-nav",
+ "source": "github-search:navmesh generation stars:>30",
+ "stars": 51,
+ "system": "Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency.",
+ "upstream": "https://github.com/Seldom-SE/seldom_map_nav",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

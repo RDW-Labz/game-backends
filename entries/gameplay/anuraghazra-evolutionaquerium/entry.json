@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:20:05Z",
+ "category": "gameplay",
+ "commit": "2022-02-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "anuraghazra/EvolutionAquerium \u2014 :fish: :bug: Small Inteli Creatures Based On Steering Behaviours",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "EvolutionAquerium",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "anuraghazra-evolutionaquerium",
+ "source": "github-search:steering behaviours stars:>15",
+ "stars": 197,
+ "system": ":fish: :bug: Small Inteli Creatures Based On Steering Behaviours",
+ "upstream": "https://github.com/anuraghazra/EvolutionAquerium",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

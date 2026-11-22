@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:20:05Z",
+ "category": "gameplay",
+ "commit": "2025-11-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "p-svacha/BlockMaps \u2014 Unity framework to create detailed, 3D, grid-based worlds with real-time navmesh generation and integrated pathfinding, vision and movement systems.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "BlockMaps",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "p-svacha-blockmaps",
+ "source": "github-search:navmesh generation stars:>30",
+ "stars": 34,
+ "system": "Unity framework to create detailed, 3D, grid-based worlds with real-time navmesh generation and integrated pathfinding, vision and movement systems.",
+ "upstream": "https://github.com/p-svacha/BlockMaps",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T16:20:05Z",
+ "category": "gameplay",
+ "commit": "2026-06-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "yuzhaouoe/SAE-based-representation-engineering \u2014 [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SAE-based-representation-engineering",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "yuzhaouoe-sae-based-representation-engineering",
+ "source": "github-search:steering behaviours stars:>15",
+ "stars": 90,
+ "system": "[NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering",
+ "upstream": "https://github.com/yuzhaouoe/SAE-based-representation-engineering",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

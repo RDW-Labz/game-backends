@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 16:04 UTC · 306 entries · 107 vendored, 199 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 16:20 UTC · 312 entries · 109 vendored, 203 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-22 16:04 UTC · 306 entries · 107 vendored, 199 reference-on
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 55 | 18 | 37 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 61 | 20 | 41 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
@@ -174,7 +174,7 @@ _Generated 2026-11-22 16:04 UTC · 306 entries · 107 vendored, 199 reference-on
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 55 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 61 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -183,9 +183,11 @@ _Generated 2026-11-22 16:04 UTC · 306 entries · 107 vendored, 199 reference-on
 | [AStar](entries/gameplay/roy-t-astar/README.md) | A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher.  | c# | MIT | vendored | [roy-t/AStar](https://github.com/roy-t/AStar) @ `3d57efaa83c8` |
 | [BehaviorTree.CPP](entries/gameplay/behaviortree-cpp/README.md) | behaviour trees for AI agents with blackboards | c++ | MIT | vendored | [BehaviorTree/BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP) @ `365b2e499d34` |
 | [biomes-game — items](entries/gameplay/biomes-game-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
+| [BlockMaps](entries/gameplay/p-svacha-blockmaps/README.md) | Unity framework to create detailed, 3D, grid-based worlds with real-time navmesh generation and integrated pathfinding, vision and movement systems. | c# | unknown | reference | [p-svacha/BlockMaps](https://github.com/p-svacha/BlockMaps) @ `2025-11-04 (branch tip at catalogue time)` |
 | [BonsaiBehaviourTree](entries/gameplay/luis-l-bonsaibehaviourtree/README.md) | An advanced behaviour tree solution for the Unity game engine | c# | MIT | vendored | [luis-l/BonsaiBehaviourTree](https://github.com/luis-l/BonsaiBehaviourTree) @ `6aa41f3006e9` |
 | [chess-engine](entries/gameplay/adam-mcdaniel-chess-engine/README.md) | A dependency-free chess engine♟️ library built to run anywhere. | rust | MIT | reference | [adam-mcdaniel/chess-engine](https://github.com/adam-mcdaniel/chess-engine) @ `2024-04-18 (branch tip at catalogue time)` |
 | [DODBT](entries/gameplay/vadimburym-dodbt/README.md) | High-performance Behaviour Tree system inspired by Data-Oriented Design. Zero MonoBehaviour, zero runtime allocations, graph-to-runtime compilation, clean debug | c# | unknown | reference | [vadimburym/DODBT](https://github.com/vadimburym/DODBT) @ `2026-10-21 (branch tip at catalogue time)` |
+| [EvolutionAquerium](entries/gameplay/anuraghazra-evolutionaquerium/README.md) | :fish: :bug: Small Inteli Creatures Based On Steering Behaviours | javascript | MIT | reference | [anuraghazra/EvolutionAquerium](https://github.com/anuraghazra/EvolutionAquerium) @ `2022-02-12 (branch tip at catalogue time)` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
 | [godot-behaviour-tree](entries/gameplay/andrew-wilkes-godot-behaviour-tree/README.md) | Behaviour Tree framework for Godot coded in GDScript. | gdscript | MIT | reference | [andrew-wilkes/godot-behaviour-tree](https://github.com/andrew-wilkes/godot-behaviour-tree) @ `2023-12-13 (branch tip at catalogue time)` |
@@ -218,12 +220,16 @@ _Generated 2026-11-22 16:04 UTC · 306 entries · 107 vendored, 199 reference-on
 | [Recast & Detour](entries/gameplay/recastnavigation/README.md) | navmesh generation + pathfinding + crowd steering | c++ | Zlib | vendored | [recastnavigation/recastnavigation](https://github.com/recastnavigation/recastnavigation) @ `9f4ce64458df` |
 | [Revengate — combat](entries/gameplay/revengate-combat/README.md) | combat, AI, pathing, quest or inventory logic | gd | GPL-3.0 | reference | [https://gitlab.com/ygingras/revengate](https://gitlab.com/ygingras/revengate) @ `ad6b2ee` |
 | [RogueSharp](entries/gameplay/faronbracy-roguesharp/README.md) | A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired | c# | MIT | reference | [FaronBracy/RogueSharp](https://github.com/FaronBracy/RogueSharp) @ `2024-08-03 (branch tip at catalogue time)` |
+| [SAE-based-representation-engineering](entries/gameplay/yuzhaouoe-sae-based-representation-engineering/README.md) | [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering | python | MIT | reference | [yuzhaouoe/SAE-based-representation-engineering](https://github.com/yuzhaouoe/SAE-based-representation-engineering) @ `2026-06-20 (branch tip at catalogue time)` |
+| [seldom_map_nav](entries/gameplay/seldom-se-seldom-map-nav/README.md) | Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency. | rust | Apache-2.0 | vendored | [Seldom-SE/seldom_map_nav](https://github.com/Seldom-SE/seldom_map_nav) @ `5586a0e6ad1f` |
 | [stronghold-protocol — ai](entries/gameplay/stronghold-protocol-ai/README.md) | combat, AI, pathing, quest or inventory logic | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
 | [suroi — items](entries/gameplay/suroi-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
 | [ue4-orders-abilities](entries/gameplay/daedalicentertainment-ue4-orders-abilities/README.md) | Sample code of the talk "Hero AI: Gameplay Abilities Meet Behaviour Trees" at Unreal Fest Europe 2019. | c++ | MIT | reference | [DaedalicEntertainment/ue4-orders-abilities](https://github.com/DaedalicEntertainment/ue4-orders-abilities) @ `2020-10-09 (branch tip at catalogue time)` |
 | [uesvon](entries/gameplay/midgen-uesvon/README.md) | 3D navmesh generation and pathfinding plugin for UnrealEngine | c++ | MIT | vendored | [midgen/uesvon](https://github.com/midgen/uesvon) @ `ca9f9ebf7b14` |
+| [Unity-2D-Context-steering-AI](entries/gameplay/sunnyvalleystudio-unity-2d-context-steering-ai/README.md) | How to implement context steering behaviours for a 2D top down Unity game | c# | MIT | reference | [SunnyValleyStudio/Unity-2D-Context-steering-AI](https://github.com/SunnyValleyStudio/Unity-2D-Context-steering-AI) @ `2023-10-06 (branch tip at catalogue time)` |
 | [Unity-Crafting-System](entries/gameplay/raulmrsouza-unity-crafting-system/README.md) | Crafting System and Building placement for unity3D | c# | MIT | reference | [RaulMrSouza/Unity-Crafting-System](https://github.com/RaulMrSouza/Unity-Crafting-System) @ `2018-10-05 (branch tip at catalogue time)` |
 | [Unity-Modular-Game-Architecture](entries/gameplay/aniskaram-unity-modular-game-architecture/README.md) | A modular Game Architecture framework in Unity 6. Features a Scalable Inventory (MVP), a Physics-based Character Controller (FSM), Dependency Injection (VContai | c# | none | reference | [AnisKaram/Unity-Modular-Game-Architecture](https://github.com/AnisKaram/Unity-Modular-Game-Architecture) @ `c9d56b38b3ef` |
+| [unity-navgen](entries/gameplay/idbrii-unity-navgen/README.md) | Tools for working with Unity's NavMeshComponents and generating navmesh: link generation, mesh cleanup, etc | c# | MIT | vendored | [idbrii/unity-navgen](https://github.com/idbrii/unity-navgen) @ `e6ebbb180615` |
 | [Unity-Script-Collection](entries/gameplay/michidk-unity-script-collection/README.md) | A maintained collection of useful & free unity scripts / library's / plugins and extensions | css | GPL-3.0 | reference | [michidk/Unity-Script-Collection](https://github.com/michidk/Unity-Script-Collection) @ `479da93a9da3` |
 | [UnityBehaviourTree](entries/gameplay/grymmyd-unitybehaviourtree/README.md) | A simple behaviour tree implementation for Unity | c# | Apache-2.0 | vendored | [GrymmyD/UnityBehaviourTree](https://github.com/GrymmyD/UnityBehaviourTree) @ `eae4a24ea5bd` |
 | [UnityBehaviourTreeEditor](entries/gameplay/thekiwicoder0-unitybehaviourtreeeditor/README.md) | Behaviour Tree Editor for Unity built with UIToolkit | c# | MIT | reference | [thekiwicoder0/UnityBehaviourTreeEditor](https://github.com/thekiwicoder0/UnityBehaviourTreeEditor) @ `2026-05-14 (branch tip at catalogue time)` |
