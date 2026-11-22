@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:24:06Z",
+ "category": "save-state",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "georust/geojson \u2014 Library for serializing the GeoJSON vector GIS file format",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "geojson",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "georust-geojson",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 350,
+ "system": "Library for serializing the GeoJSON vector GIS file format",
+ "upstream": "https://github.com/georust/geojson",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

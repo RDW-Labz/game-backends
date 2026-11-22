@@ -1547,3 +1547,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/jessey-git-fx-gltf
   - reference save-state/emberemu-hexi
   - reference save-state/neobrain-blobify
+
+- **2026-11-22 21:24 UTC** — tick 640: +2 screened, +4 reference, 0 skipped, catalogue=422
+  - added save-state/dtolnay-miniserde (Apache-2.0, vendored)
+  - added save-state/not-fl3-nanoserde (Apache-2.0, vendored)
+  - reference save-state/rust-syndication-rss
+  - reference save-state/mitsuhiko-deser
+  - reference save-state/ormsgpack-ormsgpack
+  - reference save-state/georust-geojson

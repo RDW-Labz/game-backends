@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T21:24:05Z",
+ "category": "save-state",
+ "commit": "80a9b45690c1",
+ "delivery": "vendored",
+ "description": "not-fl3/nanoserde \u2014 Serialization library with zero dependencies",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "nanoserde",
+ "size_bytes": 305599,
+ "slug": "not-fl3-nanoserde",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 916,
+ "system": "Serialization library with zero dependencies",
+ "upstream": "https://github.com/not-fl3/nanoserde",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

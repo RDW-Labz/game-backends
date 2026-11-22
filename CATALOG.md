@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 21:08 UTC · 416 entries · 135 vendored, 281 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 21:24 UTC · 422 entries · 137 vendored, 285 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-22 21:08 UTC · 416 entries · 135 vendored, 281 reference-on
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
-| [save-state](#save-state) — Save / state systems | 31 | 12 | 19 |
+| [save-state](#save-state) — Save / state systems | 37 | 14 | 23 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
 
@@ -401,7 +401,7 @@ _Generated 2026-11-22 21:08 UTC · 416 entries · 135 vendored, 281 reference-on
 
 ## save-state
 
-**Save / state systems** — 31 entries
+**Save / state systems** — 37 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -413,19 +413,25 @@ _Generated 2026-11-22 21:08 UTC · 416 entries · 135 vendored, 281 reference-on
 | [cista](entries/save-state/felixguendling-cista/README.md) | Cista is a simple, high-performance, zero-copy C++ serialization & reflection library. | c++ | MIT | reference | [felixguendling/cista](https://github.com/felixguendling/cista) @ `2026-11-06 (branch tip at catalogue time)` |
 | [cJSON](entries/save-state/cjson/README.md) | ultralight JSON parser/writer | c | MIT | vendored | [DaveGamble/cJSON](https://github.com/DaveGamble/cJSON) @ `6d9f2443ab07` |
 | [cpp-serializers](entries/save-state/thekvs-cpp-serializers/README.md) | Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++ | c++ | unknown | reference | [thekvs/cpp-serializers](https://github.com/thekvs/cpp-serializers) @ `2020-01-28 (branch tip at catalogue time)` |
+| [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
 | [fastgltf](entries/save-state/spnda-fastgltf/README.md) | A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability | c++ | MIT | reference | [spnda/fastgltf](https://github.com/spnda/fastgltf) @ `2026-11-11 (branch tip at catalogue time)` |
 | [FlatBuffers](entries/save-state/flatbuffers/README.md) | zero-copy serialization, schema-driven | c++ | Apache-2.0 | vendored | [google/flatbuffers](https://github.com/google/flatbuffers) @ `5eb190f00005` |
 | [flatcc](entries/save-state/dvidelabs-flatcc/README.md) | FlatBuffers Compiler and Library in C for C | c | Apache-2.0 | vendored | [dvidelabs/flatcc](https://github.com/dvidelabs/flatcc) @ `0df9c097a19b` |
 | [Freeciv — savegame](entries/save-state/freeciv-savegame/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [FTC-Skystone-Dark-Angels-Romania-2020](entries/save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020/README.md) | NOTICE This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season. If you are looking for the current season's FTC SDK software | java | BSD-3-Clause | vendored | [chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020](https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020) @ `b5132793582a` |
 | [fx-gltf](entries/save-state/jessey-git-fx-gltf/README.md) | A C++14/C++17 header-only library for simple, efficient, and robust serialization/deserialization of glTF 2.0 | c++ | MIT | reference | [jessey-git/fx-gltf](https://github.com/jessey-git/fx-gltf) @ `2022-01-01 (branch tip at catalogue time)` |
+| [geojson](entries/save-state/georust-geojson/README.md) | Library for serializing the GeoJSON vector GIS file format | rust | Apache-2.0 | reference | [georust/geojson](https://github.com/georust/geojson) @ `2026-11-18 (branch tip at catalogue time)` |
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
 | [Hexi](entries/save-state/emberemu-hexi/README.md) | Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy! | c++ | Apache-2.0 | reference | [EmberEmu/Hexi](https://github.com/EmberEmu/Hexi) @ `2026-04-19 (branch tip at catalogue time)` |
 | [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
 | [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
+| [miniserde](entries/save-state/dtolnay-miniserde/README.md) | Data structure serialization library with several opposite design goals from Serde | rust | Apache-2.0 | vendored | [dtolnay/miniserde](https://github.com/dtolnay/miniserde) @ `6dfa4fa395f3` |
+| [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
+| [ormsgpack](entries/save-state/ormsgpack-ormsgpack/README.md) | MessagePack serialization library for Python derived from orjson, written in Rust using PyO3 | rust | Apache-2.0 | reference | [ormsgpack/ormsgpack](https://github.com/ormsgpack/ormsgpack) @ `2026-11-21 (branch tip at catalogue time)` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
+| [rss](entries/save-state/rust-syndication-rss/README.md) | Library for serializing the RSS web content syndication format | rust | Apache-2.0 | reference | [rust-syndication/rss](https://github.com/rust-syndication/rss) @ `2026-11-10 (branch tip at catalogue time)` |
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
 | [Serialize.Linq](entries/save-state/esskar-serialize-linq/README.md) | C# library to serialize LINQ expressions | c# | MIT | vendored | [esskar/Serialize.Linq](https://github.com/esskar/Serialize.Linq) @ `44b715ffbea5` |
 | [SQLite](entries/save-state/sqlite/README.md) | embedded SQL database engine (single-file world saves) | c | Public-Domain | reference | [sqlite/sqlite](https://github.com/sqlite/sqlite) @ `e5cb4b09573a` |

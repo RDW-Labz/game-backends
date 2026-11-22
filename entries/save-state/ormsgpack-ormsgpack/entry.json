@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:24:06Z",
+ "category": "save-state",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ormsgpack/ormsgpack \u2014 MessagePack serialization library for Python derived from orjson, written in Rust using PyO3",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "ormsgpack",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "ormsgpack-ormsgpack",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 406,
+ "system": "MessagePack serialization library for Python derived from orjson, written in Rust using PyO3",
+ "upstream": "https://github.com/ormsgpack/ormsgpack",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

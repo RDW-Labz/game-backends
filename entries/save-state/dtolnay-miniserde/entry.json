@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T21:24:03Z",
+ "category": "save-state",
+ "commit": "6dfa4fa395f3",
+ "delivery": "vendored",
+ "description": "dtolnay/miniserde \u2014 Data structure serialization library with several opposite design goals from Serde",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "miniserde",
+ "size_bytes": 759735,
+ "slug": "dtolnay-miniserde",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 956,
+ "system": "Data structure serialization library with several opposite design goals from Serde",
+ "upstream": "https://github.com/dtolnay/miniserde",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

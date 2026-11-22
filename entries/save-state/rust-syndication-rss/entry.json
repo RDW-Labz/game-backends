@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:24:06Z",
+ "category": "save-state",
+ "commit": "2026-11-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rust-syndication/rss \u2014 Library for serializing the RSS web content syndication format",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "rss",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rust-syndication-rss",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 504,
+ "system": "Library for serializing the RSS web content syndication format",
+ "upstream": "https://github.com/rust-syndication/rss",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

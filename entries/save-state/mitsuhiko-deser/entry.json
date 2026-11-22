@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:24:06Z",
+ "category": "save-state",
+ "commit": "2026-10-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mitsuhiko/deser \u2014 Experimental rust serialization library",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "deser",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "mitsuhiko-deser",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 467,
+ "system": "Experimental rust serialization library",
+ "upstream": "https://github.com/mitsuhiko/deser",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
