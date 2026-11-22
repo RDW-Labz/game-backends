@@ -1,0 +1,62 @@
+using System;
+
+
+namespace SKYNET.Steamworks.Interfaces
+{
+    [InterfaceLayout("STEAMMUSIC_INTERFACE_VERSION001",
+        "BIsEnabled", "BIsPlaying", "GetPlaybackStatus", "Play",
+        "Pause", "PlayPrevious", "PlayNext", "SetVolume",
+        "GetVolume")]
+    [InterfaceLayout("SteamMusic001",
+        "BIsEnabled", "BIsPlaying", "GetPlaybackStatus", "Play",
+        "Pause", "PlayPrevious", "PlayNext", "SetVolume",
+        "GetVolume")] // Dimraeth (Unity) requests this short form instead of Valve's official macro name.
+    public class SteamMusic001 : ISteamInterface
+    {
+        public bool BIsEnabled(IntPtr _)
+        {
+            return SteamEmulator.SteamMusic.BIsEnabled();
+        }
+
+        public bool BIsPlaying(IntPtr _)
+        {
+            return SteamEmulator.SteamMusic.BIsPlaying();
+        }
+
+        public int GetPlaybackStatus(IntPtr _)
+        {
+            return SteamEmulator.SteamMusic.GetPlaybackStatus();
+        }
+
+        public void Play(IntPtr _)
+        {
+            SteamEmulator.SteamMusic.Play();
+        }
+
+        public void Pause(IntPtr _)
+        {
+            SteamEmulator.SteamMusic.Pause();
+        }
+
+        public void PlayPrevious(IntPtr _)
+        {
+            SteamEmulator.SteamMusic.PlayPrevious();
+        }
+
+        public void PlayNext(IntPtr _)
+        {
+            SteamEmulator.SteamMusic.PlayNext();
+        }
+
+        public void SetVolume(IntPtr _, float flVolume)
+        {
+            SteamEmulator.SteamMusic.SetVolume(flVolume);
+        }
+
+        public float GetVolume(IntPtr _)
+        {
+            return SteamEmulator.SteamMusic.GetVolume();
+        }
+
+    }
+}

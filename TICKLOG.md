@@ -1523,3 +1523,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/vezwork-phasocketonline
   - reference netcode/sherry0319-ytsvrlib
   - reference netcode/metagogs-gogs
+
+- **2026-11-22 20:36 UTC** — tick 637: +2 screened, +4 reference, 0 skipped, catalogue=404
+  - added netcode/cdecpgl-planetamatchmaker (MIT, vendored)
+  - added netcode/hackerprod-skynet-steam-emulator (MIT, vendored)
+  - reference netcode/flackr-lobby
+  - reference netcode/faforever-server
+  - reference netcode/appsinacup-gamend
+  - reference netcode/openatbp-openatbp

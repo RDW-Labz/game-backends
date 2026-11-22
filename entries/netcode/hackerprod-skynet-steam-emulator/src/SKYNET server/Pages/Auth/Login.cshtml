@@ -1,0 +1,68 @@
+@page "/login"
+@model SKYNET_server.Pages.Auth.LoginModel
+@{
+    ViewData["UseAppShell"] = false;
+}
+
+<div class="h-screen flex items-center justify-center p-6 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-skynet-black to-skynet-black">
+    <div class="w-full max-w-md space-y-8">
+        <!-- Logo -->
+        <div class="flex items-center justify-center gap-4">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-xl shadow-[0_0_30px_rgba(59,130,246,0.2)]">
+                <i class="fas fa-microchip text-3xl text-skynet-black"></i>
+            </div>
+            <div class="text-left">
+                <h1 class="text-4xl font-bold tracking-tighter leading-none">SKYNET<span class="text-skynet-accent">EMU</span></h1>
+                <p class="text-skynet-muted text-sm mt-2">Centralized emulation protocol</p>
+            </div>
+        </div>
+
+        <!-- Auth Card -->
+        <div class="border border-skynet-border bg-skynet-dark p-8 rounded-2xl shadow-2xl">
+            <h2 class="text-xl font-semibold mb-6">Sign In</h2>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+            {
+                <script>showToast(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ErrorMessage)), 'error')</script>
+            }
+
+            <form method="post" OnComplete="onAuthComplete" class="space-y-4">
+                <div>
+                    <label asp-for="Username" class="block text-xs font-medium text-skynet-muted uppercase tracking-widest mb-2">Username</label>
+                    <input asp-for="Username" autocomplete="username" class="w-full px-4 py-3 rounded-lg text-sm bg-skynet-black border border-skynet-border transition-all focus:border-skynet-accent focus:outline-none focus:shadow-[0_0_0_1px_rgba(59,130,246,0.2)] text-gray-200" placeholder="Your username">
+                </div>
+                <div>
+                    <label asp-for="Password" class="block text-xs font-medium text-skynet-muted uppercase tracking-widest mb-2">Password</label>
+                    <input asp-for="Password" type="password" autocomplete="current-password" class="w-full px-4 py-3 rounded-lg text-sm bg-skynet-black border border-skynet-border transition-all focus:border-skynet-accent focus:outline-none focus:shadow-[0_0_0_1px_rgba(59,130,246,0.2)] text-gray-200" placeholder="••••••••">
+                </div>
+                <label class="flex items-center space-x-2 cursor-pointer">
+                    <input asp-for="RememberMe" class="rounded border-skynet-border bg-skynet-black text-skynet-accent focus:ring-skynet-accent">
+                    <span class="text-xs text-skynet-muted">Remember me for 30 days</span>
+                </label>
+                <button type="submit" class="w-full bg-white text-skynet-black font-bold py-3 rounded-lg hover:bg-gray-200 transition-all duration-200 mt-6">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t border-skynet-border text-center">
+                <p class="text-sm text-skynet-muted">
+                    Don't have an account?
+                    <a asp-page="/Auth/Register" class="text-skynet-accent font-semibold hover:underline">Sign up</a>
+                </p>
+            </div>
+        </div>
+
+        <p class="text-center text-[10px] text-skynet-muted uppercase tracking-[0.3em]">SKYNET_NETWORK_ENCRYPTION_ACTIVE</p>
+    </div>
+</div>
+
+<script>
+    function onAuthComplete(data) {
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            setTimeout(function () { window.location.href = data.redirect || '/'; }, 600);
+        } else {
+            showToast(data && data.message ? data.message : 'Authentication failed.', 'error');
+        }
+    }
+</script>

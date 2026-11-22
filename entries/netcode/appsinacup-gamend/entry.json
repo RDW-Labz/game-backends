@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:36:07Z",
+ "category": "netcode",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "appsinacup/gamend \u2014 Open source Elixir game server with authentication, users, lobbies, groups, parties, friends, chat, notifications, achievements, leaderboards, tournaments, payments, server scripting and an admin portal with HTTP, WebSocket, and WebRTC support and SDKs for Godot, Unity, Unreal, C++, C#, Rust, JavaScript/TypeScript and Balaur",
+ "language": "elixir",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "gamend",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "appsinacup-gamend",
+ "source": "github-search:game lobby server stars:>15",
+ "stars": 58,
+ "system": "Open source Elixir game server with authentication, users, lobbies, groups, parties, friends, chat, notifications, achievements, leaderboards, tournaments, paym",
+ "upstream": "https://github.com/appsinacup/gamend",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

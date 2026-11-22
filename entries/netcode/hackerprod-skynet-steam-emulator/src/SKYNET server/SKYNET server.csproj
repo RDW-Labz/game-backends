@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>SKYNET_server</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\P2PTransportProtocol.cs" Link="Protocol\P2PTransportProtocol.cs" />
+    <Compile Remove="GC\**\tools\**\*.cs" />
+    <Content Remove="GC\**\tools\**\bin\**\*" />
+    <Content Remove="GC\**\tools\**\obj\**\*" />
+    <None Remove="GC\**\tools\**\bin\**\*" />
+    <None Remove="GC\**\tools\**\obj\**\*" />
+    <Content Update="GC\**\*.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Update="GC\**\*.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Update="GC\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Update="Assets\games.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\encrypted-app-ticket-keys.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BouncyCastle.Cryptography" Version="2.4.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="ModelContextProtocol" Version="2.2.0" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.2.0" />
+    <PackageReference Include="protobuf-net" Version="3.2.56" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\external\Ts.NET-Runtime\src\TypeSharp.Hosting\TypeSharp.Hosting.csproj" />
+    <ProjectReference Include="..\external\Ts.NET-Runtime\src\TypeSharp.VM\TypeSharp.VM.csproj" />
+  </ItemGroup>
+
+  <!--
+    Tailwind CSS build. Compiles wwwroot/css/app.css from the markup + input CSS
+    so the browser gets fully-formed, cacheable CSS (no runtime CDN compiler).
+    Runs only when node_modules is present (i.e. a dev machine that ran
+    `npm install`); CI / machines without Node fall back to the committed
+    app.css. Incremental: reruns only when the markup or config changes.
+  -->
+  <ItemGroup>
+    <TailwindInput Include="wwwroot/css/tailwind.input.css;tailwind.config.js;Pages/**/*.cshtml" />
+  </ItemGroup>
+  <Target Name="BuildTailwindCss" BeforeTargets="BeforeBuild"
+          Condition="Exists('$(MSBuildProjectDirectory)/node_modules')"
+          Inputs="@(TailwindInput)" Outputs="wwwroot/css/app.css">
+    <Message Importance="high" Text="Building Tailwind CSS (app.css)..." />
+    <Exec Command="npm run css:build" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+</Project>

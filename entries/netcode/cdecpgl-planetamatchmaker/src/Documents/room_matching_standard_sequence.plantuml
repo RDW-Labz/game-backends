@@ -1,0 +1,118 @@
+@startuml
+
+title Room Matching Standard Sequence
+
+participant MatchingServer
+participant GameHost
+participant Client1
+participant Client2
+
+group Authentication
+GameHost -> MatchingServer : authentication_request
+activate MatchingServer
+MatchingServer -> MatchingServer: authentication
+MatchingServer --> GameHost : authentication_reply[ok or error]
+deactivate MatchingServer
+end
+
+GameHost->MatchingServer : list_room_group_request
+activate MatchingServer
+MatchingServer --> GameHost : list_room_group_reply
+deactivate MatchingServer
+
+GameHost -> MatchingServer : create_room_request
+activate MatchingServer
+MatchingServer -> MatchingServer : create room
+MatchingServer --> GameHost : create_room_reply
+deactivate MatchingServer
+
+group Game
+
+==Start Lobby==
+
+group Join Client1
+
+group Authentication
+Client1 -> MatchingServer : authentication_request
+activate MatchingServer
+MatchingServer -> MatchingServer: authentication
+MatchingServer --> Client1 : authentication_reply[ok or error]
+deactivate MatchingServer
+end
+
+Client1->MatchingServer : list_room_group_request
+activate MatchingServer
+MatchingServer --> Client1 : list_room_group_reply
+deactivate MatchingServer
+
+Client1->MatchingServer : list_room_request
+activate MatchingServer
+MatchingServer --> Client1 : list_room_reply
+...
+MatchingServer --> Client1 : list_room_reply
+deactivate MatchingServer
+
+Client1->MatchingServer : join_room_request
+activate MatchingServer
+MatchingServer --> Client1 : join_room_reply
+deactivate MatchingServer
+Client1->GameHost : connect
+
+end
+
+GameHost<->Client1 : send and receive game data
+
+group Join Client2
+
+note over MatchingServer, Client2: Client join process...
+...
+
+end
+
+GameHost<->Client1 : send and receive game data
+
+GameHost<->Client2 : send and receive game data
+note right: Disconnected
+destroy Client2
+
+note right of GameHost: Pause accepting new client
+GameHost -> MatchingServer : update_room_status_notice[close room, player count]
+activate MatchingServer
+MatchingServer -> MatchingServer : update room information
+deactivate MatchingServer
+
+note right of GameHost: Resume accepting new client
+GameHost -> MatchingServer : update_room_status_notice[open room, player count]
+activate MatchingServer
+MatchingServer -> MatchingServer : update room information
+deactivate MatchingServer
+
+==Start Game==
+
+GameHost -> MatchingServer : update_room_status_notice[open room, player count]
+activate MatchingServer
+MatchingServer -> MatchingServer : update room information
+deactivate MatchingServer
+
+GameHost<->Client1 : send and receive game data
+
+==Finish Game==
+
+GameHost -> MatchingServer : update_room_status_notice[open room, player count]
+activate MatchingServer
+MatchingServer -> MatchingServer : update room information
+deactivate MatchingServer
+
+GameHost<->Client1 : send and receive game data
+
+==Finish Lobby==
+
+GameHost -> MatchingServer : update_room_status_notice[remove room]
+activate MatchingServer
+
+end
+
+MatchingServer -> MatchingServer : remove room
+deactivate MatchingServer
+
+@enduml

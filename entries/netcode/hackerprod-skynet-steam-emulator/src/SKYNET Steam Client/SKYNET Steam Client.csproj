@@ -1,0 +1,86 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- Same framework as the steam_api DLL (.NET Framework 4.7.2) for consistency,
+         and it's always present on Win10/11 (no runtime install needed). -->
+    <TargetFramework>net472</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>SKYNET Steam Client</AssemblyName>
+    <RootNamespace>SKYNET.Client</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EasyHook" Version="2.7.7097" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="System.IO" />
+  </ItemGroup>
+
+  <!-- SKYNET Hook Bootstrap is its own SDK-style project nested under this one
+       for folder organization only - without this exclude, this project's own
+       implicit **/*.cs glob would also pick up the nested project's generated
+       obj\**\AssemblyInfo.cs / AssemblyAttributes.cs files and fail to build
+       with duplicate assembly attribute errors. -->
+  <ItemGroup>
+    <Compile Remove="SKYNET Hook Bootstrap\**" />
+    <EmbeddedResource Remove="SKYNET Hook Bootstrap\**" />
+    <None Remove="SKYNET Hook Bootstrap\**" />
+  </ItemGroup>
+
+  <!-- EasyHook injection payload (SKYNET Hook Bootstrap), built for both
+       architectures - RemoteHooking.CreateAndInject wants a path for each and
+       picks the right one for the target process itself. Two ProjectReference
+       entries with an explicit SetPlatform force both platform builds to run
+       every time the client builds, since a plain ProjectReference would only
+       build whichever single platform negotiation picks. -->
+  <ItemGroup>
+    <ProjectReference Include="SKYNET Hook Bootstrap\SKYNET Hook Bootstrap.csproj"
+                      ReferenceOutputAssembly="false" SetPlatform="Platform=x86" />
+    <ProjectReference Include="SKYNET Hook Bootstrap\SKYNET Hook Bootstrap.csproj"
+                      ReferenceOutputAssembly="false" SetPlatform="Platform=x64" />
+    <Content Include="SKYNET Hook Bootstrap\bin\$(Configuration)\x86\SKYNET.HookBootstrap.dll">
+      <Link>helpers\x86\SKYNET.HookBootstrap.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="SKYNET Hook Bootstrap\bin\$(Configuration)\x64\SKYNET.HookBootstrap.dll">
+      <Link>helpers\x64\SKYNET.HookBootstrap.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <!-- EasyHook's own native helper binaries (EasyHook32/64.dll,
+         EasyHook32/64Svc.exe) are needed by the CALLING process, not the
+         injected payload - the EasyHook package's own content files already
+         copy them next to SKYNET Steam Client.exe itself, nothing extra
+         needed here. -->
+  </ItemGroup>
+
+  <!-- The emulator DLLs shipped as the injection payload. Copied next to the exe. -->
+  <ItemGroup>
+    <Content Include="payload\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="steam_api.dll" />
+    <None Remove="steam_api.dll.config" />
+  </ItemGroup>
+
+</Project>

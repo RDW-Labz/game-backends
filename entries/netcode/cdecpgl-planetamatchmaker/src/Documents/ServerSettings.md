@@ -1,0 +1,81 @@
+# Server Settings
+
+There are two ways to change server setting.
+
+1. Locating server setting file
+1. Setting environment variables
+
+Server setting is located in `/etc/pmms/setting.json` (Linux) or `C:\pmms\setting.json` (Windows).
+Setting is written by JSON format which can include comments and trailing cammma.
+The encoding of the setting file must be UTF-8 without BOM.
+
+If specific environmet variables are defined, the value of environment variables are used even if setting file is located.
+
+Those settings are loaded when server starts.
+
+## Items
+
+### `common` Section
+
+|Name|Type|Default|Env Var|Explanation|
+|:---|:---|---:|:---|:---|
+|time_out_seconds|integer (1-3600)|300|PMMS_COMMON_TIME_OUT_SECONDS|Timeout seconds to send or receive message.|
+|ip_version|string ("v4", "v6")|"v4"|PMMS_COMMON_IP_VERSION|IP version to use. ("v4" or "v6")|
+|port|integer (0-65535)|57000|PMMS_COMMON_PORT|Port number to accept.|
+|max_connection_per_thread|integer (1-65535)|1000|PMMS_COMMON_MAX_CONNECTION_PER_THREAD|A limit of connection count in each thread.|
+|thread|integer (1-65535)|1|PMMS_COMMON_MAX_THREAD|A number of thread to run.|
+|max_room_count|integer (1-65535)|1000|PMMS_COMMON_MAX_ROOM_COUNT|A limit of room count.|
+|max_player_per_room|integer (1-255)|16|PMMS_COMMON_MAX_PLAYER_PER_ROOM|A limit of player count in each room.|
+
+### `authentication` Section
+
+|Name|Type|Default|Env Var|Explanation|
+|:---|:---|---:|:---|:---|
+|game_id|string (the length is less than 24)|""|PMMS_AUTHENTICATION_GAME_ID|A game id to accept.|
+|enable_game_version_check|boolean|false|PMMS_AUTHENTICATION_ENABLE_GAME_VERSION_CHECK|Wheather game version check is enabled.|
+|game_version|string (the length is less than 24)|""|PMMS_AUTHENTICATION_GAME_VERSION|A game version to accept. This setting is reffered only if enable_game_version_check is true.|
+
+Detail of each `game_version_check_mode` options is below.
+
+|Option|Explanation|
+|:---|:---|
+|ignore|The server does't check game version of clients|
+|overall|The server checks a game version of all clients matches the value of `game_version` setting.|
+|room|The server checks a game version of clients in a room matches a host of the room.|
+
+### `log` Section
+
+|Name|Type|Default|Env Var|Explanation|
+|:---|:---|---:|:---|:---|
+|enable_console_log|boolean|true|PMMS_LOG_ENABLE_CONSOLE_LOG|Wheather log is outputed to console. It is recommended to set true when you use docker in order to use logging system of docker.|
+|console_log_level|string ("debug", "info", "warning", "error", "fatal")|"info"|PMMS_LOG_CONSOLE_LOG_LEVEL|A threshold of console log by level.|
+|enable_file_log|boolean|true|PMMS_LOG_ENABLE_FILE_LOG|Wheather log is outputed to file.|
+|file_log_level|string ("debug", "info", "warning", "error", "fatal")|"info"|PMMS_LOG_FILE_LOG_LEVEL|A threshold of file log by level.|
+|file_log_path|string (path)|""|PMMS_LOG_FILE_LOG_PATH|A path of file to ouput log. `/var/log/pmms.log` (Linux) or `C:\log\pmms.log` (Windows) are used if this setting is empty.|
+
+Log lines include the current thread ID as `[thread:<id>]`. Logs emitted while processing an accepted connection also include `[session:<number>]` before the client endpoint. Session numbers are process-local connection numbers that start from `1`.
+
+### `connection_test` Section
+
+|Name|Type|Default|Env Var|Explanation|
+|:---|:---|---:|:---|:---|
+|connection_check_tcp_time_out_seconds|integer (1-3600)|5|PMMS_CONNECTION_TEST_CONNECTION_CHECK_TCP_TIME_OUT_SECONDS|Timeout seconds in TCP connection test request.|
+|connection_check_udp_time_out_seconds|integer (1-3600)|3|PMMS_CONNECTION_TEST_CONNECTION_CHECK_UDP_TIME_OUT_SECONDS|Timeout seconds in UDP connection test request.|
+|connection_check_udp_try_count|integer (1-100)|3|PMMS_CONNECTION_TEST_CONNECTION_CHECK_UDP_TRY_COUNT|Connection test try count in UDP.|
+
+### `tls` Section
+
+|Name|Type|Default|Env Var|Explanation|
+|:---|:---|---:|:---|:---|
+|mode|string ("plain", "tls")|"tls"|PMMS_TLS_MODE|Connection security mode. Use "plain" only for backward compatibility or local development.|
+|certificate_path|string (path)|`setting.json` directory + `server.crt`|PMMS_TLS_CERTIFICATE_PATH|TLS server certificate chain path. Required when `mode` is "tls".|
+|private_key_path|string (path)|`setting.json` directory + `server.key`|PMMS_TLS_PRIVATE_KEY_PATH|TLS server private key path. Required when `mode` is "tls".|
+|reload_on_sighup|boolean|false|PMMS_TLS_RELOAD_ON_SIGHUP|Reload TLS certificate and private key when the server receives SIGHUP. This is supported on Linux and Unix-like platforms.|
+
+When `certificate_path` or `private_key_path` is omitted from the JSON setting file, the server uses files in the same directory as the loaded `setting.json`. For the standard setting paths, the defaults are `/etc/pmms/server.crt` and `/etc/pmms/server.key` on Linux, or `C:\pmms\server.crt` and `C:\pmms\server.key` on Windows. Environment variables still override these values.
+
+See [TLS Certificate Setup](TLSCertificate.md) for production certificate paths, Certbot examples, Docker mounts, renewal, and development self-signed certificates.
+
+`external_tls_termination` is reserved for future design but is not supported now. The server also does not support PROXY protocol, so it does not accept PROXY protocol headers and cannot restore the original client IP from a TLS terminator.
+
+In Builtin mode, PMMS uses the accepted TCP connection source IP to create the game host endpoint. If TLS is terminated by an external proxy without preserving the original source IP, Builtin mode can return the proxy IP instead of the host client IP.

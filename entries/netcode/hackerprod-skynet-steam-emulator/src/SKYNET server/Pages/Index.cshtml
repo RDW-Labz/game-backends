@@ -1,0 +1,410 @@
+@page
+@model IndexModel
+@{
+    var friendOnline = Model.Snapshot.Friends.Count(f => f.Status != "Offline");
+    var achievementUnlocked = Model.Snapshot.Achievements.Count(a => a.Unlocked);
+    var achievementTotal = Model.Snapshot.Achievements.Count;
+    var hoursPlayed = Model.Snapshot.FeaturedGame.HoursPlayed;
+    var winRate = Model.Stats.Stats.FirstOrDefault(s => s.Name == "wins");
+    var totalGames = Model.Stats.Stats.FirstOrDefault(s => s.Name == "kills");
+    var winPct = (winRate != null && totalGames != null && totalGames.Data > 0) ? (int)(winRate.Data * 100 / totalGames.Data) : 0;
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    var isError = Model.StatusMessage.StartsWith("Could not") || Model.StatusMessage.StartsWith("Invalid") || Model.StatusMessage.StartsWith("Select");
+    <script>showToast(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StatusMessage)), '@(isError ? "error" : "success")')</script>
+}
+
+<div class="space-y-6">
+    <!-- Profile Hero -->
+    <section class="relative overflow-hidden rounded-2xl border border-skynet-border bg-skynet-card">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.06),transparent_70%)]"></div>
+        @{
+            var avatarSrc = $"/api/users/{Model.CurrentUser.SteamId}/avatar?v={DateTimeOffset.UtcNow.ToUnixTimeSeconds()}";
+        }
+
+        <!-- Desktop hero -->
+        <div class="relative z-10 hidden md:flex items-center gap-8 p-8">
+            <div class="relative group shrink-0">
+                <img src="@avatarSrc" alt="" class="w-28 h-28 rounded-2xl border-2 border-skynet-border object-cover bg-skynet-black" />
+                <label for="avatarFile" class="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all">
+                    <i class="fas fa-camera text-white text-lg"></i>
+                </label>
+                <form method="post" asp-page-handler="Avatar" OnComplete="onAvatarComplete" enctype="multipart/form-data" id="avatarForm">
+                    <input asp-for="AvatarFile" type="file" accept="image/*" id="avatarFile" class="hidden" onchange="document.getElementById('avatarForm').requestSubmit()" />
+                </form>
+            </div>
+
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-3xl font-black text-white truncate">@Model.CurrentUser.PersonaName</h1>
+                    <button onclick="openNameModal()" class="text-skynet-muted hover:text-white transition shrink-0" title="Edit name">
+                        <i class="fas fa-pen text-xs"></i>
+                    </button>
+                </div>
+                <div class="flex items-center mt-1">
+                    <p class="text-sm text-skynet-muted">SteamID @Model.CurrentUser.SteamId</p>
+                    <span class="text-sm text-skynet-muted mx-3 leading-none">&#183;</span>
+                    <p class="text-sm text-skynet-muted">Account @Model.CurrentUser.AccountId</p>
+                </div>
+                <div class="flex flex-wrap gap-3 mt-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-skynet-black/60 border border-skynet-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-skynet-muted">
+                        <i class="fas fa-circle text-[6px] text-green-500"></i> Online
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-skynet-black/60 border border-skynet-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-skynet-accent">
+                        <i class="fas fa-layer-group text-[8px]"></i> Level @Model.CurrentUser.PlayerLevel
+                    </span>
+                    @if (Model.CurrentUser.AppId > 0)
+                    {
+                        <span class="inline-flex items-center gap-1.5 rounded-lg bg-skynet-black/60 border border-skynet-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-skynet-muted">
+                            <i class="fas fa-gamepad text-[8px]"></i> App @Model.CurrentUser.AppId
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <div class="flex gap-6 shrink-0">
+                <div class="text-center">
+                    <p class="text-[48px] md:text-2xl font-black text-white">@hoursPlayed</p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-skynet-muted">Hours</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-[48px] md:text-2xl font-black text-white">@achievementUnlocked<span class="text-sm text-skynet-muted">/@achievementTotal</span></p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-skynet-muted">Achievements</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-[48px] md:text-2xl font-black text-white">@Model.Snapshot.Friends.Count</p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-skynet-muted">Friends</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile hero -->
+        <div class="relative z-10 md:hidden p-6 space-y-5">
+            <div class="flex items-start gap-4">
+                <div class="relative group shrink-0">
+                    <img src="@avatarSrc" alt="" class="w-24 h-24 rounded-2xl border-2 border-skynet-border object-cover bg-skynet-black" />
+                    <label for="avatarFileM" class="absolute inset-0 rounded-2xl bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-all">
+                        <i class="fas fa-camera text-white text-lg"></i>
+                    </label>
+                    <form method="post" asp-page-handler="Avatar" enctype="multipart/form-data" id="avatarFormM">
+                        <input asp-for="AvatarFile" type="file" accept="image/*" id="avatarFileM" class="hidden" onchange="document.getElementById('avatarFormM').submit()" />
+                    </form>
+                </div>
+
+                <div class="flex-1 text-left min-w-0">
+                    <div class="flex items-center gap-3">
+                        <h1 class="text-4xl font-black text-white truncate">@Model.CurrentUser.PersonaName</h1>
+                        <button onclick="openNameModal()" class="text-skynet-muted hover:text-white transition shrink-0" title="Edit name">
+                            <i class="fas fa-pen text-xs"></i>
+                        </button>
+                    </div>
+                    <p class="text-sm text-skynet-muted mt-1">SteamID @Model.CurrentUser.SteamId</p>
+                    <p class="text-sm text-skynet-muted mt-1">Account @Model.CurrentUser.AccountId</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+                <span class="inline-flex items-center gap-1.5 rounded-lg bg-skynet-black/60 border border-skynet-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-skynet-muted">
+                    <i class="fas fa-circle text-[6px] text-green-500"></i> Online
+                </span>
+                <span class="inline-flex items-center gap-1.5 rounded-lg bg-skynet-black/60 border border-skynet-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-skynet-accent">
+                    <i class="fas fa-layer-group text-[8px]"></i> Level @Model.CurrentUser.PlayerLevel
+                </span>
+                @if (Model.CurrentUser.AppId > 0)
+                {
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-skynet-black/60 border border-skynet-border px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-skynet-muted">
+                        <i class="fas fa-gamepad text-[8px]"></i> App @Model.CurrentUser.AppId
+                    </span>
+                }
+            </div>
+
+            <div class="flex gap-8 md:gap-4 justify-center">
+                <div class="text-center">
+                    <p class="text-[48px] md:text-2xl font-black text-white">@hoursPlayed</p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-skynet-muted">Hours</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-[48px] md:text-2xl font-black text-white">@achievementUnlocked<span class="text-sm text-skynet-muted">/@achievementTotal</span></p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-skynet-muted">Achievements</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-[48px] md:text-2xl font-black text-white">@Model.Snapshot.Friends.Count</p>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-skynet-muted">Friends</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Friend Requests -->
+    @if (Model.IncomingFriendRequests.Count > 0 || Model.OutgoingFriendRequests.Count > 0)
+    {
+        <section class="grid gap-5 xl:grid-cols-2">
+            @if (Model.IncomingFriendRequests.Count > 0)
+            {
+                <div class="rounded-2xl border border-skynet-accent/30 bg-skynet-accent/5 p-5">
+                    <h2 class="text-sm font-black uppercase tracking-widest text-skynet-accent mb-4">Incoming Requests</h2>
+                    <div class="space-y-3">
+                        @foreach (var request in Model.IncomingFriendRequests)
+                        {
+                            <div class="flex items-center gap-3 rounded-xl border border-skynet-border bg-skynet-black px-4 py-3">
+                                <img src="/api/users/@request.FromUser.SteamId/avatar" alt="" class="h-10 w-10 rounded-lg border border-skynet-border bg-skynet-dark object-cover" />
+                                <div class="flex-1 min-w-0">
+                                    <a asp-page="/Users/Profile" asp-route-steamId="@request.FromUser.SteamId" class="text-sm font-bold text-white hover:text-skynet-accent truncate block">@request.FromUser.PersonaName</a>
+                                </div>
+                                <div class="flex gap-2 shrink-0">
+                                    <form method="post" asp-page-handler="AcceptFriend" OnComplete="onDashFriendAction">
+                                        <input type="hidden" name="RequestId" value="@request.Id" />
+                                        <button class="w-8 h-8 rounded-lg bg-skynet-accent text-white flex items-center justify-center hover:bg-blue-600 transition text-xs"><i class="fas fa-check"></i></button>
+                                    </form>
+                                    <form method="post" asp-page-handler="DeclineFriend" OnComplete="onDashFriendAction">
+                                        <input type="hidden" name="RequestId" value="@request.Id" />
+                                        <button class="w-8 h-8 rounded-lg border border-red-500/30 text-red-300 flex items-center justify-center hover:bg-red-500/10 transition text-xs"><i class="fas fa-times"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            @if (Model.OutgoingFriendRequests.Count > 0)
+            {
+                <div class="rounded-2xl border border-skynet-border bg-skynet-card p-5">
+                    <h2 class="text-sm font-black uppercase tracking-widest text-skynet-muted mb-4">Outgoing Requests</h2>
+                    <div class="space-y-3">
+                        @foreach (var request in Model.OutgoingFriendRequests)
+                        {
+                            <div class="flex items-center gap-3 rounded-xl border border-skynet-border bg-skynet-black px-4 py-3">
+                                <img src="/api/users/@request.ToUser.SteamId/avatar" alt="" class="h-10 w-10 rounded-lg border border-skynet-border bg-skynet-dark object-cover" />
+                                <div class="flex-1 min-w-0">
+                                    <a asp-page="/Users/Profile" asp-route-steamId="@request.ToUser.SteamId" class="text-sm font-bold text-white hover:text-skynet-accent truncate block">@request.ToUser.PersonaName</a>
+                                </div>
+                                <form method="post" asp-page-handler="CancelFriend" OnComplete="onDashFriendAction" class="shrink-0">
+                                    <input type="hidden" name="RequestId" value="@request.Id" />
+                                    <button class="w-8 h-8 rounded-lg border border-skynet-border text-skynet-muted flex items-center justify-center hover:text-white hover:border-skynet-accent transition text-xs" title="Cancel"><i class="fas fa-times"></i></button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </section>
+    }
+
+    <!-- Game + Stats -->
+    <section class="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+        <!-- Featured Game -->
+        <div class="rounded-2xl border border-skynet-border bg-skynet-card overflow-hidden">
+            <div class="relative p-6">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-[radial-gradient(circle,rgba(165,42,42,0.08),transparent_70%)]"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-5">
+                        <div>
+                            <span class="text-[9px] font-black text-skynet-muted uppercase tracking-widest">@Model.Snapshot.FeaturedGame.Genre</span>
+                            <h2 class="text-2xl font-black text-white mt-1">@Model.Snapshot.FeaturedGame.Name</h2>
+                        </div>
+                        <span class="text-[9px] px-2.5 py-1 rounded-lg bg-skynet-black text-green-500 border border-green-500/20 font-bold uppercase tracking-widest">@Model.Snapshot.FeaturedGame.Status</span>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-3 mb-5">
+                        <div class="p-3 rounded-xl bg-skynet-black border border-skynet-border text-center">
+                            <p class="text-lg font-black text-white">@Model.Snapshot.FeaturedGame.HoursPlayed<span class="text-xs text-skynet-muted">h</span></p>
+                            <p class="text-[9px] font-bold text-skynet-muted uppercase tracking-widest mt-1">Played</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-skynet-black border border-skynet-border text-center">
+                            <p class="text-lg font-black text-white">@Model.Snapshot.FeaturedGame.AchievementsUnlocked<span class="text-xs text-skynet-muted">/@Model.Snapshot.FeaturedGame.TotalAchievements</span></p>
+                            <p class="text-[9px] font-bold text-skynet-muted uppercase tracking-widest mt-1">Unlocked</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-skynet-black border border-skynet-border text-center">
+                            <p class="text-lg font-black text-skynet-accent">@Model.Snapshot.FeaturedGame.Progress<span class="text-xs text-skynet-muted">%</span></p>
+                            <p class="text-[9px] font-bold text-skynet-muted uppercase tracking-widest mt-1">Progress</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest mb-2">
+                            <span class="text-skynet-muted">Completion</span>
+                            <span class="text-skynet-accent">@Model.Snapshot.FeaturedGame.Progress%</span>
+                        </div>
+                        <div class="h-2 rounded-full bg-skynet-dark overflow-hidden">
+                            <div class="h-full bg-skynet-accent rounded-full transition-all duration-1000" style="width: @Model.Snapshot.FeaturedGame.Progress%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="rounded-2xl border border-skynet-border bg-skynet-card">
+            <div class="border-b border-skynet-border px-5 py-4">
+                <h2 class="text-sm font-black uppercase tracking-widest text-white">Stats</h2>
+            </div>
+            <div class="divide-y divide-skynet-border">
+                @if (Model.Stats.Stats.Count == 0)
+                {
+                    <p class="px-5 py-6 text-sm text-skynet-muted">No saved stats.</p>
+                }
+                @foreach (var stat in Model.Stats.Stats.OrderBy(s => s.Name))
+                {
+                    <div class="flex items-center justify-between px-5 py-3">
+                        <span class="text-sm font-semibold text-zinc-200 capitalize">@stat.Name</span>
+                        <span class="font-mono text-sm text-skynet-accent font-bold">@stat.Data.ToString("N0")</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Achievements -->
+    @if (Model.Snapshot.Achievements.Count > 0)
+    {
+        <section class="rounded-2xl border border-skynet-border bg-skynet-card">
+            <div class="flex items-center justify-between border-b border-skynet-border px-5 py-4">
+                <h2 class="text-sm font-black uppercase tracking-widest text-white">Achievements</h2>
+                <a asp-page="/Achievements/Index" class="text-[10px] font-bold uppercase tracking-widest text-skynet-accent hover:text-blue-400 transition">View all</a>
+            </div>
+            <div class="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-3">
+                @foreach (var achievement in Model.Snapshot.Achievements.Take(6))
+                {
+                    <article class="rounded-xl border border-skynet-border bg-skynet-black p-4 hover:border-skynet-accent/30 transition">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="truncate text-sm font-bold text-white">@achievement.Title</h3>
+                            <span class="rounded px-2 py-0.5 text-[10px] font-black uppercase @(achievement.Unlocked ? "bg-skynet-accent/10 text-skynet-accent border border-skynet-accent/20" : "text-skynet-muted border border-skynet-border")">@(achievement.Unlocked ? "OK" : "LOCK")</span>
+                        </div>
+                        <div class="mt-3 h-1.5 rounded bg-skynet-dark overflow-hidden">
+                            <div class="h-full rounded bg-skynet-accent" style="width:@achievement.Progress%"></div>
+                        </div>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+
+    <!-- Friends Online -->
+    <section class="rounded-2xl border border-skynet-border bg-skynet-card">
+        <div class="flex items-center justify-between border-b border-skynet-border px-5 py-4">
+            <h2 class="text-sm font-black uppercase tracking-widest text-white">Friends</h2>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-skynet-muted">@friendOnline online</span>
+        </div>
+        @if (Model.Snapshot.Friends.Count == 0)
+        {
+            <p class="px-5 py-6 text-sm text-skynet-muted">No friends linked yet.</p>
+        }
+        else
+        {
+            <div class="grid gap-3 p-5 md:grid-cols-2 xl:grid-cols-3">
+                @foreach (var friend in Model.Snapshot.Friends.Take(9))
+                {
+                    <article class="flex items-center gap-3 rounded-xl border border-skynet-border bg-skynet-black px-4 py-3 hover:border-skynet-accent/30 transition group">
+                        <div class="relative shrink-0">
+                            <img src="/api/users/@friend.SteamId/avatar" alt="" class="w-11 h-11 rounded-xl border border-skynet-border object-cover bg-skynet-dark" />
+                            <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-skynet-black @(friend.Status == "Offline" ? "bg-gray-500" : "bg-green-500")"></div>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <a asp-page="/Users/Profile" asp-route-steamId="@friend.SteamId" class="text-sm font-bold text-white truncate block hover:text-skynet-accent transition">@friend.DisplayName</a>
+                            <p class="text-[10px] text-skynet-muted truncate">@friend.Status</p>
+                        </div>
+                        <form method="post" asp-page-handler="RemoveFriend" OnComplete="onDashRemoveFriend" class="shrink-0 opacity-0 group-hover:opacity-100 transition">
+                            <input type="hidden" name="FriendSteamId" value="@friend.SteamId" />
+                            <button type="submit" class="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center hover:bg-red-500 hover:text-white transition" title="Remove friend">
+                                <i class="fas fa-user-minus text-[10px]"></i>
+                            </button>
+                        </form>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+</div>
+
+<!-- Edit Name Modal -->
+<div id="nameModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeNameModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
+        <div class="rounded-2xl border border-skynet-border bg-skynet-card p-6 shadow-2xl">
+            <h3 class="text-lg font-black text-white mb-1">Edit Display Name</h3>
+            <p class="text-xs text-skynet-muted mb-5">This is the name other users will see.</p>
+            <form method="post" asp-page-handler="Persona" OnComplete="onPersonaComplete">
+                <input asp-for="PersonaName" class="w-full px-4 py-3 rounded-lg text-sm bg-skynet-black border border-skynet-border transition-all focus:border-skynet-accent focus:outline-none focus:shadow-[0_0_0_1px_rgba(59,130,246,0.2)] text-gray-200" />
+                <div class="flex gap-3 mt-5">
+                    <button type="button" onclick="closeNameModal()" class="flex-1 rounded-lg border border-skynet-border px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-skynet-muted hover:text-white hover:border-skynet-accent transition">Cancel</button>
+                    <button type="submit" class="flex-1 rounded-lg bg-white text-skynet-black px-4 py-2.5 text-xs font-black uppercase tracking-widest hover:bg-gray-200 transition">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openNameModal() {
+        document.getElementById('nameModal').classList.remove('hidden');
+        document.getElementById('PersonaName').focus();
+        document.getElementById('PersonaName').select();
+    }
+    function closeNameModal() {
+        document.getElementById('nameModal').classList.add('hidden');
+    }
+    function onAvatarComplete(data, form) {
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            var img = document.querySelector('.relative.group img[alt]');
+            if (img) img.src = '/api/users/' + img.src.split('/api/users/')[1].split('?')[0] + '?v=' + Date.now();
+        } else {
+            showToast(data && data.message ? data.message : 'Could not process image.', 'error');
+        }
+    }
+    function onPersonaComplete(data, form) {
+        closeNameModal();
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            var h1 = document.querySelector('h1.text-3xl');
+            var input = form.querySelector('input[name="PersonaName"]');
+            if (h1 && input && input.value.trim()) h1.textContent = input.value.trim();
+        } else {
+            showToast(data && data.message ? data.message : 'Could not update name.', 'error');
+        }
+    }
+    function onDashFriendAction(data, form) {
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            var card = form.closest('.flex.items-center.gap-3.rounded-xl');
+            if (card) {
+                card.style.transition = 'opacity 0.3s, transform 0.3s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.95)';
+                setTimeout(function() {
+                    card.remove();
+                    var container = document.querySelector('.space-y-3');
+                    if (container && container.children.length === 0) {
+                        var section = container.closest('.rounded-2xl');
+                        if (section) {
+                            var parent = section.closest('.grid');
+                            section.remove();
+                            if (parent && parent.children.length === 0) parent.remove();
+                        }
+                    }
+                }, 300);
+            }
+        } else {
+            showToast(data && data.message ? data.message : 'Action failed.', 'error');
+        }
+    }
+    function onDashRemoveFriend(data, form) {
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            var card = form.closest('article');
+            if (card) {
+                card.style.transition = 'opacity 0.3s, transform 0.3s';
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
+                setTimeout(function() { card.remove(); }, 300);
+            }
+        } else {
+            showToast(data && data.message ? data.message : 'Could not remove friend.', 'error');
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeNameModal();
+    });
+</script>

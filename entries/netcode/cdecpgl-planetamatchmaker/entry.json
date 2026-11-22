@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T20:36:02Z",
+ "category": "netcode",
+ "commit": "4f6556aad484",
+ "delivery": "vendored",
+ "description": "CdecPGL/PlanetaMatchMaker \u2014 A very simple and light match making system for P2P online game. Server binary for linux and windows, and client library for C# including Unity are provided.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "PlanetaMatchMaker",
+ "size_bytes": 1143959,
+ "slug": "cdecpgl-planetamatchmaker",
+ "source": "github-search:matchmaking library stars:>15",
+ "stars": 20,
+ "system": "A very simple and light match making system for P2P online game. Server binary for linux and windows, and client library for C# including Unity are provided.",
+ "upstream": "https://github.com/CdecPGL/PlanetaMatchMaker",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:36:07Z",
+ "category": "netcode",
+ "commit": "2026-02-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "flackr/lobby \u2014 A multiplayer game lobby and JS library for discovering game servers and making connections.",
+ "language": "typescript",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "lobby",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "flackr-lobby",
+ "source": "github-search:game lobby server stars:>15",
+ "stars": 76,
+ "system": "A multiplayer game lobby and JS library for discovering game servers and making connections.",
+ "upstream": "https://github.com/flackr/lobby",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

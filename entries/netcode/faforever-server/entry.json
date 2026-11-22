@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:36:07Z",
+ "category": "netcode",
+ "commit": "2026-11-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "FAForever/server \u2014 The servercode for the Forged Alliance Forever lobby",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "server",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "faforever-server",
+ "source": "github-search:game lobby server stars:>15",
+ "stars": 72,
+ "system": "The servercode for the Forged Alliance Forever lobby",
+ "upstream": "https://github.com/FAForever/server",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

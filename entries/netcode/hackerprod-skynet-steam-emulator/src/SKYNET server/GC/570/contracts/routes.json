@@ -1,0 +1,555 @@
+[
+    {
+        "name": "ClientHello",
+        "requestMessage": "GCClientHello",
+        "requestProto": "CMsgClientHello",
+        "responseMessage": "GCClientWelcome",
+        "responseProto": "CMsgClientWelcome"
+    },
+    {
+        "name": "InviteToParty",
+        "requestMessage": "GCInviteToParty",
+        "requestProto": "CMsgInviteToParty",
+        "responseMessage": "GCInvitationCreated",
+        "responseProto": "CMsgInvitationCreated"
+    },
+    {
+        "name": "PartyReadyCheck",
+        "requestMessage": "PartyReadyCheckRequest",
+        "requestProto": "CMsgPartyReadyCheckRequest",
+        "responseMessage": "PartyReadyCheckResponse",
+        "responseProto": "CMsgPartyReadyCheckResponse"
+    },
+    {
+        "name": "RequestStoreSalesData",
+        "requestMessage": "GCRequestStoreSalesData",
+        "requestProto": "CMsgGCRequestStoreSalesData",
+        "responseMessage": "GCRequestStoreSalesDataResponse",
+        "responseProto": "CMsgGCRequestStoreSalesDataResponse"
+    },
+    {
+        "name": "Notifications",
+        "requestMessage": "GCNotificationsRequest",
+        "requestProto": "CMsgGCNotificationsRequest",
+        "responseMessage": "GCNotificationsResponse",
+        "responseProto": "CMsgGCNotificationsResponse"
+    },
+    {
+        "name": "JoinChatChannel",
+        "requestMessage": "GCJoinChatChannel",
+        "requestProto": "CMsgDOTAJoinChatChannel",
+        "responseMessage": "GCJoinChatChannelResponse",
+        "responseProto": "CMsgDOTAJoinChatChannelResponse"
+    },
+    {
+        "name": "FindTopSourceTvGames",
+        "requestMessage": "ClientToGCFindTopSourceTVGames",
+        "requestProto": "CMsgClientToGCFindTopSourceTVGames",
+        "responseMessage": "GCToClientFindTopSourceTVGamesResponse",
+        "responseProto": "CMsgGCToClientFindTopSourceTVGamesResponse"
+    },
+    {
+        "name": "EmoticonData",
+        "requestMessage": "ClientToGCEmoticonDataRequest",
+        "requestProto": "CMsgClientToGCEmoticonDataRequest",
+        "responseMessage": "GCToClientEmoticonData",
+        "responseProto": "CMsgGCToClientEmoticonData"
+    },
+    {
+        "name": "RequestSocialFeed",
+        "requestMessage": "ClientToGCRequestSocialFeed",
+        "requestProto": "CMsgSocialFeedRequest",
+        "responseMessage": "ClientToGCRequestSocialFeedResponse",
+        "responseProto": "CMsgSocialFeedResponse"
+    },
+    {
+        "name": "RequestSocialFeedComments",
+        "requestMessage": "ClientToGCRequestSocialFeedComments",
+        "requestProto": "CMsgSocialFeedCommentsRequest",
+        "responseMessage": "ClientToGCRequestSocialFeedCommentsResponse",
+        "responseProto": "CMsgSocialFeedCommentsResponse"
+    },
+    {
+        "name": "SocialFeedPostComment",
+        "requestMessage": "ClientToGCSocialFeedPostCommentRequest",
+        "requestProto": "CMsgClientToGCSocialFeedPostCommentRequest",
+        "responseMessage": "GCToClientSocialFeedPostCommentResponse",
+        "responseProto": "CMsgGCToClientSocialFeedPostCommentResponse"
+    },
+    {
+        "name": "GetEventPoints",
+        "requestMessage": "DOTAGetEventPoints",
+        "requestProto": "CMsgDOTAGetEventPoints",
+        "responseMessage": "DOTAGetEventPointsResponse",
+        "responseProto": "CMsgDOTAGetEventPointsResponse"
+    },
+    {
+        "name": "GetHeroStandings",
+        "requestMessage": "GCGetHeroStandings",
+        "requestProto": "CMsgGCGetHeroStandings",
+        "responseMessage": "GCGetHeroStandingsResponse",
+        "responseProto": "CMsgGCGetHeroStandingsResponse"
+    },
+    {
+        "name": "GetHeroStatsHistory",
+        "requestMessage": "GCGetHeroStatsHistory",
+        "requestProto": "CMsgGCGetHeroStatsHistory",
+        "responseMessage": "GCGetHeroStatsHistoryResponse",
+        "responseProto": "CMsgGCGetHeroStatsHistoryResponse"
+    },
+    {
+        "name": "GetPlayerMatchHistory",
+        "requestMessage": "DOTAGetPlayerMatchHistory",
+        "requestProto": "CMsgDOTAGetPlayerMatchHistory",
+        "responseMessage": "DOTAGetPlayerMatchHistoryResponse",
+        "responseProto": "CMsgDOTAGetPlayerMatchHistoryResponse"
+    },
+    {
+        "name": "MatchDetails",
+        "requestMessage": "GCMatchDetailsRequest",
+        "requestProto": "CMsgGCMatchDetailsRequest",
+        "responseMessage": "GCMatchDetailsResponse",
+        "responseProto": "CMsgGCMatchDetailsResponse"
+    },
+    {
+        "name": "LookupAccountName",
+        "requestMessage": "ClientToGCLookupAccountName",
+        "requestProto": "CMsgClientToGCLookupAccountName",
+        "responseMessage": "ClientToGCLookupAccountNameResponse",
+        "responseProto": "CMsgClientToGCLookupAccountNameResponse"
+    },
+    {
+        "name": "PlayerStats",
+        "requestMessage": "ClientToGCPlayerStatsRequest",
+        "requestProto": "CMsgClientToGCPlayerStatsRequest",
+        "responseMessage": "GCToClientPlayerStatsResponse",
+        "responseProto": "CMsgGCToClientPlayerStatsResponse"
+    },
+    {
+        "name": "HeroGlobalData",
+        "requestMessage": "HeroGlobalDataRequest",
+        "requestProto": "CMsgHeroGlobalDataRequest",
+        "responseMessage": "HeroGlobalDataResponse",
+        "responseProto": "CMsgHeroGlobalDataResponse"
+    },
+    {
+        "name": "TeammateStats",
+        "requestMessage": "ClientToGCTeammateStatsRequest",
+        "requestProto": "CMsgClientToGCTeammateStatsRequest",
+        "responseMessage": "ClientToGCTeammateStatsResponse",
+        "responseProto": "CMsgClientToGCTeammateStatsResponse"
+    },
+    {
+        "name": "RankRequest",
+        "requestMessage": "ClientToGCRankRequest",
+        "requestProto": "CMsgClientToGCRankRequest",
+        "responseMessage": "GCToClientRankResponse",
+        "responseProto": "CMsgGCToClientRankResponse"
+    },
+    {
+        "name": "ShowcaseGetUserData",
+        "requestMessage": "ClientToGCShowcaseGetUserData",
+        "requestProto": "CMsgClientToGCShowcaseGetUserData",
+        "responseMessage": "ClientToGCShowcaseGetUserDataResponse",
+        "responseProto": "CMsgClientToGCShowcaseGetUserDataResponse"
+    },
+    {
+        "name": "RequestPlayerRecentAccomplishments",
+        "requestMessage": "ClientToGCRequestPlayerRecentAccomplishments",
+        "requestProto": "CMsgClientToGCRequestPlayerRecentAccomplishments",
+        "responseMessage": "ClientToGCRequestPlayerRecentAccomplishmentsResponse",
+        "responseProto": "CMsgClientToGCRequestPlayerRecentAccomplishmentsResponse"
+    },
+    {
+        "name": "RequestPlayerHeroRecentAccomplishments",
+        "requestMessage": "ClientToGCRequestPlayerHeroRecentAccomplishments",
+        "requestProto": "CMsgClientToGCRequestPlayerHeroRecentAccomplishments",
+        "responseMessage": "ClientToGCRequestPlayerHeroRecentAccomplishmentsResponse",
+        "responseProto": "CMsgClientToGCRequestPlayerHeroRecentAccomplishmentsResponse"
+    },
+    {
+        "name": "PracticeLobbyCreate",
+        "requestMessage": "GCPracticeLobbyCreate",
+        "requestProto": "CMsgPracticeLobbyCreate",
+        "responseMessage": "GCPracticeLobbyResponse",
+        "responseProto": "CMsgGenericResult"
+    },
+    {
+        "name": "PracticeLobbyJoin",
+        "requestMessage": "GCPracticeLobbyJoin",
+        "requestProto": "CMsgPracticeLobbyJoin",
+        "responseMessage": "GCPracticeLobbyJoinResponse",
+        "responseProto": "CMsgPracticeLobbyJoinResponse"
+    },
+    {
+        "name": "PracticeLobbyList",
+        "requestMessage": "GCPracticeLobbyList",
+        "requestProto": "CMsgPracticeLobbyList",
+        "responseMessage": "GCPracticeLobbyListResponse",
+        "responseProto": "CMsgPracticeLobbyListResponse"
+    },
+    {
+        "name": "FriendPracticeLobbyList",
+        "requestMessage": "GCFriendPracticeLobbyListRequest",
+        "requestProto": "CMsgFriendPracticeLobbyListRequest",
+        "responseMessage": "GCFriendPracticeLobbyListResponse",
+        "responseProto": "CMsgFriendPracticeLobbyListResponse"
+    },
+    {
+        "name": "PracticeLobbySetDetails",
+        "requestMessage": "GCPracticeLobbySetDetails",
+        "requestProto": "CMsgPracticeLobbySetDetails",
+        "responseMessage": "GCPracticeLobbyResponse",
+        "responseProto": "CMsgGenericResult"
+    },
+    {
+        "name": "PracticeLobbySetTeamSlot",
+        "requestMessage": "GCPracticeLobbySetTeamSlot",
+        "requestProto": "CMsgPracticeLobbySetTeamSlot",
+        "responseMessage": "GCPracticeLobbyResponse",
+        "responseProto": "CMsgGenericResult"
+    },
+    {
+        "name": "PracticeLobbySetCoach",
+        "requestMessage": "GCPracticeLobbySetCoach",
+        "requestProto": "CMsgPracticeLobbySetCoach",
+        "responseMessage": "GCPracticeLobbyResponse",
+        "responseProto": "CMsgGenericResult"
+    },
+    {
+        "name": "ApplyTeamToPracticeLobby",
+        "requestMessage": "GCApplyTeamToPracticeLobby",
+        "requestProto": "CMsgApplyTeamToPracticeLobby",
+        "responseMessage": "GCGenericResult",
+        "responseProto": "CMsgGenericResult"
+    },
+    {
+        "name": "PracticeLobbyLaunch",
+        "requestMessage": "GCPracticeLobbyLaunch",
+        "requestProto": "CMsgPracticeLobbyLaunch",
+        "responseMessage": "GCGenericResult",
+        "responseProto": "CMsgGenericResult"
+    },
+    {
+        "name": "RequestBatchPlayerResources",
+        "requestMessage": "ServerToGCRequestBatchPlayerResources",
+        "requestProto": "CMsgServerToGCRequestBatchPlayerResources",
+        "responseMessage": "ServerToGCRequestBatchPlayerResourcesResponse",
+        "responseProto": "CMsgServerToGCRequestBatchPlayerResourcesResponse"
+    },
+    {
+        "name": "ServerRequestPlayerRecentAccomplishments",
+        "requestMessage": "ServerToGCRequestPlayerRecentAccomplishments",
+        "requestProto": "CMsgServerToGCRequestPlayerRecentAccomplishments",
+        "responseMessage": "ServerToGCRequestPlayerRecentAccomplishmentsResponse",
+        "responseProto": "CMsgServerToGCRequestPlayerRecentAccomplishmentsResponse"
+    },
+    {
+        "name": "HasPlayerVotedForMvp",
+        "requestMessage": "ClientToGCHasPlayerVotedForMVP",
+        "requestProto": "CMsgClientToGCHasPlayerVotedForMVP",
+        "responseMessage": "ClientToGCHasPlayerVotedForMVPResponse",
+        "responseProto": "CMsgClientToGCHasPlayerVotedForMVPResponse"
+    },
+    {
+        "name": "VoteForMvp",
+        "requestMessage": "ClientToGCVoteForMVP",
+        "requestProto": "CMsgClientToGCVoteForMVP",
+        "responseMessage": "ClientToGCVoteForMVPResponse",
+        "responseProto": "CMsgClientToGCVoteForMVPResponse"
+    },
+    {
+        "name": "MvpVoteTimeout",
+        "requestMessage": "ClientToGCMVPVoteTimeout",
+        "requestProto": "CMsgClientToGCMVPVoteTimeout",
+        "responseMessage": "ClientToGCMVPVoteTimeoutResponse",
+        "responseProto": "CMsgClientToGCMVPVoteTimeoutResponse"
+    },
+    {
+        "name": "SubmitLobbyMvpVote",
+        "requestMessage": "GCSubmitLobbyMVPVote",
+        "requestProto": "CMsgDOTASubmitLobbyMVPVote",
+        "responseMessage": "GCSubmitLobbyMVPVoteResponse",
+        "responseProto": "CMsgDOTASubmitLobbyMVPVoteResponse"
+    },
+    {
+        "name": "RerollPlayerChallenge",
+        "requestMessage": "ClientToGCRerollPlayerChallenge",
+        "requestProto": "CMsgClientToGCRerollPlayerChallenge",
+        "responseMessage": "GCRerollPlayerChallengeResponse",
+        "responseProto": "CMsgGCRerollPlayerChallengeResponse"
+    },
+    {
+        "name": "GameMatchSignOutPermission",
+        "requestMessage": "GCGameMatchSignOutPermissionRequest",
+        "requestProto": "CMsgGameMatchSignOutPermissionRequest",
+        "responseMessage": "GCGameMatchSignOutPermissionResponse",
+        "responseProto": "CMsgGameMatchSignOutPermissionResponse"
+    },
+    {
+        "name": "GameBotMatchSignOutPermission",
+        "requestMessage": "GCGameBotMatchSignOutPermissionRequest",
+        "requestProto": "CMsgGameMatchSignOutPermissionRequest",
+        "responseMessage": "GCGameMatchSignOutPermissionResponse",
+        "responseProto": "CMsgGameMatchSignOutPermissionResponse"
+    },
+    {
+        "name": "SetMatchHistoryAccess",
+        "requestMessage": "GCSetMatchHistoryAccess",
+        "requestProto": "CMsgDOTASetMatchHistoryAccess",
+        "responseMessage": "GCSetMatchHistoryAccessResponse",
+        "responseProto": "CMsgDOTASetMatchHistoryAccessResponse"
+    },
+    {
+        "name": "ServerStatus",
+        "requestMessage": "ServerToGCRequestStatus",
+        "requestProto": "CMsgServerToGCRequestStatus",
+        "responseMessage": "ServerToGCRequestStatusResponse",
+        "responseProto": "CMsgServerToGCRequestStatusResponse"
+    },
+    {
+        "name": "LeaverDetected",
+        "requestMessage": "GCLeaverDetected",
+        "requestProto": "CMsgLeaverDetected",
+        "responseMessage": "GCLeaverDetectedResponse",
+        "responseProto": "CMsgLeaverDetectedResponse"
+    },
+    {
+        "name": "SubmitPlayerReport",
+        "requestMessage": "GCSubmitPlayerReport",
+        "requestProto": "CMsgDOTASubmitPlayerReport",
+        "responseMessage": "GCSubmitPlayerReportResponse",
+        "responseProto": "CMsgDOTASubmitPlayerReportResponse"
+    },
+    {
+        "name": "SubmitPlayerReportV2",
+        "requestMessage": "GCSubmitPlayerReportV2",
+        "requestProto": "CMsgDOTASubmitPlayerReportV2",
+        "responseMessage": "GCSubmitPlayerReportResponseV2",
+        "responseProto": "CMsgDOTASubmitPlayerReportResponseV2"
+    },
+    {
+        "name": "GetCurrentPrivateCoachingSession",
+        "requestMessage": "ClientToGCGetCurrentPrivateCoachingSession",
+        "requestProto": "CMsgClientToGCGetCurrentPrivateCoachingSession",
+        "responseMessage": "ClientToGCGetCurrentPrivateCoachingSessionResponse",
+        "responseProto": "CMsgClientToGCGetCurrentPrivateCoachingSessionResponse"
+    },
+    {
+        "name": "GetAvailablePrivateCoachingSessions",
+        "requestMessage": "ClientToGCGetAvailablePrivateCoachingSessions",
+        "requestProto": "CMsgClientToGCGetAvailablePrivateCoachingSessions",
+        "responseMessage": "ClientToGCGetAvailablePrivateCoachingSessionsResponse",
+        "responseProto": "CMsgClientToGCGetAvailablePrivateCoachingSessionsResponse"
+    },
+    {
+        "name": "GetAvailablePrivateCoachingSessionsSummary",
+        "requestMessage": "ClientToGCGetAvailablePrivateCoachingSessionsSummary",
+        "requestProto": "CMsgClientToGCGetAvailablePrivateCoachingSessionsSummary",
+        "responseMessage": "ClientToGCGetAvailablePrivateCoachingSessionsSummaryResponse",
+        "responseProto": "CMsgClientToGCGetAvailablePrivateCoachingSessionsSummaryResponse"
+    },
+    {
+        "name": "EquipItems",
+        "requestMessage": "ClientToGCEquipItems",
+        "requestProto": "CMsgClientToGCEquipItems",
+        "responseMessage": "ClientToGCEquipItemsResponse",
+        "responseProto": "CMsgClientToGCEquipItemsResponse"
+    },
+    {
+        "name": "SetItemStyle",
+        "requestMessage": "ClientToGCSetItemStyle",
+        "requestProto": "CMsgClientToGCSetItemStyle",
+        "responseMessage": "ClientToGCSetItemStyleResponse",
+        "responseProto": "CMsgClientToGCSetItemStyleResponse"
+    },
+    {
+        "name": "GetProfileCard",
+        "requestMessage": "ClientToGCGetProfileCard",
+        "requestProto": "CMsgClientToGCGetProfileCard",
+        "responseMessage": "ClientToGCGetProfileCardResponse",
+        "responseProto": "CMsgDOTAProfileCard"
+    },
+    {
+        "name": "GetProfileCardStats",
+        "requestMessage": "ClientToGCGetProfileCardStats",
+        "requestProto": "CMsgClientToGCGetProfileCardStats",
+        "responseMessage": "ClientToGCGetProfileCardStatsResponse",
+        "responseProto": "CMsgDOTAProfileCard"
+    },
+    {
+        "name": "SetProfileCardSlots",
+        "requestMessage": "ClientToGCSetProfileCardSlots",
+        "requestProto": "CMsgClientToGCSetProfileCardSlots",
+        "responseMessage": "GCToClientProfileCardUpdated",
+        "responseProto": "CMsgDOTAProfileCard"
+    },
+    {
+        "name": "GetProfileTickets",
+        "requestMessage": "ClientToGCGetProfileTickets",
+        "requestProto": "CMsgClientToGCGetProfileTickets",
+        "responseMessage": "ClientToGCGetProfileTicketsResponse",
+        "responseProto": "CMsgDOTAProfileTickets"
+    },
+    {
+        "name": "ProfileRequest",
+        "requestMessage": "ProfileRequest",
+        "requestProto": "CMsgProfileRequest",
+        "responseMessage": "ProfileResponse",
+        "responseProto": "CMsgProfileResponse"
+    },
+    {
+        "name": "ProfileUpdate",
+        "requestMessage": "ProfileUpdate",
+        "requestProto": "CMsgProfileUpdate",
+        "responseMessage": "ProfileUpdateResponse",
+        "responseProto": "CMsgProfileUpdateResponse"
+    },
+    {
+        "name": "GetTrophyList",
+        "requestMessage": "ClientToGCGetTrophyList",
+        "requestProto": "CMsgClientToGCGetTrophyList",
+        "responseMessage": "ClientToGCGetTrophyListResponse",
+        "responseProto": "CMsgClientToGCGetTrophyListResponse"
+    },
+    {
+        "name": "GetAllHeroOrder",
+        "requestMessage": "ClientToGCGetAllHeroOrder",
+        "requestProto": "CMsgClientToGCGetAllHeroOrder",
+        "responseMessage": "ClientToGCGetAllHeroOrderResponse",
+        "responseProto": "CMsgClientToGCGetAllHeroOrderResponse"
+    },
+    {
+        "name": "GetAllHeroProgress",
+        "requestMessage": "ClientToGCGetAllHeroProgress",
+        "requestProto": "CMsgClientToGCGetAllHeroProgress",
+        "responseMessage": "ClientToGCGetAllHeroProgressResponse",
+        "responseProto": "CMsgClientToGCGetAllHeroProgressResponse"
+    },
+    {
+        "name": "GetQuestProgress",
+        "requestMessage": "ClientToGCGetQuestProgress",
+        "requestProto": "CMsgClientToGCGetQuestProgress",
+        "responseMessage": "ClientToGCGetQuestProgressResponse",
+        "responseProto": "CMsgClientToGCGetQuestProgressResponse"
+    },
+    {
+        "name": "LatestConductScorecard",
+        "requestMessage": "ClientToGCLatestConductScorecardRequest",
+        "requestProto": "CMsgPlayerConductScorecardRequest",
+        "responseMessage": "ClientToGCLatestConductScorecard",
+        "responseProto": "CMsgPlayerConductScorecard"
+    },
+    {
+        "name": "GetPeriodicResource",
+        "requestMessage": "DOTAGetPeriodicResource",
+        "requestProto": "CMsgDOTAGetPeriodicResource",
+        "responseMessage": "DOTAGetPeriodicResourceResponse",
+        "responseProto": "CMsgDOTAGetPeriodicResourceResponse"
+    },
+    {
+        "name": "GetBattleReport",
+        "requestMessage": "ClientToGCGetBattleReport",
+        "requestProto": "CMsgClientToGCGetBattleReport",
+        "responseMessage": "ClientToGCGetBattleReportResponse",
+        "responseProto": "CMsgClientToGCGetBattleReportResponse"
+    },
+    {
+        "name": "GetBattleReportAggregateStats",
+        "requestMessage": "ClientToGCGetBattleReportAggregateStats",
+        "requestProto": "CMsgClientToGCGetBattleReportAggregateStats",
+        "responseMessage": "ClientToGCGetBattleReportAggregateStatsResponse",
+        "responseProto": "CMsgClientToGCGetBattleReportAggregateStatsResponse"
+    },
+    {
+        "name": "GetBattleReportInfo",
+        "requestMessage": "ClientToGCGetBattleReportInfo",
+        "requestProto": "CMsgClientToGCGetBattleReportInfo",
+        "responseMessage": "ClientToGCGetBattleReportInfoResponse",
+        "responseProto": "CMsgClientToGCGetBattleReportInfoResponse"
+    },
+    {
+        "name": "GetBattleReportMatchHistory",
+        "requestMessage": "ClientToGCGetBattleReportMatchHistory",
+        "requestProto": "CMsgClientToGCGetBattleReportMatchHistory",
+        "responseMessage": "ClientToGCGetBattleReportMatchHistoryResponse",
+        "responseProto": "CMsgClientToGCGetBattleReportMatchHistoryResponse"
+    },
+    {
+        "name": "AcknowledgeBattleReport",
+        "requestMessage": "ClientToGCAcknowledgeBattleReport",
+        "requestProto": "CMsgClientToGCAcknowledgeBattleReport",
+        "responseMessage": "ClientToGCAcknowledgeBattleReportResponse",
+        "responseProto": "CMsgClientToGCAcknowledgeBattleReportResponse"
+    },
+    {
+        "name": "SetHeroSticker",
+        "requestMessage": "ClientToGCSetHeroSticker",
+        "requestProto": "CMsgClientToGCSetHeroSticker",
+        "responseMessage": "ClientToGCSetHeroStickerResponse",
+        "responseProto": "CMsgClientToGCSetHeroStickerResponse"
+    },
+    {
+        "name": "GetHeroStickers",
+        "requestMessage": "ClientToGCGetHeroStickers",
+        "requestProto": "CMsgClientToGCGetHeroStickers",
+        "responseMessage": "ClientToGCGetHeroStickersResponse",
+        "responseProto": "CMsgClientToGCGetHeroStickersResponse"
+    },
+    {
+        "name": "OverworldGetUserData",
+        "requestMessage": "ClientToGCOverworldGetUserData",
+        "requestProto": "CMsgClientToGCOverworldGetUserData",
+        "responseMessage": "ClientToGCOverworldGetUserDataResponse",
+        "responseProto": "CMsgClientToGCOverworldGetUserDataResponse"
+    },
+    {
+        "name": "MonsterHunterGetUserData",
+        "requestMessage": "ClientToGCMonsterHunterGetUserData",
+        "requestProto": "CMsgClientToGCMonsterHunterGetUserData",
+        "responseMessage": "ClientToGCMonsterHunterGetUserDataResponse",
+        "responseProto": "CMsgClientToGCMonsterHunterGetUserDataResponse"
+    },
+    {
+        "name": "RequestGuildData",
+        "requestMessage": "ClientToGCRequestGuildData",
+        "requestProto": "CMsgClientToGCRequestGuildData",
+        "responseMessage": "ClientToGCRequestGuildDataResponse",
+        "responseProto": "CMsgClientToGCRequestGuildDataResponse"
+    },
+    {
+        "name": "RequestGuildMembership",
+        "requestMessage": "ClientToGCRequestGuildMembership",
+        "requestProto": "CMsgClientToGCRequestGuildMembership",
+        "responseMessage": "ClientToGCRequestGuildMembershipResponse",
+        "responseProto": "CMsgClientToGCRequestGuildMembershipResponse"
+    },
+    {
+        "name": "RequestReporterUpdates",
+        "requestMessage": "ClientToGCRequestReporterUpdates",
+        "requestProto": "CMsgClientToGCRequestReporterUpdates",
+        "responseMessage": "ClientToGCRequestReporterUpdatesResponse",
+        "responseProto": "CMsgClientToGCRequestReporterUpdatesResponse"
+    },
+    {
+        "name": "RequestAccountGuildPersonaInfo",
+        "requestMessage": "ClientToGCRequestAccountGuildPersonaInfo",
+        "requestProto": "CMsgClientToGCRequestAccountGuildPersonaInfo",
+        "responseMessage": "ClientToGCRequestAccountGuildPersonaInfoResponse",
+        "responseProto": "CMsgClientToGCRequestAccountGuildPersonaInfoResponse"
+    },
+    {
+        "name": "RequestAccountGuildPersonaInfoBatch",
+        "requestMessage": "ClientToGCRequestAccountGuildPersonaInfoBatch",
+        "requestProto": "CMsgClientToGCRequestAccountGuildPersonaInfoBatch",
+        "responseMessage": "ClientToGCRequestAccountGuildPersonaInfoBatchResponse",
+        "responseProto": "CMsgClientToGCRequestAccountGuildPersonaInfoBatchResponse"
+    },
+    {
+        "name": "RequestAccountGuildEventData",
+        "requestMessage": "ClientToGCRequestAccountGuildEventData",
+        "requestProto": "CMsgClientToGCRequestAccountGuildEventData",
+        "responseMessage": "ClientToGCRequestAccountGuildEventDataResponse",
+        "responseProto": "CMsgClientToGCRequestAccountGuildEventDataResponse"
+    }
+]

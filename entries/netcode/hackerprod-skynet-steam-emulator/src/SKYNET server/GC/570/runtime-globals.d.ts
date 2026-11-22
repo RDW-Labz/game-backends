@@ -1,0 +1,150 @@
+declare global {
+    type int32 = number;
+
+    interface Clock {
+        now(): number;
+    }
+
+    interface Logger {
+        info(message: string): void;
+    }
+
+    function messageType(): number;
+    function body(): Uint8Array;
+    function now(): number;
+    function steamId(): bigint;
+    function accountId(): number;
+    function personaName(): string;
+    function decode<TMessage = unknown>(typeName: string, payload: Uint8Array): TMessage;
+    function encode<TMessage = unknown>(typeName: string, value: TMessage): Uint8Array;
+    function send(messageType: number, payload: Uint8Array, protobuf?: boolean): boolean;
+    function reply(messageType: number, payload: Uint8Array, protobuf?: boolean): boolean;
+    function log(message: string): void;
+    function dotaInventory(steamId?: bigint): unknown;
+    function dotaCatalogItem(defIndex: number): unknown;
+    function dotaClientVersion(): number;
+    function dotaEquipItem(itemId: bigint, heroId: number, slotId: number, style: number): unknown;
+    function dotaSetItemStyle(itemId: bigint, style: number): unknown;
+    function dotaPublishMatchSnapshot(snapshot: unknown): boolean;
+    function dotaListMatchSnapshots(): unknown;
+    function dotaRemoveMatchSnapshot(lobbyId: bigint): boolean;
+    function dotaStartDedicatedServer(lobbyId: bigint, map: string): unknown;
+    function dotaReleaseDedicatedServer(lobbyId: bigint, reason: string): boolean;
+    function dotaResolveGameServerConnectIp(publicIp: string, privateIp: string, fallbackIp: string): string;
+    function dotaResolveGameServerConnectIps(publicIp: string, privateIp: string, fallbackIp: string): string;
+    function dotaProfile(accountId: number): unknown;
+    function dotaSaveProfileSlots(slots: unknown[]): boolean;
+    function dotaSaveProfileUpdate(backgroundItemId: bigint, featuredHeroIds: number[]): boolean;
+    function dotaProfileConductScorecard(): unknown;
+    function dotaProfileQuestProgress(questIds: number[]): unknown;
+    function dotaProfilePeriodicResource(accountId: number, resourceId: number): unknown;
+    function dotaProfileHeroStickers(): unknown;
+    function dotaProfileSetHeroSticker(heroId: number, itemId: bigint): boolean;
+    function dotaProfileOverworldState(overworldId: number): unknown;
+    function dotaProfileMonsterHunterState(): unknown;
+    function dotaSocialEmoticonAccess(): unknown;
+    function dotaSocialFeed(accountId: number, selfOnly: boolean): unknown;
+    function dotaSocialFeedComments(feedEventId: bigint): unknown;
+    function dotaSocialFeedPostComment(feedEventId: bigint, comment: string): boolean;
+    function dotaSocialMatchComments(matchId: bigint): unknown;
+    function dotaSocialMatchPostComment(matchId: bigint, comment: string): boolean;
+    function dotaChatChannels(): unknown;
+    function dotaChatJoinChannel(channelName: string, channelType: number): unknown;
+    function dotaChatChannel(channelId: bigint): unknown;
+    function dotaChatLeaveChannel(channelId: bigint): boolean;
+    function dotaChatBroadcast(
+        channelId: bigint,
+        messageType: number,
+        payload: Uint8Array,
+        includeSelf: boolean
+    ): number;
+    function dotaGuildEnsureCurrent(): unknown;
+    function dotaGuildMembership(accountId: number): unknown;
+    function dotaGuild(guildId: number): unknown;
+    function dotaGuildPersonaInfo(accountId: number): unknown;
+    function dotaGuildEventData(guildId: number, eventId: number): unknown;
+    function dotaGuildInvite(guildId: number, targetAccountId: number): number;
+    function dotaGuildDeclineInvite(guildId: number): number;
+    function dotaGuildCancelInvite(guildId: number, targetAccountId: number): number;
+    function dotaGuildAcceptInvite(guildId: number): number;
+    function dotaGuildLeave(guildId: number): number;
+    function dotaReporterUpdates(): unknown;
+    function dotaAcknowledgeReporterUpdates(matchIds: bigint[]): boolean;
+    function dotaTeam(teamId: number): unknown;
+    function dotaTeamsForAccount(accountId?: number): unknown;
+    function dotaNextTeamId(): number;
+    function dotaUpsertTeam(teamId: number, name: string, tag: string, teamJson: string): unknown;
+    function dotaAddTeamMember(teamId: number, accountId: number, role: number): boolean;
+    function dotaRemoveTeamMember(teamId: number, accountId: number): boolean;
+    function dotaRemoveTeam(teamId: number): boolean;
+    function dotaTeamNameAvailable(name: string, exceptTeamId: string): boolean;
+    function dotaTeamTagAvailable(tag: string, exceptTeamId: string): boolean;
+    function dotaTeamPlayerInfo(accountId: number): unknown;
+    function dotaUpsertTeamPlayerInfo(
+        accountId: number,
+        name: string,
+        countryCode: string,
+        fantasyRole: number,
+        teamId: number,
+        sponsor: string,
+        realName: string
+    ): unknown;
+    function dotaDeleteTeamPlayerInfo(accountId: number): boolean;
+    function dotaLookupAccountName(accountId: number): unknown;
+    function dotaEventPoints(accountId: number, eventId: number): unknown;
+    function dotaHeroStandings(accountId: number): unknown;
+    function dotaHeroGlobalData(accountId: number, heroId: number): unknown;
+    function dotaPlayerStats(accountId: number): unknown;
+    function dotaRank(accountId: number): unknown;
+    function dotaTeammateStats(accountId: number): unknown;
+    function dotaMatchHistory(
+        accountId: number,
+        startAtMatchId: bigint,
+        requested: number,
+        heroId: number,
+        includePractice: boolean
+    ): unknown;
+    function dotaMatchDetails(matchId: bigint): unknown;
+    function dotaHeroStatsHistory(accountId: number, heroId: number): unknown;
+    function dotaMatchVotes(matchId: bigint): unknown;
+    function dotaShowcaseStats(accountId: number): unknown;
+    function dotaRecentAccomplishments(accountId: number): unknown;
+    function dotaHeroRecentAccomplishments(accountId: number, heroId: number): unknown;
+    function dotaHasMvpVote(matchId: bigint): boolean;
+    function dotaVoteForMvp(matchId: bigint, votedAccountId: number): boolean;
+    function dotaFinalizeMvpVote(matchId: bigint): boolean;
+    function dotaSubmitLobbyMvpVote(targetAccountId: number): unknown;
+    function dotaRecordSignOutMvpStats(matchId: bigint, players: unknown[]): boolean;
+    function dotaRerollPlayerChallenge(): boolean;
+    function dotaRecordMatchSignOutPermission(request: unknown): boolean;
+    function dotaSetMatchHistoryAccess(allow: boolean): boolean;
+    function dotaRecordServerStatus(response: number): boolean;
+    function dotaRecordLeaver(event: unknown): boolean;
+    function dotaRecordRealtimeStats(snapshot: unknown): boolean;
+    function dotaRecordMatchStateHistory(history: unknown): boolean;
+    function dotaRecordSpectatorCount(spectatorCount: number): boolean;
+    function dotaRecordLiveScoreboard(snapshot: unknown): boolean;
+    function dotaSavePlayerReport(report: unknown): boolean;
+    function dotaPartyCurrent(): unknown;
+    function dotaPartyById(partyId: bigint): unknown;
+    function dotaPartyEnsureCurrent(ping: unknown): unknown;
+    function dotaPartyAddMember(partyId: bigint, ping: unknown, isCoach: boolean): unknown;
+    function dotaPartyRemoveMember(partyId: bigint, steamId: bigint): unknown;
+    function dotaPartyDelete(partyId: bigint): boolean;
+    function dotaPartySetLeader(partyId: bigint, leaderSteamId: bigint): unknown;
+    function dotaPartySetCoach(partyId: bigint, steamId: bigint, isCoach: boolean): unknown;
+    function dotaPartySetPing(partyId: bigint, steamId: bigint, ping: unknown): unknown;
+    function dotaPartyStartReadyCheck(partyId: bigint, durationSeconds: number): unknown;
+    function dotaPartyAcknowledgeReadyCheck(partyId: bigint, readyStatus: number): unknown;
+    function dotaPartyCreateInvite(partyId: bigint, targetSteamId: bigint, teamId: number, asCoach: boolean): unknown;
+    function dotaPartyTakeInvite(partyId: bigint): unknown;
+    function dotaPartyInvitesForTarget(targetSteamId: bigint): unknown;
+    function dotaPartyDeleteInvitesForTarget(targetSteamId: bigint): unknown;
+    function dotaPartyDeleteInvitesForParty(partyId: bigint): unknown;
+    function dotaPartyPruneInvitesCreatedBefore(cutoff: number): unknown;
+    function dotaPartyUserExists(steamId: bigint): boolean;
+    function dotaPartyUserOnline(steamId: bigint): boolean;
+    function dotaQueueGcMessage(steamId: bigint, messageType: number, payload: Uint8Array, protobuf?: boolean): boolean;
+}
+
+export {};

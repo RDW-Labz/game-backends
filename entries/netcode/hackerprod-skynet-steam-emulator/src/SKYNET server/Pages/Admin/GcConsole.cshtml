@@ -1,0 +1,461 @@
+@page
+@model SKYNET_server.Pages.Admin.GcConsoleModel
+@{
+    ViewData["Title"] = "GC Console";
+}
+
+<style>
+    .gc-console-toolbar {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+        color: #ededed;
+    }
+
+    .gc-console-toolbar input[type="text"] {
+        min-width: 220px;
+        padding: 0.25rem 0.5rem;
+        background: #0a0a0a;
+        border: 1px solid #222222;
+        border-radius: 0.5rem;
+        color: #ededed;
+        font-size: 0.875rem;
+    }
+
+    .gc-console-toolbar input[type="text"]:focus {
+        border-color: #3b82f6;
+        outline: none;
+    }
+
+    .gc-console-toolbar button {
+        background: #161616;
+        border: 1px solid #222222;
+        border-radius: 0.5rem;
+        color: #ededed;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+    }
+
+    .gc-console-toolbar button:hover {
+        background: #222222;
+    }
+
+    .gc-console-wrap {
+        max-height: 70vh;
+        overflow-y: auto;
+        border: 1px solid #222222;
+        border-radius: 0.75rem;
+        background: #111111;
+    }
+
+    .gc-console-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: Consolas, monospace;
+        font-size: 0.8rem;
+        color: #ededed;
+    }
+
+    .gc-console-table th {
+        position: sticky;
+        top: 0;
+        background: #161616;
+        text-align: left;
+        padding: 0.3rem 0.5rem;
+        border-bottom: 1px solid #222222;
+    }
+
+    .gc-console-table td {
+        padding: 0.15rem 0.5rem;
+        border-bottom: 1px solid #1a1a1a;
+        white-space: nowrap;
+    }
+
+    .gc-console-table td.gc-detail {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    .gc-kind-in { color: #7ec8ff; }
+    .gc-kind-out { color: #8be98b; }
+    .gc-kind-push { color: #c39bff; }
+    .gc-kind-log { color: #e0e0a0; }
+    .gc-kind-error { color: #ff7a7a; font-weight: bold; }
+    .gc-kind-unhandled { color: #ffb45e; }
+
+    .gc-live { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+    @@media (max-width: 900px) { .gc-live { grid-template-columns: 1fr; } }
+    .gc-card { border: 1px solid #222222; border-radius: 0.75rem; background: #161616; padding: 0.5rem 0.75rem; }
+    .gc-card h2 { margin: 0 0 0.4rem; font-size: 0.85rem; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.1em; }
+    .gc-card table { width: 100%; border-collapse: collapse; font-family: Consolas, monospace; font-size: 0.78rem; color: #ddd; }
+    .gc-card td, .gc-card th { padding: 0.15rem 0.4rem; border-bottom: 1px solid #1d1d1d; text-align: left; white-space: nowrap; }
+    .gc-on { color: #8be98b; font-weight: bold; }
+    .gc-off { color: #888; }
+    .gc-muted { color: #777; font-size: 0.75rem; }
+    .gc-inspectable { cursor: pointer; }
+    .gc-inspectable:hover { background: #1b2636; }
+    .gc-detail-panel {
+        display: none;
+        position: fixed;
+        z-index: 50;
+        inset: 8vh 8vw;
+        overflow-y: auto;
+        padding: 1rem;
+        border: 1px solid #333;
+        border-radius: 0.75rem;
+        background: #111;
+        color: #ededed;
+        box-shadow: 0 1rem 4rem #000;
+    }
+    .gc-detail-panel.open { display: block; }
+    .gc-detail-header { display: flex; justify-content: space-between; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+    .gc-detail-header h2 { margin: 0; font-size: 1rem; }
+    .gc-detail-close { background: #161616; border: 1px solid #333; border-radius: 0.4rem; color: #ededed; padding: 0.25rem 0.6rem; cursor: pointer; }
+    .gc-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem 1rem; margin-bottom: 1rem; }
+    .gc-detail-field { color: #aaa; font-size: 0.75rem; }
+    .gc-detail-field strong { display: block; color: #ededed; font-size: 0.85rem; word-break: break-word; }
+    .gc-detail-section { margin-top: 1rem; }
+    .gc-detail-section h3 { color: #3b82f6; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .gc-detail-pre { max-height: 28vh; overflow: auto; padding: 0.75rem; border: 1px solid #222; border-radius: 0.4rem; background: #0a0a0a; white-space: pre-wrap; word-break: break-word; font: 0.75rem Consolas, monospace; }
+    .gc-detail-pair { background: transparent; border: 0; color: #7ec8ff; cursor: pointer; padding: 0; font: inherit; text-decoration: underline; }
+</style>
+
+<div class="space-y-4">
+<h1 class="text-2xl font-black text-white">Game Coordinator Console</h1>
+<p class="text-sm text-skynet-muted">Live GC traffic: incoming (<span class="gc-kind-in">in</span>), responses (<span class="gc-kind-out">out</span>), async pushes (<span class="gc-kind-push">push</span>), script logs (<span class="gc-kind-log">log</span>), unhandled (<span class="gc-kind-unhandled">unhandled</span>) and errors (<span class="gc-kind-error">error</span>).</p>
+
+<div class="gc-live">
+    <div class="gc-card">
+        <h2>Game Sessions <span id="liveSummary" class="gc-muted"></span></h2>
+        <table>
+            <thead><tr><th>SteamID</th><th>Persona</th><th>Status</th><th>Seen</th></tr></thead>
+            <tbody id="liveSessions"><tr><td colspan="4" class="gc-muted">Loading...</td></tr></tbody>
+        </table>
+    </div>
+    <div class="gc-card">
+        <h2>Active Matches</h2>
+        <div id="liveMatches" class="gc-muted">Loading...</div>
+    </div>
+</div>
+
+<div class="gc-console-toolbar">
+    <label><input type="checkbox" id="gcPause" /> Pause</label>
+    <label><input type="checkbox" id="gcAutoScroll" checked /> Auto-scroll</label>
+    <input type="text" id="gcFilter" placeholder="Filter (kind, msg, steamid, text)..." />
+    <button type="button" id="gcClear">Clear</button>
+    <span id="gcStatus"></span>
+</div>
+
+<div class="gc-console-wrap" id="gcWrap">
+    <table class="gc-console-table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Kind</th>
+                <th>App</th>
+                <th>SteamID</th>
+                <th>Msg</th>
+                <th>Bytes</th>
+                <th>Detail</th>
+            </tr>
+        </thead>
+        <tbody id="gcRows"></tbody>
+    </table>
+</div>
+
+<div id="gcDetailPanel" class="gc-detail-panel" role="dialog" aria-modal="true" aria-labelledby="gcDetailTitle">
+    <div class="gc-detail-header">
+        <h2 id="gcDetailTitle">GC message detail</h2>
+        <button type="button" class="gc-detail-close" id="gcDetailClose">Close</button>
+    </div>
+    <div id="gcDetailContent"></div>
+</div>
+
+<script>
+    (function () {
+        var since = 0;
+        var maxRows = 1000;
+        var entries = [];
+        var rows = document.getElementById("gcRows");
+        var wrap = document.getElementById("gcWrap");
+        var pause = document.getElementById("gcPause");
+        var autoScroll = document.getElementById("gcAutoScroll");
+        var filter = document.getElementById("gcFilter");
+        var status = document.getElementById("gcStatus");
+        var detailPanel = document.getElementById("gcDetailPanel");
+        var detailContent = document.getElementById("gcDetailContent");
+
+        document.getElementById("gcClear").addEventListener("click", function () {
+            rows.innerHTML = "";
+            entries = [];
+            closeDetail();
+        });
+
+        document.getElementById("gcDetailClose").addEventListener("click", closeDetail);
+        detailPanel.addEventListener("click", function (event) {
+            if (event.target === detailPanel) closeDetail();
+        });
+
+        filter.addEventListener("input", applyFilter);
+
+        function applyFilter() {
+            var term = filter.value.toLowerCase();
+            for (var i = 0; i < rows.children.length; i++) {
+                var row = rows.children[i];
+                row.style.display = !term || row.textContent.toLowerCase().indexOf(term) >= 0 ? "" : "none";
+            }
+        }
+
+        function addEntry(entry) {
+            entries.push(entry);
+            var tr = document.createElement("tr");
+            tr.dataset.seq = entry.seq;
+            if (entry.kind === "in" || entry.kind === "out" || entry.kind === "push") {
+                tr.className = "gc-inspectable";
+                tr.addEventListener("click", function () { showDetail(entry); });
+            }
+            var time = new Date(entry.timestampUtc).toLocaleTimeString();
+            var cells = [
+                time,
+                entry.kind,
+                entry.appId || "",
+                entry.steamId || "",
+                entry.messageType || "",
+                entry.size || "",
+                entry.detail || ""
+            ];
+
+            for (var i = 0; i < cells.length; i++) {
+                var td = document.createElement("td");
+                td.textContent = cells[i];
+                if (i === 1) {
+                    td.className = "gc-kind-" + entry.kind;
+                }
+                if (i === 6) {
+                    td.className += " gc-detail";
+                }
+                tr.appendChild(td);
+            }
+
+            var term = filter.value.toLowerCase();
+            if (term && tr.textContent.toLowerCase().indexOf(term) < 0) {
+                tr.style.display = "none";
+            }
+
+            rows.appendChild(tr);
+            while (rows.children.length > maxRows) {
+                rows.removeChild(rows.firstChild);
+                entries.shift();
+            }
+        }
+
+        function closeDetail() {
+            detailPanel.classList.remove("open");
+            detailContent.innerHTML = "";
+        }
+
+        function addField(container, label, value) {
+            var field = document.createElement("div");
+            field.className = "gc-detail-field";
+            field.textContent = label;
+            var strong = document.createElement("strong");
+            strong.textContent = value == null || value === "" ? "—" : value;
+            field.appendChild(strong);
+            container.appendChild(field);
+        }
+
+        function base64ToHex(value) {
+            if (!value) return "(empty payload)";
+            try {
+                var bytes = atob(value);
+                var lines = [];
+                for (var offset = 0; offset < bytes.length; offset += 16) {
+                    var hex = [];
+                    for (var i = offset; i < Math.min(offset + 16, bytes.length); i++) {
+                        hex.push(bytes.charCodeAt(i).toString(16).padStart(2, "0"));
+                    }
+                    lines.push(offset.toString(16).padStart(8, "0") + "  " + hex.join(" "));
+                }
+                return lines.join("\n");
+            } catch (_) {
+                return "(invalid base64 payload)";
+            }
+        }
+
+        function pairedEntry(entry) {
+            var jobId = entry.kind === "in" ? entry.sourceJobId : entry.targetJobId;
+            if (jobId == null) return null;
+            for (var i = 0; i < entries.length; i++) {
+                var candidate = entries[i];
+                if (candidate.seq === entry.seq) continue;
+                if (entry.kind === "in" && (candidate.kind === "out" || candidate.kind === "push") && candidate.targetJobId === jobId) return candidate;
+                if ((entry.kind === "out" || entry.kind === "push") && candidate.kind === "in" && candidate.sourceJobId === jobId) return candidate;
+            }
+            return null;
+        }
+
+        function showDetail(entry) {
+            fetch("?handler=EntryDetail&seq=" + encodeURIComponent(entry.seq), { credentials: "same-origin" })
+                .then(function (response) {
+                    if (response.status === 404) throw new Error("This entry is no longer in the trace buffer.");
+                    if (!response.ok) throw new Error("HTTP " + response.status);
+                    return response.json();
+                })
+                .then(function (data) {
+                    detailContent.innerHTML = "";
+                    var grid = document.createElement("div");
+                    grid.className = "gc-detail-grid";
+                    addField(grid, "Kind", data.kind);
+                    addField(grid, "AppId", data.appId);
+                    addField(grid, "SteamId", data.steamId);
+                    addField(grid, "MessageType", data.messageType);
+                    addField(grid, "SourceJobId", data.sourceJobId);
+                    addField(grid, "TargetJobId", data.targetJobId);
+                    addField(grid, "TimestampUtc", data.timestampUtc);
+                    addField(grid, "Size", data.size);
+                    addField(grid, "Protobuf", data.protobuf);
+                    detailContent.appendChild(grid);
+
+                    var payloadSection = document.createElement("div");
+                    payloadSection.className = "gc-detail-section";
+                    payloadSection.innerHTML = "<h3>Raw payload (base64)</h3>";
+                    var payload = document.createElement("pre");
+                    payload.className = "gc-detail-pre";
+                    payload.textContent = data.payloadBase64 || "(empty payload)";
+                    payloadSection.appendChild(payload);
+                    var hexTitle = document.createElement("h3");
+                    hexTitle.textContent = "Hex dump";
+                    payloadSection.appendChild(hexTitle);
+                    var hex = document.createElement("pre");
+                    hex.className = "gc-detail-pre";
+                    hex.textContent = base64ToHex(data.payloadBase64);
+                    payloadSection.appendChild(hex);
+                    detailContent.appendChild(payloadSection);
+
+                    var decodedSection = document.createElement("div");
+                    decodedSection.className = "gc-detail-section";
+                    decodedSection.innerHTML = "<h3>Decoded fields</h3>";
+                    if (data.decodedJson) {
+                        var decoded = document.createElement("pre");
+                        decoded.className = "gc-detail-pre";
+                        try { decoded.textContent = JSON.stringify(JSON.parse(data.decodedJson), null, 2); }
+                        catch (_) { decoded.textContent = data.decodedJson; }
+                        decodedSection.appendChild(decoded);
+                    } else {
+                        var reason = document.createElement("div");
+                        reason.className = "gc-muted";
+                        reason.textContent = data.decodeError || "No decode mapping for this MessageType.";
+                        decodedSection.appendChild(reason);
+                    }
+                    detailContent.appendChild(decodedSection);
+
+                    var pair = pairedEntry(data);
+                    if (pair) {
+                        var pairSection = document.createElement("div");
+                        pairSection.className = "gc-detail-section";
+                        pairSection.innerHTML = "<h3>Paired response/request</h3>";
+                        var pairButton = document.createElement("button");
+                        pairButton.className = "gc-detail-pair";
+                        pairButton.textContent = "Seq " + pair.seq + " · " + pair.kind + " · MessageType " + pair.messageType;
+                        pairButton.addEventListener("click", function () { showDetail(pair); });
+                        pairSection.appendChild(pairButton);
+                        detailContent.appendChild(pairSection);
+                    }
+
+                    detailPanel.classList.add("open");
+                })
+                .catch(function (error) {
+                    detailContent.textContent = error.message;
+                    detailPanel.classList.add("open");
+                });
+        }
+
+        function poll() {
+            if (pause.checked) {
+                setTimeout(poll, 1000);
+                return;
+            }
+
+            fetch("?handler=Entries&since=" + since, { credentials: "same-origin" })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error("HTTP " + response.status);
+                    }
+                    return response.json();
+                })
+                .then(function (data) {
+                    var entries = data.entries || [];
+                    for (var i = 0; i < entries.length; i++) {
+                        addEntry(entries[i]);
+                        if (entries[i].seq > since) {
+                            since = entries[i].seq;
+                        }
+                    }
+
+                    if (entries.length > 0 && autoScroll.checked) {
+                        wrap.scrollTop = wrap.scrollHeight;
+                    }
+
+                    status.textContent = "";
+                    setTimeout(poll, 1000);
+                })
+                .catch(function (err) {
+                    status.textContent = "No connection (" + err.message + ")";
+                    setTimeout(poll, 3000);
+                });
+        }
+
+        poll();
+    })();
+
+    (function () {
+        var sessionsBody = document.getElementById("liveSessions");
+        var summary = document.getElementById("liveSummary");
+        var matchesBox = document.getElementById("liveMatches");
+
+        function esc(s) { return String(s == null ? "" : s).replace(/[&<>]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+
+        function renderSessions(data) {
+            summary.textContent = "(" + data.liveGameSessions + " live, " + data.sweepUsersOnline + " online, window " + data.presenceTimeoutSeconds + "s)";
+            if (!data.sessions.length) {
+                sessionsBody.innerHTML = '<tr><td colspan="4" class="gc-muted">No active game sessions</td></tr>';
+                return;
+            }
+            sessionsBody.innerHTML = data.sessions.map(function (s) {
+                var st = s.online ? '<span class="gc-on">online</span>' : '<span class="gc-off">offline</span>';
+                return "<tr><td>" + esc(s.steamId) + "</td><td>" + esc(s.persona) + "</td><td>" + st + "</td><td>" + s.lastSeenSeconds + "s</td></tr>";
+            }).join("");
+        }
+
+        function renderMatches(data) {
+            if (!data.matches.length) {
+                matchesBox.innerHTML = '<span class="gc-muted">No recent matches</span>';
+                return;
+            }
+            matchesBox.innerHTML = data.matches.map(function (m) {
+                var players = m.players.map(function (p) {
+                    return "<tr><td>" + esc(p.persona || p.steamId) + "</td><td>team " + p.team + "</td><td>hero " + p.heroId + "</td><td>" + p.equippedItems + " items</td></tr>";
+                }).join("");
+                return '<div style="margin-bottom:0.5rem;">' +
+                    '<div class="gc-muted">lobby ' + esc(m.lobbyId) + ' &middot; match ' + esc(m.matchId) + ' &middot; state ' + m.state + '/gs ' + m.gameState + ' &middot; ' + m.updatedSecondsAgo + 's ago</div>' +
+                    '<table>' + players + '</table></div>';
+            }).join("");
+        }
+
+        function pollLive() {
+            fetch("?handler=LiveState", { credentials: "same-origin" })
+                .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+                .then(function (data) { renderSessions(data); renderMatches(data); setTimeout(pollLive, 3000); })
+                .catch(function () { setTimeout(pollLive, 5000); });
+        }
+
+        pollLive();
+    })();
+</script>
+</div>

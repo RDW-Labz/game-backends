@@ -1,0 +1,76 @@
+﻿using System;
+using SKYNET.Steamworks;
+
+using SteamAPICall_t = System.UInt64;
+using PartyBeaconID_t = System.UInt64;
+
+namespace SKYNET.Steamworks.Interfaces
+{
+    [InterfaceLayout("SteamParties002",
+        "GetNumActiveBeacons", "GetBeaconByIndex", "GetBeaconDetails", "JoinParty",
+        "GetNumAvailableBeaconLocations", "GetAvailableBeaconLocations", "CreateBeacon", "OnReservationCompleted",
+        "CancelReservation", "ChangeNumOpenSlots", "DestroyBeacon", "GetBeaconLocationData")]
+    public class SteamParties002 : ISteamInterface
+    {
+        public UInt32 GetNumActiveBeacons(IntPtr _)
+        {
+            return SteamEmulator.SteamParties.GetNumActiveBeacons();
+        }
+
+        public PartyBeaconID_t GetBeaconByIndex(IntPtr _, UInt32 unIndex)
+        {
+            return SteamEmulator.SteamParties.GetBeaconByIndex(unIndex);
+        }
+
+        public bool GetBeaconDetails(IntPtr _, PartyBeaconID_t ulBeaconID, IntPtr pSteamIDBeaconOwner, IntPtr pLocation, IntPtr pchMetadata, int cchMetadata)
+        {
+            return SteamEmulator.SteamParties.GetBeaconDetails(ulBeaconID, pSteamIDBeaconOwner, pLocation, pchMetadata, cchMetadata);
+        }
+
+        public SteamAPICall_t JoinParty(IntPtr _, PartyBeaconID_t ulBeaconID)
+        {
+            return SteamEmulator.SteamParties.JoinParty(ulBeaconID);
+        }
+
+
+        public bool GetNumAvailableBeaconLocations(IntPtr _, IntPtr puNumLocations)
+        {
+            return SteamEmulator.SteamParties.GetNumAvailableBeaconLocations(puNumLocations);
+        }
+
+        public bool GetAvailableBeaconLocations(IntPtr _, IntPtr pLocationList, UInt32 uMaxNumLocations)
+        {
+            return SteamEmulator.SteamParties.GetAvailableBeaconLocations(pLocationList, uMaxNumLocations);
+        }
+
+        public SteamAPICall_t CreateBeacon(IntPtr _, UInt32 unOpenSlots, IntPtr pBeaconLocation, string pchConnectString, string pchMetadata)
+        {
+            return SteamEmulator.SteamParties.CreateBeacon(unOpenSlots, pBeaconLocation, pchConnectString, pchMetadata);
+        }
+
+        public void OnReservationCompleted(IntPtr _, PartyBeaconID_t ulBeacon, ulong steamIDUser)
+        {
+            SteamEmulator.SteamParties.OnReservationCompleted(ulBeacon, steamIDUser);
+        }
+
+        public void CancelReservation(IntPtr _, PartyBeaconID_t ulBeacon, ulong steamIDUser)
+        {
+            SteamEmulator.SteamParties.CancelReservation(ulBeacon, steamIDUser);
+        }
+
+        public SteamAPICall_t ChangeNumOpenSlots(IntPtr _, PartyBeaconID_t ulBeacon, UInt32 unOpenSlots)
+        {
+            return SteamEmulator.SteamParties.ChangeNumOpenSlots(ulBeacon, unOpenSlots);
+        }
+
+        public bool DestroyBeacon(IntPtr _, PartyBeaconID_t ulBeacon)
+        {
+            return SteamEmulator.SteamParties.DestroyBeacon(ulBeacon);
+        }
+
+        public bool GetBeaconLocationData(IntPtr _, SteamPartyBeaconLocation_t BeaconLocation, int eData, IntPtr pchDataStringOut, int cchDataStringOut)
+        {
+            return SteamEmulator.SteamParties.GetBeaconLocationData(BeaconLocation, eData, pchDataStringOut, cchDataStringOut);
+        }
+    }
+}

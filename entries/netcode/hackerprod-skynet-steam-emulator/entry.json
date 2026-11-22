@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T20:36:05Z",
+ "category": "netcode",
+ "commit": "158f2c91e8d3",
+ "delivery": "vendored",
+ "description": "Hackerprod/-SKYNET-Steam-Emulator \u2014 LAN-first Steam emulator: Steamworks API client emulation + server-side Game Coordinator (Dota 2 lobbies/parties/match stats), for full offline multiplayer without Steam or internet connection",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "-SKYNET-Steam-Emulator",
+ "size_bytes": 12061123,
+ "slug": "hackerprod-skynet-steam-emulator",
+ "source": "github-search:game lobby server stars:>15",
+ "stars": 144,
+ "system": "LAN-first Steam emulator: Steamworks API client emulation + server-side Game Coordinator (Dota 2 lobbies/parties/match stats), for full offline multiplayer with",
+ "upstream": "https://github.com/Hackerprod/-SKYNET-Steam-Emulator",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,22 @@
+{
+    "GCClientWelcome": 4004,
+    "GCGameServerWelcome": 4005,
+    "GCClientHello": 4006,
+    "GCGameServerHello": 4007,
+    "GCClientConnectionStatus": 4009,
+    "RetrieveMatchVote": 7154,
+    "RetrieveMatchVoteResponse": 7155,
+    "ClientToGCSocialMatchPostCommentRequest": 8025,
+    "GCToClientSocialMatchPostCommentResponse": 8026,
+    "ClientToGCSocialMatchDetailsRequest": 8027,
+    "GCToClientSocialMatchDetailsResponse": 8028,
+    "GCGetHeroTimedStats": 8252,
+    "GCGetHeroTimedStatsResponse": 8253,
+    "SOSingleObject": 21,
+    "SOSingleObjectDestroyed": 23,
+    "SOCacheSubscribed": 24,
+    "SOCacheUnsubscribed": 25,
+    "SOCacheUpdated": 26,
+    "SOCacheSubscriptionRefresh": 28,
+    "SOCacheSubscribedUpToDate": 29
+}

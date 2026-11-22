@@ -1,0 +1,18 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="space-y-6">
+    <div class="rounded-2xl border border-red-500/30 bg-red-500/10 p-8">
+        <h1 class="text-3xl font-black text-white">Error</h1>
+        <p class="mt-2 text-skynet-muted">An error occurred while processing your request.</p>
+        @if (Model.ShowRequestId)
+        {
+            <div class="mt-4 rounded-xl border border-skynet-border bg-skynet-black p-4">
+                <p class="text-sm text-skynet-muted">Request ID: <code class="text-skynet-accent font-mono">@Model.RequestId</code></p>
+            </div>
+        }
+    </div>
+</div>

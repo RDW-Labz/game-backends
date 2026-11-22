@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.9.12105.275 stable
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "steam_api", "steam_api.csproj", "{F296C00A-53B4-4A0D-977B-F1946B1ACCE2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F296C00A-53B4-4A0D-977B-F1946B1ACCE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F296C00A-53B4-4A0D-977B-F1946B1ACCE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F296C00A-53B4-4A0D-977B-F1946B1ACCE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F296C00A-53B4-4A0D-977B-F1946B1ACCE2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {076785B9-4FBF-42AE-9BF9-41268905CCEF}
+	EndGlobalSection
+EndGlobal

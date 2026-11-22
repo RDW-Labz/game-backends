@@ -1,0 +1,422 @@
+using SKYNET.Helpers;
+using SKYNET.Steamworks;
+using System;
+using System.Collections.Generic;
+
+
+namespace SKYNET.Steamworks.Interfaces
+{
+    [InterfaceLayout("SteamMatchMaking001",
+        "GetFavoriteGameCount", "GetFavoriteGame__V001", "AddFavoriteGame__V001", "RemoveFavoriteGame__V001",
+        "GetFavoriteGame2", "AddFavoriteGame2", "RemoveFavoriteGame2", "RequestLobbyList__V001",
+        "GetLobbyByIndex", "CreateLobby__V001", "JoinLobbyOld", "LeaveLobby",
+        "InviteUserToLobby", "GetNumLobbyMembers", "GetLobbyMemberByIndex", "GetLobbyData",
+        "SetLobbyData", "GetLobbyMemberData", "SetLobbyMemberData_OLD", "SendLobbyChatMsg",
+        "GetLobbyChatEntry", "RequestLobbyData")]
+    [InterfaceLayout("SteamMatchMaking002",
+        "GetFavoriteGameCount", "GetFavoriteGame", "AddFavoriteGame", "RemoveFavoriteGame",
+        "RequestLobbyListOld", "GetLobbyByIndex", "CreateLobby__V002", "JoinLobbyOld",
+        "LeaveLobby", "InviteUserToLobby", "GetNumLobbyMembers", "GetLobbyMemberByIndex",
+        "GetLobbyData", "SetLobbyData", "GetLobbyMemberData", "SetLobbyMemberData",
+        "SendLobbyChatMsg", "GetLobbyChatEntry", "RequestLobbyData", "SetLobbyGameServer")]
+    [InterfaceLayout("SteamMatchMaking003",
+        "GetFavoriteGameCount", "GetFavoriteGame", "AddFavoriteGame", "RemoveFavoriteGame",
+        "RequestLobbyListOld", "AddRequestLobbyListFilter", "AddRequestLobbyListNumericalFilter", "AddRequestLobbyListSlotsAvailableFilter",
+        "GetLobbyByIndex", "CreateLobby__V002", "JoinLobbyOld", "LeaveLobby",
+        "InviteUserToLobby", "GetNumLobbyMembers", "GetLobbyMemberByIndex", "GetLobbyData",
+        "SetLobbyData", "GetLobbyMemberData", "SetLobbyMemberData", "SendLobbyChatMsg",
+        "GetLobbyChatEntry", "RequestLobbyData", "SetLobbyGameServer", "GetLobbyGameServer",
+        "SetLobbyMemberLimit", "GetLobbyMemberLimit", "SetLobbyVoiceEnabled", "RequestFriendsLobbies")]
+    [InterfaceLayout("SteamMatchMaking004",
+        "GetFavoriteGameCount", "GetFavoriteGame", "AddFavoriteGame", "RemoveFavoriteGame",
+        "RequestLobbyListOld", "AddRequestLobbyListFilter", "AddRequestLobbyListNumericalFilter", "AddRequestLobbyListSlotsAvailableFilter",
+        "GetLobbyByIndex", "CreateLobby__V002", "JoinLobbyOld", "LeaveLobby",
+        "InviteUserToLobby", "GetNumLobbyMembers", "GetLobbyMemberByIndex", "GetLobbyData",
+        "SetLobbyData", "GetLobbyMemberData", "SetLobbyMemberData", "SendLobbyChatMsg",
+        "GetLobbyChatEntry", "RequestLobbyData", "SetLobbyGameServer", "GetLobbyGameServer",
+        "SetLobbyMemberLimit", "GetLobbyMemberLimit", "RequestFriendsLobbies")]
+    [InterfaceLayout("SteamMatchMaking005",
+        "GetFavoriteGameCount", "GetFavoriteGame", "AddFavoriteGame", "RemoveFavoriteGame",
+        "RequestLobbyListOld", "AddRequestLobbyListFilter", "AddRequestLobbyListNumericalFilter", "AddRequestLobbyListSlotsAvailableFilter",
+        "AddRequestLobbyListNearValueFilter", "GetLobbyByIndex", "CreateLobbyOld", "JoinLobbyOld",
+        "LeaveLobby", "InviteUserToLobby", "GetNumLobbyMembers", "GetLobbyMemberByIndex",
+        "GetLobbyData", "SetLobbyData", "GetLobbyMemberData", "SetLobbyMemberData",
+        "SendLobbyChatMsg", "GetLobbyChatEntry", "RequestLobbyData", "SetLobbyGameServer",
+        "GetLobbyGameServer", "SetLobbyMemberLimit", "GetLobbyMemberLimit", "RequestFriendsLobbies",
+        "SetLobbyType", "GetLobbyOwner", "GetLobbyDistance")]
+    [InterfaceLayout("SteamMatchMaking006",
+        "GetFavoriteGameCount", "GetFavoriteGame", "AddFavoriteGame", "RemoveFavoriteGame",
+        "RequestLobbyList", "AddRequestLobbyListFilter", "AddRequestLobbyListNumericalFilter", "AddRequestLobbyListNearValueFilter",
+        "GetLobbyByIndex", "CreateLobby__V006", "JoinLobby", "LeaveLobby",
+        "InviteUserToLobby", "GetNumLobbyMembers", "GetLobbyMemberByIndex", "GetLobbyData",
+        "SetLobbyData", "GetLobbyMemberData", "SetLobbyMemberData", "SendLobbyChatMsg",
+        "GetLobbyChatEntry", "RequestLobbyData", "SetLobbyGameServer", "GetLobbyGameServer",
+        "SetLobbyMemberLimit", "GetLobbyMemberLimit", "SetLobbyType", "GetLobbyOwner")]
+    [InterfaceLayout("SteamMatchMaking007",
+        "GetFavoriteGameCount", "GetFavoriteGame", "AddFavoriteGame", "RemoveFavoriteGame",
+        "RequestLobbyList", "AddRequestLobbyListStringFilter", "AddRequestLobbyListNumericalFilter", "AddRequestLobbyListNearValueFilter",
+        "AddRequestLobbyListFilterSlotsAvailable", "GetLobbyByIndex", "CreateLobby", "JoinLobby",
+        "LeaveLobby", "InviteUserToLobby", "GetNumLobbyMembers", "GetLobbyMemberByIndex",
+        "GetLobbyData", "SetLobbyData", "GetLobbyDataCount", "GetLobbyDataByIndex",
+        "DeleteLobbyData", "GetLobbyMemberData", "SetLobbyMemberData", "SendLobbyChatMsg",
+        "GetLobbyChatEntry", "RequestLobbyData", "SetLobbyGameServer", "GetLobbyGameServer",
+        "SetLobbyMemberLimit", "GetLobbyMemberLimit", "SetLobbyType", "SetLobbyJoinable",
+        "GetLobbyOwner", "SetLobbyOwner")]
+    [InterfaceLayout("SteamMatchMaking008",
+        "GetFavoriteGameCount", "GetFavoriteGame", "AddFavoriteGame", "RemoveFavoriteGame",
+        "RequestLobbyList", "AddRequestLobbyListStringFilter", "AddRequestLobbyListNumericalFilter", "AddRequestLobbyListNearValueFilter",
+        "AddRequestLobbyListFilterSlotsAvailable", "AddRequestLobbyListDistanceFilter", "AddRequestLobbyListResultCountFilter", "GetLobbyByIndex",
+        "CreateLobby", "JoinLobby", "LeaveLobby", "InviteUserToLobby",
+        "GetNumLobbyMembers", "GetLobbyMemberByIndex", "GetLobbyData", "SetLobbyData",
+        "GetLobbyDataCount", "GetLobbyDataByIndex", "DeleteLobbyData", "GetLobbyMemberData",
+        "SetLobbyMemberData", "SendLobbyChatMsg", "GetLobbyChatEntry", "RequestLobbyData",
+        "SetLobbyGameServer", "GetLobbyGameServer", "SetLobbyMemberLimit", "GetLobbyMemberLimit",
+        "SetLobbyType", "SetLobbyJoinable", "GetLobbyOwner", "SetLobbyOwner")]
+    [InterfaceLayout("SteamMatchMaking009",
+        "GetFavoriteGameCount", "GetFavoriteGame", "AddFavoriteGame", "RemoveFavoriteGame",
+        "RequestLobbyList", "AddRequestLobbyListStringFilter", "AddRequestLobbyListNumericalFilter", "AddRequestLobbyListNearValueFilter",
+        "AddRequestLobbyListFilterSlotsAvailable", "AddRequestLobbyListDistanceFilter", "AddRequestLobbyListResultCountFilter", "AddRequestLobbyListCompatibleMembersFilter",
+        "GetLobbyByIndex", "CreateLobby", "JoinLobby", "LeaveLobby",
+        "InviteUserToLobby", "GetNumLobbyMembers", "GetLobbyMemberByIndex", "GetLobbyData",
+        "SetLobbyData", "GetLobbyDataCount", "GetLobbyDataByIndex", "DeleteLobbyData",
+        "GetLobbyMemberData", "SetLobbyMemberData", "SendLobbyChatMsg", "GetLobbyChatEntry",
+        "RequestLobbyData", "SetLobbyGameServer", "GetLobbyGameServer", "SetLobbyMemberLimit",
+        "GetLobbyMemberLimit", "SetLobbyType", "SetLobbyJoinable", "GetLobbyOwner",
+        "SetLobbyOwner", "SetLinkedLobby")]
+    public class SteamMatchmakingInterface : ISteamInterface
+    {
+        public int GetFavoriteGameCount(IntPtr _)
+        {
+            return SteamEmulator.SteamMatchmaking.GetFavoriteGameCount();
+        }
+
+        public bool GetFavoriteGame(IntPtr _, int iGame, IntPtr pnAppID, IntPtr pnIP, IntPtr pnConnPort, IntPtr pnQueryPort, IntPtr punFlags, IntPtr pRTime32LastPlayedOnServer)
+        {
+            return SteamEmulator.SteamMatchmaking.GetFavoriteGame(iGame, pnAppID, pnIP, pnConnPort, pnQueryPort, punFlags, pRTime32LastPlayedOnServer);
+        }
+
+        public int AddFavoriteGame(IntPtr _, uint nAppID, uint nIP, ushort nConnPort, ushort nQueryPort, uint unFlags, uint rTime32LastPlayedOnServer)
+        {
+            return SteamEmulator.SteamMatchmaking.AddFavoriteGame(nAppID, nIP, nConnPort, nQueryPort, unFlags, rTime32LastPlayedOnServer);
+        }
+
+        public bool RemoveFavoriteGame(IntPtr _, uint nAppID, uint nIP, ushort nConnPort, ushort nQueryPort, uint unFlags)
+        {
+            return SteamEmulator.SteamMatchmaking.RemoveFavoriteGame(nAppID, nIP, nConnPort, nQueryPort, unFlags);
+        }
+
+        public ulong RequestLobbyList(IntPtr _)
+        {
+            return SteamEmulator.SteamMatchmaking.RequestLobbyList();
+        }
+
+        public void AddRequestLobbyListStringFilter(IntPtr _, string pchKeyToMatch, string pchValueToMatch, int eComparisonType)
+        {
+            SteamEmulator.SteamMatchmaking.AddRequestLobbyListStringFilter(pchKeyToMatch, pchValueToMatch, eComparisonType);
+        }
+
+        public void AddRequestLobbyListNumericalFilter(IntPtr _, string pchKeyToMatch, int nValueToMatch, int eComparisonType)
+        {
+            SteamEmulator.SteamMatchmaking.AddRequestLobbyListNumericalFilter(pchKeyToMatch, nValueToMatch, eComparisonType);
+        }
+
+        public void AddRequestLobbyListNearValueFilter(IntPtr _, string pchKeyToMatch, int nValueToBeCloseTo)
+        {
+            SteamEmulator.SteamMatchmaking.AddRequestLobbyListNearValueFilter(pchKeyToMatch, nValueToBeCloseTo);
+        }
+
+        public void AddRequestLobbyListFilterSlotsAvailable(IntPtr _, int nSlotsAvailable)
+        {
+            SteamEmulator.SteamMatchmaking.AddRequestLobbyListFilterSlotsAvailable(nSlotsAvailable);
+        }
+
+        public IntPtr GetLobbyByIndex(IntPtr _, IntPtr ret, int iLobby)
+        {
+            return NativeSteamId.Write(ret, SteamEmulator.SteamMatchmaking.GetLobbyByIndex(iLobby));
+        }
+
+        public ulong CreateLobby(IntPtr _, int eLobbyType, int cMaxMembers)
+        {
+            return SteamEmulator.SteamMatchmaking.CreateLobby(eLobbyType, cMaxMembers);
+        }
+
+        public ulong JoinLobby(IntPtr _, ulong steamIDLobby)
+        {
+            return SteamEmulator.SteamMatchmaking.JoinLobby(steamIDLobby);
+        }
+
+        public void LeaveLobby(IntPtr _, ulong steamIDLobby)
+        {
+            SteamEmulator.SteamMatchmaking.LeaveLobby(steamIDLobby);
+        }
+
+        public bool InviteUserToLobby(IntPtr _, ulong steamIDLobby, ulong steamIDInvitee)
+        {
+            return SteamEmulator.SteamMatchmaking.InviteUserToLobby(steamIDLobby, steamIDInvitee);
+        }
+
+        public int GetNumLobbyMembers(IntPtr _, ulong steamIDLobby)
+        {
+            return SteamEmulator.SteamMatchmaking.GetNumLobbyMembers(steamIDLobby);
+        }
+
+        public IntPtr GetLobbyMemberByIndex(IntPtr _, IntPtr ret, ulong steamIDLobby, int iMember)
+        {
+            return NativeSteamId.Write(ret, SteamEmulator.SteamMatchmaking.GetLobbyMemberByIndex(steamIDLobby, iMember));
+        }
+
+        public IntPtr GetLobbyData(IntPtr _, ulong steamIDLobby, string pchKey)
+        {
+            return NativeStringCache.ToUtf8Ptr(SteamEmulator.SteamMatchmaking.GetLobbyData(steamIDLobby, pchKey));
+        }
+
+        public bool SetLobbyData(IntPtr _, ulong steamIDLobby, string pchKey, string pchValue)
+        {
+            return SteamEmulator.SteamMatchmaking.SetLobbyData(steamIDLobby, pchKey, pchValue);
+        }
+
+        public int GetLobbyDataCount(IntPtr _, ulong steamIDLobby)
+        {
+            return SteamEmulator.SteamMatchmaking.GetLobbyDataCount(steamIDLobby);
+        }
+
+        public bool GetLobbyDataByIndex(IntPtr _, ulong steamIDLobby, int iLobbyData, IntPtr pchKey, int cchKeyBufferSize, IntPtr pchValue, int cchValueBufferSize)
+        {
+            return SteamEmulator.SteamMatchmaking.GetLobbyDataByIndex(steamIDLobby, iLobbyData, pchKey, cchKeyBufferSize, pchValue, cchValueBufferSize);
+        }
+
+        public bool DeleteLobbyData(IntPtr _, ulong steamIDLobby, string pchKey)
+        {
+            return SteamEmulator.SteamMatchmaking.DeleteLobbyData(steamIDLobby, pchKey);
+        }
+
+        public IntPtr GetLobbyMemberData(IntPtr _, ulong steamIDLobby, ulong steamIDUser, string pchKey)
+        {
+            return NativeStringCache.ToUtf8Ptr(SteamEmulator.SteamMatchmaking.GetLobbyMemberData(steamIDLobby, steamIDUser, pchKey));
+        }
+
+        public void SetLobbyMemberData(IntPtr _, ulong steamIDLobby, string pchKey, string pchValue)
+        {
+            SteamEmulator.SteamMatchmaking.SetLobbyMemberData(steamIDLobby, pchKey, pchValue);
+        }
+
+        public bool SendLobbyChatMsg(IntPtr _, ulong steamIDLobby, IntPtr pvMsgBody, int cubMsgBody)
+        {
+            return SteamEmulator.SteamMatchmaking.SendLobbyChatMsg(steamIDLobby, pvMsgBody, cubMsgBody);
+        }
+
+        public int GetLobbyChatEntry(IntPtr _, ulong steamIDLobby, int iChatID, IntPtr pSteamIDUser, IntPtr pvData, int cubData, IntPtr peChatEntryType)
+        {
+            return SteamEmulator.SteamMatchmaking.GetLobbyChatEntry(steamIDLobby, iChatID, pSteamIDUser, pvData, cubData, peChatEntryType);
+        }
+
+        public bool RequestLobbyData(IntPtr _, ulong steamIDLobby)
+        {
+            return SteamEmulator.SteamMatchmaking.RequestLobbyData(steamIDLobby);
+        }
+
+        public void SetLobbyGameServer(IntPtr _, ulong steamIDLobby, uint unGameServerIP, ushort unGameServerPort, ulong steamIDGameServer)
+        {
+            SteamEmulator.SteamMatchmaking.SetLobbyGameServer(steamIDLobby, unGameServerIP, unGameServerPort, steamIDGameServer);
+        }
+
+        public bool GetLobbyGameServer(IntPtr _, ulong steamIDLobby, IntPtr punGameServerIP, IntPtr punGameServerPort, IntPtr psteamIDGameServer)
+        {
+            return SteamEmulator.SteamMatchmaking.GetLobbyGameServer(steamIDLobby, punGameServerIP, punGameServerPort, psteamIDGameServer);
+        }
+
+        public bool SetLobbyMemberLimit(IntPtr _, ulong steamIDLobby, int cMaxMembers)
+        {
+            return SteamEmulator.SteamMatchmaking.SetLobbyMemberLimit(steamIDLobby, cMaxMembers);
+        }
+
+        public int GetLobbyMemberLimit(IntPtr _, ulong steamIDLobby)
+        {
+            return SteamEmulator.SteamMatchmaking.GetLobbyMemberLimit(steamIDLobby);
+        }
+
+        public bool SetLobbyType(IntPtr _, ulong steamIDLobby, int eLobbyType)
+        {
+            return SteamEmulator.SteamMatchmaking.SetLobbyType(steamIDLobby, eLobbyType);
+        }
+
+        public bool SetLobbyJoinable(IntPtr _, ulong steamIDLobby, bool bLobbyJoinable)
+        {
+            return SteamEmulator.SteamMatchmaking.SetLobbyJoinable(steamIDLobby, bLobbyJoinable);
+        }
+
+        public IntPtr GetLobbyOwner(IntPtr _, IntPtr ret, ulong steamIDLobby)
+        {
+            return NativeSteamId.Write(ret, SteamEmulator.SteamMatchmaking.GetLobbyOwner(steamIDLobby));
+        }
+
+        public bool SetLobbyOwner(IntPtr _, ulong steamIDLobby, ulong steamIDNewOwner)
+        {
+            return SteamEmulator.SteamMatchmaking.SetLobbyOwner(steamIDLobby, steamIDNewOwner);
+        }
+
+        public void AddRequestLobbyListDistanceFilter(IntPtr _, int eLobbyDistanceFilter)
+        {
+            SteamEmulator.SteamMatchmaking.AddRequestLobbyListDistanceFilter(eLobbyDistanceFilter);
+        }
+
+        public void AddRequestLobbyListResultCountFilter(IntPtr _, int cMaxResults)
+        {
+            SteamEmulator.SteamMatchmaking.AddRequestLobbyListResultCountFilter(cMaxResults);
+        }
+
+        public void AddRequestLobbyListCompatibleMembersFilter(IntPtr _, ulong steamIDLobby)
+        {
+            SteamEmulator.SteamMatchmaking.AddRequestLobbyListCompatibleMembersFilter(steamIDLobby);
+        }
+
+        public bool SetLinkedLobby(IntPtr _, ulong steamIDLobby, ulong steamIDLobbyDependent)
+        {
+            return SteamEmulator.SteamMatchmaking.SetLinkedLobby(steamIDLobby, steamIDLobbyDependent);
+        }
+
+        private const int LegacyLobbyMaxMembers = 250;
+        private const int LobbyTypePrivate = 0;
+        private const int LobbyTypePublic = 2;
+        private const int LobbyComparisonEqual = 0;
+
+        private static readonly HashSet<string> _stubsLogged = new HashSet<string>();
+
+        private static void LogStub(string method)
+        {
+            lock (_stubsLogged)
+            {
+                if (!_stubsLogged.Add(method))
+                {
+                    return;
+                }
+            }
+
+            SteamEmulator.Write("SteamMatchmaking", method + " not implemented");
+        }
+
+        public void RequestLobbyListOld(IntPtr _)
+        {
+            SteamEmulator.SteamMatchmaking.RequestLobbyListLegacy();
+        }
+
+        public void CreateLobby__V002(IntPtr _, bool bPrivate)
+        {
+            SteamEmulator.SteamMatchmaking.CreateLobbyLegacy(bPrivate ? LobbyTypePrivate : LobbyTypePublic, LegacyLobbyMaxMembers);
+        }
+
+        public void CreateLobbyOld(IntPtr _, int eLobbyType)
+        {
+            SteamEmulator.SteamMatchmaking.CreateLobbyLegacy(eLobbyType, LegacyLobbyMaxMembers);
+        }
+
+        public ulong CreateLobby__V006(IntPtr _, int eLobbyType)
+        {
+            return SteamEmulator.SteamMatchmaking.CreateLobby(eLobbyType, LegacyLobbyMaxMembers);
+        }
+
+        public void JoinLobbyOld(IntPtr _, ulong steamIDLobby)
+        {
+            SteamEmulator.SteamMatchmaking.JoinLobbyLegacy(steamIDLobby);
+        }
+
+        public void AddRequestLobbyListFilter(IntPtr _, string pchKeyToMatch, string pchValueToMatch)
+        {
+            SteamEmulator.SteamMatchmaking.AddRequestLobbyListStringFilter(pchKeyToMatch, pchValueToMatch, LobbyComparisonEqual);
+        }
+
+        public void AddRequestLobbyListSlotsAvailableFilter(IntPtr _)
+        {
+            SteamEmulator.SteamMatchmaking.AddRequestLobbyListFilterSlotsAvailable(1);
+        }
+
+        public void SetLobbyVoiceEnabled(IntPtr _, ulong steamIDLobby, bool bVoiceEnabled)
+        {
+            LogStub("SetLobbyVoiceEnabled");
+        }
+
+        public bool RequestFriendsLobbies(IntPtr _)
+        {
+            LogStub("RequestFriendsLobbies");
+            return false;
+        }
+
+        public float GetLobbyDistance(IntPtr _, ulong steamIDLobby)
+        {
+            LogStub("GetLobbyDistance");
+            return 0f;
+        }
+
+        private const int MatchMakingKeyValueFieldSize = 256;
+        private const uint MaxLegacyFilters = 256;
+
+        public bool GetFavoriteGame__V001(IntPtr _, int iGame, IntPtr pnAppID, IntPtr pnIP, IntPtr pnConnPort, IntPtr punFlags, IntPtr pRTime32LastPlayedOnServer)
+        {
+            return SteamEmulator.SteamMatchmaking.GetFavoriteGame(iGame, pnAppID, pnIP, pnConnPort, IntPtr.Zero, punFlags, pRTime32LastPlayedOnServer);
+        }
+
+        public int AddFavoriteGame__V001(IntPtr _, uint nAppID, uint nIP, ushort nConnPort, uint unFlags, uint rTime32LastPlayedOnServer)
+        {
+            return SteamEmulator.SteamMatchmaking.AddFavoriteGame(nAppID, nIP, nConnPort, 0, unFlags, rTime32LastPlayedOnServer);
+        }
+
+        public bool RemoveFavoriteGame__V001(IntPtr _, uint nAppID, uint nIP, ushort nConnPort, uint unFlags)
+        {
+            return SteamEmulator.SteamMatchmaking.RemoveFavoriteGame(nAppID, nIP, nConnPort, 0, unFlags);
+        }
+
+        public bool GetFavoriteGame2(IntPtr _, int iGame, IntPtr pnAppID, IntPtr pnIP, IntPtr pnConnPort, IntPtr pnQueryPort, IntPtr punFlags, IntPtr pRTime32LastPlayedOnServer)
+        {
+            return SteamEmulator.SteamMatchmaking.GetFavoriteGame(iGame, pnAppID, pnIP, pnConnPort, pnQueryPort, punFlags, pRTime32LastPlayedOnServer);
+        }
+
+        public int AddFavoriteGame2(IntPtr _, uint nAppID, uint nIP, ushort nConnPort, ushort nQueryPort, uint unFlags, uint rTime32LastPlayedOnServer)
+        {
+            return SteamEmulator.SteamMatchmaking.AddFavoriteGame(nAppID, nIP, nConnPort, nQueryPort, unFlags, rTime32LastPlayedOnServer);
+        }
+
+        public bool RemoveFavoriteGame2(IntPtr _, uint nAppID, uint nIP, ushort nConnPort, ushort nQueryPort, uint unFlags)
+        {
+            return SteamEmulator.SteamMatchmaking.RemoveFavoriteGame(nAppID, nIP, nConnPort, nQueryPort, unFlags);
+        }
+
+        public void RequestLobbyList__V001(IntPtr _, ulong ulGameID, IntPtr pFilters, uint nFilters)
+        {
+            if (pFilters != IntPtr.Zero)
+            {
+                uint count = Math.Min(nFilters, MaxLegacyFilters);
+                for (uint i = 0; i < count; i++)
+                {
+                    IntPtr entry = IntPtr.Add(pFilters, checked((int)i * MatchMakingKeyValueFieldSize * 2));
+                    string key = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(entry, MatchMakingKeyValueFieldSize);
+                    string value = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(IntPtr.Add(entry, MatchMakingKeyValueFieldSize), MatchMakingKeyValueFieldSize);
+                    SteamEmulator.SteamMatchmaking.AddRequestLobbyListStringFilter(TrimAtNull(key), TrimAtNull(value), LobbyComparisonEqual);
+                }
+            }
+
+            SteamEmulator.SteamMatchmaking.RequestLobbyListLegacy();
+        }
+
+        public void CreateLobby__V001(IntPtr _, ulong ulGameID, bool bPrivate)
+        {
+            SteamEmulator.SteamMatchmaking.CreateLobbyLegacy(bPrivate ? LobbyTypePrivate : LobbyTypePublic, LegacyLobbyMaxMembers);
+        }
+
+        public bool SetLobbyMemberData_OLD(IntPtr _, ulong steamIDLobby, string pchKey, string pchValue)
+        {
+            SteamEmulator.SteamMatchmaking.SetLobbyMemberData(steamIDLobby, pchKey, pchValue);
+            return true;
+        }
+
+        private static string TrimAtNull(string value)
+        {
+            if (value == null)
+            {
+                return string.Empty;
+            }
+
+            int end = value.IndexOf('\0');
+            return end < 0 ? value : value.Substring(0, end);
+        }
+    }
+}

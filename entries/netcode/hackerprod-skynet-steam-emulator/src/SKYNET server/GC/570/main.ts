@@ -1,0 +1,40 @@
+import { gc } from "./framework/gc";
+import { registerAuth } from "./modules/Auth";
+import { registerChat } from "./modules/Chat";
+import { registerCoaching } from "./modules/Coaching";
+import { registerEconomy } from "./modules/Economy";
+import { registerGuilds } from "./modules/Guilds";
+import { registerItems } from "./modules/Items";
+import { registerLobby } from "./modules/Lobby";
+import { registerMatch } from "./modules/Match";
+import { registerParty } from "./modules/Party";
+import { registerProfile } from "./modules/Profile";
+import { registerSocial } from "./modules/Social";
+import { registerStats } from "./modules/Stats";
+import { registerTeams } from "./modules/Teams";
+import { registerWeekendTourney } from "./modules/WeekendTourney";
+
+const lobby = registerLobby();
+const party = registerParty();
+
+registerAuth();
+registerItems();
+registerStats();
+registerProfile();
+registerEconomy();
+registerMatch();
+registerTeams();
+registerGuilds();
+registerCoaching();
+registerSocial();
+registerChat();
+registerWeekendTourney();
+
+export async function handle(): Promise<boolean> {
+    return await gc.dispatch();
+}
+
+export function tick(): void {
+    lobby.tick();
+    party.tick();
+}

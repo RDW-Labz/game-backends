@@ -1,0 +1,29 @@
+@startuml
+
+title Room Matcing Error Sequence
+
+participant MatchingServer
+participant GameHost
+participant Client1
+
+...
+
+==Start Game==
+
+GameHost -> MatchingServer : update_room_status_notice[open room, player count]
+activate MatchingServer
+MatchingServer -> MatchingServer : update room information
+deactivate MatchingServer
+
+GameHost<->Client1 : send and receive game data
+destroy GameHost
+
+note right of GameHost: Disconnected
+
+...
+
+note right of MatchingServer: timeout
+
+MatchingServer -> MatchingServer : remove room
+
+@enduml

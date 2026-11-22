@@ -1,0 +1,125 @@
+@page "/users"
+@model SKYNET_server.Pages.Users.IndexModel
+
+<div class="space-y-6">
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    var isError = Model.StatusMessage.StartsWith("Could not") || Model.StatusMessage.StartsWith("Invalid");
+    <script>showToast(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.StatusMessage)), '@(isError ? "error" : "success")')</script>
+}
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight">User Network</h1>
+            <p class="text-skynet-muted mt-1">Browse players connected to the SKYNET network.</p>
+        </div>
+        <div class="relative w-full md:w-80">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-skynet-muted text-xs"></i>
+            <input type="text" id="userSearch" class="w-full pl-10 pr-4 py-3 rounded-lg text-sm bg-skynet-black border border-skynet-border transition-all focus:border-skynet-accent focus:outline-none focus:shadow-[0_0_0_1px_rgba(59,130,246,0.2)] text-gray-200" placeholder="Search by username or ID..." oninput="filterUsers(this.value)">
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @if (Model.Users.Count == 0)
+        {
+            <div class="bg-skynet-card border border-skynet-border rounded-xl p-6">
+                <h2 class="font-bold">No other users</h2>
+                <p class="text-[10px] text-skynet-muted uppercase tracking-widest mt-1">Register another web account or launch Dota with a different AccountID.</p>
+            </div>
+        }
+        @foreach (var user in Model.Users)
+        {
+            var isOnline = user.PersonaState != 0;
+            var isFriend = user.FriendRelationship == 3;
+            var isIncoming = user.FriendRelationship == 2;
+            var isOutgoing = user.FriendRelationship == 4;
+
+            string statusDotColor = isOnline ? "bg-green-500" : "bg-gray-500";
+            string statusText = isOnline ? "Online" : "Offline";
+
+            <article data-user="@user.PersonaName @user.SteamId @user.AccountId" class="bg-skynet-card border border-skynet-border rounded-xl p-6 flex items-center space-x-4 hover:bg-skynet-dark transition group">
+                <div class="relative">
+                    <img src="/api/users/@user.SteamId/avatar" alt="" class="w-14 h-14 rounded-xl border border-skynet-border object-cover bg-skynet-black" />
+                    <div class="absolute -bottom-1 -right-1 w-3 h-3 @statusDotColor rounded-full border-2 border-skynet-card"></div>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <a asp-page="/Users/Profile" asp-route-steamId="@user.SteamId" class="font-bold truncate block hover:text-skynet-accent transition">@user.PersonaName</a>
+                    <p class="text-[10px] text-skynet-muted uppercase tracking-widest">@statusText</p>
+                </div>
+                @if (isFriend)
+                {
+                    <form method="post" asp-page-handler="Remove" OnComplete="onUsersRelation">
+                        <input type="hidden" name="TargetSteamId" value="@user.SteamId" />
+                        <button type="submit" class="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center hover:bg-red-500 hover:text-white transition" title="Remove friend">
+                            <i class="fas fa-user-minus text-xs"></i>
+                        </button>
+                    </form>
+                }
+                else if (isIncoming)
+                {
+                    <form method="post" asp-page-handler="Accept" OnComplete="onUsersRelation">
+                        <input type="hidden" name="TargetSteamId" value="@user.SteamId" />
+                        <button type="submit" class="w-10 h-10 rounded-lg bg-skynet-accent/10 text-skynet-accent border border-skynet-accent/20 flex items-center justify-center hover:bg-skynet-accent hover:text-white transition" title="Accept request">
+                            <i class="fas fa-user-check text-xs"></i>
+                        </button>
+                    </form>
+                }
+                else if (isOutgoing)
+                {
+                    <div class="w-10 h-10 rounded-lg bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 flex items-center justify-center" title="Request sent">
+                        <i class="fas fa-clock text-xs"></i>
+                    </div>
+                }
+                else
+                {
+                    <form method="post" asp-page-handler="Request" OnComplete="onUsersRelation">
+                        <input type="hidden" name="TargetSteamId" value="@user.SteamId" />
+                        <button type="submit" class="w-10 h-10 rounded-lg bg-skynet-accent/10 text-skynet-accent border border-skynet-accent/20 flex items-center justify-center hover:bg-skynet-accent hover:text-white transition" title="Add friend">
+                            <i class="fas fa-user-plus text-xs"></i>
+                        </button>
+                    </form>
+                }
+            </article>
+        }
+    </div>
+</div>
+
+<script>
+    function filterUsers(term) {
+        var t = term.toLowerCase();
+        var cards = document.querySelectorAll('article[data-user]');
+        cards.forEach(function(card) {
+            var name = (card.getAttribute('data-user') || '').toLowerCase();
+            card.style.display = !t || name.indexOf(t) >= 0 ? '' : 'none';
+        });
+    }
+    function onUsersRelation(data, form) {
+        if (data && data.success) {
+            showToast(data.message, 'success');
+            var article = form.closest('article[data-user]');
+            if (!article) return;
+            var targetId = form.querySelector('input[name="TargetSteamId"]');
+            if (!targetId) return;
+            var steamId = targetId.value;
+            var action = form.getAttribute('asp-page-handler') || '';
+            var pageUrl = window.location.pathname;
+            if (action === 'Request') {
+                form.outerHTML =
+                    '<div class="w-10 h-10 rounded-lg bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 flex items-center justify-center" title="Request sent">' +
+                    '<i class="fas fa-clock text-xs"></i></div>';
+            } else if (action === 'Accept') {
+                form.outerHTML =
+                    '<form method="post" action="' + pageUrl + '?handler=Remove"><input type="hidden" name="TargetSteamId" value="' + steamId + '" />' +
+                    '<button type="submit" class="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center hover:bg-red-500 hover:text-white transition" title="Remove friend">' +
+                    '<i class="fas fa-user-minus text-xs"></i></button></form>';
+            } else if (action === 'Remove') {
+                form.outerHTML =
+                    '<form method="post" action="' + pageUrl + '?handler=Request"><input type="hidden" name="TargetSteamId" value="' + steamId + '" />' +
+                    '<button type="submit" class="w-10 h-10 rounded-lg bg-skynet-accent/10 text-skynet-accent border border-skynet-accent/20 flex items-center justify-center hover:bg-skynet-accent hover:text-white transition" title="Add friend">' +
+                    '<i class="fas fa-user-plus text-xs"></i></button></form>';
+            }
+        } else {
+            showToast(data && data.message ? data.message : 'Action failed.', 'error');
+        }
+    }
+</script>

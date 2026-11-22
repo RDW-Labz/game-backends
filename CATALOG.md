@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 20:20 UTC · 398 entries · 130 vendored, 268 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 20:36 UTC · 404 entries · 132 vendored, 272 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-22 20:20 UTC · 398 entries · 130 vendored, 268 reference-on
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
-| [netcode](#netcode) — Networking / netcode | 99 | 30 | 69 |
+| [netcode](#netcode) — Networking / netcode | 105 | 32 | 73 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
@@ -280,10 +280,11 @@ _Generated 2026-11-22 20:20 UTC · 398 entries · 130 vendored, 268 reference-on
 
 ## netcode
 
-**Networking / netcode** — 99 entries
+**Networking / netcode** — 105 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
+| [-SKYNET-Steam-Emulator](entries/netcode/hackerprod-skynet-steam-emulator/README.md) | LAN-first Steam emulator: Steamworks API client emulation + server-side Game Coordinator (Dota 2 lobbies/parties/match stats), for full offline multiplayer with | c# | MIT | vendored | [Hackerprod/-SKYNET-Steam-Emulator](https://github.com/Hackerprod/-SKYNET-Steam-Emulator) @ `158f2c91e8d3` |
 | [agones](entries/netcode/agones-dev-agones/README.md) | Dedicated Game Server Hosting and Scaling for Multiplayer Games on Kubernetes | go | Apache-2.0 | reference | [agones-dev/agones](https://github.com/agones-dev/agones) @ `a71420b2b34a` |
 | [ancientbeast — multiplayer](entries/netcode/ancientbeast-multiplayer/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [arcomage-hd](entries/netcode/arcomage-arcomage-hd/README.md) | Web-based, free and open source, remastered 3D clone of 3DO/NWC's 2000 card game Arcomage. 16 languages. Desktop or mobile Android iOS. Online or offline PWA. A | typescript | MIT | reference | [arcomage/arcomage-hd](https://github.com/arcomage/arcomage-hd) @ `2025-11-15 (branch tip at catalogue time)` |
@@ -311,6 +312,7 @@ _Generated 2026-11-22 20:20 UTC · 398 entries · 130 vendored, 268 reference-on
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
 | [GameFrameX.Server](entries/netcode/gameframex-gameframex-server/README.md) | High-performance game server framework built on C# .NET 10.0 with Actor Model architecture, hot-update support, multi-protocol networking (TCP/WebSocket/HTTP/KC | c# | Apache-2.0 | reference | [GameFrameX/GameFrameX.Server](https://github.com/GameFrameX/GameFrameX.Server) @ `2026-11-20 (branch tip at catalogue time)` |
+| [gamend](entries/netcode/appsinacup-gamend/README.md) | Open source Elixir game server with authentication, users, lobbies, groups, parties, friends, chat, notifications, achievements, leaderboards, tournaments, paym | elixir | MIT | reference | [appsinacup/gamend](https://github.com/appsinacup/gamend) @ `2026-11-22 (branch tip at catalogue time)` |
 | [GameNetworkingSockets](entries/netcode/gamenetworkingsockets/README.md) | reliable/unreliable encrypted message transport (Valve) | c++ | BSD-3-Clause | vendored | [ValveSoftware/GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) @ `d534c19aa760` |
 | [GameProject3](entries/netcode/ylmbtm-gameproject3/README.md) | 游戏服务器框架，网络层分别用SocketAPI、Boost Asio、Libuv三种方式实现， 框架内使用共享内存，无锁队列，对象池，内存池来提高服务器性能。还包含一个不断完善的Unity 3D客户端，客户端含大量完整资源，坐骑，宠物，伙伴，装备, 这些均己实现上阵和穿戴, 并可进入副本战斗，多人玩法也己实现, 持续开 | c++ | unknown | reference | [ylmbtm/GameProject3](https://github.com/ylmbtm/GameProject3) @ `2025-04-28 (branch tip at catalogue time)` |
 | [GekkoNet](entries/netcode/heatxd-gekkonet/README.md) | P2P Rollback Game Networking SDK | c++ | BSD-2-Clause | vendored | [HeatXD/GekkoNet](https://github.com/HeatXD/GekkoNet) @ `45dac7e50fd3` |
@@ -332,6 +334,7 @@ _Generated 2026-11-22 20:20 UTC · 398 entries · 130 vendored, 268 reference-on
 | [lgsl](entries/netcode/tltneon-lgsl/README.md) | LGSL v6.2.1/v7.0.0 for PHP 5.4-8.5+ (Live Game Server List): online status for CS2 (Source Query), Discord, FiveM, Rust, SA:MP, GMOD, Minecraft, Teamspeak and 2 | php | GPL-3.0 | reference | [tltneon/lgsl](https://github.com/tltneon/lgsl) @ `2026-09-11 (branch tip at catalogue time)` |
 | [librg](entries/netcode/zpl-c-librg/README.md) | 🚀  Making multi-player gamedev simpler since 2017 | c | BSD-3-Clause | vendored | [zpl-c/librg](https://github.com/zpl-c/librg) @ `106c658620d8` |
 | [lightyear](entries/netcode/cbournhonesque-lightyear/README.md) | A networking library to make multiplayer games for the Bevy game engine | rust | Apache-2.0 | reference | [cBournhonesque/lightyear](https://github.com/cBournhonesque/lightyear) @ `2026-11-05 (branch tip at catalogue time)` |
+| [lobby](entries/netcode/flackr-lobby/README.md) | A multiplayer game lobby and JS library for discovering game servers and making connections. | typescript | Apache-2.0 | reference | [flackr/lobby](https://github.com/flackr/lobby) @ `2026-02-28 (branch tip at catalogue time)` |
 | [LockStepECS](entries/netcode/elk-milu-lockstepecs/README.md) | A ESC FrameWork，using lockstep in networking | c# | unknown | reference | [ELK-milu/LockStepECS](https://github.com/ELK-milu/LockStepECS) @ `2025-01-03 (branch tip at catalogue time)` |
 | [megaglest — network](entries/netcode/megaglest-network/README.md) | network transport, protocol, replication or server loop | h | none | reference | [megaglest/megaglest-source.git](https://github.com/megaglest/megaglest-source.git) @ `4ab09c6` |
 | [Mindustry — net](entries/netcode/mindustry-net/README.md) | network transport, protocol, replication or server loop | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
@@ -347,6 +350,7 @@ _Generated 2026-11-22 20:20 UTC · 398 entries · 130 vendored, 268 reference-on
 | [online-chess](entries/netcode/hulang1024-online-chess/README.md) | Chess game website client and server. | typescript | MIT | vendored | [hulang1024/online-chess](https://github.com/hulang1024/online-chess) @ `6e4db9c01034` |
 | [open_spiel — session](entries/netcode/open-spiel-session/README.md) | network transport, protocol, replication or server loop | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
 | [OpenArena — server](entries/netcode/openarena-server/README.md) | network transport, protocol, replication or server loop | c | GPL-2.0 | reference | [OpenArena/engine.git](https://github.com/OpenArena/engine.git) @ `fd74931` |
+| [OpenATBP](entries/netcode/openatbp-openatbp/README.md) | Open source lobby and game server for Adventure Time Battle Party | java | MIT | reference | [OpenATBP/OpenATBP](https://github.com/OpenATBP/OpenATBP) @ `2026-07-12 (branch tip at catalogue time)` |
 | [openclonk — network](entries/netcode/openclonk-network/README.md) | network transport, protocol, replication or server loop | c | ISC | vendored | [openclonk/openclonk.git](https://github.com/openclonk/openclonk.git) @ `36de799` |
 | [openclonk — network](entries/netcode/openclonk-src-network/README.md) | Clonk-style network sync and control queues | c++ | ISC | vendored | [openclonk/openclonk.git](https://github.com/openclonk/openclonk.git) @ `36de799544af` |
 | [OpenDungeons — network](entries/netcode/opendungeons-network/README.md) | network transport, protocol, replication or server loop | cpp | GPL-3.0 | reference | [OpenDungeons/OpenDungeons.git](https://github.com/OpenDungeons/OpenDungeons.git) @ `a9efe49` |
@@ -354,6 +358,7 @@ _Generated 2026-11-22 20:20 UTC · 398 entries · 130 vendored, 268 reference-on
 | [openmu — Network](entries/netcode/openmu-src-network/README.md) | MMO network protocol, packet handlers, encryption | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
 | [openrct2 — network](entries/netcode/openrct2-network/README.md) | network transport, protocol, replication or server loop | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
 | [phasocketonline](entries/netcode/vezwork-phasocketonline/README.md) | A server and client for a multiplayer browser game. Server in node.js, game in javascript with phaser and using socket.io for websockets. | html | MIT | reference | [vezwork/phasocketonline](https://github.com/vezwork/phasocketonline) @ `2017-12-17 (branch tip at catalogue time)` |
+| [PlanetaMatchMaker](entries/netcode/cdecpgl-planetamatchmaker/README.md) | A very simple and light match making system for P2P online game. Server binary for linux and windows, and client library for C# including Unity are provided. | c# | MIT | vendored | [CdecPGL/PlanetaMatchMaker](https://github.com/CdecPGL/PlanetaMatchMaker) @ `4f6556aad484` |
 | [PlayHex — server](entries/netcode/playhex-server/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [playhex/playhex](https://github.com/playhex/playhex) @ `5750af4` |
 | [psn-api](entries/netcode/achievements-app-psn-api/README.md) | A JavaScript library that lets you get trophy, user, and game data from the PlayStation Network. | typescript | MIT | reference | [achievements-app/psn-api](https://github.com/achievements-app/psn-api) @ `2026-08-15 (branch tip at catalogue time)` |
 | [quilkin](entries/netcode/embarkstudios-quilkin/README.md) | Quilkin is a non-transparent UDP proxy specifically designed for use with large scale multiplayer dedicated game server deployments, to ensure security, access  | rust | Apache-2.0 | reference | [EmbarkStudios/quilkin](https://github.com/EmbarkStudios/quilkin) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -362,6 +367,7 @@ _Generated 2026-11-22 20:20 UTC · 398 entries · 130 vendored, 268 reference-on
 | [Rollback-Networking-Shooter](entries/netcode/thefiftguy-rollback-networking-shooter/README.md) | My Honours project's UE5 project files. I aim to use GGPO, Bullet3 Physics, and Unreal Engine 5 to create a FPS game demo that uses Rollback Netcode. | c++ | unknown | reference | [TheFiftGuy/Rollback-Networking-Shooter](https://github.com/TheFiftGuy/Rollback-Networking-Shooter) @ `2024-03-27 (branch tip at catalogue time)` |
 | [Scandium_RTS](entries/netcode/eamonnmr-scandium-rts/README.md) | Networked Java RTS | java | unknown | reference | [EamonnMR/Scandium_RTS](https://github.com/EamonnMR/Scandium_RTS) @ `2017-02-15 (branch tip at catalogue time)` |
 | [Segs](entries/netcode/segs-segs/README.md) | :muscle: SEGS - Super Entity Game Server | c++ | BSD-3-Clause | reference | [Segs/Segs](https://github.com/Segs/Segs) @ `73b2ccb9aa5b` |
+| [server](entries/netcode/faforever-server/README.md) | The servercode for the Forged Alliance Forever lobby | python | GPL-3.0 | reference | [FAForever/server](https://github.com/FAForever/server) @ `2026-11-02 (branch tip at catalogue time)` |
 | [sf4e](entries/netcode/fabeloper-sf4e/README.md) | Rollback netcode mod for Ultra Street Fighter IV (Steam). Fork of sf4e by Anthony Danducci (adanducci), codeberg.org/adanducci/sf4e | c++ | MIT | vendored | [fabeloper/sf4e](https://github.com/fabeloper/sf4e) @ `e01d5ab3a4ac` |
 | [snowglobe](entries/netcode/hastearcade-snowglobe/README.md) | A JS port of CrystalOrb | typescript | Apache-2.0 | vendored | [hastearcade/snowglobe](https://github.com/hastearcade/snowglobe) @ `3511de2d9379` |
 | [stronghold-protocol — server](entries/netcode/stronghold-protocol-server/README.md) | network transport, protocol, replication or server loop | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |

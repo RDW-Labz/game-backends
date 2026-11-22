@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:36:07Z",
+ "category": "netcode",
+ "commit": "2026-07-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OpenATBP/OpenATBP \u2014 Open source lobby and game server for Adventure Time Battle Party",
+ "language": "java",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "OpenATBP",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "openatbp-openatbp",
+ "source": "github-search:game lobby server stars:>15",
+ "stars": 42,
+ "system": "Open source lobby and game server for Adventure Time Battle Party",
+ "upstream": "https://github.com/OpenATBP/OpenATBP",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
