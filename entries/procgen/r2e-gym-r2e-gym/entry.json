@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:00:10Z",
+ "category": "procgen",
+ "commit": "2025-07-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "R2E-Gym/R2E-Gym \u2014 [COLM 2025] Official repository for R2E-Gym: Procedural Environment Generation and Hybrid Verifiers for Scaling Open-Weights SWE Agents",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "R2E-Gym",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "r2e-gym-r2e-gym",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 353,
+ "system": "[COLM 2025] Official repository for R2E-Gym: Procedural Environment Generation and Hybrid Verifiers for Scaling Open-Weights SWE Agents",
+ "upstream": "https://github.com/R2E-Gym/R2E-Gym",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

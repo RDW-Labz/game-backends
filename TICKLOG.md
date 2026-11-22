@@ -1595,3 +1595,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/dkoerner-houio
   - reference save-state/lasp-space-packet-parser
   - reference procgen/princeton-vl-infinigen
+
+- **2026-11-22 23:00 UTC** — tick 646: +2 screened, +4 reference, 1 skipped, catalogue=458
+  - added procgen/thesoenke-proceduralterrain (MIT, vendored)
+  - added procgen/jeksun97-gdtree3d (MIT, vendored)
+  - reference procgen/eliemichel-bmeshunity
+  - reference procgen/siggig-proceduralmeshdemos
+  - reference procgen/r2e-gym-r2e-gym
+  - reference procgen/weigert-soilmachine

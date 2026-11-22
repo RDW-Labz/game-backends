@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:00:10Z",
+ "category": "procgen",
+ "commit": "2023-12-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "eliemichel/BMeshUnity \u2014 A Unity package to make runtime procedural mesh generation more flexible.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "BMeshUnity",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "eliemichel-bmeshunity",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 379,
+ "system": "A Unity package to make runtime procedural mesh generation more flexible.",
+ "upstream": "https://github.com/eliemichel/BMeshUnity",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

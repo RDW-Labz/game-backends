@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:00:10Z",
+ "category": "procgen",
+ "commit": "2026-10-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SiggiG/ProceduralMeshDemos \u2014 Examples of procedural mesh generation in Unreal Engine.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ProceduralMeshDemos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "siggig-proceduralmeshdemos",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 365,
+ "system": "Examples of procedural mesh generation in Unreal Engine.",
+ "upstream": "https://github.com/SiggiG/ProceduralMeshDemos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T23:00:08Z",
+ "category": "procgen",
+ "commit": "e9ec657b0ee3",
+ "delivery": "vendored",
+ "description": "JekSun97/gdTree3D \u2014 \ud83c\udf33 Plugin for procedural generation of 3D trees of varying complexity for Godot Engine.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "gdTree3D",
+ "size_bytes": 65787,
+ "slug": "jeksun97-gdtree3d",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 391,
+ "system": "\ud83c\udf33 Plugin for procedural generation of 3D trees of varying complexity for Godot Engine.",
+ "upstream": "https://github.com/JekSun97/gdTree3D",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

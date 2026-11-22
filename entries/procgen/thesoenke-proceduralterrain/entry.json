@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T23:00:05Z",
+ "category": "procgen",
+ "commit": "468372292bea",
+ "delivery": "vendored",
+ "description": "theSoenke/ProceduralTerrain \u2014 Procedural voxel terrain generation in Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ProceduralTerrain",
+ "size_bytes": 320168,
+ "slug": "thesoenke-proceduralterrain",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 394,
+ "system": "Procedural voxel terrain generation in Unity",
+ "upstream": "https://github.com/theSoenke/ProceduralTerrain",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
