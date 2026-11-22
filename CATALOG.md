@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 16:52 UTC · 324 entries · 111 vendored, 213 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 17:08 UTC · 330 entries · 113 vendored, 217 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-22 16:52 UTC · 324 entries · 111 vendored, 213 reference-on
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 73 | 22 | 51 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 79 | 24 | 55 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
@@ -174,7 +174,7 @@ _Generated 2026-11-22 16:52 UTC · 324 entries · 111 vendored, 213 reference-on
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 73 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 79 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -186,17 +186,21 @@ _Generated 2026-11-22 16:52 UTC · 324 entries · 111 vendored, 213 reference-on
 | [biomes-game — items](entries/gameplay/biomes-game-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [BlockMaps](entries/gameplay/p-svacha-blockmaps/README.md) | Unity framework to create detailed, 3D, grid-based worlds with real-time navmesh generation and integrated pathfinding, vision and movement systems. | c# | unknown | reference | [p-svacha/BlockMaps](https://github.com/p-svacha/BlockMaps) @ `2025-11-04 (branch tip at catalogue time)` |
 | [BonsaiBehaviourTree](entries/gameplay/luis-l-bonsaibehaviourtree/README.md) | An advanced behaviour tree solution for the Unity game engine | c# | MIT | vendored | [luis-l/BonsaiBehaviourTree](https://github.com/luis-l/BonsaiBehaviourTree) @ `6aa41f3006e9` |
+| [check_redfish](entries/gameplay/bb-ricardo-check-redfish/README.md) | A monitoring/inventory plugin to check components and health status of systems which support Redfish. It will also create an inventory of all components of a sy | python | MIT | reference | [bb-Ricardo/check_redfish](https://github.com/bb-Ricardo/check_redfish) @ `2026-11-16 (branch tip at catalogue time)` |
 | [chess-engine](entries/gameplay/adam-mcdaniel-chess-engine/README.md) | A dependency-free chess engine♟️ library built to run anywhere. | rust | MIT | reference | [adam-mcdaniel/chess-engine](https://github.com/adam-mcdaniel/chess-engine) @ `2024-04-18 (branch tip at catalogue time)` |
 | [DODBT](entries/gameplay/vadimburym-dodbt/README.md) | High-performance Behaviour Tree system inspired by Data-Oriented Design. Zero MonoBehaviour, zero runtime allocations, graph-to-runtime compilation, clean debug | c# | unknown | reference | [vadimburym/DODBT](https://github.com/vadimburym/DODBT) @ `2026-10-21 (branch tip at catalogue time)` |
 | [EvolutionAquerium](entries/gameplay/anuraghazra-evolutionaquerium/README.md) | :fish: :bug: Small Inteli Creatures Based On Steering Behaviours | javascript | MIT | reference | [anuraghazra/EvolutionAquerium](https://github.com/anuraghazra/EvolutionAquerium) @ `2022-02-12 (branch tip at catalogue time)` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
 | [godot-behaviour-tree](entries/gameplay/andrew-wilkes-godot-behaviour-tree/README.md) | Behaviour Tree framework for Godot coded in GDScript. | gdscript | MIT | reference | [andrew-wilkes/godot-behaviour-tree](https://github.com/andrew-wilkes/godot-behaviour-tree) @ `2023-12-13 (branch tip at catalogue time)` |
+| [godot-wyvernbox-inventory](entries/gameplay/don-tnowe-godot-wyvernbox-inventory/README.md) | Action RPG-focused inventory system for Godot 3 and 4 | gdscript | MIT | reference | [don-tnowe/godot-wyvernbox-inventory](https://github.com/don-tnowe/godot-wyvernbox-inventory) @ `2026-01-27 (branch tip at catalogue time)` |
 | [graphhopper](entries/gameplay/graphhopper-graphhopper/README.md) | Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server. | java | Apache-2.0 | vendored | [graphhopper/graphhopper](https://github.com/graphhopper/graphhopper) @ `9df847473a5e` |
 | [homebox](entries/gameplay/sysadminsmedia-homebox/README.md) | A continuation of HomeBox the inventory and organization system built for the Home User | go | AGPL-3.0 | reference | [sysadminsmedia/homebox](https://github.com/sysadminsmedia/homebox) @ `2026-11-21 (branch tip at catalogue time)` |
 | [horror-game-enemy-demo](entries/gameplay/bypell-horror-game-enemy-demo/README.md) | Demo project for a horror game enemy that tries to find and catch the player using 3D navigation and a node-based finite state machine. | gdscript | MIT | reference | [bypell/horror-game-enemy-demo](https://github.com/bypell/horror-game-enemy-demo) @ `2024-12-23 (branch tip at catalogue time)` |
 | [hypersomnia — inventory](entries/gameplay/hypersomnia-inventory/README.md) | combat, AI, pathing, quest or inventory logic | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [inventory-manager](entries/gameplay/rubonnek-inventory-manager/README.md) | A comprehensive inventory management system for the Godot Game Engine | gdscript | unknown | reference | [Rubonnek/inventory-manager](https://github.com/Rubonnek/inventory-manager) @ `2026-06-05 (branch tip at catalogue time)` |
+| [inventory-system-4724](entries/gameplay/coyer1986-inventory-system-4724/README.md) | Project repository created at 2025-10-14 | n/a | unknown | reference | [coyer1986/inventory-system-4724](https://github.com/coyer1986/inventory-system-4724) @ `2025-10-14 (branch tip at catalogue time)` |
+| [inventory-system-7857](entries/gameplay/coyer1986-inventory-system-7857/README.md) | Project repository created at 2025-10-14 | n/a | unknown | reference | [coyer1986/inventory-system-7857](https://github.com/coyer1986/inventory-system-7857) @ `2025-10-14 (branch tip at catalogue time)` |
 | [InventoryManagementSystem](entries/gameplay/sajxraj-inventorymanagementsystem/README.md) | A software developed using Java SE which provides as easy way to track the products, suppliers, customers as well as purchase and sales information. It also rec | java | unknown | reference | [sajxraj/InventoryManagementSystem](https://github.com/sajxraj/InventoryManagementSystem) @ `2024-05-30 (branch tip at catalogue time)` |
 | [InventorySystem](entries/gameplay/benolimits-inventorysystem/README.md) | Easy to use Hotbar and Inventory system for Unreal Engine 5 | n/a | MIT | vendored | [benolimits/InventorySystem](https://github.com/benolimits/InventorySystem) @ `ff320f8f87fb` |
 | [InvenTree](entries/gameplay/inventree-inventree/README.md) | Open Source Inventory Management System | python | MIT | reference | [inventree/InvenTree](https://github.com/inventree/InvenTree) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -232,11 +236,13 @@ _Generated 2026-11-22 16:52 UTC · 324 entries · 111 vendored, 213 reference-on
 | [RogueSharp](entries/gameplay/faronbracy-roguesharp/README.md) | A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired | c# | MIT | reference | [FaronBracy/RogueSharp](https://github.com/FaronBracy/RogueSharp) @ `2024-08-03 (branch tip at catalogue time)` |
 | [SAE-based-representation-engineering](entries/gameplay/yuzhaouoe-sae-based-representation-engineering/README.md) | [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering | python | MIT | reference | [yuzhaouoe/SAE-based-representation-engineering](https://github.com/yuzhaouoe/SAE-based-representation-engineering) @ `2026-06-20 (branch tip at catalogue time)` |
 | [seldom_map_nav](entries/gameplay/seldom-se-seldom-map-nav/README.md) | Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency. | rust | Apache-2.0 | vendored | [Seldom-SE/seldom_map_nav](https://github.com/Seldom-SE/seldom_map_nav) @ `5586a0e6ad1f` |
+| [Spotlight_Storage](entries/gameplay/firemarshmellow-spotlight-storage/README.md) | MIMOSA - short for "Mellow_Labs Inventory Management and Organization System Apparatus". Just like a refreshing mimosa, this system will make your life brighter | javascript | MIT | vendored | [FireMarshmellow/Spotlight_Storage](https://github.com/FireMarshmellow/Spotlight_Storage) @ `4fe8fdafdd45` |
 | [storaji](entries/gameplay/indomaximtechid-storaji/README.md) | :ledger: The light/responsive inventory management system available on Windows, macOS and Linux. | php | MIT | reference | [IndomaximTechID/storaji](https://github.com/IndomaximTechID/storaji) @ `2023-08-09 (branch tip at catalogue time)` |
 | [StoreDown](entries/gameplay/jliscom-storedown/README.md) | An inventory system that is hopefully simple enough for everyone! | javascript | MIT | vendored | [JLiscom/StoreDown](https://github.com/JLiscom/StoreDown) @ `cb2746330760` |
 | [stronghold-protocol — ai](entries/gameplay/stronghold-protocol-ai/README.md) | combat, AI, pathing, quest or inventory logic | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
 | [suroi — items](entries/gameplay/suroi-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
 | [ue4-orders-abilities](entries/gameplay/daedalicentertainment-ue4-orders-abilities/README.md) | Sample code of the talk "Hero AI: Gameplay Abilities Meet Behaviour Trees" at Unreal Fest Europe 2019. | c++ | MIT | reference | [DaedalicEntertainment/ue4-orders-abilities](https://github.com/DaedalicEntertainment/ue4-orders-abilities) @ `2020-10-09 (branch tip at catalogue time)` |
+| [UE5Inventory](entries/gameplay/synock-ue5inventory/README.md) | Replicated inventory system for unreal engine 5 | c++ | MIT | vendored | [Synock/UE5Inventory](https://github.com/Synock/UE5Inventory) @ `63273f096e7c` |
 | [uesvon](entries/gameplay/midgen-uesvon/README.md) | 3D navmesh generation and pathfinding plugin for UnrealEngine | c++ | MIT | vendored | [midgen/uesvon](https://github.com/midgen/uesvon) @ `ca9f9ebf7b14` |
 | [Unity-2D-Context-steering-AI](entries/gameplay/sunnyvalleystudio-unity-2d-context-steering-ai/README.md) | How to implement context steering behaviours for a 2D top down Unity game | c# | MIT | reference | [SunnyValleyStudio/Unity-2D-Context-steering-AI](https://github.com/SunnyValleyStudio/Unity-2D-Context-steering-AI) @ `2023-10-06 (branch tip at catalogue time)` |
 | [Unity-Crafting-System](entries/gameplay/raulmrsouza-unity-crafting-system/README.md) | Crafting System and Building placement for unity3D | c# | MIT | reference | [RaulMrSouza/Unity-Crafting-System](https://github.com/RaulMrSouza/Unity-Crafting-System) @ `2018-10-05 (branch tip at catalogue time)` |

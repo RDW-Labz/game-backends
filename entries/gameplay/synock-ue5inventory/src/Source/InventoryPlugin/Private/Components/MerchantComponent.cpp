@@ -1,0 +1,221 @@
+#include "Components/MerchantComponent.h"
+#include "InventoryPlugin.h"
+#include "GameFramework/Actor.h"
+#include <Net/UnrealNetwork.h>
+
+namespace
+{
+	void MarkMerchantOwnerNetDirty(const UActorComponent* Component)
+	{
+		if (AActor* Owner = Component ? Component->GetOwner() : nullptr)
+		{
+			Owner->FlushNetDormancy();
+			Owner->ForceNetUpdate();
+		}
+	}
+}
+
+// Sets default values for this component's properties
+UMerchantComponent::UMerchantComponent()
+{
+	PrimaryComponentTick.bCanEverTick = false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// Called when the game starts
+void UMerchantComponent::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void UMerchantComponent::OnRep_StaticPool()
+{
+#if WITH_AUTOMATION_WORKER
+	++StaticPoolRepNotifyCountForTests;
+#endif
+	MerchantPoolDispatcher.Broadcast();
+	UE_LOG(LogInventoryPlugin, Verbose, TEXT("OnRep_StaticPool %s"), *GetName());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void UMerchantComponent::OnRep_DynamicPool()
+{
+	MerchantPoolDispatcher.Broadcast();
+	UE_LOG(LogInventoryPlugin, Verbose, TEXT("OnRep_DynamicPool %s"), *GetName());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void UMerchantComponent::RemoveItemID_Implementation(int32 ItemID)
+{
+	if (!GetOwner() || !GetOwner()->HasAuthority())
+	{
+		UE_LOG(LogInventoryPlugin, Warning, TEXT("RemoveItemID called without authority"));
+		return;
+	}
+
+	UE_LOG(LogInventoryPlugin, Verbose, TEXT("RemoveItemID: %d"), ItemID);
+	int32 IDToRemove = -1;
+	int32 LocalID = 0;
+	for (auto& DynamicItem : DynamicMerchantPool)
+	{
+		if (DynamicItem.ItemID == ItemID)
+		{
+			UE_LOG(LogInventoryPlugin, Verbose, TEXT("RemoveItemID: found item %d, quantity %d"), DynamicItem.ItemID, DynamicItem.Quantity);
+			DynamicItem.Quantity--;
+
+			if (DynamicItem.Quantity <= 0)
+				IDToRemove = LocalID;
+
+			break;
+		}
+		LocalID++;
+	}
+
+	if (IDToRemove >= 0)
+	{
+		UE_LOG(LogInventoryPlugin, Verbose, TEXT("RemoveItemID: removing item %d (index %d) — quantity hit 0"), ItemID, IDToRemove);
+		DynamicMerchantPool.RemoveAt(IDToRemove);
+	}
+
+	MarkMerchantOwnerNetDirty(this);
+
+	//Static items are not affected
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+int32 UMerchantComponent::GetItemAtIndex(int32 ListIndex) const
+{
+	if (ListIndex < StaticMerchantPool.Num())
+		return StaticMerchantPool[ListIndex];
+
+	if (ListIndex < StaticMerchantPool.Num() + DynamicMerchantPool.Num())
+		return DynamicMerchantPool[ListIndex - StaticMerchantPool.Num()].ItemID;
+
+	return -1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+int32 UMerchantComponent::GetItemFromStaticPool(int32 ListIndex) const
+{
+	if (ListIndex < StaticMerchantPool.Num())
+		return StaticMerchantPool[ListIndex];
+
+	return -1;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+FMerchantDynamicItemStorage UMerchantComponent::GetItemFromDynamicPool(int32 ListIndex) const
+{
+	if (ListIndex < DynamicMerchantPool.Num())
+		return DynamicMerchantPool[ListIndex];
+
+	return {-1, -1};
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bool UMerchantComponent::HasItem(int32 ItemID) const
+{
+	if (StaticMerchantPool.Contains(ItemID))
+		return true;
+
+	for (auto& ItemData : DynamicMerchantPool)
+	{
+		if (ItemData.ItemID == ItemID)
+			return true;
+	}
+	return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+#if WITH_AUTOMATION_WORKER
+void UMerchantComponent::SetStaticMerchantPoolForTests(const TArray<int32>& Items)
+{
+	StaticMerchantPool = Items;
+}
+#endif
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void UMerchantComponent::InitDynamic_Implementation(const TArray<FMerchantDynamicItemStorage>& MerchantDynamicItems)
+{
+	DynamicMerchantPool = MerchantDynamicItems;
+	//call the refresh broadcast just in case
+	MerchantPoolDispatcher.Broadcast();
+	MarkMerchantOwnerNetDirty(this);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void UMerchantComponent::InitStatic_Implementation(const TArray<int32>& MerchantStaticItems)
+{
+	StaticMerchantPool = MerchantStaticItems;
+
+	//call the refresh broadcast just in case
+	MerchantPoolDispatcher.Broadcast();
+	MarkMerchantOwnerNetDirty(this);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void UMerchantComponent::AddItem_Implementation(int32 ItemID)
+{
+
+	if (!GetOwner() || !GetOwner()->HasAuthority())
+	{
+		UE_LOG(LogInventoryPlugin, Warning, TEXT("AddItem called without authority"));
+		return;
+	}
+
+	// Somehow i will find a less retarded way to do that
+
+	for (const auto& StaticItem : StaticMerchantPool)
+		if (StaticItem == ItemID)
+			return;
+
+	for (auto& DynamicItem : DynamicMerchantPool)
+		if (DynamicItem.ItemID == ItemID)
+		{
+			DynamicItem.Quantity++;
+			return;
+		}
+	if (DynamicMerchantPool.Num() < DynamicPoolLimit)
+		DynamicMerchantPool.Add({ItemID, 1});
+
+	MarkMerchantOwnerNetDirty(this);
+
+	//otherwise drop the request
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void UMerchantComponent::RemoveItem_Implementation(int32 ListIndex)
+{
+	if (ListIndex < DynamicMerchantPool.Num())
+	{
+		if (DynamicMerchantPool[ListIndex].Quantity > 1)
+			DynamicMerchantPool[ListIndex].Quantity--;
+		else
+			DynamicMerchantPool.RemoveAt(ListIndex);
+	}
+
+	MarkMerchantOwnerNetDirty(this);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void UMerchantComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UMerchantComponent, StaticMerchantPool);
+	DOREPLIFETIME(UMerchantComponent, DynamicMerchantPool);
+}

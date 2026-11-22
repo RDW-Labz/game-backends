@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T17:08:04Z",
+ "category": "gameplay",
+ "commit": "63273f096e7c",
+ "delivery": "vendored",
+ "description": "Synock/UE5Inventory \u2014 Replicated inventory system for unreal engine 5",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "UE5Inventory",
+ "size_bytes": 1287984,
+ "slug": "synock-ue5inventory",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 167,
+ "system": "Replicated inventory system for unreal engine 5",
+ "upstream": "https://github.com/Synock/UE5Inventory",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

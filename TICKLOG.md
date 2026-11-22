@@ -1423,3 +1423,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/sadatrafsanjani-point-of-sales
   - reference gameplay/amritmaurya1504-restaurant-pos-system
   - reference gameplay/indomaximtechid-storaji
+
+- **2026-11-22 17:08 UTC** — tick 624: +2 screened, +4 reference, 4 skipped, catalogue=330
+  - added gameplay/firemarshmellow-spotlight-storage (MIT, vendored)
+  - added gameplay/synock-ue5inventory (MIT, vendored)
+  - reference gameplay/don-tnowe-godot-wyvernbox-inventory
+  - reference gameplay/bb-ricardo-check-redfish
+  - reference gameplay/coyer1986-inventory-system-7857
+  - reference gameplay/coyer1986-inventory-system-4724

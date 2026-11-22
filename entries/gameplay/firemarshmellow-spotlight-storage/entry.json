@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T17:08:02Z",
+ "category": "gameplay",
+ "commit": "4fe8fdafdd45",
+ "delivery": "vendored",
+ "description": "FireMarshmellow/Spotlight_Storage \u2014 MIMOSA - short for \"Mellow_Labs Inventory Management and Organization System Apparatus\". Just like a refreshing mimosa, this system will make your life brighter and more organized!",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Spotlight_Storage",
+ "size_bytes": 148247,
+ "slug": "firemarshmellow-spotlight-storage",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 223,
+ "system": "MIMOSA - short for \"Mellow_Labs Inventory Management and Organization System Apparatus\". Just like a refreshing mimosa, this system will make your life brighter",
+ "upstream": "https://github.com/FireMarshmellow/Spotlight_Storage",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

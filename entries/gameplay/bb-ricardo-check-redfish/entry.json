@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:08:06Z",
+ "category": "gameplay",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bb-Ricardo/check_redfish \u2014 A monitoring/inventory plugin to check components and health status of systems which support Redfish. It will also create an inventory of all components of a system.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "check_redfish",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "bb-ricardo-check-redfish",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 152,
+ "system": "A monitoring/inventory plugin to check components and health status of systems which support Redfish. It will also create an inventory of all components of a sy",
+ "upstream": "https://github.com/bb-Ricardo/check_redfish",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

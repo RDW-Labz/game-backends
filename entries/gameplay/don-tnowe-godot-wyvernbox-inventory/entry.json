@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:08:06Z",
+ "category": "gameplay",
+ "commit": "2026-01-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "don-tnowe/godot-wyvernbox-inventory \u2014 Action RPG-focused inventory system for Godot 3 and 4",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-wyvernbox-inventory",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "don-tnowe-godot-wyvernbox-inventory",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 164,
+ "system": "Action RPG-focused inventory system for Godot 3 and 4",
+ "upstream": "https://github.com/don-tnowe/godot-wyvernbox-inventory",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

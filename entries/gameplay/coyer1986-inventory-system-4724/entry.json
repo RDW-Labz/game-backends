@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:08:06Z",
+ "category": "gameplay",
+ "commit": "2025-10-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "coyer1986/inventory-system-4724 \u2014 Project repository created at 2025-10-14",
+ "language": "n/a",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "inventory-system-4724",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "coyer1986-inventory-system-4724",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 151,
+ "system": "Project repository created at 2025-10-14",
+ "upstream": "https://github.com/coyer1986/inventory-system-4724",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
