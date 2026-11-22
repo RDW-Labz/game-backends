@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-22T17:24:10Z",
+ "category": "gameplay",
+ "commit": "5602e3d4c7a0",
+ "delivery": "reference",
+ "description": "sajib1066/inventory-management \u2014 This is a inventory management system",
+ "language": "html",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "inventory-management",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 99715,
+ "slug": "sajib1066-inventory-management",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 113,
+ "system": "This is a inventory management system",
+ "upstream": "https://github.com/sajib1066/inventory-management",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

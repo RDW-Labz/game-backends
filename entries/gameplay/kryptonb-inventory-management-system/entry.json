@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:24:15Z",
+ "category": "gameplay",
+ "commit": "2023-07-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "KryptonB/inventory-management-system \u2014 Simple PHP, MySQL inventory control system",
+ "language": "php",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "inventory-management-system",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kryptonb-inventory-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 106,
+ "system": "Simple PHP, MySQL inventory control system",
+ "upstream": "https://github.com/KryptonB/inventory-management-system",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

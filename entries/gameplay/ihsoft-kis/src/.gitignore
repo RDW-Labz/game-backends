@@ -1,0 +1,6 @@
+/Release
+*.zip
+Source/obj
+Source/bin
+**/*.wrk
+.DS_Store

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:24:15Z",
+ "category": "gameplay",
+ "commit": "2022-10-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "KinjalDas/Inventory-Management-System-Django \u2014 A Inventory management system written in DJango",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Inventory-Management-System-Django",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "kinjaldas-inventory-management-system-django",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 103,
+ "system": "A Inventory management system written in DJango",
+ "upstream": "https://github.com/KinjalDas/Inventory-Management-System-Django",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

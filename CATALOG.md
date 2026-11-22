@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 17:08 UTC · 330 entries · 113 vendored, 217 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 17:24 UTC · 336 entries · 114 vendored, 222 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-22 17:08 UTC · 330 entries · 113 vendored, 217 reference-on
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 79 | 24 | 55 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 85 | 25 | 60 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
@@ -174,7 +174,7 @@ _Generated 2026-11-22 17:08 UTC · 330 entries · 113 vendored, 217 reference-on
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 79 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 85 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -198,6 +198,11 @@ _Generated 2026-11-22 17:08 UTC · 330 entries · 113 vendored, 217 reference-on
 | [homebox](entries/gameplay/sysadminsmedia-homebox/README.md) | A continuation of HomeBox the inventory and organization system built for the Home User | go | AGPL-3.0 | reference | [sysadminsmedia/homebox](https://github.com/sysadminsmedia/homebox) @ `2026-11-21 (branch tip at catalogue time)` |
 | [horror-game-enemy-demo](entries/gameplay/bypell-horror-game-enemy-demo/README.md) | Demo project for a horror game enemy that tries to find and catch the player using 3D navigation and a node-based finite state machine. | gdscript | MIT | reference | [bypell/horror-game-enemy-demo](https://github.com/bypell/horror-game-enemy-demo) @ `2024-12-23 (branch tip at catalogue time)` |
 | [hypersomnia — inventory](entries/gameplay/hypersomnia-inventory/README.md) | combat, AI, pathing, quest or inventory logic | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
+| [inventory-management](entries/gameplay/akashroshan135-inventory-management/README.md) | A simple inventory management system built with Django | html | unknown | reference | [akashroshan135/inventory-management](https://github.com/akashroshan135/inventory-management) @ `2023-07-28 (branch tip at catalogue time)` |
+| [inventory-management](entries/gameplay/sajib1066-inventory-management/README.md) | This is a inventory management system | html | none | reference | [sajib1066/inventory-management](https://github.com/sajib1066/inventory-management) @ `5602e3d4c7a0` |
+| [inventory-management-system](entries/gameplay/kryptonb-inventory-management-system/README.md) | Simple PHP, MySQL inventory control system | php | MIT | reference | [KryptonB/inventory-management-system](https://github.com/KryptonB/inventory-management-system) @ `2023-07-28 (branch tip at catalogue time)` |
+| [Inventory-Management-System-Django](entries/gameplay/kinjaldas-inventory-management-system-django/README.md) | A Inventory management system written in DJango | python | unknown | reference | [KinjalDas/Inventory-Management-System-Django](https://github.com/KinjalDas/Inventory-Management-System-Django) @ `2022-10-31 (branch tip at catalogue time)` |
+| [Inventory-Management-System-MERN-CRUD-App](entries/gameplay/mhy20401-inventory-management-system-mern-crud-app/README.md) | Inventory Management System MERN CRUD App (MERN Stack Project). A simple MERN project that lets the user insert, update, delete & get products from the MongoDB. | javascript | unknown | reference | [mhy20401/Inventory-Management-System-MERN-CRUD-App](https://github.com/mhy20401/Inventory-Management-System-MERN-CRUD-App) @ `2023-07-16 (branch tip at catalogue time)` |
 | [inventory-manager](entries/gameplay/rubonnek-inventory-manager/README.md) | A comprehensive inventory management system for the Godot Game Engine | gdscript | unknown | reference | [Rubonnek/inventory-manager](https://github.com/Rubonnek/inventory-manager) @ `2026-06-05 (branch tip at catalogue time)` |
 | [inventory-system-4724](entries/gameplay/coyer1986-inventory-system-4724/README.md) | Project repository created at 2025-10-14 | n/a | unknown | reference | [coyer1986/inventory-system-4724](https://github.com/coyer1986/inventory-system-4724) @ `2025-10-14 (branch tip at catalogue time)` |
 | [inventory-system-7857](entries/gameplay/coyer1986-inventory-system-7857/README.md) | Project repository created at 2025-10-14 | n/a | unknown | reference | [coyer1986/inventory-system-7857](https://github.com/coyer1986/inventory-system-7857) @ `2025-10-14 (branch tip at catalogue time)` |
@@ -206,6 +211,7 @@ _Generated 2026-11-22 17:08 UTC · 330 entries · 113 vendored, 217 reference-on
 | [InvenTree](entries/gameplay/inventree-inventree/README.md) | Open Source Inventory Management System | python | MIT | reference | [inventree/InvenTree](https://github.com/inventree/InvenTree) @ `2026-11-22 (branch tip at catalogue time)` |
 | [jbt](entries/gameplay/gaia-ucm-jbt/README.md) | Java Behaviour Trees is a Java framework for easily building and running generic behaviour trees. Here, "behaviour tree" refers to the technique used to control | java | Apache-2.0 | reference | [gaia-ucm/jbt](https://github.com/gaia-ucm/jbt) @ `2014-07-25 (branch tip at catalogue time)` |
 | [Jumper](entries/gameplay/yonaba-jumper/README.md) | Fast, lightweight and easy-to-use pathfinding library for grid-based games | lua | MIT | reference | [Yonaba/Jumper](https://github.com/Yonaba/Jumper) @ `2022-10-21 (branch tip at catalogue time)` |
+| [KIS](entries/gameplay/ihsoft-kis/README.md) | Kerbal Inventory System | c# | Unlicense | vendored | [ihsoft/KIS](https://github.com/ihsoft/KIS) @ `1620d0cb2bae` |
 | [libtcod](entries/gameplay/libtcod/README.md) | roguelike toolkit: FOV, pathfinding, RNG, line drawing, console | c++ | BSD-3-Clause | vendored | [libtcod/libtcod](https://github.com/libtcod/libtcod) @ `de16289cd50e` |
 | [Lockstep.BehaviourTree](entries/gameplay/jiepengtan-lockstep-behaviourtree/README.md) | Memory-compact BehaviorTree (use c#  unsafe pointer && struct) | c# | none | reference | [JiepengTan/Lockstep.BehaviourTree](https://github.com/JiepengTan/Lockstep.BehaviourTree) @ `c17e940821ad` |
 | [LockstepEngine](entries/gameplay/jiepengtan-lockstepengine/README.md) | A lockstep solution include lots of deterministic library (Math,Collision,Navmesh,BehaviorTree,Serialization ...) | c# | unknown | reference | [JiepengTan/LockstepEngine](https://github.com/JiepengTan/LockstepEngine) @ `2020-03-23 (branch tip at catalogue time)` |

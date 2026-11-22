@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:24:15Z",
+ "category": "gameplay",
+ "commit": "2023-07-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "akashroshan135/inventory-management \u2014 A simple inventory management system built with Django",
+ "language": "html",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "inventory-management",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "akashroshan135-inventory-management",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 108,
+ "system": "A simple inventory management system built with Django",
+ "upstream": "https://github.com/akashroshan135/inventory-management",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

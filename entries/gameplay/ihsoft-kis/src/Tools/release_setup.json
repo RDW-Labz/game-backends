@@ -1,0 +1,32 @@
+{
+  "JSON_SCHEMA_VERSION": "1.1",
+  "PACKAGE_NAME": "KIS",
+  "SHELL_COMPILE_BINARY_SCRIPT" : "make_binary.cmd",
+  "RELEASE_NAME_FREE_FORMAT" : "{PACKAGE_NAME}_v{0}.{1}",
+  "STRUCTURE" : {
+    "/": [
+      "/Deps/*",
+      "-README.*"
+    ],
+    "" : [
+      "/Lang",
+      "/Parts",
+      "/Parts.fun",
+      "/Patches",
+      "/Sounds",
+      "/Textures",
+      "/settings.cfg",
+      "/User Guide.pdf",
+      "/README.md",
+      "/LICENSE.md",
+      "/remove_fun_part_patch.txt",
+      "/kis_legacy_containers.txt"
+    ],
+    "Plugins" : [
+      "{COMPILED_BINARY}",
+      "?{MINIAVC_VERSION_FILE}",
+      "/Binaries/MiniAVC-V2.dll",
+      "/Binaries/KSPDev_Utils*"
+    ]
+  }
+}

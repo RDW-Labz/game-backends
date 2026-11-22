@@ -1,0 +1,24 @@
+{
+    "spec_version"    : 1,
+    "name"            : "Kerbal Inventory System",
+    "identifier"      : "KIS",
+    "abstract"        : "KIS introduces new gameplay mechanics by adding a brand new inventory system and EVA usables items as tools. You want to build a rover on Duna from scratch? Now you can...",
+    "resources": {
+        "homepage": "http://forum.kerbalspaceprogram.com/index.php?/topic/149848-kerbal-inventory-system-kis",
+        "repository": "https://github.com/ihsoft/KIS",
+        "bugtracker": "https://github.com/ihsoft/KIS/issues",
+        "manual": "https://github.com/ihsoft/KIS/raw/master/User%20Guide.pdf"
+    },
+    "depends"      : [
+        { "name": "CommunityCategoryKit" },
+        { "name": "ModuleManager" }
+    ],
+    "suggests": [
+        { "name": "KAS" },
+        { "name": "EasyVesselSwitch" }
+    ],
+    "license"         : "restricted",
+    "author"          : [ "IgorZ", "KospY", "Winn75"],
+    "$vref"           : "#/ckan/ksp-avc",
+    "$kref"           : "#/ckan/spacedock/1909"
+}

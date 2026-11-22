@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T17:24:15Z",
+ "category": "gameplay",
+ "commit": "2023-07-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mhy20401/Inventory-Management-System-MERN-CRUD-App \u2014 Inventory Management System MERN CRUD App (MERN Stack Project). A simple MERN project that lets the user insert, update, delete & get products from the MongoDB.",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Inventory-Management-System-MERN-CRUD-App",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mhy20401-inventory-management-system-mern-crud-app",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 106,
+ "system": "Inventory Management System MERN CRUD App (MERN Stack Project). A simple MERN project that lets the user insert, update, delete & get products from the MongoDB.",
+ "upstream": "https://github.com/mhy20401/Inventory-Management-System-MERN-CRUD-App",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

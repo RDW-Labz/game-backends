@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T17:24:13Z",
+ "category": "gameplay",
+ "commit": "1620d0cb2bae",
+ "delivery": "vendored",
+ "description": "ihsoft/KIS \u2014 Kerbal Inventory System",
+ "language": "c#",
+ "license": "Unlicense",
+ "license_file": "KSPDev_Utils_License.md",
+ "license_verdict": "clean",
+ "name": "KIS",
+ "size_bytes": 484724,
+ "slug": "ihsoft-kis",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 108,
+ "system": "Kerbal Inventory System",
+ "upstream": "https://github.com/ihsoft/KIS",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
