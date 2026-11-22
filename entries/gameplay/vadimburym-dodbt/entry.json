@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T15:48:07Z",
+ "category": "gameplay",
+ "commit": "2026-10-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vadimburym/DODBT \u2014 High-performance Behaviour Tree system inspired by Data-Oriented Design. Zero MonoBehaviour, zero runtime allocations, graph-to-runtime compilation, clean debugging and ECS-friendly architecture.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "DODBT",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "vadimburym-dodbt",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 52,
+ "system": "High-performance Behaviour Tree system inspired by Data-Oriented Design. Zero MonoBehaviour, zero runtime allocations, graph-to-runtime compilation, clean debug",
+ "upstream": "https://github.com/vadimburym/DODBT",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

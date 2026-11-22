@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-22T15:48:05Z",
+ "category": "gameplay",
+ "commit": "c17e940821ad",
+ "delivery": "reference",
+ "description": "JiepengTan/Lockstep.BehaviourTree \u2014 Memory-compact BehaviorTree (use c#  unsafe pointer && struct)",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Lockstep.BehaviourTree",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 638098,
+ "slug": "jiepengtan-lockstep-behaviourtree",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 56,
+ "system": "Memory-compact BehaviorTree (use c#  unsafe pointer && struct)",
+ "upstream": "https://github.com/JiepengTan/Lockstep.BehaviourTree",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

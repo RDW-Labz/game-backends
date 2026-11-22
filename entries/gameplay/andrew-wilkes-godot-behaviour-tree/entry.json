@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T15:48:07Z",
+ "category": "gameplay",
+ "commit": "2023-12-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "andrew-wilkes/godot-behaviour-tree \u2014 Behaviour Tree framework for Godot coded in GDScript.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-behaviour-tree",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "andrew-wilkes-godot-behaviour-tree",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 52,
+ "system": "Behaviour Tree framework for Godot coded in GDScript.",
+ "upstream": "https://github.com/andrew-wilkes/godot-behaviour-tree",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

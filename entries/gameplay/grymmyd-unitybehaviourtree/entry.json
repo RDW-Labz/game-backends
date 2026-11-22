@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T15:48:03Z",
+ "category": "gameplay",
+ "commit": "eae4a24ea5bd",
+ "delivery": "vendored",
+ "description": "GrymmyD/UnityBehaviourTree \u2014 A simple behaviour tree implementation for Unity",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "UnityBehaviourTree",
+ "size_bytes": 16526,
+ "slug": "grymmyd-unitybehaviourtree",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 57,
+ "system": "A simple behaviour tree implementation for Unity",
+ "upstream": "https://github.com/GrymmyD/UnityBehaviourTree",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

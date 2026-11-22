@@ -1383,3 +1383,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/qriva-monobehaviourtree
   - reference gameplay/gaia-ucm-jbt
   - reference gameplay/daedalicentertainment-ue4-orders-abilities
+
+- **2026-11-22 15:48 UTC** — tick 619: +2 screened, +4 reference, 0 skipped, catalogue=300
+  - added gameplay/grymmyd-unitybehaviourtree (Apache-2.0, vendored)
+  - added gameplay/jiepengtan-lockstep-behaviourtree (none, reference)
+  - reference gameplay/thomheymann-multitree-behavior
+  - reference gameplay/andrew-wilkes-godot-behaviour-tree
+  - reference gameplay/ands-ponybehaviourtrees
+  - reference gameplay/vadimburym-dodbt
