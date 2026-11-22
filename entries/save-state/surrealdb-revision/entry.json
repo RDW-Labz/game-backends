@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T21:40:03Z",
+ "category": "save-state",
+ "commit": "4671d9343099",
+ "delivery": "vendored",
+ "description": "surrealdb/revision \u2014 A Rust library for revision-tolerant serialisation and deserialisation, with support for schema evolution over time",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "revision",
+ "size_bytes": 858280,
+ "slug": "surrealdb-revision",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 53,
+ "system": "A Rust library for revision-tolerant serialisation and deserialisation, with support for schema evolution over time",
+ "upstream": "https://github.com/surrealdb/revision",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

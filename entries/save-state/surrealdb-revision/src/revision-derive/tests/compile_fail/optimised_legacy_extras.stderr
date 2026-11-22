@@ -1,0 +1,5 @@
+error: encoding-specific attributes (`map`, `seq`, `indexed_struct`) require the `optimised` flag on the same revision entry
+ --> tests/compile_fail/optimised_legacy_extras.rs:7:14
+  |
+7 | #[revisioned(revision(1, indexed_struct))]
+  |              ^^^^^^^^

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:40:07Z",
+ "category": "save-state",
+ "commit": "2026-11-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jpietek/PenguinBurner \u2014 Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play. Steam, Heroic, Lutris, Faugus game library with per-game profiles, in-game overlay with PC latency, MSI Afterburner import and LACT export.",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "PenguinBurner",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "jpietek-penguinburner",
+ "source": "github-search:save game library stars:>10",
+ "stars": 171,
+ "system": "Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play",
+ "upstream": "https://github.com/jpietek/PenguinBurner",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

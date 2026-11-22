@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:40:07Z",
+ "category": "save-state",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "NookieAI/kura \u2014 Scan, identify, organize, and transfer your PS1-PS5 & Vita game library (Windows, macOS, Linux), with a bundled PS5 payload for installs, cheats, saves, and fan control",
+ "language": "n/a",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "kura",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "nookieai-kura",
+ "source": "github-search:save game library stars:>10",
+ "stars": 88,
+ "system": "Scan, identify, organize, and transfer your PS1-PS5 & Vita game library (Windows, macOS, Linux), with a bundled PS5 payload for installs, cheats, saves, and fan",
+ "upstream": "https://github.com/NookieAI/kura",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

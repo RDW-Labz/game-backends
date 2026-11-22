@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T21:40:05Z",
+ "category": "save-state",
+ "commit": "3c7f2ba61cfb",
+ "delivery": "vendored",
+ "description": "qnighy/yasna.rs \u2014 ASN.1 library for Rust",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "yasna.rs",
+ "size_bytes": 246496,
+ "slug": "qnighy-yasna-rs",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 52,
+ "system": "ASN.1 library for Rust",
+ "upstream": "https://github.com/qnighy/yasna.rs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,292 @@
+mod common;
+mod context;
+mod de;
+mod optimised;
+mod reexport;
+mod ser;
+mod skip;
+mod validate_version;
+mod walk;
+
+use context::EncodingContext;
+use de::{DeserializeVisitor, EnumStructsVisitor};
+use proc_macro2::{Span, TokenStream};
+use quote::quote;
+use reexport::Reexport;
+use ser::SerializeVisitor;
+use skip::SkipVisitor;
+use validate_version::{ValidateOptimised, ValidateRevision};
+
+use crate::ast::{self, Direct, ItemOptions, Visit};
+
+pub fn revision(attr: TokenStream, input: TokenStream) -> syn::Result<TokenStream> {
+	let attrs: Direct<ItemOptions> = syn::parse2(attr)?;
+	let ast: ast::Item = syn::parse2(input)?;
+
+	// Two sources of history: `#[revisioned(...)]` on the macro invocation
+	// (`attrs.0.history`), and `#[revision(...)]` separate attributes on the
+	// item (`ast.attrs.options.history`). Exactly one of them must be non-empty.
+	let history = match (ast.attrs.options.history.is_empty(), attrs.0.history.is_empty()) {
+		(false, true) => ast.attrs.options.history.clone(),
+		(true, false) => attrs.0.history.clone(),
+		(true, true) => {
+			return Err(syn::Error::new(
+				Span::call_site(),
+				"Current revision not specified, please specify the current revision with `#[revisioned(revision = ..)]` or `#[revisioned(revision(N, ...))]`",
+			));
+		}
+		(false, false) => {
+			return Err(syn::Error::new(Span::call_site(), "Current revision specified twice"));
+		}
+	};
+
+	let revision =
+		history.last().map(|h| h.revision.value).expect("history non-empty at this point");
+
+	if revision > u16::MAX as usize {
+		return Err(syn::Error::new(
+			Span::call_site(),
+			format_args!("Revision exceeded maximum supported value of {}", u16::MAX),
+		));
+	}
+	if revision == 0 {
+		return Err(syn::Error::new(Span::call_site(), "Revision versions start at 1"));
+	}
+
+	// Make sure that all used revisions are less or equal to the current revision.
+	ValidateRevision(revision).visit_item(&ast)?;
+
+	// Validate optimised-encoding invariants once, up front, so the per-visitor
+	// codegen modules can assume they hold.
+	ValidateOptimised(&history).check(&ast)?;
+
+	// Recreate the item.
+	let mut reexport = TokenStream::new();
+	Reexport {
+		revision,
+		stream: &mut reexport,
+	}
+	.visit_item(&ast)?;
+
+	// The latest history entry drives the serialize impl. Every prior entry has
+	// its own decode arm below.
+	let latest_entry = history.last().expect("history non-empty");
+	let serialize_ctx = EncodingContext::from_entry(latest_entry);
+
+	// serialize implementation
+	let mut serialize = TokenStream::new();
+	SerializeVisitor::new(revision, serialize_ctx, &mut serialize).visit_item(&ast)?;
+
+	let mut deserialize_structs = TokenStream::new();
+	EnumStructsVisitor::new(revision, &mut deserialize_structs).visit_item(&ast)?;
+
+	// deserialize implementation — one arm per history entry.
+	let deserialize = history
+		.iter()
+		.map(|entry| -> syn::Result<TokenStream> {
+			let x = entry.revision.value;
+			let ctx = EncodingContext::from_entry(entry);
+			let mut deserialize = TokenStream::new();
+			DeserializeVisitor {
+				target: revision,
+				current: x,
+				ctx,
+				stream: &mut deserialize,
+			}
+			.visit_item(&ast)?;
+
+			let revision = x as u16;
+
+			Ok(quote! {
+				#revision => {
+					#deserialize
+				}
+			})
+		})
+		.collect::<syn::Result<Vec<_>>>()?;
+
+	let name = match &ast.kind {
+		ast::ItemKind::Enum(x) => x.name.clone(),
+		ast::ItemKind::Struct(x) => x.name.clone(),
+	};
+	let schema_revision = revision;
+	let revision_lit = revision as u16;
+	let revision_error = format!("Invalid revision `{{}}` for type `{}`", name);
+
+	let skip_derive_enabled = attrs.0.skip.unwrap_or(attrs.0.deserialize);
+
+	let mut skip_revision_arms = Vec::new();
+	let mut skip_revision_slice_arms = Vec::new();
+
+	if skip_derive_enabled {
+		for entry in history.iter() {
+			let x = entry.revision.value;
+			let ctx = EncodingContext::from_entry(entry);
+			let mut skip_body = TokenStream::new();
+			SkipVisitor {
+				target: schema_revision,
+				current: x,
+				ctx,
+				stream: &mut skip_body,
+				slice_mode: false,
+			}
+			.visit_item(&ast)?;
+			let revision_x = x as u16;
+			skip_revision_arms.push(quote! {
+				#revision_x => {
+					#skip_body
+				}
+			});
+
+			let mut skip_slice_body = TokenStream::new();
+			SkipVisitor {
+				target: schema_revision,
+				current: x,
+				ctx,
+				stream: &mut skip_slice_body,
+				slice_mode: true,
+			}
+			.visit_item(&ast)?;
+			skip_revision_slice_arms.push(quote! {
+				#revision_x => {
+					#skip_slice_body
+				}
+			});
+		}
+	}
+
+	let skip_revisioned_impl = if skip_derive_enabled {
+		quote! {
+			impl ::revision::SkipRevisioned for #name {
+				fn skip_revisioned<R: ::std::io::Read>(reader: &mut R)
+					-> ::std::result::Result<(), ::revision::Error> {
+					let __revision = <u16 as ::revision::DeserializeRevisioned>::deserialize_revisioned(reader)?;
+					match __revision {
+						#(#skip_revision_arms)*
+						x => Err(::revision::Error::Deserialize(
+							format!(#revision_error,x)
+						)),
+					}
+				}
+				fn skip_revisioned_slice(reader: &mut ::revision::SliceReader<'_>)
+					-> ::std::result::Result<(), ::revision::Error> {
+					let __revision =
+						<u16 as ::revision::DeserializeRevisioned>::deserialize_revisioned(reader)?;
+					match __revision {
+						#(#skip_revision_slice_arms)*
+						x => Err(::revision::Error::Deserialize(
+							format!(#revision_error,x)
+						)),
+					}
+				}
+			}
+		}
+	} else {
+		quote! {}
+	};
+
+	let skip_check_impl = if skip_derive_enabled && attrs.0.deserialize {
+		quote! {
+			impl ::revision::SkipCheckRevisioned for #name {
+				fn skip_check_revisioned<R: ::std::io::Read>(reader: &mut R)
+					-> ::std::result::Result<(), ::revision::Error> {
+					let _ = <Self as ::revision::DeserializeRevisioned>::deserialize_revisioned(reader)?;
+					Ok(())
+				}
+			}
+		}
+	} else {
+		quote! {}
+	};
+
+	let walk_derive_enabled = attrs.0.walk.unwrap_or(attrs.0.deserialize);
+	let has_convert_fn = common::HasConvertFn::check(&ast)?;
+	let walk_impl = if walk_derive_enabled {
+		walk::emit_walk_impl(
+			match &ast.kind {
+				ast::ItemKind::Enum(x) => &x.name,
+				ast::ItemKind::Struct(x) => &x.name,
+			},
+			revision,
+			&ast,
+			&history,
+			has_convert_fn,
+			attrs.0.serialize,
+			attrs.0.deserialize,
+		)?
+	} else {
+		quote! {}
+	};
+
+	let serialize_impl = if attrs.0.serialize {
+		quote! {
+			impl ::revision::SerializeRevisioned for #name {
+				fn serialize_revisioned<W: ::std::io::Write>(&self, writer: &mut W) -> ::std::result::Result<(), ::revision::Error> {
+					::revision::SerializeRevisioned::serialize_revisioned(&<Self as ::revision::Revisioned>::revision(),writer)?;
+					#serialize
+				}
+			}
+		}
+	} else {
+		quote! {}
+	};
+
+	let deserialize_impl = if attrs.0.deserialize {
+		quote! {
+			impl #name {
+				/// Deserialize the body of a revisioned encoding **after** the
+				/// `u16` revision header has already been read.
+				///
+				/// Used internally by [`DeserializeRevisioned::deserialize_revisioned`]
+				/// and by the walker's materialised cross-revision fallback.
+				#[doc(hidden)]
+				#[allow(non_snake_case)]
+				fn __deserialize_after_header<R: ::std::io::Read>(
+					reader: &mut R,
+					__revision: u16,
+				) -> ::std::result::Result<Self, ::revision::Error> {
+					match __revision {
+						#(#deserialize)*
+						x => {
+							return Err(::revision::Error::Deserialize(
+								format!(#revision_error,x)
+							))
+						}
+					}
+				}
+			}
+
+			impl ::revision::DeserializeRevisioned for #name {
+				fn deserialize_revisioned<R: ::std::io::Read>(reader: &mut R) -> ::std::result::Result<Self, ::revision::Error> {
+					let __revision = <u16 as ::revision::DeserializeRevisioned>::deserialize_revisioned(reader)?;
+					Self::__deserialize_after_header(reader, __revision)
+				}
+			}
+		}
+	} else {
+		quote! {}
+	};
+
+	Ok(quote! {
+		#reexport
+		#deserialize_structs
+
+		#serialize_impl
+		#deserialize_impl
+		#skip_revisioned_impl
+		#skip_check_impl
+		#walk_impl
+
+		impl #name {
+			/// The revision number of this type, as declared via `#[revisioned(revision = N)]`.
+			pub const REVISION: u16 = #revision_lit;
+		}
+
+		impl ::revision::Revisioned for #name {
+			#[inline]
+			fn revision() -> u16{
+				#revision_lit
+			}
+		}
+	})
+}

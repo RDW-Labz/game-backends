@@ -1555,3 +1555,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/mitsuhiko-deser
   - reference save-state/ormsgpack-ormsgpack
   - reference save-state/georust-geojson
+
+- **2026-11-22 21:40 UTC** — tick 641: +2 screened, +4 reference, 2 skipped, catalogue=428
+  - added save-state/surrealdb-revision (Apache-2.0, vendored)
+  - added save-state/qnighy-yasna-rs (Apache-2.0, vendored)
+  - reference save-state/deeptir18-cornflakes
+  - reference save-state/bium23-nxlibrary
+  - reference save-state/jpietek-penguinburner
+  - reference save-state/nookieai-kura

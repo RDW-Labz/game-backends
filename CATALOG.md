@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 21:24 UTC · 422 entries · 137 vendored, 285 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 21:40 UTC · 428 entries · 139 vendored, 289 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-22 21:24 UTC · 422 entries · 137 vendored, 285 reference-on
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
-| [save-state](#save-state) — Save / state systems | 37 | 14 | 23 |
+| [save-state](#save-state) — Save / state systems | 43 | 16 | 27 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
 
@@ -401,7 +401,7 @@ _Generated 2026-11-22 21:24 UTC · 422 entries · 137 vendored, 285 reference-on
 
 ## save-state
 
-**Save / state systems** — 37 entries
+**Save / state systems** — 43 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -412,6 +412,7 @@ _Generated 2026-11-22 21:24 UTC · 422 entries · 137 vendored, 285 reference-on
 | [cereal](entries/save-state/cereal/README.md) | C++11 serialization: JSON/binary/XML archives, versioning | c++ | BSD-3-Clause | vendored | [USCiLab/cereal](https://github.com/USCiLab/cereal) @ `22a1b369f39b` |
 | [cista](entries/save-state/felixguendling-cista/README.md) | Cista is a simple, high-performance, zero-copy C++ serialization & reflection library. | c++ | MIT | reference | [felixguendling/cista](https://github.com/felixguendling/cista) @ `2026-11-06 (branch tip at catalogue time)` |
 | [cJSON](entries/save-state/cjson/README.md) | ultralight JSON parser/writer | c | MIT | vendored | [DaveGamble/cJSON](https://github.com/DaveGamble/cJSON) @ `6d9f2443ab07` |
+| [cornflakes](entries/save-state/deeptir18-cornflakes/README.md) | A zero-copy serialization library and networking stack. | rust | unknown | reference | [deeptir18/cornflakes](https://github.com/deeptir18/cornflakes) @ `2024-01-19 (branch tip at catalogue time)` |
 | [cpp-serializers](entries/save-state/thekvs-cpp-serializers/README.md) | Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++ | c++ | unknown | reference | [thekvs/cpp-serializers](https://github.com/thekvs/cpp-serializers) @ `2020-01-28 (branch tip at catalogue time)` |
 | [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
 | [fastgltf](entries/save-state/spnda-fastgltf/README.md) | A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability | c++ | MIT | reference | [spnda/fastgltf](https://github.com/spnda/fastgltf) @ `2026-11-11 (branch tip at catalogue time)` |
@@ -425,12 +426,16 @@ _Generated 2026-11-22 21:24 UTC · 422 entries · 137 vendored, 285 reference-on
 | [Hexi](entries/save-state/emberemu-hexi/README.md) | Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy! | c++ | Apache-2.0 | reference | [EmberEmu/Hexi](https://github.com/EmberEmu/Hexi) @ `2026-04-19 (branch tip at catalogue time)` |
 | [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
 | [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
+| [kura](entries/save-state/nookieai-kura/README.md) | Scan, identify, organize, and transfer your PS1-PS5 & Vita game library (Windows, macOS, Linux), with a bundled PS5 payload for installs, cheats, saves, and fan | n/a | unknown | reference | [NookieAI/kura](https://github.com/NookieAI/kura) @ `2026-11-22 (branch tip at catalogue time)` |
 | [miniserde](entries/save-state/dtolnay-miniserde/README.md) | Data structure serialization library with several opposite design goals from Serde | rust | Apache-2.0 | vendored | [dtolnay/miniserde](https://github.com/dtolnay/miniserde) @ `6dfa4fa395f3` |
 | [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
+| [NxLibrary](entries/save-state/bium23-nxlibrary/README.md) | A console-style macOS game library and launcher in SwiftUI. Features guided setup, assisted local builds for nxnative, save backup/import, and controller naviga | swift | MIT | reference | [Bium23/NxLibrary](https://github.com/Bium23/NxLibrary) @ `2026-11-20 (branch tip at catalogue time)` |
 | [ormsgpack](entries/save-state/ormsgpack-ormsgpack/README.md) | MessagePack serialization library for Python derived from orjson, written in Rust using PyO3 | rust | Apache-2.0 | reference | [ormsgpack/ormsgpack](https://github.com/ormsgpack/ormsgpack) @ `2026-11-21 (branch tip at catalogue time)` |
+| [PenguinBurner](entries/save-state/jpietek-penguinburner/README.md) | Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play | python | GPL-3.0 | reference | [jpietek/PenguinBurner](https://github.com/jpietek/PenguinBurner) @ `2026-11-17 (branch tip at catalogue time)` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
+| [revision](entries/save-state/surrealdb-revision/README.md) | A Rust library for revision-tolerant serialisation and deserialisation, with support for schema evolution over time | rust | Apache-2.0 | vendored | [surrealdb/revision](https://github.com/surrealdb/revision) @ `4671d9343099` |
 | [rss](entries/save-state/rust-syndication-rss/README.md) | Library for serializing the RSS web content syndication format | rust | Apache-2.0 | reference | [rust-syndication/rss](https://github.com/rust-syndication/rss) @ `2026-11-10 (branch tip at catalogue time)` |
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
 | [Serialize.Linq](entries/save-state/esskar-serialize-linq/README.md) | C# library to serialize LINQ expressions | c# | MIT | vendored | [esskar/Serialize.Linq](https://github.com/esskar/Serialize.Linq) @ `44b715ffbea5` |
@@ -440,6 +445,7 @@ _Generated 2026-11-22 21:24 UTC · 422 entries · 137 vendored, 285 reference-on
 | [VCMI — serializer](entries/save-state/vcmi-serializer/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [VYaml](entries/save-state/hadashia-vyaml/README.md) | The extra fast, low memory footprint YAML library for C#,  focued on .NET and Unity. | c# | MIT | reference | [hadashiA/VYaml](https://github.com/hadashiA/VYaml) @ `2026-11-05 (branch tip at catalogue time)` |
 | [yaff](entries/save-state/yandex-yaff/README.md) | YaFF is a high-performance C++ serialization library that provides a zero-copy wire format for the Protobuf ecosystem. | c++ | unknown | reference | [yandex/yaff](https://github.com/yandex/yaff) @ `2026-11-02 (branch tip at catalogue time)` |
+| [yasna.rs](entries/save-state/qnighy-yasna-rs/README.md) | ASN.1 library for Rust | rust | Apache-2.0 | vendored | [qnighy/yasna.rs](https://github.com/qnighy/yasna.rs) @ `3c7f2ba61cfb` |
 | [yyjson](entries/save-state/yyjson/README.md) | high-performance JSON library (read/write/mutate) | c | MIT | vendored | [ibireme/yyjson](https://github.com/ibireme/yyjson) @ `ebb8d7e5aaa5` |
 | [zpp_bits](entries/save-state/eyalz800-zpp-bits/README.md) | A lightweight C++20 serialization and RPC library | c++ | MIT | vendored | [eyalz800/zpp_bits](https://github.com/eyalz800/zpp_bits) @ `4ccf2a773d61` |
 

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:40:07Z",
+ "category": "save-state",
+ "commit": "2024-01-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "deeptir18/cornflakes \u2014 A zero-copy serialization library and networking stack.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "cornflakes",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "deeptir18-cornflakes",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 51,
+ "system": "A zero-copy serialization library and networking stack.",
+ "upstream": "https://github.com/deeptir18/cornflakes",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

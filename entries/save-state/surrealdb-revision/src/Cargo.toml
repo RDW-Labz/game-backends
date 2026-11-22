@@ -1,0 +1,218 @@
+[workspace]
+members = [".", "revision-derive"]
+
+[workspace.package]
+edition = "2024"
+version = "0.30.0"
+authors = ["Tobie Morgan Hitchcock <tobie@surrealdb.com>"]
+description = "A serialization and deserialization implementation which allows for schema-evolution."
+repository = "https://github.com/surrealdb/revision"
+homepage = "https://github.com/surrealdb/revision"
+documentation = "https://docs.rs/revision/"
+keywords = ["serialization", "encoding", "revision", "version", "bincode"]
+categories = ["encoding"]
+license = "Apache-2.0"
+
+[package]
+name = "revision"
+publish = true
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+repository.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+categories.workspace = true
+license.workspace = true
+autobenches = false
+
+[workspace.lints]
+
+[features]
+default = ["specialised-vectors"]
+specialised-vectors = []
+fixed-width-encoding = []
+
+[dependencies]
+revision-derive = { version = "0.30.0", path = "revision-derive" }
+bytes = { version = "1.11.1", optional = true }
+chrono = { version = "0.4.44", default-features = false, features = ["std"], optional = true }
+geo = { version = "0.32.0", default-features = false, features = ["use-serde"], optional = true }
+imbl = { version = "6.1.0", optional = true }
+ordered-float = { version = "5.3.0", optional = true }
+regex = { version = "1.12.3", optional = true }
+roaring = { version = "0.11.4", optional = true }
+rust_decimal = { version = "1.42.0", default-features = false, optional = true }
+uuid = { version = "1.23.1", optional = true }
+
+[dev-dependencies]
+rand = "0.9.4"
+criterion = "0.7.0"
+bincode = "1.3.3"
+serde = "1.0.228"
+paste = "1.0"
+roaring = { version = "0.11.4", features = ["serde"] }
+
+[[test]]
+name = "skip"
+path = "tests/skip.rs"
+
+[[test]]
+name = "walk"
+path = "tests/walk.rs"
+
+[[test]]
+name = "optimised"
+path = "tests/optimised.rs"
+
+[[test]]
+name = "indexed"
+path = "tests/indexed.rs"
+
+[[test]]
+name = "corruption"
+path = "tests/corruption.rs"
+
+[[test]]
+name = "syntax_legacy_vs_new"
+path = "tests/syntax_legacy_vs_new.rs"
+
+[[test]]
+name = "macro_optimised"
+path = "tests/macro_optimised.rs"
+
+[[test]]
+name = "migration"
+path = "tests/migration.rs"
+
+[[test]]
+name = "walker_optimised"
+path = "tests/walker_optimised.rs"
+
+[[test]]
+name = "property"
+path = "tests/property.rs"
+
+[[test]]
+name = "indexed_fields"
+path = "tests/indexed_fields.rs"
+
+[[bench]]
+name = "roaring"
+harness = false
+required-features = ["roaring"]
+
+[[bench]]
+name = "generic"
+harness = false
+
+[[bench]]
+name = "vec_i8_comparison"
+harness = false
+
+[[bench]]
+name = "vec_i16_comparison"
+harness = false
+
+[[bench]]
+name = "vec_i32_comparison"
+harness = false
+
+[[bench]]
+name = "vec_i64_comparison"
+harness = false
+
+[[bench]]
+name = "vec_i128_comparison"
+harness = false
+
+[[bench]]
+name = "vec_u8_comparison"
+harness = false
+
+[[bench]]
+name = "vec_u16_comparison"
+harness = false
+
+[[bench]]
+name = "vec_u32_comparison"
+harness = false
+
+[[bench]]
+name = "vec_u64_comparison"
+harness = false
+
+[[bench]]
+name = "vec_u128_comparison"
+harness = false
+
+[[bench]]
+name = "vec_f32_comparison"
+harness = false
+
+[[bench]]
+name = "vec_f64_comparison"
+harness = false
+
+[[bench]]
+name = "vec_string_comparison"
+harness = false
+
+[[bench]]
+name = "specialisation_comparison"
+harness = false
+
+[[bench]]
+name = "ordmap_comparison"
+harness = false
+required-features = ["imbl"]
+
+[[bench]]
+name = "varint_comparison"
+harness = false
+
+[[bench]]
+name = "walk"
+harness = false
+
+[[bench]]
+name = "skip"
+harness = false
+
+[[bench]]
+name = "skip_nested_struct"
+harness = false
+
+[[bench]]
+name = "skip_nested_btreemap"
+harness = false
+
+[[bench]]
+name = "skip_surrealdb_doc"
+harness = false
+
+[[bench]]
+name = "skip_mixed_btreemap_nested"
+harness = false
+required-features = ["uuid"]
+
+[[bench]]
+name = "vec_bool_comparison"
+harness = false
+
+[[bench]]
+name = "optimised_vs_legacy"
+harness = false
+
+[[bench]]
+name = "optimised_nested"
+harness = false
+
+[[bench]]
+name = "optimised_walker"
+harness = false
+
+[[bench]]
+name = "late_field_access"
+harness = false

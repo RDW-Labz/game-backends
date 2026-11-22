@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T21:40:07Z",
+ "category": "save-state",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Bium23/NxLibrary \u2014 A console-style macOS game library and launcher in SwiftUI. Features guided setup, assisted local builds for nxnative, save backup/import, and controller navigation on Apple Silicon.",
+ "language": "swift",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "NxLibrary",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "bium23-nxlibrary",
+ "source": "github-search:save game library stars:>10",
+ "stars": 221,
+ "system": "A console-style macOS game library and launcher in SwiftUI. Features guided setup, assisted local builds for nxnative, save backup/import, and controller naviga",
+ "upstream": "https://github.com/Bium23/NxLibrary",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
