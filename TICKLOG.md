@@ -1319,3 +1319,7 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-22 08:04 UTC** — tick 589: +0 screened, +0 reference, 20 skipped, catalogue=286
 
 - **2026-11-22 08:20 UTC** — tick 590: +0 screened, +0 reference, 2 skipped, catalogue=286
+
+- **2026-11-22 08:36 UTC** — tick 591: +2 screened, +0 reference, 7 skipped, catalogue=288
+  - added procgen/caroledwards6652-substance-designer-win (CC-BY-SA-4.0, reference)
+  - added procgen/webro12-substance-designer-win (CC-BY-SA-4.0, reference)

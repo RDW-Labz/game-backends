@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 08:20 UTC · 286 entries · 104 vendored, 182 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 08:36 UTC · 288 entries · 104 vendored, 184 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-22 08:20 UTC · 286 entries · 104 vendored, 182 reference-on
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 37 | 15 | 22 |
 | [netcode](#netcode) — Networking / netcode | 51 | 19 | 32 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
-| [procgen](#procgen) — Procedural generation | 40 | 15 | 25 |
+| [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
 
 ## engines
@@ -311,7 +311,7 @@ _Generated 2026-11-22 08:20 UTC · 286 entries · 104 vendored, 182 reference-on
 
 ## procgen
 
-**Procedural generation** — 40 entries
+**Procedural generation** — 42 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -342,6 +342,8 @@ _Generated 2026-11-22 08:20 UTC · 286 entries · 104 vendored, 182 reference-on
 | [ProceduralToolkit](entries/procgen/syomus-proceduraltoolkit/README.md) | Procedural generation library for Unity | c# | MIT | vendored | [Syomus/ProceduralToolkit](https://github.com/Syomus/ProceduralToolkit) @ `984a1e69b8ac` |
 | [ptdesigner](entries/procgen/drummyfish-ptdesigner/README.md) | Library and GUI tool for designing and generation of procedural textures, made as a part of my Bachelor thesis. | c++ | GPL-2.0 | reference | [drummyfish/ptdesigner](https://github.com/drummyfish/ptdesigner) @ `a2532e9ddc4b` |
 | [space-station-14 — Procedural](entries/procgen/space-station-14-content-shared-procedural/README.md) | procedural station/AI content generation | c# | MIT | vendored | [space-wizards/space-station-14](https://github.com/space-wizards/space-station-14) @ `33a1d0e32d63` |
+| [substance-designer-win](entries/procgen/caroledwards6652-substance-designer-win/README.md) | Adobe Substance Designer - node-based procedural texture authoring tool for material graph creation, PBR texture generation and parametric material libraries on | n/a | CC-BY-SA-4.0 | reference | [caroledwards6652/substance-designer-win](https://github.com/caroledwards6652/substance-designer-win) @ `278cb141589d` |
+| [substance-designer-win](entries/procgen/webro12-substance-designer-win/README.md) | Adobe Substance Designer - node-based procedural texture authoring tool for material graph creation, PBR texture generation and parametric material libraries on | n/a | CC-BY-SA-4.0 | reference | [webro12/substance-designer-win](https://github.com/webro12/substance-designer-win) @ `60ac840d38dd` |
 | [THREE.Terrain](entries/procgen/icecreamyou-three-terrain/README.md) | A procedural terrain generation engine for use with the Three.js 3D graphics library for the web. | javascript | MIT | reference | [IceCreamYou/THREE.Terrain](https://github.com/IceCreamYou/THREE.Terrain) @ `2026-11-12 (branch tip at catalogue time)` |
 | [Tracery](entries/procgen/tracery/README.md) | grammar-based generative text/structure | javascript | Apache-2.0 | vendored | [galaxykate/tracery](https://github.com/galaxykate/tracery) @ `11db07cb8e35` |
 | [unity-wave-function-collapse](entries/procgen/selfsame-unity-wave-function-collapse/README.md) | see upstream | c# | MIT | vendored | [selfsame/unity-wave-function-collapse](https://github.com/selfsame/unity-wave-function-collapse) @ `d1b28923ff38` |

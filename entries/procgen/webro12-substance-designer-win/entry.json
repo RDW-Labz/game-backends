@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T08:36:03Z",
+ "category": "procgen",
+ "commit": "60ac840d38dd",
+ "delivery": "reference",
+ "description": "webro12/substance-designer-win \u2014 Adobe Substance Designer - node-based procedural texture authoring tool for material graph creation, PBR texture generation and parametric material libraries on Windows 10/11",
+ "language": "n/a",
+ "license": "CC-BY-SA-4.0",
+ "license_file": "LICENSE",
+ "license_verdict": "gated-reference",
+ "name": "substance-designer-win",
+ "reference_reason": "licence: CC-BY-SA-4.0 (gated-reference)",
+ "size_bytes": 0,
+ "slug": "webro12-substance-designer-win",
+ "source": "github-search:procedural generation library stars:>80",
+ "stars": 150,
+ "system": "Adobe Substance Designer - node-based procedural texture authoring tool for material graph creation, PBR texture generation and parametric material libraries on",
+ "upstream": "https://github.com/webro12/substance-designer-win",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
