@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:52:09Z",
+ "category": "netcode",
+ "commit": "2023-01-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dapucita/haxbotron \u2014 Haxbotron is a headless host server for Haxball game.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "haxbotron",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dapucita-haxbotron",
+ "source": "github-search:headless game server stars:>20",
+ "stars": 29,
+ "system": "Haxbotron is a headless host server for Haxball game.",
+ "upstream": "https://github.com/dapucita/haxbotron",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 20:36 UTC · 404 entries · 132 vendored, 272 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 20:52 UTC · 410 entries · 133 vendored, 277 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-22 20:36 UTC · 404 entries · 132 vendored, 272 reference-on
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
-| [netcode](#netcode) — Networking / netcode | 105 | 32 | 73 |
+| [netcode](#netcode) — Networking / netcode | 111 | 33 | 78 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
@@ -280,7 +280,7 @@ _Generated 2026-11-22 20:36 UTC · 404 entries · 132 vendored, 272 reference-on
 
 ## netcode
 
-**Networking / netcode** — 105 entries
+**Networking / netcode** — 111 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -299,13 +299,16 @@ _Generated 2026-11-22 20:36 UTC · 404 entries · 132 vendored, 272 reference-on
 | [Colyseus](entries/netcode/colyseus/README.md) | authoritative room-based multiplayer framework with state sync | typescript | MIT | vendored | [colyseus/colyseus](https://github.com/colyseus/colyseus) @ `ce781b98bfc5` |
 | [Cubit — server](entries/netcode/cubit-server/README.md) | network transport, protocol, replication or server loop | go | MIT | vendored | [taynotfound/cubit](https://github.com/taynotfound/cubit) @ `0bd4518` |
 | [cubyz — server](entries/netcode/cubyz-server/README.md) | network transport, protocol, replication or server loop | zig | GPL-3.0 | reference | [PixelGuys/Cubyz](https://github.com/PixelGuys/Cubyz) @ `74b6814` |
+| [d2-dedicated-server](entries/netcode/jaenster-d2-dedicated-server/README.md) | Self-hosted, cloud-native Diablo II dedicated game server + Battle.net realm in Zig — a modern PvPGN replacement. Seven engines (1.06b … 1.13c) on the game's ow | zig | MIT | reference | [jaenster/d2-dedicated-server](https://github.com/jaenster/d2-dedicated-server) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Darklings-FightingGame](entries/netcode/kidagine-darklings-fightinggame/README.md) | DARKLINGS is an accessible F2P 2D fighting game with periodic updates (using Rollback Netcode). | shaderlab | unknown | reference | [kidagine/Darklings-FightingGame](https://github.com/kidagine/Darklings-FightingGame) @ `2024-09-12 (branch tip at catalogue time)` |
 | [DelayNoMore](entries/netcode/genxium-delaynomore/README.md) | A Multiplayer Platformer game demo on websocket with delayed-input Rollback Netcode inspired by GGPO | javascript | unknown | reference | [genxium/DelayNoMore](https://github.com/genxium/DelayNoMore) @ `2023-11-28 (branch tip at catalogue time)` |
 | [DelayNoMoreUnity](entries/netcode/genxium-delaynomoreunity/README.md) | A Multiplayer Platformer game demo on websocket+UDP peer-to-peer with delayed-input Rollback Netcode inspired by GGPO | c# | none | reference | [genxium/DelayNoMoreUnity](https://github.com/genxium/DelayNoMoreUnity) @ `4e18b0f15947` |
 | [DemoFighterWithNetcode](entries/netcode/rcmagic-demofighterwithnetcode/README.md) | An example fighting game demonstrating how to implement rollback based netcode. | lua | MIT | reference | [rcmagic/DemoFighterWithNetcode](https://github.com/rcmagic/DemoFighterWithNetcode) @ `2021-05-21 (branch tip at catalogue time)` |
 | [deterministic-lockstep-demo](entries/netcode/pietrobassi-deterministic-lockstep-demo/README.md) | Deterministic lockstep networking demo running locally in the browser | typescript | MIT | vendored | [pietrobassi/deterministic-lockstep-demo](https://github.com/pietrobassi/deterministic-lockstep-demo) @ `16feeaf3b200` |
+| [discord-badge-maximizer](entries/netcode/sonuworks-discord-badge-maximizer/README.md) | Discord Badge Maximizer: Max out your Discord badges effortlessly! Instantly unlock 5,000+ playtime hours & 1,000+ game titles via telemetry spoofing, and farm  | python | MIT | vendored | [sonuworks/discord-badge-maximizer](https://github.com/sonuworks/discord-badge-maximizer) @ `bd1328204a9e` |
 | [due](entries/netcode/dobyte-due/README.md) | A High-Performance Distributed Game Server Framework in Go | go | MIT | reference | [dobyte/due](https://github.com/dobyte/due) @ `2026-11-16 (branch tip at catalogue time)` |
 | [ENet](entries/netcode/enet/README.md) | reliable UDP networking for games | c | MIT | vendored | [lsalzman/enet](https://github.com/lsalzman/enet) @ `5a9c537fd464` |
+| [factorio-control-panel](entries/netcode/jjclark1982-factorio-control-panel/README.md) | Web admin interface for Factorio headless game server | javascript | unknown | reference | [jjclark1982/factorio-control-panel](https://github.com/jjclark1982/factorio-control-panel) @ `2016-11-22 (branch tip at catalogue time)` |
 | [fifa-api](entries/netcode/sauravhiremath-fifa-api/README.md) | React + Node.js + socket.io -- Multiplayer Game server | javascript | MIT | reference | [sauravhiremath/fifa-api](https://github.com/sauravhiremath/fifa-api) @ `2023-03-05 (branch tip at catalogue time)` |
 | [fMath](entries/netcode/8izips-fmath/README.md) | fixed point math library for deterministic lockstep network game in Unity | c# | MIT | reference | [8izips/fMath](https://github.com/8izips/fMath) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Freeciv — networking](entries/netcode/freeciv-common-networking/README.md) | turn-based client/server protocol and packet layer | c | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756d5b07` |
@@ -317,12 +320,14 @@ _Generated 2026-11-22 20:36 UTC · 404 entries · 132 vendored, 272 reference-on
 | [GameProject3](entries/netcode/ylmbtm-gameproject3/README.md) | 游戏服务器框架，网络层分别用SocketAPI、Boost Asio、Libuv三种方式实现， 框架内使用共享内存，无锁队列，对象池，内存池来提高服务器性能。还包含一个不断完善的Unity 3D客户端，客户端含大量完整资源，坐骑，宠物，伙伴，装备, 这些均己实现上阵和穿戴, 并可进入副本战斗，多人玩法也己实现, 持续开 | c++ | unknown | reference | [ylmbtm/GameProject3](https://github.com/ylmbtm/GameProject3) @ `2025-04-28 (branch tip at catalogue time)` |
 | [GekkoNet](entries/netcode/heatxd-gekkonet/README.md) | P2P Rollback Game Networking SDK | c++ | BSD-2-Clause | vendored | [HeatXD/GekkoNet](https://github.com/HeatXD/GekkoNet) @ `45dac7e50fd3` |
 | [GGRS](entries/netcode/ggrs/README.md) | rollback netcode (GGPO-style) in Rust with WASM support | rust | Apache-2.0 | vendored | [gschup/ggrs](https://github.com/gschup/ggrs) @ `25bd9983dee3` |
+| [godot-mcp-enhanced](entries/netcode/wgt19861219-godot-mcp-enhanced/README.md) | Enhanced MCP server for Godot 4.5-4.7: 33 tools / 199 actions, 3-layer architecture (headless + editor + game bridge), secure sandbox, recording & frame-verify, | typescript | MIT | reference | [wgt19861219/godot-mcp-enhanced](https://github.com/wgt19861219/godot-mcp-enhanced) @ `9cc3b70ec11b` |
 | [godot-multiplayer-starter](entries/netcode/codingquests-godot-multiplayer-starter/README.md) | A server-authoritative co-op multiplayer starter for Godot 4 with a ready-up lobby, client-side prediction, reconciliation and validated RPCs. | gdscript | MIT | vendored | [CodingQuests/godot-multiplayer-starter](https://github.com/CodingQuests/godot-multiplayer-starter) @ `ccde74b9490c` |
 | [godot-rocket-league](entries/netcode/albertok-godot-rocket-league/README.md) | Network physics with rollback test using Godot and netfox | gdscript | MIT | vendored | [albertok/godot-rocket-league](https://github.com/albertok/godot-rocket-league) @ `78b28ce495fa` |
 | [Godot-Rollback-Fighter-Demo](entries/netcode/blast-harbour-godot-rollback-fighter-demo/README.md) | An example project built on Bimdav's "Delta Rollback" Fork of David Snopek's "Godot Rollback Netcode" Addon  | gdscript | MIT | reference | [blast-harbour/Godot-Rollback-Fighter-Demo](https://github.com/blast-harbour/Godot-Rollback-Fighter-Demo) @ `2024-07-10 (branch tip at catalogue time)` |
 | [godot-tiny-mmo](entries/netcode/slayhorizon-godot-tiny-mmo/README.md) | Open-source cross-platform MMORPG built with Godot 4 | gdscript | MIT | vendored | [SlayHorizon/godot-tiny-mmo](https://github.com/SlayHorizon/godot-tiny-mmo) @ `f4ed04f20963` |
 | [gogs](entries/netcode/metagogs-gogs/README.md) | gogs is a simple, fast and lightweight game server framework written in golang | go | Apache-2.0 | reference | [metagogs/gogs](https://github.com/metagogs/gogs) @ `2026-09-08 (branch tip at catalogue time)` |
 | [GopherGameServer](entries/netcode/hewiefreeman-gophergameserver/README.md) | :trophy: Feature packed, easy-to-use game server API for Go back-ends and Javascript clients. Tutorials and examples included! | go | Apache-2.0 | reference | [hewiefreeman/GopherGameServer](https://github.com/hewiefreeman/GopherGameServer) @ `2024-03-29 (branch tip at catalogue time)` |
+| [haxbotron](entries/netcode/dapucita-haxbotron/README.md) | Haxbotron is a headless host server for Haxball game. | typescript | MIT | reference | [dapucita/haxbotron](https://github.com/dapucita/haxbotron) @ `2023-01-06 (branch tip at catalogue time)` |
 | [hypersomnia — network](entries/netcode/hypersomnia-network/README.md) | network transport, protocol, replication or server loop | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [ioGame](entries/netcode/iohao-iogame/README.md) | A lock-free, asynchronous, event-driven Java Netty framework for building high-performance network applications. Lightweight and dependency-free, it supports di | java | AGPL-3.0 | reference | [iohao/ioGame](https://github.com/iohao/ioGame) @ `2026-08-02 (branch tip at catalogue time)` |
 | [j360-boot-app-all](entries/netcode/xuminwlt-j360-boot-app-all/README.md) | 基于Spring boot 2.0+ 脚手架重构微服务系统，CI、DevOps、Redisson、Shiro、RocketMQ tx、Dubbo、Sentinel、Sharding-Sphere、Fescar、Skywalking、Apollo、SocketIO， 小程序服务端快速上手Sample, Netty Soc | java | Apache-2.0 | vendored | [xuminwlt/j360-boot-app-all](https://github.com/xuminwlt/j360-boot-app-all) @ `27c5849aaf2e` |
@@ -385,6 +390,7 @@ _Generated 2026-11-22 20:36 UTC · 404 entries · 132 vendored, 272 reference-on
 | [warzone2100 — netplay](entries/netcode/warzone2100-lib-netplay/README.md) | RTS netplay: sync, desync detection, rejoin | c++ | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e14614` |
 | [widelands — network](entries/netcode/widelands-network/README.md) | network transport, protocol, replication or server loop | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
 | [WLANOptimizer](entries/netcode/catid-wlanoptimizer/README.md) | Single-header C library that fixes WiFi performance issues for online gaming and other low-latency real-time network traffic. | c++ | unknown | reference | [catid/WLANOptimizer](https://github.com/catid/WLANOptimizer) @ `2018-08-25 (branch tip at catalogue time)` |
+| [Xenko.ClientServerSample](entries/netcode/xen2-xenko-clientserversample/README.md) | Xenko Game sample + headless server | c# | MIT | reference | [xen2/Xenko.ClientServerSample](https://github.com/xen2/Xenko.ClientServerSample) @ `2022-04-22 (branch tip at catalogue time)` |
 | [yojimbo](entries/netcode/mas-bandwidth-yojimbo/README.md) | A network library for client/server games written in C++ | c++ | BSD-3-Clause | vendored | [mas-bandwidth/yojimbo](https://github.com/mas-bandwidth/yojimbo) @ `ae64e145c993` |
 | [yojimbo](entries/netcode/yojimbo/README.md) | client/server game protocol: encryption, reliability, connection tags | c++ | BSD-3-Clause | vendored | [networkprotocol/yojimbo](https://github.com/networkprotocol/yojimbo) @ `ae64e145c993` |
 | [YTSvrLib](entries/netcode/sherry0319-ytsvrlib/README.md) | A game server library for linux/windows(support TCP, UDP, HTTP(S) and Websocket,MySQL,redis) 一个简单但功能强大的跨平台(Win/Linux)游戏服务器框架.支持TCP,UDP,HTTP,WEBSOCKET.支持MySQL和Re | c++ | MIT | reference | [sherry0319/YTSvrLib](https://github.com/sherry0319/YTSvrLib) @ `2020-02-28 (branch tip at catalogue time)` |

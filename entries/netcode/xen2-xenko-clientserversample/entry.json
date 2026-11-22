@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:52:09Z",
+ "category": "netcode",
+ "commit": "2022-04-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "xen2/Xenko.ClientServerSample \u2014 Xenko Game sample + headless server",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Xenko.ClientServerSample",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "xen2-xenko-clientserversample",
+ "source": "github-search:headless game server stars:>20",
+ "stars": 23,
+ "system": "Xenko Game sample + headless server",
+ "upstream": "https://github.com/xen2/Xenko.ClientServerSample",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

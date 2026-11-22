@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:52:09Z",
+ "category": "netcode",
+ "commit": "2026-10-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jaenster/d2-dedicated-server \u2014 Self-hosted, cloud-native Diablo II dedicated game server + Battle.net realm in Zig \u2014 a modern PvPGN replacement. Seven engines (1.06b \u2026 1.13c) on the game's own DLLs, 1.14d via wine, and a wine-free native build. Postgres/Redis, Docker & Kubernetes.",
+ "language": "zig",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "d2-dedicated-server",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jaenster-d2-dedicated-server",
+ "source": "github-search:headless game server stars:>20",
+ "stars": 37,
+ "system": "Self-hosted, cloud-native Diablo II dedicated game server + Battle.net realm in Zig \u2014 a modern PvPGN replacement. Seven engines (1.06b \u2026 1.13c) on the game's ow",
+ "upstream": "https://github.com/jaenster/d2-dedicated-server",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

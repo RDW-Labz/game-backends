@@ -1531,3 +1531,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/faforever-server
   - reference netcode/appsinacup-gamend
   - reference netcode/openatbp-openatbp
+
+- **2026-11-22 20:52 UTC** — tick 638: +2 screened, +4 reference, 0 skipped, catalogue=410
+  - added netcode/wgt19861219-godot-mcp-enhanced (MIT, reference)
+  - added netcode/sonuworks-discord-badge-maximizer (MIT, vendored)
+  - reference netcode/jaenster-d2-dedicated-server
+  - reference netcode/dapucita-haxbotron
+  - reference netcode/jjclark1982-factorio-control-panel
+  - reference netcode/xen2-xenko-clientserversample

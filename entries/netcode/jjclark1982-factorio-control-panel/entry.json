@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:52:09Z",
+ "category": "netcode",
+ "commit": "2016-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jjclark1982/factorio-control-panel \u2014 Web admin interface for Factorio headless game server",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "factorio-control-panel",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "jjclark1982-factorio-control-panel",
+ "source": "github-search:headless game server stars:>20",
+ "stars": 23,
+ "system": "Web admin interface for Factorio headless game server",
+ "upstream": "https://github.com/jjclark1982/factorio-control-panel",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
