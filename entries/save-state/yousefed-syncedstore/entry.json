@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:12:11Z",
+ "category": "save-state",
+ "commit": "2024-03-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "YousefED/SyncedStore \u2014 SyncedStore CRDT is an easy-to-use library for building live, collaborative applications that sync automatically.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SyncedStore",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "yousefed-syncedstore",
+ "source": "github-search:crdt library stars:>80",
+ "stars": 1863,
+ "system": "SyncedStore CRDT is an easy-to-use library for building live, collaborative applications that sync automatically.",
+ "upstream": "https://github.com/YousefED/SyncedStore",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

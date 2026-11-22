@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T22:12:06Z",
+ "category": "save-state",
+ "commit": "bd9ed94824fe",
+ "delivery": "reference",
+ "description": "microsoft/FluidFramework \u2014 Library for building distributed, real-time collaborative web  applications",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "FluidFramework",
+ "reference_reason": "size gate: 86 MB",
+ "size_bytes": 90268738,
+ "slug": "microsoft-fluidframework",
+ "source": "github-search:crdt library stars:>80",
+ "stars": 4951,
+ "system": "Library for building distributed, real-time collaborative web  applications",
+ "upstream": "https://github.com/microsoft/FluidFramework",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

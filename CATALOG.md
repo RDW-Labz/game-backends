@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 21:56 UTC · 434 entries · 139 vendored, 295 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 22:12 UTC · 440 entries · 139 vendored, 301 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-22 21:56 UTC · 434 entries · 139 vendored, 295 reference-on
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
-| [save-state](#save-state) — Save / state systems | 49 | 16 | 33 |
+| [save-state](#save-state) — Save / state systems | 55 | 16 | 39 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
 
@@ -401,7 +401,7 @@ _Generated 2026-11-22 21:56 UTC · 434 entries · 139 vendored, 295 reference-on
 
 ## save-state
 
-**Save / state systems** — 49 entries
+**Save / state systems** — 55 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -416,9 +416,11 @@ _Generated 2026-11-22 21:56 UTC · 434 entries · 139 vendored, 295 reference-on
 | [cornflakes](entries/save-state/deeptir18-cornflakes/README.md) | A zero-copy serialization library and networking stack. | rust | unknown | reference | [deeptir18/cornflakes](https://github.com/deeptir18/cornflakes) @ `2024-01-19 (branch tip at catalogue time)` |
 | [cpp-serializers](entries/save-state/thekvs-cpp-serializers/README.md) | Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++ | c++ | unknown | reference | [thekvs/cpp-serializers](https://github.com/thekvs/cpp-serializers) @ `2020-01-28 (branch tip at catalogue time)` |
 | [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
+| [evolu](entries/save-state/evoluhq-evolu/README.md) | Local-first platform and TypeScript library | typescript | MIT | reference | [evoluhq/evolu](https://github.com/evoluhq/evolu) @ `4eedb2272841` |
 | [fastgltf](entries/save-state/spnda-fastgltf/README.md) | A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability | c++ | MIT | reference | [spnda/fastgltf](https://github.com/spnda/fastgltf) @ `2026-11-11 (branch tip at catalogue time)` |
 | [FlatBuffers](entries/save-state/flatbuffers/README.md) | zero-copy serialization, schema-driven | c++ | Apache-2.0 | vendored | [google/flatbuffers](https://github.com/google/flatbuffers) @ `5eb190f00005` |
 | [flatcc](entries/save-state/dvidelabs-flatcc/README.md) | FlatBuffers Compiler and Library in C for C | c | Apache-2.0 | vendored | [dvidelabs/flatcc](https://github.com/dvidelabs/flatcc) @ `0df9c097a19b` |
+| [FluidFramework](entries/save-state/microsoft-fluidframework/README.md) | Library for building distributed, real-time collaborative web  applications | typescript | MIT | reference | [microsoft/FluidFramework](https://github.com/microsoft/FluidFramework) @ `bd9ed94824fe` |
 | [Freeciv — savegame](entries/save-state/freeciv-savegame/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [FTC-Skystone-Dark-Angels-Romania-2020](entries/save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020/README.md) | NOTICE This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season. If you are looking for the current season's FTC SDK software | java | BSD-3-Clause | vendored | [chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020](https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020) @ `b5132793582a` |
 | [fx-gltf](entries/save-state/jessey-git-fx-gltf/README.md) | A C++14/C++17 header-only library for simple, efficient, and robust serialization/deserialization of glTF 2.0 | c++ | MIT | reference | [jessey-git/fx-gltf](https://github.com/jessey-git/fx-gltf) @ `2022-01-01 (branch tip at catalogue time)` |
@@ -427,8 +429,10 @@ _Generated 2026-11-22 21:56 UTC · 434 entries · 139 vendored, 295 reference-on
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
 | [Hexi](entries/save-state/emberemu-hexi/README.md) | Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy! | c++ | Apache-2.0 | reference | [EmberEmu/Hexi](https://github.com/EmberEmu/Hexi) @ `2026-04-19 (branch tip at catalogue time)` |
 | [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
+| [json-joy](entries/save-state/streamich-json-joy/README.md) | json-joy is a library that implements cutting-edge real-time and collaborative editing algorithms and utilities for JSON data models, with a focus on developing | typescript | unknown | reference | [streamich/json-joy](https://github.com/streamich/json-joy) @ `2026-09-08 (branch tip at catalogue time)` |
 | [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
 | [kura](entries/save-state/nookieai-kura/README.md) | Scan, identify, organize, and transfer your PS1-PS5 & Vita game library (Windows, macOS, Linux), with a bundled PS5 payload for installs, cheats, saves, and fan | n/a | unknown | reference | [NookieAI/kura](https://github.com/NookieAI/kura) @ `2026-11-22 (branch tip at catalogue time)` |
+| [loom](entries/save-state/asonge-loom/README.md) | A CRDT library with δ-CRDT support. | elixir | unknown | reference | [asonge/loom](https://github.com/asonge/loom) @ `2017-05-30 (branch tip at catalogue time)` |
 | [miniserde](entries/save-state/dtolnay-miniserde/README.md) | Data structure serialization library with several opposite design goals from Serde | rust | Apache-2.0 | vendored | [dtolnay/miniserde](https://github.com/dtolnay/miniserde) @ `6dfa4fa395f3` |
 | [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
 | [nes-emulator](entries/save-state/nicolfo-nes-emulator/README.md) | Cycle-accurate NES emulator in Rust - CPU/PPU/APU, 43 mappers with expansion audio (incl. VRC7 FM), NTSC/PAL auto-detect, gamepad + savestates. | rust | GPL-3.0 | reference | [Nicolfo/nes-emulator](https://github.com/Nicolfo/nes-emulator) @ `2026-11-13 (branch tip at catalogue time)` |
@@ -447,9 +451,11 @@ _Generated 2026-11-22 21:56 UTC · 434 entries · 139 vendored, 295 reference-on
 | [Server-crashes-on-player-connect](entries/save-state/teehee123123-server-crashes-on-player-connect/README.md) | ---- Minecraft Crash Report ---- // Ooh. Shiny.  Time: 7/4/13 11:37 PM Description: Ticking entity  java.lang.OutOfMemoryError: Java heap space 	at net.minecraf | n/a | unknown | reference | [Teehee123123/Server-crashes-on-player-connect](https://github.com/Teehee123123/Server-crashes-on-player-connect) @ `2022-08-31 (branch tip at catalogue time)` |
 | [SQLite](entries/save-state/sqlite/README.md) | embedded SQL database engine (single-file world saves) | c | Public-Domain | reference | [sqlite/sqlite](https://github.com/sqlite/sqlite) @ `e5cb4b09573a` |
 | [struct2json](entries/save-state/armink-struct2json/README.md) | A fast convert library between the JSON and C structure. Implement structure serialization and deserialization for C. / C 结构体与 JSON 快速互转库，快速实现 C 结构体的序列化及反序列化 | c | MIT | reference | [armink/struct2json](https://github.com/armink/struct2json) @ `2022-01-07 (branch tip at catalogue time)` |
+| [SyncedStore](entries/save-state/yousefed-syncedstore/README.md) | SyncedStore CRDT is an easy-to-use library for building live, collaborative applications that sync automatically. | typescript | MIT | reference | [YousefED/SyncedStore](https://github.com/YousefED/SyncedStore) @ `2024-03-01 (branch tip at catalogue time)` |
 | [thrive — saving](entries/save-state/thrive-saving/README.md) | persistence: save/load, snapshot or state serialisation | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [VCMI — serializer](entries/save-state/vcmi-serializer/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [VYaml](entries/save-state/hadashia-vyaml/README.md) | The extra fast, low memory footprint YAML library for C#,  focued on .NET and Unity. | c# | MIT | reference | [hadashiA/VYaml](https://github.com/hadashiA/VYaml) @ `2026-11-05 (branch tip at catalogue time)` |
+| [weavejs](entries/save-state/inditextech-weavejs/README.md) | Weave.js is an open source library to build real-time collaboration applications like whiteboards, diagram editors, etc. on HTML5 Canvas with your own UI | typescript | Apache-2.0 | reference | [InditexTech/weavejs](https://github.com/InditexTech/weavejs) @ `2026-11-22 (branch tip at catalogue time)` |
 | [yaff](entries/save-state/yandex-yaff/README.md) | YaFF is a high-performance C++ serialization library that provides a zero-copy wire format for the Protobuf ecosystem. | c++ | unknown | reference | [yandex/yaff](https://github.com/yandex/yaff) @ `2026-11-02 (branch tip at catalogue time)` |
 | [yasna.rs](entries/save-state/qnighy-yasna-rs/README.md) | ASN.1 library for Rust | rust | Apache-2.0 | vendored | [qnighy/yasna.rs](https://github.com/qnighy/yasna.rs) @ `3c7f2ba61cfb` |
 | [yyjson](entries/save-state/yyjson/README.md) | high-performance JSON library (read/write/mutate) | c | MIT | vendored | [ibireme/yyjson](https://github.com/ibireme/yyjson) @ `ebb8d7e5aaa5` |

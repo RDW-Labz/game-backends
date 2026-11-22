@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:12:11Z",
+ "category": "save-state",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "InditexTech/weavejs \u2014 Weave.js is an open source library to build real-time collaboration applications like whiteboards, diagram editors, etc. on HTML5 Canvas with your own UI",
+ "language": "typescript",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "weavejs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "inditextech-weavejs",
+ "source": "github-search:crdt library stars:>80",
+ "stars": 276,
+ "system": "Weave.js is an open source library to build real-time collaboration applications like whiteboards, diagram editors, etc. on HTML5 Canvas with your own UI",
+ "upstream": "https://github.com/InditexTech/weavejs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T22:12:11Z",
+ "category": "save-state",
+ "commit": "2026-09-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "streamich/json-joy \u2014 json-joy is a library that implements cutting-edge real-time and collaborative editing algorithms and utilities for JSON data models, with a focus on developing the JSON CRDT (Conflict-free Replicated Data Type) specification and implementation.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "json-joy",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "streamich-json-joy",
+ "source": "github-search:crdt library stars:>80",
+ "stars": 1100,
+ "system": "json-joy is a library that implements cutting-edge real-time and collaborative editing algorithms and utilities for JSON data models, with a focus on developing",
+ "upstream": "https://github.com/streamich/json-joy",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

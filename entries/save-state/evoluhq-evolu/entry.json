@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T22:12:09Z",
+ "category": "save-state",
+ "commit": "4eedb2272841",
+ "delivery": "reference",
+ "description": "evoluhq/evolu \u2014 Local-first platform and TypeScript library",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "evolu",
+ "reference_reason": "size gate: 13 MB",
+ "size_bytes": 14450286,
+ "slug": "evoluhq-evolu",
+ "source": "github-search:crdt library stars:>80",
+ "stars": 1920,
+ "system": "Local-first platform and TypeScript library",
+ "upstream": "https://github.com/evoluhq/evolu",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1571,3 +1571,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/andjiang0083-retro-go-tab5
   - reference save-state/zylkowski-bevy-prefabs
   - reference save-state/teehee123123-server-crashes-on-player-connect
+
+- **2026-11-22 22:12 UTC** — tick 643: +2 screened, +4 reference, 0 skipped, catalogue=440
+  - added save-state/microsoft-fluidframework (MIT, reference)
+  - added save-state/evoluhq-evolu (MIT, reference)
+  - reference save-state/yousefed-syncedstore
+  - reference save-state/streamich-json-joy
+  - reference save-state/inditextech-weavejs
+  - reference save-state/asonge-loom
