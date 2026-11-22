@@ -1507,3 +1507,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/8izips-fmath
   - reference netcode/eamonnmr-scandium-rts
   - reference netcode/boomlulu-boomnetwork
+
+- **2026-11-22 20:04 UTC** — tick 635: +2 screened, +4 reference, 0 skipped, catalogue=392
+  - added netcode/codingquests-godot-multiplayer-starter (MIT, vendored)
+  - added netcode/billionerleha-111-tolmachev-netcode-sdk (none, reference)
+  - reference netcode/zfoo-project-zfoo
+  - reference netcode/jwpttcg66-nettygameserver
+  - reference netcode/iohao-iogame
+  - reference netcode/dobyte-due

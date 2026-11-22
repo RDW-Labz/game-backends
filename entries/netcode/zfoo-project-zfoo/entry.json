@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:04:07Z",
+ "category": "netcode",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "zfoo-project/zfoo \u2014 \ud83d\udca1Extremely fast enterprise server framework, can be used in RPC,  game server,  web server.",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "zfoo",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "zfoo-project-zfoo",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 2005,
+ "system": "\ud83d\udca1Extremely fast enterprise server framework, can be used in RPC,  game server,  web server.",
+ "upstream": "https://github.com/zfoo-project/zfoo",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

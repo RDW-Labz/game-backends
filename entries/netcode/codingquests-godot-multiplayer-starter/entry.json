@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T20:04:04Z",
+ "category": "netcode",
+ "commit": "ccde74b9490c",
+ "delivery": "vendored",
+ "description": "CodingQuests/godot-multiplayer-starter \u2014 A server-authoritative co-op multiplayer starter for Godot 4 with a ready-up lobby, client-side prediction, reconciliation and validated RPCs.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-multiplayer-starter",
+ "size_bytes": 43583,
+ "slug": "codingquests-godot-multiplayer-starter",
+ "source": "github-search:client side prediction netcode stars:>5",
+ "stars": 69,
+ "system": "A server-authoritative co-op multiplayer starter for Godot 4 with a ready-up lobby, client-side prediction, reconciliation and validated RPCs.",
+ "upstream": "https://github.com/CodingQuests/godot-multiplayer-starter",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

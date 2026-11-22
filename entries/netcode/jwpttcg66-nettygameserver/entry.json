@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:04:07Z",
+ "category": "netcode",
+ "commit": "2026-04-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jwpttcg66/NettyGameServer \u2014 \u4f7f\u7528netty4.X\u5b9e\u73b0\u7684\u624b\u673a\u6e38\u620f\u5206\u5e03\u5f0f\u670d\u52a1\u5668,\u652f\u6301tcp,udp,http,websocket\u94fe\u63a5\uff0c\u91c7\u7528protobuf\u81ea\u5b9a\u4e49\u534f\u8bae\u6808\u8fdb\u884c\u7f51\u7edc\u901a\u4fe1,\u652f\u6301rpc\u8fdc\u7a0b\u8c03\u7528,\u4f7f\u7528mybatis3\u652f\u6301db\u5b58\u50a8\u5206\u5e93\u5206\u8868\uff0c\u652f\u6301\u5f02\u6b65mysql\u5b58\u50a8\uff0cdb\u4fdd\u5b58\u65f6\u540c\u6b65\u66f4\u65b0reids\u7f13\u5b58\u3002 \u4f7f\u7528ExcelToCode\u5de5\u7a0b\uff0c\u5c06excel\u6570\u636e\u751f\u6210java\u7c7b\u548cjson\u6570\u636e\u5b57\u5178\uff0cDictService\u76f4\u63a5\u8bfb\u53d6json\uff0c\u51cf\u5c11\u6570\u636e\u5b57\u5178\u90e8\u5206\u4ee3\u7801\u3002\u4f7f\u7528game-executor\u5de5\u7a0b\uff0c\u589e\u52a0\u6e38\u620f\u5185\u7684\u5f02\u6b65\u4e8b\u4ef6\u5168\u5c40\u670d\u52a1, \u652f\u6301\u4e8b\u4ef6sharding,\u5747\u8861\u7684\u5f02\u6b65\u6267\u884c\u4e8b\u4ef6\u903b\u8f91",
+ "language": "java",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "NettyGameServer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "jwpttcg66-nettygameserver",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 1670,
+ "system": "\u4f7f\u7528netty4.X\u5b9e\u73b0\u7684\u624b\u673a\u6e38\u620f\u5206\u5e03\u5f0f\u670d\u52a1\u5668,\u652f\u6301tcp,udp,http,websocket\u94fe\u63a5\uff0c\u91c7\u7528protobuf\u81ea\u5b9a\u4e49\u534f\u8bae\u6808\u8fdb\u884c\u7f51\u7edc\u901a\u4fe1,\u652f\u6301rpc\u8fdc\u7a0b\u8c03\u7528,\u4f7f\u7528mybatis3\u652f\u6301db\u5b58\u50a8\u5206\u5e93\u5206\u8868\uff0c\u652f\u6301\u5f02\u6b65mysql\u5b58\u50a8\uff0cdb\u4fdd\u5b58\u65f6\u540c\u6b65\u66f4\u65b0reids\u7f13\u5b58\u3002 \u4f7f\u7528ExcelToCode\u5de5\u7a0b\uff0c\u5c06excel\u6570\u636e\u751f",
+ "upstream": "https://github.com/jwpttcg66/NettyGameServer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

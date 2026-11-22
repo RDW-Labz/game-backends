@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/ChatBox.gd" id="script"]
+[node name="ChatBox" type="CanvasLayer"]
+script = ExtResource("script")
+[node name="Panel" type="PanelContainer" parent="."]
+offset_left = 16.0
+offset_top = 370.0
+offset_right = 416.0
+[node name="Rows" type="VBoxContainer" parent="Panel"]
+[node name="History" type="RichTextLabel" parent="Panel/Rows"]
+custom_minimum_size = Vector2(0, 110)
+text = ""
+scroll_following = true
+[node name="Entry" type="LineEdit" parent="Panel/Rows"]
+placeholder_text = "Chat (160 characters)"
+max_length = 160

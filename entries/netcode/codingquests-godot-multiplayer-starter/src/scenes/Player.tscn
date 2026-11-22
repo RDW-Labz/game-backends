@@ -1,0 +1,56 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/PlayerAvatar.gd" id="script"]
+
+[sub_resource type="CircleShape2D" id="collision"]
+radius = 14.0
+
+[sub_resource type="SceneReplicationConfig" id="replication"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 0
+properties/1/path = NodePath(".:round_id")
+properties/1/spawn = true
+properties/1/replication_mode = 0
+properties/2/path = NodePath(".:server_position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:facing")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath(".:server_state")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+
+[node name="Player" type="CharacterBody2D" groups=["players"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("script")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("collision")
+
+[node name="Sync" type="MultiplayerSynchronizer" parent="." groups=["world_sync"]]
+replication_interval = 0.0333333
+public_visibility = false
+replication_config = SubResource("replication")
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Body" type="Polygon2D" parent="Visual"]
+color = Color(0.35, 0.8, 0.9, 1)
+polygon = PackedVector2Array(-12, -12, 12, -12, 18, 0, 12, 12, -12, 12)
+
+[node name="Name" type="Label" parent="."]
+offset_left = -50.0
+offset_top = -34.0
+offset_right = 50.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+text = "Player"
+horizontal_alignment = 1
+clip_text = true
+text_overrun_behavior = 3
+
+[node name="Camera" type="Camera2D" parent="."]
+enabled = false

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:04:07Z",
+ "category": "netcode",
+ "commit": "2026-08-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "iohao/ioGame \u2014 A lock-free, asynchronous, event-driven Java Netty framework for building high-performance network applications. Lightweight and dependency-free, it supports distributed, decentralized clusters without requiring external middleware or databases\u2014ideal for game servers, IoT, and long-lived connection systems.",
+ "language": "java",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "ioGame",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "iohao-iogame",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 1281,
+ "system": "A lock-free, asynchronous, event-driven Java Netty framework for building high-performance network applications. Lightweight and dependency-free, it supports di",
+ "upstream": "https://github.com/iohao/ioGame",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

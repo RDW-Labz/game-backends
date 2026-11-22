@@ -1,0 +1,28 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scenes/Lobby.gd" id="script"]
+[node name="Lobby" type="CanvasLayer"]
+script = ExtResource("script")
+[node name="Panel" type="PanelContainer" parent="."]
+offset_left = 500.0
+offset_top = 40.0
+offset_right = 920.0
+[node name="Rows" type="VBoxContainer" parent="Panel"]
+[node name="Title" type="Label" parent="Panel/Rows"]
+text="Godot Multiplayer Starter"
+[node name="Status" type="Label" parent="Panel/Rows"]
+text="Host or join a session."
+[node name="Name" type="LineEdit" parent="Panel/Rows"]
+placeholder_text="Your name"
+max_length=24
+[node name="Address" type="LineEdit" parent="Panel/Rows"]
+text="127.0.0.1"
+[node name="Host" type="Button" parent="Panel/Rows"]
+text="Host"
+[node name="Join" type="Button" parent="Panel/Rows"]
+text="Join"
+[node name="Leave" type="Button" parent="Panel/Rows"]
+text="Leave"
+[node name="Ready" type="Button" parent="Panel/Rows"]
+text="Toggle ready"
+[node name="Start" type="Button" parent="Panel/Rows"]
+text="Start round (host)"

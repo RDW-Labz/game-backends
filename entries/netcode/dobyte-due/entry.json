@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:04:07Z",
+ "category": "netcode",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dobyte/due \u2014 A High-Performance Distributed Game Server Framework in Go",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "due",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dobyte-due",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 995,
+ "system": "A High-Performance Distributed Game Server Framework in Go",
+ "upstream": "https://github.com/dobyte/due",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
