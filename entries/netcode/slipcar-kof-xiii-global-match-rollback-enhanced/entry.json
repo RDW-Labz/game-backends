@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-22T19:32:04Z",
+ "category": "netcode",
+ "commit": "06ef1443218b",
+ "delivery": "reference",
+ "description": "Slipcar/kof-xiii-global-match-rollback-enhanced \u2014 Projeto de melhoria do rollback netcode do KOF XIII",
+ "language": "n/a",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "kof-xiii-global-match-rollback-enhanced",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "slipcar-kof-xiii-global-match-rollback-enhanced",
+ "source": "github-search:rollback netcode stars:>15",
+ "stars": 33,
+ "system": "Projeto de melhoria do rollback netcode do KOF XIII",
+ "upstream": "https://github.com/Slipcar/kof-xiii-global-match-rollback-enhanced",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

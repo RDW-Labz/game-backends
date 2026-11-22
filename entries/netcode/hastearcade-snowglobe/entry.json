@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T19:32:06Z",
+ "category": "netcode",
+ "commit": "3511de2d9379",
+ "delivery": "vendored",
+ "description": "hastearcade/snowglobe \u2014 A JS port of CrystalOrb",
+ "language": "typescript",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "snowglobe",
+ "size_bytes": 414969,
+ "slug": "hastearcade-snowglobe",
+ "source": "github-search:rollback netcode stars:>15",
+ "stars": 33,
+ "system": "A JS port of CrystalOrb",
+ "upstream": "https://github.com/hastearcade/snowglobe",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

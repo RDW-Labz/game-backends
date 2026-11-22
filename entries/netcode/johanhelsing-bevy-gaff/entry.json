@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:32:07Z",
+ "category": "netcode",
+ "commit": "2023-10-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "johanhelsing/bevy_gaff \u2014 a networked (p2p), cross-platform physics simulation example using rollback netcode",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_gaff",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "johanhelsing-bevy-gaff",
+ "source": "github-search:rollback netcode stars:>15",
+ "stars": 32,
+ "system": "a networked (p2p), cross-platform physics simulation example using rollback netcode",
+ "upstream": "https://github.com/johanhelsing/bevy_gaff",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 19:16 UTC · 374 entries · 125 vendored, 249 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 19:32 UTC · 380 entries · 126 vendored, 254 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-22 19:16 UTC · 374 entries · 125 vendored, 249 reference-on
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
-| [netcode](#netcode) — Networking / netcode | 75 | 25 | 50 |
+| [netcode](#netcode) — Networking / netcode | 81 | 26 | 55 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
@@ -280,7 +280,7 @@ _Generated 2026-11-22 19:16 UTC · 374 entries · 125 vendored, 249 reference-on
 
 ## netcode
 
-**Networking / netcode** — 75 entries
+**Networking / netcode** — 81 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -291,6 +291,7 @@ _Generated 2026-11-22 19:16 UTC · 374 entries · 125 vendored, 249 reference-on
 | [backroll-rs](entries/netcode/houraiteahouse-backroll-rs/README.md) | A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode. | rust | ISC | reference | [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) @ `2023-03-13 (branch tip at catalogue time)` |
 | [BeamMP-Server](entries/netcode/beammp-beammp-server/README.md) | Server for the multiplayer mod BeamMP for BeamNG.drive | c++ | AGPL-3.0 | reference | [BeamMP/BeamMP-Server](https://github.com/BeamMP/BeamMP-Server) @ `2026-09-23 (branch tip at catalogue time)` |
 | [BestoNet](entries/netcode/bestogames-bestonet/README.md) | BestoNet is a custom rollback networking solution developed for the fighting game Idol Showdown. Built in C# for Unity, it integrates with Facepunch Steamworks  | c# | MIT | reference | [BestoGames/BestoNet](https://github.com/BestoGames/BestoNet) @ `2026-06-02 (branch tip at catalogue time)` |
+| [bevy_gaff](entries/netcode/johanhelsing-bevy-gaff/README.md) | a networked (p2p), cross-platform physics simulation example using rollback netcode | rust | Apache-2.0 | reference | [johanhelsing/bevy_gaff](https://github.com/johanhelsing/bevy_gaff) @ `2023-10-22 (branch tip at catalogue time)` |
 | [cellnet](entries/netcode/davyxu-cellnet/README.md) | High performance, simple, extensible golang open source network library | go | MIT | vendored | [davyxu/cellnet](https://github.com/davyxu/cellnet) @ `916a7eaabb30` |
 | [cocos2dxMultiPlayer](entries/netcode/obastemur-cocos2dxmultiplayer/README.md) | Sample Cocos2d-x Multiplayer game with server side source codes | c++ | unknown | reference | [obastemur/cocos2dxMultiPlayer](https://github.com/obastemur/cocos2dxMultiPlayer) @ `2013-05-09 (branch tip at catalogue time)` |
 | [Colyseus](entries/netcode/colyseus/README.md) | authoritative room-based multiplayer framework with state sync | typescript | MIT | vendored | [colyseus/colyseus](https://github.com/colyseus/colyseus) @ `ce781b98bfc5` |
@@ -316,6 +317,7 @@ _Generated 2026-11-22 19:16 UTC · 374 entries · 125 vendored, 249 reference-on
 | [hypersomnia — network](entries/netcode/hypersomnia-network/README.md) | network transport, protocol, replication or server loop | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [java-game-server](entries/netcode/menacher-java-game-server/README.md) | Jetserver is a high speed nio socket based multiplayer java game server written using Netty and Mike Rettig's Jetlang.It is specifically tuned for network based | java | unknown | reference | [menacher/java-game-server](https://github.com/menacher/java-game-server) @ `2025-11-03 (branch tip at catalogue time)` |
 | [KCP](entries/netcode/kcp/README.md) | fast reliable ARQ protocol (TCP-like over UDP) | c | MIT | vendored | [skywind3000/kcp](https://github.com/skywind3000/kcp) @ `b1a7a2101dcb` |
+| [kof-xiii-global-match-rollback-enhanced](entries/netcode/slipcar-kof-xiii-global-match-rollback-enhanced/README.md) | Projeto de melhoria do rollback netcode do KOF XIII | n/a | none | reference | [Slipcar/kof-xiii-global-match-rollback-enhanced](https://github.com/Slipcar/kof-xiii-global-match-rollback-enhanced) @ `06ef1443218b` |
 | [kruise-game](entries/netcode/openkruise-kruise-game/README.md) | Game Servers Management on Kubernetes | go | Apache-2.0 | reference | [openkruise/kruise-game](https://github.com/openkruise/kruise-game) @ `2026-07-24 (branch tip at catalogue time)` |
 | [lance](entries/netcode/lance-gg-lance/README.md) | Multiplayer game server based on Node.JS | typescript | Apache-2.0 | vendored | [lance-gg/lance](https://github.com/lance-gg/lance) @ `fd9bc5dce93f` |
 | [lgsl](entries/netcode/tltneon-lgsl/README.md) | LGSL v6.2.1/v7.0.0 for PHP 5.4-8.5+ (Live Game Server List): online status for CS2 (Source Query), Discord, FiveM, Rust, SA:MP, GMOD, Minecraft, Teamspeak and 2 | php | GPL-3.0 | reference | [tltneon/lgsl](https://github.com/tltneon/lgsl) @ `2026-09-11 (branch tip at catalogue time)` |
@@ -343,8 +345,11 @@ _Generated 2026-11-22 19:16 UTC · 374 entries · 125 vendored, 249 reference-on
 | [psn-api](entries/netcode/achievements-app-psn-api/README.md) | A JavaScript library that lets you get trophy, user, and game data from the PlayStation Network. | typescript | MIT | reference | [achievements-app/psn-api](https://github.com/achievements-app/psn-api) @ `2026-08-15 (branch tip at catalogue time)` |
 | [quilkin](entries/netcode/embarkstudios-quilkin/README.md) | Quilkin is a non-transparent UDP proxy specifically designed for use with large scale multiplayer dedicated game server deployments, to ensure security, access  | rust | Apache-2.0 | reference | [EmbarkStudios/quilkin](https://github.com/EmbarkStudios/quilkin) @ `2026-11-22 (branch tip at catalogue time)` |
 | [rigs-of-rods — server](entries/netcode/rigs-of-rods-server/README.md) | network transport, protocol, replication or server loop | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
+| [Rollback-Core](entries/netcode/gregorik-rollback-core/README.md) | Deterministic GGPO-style rollback netcode for Unreal Engine 5: fixed-step simulation, SaveGame-reflection state capture, UDP transport with input redundancy and | c++ | MIT | reference | [gregorik/Rollback-Core](https://github.com/gregorik/Rollback-Core) @ `2026-11-18 (branch tip at catalogue time)` |
+| [Rollback-Networking-Shooter](entries/netcode/thefiftguy-rollback-networking-shooter/README.md) | My Honours project's UE5 project files. I aim to use GGPO, Bullet3 Physics, and Unreal Engine 5 to create a FPS game demo that uses Rollback Netcode. | c++ | unknown | reference | [TheFiftGuy/Rollback-Networking-Shooter](https://github.com/TheFiftGuy/Rollback-Networking-Shooter) @ `2024-03-27 (branch tip at catalogue time)` |
 | [Segs](entries/netcode/segs-segs/README.md) | :muscle: SEGS - Super Entity Game Server | c++ | BSD-3-Clause | reference | [Segs/Segs](https://github.com/Segs/Segs) @ `73b2ccb9aa5b` |
 | [sf4e](entries/netcode/fabeloper-sf4e/README.md) | Rollback netcode mod for Ultra Street Fighter IV (Steam). Fork of sf4e by Anthony Danducci (adanducci), codeberg.org/adanducci/sf4e | c++ | MIT | vendored | [fabeloper/sf4e](https://github.com/fabeloper/sf4e) @ `e01d5ab3a4ac` |
+| [snowglobe](entries/netcode/hastearcade-snowglobe/README.md) | A JS port of CrystalOrb | typescript | Apache-2.0 | vendored | [hastearcade/snowglobe](https://github.com/hastearcade/snowglobe) @ `3511de2d9379` |
 | [stronghold-protocol — server](entries/netcode/stronghold-protocol-server/README.md) | network transport, protocol, replication or server loop | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
 | [summer](entries/netcode/summerengine-summer/README.md) | The game engine built for AI. Includes MCP server, CLI and skills that let any agent build, test, publish, and grow full games with Summer Engine. | typescript | MIT | vendored | [SummerEngine/summer](https://github.com/SummerEngine/summer) @ `74a5a9d7e823` |
 | [suroi — packets](entries/netcode/suroi-packets/README.md) | network transport, protocol, replication or server loop | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
@@ -352,6 +357,7 @@ _Generated 2026-11-22 19:16 UTC · 374 entries · 125 vendored, 249 reference-on
 | [teeworlds — server](entries/netcode/teeworlds-server/README.md) | network transport, protocol, replication or server loop | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
 | [Tekken6-native-online](entries/netcode/ekspym-tekken6-native-online/README.md) | Tekken 6 (Xbox 360) native on Windows with rollback netcode - build from your own ISO | n/a | none | reference | [Ekspym/Tekken6-native-online](https://github.com/Ekspym/Tekken6-native-online) @ `f68b65b253d8` |
 | [tenio](entries/netcode/congcoi123-tenio/README.md) | TenIO is an open-source project for making online games that includes a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games and | java | MIT | vendored | [congcoi123/tenio](https://github.com/congcoi123/tenio) @ `5df792294b31` |
+| [TF.EX](entries/netcode/fcornaire-tf-ex/README.md) | Rollback netcode for TowerFall | c# | GPL-3.0 | reference | [Fcornaire/TF.EX](https://github.com/Fcornaire/TF.EX) @ `2026-11-22 (branch tip at catalogue time)` |
 | [VCMI — server](entries/netcode/vcmi-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [voldorium](entries/netcode/enrique363-voldorium/README.md) | Native Windows and Linux port of SoulCalibur (Dreamcast) by static recompilation: 16:9, online versus with rollback netcode (Windows and Linux play together). R | c | unknown | reference | [enrique363/voldorium](https://github.com/enrique363/voldorium) @ `2026-11-14 (branch tip at catalogue time)` |
 | [warzone2100 — netplay](entries/netcode/warzone2100-lib-netplay/README.md) | RTS netplay: sync, desync detection, rejoin | c++ | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e14614` |

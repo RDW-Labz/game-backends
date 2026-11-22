@@ -1491,3 +1491,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/huytd-node-js-game-server
   - reference netcode/obastemur-cocos2dxmultiplayer
   - reference netcode/sauravhiremath-fifa-api
+
+- **2026-11-22 19:32 UTC** — tick 633: +2 screened, +4 reference, 17 skipped, catalogue=380
+  - added netcode/slipcar-kof-xiii-global-match-rollback-enhanced (none, reference)
+  - added netcode/hastearcade-snowglobe (Apache-2.0, vendored)
+  - reference netcode/johanhelsing-bevy-gaff
+  - reference netcode/thefiftguy-rollback-networking-shooter
+  - reference netcode/fcornaire-tf-ex
+  - reference netcode/gregorik-rollback-core

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T19:32:07Z",
+ "category": "netcode",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gregorik/Rollback-Core \u2014 Deterministic GGPO-style rollback netcode for Unreal Engine 5: fixed-step simulation, SaveGame-reflection state capture, UDP transport with input redundancy and reliable ACKs. MIT-licensed.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Rollback-Core",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gregorik-rollback-core",
+ "source": "github-search:rollback netcode stars:>15",
+ "stars": 27,
+ "system": "Deterministic GGPO-style rollback netcode for Unreal Engine 5: fixed-step simulation, SaveGame-reflection state capture, UDP transport with input redundancy and",
+ "upstream": "https://github.com/gregorik/Rollback-Core",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
