@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T23:32:05Z",
+ "category": "procgen",
+ "commit": "a238f62f06c2",
+ "delivery": "reference",
+ "description": "Epholys/procgen \u2014 Procedural Generation Experiments",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "procgen",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 3593711,
+ "slug": "epholys-procgen",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 105,
+ "system": "Procedural Generation Experiments",
+ "upstream": "https://github.com/Epholys/procgen",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

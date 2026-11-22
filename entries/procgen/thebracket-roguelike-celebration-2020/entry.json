@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:32:06Z",
+ "category": "procgen",
+ "commit": "2022-06-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "thebracket/roguelike-celebration-2020 \u2014 Code for my Procedural Map Generation talk at the Roguelike Celebration 2020",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "roguelike-celebration-2020",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "thebracket-roguelike-celebration-2020",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 105,
+ "system": "Code for my Procedural Map Generation talk at the Roguelike Celebration 2020",
+ "upstream": "https://github.com/thebracket/roguelike-celebration-2020",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

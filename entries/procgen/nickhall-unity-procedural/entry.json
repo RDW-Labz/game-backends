@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:32:06Z",
+ "category": "procgen",
+ "commit": "2018-10-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "nickhall/Unity-Procedural \u2014 Spline based mesh generation",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Unity-Procedural",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "nickhall-unity-procedural",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 96,
+ "system": "Spline based mesh generation",
+ "upstream": "https://github.com/nickhall/Unity-Procedural",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

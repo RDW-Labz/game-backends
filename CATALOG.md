@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 23:16 UTC · 464 entries · 143 vendored, 321 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 23:32 UTC · 470 entries · 143 vendored, 327 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-22 23:16 UTC · 464 entries · 143 vendored, 321 reference-on
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
-| [procgen](#procgen) — Procedural generation | 55 | 17 | 38 |
+| [procgen](#procgen) — Procedural generation | 61 | 17 | 44 |
 
 
 ## engines
@@ -474,14 +474,16 @@ _Generated 2026-11-22 23:16 UTC · 464 entries · 143 vendored, 321 reference-on
 
 ## procgen
 
-**Procedural generation** — 55 entries
+**Procedural generation** — 61 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [1843-planet-generation](entries/procgen/redblobgames-1843-planet-generation/README.md) | One week experiment: learn how to procedurally generate maps on a sphere. Code is messy but it runs. | javascript | Apache-2.0 | reference | [redblobgames/1843-planet-generation](https://github.com/redblobgames/1843-planet-generation) @ `2026-06-06 (branch tip at catalogue time)` |
+| [ae-motion-compiler](entries/procgen/volumetenrectify-ae-motion-compiler/README.md) | Motion graphics automation framework for Adobe After Effects CC 2024+. Procedural keyframe generation, expression-based animation control, layer automation, and | html | none | reference | [Volumetenrectify/ae-motion-compiler](https://github.com/Volumetenrectify/ae-motion-compiler) @ `c64daebc9e52` |
 | [ArduTouch](entries/procgen/maltman23-ardutouch/README.md) | ==> ARDUTOUCH KITS ARE AVAILABLE at CornfieldElectronics.com <==  ArduTouch is an Arduino-compatible music synthesizer kit with a built-in touch keyboard, and w | c++ | CC-BY-SA-3.0 | reference | [maltman23/ArduTouch](https://github.com/maltman23/ArduTouch) @ `8b6c6f74e6ca` |
 | [astray](entries/procgen/sience-astray/README.md) | Astray is a lua based maze, room and dungeon generation library for dungeon crawlers and rougelike video games | lua | Zlib | vendored | [SiENcE/astray](https://github.com/SiENcE/astray) @ `1a557a8281a8` |
 | [BMeshUnity](entries/procgen/eliemichel-bmeshunity/README.md) | A Unity package to make runtime procedural mesh generation more flexible. | c# | MIT | reference | [eliemichel/BMeshUnity](https://github.com/eliemichel/BMeshUnity) @ `2023-12-13 (branch tip at catalogue time)` |
+| [CasualGodComplex](entries/procgen/martindevans-casualgodcomplex/README.md) | Procedural generation of galaxies | c# | MIT | reference | [martindevans/CasualGodComplex](https://github.com/martindevans/CasualGodComplex) @ `2019-04-08 (branch tip at catalogue time)` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-mapgen/README.md) | procedural map/world/level generation | cpp | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300f` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-src-mapgen/README.md) | map and city generation | c++ | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300fd2353` |
 | [Comp_Sci_Sem_2](entries/procgen/danderfer-comp-sci-sem-2/README.md) | According to all known laws of aviation, there is no way that a bee should be able to fly. Its wings are too small to get its fat little body off the ground. Th | python | unknown | reference | [danderfer/Comp_Sci_Sem_2](https://github.com/danderfer/Comp_Sci_Sem_2) @ `2023-04-03 (branch tip at catalogue time)` |
@@ -512,8 +514,10 @@ _Generated 2026-11-22 23:16 UTC · 464 entries · 143 vendored, 321 reference-on
 | [ProceduralMeshDemos](entries/procgen/siggig-proceduralmeshdemos/README.md) | Examples of procedural mesh generation in Unreal Engine. | c++ | MIT | reference | [SiggiG/ProceduralMeshDemos](https://github.com/SiggiG/ProceduralMeshDemos) @ `2026-10-20 (branch tip at catalogue time)` |
 | [ProceduralTerrain](entries/procgen/thesoenke-proceduralterrain/README.md) | Procedural voxel terrain generation in Unity | c# | MIT | vendored | [theSoenke/ProceduralTerrain](https://github.com/theSoenke/ProceduralTerrain) @ `468372292bea` |
 | [ProceduralToolkit](entries/procgen/syomus-proceduraltoolkit/README.md) | Procedural generation library for Unity | c# | MIT | vendored | [Syomus/ProceduralToolkit](https://github.com/Syomus/ProceduralToolkit) @ `984a1e69b8ac` |
+| [procgen](entries/procgen/epholys-procgen/README.md) | Procedural Generation Experiments | c++ | GPL-3.0 | reference | [Epholys/procgen](https://github.com/Epholys/procgen) @ `a238f62f06c2` |
 | [ptdesigner](entries/procgen/drummyfish-ptdesigner/README.md) | Library and GUI tool for designing and generation of procedural textures, made as a part of my Bachelor thesis. | c++ | GPL-2.0 | reference | [drummyfish/ptdesigner](https://github.com/drummyfish/ptdesigner) @ `a2532e9ddc4b` |
 | [R2E-Gym](entries/procgen/r2e-gym-r2e-gym/README.md) | [COLM 2025] Official repository for R2E-Gym: Procedural Environment Generation and Hybrid Verifiers for Scaling Open-Weights SWE Agents | python | Apache-2.0 | reference | [R2E-Gym/R2E-Gym](https://github.com/R2E-Gym/R2E-Gym) @ `2025-07-13 (branch tip at catalogue time)` |
+| [roguelike-celebration-2020](entries/procgen/thebracket-roguelike-celebration-2020/README.md) | Code for my Procedural Map Generation talk at the Roguelike Celebration 2020 | rust | MIT | reference | [thebracket/roguelike-celebration-2020](https://github.com/thebracket/roguelike-celebration-2020) @ `2022-06-17 (branch tip at catalogue time)` |
 | [SoilMachine](entries/procgen/weigert-soilmachine/README.md) | Advanced, modular, coupled geomorpohology simulator for real-time procedural terrain generation. | c++ | unknown | reference | [weigert/SoilMachine](https://github.com/weigert/SoilMachine) @ `2023-06-11 (branch tip at catalogue time)` |
 | [space-2d](entries/procgen/wwwtyro-space-2d/README.md) | Fast procedural 2D space scene generation on the GPU. | javascript | Unlicense | reference | [wwwtyro/space-2d](https://github.com/wwwtyro/space-2d) @ `2016-10-24 (branch tip at catalogue time)` |
 | [space-station-14 — Procedural](entries/procgen/space-station-14-content-shared-procedural/README.md) | procedural station/AI content generation | c# | MIT | vendored | [space-wizards/space-station-14](https://github.com/space-wizards/space-station-14) @ `33a1d0e32d63` |
@@ -522,8 +526,10 @@ _Generated 2026-11-22 23:16 UTC · 464 entries · 143 vendored, 321 reference-on
 | [THREE.Terrain](entries/procgen/icecreamyou-three-terrain/README.md) | A procedural terrain generation engine for use with the Three.js 3D graphics library for the web. | javascript | MIT | reference | [IceCreamYou/THREE.Terrain](https://github.com/IceCreamYou/THREE.Terrain) @ `2026-11-12 (branch tip at catalogue time)` |
 | [Tracery](entries/procgen/tracery/README.md) | grammar-based generative text/structure | javascript | Apache-2.0 | vendored | [galaxykate/tracery](https://github.com/galaxykate/tracery) @ `11db07cb8e35` |
 | [UE4ProceduralMesh](entries/procgen/srombauts-ue4proceduralmesh/README.md) | UE4.7 Procedural Mesh Generation plugin | c++ | none | reference | [SRombauts/UE4ProceduralMesh](https://github.com/SRombauts/UE4ProceduralMesh) @ `559456457530` |
+| [Unity-Procedural](entries/procgen/nickhall-unity-procedural/README.md) | Spline based mesh generation | c# | unknown | reference | [nickhall/Unity-Procedural](https://github.com/nickhall/Unity-Procedural) @ `2018-10-29 (branch tip at catalogue time)` |
 | [unity-wave-function-collapse](entries/procgen/selfsame-unity-wave-function-collapse/README.md) | see upstream | c# | MIT | vendored | [selfsame/unity-wave-function-collapse](https://github.com/selfsame/unity-wave-function-collapse) @ `d1b28923ff38` |
 | [unity-wave-function-collapse-3d](entries/procgen/oddmax-unity-wave-function-collapse-3d/README.md) | Implementation of wave function collapse approach for Unity in 3d space | c# | unknown | reference | [oddmax/unity-wave-function-collapse-3d](https://github.com/oddmax/unity-wave-function-collapse-3d) @ `2022-06-21 (branch tip at catalogue time)` |
+| [Unity.ProceduralContentGeneration-Terrain](entries/procgen/erikmoczi-unity-proceduralcontentgeneration-terrain/README.md) | Procedural Terrain Generation using CPU workflow based on ECS, focused on performance | c# | MIT | reference | [ErikMoczi/Unity.ProceduralContentGeneration-Terrain](https://github.com/ErikMoczi/Unity.ProceduralContentGeneration-Terrain) @ `2019-04-12 (branch tip at catalogue time)` |
 | [urizen](entries/procgen/vurmux-urizen/README.md) | Roguelike dungeon generation library written on Python3 | python | Apache-2.0 | vendored | [vurmux/urizen](https://github.com/vurmux/urizen) @ `28b1e60cf8fa` |
 | [utymap](entries/procgen/reinterpretcat-utymap/README.md) | Highly customizable library for procedural world generation based on real map data | c++ | Apache-2.0 | reference | [reinterpretcat/utymap](https://github.com/reinterpretcat/utymap) @ `2019-05-16 (branch tip at catalogue time)` |
 | [veloren — world](entries/procgen/veloren-world/README.md) | world generation (terrain, biomes, caves, structures) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |

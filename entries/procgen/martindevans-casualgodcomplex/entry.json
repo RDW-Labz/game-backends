@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:32:06Z",
+ "category": "procgen",
+ "commit": "2019-04-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "martindevans/CasualGodComplex \u2014 Procedural generation of galaxies",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "CasualGodComplex",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "martindevans-casualgodcomplex",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 102,
+ "system": "Procedural generation of galaxies",
+ "upstream": "https://github.com/martindevans/CasualGodComplex",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

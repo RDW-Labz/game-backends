@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-22T23:32:02Z",
+ "category": "procgen",
+ "commit": "c64daebc9e52",
+ "delivery": "reference",
+ "description": "Volumetenrectify/ae-motion-compiler \u2014 Motion graphics automation framework for Adobe After Effects CC 2024+. Procedural keyframe generation, expression-based animation control, layer automation, and batch rendering. Scripting tools for animators and motion designers. Includes keyframe generators, expression builders, and render automation.",
+ "language": "html",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "ae-motion-compiler",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "volumetenrectify-ae-motion-compiler",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 110,
+ "system": "Motion graphics automation framework for Adobe After Effects CC 2024+. Procedural keyframe generation, expression-based animation control, layer automation, and",
+ "upstream": "https://github.com/Volumetenrectify/ae-motion-compiler",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

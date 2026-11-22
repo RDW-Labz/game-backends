@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T23:32:06Z",
+ "category": "procgen",
+ "commit": "2019-04-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ErikMoczi/Unity.ProceduralContentGeneration-Terrain \u2014 Procedural Terrain Generation using CPU workflow based on ECS, focused on performance",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Unity.ProceduralContentGeneration-Terrain",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "erikmoczi-unity-proceduralcontentgeneration-terrain",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 103,
+ "system": "Procedural Terrain Generation using CPU workflow based on ECS, focused on performance",
+ "upstream": "https://github.com/ErikMoczi/Unity.ProceduralContentGeneration-Terrain",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
