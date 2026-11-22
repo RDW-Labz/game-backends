@@ -1,0 +1,11 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.ipr
+
+
+dump.rdb
+.DS_Store
+
+/server/src/db
+/server/src/main/resources/application-prod.yml

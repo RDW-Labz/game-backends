@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:20:08Z",
+ "category": "netcode",
+ "commit": "2017-12-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vezwork/phasocketonline \u2014 A server and client for a multiplayer browser game. Server in node.js, game in javascript with phaser and using socket.io for websockets.",
+ "language": "html",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "phasocketonline",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "vezwork-phasocketonline",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 64,
+ "system": "A server and client for a multiplayer browser game. Server in node.js, game in javascript with phaser and using socket.io for websockets.",
+ "upstream": "https://github.com/vezwork/phasocketonline",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

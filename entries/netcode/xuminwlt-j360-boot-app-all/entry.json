@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T20:20:06Z",
+ "category": "netcode",
+ "commit": "27c5849aaf2e",
+ "delivery": "vendored",
+ "description": "xuminwlt/j360-boot-app-all \u2014 \u57fa\u4e8eSpring boot 2.0+ \u811a\u624b\u67b6\u91cd\u6784\u5fae\u670d\u52a1\u7cfb\u7edf\uff0cCI\u3001DevOps\u3001Redisson\u3001Shiro\u3001RocketMQ tx\u3001Dubbo\u3001Sentinel\u3001Sharding-Sphere\u3001Fescar\u3001Skywalking\u3001Apollo\u3001SocketIO\uff0c \u5c0f\u7a0b\u5e8f\u670d\u52a1\u7aef\u5feb\u901f\u4e0a\u624bSample, Netty Socket Game/PUSH Server",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "j360-boot-app-all",
+ "size_bytes": 1628877,
+ "slug": "xuminwlt-j360-boot-app-all",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 69,
+ "system": "\u57fa\u4e8eSpring boot 2.0+ \u811a\u624b\u67b6\u91cd\u6784\u5fae\u670d\u52a1\u7cfb\u7edf\uff0cCI\u3001DevOps\u3001Redisson\u3001Shiro\u3001RocketMQ tx\u3001Dubbo\u3001Sentinel\u3001Sharding-Sphere\u3001Fescar\u3001Skywalking\u3001Apollo\u3001SocketIO\uff0c \u5c0f\u7a0b\u5e8f\u670d\u52a1\u7aef\u5feb\u901f\u4e0a\u624bSample, Netty Soc",
+ "upstream": "https://github.com/xuminwlt/j360-boot-app-all",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

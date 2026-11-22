@@ -1,0 +1,17 @@
+import User from "../../user/User";
+import { APIRequest, HttpMethod } from "../api/api_request";
+import AddFriendResponse from "./AddFriendResponse";
+
+export default class AddFriendRequest extends APIRequest<AddFriendResponse> {
+  private friend: User;
+
+  constructor(friend: User) {
+    super();
+    this.friend = friend;
+  }
+
+  prepare() {
+    this.method = HttpMethod.POST;
+    this.path = `users/${this.user.id}/friends/${this.friend.id}`;
+  }
+}

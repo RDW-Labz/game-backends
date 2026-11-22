@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:20:08Z",
+ "category": "netcode",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "GameFrameX/GameFrameX.Server \u2014 High-performance game server framework built on C# .NET 10.0 with Actor Model architecture, hot-update support, multi-protocol networking (TCP/WebSocket/HTTP/KCP), MongoDB persistence, and OpenTelemetry monitoring. | GameFrameX \u7684\u9ad8\u6027\u80fd\u6e38\u620f\u670d\u52a1\u5668\uff1aC# .NET 10\u3001Actor \u6a21\u578b\u3001\u70ed\u66f4\u65b0\u3001TCP/WebSocket/HTTP/KCP\u3001MongoDB\u3001OpenTelemetry \u76d1\u63a7\u3002",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "GameFrameX.Server",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "gameframex-gameframex-server",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 65,
+ "system": "High-performance game server framework built on C# .NET 10.0 with Actor Model architecture, hot-update support, multi-protocol networking (TCP/WebSocket/HTTP/KC",
+ "upstream": "https://github.com/GameFrameX/GameFrameX.Server",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

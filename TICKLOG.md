@@ -1515,3 +1515,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/jwpttcg66-nettygameserver
   - reference netcode/iohao-iogame
   - reference netcode/dobyte-due
+
+- **2026-11-22 20:20 UTC** — tick 636: +2 screened, +4 reference, 2 skipped, catalogue=398
+  - added netcode/hulang1024-online-chess (MIT, vendored)
+  - added netcode/xuminwlt-j360-boot-app-all (Apache-2.0, vendored)
+  - reference netcode/gameframex-gameframex-server
+  - reference netcode/vezwork-phasocketonline
+  - reference netcode/sherry0319-ytsvrlib
+  - reference netcode/metagogs-gogs

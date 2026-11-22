@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-22T20:20:04Z",
+ "category": "netcode",
+ "commit": "6e4db9c01034",
+ "delivery": "vendored",
+ "description": "hulang1024/online-chess \u2014 Chess game website client and server.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "online-chess",
+ "size_bytes": 1357607,
+ "slug": "hulang1024-online-chess",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 77,
+ "system": "Chess game website client and server.",
+ "upstream": "https://github.com/hulang1024/online-chess",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

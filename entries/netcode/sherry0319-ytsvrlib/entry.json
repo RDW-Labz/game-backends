@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:20:08Z",
+ "category": "netcode",
+ "commit": "2020-02-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sherry0319/YTSvrLib \u2014 A game server library for linux/windows(support TCP, UDP, HTTP(S) and Websocket,MySQL,redis) \u4e00\u4e2a\u7b80\u5355\u4f46\u529f\u80fd\u5f3a\u5927\u7684\u8de8\u5e73\u53f0(Win/Linux)\u6e38\u620f\u670d\u52a1\u5668\u6846\u67b6.\u652f\u6301TCP,UDP,HTTP,WEBSOCKET.\u652f\u6301MySQL\u548cRedis",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "YTSvrLib",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sherry0319-ytsvrlib",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 63,
+ "system": "A game server library for linux/windows(support TCP, UDP, HTTP(S) and Websocket,MySQL,redis) \u4e00\u4e2a\u7b80\u5355\u4f46\u529f\u80fd\u5f3a\u5927\u7684\u8de8\u5e73\u53f0(Win/Linux)\u6e38\u620f\u670d\u52a1\u5668\u6846\u67b6.\u652f\u6301TCP,UDP,HTTP,WEBSOCKET.\u652f\u6301MySQL\u548cRe",
+ "upstream": "https://github.com/sherry0319/YTSvrLib",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

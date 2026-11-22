@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-22 20:04 UTC · 392 entries · 128 vendored, 264 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-22 20:20 UTC · 398 entries · 130 vendored, 268 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-22 20:04 UTC · 392 entries · 128 vendored, 264 reference-on
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
-| [netcode](#netcode) — Networking / netcode | 93 | 28 | 65 |
+| [netcode](#netcode) — Networking / netcode | 99 | 30 | 69 |
 | [save-state](#save-state) — Save / state systems | 28 | 12 | 16 |
 | [procgen](#procgen) — Procedural generation | 42 | 15 | 27 |
 
@@ -280,7 +280,7 @@ _Generated 2026-11-22 20:04 UTC · 392 entries · 128 vendored, 264 reference-on
 
 ## netcode
 
-**Networking / netcode** — 93 entries
+**Networking / netcode** — 99 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -310,6 +310,7 @@ _Generated 2026-11-22 20:04 UTC · 392 entries · 128 vendored, 264 reference-on
 | [Freeciv — networking](entries/netcode/freeciv-common-networking/README.md) | turn-based client/server protocol and packet layer | c | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756d5b07` |
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
+| [GameFrameX.Server](entries/netcode/gameframex-gameframex-server/README.md) | High-performance game server framework built on C# .NET 10.0 with Actor Model architecture, hot-update support, multi-protocol networking (TCP/WebSocket/HTTP/KC | c# | Apache-2.0 | reference | [GameFrameX/GameFrameX.Server](https://github.com/GameFrameX/GameFrameX.Server) @ `2026-11-20 (branch tip at catalogue time)` |
 | [GameNetworkingSockets](entries/netcode/gamenetworkingsockets/README.md) | reliable/unreliable encrypted message transport (Valve) | c++ | BSD-3-Clause | vendored | [ValveSoftware/GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) @ `d534c19aa760` |
 | [GameProject3](entries/netcode/ylmbtm-gameproject3/README.md) | 游戏服务器框架，网络层分别用SocketAPI、Boost Asio、Libuv三种方式实现， 框架内使用共享内存，无锁队列，对象池，内存池来提高服务器性能。还包含一个不断完善的Unity 3D客户端，客户端含大量完整资源，坐骑，宠物，伙伴，装备, 这些均己实现上阵和穿戴, 并可进入副本战斗，多人玩法也己实现, 持续开 | c++ | unknown | reference | [ylmbtm/GameProject3](https://github.com/ylmbtm/GameProject3) @ `2025-04-28 (branch tip at catalogue time)` |
 | [GekkoNet](entries/netcode/heatxd-gekkonet/README.md) | P2P Rollback Game Networking SDK | c++ | BSD-2-Clause | vendored | [HeatXD/GekkoNet](https://github.com/HeatXD/GekkoNet) @ `45dac7e50fd3` |
@@ -318,9 +319,11 @@ _Generated 2026-11-22 20:04 UTC · 392 entries · 128 vendored, 264 reference-on
 | [godot-rocket-league](entries/netcode/albertok-godot-rocket-league/README.md) | Network physics with rollback test using Godot and netfox | gdscript | MIT | vendored | [albertok/godot-rocket-league](https://github.com/albertok/godot-rocket-league) @ `78b28ce495fa` |
 | [Godot-Rollback-Fighter-Demo](entries/netcode/blast-harbour-godot-rollback-fighter-demo/README.md) | An example project built on Bimdav's "Delta Rollback" Fork of David Snopek's "Godot Rollback Netcode" Addon  | gdscript | MIT | reference | [blast-harbour/Godot-Rollback-Fighter-Demo](https://github.com/blast-harbour/Godot-Rollback-Fighter-Demo) @ `2024-07-10 (branch tip at catalogue time)` |
 | [godot-tiny-mmo](entries/netcode/slayhorizon-godot-tiny-mmo/README.md) | Open-source cross-platform MMORPG built with Godot 4 | gdscript | MIT | vendored | [SlayHorizon/godot-tiny-mmo](https://github.com/SlayHorizon/godot-tiny-mmo) @ `f4ed04f20963` |
+| [gogs](entries/netcode/metagogs-gogs/README.md) | gogs is a simple, fast and lightweight game server framework written in golang | go | Apache-2.0 | reference | [metagogs/gogs](https://github.com/metagogs/gogs) @ `2026-09-08 (branch tip at catalogue time)` |
 | [GopherGameServer](entries/netcode/hewiefreeman-gophergameserver/README.md) | :trophy: Feature packed, easy-to-use game server API for Go back-ends and Javascript clients. Tutorials and examples included! | go | Apache-2.0 | reference | [hewiefreeman/GopherGameServer](https://github.com/hewiefreeman/GopherGameServer) @ `2024-03-29 (branch tip at catalogue time)` |
 | [hypersomnia — network](entries/netcode/hypersomnia-network/README.md) | network transport, protocol, replication or server loop | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [ioGame](entries/netcode/iohao-iogame/README.md) | A lock-free, asynchronous, event-driven Java Netty framework for building high-performance network applications. Lightweight and dependency-free, it supports di | java | AGPL-3.0 | reference | [iohao/ioGame](https://github.com/iohao/ioGame) @ `2026-08-02 (branch tip at catalogue time)` |
+| [j360-boot-app-all](entries/netcode/xuminwlt-j360-boot-app-all/README.md) | 基于Spring boot 2.0+ 脚手架重构微服务系统，CI、DevOps、Redisson、Shiro、RocketMQ tx、Dubbo、Sentinel、Sharding-Sphere、Fescar、Skywalking、Apollo、SocketIO， 小程序服务端快速上手Sample, Netty Soc | java | Apache-2.0 | vendored | [xuminwlt/j360-boot-app-all](https://github.com/xuminwlt/j360-boot-app-all) @ `27c5849aaf2e` |
 | [java-game-server](entries/netcode/menacher-java-game-server/README.md) | Jetserver is a high speed nio socket based multiplayer java game server written using Netty and Mike Rettig's Jetlang.It is specifically tuned for network based | java | unknown | reference | [menacher/java-game-server](https://github.com/menacher/java-game-server) @ `2025-11-03 (branch tip at catalogue time)` |
 | [KCP](entries/netcode/kcp/README.md) | fast reliable ARQ protocol (TCP-like over UDP) | c | MIT | vendored | [skywind3000/kcp](https://github.com/skywind3000/kcp) @ `b1a7a2101dcb` |
 | [kof-xiii-global-match-rollback-enhanced](entries/netcode/slipcar-kof-xiii-global-match-rollback-enhanced/README.md) | Projeto de melhoria do rollback netcode do KOF XIII | n/a | none | reference | [Slipcar/kof-xiii-global-match-rollback-enhanced](https://github.com/Slipcar/kof-xiii-global-match-rollback-enhanced) @ `06ef1443218b` |
@@ -341,6 +344,7 @@ _Generated 2026-11-22 20:04 UTC · 392 entries · 128 vendored, 264 reference-on
 | [netplayjs](entries/netcode/rameshvarun-netplayjs/README.md) | Make P2P multiplayer browser games, no server hosting or synchronization code required. Powered by rollback netcode + WebRTC. | typescript | ISC | vendored | [rameshvarun/netplayjs](https://github.com/rameshvarun/netplayjs) @ `c6f888a65d49` |
 | [NettyGameServer](entries/netcode/jwpttcg66-nettygameserver/README.md) | 使用netty4.X实现的手机游戏分布式服务器,支持tcp,udp,http,websocket链接，采用protobuf自定义协议栈进行网络通信,支持rpc远程调用,使用mybatis3支持db存储分库分表，支持异步mysql存储，db保存时同步更新reids缓存。 使用ExcelToCode工程，将excel数据生 | java | GPL-3.0 | reference | [jwpttcg66/NettyGameServer](https://github.com/jwpttcg66/NettyGameServer) @ `2026-04-14 (branch tip at catalogue time)` |
 | [node-js-game-server](entries/netcode/huytd-node-js-game-server/README.md) | Easy to use Multiplayer Game Server based on Node.JS. Suitable with HTML5 Websocket, Unity3D (Web/PC, Android, iOS,...), Flash, C++/OpenGL/DirectX, XNA clients, | javascript | unknown | reference | [huytd/node-js-game-server](https://github.com/huytd/node-js-game-server) @ `2013-10-15 (branch tip at catalogue time)` |
+| [online-chess](entries/netcode/hulang1024-online-chess/README.md) | Chess game website client and server. | typescript | MIT | vendored | [hulang1024/online-chess](https://github.com/hulang1024/online-chess) @ `6e4db9c01034` |
 | [open_spiel — session](entries/netcode/open-spiel-session/README.md) | network transport, protocol, replication or server loop | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
 | [OpenArena — server](entries/netcode/openarena-server/README.md) | network transport, protocol, replication or server loop | c | GPL-2.0 | reference | [OpenArena/engine.git](https://github.com/OpenArena/engine.git) @ `fd74931` |
 | [openclonk — network](entries/netcode/openclonk-network/README.md) | network transport, protocol, replication or server loop | c | ISC | vendored | [openclonk/openclonk.git](https://github.com/openclonk/openclonk.git) @ `36de799` |
@@ -349,6 +353,7 @@ _Generated 2026-11-22 20:04 UTC · 392 entries · 128 vendored, 264 reference-on
 | [OpenJK — server](entries/netcode/openjk-server/README.md) | network transport, protocol, replication or server loop | cpp | GPL-2.0 | reference | [JACoders/OpenJK.git](https://github.com/JACoders/OpenJK.git) @ `260c59c` |
 | [openmu — Network](entries/netcode/openmu-src-network/README.md) | MMO network protocol, packet handlers, encryption | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
 | [openrct2 — network](entries/netcode/openrct2-network/README.md) | network transport, protocol, replication or server loop | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
+| [phasocketonline](entries/netcode/vezwork-phasocketonline/README.md) | A server and client for a multiplayer browser game. Server in node.js, game in javascript with phaser and using socket.io for websockets. | html | MIT | reference | [vezwork/phasocketonline](https://github.com/vezwork/phasocketonline) @ `2017-12-17 (branch tip at catalogue time)` |
 | [PlayHex — server](entries/netcode/playhex-server/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [playhex/playhex](https://github.com/playhex/playhex) @ `5750af4` |
 | [psn-api](entries/netcode/achievements-app-psn-api/README.md) | A JavaScript library that lets you get trophy, user, and game data from the PlayStation Network. | typescript | MIT | reference | [achievements-app/psn-api](https://github.com/achievements-app/psn-api) @ `2026-08-15 (branch tip at catalogue time)` |
 | [quilkin](entries/netcode/embarkstudios-quilkin/README.md) | Quilkin is a non-transparent UDP proxy specifically designed for use with large scale multiplayer dedicated game server deployments, to ensure security, access  | rust | Apache-2.0 | reference | [EmbarkStudios/quilkin](https://github.com/EmbarkStudios/quilkin) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -376,6 +381,7 @@ _Generated 2026-11-22 20:04 UTC · 392 entries · 128 vendored, 264 reference-on
 | [WLANOptimizer](entries/netcode/catid-wlanoptimizer/README.md) | Single-header C library that fixes WiFi performance issues for online gaming and other low-latency real-time network traffic. | c++ | unknown | reference | [catid/WLANOptimizer](https://github.com/catid/WLANOptimizer) @ `2018-08-25 (branch tip at catalogue time)` |
 | [yojimbo](entries/netcode/mas-bandwidth-yojimbo/README.md) | A network library for client/server games written in C++ | c++ | BSD-3-Clause | vendored | [mas-bandwidth/yojimbo](https://github.com/mas-bandwidth/yojimbo) @ `ae64e145c993` |
 | [yojimbo](entries/netcode/yojimbo/README.md) | client/server game protocol: encryption, reliability, connection tags | c++ | BSD-3-Clause | vendored | [networkprotocol/yojimbo](https://github.com/networkprotocol/yojimbo) @ `ae64e145c993` |
+| [YTSvrLib](entries/netcode/sherry0319-ytsvrlib/README.md) | A game server library for linux/windows(support TCP, UDP, HTTP(S) and Websocket,MySQL,redis) 一个简单但功能强大的跨平台(Win/Linux)游戏服务器框架.支持TCP,UDP,HTTP,WEBSOCKET.支持MySQL和Re | c++ | MIT | reference | [sherry0319/YTSvrLib](https://github.com/sherry0319/YTSvrLib) @ `2020-02-28 (branch tip at catalogue time)` |
 | [zfoo](entries/netcode/zfoo-project-zfoo/README.md) | 💡Extremely fast enterprise server framework, can be used in RPC,  game server,  web server. | java | Apache-2.0 | reference | [zfoo-project/zfoo](https://github.com/zfoo-project/zfoo) @ `2026-11-19 (branch tip at catalogue time)` |
 
 ## save-state

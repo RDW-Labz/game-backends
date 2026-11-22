@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-22T20:20:08Z",
+ "category": "netcode",
+ "commit": "2026-09-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "metagogs/gogs \u2014 gogs is a simple, fast and lightweight game server framework written in golang",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "gogs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "metagogs-gogs",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 62,
+ "system": "gogs is a simple, fast and lightweight game server framework written in golang",
+ "upstream": "https://github.com/metagogs/gogs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

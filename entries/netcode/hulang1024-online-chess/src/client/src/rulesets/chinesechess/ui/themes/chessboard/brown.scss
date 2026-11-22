@@ -1,0 +1,7 @@
+.chinesechess-chessboard.theme-brown {
+  background: radial-gradient(closest-corner, #9e624c,#6e3622);
+
+  > canvas {
+    background: transparent;
+  }
+}
