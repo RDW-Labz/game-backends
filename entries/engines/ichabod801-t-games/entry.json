@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:22:13Z",
+ "category": "engines",
+ "commit": "2020-04-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ichabod801/t_games \u2014 A collection of command-line interface games written in Python.",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "t_games",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "ichabod801-t-games",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 21,
+ "system": "A collection of command-line interface games written in Python.",
+ "upstream": "https://github.com/ichabod801/t_games",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

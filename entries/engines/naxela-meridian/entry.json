@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:22:13Z",
+ "category": "engines",
+ "commit": "2026-06-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Naxela/Meridian \u2014 Bridging Godot and Blender",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Meridian",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "naxela-meridian",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 22,
+ "system": "Bridging Godot and Blender",
+ "upstream": "https://github.com/Naxela/Meridian",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

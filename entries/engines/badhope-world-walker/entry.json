@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:22:13Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "badhope/world-walker \u2014 A single-player AI tabletop RPG engine: deterministic rules own the numbers, saves and replay; any OpenAI-compatible model writes the scene.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "world-walker",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "badhope-world-walker",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 21,
+ "system": "A single-player AI tabletop RPG engine: deterministic rules own the numbers, saves and replay; any OpenAI-compatible model writes the scene.",
+ "upstream": "https://github.com/badhope/world-walker",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

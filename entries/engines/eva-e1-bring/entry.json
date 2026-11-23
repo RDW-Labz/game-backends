@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T08:22:03Z",
+ "category": "engines",
+ "commit": "e907dee1b2a5",
+ "delivery": "vendored",
+ "description": "Eva-E1/BRING \u2014 Next generation role-playing with LLM - with AI world and intelligent NPCs and multi-faceted Graph memory for all entities and a rich pipline and multi agent",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "BRING",
+ "size_bytes": 969246,
+ "slug": "eva-e1-bring",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 23,
+ "system": "Next generation role-playing with LLM - with AI world and intelligent NPCs and multi-faceted Graph memory for all entities and a rich pipline and multi agent",
+ "upstream": "https://github.com/Eva-E1/BRING",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

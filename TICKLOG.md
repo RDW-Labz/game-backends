@@ -1875,3 +1875,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/underpig1-neuro-bge
   - reference engines/qsjl11-pyera
   - reference engines/katelouie-bardic
+
+- **2026-11-23 08:22 UTC** — tick 681: +2 screened, +4 reference, 0 skipped, catalogue=668
+  - added engines/eva-e1-bring (Apache-2.0, vendored)
+  - added engines/sarisabban-pose (Apache-2.0, reference)
+  - reference engines/naxela-meridian
+  - reference engines/cronza-heartbeatengine
+  - reference engines/badhope-world-walker
+  - reference engines/ichabod801-t-games

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T08:22:12Z",
+ "category": "engines",
+ "commit": "ed2d3f723c59",
+ "delivery": "reference",
+ "description": "sarisabban/Pose \u2014 A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Pose",
+ "reference_reason": "size gate: 69 MB",
+ "size_bytes": 72962927,
+ "slug": "sarisabban-pose",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 22,
+ "system": "A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules",
+ "upstream": "https://github.com/sarisabban/Pose",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

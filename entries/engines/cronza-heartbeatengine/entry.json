@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:22:13Z",
+ "category": "engines",
+ "commit": "2025-08-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Cronza/HeartbeatEngine \u2014 A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "HeartbeatEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "cronza-heartbeatengine",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 22,
+ "system": "A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5",
+ "upstream": "https://github.com/Cronza/HeartbeatEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
