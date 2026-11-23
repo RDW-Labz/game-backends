@@ -1771,3 +1771,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/yarnspinnertool-yarnspinner
   - reference engines/in0finite-sanandreasunity
   - reference engines/ellanjiang-unitygameframework
+
+- **2026-11-23 04:54 UTC** — tick 668: +2 screened, +4 reference, 1 skipped, catalogue=590
+  - added engines/openra-ra2 (GPL-3.0, reference)
+  - added engines/manlymarco-runtimeunityeditor (GPL-3.0, reference)
+  - reference engines/anyrpg-anyrpgcore
+  - reference engines/tippinggame-f8framework
+  - reference engines/srcnalt-openai-unity
+  - reference engines/delmarle-rpg-core

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:54:08Z",
+ "category": "engines",
+ "commit": "2024-11-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "srcnalt/OpenAI-Unity \u2014 An unofficial OpenAI Unity Package that aims to help you use OpenAI API directly in Unity Game engine.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "OpenAI-Unity",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "srcnalt-openai-unity",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 841,
+ "system": "An unofficial OpenAI Unity Package that aims to help you use OpenAI API directly in Unity Game engine.",
+ "upstream": "https://github.com/srcnalt/OpenAI-Unity",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

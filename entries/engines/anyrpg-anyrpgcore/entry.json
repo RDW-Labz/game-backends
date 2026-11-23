@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:54:08Z",
+ "category": "engines",
+ "commit": "2026-10-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AnyRPG/AnyRPGCore \u2014 Open source Role Playing Game engine for Unity 3D written in C#.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "AnyRPGCore",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "anyrpg-anyrpgcore",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 1038,
+ "system": "Open source Role Playing Game engine for Unity 3D written in C#.",
+ "upstream": "https://github.com/AnyRPG/AnyRPGCore",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

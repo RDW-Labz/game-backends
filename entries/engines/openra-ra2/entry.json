@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T04:54:04Z",
+ "category": "engines",
+ "commit": "61e24e3c1d7b",
+ "delivery": "reference",
+ "description": "OpenRA/ra2 \u2014 A Red Alert 2 mod for the OpenRA game engine",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "ra2",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 157430,
+ "slug": "openra-ra2",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 1156,
+ "system": "A Red Alert 2 mod for the OpenRA game engine",
+ "upstream": "https://github.com/OpenRA/ra2",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

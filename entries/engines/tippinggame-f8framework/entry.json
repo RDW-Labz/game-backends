@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:54:08Z",
+ "category": "engines",
+ "commit": "2026-09-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "TippingGame/F8Framework \u2014 F8 Framework\u662f\u4e00\u4e2a\u4f18\u96c5\uff0c\u8f7b\u91cf\uff0c\u7b26\u5408\u76f4\u89c9\u7684\u57fa\u4e8eUnity\u5f15\u64ce\u7684\u6e38\u620f\u6846\u67b6\uff0c\u7ec4\u4ef6\u56f4\u7ed5F8\u4e00\u952e\u542f\u52a8\uff0c\u6846\u67b6\u6574\u4f53\u9075\u5faa\u4ee5\u6781\u5c11\u7684\u4f7f\u7528\u6210\u672c\u5f00\u53d1\u6e38\u620f\u3002F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity engine. Its components are centered around the F8 one-click startup, and the framework as a whole is designed to enable game development with minimal usage cost.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "F8Framework",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "tippinggame-f8framework",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 886,
+ "system": "F8 Framework\u662f\u4e00\u4e2a\u4f18\u96c5\uff0c\u8f7b\u91cf\uff0c\u7b26\u5408\u76f4\u89c9\u7684\u57fa\u4e8eUnity\u5f15\u64ce\u7684\u6e38\u620f\u6846\u67b6\uff0c\u7ec4\u4ef6\u56f4\u7ed5F8\u4e00\u952e\u542f\u52a8\uff0c\u6846\u67b6\u6574\u4f53\u9075\u5faa\u4ee5\u6781\u5c11\u7684\u4f7f\u7528\u6210\u672c\u5f00\u53d1\u6e38\u620f\u3002F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity ",
+ "upstream": "https://github.com/TippingGame/F8Framework",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

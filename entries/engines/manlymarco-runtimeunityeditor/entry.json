@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T04:54:07Z",
+ "category": "engines",
+ "commit": "1ce168c7acfd",
+ "delivery": "reference",
+ "description": "ManlyMarco/RuntimeUnityEditor \u2014 In-game inspector and debugging tools for applications made with Unity3D game engine",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "RuntimeUnityEditor",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 771961,
+ "slug": "manlymarco-runtimeunityeditor",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 1134,
+ "system": "In-game inspector and debugging tools for applications made with Unity3D game engine",
+ "upstream": "https://github.com/ManlyMarco/RuntimeUnityEditor",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:54:08Z",
+ "category": "engines",
+ "commit": "2026-04-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "delmarle/RPG-Core \u2014 UNITY engine RPG framework",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "RPG-Core",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "delmarle-rpg-core",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 733,
+ "system": "UNITY engine RPG framework",
+ "upstream": "https://github.com/delmarle/RPG-Core",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
