@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:39:07Z",
+ "category": "physics",
+ "commit": "2025-08-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "d954mas/defold-box2d \u2014 defold-box2d bindings",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "defold-box2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "d954mas-defold-box2d",
+ "source": "github-search:box2d bindings stars:>15",
+ "stars": 42,
+ "system": "defold-box2d bindings",
+ "upstream": "https://github.com/d954mas/defold-box2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

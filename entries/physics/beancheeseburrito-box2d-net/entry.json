@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:39:07Z",
+ "category": "physics",
+ "commit": "2025-05-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BeanCheeseBurrito/Box2D.NET \u2014 Auto-generated C# bindings for Box2D 3.0",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Box2D.NET",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "beancheeseburrito-box2d-net",
+ "source": "github-search:box2d bindings stars:>15",
+ "stars": 33,
+ "system": "Auto-generated C# bindings for Box2D 3.0",
+ "upstream": "https://github.com/BeanCheeseBurrito/Box2D.NET",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:39:07Z",
+ "category": "physics",
+ "commit": "2026-07-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Kira-PH/Box2D-dotnet-bindings \u2014 Box2D 3.x Bindings for dotnet (C#, F#, VB, ...)",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Box2D-dotnet-bindings",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kira-ph-box2d-dotnet-bindings",
+ "source": "github-search:box2d bindings stars:>15",
+ "stars": 22,
+ "system": "Box2D 3.x Bindings for dotnet (C#, F#, VB, ...)",
+ "upstream": "https://github.com/Kira-PH/Box2D-dotnet-bindings",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2210,3 +2210,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/ronenness-partykals
   - reference physics/giladaya-arduino-particle-sys
   - reference physics/fazeaction-three-gpu-particle-system
+
+- **2026-11-23 19:39 UTC** — tick 723: +2 screened, +4 reference, 0 skipped, catalogue=919
+  - added physics/bastacyclop-rust-box2d (Zlib, vendored)
+  - added physics/holyblackcat-box2cpp (Zlib, vendored)
+  - reference physics/d954mas-defold-box2d
+  - reference physics/joaomcl-boks2d
+  - reference physics/beancheeseburrito-box2d-net
+  - reference physics/kira-ph-box2d-dotnet-bindings

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:39:07Z",
+ "category": "physics",
+ "commit": "2026-03-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "joaomcl/boks2d \u2014 Kotlin Multiplatform bindings for the Box2D physics engine.",
+ "language": "kotlin",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "boks2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "joaomcl-boks2d",
+ "source": "github-search:box2d bindings stars:>15",
+ "stars": 35,
+ "system": "Kotlin Multiplatform bindings for the Box2D physics engine.",
+ "upstream": "https://github.com/joaomcl/boks2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

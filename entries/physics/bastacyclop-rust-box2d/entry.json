@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T19:39:03Z",
+ "category": "physics",
+ "commit": "4f2b01aebac4",
+ "delivery": "vendored",
+ "description": "Bastacyclop/rust_box2d \u2014 Rust binding for Box2D",
+ "language": "rust",
+ "license": "Zlib",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "rust_box2d",
+ "size_bytes": 333585,
+ "slug": "bastacyclop-rust-box2d",
+ "source": "github-search:box2d bindings stars:>15",
+ "stars": 67,
+ "system": "Rust binding for Box2D",
+ "upstream": "https://github.com/Bastacyclop/rust_box2d",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

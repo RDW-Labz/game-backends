@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T19:39:05Z",
+ "category": "physics",
+ "commit": "a912a4e0ff5e",
+ "delivery": "vendored",
+ "description": "HolyBlackCat/box2cpp \u2014 C++ bindings for box2d 3.x physics engine (aka box2c)",
+ "language": "c++",
+ "license": "Zlib",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "box2cpp",
+ "size_bytes": 253297,
+ "slug": "holyblackcat-box2cpp",
+ "source": "github-search:box2d bindings stars:>15",
+ "stars": 50,
+ "system": "C++ bindings for box2d 3.x physics engine (aka box2c)",
+ "upstream": "https://github.com/HolyBlackCat/box2cpp",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

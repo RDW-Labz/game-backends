@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 19:23 UTC · 913 entries · 241 vendored, 672 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 19:39 UTC · 919 entries · 243 vendored, 676 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
-| [physics](#physics) — Physics | 121 | 30 | 91 |
+| [physics](#physics) — Physics | 127 | 32 | 95 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
@@ -420,7 +420,7 @@ _Generated 2026-11-23 19:23 UTC · 913 entries · 241 vendored, 672 reference-on
 
 ## physics
 
-**Physics** — 121 entries
+**Physics** — 127 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -438,10 +438,14 @@ _Generated 2026-11-23 19:23 UTC · 913 entries · 241 vendored, 672 reference-on
 | [bevy_prototype_character_controller](entries/physics/superdump-bevy-prototype-character-controller/README.md) | Character controllers for use with Bevy and any physics engine you like | rust | MIT | vendored | [superdump/bevy_prototype_character_controller](https://github.com/superdump/bevy_prototype_character_controller) @ `a7a87b3c2c4e` |
 | [bevy_verlet](entries/physics/manevillef-bevy-verlet/README.md) | Verlet physics plugin for bevy. | rust | MIT | reference | [ManevilleF/bevy_verlet](https://github.com/ManevilleF/bevy_verlet) @ `2026-05-04 (branch tip at catalogue time)` |
 | [Blinc](entries/physics/project-blinc-blinc/README.md) | A declarative, reactive UI system with first-class state machines, spring physics animations, and GPU-accelerated rendering | rust | Apache-2.0 | reference | [project-blinc/Blinc](https://github.com/project-blinc/Blinc) @ `2026-11-23 (branch tip at catalogue time)` |
+| [boks2d](entries/physics/joaomcl-boks2d/README.md) | Kotlin Multiplatform bindings for the Box2D physics engine. | kotlin | MIT | reference | [joaomcl/boks2d](https://github.com/joaomcl/boks2d) @ `2026-03-23 (branch tip at catalogue time)` |
+| [box2cpp](entries/physics/holyblackcat-box2cpp/README.md) | C++ bindings for box2d 3.x physics engine (aka box2c) | c++ | Zlib | vendored | [HolyBlackCat/box2cpp](https://github.com/HolyBlackCat/box2cpp) @ `a912a4e0ff5e` |
 | [Box2D](entries/physics/box2d/README.md) | 2D rigid-body collision + dynamics solver | c++ | MIT | vendored | [erincatto/box2d](https://github.com/erincatto/box2d) @ `dd8bd3fb525f` |
 | [box2d](entries/physics/bytearena-box2d/README.md) | Box2D.go - Go port of Box2D - a 2D Physics Engine for Games. | go | Zlib | vendored | [ByteArena/box2d](https://github.com/ByteArena/box2d) @ `acbde413692f` |
+| [Box2D-dotnet-bindings](entries/physics/kira-ph-box2d-dotnet-bindings/README.md) | Box2D 3.x Bindings for dotnet (C#, F#, VB, ...) | c# | MIT | reference | [Kira-PH/Box2D-dotnet-bindings](https://github.com/Kira-PH/Box2D-dotnet-bindings) @ `2026-07-22 (branch tip at catalogue time)` |
 | [box2d-lite](entries/physics/erincatto-box2d-lite/README.md) | A small 2D physics engine | c++ | MIT | vendored | [erincatto/box2d-lite](https://github.com/erincatto/box2d-lite) @ `227b71b6974e` |
 | [box2d-netstandard](entries/physics/codingben-box2d-netstandard/README.md) | C# port of Box2D - Erin Catto's 2D Physics Engine | c# | MIT | vendored | [codingben/box2d-netstandard](https://github.com/codingben/box2d-netstandard) @ `b34d6238011a` |
+| [Box2D.NET](entries/physics/beancheeseburrito-box2d-net/README.md) | Auto-generated C# bindings for Box2D 3.0 | c# | MIT | reference | [BeanCheeseBurrito/Box2D.NET](https://github.com/BeanCheeseBurrito/Box2D.NET) @ `2025-05-23 (branch tip at catalogue time)` |
 | [box3d](entries/physics/erincatto-box3d/README.md) | Box3D is a 3D physics engine for games | c | MIT | vendored | [erincatto/box3d](https://github.com/erincatto/box3d) @ `e48b902fee41` |
 | [Bullet Physics](entries/physics/bullet3/README.md) | 3D collision/dynamics + soft body + ML | c++ | Zlib | reference | [bulletphysics/bullet3](https://github.com/bulletphysics/bullet3) @ `d3afe76132fc` |
 | [bulletrs](entries/physics/not-fl3-bulletrs/README.md) | Bullet Physics wrapper for the Rust language. | rust | MIT | reference | [not-fl3/bulletrs](https://github.com/not-fl3/bulletrs) @ `2018-03-08 (branch tip at catalogue time)` |
@@ -457,6 +461,7 @@ _Generated 2026-11-23 19:23 UTC · 913 entries · 241 vendored, 672 reference-on
 | [ClothSimulation](entries/physics/johnbuffer-clothsimulation/README.md) | Basic cloth simulation using Verlet integration | c++ | MIT | vendored | [johnBuffer/ClothSimulation](https://github.com/johnBuffer/ClothSimulation) @ `ac5bbce045e8` |
 | [confetti](entries/physics/jinatonic-confetti/README.md) | An Android particle system library for displaying confetti! | java | Apache-2.0 | vendored | [jinatonic/confetti](https://github.com/jinatonic/confetti) @ `db8a475f7716` |
 | [crashcat](entries/physics/isaac-mason-crashcat/README.md) | physics engine for javascript, built for games, simulations, and creative websites | typescript | MIT | reference | [isaac-mason/crashcat](https://github.com/isaac-mason/crashcat) @ `2026-10-30 (branch tip at catalogue time)` |
+| [defold-box2d](entries/physics/d954mas-defold-box2d/README.md) | defold-box2d bindings | c++ | MIT | reference | [d954mas/defold-box2d](https://github.com/d954mas/defold-box2d) @ `2025-08-28 (branch tip at catalogue time)` |
 | [dyn4j](entries/physics/dyn4j-dyn4j/README.md) | Java Collision Detection and Physics Engine | java | BSD-3-Clause | vendored | [dyn4j/dyn4j](https://github.com/dyn4j/dyn4j) @ `bcf942adaa9b` |
 | [edyn](entries/physics/xissburg-edyn/README.md) | Edyn is a real-time physics engine organized as an ECS. | c++ | MIT | reference | [xissburg/edyn](https://github.com/xissburg/edyn) @ `2026-09-08 (branch tip at catalogue time)` |
 | [effects-library](entries/physics/getstream-effects-library/README.md) | The Effects Library allows developers to create sophisticated and realistic particle systems such as snow, fire, rain, confetti, fireworks, and smoke with no or | swift | Apache-2.0 | reference | [GetStream/effects-library](https://github.com/GetStream/effects-library) @ `eaf607ba6d02` |
@@ -519,6 +524,7 @@ _Generated 2026-11-23 19:23 UTC · 913 entries · 241 vendored, 672 reference-on
 | [rigs-of-rods — physics](entries/physics/rigs-of-rods-physics/README.md) | rigid-body collision and dynamics | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
 | [RobotNativeEngine](entries/physics/rsasaki0109-robotnativeengine/README.md) | Robot Native Engine — robot-native Rust simulation core with physics, sensors, Python bindings, and optional ROS 2 adapters. | rust | Apache-2.0 | reference | [rsasaki0109/RobotNativeEngine](https://github.com/rsasaki0109/RobotNativeEngine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [rumoca](entries/physics/cognipilot-rumoca/README.md) | a rust-native Modelica compiler for fast, composable, scientific computing | rust | Apache-2.0 | reference | [CogniPilot/rumoca](https://github.com/CogniPilot/rumoca) @ `488d6d5f239f` |
+| [rust_box2d](entries/physics/bastacyclop-rust-box2d/README.md) | Rust binding for Box2D | rust | Zlib | vendored | [Bastacyclop/rust_box2d](https://github.com/Bastacyclop/rust_box2d) @ `4f2b01aebac4` |
 | [Rythe-Engine](entries/physics/rythe-interactive-rythe-engine/README.md) | Rythe is a data-oriented C++20 game engine built to make optimal use of modern hardware. | c++ | MIT | vendored | [Rythe-Interactive/Rythe-Engine](https://github.com/Rythe-Interactive/Rythe-Engine) @ `0bcddef74693` |
 | [salva](entries/physics/dimforge-salva/README.md) | 2 and 3-dimensional fluid simulation library in Rust. | rust | Apache-2.0 | reference | [dimforge/salva](https://github.com/dimforge/salva) @ `2026-11-01 (branch tip at catalogue time)` |
 | [sandbox](entries/physics/hakolao-sandbox/README.md) | 2D Pixel Physics Simulator | rust | Apache-2.0 | reference | [hakolao/sandbox](https://github.com/hakolao/sandbox) @ `2023-05-10 (branch tip at catalogue time)` |

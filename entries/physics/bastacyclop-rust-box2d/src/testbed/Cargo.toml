@@ -1,0 +1,14 @@
+[package]
+name = "wrapped2d_testbed"
+version = "0.2.0"
+authors = ["Thomas Koehler <basta.t.k+git@gmail.com>"]
+
+[lib]
+name = "testbed"
+
+[dependencies]
+wrapped2d = { path = ".." }
+gfx = "0.18"
+piston = "0.52"
+piston_window = "0.114"
+piston2d-graphics = "0.37"
