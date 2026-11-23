@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T17:30:09Z",
+ "category": "physics",
+ "commit": "e5c448022c80",
+ "delivery": "vendored",
+ "description": "lucas-schuermann/ten-minute-physics-rs \u2014 Reimplementation of Matthias M\u00fcller's \"Ten Minute Physics\" demos in Rust with WASM + WebGL",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "ten-minute-physics-rs",
+ "size_bytes": 3307573,
+ "slug": "lucas-schuermann-ten-minute-physics-rs",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 147,
+ "system": "Reimplementation of Matthias M\u00fcller's \"Ten Minute Physics\" demos in Rust with WASM + WebGL",
+ "upstream": "https://github.com/lucas-schuermann/ten-minute-physics-rs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

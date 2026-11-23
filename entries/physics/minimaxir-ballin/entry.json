@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T17:30:11Z",
+ "category": "physics",
+ "commit": "2026-01-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "minimaxir/ballin \u2014 A colorful interactive physics simulator with thousands of balls, but in your terminal!",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ballin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "minimaxir-ballin",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 102,
+ "system": "A colorful interactive physics simulator with thousands of balls, but in your terminal!",
+ "upstream": "https://github.com/minimaxir/ballin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

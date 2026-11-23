@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T17:30:07Z",
+ "category": "physics",
+ "commit": "488d6d5f239f",
+ "delivery": "reference",
+ "description": "CogniPilot/rumoca \u2014 a rust-native Modelica compiler for fast, composable, scientific computing",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "rumoca",
+ "reference_reason": "size gate: 56 MB",
+ "size_bytes": 59242577,
+ "slug": "cognipilot-rumoca",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 170,
+ "system": "a rust-native Modelica compiler for fast, composable, scientific computing",
+ "upstream": "https://github.com/CogniPilot/rumoca",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

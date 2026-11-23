@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T17:30:11Z",
+ "category": "physics",
+ "commit": "2026-11-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SecondHalfGames/jolt-rust \u2014 Rust bindings to Jolt Physics",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "jolt-rust",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "secondhalfgames-jolt-rust",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 104,
+ "system": "Rust bindings to Jolt Physics",
+ "upstream": "https://github.com/SecondHalfGames/jolt-rust",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

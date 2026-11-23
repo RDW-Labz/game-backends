@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <title>Ten Minute Physics in Rust | Lucas V. Schuermann</title>
+    <style>
+        html {
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
+        }
+
+        body {
+            margin: 0;
+            background-color: #000;
+            color: #fff;
+            font-family: Monospace;
+            font-size: 13px;
+            line-height: 20px;
+            overscroll-behavior: none;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+            pointer-events: auto;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        canvas {
+            display: block;
+            outline: none;
+            border: none;
+        }
+
+        #info {
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            padding: 10px 255px 0px 90px;
+            box-sizing: border-box;
+            text-align: center;
+            user-select: none;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #gui {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 2 !important;
+        }
+
+        #error {
+            color: red;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        @media all and (max-width: 640px) {
+            #info {
+                padding-right: 10px;
+            }
+
+            #gui {
+                right: auto;
+                top: auto;
+                max-height: 80%;
+                max-width: 80%;
+                bottom: 0;
+                left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="info">
+        <a href="https://lucasschuermann.com" target="_blank" rel="noopener">Lucas V. Schuermann</a> -
+        <a href="https://matthias-research.github.io/pages/tenMinutePhysics/index.html" target="_blank"
+            rel="noopener">Ten Minute Physics</a> (XPBD) in Rust -
+        <span id="title">Loading...</span>
+        <br>
+        <a href="https://github.com/lucas-schuermann/ten-minute-physics-rs">View code on GitHub</a>
+    </div>
+
+    <div id="container">
+        <canvas id="canvas">
+            <p id="error">Browser does not support required features</p>
+        </canvas>
+        <div id="gui"></div>
+    </div>
+</body>
+
+</html>

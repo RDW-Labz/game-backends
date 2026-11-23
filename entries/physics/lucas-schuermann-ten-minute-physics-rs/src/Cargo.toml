@@ -1,0 +1,41 @@
+[package]
+name = "ten-minute-physics-rs"
+version = "0.3.0"
+repository = "https://github.com/lucas-schuermann/ten-minute-physics-rs"
+authors = ["Lucas V. Schuermann <lucas@lvs.io>"]
+edition = "2021"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+cgmath = "0.18"
+js-sys = "0.3"
+wasm-bindgen = { version = "0.2" }
+web-sys = { version = "0.3", features = [
+    "ImageData",
+    "CanvasRenderingContext2d",
+    "WebGlBuffer",
+    "WebGl2RenderingContext",
+    "WebGlUniformLocation",
+    "WebGlProgram",
+    "WebGlShader",
+] }
+glam = { version = "0.24", features = ["fast-math", "scalar-math"] }
+once_cell = "1.18"
+wasm-bindgen-rayon = { version = "1.0" }
+rayon = { version = "1.8" }
+
+pbd-fluid-solver = { git = "https://github.com/lucas-schuermann/pbd-fluid-rs", package = "solver", rev = "8d3a2a8" }
+
+[profile.release]
+lto = "fat"
+panic = "abort"
+strip = "debuginfo" # strip all 
+codegen-units = 1
+debug = 0           # Set this to 1 or two for more useful backtraces or flamegraphs
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-O3"]

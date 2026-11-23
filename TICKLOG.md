@@ -2146,3 +2146,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/dimforge-salva
   - reference physics/project-blinc-blinc
   - reference physics/unrust-unrust
+
+- **2026-11-23 17:30 UTC** — tick 715: +2 screened, +4 reference, 2 skipped, catalogue=871
+  - added physics/cognipilot-rumoca (Apache-2.0, reference)
+  - added physics/lucas-schuermann-ten-minute-physics-rs (MIT, vendored)
+  - reference physics/hakolao-sandbox
+  - reference physics/aclfe-inertia
+  - reference physics/secondhalfgames-jolt-rust
+  - reference physics/minimaxir-ballin

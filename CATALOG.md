@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 17:14 UTC · 865 entries · 231 vendored, 634 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 17:30 UTC · 871 entries · 232 vendored, 639 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
-| [physics](#physics) — Physics | 73 | 20 | 53 |
+| [physics](#physics) — Physics | 79 | 21 | 58 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
@@ -420,7 +420,7 @@ _Generated 2026-11-23 17:14 UTC · 865 entries · 231 vendored, 634 reference-on
 
 ## physics
 
-**Physics** — 73 entries
+**Physics** — 79 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -428,6 +428,7 @@ _Generated 2026-11-23 17:14 UTC · 865 entries · 231 vendored, 634 reference-on
 | [anki-3d-engine](entries/physics/godlikepanos-anki-3d-engine/README.md) | AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more | c++ | unknown | reference | [godlikepanos/anki-3d-engine](https://github.com/godlikepanos/anki-3d-engine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [apollonia](entries/physics/wgtdkp-apollonia/README.md) | Tiny 2D physics engine | c++ | MIT | reference | [wgtdkp/apollonia](https://github.com/wgtdkp/apollonia) @ `2022-01-28 (branch tip at catalogue time)` |
 | [avian](entries/physics/avianphysics-avian/README.md) | ECS-driven 2D and 3D physics engine for the Bevy game engine. | rust | Apache-2.0 | reference | [avianphysics/avian](https://github.com/avianphysics/avian) @ `2026-11-04 (branch tip at catalogue time)` |
+| [ballin](entries/physics/minimaxir-ballin/README.md) | A colorful interactive physics simulator with thousands of balls, but in your terminal! | rust | MIT | reference | [minimaxir/ballin](https://github.com/minimaxir/ballin) @ `2026-01-19 (branch tip at catalogue time)` |
 | [Blinc](entries/physics/project-blinc-blinc/README.md) | A declarative, reactive UI system with first-class state machines, spring physics animations, and GPU-accelerated rendering | rust | Apache-2.0 | reference | [project-blinc/Blinc](https://github.com/project-blinc/Blinc) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Box2D](entries/physics/box2d/README.md) | 2D rigid-body collision + dynamics solver | c++ | MIT | vendored | [erincatto/box2d](https://github.com/erincatto/box2d) @ `dd8bd3fb525f` |
 | [box2d](entries/physics/bytearena-box2d/README.md) | Box2D.go - Go port of Box2D - a 2D Physics Engine for Games. | go | Zlib | vendored | [ByteArena/box2d](https://github.com/ByteArena/box2d) @ `acbde413692f` |
@@ -452,10 +453,12 @@ _Generated 2026-11-23 17:14 UTC · 865 entries · 231 vendored, 634 reference-on
 | [godot-rapier-physics](entries/physics/appsinacup-godot-rapier-physics/README.md) | Godot Rapier Physics – 2D and 3D physics engine for the Godot game engine. with better stability, performance, liquids, determinism, state serialization and no  | rust | MIT | reference | [appsinacup/godot-rapier-physics](https://github.com/appsinacup/godot-rapier-physics) @ `2026-11-08 (branch tip at catalogue time)` |
 | [hypersomnia — physics](entries/physics/hypersomnia-physics/README.md) | rigid-body collision and dynamics | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [ImpulseEngine](entries/physics/randygaul-impulseengine/README.md) | Simple, open source, 2D impulse based physics engine for educational use. | c++ | Zlib | reference | [RandyGaul/ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) @ `2019-10-28 (branch tip at catalogue time)` |
+| [inertia](entries/physics/aclfe-inertia/README.md) | A physics sandbox that runs in your terminal: rigid bodies, n-body gravity, cloth, and fluid, projected in 3D onto braille with no GPU. | rust | Apache-2.0 | reference | [aclfe/inertia](https://github.com/aclfe/inertia) @ `2026-07-19 (branch tip at catalogue time)` |
 | [Jax2D](entries/physics/michaeltmatthews-jax2d/README.md) | Highly scalable 2D JAX physics engine. | python | MIT | vendored | [MichaelTMatthews/Jax2D](https://github.com/MichaelTMatthews/Jax2D) @ `3c902a2b8e78` |
 | [jbox2d](entries/physics/jbox2d-jbox2d/README.md) | a 2d Java physics engine, native java port of the C++ physics engines Box2D and LiquidFun  | java | BSD-2-Clause | vendored | [jbox2d/jbox2d](https://github.com/jbox2d/jbox2d) @ `2f56e93d99a6` |
 | [jitterphysics2](entries/physics/notgiven688-jitterphysics2/README.md) | Fast, simple to use, and dependency-free physics engine written in C# with a clear and user-friendly API. | c# | MIT | reference | [notgiven688/jitterphysics2](https://github.com/notgiven688/jitterphysics2) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Jolt Physics](entries/physics/joltphysics/README.md) | 3D rigid bodies, constraints, character controller, vehicles | c++ | MIT | vendored | [jrouwe/JoltPhysics](https://github.com/jrouwe/JoltPhysics) @ `cf16769bb0ed` |
+| [jolt-rust](entries/physics/secondhalfgames-jolt-rust/README.md) | Rust bindings to Jolt Physics | rust | Apache-2.0 | reference | [SecondHalfGames/jolt-rust](https://github.com/SecondHalfGames/jolt-rust) @ `2026-11-09 (branch tip at catalogue time)` |
 | [LayaAir](entries/physics/layabox-layaair/README.md) | LayaAir is a fully platform rendering engine with rich 2D/3D rendering capabilities and a mature integrated development platform | typescript | MIT | reference | [layabox/LayaAir](https://github.com/layabox/LayaAir) @ `2026-11-13 (branch tip at catalogue time)` |
 | [libccd](entries/physics/libccd/README.md) | convex collision detection (GJK/EPA) library | c | BSD-3-Clause | vendored | [danfis/libccd](https://github.com/danfis/libccd) @ `7931e764a19e` |
 | [matter-js](entries/physics/liabru-matter-js/README.md) | a 2D rigid body physics engine for the web ▲● ■ | javascript | MIT | vendored | [liabru/matter-js](https://github.com/liabru/matter-js) @ `b8ee71cd7f9b` |
@@ -483,12 +486,15 @@ _Generated 2026-11-23 17:14 UTC · 865 entries · 231 vendored, 634 reference-on
 | [react-native-filament](entries/physics/margelo-react-native-filament/README.md) | 🐧 A real-time physically based 3D rendering engine for React Native | c++ | MIT | reference | [margelo/react-native-filament](https://github.com/margelo/react-native-filament) @ `2026-05-27 (branch tip at catalogue time)` |
 | [ReactPhysics3D](entries/physics/reactphysics3d/README.md) | 3D physics: broadphase, constraints, raycast | c++ | Zlib | vendored | [DanielChappuis/reactphysics3d](https://github.com/DanielChappuis/reactphysics3d) @ `7000610a244e` |
 | [rigs-of-rods — physics](entries/physics/rigs-of-rods-physics/README.md) | rigid-body collision and dynamics | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
+| [rumoca](entries/physics/cognipilot-rumoca/README.md) | a rust-native Modelica compiler for fast, composable, scientific computing | rust | Apache-2.0 | reference | [CogniPilot/rumoca](https://github.com/CogniPilot/rumoca) @ `488d6d5f239f` |
 | [Rythe-Engine](entries/physics/rythe-interactive-rythe-engine/README.md) | Rythe is a data-oriented C++20 game engine built to make optimal use of modern hardware. | c++ | MIT | vendored | [Rythe-Interactive/Rythe-Engine](https://github.com/Rythe-Interactive/Rythe-Engine) @ `0bcddef74693` |
 | [salva](entries/physics/dimforge-salva/README.md) | 2 and 3-dimensional fluid simulation library in Rust. | rust | Apache-2.0 | reference | [dimforge/salva](https://github.com/dimforge/salva) @ `2026-11-01 (branch tip at catalogue time)` |
+| [sandbox](entries/physics/hakolao-sandbox/README.md) | 2D Pixel Physics Simulator | rust | Apache-2.0 | reference | [hakolao/sandbox](https://github.com/hakolao/sandbox) @ `2023-05-10 (branch tip at catalogue time)` |
 | [supertux — collision](entries/physics/supertux-collision/README.md) | rigid-body collision and dynamics | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [symbolica](entries/physics/symbolica-dev-symbolica/README.md) | Symbolica is a high-performance computer algebra library for Python and Rust. Manipulate large expressions, match patterns, and generate optimized numerical cod | rust | none | reference | [symbolica-dev/symbolica](https://github.com/symbolica-dev/symbolica) @ `bf6e4e2813db` |
 | [tabletop-club](entries/physics/drwhut-tabletop-club/README.md) | An open-source platform for playing tabletop games in a physics-based 3D environment for Windows, macOS, and Linux! Made with the Godot Engine. | gdscript | MIT | reference | [drwhut/tabletop-club](https://github.com/drwhut/tabletop-club) @ `2026-08-30 (branch tip at catalogue time)` |
 | [taro](entries/physics/cloud9c-taro/README.md) | A lightweight 3D game engine for the web. | javascript | MIT | reference | [cloud9c/taro](https://github.com/cloud9c/taro) @ `2025-02-13 (branch tip at catalogue time)` |
+| [ten-minute-physics-rs](entries/physics/lucas-schuermann-ten-minute-physics-rs/README.md) | Reimplementation of Matthias Müller's "Ten Minute Physics" demos in Rust with WASM + WebGL | rust | MIT | vendored | [lucas-schuermann/ten-minute-physics-rs](https://github.com/lucas-schuermann/ten-minute-physics-rs) @ `e5c448022c80` |
 | [thetawave](entries/physics/thetawavegame-thetawave/README.md) | A physics based, space shooter game made with Rust and the Bevy engine. | rust | MIT | vendored | [thetawavegame/thetawave](https://github.com/thetawavegame/thetawave) @ `94fad04fb913` |
 | [thrive — physics](entries/physics/thrive-physics/README.md) | rigid-body collision and dynamics | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [thrive — physics](entries/physics/thrive-src-native-physics/README.md) | custom rigid-body physics for a sim game | c++ | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f4f2e0` |
