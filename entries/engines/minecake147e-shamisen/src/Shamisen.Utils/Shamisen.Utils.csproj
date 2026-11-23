@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+      <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
+      <RootNamespace>Shamisen</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+      <Description>Utility features independent from Shamisen</Description>
+      <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
+      <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio library;csharp library</PackageTags>
+      <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+    <Import Project="../Shamisen.Core.targets" />
+    <PropertyGroup Condition="'$(TargetFramework)' != '$(ShamisenCurrentTargetFramework)'">
+        <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="DivideSharp" Version="0.0.6" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="README.md" Pack="True" PackagePath="\" />
+        <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+</Project>

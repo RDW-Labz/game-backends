@@ -2074,3 +2074,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/digitalrune-digitalrune
   - reference engines/apostolique-apos-gui
   - reference engines/thebonejarmer-tiledcs
+
+- **2026-11-23 15:04 UTC** — tick 706: +2 screened, +4 reference, 0 skipped, catalogue=817
+  - added engines/craftworkgames-farseerphysics-portable (Zlib, vendored)
+  - added engines/minecake147e-shamisen (MIT, vendored)
+  - reference engines/aristurtledev-forme
+  - reference engines/atomictorchstudio-noesisgui-monogamewrapper
+  - reference engines/dmanning23-admobbuddy
+  - reference engines/robert-wallis-ecslight

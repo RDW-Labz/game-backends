@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
+        <RootNamespace>Shamisen</RootNamespace>
+        <AssemblyName>Shamisen</AssemblyName>
+    </PropertyGroup>
+    <Import Project="../Shamisen.Core.targets" />
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <!--<EnablePreviewFeatures>true</EnablePreviewFeatures>-->
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="Data\**" />
+      <Compile Remove="Formats\**" />
+      <Compile Remove="Metadata\**" />
+      <Compile Remove="Optimization\**" />
+      <Compile Remove="Utils\**" />
+      <EmbeddedResource Remove="Data\**" />
+      <EmbeddedResource Remove="Formats\**" />
+      <EmbeddedResource Remove="Metadata\**" />
+      <EmbeddedResource Remove="Optimization\**" />
+      <EmbeddedResource Remove="Utils\**" />
+      <None Remove="Data\**" />
+      <None Remove="Formats\**" />
+      <None Remove="Metadata\**" />
+      <None Remove="Optimization\**" />
+      <None Remove="Utils\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="Filters\SimpleMixerEntry.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Include="..\.editorconfig" Link=".editorconfig" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Conversion\Resampling\Sample\SplineResampler\SplineResampler.Resample.Standard.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>SplineResampler.Resample.Standard.g.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Codecs\Managed\Shamisen.Codecs.Flac\Shamisen.Codecs.Flac.csproj" />
+      <ProjectReference Include="..\Shamisen.Core\Shamisen.Core.csproj" />
+      <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />
+    </ItemGroup>
+</Project>

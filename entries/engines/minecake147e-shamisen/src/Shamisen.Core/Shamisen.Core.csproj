@@ -1,0 +1,185 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
+    <RootNamespace>Shamisen</RootNamespace>
+    <SonarQubeTestProject>False</SonarQubeTestProject>
+    <Description>Brand New Audio Library for modern .NET. </Description>
+    <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio player;audio library;csharp library</PackageTags>
+  </PropertyGroup>
+  <Import Project="../Shamisen.Core.targets" />
+    <PropertyGroup Condition="'$(TargetFramework)' != '$(ShamisenCurrentTargetFramework)'">
+        <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="Utils\Audio\**" />
+      <Compile Remove="Utils\Intrinsics\**" />
+      <Compile Remove="Utils\Memory\**" />
+      <Compile Remove="Utils\Samples\**" />
+      <EmbeddedResource Remove="Utils\Audio\**" />
+      <EmbeddedResource Remove="Utils\Intrinsics\**" />
+      <EmbeddedResource Remove="Utils\Memory\**" />
+      <EmbeddedResource Remove="Utils\Samples\**" />
+      <None Remove="Utils\Audio\**" />
+      <None Remove="Utils\Intrinsics\**" />
+      <None Remove="Utils\Memory\**" />
+      <None Remove="Utils\Samples\**" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Remove="Data\AsyncStreamSynchronizer.cs" />
+      <Compile Remove="Data\DataReader.cs" />
+      <Compile Remove="Data\DataReaders.cs" />
+      <Compile Remove="Data\DataWriter.cs" />
+      <Compile Remove="Data\SampleDataReader.cs" />
+      <Compile Remove="Data\SynchronizedDataReader.cs" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Threading.Channels" Version="10.0.0" />
+        <PackageReference Include="System.Threading.Tasks.Dataflow" Version="10.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Codecs\Waveform\Composing\" />
+      <Folder Include="Codecs\Waveform\Formats\ALaw\" />
+      <Folder Include="Codecs\Waveform\Formats\Ieee754Binary\" />
+      <Folder Include="Codecs\Waveform\Formats\MuLaw\" />
+      <Folder Include="Codecs\Waveform\Headers\" />
+      <Folder Include="Data\Composing\" />
+      <Folder Include="Optimization\Intrinsics\X86\" />
+      <Folder Include="Utils\Binary\" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="README.md" Pack="True" PackagePath="\" />
+        <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Shamisen.Utils\Shamisen.Utils.csproj" />
+    </ItemGroup>
+  <!--<ItemGroup>
+      <None Include="Codecs\Waveform\InfoSubChunkId.g.cs">
+        <DependentUpon>InfoSubChunkId.g.tt</DependentUpon>
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+      </None>
+      <None Include="Codecs\Waveform\WaveformSubFormats.g.cs">
+        <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+      </None>
+      <None Include="Data\Binary\DataSinkUtils.g.cs">
+        <DependentUpon>DataSinkUtils.g.tt</DependentUpon>
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+      </None>
+      <None Include="Formats\PcmSampleFormats.g.cs">
+        <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Shamisen.Utils\Shamisen.Utils.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Update="Codecs\Waveform\Composing\BinaryContent.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>BinaryContent.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Codecs\Waveform\InfoSubChunkId.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>InfoSubChunkId.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Codecs\Waveform\WaveformSubFormats.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>WaveformSubFormats.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Conversion\Resampling\Sample\SplineResampler.Resample.Standard.g.cs">
+        <DependentUpon>SplineResampler.Resample.Standard.tt</DependentUpon>
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+      </Compile>
+      <Compile Update="Data\Binary\DataSinkUtils.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>DataSinkUtils.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Formats\PcmSampleFormats.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>PcmSampleFormats.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\Binary\BinaryExtensions.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>BinaryExtensions.g.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\MathITemplate.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>MathITemplate.tt</DependentUpon>
+      </Compile>
+      <Compile Update="Utils\Tuples\Tuples.cs">
+        <DependentUpon>Tuples.tt</DependentUpon>
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+      </Compile>
+      <Compile Update="Utils\Tuples\Tuples.g.cs">
+        <DependentUpon>Tuples.g.tt</DependentUpon>
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+      </Compile>
+      <Compile Update="Utils\VectorUtils.g.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>VectorUtils.g.tt</DependentUpon>
+      </Compile>
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="Codecs\Waveform\Composing\BinaryContent.g.tt">
+        <LastGenOutput>BinaryContent.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Codecs\Waveform\InfoSubChunkId.g.tt">
+        <LastGenOutput>InfoSubChunkId.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Codecs\Waveform\WaveformSubFormats.g.tt">
+        <LastGenOutput>WaveformSubFormats.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Conversion\Resampling\Sample\SplineResampler.Resample.Standard.tt">
+        <LastGenOutput>SplineResampler.Resample.Standard.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Data\Binary\DataSinkUtils.g.tt">
+        <LastGenOutput>DataSinkUtils.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Formats\PcmSampleFormats.g.tt">
+        <LastGenOutput>PcmSampleFormats.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Utils\Binary\BinaryExtensions.g.tt">
+        <LastGenOutput>BinaryExtensions.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Utils\MathITemplate.tt">
+        <LastGenOutput>MathITemplate.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Utils\Tuples\Tuples.g.tt">
+        <LastGenOutput>Tuples.g.cs</LastGenOutput>
+        <Generator>TextTemplatingFileGenerator</Generator>
+      </None>
+      <None Update="Utils\VectorUtils.g.tt">
+        <Generator>TextTemplatingFileGenerator</Generator>
+        <LastGenOutput>VectorUtils.g.cs</LastGenOutput>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>-->
+</Project>

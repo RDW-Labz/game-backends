@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
+        <RootNamespace>Shamisen.IO.OpenTK.OpenAL</RootNamespace>
+        <Nullable>enable</Nullable>
+        <Description>OpenTK OpenAL output for Shamisen.</Description>
+        <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>audio;csharp;dotnet;signal processing;audio player;audio library;csharp library;audio io;io;OpenTK;OpenAL</PackageTags>
+    </PropertyGroup>
+    <Import Project="../Shamisen.Core.targets" />
+    <ItemGroup>
+        <None Include="README.md" Pack="True" PackagePath="\" />
+        <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
+        <DocumentationFile>Shamisen.IO.OpenTK.xml</DocumentationFile>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DocumentationFile>Shamisen.IO.OpenTK.xml</DocumentationFile>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <WarningsAsErrors>NU1605;CS1591</WarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="OpenTK" Version="5.0.0-pre.15" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />
+    </ItemGroup>
+</Project>

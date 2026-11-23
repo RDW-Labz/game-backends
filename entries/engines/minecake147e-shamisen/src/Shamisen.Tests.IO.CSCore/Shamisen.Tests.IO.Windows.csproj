@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>$(ShamisenCurrentTargetFramework)-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+    </PropertyGroup>
+  <Import Project="../TargetFrameworks.targets" />
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ReactiveProperty" Version="9.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Shamisen.IO.CSCore\Shamisen.IO.CSCore.csproj" />
+        <ProjectReference Include="..\Shamisen\Shamisen.csproj" />
+    </ItemGroup>
+</Project>

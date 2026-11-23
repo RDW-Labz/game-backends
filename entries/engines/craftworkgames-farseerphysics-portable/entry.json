@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T15:04:03Z",
+ "category": "engines",
+ "commit": "966732fa972e",
+ "delivery": "vendored",
+ "description": "craftworkgames/FarseerPhysics.Portable \u2014 Farseer Physics compiled as a portable class library (PCL) against the PCL version of MonoGame",
+ "language": "c#",
+ "license": "Zlib",
+ "license_file": "Settings.cs",
+ "license_verdict": "clean",
+ "name": "FarseerPhysics.Portable",
+ "size_bytes": 1311396,
+ "slug": "craftworkgames-farseerphysics-portable",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 34,
+ "system": "Farseer Physics compiled as a portable class library (PCL) against the PCL version of MonoGame",
+ "upstream": "https://github.com/craftworkgames/FarseerPhysics.Portable",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

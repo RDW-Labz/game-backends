@@ -1,0 +1,71 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
+        <IsPackable>false</IsPackable>
+        <ApplicationIcon />
+        <OutputType>Library</OutputType>
+        <StartupObject />
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+        <DocumentationFile></DocumentationFile>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    </PropertyGroup>
+    <Import Project="../../T4Transform.targets" />
+    <ItemGroup>
+        <None Remove="Resources\Test.wav" />
+        <None Remove="Resources\Test_rf64.wav" />
+        <None Remove="Resources\Utf8TestCases.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Test.wav" />
+        <EmbeddedResource Include="Resources\Test_rf64.wav" />
+        <EmbeddedResource Include="Resources\Utf8TestCases.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.4">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.msbuild" Version="6.0.4">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="FastEnum" Version="2.0.6" />
+        <PackageReference Include="NUnit.Analyzers" Version="4.11.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="NUnit3TestAdapter" Version="5.2.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+        <PackageReference Include="ReportGenerator" Version="5.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Codecs\Managed\Shamisen.Codecs.Flac\Shamisen.Codecs.Flac.csproj" />
+        <ProjectReference Include="..\..\Shamisen.TestUtils\Shamisen.TestUtils.csproj" />
+        <ProjectReference Include="..\..\Shamisen\Shamisen.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Songs\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Samples\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Songs\" />
+    </ItemGroup>
+</Project>

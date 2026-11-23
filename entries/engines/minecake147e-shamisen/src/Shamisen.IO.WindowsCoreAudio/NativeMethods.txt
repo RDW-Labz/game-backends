@@ -1,0 +1,4 @@
+﻿Windows.Win32.Media.Audio.CoreAudio
+CoCreateInstance
+CLSCTX
+PROPVARIANT

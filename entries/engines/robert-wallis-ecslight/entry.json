@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:04:23Z",
+ "category": "engines",
+ "commit": "2017-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "robert-wallis/ECSLight \u2014 A lightweight Entity Component System in a portable library.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ECSLight",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "robert-wallis-ecslight",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 26,
+ "system": "A lightweight Entity Component System in a portable library.",
+ "upstream": "https://github.com/robert-wallis/ECSLight",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+      <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Description>Core interfaces of IO features for Shamisen.</Description>
+    <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+    <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio player;audio library;csharp library;codecs;audio io;io</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+    <Import Project="../Shamisen.Core.targets" />
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Shamisen.Core\Shamisen.Core.csproj" />
+    </ItemGroup>
+</Project>

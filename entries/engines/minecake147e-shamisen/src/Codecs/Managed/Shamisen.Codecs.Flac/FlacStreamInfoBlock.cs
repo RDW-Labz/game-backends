@@ -1,0 +1,293 @@
+﻿using System;
+using System.Buffers.Binary;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Shamisen.Codecs.Flac
+{
+    /// <summary>
+    /// Represents a FLAC Stream Info block.
+    /// </summary>
+    [StructLayout(LayoutKind.Explicit, Pack = 1, Size = 34)]
+    [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
+    public readonly struct FlacStreamInfoBlock : IEquatable<FlacStreamInfoBlock>
+    {
+        [FieldOffset(0)]
+        private readonly ushort blockMinSize;
+
+        [FieldOffset(2)]
+        private readonly ushort blockMaxSize;
+
+        [FieldOffset(4)]
+        private readonly UInt24 frameMinSize;
+
+        [FieldOffset(7)]
+        private readonly UInt24 frameMaxSize;
+
+        [FieldOffset(10)]
+        private readonly ulong field4;
+
+        [FieldOffset(18)]
+        private readonly Vector128<byte> md5Signature;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FlacStreamInfoBlock"/> struct directly.
+        /// </summary>
+        /// <param name="blockMinSize">Minimum size of the block.</param>
+        /// <param name="blockMaxSize">Maximum size of the block.</param>
+        /// <param name="frameMinSize">Minimum size of the frame.</param>
+        /// <param name="frameMaxSize">Maximum size of the frame.</param>
+        /// <param name="field4">The 5th field which contains information of <see cref="SampleRate"/>, <see cref="Channels"/>, <see cref="BitDepth"/>, and <see cref="TotalSamples"/>.</param>
+        /// <param name="md5Signature">The md5 signature.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public FlacStreamInfoBlock(ushort blockMinSize, ushort blockMaxSize, UInt24 frameMinSize, UInt24 frameMaxSize, ulong field4, Vector128<byte> md5Signature)
+        {
+            this.blockMinSize = blockMinSize;
+            this.blockMaxSize = blockMaxSize;
+            this.frameMinSize = frameMinSize;
+            this.frameMaxSize = frameMaxSize;
+            this.field4 = field4;
+            this.md5Signature = md5Signature;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FlacStreamInfoBlock"/> struct.<br/>
+        /// Suitable for encoding purpose.
+        /// </summary>
+        /// <param name="minimumBlockSize">Minimum size of the block.</param>
+        /// <param name="maximumBlockSize">Maximum size of the block.</param>
+        /// <param name="minimumFrameSize">Minimum size of the frame.</param>
+        /// <param name="maximumFrameSize">Maximum size of the frame.</param>
+        /// <param name="sampleRate">The sample rate.</param>
+        /// <param name="channels">The channels.</param>
+        /// <param name="bitDepth">The bit depth.</param>
+        /// <param name="totalSamples">The total samples.</param>
+        /// <param name="md5Signature">The MD5 signature.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public FlacStreamInfoBlock(ushort minimumBlockSize, ushort maximumBlockSize, UInt24 minimumFrameSize, UInt24 maximumFrameSize, uint sampleRate, byte channels, byte bitDepth, ulong totalSamples, Vector128<byte> md5Signature)
+        {
+            blockMinSize = minimumBlockSize;
+            blockMaxSize = maximumBlockSize;
+            frameMinSize = minimumFrameSize;
+            frameMaxSize = maximumFrameSize;
+            if (sampleRate > 655350 || sampleRate == 0) throw new ArgumentOutOfRangeException(nameof(sampleRate), "sampleRate must be between 1 and 655360!");
+            if (channels > 8 || channels == 0) throw new ArgumentOutOfRangeException(nameof(sampleRate), "channels must be between 1 and 8!");
+            if (bitDepth > 32 || bitDepth < 4) throw new ArgumentOutOfRangeException(nameof(bitDepth), "bitDepth must be between 4 and 32!");
+            if (totalSamples >= 1ul << 36) throw new ArgumentOutOfRangeException(nameof(totalSamples), $"totalSamples must be between 0 and {(1ul << 36) - 1}!");
+            sampleRate &= (uint)(~0ul >> 44);
+            channels &= 0b0111;
+            bitDepth &= 0x1f;
+            totalSamples &= ~(~0ul << 36);
+            channels--;
+            bitDepth--;
+            field4 = ((ulong)sampleRate << 44) | ((ulong)channels << 41) | ((ulong)bitDepth << 36) | totalSamples;
+            this.md5Signature = md5Signature;
+        }
+
+        /// <summary>
+        /// Gets the minimum size of the block in samples.
+        /// </summary>
+        /// <value>
+        /// The minimum size of the block.
+        /// </value>
+        public ushort MinimumBlockSize
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get => blockMinSize;
+        }
+
+        /// <summary>
+        /// Gets the maximum size of the block.
+        /// </summary>
+        /// <value>
+        /// The maximum size of the block.
+        /// </value>
+        public ushort MaximumBlockSize
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get => blockMaxSize;
+        }
+
+        /// <summary>
+        /// Gets the minimum size of the FLAC frame in bytes.
+        /// </summary>
+        /// <value>
+        /// The minimum size of the frame.
+        /// </value>
+        public UInt24 MinimumFrameSize
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get => frameMinSize;
+        }
+
+        /// <summary>
+        /// Gets the maximum size of the FLAC frame in bytes.
+        /// </summary>
+        /// <value>
+        /// The maximum size of the frame.
+        /// </value>
+        public UInt24 MaximumFrameSize
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get => frameMaxSize;
+        }
+
+        /// <summary>
+        /// Gets the sample rate.
+        /// </summary>
+        /// <value>
+        /// The sample rate.
+        /// </value>
+        public uint SampleRate
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get => (uint)(field4 >> 44);
+        }
+
+        /// <summary>
+        /// Gets the channels.
+        /// </summary>
+        /// <value>
+        /// The channels.
+        /// </value>
+        public int Channels
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get => (int)((field4 >> 41) & 0x7) + 1;
+        }
+
+        /// <summary>
+        /// Gets the bit depth.
+        /// </summary>
+        /// <value>
+        /// The bit depth.
+        /// </value>
+        public int BitDepth
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get => (int)((field4 >> 36) & 0b1_1111) + 1;
+        }
+
+        /// <summary>
+        /// Gets the total inter-channel samples(aka "Frames" in Shamisen) in this FLAC stream.
+        /// </summary>
+        /// <value>
+        /// The total samples.
+        /// </value>
+        public ulong TotalSamples
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get => field4 & ~(~0ul << 36);
+        }
+
+        /// <summary>
+        /// Gets the MD5 signature.
+        /// </summary>
+        /// <value>
+        /// The MD5 signature.
+        /// </value>
+        public Vector128<byte> MD5Signature => md5Signature;
+
+        /// <summary>
+        /// Converts the specified <paramref name="value"/> read directly from <see cref="Span{T}"/> of <see cref="byte"/>, to readable value.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static FlacStreamInfoBlock ToReadableValue(FlacStreamInfoBlock value)
+            => !BitConverter.IsLittleEndian ? value
+                : ReverseEndianness(value);
+
+        /// <summary>
+        /// Converts the specified <paramref name="value"/> constructed manually in user code, to writable value.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static FlacStreamInfoBlock ToWritableValue(FlacStreamInfoBlock value) => ToReadableValue(value);
+
+        /// <summary>
+        /// Reverses the endianness of every field in <paramref name="value"/>.
+        /// </summary>
+        /// <param name="value">The value to convert endianness.</param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static FlacStreamInfoBlock ReverseEndianness(FlacStreamInfoBlock value)
+            => new(
+                    BinaryPrimitives.ReverseEndianness(value.blockMinSize),
+                    BinaryPrimitives.ReverseEndianness(value.blockMaxSize),
+                    UInt24.ReverseEndianness(value.frameMinSize),
+                    UInt24.ReverseEndianness(value.frameMaxSize),
+                    BinaryPrimitives.ReverseEndianness(value.field4),
+                    value.md5Signature);
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="obj">An object to compare with this object.</param>
+        /// <returns>
+        ///   <c>true</c> if the current object is equal to the obj parameter; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool Equals(object? obj) => obj is FlacStreamInfoBlock block && Equals(block);
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns>
+        ///   <c>true</c> if the current object is equal to the other parameter; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Equals(FlacStreamInfoBlock other) => blockMinSize == other.blockMinSize && blockMaxSize == other.blockMaxSize && frameMinSize.Equals(other.frameMinSize) && frameMaxSize.Equals(other.frameMaxSize) && field4 == other.field4 && md5Signature == other.md5Signature;
+
+        /// <summary>
+        /// Returns a hash code for this instance.
+        /// </summary>
+        /// <returns>
+        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.
+        /// </returns>
+        public override int GetHashCode() => HashCode.Combine(blockMinSize, blockMaxSize, frameMinSize, frameMaxSize, field4, md5Signature);
+
+        /// <summary>
+        /// Indicates whether the values of two specified <see cref="FlacStreamInfoBlock"/> objects are equal.
+        /// </summary>
+        /// <param name="left">The first <see cref="FlacStreamInfoBlock"/> to compare.</param>
+        /// <param name="right">The second <see cref="FlacStreamInfoBlock"/> to compare.</param>
+        /// <returns>
+        ///   <c>true</c> if the left is the same as the right; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator ==(FlacStreamInfoBlock left, FlacStreamInfoBlock right) => left.Equals(right);
+
+        /// <summary>
+        /// Indicates whether the values of two specified <see cref="FlacStreamInfoBlock"/> objects are not equal.
+        /// </summary>
+        /// <param name="left">The first <see cref="FlacStreamInfoBlock"/> to compare.</param>
+        /// <param name="right">The second  <see cref="FlacStreamInfoBlock"/> to compare.</param>
+        /// <returns>
+        ///   <c>true</c> if left and right are not equal; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool operator !=(FlacStreamInfoBlock left, FlacStreamInfoBlock right) => !(left == right);
+
+        /// <inheritdoc/>
+        public override string? ToString() => GetDebuggerDisplay();
+
+        private string GetDebuggerDisplay()
+        {
+            var sb = new StringBuilder();
+            _ = sb.AppendLine($"{nameof(MinimumBlockSize)}: {blockMinSize}");
+            _ = sb.AppendLine($"{nameof(MaximumBlockSize)}: {blockMaxSize}");
+            _ = sb.AppendLine($"{nameof(MinimumFrameSize)}: {frameMinSize}");
+            _ = sb.AppendLine($"{nameof(MaximumFrameSize)}: {frameMaxSize}");
+            _ = sb.AppendLine($"{nameof(SampleRate)}: {SampleRate}");
+            _ = sb.AppendLine($"{nameof(Channels)}: {Channels}");
+            _ = sb.AppendLine($"{nameof(BitDepth)}: {BitDepth}");
+            _ = sb.Append($"{nameof(MD5Signature)}: {md5Signature}");
+            return sb.ToString();
+        }
+    }
+}

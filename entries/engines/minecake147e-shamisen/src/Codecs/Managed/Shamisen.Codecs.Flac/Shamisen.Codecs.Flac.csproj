@@ -1,0 +1,81 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ShamisenCurrentTargetFramework)</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageTags>audio;csharp;cross platform;dotnet;signal processing;audio player;audio library;csharp library;codecs;flac</PackageTags>
+    <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+    <Description>FLAC Decoder for Shamisen.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+    <Import Project="../../../Shamisen.Core.targets" />
+    <ItemGroup>
+      <None Include="..\..\..\Shamisen-NuGetIcon.png">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
+    </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Shamisen.Core\Shamisen.Core.csproj" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Parsing\FlacCrc16.table.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacCrc16.table.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Parsing\FlacCrc8.table.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacCrc8.table.tt</DependentUpon>
+    </Compile>
+    <Compile Update="SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacLinearPredictionSubFrame.Intrinsics.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="SubFrames\FlacLinearPredictionSubFrame.X86.g.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacLinearPredictionSubFrame.X86.g.tt</DependentUpon>
+    </Compile>
+    <Compile Update="SubFrames\FlacLinearPredictionSubFrame.Predict.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FlacLinearPredictionSubFrame.Predict.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Parsing\FlacCrc16.table.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacCrc16.table.cs</LastGenOutput>
+    </None>
+    <None Update="Parsing\FlacCrc8.table.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacCrc8.table.cs</LastGenOutput>
+    </None>
+    <None Update="SubFrames\FlacLinearPredictionSubFrame.Intrinsics.g.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacLinearPredictionSubFrame.Intrinsics.g.cs</LastGenOutput>
+    </None>
+    <None Update="SubFrames\FlacLinearPredictionSubFrame.Predict.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacLinearPredictionSubFrame.Predict.cs</LastGenOutput>
+    </None>
+    <None Update="SubFrames\FlacLinearPredictionSubFrame.X86.g.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FlacLinearPredictionSubFrame.X86.g.cs</LastGenOutput>
+    </None>
+  </ItemGroup>-->
+  <ItemGroup>
+      <None Include="README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

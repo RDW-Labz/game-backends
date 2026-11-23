@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T15:04:20Z",
+ "category": "engines",
+ "commit": "2f1adeec434d",
+ "delivery": "vendored",
+ "description": "MineCake147E/Shamisen \u2014 Cross-Platform Audio Library for modern .NET.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "Shamisen",
+ "size_bytes": 5975136,
+ "slug": "minecake147e-shamisen",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 34,
+ "system": "Cross-Platform Audio Library for modern .NET.",
+ "upstream": "https://github.com/MineCake147E/Shamisen",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

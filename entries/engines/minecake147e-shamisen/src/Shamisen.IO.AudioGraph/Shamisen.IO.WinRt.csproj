@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(ShamisenCurrentTargetFramework)-windows10.0.19041.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Shamisen.IO.WinRt</RootNamespace>
+    <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+    <Description>WinRt AudioGraph interface for Shamisen.</Description>
+    <PackageTags>audio;csharp;dotnet;signal processing;audio player;audio library;csharp library;audio io;io;windows;winappsdk;winrt;cswinrt;audiograph</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+    <Import Project="../Shamisen.Core.targets" />
+    <ItemGroup>
+      <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />
+        <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="\" />
+        <None Include="README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
+</Project>

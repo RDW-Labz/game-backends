@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:04:23Z",
+ "category": "engines",
+ "commit": "2026-07-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AristurtleDev/Forme \u2014 GPU acelerated text rendering library for MonoGame build on the Slug algorithm",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Forme",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "aristurtledev-forme",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 32,
+ "system": "GPU acelerated text rendering library for MonoGame build on the Slug algorithm",
+ "upstream": "https://github.com/AristurtleDev/Forme",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

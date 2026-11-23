@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFrameworks>$(ShamisenCurrentTargetFramework)-windows</TargetFrameworks>
+        <RootNamespace>Shamisen.IO</RootNamespace>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <Nullable>enable</Nullable>
+        <WarningsAsErrors>NU1605;CS1591;CS1574;CS8625;CS8602;CS8603;CS8618</WarningsAsErrors>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Description>NAudio interface for Shamisen.</Description>
+        <PackageTags>audio;csharp;dotnet;signal processing;audio player;audio library;csharp library;audio io;io;windows;wasapi</PackageTags>
+        <PackageIcon>Shamisen-NuGetIcon.png</PackageIcon>
+    </PropertyGroup>
+    <Import Project="../Shamisen.Core.targets" />
+    <ItemGroup>
+        <PackageReference Include="NAudio" Version="2.2.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shamisen.Core\Shamisen.Core.csproj" />
+      <ProjectReference Include="..\Shamisen.IO\Shamisen.IO.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="" />
+        <None Include="..\Shamisen-NuGetIcon.png" Pack="true" PackagePath="" />
+    </ItemGroup>
+</Project>
