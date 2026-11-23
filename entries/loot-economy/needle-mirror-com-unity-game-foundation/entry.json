@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:40:13Z",
+ "category": "loot-economy",
+ "commit": "2021-06-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "needle-mirror/com.unity.game-foundation \u2014 Game Foundation core package.This package contains the following components: \u25aa Inventory System \u25aa Virtual Currency Wallet \u25aa Properties System \u25aa Transaction System  \u25aa Reward System  \u25aa Core Systems Note: Preview release, public API subject to change. \ud83d\udce6 [Mirrored from UPM, not affiliated with Unity Technologies.]",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "com.unity.game-foundation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "needle-mirror-com-unity-game-foundation",
+ "source": "github-search:reward system game stars:>5",
+ "stars": 11,
+ "system": "Game Foundation core package.This package contains the following components: \u25aa Inventory System \u25aa Virtual Currency Wallet \u25aa Properties System \u25aa Transaction Syst",
+ "upstream": "https://github.com/needle-mirror/com.unity.game-foundation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:40:13Z",
+ "category": "loot-economy",
+ "commit": "2021-05-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "MontaLabidi/Race-Car-Unity-3D \u2014 3D Race Car game with a simple reward system to unlock more powerful cars and enjoy the speed :car:",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Race-Car-Unity-3D",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "montalabidi-race-car-unity-3d",
+ "source": "github-search:reward system game stars:>5",
+ "stars": 13,
+ "system": "3D Race Car game with a simple reward system to unlock more powerful cars and enjoy the speed :car:",
+ "upstream": "https://github.com/MontaLabidi/Race-Car-Unity-3D",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

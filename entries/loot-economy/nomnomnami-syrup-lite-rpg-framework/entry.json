@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T23:40:05Z",
+ "category": "loot-economy",
+ "commit": "9b435afd1038",
+ "delivery": "vendored",
+ "description": "nomnomnami/syrup-lite-rpg-framework \u2014 inventory, shop, crafting, quests, and battle systems for ren'py!",
+ "language": "ren'py",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "syrup-lite-rpg-framework",
+ "size_bytes": 0,
+ "slug": "nomnomnami-syrup-lite-rpg-framework",
+ "source": "github-search:shop system rpg stars:>5",
+ "stars": 39,
+ "system": "inventory, shop, crafting, quests, and battle systems for ren'py!",
+ "upstream": "https://github.com/nomnomnami/syrup-lite-rpg-framework",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

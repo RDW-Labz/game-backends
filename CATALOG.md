@@ -1,13 +1,13 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 23:24 UTC · 1000 entries · 266 vendored, 734 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 23:40 UTC · 1006 entries · 267 vendored, 739 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
-| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 24 | 6 | 18 |
+| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
@@ -649,13 +649,15 @@ _Generated 2026-11-23 23:24 UTC · 1000 entries · 266 vendored, 734 reference-o
 
 ## loot-economy
 
-**Loot / drop and economy rolls** — 24 entries
+**Loot / drop and economy rolls** — 30 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
+| [3DGame_TheLostVillage](entries/loot-economy/leethebuilder-3dgame-thelostvillage/README.md) | A 3D RPG adventure game developed with Unity3D. The game has built-in quest systems, battle systems and traditional RPG elements (Shops, Collections etc). | c# | unknown | reference | [LeeTheBuilder/3DGame_TheLostVillage](https://github.com/LeeTheBuilder/3DGame_TheLostVillage) @ `2021-04-21 (branch tip at catalogue time)` |
 | [Apex-Legends-Game-Assistant-Cheats-Hacks-2026](entries/loot-economy/pausesocialkinks-apex-legends-game-assistant-cheats-hacks-2026/README.md) |  🛡️⚡ Apex Legends Game Assistant 2026 with aiming assistance, visual feedback system (players/loot/deathboxes/care packages/beacons through walls), position tra | c++ | none | reference | [pausesocialkinks/Apex-Legends-Game-Assistant-Cheats-Hacks-2026](https://github.com/pausesocialkinks/Apex-Legends-Game-Assistant-Cheats-Hacks-2026) @ `fb1ab2a406eb` |
 | [BlockState](entries/loot-economy/triton365-blockstate/README.md) | A very, very large loot-table that extracts the BlockState data of any block at given position | mcfunction | MIT | reference | [Triton365/BlockState](https://github.com/Triton365/BlockState) @ `2026-09-26 (branch tip at catalogue time)` |
 | [Cataclysm-DDA — itemgroups](entries/loot-economy/cataclysm-dda-data-json-itemgroups/README.md) | item group / loot tables (JSON) | json | CC-BY-SA-3.0 | reference | [CleverRaven/Cataclysm-DDA.git](https://github.com/CleverRaven/Cataclysm-DDA.git) @ `2599825ebb8c` |
+| [com.unity.game-foundation](entries/loot-economy/needle-mirror-com-unity-game-foundation/README.md) | Game Foundation core package.This package contains the following components: ▪ Inventory System ▪ Virtual Currency Wallet ▪ Properties System ▪ Transaction Syst | c# | unknown | reference | [needle-mirror/com.unity.game-foundation](https://github.com/needle-mirror/com.unity.game-foundation) @ `2021-06-11 (branch tip at catalogue time)` |
 | [crawl — source](entries/loot-economy/crawl-crawl-ref-source/README.md) | item generation (makeitem) and drop logic | c++ | GPL-2.0 | reference | [crawl/crawl.git](https://github.com/crawl/crawl.git) @ `cf8c9bca9065` |
 | [cyber-acid](entries/loot-economy/stateless-minds-cyber-acid/README.md) | Liquid democracy political simulator based on the automated data feed from the moneyless economy simulator Cyber Stasis. | go | MIT | reference | [stateless-minds/cyber-acid](https://github.com/stateless-minds/cyber-acid) @ `2024-12-04 (branch tip at catalogue time)` |
 | [cyber-stasis](entries/loot-economy/stateless-minds-cyber-stasis/README.md) | Post-money economy simulator in the form of a free fictional game based on gift economy that tests the hypothesis of having a market system without any exchange | go | MIT | vendored | [stateless-minds/cyber-stasis](https://github.com/stateless-minds/cyber-stasis) @ `cd2585927609` |
@@ -668,12 +670,16 @@ _Generated 2026-11-23 23:24 UTC · 1000 entries · 266 vendored, 734 reference-o
 | [Lootie](entries/loot-economy/sempitern0-lootie/README.md) | Portable loot table for Godot class that facilitates generating random loot based on specified items and their associated probabilities. | gdscript | MIT | vendored | [sempitern0/Lootie](https://github.com/sempitern0/Lootie) @ `ab2b6065789b` |
 | [LootTable.js](entries/loot-economy/jotson-loottable-js/README.md) | A loot drop table implementation in JavaScript | javascript | MIT | reference | [jotson/LootTable.js](https://github.com/jotson/LootTable.js) @ `2023-10-11 (branch tip at catalogue time)` |
 | [Major-project-list](entries/loot-economy/manojkumarpatnaik-major-project-list/README.md) | A list of practical projects that anyone can solve in any programming language (See solutions). These projects are divided into multiple categories, and each ca | n/a | MIT | vendored | [ManojKumarPatnaik/Major-project-list](https://github.com/ManojKumarPatnaik/Major-project-list) @ `1bc6f5724b21` |
+| [Moonmission-NFT-Game](entries/loot-economy/chakra377-moonmission-nft-game/README.md) | Bulls & Bears is an on-chain token generation and staking ecosystem inspired by The Whales Game, built to explore asymmetric reward mechanics and market-driven  | solidity | unknown | reference | [chakra377/Moonmission-NFT-Game](https://github.com/chakra377/Moonmission-NFT-Game) @ `2025-10-23 (branch tip at catalogue time)` |
 | [openmu — Trade](entries/loot-economy/openmu-src-gamelogic-views-trade/README.md) | player trade/market views and pricing | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
 | [Prosperity-Wars](entries/loot-economy/nashet-prosperity-wars/README.md) | Game-like agent based economy simulator | c# | GPL-3.0 | reference | [Nashet/Prosperity-Wars](https://github.com/Nashet/Prosperity-Wars) @ `6c521ec46378` |
+| [Race-Car-Unity-3D](entries/loot-economy/montalabidi-race-car-unity-3d/README.md) | 3D Race Car game with a simple reward system to unlock more powerful cars and enjoy the speed :car: | c# | unknown | reference | [MontaLabidi/Race-Car-Unity-3D](https://github.com/MontaLabidi/Race-Car-Unity-3D) @ `2021-05-12 (branch tip at catalogue time)` |
 | [StewBeet](entries/loot-economy/stoupy51-stewbeet/README.md) | A beet framework for generating Minecraft datapacks: declare an item once, and its models, recipes, loot tables, translations and in-game manual page are writte | python | unknown | reference | [Stoupy51/StewBeet](https://github.com/Stoupy51/StewBeet) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Surviv.io](entries/loot-economy/ronald106-surviv-io/README.md) |  <!doctype html> <html lang='en'>   <head>     <!-- Meta Properties -->     <meta charset='UTF-8'>     <title>surviv.io - 2d battle royale game</title>     <met | n/a | none | reference | [Ronald106/Surviv.io](https://github.com/Ronald106/Surviv.io) @ `HEAD` |
+| [syrup-lite-rpg-framework](entries/loot-economy/nomnomnami-syrup-lite-rpg-framework/README.md) | inventory, shop, crafting, quests, and battle systems for ren'py! | ren'py | MIT | vendored | [nomnomnami/syrup-lite-rpg-framework](https://github.com/nomnomnami/syrup-lite-rpg-framework) @ `9b435afd1038` |
 | [Treasure-Chest-System](entries/loot-economy/zyggy123-treasure-chest-system/README.md) | A dynamic treasure chest system for AzerothCore that allows Game Masters to create and manage treasure chests with custom loot and hints. Players can find and l | lua | AGPL-3.0 | reference | [zyggy123/Treasure-Chest-System](https://github.com/zyggy123/Treasure-Chest-System) @ `a11167b11280` |
 | [ultraloot](entries/loot-economy/manticorp-ultraloot/README.md) | Highly functional loot table implementation in Javascript. Extendable, inheritance based tables with multiple pools and a flexible workflow. | typescript | MIT | reference | [manticorp/ultraloot](https://github.com/manticorp/ultraloot) @ `2026-11-22 (branch tip at catalogue time)` |
+| [unity-blockventure](entries/loot-economy/thirdweb-example-unity-blockventure/README.md) | Unity SDK Starter Template - Lite RPG Gathering, Shopping and Trading Systems. | javascript | none | reference | [thirdweb-example/unity-blockventure](https://github.com/thirdweb-example/unity-blockventure) @ `6cb410de03ba` |
 | [valhallarpg](entries/loot-economy/bartoszsdr-valhallarpg/README.md) | Discord Bot RPG game inspired by many RPGs and cRPGs featuring adventures, quests, character development, PvP, riddles to solve, loot, inventory, training syste | javascript | unknown | reference | [bartoszsdr/valhallarpg](https://github.com/bartoszsdr/valhallarpg) @ `2022-11-17 (branch tip at catalogue time)` |
 | [widelands — economy](entries/loot-economy/widelands-economy/README.md) | loot, drop-rate, trade or economy simulation | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
 | [widelands — economy](entries/loot-economy/widelands-src-economy/README.md) | economy simulation: production chains, ware routing, markets | c++ | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `29753773d9c1` |

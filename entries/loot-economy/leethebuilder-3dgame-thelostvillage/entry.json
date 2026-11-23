@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:40:13Z",
+ "category": "loot-economy",
+ "commit": "2021-04-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LeeTheBuilder/3DGame_TheLostVillage \u2014 A 3D RPG adventure game developed with Unity3D. The game has built-in quest systems, battle systems and traditional RPG elements (Shops, Collections etc).",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "3DGame_TheLostVillage",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "leethebuilder-3dgame-thelostvillage",
+ "source": "github-search:shop system rpg stars:>5",
+ "stars": 6,
+ "system": "A 3D RPG adventure game developed with Unity3D. The game has built-in quest systems, battle systems and traditional RPG elements (Shops, Collections etc).",
+ "upstream": "https://github.com/LeeTheBuilder/3DGame_TheLostVillage",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

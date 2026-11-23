@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:40:13Z",
+ "category": "loot-economy",
+ "commit": "2025-10-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "chakra377/Moonmission-NFT-Game \u2014 Bulls & Bears is an on-chain token generation and staking ecosystem inspired by The Whales Game, built to explore asymmetric reward mechanics and market-driven tokenomics. The system introduces two NFT-based roles \u2014 Bulls and Bears \u2014 each with unique earning dynamics tied to the WSDM (Wisdom) Token.",
+ "language": "solidity",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Moonmission-NFT-Game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "chakra377-moonmission-nft-game",
+ "source": "github-search:reward system game stars:>5",
+ "stars": 12,
+ "system": "Bulls & Bears is an on-chain token generation and staking ecosystem inspired by The Whales Game, built to explore asymmetric reward mechanics and market-driven ",
+ "upstream": "https://github.com/chakra377/Moonmission-NFT-Game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

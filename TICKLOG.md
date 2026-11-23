@@ -2327,3 +2327,11 @@ One line per 15-minute extension tick, newest last.
   - added loot-economy/pausesocialkinks-apex-legends-game-assistant-cheats-hacks-2026 (none, reference)
   - added loot-economy/zyggy123-treasure-chest-system (AGPL-3.0, reference)
   - reference loot-economy/bartoszsdr-valhallarpg
+
+- **2026-11-23 23:40 UTC** — tick 738: +2 screened, +4 reference, 1 skipped, catalogue=1006
+  - added loot-economy/nomnomnami-syrup-lite-rpg-framework (MIT, vendored)
+  - added loot-economy/thirdweb-example-unity-blockventure (none, reference)
+  - reference loot-economy/leethebuilder-3dgame-thelostvillage
+  - reference loot-economy/montalabidi-race-car-unity-3d
+  - reference loot-economy/chakra377-moonmission-nft-game
+  - reference loot-economy/needle-mirror-com-unity-game-foundation

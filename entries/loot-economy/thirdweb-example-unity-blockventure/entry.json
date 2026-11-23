@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T23:40:11Z",
+ "category": "loot-economy",
+ "commit": "6cb410de03ba",
+ "delivery": "reference",
+ "description": "thirdweb-example/unity-blockventure \u2014 Unity SDK Starter Template - Lite RPG Gathering, Shopping and Trading Systems.",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "unity-blockventure",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 16447253,
+ "slug": "thirdweb-example-unity-blockventure",
+ "source": "github-search:shop system rpg stars:>5",
+ "stars": 24,
+ "system": "Unity SDK Starter Template - Lite RPG Gathering, Shopping and Trading Systems.",
+ "upstream": "https://github.com/thirdweb-example/unity-blockventure",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
