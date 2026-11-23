@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:23:19Z",
+ "category": "physics",
+ "commit": "2023-03-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fazeaction/three-gpu-particle-system \u2014 GPU based particle system for three.js. Heavily based on tdl library (https://github.com/greggman/tdl)",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "three-gpu-particle-system",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "fazeaction-three-gpu-particle-system",
+ "source": "github-search:particle system library stars:>30",
+ "stars": 57,
+ "system": "GPU based particle system for three.js. Heavily based on tdl library (https://github.com/greggman/tdl)",
+ "upstream": "https://github.com/fazeaction/three-gpu-particle-system",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

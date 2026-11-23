@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:23:19Z",
+ "category": "physics",
+ "commit": "2021-03-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RonenNess/partykals \u2014 Particles system library for THREE.js",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "partykals",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ronenness-partykals",
+ "source": "github-search:particle system library stars:>30",
+ "stars": 136,
+ "system": "Particles system library for THREE.js",
+ "upstream": "https://github.com/RonenNess/partykals",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

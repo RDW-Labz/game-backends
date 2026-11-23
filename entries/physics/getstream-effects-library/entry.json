@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T19:23:18Z",
+ "category": "physics",
+ "commit": "eaf607ba6d02",
+ "delivery": "reference",
+ "description": "GetStream/effects-library \u2014 The Effects Library allows developers to create sophisticated and realistic particle systems such as snow, fire, rain, confetti, fireworks, and smoke with no or minimal effort.",
+ "language": "swift",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "effects-library",
+ "reference_reason": "size gate: 19 MB",
+ "size_bytes": 20790169,
+ "slug": "getstream-effects-library",
+ "source": "github-search:particle system library stars:>30",
+ "stars": 364,
+ "system": "The Effects Library allows developers to create sophisticated and realistic particle systems such as snow, fire, rain, confetti, fireworks, and smoke with no or",
+ "upstream": "https://github.com/GetStream/effects-library",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

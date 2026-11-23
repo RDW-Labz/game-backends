@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T19:23:03Z",
+ "category": "physics",
+ "commit": "db8a475f7716",
+ "delivery": "vendored",
+ "description": "jinatonic/confetti \u2014 An Android particle system library for displaying confetti!",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "confetti",
+ "size_bytes": 93961,
+ "slug": "jinatonic-confetti",
+ "source": "github-search:particle system library stars:>30",
+ "stars": 1297,
+ "system": "An Android particle system library for displaying confetti!",
+ "upstream": "https://github.com/jinatonic/confetti",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

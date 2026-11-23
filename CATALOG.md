@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 19:07 UTC · 907 entries · 240 vendored, 667 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 19:23 UTC · 913 entries · 241 vendored, 672 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
-| [physics](#physics) — Physics | 115 | 29 | 86 |
+| [physics](#physics) — Physics | 121 | 30 | 91 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
@@ -420,7 +420,7 @@ _Generated 2026-11-23 19:07 UTC · 907 entries · 240 vendored, 667 reference-on
 
 ## physics
 
-**Physics** — 115 entries
+**Physics** — 121 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -429,6 +429,7 @@ _Generated 2026-11-23 19:07 UTC · 907 entries · 240 vendored, 667 reference-on
 | [AnimVerlet](entries/physics/chonjay21-animverlet/README.md) | Yet another anim dynamics plugin for cloth, string, hair, blob, fluids simulation in UE4, UE5 | c++ | MIT | reference | [chonjay21/AnimVerlet](https://github.com/chonjay21/AnimVerlet) @ `2026-08-03 (branch tip at catalogue time)` |
 | [anki-3d-engine](entries/physics/godlikepanos-anki-3d-engine/README.md) | AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more | c++ | unknown | reference | [godlikepanos/anki-3d-engine](https://github.com/godlikepanos/anki-3d-engine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [apollonia](entries/physics/wgtdkp-apollonia/README.md) | Tiny 2D physics engine | c++ | MIT | reference | [wgtdkp/apollonia](https://github.com/wgtdkp/apollonia) @ `2022-01-28 (branch tip at catalogue time)` |
+| [arduino-particle-sys](entries/physics/giladaya-arduino-particle-sys/README.md) | A particle system library for arduino | c++ | unknown | reference | [giladaya/arduino-particle-sys](https://github.com/giladaya/arduino-particle-sys) @ `2013-05-18 (branch tip at catalogue time)` |
 | [avian](entries/physics/avianphysics-avian/README.md) | ECS-driven 2D and 3D physics engine for the Bevy game engine. | rust | Apache-2.0 | reference | [avianphysics/avian](https://github.com/avianphysics/avian) @ `2026-11-04 (branch tip at catalogue time)` |
 | [avian_pickup](entries/physics/janhohenheim-avian-pickup/README.md) | A plugin for implementing picking up dynamic rigid bodies in Avian physics for the Bevy engine. Modeled after Half Life 2's gravity gun. | rust | Apache-2.0 | vendored | [janhohenheim/avian_pickup](https://github.com/janhohenheim/avian_pickup) @ `4fbfdaa751de` |
 | [awesome-collision-detection](entries/physics/jslee02-awesome-collision-detection/README.md) | :sunglasses: A curated list of awesome collision detection libraries and resources | python | CC0-1.0 | reference | [jslee02/awesome-collision-detection](https://github.com/jslee02/awesome-collision-detection) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -454,9 +455,11 @@ _Generated 2026-11-23 19:07 UTC · 907 entries · 240 vendored, 667 reference-on
 | [cloth-physics](entries/physics/esimov-cloth-physics/README.md) | Desktop application for cloth physics simulation using Gio GUI. | go | MIT | reference | [esimov/cloth-physics](https://github.com/esimov/cloth-physics) @ `2026-06-29 (branch tip at catalogue time)` |
 | [Cloth-Simulation-With-python---Verlet-Integration](entries/physics/josephbakulikira-cloth-simulation-with-python-verlet-integration/README.md) | see upstream | python | unknown | reference | [Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration](https://github.com/Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration) @ `2023-02-03 (branch tip at catalogue time)` |
 | [ClothSimulation](entries/physics/johnbuffer-clothsimulation/README.md) | Basic cloth simulation using Verlet integration | c++ | MIT | vendored | [johnBuffer/ClothSimulation](https://github.com/johnBuffer/ClothSimulation) @ `ac5bbce045e8` |
+| [confetti](entries/physics/jinatonic-confetti/README.md) | An Android particle system library for displaying confetti! | java | Apache-2.0 | vendored | [jinatonic/confetti](https://github.com/jinatonic/confetti) @ `db8a475f7716` |
 | [crashcat](entries/physics/isaac-mason-crashcat/README.md) | physics engine for javascript, built for games, simulations, and creative websites | typescript | MIT | reference | [isaac-mason/crashcat](https://github.com/isaac-mason/crashcat) @ `2026-10-30 (branch tip at catalogue time)` |
 | [dyn4j](entries/physics/dyn4j-dyn4j/README.md) | Java Collision Detection and Physics Engine | java | BSD-3-Clause | vendored | [dyn4j/dyn4j](https://github.com/dyn4j/dyn4j) @ `bcf942adaa9b` |
 | [edyn](entries/physics/xissburg-edyn/README.md) | Edyn is a real-time physics engine organized as an ECS. | c++ | MIT | reference | [xissburg/edyn](https://github.com/xissburg/edyn) @ `2026-09-08 (branch tip at catalogue time)` |
+| [effects-library](entries/physics/getstream-effects-library/README.md) | The Effects Library allows developers to create sophisticated and realistic particle systems such as snow, fire, rain, confetti, fireworks, and smoke with no or | swift | Apache-2.0 | reference | [GetStream/effects-library](https://github.com/GetStream/effects-library) @ `eaf607ba6d02` |
 | [elastica](entries/physics/darkroomengineering-elastica/README.md) | Physics engine for 2D rigid body collisions with React bindings. | typescript | MIT | reference | [darkroomengineering/elastica](https://github.com/darkroomengineering/elastica) @ `2026-10-31 (branch tip at catalogue time)` |
 | [engine](entries/physics/galacean-engine/README.md) | A typescript interactive engine, support 2D, 3D, animation, physics, built on WebGL and glTF. | typescript | MIT | reference | [galacean/engine](https://github.com/galacean/engine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [engine](entries/physics/renzora-engine/README.md) | 2D & 3D game engine & scene editor using bevy 0.20 | rust | Apache-2.0 | reference | [renzora/engine](https://github.com/renzora/engine) @ `2026-11-05 (branch tip at catalogue time)` |
@@ -494,6 +497,7 @@ _Generated 2026-11-23 19:07 UTC · 907 entries · 240 vendored, 667 reference-on
 | [PARC](entries/physics/mshoe-parc/README.md) | PARC: Physics-based Augmentation with Reinforcement Learning for Character Controllers | python | unknown | reference | [mshoe/PARC](https://github.com/mshoe/PARC) @ `2026-02-04 (branch tip at catalogue time)` |
 | [parry](entries/physics/dimforge-parry/README.md) | 2D and 3D collision-detection library for Rust. | rust | Apache-2.0 | reference | [dimforge/parry](https://github.com/dimforge/parry) @ `2026-10-06 (branch tip at catalogue time)` |
 | [ParticlePhysics2D-Unity](entries/physics/pan-pawka-particlephysics2d-unity/README.md) | A fast and stable particle based physics 2D engine for Unity 3D. | c# | none | reference | [pan-pawka/ParticlePhysics2D-Unity](https://github.com/pan-pawka/ParticlePhysics2D-Unity) @ `0930754b74e4` |
+| [partykals](entries/physics/ronenness-partykals/README.md) | Particles system library for THREE.js | javascript | MIT | reference | [RonenNess/partykals](https://github.com/RonenNess/partykals) @ `2021-03-25 (branch tip at catalogue time)` |
 | [pendulum](entries/physics/christophmark-pendulum/README.md) | A physics-inspired 2D browser game for both mobile and desktop that involves an alien swinging from a rope to avoid obstacles in randomly generated, fully destr | javascript | unknown | reference | [christophmark/pendulum](https://github.com/christophmark/pendulum) @ `2017-05-25 (branch tip at catalogue time)` |
 | [phaser-box2d](entries/physics/phaserjs-phaser-box2d/README.md) | A high-performance, industry-standard 2D physics engine built on Box2D v3, delivering incredibly realistic and engaging web game experiences. | javascript | MIT | reference | [phaserjs/phaser-box2d](https://github.com/phaserjs/phaser-box2d) @ `2025-04-03 (branch tip at catalogue time)` |
 | [Physix-go](entries/physics/rudransh61-physix-go/README.md) | A simple Physics engine in GoLang | go | MIT | vendored | [rudransh61/Physix-go](https://github.com/rudransh61/Physix-go) @ `345e56f833a5` |
@@ -505,6 +509,7 @@ _Generated 2026-11-23 19:07 UTC · 907 entries · 240 vendored, 667 reference-on
 | [project_superdex](entries/physics/facebookresearch-project-superdex/README.md) | SuperDex brings together a purpose-built physics engine, robotics authoring tools, and a scalable reinforcement learning interface in a unified simulation platf | c++ | Apache-2.0 | reference | [facebookresearch/project_superdex](https://github.com/facebookresearch/project_superdex) @ `2026-11-23 (branch tip at catalogue time)` |
 | [pygame-physics](entries/physics/idgmatrix-pygame-physics/README.md) | Simple Physics Simulation with Pygame | python | none | reference | [idgmatrix/pygame-physics](https://github.com/idgmatrix/pygame-physics) @ `d3fff95306b9` |
 | [pymunk](entries/physics/viblo-pymunk/README.md) | Pymunk is a easy-to-use pythonic 2d physics library that can be used whenever  you need 2d rigid body physics from Python | python | MIT | vendored | [viblo/pymunk](https://github.com/viblo/pymunk) @ `b993f9b3ef2d` |
+| [python-hacked-mobile-phone-](entries/physics/masudbro94-python-hacked-mobile-phone/README.md) | Open in app Get started   ITNEXT Published in ITNEXT  You have 2 free member-only stories left this month. Sign up for Medium and get an extra one  Kush Kush Fo | n/a | unknown | reference | [Masudbro94/python-hacked-mobile-phone-](https://github.com/Masudbro94/python-hacked-mobile-phone-) @ `2022-06-30 (branch tip at catalogue time)` |
 | [QuarkPhysics](entries/physics/erayzesen-quarkphysics/README.md) | A 2D Soft Body and Rigid Body Physics Engine. | c++ | MIT | reference | [erayzesen/QuarkPhysics](https://github.com/erayzesen/QuarkPhysics) @ `2025-10-17 (branch tip at catalogue time)` |
 | [Rapier](entries/physics/rapier/README.md) | Rust 2D/3D physics with deterministic solver + WASM build | rust | Apache-2.0 | reference | [dimforge/rapier](https://github.com/dimforge/rapier) @ `475caa3ff464` |
 | [react-babylonjs](entries/physics/brianzinn-react-babylonjs/README.md) | React for Babylon 3D engine | typescript | none | reference | [brianzinn/react-babylonjs](https://github.com/brianzinn/react-babylonjs) @ `97595cd62895` |
@@ -531,6 +536,7 @@ _Generated 2026-11-23 19:07 UTC · 907 entries · 240 vendored, 667 reference-on
 | [taro](entries/physics/cloud9c-taro/README.md) | A lightweight 3D game engine for the web. | javascript | MIT | reference | [cloud9c/taro](https://github.com/cloud9c/taro) @ `2025-02-13 (branch tip at catalogue time)` |
 | [ten-minute-physics-rs](entries/physics/lucas-schuermann-ten-minute-physics-rs/README.md) | Reimplementation of Matthias Müller's "Ten Minute Physics" demos in Rust with WASM + WebGL | rust | MIT | vendored | [lucas-schuermann/ten-minute-physics-rs](https://github.com/lucas-schuermann/ten-minute-physics-rs) @ `e5c448022c80` |
 | [thetawave](entries/physics/thetawavegame-thetawave/README.md) | A physics based, space shooter game made with Rust and the Bevy engine. | rust | MIT | vendored | [thetawavegame/thetawave](https://github.com/thetawavegame/thetawave) @ `94fad04fb913` |
+| [three-gpu-particle-system](entries/physics/fazeaction-three-gpu-particle-system/README.md) | GPU based particle system for three.js. Heavily based on tdl library (https://github.com/greggman/tdl) | javascript | unknown | reference | [fazeaction/three-gpu-particle-system](https://github.com/fazeaction/three-gpu-particle-system) @ `2023-03-06 (branch tip at catalogue time)` |
 | [thrive — physics](entries/physics/thrive-physics/README.md) | rigid-body collision and dynamics | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [thrive — physics](entries/physics/thrive-src-native-physics/README.md) | custom rigid-body physics for a sim game | c++ | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f4f2e0` |
 | [unrust](entries/physics/unrust-unrust/README.md) | unrust - A pure rust based (webgl 2.0 / native) game engine | rust | Apache-2.0 | reference | [unrust/unrust](https://github.com/unrust/unrust) @ `2018-08-13 (branch tip at catalogue time)` |

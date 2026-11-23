@@ -2202,3 +2202,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/interactivecomputergraphics-splishsplash
   - reference physics/diwi-pixelflow
   - reference physics/xiangyu-hu-sphinxsys
+
+- **2026-11-23 19:23 UTC** — tick 722: +2 screened, +4 reference, 1 skipped, catalogue=913
+  - added physics/jinatonic-confetti (Apache-2.0, vendored)
+  - added physics/getstream-effects-library (Apache-2.0, reference)
+  - reference physics/masudbro94-python-hacked-mobile-phone
+  - reference physics/ronenness-partykals
+  - reference physics/giladaya-arduino-particle-sys
+  - reference physics/fazeaction-three-gpu-particle-system
