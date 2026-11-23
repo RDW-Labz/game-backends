@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T18:02:04Z",
+ "category": "physics",
+ "commit": "b5b2b8ed6ba1",
+ "delivery": "reference",
+ "description": "mkhan45/SIMple-Mechanics \u2014 An educational physics sim for high school physics, part of the SIMple Physics project",
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "SIMple-Mechanics",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 124995,
+ "slug": "mkhan45-simple-mechanics",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 33,
+ "system": "An educational physics sim for high school physics, part of the SIMple Physics project",
+ "upstream": "https://github.com/mkhan45/SIMple-Mechanics",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

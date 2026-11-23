@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T18:02:06Z",
+ "category": "physics",
+ "commit": "d1131288b34f",
+ "delivery": "vendored",
+ "description": "MarcVivas/gpu-physics-engine \u2014 Experimenting with a gpu physics engine from scratch",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "gpu-physics-engine",
+ "size_bytes": 196320,
+ "slug": "marcvivas-gpu-physics-engine",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 32,
+ "system": "Experimenting with a gpu physics engine from scratch",
+ "upstream": "https://github.com/MarcVivas/gpu-physics-engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

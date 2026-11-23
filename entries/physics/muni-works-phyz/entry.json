@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:02:08Z",
+ "category": "physics",
+ "commit": "2026-11-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "muni-works/phyz \u2014 differentiable physics engine for rust",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "phyz",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "muni-works-phyz",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 29,
+ "system": "differentiable physics engine for rust",
+ "upstream": "https://github.com/muni-works/phyz",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

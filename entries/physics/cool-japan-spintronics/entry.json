@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:02:08Z",
+ "category": "physics",
+ "commit": "2026-11-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "cool-japan/spintronics \u2014 A pure Rust library for simulating spin dynamics, spin current generation, and conversion phenomena in magnetic and topological materials.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "spintronics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "cool-japan-spintronics",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 32,
+ "system": "A pure Rust library for simulating spin dynamics, spin current generation, and conversion phenomena in magnetic and topological materials.",
+ "upstream": "https://github.com/cool-japan/spintronics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

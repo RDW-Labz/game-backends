@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:02:08Z",
+ "category": "physics",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rsasaki0109/RobotNativeEngine \u2014 Robot Native Engine \u2014 robot-native Rust simulation core with physics, sensors, Python bindings, and optional ROS 2 adapters.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "RobotNativeEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rsasaki0109-robotnativeengine",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 32,
+ "system": "Robot Native Engine \u2014 robot-native Rust simulation core with physics, sensors, Python bindings, and optional ROS 2 adapters.",
+ "upstream": "https://github.com/rsasaki0109/RobotNativeEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

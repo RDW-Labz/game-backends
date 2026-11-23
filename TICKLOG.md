@@ -2162,3 +2162,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/maffi44-slice-4d-shooter
   - reference physics/manevillef-bevy-verlet
   - reference physics/not-fl3-bulletrs
+
+- **2026-11-23 18:02 UTC** — tick 717: +2 screened, +4 reference, 3 skipped, catalogue=883
+  - added physics/mkhan45-simple-mechanics (GPL-3.0, reference)
+  - added physics/marcvivas-gpu-physics-engine (Apache-2.0, vendored)
+  - reference physics/cool-japan-spintronics
+  - reference physics/bbrannon4-openbse
+  - reference physics/rsasaki0109-robotnativeengine
+  - reference physics/muni-works-phyz

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:02:08Z",
+ "category": "physics",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bbrannon4/OpenBSE \u2014 Open-source building energy simulation engine \u2014 modern architecture, validated physics, built for programmatic and AI-assisted workflows.",
+ "language": "rust",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "OpenBSE",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "bbrannon4-openbse",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 32,
+ "system": "Open-source building energy simulation engine \u2014 modern architecture, validated physics, built for programmatic and AI-assisted workflows.",
+ "upstream": "https://github.com/bbrannon4/OpenBSE",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
