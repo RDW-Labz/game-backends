@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:34:11Z",
+ "category": "engines",
+ "commit": "2026-04-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OTFCG/Awesome-Game-Analysis \u2014 a comprehensive collection of video game tech analysis resources",
+ "language": "python",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "Awesome-Game-Analysis",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "otfcg-awesome-game-analysis",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 1177,
+ "system": "a comprehensive collection of video game tech analysis resources",
+ "upstream": "https://github.com/OTFCG/Awesome-Game-Analysis",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

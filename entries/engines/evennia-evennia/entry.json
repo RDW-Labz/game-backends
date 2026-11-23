@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:34:11Z",
+ "category": "engines",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "evennia/evennia \u2014 Python MUD/MUX/MUSH/MU* development system",
+ "language": "python",
+ "license": "BSD-3-Clause",
+ "license_verdict": "clean",
+ "name": "evennia",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-3-Clause)",
+ "slug": "evennia-evennia",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 2124,
+ "system": "Python MUD/MUX/MUSH/MU* development system",
+ "upstream": "https://github.com/evennia/evennia",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

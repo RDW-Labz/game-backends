@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T07:34:09Z",
+ "category": "engines",
+ "commit": "11ac1f7bab99",
+ "delivery": "vendored",
+ "description": "pokepetter/ursina \u2014 A 3D and 2D game engine for Python",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ursina",
+ "size_bytes": 1182213,
+ "slug": "pokepetter-ursina",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 2614,
+ "system": "A 3D and 2D game engine for Python",
+ "upstream": "https://github.com/pokepetter/ursina",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

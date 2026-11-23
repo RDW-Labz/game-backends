@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:34:11Z",
+ "category": "engines",
+ "commit": "2026-09-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RimoChan/Librian \u2014 \u3010Librian\u3011\u7c21\u660e\u5f37\u5927\u7684 Galgame | Visual Novel \u5f15\u64ce",
+ "language": "python",
+ "license": "MPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Librian",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MPL-2.0)",
+ "slug": "rimochan-librian",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 788,
+ "system": "\u3010Librian\u3011\u7c21\u660e\u5f37\u5927\u7684 Galgame | Visual Novel \u5f15\u64ce",
+ "upstream": "https://github.com/RimoChan/Librian",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

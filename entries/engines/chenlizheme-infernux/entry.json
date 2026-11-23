@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T07:34:06Z",
+ "category": "engines",
+ "commit": "b5eba5c42ea0",
+ "delivery": "reference",
+ "description": "ChenlizheMe/Infernux \u2014 Building a Neural Network-Native Engine (3N). Python authoring, C++ runtime, Vulkan/WebGPU. Windows, Linux, Android and Web.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Infernux",
+ "reference_reason": "size gate: 35 MB",
+ "size_bytes": 36758036,
+ "slug": "chenlizheme-infernux",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 2720,
+ "system": "Building a Neural Network-Native Engine (3N). Python authoring, C++ runtime, Vulkan/WebGPU. Windows, Linux, Android and Web.",
+ "upstream": "https://github.com/ChenlizheMe/Infernux",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

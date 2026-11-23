@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 07:18 UTC · 644 entries · 178 vendored, 466 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 07:34 UTC · 650 entries · 179 vendored, 471 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 218 | 45 | 173 |
+| [engines](#engines) — Game engines and engine subsystems | 224 | 46 | 178 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 07:18 UTC · 644 entries · 178 vendored, 466 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 218 entries
+**Game engines and engine subsystems** — 224 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -33,6 +33,7 @@ _Generated 2026-11-23 07:18 UTC · 644 entries · 178 vendored, 466 reference-on
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
 | [armory](entries/engines/armory3d-armory/README.md) | 3D Engine with Blender Integration | c++ | Zlib | reference | [armory3d/armory](https://github.com/armory3d/armory) @ `7f7f588b5a50` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
+| [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
 | [awesome-PICO-8](entries/engines/pico-8-awesome-pico-8/README.md) | A curated list of awesome PICO-8 resources, carts, tools and more | n/a | CC0-1.0 | reference | [pico-8/awesome-PICO-8](https://github.com/pico-8/awesome-PICO-8) @ `2026-07-28 (branch tip at catalogue time)` |
 | [axmol](entries/engines/axmolengine-axmol/README.md) | Open-source C++ game engine with Lua for 2D and 3D games across mobile, desktop, WebAssembly, and Xbox (UWP). | c++ | unknown | reference | [axmolengine/axmol](https://github.com/axmolengine/axmol) @ `2026-11-23 (branch tip at catalogue time)` |
 | [azeroth-survivors-re](entries/engines/outthislife-azeroth-survivors-re/README.md) | A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy). | rust | Apache-2.0 | reference | [OutThisLife/azeroth-survivors-re](https://github.com/OutThisLife/azeroth-survivors-re) @ `2026-10-26 (branch tip at catalogue time)` |
@@ -85,6 +86,7 @@ _Generated 2026-11-23 07:18 UTC · 644 entries · 178 vendored, 466 reference-on
 | [esper](entries/engines/benmoran56-esper/README.md) | An ECS (Entity Component System) for Python | python | MIT | reference | [benmoran56/esper](https://github.com/benmoran56/esper) @ `2026-09-20 (branch tip at catalogue time)` |
 | [estella](entries/engines/esengine-estella/README.md) | A fast 2D and 3D game engine — TypeScript SDK, C++/WebAssembly core, visual editor. Ship one project to web, desktop, WeChat MiniGames, playable ads, and native | typescript | Apache-2.0 | reference | [esengine/estella](https://github.com/esengine/estella) @ `2026-11-23 (branch tip at catalogue time)` |
 | [ET](entries/engines/egametang-et/README.md) | Unity3D Client And C# Server Framework | c# | unknown | reference | [egametang/ET](https://github.com/egametang/ET) @ `2026-08-26 (branch tip at catalogue time)` |
+| [evennia](entries/engines/evennia-evennia/README.md) | Python MUD/MUX/MUSH/MU* development system | python | BSD-3-Clause | reference | [evennia/evennia](https://github.com/evennia/evennia) @ `2026-11-14 (branch tip at catalogue time)` |
 | [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
 | [ezEngine](entries/engines/ezengine-ezengine/README.md) | An open source C++ game engine. | c++ | MIT | reference | [ezEngine/ezEngine](https://github.com/ezEngine/ezEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [F8Framework](entries/engines/tippinggame-f8framework/README.md) | F8 Framework是一个优雅，轻量，符合直觉的基于Unity引擎的游戏框架，组件围绕F8一键启动，框架整体遵循以极少的使用成本开发游戏。F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity  | c# | MIT | reference | [TippingGame/F8Framework](https://github.com/TippingGame/F8Framework) @ `2026-09-15 (branch tip at catalogue time)` |
@@ -125,6 +127,7 @@ _Generated 2026-11-23 07:18 UTC · 644 entries · 178 vendored, 466 reference-on
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
 | [Ikemen-GO](entries/engines/ikemen-engine-ikemen-go/README.md) | An open-source fighting game engine that supports MUGEN resources. | go | unknown | reference | [ikemen-engine/Ikemen-GO](https://github.com/ikemen-engine/Ikemen-GO) @ `2026-11-22 (branch tip at catalogue time)` |
 | [imgui](entries/engines/ocornut-imgui/README.md) | Dear ImGui: Bloat-free Graphical User interface for C++ with minimal dependencies | c++ | MIT | vendored | [ocornut/imgui](https://github.com/ocornut/imgui) @ `77fe4588e6af` |
+| [Infernux](entries/engines/chenlizheme-infernux/README.md) | Building a Neural Network-Native Engine (3N). Python authoring, C++ runtime, Vulkan/WebGPU. Windows, Linux, Android and Web. | python | MIT | reference | [ChenlizheMe/Infernux](https://github.com/ChenlizheMe/Infernux) @ `b5eba5c42ea0` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
 | [kaiju](entries/engines/kaijuengine-kaiju/README.md) | General purpose 3D and 2D game engine using Go (golang) and Vulkan with built in editor | go | MIT | vendored | [KaijuEngine/kaiju](https://github.com/KaijuEngine/kaiju) @ `c5b49f65571f` |
@@ -134,6 +137,7 @@ _Generated 2026-11-23 07:18 UTC · 644 entries · 178 vendored, 466 reference-on
 | [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
+| [Librian](entries/engines/rimochan-librian/README.md) | 【Librian】簡明強大的 Galgame / Visual Novel 引擎 | python | MPL-2.0 | reference | [RimoChan/Librian](https://github.com/RimoChan/Librian) @ `2026-09-05 (branch tip at catalogue time)` |
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
 | [luanti](entries/engines/luanti-org-luanti/README.md) | Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation | c++ | unknown | reference | [luanti-org/luanti](https://github.com/luanti-org/luanti) @ `2026-11-20 (branch tip at catalogue time)` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -201,6 +205,7 @@ _Generated 2026-11-23 07:18 UTC · 644 entries · 178 vendored, 466 reference-on
 | [server](entries/engines/runejs-server/README.md) | RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing s | typescript | GPL-3.0 | reference | [runejs/server](https://github.com/runejs/server) @ `2026-09-03 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
+| [SolarWM](entries/engines/junchao-cs-solarwm/README.md) | Open data and scalable training for long-horizon video world models. | python | Apache-2.0 | reference | [Junchao-cs/SolarWM](https://github.com/Junchao-cs/SolarWM) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
 | [space-engineers-coop-merralia](entries/engines/talhanadeem4321-space-engineers-coop-merralia/README.md) | Build and share cooperative space engineering projects together in Merralia. | typescript | MIT | reference | [TalhaNadeem4321/space-engineers-coop-merralia](https://github.com/TalhaNadeem4321/space-engineers-coop-merralia) @ `2026-11-23 (branch tip at catalogue time)` |
 | [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -224,6 +229,7 @@ _Generated 2026-11-23 07:18 UTC · 644 entries · 178 vendored, 466 reference-on
 | [unity-raw-input](entries/engines/elringus-unity-raw-input/README.md) | Windows Raw Input wrapper for Unity game engine | c# | MIT | reference | [elringus/unity-raw-input](https://github.com/elringus/unity-raw-input) @ `2025-10-15 (branch tip at catalogue time)` |
 | [UnityGameFramework](entries/engines/ellanjiang-unitygameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | reference | [EllanJiang/UnityGameFramework](https://github.com/EllanJiang/UnityGameFramework) @ `2023-05-21 (branch tip at catalogue time)` |
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
+| [ursina](entries/engines/pokepetter-ursina/README.md) | A 3D and 2D game engine for Python | python | MIT | vendored | [pokepetter/ursina](https://github.com/pokepetter/ursina) @ `11ac1f7bab99` |
 | [VContainer](entries/engines/hadashia-vcontainer/README.md) | The extra fast, minimum code size, GC-free DI (Dependency Injection) library running on Unity Game Engine. | c# | MIT | reference | [hadashiA/VContainer](https://github.com/hadashiA/VContainer) @ `2026-10-06 (branch tip at catalogue time)` |
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
 | [voxelcore](entries/engines/mihailris-voxelcore/README.md) | VoxelCore – voxel game engine in C++ | c++ | MPL-2.0 | reference | [MihailRis/voxelcore](https://github.com/MihailRis/voxelcore) @ `2026-11-22 (branch tip at catalogue time)` |

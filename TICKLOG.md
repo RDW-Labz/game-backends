@@ -1851,3 +1851,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/bberak-react-native-game-engine
   - reference engines/pico-8-awesome-pico-8
   - reference engines/korlibs-korge
+
+- **2026-11-23 07:34 UTC** — tick 678: +2 screened, +4 reference, 1 skipped, catalogue=650
+  - added engines/chenlizheme-infernux (MIT, reference)
+  - added engines/pokepetter-ursina (MIT, vendored)
+  - reference engines/evennia-evennia
+  - reference engines/otfcg-awesome-game-analysis
+  - reference engines/junchao-cs-solarwm
+  - reference engines/rimochan-librian
