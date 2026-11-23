@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T07:50:05Z",
+ "category": "engines",
+ "commit": "4f7778642e26",
+ "delivery": "reference",
+ "description": "b3dgs/lionengine \u2014 Java 2D Game Engine",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "lionengine",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 6159,
+ "slug": "b3dgs-lionengine",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 145,
+ "system": "Java 2D Game Engine",
+ "upstream": "https://github.com/b3dgs/lionengine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

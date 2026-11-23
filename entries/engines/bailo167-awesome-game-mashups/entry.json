@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:50:06Z",
+ "category": "engines",
+ "commit": "2026-11-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bailo167/awesome-game-mashups \u2014 Curated list of games rebuilt inside other games \u2014 cross-game mechanics, engine/runtime mashups, playable ports, and verified viral projects.",
+ "language": "python",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "awesome-game-mashups",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "bailo167-awesome-game-mashups",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 143,
+ "system": "Curated list of games rebuilt inside other games \u2014 cross-game mechanics, engine/runtime mashups, playable ports, and verified viral projects.",
+ "upstream": "https://github.com/bailo167/awesome-game-mashups",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

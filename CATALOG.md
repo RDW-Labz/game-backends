@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 07:34 UTC · 650 entries · 179 vendored, 471 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 07:50 UTC · 656 entries · 179 vendored, 477 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 224 | 46 | 178 |
+| [engines](#engines) — Game engines and engine subsystems | 230 | 46 | 184 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 07:34 UTC · 650 entries · 179 vendored, 471 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 224 entries
+**Game engines and engine subsystems** — 230 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -34,6 +34,7 @@ _Generated 2026-11-23 07:34 UTC · 650 entries · 179 vendored, 471 reference-on
 | [armory](entries/engines/armory3d-armory/README.md) | 3D Engine with Blender Integration | c++ | Zlib | reference | [armory3d/armory](https://github.com/armory3d/armory) @ `7f7f588b5a50` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
 | [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
+| [awesome-game-mashups](entries/engines/bailo167-awesome-game-mashups/README.md) | Curated list of games rebuilt inside other games — cross-game mechanics, engine/runtime mashups, playable ports, and verified viral projects. | python | CC0-1.0 | reference | [bailo167/awesome-game-mashups](https://github.com/bailo167/awesome-game-mashups) @ `2026-11-09 (branch tip at catalogue time)` |
 | [awesome-PICO-8](entries/engines/pico-8-awesome-pico-8/README.md) | A curated list of awesome PICO-8 resources, carts, tools and more | n/a | CC0-1.0 | reference | [pico-8/awesome-PICO-8](https://github.com/pico-8/awesome-PICO-8) @ `2026-07-28 (branch tip at catalogue time)` |
 | [axmol](entries/engines/axmolengine-axmol/README.md) | Open-source C++ game engine with Lua for 2D and 3D games across mobile, desktop, WebAssembly, and Xbox (UWP). | c++ | unknown | reference | [axmolengine/axmol](https://github.com/axmolengine/axmol) @ `2026-11-23 (branch tip at catalogue time)` |
 | [azeroth-survivors-re](entries/engines/outthislife-azeroth-survivors-re/README.md) | A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy). | rust | Apache-2.0 | reference | [OutThisLife/azeroth-survivors-re](https://github.com/OutThisLife/azeroth-survivors-re) @ `2026-10-26 (branch tip at catalogue time)` |
@@ -138,10 +139,13 @@ _Generated 2026-11-23 07:34 UTC · 650 entries · 179 vendored, 471 reference-on
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [Librian](entries/engines/rimochan-librian/README.md) | 【Librian】簡明強大的 Galgame / Visual Novel 引擎 | python | MPL-2.0 | reference | [RimoChan/Librian](https://github.com/RimoChan/Librian) @ `2026-09-05 (branch tip at catalogue time)` |
+| [lionengine](entries/engines/b3dgs-lionengine/README.md) | Java 2D Game Engine | python | GPL-3.0 | reference | [b3dgs/lionengine](https://github.com/b3dgs/lionengine) @ `4f7778642e26` |
+| [Lisien](entries/engines/tacticalmetaphysics-lisien/README.md) | Rules-based engine for life sims, with time travel | python | AGPL-3.0 | reference | [TacticalMetaphysics/Lisien](https://github.com/TacticalMetaphysics/Lisien) @ `2026-03-01 (branch tip at catalogue time)` |
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
 | [luanti](entries/engines/luanti-org-luanti/README.md) | Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation | c++ | unknown | reference | [luanti-org/luanti](https://github.com/luanti-org/luanti) @ `2026-11-20 (branch tip at catalogue time)` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Lumos](entries/engines/jmorton06-lumos/README.md) | Cross-Platform C++ 2D/3D game engine | c++ | MIT | reference | [jmorton06/Lumos](https://github.com/jmorton06/Lumos) @ `2026-11-10 (branch tip at catalogue time)` |
+| [LunyScript-RFC](entries/engines/codesmile-0000011110110111-lunyscript-rfc/README.md) | Beginner-friendly gameplay programming for Godot & Unity: Declarative, block-based, StateMachine & BehaviorTree powered portable C# code! | python | MIT | reference | [CodeSmile-0000011110110111/LunyScript-RFC](https://github.com/CodeSmile-0000011110110111/LunyScript-RFC) @ `2026-04-08 (branch tip at catalogue time)` |
 | [macroquad](entries/engines/not-fl3-macroquad/README.md) | Cross-platform game engine in Rust.  | rust | Apache-2.0 | vendored | [not-fl3/macroquad](https://github.com/not-fl3/macroquad) @ `8d602d3f8ebb` |
 | [magictools](entries/engines/ellisonleao-magictools/README.md) | :video_game: :pencil: A list of Game Development resources to make magic happen. | markdown | MIT | vendored | [ellisonleao/magictools](https://github.com/ellisonleao/magictools) @ `7ea0640f128c` |
 | [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
@@ -224,6 +228,7 @@ _Generated 2026-11-23 07:34 UTC · 650 entries · 179 vendored, 471 reference-on
 | [traviso.js](entries/engines/axaq-traviso-js/README.md) | Traviso is an open source JS engine that makes it easy to build isometric applications that run in a web browser. | typescript | MIT | reference | [axaq/traviso.js](https://github.com/axaq/traviso.js) @ `2026-06-17 (branch tip at catalogue time)` |
 | [turbulenz_engine](entries/engines/turbulenz-turbulenz-engine/README.md) | Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices. | typescript | MIT | reference | [turbulenz/turbulenz_engine](https://github.com/turbulenz/turbulenz_engine) @ `2023-05-28 (branch tip at catalogue time)` |
 | [UEAESKeyFinder](entries/engines/ezfndev-ueaeskeyfinder/README.md) | This tool can find the AES Key of probably any Unreal Engine game | c# | none | reference | [EZFNDEV/UEAESKeyFinder](https://github.com/EZFNDEV/UEAESKeyFinder) @ `eeacbb1f0e7d` |
+| [umodel_tools](entries/engines/skarndev-umodel-tools/README.md) | A Blender add-on featuring import of Unreal Engine games static meshes and maps. It provides basic support for many UE games, while some have dedicated improved | python | GPL-3.0 | reference | [skarndev/umodel_tools](https://github.com/skarndev/umodel_tools) @ `c76ebf73bf17` |
 | [unity-ecs-navmesh](entries/engines/zulfajuniadi-unity-ecs-navmesh/README.md) | A demo implementation of Unity Entity Component System with NavMesh | c# | MIT | vendored | [zulfajuniadi/unity-ecs-navmesh](https://github.com/zulfajuniadi/unity-ecs-navmesh) @ `bb4fe6ed2f84` |
 | [unity-google-drive](entries/engines/elringus-unity-google-drive/README.md) | Google Drive SDK for the Unity game engine | c# | MIT | vendored | [elringus/unity-google-drive](https://github.com/elringus/unity-google-drive) @ `ac3f7da2013c` |
 | [unity-raw-input](entries/engines/elringus-unity-raw-input/README.md) | Windows Raw Input wrapper for Unity game engine | c# | MIT | reference | [elringus/unity-raw-input](https://github.com/elringus/unity-raw-input) @ `2025-10-15 (branch tip at catalogue time)` |
@@ -240,6 +245,7 @@ _Generated 2026-11-23 07:34 UTC · 650 entries · 179 vendored, 471 reference-on
 | [webTaleKit](entries/engines/endohizumi-webtalekit/README.md) | A visual novel game engine written in JavaScript (TypeScript) that allows full customization of the UI. | typescript | MIT | reference | [EndoHizumi/webTaleKit](https://github.com/EndoHizumi/webTaleKit) @ `2026-11-17 (branch tip at catalogue time)` |
 | [WickedEngine](entries/engines/turanszkij-wickedengine/README.md) | 3D engine with modern graphics | c++ | MIT | reference | [turanszkij/WickedEngine](https://github.com/turanszkij/WickedEngine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |
+| [WorldLines](entries/engines/ludicdynamics-worldlines/README.md) | Agents for Role Play. Agents for Game. Agents as a Game. An orchestrator-agents engine for living worlds — file-backed, event-sourced. | python | unknown | reference | [LudicDynamics/WorldLines](https://github.com/LudicDynamics/WorldLines) @ `2026-10-26 (branch tip at catalogue time)` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |
 | [z_impact](entries/engines/scemino-z-impact/README.md) | A 2d game engine written in ZIG | zig | MIT | reference | [scemino/z_impact](https://github.com/scemino/z_impact) @ `2025-07-17 (branch tip at catalogue time)` |

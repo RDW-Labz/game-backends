@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:50:06Z",
+ "category": "engines",
+ "commit": "2026-04-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "CodeSmile-0000011110110111/LunyScript-RFC \u2014 Beginner-friendly gameplay programming for Godot & Unity: Declarative, block-based, StateMachine & BehaviorTree powered portable C# code!",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "LunyScript-RFC",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "codesmile-0000011110110111-lunyscript-rfc",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 131,
+ "system": "Beginner-friendly gameplay programming for Godot & Unity: Declarative, block-based, StateMachine & BehaviorTree powered portable C# code!",
+ "upstream": "https://github.com/CodeSmile-0000011110110111/LunyScript-RFC",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

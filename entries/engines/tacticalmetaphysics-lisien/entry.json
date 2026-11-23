@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:50:06Z",
+ "category": "engines",
+ "commit": "2026-03-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "TacticalMetaphysics/Lisien \u2014 Rules-based engine for life sims, with time travel",
+ "language": "python",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Lisien",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "tacticalmetaphysics-lisien",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 136,
+ "system": "Rules-based engine for life sims, with time travel",
+ "upstream": "https://github.com/TacticalMetaphysics/Lisien",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

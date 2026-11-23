@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:50:06Z",
+ "category": "engines",
+ "commit": "2026-10-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LudicDynamics/WorldLines \u2014 Agents for Role Play. Agents for Game. Agents as a Game. An orchestrator-agents engine for living worlds \u2014 file-backed, event-sourced.",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "WorldLines",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ludicdynamics-worldlines",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 120,
+ "system": "Agents for Role Play. Agents for Game. Agents as a Game. An orchestrator-agents engine for living worlds \u2014 file-backed, event-sourced.",
+ "upstream": "https://github.com/LudicDynamics/WorldLines",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

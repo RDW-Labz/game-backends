@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T07:50:03Z",
+ "category": "engines",
+ "commit": "c76ebf73bf17",
+ "delivery": "reference",
+ "description": "skarndev/umodel_tools \u2014 A Blender add-on featuring import of Unreal Engine games static meshes and maps. It provides basic support for many UE games, while some have dedicated improved support.",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "umodel_tools",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 200889,
+ "slug": "skarndev-umodel-tools",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 150,
+ "system": "A Blender add-on featuring import of Unreal Engine games static meshes and maps. It provides basic support for many UE games, while some have dedicated improved",
+ "upstream": "https://github.com/skarndev/umodel_tools",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

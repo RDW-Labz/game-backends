@@ -1859,3 +1859,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/otfcg-awesome-game-analysis
   - reference engines/junchao-cs-solarwm
   - reference engines/rimochan-librian
+
+- **2026-11-23 07:50 UTC** — tick 679: +2 screened, +4 reference, 0 skipped, catalogue=656
+  - added engines/skarndev-umodel-tools (GPL-3.0, reference)
+  - added engines/b3dgs-lionengine (GPL-3.0, reference)
+  - reference engines/bailo167-awesome-game-mashups
+  - reference engines/tacticalmetaphysics-lisien
+  - reference engines/codesmile-0000011110110111-lunyscript-rfc
+  - reference engines/ludicdynamics-worldlines
