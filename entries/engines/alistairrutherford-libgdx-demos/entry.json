@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:20:07Z",
+ "category": "engines",
+ "commit": "2016-11-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "alistairrutherford/libgdx-demos \u2014 LibGDX Demos using my LibGDX Scene2D netthreads-libgdx extension library.",
+ "language": "java",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "libgdx-demos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "alistairrutherford-libgdx-demos",
+ "source": "github-search:libgdx library stars:>30",
+ "stars": 120,
+ "system": "LibGDX Demos using my LibGDX Scene2D netthreads-libgdx extension library.",
+ "upstream": "https://github.com/alistairrutherford/libgdx-demos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T15:20:05Z",
+ "category": "engines",
+ "commit": "6ef713ee3fe2",
+ "delivery": "vendored",
+ "description": "StrongJoshua/libgdx-inGameConsole \u2014 A LibGdx library that allows a developer to add a console (similar to how it is featured in Source games) to their game.",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "libgdx-inGameConsole",
+ "size_bytes": 86966,
+ "slug": "strongjoshua-libgdx-ingameconsole",
+ "source": "github-search:libgdx library stars:>30",
+ "stars": 136,
+ "system": "A LibGdx library that allows a developer to add a console (similar to how it is featured in Source games) to their game.",
+ "upstream": "https://github.com/StrongJoshua/libgdx-inGameConsole",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

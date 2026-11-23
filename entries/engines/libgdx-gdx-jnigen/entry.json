@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:20:07Z",
+ "category": "engines",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "libgdx/gdx-jnigen \u2014 jnigen is a small library that can be used with or without libGDX which allows C/C++ code to be written inline with Java source code.",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "gdx-jnigen",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "libgdx-gdx-jnigen",
+ "source": "github-search:libgdx library stars:>30",
+ "stars": 88,
+ "system": "jnigen is a small library that can be used with or without libGDX which allows C/C++ code to be written inline with Java source code. ",
+ "upstream": "https://github.com/libgdx/gdx-jnigen",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T15:20:03Z",
+ "category": "engines",
+ "commit": "9e4b689f63b7",
+ "delivery": "vendored",
+ "description": "earlygrey/shapedrawer \u2014 A library for libGDX that draws simple shapes using a batch.",
+ "language": "java",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "shapedrawer",
+ "size_bytes": 257889,
+ "slug": "earlygrey-shapedrawer",
+ "source": "github-search:libgdx library stars:>30",
+ "stars": 202,
+ "system": "A library for libGDX that draws simple shapes using a batch.",
+ "upstream": "https://github.com/earlygrey/shapedrawer",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 15:04 UTC · 817 entries · 220 vendored, 597 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 15:20 UTC · 823 entries · 222 vendored, 601 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 391 | 87 | 304 |
+| [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 15:04 UTC · 817 entries · 220 vendored, 597 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 391 entries
+**Game engines and engine subsystems** — 397 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -171,6 +171,7 @@ _Generated 2026-11-23 15:04 UTC · 817 entries · 220 vendored, 597 reference-on
 | [GBM2K-Framework](entries/engines/oplexitie-gbm2k-framework/README.md) | A 2D Grid Based Movement framework made for the Godot game engine. | gdscript | MIT | reference | [Oplexitie/GBM2K-Framework](https://github.com/Oplexitie/GBM2K-Framework) @ `2026-10-09 (branch tip at catalogue time)` |
 | [gdcef](entries/engines/lecrapouille-gdcef/README.md) | [Godot Plugin][Version 0.21.0][Functional] Chromium Embedded Framework Webview for Godot 4 | c++ | MIT | reference | [Lecrapouille/gdcef](https://github.com/Lecrapouille/gdcef) @ `2026-11-05 (branch tip at catalogue time)` |
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
+| [gdx-jnigen](entries/engines/libgdx-gdx-jnigen/README.md) | jnigen is a small library that can be used with or without libGDX which allows C/C++ code to be written inline with Java source code.  | java | Apache-2.0 | reference | [libgdx/gdx-jnigen](https://github.com/libgdx/gdx-jnigen) @ `2026-11-16 (branch tip at catalogue time)` |
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
 | [genex-desktop](entries/engines/genex-games-genex-desktop/README.md) | Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models. | typescript | MIT | reference | [genex-games/genex-desktop](https://github.com/genex-games/genex-desktop) @ `2026-11-22 (branch tip at catalogue time)` |
 | [ggez](entries/engines/ggez-ggez/README.md) | Rust library to create a Good Game Easily | rust | MIT | reference | [ggez/ggez](https://github.com/ggez/ggez) @ `2026-10-26 (branch tip at catalogue time)` |
@@ -226,6 +227,8 @@ _Generated 2026-11-23 15:04 UTC · 817 entries · 220 vendored, 597 reference-on
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [legion](entries/engines/amethyst-legion/README.md) | High performance Rust ECS library | rust | MIT | vendored | [amethyst/legion](https://github.com/amethyst/legion) @ `32df916517fa` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
+| [libgdx-demos](entries/engines/alistairrutherford-libgdx-demos/README.md) | LibGDX Demos using my LibGDX Scene2D netthreads-libgdx extension library. | java | unknown | reference | [alistairrutherford/libgdx-demos](https://github.com/alistairrutherford/libgdx-demos) @ `2016-11-27 (branch tip at catalogue time)` |
+| [libgdx-inGameConsole](entries/engines/strongjoshua-libgdx-ingameconsole/README.md) | A LibGdx library that allows a developer to add a console (similar to how it is featured in Source games) to their game. | java | Apache-2.0 | vendored | [StrongJoshua/libgdx-inGameConsole](https://github.com/StrongJoshua/libgdx-inGameConsole) @ `6ef713ee3fe2` |
 | [Librian](entries/engines/rimochan-librian/README.md) | 【Librian】簡明強大的 Galgame / Visual Novel 引擎 | python | MPL-2.0 | reference | [RimoChan/Librian](https://github.com/RimoChan/Librian) @ `2026-09-05 (branch tip at catalogue time)` |
 | [lionengine](entries/engines/b3dgs-lionengine/README.md) | Java 2D Game Engine | python | GPL-3.0 | reference | [b3dgs/lionengine](https://github.com/b3dgs/lionengine) @ `4f7778642e26` |
 | [Lisien](entries/engines/tacticalmetaphysics-lisien/README.md) | Rules-based engine for life sims, with time travel | python | AGPL-3.0 | reference | [TacticalMetaphysics/Lisien](https://github.com/TacticalMetaphysics/Lisien) @ `2026-03-01 (branch tip at catalogue time)` |
@@ -235,6 +238,7 @@ _Generated 2026-11-23 15:04 UTC · 817 entries · 220 vendored, 597 reference-on
 | [luanti](entries/engines/luanti-org-luanti/README.md) | Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation | c++ | unknown | reference | [luanti-org/luanti](https://github.com/luanti-org/luanti) @ `2026-11-20 (branch tip at catalogue time)` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Lumos](entries/engines/jmorton06-lumos/README.md) | Cross-Platform C++ 2D/3D game engine | c++ | MIT | reference | [jmorton06/Lumos](https://github.com/jmorton06/Lumos) @ `2026-11-10 (branch tip at catalogue time)` |
+| [LunarGdx](entries/engines/vrekt-lunargdx/README.md) | A networking library for LibGDX utilizing Netty allowing easy creation of multiplayer games. | java | MIT | reference | [Vrekt/LunarGdx](https://github.com/Vrekt/LunarGdx) @ `2024-05-30 (branch tip at catalogue time)` |
 | [LunyScript-RFC](entries/engines/codesmile-0000011110110111-lunyscript-rfc/README.md) | Beginner-friendly gameplay programming for Godot & Unity: Declarative, block-based, StateMachine & BehaviorTree powered portable C# code! | python | MIT | reference | [CodeSmile-0000011110110111/LunyScript-RFC](https://github.com/CodeSmile-0000011110110111/LunyScript-RFC) @ `2026-04-08 (branch tip at catalogue time)` |
 | [macroquad](entries/engines/not-fl3-macroquad/README.md) | Cross-platform game engine in Rust.  | rust | Apache-2.0 | vendored | [not-fl3/macroquad](https://github.com/not-fl3/macroquad) @ `8d602d3f8ebb` |
 | [magictools](entries/engines/ellisonleao-magictools/README.md) | :video_game: :pencil: A list of Game Development resources to make magic happen. | markdown | MIT | vendored | [ellisonleao/magictools](https://github.com/ellisonleao/magictools) @ `7ea0640f128c` |
@@ -291,6 +295,7 @@ _Generated 2026-11-23 15:04 UTC · 817 entries · 220 vendored, 597 reference-on
 | [phaser-ce](entries/engines/phaserjs-phaser-ce/README.md) | Phaser CE is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser-ce](https://github.com/phaserjs/phaser-ce) @ `2026-11-19 (branch tip at catalogue time)` |
 | [phoria.js](entries/engines/kevinroast-phoria-js/README.md) | JavaScript library for simple 3D graphics and visualisation on a HTML5 canvas 2D renderer. It does not use WebGL. Works on all HTML5 browsers, including desktop | javascript | BSD-3-Clause | reference | [kevinroast/phoria.js](https://github.com/kevinroast/phoria.js) @ `2026-11-05 (branch tip at catalogue time)` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
+| [PieMenu](entries/engines/payne911-piemenu/README.md) | A library for easy integration of a flexible circular WidgetGroup within libGDX | java | MIT | reference | [payne911/PieMenu](https://github.com/payne911/PieMenu) @ `2022-12-01 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
 | [Pixelwave](entries/engines/spiralstorm-pixelwave/README.md) | A native 2D OpenGL game framework for iOS. Inspired by the ActionScript 3.0 API | c | Zlib | vendored | [spiralstorm/Pixelwave](https://github.com/spiralstorm/Pixelwave) @ `ccfbc9d240b6` |
 | [pixi-framework](entries/engines/hafaux-pixi-framework/README.md) | Simple 2D Game Framework for PixiJS using Vite. | typescript | MIT | reference | [Hafaux/pixi-framework](https://github.com/Hafaux/pixi-framework) @ `2024-03-14 (branch tip at catalogue time)` |
@@ -332,6 +337,7 @@ _Generated 2026-11-23 15:04 UTC · 817 entries · 220 vendored, 597 reference-on
 | [server](entries/engines/runejs-server/README.md) | RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing s | typescript | GPL-3.0 | reference | [runejs/server](https://github.com/runejs/server) @ `2026-09-03 (branch tip at catalogue time)` |
 | [Shaker](entries/engines/eneskp3441-shaker/README.md) | shake plugin for godot | gdscript | MIT | vendored | [Eneskp3441/Shaker](https://github.com/Eneskp3441/Shaker) @ `c127bcc49416` |
 | [Shamisen](entries/engines/minecake147e-shamisen/README.md) | Cross-Platform Audio Library for modern .NET. | c# | MIT | vendored | [MineCake147E/Shamisen](https://github.com/MineCake147E/Shamisen) @ `2f1adeec434d` |
+| [shapedrawer](entries/engines/earlygrey-shapedrawer/README.md) | A library for libGDX that draws simple shapes using a batch. | java | MIT | vendored | [earlygrey/shapedrawer](https://github.com/earlygrey/shapedrawer) @ `9e4b689f63b7` |
 | [SharpLibHid](entries/engines/slion-sharplibhid/README.md) | C# HID Library using Windows Raw Input. | c# | unknown | reference | [Slion/SharpLibHid](https://github.com/Slion/SharpLibHid) @ `2022-06-22 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sketch](entries/engines/vydd-sketch/README.md) | A Common Lisp framework for the creation of electronic art, visual design, game prototyping, game making, computer graphics, exploration of human-computer inter | common lisp | MIT | reference | [vydd/sketch](https://github.com/vydd/sketch) @ `2026-01-18 (branch tip at catalogue time)` |

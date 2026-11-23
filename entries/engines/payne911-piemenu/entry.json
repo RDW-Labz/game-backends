@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:20:07Z",
+ "category": "engines",
+ "commit": "2022-12-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "payne911/PieMenu \u2014 A library for easy integration of a flexible circular WidgetGroup within libGDX",
+ "language": "java",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "PieMenu",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "payne911-piemenu",
+ "source": "github-search:libgdx library stars:>30",
+ "stars": 91,
+ "system": "A library for easy integration of a flexible circular WidgetGroup within libGDX",
+ "upstream": "https://github.com/payne911/PieMenu",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

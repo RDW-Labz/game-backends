@@ -2082,3 +2082,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/atomictorchstudio-noesisgui-monogamewrapper
   - reference engines/dmanning23-admobbuddy
   - reference engines/robert-wallis-ecslight
+
+- **2026-11-23 15:20 UTC** — tick 707: +2 screened, +4 reference, 2 skipped, catalogue=823
+  - added engines/earlygrey-shapedrawer (MIT, vendored)
+  - added engines/strongjoshua-libgdx-ingameconsole (Apache-2.0, vendored)
+  - reference engines/alistairrutherford-libgdx-demos
+  - reference engines/payne911-piemenu
+  - reference engines/libgdx-gdx-jnigen
+  - reference engines/vrekt-lunargdx

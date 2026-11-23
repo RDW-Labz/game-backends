@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:20:07Z",
+ "category": "engines",
+ "commit": "2024-05-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Vrekt/LunarGdx \u2014 A networking library for LibGDX utilizing Netty allowing easy creation of multiplayer games.",
+ "language": "java",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "LunarGdx",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "vrekt-lunargdx",
+ "source": "github-search:libgdx library stars:>30",
+ "stars": 61,
+ "system": "A networking library for LibGDX utilizing Netty allowing easy creation of multiplayer games.",
+ "upstream": "https://github.com/Vrekt/LunarGdx",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
