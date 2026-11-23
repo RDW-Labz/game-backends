@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T22:36:04Z",
+ "category": "math",
+ "commit": "f000fd5c286b",
+ "delivery": "vendored",
+ "description": "ckknight/random-js \u2014 A mathematically correct random number generator library for JavaScript.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "random-js",
+ "size_bytes": 167511,
+ "slug": "ckknight-random-js",
+ "source": "github-search:random number generator library stars:>80",
+ "stars": 614,
+ "system": "A mathematically correct random number generator library for JavaScript.",
+ "upstream": "https://github.com/ckknight/random-js",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

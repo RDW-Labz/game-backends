@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:36:08Z",
+ "category": "math",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rabauke/trng4 \u2014 state-of-the-art C++ pseudo-random number generator library for sequential and parallel Monte Carlo simulations",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_verdict": "clean",
+ "name": "trng4",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-3-Clause)",
+ "slug": "rabauke-trng4",
+ "source": "github-search:random number generator library stars:>80",
+ "stars": 123,
+ "system": "state-of-the-art C++ pseudo-random number generator library for sequential and parallel Monte Carlo simulations",
+ "upstream": "https://github.com/rabauke/trng4",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2298,3 +2298,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/tomstewart89-geometry
   - reference math/georust-earcut
   - reference math/msteinbeck-tinyspline
+
+- **2026-11-23 22:36 UTC** — tick 734: +2 screened, +4 reference, 1 skipped, catalogue=985
+  - added math/ckknight-random-js (MIT, vendored)
+  - added math/librarianofbabel-libraryofbabel-info-algo (none, reference)
+  - reference math/rabauke-trng4
+  - reference math/umontreal-simul-testu01-2009
+  - reference math/ar1st0crat-nwaves
+  - reference math/jiepengtan-unity-raymarching-framework

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:36:08Z",
+ "category": "math",
+ "commit": "2026-04-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "umontreal-simul/TestU01-2009 \u2014 This is the 2009 version of TestU01, a software library, implemented in the ANSI C language, and offering a collection of utilities for the empirical statistical testing of uniform random number generators.",
+ "language": "c",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "TestU01-2009",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "umontreal-simul-testu01-2009",
+ "source": "github-search:random number generator library stars:>80",
+ "stars": 89,
+ "system": "This is the 2009 version of TestU01, a software library, implemented in the ANSI C language, and offering a collection of utilities for the empirical statistica",
+ "upstream": "https://github.com/umontreal-simul/TestU01-2009",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

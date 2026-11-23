@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T22:36:06Z",
+ "category": "math",
+ "commit": "81b5786db9d9",
+ "delivery": "reference",
+ "description": "librarianofbabel/libraryofbabel.info-algo \u2014 Invertible multi-precision pseudo random number generator example",
+ "language": "c++",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "libraryofbabel.info-algo",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 3685408,
+ "slug": "librarianofbabel-libraryofbabel-info-algo",
+ "source": "github-search:random number generator library stars:>80",
+ "stars": 508,
+ "system": "Invertible multi-precision pseudo random number generator example",
+ "upstream": "https://github.com/librarianofbabel/libraryofbabel.info-algo",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

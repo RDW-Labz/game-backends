@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:36:08Z",
+ "category": "math",
+ "commit": "2018-04-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JiepengTan/Unity-Raymarching-Framework \u2014 A framework to easy implement raymarching in unity. Include lots of hash,noise,fbm,SDF,rotate functions",
+ "language": "hlsl",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Unity-Raymarching-Framework",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jiepengtan-unity-raymarching-framework",
+ "source": "github-search:noise function library stars:>40",
+ "stars": 160,
+ "system": "A framework to easy implement raymarching in unity. Include lots of hash,noise,fbm,SDF,rotate functions",
+ "upstream": "https://github.com/JiepengTan/Unity-Raymarching-Framework",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
