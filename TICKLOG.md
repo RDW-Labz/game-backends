@@ -1651,3 +1651,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/jaysmito101-terraforge3d
   - reference procgen/manankarnik-bevy-generative
   - reference procgen/bubblebrainbb-afternoon-light
+
+- **2026-11-23 00:52 UTC** — tick 653: +2 screened, +4 reference, 3 skipped, catalogue=500
+  - added engines/pixijs-pixijs (MIT, vendored)
+  - added engines/4ian-gdevelop (MIT, reference)
+  - reference engines/babylonjs-babylon-js
+  - reference engines/dujltqzv-some-many-books
+  - reference engines/kitao-pyxel
+  - reference engines/openra-openra

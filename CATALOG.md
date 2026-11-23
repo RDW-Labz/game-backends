@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 00:36 UTC · 494 entries · 150 vendored, 344 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 00:52 UTC · 500 entries · 151 vendored, 349 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 68 | 17 | 51 |
+| [engines](#engines) — Game engines and engine subsystems | 74 | 18 | 56 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 00:36 UTC · 494 entries · 150 vendored, 344 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 68 entries
+**Game engines and engine subsystems** — 74 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -25,6 +25,7 @@ _Generated 2026-11-23 00:36 UTC · 494 entries · 150 vendored, 344 reference-on
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
+| [Babylon.js](entries/engines/babylonjs-babylon-js/README.md) | Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework. | typescript | Apache-2.0 | reference | [BabylonJS/Babylon.js](https://github.com/BabylonJS/Babylon.js) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Bevy](entries/engines/bevy/README.md) | ECS-first engine: schedules, asset pipeline, render graph | rust | Apache-2.0 | reference | [bevyengine/bevy](https://github.com/bevyengine/bevy) @ `7ea4827e16d5` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [carp — core](entries/engines/carp-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | Apache-2.0 | vendored | [carp-lang/Carp](https://github.com/carp-lang/Carp) @ `ad5a96e` |
@@ -47,6 +48,7 @@ _Generated 2026-11-23 00:36 UTC · 494 entries · 150 vendored, 344 reference-on
 | [Flecs](entries/engines/flecs/README.md) | ECS with prefabs, pipelines, hierarchies, REST explorer | c | MIT | reference | [SanderMertens/flecs](https://github.com/SanderMertens/flecs) @ `fa6554710d0d` |
 | [gameplay](entries/engines/gameplay3d-gameplay/README.md) | Open-source, cross-platform, C++ game engine for creating 2D/3D games. | c++ | unknown | reference | [gameplay3d/gameplay](https://github.com/gameplay3d/gameplay) @ `2025-02-25 (branch tip at catalogue time)` |
 | [gamezone — core](entries/engines/gamezone-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | Apache-2.0 | vendored | [kunjgit/GameZone](https://github.com/kunjgit/GameZone) @ `ac4ce20` |
+| [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
 | [glas — core](entries/engines/glas-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
@@ -64,19 +66,23 @@ _Generated 2026-11-23 00:36 UTC · 494 entries · 150 vendored, 344 reference-on
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
 | [open_spiel — core](entries/engines/open-spiel-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
 | [openmw](entries/engines/openmw-openmw/README.md) | OpenMW is an open-source open-world RPG game engine that supports playing Morrowind. Main repo and issue tracker can be found here: https://gitlab.com/OpenMW/op | c++ | GPL-3.0 | reference | [OpenMW/openmw](https://github.com/OpenMW/openmw) @ `77eec0471802` |
+| [OpenRA](entries/engines/openra-openra/README.md) | Open Source real-time strategy game engine for early Westwood games such as Command & Conquer: Red Alert written in C# using SDL and OpenGL. Runs on Windows, Li | c# | GPL-3.0 | reference | [OpenRA/OpenRA](https://github.com/OpenRA/OpenRA) @ `2026-11-22 (branch tip at catalogue time)` |
 | [openrct2 — core](entries/engines/openrct2-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
 | [OpenSurge — core](entries/engines/opensurge-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [optick — core](entries/engines/optick-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
 | [Pekka-Kana-2 — engine](entries/engines/pekka-kana-2-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | vendored | [danilolc/pk2](https://github.com/danilolc/pk2) @ `b1c5597` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
+| [pixijs](entries/engines/pixijs-pixijs/README.md) | The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer. | typescript | MIT | vendored | [pixijs/pixijs](https://github.com/pixijs/pixijs) @ `16011d73d816` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
+| [pyxel](entries/engines/kitao-pyxel/README.md) | A retro game engine for Python | rust | unknown | reference | [kitao/pyxel](https://github.com/kitao/pyxel) @ `2026-11-23 (branch tip at catalogue time)` |
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
+| [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |

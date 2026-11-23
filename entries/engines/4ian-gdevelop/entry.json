@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T00:52:22Z",
+ "category": "engines",
+ "commit": "7deebc2d2ba1",
+ "delivery": "reference",
+ "description": "4ian/GDevelop \u2014 \ud83c\udfae Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "GDevelop",
+ "reference_reason": "size gate: 172 MB",
+ "size_bytes": 180551128,
+ "slug": "4ian-gdevelop",
+ "source": "github-search:game engine stars:>200",
+ "stars": 29191,
+ "system": "\ud83c\udfae Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone.",
+ "upstream": "https://github.com/4ian/GDevelop",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

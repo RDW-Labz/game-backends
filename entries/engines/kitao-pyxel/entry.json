@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:52:23Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kitao/pyxel \u2014 A retro game engine for Python",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "pyxel",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "kitao-pyxel",
+ "source": "github-search:game engine stars:>200",
+ "stars": 18665,
+ "system": "A retro game engine for Python",
+ "upstream": "https://github.com/kitao/pyxel",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

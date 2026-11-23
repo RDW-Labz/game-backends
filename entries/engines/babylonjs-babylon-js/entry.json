@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:52:23Z",
+ "category": "engines",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BabylonJS/Babylon.js \u2014 Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework.",
+ "language": "typescript",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "Babylon.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "babylonjs-babylon-js",
+ "source": "github-search:game engine stars:>200",
+ "stars": 26428,
+ "system": "Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework.",
+ "upstream": "https://github.com/BabylonJS/Babylon.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

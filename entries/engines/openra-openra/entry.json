@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:52:23Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OpenRA/OpenRA \u2014 Open Source real-time strategy game engine for early Westwood games such as Command & Conquer: Red Alert written in C# using SDL and OpenGL. Runs on Windows, Linux, *BSD and Mac OS X.",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "OpenRA",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "openra-openra",
+ "source": "github-search:game engine stars:>200",
+ "stars": 17823,
+ "system": "Open Source real-time strategy game engine for early Westwood games such as Command & Conquer: Red Alert written in C# using SDL and OpenGL. Runs on Windows, Li",
+ "upstream": "https://github.com/OpenRA/OpenRA",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

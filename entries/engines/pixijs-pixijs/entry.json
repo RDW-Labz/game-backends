@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T00:52:06Z",
+ "category": "engines",
+ "commit": "16011d73d816",
+ "delivery": "vendored",
+ "description": "pixijs/pixijs \u2014 The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "pixijs",
+ "size_bytes": 8762773,
+ "slug": "pixijs-pixijs",
+ "source": "github-search:game engine stars:>200",
+ "stars": 48882,
+ "system": "The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer.",
+ "upstream": "https://github.com/pixijs/pixijs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
