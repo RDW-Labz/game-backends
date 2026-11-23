@@ -1979,3 +1979,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/bayatgames-voxelframework
   - reference engines/mrsmith33-voxelman
   - reference engines/vercidium-voxel-mesh-generation
+
+- **2026-11-23 11:50 UTC** — tick 694: +2 screened, +4 reference, 1 skipped, catalogue=746
+  - added engines/seannikkel-voxelengine (MIT, vendored)
+  - added engines/antopilo-voxelfactory (MIT, vendored)
+  - reference engines/jrenner-kotlin-voxel
+  - reference engines/bonsairobo-feldspar
+  - reference engines/fenomas-voxel-physics-engine
+  - reference engines/kosshi-net-voxplat

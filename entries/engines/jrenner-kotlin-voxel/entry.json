@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:50:06Z",
+ "category": "engines",
+ "commit": "2025-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jrenner/kotlin-voxel \u2014 A voxel engine (like Minecraft) written in Kotlin",
+ "language": "kotlin",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "kotlin-voxel",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "jrenner-kotlin-voxel",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 81,
+ "system": "A voxel engine (like Minecraft) written in Kotlin",
+ "upstream": "https://github.com/jrenner/kotlin-voxel",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

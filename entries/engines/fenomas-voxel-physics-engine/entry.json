@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:50:06Z",
+ "category": "engines",
+ "commit": "2024-03-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fenomas/voxel-physics-engine \u2014 Simple but physical engine for voxels. Demo:",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "voxel-physics-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "fenomas-voxel-physics-engine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 79,
+ "system": "Simple but physical engine for voxels. Demo: ",
+ "upstream": "https://github.com/fenomas/voxel-physics-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

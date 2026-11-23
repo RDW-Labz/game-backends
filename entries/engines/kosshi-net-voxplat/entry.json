@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:50:06Z",
+ "category": "engines",
+ "commit": "2022-02-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kosshi-net/voxplat \u2014 A hybrid voxel rendering engine",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "voxplat",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "kosshi-net-voxplat",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 78,
+ "system": "A hybrid voxel rendering engine",
+ "upstream": "https://github.com/kosshi-net/voxplat",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

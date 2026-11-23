@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T11:50:05Z",
+ "category": "engines",
+ "commit": "6c5254d083f3",
+ "delivery": "vendored",
+ "description": "antopilo/VoxelFactory \u2014 A simple to use Voxel library for Godot engine.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "VoxelFactory",
+ "size_bytes": 41931,
+ "slug": "antopilo-voxelfactory",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 84,
+ "system": "A simple to use Voxel library for Godot engine. ",
+ "upstream": "https://github.com/antopilo/VoxelFactory",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

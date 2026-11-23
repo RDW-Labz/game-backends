@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 11:34 UTC · 740 entries · 197 vendored, 543 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 11:50 UTC · 746 entries · 199 vendored, 547 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 314 | 64 | 250 |
+| [engines](#engines) — Game engines and engine subsystems | 320 | 66 | 254 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 11:34 UTC · 740 entries · 197 vendored, 543 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 314 entries
+**Game engines and engine subsystems** — 320 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -112,6 +112,7 @@ _Generated 2026-11-23 11:34 UTC · 740 entries · 197 vendored, 543 reference-on
 | [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
 | [ezEngine](entries/engines/ezengine-ezengine/README.md) | An open source C++ game engine. | c++ | MIT | reference | [ezEngine/ezEngine](https://github.com/ezEngine/ezEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [F8Framework](entries/engines/tippinggame-f8framework/README.md) | F8 Framework是一个优雅，轻量，符合直觉的基于Unity引擎的游戏框架，组件围绕F8一键启动，框架整体遵循以极少的使用成本开发游戏。F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity  | c# | MIT | reference | [TippingGame/F8Framework](https://github.com/TippingGame/F8Framework) @ `2026-09-15 (branch tip at catalogue time)` |
+| [feldspar](entries/engines/bonsairobo-feldspar/README.md) | Procedural voxel worlds for Bevy Engine. | rust | MIT | reference | [bonsairobo/feldspar](https://github.com/bonsairobo/feldspar) @ `2022-08-13 (branch tip at catalogue time)` |
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
 | [flame](entries/engines/flame-engine-flame/README.md) | A Flutter based game engine. | dart | MIT | vendored | [flame-engine/flame](https://github.com/flame-engine/flame) @ `c4c6b3f163d5` |
 | [flappyphpant](entries/engines/phpgl-flappyphpant/README.md) | A very simple Flappy Bird-like game written in PHP, built on PHP-GLFW and the VISU framework. | php | MIT | vendored | [phpgl/flappyphpant](https://github.com/phpgl/flappyphpant) @ `764e716a1080` |
@@ -167,6 +168,7 @@ _Generated 2026-11-23 11:34 UTC · 740 entries · 197 vendored, 543 reference-on
 | [kengine](entries/engines/phisko-kengine/README.md) | Game engine with an Entity-Component-System (ECS) architecture. Focus on ease-of-use, runtime extensibility and compile-time type safety. | c++ | MIT | vendored | [phisko/kengine](https://github.com/phisko/kengine) @ `5a0ad085cdef` |
 | [KlayGE](entries/engines/gongminmin-klayge/README.md) | KlayGE is a cross-platform open source game engine with plugin-based architecture. | c++ | GPL-2.0 | reference | [gongminmin/KlayGE](https://github.com/gongminmin/KlayGE) @ `2026-07-17 (branch tip at catalogue time)` |
 | [korge](entries/engines/korlibs-korge/README.md) | Korge is a Multiplatform Game Engine written in Kotlin for JVM, Web, Android and iOS. | kotlin | unknown | reference | [korlibs/korge](https://github.com/korlibs/korge) @ `2026-11-20 (branch tip at catalogue time)` |
+| [kotlin-voxel](entries/engines/jrenner-kotlin-voxel/README.md) | A voxel engine (like Minecraft) written in Kotlin | kotlin | Apache-2.0 | reference | [jrenner/kotlin-voxel](https://github.com/jrenner/kotlin-voxel) @ `2025-11-21 (branch tip at catalogue time)` |
 | [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [legion](entries/engines/amethyst-legion/README.md) | High performance Rust ECS library | rust | MIT | vendored | [amethyst/legion](https://github.com/amethyst/legion) @ `32df916517fa` |
@@ -314,13 +316,17 @@ _Generated 2026-11-23 11:34 UTC · 740 entries · 197 vendored, 543 reference-on
 | [vox2](entries/engines/lallassu-vox2/README.md) | Simple POC of PCG voxel-engine | javascript | MIT | vendored | [Lallassu/vox2](https://github.com/Lallassu/vox2) @ `4280b7463082` |
 | [voxel-engine](entries/engines/max-mapper-voxel-engine/README.md) | 3D HTML5 voxel game engine | javascript | BSD-3-Clause | reference | [max-mapper/voxel-engine](https://github.com/max-mapper/voxel-engine) @ `2017-12-08 (branch tip at catalogue time)` |
 | [voxel-mesh-generation](entries/engines/vercidium-voxel-mesh-generation/README.md) | Optimised voxel mesh generation, written in C# and open sourced from the Vercidium Engine. | c# | Apache-2.0 | reference | [Vercidium/voxel-mesh-generation](https://github.com/Vercidium/voxel-mesh-generation) @ `2024-03-27 (branch tip at catalogue time)` |
+| [voxel-physics-engine](entries/engines/fenomas-voxel-physics-engine/README.md) | Simple but physical engine for voxels. Demo:  | javascript | MIT | reference | [fenomas/voxel-physics-engine](https://github.com/fenomas/voxel-physics-engine) @ `2024-03-15 (branch tip at catalogue time)` |
 | [voxelcore](entries/engines/mihailris-voxelcore/README.md) | VoxelCore – voxel game engine in C++ | c++ | MPL-2.0 | reference | [MihailRis/voxelcore](https://github.com/MihailRis/voxelcore) @ `2026-11-22 (branch tip at catalogue time)` |
+| [VoxelEngine](entries/engines/seannikkel-voxelengine/README.md) | Custom voxel engine written in C++ and OpenGL | c++ | MIT | vendored | [SeanNikkel/VoxelEngine](https://github.com/SeanNikkel/VoxelEngine) @ `31949ccd1836` |
 | [voxelengine3](entries/engines/lallassu-voxelengine3/README.md) | Voxel-engine in Javascript | javascript | MIT | vendored | [Lallassu/voxelengine3](https://github.com/Lallassu/voxelengine3) @ `bb80288743a1` |
+| [VoxelFactory](entries/engines/antopilo-voxelfactory/README.md) | A simple to use Voxel library for Godot engine.  | gdscript | MIT | vendored | [antopilo/VoxelFactory](https://github.com/antopilo/VoxelFactory) @ `6c5254d083f3` |
 | [VoxelFramework](entries/engines/bayatgames-voxelframework/README.md) | An awesome Voxel framework for Unity (Game Engine) | c# | MIT | reference | [BayatGames/VoxelFramework](https://github.com/BayatGames/VoxelFramework) @ `2018-04-29 (branch tip at catalogue time)` |
 | [voxelgame](entries/engines/zylann-voxelgame/README.md) | Voxel world prototype made with Godot Engine | gdscript | unknown | reference | [Zylann/voxelgame](https://github.com/Zylann/voxelgame) @ `2025-12-04 (branch tip at catalogue time)` |
 | [voxelize](entries/engines/voxelize-voxelize/README.md) | :mushroom: Full stack voxel engine | typescript | MIT | reference | [voxelize/voxelize](https://github.com/voxelize/voxelize) @ `2026-11-23 (branch tip at catalogue time)` |
 | [voxelman](entries/engines/mrsmith33-voxelman/README.md) | Plugin-based client-server voxel game engine written in D language | d | BSL-1.0 | reference | [MrSmith33/voxelman](https://github.com/MrSmith33/voxelman) @ `2022-05-10 (branch tip at catalogue time)` |
 | [VoxelPluginFreeLegacy](entries/engines/voxelplugin-voxelpluginfreelegacy/README.md) | Voxel Plugin Legacy for Unreal Engine | c++ | none | reference | [VoxelPlugin/VoxelPluginFreeLegacy](https://github.com/VoxelPlugin/VoxelPluginFreeLegacy) @ `7e64a89ce827` |
+| [voxplat](entries/engines/kosshi-net-voxplat/README.md) | A hybrid voxel rendering engine | c | unknown | reference | [kosshi-net/voxplat](https://github.com/kosshi-net/voxplat) @ `2022-02-21 (branch tip at catalogue time)` |
 | [vx_bevy](entries/engines/game4all-vx-bevy/README.md) | 🧊 Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy. | rust | MIT | reference | [Game4all/vx_bevy](https://github.com/Game4all/vx_bevy) @ `2024-12-11 (branch tip at catalogue time)` |
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |
 | [web-sdk](entries/engines/engineio-web-sdk/README.md) | About The Web Game Engine: Create your own web game with in a declarative way. | typescript | unknown | reference | [engineio/web-sdk](https://github.com/engineio/web-sdk) @ `2025-11-27 (branch tip at catalogue time)` |

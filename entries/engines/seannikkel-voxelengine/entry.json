@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T11:50:03Z",
+ "category": "engines",
+ "commit": "31949ccd1836",
+ "delivery": "vendored",
+ "description": "SeanNikkel/VoxelEngine \u2014 Custom voxel engine written in C++ and OpenGL",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "VoxelEngine",
+ "size_bytes": 1934112,
+ "slug": "seannikkel-voxelengine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 88,
+ "system": "Custom voxel engine written in C++ and OpenGL",
+ "upstream": "https://github.com/SeanNikkel/VoxelEngine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
