@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T11:34:07Z",
+ "category": "engines",
+ "commit": "4280b7463082",
+ "delivery": "vendored",
+ "description": "Lallassu/vox2 \u2014 Simple POC of PCG voxel-engine",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "vox2",
+ "size_bytes": 1056818,
+ "slug": "lallassu-vox2",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 145,
+ "system": "Simple POC of PCG voxel-engine",
+ "upstream": "https://github.com/Lallassu/vox2",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

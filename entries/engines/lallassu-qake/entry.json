@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T11:34:04Z",
+ "category": "engines",
+ "commit": "6c8da7a83b72",
+ "delivery": "vendored",
+ "description": "Lallassu/Qake \u2014 Qake voxel-engine demo",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Qake",
+ "size_bytes": 664736,
+ "slug": "lallassu-qake",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 146,
+ "system": "Qake voxel-engine demo",
+ "upstream": "https://github.com/Lallassu/Qake",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

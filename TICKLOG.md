@@ -1971,3 +1971,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/gregcman-sucle
   - reference engines/davidwilliams81-cubiquity
   - reference engines/darbycostello-nav3d
+
+- **2026-11-23 11:34 UTC** — tick 693: +2 screened, +4 reference, 0 skipped, catalogue=740
+  - added engines/lallassu-qake (MIT, vendored)
+  - added engines/lallassu-vox2 (MIT, vendored)
+  - reference engines/blazekill-vloxyengine
+  - reference engines/bayatgames-voxelframework
+  - reference engines/mrsmith33-voxelman
+  - reference engines/vercidium-voxel-mesh-generation

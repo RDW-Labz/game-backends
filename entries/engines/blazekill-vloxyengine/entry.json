@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:34:08Z",
+ "category": "engines",
+ "commit": "2024-11-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BLaZeKiLL/VloxyEngine \u2014 Performance oriented voxel engine for unity.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "VloxyEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "blazekill-vloxyengine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 130,
+ "system": "Performance oriented voxel engine for unity.",
+ "upstream": "https://github.com/BLaZeKiLL/VloxyEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
