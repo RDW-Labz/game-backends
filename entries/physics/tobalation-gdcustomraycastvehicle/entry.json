@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T19:55:08Z",
+ "category": "physics",
+ "commit": "8d608d28b5f5",
+ "delivery": "vendored",
+ "description": "Tobalation/GDCustomRaycastVehicle \u2014 A simple custom raycast vehicle implementation",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "GDCustomRaycastVehicle",
+ "size_bytes": 27167,
+ "slug": "tobalation-gdcustomraycastvehicle",
+ "source": "github-search:raycast vehicle physics stars:>10",
+ "stars": 77,
+ "system": "A simple custom raycast vehicle implementation",
+ "upstream": "https://github.com/Tobalation/GDCustomRaycastVehicle",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

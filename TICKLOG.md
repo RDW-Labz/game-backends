@@ -2218,3 +2218,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/joaomcl-boks2d
   - reference physics/beancheeseburrito-box2d-net
   - reference physics/kira-ph-box2d-dotnet-bindings
+
+- **2026-11-23 19:55 UTC** — tick 724: +2 screened, +4 reference, 3 skipped, catalogue=925
+  - added physics/adrenak-tork (MIT, vendored)
+  - added physics/tobalation-gdcustomraycastvehicle (MIT, vendored)
+  - reference physics/hayden-donnelly-vehicle-physics
+  - reference physics/seerban-godot-vehicle
+  - reference math/randygaul-cute-headers
+  - reference math/bitshifter-mathbench-rs

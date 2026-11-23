@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:55:10Z",
+ "category": "math",
+ "commit": "2026-11-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RandyGaul/cute_headers \u2014 Collection of cross-platform one-file C/C++ libraries with no dependencies, primarily used for games",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "cute_headers",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "randygaul-cute-headers",
+ "source": "github-search:game math library stars:>40",
+ "stars": 5103,
+ "system": "Collection of cross-platform one-file C/C++ libraries with no dependencies, primarily used for games",
+ "upstream": "https://github.com/RandyGaul/cute_headers",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T19:55:06Z",
+ "category": "physics",
+ "commit": "17ae6323c007",
+ "delivery": "vendored",
+ "description": "adrenak/tork \u2014 Vehicle physics for Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "tork",
+ "size_bytes": 48047,
+ "slug": "adrenak-tork",
+ "source": "github-search:raycast vehicle physics stars:>10",
+ "stars": 444,
+ "system": "Vehicle physics for Unity",
+ "upstream": "https://github.com/adrenak/tork",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

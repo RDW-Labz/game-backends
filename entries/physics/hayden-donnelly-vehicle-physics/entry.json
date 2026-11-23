@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:55:10Z",
+ "category": "physics",
+ "commit": "2024-12-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hayden-donnelly/vehicle-physics \u2014 This is a Unity project implementing a custom vehicle controller with a raycast suspension.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "vehicle-physics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hayden-donnelly-vehicle-physics",
+ "source": "github-search:raycast vehicle physics stars:>10",
+ "stars": 31,
+ "system": "This is a Unity project implementing a custom vehicle controller with a raycast suspension.",
+ "upstream": "https://github.com/hayden-donnelly/vehicle-physics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

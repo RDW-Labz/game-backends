@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:55:10Z",
+ "category": "physics",
+ "commit": "2026-08-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Seerban/godot-vehicle \u2014 WIP Racing Game and 3d vehicle physics implementation in Godot Engine.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-vehicle",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "seerban-godot-vehicle",
+ "source": "github-search:raycast vehicle physics stars:>10",
+ "stars": 14,
+ "system": "WIP Racing Game and 3d vehicle physics implementation in Godot Engine.",
+ "upstream": "https://github.com/Seerban/godot-vehicle",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

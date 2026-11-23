@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:55:10Z",
+ "category": "math",
+ "commit": "2026-10-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bitshifter/mathbench-rs \u2014 Comparing performance of Rust math libraries for common 3D game and graphics tasks",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "mathbench-rs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "bitshifter-mathbench-rs",
+ "source": "github-search:game math library stars:>40",
+ "stars": 239,
+ "system": "Comparing performance of Rust math libraries for common 3D game and graphics tasks",
+ "upstream": "https://github.com/bitshifter/mathbench-rs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
