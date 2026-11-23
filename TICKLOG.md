@@ -1755,3 +1755,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/pikedev-go2d
   - reference engines/anthdm-ggpoker
   - reference engines/opendiablo2-abyssengine
+
+- **2026-11-23 04:22 UTC** — tick 666: +2 screened, +4 reference, 4 skipped, catalogue=578
+  - added engines/pkmn-engine (MIT, vendored)
+  - added engines/openreliant-openreliant (GPL-3.0, reference)
+  - reference engines/quaint-studios-sustenet
+  - reference engines/zoeesilcock-flint
+  - reference engines/peterino2-neonwood
+  - reference engines/scemino-z-impact

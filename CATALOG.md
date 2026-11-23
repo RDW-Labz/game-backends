@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 04:06 UTC · 572 entries · 166 vendored, 406 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 04:22 UTC · 578 entries · 167 vendored, 411 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 146 | 33 | 113 |
+| [engines](#engines) — Game engines and engine subsystems | 152 | 34 | 118 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 04:06 UTC · 572 entries · 166 vendored, 406 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 146 entries
+**Game engines and engine subsystems** — 152 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -57,6 +57,7 @@ _Generated 2026-11-23 04:06 UTC · 572 entries · 166 vendored, 406 reference-on
 | [ecst](entries/engines/vittorioromeo-ecst/README.md) | [WIP] Experimental C++14 multithreaded compile-time entity-component-system library. | c++ | unknown | reference | [vittorioromeo/ecst](https://github.com/vittorioromeo/ecst) @ `2019-09-03 (branch tip at catalogue time)` |
 | [egret-core](entries/engines/egret-labs-egret-core/README.md) | Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows. | javascript | unknown | reference | [egret-labs/egret-core](https://github.com/egret-labs/egret-core) @ `2022-07-20 (branch tip at catalogue time)` |
 | [engine](entries/engines/g3n-engine/README.md) | Go 3D Game Engine (http://g3n.rocks) | go | BSD-2-Clause | reference | [g3n/engine](https://github.com/g3n/engine) @ `2026-11-21 (branch tip at catalogue time)` |
+| [engine](entries/engines/pkmn-engine/README.md) | A minimal, complete, Pokémon battle simulation engine optimized for performance | zig | MIT | vendored | [pkmn/engine](https://github.com/pkmn/engine) @ `df3c333f0947` |
 | [engo](entries/engines/engoengine-engo/README.md) | Engo is an open-source 2D game engine written in Go. | go | MIT | reference | [EngoEngine/engo](https://github.com/EngoEngine/engo) @ `2026-03-30 (branch tip at catalogue time)` |
 | [Entitas](entries/engines/sschmid-entitas/README.md) | Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity | c# | MIT | vendored | [sschmid/Entitas](https://github.com/sschmid/Entitas) @ `37547d1bd280` |
 | [EntityComponentSystemSamples](entries/engines/unity-technologies-entitycomponentsystemsamples/README.md) | see upstream | c# | none | reference | [Unity-Technologies/EntityComponentSystemSamples](https://github.com/Unity-Technologies/EntityComponentSystemSamples) @ `6786a741ee1f` |
@@ -69,6 +70,7 @@ _Generated 2026-11-23 04:06 UTC · 572 entries · 166 vendored, 406 reference-on
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
 | [Flecs](entries/engines/flecs/README.md) | ECS with prefabs, pipelines, hierarchies, REST explorer | c | MIT | reference | [SanderMertens/flecs](https://github.com/SanderMertens/flecs) @ `fa6554710d0d` |
 | [FlexEngine](entries/engines/ajweeks-flexengine/README.md) | Cross-platform game engine with Vulkan backend | c++ | MIT | reference | [ajweeks/FlexEngine](https://github.com/ajweeks/FlexEngine) @ `03aab462249b` |
+| [flint](entries/engines/zoeesilcock-flint/README.md) | Building blocks for the game engine your game actually needs. | zig | MIT | reference | [zoeesilcock/flint](https://github.com/zoeesilcock/flint) @ `2026-11-15 (branch tip at catalogue time)` |
 | [fmod-gdextension](entries/engines/utopia-rise-fmod-gdextension/README.md) | FMOD Studio GDExtension bindings for the Godot game engine | c++ | unknown | reference | [utopia-rise/fmod-gdextension](https://github.com/utopia-rise/fmod-gdextension) @ `2026-11-07 (branch tip at catalogue time)` |
 | [freeablo](entries/engines/wheybags-freeablo/README.md) | [ARCHIVED] Modern reimplementation of the Diablo 1 game engine | c++ | GPL-3.0 | reference | [wheybags/freeablo](https://github.com/wheybags/freeablo) @ `2023-04-13 (branch tip at catalogue time)` |
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
@@ -109,6 +111,7 @@ _Generated 2026-11-23 04:06 UTC · 572 entries · 166 vendored, 406 reference-on
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
+| [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
 | [NVForever](entries/engines/lootjunkieazza-nvforever/README.md) | NVForever Rebuilt New Vegas Game Engine in Rust | rust | GPL-3.0 | reference | [LootJunkieAzza/NVForever](https://github.com/LootJunkieAzza/NVForever) @ `2026-11-23 (branch tip at catalogue time)` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
@@ -118,6 +121,7 @@ _Generated 2026-11-23 04:06 UTC · 572 entries · 166 vendored, 406 reference-on
 | [openmw](entries/engines/openmw-openmw/README.md) | OpenMW is an open-source open-world RPG game engine that supports playing Morrowind. Main repo and issue tracker can be found here: https://gitlab.com/OpenMW/op | c++ | GPL-3.0 | reference | [OpenMW/openmw](https://github.com/OpenMW/openmw) @ `77eec0471802` |
 | [OpenRA](entries/engines/openra-openra/README.md) | Open Source real-time strategy game engine for early Westwood games such as Command & Conquer: Red Alert written in C# using SDL and OpenGL. Runs on Windows, Li | c# | GPL-3.0 | reference | [OpenRA/OpenRA](https://github.com/OpenRA/OpenRA) @ `2026-11-22 (branch tip at catalogue time)` |
 | [openrct2 — core](entries/engines/openrct2-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
+| [openreliant](entries/engines/openreliant-openreliant/README.md) | An open-source reimplementation of StarLancer's engine, in Zig on SDL3. Needs your own copy of the game. | zig | GPL-3.0 | reference | [OpenReliant/openreliant](https://github.com/OpenReliant/openreliant) @ `6f7aed3d7f6f` |
 | [OpenSurge — core](entries/engines/opensurge-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [optick — core](entries/engines/optick-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
 | [ouzel](entries/engines/elnormous-ouzel/README.md) | C++ game engine for Windows, macOS, Linux, iOS, tvOS, Android, and web browsers | c++ | Unlicense | reference | [elnormous/ouzel](https://github.com/elnormous/ouzel) @ `2024-03-01 (branch tip at catalogue time)` |
@@ -149,6 +153,7 @@ _Generated 2026-11-23 04:06 UTC · 572 entries · 166 vendored, 406 reference-on
 | [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
 | [SuperFamiconv](entries/engines/optiroc-superfamiconv/README.md) | Flexible and composable tile graphics converter supporting Super Nintendo, Game Boy, Game Boy Color, Game Boy Advance, Mega Drive, Master System, Game Gear, PC  | rust | MIT | reference | [Optiroc/SuperFamiconv](https://github.com/Optiroc/SuperFamiconv) @ `2026-11-16 (branch tip at catalogue time)` |
+| [Sustenet](entries/engines/quaint-studios-sustenet/README.md) | Sustenet is a networking solution built with Rust and Zig, formerly C#, for game engines like Unity3D, Godot, and Unreal Engine. The primary focus is on scaling | zig | MIT | reference | [Quaint-Studios/Sustenet](https://github.com/Quaint-Studios/Sustenet) @ `2025-08-09 (branch tip at catalogue time)` |
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
@@ -166,6 +171,7 @@ _Generated 2026-11-23 04:06 UTC · 572 entries · 166 vendored, 406 reference-on
 | [WebGAL](entries/engines/openwebgal-webgal/README.md) | A brand new web Visual Novel engine / 全新的网页端视觉小说引擎 | typescript | MPL-2.0 | reference | [OpenWebGAL/WebGAL](https://github.com/OpenWebGAL/WebGAL) @ `2026-11-21 (branch tip at catalogue time)` |
 | [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
+| [z_impact](entries/engines/scemino-z-impact/README.md) | A 2d game engine written in ZIG | zig | MIT | reference | [scemino/z_impact](https://github.com/scemino/z_impact) @ `2025-07-17 (branch tip at catalogue time)` |
 
 ## physics
 

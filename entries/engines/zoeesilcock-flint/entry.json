@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:22:08Z",
+ "category": "engines",
+ "commit": "2026-11-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "zoeesilcock/flint \u2014 Building blocks for the game engine your game actually needs.",
+ "language": "zig",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "flint",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "zoeesilcock-flint",
+ "source": "github-search:game engine language:zig stars:>15",
+ "stars": 43,
+ "system": "Building blocks for the game engine your game actually needs.",
+ "upstream": "https://github.com/zoeesilcock/flint",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

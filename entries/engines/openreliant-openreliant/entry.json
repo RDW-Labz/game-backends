@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T04:22:07Z",
+ "category": "engines",
+ "commit": "6f7aed3d7f6f",
+ "delivery": "reference",
+ "description": "OpenReliant/openreliant \u2014 An open-source reimplementation of StarLancer's engine, in Zig on SDL3. Needs your own copy of the game.",
+ "language": "zig",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "openreliant",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 14678913,
+ "slug": "openreliant-openreliant",
+ "source": "github-search:game engine language:zig stars:>15",
+ "stars": 54,
+ "system": "An open-source reimplementation of StarLancer's engine, in Zig on SDL3. Needs your own copy of the game.",
+ "upstream": "https://github.com/OpenReliant/openreliant",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

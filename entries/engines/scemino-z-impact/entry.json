@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:22:08Z",
+ "category": "engines",
+ "commit": "2025-07-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "scemino/z_impact \u2014 A 2d game engine written in ZIG",
+ "language": "zig",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "z_impact",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "scemino-z-impact",
+ "source": "github-search:game engine language:zig stars:>15",
+ "stars": 26,
+ "system": "A 2d game engine written in ZIG",
+ "upstream": "https://github.com/scemino/z_impact",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

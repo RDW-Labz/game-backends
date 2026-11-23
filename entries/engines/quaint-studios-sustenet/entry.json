@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:22:08Z",
+ "category": "engines",
+ "commit": "2025-08-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Quaint-Studios/Sustenet \u2014 Sustenet is a networking solution built with Rust and Zig, formerly C#, for game engines like Unity3D, Godot, and Unreal Engine. The primary focus is on scaling by allowing multiple servers to work together.",
+ "language": "zig",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Sustenet",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "quaint-studios-sustenet",
+ "source": "github-search:game engine language:zig stars:>15",
+ "stars": 45,
+ "system": "Sustenet is a networking solution built with Rust and Zig, formerly C#, for game engines like Unity3D, Godot, and Unreal Engine. The primary focus is on scaling",
+ "upstream": "https://github.com/Quaint-Studios/Sustenet",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

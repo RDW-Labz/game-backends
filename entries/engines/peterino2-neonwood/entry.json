@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:22:08Z",
+ "category": "engines",
+ "commit": "2025-11-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "peterino2/NeonWood \u2014 A game engine written in zig (development is concluded)",
+ "language": "zig",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "NeonWood",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "peterino2-neonwood",
+ "source": "github-search:game engine language:zig stars:>15",
+ "stars": 36,
+ "system": "A game engine written in zig (development is concluded)",
+ "upstream": "https://github.com/peterino2/NeonWood",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

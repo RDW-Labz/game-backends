@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T04:22:03Z",
+ "category": "engines",
+ "commit": "df3c333f0947",
+ "delivery": "vendored",
+ "description": "pkmn/engine \u2014 A minimal, complete, Pok\u00e9mon battle simulation engine optimized for performance",
+ "language": "zig",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "engine",
+ "size_bytes": 2472536,
+ "slug": "pkmn-engine",
+ "source": "github-search:game engine language:zig stars:>15",
+ "stars": 379,
+ "system": "A minimal, complete, Pok\u00e9mon battle simulation engine optimized for performance",
+ "upstream": "https://github.com/pkmn/engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
