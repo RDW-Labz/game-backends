@@ -1683,3 +1683,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/hailtododongo-pyrite64
   - reference engines/panosk92-spartanengine
   - reference engines/croteam-official-serious-engine
+
+- **2026-11-23 01:56 UTC** — tick 657: +2 screened, +4 reference, 25 skipped, catalogue=524
+  - added engines/coronalabs-corona (MIT, reference)
+  - added engines/overload-technologies-overload (MIT, reference)
+  - reference engines/crownengine-crown
+  - reference engines/gongminmin-klayge
+  - reference engines/wheybags-freeablo
+  - reference engines/ezengine-ezengine

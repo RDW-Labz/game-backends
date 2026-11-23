@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:56:48Z",
+ "category": "engines",
+ "commit": "2026-07-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gongminmin/KlayGE \u2014 KlayGE is a cross-platform open source game engine with plugin-based architecture.",
+ "language": "c++",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "KlayGE",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-2.0)",
+ "slug": "gongminmin-klayge",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 2175,
+ "system": "KlayGE is a cross-platform open source game engine with plugin-based architecture.",
+ "upstream": "https://github.com/gongminmin/KlayGE",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:56:48Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ezEngine/ezEngine \u2014 An open source C++ game engine.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ezEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ezengine-ezengine",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 2039,
+ "system": "An open source C++ game engine.",
+ "upstream": "https://github.com/ezEngine/ezEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T01:56:47Z",
+ "category": "engines",
+ "commit": "26efaa5dc92b",
+ "delivery": "reference",
+ "description": "Overload-Technologies/Overload \u2014 3D game engine with lua scripting",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Overload",
+ "reference_reason": "size gate: 36 MB",
+ "size_bytes": 38078370,
+ "slug": "overload-technologies-overload",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 2508,
+ "system": "3D game engine with lua scripting",
+ "upstream": "https://github.com/Overload-Technologies/Overload",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

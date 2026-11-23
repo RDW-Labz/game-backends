@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T01:56:43Z",
+ "category": "engines",
+ "commit": "22368dfc1209",
+ "delivery": "reference",
+ "description": "coronalabs/corona \u2014 Solar2D Game Engine main repository (ex Corona SDK)",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "corona",
+ "reference_reason": "size gate: 63 MB",
+ "size_bytes": 66403395,
+ "slug": "coronalabs-corona",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 2902,
+ "system": "Solar2D Game Engine main repository (ex Corona SDK)",
+ "upstream": "https://github.com/coronalabs/corona",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
