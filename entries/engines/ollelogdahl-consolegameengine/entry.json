@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:10:07Z",
+ "category": "engines",
+ "commit": "2021-06-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ollelogdahl/ConsoleGameEngine \u2014 .NET Console Graphics Engine",
+ "language": "c#",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "ConsoleGameEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "ollelogdahl-consolegameengine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 365,
+ "system": ".NET Console Graphics Engine",
+ "upstream": "https://github.com/ollelogdahl/ConsoleGameEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

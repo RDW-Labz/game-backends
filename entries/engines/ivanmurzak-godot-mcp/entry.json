@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:10:07Z",
+ "category": "engines",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "IvanMurzak/Godot-MCP \u2014 Godot-MCP \u2014 Model Context Protocol (MCP) integration for the Godot Engine. AI tools for the Godot Editor in C#, with cloud connection to ai-game.dev. Apache-2.0.",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "Godot-MCP",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "ivanmurzak-godot-mcp",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 382,
+ "system": "Godot-MCP \u2014 Model Context Protocol (MCP) integration for the Godot Engine. AI tools for the Godot Editor in C#, with cloud connection to ai-game.dev. Apache-2.0",
+ "upstream": "https://github.com/IvanMurzak/Godot-MCP",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:10:07Z",
+ "category": "engines",
+ "commit": "2026-03-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "eumario/godot-manager \u2014 A Project, Version and Addons/Plugins manager for Godot Game Engine.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-manager",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "eumario-godot-manager",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 419,
+ "system": "A Project, Version and Addons/Plugins manager for Godot Game Engine.",
+ "upstream": "https://github.com/eumario/godot-manager",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

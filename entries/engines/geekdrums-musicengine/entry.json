@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:10:07Z",
+ "category": "engines",
+ "commit": "2023-01-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "geekdrums/MusicEngine \u2014 make music synced game with Unity / ADX2 / Wwise",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "MusicEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "geekdrums-musicengine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 420,
+ "system": "make music synced game with Unity / ADX2 / Wwise",
+ "upstream": "https://github.com/geekdrums/MusicEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

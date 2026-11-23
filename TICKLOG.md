@@ -1779,3 +1779,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/tippinggame-f8framework
   - reference engines/srcnalt-openai-unity
   - reference engines/delmarle-rpg-core
+
+- **2026-11-23 05:10 UTC** — tick 669: +2 screened, +4 reference, 2 skipped, catalogue=596
+  - added engines/eos-contrib-eos-plugin-for-unity (MIT, reference)
+  - added engines/elringus-unity-google-drive (MIT, vendored)
+  - reference engines/geekdrums-musicengine
+  - reference engines/eumario-godot-manager
+  - reference engines/ivanmurzak-godot-mcp
+  - reference engines/ollelogdahl-consolegameengine

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T05:10:03Z",
+ "category": "engines",
+ "commit": "c5167a5fa86d",
+ "delivery": "reference",
+ "description": "EOS-Contrib/eos_plugin_for_unity \u2014 Repository for EOS Plugin for Unity, bringing the functionality of Epic Online Services to the Unity Game Engine.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "eos_plugin_for_unity",
+ "reference_reason": "size gate: 15 MB",
+ "size_bytes": 15964924,
+ "slug": "eos-contrib-eos-plugin-for-unity",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 429,
+ "system": "Repository for EOS Plugin for Unity, bringing the functionality of Epic Online Services to the Unity Game Engine.",
+ "upstream": "https://github.com/EOS-Contrib/eos_plugin_for_unity",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
