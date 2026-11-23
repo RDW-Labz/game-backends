@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T22:04:07Z",
+ "category": "math",
+ "commit": "377beff01dfe",
+ "delivery": "vendored",
+ "description": "zfedoran/brine-fp \u2014 Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "brine-fp",
+ "size_bytes": 69251,
+ "slug": "zfedoran-brine-fp",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 19,
+ "system": "Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications.",
+ "upstream": "https://github.com/zfedoran/brine-fp",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

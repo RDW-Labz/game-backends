@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:04:08Z",
+ "category": "math",
+ "commit": "2026-01-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gradientspace/geometry3Sharp \u2014 C# library for 2D/3D geometric computation, mesh algorithms, and so on. Boost license.",
+ "language": "c#",
+ "license": "BSL-1.0",
+ "license_verdict": "gated-reference",
+ "name": "geometry3Sharp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSL-1.0)",
+ "slug": "gradientspace-geometry3sharp",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 1907,
+ "system": "C# library for 2D/3D geometric computation, mesh algorithms, and so on. Boost license.",
+ "upstream": "https://github.com/gradientspace/geometry3Sharp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

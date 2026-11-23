@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 21:48 UTC · 967 entries · 259 vendored, 708 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 22:04 UTC · 973 entries · 261 vendored, 712 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
-| [math](#math) — Math libraries | 60 | 25 | 35 |
+| [math](#math) — Math libraries | 66 | 27 | 39 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
@@ -558,13 +558,14 @@ _Generated 2026-11-23 21:48 UTC · 967 entries · 259 vendored, 708 reference-on
 
 ## math
 
-**Math libraries** — 60 entries
+**Math libraries** — 66 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [abacus](entries/math/sungiant-abacus/README.md) | :triangular_ruler: C# cross precision 3D maths library. | c# | MIT | reference | [sungiant/abacus](https://github.com/sungiant/abacus) @ `2026-02-06 (branch tip at catalogue time)` |
 | [amgcl](entries/math/ddemidov-amgcl/README.md) | C++ library for solving large sparse linear systems with algebraic multigrid method | c++ | MIT | reference | [ddemidov/amgcl](https://github.com/ddemidov/amgcl) @ `2026-11-18 (branch tip at catalogue time)` |
 | [biomes-game — math](entries/math/biomes-game-math/README.md) | vector/matrix/quaternion math substrate | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
+| [brine-fp](entries/math/zfedoran-brine-fp/README.md) | Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications. | rust | Apache-2.0 | vendored | [zfedoran/brine-fp](https://github.com/zfedoran/brine-fp) @ `377beff01dfe` |
 | [ccVector](entries/math/jobtalle-ccvector/README.md) | A vector and matrix math library | c | Public-Domain | vendored | [jobtalle/ccVector](https://github.com/jobtalle/ccVector) @ `ffefafe5a0b9` |
 | [cfmm-math-libraries](entries/math/0xosiris-cfmm-math-libraries/README.md) | CFMM Fixed Point Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. | solidity | unknown | reference | [0xOsiris/cfmm-math-libraries](https://github.com/0xOsiris/cfmm-math-libraries) @ `2023-01-21 (branch tip at catalogue time)` |
 | [cglm](entries/math/cglm/README.md) | SIMD-accelerated C math (vec/mat/quat/affine/euler) | c | MIT | vendored | [recp/cglm](https://github.com/recp/cglm) @ `b9b570b78d58` |
@@ -579,11 +580,13 @@ _Generated 2026-11-23 21:48 UTC · 967 entries · 259 vendored, 708 reference-on
 | [Eigen](entries/math/eigen/README.md) | dense/sparse linear algebra (MPL-2.0) | c++ | GPL-3.0 | reference | [eigenteam/eigen-git-mirror](https://github.com/eigenteam/eigen-git-mirror) @ `36b95962756c` |
 | [eigen](entries/math/px4-eigen/README.md) | Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms. | c++ | unknown | reference | [PX4/eigen](https://github.com/PX4/eigen) @ `2023-10-18 (branch tip at catalogue time)` |
 | [en_cl_fix](entries/math/enclustra-en-cl-fix/README.md) | Fixed-point math library with VHDL, Python and MATLAB support | vhdl | MIT | reference | [enclustra/en_cl_fix](https://github.com/enclustra/en_cl_fix) @ `2026-08-12 (branch tip at catalogue time)` |
+| [fixed-point](entries/math/nilpunch-fixed-point/README.md) | Configurable 32-bit and 64-bit fixed point math library. | c# | MIT | vendored | [nilpunch/fixed-point](https://github.com/nilpunch/fixed-point) @ `e88d23b07774` |
 | [FixedPoint-Sharp](entries/math/romanzhu-fixedpoint-sharp/README.md) | Fixed point math with 48.16 precision (based on lib by https://github.com/fholm) | c# | MIT | reference | [RomanZhu/FixedPoint-Sharp](https://github.com/RomanZhu/FixedPoint-Sharp) @ `2021-11-15 (branch tip at catalogue time)` |
 | [fplib](entries/math/skyworkssolutionsinc-fplib/README.md) | Fixed point math library for SystemVerilog | systemverilog | Apache-2.0 | reference | [SkyworksSolutionsInc/fplib](https://github.com/SkyworksSolutionsInc/fplib) @ `2024-11-14 (branch tip at catalogue time)` |
 | [fpm](entries/math/mikelankamp-fpm/README.md) | C++ header-only fixed-point math library | c++ | MIT | vendored | [MikeLankamp/fpm](https://github.com/MikeLankamp/fpm) @ `b46537fe9697` |
 | [fptc-lib](entries/math/mgetka-fptc-lib/README.md) | Modified version of Fixed Point Math Library for C | c++ | BSD-2-Clause | reference | [mgetka/fptc-lib](https://github.com/mgetka/fptc-lib) @ `2024-04-09 (branch tip at catalogue time)` |
 | [fr_math](entries/math/deftio-fr-math/README.md) | Fixed-point math library (integer / no FPU)  for embedded C.  Trig, log/exp, sqrt, 2D transforms, wave generators, ADSR and variable radix support.  ~4.5 KB  | c++ | BSD-2-Clause | vendored | [deftio/fr_math](https://github.com/deftio/fr_math) @ `2c5d2e362386` |
+| [geometry3Sharp](entries/math/gradientspace-geometry3sharp/README.md) | C# library for 2D/3D geometric computation, mesh algorithms, and so on. Boost license. | c# | BSL-1.0 | reference | [gradientspace/geometry3Sharp](https://github.com/gradientspace/geometry3Sharp) @ `2026-01-09 (branch tip at catalogue time)` |
 | [glam-rs](entries/math/bitshifter-glam-rs/README.md) | A simple and fast linear algebra library for games and graphics | rust | Apache-2.0 | reference | [bitshifter/glam-rs](https://github.com/bitshifter/glam-rs) @ `2026-11-08 (branch tip at catalogue time)` |
 | [glas — math](entries/math/glas-math/README.md) | vector/matrix/quaternion math substrate | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
 | [GLM](entries/math/glm/README.md) | header-only GLSL-style vector/matrix/quaternion math | c++ | MIT | vendored | [g-truc/glm](https://github.com/g-truc/glm) @ `6f14f4792a0c` |
@@ -605,14 +608,17 @@ _Generated 2026-11-23 21:48 UTC · 967 entries · 259 vendored, 708 reference-on
 | [maths-rs](entries/math/polymonster-maths-rs/README.md) | Linear algebra library for graphics and gamedev. | rust | MIT | vendored | [polymonster/maths-rs](https://github.com/polymonster/maths-rs) @ `d1980e43c875` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
 | [NTSC-CRT](entries/math/lmp88959-ntsc-crt/README.md) | NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time application | c | unknown | reference | [LMP88959/NTSC-CRT](https://github.com/LMP88959/NTSC-CRT) @ `2026-07-19 (branch tip at catalogue time)` |
+| [openMVG](entries/math/openmvg-openmvg/README.md) | open Multiple View Geometry library. Basis for 3D computer vision and Structure from Motion. | c++ | MPL-2.0 | reference | [openMVG/openMVG](https://github.com/openMVG/openMVG) @ `2026-11-07 (branch tip at catalogue time)` |
 | [optick — simd](entries/math/optick-simd/README.md) | vector/matrix/quaternion math substrate | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
 | [PL3D-KC](entries/math/lmp88959-pl3d-kc/README.md) | A very fast and simple software renderer using only integers and fixed point math. PiSHi LE (PL) is a subset of the 3D software graphics library used in King's  | c | unknown | reference | [LMP88959/PL3D-KC](https://github.com/LMP88959/PL3D-KC) @ `2024-05-30 (branch tip at catalogue time)` |
 | [prb-math](entries/math/paulrberg-prb-math/README.md) | Solidity library for advanced fixed-point math | solidity | MIT | vendored | [PaulRBerg/prb-math](https://github.com/PaulRBerg/prb-math) @ `3fbfb3e399b2` |
+| [PyMesh](entries/math/pymesh-pymesh/README.md) | Geometry Processing Library for Python | c++ | unknown | reference | [PyMesh/PyMesh](https://github.com/PyMesh/PyMesh) @ `2024-08-08 (branch tip at catalogue time)` |
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
 | [russell](entries/math/cpmech-russell/README.md) | Rust Scientific Library. ODE, DAE, and PDE solvers. Special functions (Bessel, Elliptic, Beta, Gamma, Erf). Linear algebra. Sparse solvers. Probability distribu | rust | MIT | vendored | [cpmech/russell](https://github.com/cpmech/russell) @ `261fc91f7592` |
 | [sh4zam](entries/math/gyrovorbis-sh4zam/README.md) | Fast linear algebra and math library for the Hitachi SuperH4 Processor (used by the Sega Dreamcast). | c | MIT | vendored | [gyrovorbis/sh4zam](https://github.com/gyrovorbis/sh4zam) @ `5b7dfc22a91f` |
 | [SIFT3D](entries/math/bbrister-sift3d/README.md) | Analogue of the scale-invariant feature transform (SIFT) for three-dimensional images. Includes an image processing and linear algebra library with feature matc | c | MIT | reference | [bbrister/SIFT3D](https://github.com/bbrister/SIFT3D) @ `2020-08-28 (branch tip at catalogue time)` |
 | [slate](entries/math/icl-utk-edu-slate/README.md) | SLATE is a distributed, GPU-accelerated, dense linear algebra library targetting current and upcoming high-performance computing (HPC) systems. It is developed  | c++ | BSD-3-Clause | reference | [icl-utk-edu/slate](https://github.com/icl-utk-edu/slate) @ `2026-08-27 (branch tip at catalogue time)` |
+| [soroban-fixed-point-math](entries/math/script3-soroban-fixed-point-math/README.md) | Fixed point math library for Soroban smart contracts. | rust | MIT | reference | [script3/soroban-fixed-point-math](https://github.com/script3/soroban-fixed-point-math) @ `2026-04-28 (branch tip at catalogue time)` |
 | [SpaceVecAlg](entries/math/jrl-umi3218-spacevecalg/README.md) | Implementation of spatial vector algebra with the Eigen3 linear algebra library. | c++ | BSD-2-Clause | reference | [jrl-umi3218/SpaceVecAlg](https://github.com/jrl-umi3218/SpaceVecAlg) @ `2026-11-18 (branch tip at catalogue time)` |
 | [supertux — math](entries/math/supertux-math/README.md) | vector/matrix/quaternion math substrate | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [Terathon-Math-Library](entries/math/ericlengyel-terathon-math-library/README.md) | C++ math library for 2D/3D/4D vector, matrix, quaternion, and geometric algebra. | c++ | MIT | reference | [EricLengyel/Terathon-Math-Library](https://github.com/EricLengyel/Terathon-Math-Library) @ `2026-07-27 (branch tip at catalogue time)` |

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T22:04:05Z",
+ "category": "math",
+ "commit": "e88d23b07774",
+ "delivery": "vendored",
+ "description": "nilpunch/fixed-point \u2014 Configurable 32-bit and 64-bit fixed point math library.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "fixed-point",
+ "size_bytes": 375081,
+ "slug": "nilpunch-fixed-point",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 19,
+ "system": "Configurable 32-bit and 64-bit fixed point math library.",
+ "upstream": "https://github.com/nilpunch/fixed-point",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

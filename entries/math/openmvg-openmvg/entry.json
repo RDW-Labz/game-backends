@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:04:08Z",
+ "category": "math",
+ "commit": "2026-11-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "openMVG/openMVG \u2014 open Multiple View Geometry library. Basis for 3D computer vision and Structure from Motion.",
+ "language": "c++",
+ "license": "MPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "openMVG",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MPL-2.0)",
+ "slug": "openmvg-openmvg",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 6608,
+ "system": "open Multiple View Geometry library. Basis for 3D computer vision and Structure from Motion.",
+ "upstream": "https://github.com/openMVG/openMVG",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

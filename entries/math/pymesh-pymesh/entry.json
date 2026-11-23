@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:04:08Z",
+ "category": "math",
+ "commit": "2024-08-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "PyMesh/PyMesh \u2014 Geometry Processing Library for Python",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "PyMesh",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "pymesh-pymesh",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 2052,
+ "system": "Geometry Processing Library for Python",
+ "upstream": "https://github.com/PyMesh/PyMesh",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

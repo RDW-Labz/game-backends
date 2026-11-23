@@ -2282,3 +2282,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/skyworkssolutionsinc-fplib
   - reference math/mgetka-fptc-lib
   - reference math/enclustra-en-cl-fix
+
+- **2026-11-23 22:04 UTC** — tick 732: +2 screened, +4 reference, 1 skipped, catalogue=973
+  - added math/nilpunch-fixed-point (MIT, vendored)
+  - added math/zfedoran-brine-fp (Apache-2.0, vendored)
+  - reference math/script3-soroban-fixed-point-math
+  - reference math/openmvg-openmvg
+  - reference math/pymesh-pymesh
+  - reference math/gradientspace-geometry3sharp

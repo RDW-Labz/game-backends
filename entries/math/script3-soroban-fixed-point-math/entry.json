@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:04:08Z",
+ "category": "math",
+ "commit": "2026-04-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "script3/soroban-fixed-point-math \u2014 Fixed point math library for Soroban smart contracts.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "soroban-fixed-point-math",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "script3-soroban-fixed-point-math",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 16,
+ "system": "Fixed point math library for Soroban smart contracts.",
+ "upstream": "https://github.com/script3/soroban-fixed-point-math",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
