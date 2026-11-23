@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T23:24:07Z",
+ "category": "loot-economy",
+ "commit": "a11167b11280",
+ "delivery": "reference",
+ "description": "zyggy123/Treasure-Chest-System \u2014 A dynamic treasure chest system for AzerothCore that allows Game Masters to create and manage treasure chests with custom loot and hints. Players can find and loot these chests, with server-wide announcements for discoveries.",
+ "language": "lua",
+ "license": "AGPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Treasure-Chest-System",
+ "reference_reason": "licence: AGPL-3.0 (copyleft-reference)",
+ "size_bytes": 60724,
+ "slug": "zyggy123-treasure-chest-system",
+ "source": "github-search:loot system game stars:>5",
+ "stars": 15,
+ "system": "A dynamic treasure chest system for AzerothCore that allows Game Masters to create and manage treasure chests with custom loot and hints. Players can find and l",
+ "upstream": "https://github.com/zyggy123/Treasure-Chest-System",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

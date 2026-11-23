@@ -2322,3 +2322,8 @@ One line per 15-minute extension tick, newest last.
   - reference loot-economy/jotson-loottable-js
   - reference loot-economy/triton365-blockstate
   - reference loot-economy/manticorp-ultraloot
+
+- **2026-11-23 23:24 UTC** — tick 737: +2 screened, +1 reference, 7 skipped, catalogue=1000
+  - added loot-economy/pausesocialkinks-apex-legends-game-assistant-cheats-hacks-2026 (none, reference)
+  - added loot-economy/zyggy123-treasure-chest-system (AGPL-3.0, reference)
+  - reference loot-economy/bartoszsdr-valhallarpg

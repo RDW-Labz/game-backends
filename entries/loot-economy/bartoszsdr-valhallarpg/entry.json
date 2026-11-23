@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:24:09Z",
+ "category": "loot-economy",
+ "commit": "2022-11-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bartoszsdr/valhallarpg \u2014 Discord Bot RPG game inspired by many RPGs and cRPGs featuring adventures, quests, character development, PvP, riddles to solve, loot, inventory, training system, and storyline",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "valhallarpg",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "bartoszsdr-valhallarpg",
+ "source": "github-search:loot system game stars:>5",
+ "stars": 7,
+ "system": "Discord Bot RPG game inspired by many RPGs and cRPGs featuring adventures, quests, character development, PvP, riddles to solve, loot, inventory, training syste",
+ "upstream": "https://github.com/bartoszsdr/valhallarpg",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

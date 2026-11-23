@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T23:24:06Z",
+ "category": "loot-economy",
+ "commit": "fb1ab2a406eb",
+ "delivery": "reference",
+ "description": "pausesocialkinks/Apex-Legends-Game-Assistant-Cheats-Hacks-2026 \u2014  \ud83d\udee1\ufe0f\u26a1 Apex Legends Game Assistant 2026 with aiming assistance, visual feedback system (players/loot/deathboxes/care packages/beacons through walls), position tracking radar, combat optimizations (reduced weapon shake, no spread, faster fire rate), movement enhancements (speed hack, super jump), loot automation, health management",
+ "language": "c++",
+ "license": "none",
+ "license_file": "LICENSE",
+ "license_verdict": "unlicensed-reference",
+ "name": "Apex-Legends-Game-Assistant-Cheats-Hacks-2026",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 78,
+ "slug": "pausesocialkinks-apex-legends-game-assistant-cheats-hacks-2026",
+ "source": "github-search:loot system game stars:>5",
+ "stars": 27,
+ "system": " \ud83d\udee1\ufe0f\u26a1 Apex Legends Game Assistant 2026 with aiming assistance, visual feedback system (players/loot/deathboxes/care packages/beacons through walls), position tra",
+ "upstream": "https://github.com/pausesocialkinks/Apex-Legends-Game-Assistant-Cheats-Hacks-2026",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
