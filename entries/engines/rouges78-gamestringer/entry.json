@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:14:06Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rouges78/GameStringer \u2014 Desktop app that auto-detects a game's engine, extracts the text, translates it with local or cloud AI, and re-applies the patch. 20+ engines, 20+ AI providers, 11 UI languages. Free & source-available, single-player focused.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "GameStringer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "rouges78-gamestringer",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 144,
+ "system": "Desktop app that auto-detects a game's engine, extracts the text, translates it with local or cloud AI, and re-applies the patch. 20+ engines, 20+ AI providers,",
+ "upstream": "https://github.com/rouges78/GameStringer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

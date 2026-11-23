@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:14:06Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "TalhaNadeem4321/space-engineers-coop-merralia \u2014 Build and share cooperative space engineering projects together in Merralia.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "space-engineers-coop-merralia",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "talhanadeem4321-space-engineers-coop-merralia",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 147,
+ "system": "Build and share cooperative space engineering projects together in Merralia.",
+ "upstream": "https://github.com/TalhaNadeem4321/space-engineers-coop-merralia",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

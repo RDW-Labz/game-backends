@@ -1811,3 +1811,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/axaq-traviso-js
   - reference engines/yunyoujun-advjs
   - reference engines/runejs-server
+
+- **2026-11-23 06:14 UTC** — tick 673: +2 screened, +4 reference, 3 skipped, catalogue=620
+  - added engines/drincs-productions-pixi-vn (LGPL-2.1, reference)
+  - added engines/kayjames196-cat-game-engine (none, reference)
+  - reference engines/talhanadeem4321-space-engineers-coop-merralia
+  - reference engines/rouges78-gamestringer
+  - reference engines/engineio-web-sdk
+  - reference engines/art-emini-duckengine

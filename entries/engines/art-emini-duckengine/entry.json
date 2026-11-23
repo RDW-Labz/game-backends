@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:14:06Z",
+ "category": "engines",
+ "commit": "2023-08-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "art-emini/DuckEngine \u2014 A 2D Game Engine for the web.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "DuckEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "art-emini-duckengine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 108,
+ "system": "A 2D Game Engine for the web.",
+ "upstream": "https://github.com/art-emini/DuckEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

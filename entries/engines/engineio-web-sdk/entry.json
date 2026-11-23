@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:14:06Z",
+ "category": "engines",
+ "commit": "2025-11-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "engineio/web-sdk \u2014 About The Web Game Engine: Create your own web game with in a declarative way.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "web-sdk",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "engineio-web-sdk",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 132,
+ "system": "About The Web Game Engine: Create your own web game with in a declarative way.",
+ "upstream": "https://github.com/engineio/web-sdk",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

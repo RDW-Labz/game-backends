@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T06:14:03Z",
+ "category": "engines",
+ "commit": "e5fd8e15c912",
+ "delivery": "reference",
+ "description": "DRincs-Productions/pixi-vn \u2014 Create visual novels/story-driven game with a modern 2D rendering engine and your favorite JavaScript framework.",
+ "language": "typescript",
+ "license": "LGPL-2.1",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "pixi-vn",
+ "reference_reason": "licence: LGPL-2.1 (copyleft-reference)",
+ "size_bytes": 2552851,
+ "slug": "drincs-productions-pixi-vn",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 155,
+ "system": "Create visual novels/story-driven game with a modern 2D rendering engine and your favorite JavaScript framework.",
+ "upstream": "https://github.com/DRincs-Productions/pixi-vn",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
