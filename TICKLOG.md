@@ -1907,3 +1907,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/stuhl-javascript-entity-component-system
   - reference engines/flame-engine-oxygen
   - reference engines/amethyst-specs-physics
+
+- **2026-11-23 09:26 UTC** — tick 685: +2 screened, +4 reference, 1 skipped, catalogue=692
+  - added engines/amethyst-legion (MIT, vendored)
+  - added engines/annekitsune-planck-ecs (Apache-2.0, vendored)
+  - reference engines/rustgd-rhusics
+  - reference engines/ten3roberts-flax
+  - reference engines/hikikones-bevy-sequential-actions
+  - reference engines/silentsokolov-tocenter

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:26:06Z",
+ "category": "engines",
+ "commit": "2022-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "silentsokolov/tocenter \u2014 ToCenter is a video game written in Rust using the ggez engine and the ECS library.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "tocenter",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "silentsokolov-tocenter",
+ "source": "github-search:ecs library language:rust stars:>40",
+ "stars": 49,
+ "system": "ToCenter is a video game written in Rust using the ggez engine and the ECS library.",
+ "upstream": "https://github.com/silentsokolov/tocenter",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

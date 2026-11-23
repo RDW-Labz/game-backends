@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:26:06Z",
+ "category": "engines",
+ "commit": "2026-10-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hikikones/bevy-sequential-actions \u2014 A Bevy library for executing various actions in a sequence.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy-sequential-actions",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "hikikones-bevy-sequential-actions",
+ "source": "github-search:ecs library language:rust stars:>40",
+ "stars": 54,
+ "system": "A Bevy library for executing various actions in a sequence.",
+ "upstream": "https://github.com/hikikones/bevy-sequential-actions",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

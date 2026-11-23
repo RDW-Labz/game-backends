@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T09:26:02Z",
+ "category": "engines",
+ "commit": "32df916517fa",
+ "delivery": "vendored",
+ "description": "amethyst/legion \u2014 High performance Rust ECS library",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "legion",
+ "size_bytes": 580690,
+ "slug": "amethyst-legion",
+ "source": "github-search:ecs library language:rust stars:>40",
+ "stars": 1725,
+ "system": "High performance Rust ECS library",
+ "upstream": "https://github.com/amethyst/legion",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

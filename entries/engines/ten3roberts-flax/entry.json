@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:26:06Z",
+ "category": "engines",
+ "commit": "2026-11-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ten3roberts/flax \u2014 Batteries included ECS library for rust with entity relations and much more",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "flax",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ten3roberts-flax",
+ "source": "github-search:ecs library language:rust stars:>40",
+ "stars": 99,
+ "system": "Batteries included ECS library for rust with entity relations and much more",
+ "upstream": "https://github.com/ten3roberts/flax",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

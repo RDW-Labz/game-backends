@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:26:06Z",
+ "category": "engines",
+ "commit": "2020-08-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rustgd/rhusics \u2014 A cgmath physics library that can be used with Specs",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "rhusics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rustgd-rhusics",
+ "source": "github-search:ecs library language:rust stars:>40",
+ "stars": 109,
+ "system": "A cgmath physics library that can be used with Specs",
+ "upstream": "https://github.com/rustgd/rhusics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

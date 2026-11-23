@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T09:26:04Z",
+ "category": "engines",
+ "commit": "b0b496643541",
+ "delivery": "vendored",
+ "description": "AnneKitsune/planck_ecs \u2014 A minimalist and safe ECS library for rust!",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "planck_ecs",
+ "size_bytes": 3529,
+ "slug": "annekitsune-planck-ecs",
+ "source": "github-search:ecs library language:rust stars:>40",
+ "stars": 137,
+ "system": "A minimalist and safe ECS library for rust!",
+ "upstream": "https://github.com/AnneKitsune/planck_ecs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
