@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:10:00Z",
+ "category": "physics",
+ "commit": "2025-02-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "cloud9c/taro \u2014 A lightweight 3D game engine for the web.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "taro",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "cloud9c-taro",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 820,
+ "system": "A lightweight 3D game engine for the web.",
+ "upstream": "https://github.com/cloud9c/taro",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

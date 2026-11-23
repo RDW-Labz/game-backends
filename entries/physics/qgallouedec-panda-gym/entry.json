@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:10:00Z",
+ "category": "physics",
+ "commit": "2024-07-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "qgallouedec/panda-gym \u2014 Set of robotic environments based on PyBullet physics engine and gymnasium.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "panda-gym",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "qgallouedec-panda-gym",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 772,
+ "system": "Set of robotic environments based on PyBullet physics engine and gymnasium.",
+ "upstream": "https://github.com/qgallouedec/panda-gym",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

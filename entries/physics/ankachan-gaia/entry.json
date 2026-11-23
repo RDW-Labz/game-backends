@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T16:09:58Z",
+ "category": "physics",
+ "commit": "c22969204546",
+ "delivery": "reference",
+ "description": "AnkaChan/Gaia \u2014 Gaia Physics Engine",
+ "language": "raku",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Gaia",
+ "reference_reason": "size gate: 266 MB",
+ "size_bytes": 279110157,
+ "slug": "ankachan-gaia",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 880,
+ "system": "Gaia Physics Engine",
+ "upstream": "https://github.com/AnkaChan/Gaia",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:10:00Z",
+ "category": "physics",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "facebookresearch/project_superdex \u2014 SuperDex brings together a purpose-built physics engine, robotics authoring tools, and a scalable reinforcement learning interface in a unified simulation platform, with VR-based teleoperation and additional capabilities planned for future releases.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "project_superdex",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "facebookresearch-project-superdex",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 851,
+ "system": "SuperDex brings together a purpose-built physics engine, robotics authoring tools, and a scalable reinforcement learning interface in a unified simulation platf",
+ "upstream": "https://github.com/facebookresearch/project_superdex",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

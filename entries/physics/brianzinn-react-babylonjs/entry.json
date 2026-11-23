@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T16:08:05Z",
+ "category": "physics",
+ "commit": "97595cd62895",
+ "delivery": "reference",
+ "description": "brianzinn/react-babylonjs \u2014 React for Babylon 3D engine",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "react-babylonjs",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 1639985,
+ "slug": "brianzinn-react-babylonjs",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 891,
+ "system": "React for Babylon 3D engine",
+ "upstream": "https://github.com/brianzinn/react-babylonjs",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

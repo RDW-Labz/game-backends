@@ -2106,3 +2106,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/drwhut-tabletop-club
   - reference physics/misyltoad-vphysics-jolt
   - reference physics/margelo-react-native-filament
+
+- **2026-11-23 16:10 UTC** — tick 710: +2 screened, +4 reference, 0 skipped, catalogue=841
+  - added physics/brianzinn-react-babylonjs (none, reference)
+  - added physics/ankachan-gaia (Apache-2.0, reference)
+  - reference physics/facebookresearch-project-superdex
+  - reference physics/cloud9c-taro
+  - reference physics/xissburg-edyn
+  - reference physics/qgallouedec-panda-gym

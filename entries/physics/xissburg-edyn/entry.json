@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:10:00Z",
+ "category": "physics",
+ "commit": "2026-09-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "xissburg/edyn \u2014 Edyn is a real-time physics engine organized as an ECS.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "edyn",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "xissburg-edyn",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 795,
+ "system": "Edyn is a real-time physics engine organized as an ECS.",
+ "upstream": "https://github.com/xissburg/edyn",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
