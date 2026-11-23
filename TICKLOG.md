@@ -1667,3 +1667,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/rodzill4-material-maker
   - reference engines/turbulenz-turbulenz-engine
   - reference engines/almasb-fxgl
+
+- **2026-11-23 01:24 UTC** — tick 655: +2 screened, +4 reference, 4 skipped, catalogue=512
+  - added engines/pistondevelopers-piston (MIT, vendored)
+  - added engines/killedbyapixel-littlejs (MIT, reference)
+  - reference engines/gdquest-demos-godot-shaders
+  - reference engines/openwebgal-webgal
+  - reference engines/egret-labs-egret-core
+  - reference engines/ahmadhassan-bted-eqai

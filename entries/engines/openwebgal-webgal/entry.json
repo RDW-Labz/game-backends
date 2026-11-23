@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:24:07Z",
+ "category": "engines",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OpenWebGAL/WebGAL \u2014 A brand new web Visual Novel engine | \u5168\u65b0\u7684\u7f51\u9875\u7aef\u89c6\u89c9\u5c0f\u8bf4\u5f15\u64ce",
+ "language": "typescript",
+ "license": "MPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "WebGAL",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MPL-2.0)",
+ "slug": "openwebgal-webgal",
+ "source": "github-search:game engine stars:>200",
+ "stars": 4052,
+ "system": "A brand new web Visual Novel engine | \u5168\u65b0\u7684\u7f51\u9875\u7aef\u89c6\u89c9\u5c0f\u8bf4\u5f15\u64ce",
+ "upstream": "https://github.com/OpenWebGAL/WebGAL",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

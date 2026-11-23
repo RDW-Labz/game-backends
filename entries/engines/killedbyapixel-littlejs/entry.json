@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T01:24:05Z",
+ "category": "engines",
+ "commit": "47bdb56e2b96",
+ "delivery": "reference",
+ "description": "KilledByAPixel/LittleJS \u2014 Tiny fast 2D/3D HTML5 game engine with many features and no dependencies.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "LittleJS",
+ "reference_reason": "size gate: 15 MB",
+ "size_bytes": 16727841,
+ "slug": "killedbyapixel-littlejs",
+ "source": "github-search:game engine stars:>200",
+ "stars": 4400,
+ "system": "Tiny fast 2D/3D HTML5 game engine with many features and no dependencies.",
+ "upstream": "https://github.com/KilledByAPixel/LittleJS",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T01:24:02Z",
+ "category": "engines",
+ "commit": "21b8719a0606",
+ "delivery": "vendored",
+ "description": "PistonDevelopers/piston \u2014 A modular game engine written in Rust",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "piston",
+ "size_bytes": 141975,
+ "slug": "pistondevelopers-piston",
+ "source": "github-search:game engine stars:>200",
+ "stars": 4712,
+ "system": "A modular game engine written in Rust",
+ "upstream": "https://github.com/PistonDevelopers/piston",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

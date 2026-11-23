@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:24:07Z",
+ "category": "engines",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gdquest-demos/godot-shaders \u2014 A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos.",
+ "language": "gdshader",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "godot-shaders",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "gdquest-demos-godot-shaders",
+ "source": "github-search:game engine stars:>200",
+ "stars": 4234,
+ "system": "A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos.",
+ "upstream": "https://github.com/gdquest-demos/godot-shaders",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

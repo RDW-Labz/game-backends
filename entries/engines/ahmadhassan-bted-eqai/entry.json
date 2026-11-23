@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:24:07Z",
+ "category": "engines",
+ "commit": "2026-07-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AhmadHassan-BTed/EQAI \u2014 A highly specialized reverse-engineering pipeline designed to structurally transplant original Vanilla character models into the EverQuest Online Adventures: Frontiers (PS2) game engine, resolving complex Vector Unit 1 (VU1) shader bugs, Emotion Engine (EE) memory overflows, and PS2 CDVDman hardware faults.",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "EQAI",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ahmadhassan-bted-eqai",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3951,
+ "system": "A highly specialized reverse-engineering pipeline designed to structurally transplant original Vanilla character models into the EverQuest Online Adventures: Fr",
+ "upstream": "https://github.com/AhmadHassan-BTed/EQAI",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

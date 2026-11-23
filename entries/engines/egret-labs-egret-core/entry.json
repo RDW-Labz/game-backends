@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:24:07Z",
+ "category": "engines",
+ "commit": "2022-07-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "egret-labs/egret-core \u2014 Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows.",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "egret-core",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "egret-labs-egret-core",
+ "source": "github-search:game engine stars:>200",
+ "stars": 4028,
+ "system": "Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows.",
+ "upstream": "https://github.com/egret-labs/egret-core",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
