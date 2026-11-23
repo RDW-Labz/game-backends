@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T16:42:14Z",
+ "category": "physics",
+ "commit": "94fad04fb913",
+ "delivery": "vendored",
+ "description": "thetawavegame/thetawave \u2014 A physics based, space shooter game made with Rust and the Bevy engine.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "thetawave",
+ "size_bytes": 692355,
+ "slug": "thetawavegame-thetawave",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 183,
+ "system": "A physics based, space shooter game made with Rust and the Bevy engine.",
+ "upstream": "https://github.com/thetawavegame/thetawave",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

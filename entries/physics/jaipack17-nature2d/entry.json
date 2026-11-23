@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:42:15Z",
+ "category": "physics",
+ "commit": "2025-12-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jaipack17/Nature2D \u2014 A 2D physics engine for Roblox. Create versatile physics simulations and mechanics with GUIs!",
+ "language": "lua",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Nature2D",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jaipack17-nature2d",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 182,
+ "system": "A 2D physics engine for Roblox. Create versatile physics simulations and mechanics with GUIs!",
+ "upstream": "https://github.com/jaipack17/Nature2D",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+[package]
+name = "thetawave_interface"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { workspace = true }
+strum = { workspace = true }
+strum_macros = { workspace = true }
+derive_more = { workspace = true }
+bevy_ecs_macros = { workspace = true }
+bevy_ecs = { workspace = true }
+bevy_reflect = { workspace = true }
+leafwing-input-manager = { workspace = true }
+bevy_input = { workspace = true }
+bevy_time = { workspace = true }
+bevy_math = { workspace = true }
+bevy_state = { workspace = true }

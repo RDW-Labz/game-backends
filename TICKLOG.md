@@ -2122,3 +2122,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/keenon-nimblephysics
   - reference physics/isaac-mason-crashcat
   - reference physics/notgiven688-jitterphysics2
+
+- **2026-11-23 16:42 UTC** — tick 712: +2 screened, +4 reference, 22 skipped, catalogue=853
+  - added physics/rudransh61-physix-go (MIT, vendored)
+  - added physics/thetawavegame-thetawave (MIT, vendored)
+  - reference physics/jaipack17-nature2d
+  - reference physics/phaserjs-phaser-box2d
+  - reference physics/dimforge-nexus
+  - reference physics/wgtdkp-apollonia

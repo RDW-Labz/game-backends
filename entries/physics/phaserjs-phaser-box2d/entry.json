@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:42:15Z",
+ "category": "physics",
+ "commit": "2025-04-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "phaserjs/phaser-box2d \u2014 A high-performance, industry-standard 2D physics engine built on Box2D v3, delivering incredibly realistic and engaging web game experiences.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "phaser-box2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "phaserjs-phaser-box2d",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 164,
+ "system": "A high-performance, industry-standard 2D physics engine built on Box2D v3, delivering incredibly realistic and engaging web game experiences.",
+ "upstream": "https://github.com/phaserjs/phaser-box2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

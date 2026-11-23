@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T16:42:10Z",
+ "category": "physics",
+ "commit": "345e56f833a5",
+ "delivery": "vendored",
+ "description": "rudransh61/Physix-go \u2014 A simple Physics engine in GoLang",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENCE.md",
+ "license_verdict": "clean",
+ "name": "Physix-go",
+ "size_bytes": 104070,
+ "slug": "rudransh61-physix-go",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 240,
+ "system": "A simple Physics engine in GoLang",
+ "upstream": "https://github.com/rudransh61/Physix-go",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

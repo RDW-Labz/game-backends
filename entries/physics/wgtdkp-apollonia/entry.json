@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:42:15Z",
+ "category": "physics",
+ "commit": "2022-01-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "wgtdkp/apollonia \u2014 Tiny 2D physics engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "apollonia",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "wgtdkp-apollonia",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 129,
+ "system": "Tiny 2D physics engine",
+ "upstream": "https://github.com/wgtdkp/apollonia",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
