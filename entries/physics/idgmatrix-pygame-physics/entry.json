@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T18:50:05Z",
+ "category": "physics",
+ "commit": "d3fff95306b9",
+ "delivery": "reference",
+ "description": "idgmatrix/pygame-physics \u2014 Simple Physics Simulation with Pygame",
+ "language": "python",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "pygame-physics",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 31184,
+ "slug": "idgmatrix-pygame-physics",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 102,
+ "system": "Simple Physics Simulation with Pygame",
+ "upstream": "https://github.com/idgmatrix/pygame-physics",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

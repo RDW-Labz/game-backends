@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:50:07Z",
+ "category": "physics",
+ "commit": "2026-08-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "chonjay21/AnimVerlet \u2014 Yet another anim dynamics plugin for cloth, string, hair, blob, fluids simulation in UE4, UE5",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "AnimVerlet",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "chonjay21-animverlet",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 54,
+ "system": "Yet another anim dynamics plugin for cloth, string, hair, blob, fluids simulation in UE4, UE5",
+ "upstream": "https://github.com/chonjay21/AnimVerlet",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:50:07Z",
+ "category": "physics",
+ "commit": "2023-11-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "NiallHornFX/VerletClothMeshComponent \u2014 Cloth Simulation using Position Based Dynamics (PBD) with Verlet integration in Unreal Engine 4",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "VerletClothMeshComponent",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "niallhornfx-verletclothmeshcomponent",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 46,
+ "system": "Cloth Simulation using Position Based Dynamics (PBD) with Verlet integration in Unreal Engine 4",
+ "upstream": "https://github.com/NiallHornFX/VerletClothMeshComponent",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

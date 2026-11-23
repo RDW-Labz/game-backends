@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:50:07Z",
+ "category": "physics",
+ "commit": "2023-02-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Cloth-Simulation-With-python---Verlet-Integration",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "josephbakulikira-cloth-simulation-with-python-verlet-integration",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 44,
+ "system": "see upstream",
+ "upstream": "https://github.com/Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

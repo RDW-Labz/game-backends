@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T18:50:04Z",
+ "category": "physics",
+ "commit": "ac5bbce045e8",
+ "delivery": "vendored",
+ "description": "johnBuffer/ClothSimulation \u2014 Basic cloth simulation using Verlet integration",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ClothSimulation",
+ "size_bytes": 41679,
+ "slug": "johnbuffer-clothsimulation",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 775,
+ "system": "Basic cloth simulation using Verlet integration",
+ "upstream": "https://github.com/johnBuffer/ClothSimulation",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

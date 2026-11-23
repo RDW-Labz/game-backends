@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:50:07Z",
+ "category": "physics",
+ "commit": "2026-06-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "esimov/cloth-physics \u2014 Desktop application for cloth physics simulation using Gio GUI.",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "cloth-physics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "esimov-cloth-physics",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 50,
+ "system": "Desktop application for cloth physics simulation using Gio GUI.",
+ "upstream": "https://github.com/esimov/cloth-physics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

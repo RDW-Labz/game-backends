@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 18:34 UTC · 895 entries · 239 vendored, 656 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 18:50 UTC · 901 entries · 240 vendored, 661 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
-| [physics](#physics) — Physics | 103 | 28 | 75 |
+| [physics](#physics) — Physics | 109 | 29 | 80 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
@@ -420,12 +420,13 @@ _Generated 2026-11-23 18:34 UTC · 895 entries · 239 vendored, 656 reference-on
 
 ## physics
 
-**Physics** — 103 entries
+**Physics** — 109 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [ActiveRagdoll](entries/physics/ashleve-activeragdoll/README.md) | From-scratch implementation of physically simulated character animation with proportional-integral-derivative controllers (PID) | c# | MIT | reference | [ashleve/ActiveRagdoll](https://github.com/ashleve/ActiveRagdoll) @ `2023-03-05 (branch tip at catalogue time)` |
 | [ammo.js](entries/physics/kripken-ammo-js/README.md) | Direct port of the Bullet physics engine to JavaScript using Emscripten | c++ | unknown | reference | [kripken/ammo.js](https://github.com/kripken/ammo.js) @ `2026-09-22 (branch tip at catalogue time)` |
+| [AnimVerlet](entries/physics/chonjay21-animverlet/README.md) | Yet another anim dynamics plugin for cloth, string, hair, blob, fluids simulation in UE4, UE5 | c++ | MIT | reference | [chonjay21/AnimVerlet](https://github.com/chonjay21/AnimVerlet) @ `2026-08-03 (branch tip at catalogue time)` |
 | [anki-3d-engine](entries/physics/godlikepanos-anki-3d-engine/README.md) | AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more | c++ | unknown | reference | [godlikepanos/anki-3d-engine](https://github.com/godlikepanos/anki-3d-engine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [apollonia](entries/physics/wgtdkp-apollonia/README.md) | Tiny 2D physics engine | c++ | MIT | reference | [wgtdkp/apollonia](https://github.com/wgtdkp/apollonia) @ `2022-01-28 (branch tip at catalogue time)` |
 | [avian](entries/physics/avianphysics-avian/README.md) | ECS-driven 2D and 3D physics engine for the Bevy game engine. | rust | Apache-2.0 | reference | [avianphysics/avian](https://github.com/avianphysics/avian) @ `2026-11-04 (branch tip at catalogue time)` |
@@ -449,6 +450,9 @@ _Generated 2026-11-23 18:34 UTC · 895 entries · 239 vendored, 656 reference-on
 | [CharacterMovementFundamentals](entries/physics/jan-ott-charactermovementfundamentals/README.md) | A physics-based character controller system for Unity | c# | MIT | reference | [Jan-Ott/CharacterMovementFundamentals](https://github.com/Jan-Ott/CharacterMovementFundamentals) @ `2025-02-09 (branch tip at catalogue time)` |
 | [Chipmunk2D](entries/physics/chipmunk2d/README.md) | 2D rigid bodies, constraints, spatial index | c | MIT | vendored | [slembcke/Chipmunk2D](https://github.com/slembcke/Chipmunk2D) @ `f2f3d66220b8` |
 | [cirobb](entries/physics/joncodeofficial-cirobb/README.md) | A small, readable 2D rigid body physics engine in C++, built around one state-of-the-art solver. | c++ | MIT | reference | [joncodeofficial/cirobb](https://github.com/joncodeofficial/cirobb) @ `2026-10-27 (branch tip at catalogue time)` |
+| [cloth-physics](entries/physics/esimov-cloth-physics/README.md) | Desktop application for cloth physics simulation using Gio GUI. | go | MIT | reference | [esimov/cloth-physics](https://github.com/esimov/cloth-physics) @ `2026-06-29 (branch tip at catalogue time)` |
+| [Cloth-Simulation-With-python---Verlet-Integration](entries/physics/josephbakulikira-cloth-simulation-with-python-verlet-integration/README.md) | see upstream | python | unknown | reference | [Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration](https://github.com/Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration) @ `2023-02-03 (branch tip at catalogue time)` |
+| [ClothSimulation](entries/physics/johnbuffer-clothsimulation/README.md) | Basic cloth simulation using Verlet integration | c++ | MIT | vendored | [johnBuffer/ClothSimulation](https://github.com/johnBuffer/ClothSimulation) @ `ac5bbce045e8` |
 | [crashcat](entries/physics/isaac-mason-crashcat/README.md) | physics engine for javascript, built for games, simulations, and creative websites | typescript | MIT | reference | [isaac-mason/crashcat](https://github.com/isaac-mason/crashcat) @ `2026-10-30 (branch tip at catalogue time)` |
 | [dyn4j](entries/physics/dyn4j-dyn4j/README.md) | Java Collision Detection and Physics Engine | java | BSD-3-Clause | vendored | [dyn4j/dyn4j](https://github.com/dyn4j/dyn4j) @ `bcf942adaa9b` |
 | [edyn](entries/physics/xissburg-edyn/README.md) | Edyn is a real-time physics engine organized as an ECS. | c++ | MIT | reference | [xissburg/edyn](https://github.com/xissburg/edyn) @ `2026-09-08 (branch tip at catalogue time)` |
@@ -496,6 +500,7 @@ _Generated 2026-11-23 18:34 UTC · 895 entries · 239 vendored, 656 reference-on
 | [PositionBasedDynamics](entries/physics/interactivecomputergraphics-positionbaseddynamics/README.md) | PositionBasedDynamics is a library for the physically-based simulation of rigid bodies, deformable solids and fluids. | c++ | MIT | reference | [InteractiveComputerGraphics/PositionBasedDynamics](https://github.com/InteractiveComputerGraphics/PositionBasedDynamics) @ `10a70bc146a9` |
 | [Principia — lib](entries/physics/principia-lib/README.md) | Box2D-derived 2D physics with custom collision handling | c++ | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b127c2` |
 | [project_superdex](entries/physics/facebookresearch-project-superdex/README.md) | SuperDex brings together a purpose-built physics engine, robotics authoring tools, and a scalable reinforcement learning interface in a unified simulation platf | c++ | Apache-2.0 | reference | [facebookresearch/project_superdex](https://github.com/facebookresearch/project_superdex) @ `2026-11-23 (branch tip at catalogue time)` |
+| [pygame-physics](entries/physics/idgmatrix-pygame-physics/README.md) | Simple Physics Simulation with Pygame | python | none | reference | [idgmatrix/pygame-physics](https://github.com/idgmatrix/pygame-physics) @ `d3fff95306b9` |
 | [pymunk](entries/physics/viblo-pymunk/README.md) | Pymunk is a easy-to-use pythonic 2d physics library that can be used whenever  you need 2d rigid body physics from Python | python | MIT | vendored | [viblo/pymunk](https://github.com/viblo/pymunk) @ `b993f9b3ef2d` |
 | [QuarkPhysics](entries/physics/erayzesen-quarkphysics/README.md) | A 2D Soft Body and Rigid Body Physics Engine. | c++ | MIT | reference | [erayzesen/QuarkPhysics](https://github.com/erayzesen/QuarkPhysics) @ `2025-10-17 (branch tip at catalogue time)` |
 | [Rapier](entries/physics/rapier/README.md) | Rust 2D/3D physics with deterministic solver + WASM build | rust | Apache-2.0 | reference | [dimforge/rapier](https://github.com/dimforge/rapier) @ `475caa3ff464` |
@@ -525,6 +530,7 @@ _Generated 2026-11-23 18:34 UTC · 895 entries · 239 vendored, 656 reference-on
 | [unrust](entries/physics/unrust-unrust/README.md) | unrust - A pure rust based (webgl 2.0 / native) game engine | rust | Apache-2.0 | reference | [unrust/unrust](https://github.com/unrust/unrust) @ `2018-08-13 (branch tip at catalogue time)` |
 | [VectorizedMultiAgentSimulator](entries/physics/proroklab-vectorizedmultiagentsimulator/README.md) | VMAS is a vectorized differentiable simulator designed for efficient Multi-Agent Reinforcement Learning benchmarking. It is comprised of a vectorized 2D physics | python | GPL-3.0 | reference | [proroklab/VectorizedMultiAgentSimulator](https://github.com/proroklab/VectorizedMultiAgentSimulator) @ `2026-05-19 (branch tip at catalogue time)` |
 | [verlet-js](entries/physics/subprotocol-verlet-js/README.md) | A simple Verlet physics engine written in javascript | javascript | unknown | reference | [subprotocol/verlet-js](https://github.com/subprotocol/verlet-js) @ `2019-10-18 (branch tip at catalogue time)` |
+| [VerletClothMeshComponent](entries/physics/niallhornfx-verletclothmeshcomponent/README.md) | Cloth Simulation using Position Based Dynamics (PBD) with Verlet integration in Unreal Engine 4 | c++ | MIT | reference | [NiallHornFX/VerletClothMeshComponent](https://github.com/NiallHornFX/VerletClothMeshComponent) @ `2023-11-26 (branch tip at catalogue time)` |
 | [VPhysics-Jolt](entries/physics/misyltoad-vphysics-jolt/README.md) | Volt (VPhysics Jolt) is a replacement physics module for the Source Engine. | c++ | MIT | reference | [misyltoad/VPhysics-Jolt](https://github.com/misyltoad/VPhysics-Jolt) @ `2025-05-18 (branch tip at catalogue time)` |
 | [Woxi](entries/physics/ad-si-woxi/README.md) | Wolfram Language / Mathematica reimplementation in Rust (Wolfram oxidized) | rust | AGPL-3.0 | reference | [ad-si/Woxi](https://github.com/ad-si/Woxi) @ `2026-11-23 (branch tip at catalogue time)` |
 

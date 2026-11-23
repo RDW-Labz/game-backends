@@ -2186,3 +2186,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/ashleve-activeragdoll
   - reference physics/joebinns-stylised-character-controller
   - reference physics/jan-ott-charactermovementfundamentals
+
+- **2026-11-23 18:50 UTC** — tick 720: +2 screened, +4 reference, 0 skipped, catalogue=901
+  - added physics/johnbuffer-clothsimulation (MIT, vendored)
+  - added physics/idgmatrix-pygame-physics (none, reference)
+  - reference physics/chonjay21-animverlet
+  - reference physics/esimov-cloth-physics
+  - reference physics/niallhornfx-verletclothmeshcomponent
+  - reference physics/josephbakulikira-cloth-simulation-with-python-verlet-integration
