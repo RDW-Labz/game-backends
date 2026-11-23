@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 10:14 UTC · 710 entries · 192 vendored, 518 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 10:30 UTC · 716 entries · 193 vendored, 523 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 284 | 59 | 225 |
+| [engines](#engines) — Game engines and engine subsystems | 290 | 60 | 230 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 10:14 UTC · 710 entries · 192 vendored, 518 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 284 entries
+**Game engines and engine subsystems** — 290 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -181,6 +181,7 @@ _Generated 2026-11-23 10:14 UTC · 710 entries · 192 vendored, 518 reference-on
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
+| [MonoGameFramework.Net8](entries/engines/catfortman-monogameframework-net8/README.md) | Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development. | c# | MIT | reference | [CatFortman/MonoGameFramework.Net8](https://github.com/CatFortman/MonoGameFramework.Net8) @ `2026-07-17 (branch tip at catalogue time)` |
 | [multiplayer-voxel-browser-game-engine](entries/engines/kevzettler-multiplayer-voxel-browser-game-engine/README.md) | A multiplayer voxel browser game engine | typescript | unknown | reference | [kevzettler/multiplayer-voxel-browser-game-engine](https://github.com/kevzettler/multiplayer-voxel-browser-game-engine) @ `2023-04-24 (branch tip at catalogue time)` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
 | [MusicEngine](entries/engines/geekdrums-musicengine/README.md) | make music synced game with Unity / ADX2 / Wwise | c# | unknown | reference | [geekdrums/MusicEngine](https://github.com/geekdrums/MusicEngine) @ `2023-01-09 (branch tip at catalogue time)` |
@@ -188,6 +189,7 @@ _Generated 2026-11-23 10:14 UTC · 710 entries · 192 vendored, 518 reference-on
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
 | [NomadECS](entries/engines/taurheim-nomadecs/README.md) | NomadECS - An entity component system implementation | c++ | MIT | reference | [taurheim/NomadECS](https://github.com/taurheim/NomadECS) @ `2026-11-15 (branch tip at catalogue time)` |
+| [nova](entries/engines/17cupsofcoffee-nova/README.md) | 🎮 An even simpler 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/nova](https://github.com/17cupsofcoffee/nova) @ `2025-03-08 (branch tip at catalogue time)` |
 | [NVForever](entries/engines/lootjunkieazza-nvforever/README.md) | NVForever Rebuilt New Vegas Game Engine in Rust | rust | GPL-3.0 | reference | [LootJunkieAzza/NVForever](https://github.com/LootJunkieAzza/NVForever) @ `2026-11-23 (branch tip at catalogue time)` |
 | [o2](entries/engines/o2-engine-o2/README.md) | 2D Game Engine with visual WYSIWYG editor and JS scripting | c++ | MIT | reference | [o2-engine/o2](https://github.com/o2-engine/o2) @ `2026-11-23 (branch tip at catalogue time)` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
@@ -218,6 +220,8 @@ _Generated 2026-11-23 10:14 UTC · 710 entries · 192 vendored, 518 reference-on
 | [phaser-ce](entries/engines/phaserjs-phaser-ce/README.md) | Phaser CE is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser-ce](https://github.com/phaserjs/phaser-ce) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
+| [Pixelwave](entries/engines/spiralstorm-pixelwave/README.md) | A native 2D OpenGL game framework for iOS. Inspired by the ActionScript 3.0 API | c | Zlib | vendored | [spiralstorm/Pixelwave](https://github.com/spiralstorm/Pixelwave) @ `ccfbc9d240b6` |
+| [pixi-framework](entries/engines/hafaux-pixi-framework/README.md) | Simple 2D Game Framework for PixiJS using Vite. | typescript | MIT | reference | [Hafaux/pixi-framework](https://github.com/Hafaux/pixi-framework) @ `2024-03-14 (branch tip at catalogue time)` |
 | [pixi-vn](entries/engines/drincs-productions-pixi-vn/README.md) | Create visual novels/story-driven game with a modern 2D rendering engine and your favorite JavaScript framework. | typescript | LGPL-2.1 | reference | [DRincs-Productions/pixi-vn](https://github.com/DRincs-Productions/pixi-vn) @ `e5fd8e15c912` |
 | [pixijs](entries/engines/pixijs-pixijs/README.md) | The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer. | typescript | MIT | vendored | [pixijs/pixijs](https://github.com/pixijs/pixijs) @ `16011d73d816` |
 | [planck_ecs](entries/engines/annekitsune-planck-ecs/README.md) | A minimalist and safe ECS library for rust! | rust | Apache-2.0 | vendored | [AnneKitsune/planck_ecs](https://github.com/AnneKitsune/planck_ecs) @ `b0b496643541` |
@@ -233,6 +237,7 @@ _Generated 2026-11-23 10:14 UTC · 710 entries · 192 vendored, 518 reference-on
 | [pylash_engine](entries/engines/yuehaowang-pylash-engine/README.md) | A lightweight and relaxed game engine for Python. | python | MIT | reference | [yuehaowang/pylash_engine](https://github.com/yuehaowang/pylash_engine) @ `2021-03-12 (branch tip at catalogue time)` |
 | [pyrite64](entries/engines/hailtododongo-pyrite64/README.md) | N64 Game-Engine and Editor using libdragon & tiny3d | c++ | MIT | reference | [HailToDodongo/pyrite64](https://github.com/HailToDodongo/pyrite64) @ `2026-11-22 (branch tip at catalogue time)` |
 | [pyxel](entries/engines/kitao-pyxel/README.md) | A retro game engine for Python | rust | unknown | reference | [kitao/pyxel](https://github.com/kitao/pyxel) @ `2026-11-23 (branch tip at catalogue time)` |
+| [Quasi-Engine](entries/engines/indt-quasi-engine/README.md) | Quasi Engine is a framework that intends to be a complete toolset to ease 2d game development, providing ready-to-use QML elements representing basic game entit | c++ | LGPL-3.0 | reference | [INdT/Quasi-Engine](https://github.com/INdT/Quasi-Engine) @ `7d496613c31b` |
 | [ra2](entries/engines/openra-ra2/README.md) | A Red Alert 2 mod for the OpenRA game engine | c# | GPL-3.0 | reference | [OpenRA/ra2](https://github.com/OpenRA/ra2) @ `61e24e3c1d7b` |
 | [Rain-Meadow](entries/engines/henpemaz-rain-meadow/README.md) | Rain World multiplayer engine and custom game mode | c# | unknown | reference | [henpemaz/Rain-Meadow](https://github.com/henpemaz/Rain-Meadow) @ `2026-11-18 (branch tip at catalogue time)` |
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
@@ -286,6 +291,7 @@ _Generated 2026-11-23 10:14 UTC · 710 entries · 192 vendored, 518 reference-on
 | [UnityGameFramework](entries/engines/ellanjiang-unitygameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | reference | [EllanJiang/UnityGameFramework](https://github.com/EllanJiang/UnityGameFramework) @ `2023-05-21 (branch tip at catalogue time)` |
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
 | [ursina](entries/engines/pokepetter-ursina/README.md) | A 3D and 2D game engine for Python | python | MIT | vendored | [pokepetter/ursina](https://github.com/pokepetter/ursina) @ `11ac1f7bab99` |
+| [v3](entries/engines/r-lyeh-v3/README.md) | 💎 3D game framework in C, v3. | c | unknown | reference | [r-lyeh/v3](https://github.com/r-lyeh/v3) @ `2025-11-29 (branch tip at catalogue time)` |
 | [VContainer](entries/engines/hadashia-vcontainer/README.md) | The extra fast, minimum code size, GC-free DI (Dependency Injection) library running on Unity Game Engine. | c# | MIT | reference | [hadashiA/VContainer](https://github.com/hadashiA/VContainer) @ `2026-10-06 (branch tip at catalogue time)` |
 | [Velaptor](entries/engines/kinsondigital-velaptor/README.md) | 2D game development framework | c# | MIT | reference | [KinsonDigital/Velaptor](https://github.com/KinsonDigital/Velaptor) @ `2026-11-22 (branch tip at catalogue time)` |
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |

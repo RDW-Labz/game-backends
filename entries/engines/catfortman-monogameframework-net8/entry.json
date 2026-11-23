@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T10:30:08Z",
+ "category": "engines",
+ "commit": "2026-07-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "CatFortman/MonoGameFramework.Net8 \u2014 Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "MonoGameFramework.Net8",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "catfortman-monogameframework-net8",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 46,
+ "system": "Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development.",
+ "upstream": "https://github.com/CatFortman/MonoGameFramework.Net8",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

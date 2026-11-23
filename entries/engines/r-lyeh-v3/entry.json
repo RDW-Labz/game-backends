@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T10:30:08Z",
+ "category": "engines",
+ "commit": "2025-11-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "r-lyeh/v3 \u2014 \ud83d\udc8e 3D game framework in C, v3.",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "v3",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "r-lyeh-v3",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 49,
+ "system": "\ud83d\udc8e 3D game framework in C, v3.",
+ "upstream": "https://github.com/r-lyeh/v3",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

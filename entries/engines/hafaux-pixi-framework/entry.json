@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T10:30:08Z",
+ "category": "engines",
+ "commit": "2024-03-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Hafaux/pixi-framework \u2014 Simple 2D Game Framework for PixiJS using Vite.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pixi-framework",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hafaux-pixi-framework",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 45,
+ "system": "Simple 2D Game Framework for PixiJS using Vite.",
+ "upstream": "https://github.com/Hafaux/pixi-framework",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

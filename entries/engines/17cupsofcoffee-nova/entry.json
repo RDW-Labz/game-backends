@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T10:30:08Z",
+ "category": "engines",
+ "commit": "2025-03-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "17cupsofcoffee/nova \u2014 \ud83c\udfae An even simpler 2D game framework written in Rust",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "nova",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "17cupsofcoffee-nova",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 45,
+ "system": "\ud83c\udfae An even simpler 2D game framework written in Rust",
+ "upstream": "https://github.com/17cupsofcoffee/nova",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

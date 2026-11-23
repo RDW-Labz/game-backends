@@ -1939,3 +1939,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/oplexitie-gbm2k-framework
   - reference engines/boldtemplegaming-engine
   - reference engines/luacats-love2d
+
+- **2026-11-23 10:30 UTC** — tick 689: +2 screened, +4 reference, 1 skipped, catalogue=716
+  - added engines/indt-quasi-engine (LGPL-3.0, reference)
+  - added engines/spiralstorm-pixelwave (Zlib, vendored)
+  - reference engines/r-lyeh-v3
+  - reference engines/catfortman-monogameframework-net8
+  - reference engines/hafaux-pixi-framework
+  - reference engines/17cupsofcoffee-nova

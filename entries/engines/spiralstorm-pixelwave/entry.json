@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T10:30:06Z",
+ "category": "engines",
+ "commit": "ccfbc9d240b6",
+ "delivery": "vendored",
+ "description": "spiralstorm/Pixelwave \u2014 A native 2D OpenGL game framework for iOS. Inspired by the ActionScript 3.0 API",
+ "language": "c",
+ "license": "Zlib",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Pixelwave",
+ "size_bytes": 6518551,
+ "slug": "spiralstorm-pixelwave",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 55,
+ "system": "A native 2D OpenGL game framework for iOS. Inspired by the ActionScript 3.0 API",
+ "upstream": "https://github.com/spiralstorm/Pixelwave",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
