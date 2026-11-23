@@ -2335,3 +2335,11 @@ One line per 15-minute extension tick, newest last.
   - reference loot-economy/montalabidi-race-car-unity-3d
   - reference loot-economy/chakra377-moonmission-nft-game
   - reference loot-economy/needle-mirror-com-unity-game-foundation
+
+- **2026-11-23 23:56 UTC** — tick 739: +2 screened, +4 reference, 4 skipped, catalogue=1012
+  - added gameplay/cabaletta-baritone (LGPL-3.0, reference)
+  - added gameplay/h8man-navmeshplus (MIT, vendored)
+  - reference gameplay/prettymuchbryce-easystarjs
+  - reference gameplay/clementmihailescu-pathfinding-visualizer
+  - reference gameplay/bgrins-javascript-astar
+  - reference gameplay/donmccurdy-three-pathfinding

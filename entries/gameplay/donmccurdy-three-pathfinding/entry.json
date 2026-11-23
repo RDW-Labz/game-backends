@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:56:07Z",
+ "category": "gameplay",
+ "commit": "2026-10-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "donmccurdy/three-pathfinding \u2014 Navigation mesh utilities for three.js, based on PatrolJS.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "three-pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "donmccurdy-three-pathfinding",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 1380,
+ "system": "Navigation mesh utilities for three.js, based on PatrolJS.",
+ "upstream": "https://github.com/donmccurdy/three-pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

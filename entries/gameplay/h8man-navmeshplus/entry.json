@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T23:56:06Z",
+ "category": "gameplay",
+ "commit": "d615919ce2d1",
+ "delivery": "vendored",
+ "description": "h8man/NavMeshPlus \u2014 Unity NavMesh 2D Pathfinding",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "NavMeshPlus",
+ "size_bytes": 156784,
+ "slug": "h8man-navmeshplus",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 2373,
+ "system": "Unity NavMesh 2D Pathfinding",
+ "upstream": "https://github.com/h8man/NavMeshPlus",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

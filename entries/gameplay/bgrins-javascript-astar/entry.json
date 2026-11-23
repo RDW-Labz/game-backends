@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:56:07Z",
+ "category": "gameplay",
+ "commit": "2023-09-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bgrins/javascript-astar \u2014 A* Search / Pathfinding Algorithm in Javascript",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "javascript-astar",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "bgrins-javascript-astar",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 1395,
+ "system": "A* Search / Pathfinding Algorithm in Javascript",
+ "upstream": "https://github.com/bgrins/javascript-astar",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

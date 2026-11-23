@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:56:07Z",
+ "category": "gameplay",
+ "commit": "2024-01-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "prettymuchbryce/easystarjs \u2014 An asynchronous A* pathfinding API written in Javascript.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "easystarjs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "prettymuchbryce-easystarjs",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 1935,
+ "system": "An asynchronous A* pathfinding API written in Javascript.",
+ "upstream": "https://github.com/prettymuchbryce/easystarjs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
