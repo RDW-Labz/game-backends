@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:38:10Z",
+ "category": "engines",
+ "commit": "2023-06-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "in0finite/SanAndreasUnity \u2014 Open source reimplementation of GTA San Andreas game engine in Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SanAndreasUnity",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "in0finite-sanandreasunity",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 2708,
+ "system": "Open source reimplementation of GTA San Andreas game engine in Unity",
+ "upstream": "https://github.com/in0finite/SanAndreasUnity",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

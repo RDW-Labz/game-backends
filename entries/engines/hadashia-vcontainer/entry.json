@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:38:10Z",
+ "category": "engines",
+ "commit": "2026-10-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hadashiA/VContainer \u2014 The extra fast, minimum code size, GC-free DI (Dependency Injection) library running on Unity Game Engine.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "VContainer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hadashia-vcontainer",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 3093,
+ "system": "The extra fast, minimum code size, GC-free DI (Dependency Injection) library running on Unity Game Engine.",
+ "upstream": "https://github.com/hadashiA/VContainer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1763,3 +1763,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/zoeesilcock-flint
   - reference engines/peterino2-neonwood
   - reference engines/scemino-z-impact
+
+- **2026-11-23 04:38 UTC** — tick 667: +2 screened, +4 reference, 4 skipped, catalogue=584
+  - added engines/stride3d-stride (MIT, reference)
+  - added engines/opentk-opentk (MIT, vendored)
+  - reference engines/hadashia-vcontainer
+  - reference engines/yarnspinnertool-yarnspinner
+  - reference engines/in0finite-sanandreasunity
+  - reference engines/ellanjiang-unitygameframework

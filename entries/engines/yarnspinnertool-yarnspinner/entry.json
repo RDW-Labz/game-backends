@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:38:10Z",
+ "category": "engines",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "YarnSpinnerTool/YarnSpinner \u2014 The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "YarnSpinner",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "yarnspinnertool-yarnspinner",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 2876,
+ "system": "The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool.",
+ "upstream": "https://github.com/YarnSpinnerTool/YarnSpinner",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

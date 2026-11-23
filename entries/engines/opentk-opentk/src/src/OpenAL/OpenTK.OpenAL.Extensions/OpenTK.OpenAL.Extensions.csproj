@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+        <LangVersion>latest</LangVersion>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>../../../OpenTK.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="$(OpenTKSolutionRoot)\src\OpenAL\OpenTK.Audio.OpenAL\OpenTK.Audio.OpenAL.csproj" />
+    </ItemGroup>
+
+    <Import Project="..\..\..\props\common.props" />
+    <Import Project="$(OpenTKSolutionRoot)\props\nuget-common.props" />
+    <Import Project="$(OpenTKSolutionRoot)\props\stylecop.props" />
+</Project>

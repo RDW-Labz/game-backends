@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T04:38:06Z",
+ "category": "engines",
+ "commit": "852da2345e76",
+ "delivery": "reference",
+ "description": "stride3d/stride \u2014 Stride (formerly Xenko), a free and open-source cross-platform C# game engine.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "stride",
+ "reference_reason": "size gate: 51 MB",
+ "size_bytes": 53527615,
+ "slug": "stride3d-stride",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 7965,
+ "system": "Stride (formerly Xenko), a free and open-source cross-platform C# game engine.",
+ "upstream": "https://github.com/stride3d/stride",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

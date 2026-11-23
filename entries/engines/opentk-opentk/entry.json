@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T04:38:08Z",
+ "category": "engines",
+ "commit": "21a53d478fd9",
+ "delivery": "vendored",
+ "description": "opentk/opentk \u2014 The Open Toolkit library is a fast, low-level C# wrapper for OpenGL, OpenAL & OpenCL. It also includes windowing, mouse, keyboard and joystick input and a robust and fast math library, giving you everything you need to write your own renderer or game engine. OpenTK can be used standalone or inside a GUI on Windows, Linux, Mac.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "opentk",
+ "size_bytes": 4115927,
+ "slug": "opentk-opentk",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 3544,
+ "system": "The Open Toolkit library is a fast, low-level C# wrapper for OpenGL, OpenAL & OpenCL. It also includes windowing, mouse, keyboard and joystick input and a robus",
+ "upstream": "https://github.com/opentk/opentk",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+      <RootNamespace>OpenTK.Windowing.GraphicsLibraryFramework</RootNamespace>
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+      <SignAssembly>true</SignAssembly>
+      <AssemblyOriginatorKeyFile>../../OpenTK.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\OpenTK.Core\OpenTK.Core.csproj" />
+      <ProjectReference Include="..\OpenTK.Windowing.Common\OpenTK.Windowing.Common.csproj" />
+      <PackageReference Include="OpenTK.redist.glfw" Version="3.5.1.71" />
+    </ItemGroup>
+
+    <Import Project="..\..\props\common.props" />
+    <Import Project="..\..\props\nuget-common.props" />
+    <Import Project="..\..\props\stylecop.props" />
+</Project>
