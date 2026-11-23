@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T00:04:03Z",
+ "category": "procgen",
+ "commit": "f9a7a96b583a",
+ "delivery": "vendored",
+ "description": "mapbox/martini \u2014 A JavaScript library for real-time RTIN terrain mesh generation",
+ "language": "javascript",
+ "license": "ISC",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "martini",
+ "size_bytes": 46459,
+ "slug": "mapbox-martini",
+ "source": "github-search:terrain generation library stars:>30",
+ "stars": 662,
+ "system": "A JavaScript library for real-time RTIN terrain mesh generation",
+ "upstream": "https://github.com/mapbox/martini",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

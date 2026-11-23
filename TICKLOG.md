@@ -1627,3 +1627,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/damarindra-unity-dungeon-generator
   - reference procgen/jnyjny-dungeongenerator
   - reference procgen/fallenwyvern-dnd-monster-generator
+
+- **2026-11-23 00:04 UTC** — tick 650: +2 screened, +4 reference, 7 skipped, catalogue=482
+  - added procgen/mapbox-martini (ISC, vendored)
+  - added procgen/marshallward-tiledsharp (Apache-2.0, vendored)
+  - reference procgen/jettbrains-l
+  - reference procgen/solarlune-dngn
+  - reference procgen/parcel-bundler-source-map
+  - reference procgen/coryleach-unityprocgen

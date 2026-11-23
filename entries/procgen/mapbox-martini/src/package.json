@@ -1,0 +1,39 @@
+{
+  "name": "@mapbox/martini",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "A JavaScript library for real-time terrain mesh generation",
+  "main": "index.js",
+  "exports": "./index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "pretest": "eslint index.js bench.js test",
+    "test": "node test/test.js",
+    "bench": "node bench.js",
+    "prepublishOnly": "npm run test"
+  },
+  "keywords": [
+    "terrain",
+    "rtin",
+    "mesh",
+    "3d",
+    "webgl"
+  ],
+  "author": "Vladimir Agafonkin",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.31.0",
+    "eslint-config-mourner": "^4.0.2",
+    "pngjs": "^7.0.0"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "eslintConfig": {
+    "extends": "mourner",
+    "rules": {
+      "no-use-before-define": 0
+    }
+  }
+}

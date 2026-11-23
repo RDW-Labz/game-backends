@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:04:06Z",
+ "category": "procgen",
+ "commit": "2026-11-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "parcel-bundler/source-map \u2014 A fast source map manipulation, generation and consumption library written in Rust and Node.js",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "source-map",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "parcel-bundler-source-map",
+ "source": "github-search:map generation library stars:>20",
+ "stars": 111,
+ "system": "A fast source map manipulation, generation and consumption library written in Rust and Node.js",
+ "upstream": "https://github.com/parcel-bundler/source-map",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

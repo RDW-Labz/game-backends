@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:04:06Z",
+ "category": "procgen",
+ "commit": "2024-07-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SolarLune/dngn \u2014 A Golang library for random map generation for games.",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "dngn",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "solarlune-dngn",
+ "source": "github-search:map generation library stars:>20",
+ "stars": 142,
+ "system": "A Golang library for random map generation for games.",
+ "upstream": "https://github.com/SolarLune/dngn",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

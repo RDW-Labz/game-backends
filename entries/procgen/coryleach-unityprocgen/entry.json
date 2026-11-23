@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:04:06Z",
+ "category": "procgen",
+ "commit": "2025-05-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "coryleach/UnityProcgen \u2014 Library of procedural generation code for use in Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "UnityProcgen",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "coryleach-unityprocgen",
+ "source": "github-search:map generation library stars:>20",
+ "stars": 61,
+ "system": "Library of procedural generation code for use in Unity",
+ "upstream": "https://github.com/coryleach/UnityProcgen",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
