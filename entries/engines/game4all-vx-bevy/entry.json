@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T03:18:09Z",
+ "category": "engines",
+ "commit": "2024-12-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Game4all/vx_bevy \u2014 \ud83e\uddca Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "vx_bevy",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "game4all-vx-bevy",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 331,
+ "system": "\ud83e\uddca Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy.",
+ "upstream": "https://github.com/Game4all/vx_bevy",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

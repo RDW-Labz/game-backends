@@ -1723,3 +1723,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/djeedai-bevy-tweening
   - reference engines/thereddeveloper-ply-engine
   - reference engines/lasa01-plumber
+
+- **2026-11-23 03:18 UTC** — tick 662: +2 screened, +4 reference, 1 skipped, catalogue=554
+  - added engines/henauxg-bevy-quinnet (Apache-2.0, vendored)
+  - added engines/ruddle-oxidator (MIT, vendored)
+  - reference engines/diptools-dip
+  - reference engines/phase-rs-phase
+  - reference engines/game4all-vx-bevy
+  - reference engines/shaoruu-mine-js

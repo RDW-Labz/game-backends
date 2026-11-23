@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T03:18:09Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "phase-rs/phase \u2014 A rules engine and game client \u2014 Rust + WASM + React",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "phase",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "phase-rs-phase",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 334,
+ "system": "A rules engine and game client \u2014 Rust + WASM + React",
+ "upstream": "https://github.com/phase-rs/phase",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

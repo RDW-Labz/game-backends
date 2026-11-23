@@ -1,0 +1,58 @@
+[workspace]
+members = [".", "examples/breakout", "examples/chat"]
+resolver = "2"
+
+[package]
+name = "bevy_quinnet"
+version = "0.23.0"
+description = "Bevy plugin for Client/Server multiplayer games using QUIC"
+repository = "https://github.com/Henauxg/bevy_quinnet"
+documentation = "https://docs.rs/bevy_quinnet"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+keywords = ["gamedev", "networking", "quic", "bevy", "plugin"]
+categories = ["game-development", "network-programming"]
+readme = "README.md"
+exclude = ["examples/"]
+
+[package.metadata.docs.rs]
+all-features = true
+
+[dependencies]
+bevy = { version = "0.20.0", default-features = false, features = ["bevy_log"] }
+rustls = { version = "0.23", default-features = false, features = [] }
+rustls-pemfile = "2"
+rustls-platform-verifier = "0.7"
+ring = "0.17.7"
+tokio = { version = "1.36.0", features = ["sync", "rt-multi-thread", "macros"] }
+tokio-util = { version = "0.7.4", features = ["codec"] }
+rcgen = "0.14"
+quinn = { version = "0.11.5", default-features = true }
+quinn-proto = "0.11.8"
+futures = "0.3.24"
+bytes = "1.5.0"
+base64 = "0.22.1"
+thiserror = "2.0.18"
+
+# Optional
+bincode = { version = "2.0.1", optional = true, features = ["serde"] }
+serde = { version = "1.0.145", optional = true, features = ["derive"] }
+
+[features]
+default = ["client", "server", "shared-client-id"]
+
+# Enables client features
+client = []
+# Enables server features
+server = []
+
+# Server sends the client id to the client, client wait for it before being “connected”
+shared-client-id = []
+# Adds some quick utility methods on server and client to send messages directly (serialized/deserialized with bincode)
+bincode-messages = ["bincode", "serde"]
+
+[dev-dependencies]
+bevy = { version = "0.20.0", default-features = false, features = [
+	"bevy_log",
+	"serialize",
+] }
