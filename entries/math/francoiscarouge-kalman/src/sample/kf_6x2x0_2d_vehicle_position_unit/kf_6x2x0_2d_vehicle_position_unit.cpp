@@ -1,0 +1,241 @@
+/*  __          _      __  __          _   _
+| |/ /    /\   | |    |  \/  |   /\   | \ | |
+| ' /    /  \  | |    | \  / |  /  \  |  \| |
+|  <    / /\ \ | |    | |\/| | / /\ \ | . ` |
+| . \  / ____ \| |____| |  | |/ ____ \| |\  |
+|_|\_\/_/    \_\______|_|  |_/_/    \_\_| \_|
+
+Kalman Filter
+Version 0.5.4
+https://github.com/FrancoisCarouge/Kalman
+
+SPDX-License-Identifier: Unlicense
+
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org> */
+
+#include "fcarouge/kalman.hpp"
+#include "fcarouge/linalg.hpp"
+
+#include <cassert>
+#include <tuple>
+
+#include <mp-units/systems/isq/space_and_time.h>
+
+namespace fcarouge::sample {
+namespace {
+using mp_units::si::unit_symbols::m;
+using mp_units::si::unit_symbols::m2;
+using mp_units::si::unit_symbols::s;
+using mp_units::si::unit_symbols::s2;
+using mp_units::si::unit_symbols::s3;
+using position = mp_units::quantity<mp_units::isq::length[m]>;
+using velocity = mp_units::quantity<mp_units::isq::velocity[m / s]>;
+using acceleration = mp_units::quantity<mp_units::isq::acceleration[m / s2]>;
+
+constexpr auto s4{pow<4>(s)};
+
+template <typename... Types> using vector = column_vector<double, Types...>;
+using motion =
+    vector<position, velocity, acceleration, position, velocity, acceleration>;
+//! @brief A covariance of the motion, the estimate uncertainty P and the
+//! process uncertainty Q: the element of a row and a column is the product of
+//! the motion elements they index.
+using motion_covariance =
+    matrix<double, motion::row_indexes, motion::row_indexes>;
+using location = vector<position, position>;
+using reciprocal_position =
+    mp_units::quantity<mp_units::one / mp_units::isq::length[m]>;
+using reciprocal_velocity =
+    mp_units::quantity<mp_units::one / mp_units::isq::velocity[m / s]>;
+using reciprocal_acceleration =
+    mp_units::quantity<mp_units::one / mp_units::isq::acceleration[m / s2]>;
+//! @brief The reciprocals of the motion elements: the column indexes of a
+//! derivative by the motion.
+using reciprocal_motion =
+    std::tuple<reciprocal_position, reciprocal_velocity,
+               reciprocal_acceleration, reciprocal_position,
+               reciprocal_velocity, reciprocal_acceleration>;
+//! @brief The state transition F: the derivatives of the motion by the motion
+//! [1, s, s^2].
+using motion_transition =
+    matrix<double, motion::row_indexes, reciprocal_motion>;
+//! @brief The output model H: the derivatives of the location by the motion [1,
+//! s, s^2].
+using location_model = matrix<double, location::row_indexes, reciprocal_motion>;
+
+//! @brief Estimating the vehicle location.
+//!
+//! @copyright This example is transcribed from KalmanFilter.NET copyright Alex
+//! Becker.
+//!
+//! @see https://www.kalmanfilter.net/multiExamples.html#ex9
+//!
+//! @details In this example, we would like to estimate the location of the
+//! vehicle in the XY plane. The vehicle has an onboard location sensor that
+//! reports X and Y coordinates of the system. We assume constant acceleration
+//! dynamics. In this example we don't have a control variable u since we don't
+//! have control input. Let us assume a vehicle moving in a straight line in the
+//! X direction with a constant velocity. After traveling 400 meters the vehicle
+//! turns right, with a turning radius of 300 meters. During the turning
+//! maneuver, the vehicle experiences acceleration due to the circular motion
+//! (an angular acceleration). The measurements period: Δt = 1s (constant).
+//!
+//! @image html kf_6x2x0_2d_vehicle_position_layout.svg
+//!
+//! The initial guess, at the origin, lies some 500 m from the vehicle, far
+//! beyond its 22 m standard deviation: the first innovations are inconsistent
+//! until the estimate converges. The turn, from the seventeenth measurement,
+//! surprises the constant acceleration model again. The acceleration is never
+//! measured, yet through the turn its estimate tracks the centripetal
+//! acceleration v²/R of a 25 m/s vehicle on a 300 m radius.
+//!
+//! The plot shows the complete data of the sample without units, of which
+//! this sample filters the first two measurements.
+//!
+//! @image html kf_6x2x0_2d_vehicle_position.svg
+//!
+//! @include{doc} kf_6x2x0_2d_vehicle_position_unit_benchmark.md
+//!
+//! @example kf_6x2x0_2d_vehicle_position_unit.cpp
+[[maybe_unused]] const auto sample{[] -> int {
+  // A 6x2x0 filter, constant acceleration dynamic model, no control.
+  kalman filter{
+      // The state X is chosen to be the position, velocity, acceleration in the
+      // XY plane: [px, vx, ax, py, vy, ay]. We don't know the vehicle location;
+      // we will set initial position, velocity and acceleration to 0.
+      state{motion{position{0. * m}, velocity{0. * m / s},
+                   acceleration{0. * m / s2}, position{0. * m},
+                   velocity{0. * m / s}, acceleration{0. * m / s2}}},
+      // The vehicle has an onboard location sensor that reports output Z as X
+      // and Y coordinates of the system.
+      output<location>,
+      // The estimate uncertainty matrix P.
+      // Since our initial state vector is a guess, we will set a very high
+      // estimate uncertainty. The high estimate uncertainty results in a high
+      // Kalman Gain, giving a high weight to the measurement.
+      estimate_uncertainty{[]() -> auto {
+        motion_covariance value;
+        value.at<0, 0>(500. * m2);
+        value.at<1, 1>(500. * m2 / s2);
+        value.at<2, 2>(500. * m2 / s4);
+        value.at<3, 3>(500. * m2);
+        value.at<4, 4>(500. * m2 / s2);
+        value.at<5, 5>(500. * m2 / s4);
+        return value;
+      }()},
+      // The process uncertainty noise matrix Q, constant, computed in place,
+      // with  random acceleration standard deviation: σa = 0.2 m.s^-2.
+      process_uncertainty{[]() -> auto {
+        motion_covariance value;
+        value.at<0, 0>(0.2 * 0.2 * 0.25 * m2);
+        value.at<0, 1>(0.2 * 0.2 * 0.5 * m2 / s);
+        value.at<0, 2>(0.2 * 0.2 * 0.5 * m2 / s2);
+        value.at<1, 0>(0.2 * 0.2 * 0.5 * m2 / s);
+        value.at<1, 1>(0.2 * 0.2 * m2 / s2);
+        value.at<1, 2>(0.2 * 0.2 * m2 / s3);
+        value.at<2, 0>(0.2 * 0.2 * 0.5 * m2 / s2);
+        value.at<2, 1>(0.2 * 0.2 * m2 / s3);
+        value.at<2, 2>(0.2 * 0.2 * m2 / s4);
+        value.at<3, 3>(0.2 * 0.2 * 0.25 * m2);
+        value.at<3, 4>(0.2 * 0.2 * 0.5 * m2 / s);
+        value.at<3, 5>(0.2 * 0.2 * 0.5 * m2 / s2);
+        value.at<4, 3>(0.2 * 0.2 * 0.5 * m2 / s);
+        value.at<4, 4>(0.2 * 0.2 * m2 / s2);
+        value.at<4, 5>(0.2 * 0.2 * m2 / s3);
+        value.at<5, 3>(0.2 * 0.2 * 0.5 * m2 / s2);
+        value.at<5, 4>(0.2 * 0.2 * m2 / s3);
+        value.at<5, 5>(0.2 * 0.2 * m2 / s4);
+        return value;
+      }()},
+      // The output uncertainty matrix R. Assume that the x and y measurements
+      // are uncorrelated, i.e. error in the x coordinate measurement doesn't
+      // depend on the error in the y coordinate measurement. In real-life
+      // applications, the measurement uncertainty can differ between
+      // measurements. In many systems the measurement uncertainty depends on
+      // the measurement SNR (signal-to-noise ratio), angle between sensor (or
+      // sensors) and target, signal frequency and many other parameters.
+      // For the sake of the example simplicity, we will assume a constant
+      // measurement uncertainty: R1 = R2...Rn-1 = Rn = R The measurement error
+      // standard deviation: σxm = σym = 3m. The variance 9.
+      output_uncertainty{{9. * m2, 0. * m2}, {0. * m2, 9. * m2}},
+      // The output model matrix H. The dimension of zn is 2x1 and the dimension
+      // of xn is 6x1. Therefore the dimension of the observation matrix H shall
+      // be 2x6.
+      output_model{[]() -> auto {
+        location_model value;
+        value.at<0, 0>(1.);
+        value.at<1, 3>(1.);
+        return value;
+      }()},
+      // The state transition matrix F would be:
+      state_transition{[]() -> auto {
+        motion_transition value;
+        value.at<0, 0>(1.);
+        value.at<0, 1>(1. * s);
+        value.at<0, 2>(0.5 * s2);
+        value.at<1, 1>(1.);
+        value.at<1, 2>(1. * s);
+        value.at<2, 2>(1.);
+        value.at<3, 3>(1.);
+        value.at<3, 4>(1. * s);
+        value.at<3, 5>(0.5 * s2);
+        value.at<4, 4>(1.);
+        value.at<4, 5>(1. * s);
+        value.at<5, 5>(1.);
+        return value;
+      }()}};
+
+  // Now we can predict the next state based on the initialization values.
+  filter.predict();
+
+  // The measurement values: z1 = [-393.66 m, 300.4 m]
+  filter.update(-393.66 * m, 300.4 * m);
+  filter.predict();
+  filter.update(-375.93 * m, 301.78 * m);
+  filter.predict();
+
+  // Verify the example estimated state at 0.1% accuracy.
+  assert(position{-277.8 * m} < filter.x().at<0>() &&
+         filter.x().at<0>() < position{-277.7 * m} &&
+         velocity{148.3 * m / s} < filter.x().at<1>() &&
+         filter.x().at<1>() < velocity{148.4 * m / s} &&
+         acceleration{94.5 * m / s2} < filter.x().at<2>() &&
+         filter.x().at<2>() < acceleration{94.56 * m / s2} &&
+         position{249.7 * m} < filter.x().at<3>() &&
+         filter.x().at<3>() < position{249.8 * m} &&
+         velocity{-86.0 * m / s} < filter.x().at<4>() &&
+         filter.x().at<4>() < velocity{-85.9 * m / s} &&
+         acceleration{-63.65 * m / s2} < filter.x().at<5>() &&
+         filter.x().at<5>() < acceleration{-63.64 * m / s2} &&
+         "The state estimates expected at 0.1% accuracy.");
+
+  //! @todo Add format verification.
+  //! @todo Complete the example from the original data.
+
+  return 0;
+}()};
+} // namespace
+} // namespace fcarouge::sample

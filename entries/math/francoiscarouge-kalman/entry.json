@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T20:44:05Z",
+ "category": "math",
+ "commit": "cdd8a9387943",
+ "delivery": "vendored",
+ "description": "FrancoisCarouge/Kalman \u2014 Kalman filter for C++26 that turns dimension and unit mistakes into compile errors. You describe the filter with named arguments and the library deduces a lean, specialized type, so you don't write matrix boilerplate. Use any linear algebra backend and strong types for physical quantities. Header-only, public domain.",
+ "language": "c++",
+ "license": "Unlicense",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "Kalman",
+ "size_bytes": 3044348,
+ "slug": "francoiscarouge-kalman",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 84,
+ "system": "Kalman filter for C++26 that turns dimension and unit mistakes into compile errors. You describe the filter with named arguments and the library deduces a lean,",
+ "upstream": "https://github.com/FrancoisCarouge/Kalman",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T20:44:11Z",
+ "category": "math",
+ "commit": "2381a1f7a028",
+ "delivery": "vendored",
+ "description": "PASSIONLab/CombBLAS \u2014 The Combinatorial BLAS (CombBLAS) is an extensible distributed-memory parallel graph library offering a small but powerful set of linear algebra primitives specifically targeting graph analytics.",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "CombBLAS",
+ "size_bytes": 4661839,
+ "slug": "passionlab-combblas",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 83,
+ "system": "The Combinatorial BLAS (CombBLAS) is an extensible distributed-memory parallel graph library offering a small but powerful set of linear algebra primitives spec",
+ "upstream": "https://github.com/PASSIONLab/CombBLAS",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

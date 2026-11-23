@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T20:44:13Z",
+ "category": "math",
+ "commit": "2026-07-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "EricLengyel/Terathon-Math-Library \u2014 C++ math library for 2D/3D/4D vector, matrix, quaternion, and geometric algebra.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Terathon-Math-Library",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ericlengyel-terathon-math-library",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 1039,
+ "system": "C++ math library for 2D/3D/4D vector, matrix, quaternion, and geometric algebra.",
+ "upstream": "https://github.com/EricLengyel/Terathon-Math-Library",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

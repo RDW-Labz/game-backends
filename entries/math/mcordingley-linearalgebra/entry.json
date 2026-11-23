@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T20:44:13Z",
+ "category": "math",
+ "commit": "2022-08-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mcordingley/LinearAlgebra \u2014 Stand-alone Linear Algebra Library for PHP",
+ "language": "php",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "LinearAlgebra",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mcordingley-linearalgebra",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 82,
+ "system": "Stand-alone Linear Algebra Library for PHP",
+ "upstream": "https://github.com/mcordingley/LinearAlgebra",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

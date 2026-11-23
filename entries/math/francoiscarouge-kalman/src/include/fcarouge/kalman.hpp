@@ -1,0 +1,727 @@
+/*  __          _      __  __          _   _
+| |/ /    /\   | |    |  \/  |   /\   | \ | |
+| ' /    /  \  | |    | \  / |  /  \  |  \| |
+|  <    / /\ \ | |    | |\/| | / /\ \ | . ` |
+| . \  / ____ \| |____| |  | |/ ____ \| |\  |
+|_|\_\/_/    \_\______|_|  |_/_/    \_\_| \_|
+
+Kalman Filter
+Version 0.5.4
+https://github.com/FrancoisCarouge/Kalman
+
+SPDX-License-Identifier: Unlicense
+
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org> */
+
+#ifndef FCAROUGE_KALMAN_HPP
+#define FCAROUGE_KALMAN_HPP
+
+//! @file
+//! @brief The Kalman filter class and library top-level header.
+//!
+//! @details Provides the library public definitions of filters, algorithms,
+//! utilities, and documentation. Only this header file is intended for
+//! inclusion in third party software.
+//!
+//! @note Freestanding compatible. The formatting and printing support require
+//! a hosted implementation.
+
+#include "kalman_filter/internal/factory.hpp"
+#include "kalman_filter/internal/format.hpp"
+#include "kalman_filter/internal/print.hpp"
+#include "kalman_filter/internal/utility.hpp"
+#include "kalman_forward.hpp"
+
+#include <concepts>
+#include <cstddef>
+
+namespace fcarouge {
+namespace kf = kalman_filter::internal;
+
+//! @name Types
+//! @{
+
+//! @brief A generic Kalman filter.
+//!
+//! @details The Kalman filter is a Bayesian filter that uses multivariate
+//! Gaussians, a recursive state estimator, a linear quadratic estimator (LQE),
+//! and an Infinite Impulse Response (IIR) filter. It is a control theory tool
+//! applicable to signal estimation, sensor fusion, or data assimilation
+//! problems. The filter is applicable for unimodal and uncorrelated
+//! uncertainties. The filter assumes white noise, propagation and measurement
+//! functions are differentiable, and that the uncertainty stays centered on the
+//! state estimate. The filter is the optimal linear filter under assumptions.
+//! The filter updates estimates by multiplying Gaussians and predicts estimates
+//! by adding Gaussians. Designing a filter is as much art as science. Design
+//! the state $X$, $P$, the process $F$, $Q$, the measurement $Z$, $R$, the
+//! measurement function $H$, and if the system has control inputs $U$, $G$.
+//!
+//! This library supports various simple and extended filters. The
+//! implementation is independent from linear algebra backends. Arbitrary
+//! parameters can be added to the prediction and update stages to participate
+//! in gain-scheduling or linear parameter varying (LPV) systems. The default
+//! filter type is a generalized, customizable, and extended filter. The default
+//! type parameters implement a one-state, one-output, and double-precision
+//! floating-point type filter. The default update equation uses the Joseph
+//! form. Optional policies declared with the filter select another update form
+//! or condition the estimate uncertainty, at compile-time. Examples illustrate
+//! various usages and implementation tradeoffs. A standard formatter
+//! specialization is included for representation of the filter states. Filters
+//! with `state x output x input` dimensions as 1x1x1 and 1x1x0 (no input) are
+//! supported through vanilla C++. Higher dimension filters require a linear
+//! algebra backend. Customization points and type injections allow for
+//! implementation tradeoffs.
+//!
+//! A member function participates in overload resolution only when the filter
+//! accepts its arguments, so that generic code may test a call in a
+//! `requires`-expression rather than meet a compilation error. A
+//! characteristic is set from values that direct-list-initialize it, without
+//! narrowing, through a modifiable filter; a callable characteristic may also
+//! be replaced by a callable of its configured type. The prediction and the
+//! update take the arguments of their declared types followed by values that
+//! direct-list-initialize the input and the output, respectively. A backend
+//! whose constructors accept arguments they cannot use is outside this
+//! guarantee: its errors are reported when the call is compiled.
+//!
+//! @tparam Filter Exposition only. The deduced internal filter template
+//! parameter. Class template argument deduction (CTAD) figures out the filter
+//! type based on the declared configuration. See deduction guide. The internal
+//! implementation, filtering strategies, and presence of members vary based on
+//! the constructed, configured, declared, or deduced filter.
+//!
+//! @todo Make this class usable in constant expressions.
+//! @todo Is this filter restricted to Newton's equations of motion? That is
+//! only a discretized continuous-time kinematic filter? How about non-Newtonian
+//! systems?
+//! @todo Would we want to support smoothers?
+//! @todo Prepare support for larger dataset recording for graphing, metrics of
+//! large test data to facilitate tuning.
+//! @todo Support filter generator from equation? Third party integration?
+//! @todo Compare performance of general filter with its equivalent generated?
+//! @todo Support ranges operator filter?
+//! @todo Support mux pipes https://github.com/joboccara/pipes operator filter?
+//! @todo Reproduce Ardupilot's inertial navigation EKF and comparison
+//! benchmarks in SITL (software in the loop simulation).
+//! @todo Should we provide the operator[] for the vector characteristics
+//! regardless of implementation? And for the matrix ones too? It could simplify
+//! client code.
+//! @todo Should we provide the operator[] for state directly on the filter? Is
+//! the state X always what the user would want?
+//! @todo Support, test complex number filters?
+//! @todo Use automatic (Eigen::AutoDiffScalar?), symbolic, numerical solvers to
+//! define the filter characteristics and simplify solving the dynamic system
+//! for non-mathematicians.
+//! @todo Should we add back the call operator? How to resolve the
+//! update/predict ordering? And parameter ordering?
+//! @todo Should we support the noise cross covariance `N = E[wvᵀ]` for
+//! correlated noise sources, with default to null?
+//! @todo Can we implement Temporal Parallelization of Bayesian Smoothers, Simo
+//! Sarkka, Senior Member, IEEE, Angel F. Garc ıa-Fernandez,
+//! https://arxiv.org/pdf/1905.13002.pdf ? GPU implementation? Parallel
+//! implementation?
+template <typename Filter>
+class kalman : public kf::conditional_member_types<Filter> {
+public:
+  //! @name Public Member Functions
+  //! @{
+
+  //! @brief Constructs a Kalman filter from its declared configuration.
+  //!
+  //! @details Participates in overload resolution only if the arguments
+  //! declare the configuration of this filter type.
+  //!
+  //! @see Deduction guide for details.
+  //!
+  //! @complexity Constant.
+  template <typename... Arguments>
+    requires requires(Arguments... declarations) {
+      { kf::deducer<Filter>(declarations...) } -> std::same_as<Filter>;
+    }
+  constexpr kalman(Arguments... arguments);
+
+  //! @brief Copy constructs a filter.
+  //!
+  //! @details Copy constructor. Constructs the filter with the contents of
+  //! the `other` filter using copy semantics (i.e. the data in `other`
+  //! filter is copied from the other into this filter).
+  //!
+  //! @param other Another filter to be used as source to initialize the
+  //! elements of the filter with.
+  //!
+  //! @complexity Constant.
+  constexpr kalman(const kalman &other) = default;
+
+  //! @brief Move constructs a filter.
+  //!
+  //! @details Move constructor. Constructs the filter with the contents of
+  //! the `other` filter using move semantics (i.e. the data in `other`
+  //! filter is moved from the other into this filter).
+  //!
+  //! @param other Another filter to be used as source to initialize the
+  //! elements of the filter with.
+  //!
+  //! @complexity Constant.
+  constexpr kalman(kalman &&other) noexcept = default;
+
+  //! @brief Copy assignment operator.
+  //!
+  //! @details Replaces the contents of the filter with those of the `other`
+  //! filter using copy semantics (i.e. the data in `other` filter is copied
+  //! from the other into this filter).
+  //!
+  //! @param other Another filter to be used as source to initialize the
+  //! elements of the filter with.
+  //!
+  //! @return The reference value of this implicit object filter parameter,
+  //! i.e. `*this`.
+  //!
+  //! @complexity Constant.
+  constexpr auto operator=(const kalman &other) -> kalman & = default;
+
+  //! @brief Move assignment operator.
+  //!
+  //! @details Replaces the contents of the filter with those of the `other`
+  //! filter using move semantics (i.e. the data in `other` filter is moved from
+  //! the other into this filter). The other filter is in a valid but
+  //! unspecified state afterwards.
+  //!
+  //! @param other Another filter to be used as source to initialize the
+  //! elements of the filter with.
+  //!
+  //! @return The reference value of this implicit object filter parameter,
+  //! i.e. `*this`.
+  //!
+  //! @complexity Constant.
+  constexpr auto operator=(kalman &&other) noexcept -> kalman & = default;
+
+  //! @brief Destructs the Kalman filter.
+  //!
+  //! @complexity Constant.
+  constexpr ~kalman() = default;
+  //! @}
+
+  //! @name Public Characteristics Member Functions
+  //! @{
+
+  //! @brief Read, write the estimated state column vector X.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the estimated state
+  //! column vector X characteristic.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) x(this auto &&self, const auto &...values)
+    requires(
+        kf::has_state<Filter> &&
+        kf::sets<decltype(self), typename Filter::state, decltype(values)...>);
+
+  //! @brief Read, write the observation column vector Z.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the observation
+  //! column vector Z characteristic.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) z(this auto &&self, const auto &...values)
+    requires(
+        kf::has_output<Filter> &&
+        kf::sets<decltype(self), typename Filter::output, decltype(values)...>);
+
+  //! @brief Read, write the control column vector U.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the control column
+  //! vector U characteristic.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) u(this auto &&self, const auto &...values)
+    requires(
+        kf::has_input<Filter> &&
+        kf::sets<decltype(self), typename Filter::input, decltype(values)...>);
+
+  //! @brief Read, write the estimated covariance matrix P.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the estimated
+  //! covariance matrix P characteristic.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) p(this auto &&self, const auto &...values)
+    requires(kf::has_estimate_uncertainty<Filter> &&
+             kf::sets<decltype(self), typename Filter::estimate_uncertainty,
+                      decltype(values)...>);
+
+  //! @brief Read, write the process noise covariance matrix or function Q.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the process noise
+  //! covariance matrix Q characteristic. The characteristic may also be a
+  //! callable of the form `process_uncertainty(const state &, const
+  //! PredictionTypes &...)`, of the type configured at construction.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) q(this auto &&self, const auto &...values)
+    requires(
+        kf::has_process_uncertainty<Filter> &&
+        (sizeof...(values) == 0 ||
+         kf::sets_value<decltype(self), typename Filter::process_uncertainty,
+                        decltype(values)...> ||
+         kf::replaces<decltype(self), decltype(Filter::noise_process_q),
+                      decltype(values)...>));
+
+  //! @brief Read, write the observation noise covariance matrix R.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the observation
+  //! noise covariance matrix R characteristic. The characteristic may also be a
+  //! callable of the form `output_uncertainty(const state &, const output &,
+  //! const UpdateTypes &...)`, of the type configured at construction.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) r(this auto &&self, const auto &...values)
+    requires(
+        kf::has_output_uncertainty<Filter> &&
+        (sizeof...(values) == 0 ||
+         kf::sets_value<decltype(self), typename Filter::output_uncertainty,
+                        decltype(values)...> ||
+         kf::replaces<decltype(self), decltype(Filter::noise_observation_r),
+                      decltype(values)...>));
+
+  //! @brief Read, write the state transition matrix F.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the state transition
+  //! matrix F characteristic. The characteristic may also be a callable of the
+  //! form `state_transition(const input &, const PredictionTypes &...)`,
+  //! `state_transition(const PredictionTypes &...)`, or
+  //! `state_transition(const state &, const PredictionTypes &...)` evaluated at
+  //! the state estimate before the prediction, of the type configured at
+  //! construction. For non-linear system, or extended filter, F is the Jacobian
+  //! of the state transition function: `F = ∂f/∂X = ∂fj/∂xi` that is each row i
+  //! contains the derivatives of the state transition function for every
+  //! element j in the state column vector X.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) f(this auto &&self, const auto &...values)
+    requires(kf::has_state_transition<Filter> &&
+             (sizeof...(values) == 0 ||
+              kf::sets_value<decltype(self), typename Filter::state_transition,
+                             decltype(values)...> ||
+              kf::replaces<decltype(self), decltype(Filter::transition_state_f),
+                           decltype(values)...>));
+
+  //! @brief Read, write the observation transition matrix H.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the observation
+  //! transition matrix H characteristic. The characteristic may also be a
+  //! callable of the form `output_model(const state &, const UpdateTypes
+  //! &...)`, of the type configured at construction. For non-linear system, or
+  //! extended filter, H is the Jacobian of the state observation function:
+  //! `H = ∂h/∂X = ∂hj/∂xi` that is each row i contains the derivatives of the
+  //! state observation function for every element j in the state column vector
+  //! X. This member function is not present when the filter has no output
+  //! model.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) h(this auto &&self, const auto &...values)
+    requires(
+        kf::has_output_model<Filter> &&
+        (sizeof...(values) == 0 ||
+         kf::sets_value<decltype(self), typename Filter::output_model,
+                        decltype(values)...> ||
+         kf::replaces<decltype(self), decltype(Filter::observation_state_h),
+                      decltype(values)...>));
+
+  //! @brief Read, write the control transition matrix G.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the control
+  //! transition matrix G. characteristic. The characteristic may also be a
+  //! callable of the form `input_control(const PredictionTypes &...)`, of the
+  //! type configured at construction. This member function is not present when
+  //! the filter has no input control.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) g(this auto &&self, const auto &...values)
+    requires(
+        kf::has_input_control<Filter> &&
+        (sizeof...(values) == 0 ||
+         kf::sets_value<decltype(self), typename Filter::input_control,
+                        decltype(values)...> ||
+         kf::replaces<decltype(self), decltype(Filter::transition_control_g),
+                      decltype(values)...>));
+
+  //! @brief Read, write the gain matrix K.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the gain matrix K
+  //! characteristic.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) k(this auto &&self, const auto &...values)
+    requires(
+        kf::has_gain<Filter> &&
+        kf::sets<decltype(self), typename Filter::gain, decltype(values)...>);
+
+  //! @brief Read, write the innovation column vector Y.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the innovation
+  //! column vector Y characteristic.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) y(this auto &&self, const auto &...values)
+    requires(kf::has_innovation<Filter> &&
+             kf::sets<decltype(self), typename Filter::innovation,
+                      decltype(values)...>);
+
+  //! @brief Read, write the innovation uncertainty matrix S.
+  //!
+  //! @param self Explicit object parameter. Internal implementation detail.
+  //! @param values The optional copied initializers to set the innovation
+  //! uncertainty matrix S characteristic.
+  //!
+  //! @return A constant reference to the characteristic for an lvalue filter,
+  //! valid for the lifetime of the filter and reflecting its later changes, or
+  //! the moved characteristic for an rvalue filter.
+  //!
+  //! @complexity Constant.
+  constexpr decltype(auto) s(this auto &&self, const auto &...values)
+    requires(kf::has_innovation_uncertainty<Filter> &&
+             kf::sets<decltype(self), typename Filter::innovation_uncertainty,
+                      decltype(values)...>);
+
+  //! @}
+
+  //! @name Public Filtering Member Functions
+  //! @{
+
+  //! @brief Produces estimates of the state variables and uncertainties.
+  //!
+  //! @details Also known as the propagation step. Implements the total
+  //! probability theorem. Estimate the next state by suming the known
+  //! probabilities. The prior state always participates in the prediction: the
+  //! state is propagated through the state transition, and the input, if any,
+  //! contributes through the input control, as in X = F.X + G.U. A
+  //! characteristic the filter does not declare takes its default value, the
+  //! identity for F and G. The meaning of the prediction is therefore a
+  //! property of the process model alone: it depends neither on whether the
+  //! input type equals the state type, nor on which uncertainties are declared.
+  //!
+  //! @param arguments The prediction and input parameters of
+  //! the filter, in that order. The arguments need to be compatible with the
+  //! filter types. The prediction parameters convertible to the
+  //! `PredictionTypes` template pack types are passed through for computations
+  //! of prediction matrices. The control parameter pack types convertible to
+  //! the `Input` template type. The prediction types are explicitly defined
+  //! with the class definition.
+  //!
+  //! @todo Consider if returning the state column vector X would be preferable?
+  //! Or fluent interface? Would be compatible with an ES-EKF implementation?
+  //! @todo Can the parameter pack of `PredictionTypes` be explicit in the
+  //! method declaration for user clarity?
+  constexpr void predict(const auto &...arguments)
+    requires requires(Filter &implementation) {
+      implementation.predict(arguments...);
+    };
+
+  //! @brief Returns the Nth prediction argument.
+  //!
+  //! @details Convenience access to the last used prediction arguments.
+  //!
+  //! @tparam Position The index of the prediction argument in the
+  //! `PredictionTypes` pack. The member function is not present when the filter
+  //! has no prediction arguments, or when the position is out of range.
+  //!
+  //! @return The prediction argument corresponding to the Nth position of the
+  //! parameter pack of the tuple `PredictionTypes` class template type.
+  //!
+  //! @complexity Constant.
+  template <std::size_t Position>
+    requires(kf::has_prediction_argument<Filter, Position>)
+  constexpr auto predict() const;
+
+  //! @brief Updates the estimates with the outcome of a measurement.
+  //!
+  //! @details Also known as the observation or correction step. Implements the
+  //! Bayes' theorem. Combine one measurement and the prior estimate by applying
+  //! the multiplicative law.
+  //!
+  //! @param arguments The update and output parameters of
+  //! the filter, in that order. The arguments need to be compatible with the
+  //! filter types. The update parameters convertible to the
+  //! `UpdateTypes` template pack types are passed through for computations of
+  //! update matrices. The observation parameter pack types convertible to
+  //! the `Output` template type. The update types are explicitly
+  //! defined with the class definition.
+  //!
+  //! @todo Consider if returning the state column vector X would be preferable?
+  //! Or fluent interface? Would be compatible with an ES-EKF implementation?
+  //! @todo Can the parameter pack of `UpdateTypes` be explicit in the method
+  //! declaration for user clarity?
+  constexpr void update(const auto &...arguments)
+    requires requires(Filter &implementation) {
+      implementation.update(arguments...);
+    };
+
+  //! @brief Returns the Nth update argument.
+  //!
+  //! @details Convenience access to the last used update arguments.
+  //!
+  //! @tparam Position The index of the update argument in the
+  //! `UpdateTypes` pack. The member function is not present when the filter
+  //! has no update arguments, or when the position is out of range.
+  //!
+  //! @return The update argument corresponding to the Nth position of the
+  //! parameter pack of the tuple `UpdateTypes` class template type.
+  //!
+  //! @complexity Constant.
+  template <std::size_t Position>
+    requires(kf::has_update_argument<Filter, Position>)
+  constexpr auto update() const;
+  //! @}
+
+private:
+  //! @name Private Member Variables
+  //! @{
+
+  //! @brief Encapsulates the implementation details of the filter.
+  //!
+  //! @details Optionally exposes a variety of members and methods according to
+  //! the selected implementation.
+  Filter filter;
+
+  //! @}
+};
+
+//! @brief State type wrapper for filter declaration support.
+//!
+//! @todo Use alias from internal when Clang supports CTAD for alias?
+using kf::state;
+
+//! @brief Estimate uncertainty type wrapper for filter declaration support.
+using kf::estimate_uncertainty;
+
+//! @brief Output uncertainty type wrapper for filter declaration support.
+using kf::output_uncertainty;
+
+//! @brief Process uncertainty type wrapper for filter declaration support.
+using kf::process_uncertainty;
+
+//! @brief Input value wrapper for filter declaration support.
+using kf::input;
+
+//! @brief Input type wrapper for filter declaration support.
+using kf::input_t;
+
+//! @brief Output value wrapper for filter declaration support.
+using kf::output;
+
+//! @brief Output type wrapper for filter declaration support.
+using kf::output_t;
+
+//! @brief Output model type wrapper for filter declaration support.
+using kf::output_model;
+
+//! @brief Transition function type wrapper for filter declaration support.
+using kf::transition;
+
+//! @brief Observation function type wrapper for filter declaration support.
+using kf::observation;
+
+//! @brief Update types wrapper for filter declaration support.
+using kf::update_types;
+
+//! @brief Prediction types wrapper for filter declaration support.
+using kf::prediction_types;
+
+//! @brief State transition types wrapper for filter declaration support.
+using kf::state_transition;
+
+//! @brief Input control types wrapper for filter declaration support.
+using kf::input_control;
+
+//! @brief Joseph update form policy for filter declaration support.
+//!
+//! @details Updates the estimate uncertainty as `P = (I - KH)P(I - KH)ᵀ +
+//! KRKᵀ`, valid for any gain, a sum of products keeping the estimate
+//! uncertainty close to symmetric and usually positive semi-definite despite
+//! rounding. The most robust and the most expensive form, evaluated at a
+//! quadratic rather than a cubic cost in the state dimension for a scalar
+//! output. The default update form: declaring it explicitly is the default
+//! filter, of the same type. Incompatible with another update form.
+using kf::joseph_form;
+
+//! @brief Simple update form policy for filter declaration support.
+//!
+//! @details Updates the estimate uncertainty as `P = (I - KH)P`, the cheapest
+//! form. Valid for the optimal gain only, which the filter computes. Rounding
+//! loses the symmetry of the estimate uncertainty and may lose its positive
+//! semi-definiteness. Incompatible with another update form.
+using kf::simple_form;
+
+//! @brief Symmetric update form policy for filter declaration support.
+//!
+//! @details Updates the estimate uncertainty as `P = P - KSKᵀ`, symmetric in
+//! exact arithmetic, at a cost similar to the simple form. Valid for the
+//! optimal gain only, which the filter computes. Subtracting nearly equal
+//! matrices of a precise output may lose the positive semi-definiteness of the
+//! estimate uncertainty. Incompatible with another update form.
+using kf::symmetric_form;
+
+//! @brief Information update form policy for filter declaration support.
+//!
+//! @details Updates the estimate uncertainty as `P = (P⁻¹ + HᵀR⁻¹H)⁻¹`, the
+//! information added by the output. Inverts state-sized rather than
+//! output-sized matrices: cheaper only for outputs much larger than the state.
+//! Requires invertible estimate and output uncertainties: the default null
+//! output uncertainty is not. Incompatible with another update form.
+using kf::information_form;
+
+//! @brief Symmetrization conditioning policy for filter declaration support.
+//!
+//! @details Averages the estimate uncertainty with its transpose after each
+//! update and prediction, `P = (P + Pᵀ) / 2`, restoring its symmetry lost to
+//! rounding, not its positive semi-definiteness. A scalar estimate uncertainty
+//! is symmetric: the policy does nothing. Compatible with every update form and
+//! with the floors: its diagonal is unchanged, so their order does not matter.
+using kf::symmetrize;
+
+//! @brief Floors conditioning policy for filter declaration support.
+//!
+//! @details Raises each diagonal variance of the estimate uncertainty to at
+//! least the square of its floor after each update and prediction. One floor
+//! per state, in state order, is a standard deviation in the units of the
+//! state: a runtime value, stored in the filter, or a compile-time constant,
+//! `cw<0.1>`, without storage, and without runtime cost but the raise. The
+//! constants and the values may be mixed. The floors keep the estimate
+//! uncertainty consistent with the estimation error: they change it on purpose,
+//! a modelling decision rather than a numerical repair. A variance raised alone
+//! keeps its correlations, which may lose the positive semi-definiteness of the
+//! estimate uncertainty.
+using kf::floors;
+
+//! @brief Compile-time constant of a value for filter declaration support.
+//!
+//! @details Mirrors the standard `std::cw` constant wrapper, which the standard
+//! libraries do not yet provide: a constant of an empty type with a static
+//! value member, as `std::integral_constant<decltype(Value), Value>`. A
+//! standard constant wrapper, or any such constant, is accepted in its place.
+using kf::cw;
+
+//! @}
+
+//! @name Deduction Guides
+//! @{
+
+//! @brief Deduces the filter type from its declared configuration.
+//!
+//! @details The configuration arguments passed are used to determine at compile
+//! time the type of filter to use. The objective is to select the most
+//! performant filter within the defined configuration parameters. Declare the
+//! configuration with a single scalar representation to avoid narrowing in the
+//! filter equations: mixed built-in arithmetic types are rejected. A
+//! configuration with an observation function may omit the transition
+//! function: the state is then predicted by the state transition F, X = F.X, as
+//! for a state that does not change between predictions.
+//!
+//! @tparam Arguments The declarations of the filter configuration.
+//!
+//! @todo Should the parameter be named configurations?
+//! @todo Should the configuration examples, supports be documented here?
+template <typename... Arguments>
+kalman(Arguments... arguments) -> kalman<kf::deduce_filter<Arguments...>>;
+
+//! @}
+
+#if __STDC_HOSTED__
+//! @name Decorators
+//! @{
+
+//! @brief Filter decorator to print activities to the standard output.
+//!
+//! @details Pipe decorator to filter declaration to print out its activities:
+//! construction, destruction, updates, predictions, and characteristic changes.
+//! Prints with default formatting. Takes no parameters.
+//!
+//! @note The decorator takes ownership of the decorated filter: decorate the
+//! filter declaration, or an explicitly moved filter. An lvalue filter operand,
+//! `const` or not, is rejected.
+inline constexpr printer print;
+
+//! @}
+#endif // __STDC_HOSTED__
+
+} // namespace fcarouge
+
+#include "kalman_filter/internal/kalman.tpp"
+
+#endif // FCAROUGE_KALMAN_HPP

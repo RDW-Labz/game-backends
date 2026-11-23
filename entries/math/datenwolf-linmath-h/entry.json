@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T20:44:13Z",
+ "category": "math",
+ "commit": "2023-05-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "datenwolf/linmath.h \u2014 a lean linear math library, aimed at graphics programming. Supports vec3, vec4, mat4x4 and quaternions",
+ "language": "c",
+ "license": "WTFPL",
+ "license_verdict": "gated-reference",
+ "name": "linmath.h",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (WTFPL)",
+ "slug": "datenwolf-linmath-h",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 1068,
+ "system": "a lean linear math library, aimed at graphics programming. Supports vec3, vec4, mat4x4 and quaternions",
+ "upstream": "https://github.com/datenwolf/linmath.h",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,1192 @@
+/*  __          _      __  __          _   _
+| |/ /    /\   | |    |  \/  |   /\   | \ | |
+| ' /    /  \  | |    | \  / |  /  \  |  \| |
+|  <    / /\ \ | |    | |\/| | / /\ \ | . ` |
+| . \  / ____ \| |____| |  | |/ ____ \| |\  |
+|_|\_\/_/    \_\______|_|  |_/_/    \_\_| \_|
+
+Kalman Filter
+Version 0.5.4
+https://github.com/FrancoisCarouge/Kalman
+
+SPDX-License-Identifier: Unlicense
+
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org> */
+
+#ifndef FCAROUGE_KALMAN_FILTER_INTERNAL_FACTORY_HPP
+#define FCAROUGE_KALMAN_FILTER_INTERNAL_FACTORY_HPP
+
+#include "policy.hpp"
+#include "type.hpp"
+#include "x_z_p_q_r.hpp"
+#include "x_z_p_q_r_h_f.hpp"
+#include "x_z_p_q_r_hh_f_oo.hpp"
+#include "x_z_p_q_r_hh_f_oo_us.hpp"
+#include "x_z_p_q_r_hh_f_tt_oo.hpp"
+#include "x_z_p_q_r_hh_f_tt_oo_ps.hpp"
+#include "x_z_p_q_r_hh_f_tt_oo_us.hpp"
+#include "x_z_p_q_r_hh_f_us_ps.hpp"
+#include "x_z_p_q_r_hh_ff_oo.hpp"
+#include "x_z_p_q_r_hh_ff_ps.hpp"
+#include "x_z_p_q_r_hh_ff_tt_oo.hpp"
+#include "x_z_p_q_r_hh_ff_tt_oo_ps.hpp"
+#include "x_z_p_q_r_hh_ff_tt_oo_us.hpp"
+#include "x_z_p_q_r_hh_ff_us_ps.hpp"
+#include "x_z_p_qq_r_hh_f_tt_oo.hpp"
+#include "x_z_p_qq_r_hh_f_tt_oo_ps.hpp"
+#include "x_z_p_qq_r_hh_f_tt_oo_us.hpp"
+#include "x_z_p_qq_r_hh_f_us_ps.hpp"
+#include "x_z_p_qq_r_hh_ff_tt_oo.hpp"
+#include "x_z_p_qq_r_hh_ff_tt_oo_ps.hpp"
+#include "x_z_p_qq_r_hh_ff_tt_oo_us.hpp"
+#include "x_z_p_qq_r_hh_ff_us_ps.hpp"
+#include "x_z_p_qq_rr_f.hpp"
+#include "x_z_p_r.hpp"
+#include "x_z_p_r_f.hpp"
+#include "x_z_u_p_q_r.hpp"
+#include "x_z_u_p_q_r_h_f_g.hpp"
+#include "x_z_u_p_q_r_h_f_g_ps.hpp"
+#include "x_z_u_p_q_r_h_f_g_us.hpp"
+#include "x_z_u_p_q_r_h_f_g_us_ps.hpp"
+#include "x_z_u_p_qq_r_ff_gg.hpp"
+#include "x_z_u_p_qq_r_ff_gg_ps.hpp"
+
+#include <concepts>
+#include <cstddef>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+
+namespace fcarouge::kalman_filter::internal {
+// Converts the value of a declared characteristic to the filter member type.
+template <typename To, typename From>
+[[nodiscard]] constexpr auto convert(const From &value) -> To {
+  return To{value};
+}
+
+template <typename To, typename Element, std::size_t Rows, std::size_t Columns>
+[[nodiscard]] constexpr auto
+convert(const row_list<Element, Rows, Columns> &value) -> To {
+  return value.template to<To>();
+}
+
+// The filter builder helps in selecting the filter type from the
+// characteristics declared by the caller. The filter builder also helps in
+// passing through or ignoring values for the filter construction. Finally the
+// builder helps in converting the characteristics to the filter members types,
+// and constructs the filter with its declared policies.
+template <typename Filter, typename Policies> struct filter_builder {
+  template <typename... Arguments>
+  [[nodiscard]] static constexpr auto
+  operator()([[maybe_unused]] const Policies &policies,
+             [[maybe_unused]] Arguments... arguments)
+    requires(std::same_as<Filter, void>)
+  {
+    static_assert(false,
+                  "This requested filter configuration is not yet supported. "
+                  "Please, submit a pull request or feature request.");
+
+    return x_z_p_r<double, Policies>{};
+  }
+
+  [[nodiscard]] static constexpr auto operator()(const Policies &policies) {
+    return x_z_p_r<double, Policies>{policies};
+  }
+
+  template <typename X>
+  [[nodiscard]] static constexpr auto operator()(const Policies &policies,
+                                                 state<X> x) {
+    return x_z_p_r<X, Policies>{policies, x.value};
+  }
+
+  template <typename X>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<X> z) {
+    return x_z_p_r<X, Policies>{policies, x.value};
+  }
+
+  template <typename X, typename Z>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z) {
+    return x_z_p_q_r_h_f<X, Z, Policies>{policies, x.value};
+  }
+
+  template <typename X, typename Z, typename U>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u) {
+    using kt = x_z_u_p_q_r_h_f_g<X, Z, U, Policies>;
+
+    return kt{policies, typename kt::state{x.value}};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename Q,
+            typename R, typename F, typename G, typename... Ps>
+    requires requires() { requires std::invocable<Q, X, Ps...>; }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r, state_transition<F> f, input_control<G> g,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_u_p_qq_r_ff_gg_ps<X, Z, U, std::tuple<>,
+                                     repack<prediction_types_t<Ps...>>, Q, F, G,
+                                     Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_control_function{g.value}};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename Q,
+            typename R, typename F, typename G>
+    requires requires() { requires std::invocable<Q, X>; }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r, state_transition<F> f,
+             input_control<G> g) {
+    using kt = x_z_u_p_qq_r_ff_gg<X, Z, U, Q, F, G, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_control_function{g.value}};
+  }
+
+  template <typename X, typename Z, typename U, typename... Us, typename... Ps>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             [[maybe_unused]] update_types_t<Us...> uts,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt =
+        x_z_u_p_q_r_h_f_g_us_ps<X, Z, U, repack<update_types_t<Us...>>,
+                                repack<prediction_types_t<Ps...>>, Policies>;
+
+    return kt{policies, typename kt::state{x.value}};
+  }
+
+  template <typename X, typename Z, typename U, typename... Ps>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_u_p_q_r_h_f_g_ps<X, Z, U, repack<prediction_types_t<Ps...>>,
+                                    Policies>;
+
+    return kt{policies, typename kt::state{x.value}};
+  }
+
+  template <typename X, typename Z, typename U, typename... Us>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             [[maybe_unused]] update_types_t<Us...> uts) {
+    using kt =
+        x_z_u_p_q_r_h_f_g_us<X, Z, U, repack<update_types_t<Us...>>, Policies>;
+
+    return kt{policies, typename kt::state{x.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename T, typename O, typename... Us, typename... Ps>
+    requires requires() {
+      requires !std::invocable<Q, X, Ps...>;
+      requires std::invocable<H, X, Us...>;
+      requires std::invocable<T, X, Ps...>;
+      requires std::invocable<O, X, Us...>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, transition<T> ff, observation<O> hh,
+             [[maybe_unused]] update_types_t<Us...> uts,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_p_q_r_hh_f_us_ps<X, Z, repack<update_types_t<Us...>>,
+                                    repack<prediction_types_t<Ps...>>, H, T, O,
+                                    Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename T, typename O, typename... Ps>
+    requires requires() {
+      requires !std::invocable<Q, X, Ps...>;
+      requires std::invocable<H, X>;
+      requires std::invocable<T, X, Ps...>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, transition<T> ff, observation<O> hh,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_p_q_r_hh_f_tt_oo_ps<X, Z, repack<prediction_types_t<Ps...>>,
+                                       H, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename T, typename O, typename... Us>
+    requires requires() {
+      requires !std::invocable<Q, X>;
+      requires std::invocable<H, X, Us...>;
+      requires std::invocable<T, X>;
+      requires std::invocable<O, X, Us...>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, transition<T> ff, observation<O> hh,
+             [[maybe_unused]] update_types_t<Us...> uts) {
+    using kt = x_z_p_q_r_hh_f_tt_oo_us<X, Z, repack<update_types_t<Us...>>, H,
+                                       T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename T, typename O>
+    requires requires() {
+      requires !std::invocable<Q, X>;
+      requires std::invocable<H, X>;
+      requires std::invocable<T, X>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, transition<T> ff, observation<O> hh) {
+    using kt = x_z_p_q_r_hh_f_tt_oo<X, Z, H, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename O, typename... Us>
+    requires requires() {
+      requires !std::invocable<Q, X>;
+      requires std::invocable<H, X, Us...>;
+      requires std::invocable<O, X, Us...>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, observation<O> hh,
+             [[maybe_unused]] update_types_t<Us...> uts) {
+    using kt = x_z_p_q_r_hh_f_oo_us<X, Z, repack<update_types_t<Us...>>, H, O,
+                                    Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename O>
+    requires requires() {
+      requires !std::invocable<Q, X>;
+      requires std::invocable<H, X>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, observation<O> hh) {
+    using kt = x_z_p_q_r_hh_f_oo<X, Z, H, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename T, typename O, typename... Us, typename... Ps>
+    requires requires() {
+      requires std::invocable<Q, X, Ps...>;
+      requires std::invocable<H, X, Us...>;
+      requires std::invocable<T, X, Ps...>;
+      requires std::invocable<O, X, Us...>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, transition<T> ff, observation<O> hh,
+             [[maybe_unused]] update_types_t<Us...> uts,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_p_qq_r_hh_f_us_ps<X, Z, repack<update_types_t<Us...>>,
+                                     repack<prediction_types_t<Ps...>>, Q, H, T,
+                                     O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename T, typename O, typename... Ps>
+    requires requires() {
+      requires std::invocable<Q, X, Ps...>;
+      requires std::invocable<H, X>;
+      requires std::invocable<T, X, Ps...>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, transition<T> ff, observation<O> hh,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_p_qq_r_hh_f_tt_oo_ps<X, Z, repack<prediction_types_t<Ps...>>,
+                                        Q, H, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename T, typename O, typename... Us>
+    requires requires() {
+      requires std::invocable<Q, X>;
+      requires std::invocable<H, X, Us...>;
+      requires std::invocable<T, X>;
+      requires std::invocable<O, X, Us...>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, transition<T> ff, observation<O> hh,
+             [[maybe_unused]] update_types_t<Us...> uts) {
+    using kt = x_z_p_qq_r_hh_f_tt_oo_us<X, Z, repack<update_types_t<Us...>>, Q,
+                                        H, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename T, typename O>
+    requires requires() {
+      requires std::invocable<Q, X>;
+      requires std::invocable<H, X>;
+      requires std::invocable<T, X>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, transition<T> ff, observation<O> hh) {
+    using kt = x_z_p_qq_r_hh_f_tt_oo<X, Z, Q, H, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename T, typename O, typename... Us,
+            typename... Ps>
+    requires requires() {
+      requires !std::invocable<Q, X, Ps...>;
+      requires std::invocable<H, X, Us...>;
+      requires std::invocable<F, X, Ps...>;
+      requires std::invocable<T, X, Ps...>;
+      requires std::invocable<O, X, Us...>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, state_transition<F> f, transition<T> ff,
+             observation<O> hh, [[maybe_unused]] update_types_t<Us...> uts,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_p_q_r_hh_ff_us_ps<X, Z, repack<update_types_t<Us...>>,
+                                     repack<prediction_types_t<Ps...>>, H, F, T,
+                                     O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename T, typename O, typename... Ps>
+    requires requires() {
+      requires !std::invocable<Q, X, Ps...>;
+      requires std::invocable<H, X>;
+      requires std::invocable<F, X, Ps...>;
+      requires std::invocable<T, X, Ps...>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, state_transition<F> f, transition<T> ff,
+             observation<O> hh,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_p_q_r_hh_ff_tt_oo_ps<X, Z, repack<prediction_types_t<Ps...>>,
+                                        H, F, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename T, typename O, typename... Us>
+    requires requires() {
+      requires !std::invocable<Q, X>;
+      requires std::invocable<H, X, Us...>;
+      requires std::invocable<F, X>;
+      requires std::invocable<T, X>;
+      requires std::invocable<O, X, Us...>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, state_transition<F> f, transition<T> ff,
+             observation<O> hh, [[maybe_unused]] update_types_t<Us...> uts) {
+    using kt = x_z_p_q_r_hh_ff_tt_oo_us<X, Z, repack<update_types_t<Us...>>, H,
+                                        F, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename T, typename O>
+    requires requires() {
+      requires !std::invocable<Q, X>;
+      requires std::invocable<H, X>;
+      requires std::invocable<F, X>;
+      requires std::invocable<T, X>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, state_transition<F> f, transition<T> ff,
+             observation<O> hh) {
+    using kt = x_z_p_q_r_hh_ff_tt_oo<X, Z, H, F, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename T, typename O, typename... Us,
+            typename... Ps>
+    requires requires() {
+      requires std::invocable<Q, X, Ps...>;
+      requires std::invocable<H, X, Us...>;
+      requires std::invocable<F, X, Ps...>;
+      requires std::invocable<T, X, Ps...>;
+      requires std::invocable<O, X, Us...>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, state_transition<F> f, transition<T> ff,
+             observation<O> hh, [[maybe_unused]] update_types_t<Us...> uts,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_p_qq_r_hh_ff_us_ps<X, Z, repack<update_types_t<Us...>>,
+                                      repack<prediction_types_t<Ps...>>, Q, H,
+                                      F, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename T, typename O, typename... Ps>
+    requires requires() {
+      requires std::invocable<Q, X, Ps...>;
+      requires std::invocable<H, X>;
+      requires std::invocable<F, X, Ps...>;
+      requires std::invocable<T, X, Ps...>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, state_transition<F> f, transition<T> ff,
+             observation<O> hh,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt =
+        x_z_p_qq_r_hh_ff_tt_oo_ps<X, Z, repack<prediction_types_t<Ps...>>, Q, H,
+                                  F, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename T, typename O, typename... Us>
+    requires requires() {
+      requires std::invocable<Q, X>;
+      requires std::invocable<H, X, Us...>;
+      requires std::invocable<F, X>;
+      requires std::invocable<T, X>;
+      requires std::invocable<O, X, Us...>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, state_transition<F> f, transition<T> ff,
+             observation<O> hh, [[maybe_unused]] update_types_t<Us...> uts) {
+    using kt = x_z_p_qq_r_hh_ff_tt_oo_us<X, Z, repack<update_types_t<Us...>>, Q,
+                                         H, F, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename T, typename O>
+    requires requires() {
+      requires std::invocable<Q, X>;
+      requires std::invocable<H, X>;
+      requires std::invocable<F, X>;
+      requires std::invocable<T, X>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, state_transition<F> f, transition<T> ff,
+             observation<O> hh) {
+    using kt = x_z_p_qq_r_hh_ff_tt_oo<X, Z, Q, H, F, T, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{h.value},
+              typename kt::transition_state_function{f.value},
+              typename kt::transition_function{ff.value},
+              typename kt::observation_function{hh.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename O, typename... Ps>
+    requires requires() {
+      requires std::invocable<H, X>;
+      requires std::invocable<F, Ps...>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> hh, state_transition<F> ff, observation<O> obs,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_p_q_r_hh_ff_ps<X, Z, repack<prediction_types_t<Ps...>>, H, F,
+                                  O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{hh.value},
+              typename kt::transition_state_function{ff.value},
+              typename kt::observation_function{obs.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F, typename O>
+    requires requires() {
+      requires std::invocable<H, X>;
+      requires std::invocable<F>;
+      requires std::invocable<O, X>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> hh, state_transition<F> ff, observation<O> obs) {
+    using kt = x_z_p_q_r_hh_ff_oo<X, Z, H, F, O, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              typename kt::observation_state_function{hh.value},
+              typename kt::transition_state_function{ff.value},
+              typename kt::observation_function{obs.value}};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename H, typename F>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             output_model<H> h, state_transition<F> f) {
+    using kt = x_z_p_q_r_h_f<X, Z, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              internal::convert<typename kt::output_model>(h.value),
+              internal::convert<typename kt::state_transition>(f.value)};
+  }
+
+  template <typename X, typename Z, typename P, typename R>
+    requires std::same_as<X, Z>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             output_uncertainty<R> r) {
+    using kt = x_z_p_r<X, Policies>;
+
+    return kt{policies, typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::output_uncertainty>(r.value)};
+  }
+
+  template <typename X, typename Z, typename P, typename R, typename F>
+    requires std::same_as<X, Z>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             output_uncertainty<R> r, state_transition<F> f) {
+    using kt = x_z_p_r_f<X, Policies>;
+
+    return kt{policies, typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              internal::convert<typename kt::state_transition>(f.value)};
+  }
+
+  template <typename X, typename Z, typename P, typename R>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             output_uncertainty<R> r) {
+    using kt = x_z_p_q_r_h_f<X, Z, Policies>;
+
+    return kt{policies, typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              make_zero<typename kt::process_uncertainty>(),
+              internal::convert<typename kt::output_uncertainty>(r.value)};
+  }
+
+  template <typename X, typename Z, typename P, typename R, typename F>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             output_uncertainty<R> r, state_transition<F> f) {
+    using kt = x_z_p_q_r_h_f<X, Z, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              make_zero<typename kt::process_uncertainty>(),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              make_one<typename kt::output_model>(),
+              internal::convert<typename kt::state_transition>(f.value)};
+  }
+
+  template <typename X, typename P, typename R, typename Q>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<X> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r) {
+    using kt = x_z_p_q_r<X, Policies>;
+
+    return kt{policies, typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value)};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename Q,
+            typename R>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r) {
+    using kt = x_z_u_p_q_r_h_f_g<X, Z, U, Policies>;
+
+    return kt{policies, typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value)};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename R,
+            typename Q, typename... Us, typename... Ps>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r,
+             [[maybe_unused]] update_types_t<Us...> uts,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt =
+        x_z_u_p_q_r_h_f_g_us_ps<X, Z, U, repack<update_types_t<Us...>>,
+                                repack<prediction_types_t<Ps...>>, Policies>;
+
+    return kt{policies, typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value)};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename R,
+            typename Q, typename... Ps>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_u_p_q_r_h_f_g_ps<X, Z, U, repack<prediction_types_t<Ps...>>,
+                                    Policies>;
+
+    return kt{policies, typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value)};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename R,
+            typename Q, typename... Us>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r,
+             [[maybe_unused]] update_types_t<Us...> uts) {
+    using kt =
+        x_z_u_p_q_r_h_f_g_us<X, Z, U, repack<update_types_t<Us...>>, Policies>;
+
+    return kt{policies, typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value)};
+  }
+
+  template <typename X, typename P, typename Q, typename R>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<X> z, [[maybe_unused]] input_t<X> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r) {
+    using kt = x_z_u_p_q_r<X, Policies>;
+
+    return kt{policies, typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value)};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename Q,
+            typename R, typename H, typename F, typename G, typename... Us,
+            typename... Ps>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r, output_model<H> h, state_transition<F> f,
+             input_control<G> g, [[maybe_unused]] update_types_t<Us...> uts,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt =
+        x_z_u_p_q_r_h_f_g_us_ps<X, Z, U, repack<update_types_t<Us...>>,
+                                repack<prediction_types_t<Ps...>>, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              internal::convert<typename kt::output_model>(h.value),
+              internal::convert<typename kt::state_transition>(f.value),
+              internal::convert<typename kt::input_control>(g.value)};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename Q,
+            typename R, typename H, typename F, typename G, typename... Ps>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r, output_model<H> h, state_transition<F> f,
+             input_control<G> g,
+             [[maybe_unused]] prediction_types_t<Ps...> pts) {
+    using kt = x_z_u_p_q_r_h_f_g_ps<X, Z, U, repack<prediction_types_t<Ps...>>,
+                                    Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              internal::convert<typename kt::output_model>(h.value),
+              internal::convert<typename kt::state_transition>(f.value),
+              internal::convert<typename kt::input_control>(g.value)};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename Q,
+            typename R, typename H, typename F, typename G, typename... Us>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r, output_model<H> h, state_transition<F> f,
+             input_control<G> g, [[maybe_unused]] update_types_t<Us...> uts) {
+    using kt =
+        x_z_u_p_q_r_h_f_g_us<X, Z, U, repack<update_types_t<Us...>>, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              internal::convert<typename kt::output_model>(h.value),
+              internal::convert<typename kt::state_transition>(f.value),
+              internal::convert<typename kt::input_control>(g.value)};
+  }
+
+  template <typename X, typename Z, typename U, typename P, typename Q,
+            typename R, typename H, typename F, typename G>
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, [[maybe_unused]] input_t<U> u,
+             estimate_uncertainty<P> p, process_uncertainty<Q> q,
+             output_uncertainty<R> r, output_model<H> h, state_transition<F> f,
+             input_control<G> g) {
+    using kt = x_z_u_p_q_r_h_f_g<X, Z, U, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              internal::convert<typename kt::process_uncertainty>(q.value),
+              internal::convert<typename kt::output_uncertainty>(r.value),
+              internal::convert<typename kt::output_model>(h.value),
+              internal::convert<typename kt::state_transition>(f.value),
+              internal::convert<typename kt::input_control>(g.value)};
+  }
+
+  template <typename X, typename Z, typename P, typename Q, typename R,
+            typename F>
+    requires requires() {
+      requires std::invocable<Q, X>;
+      requires std::invocable<R, X, Z>;
+    }
+  [[nodiscard]] static constexpr auto
+  operator()(const Policies &policies, state<X> x,
+             [[maybe_unused]] output_t<Z> z, estimate_uncertainty<P> p,
+             process_uncertainty<Q> q, output_uncertainty<R> r,
+             state_transition<F> f) {
+    using kt = x_z_p_qq_rr_f<X, Z, Q, R, Policies>;
+
+    return kt{policies,
+              typename kt::state{x.value},
+              internal::convert<typename kt::estimate_uncertainty>(p.value),
+              typename kt::noise_process_function{q.value},
+              typename kt::noise_observation_function{r.value},
+              internal::convert<typename kt::state_transition>(f.value)};
+  }
+};
+
+// The declaration argument as a tuple of a reference to it when it satisfies
+// the predicate, an empty tuple otherwise.
+template <template <typename> typename Predicate>
+[[nodiscard]] constexpr auto pick(const auto &argument) {
+  if constexpr (Predicate<std::remove_cvref_t<decltype(argument)>>::value) {
+    return std::tuple<decltype(argument)>{argument};
+  } else {
+    return std::tuple<>{};
+  }
+}
+
+// The policies value of the declaration arguments, storing the floors with a
+// runtime standard deviation.
+template <typename Policies>
+[[nodiscard]] constexpr auto configure(const auto &...arguments) -> Policies {
+  if constexpr (requires(Policies policies) { policies.deviations; }) {
+    return Policies{
+        std::get<0>(std::tuple_cat(pick<is_floors>(arguments)...)).value};
+  } else {
+    return Policies{};
+  }
+}
+
+// Constructs the state from the floors standard deviations. Never evaluated,
+// only instantiated: some backends reject a number of elements other than
+// their size in the definition of their constructors only. The deduced return
+// type instantiates the definition from an unevaluated operand, which does not
+// odr-use the function, so no code is emitted for it.
+template <typename State, typename... Deviations>
+[[nodiscard]] constexpr auto state_of(const Deviations &...deviations) {
+  return State{deviations...};
+}
+
+// Rejects floors other than one standard deviation per state, in its units.
+template <typename State, typename... Deviations>
+constexpr void check_floors(std::type_identity<std::tuple<Deviations...>>) {
+  static_assert(list_initializes<State, deviation_t<Deviations>...>,
+                "Declare one floor standard deviation per state, in the units "
+                "of the state.");
+
+  using instantiation [[maybe_unused]] = decltype(state_of<State>(
+      std::declval<const deviation_t<Deviations> &>()...));
+}
+
+template <typename State, typename... Policies>
+constexpr void check_floors(std::type_identity<policies<Policies...>>) {
+  if constexpr (sizeof...(Policies) > 0) {
+    using last =
+        std::tuple_element_t<sizeof...(Policies) - 1, std::tuple<Policies...>>;
+
+    if constexpr (floors_policy<last>) {
+      check_floors<State>(std::type_identity<decltype(last::value)>{});
+    }
+  }
+}
+
+template <typename Filter, typename Policies, typename Characteristics>
+inline constexpr bool buildable{false};
+
+template <typename Filter, typename Policies, typename... Characteristics>
+inline constexpr bool
+    buildable<Filter, Policies, std::tuple<Characteristics...>>{
+        std::invocable<filter_builder<Filter, Policies>, const Policies &,
+                       const Characteristics &...>};
+
+template <typename Filter, typename... Arguments>
+concept builds = buildable<Filter, policies_of<Arguments...>,
+                           characteristics_of<Arguments...>>;
+
+// The filter deducer separates the policies from the characteristics declared
+// by the caller, in any order. The characteristics select the filter type, the
+// policies complete it, and the filter is constructed in place.
+template <typename Filter = void> struct filter_deducer {
+  [[nodiscard]] static constexpr auto operator()() -> x_z_p_r<double>
+    requires(std::same_as<Filter, void>);
+
+  [[nodiscard]] static constexpr auto operator()() { return Filter{}; }
+
+  template <typename... Arguments>
+    requires(sizeof...(Arguments) > 0 && builds<Filter, Arguments...>)
+  [[nodiscard]] static constexpr auto
+  operator()(const Arguments &...arguments) {
+    using configuration = policies_of<Arguments...>;
+    using builder = filter_builder<Filter, configuration>;
+
+    static_assert(count_of<is_update_form, Arguments...> <= 1,
+                  "Declare at most one update form.");
+    static_assert(count_of<is_symmetrize, Arguments...> <= 1,
+                  "Declare the symmetrization at most once.");
+    static_assert(count_of<is_floors, Arguments...> <= 1,
+                  "Declare the floors at most once.");
+
+    return std::apply(
+        [&arguments...](const auto &...characteristics) {
+          using filter = decltype(builder{}(std::declval<configuration>(),
+                                            characteristics...));
+
+          check_floors<typename filter::state>(
+              std::type_identity<configuration>{});
+
+          return builder{}(configure<configuration>(arguments...),
+                           characteristics...);
+        },
+        std::tuple_cat(pick<is_characteristic>(arguments)...));
+  }
+};
+
+template <typename Filter> inline constexpr filter_deducer<Filter> deducer{};
+
+// The arithmetic type of a declaration, void otherwise.
+template <typename Argument> struct arithmetic_of : std::type_identity<void> {};
+
+template <typename Argument>
+  requires arithmetic<typename Argument::type>
+struct arithmetic_of<Argument> : std::type_identity<typename Argument::type> {};
+
+template <typename Type, typename... Types>
+concept agrees = ((std::same_as<Type, void> || std::same_as<Types, void> ||
+                   std::same_as<Type, Types>) &&
+                  ...);
+
+template <typename... Types>
+concept agree = (agrees<Types, Types...> && ...);
+
+// Rejects mixed arithmetic types, which would narrow in the filter equations.
+template <typename... Arguments> struct filter_deduction {
+  static_assert(agree<typename arithmetic_of<Arguments>::type...>,
+                "Declare the filter with a single arithmetic type.");
+
+  using type = std::invoke_result_t<filter_deducer<>, Arguments...>;
+};
+
+template <typename... Arguments>
+using deduce_filter = filter_deduction<Arguments...>::type;
+} // namespace fcarouge::kalman_filter::internal
+
+#endif // FCAROUGE_KALMAN_FILTER_INTERNAL_FACTORY_HPP

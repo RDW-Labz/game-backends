@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T20:44:13Z",
+ "category": "math",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jrl-umi3218/SpaceVecAlg \u2014 Implementation of spatial vector algebra with the Eigen3 linear algebra library.",
+ "language": "c++",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "SpaceVecAlg",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "jrl-umi3218-spacevecalg",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 81,
+ "system": "Implementation of spatial vector algebra with the Eigen3 linear algebra library.",
+ "upstream": "https://github.com/jrl-umi3218/SpaceVecAlg",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

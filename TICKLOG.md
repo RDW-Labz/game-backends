@@ -2242,3 +2242,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/bbrister-sift3d
   - reference math/alexandertar-laswift
   - reference math/icl-utk-edu-slate
+
+- **2026-11-23 20:44 UTC** — tick 727: +2 screened, +4 reference, 1 skipped, catalogue=943
+  - added math/francoiscarouge-kalman (Unlicense, vendored)
+  - added math/passionlab-combblas (BSD-3-Clause, vendored)
+  - reference math/mcordingley-linearalgebra
+  - reference math/jrl-umi3218-spacevecalg
+  - reference math/datenwolf-linmath-h
+  - reference math/ericlengyel-terathon-math-library
