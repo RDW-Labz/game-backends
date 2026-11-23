@@ -2258,3 +2258,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/sungiant-abacus
   - reference math/rawify-trackball-js
   - reference math/barerose-dvector
+
+- **2026-11-23 21:16 UTC** — tick 729: +2 screened, +4 reference, 0 skipped, catalogue=955
+  - added math/unn4m3d-crystaledge (MIT, vendored)
+  - added math/jpreiss-cmath3d (MIT, vendored)
+  - reference math/discretegames-hypercomplex
+  - reference math/giorgiomedico-interpolatepy
+  - reference math/mrmcsoftware-vec-mat-comp-quat
+  - reference math/brutpitt-vgmath

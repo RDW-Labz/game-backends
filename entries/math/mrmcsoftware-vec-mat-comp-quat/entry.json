@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:16:06Z",
+ "category": "math",
+ "commit": "2024-06-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mrmcsoftware/vec-mat-comp-quat \u2014 C++ 2d/3d/4d Vector, 2x2/3x3/4x4 Matrix, Complex Number, Quaternion, and 3d Transformation Classes / Functions (Header Only libraries)",
+ "language": "c++",
+ "license": "LGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "vec-mat-comp-quat",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-3.0)",
+ "slug": "mrmcsoftware-vec-mat-comp-quat",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 24,
+ "system": "C++ 2d/3d/4d Vector, 2x2/3x3/4x4 Matrix, Complex Number, Quaternion, and 3d Transformation Classes / Functions (Header Only libraries)",
+ "upstream": "https://github.com/mrmcsoftware/vec-mat-comp-quat",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

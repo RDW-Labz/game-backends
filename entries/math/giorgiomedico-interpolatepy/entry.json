@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:16:06Z",
+ "category": "math",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "GiorgioMedico/InterpolatePy \u2014 \ud83d\ude80 InterpolatePy: A fast and precise Python library for production-ready trajectory planning, offering 20+ algorithms for C\u00b2 continuous splines, jerk-limited S-curves, and quaternion interpolation for robotics, animation, and scientific computing.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "InterpolatePy",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "giorgiomedico-interpolatepy",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 26,
+ "system": "\ud83d\ude80 InterpolatePy: A fast and precise Python library for production-ready trajectory planning, offering 20+ algorithms for C\u00b2 continuous splines, jerk-limited S-c",
+ "upstream": "https://github.com/GiorgioMedico/InterpolatePy",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

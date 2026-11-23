@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:16:06Z",
+ "category": "math",
+ "commit": "2025-03-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BrutPitt/vgMath \u2014 vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ...",
+ "language": "c++",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "vgMath",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "brutpitt-vgmath",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 23,
+ "system": "vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ...",
+ "upstream": "https://github.com/BrutPitt/vgMath",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

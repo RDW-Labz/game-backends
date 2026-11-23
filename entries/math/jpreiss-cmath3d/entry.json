@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T21:16:05Z",
+ "category": "math",
+ "commit": "39f4fcdc8ec4",
+ "delivery": "vendored",
+ "description": "jpreiss/cmath3d \u2014 3d math library for C. Vectors, 3x3 matrices, quaternions, polytopes.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cmath3d",
+ "size_bytes": 31783,
+ "slug": "jpreiss-cmath3d",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 27,
+ "system": "3d math library for C. Vectors, 3x3 matrices, quaternions, polytopes.",
+ "upstream": "https://github.com/jpreiss/cmath3d",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

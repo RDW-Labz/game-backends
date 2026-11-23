@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T21:16:03Z",
+ "category": "math",
+ "commit": "0f5e82952b95",
+ "delivery": "vendored",
+ "description": "unn4m3d/crystaledge \u2014 A pure Crystal Vector Math library",
+ "language": "crystal",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "crystaledge",
+ "size_bytes": 0,
+ "slug": "unn4m3d-crystaledge",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 27,
+ "system": "A pure Crystal Vector Math library",
+ "upstream": "https://github.com/unn4m3d/crystaledge",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

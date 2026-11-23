@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 21:00 UTC · 949 entries · 253 vendored, 696 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 21:16 UTC · 955 entries · 255 vendored, 700 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
-| [math](#math) — Math libraries | 42 | 19 | 23 |
+| [math](#math) — Math libraries | 48 | 21 | 27 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
@@ -558,7 +558,7 @@ _Generated 2026-11-23 21:00 UTC · 949 entries · 253 vendored, 696 reference-on
 
 ## math
 
-**Math libraries** — 42 entries
+**Math libraries** — 48 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -568,7 +568,9 @@ _Generated 2026-11-23 21:00 UTC · 949 entries · 253 vendored, 696 reference-on
 | [ccVector](entries/math/jobtalle-ccvector/README.md) | A vector and matrix math library | c | Public-Domain | vendored | [jobtalle/ccVector](https://github.com/jobtalle/ccVector) @ `ffefafe5a0b9` |
 | [cglm](entries/math/cglm/README.md) | SIMD-accelerated C math (vec/mat/quat/affine/euler) | c | MIT | vendored | [recp/cglm](https://github.com/recp/cglm) @ `b9b570b78d58` |
 | [cgmath](entries/math/rustgd-cgmath/README.md) | A linear algebra and mathematics library for computer graphics. | rust | Apache-2.0 | reference | [rustgd/cgmath](https://github.com/rustgd/cgmath) @ `2024-12-07 (branch tip at catalogue time)` |
+| [cmath3d](entries/math/jpreiss-cmath3d/README.md) | 3d math library for C. Vectors, 3x3 matrices, quaternions, polytopes. | c | MIT | vendored | [jpreiss/cmath3d](https://github.com/jpreiss/cmath3d) @ `39f4fcdc8ec4` |
 | [CombBLAS](entries/math/passionlab-combblas/README.md) | The Combinatorial BLAS (CombBLAS) is an extensible distributed-memory parallel graph library offering a small but powerful set of linear algebra primitives spec | c++ | BSD-3-Clause | vendored | [PASSIONLab/CombBLAS](https://github.com/PASSIONLab/CombBLAS) @ `2381a1f7a028` |
+| [crystaledge](entries/math/unn4m3d-crystaledge/README.md) | A pure Crystal Vector Math library | crystal | MIT | vendored | [unn4m3d/crystaledge](https://github.com/unn4m3d/crystaledge) @ `0f5e82952b95` |
 | [cute_headers](entries/math/randygaul-cute-headers/README.md) | Collection of cross-platform one-file C/C++ libraries with no dependencies, primarily used for games | c | unknown | reference | [RandyGaul/cute_headers](https://github.com/RandyGaul/cute_headers) @ `2026-11-03 (branch tip at catalogue time)` |
 | [DirectXMath](entries/math/directxmath/README.md) | SIMD math library (SSE/AVX/NEON) for games | c++ | MIT | vendored | [microsoft/DirectXMath](https://github.com/microsoft/DirectXMath) @ `fef99048e3da` |
 | [dvector](entries/math/barerose-dvector/README.md) | Portable, single-file, 2D/3D vector/quaternion/matrix math library | c | CC0-1.0 | reference | [BareRose/dvector](https://github.com/BareRose/dvector) @ `2021-01-12 (branch tip at catalogue time)` |
@@ -579,7 +581,9 @@ _Generated 2026-11-23 21:00 UTC · 949 entries · 253 vendored, 696 reference-on
 | [GLM](entries/math/glm/README.md) | header-only GLSL-style vector/matrix/quaternion math | c++ | MIT | vendored | [g-truc/glm](https://github.com/g-truc/glm) @ `6f14f4792a0c` |
 | [Handmade Math](entries/math/handmademath/README.md) | single-header 3D math for games | c | CC0-1.0 | vendored | [HandmadeMath/HandmadeMath](https://github.com/HandmadeMath/HandmadeMath) @ `661fef0893bc` |
 | [hlslpp](entries/math/redorav-hlslpp/README.md) | Math library using HLSL syntax with multiplatform SIMD support | c++ | MIT | vendored | [redorav/hlslpp](https://github.com/redorav/hlslpp) @ `3d9af2e77a89` |
+| [hypercomplex](entries/math/discretegames-hypercomplex/README.md) | A Python library for working with arbitrary-dimension hypercomplex numbers following the Cayley-Dickson construction of algebras. | python | MIT | reference | [discretegames/hypercomplex](https://github.com/discretegames/hypercomplex) @ `2022-08-14 (branch tip at catalogue time)` |
 | [hypersomnia — math](entries/math/hypersomnia-math/README.md) | vector/matrix/quaternion math substrate | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
+| [InterpolatePy](entries/math/giorgiomedico-interpolatepy/README.md) | 🚀 InterpolatePy: A fast and precise Python library for production-ready trajectory planning, offering 20+ algorithms for C² continuous splines, jerk-limited S-c | python | MIT | reference | [GiorgioMedico/InterpolatePy](https://github.com/GiorgioMedico/InterpolatePy) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Kalman](entries/math/francoiscarouge-kalman/README.md) | Kalman filter for C++26 that turns dimension and unit mistakes into compile errors. You describe the filter with named arguments and the library deduces a lean, | c++ | Unlicense | vendored | [FrancoisCarouge/Kalman](https://github.com/FrancoisCarouge/Kalman) @ `cdd8a9387943` |
 | [LASwift](entries/math/alexandertar-laswift/README.md) | Fast linear algebra for Swift on Apple platforms, powered by Accelerate (BLAS, LAPACK, vDSP) | swift | BSD-3-Clause | reference | [AlexanderTar/LASwift](https://github.com/AlexanderTar/LASwift) @ `2026-11-19 (branch tip at catalogue time)` |
 | [libfixmath](entries/math/libfixmath/README.md) | fixed-point math for deterministic simulation | c | MIT | vendored | [PetteriAimonen/libfixmath](https://github.com/PetteriAimonen/libfixmath) @ `46e89b748b1f` |
@@ -604,6 +608,8 @@ _Generated 2026-11-23 21:00 UTC · 949 entries · 253 vendored, 696 reference-on
 | [Tessel-A-tile-game — geom](entries/math/tessel-a-tile-game-geom/README.md) | vector/matrix/quaternion math substrate | ts | GPL-3.0 | reference | [gvtulder/tessel](https://github.com/gvtulder/tessel) @ `6249857` |
 | [tpp-mlir](entries/math/libxsmm-tpp-mlir/README.md) | TPP experimentation on MLIR for linear algebra | mlir | Apache-2.0 | vendored | [libxsmm/tpp-mlir](https://github.com/libxsmm/tpp-mlir) @ `14368326a83f` |
 | [Trackball.js](entries/math/rawify-trackball-js/README.md) | The RAW library to add a virtual Trackball to your DOM | javascript | MIT | reference | [rawify/Trackball.js](https://github.com/rawify/Trackball.js) @ `2025-09-12 (branch tip at catalogue time)` |
+| [vec-mat-comp-quat](entries/math/mrmcsoftware-vec-mat-comp-quat/README.md) | C++ 2d/3d/4d Vector, 2x2/3x3/4x4 Matrix, Complex Number, Quaternion, and 3d Transformation Classes / Functions (Header Only libraries) | c++ | LGPL-3.0 | reference | [mrmcsoftware/vec-mat-comp-quat](https://github.com/mrmcsoftware/vec-mat-comp-quat) @ `2024-06-23 (branch tip at catalogue time)` |
+| [vgMath](entries/math/brutpitt-vgmath/README.md) | vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ... | c++ | BSD-2-Clause | reference | [BrutPitt/vgMath](https://github.com/BrutPitt/vgMath) @ `2025-03-16 (branch tip at catalogue time)` |
 
 ## loot-economy
 

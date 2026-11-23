@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:16:06Z",
+ "category": "math",
+ "commit": "2022-08-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "discretegames/hypercomplex \u2014 A Python library for working with arbitrary-dimension hypercomplex numbers following the Cayley-Dickson construction of algebras.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "hypercomplex",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "discretegames-hypercomplex",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 27,
+ "system": "A Python library for working with arbitrary-dimension hypercomplex numbers following the Cayley-Dickson construction of algebras.",
+ "upstream": "https://github.com/discretegames/hypercomplex",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
