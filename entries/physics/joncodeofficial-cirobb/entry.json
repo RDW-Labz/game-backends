@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:58:07Z",
+ "category": "physics",
+ "commit": "2026-10-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "joncodeofficial/cirobb \u2014 A small, readable 2D rigid body physics engine in C++, built around one state-of-the-art solver.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "cirobb",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "joncodeofficial-cirobb",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 67,
+ "system": "A small, readable 2D rigid body physics engine in C++, built around one state-of-the-art solver.",
+ "upstream": "https://github.com/joncodeofficial/cirobb",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

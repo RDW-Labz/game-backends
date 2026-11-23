@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T16:58:04Z",
+ "category": "physics",
+ "commit": "3c902a2b8e78",
+ "delivery": "vendored",
+ "description": "MichaelTMatthews/Jax2D \u2014 Highly scalable 2D JAX physics engine.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Jax2D",
+ "size_bytes": 103739,
+ "slug": "michaeltmatthews-jax2d",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 75,
+ "system": "Highly scalable 2D JAX physics engine.",
+ "upstream": "https://github.com/MichaelTMatthews/Jax2D",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

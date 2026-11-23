@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:58:07Z",
+ "category": "physics",
+ "commit": "2021-08-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "twobitcoder101/FlatPhysics \u2014 Basic 2D rigid body physics engine.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "FlatPhysics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "twobitcoder101-flatphysics",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 65,
+ "system": "Basic 2D rigid body physics engine.",
+ "upstream": "https://github.com/twobitcoder101/FlatPhysics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

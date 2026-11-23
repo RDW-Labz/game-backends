@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T16:58:06Z",
+ "category": "physics",
+ "commit": "0930754b74e4",
+ "delivery": "reference",
+ "description": "pan-pawka/ParticlePhysics2D-Unity \u2014 A fast and stable particle based physics 2D engine for Unity 3D.",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "ParticlePhysics2D-Unity",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 203559,
+ "slug": "pan-pawka-particlephysics2d-unity",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 67,
+ "system": "A fast and stable particle based physics 2D engine for Unity 3D.",
+ "upstream": "https://github.com/pan-pawka/ParticlePhysics2D-Unity",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

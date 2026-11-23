@@ -2130,3 +2130,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/phaserjs-phaser-box2d
   - reference physics/dimforge-nexus
   - reference physics/wgtdkp-apollonia
+
+- **2026-11-23 16:58 UTC** — tick 713: +2 screened, +4 reference, 3 skipped, catalogue=859
+  - added physics/michaeltmatthews-jax2d (MIT, vendored)
+  - added physics/pan-pawka-particlephysics2d-unity (none, reference)
+  - reference physics/cadeteditor-cadetengine-as
+  - reference physics/joncodeofficial-cirobb
+  - reference physics/twobitcoder101-flatphysics
+  - reference physics/darkroomengineering-elastica
