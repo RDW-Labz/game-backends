@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:18:21Z",
+ "category": "engines",
+ "commit": "2024-12-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bberak/react-native-game-engine \u2014 A lightweight Game Engine for React Native \ud83d\udd79\u26a1\ud83c\udfae",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "react-native-game-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "bberak-react-native-game-engine",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 3102,
+ "system": "A lightweight Game Engine for React Native \ud83d\udd79\u26a1\ud83c\udfae",
+ "upstream": "https://github.com/bberak/react-native-game-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

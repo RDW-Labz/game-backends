@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T07:18:02Z",
+ "category": "engines",
+ "commit": "3250c3c79860",
+ "delivery": "vendored",
+ "description": "passivestar/godot-minimal-theme \u2014 Godot Minimal Theme",
+ "language": "n/a",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-minimal-theme",
+ "size_bytes": 0,
+ "slug": "passivestar-godot-minimal-theme",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 3761,
+ "system": "Godot Minimal Theme",
+ "upstream": "https://github.com/passivestar/godot-minimal-theme",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

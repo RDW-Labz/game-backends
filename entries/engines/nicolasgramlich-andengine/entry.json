@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:18:21Z",
+ "category": "engines",
+ "commit": "2018-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "nicolasgramlich/AndEngine \u2014 Free Android 2D OpenGL Game Engine",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "AndEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "nicolasgramlich-andengine",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 3188,
+ "system": "Free Android 2D OpenGL Game Engine",
+ "upstream": "https://github.com/nicolasgramlich/AndEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

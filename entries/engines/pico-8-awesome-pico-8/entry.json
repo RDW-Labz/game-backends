@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:18:21Z",
+ "category": "engines",
+ "commit": "2026-07-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "pico-8/awesome-PICO-8 \u2014 A curated list of awesome PICO-8 resources, carts, tools and more",
+ "language": "n/a",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "awesome-PICO-8",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "pico-8-awesome-pico-8",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 3093,
+ "system": "A curated list of awesome PICO-8 resources, carts, tools and more",
+ "upstream": "https://github.com/pico-8/awesome-PICO-8",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T07:18:19Z",
+ "category": "engines",
+ "commit": "7f7f588b5a50",
+ "delivery": "reference",
+ "description": "armory3d/armory \u2014 3D Engine with Blender Integration",
+ "language": "c++",
+ "license": "Zlib",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "armory",
+ "reference_reason": "size gate: 14 MB",
+ "size_bytes": 15688745,
+ "slug": "armory3d-armory",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 3373,
+ "system": "3D Engine with Blender Integration",
+ "upstream": "https://github.com/armory3d/armory",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

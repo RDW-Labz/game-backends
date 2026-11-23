@@ -1843,3 +1843,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/turanszkij-wickedengine
   - reference engines/renpy-renpy
   - reference engines/godotengine-godot-docs
+
+- **2026-11-23 07:18 UTC** — tick 677: +2 screened, +4 reference, 7 skipped, catalogue=644
+  - added engines/passivestar-godot-minimal-theme (MIT, vendored)
+  - added engines/armory3d-armory (Zlib, reference)
+  - reference engines/nicolasgramlich-andengine
+  - reference engines/bberak-react-native-game-engine
+  - reference engines/pico-8-awesome-pico-8
+  - reference engines/korlibs-korge

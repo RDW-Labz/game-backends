@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:18:21Z",
+ "category": "engines",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "korlibs/korge \u2014 Korge is a Multiplatform Game Engine written in Kotlin for JVM, Web, Android and iOS.",
+ "language": "kotlin",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "korge",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "korlibs-korge",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 3066,
+ "system": "Korge is a Multiplatform Game Engine written in Kotlin for JVM, Web, Android and iOS.",
+ "upstream": "https://github.com/korlibs/korge",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
