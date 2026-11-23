@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T04:06:04Z",
+ "category": "engines",
+ "commit": "3e8c854b7aff",
+ "delivery": "reference",
+ "description": "bbuck/dragon-mud \u2014 A text-based game engine written in Go and scripted with Lua.",
+ "language": "go",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "dragon-mud",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 939157,
+ "slug": "bbuck-dragon-mud",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 123,
+ "system": "A text-based game engine written in Go and scripted with Lua.",
+ "upstream": "https://github.com/bbuck/dragon-mud",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

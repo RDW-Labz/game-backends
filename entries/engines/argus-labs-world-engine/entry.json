@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T04:06:06Z",
+ "category": "engines",
+ "commit": "25506662a5f3",
+ "delivery": "reference",
+ "description": "Argus-Labs/world-engine \u2014 Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc)",
+ "language": "go",
+ "license": "LGPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "world-engine",
+ "reference_reason": "licence: LGPL-3.0 (copyleft-reference)",
+ "size_bytes": 6749694,
+ "slug": "argus-labs-world-engine",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 118,
+ "system": "Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc)",
+ "upstream": "https://github.com/Argus-Labs/world-engine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

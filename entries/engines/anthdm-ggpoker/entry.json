@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:06:08Z",
+ "category": "engines",
+ "commit": "2024-01-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "anthdm/ggpoker \u2014 A decentralized poker game engine written in Golang and Solidity",
+ "language": "go",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ggpoker",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "anthdm-ggpoker",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 89,
+ "system": "A decentralized poker game engine written in Golang and Solidity",
+ "upstream": "https://github.com/anthdm/ggpoker",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

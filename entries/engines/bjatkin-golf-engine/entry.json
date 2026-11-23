@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T04:06:08Z",
+ "category": "engines",
+ "commit": "2021-11-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bjatkin/golf-engine \u2014 A small fantasy game engine in WASM using GoLang",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "golf-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "bjatkin-golf-engine",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 97,
+ "system": "A small fantasy game engine in WASM using GoLang",
+ "upstream": "https://github.com/bjatkin/golf-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1747,3 +1747,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/xiaonanln-goworld
   - reference engines/engoengine-engo
   - reference engines/ikemen-engine-ikemen-go
+
+- **2026-11-23 04:06 UTC** — tick 665: +2 screened, +4 reference, 0 skipped, catalogue=572
+  - added engines/bbuck-dragon-mud (none, reference)
+  - added engines/argus-labs-world-engine (LGPL-3.0, reference)
+  - reference engines/bjatkin-golf-engine
+  - reference engines/pikedev-go2d
+  - reference engines/anthdm-ggpoker
+  - reference engines/opendiablo2-abyssengine

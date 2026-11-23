@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 03:50 UTC · 566 entries · 166 vendored, 400 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 04:06 UTC · 572 entries · 166 vendored, 406 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 140 | 33 | 107 |
+| [engines](#engines) — Game engines and engine subsystems | 146 | 33 | 113 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,11 +16,12 @@ _Generated 2026-11-23 03:50 UTC · 566 entries · 166 vendored, 400 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 140 entries
+**Game engines and engine subsystems** — 146 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [AAAAXY — engine](entries/engines/aaaaxy-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | go | Apache-2.0 | vendored | [divVerent/aaaaxy](https://github.com/divVerent/aaaaxy) @ `07d7252` |
+| [AbyssEngine](entries/engines/opendiablo2-abyssengine/README.md) | A 2D ARPG game engine. | go | GPL-3.0 | reference | [OpenDiablo2/AbyssEngine](https://github.com/OpenDiablo2/AbyssEngine) @ `2025-12-05 (branch tip at catalogue time)` |
 | [ActionRoguelike](entries/engines/tomlooman-actionroguelike/README.md) | Project Orion - Co-op Action Roguelike in Unreal Engine C++ | c++ | none | reference | [tomlooman/ActionRoguelike](https://github.com/tomlooman/ActionRoguelike) @ `b7aef7d0f8ef` |
 | [Ambient](entries/engines/ambientrun-ambient/README.md) | The multiplayer game engine | rust | Apache-2.0 | reference | [AmbientRun/Ambient](https://github.com/AmbientRun/Ambient) @ `2025-01-07 (branch tip at catalogue time)` |
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
@@ -49,6 +50,7 @@ _Generated 2026-11-23 03:50 UTC · 566 entries · 166 vendored, 400 reference-on
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
 | [dip](entries/engines/diptools-dip/README.md) | Rust application framework focuses on composability, ECS and Web3.  Powered by Bevy game engine, Tauri, and Dioxus. From desktop apps to the Metaverse. | rust | unknown | reference | [diptools/dip](https://github.com/diptools/dip) @ `2026-04-13 (branch tip at catalogue time)` |
 | [doriax](entries/engines/doriaxengine-doriax/README.md) | Game engine for 2D and 3D projects with entity component system (ECS) and data-oriented design | c++ | MIT | reference | [doriaxengine/doriax](https://github.com/doriaxengine/doriax) @ `2026-11-15 (branch tip at catalogue time)` |
+| [dragon-mud](entries/engines/bbuck-dragon-mud/README.md) | A text-based game engine written in Go and scripted with Lua. | go | none | reference | [bbuck/dragon-mud](https://github.com/bbuck/dragon-mud) @ `3e8c854b7aff` |
 | [ebiten](entries/engines/hajimehoshi-ebiten/README.md) | A dead simple 2D game engine for Go | go | Apache-2.0 | vendored | [hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) @ `d438df689b19` |
 | [echo](entries/engines/timi-liuliang-echo/README.md) | A New Cross-Platform 2D 3D Game Engine | c++ | MIT | reference | [timi-liuliang/echo](https://github.com/timi-liuliang/echo) @ `2026-09-16 (branch tip at catalogue time)` |
 | [ecs-faq](entries/engines/sandermertens-ecs-faq/README.md) | Frequently asked questions about Entity Component Systems | n/a | unknown | reference | [SanderMertens/ecs-faq](https://github.com/SanderMertens/ecs-faq) @ `2026-07-01 (branch tip at catalogue time)` |
@@ -77,12 +79,15 @@ _Generated 2026-11-23 03:50 UTC · 566 entries · 166 vendored, 400 reference-on
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
 | [ggez](entries/engines/ggez-ggez/README.md) | Rust library to create a Good Game Easily | rust | MIT | reference | [ggez/ggez](https://github.com/ggez/ggez) @ `2026-10-26 (branch tip at catalogue time)` |
+| [ggpoker](entries/engines/anthdm-ggpoker/README.md) | A decentralized poker game engine written in Golang and Solidity | go | unknown | reference | [anthdm/ggpoker](https://github.com/anthdm/ggpoker) @ `2024-01-27 (branch tip at catalogue time)` |
 | [glas — core](entries/engines/glas-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
+| [Go2D](entries/engines/pikedev-go2d/README.md) | GoLang 2D Game Library based on SDL 1.3. This can be used to easily write games using Go (www.golang.org) using SDL 1.3 for hardware-accelerated rendering (Open | go | unknown | reference | [PikeDev/Go2D](https://github.com/PikeDev/Go2D) @ `2011-09-18 (branch tip at catalogue time)` |
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
 | [godot-cpp (GDExtension bindings)](entries/engines/godot-cpp/README.md) | C++ bindings/extension ABI for Godot | c++ | MIT | reference | [godotengine/godot-cpp](https://github.com/godotengine/godot-cpp) @ `2a4c066e1e8c` |
 | [godot-mcp](entries/engines/coding-solo-godot-mcp/README.md) | MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output. | javascript | MIT | vendored | [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) @ `1209744fad78` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
 | [godot-voip](entries/engines/ikbencasdoei-godot-voip/README.md) | godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project. | rust | MIT | reference | [ikbencasdoei/godot-voip](https://github.com/ikbencasdoei/godot-voip) @ `2024-09-22 (branch tip at catalogue time)` |
+| [golf-engine](entries/engines/bjatkin-golf-engine/README.md) | A small fantasy game engine in WASM using GoLang | go | MIT | reference | [bjatkin/golf-engine](https://github.com/bjatkin/golf-engine) @ `2021-11-27 (branch tip at catalogue time)` |
 | [goworld](entries/engines/xiaonanln-goworld/README.md) | Scalable Distributed Game Server Engine with Hot Swapping in Golang | go | Apache-2.0 | reference | [xiaonanln/goworld](https://github.com/xiaonanln/goworld) @ `2025-11-14 (branch tip at catalogue time)` |
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
@@ -159,6 +164,7 @@ _Generated 2026-11-23 03:50 UTC · 566 entries · 166 vendored, 400 reference-on
 | [vx_bevy](entries/engines/game4all-vx-bevy/README.md) | 🧊 Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy. | rust | MIT | reference | [Game4all/vx_bevy](https://github.com/Game4all/vx_bevy) @ `2024-12-11 (branch tip at catalogue time)` |
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |
 | [WebGAL](entries/engines/openwebgal-webgal/README.md) | A brand new web Visual Novel engine / 全新的网页端视觉小说引擎 | typescript | MPL-2.0 | reference | [OpenWebGAL/WebGAL](https://github.com/OpenWebGAL/WebGAL) @ `2026-11-21 (branch tip at catalogue time)` |
+| [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 
 ## physics
