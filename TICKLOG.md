@@ -1699,3 +1699,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/hugoam-toy
   - reference engines/axmolengine-axmol
   - reference engines/mihailris-voxelcore
+
+- **2026-11-23 02:30 UTC** — tick 659: +2 screened, +4 reference, 0 skipped, catalogue=536
+  - added engines/ajweeks-flexengine (MIT, reference)
+  - added engines/lethal-guitar-rigelengine (GPL-2.0, reference)
+  - reference engines/timi-liuliang-echo
+  - reference engines/elnormous-ouzel
+  - reference engines/krkrz-krkrz
+  - reference engines/utopia-rise-fmod-gdextension

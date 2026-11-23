@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 02:12 UTC · 530 entries · 156 vendored, 374 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 02:30 UTC · 536 entries · 156 vendored, 380 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 104 | 23 | 81 |
+| [engines](#engines) — Game engines and engine subsystems | 110 | 23 | 87 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 02:12 UTC · 530 entries · 156 vendored, 374 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 104 entries
+**Game engines and engine subsystems** — 110 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -40,6 +40,7 @@ _Generated 2026-11-23 02:12 UTC · 530 entries · 156 vendored, 374 reference-on
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
 | [doriax](entries/engines/doriaxengine-doriax/README.md) | Game engine for 2D and 3D projects with entity component system (ECS) and data-oriented design | c++ | MIT | reference | [doriaxengine/doriax](https://github.com/doriaxengine/doriax) @ `2026-11-15 (branch tip at catalogue time)` |
+| [echo](entries/engines/timi-liuliang-echo/README.md) | A New Cross-Platform 2D 3D Game Engine | c++ | MIT | reference | [timi-liuliang/echo](https://github.com/timi-liuliang/echo) @ `2026-09-16 (branch tip at catalogue time)` |
 | [ecs-faq](entries/engines/sandermertens-ecs-faq/README.md) | Frequently asked questions about Entity Component Systems | n/a | unknown | reference | [SanderMertens/ecs-faq](https://github.com/SanderMertens/ecs-faq) @ `2026-07-01 (branch tip at catalogue time)` |
 | [ecst](entries/engines/vittorioromeo-ecst/README.md) | [WIP] Experimental C++14 multithreaded compile-time entity-component-system library. | c++ | unknown | reference | [vittorioromeo/ecst](https://github.com/vittorioromeo/ecst) @ `2019-09-03 (branch tip at catalogue time)` |
 | [egret-core](entries/engines/egret-labs-egret-core/README.md) | Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows. | javascript | unknown | reference | [egret-labs/egret-core](https://github.com/egret-labs/egret-core) @ `2022-07-20 (branch tip at catalogue time)` |
@@ -53,6 +54,8 @@ _Generated 2026-11-23 02:12 UTC · 530 entries · 156 vendored, 374 reference-on
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
 | [Flecs](entries/engines/flecs/README.md) | ECS with prefabs, pipelines, hierarchies, REST explorer | c | MIT | reference | [SanderMertens/flecs](https://github.com/SanderMertens/flecs) @ `fa6554710d0d` |
+| [FlexEngine](entries/engines/ajweeks-flexengine/README.md) | Cross-platform game engine with Vulkan backend | c++ | MIT | reference | [ajweeks/FlexEngine](https://github.com/ajweeks/FlexEngine) @ `03aab462249b` |
+| [fmod-gdextension](entries/engines/utopia-rise-fmod-gdextension/README.md) | FMOD Studio GDExtension bindings for the Godot game engine | c++ | unknown | reference | [utopia-rise/fmod-gdextension](https://github.com/utopia-rise/fmod-gdextension) @ `2026-11-07 (branch tip at catalogue time)` |
 | [freeablo](entries/engines/wheybags-freeablo/README.md) | [ARCHIVED] Modern reimplementation of the Diablo 1 game engine | c++ | GPL-3.0 | reference | [wheybags/freeablo](https://github.com/wheybags/freeablo) @ `2023-04-13 (branch tip at catalogue time)` |
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
 | [GameFramework](entries/engines/ellanjiang-gameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | vendored | [EllanJiang/GameFramework](https://github.com/EllanJiang/GameFramework) @ `d0c010b05167` |
@@ -70,6 +73,7 @@ _Generated 2026-11-23 02:12 UTC · 530 entries · 156 vendored, 374 reference-on
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
 | [kengine](entries/engines/phisko-kengine/README.md) | Game engine with an Entity-Component-System (ECS) architecture. Focus on ease-of-use, runtime extensibility and compile-time type safety. | c++ | MIT | vendored | [phisko/kengine](https://github.com/phisko/kengine) @ `5a0ad085cdef` |
 | [KlayGE](entries/engines/gongminmin-klayge/README.md) | KlayGE is a cross-platform open source game engine with plugin-based architecture. | c++ | GPL-2.0 | reference | [gongminmin/KlayGE](https://github.com/gongminmin/KlayGE) @ `2026-07-17 (branch tip at catalogue time)` |
+| [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -88,6 +92,7 @@ _Generated 2026-11-23 02:12 UTC · 530 entries · 156 vendored, 374 reference-on
 | [openrct2 — core](entries/engines/openrct2-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
 | [OpenSurge — core](entries/engines/opensurge-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [optick — core](entries/engines/optick-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
+| [ouzel](entries/engines/elnormous-ouzel/README.md) | C++ game engine for Windows, macOS, Linux, iOS, tvOS, Android, and web browsers | c++ | Unlicense | reference | [elnormous/ouzel](https://github.com/elnormous/ouzel) @ `2024-03-01 (branch tip at catalogue time)` |
 | [Overload](entries/engines/overload-technologies-overload/README.md) | 3D game engine with lua scripting | c++ | MIT | reference | [Overload-Technologies/Overload](https://github.com/Overload-Technologies/Overload) @ `26efaa5dc92b` |
 | [PainterEngine](entries/engines/matrixcascade-painterengine/README.md) | PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C | c | MIT | reference | [matrixcascade/PainterEngine](https://github.com/matrixcascade/PainterEngine) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
@@ -101,6 +106,7 @@ _Generated 2026-11-23 02:12 UTC · 530 entries · 156 vendored, 374 reference-on
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
+| [RigelEngine](entries/engines/lethal-guitar-rigelengine/README.md) | A modern re-implementation of the classic DOS game Duke Nukem II | c++ | GPL-2.0 | reference | [lethal-guitar/RigelEngine](https://github.com/lethal-guitar/RigelEngine) @ `30afeff8f0b1` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
 | [sbox-public](entries/engines/facepunch-sbox-public/README.md) | s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games | c# | unknown | reference | [Facepunch/sbox-public](https://github.com/Facepunch/sbox-public) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Serious-Engine](entries/engines/croteam-official-serious-engine/README.md) | An open source version of a game engine developed by Croteam for the classic Serious Sam games. | c++ | GPL-2.0 | reference | [Croteam-official/Serious-Engine](https://github.com/Croteam-official/Serious-Engine) @ `2020-10-31 (branch tip at catalogue time)` |

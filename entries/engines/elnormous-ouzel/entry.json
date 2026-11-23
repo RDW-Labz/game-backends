@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T02:30:53Z",
+ "category": "engines",
+ "commit": "2024-03-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "elnormous/ouzel \u2014 C++ game engine for Windows, macOS, Linux, iOS, tvOS, Android, and web browsers",
+ "language": "c++",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "ouzel",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "elnormous-ouzel",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 980,
+ "system": "C++ game engine for Windows, macOS, Linux, iOS, tvOS, Android, and web browsers",
+ "upstream": "https://github.com/elnormous/ouzel",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

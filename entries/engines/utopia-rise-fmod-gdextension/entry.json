@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T02:30:53Z",
+ "category": "engines",
+ "commit": "2026-11-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "utopia-rise/fmod-gdextension \u2014 FMOD Studio GDExtension bindings for the Godot game engine",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "fmod-gdextension",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "utopia-rise-fmod-gdextension",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 963,
+ "system": "FMOD Studio GDExtension bindings for the Godot game engine",
+ "upstream": "https://github.com/utopia-rise/fmod-gdextension",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

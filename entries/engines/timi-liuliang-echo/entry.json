@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T02:30:53Z",
+ "category": "engines",
+ "commit": "2026-09-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "timi-liuliang/echo \u2014 A New Cross-Platform 2D 3D Game Engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "echo",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "timi-liuliang-echo",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 996,
+ "system": "A New Cross-Platform 2D 3D Game Engine",
+ "upstream": "https://github.com/timi-liuliang/echo",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

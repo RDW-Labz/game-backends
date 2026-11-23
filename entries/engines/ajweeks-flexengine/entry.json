@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T02:30:49Z",
+ "category": "engines",
+ "commit": "03aab462249b",
+ "delivery": "reference",
+ "description": "ajweeks/FlexEngine \u2014 Cross-platform game engine with Vulkan backend",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "FlexEngine",
+ "reference_reason": "size gate: 19 MB",
+ "size_bytes": 19924526,
+ "slug": "ajweeks-flexengine",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1038,
+ "system": "Cross-platform game engine with Vulkan backend",
+ "upstream": "https://github.com/ajweeks/FlexEngine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

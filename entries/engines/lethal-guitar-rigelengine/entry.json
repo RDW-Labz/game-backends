@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T02:30:52Z",
+ "category": "engines",
+ "commit": "30afeff8f0b1",
+ "delivery": "reference",
+ "description": "lethal-guitar/RigelEngine \u2014 A modern re-implementation of the classic DOS game Duke Nukem II",
+ "language": "c++",
+ "license": "GPL-2.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "copyleft-reference",
+ "name": "RigelEngine",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 4062944,
+ "slug": "lethal-guitar-rigelengine",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1022,
+ "system": "A modern re-implementation of the classic DOS game Duke Nukem II",
+ "upstream": "https://github.com/lethal-guitar/RigelEngine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
