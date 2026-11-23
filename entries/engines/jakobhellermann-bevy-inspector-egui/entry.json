@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T14:00:03Z",
+ "category": "engines",
+ "commit": "9ac848f7a128",
+ "delivery": "vendored",
+ "description": "jakobhellermann/bevy-inspector-egui \u2014 Inspector plugin for the bevy game engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE.md",
+ "license_verdict": "clean",
+ "name": "bevy-inspector-egui",
+ "size_bytes": 365523,
+ "slug": "jakobhellermann-bevy-inspector-egui",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 1656,
+ "system": "Inspector plugin for the bevy game engine",
+ "upstream": "https://github.com/jakobhellermann/bevy-inspector-egui",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

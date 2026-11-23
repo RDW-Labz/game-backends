@@ -2042,3 +2042,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/eirteam-eirteam-ffmpeg
   - reference engines/celyk-gputrail
   - reference engines/alexdarigan-wat
+
+- **2026-11-23 14:00 UTC** — tick 702: +2 screened, +4 reference, 5 skipped, catalogue=793
+  - added engines/jakobhellermann-bevy-inspector-egui (Apache-2.0, vendored)
+  - added engines/djeedai-bevy-hanabi (Apache-2.0, vendored)
+  - reference engines/trouv-bevy-ecs-ldtk
+  - reference engines/makspll-bevy-mod-scripting
+  - reference engines/niklasei-bevy-kira-audio
+  - reference engines/gschup-bevy-ggrs

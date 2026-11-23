@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:00:08Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gschup/bevy_ggrs \u2014 Bevy plugin for the GGRS P2P rollback networking library.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "bevy_ggrs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "gschup-bevy-ggrs",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 368,
+ "system": "Bevy plugin for the GGRS P2P rollback networking library.",
+ "upstream": "https://github.com/gschup/bevy_ggrs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

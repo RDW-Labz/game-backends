@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:00:08Z",
+ "category": "engines",
+ "commit": "2026-10-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Trouv/bevy_ecs_ldtk \u2014 ECS-friendly ldtk plugin for bevy, leveraging bevy_ecs_tilemap",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "bevy_ecs_ldtk",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "trouv-bevy-ecs-ldtk",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 900,
+ "system": "ECS-friendly ldtk plugin for bevy, leveraging bevy_ecs_tilemap",
+ "upstream": "https://github.com/Trouv/bevy_ecs_ldtk",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

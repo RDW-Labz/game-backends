@@ -1,0 +1,187 @@
+[package]
+name = "bevy-inspector-egui"
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
+documentation.workspace = true
+description = "Inspector plugin for the bevy game engine"
+keywords = ["bevy", "inspector", "egui", "editor", "reflect"]
+categories = [
+    "game-development",
+    "gui",
+    "visualization",
+    "development-tools::procedural-macro-helpers",
+]
+
+[features]
+default = [
+    "documentation",
+    "bevy",
+    "egui_clipboard",
+]
+# COLLECTION: Enable inspector UI for all optional bevy types
+bevy = [
+    "2d", "3d",
+    "bevy_gizmos",
+]
+# COLLECTION: Enable inspector UI for the bevy 2d collection
+2d = [
+    "bevy_render", "bevy_core_pipeline", "bevy_camera", "bevy_image", "bevy_mesh" # common
+]
+# COLLECTION: Enable inspector UI for the bevy 3d collection
+3d = [
+    "bevy_light", "bevy_mikktspace", "bevy_pbr",
+    "bevy_render", "bevy_core_pipeline", "bevy_camera", "bevy_image", "bevy_mesh" # common
+]
+
+# Enable showing documentation on hover.
+documentation = ["bevy_reflect/reflect_documentation"]
+
+# Enable `bevy_egui` clipboard management
+egui_clipboard = ["bevy_egui/manage_clipboard"]
+# Enable `bevy_egui` ability to open URLs
+egui_open_url = ["bevy_egui/open_url"]
+
+# Highlight changes to components in a different color.
+highlight_changes = [] # this should ideally be runtime configurable.
+
+# Show inspector UI for `bevy_camera` types
+bevy_camera = ["dep:bevy_camera"]
+# Show inspector UI for `bevy_core_pipeline` types
+bevy_core_pipeline = ["dep:bevy_core_pipeline"]
+# Show inspector UI for `bevy_gizmos` types
+bevy_gizmos = ["dep:bevy_gizmos"]
+# Show inspector UI for `bevy_image` types
+bevy_image = ["dep:bevy_image", "bevy_render"]
+# Show inspector UI for `bevy_light` types
+bevy_light = ["dep:bevy_light"]
+# Show inspector UI for `bevy_mesh` types
+bevy_mesh = ["dep:bevy_mesh"]
+# Show inspector UI for `bevy_mikktspace` types
+bevy_mikktspace = ["dep:bevy_mikktspace"]
+# Show inspector UI for `bevy_pbr` types
+bevy_pbr = ["dep:bevy_pbr"]
+# Show inspector UI for `bevy_render` types
+bevy_render = ["dep:bevy_render", "bevy_egui/render"]
+
+[package.metadata.docs.rs]
+features = ["winit/x11"]
+
+[dependencies]
+winit = { version = "0.30.0", default-features = false }
+
+bevy-inspector-egui-derive = { version = "0.38", path = "../bevy-inspector-egui-derive" }
+
+bevy_app = "0.20.0"
+bevy_asset = "0.20.0"
+bevy_color = "0.20.0"
+bevy_platform = "0.20.0"
+bevy_ecs = "0.20.0"
+bevy_log = "0.20.0"
+bevy_math = "0.20.0"
+bevy_reflect = "0.20.0"
+bevy_state = "0.20.0"
+bevy_time = "0.20.0"
+bevy_utils = "0.20.0"
+bevy_window = "0.20.0"
+
+bevy_camera = { version = "0.20.0", optional = true }
+bevy_core_pipeline = { version = "0.20.0", optional = true }
+bevy_gizmos = { version = "0.20.0", optional = true }
+bevy_image = { version = "0.20.0", optional = true }
+bevy_light = { version = "0.20.0", optional = true }
+bevy_mesh = { version = "0.20.0", optional = true }
+bevy_mikktspace = { version = "1.0", optional = true }
+bevy_pbr = { version = "0.20.0", optional = true }
+bevy_render = { version = "0.20.0", optional = true }
+
+egui.workspace = true
+bevy_egui.workspace = true
+
+bytemuck = "1.16.0"
+image = { version = "0.25", default-features = false }
+smallvec = "1.10"
+
+fuzzy-matcher = "0.3.7"
+disqualified = "1.0.0"
+uuid = "1.21.0"
+opener = "0.9"
+
+[dev-dependencies]
+bevy = { version = "0.20.0", default-features = false, features = [
+    "std",
+    "x11",
+    "wayland",
+    "reflect_auto_register",
+    "bevy_log",
+    "bevy_winit",
+    "bevy_state",
+    "bevy_window",
+    "bevy_pbr",
+    "bevy_sprite",
+    "bevy_text",
+    "bevy_core_pipeline",
+    "bevy_picking",
+    "bevy_gizmos",
+    "mesh_picking",
+    "gltf_animation",
+    "png",
+    "zstd_rust",
+    "tonemapping_luts",
+    "ktx2",
+] }
+bevy_math = { version = "0.20.0", features = ["mint"] }
+egui_dock = "0.21.1"
+# transform-gizmo-bevy = { git = "https://github.com/taboky-dev/transform-gizmo", branch = "bevy-0.18" }
+# bevy_mod_picking = { git = "https://github.com/aevyrie/bevy_mod_picking", rev = "554649a951689dce66d0d759839b326874e8826f", default-features = false, features = ["backend_raycast", "backend_egui", "backend_sprite"] }
+# bevy_framepace = "0.11"
+
+
+[[example]]
+name = "inspector_options"
+path = "examples/basic/inspector_options.rs"
+
+[[example]]
+name = "custom_type_ui"
+path = "examples/basic/custom_type_ui.rs"
+
+[[example]]
+name = "resource_inspector_manual"
+path = "examples/basic/resource_inspector_manual.rs"
+
+[[example]]
+name = "world_inspector_manual"
+path = "examples/basic/world_inspector_manual.rs"
+
+[[example]]
+name = "resource_inspector"
+path = "examples/quick/resource_inspector.rs"
+
+[[example]]
+name = "filter_query_inspector"
+path = "examples/quick/filter_query_inspector.rs"
+
+[[example]]
+name = "asset_inspector"
+path = "examples/quick/asset_inspector.rs"
+
+[[example]]
+name = "world_inspector"
+path = "examples/quick/world_inspector.rs"
+
+[[example]]
+name = "world_inspector_assets"
+path = "examples/quick/world_inspector_assets.rs"
+
+[[example]]
+name = "state_inspector"
+path = "examples/quick/state_inspector.rs"
+
+[[example]]
+name = "egui_dock"
+path = "examples/integrations/egui_dock.rs"
+
+[[example]]
+name = "side_panel"
+path = "examples/integrations/side_panel.rs"

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:00:08Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "makspll/bevy_mod_scripting \u2014 Bevy Scripting Plugin",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_mod_scripting",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "makspll-bevy-mod-scripting",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 664,
+ "system": "Bevy Scripting Plugin",
+ "upstream": "https://github.com/makspll/bevy_mod_scripting",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
