@@ -1,0 +1,270 @@
+//go:build linux && !android
+
+/******************************************************************************/
+/* window.x11.go                                                              */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package windowing
+
+/*
+#cgo CFLAGS: -I/usr/include
+#cgo LDFLAGS: -lX11 -lXcursor -lXrandr
+#cgo noescape get_toggle_key_state
+#cgo noescape window_main
+#cgo noescape window_poll_controller
+#cgo noescape window_poll
+#cgo noescape window_show
+#cgo noescape window_destroy
+#cgo noescape window_focus
+#cgo noescape window_position
+#cgo noescape window_set_position
+#cgo noescape window_set_size
+#cgo noescape window_width_mm
+#cgo noescape window_height_mm
+#cgo noescape window_cursor_standard
+#cgo noescape window_cursor_ibeam
+#cgo noescape window_cursor_size_all
+#cgo noescape window_cursor_size_ns
+#cgo noescape window_cursor_size_we
+#cgo noescape window_show_cursor
+#cgo noescape window_hide_cursor
+#cgo noescape window_dpi
+#cgo noescape window_set_title
+#cgo noescape window_set_full_screen
+#cgo noescape window_set_windowed
+#cgo noescape window_lock_cursor
+#cgo noescape window_unlock_cursor
+#cgo noescape window_set_cursor_position
+#cgo noescape window_set_icon
+#cgo noescape window_invalidate_monitor_cache
+#cgo noescape screen_count
+#cgo noescape screen_resolutions
+
+#include <stdlib.h>
+#include "windowing.h"
+*/
+import "C"
+import (
+	"errors"
+	"image"
+	"unsafe"
+
+	"kaijuengine.com/klib"
+	"kaijuengine.com/platform/hid"
+
+	"golang.design/x/clipboard"
+)
+
+//export goProcessEvents
+func goProcessEvents(goWindow C.uint64_t, events unsafe.Pointer, eventCount C.uint32_t) {
+	goProcessEventsCommon(uint64(goWindow), events, uint32(eventCount))
+}
+
+func (w *Window) checkToggleKeyState() map[hid.KeyboardKey]bool {
+	mask := C.get_toggle_key_state()
+
+	caps := (mask & 1) != 0
+	num := (mask & 2) != 0
+	scroll := (mask & 4) != 0
+
+	return map[hid.KeyboardKey]bool{
+		hid.KeyboardKeyCapsLock:   caps,
+		hid.KeyboardKeyNumLock:    num,
+		hid.KeyboardKeyScrollLock: scroll,
+	}
+}
+
+func (w *Window) createWindow(windowName string, x, y int, _ any) {
+	title := C.CString(windowName)
+	defer C.free(unsafe.Pointer(title))
+	w.lookupId = nextLookupId.Add(1)
+	windowLookup.Store(w.lookupId, w)
+	C.window_main(title, C.int(w.width), C.int(w.height),
+		C.int(x), C.int(y), C.uint64_t(w.lookupId))
+}
+
+func (w *Window) showWindow() {
+	C.window_show(w.handle)
+}
+
+func destroyWindow(handle unsafe.Pointer) {
+	C.window_destroy(handle)
+}
+
+func (w *Window) poll() {
+	C.window_poll_controller(w.handle)
+	C.window_poll(w.handle)
+}
+
+func (w *Window) cursorStandard() {
+	C.window_cursor_standard(w.handle)
+}
+
+func (w *Window) cursorHand() {
+	C.window_cursor_standard(w.handle) // fallback
+}
+
+func (w *Window) cursorIbeam() {
+	C.window_cursor_ibeam(w.handle)
+}
+
+func (w *Window) cursorSizeAll() {
+	C.window_cursor_size_all(w.handle)
+}
+
+func (w *Window) cursorSizeNS() {
+	C.window_cursor_size_ns(w.handle)
+}
+
+func (w *Window) cursorSizeWE() {
+	C.window_cursor_size_we(w.handle)
+}
+
+func (w *Window) copyToClipboard(text string) {
+	clipboard.Write(clipboard.FmtText, []byte(text))
+}
+
+func (w *Window) clipboardContents() string {
+	return string(clipboard.Read(clipboard.FmtText))
+}
+
+func (w *Window) sizeMM() (int, int, error) {
+	dpmm := float64(C.window_dpi(w.handle))
+	if dpmm <= 0 {
+		return 0, 0, errors.New("invalid dpmm")
+	}
+	return int(float64(w.width) / dpmm), int(float64(w.height) / dpmm), nil
+}
+
+func (w *Window) cHandle() unsafe.Pointer   { return C.window(w.handle) }
+func (w *Window) cInstance() unsafe.Pointer { return C.display(w.handle) }
+
+func (w *Window) focus() {
+	C.window_focus(w.handle)
+}
+
+func (w *Window) position() (x, y int) {
+	C.window_position(w.handle, (*C.int)(unsafe.Pointer(&x)), (*C.int)(unsafe.Pointer(&y)))
+	return x, y
+}
+
+func (w *Window) setPosition(x, y int) {
+	C.window_set_position(w.handle, C.int(x), C.int(y))
+}
+
+func (w *Window) setSize(width, height int) {
+	C.window_set_size(w.handle, C.int(width), C.int(height))
+}
+
+func (w *Window) showCursor() {
+	C.window_show_cursor(w.handle)
+}
+
+func (w *Window) hideCursor() {
+	C.window_hide_cursor(w.handle)
+}
+
+func (w *Window) invalidateMonitorCache() {
+	C.window_invalidate_monitor_cache(w.handle)
+}
+
+func (w *Window) monitorCount() int {
+	return int(C.screen_count(w.handle))
+}
+
+func (w *Window) monitorResolutions() []MonitorResolution {
+	count := int(C.screen_resolutions(w.handle, nil, 0))
+	if count <= 0 {
+		return nil
+	}
+
+	native := make([]C.MonitorResolution, count)
+	found := int(C.screen_resolutions(
+		w.handle, &native[0], C.int(len(native))))
+	if found > len(native) {
+		native = make([]C.MonitorResolution, found)
+		found = int(C.screen_resolutions(
+			w.handle, &native[0], C.int(len(native))))
+	}
+	found = min(found, len(native))
+
+	resolutions := make([]MonitorResolution, found)
+	for i := range found {
+		resolutions[i] = MonitorResolution{
+			Width:  int(native[i].width),
+			Height: int(native[i].height),
+		}
+	}
+	return resolutions
+}
+
+func (w *Window) dotsPerMillimeter() float64 {
+	return float64(C.window_dpi(w.handle))
+}
+
+func (w *Window) screenSizeMM() (int, int, error) {
+	return int(C.window_width_mm(w.handle)), int(C.window_height_mm(w.handle)), nil
+}
+
+func (w Window) setTitle(name string) {
+	title := C.CString(name)
+	defer C.free(unsafe.Pointer(title))
+	C.window_set_title(w.handle, title)
+}
+
+// TODO: placeholder
+func (w *Window) setTitleBarMode(mode TitleBarMode) {}
+func (w *Window) getTitleBarMode() TitleBarMode     { return w.titleBarMode }
+
+func (w Window) setFullscreen() {
+	C.window_set_full_screen(w.handle)
+}
+
+func (w Window) setWindowed(width, height int) {
+	C.window_set_windowed(w.handle, C.int(width), C.int(height))
+}
+
+func (w Window) lockCursor(x, y int) {
+	C.window_lock_cursor(w.handle, C.int(x), C.int(y))
+}
+
+func (w Window) unlockCursor() {
+	C.window_unlock_cursor(w.handle)
+}
+
+func (w *Window) removeBorder() {
+	klib.NotYetImplemented(234)
+}
+
+func (w *Window) addBorder() {
+	klib.NotYetImplemented(234)
+}
+
+func (w Window) disableRawMouse() { /* Don't think this is needed for X11 */ }
+func (w Window) enableRawMouse()  { /* Don't think this is needed for X11 */ }
+
+func (w *Window) setCursorPosition(x, y int) {
+	C.window_set_cursor_position(w.handle, C.int(x), C.int(y))
+}
+
+func (w *Window) setIcon(img image.Image) {
+	b := img.Bounds()
+	width := b.Dx()
+	height := b.Dy()
+	rgba := image.NewRGBA(image.Rect(0, 0, width, height))
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			rgba.Set(x, y, img.At(x+b.Min.X, y+b.Min.Y))
+		}
+	}
+	C.window_set_icon(w.handle, C.int(width), C.int(height), (*C.uchar)(&rgba.Pix[0]))
+}
+
+// TODO: placeholder
+func (w *Window) setFileDropEnabled(enabled bool) {}
+
+func (w *Window) readApplicationAsset(path string) ([]byte, error) {
+	return []byte{}, errors.New("linux doesn't support application assets")
+}

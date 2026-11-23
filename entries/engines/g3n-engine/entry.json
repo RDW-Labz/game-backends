@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T03:50:09Z",
+ "category": "engines",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "g3n/engine \u2014 Go 3D Game Engine (http://g3n.rocks)",
+ "language": "go",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "g3n-engine",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 3128,
+ "system": "Go 3D Game Engine (http://g3n.rocks)",
+ "upstream": "https://github.com/g3n/engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

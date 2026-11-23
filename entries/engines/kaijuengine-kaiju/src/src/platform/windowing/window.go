@@ -1,0 +1,775 @@
+/******************************************************************************/
+/* window.go                                                                  */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package windowing
+
+import (
+	"errors"
+	"image"
+	"log/slog"
+	"math"
+	"runtime"
+	"slices"
+	"sync"
+	"sync/atomic"
+	"unsafe"
+
+	"kaijuengine.com/debug"
+	"kaijuengine.com/engine/assets"
+	"kaijuengine.com/engine/systems/events"
+	"kaijuengine.com/klib"
+	"kaijuengine.com/matrix"
+	"kaijuengine.com/platform/filesystem"
+	"kaijuengine.com/platform/hid"
+	"kaijuengine.com/platform/profiler/tracing"
+	"kaijuengine.com/rendering"
+)
+
+var (
+	activeWindows []*Window
+	windowLookup  sync.Map
+	nextLookupId  atomic.Uint64
+)
+
+type Window struct {
+	lookupId                 uint64
+	handle                   unsafe.Pointer
+	instance                 unsafe.Pointer
+	Mouse                    hid.Mouse
+	Keyboard                 hid.Keyboard
+	Touch                    hid.Touch
+	Stylus                   hid.Stylus
+	Controller               hid.Controller
+	Cursor                   hid.Cursor
+	GpuHost                  rendering.GPUApplication
+	GpuInstance              *rendering.GPUApplicationInstance
+	OnResize                 events.Event
+	OnMove                   events.Event
+	OnActivate               events.Event
+	OnDeactivate             events.Event
+	fileDrop                 fileDropModule
+	title                    string
+	x, y                     int
+	width, height            int
+	left, top, right, bottom int // Full window including title and borders
+	resetDragDataInFrames    int
+	cursorChangeCount        int
+	cachedScreenSizeWidthMM  int
+	cacheScreenSizeHeightMM  int
+	dpmmCache                atomic.Uint64 // cached DotsPerMillimeter (float bits); 0 = recompute
+	windowSync               chan struct{}
+	titleBarMode             TitleBarMode
+	syncRequest              bool
+	isClosed                 bool
+	isDestroyed              bool
+	isCrashed                bool
+	fatalFromNativeAPI       bool
+	resizedFromNativeAPI     bool
+	isFullScreen             bool
+}
+
+type FileSearch struct {
+	Title     string
+	Extension string
+}
+
+// MonitorResolution is the current pixel resolution of an active monitor.
+type MonitorResolution struct {
+	Width  int
+	Height int
+}
+
+type TitleBarMode uint8
+
+const (
+	TitleBarModeSystem TitleBarMode = iota
+	TitleBarModeLight
+	TitleBarModeDark
+)
+
+func (m TitleBarMode) String() string {
+	switch m {
+	case TitleBarModeSystem:
+		return "system"
+	case TitleBarModeLight:
+		return "light"
+	case TitleBarModeDark:
+		return "dark"
+	default:
+		return "unknown"
+	}
+}
+
+func New(windowName string, width, height, x, y int, adb assets.Database, platformState any) (*Window, error) {
+	defer tracing.NewRegion("windowing.New").End()
+	debug.Assert(width > 0, "window width must be greater than zero")
+	debug.Assert(height > 0, "window height must be greater than zero")
+	debug.Assert(adb != nil, "asset database cannot be nil")
+	w := &Window{
+		Keyboard:   hid.NewKeyboard(),
+		Mouse:      hid.NewMouse(),
+		Touch:      hid.NewTouch(),
+		Stylus:     hid.NewStylus(),
+		Controller: hid.NewController(),
+		width:      width,
+		height:     height,
+		x:          x,
+		y:          y,
+		left:       x,
+		top:        y,
+		right:      x + width,
+		bottom:     y + height,
+		title:      windowName,
+		windowSync: make(chan struct{}),
+	}
+	keys := w.checkToggleKeyState()
+	for key, pressed := range keys {
+		if pressed {
+			w.Keyboard.SetToggleKeyState(key, hid.KeyStateToggled)
+		}
+	}
+	activeWindows = slices.Insert(activeWindows, 0, w)
+	w.Cursor = hid.NewCursor(&w.Mouse, &w.Touch, &w.Stylus)
+	w.createWindow(windowName+"\x00\x00", x, y, platformState)
+	if w.fatalFromNativeAPI {
+		return nil, errors.New("failed to create the window " + windowName)
+	}
+	w.SetTitleBarMode(TitleBarModeSystem)
+	createWindowContext(w.handle)
+	if w.fatalFromNativeAPI {
+		return nil, errors.New("failed to create the window context for " + windowName)
+	}
+	w.showWindow()
+	if w.fatalFromNativeAPI {
+		return nil, errors.New("failed to present the window " + windowName)
+	}
+	adb.PostWindowCreate(w)
+	w.x, w.y = w.position()
+	return w, nil
+}
+
+func (w *Window) InitializeGPU(adb assets.Database) error {
+	defer tracing.NewRegion("Window.InitializeGPU").End()
+	if w.GpuInstance != nil && w.GpuInstance.IsValid() {
+		return nil
+	}
+	inst, err := w.GpuHost.CreateInstance(w, adb)
+	if err != nil {
+		return err
+	}
+	w.GpuInstance = inst
+	return nil
+}
+
+func FindWindowAtPoint(x, y int) (*Window, bool) {
+	defer tracing.NewRegion("windowing.FindWindowAtPoint").End()
+	for i := range activeWindows {
+		w := activeWindows[i]
+		if x >= w.left && x <= w.right && y >= w.top && y <= w.bottom {
+			return w, true
+		}
+	}
+	return nil, false
+}
+
+func (w *Window) IsMinimized() bool {
+	// TODO:  Is this accurate for X11?
+	return w.width == 0 || w.height == 0
+}
+
+func (w *Window) ToScreenPosition(x, y int) (int, int) {
+	leftBorder := (w.right - w.left - w.width) / 2
+	topBorder := (w.bottom - w.top - w.height) - leftBorder // Borders are same?
+	return x + (w.x + leftBorder), y + (w.y + topBorder)
+}
+
+func (w *Window) ToLocalPosition(x, y int) (int, int) {
+	leftBorder := (w.right - w.left - w.width) / 2
+	topBorder := (w.bottom - w.top - w.height) - leftBorder // Borders are same?
+	return x - (w.x + leftBorder), y - (w.y + topBorder)
+}
+
+func (w *Window) PlatformWindow() unsafe.Pointer   { return w.cHandle() }
+func (w *Window) PlatformInstance() unsafe.Pointer { return w.cInstance() }
+
+func (w *Window) IsClosed() bool  { return w.isClosed }
+func (w *Window) IsCrashed() bool { return w.isCrashed }
+func (w *Window) X() int          { return w.x }
+func (w *Window) Y() int          { return w.y }
+func (w *Window) XY() (int, int)  { return w.x, w.y }
+func (w *Window) Width() int      { return w.width }
+func (w *Window) Height() int     { return w.height }
+
+func (w *Window) Viewport() matrix.Vec4 {
+	return matrix.NewVec4(0, 0, w.width, w.height)
+}
+
+func (w *Window) Poll() {
+	defer tracing.NewRegion("Window.Poll").End()
+	if w.syncRequest {
+		w.windowSync <- struct{}{}
+		<-w.windowSync
+		w.syncRequest = false
+	}
+	w.poll()
+	w.fileDrop.processQueuedFileDrops()
+	if w.resizedFromNativeAPI {
+		slog.Debug("window resize has been requested")
+		w.resizedFromNativeAPI = false
+		w.OnResize.Execute()
+	}
+	w.isCrashed = w.isCrashed || w.fatalFromNativeAPI
+	w.Cursor.Poll()
+}
+
+func (w *Window) EndUpdate() {
+	defer tracing.NewRegion("Window.EndUpdate").End()
+	w.Keyboard.EndUpdate()
+	w.Mouse.EndUpdate()
+	w.Touch.EndUpdate()
+	w.Stylus.EndUpdate()
+	w.Controller.EndUpdate()
+	if w.resetDragDataInFrames > 0 {
+		// We wait a number of frames to allow for cross-window communication
+		w.resetDragDataInFrames--
+		if w.resetDragDataInFrames == 0 {
+			SetDragData(nil)
+		}
+	}
+}
+
+func (w *Window) SwapBuffers() {
+	defer tracing.NewRegion("Window.SwapBuffers").End()
+	inst := w.GpuInstance
+	if inst == nil || !inst.IsValid() {
+		return
+	}
+	if inst.PrimaryDevice().SwapFrame(w, inst, int32(w.Width()), int32(w.Height())) {
+		swapBuffers(w.handle)
+	}
+}
+
+func (w *Window) SwapBuffersWithContainer(container rendering.RenderingContainer, width, height int32) bool {
+	defer tracing.NewRegion("Window.SwapBuffersWithContainer").End()
+	inst := w.GpuInstance
+	if inst == nil || !inst.IsValid() {
+		return false
+	}
+	if inst.PrimaryDevice().SwapFrame(container, inst, width, height) {
+		swapBuffers(w.handle)
+		return true
+	}
+	return false
+}
+
+// DotsPerMillimeter returns the window's DPI scaled to dots/mm. The underlying
+// platform query is a cgo call (e.g. cocoa_get_backing_scale_factor on macOS)
+// and was being invoked for every CSS length resolution during layout, which
+// dominated CPU. The value only changes on resize / display change, so it is
+// cached here and invalidated by the resize/move handlers. Cache is lock-free
+func (w *Window) DotsPerMillimeter() float64 {
+	if bits := w.dpmmCache.Load(); bits != 0 {
+		return math.Float64frombits(bits)
+	}
+	v := w.dotsPerMillimeter()
+	if v > 0 {
+		w.dpmmCache.Store(math.Float64bits(v))
+	}
+	return v
+}
+
+func (w *Window) MonitorCount() int {
+	count := w.monitorCount()
+	if count < 1 {
+		return 1
+	}
+	return count
+}
+
+// MonitorResolutions returns the current pixel resolution of each active
+// monitor. The number of connected, active monitors is len(result).
+func (w *Window) MonitorResolutions() []MonitorResolution {
+	if w == nil {
+		return nil
+	}
+	return w.monitorResolutions()
+}
+
+func (w *Window) SizeMM() (int, int, error) {
+	return w.sizeMM()
+}
+
+func (w *Window) ScreenSizeMM() (int, int, error) {
+	var err error
+	if w.cachedScreenSizeWidthMM == 0 {
+		w.cachedScreenSizeWidthMM, w.cacheScreenSizeHeightMM, err = w.screenSizeMM()
+	}
+	return w.cachedScreenSizeWidthMM, w.cacheScreenSizeHeightMM, err
+}
+
+func (w *Window) IsPhoneSize() bool {
+	wmm, hmm, _ := w.SizeMM()
+	return wmm < 178 || hmm < 170
+}
+
+func (w *Window) IsPCSize() bool {
+	wmm, hmm, _ := w.SizeMM()
+	return wmm > 254 || hmm > 254
+}
+
+func (w *Window) IsTabletSize() bool {
+	return !w.IsPhoneSize() && !w.IsPCSize()
+}
+
+func DPI2PX(pixels, mm, targetMM int) int {
+	debug.Assert(mm != 0, "DPI2PX mm cannot be zero")
+	return targetMM * (pixels / mm)
+}
+
+func DPI2PXF(pixels, mm, targetMM float64) float64 {
+	debug.Assert(mm != 0, "DPI2PXF mm cannot be zero")
+	return targetMM * (pixels / mm)
+}
+
+func (w *Window) CursorStandard() {
+	w.cursorChangeCount = max(0, w.cursorChangeCount-1)
+	if w.cursorChangeCount == 0 {
+		w.cursorStandard()
+	}
+}
+
+func (w *Window) CursorHand() {
+	if w.canChangeCursor() {
+		w.cursorHand()
+	}
+	w.cursorChangeCount++
+}
+
+func (w *Window) CursorIbeam() {
+	if w.canChangeCursor() {
+		w.cursorIbeam()
+	}
+	w.cursorChangeCount++
+}
+
+func (w *Window) CursorSizeAll() {
+	if w.canChangeCursor() {
+		w.cursorSizeAll()
+	}
+	w.cursorChangeCount++
+}
+
+func (w *Window) CursorSizeNS() {
+	if w.canChangeCursor() {
+		w.cursorSizeNS()
+	}
+	w.cursorChangeCount++
+}
+
+func (w *Window) CursorSizeWE() {
+	if w.canChangeCursor() {
+		w.cursorSizeWE()
+	}
+	w.cursorChangeCount++
+}
+
+func (w *Window) CopyToClipboard(text string) { w.copyToClipboard(text) }
+func (w *Window) ClipboardContents() string   { return w.clipboardContents() }
+
+func (w *Window) Destroy() {
+	defer tracing.NewRegion("Window.Destroy").End()
+	if w.isDestroyed {
+		return
+	}
+	w.isDestroyed = true
+	w.isClosed = true
+	w.removeFromActiveWindows()
+	w.DestroyGPU()
+	// TODO:  Pass both to not have this if statement
+	if runtime.GOOS == "darwin" {
+		destroyWindow(w.instance)
+	} else {
+		destroyWindow(w.handle)
+	}
+	close(w.windowSync)
+}
+
+func (w *Window) DestroyGPU() {
+	defer tracing.NewRegion("Window.DestroyGPU").End()
+	if w.GpuInstance == nil {
+		return
+	}
+	w.GpuHost.Destroy()
+	w.GpuInstance = nil
+	w.GpuHost = rendering.GPUApplication{}
+}
+
+func (w *Window) Focus() {
+	defer tracing.NewRegion("Window.Focus").End()
+	w.focus()
+	w.cursorStandard()
+}
+
+func (w *Window) Position() (x int, y int) {
+	x, y = w.position()
+	w.x = x
+	w.y = y
+	return x, y
+}
+
+func (w *Window) SetPosition(x, y int) {
+	w.setPosition(x, y)
+	w.x = x
+	w.y = y
+}
+
+func (w *Window) SetSize(width, height int) {
+	debug.Assert(width >= 0, "window width cannot be negative")
+	debug.Assert(height >= 0, "window height cannot be negative")
+	w.setSize(width, height)
+	w.width = width
+	w.height = height
+}
+
+func (w *Window) RemoveBorder()      { w.removeBorder() }
+func (w *Window) AddBorder()         { w.addBorder() }
+func (w *Window) ShowCursor()        { w.showCursor() }
+func (w *Window) HideCursor()        { w.hideCursor() }
+func (w *Window) IsFullScreen() bool { return w.isFullScreen }
+func (w *Window) UnlockCursor()      { w.unlockCursor() }
+
+func (w *Window) LockCursor(x, y int) {
+	debug.Assert(w.width > 0, "cannot lock cursor: window width must be greater than zero")
+	debug.Assert(w.height > 0, "cannot lock cursor: window height must be greater than zero")
+	w.lockCursor(x, y)
+	w.Mouse.SetPosition(float32(x), float32(y), float32(w.width), float32(w.height))
+}
+
+func (w *Window) SetFullscreen() {
+	if w.isFullScreen {
+		return
+	}
+	w.setFullscreen()
+	w.isFullScreen = true
+}
+
+func (w *Window) SetWindowed(width, height int) {
+	debug.Assert(width > 0, "windowed mode width must be greater than zero")
+	debug.Assert(height > 0, "windowed mode height must be greater than zero")
+	w.setWindowed(width, height)
+	w.isFullScreen = false
+}
+
+func (w *Window) Center() (x int, y int) {
+	x, y = w.Position()
+	return x + w.Width()/2, y + w.Height()/2
+}
+
+func (w *Window) OpenFileDialog(startPath string, extensions []filesystem.DialogExtension, ok func(path string), cancel func()) error {
+	debug.Assert(ok != nil, "OpenFileDialog requires a non-nil ok callback")
+	w.disableRawMouse()
+	return filesystem.OpenFileDialogWindow(startPath, extensions, func(path string) {
+		w.enableRawMouse()
+		ok(path)
+	}, func() {
+		w.enableRawMouse()
+		if cancel != nil {
+			cancel()
+		}
+	}, w.handle)
+}
+
+func (w *Window) SaveFileDialog(startPath string, fileName string, extensions []filesystem.DialogExtension, ok func(path string), cancel func()) error {
+	debug.Assert(ok != nil, "SaveFileDialog requires a non-nil ok callback")
+	w.disableRawMouse()
+	return filesystem.OpenSaveFileDialogWindow(startPath, fileName, extensions, func(path string) {
+		w.enableRawMouse()
+		ok(path)
+	}, func() {
+		w.enableRawMouse()
+		if cancel != nil {
+			cancel()
+		}
+	}, w.handle)
+}
+
+func (w *Window) EnableRawMouseInput()  { w.enableRawMouse() }
+func (w *Window) DisableRawMouseInput() { w.disableRawMouse() }
+
+func (w *Window) SetTitle(name string) { w.setTitle(name) }
+
+func (w *Window) SetTitleBarMode(mode TitleBarMode) {
+	debug.Assert(mode <= TitleBarModeDark, "Invalid TitleBarMode")
+	w.titleBarMode = mode
+	w.setTitleBarMode(mode)
+}
+func (w *Window) TitleBarMode() TitleBarMode { return w.getTitleBarMode() }
+
+func (w *Window) SetIcon(img image.Image) {
+	if img == nil {
+		slog.Error("failed to set the window icon, a nil image was supplied")
+		return
+	}
+	w.setIcon(img)
+}
+
+func (w *Window) SetCursorPosition(x, y int) { w.setCursorPosition(x, y) }
+
+// ReadApplicationAsset will read an asset bound to the application. This is
+// typically only useful on mobile platforms like Android. Platforms like Linux,
+// Windows, and Mac will return an error, use #ReadFile instead
+func (w *Window) ReadApplicationAsset(path string) ([]byte, error) {
+	return w.readApplicationAsset(path)
+}
+
+func (w *Window) requestSync() {
+	w.syncRequest = true
+}
+
+func (w *Window) canChangeCursor() bool { return w.cursorChangeCount == 0 }
+
+func (w *Window) processWindowResizeEvent(evt *WindowResizeEvent) {
+	w.width = int(evt.width)
+	w.height = int(evt.height)
+	w.left = int(evt.left)
+	w.top = int(evt.top)
+	w.right = int(evt.right)
+	w.bottom = int(evt.bottom)
+	w.cachedScreenSizeWidthMM, w.cacheScreenSizeHeightMM = 0, 0
+	w.dpmmCache.Store(0)
+}
+
+func (w *Window) processWindowMoveEvent(evt *WindowMoveEvent) {
+	ww := w.right - w.left
+	wh := w.bottom - w.top
+	w.x = int(evt.x)
+	w.y = int(evt.y)
+	w.left = w.x
+	w.top = w.y
+	w.right = w.x + ww
+	w.bottom = w.y + wh
+	w.cachedScreenSizeWidthMM, w.cacheScreenSizeHeightMM = 0, 0
+	w.dpmmCache.Store(0)
+	w.invalidateMonitorCache()
+	w.OnMove.Execute()
+}
+
+func (w *Window) processWindowActivityEvent(evt *WindowActivityEvent) {
+	defer tracing.NewRegion("Window.processWindowActivityEvent").End()
+	switch evt.activityType {
+	case windowEventActivityTypeMinimize:
+		// TODO:  Not implemented yet
+	case windowEventActivityTypeMaximize:
+		// TODO:  Not implemented yet
+	case windowEventActivityTypeClose:
+		w.isClosed = true
+	case windowEventActivityTypeFocus:
+		w.becameActive()
+	case windowEventActivityTypeBlur:
+		w.becameInactive()
+	}
+}
+
+func (w *Window) processMouseMoveEvent(evt *MouseMoveWindowEvent) {
+	defer tracing.NewRegion("Window.processMouseMoveEvent").End()
+	w.Mouse.SetPosition(float32(evt.x), float32(evt.y), float32(w.width), float32(w.height))
+	UpdateDragData(w, int(evt.x), int(evt.y))
+}
+
+func (w *Window) processMouseButtonEvent(evt *MouseButtonWindowEvent) {
+	defer tracing.NewRegion("Window.processMouseButtonEvent").End()
+	var targetButton int
+	switch evt.buttonId {
+	case nativeMouseButtonLeft:
+		targetButton = hid.MouseButtonLeft
+	case nativeMouseButtonMiddle:
+		targetButton = hid.MouseButtonMiddle
+	case nativeMouseButtonRight:
+		targetButton = hid.MouseButtonRight
+	case nativeMouseButtonX1:
+		targetButton = hid.MouseButtonX1
+	case nativeMouseButtonX2:
+		targetButton = hid.MouseButtonX2
+	}
+	switch evt.action {
+	case windowEventButtonTypeDown:
+		w.Mouse.SetDown(targetButton)
+	case windowEventButtonTypeUp:
+		w.Mouse.SetUp(targetButton)
+		if targetButton == hid.MouseButtonLeft {
+			w.resetDragDataInFrames = 2
+			UpdateDragDrop(w, int(w.Mouse.SX), int(w.Mouse.SY))
+		}
+	}
+}
+
+func (w *Window) processMouseScrollEvent(evt *MouseScrollWindowEvent) {
+	defer tracing.NewRegion("Window.processMouseScrollEvent").End()
+	s := w.Mouse.Scroll()
+	w.Mouse.SetScroll(s.X()+float32(evt.deltaX), s.Y()+float32(evt.deltaY))
+}
+
+func (w *Window) processKeyboardButtonEvent(evt *KeyboardButtonWindowEvent) {
+	defer tracing.NewRegion("Window.processKeyboardButtonEvent").End()
+	switch evt.action {
+	case windowEventButtonTypeDown:
+		key := hid.ToKeyboardKey(int(evt.buttonId))
+		if !w.Keyboard.IsToggleKey(key) {
+			w.Keyboard.SetKeyDown(key)
+		}
+	case windowEventButtonTypeUp:
+		key := hid.ToKeyboardKey(int(evt.buttonId))
+		if w.Keyboard.IsToggleKey(key) {
+			w.Keyboard.ToggleKey(key)
+		} else {
+			w.Keyboard.SetKeyUp(key)
+		}
+	}
+}
+
+func (w *Window) processControllerStateEvent(evt *ControllerStateWindowEvent) {
+	defer tracing.NewRegion("Window.processControllerStateEvent").End()
+	if evt.connectionType == windowEventControllerConnectionTypeDisconnected {
+		w.Controller.Disconnected(int(evt.controllerId))
+	} else {
+		w.Controller.Connected(int(evt.controllerId))
+	}
+	for i := 0; i < int(unsafe.Sizeof(evt.buttons)*8); i++ {
+		buttonId := evt.buttons & (1 << i)
+		btn, err := hid.ToControllerButton(i)
+		if err != nil {
+			continue
+		}
+		if buttonId != 0 {
+			w.Controller.SetButtonDown(int(evt.controllerId), btn)
+		} else {
+			w.Controller.SetButtonUp(int(evt.controllerId), btn)
+		}
+	}
+	id := int(evt.controllerId)
+	w.Controller.SetAxis(id, hid.ControllerAxisLeftHorizontal, float32(evt.thumbLX)/math.MaxInt16)
+	w.Controller.SetAxis(id, hid.ControllerAxisLeftVertical, float32(evt.thumbLY)/math.MaxInt16)
+	w.Controller.SetAxis(id, hid.ControllerAxisRightHorizontal, float32(evt.thumbRX)/math.MaxInt16)
+	w.Controller.SetAxis(id, hid.ControllerAxisRightVertical, float32(evt.thumbRY)/math.MaxInt16)
+	w.Controller.SetAxis(id, hid.ControllerAxisLeftTrigger, float32(evt.leftTrigger)/math.MaxUint8)
+	w.Controller.SetAxis(id, hid.ControllerAxisRightTrigger, float32(evt.rightTrigger)/math.MaxUint8)
+}
+
+func (w *Window) processTouchStateEvent(evt *TouchStateWindowEvent) {
+	defer tracing.NewRegion("Window.processTouchStateEvent").End()
+	switch evt.actionState {
+	case touchActionStateUp:
+		w.Touch.SetUp(int64(evt.index), evt.x, evt.y, float32(w.height))
+	case touchActionStateMove:
+		w.Touch.SetMoved(int64(evt.index), evt.x, evt.y, float32(w.height))
+	case touchActionStateCancel:
+		w.Touch.Cancel()
+	}
+}
+
+func (w *Window) processStylusStateEvent(evt *StylusStateWindowEvent) {
+	defer tracing.NewRegion("Window.processStylusStateEvent").End()
+	switch evt.actionState {
+	case stylusActionStateHoverEnter:
+		w.Stylus.SetActionState(hid.StylusActionHoverEnter)
+	case stylusActionStateHoverMove:
+		w.Stylus.SetActionState(hid.StylusActionHoverMove)
+	case stylusActionStateHoverExit:
+		w.Stylus.SetActionState(hid.StylusActionHoverExit)
+	case stylusActionStateDown:
+		w.Stylus.SetActionState(hid.StylusActionDown)
+	case stylusActionStateMove:
+		w.Stylus.SetActionState(hid.StylusActionMove)
+	case stylusActionStateUp:
+		w.Stylus.SetActionState(hid.StylusActionUp)
+	case stylusActionStateNone:
+	default:
+		w.Stylus.SetActionState(hid.StylusActionNone)
+	}
+	w.Stylus.Set(evt.x, evt.y, evt.pressure, evt.distance, float32(w.height))
+}
+
+func (w *Window) removeFromActiveWindows() {
+	defer tracing.NewRegion("Window.removeFromActiveWindows").End()
+	for i := range activeWindows {
+		if activeWindows[i] == w {
+			activeWindows = slices.Delete(activeWindows, i, i+1)
+			break
+		}
+	}
+	windowLookup.Delete(w.lookupId)
+}
+
+func (w *Window) becameInactive() {
+	defer tracing.NewRegion("Window.becameInactive").End()
+	w.disableRawMouse()
+	w.Keyboard.Reset()
+	w.Mouse.Reset()
+	w.Touch.Reset()
+	w.Stylus.Reset()
+	w.Controller.Reset()
+	w.OnDeactivate.Execute()
+}
+
+func (w *Window) becameActive() {
+	defer tracing.NewRegion("Window.becameActive").End()
+	w.cursorStandard()
+	idx := -1
+	for i := range activeWindows {
+		if activeWindows[i] == w {
+			idx = i
+			break
+		}
+	}
+	if idx >= 0 {
+		klib.SliceMove(activeWindows, idx, 0)
+	}
+	w.enableRawMouse()
+	w.OnActivate.Execute()
+}
+
+func goProcessEventsCommon(goWindow uint64, events unsafe.Pointer, eventCount uint32) {
+	defer tracing.NewRegion("windowing.goProcessEventsCommon").End()
+	gw, ok := windowLookup.Load(goWindow)
+	if !ok || gw == nil {
+		return
+	}
+	win := gw.(*Window)
+	for range eventCount {
+		eType, body := readType(events)
+		switch eType {
+		case windowEventTypeSetHandle:
+			evt := asSetHandleEvent(body)
+			win.handle = evt.hwnd
+			win.instance = evt.instance
+		case windowEventTypeActivity:
+			win.processWindowActivityEvent(asWindowActivityEvent(body))
+		case windowEventTypeMove:
+			win.processWindowMoveEvent(asWindowMoveEvent(body))
+		case windowEventTypeResize:
+			win.processWindowResizeEvent(asWindowResizeEvent(body))
+			win.resizedFromNativeAPI = true
+		case windowEventTypeMouseMove:
+			win.processMouseMoveEvent(asMouseMoveWindowEvent(body))
+		case windowEventTypeMouseScroll:
+			win.processMouseScrollEvent(asMouseScrollWindowEvent(body))
+		case windowEventTypeMouseButton:
+			win.processMouseButtonEvent(asMouseButtonWindowEvent(body))
+		case windowEventTypeKeyboardButton:
+			win.processKeyboardButtonEvent(asKeyboardButtonWindowEvent(body))
+		case windowEventTypeControllerState:
+			win.processControllerStateEvent(asControllerStateWindowEvent(body))
+		case windowEventTypeTouchState:
+			win.processTouchStateEvent(asTouchStateWindowEvent(body))
+		case windowEventTypeStylusState:
+			win.processStylusStateEvent(asStylusStateWindowEvent(body))
+		case windowEventTypeFatal:
+			events = body
+			win.fatalFromNativeAPI = true
+		}
+		events = unsafe.Pointer(uintptr(body) + evtUnionSize)
+	}
+}

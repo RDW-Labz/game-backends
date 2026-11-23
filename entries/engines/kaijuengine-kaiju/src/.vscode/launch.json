@@ -1,0 +1,112 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Editor",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/src",
+			"cwd": "${workspaceFolder}",
+			"buildFlags": "-tags=debug,editor,filedrop,rawsrc",
+			"env": {
+				"CGO_ENABLED": "1",
+			}
+		}, {
+			"name": "Trace Editor",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/src",
+			"cwd": "${workspaceFolder}",
+			"args": ["-trace"],
+			"buildFlags": "-tags=debug,editor,filedrop,rawsrc",
+			"env": {
+				"CGO_ENABLED": "1",
+			}
+		}, {
+			"name": "Editor Release",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/src",
+			"cwd": "${workspaceFolder}",
+			"buildFlags": "-tags=editor,filedrop",
+			"env": {
+				"CGO_ENABLED": "1",
+			}
+		}, {
+			"name": "Raw Game",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/src",
+			"cwd": "${workspaceFolder}/src",
+			"env": {
+				"CGO_ENABLED": "1",
+			}
+		}, {
+			"name": "Documentation Generator",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/src/generators/api",
+			"cwd": "${workspaceFolder}",
+			"buildFlags": "-tags=generator",
+			"env": {
+				"CGO_ENABLED": "1",
+			}
+		}, {
+			"name": "Copy Headers",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/src/generators/copy_header",
+			"cwd": "${workspaceFolder}",
+			"buildFlags": "-tags=generator",
+			"env": {
+				"CGO_ENABLED": "1",
+			}
+		}, {
+			"name": "Debug Build Android",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/src/generators/engine_builds/engine_builds_android",
+			"cwd": "${workspaceFolder}",
+			"buildFlags": "-tags=debug,generator",
+			"env": {
+				"CGO_ENABLED": "1",
+			}
+		},
+		{
+			"name": "Spv Prebuilt Generator",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/src/generators/spirv/main.go",
+			"cwd": "${workspaceFolder}/src",
+			"buildFlags": "-tags=generator",
+			"env": {
+				"CGO_ENABLED": "1",
+			}
+		}, {
+			"name": "Integration Test",
+			"type": "go",
+			"request": "launch",
+			"mode": "auto",
+			"program": "${workspaceFolder}/src",
+			"cwd": "${workspaceFolder}",
+			"buildFlags": "-tags=debug,editor,filedrop,rawsrc",
+			"args": [
+				"-integrationtest=screenshot"
+			],
+			"env": {
+				"CGO_ENABLED": "1",
+			}
+		}
+	]
+}

@@ -1,0 +1,734 @@
+/******************************************************************************/
+/* font.go                                                                    */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package rendering
+
+import (
+	"bytes"
+	"encoding/binary"
+	"fmt"
+	"log/slog"
+	"slices"
+	"sync"
+	"unicode"
+	"unicode/utf8"
+	"unsafe"
+
+	"kaijuengine.com/engine/assets"
+	"kaijuengine.com/engine/cameras"
+	"kaijuengine.com/klib"
+	"kaijuengine.com/matrix"
+	"kaijuengine.com/platform/profiler/tracing"
+	"kaijuengine.com/rendering/textures"
+)
+
+const (
+	distanceFieldRange = 4.0
+	invalidRuneProxy   = '_'
+)
+
+// We need overlapping letters to be drawn first when rendering blocks of text,
+// otherwise, when they have a background, they will clip the text that they
+// are overlapping
+var overlappingLetters = []rune{'j', 'J', ' '}
+
+type FontJustify int
+
+const (
+	FontJustifyLeft = FontJustify(iota)
+	FontJustifyCenter
+	FontJustifyRight
+	FontJustifyJustify
+)
+
+type FontBaseline int
+
+const (
+	FontBaselineBottom = FontBaseline(iota)
+	FontBaselineCenter
+	FontBaselineTop
+)
+
+var (
+	DefaultFontEMSize = 14.0 * UIScale
+)
+
+type fontBinMetrics struct {
+	EMSize, LineHeight, Ascender, Descender, UnderlineY, UnderlineThickness float32
+}
+
+type fontBinChar struct {
+	letter                   rune
+	advance                  float32
+	planeBounds, atlasBounds [4]float32
+}
+
+type fontBin struct {
+	texture                           *Texture
+	width, height                     int32
+	metrics                           fontBinMetrics
+	letters                           map[rune]fontBinChar
+	cachedLetters, cachedOrthoLetters map[rune]*cachedLetterMesh
+}
+
+type cachedLetterMesh struct {
+	mesh           *Mesh
+	pxRange        matrix.Vec2
+	uvs            matrix.Vec4
+	material       *Material
+	texture        *Texture
+	transformation matrix.Mat4
+}
+
+type FontCache struct {
+	textMaterial                 *Material
+	textOrthoMaterial            *Material
+	textMaterialTransparent      *Material
+	textOrthoMaterialTransparent *Material
+	device                       *GPUDevice
+	renderCaches                 RenderCaches
+	assetDb                      assets.Database
+	fontFaces                    map[string]fontBin
+	instanceKey                  int64
+	FaceMutex                    sync.RWMutex
+}
+
+type TextShaderData struct {
+	ShaderDataBase
+	UVs     matrix.Vec4
+	FgColor matrix.Color
+	BgColor matrix.Color
+	Scissor matrix.Vec4
+	PxRange matrix.Vec2
+}
+
+func (s TextShaderData) Size() int {
+	return int(ShaderBaseDataSize +
+		unsafe.Sizeof(TextShaderData{}.UVs) +
+		unsafe.Sizeof(TextShaderData{}.FgColor) +
+		unsafe.Sizeof(TextShaderData{}.BgColor) +
+		unsafe.Sizeof(TextShaderData{}.Scissor) +
+		unsafe.Sizeof(TextShaderData{}.PxRange))
+}
+
+func msdfAtlasPxRange() matrix.Vec2 {
+	return matrix.Vec2{distanceFieldRange, distanceFieldRange}
+}
+
+func (cache *FontCache) TransparentMaterial(target *Material) *Material {
+	defer tracing.NewRegion("FontCache.TransparentMaterial").End()
+	if target.SelectRoot() == cache.textMaterial.SelectRoot() {
+		return cache.textMaterialTransparent
+	} else if target.SelectRoot() == cache.textOrthoMaterial.SelectRoot() {
+		return cache.textOrthoMaterialTransparent
+	} else if target.SelectRoot() == cache.textMaterialTransparent.SelectRoot() ||
+		target.SelectRoot() == cache.textOrthoMaterialTransparent.SelectRoot() {
+		return target
+	}
+	slog.Error("invalid material used for getting transparent text material", "material", target.Id)
+	return nil
+}
+
+// OpaqueMaterial returns the opaque counterpart for a text material. This is
+// used by cutout text: the fragment shader discards pixels outside the glyph,
+// leaving a transparent background while writing fully opaque glyph pixels.
+func (cache *FontCache) OpaqueMaterial(target *Material) *Material {
+	defer tracing.NewRegion("FontCache.OpaqueMaterial").End()
+	root := target.SelectRoot()
+	if root == cache.textMaterial.SelectRoot() || root == cache.textMaterialTransparent.SelectRoot() {
+		return cache.textMaterial.CreateInstance(target.Textures)
+	}
+	if root == cache.textOrthoMaterial.SelectRoot() || root == cache.textOrthoMaterialTransparent.SelectRoot() {
+		return cache.textOrthoMaterial.CreateInstance(target.Textures)
+	}
+	slog.Error("invalid material used for getting opaque text material", "material", target.Id)
+	return nil
+}
+
+func (cache *FontCache) nextInstanceKey(key rune) string {
+	cache.instanceKey++
+	return fmt.Sprintf("font_%c_%d", key, cache.instanceKey)
+}
+
+func (cache *FontCache) requireFace(face FontFace) {
+	cache.FaceMutex.RLock()
+	if _, ok := cache.fontFaces[face.string()]; !ok {
+		defer tracing.NewRegion("FontCache.requireFace").End()
+		cache.FaceMutex.RUnlock()
+		cache.FaceMutex.Lock()
+		defer cache.FaceMutex.Unlock()
+		cache.initFont(face, cache.assetDb)
+	} else {
+		cache.FaceMutex.RUnlock()
+	}
+}
+
+func (cache *FontCache) PreloadFace(face FontFace) {
+	defer tracing.NewRegion("FontCache.PreloadFace").End()
+	cache.requireFace(face)
+}
+
+func (cache *FontCache) EMSize(face FontFace) float32 {
+	cache.requireFace(face)
+	return cache.fontFaces[face.string()].metrics.EMSize * DefaultFontEMSize
+}
+
+func NewFontCache(device *GPUDevice, assetDb assets.Database) FontCache {
+	defer tracing.NewRegion("rendering.NewFontCache").End()
+	return FontCache{
+		device:    device,
+		assetDb:   assetDb,
+		fontFaces: make(map[string]fontBin),
+	}
+	// TODO:  Deal with the freeing of mesh/shaders/textures
+}
+
+func (c fontBinChar) Width() float32 {
+	return c.planeBounds[2] - c.planeBounds[0]
+}
+
+func (c fontBinChar) Height() float32 {
+	return c.planeBounds[3] - c.planeBounds[1]
+}
+
+func (c fontBinChar) AtlasWidth() float32 {
+	return c.atlasBounds[2] - c.atlasBounds[0]
+}
+
+func (c fontBinChar) AtlasHeight() float32 {
+	return c.atlasBounds[3] - c.atlasBounds[1]
+}
+
+func findBinChar(font fontBin, letter rune) fontBinChar {
+	cached, ok := font.letters[letter]
+	if !ok {
+		cached = font.letters[invalidRuneProxy]
+	}
+	return cached
+}
+
+func (cache *FontCache) charCountInWidth(font fontBin, runes []rune, maxWidth, scale, letterSpacing float32) int {
+	wrap := false
+	spaceIndex := 0
+	wx := float32(0.0)
+	textLen := len(runes)
+	for i, r := range runes {
+		if r == '\n' {
+			spaceIndex = i
+			wrap = true
+			break
+		} else if unicode.IsSpace(r) {
+			spaceIndex = i
+		}
+		// TODO:  Optimize this to use a linear array
+		ch := findBinChar(font, r)
+		wx += ch.advance * scale
+		if i < textLen-1 {
+			wx += letterSpacing
+		}
+		if wx >= maxWidth && spaceIndex != 0 {
+			wrap = true
+			break
+		}
+	}
+	if !wrap {
+		return textLen
+	} else {
+		return spaceIndex + 1
+	}
+}
+
+func (cache *FontCache) cachedMeshLetter(font fontBin, letter rune, isOrtho bool) *cachedLetterMesh {
+	defer tracing.NewRegion("FontCache.cachedMeshLetter").End()
+	var outLetter *cachedLetterMesh
+	var ok bool
+	if isOrtho {
+		outLetter, ok = font.cachedOrthoLetters[letter]
+	} else {
+		outLetter, ok = font.cachedLetters[letter]
+	}
+	if !ok {
+		if isOrtho {
+			outLetter = font.cachedOrthoLetters[invalidRuneProxy]
+		} else {
+			outLetter = font.cachedLetters[invalidRuneProxy]
+		}
+	}
+	return outLetter
+}
+
+func (cache *FontCache) createLetterMesh(font fontBin, key rune, c fontBinChar, meshCache *MeshCache) {
+	defer tracing.NewRegion("FontCache.createLetterMesh").End()
+	mat := cache.textMaterial
+	oMat := cache.textOrthoMaterial
+
+	w := c.Width()
+	h := -c.Height()
+
+	mesh := NewMeshScreenQuad(meshCache)
+	transformation := matrix.Mat4Identity()
+	transformation.Scale(matrix.NewVec3(w, h, 1))
+	var clm cachedLetterMesh
+	clm.mesh = mesh
+	clm.material = mat
+	clm.texture = font.texture
+	clm.transformation = transformation
+	uvx := c.atlasBounds[0]
+	uvy := c.atlasBounds[3]
+	uvw := c.atlasBounds[2] - c.atlasBounds[0]
+	uvh := c.atlasBounds[1] - c.atlasBounds[3]
+	clm.uvs = matrix.NewVec4(
+		uvx/float32(font.width), uvy/float32(font.height),
+		uvw/float32(font.width), uvh/float32(font.height))
+	clm.pxRange = msdfAtlasPxRange()
+	font.cachedLetters[key] = &clm
+
+	clmCpy := clm
+	clmCpy.material = oMat
+	clmCpy.texture = font.texture
+	// TODO:  [PORT] Do we need to clone the mesh anymore?
+	//clmCpy.mesh = mesh.Clone()
+	clmCpy.mesh = mesh
+	font.cachedOrthoLetters[key] = &clmCpy
+}
+
+func (cache *FontCache) initFont(face FontFace, adb assets.Database) bool {
+	defer tracing.NewRegion("FontCache.initFont").End()
+	bin := fontBin{}
+	textureKey := face.string() + ".png"
+	bin.texture, _ = cache.renderCaches.TextureCache().Texture(textureKey, textures.TextureFilterLinear)
+	if bin.texture != nil {
+		needsReload := bin.texture.IsValid() && bin.texture.MipLevels != 1
+		bin.texture.MipLevels = 1
+		if needsReload {
+			if err := cache.renderCaches.TextureCache().ReloadTexture(textureKey, textures.TextureFilterLinear); err != nil {
+				slog.Error("failed to reload font texture without mipmaps", "texture", textureKey, "error", err)
+			}
+		}
+	}
+	bin.cachedLetters = make(map[rune]*cachedLetterMesh)
+	bin.cachedOrthoLetters = make(map[rune]*cachedLetterMesh)
+	out, _ := adb.Read(face.string() + ".bin")
+	if bin.texture == nil || out == nil || len(out) == 0 {
+		return false
+	}
+	read := bytes.NewReader(out)
+	// Create an int32 variable named count that is read from read
+	var count int32
+	binary.Read(read, binary.LittleEndian, &count)
+	binary.Read(read, binary.LittleEndian, &bin.width)
+	binary.Read(read, binary.LittleEndian, &bin.height)
+	// TODO:  Read the metrics into cache.[font]
+	binary.Read(read, binary.LittleEndian, &bin.metrics)
+	bin.letters = make(map[rune]fontBinChar, count)
+	for i := int32(0); i < count; i++ {
+		var fbc fontBinChar
+		var letter uint32
+		binary.Read(read, binary.LittleEndian, &letter)
+		fbc.letter = rune(letter)
+		//utf8_from_unicode(letter, &fbc.letter)
+		binary.Read(read, binary.LittleEndian, &fbc.advance)
+		binary.Read(read, binary.LittleEndian, &fbc.planeBounds)
+		binary.Read(read, binary.LittleEndian, &fbc.atlasBounds)
+		bin.letters[fbc.letter] = fbc
+	}
+	sample := findBinChar(bin, '-')
+	cSpace := fontBinChar{
+		letter:      ' ',
+		advance:     sample.advance,
+		planeBounds: sample.planeBounds,
+		atlasBounds: [4]float32{0.999, 0.001, 1.0, 0.0},
+	}
+	const tabRune = '\t'
+	const tabSize = 4
+	cTab := fontBinChar{
+		letter:  tabRune,
+		advance: cSpace.advance * 4,
+		planeBounds: [4]float32{
+			cSpace.planeBounds[0] * tabSize / 2,
+			cSpace.planeBounds[1],
+			cSpace.planeBounds[2] * tabSize / 2,
+			cSpace.planeBounds[3],
+		},
+		atlasBounds: cSpace.atlasBounds,
+	}
+	bin.letters[' '] = cSpace
+	bin.letters[tabRune] = cTab
+	cReturn := fontBinChar{letter: '\r', advance: 0.0,
+		planeBounds: [4]float32{0, 0, 0, 0}, atlasBounds: [4]float32{0.999, 0.001, 1.0, 0.0}}
+	bin.letters['\r'] = cReturn
+	// bin.letters is keyed by codepoint (not a dense 0..count-1 array), so range
+	// over its values to pre-create a mesh for every glyph. Indexing by i would
+	// only build meshes for codepoints < count, leaving higher glyphs (symbols,
+	// arrows, geometric shapes) to fall back to the invalidRuneProxy.
+	for r, fbc := range bin.letters {
+		cache.createLetterMesh(bin, r, fbc, cache.renderCaches.MeshCache())
+	}
+	cache.fontFaces[face.string()] = bin
+	return true
+}
+
+func (cache *FontCache) Init(caches RenderCaches) error {
+	defer tracing.NewRegion("FontCache.Init").End()
+	var err error
+	mc := caches.MaterialCache()
+	if cache.textMaterial, err = mc.Material(assets.MaterialDefinitionText3D); err != nil {
+		slog.Error("failed to load the text3d material", "error", err)
+		return err
+	}
+	if cache.textOrthoMaterial, err = mc.Material(assets.MaterialDefinitionText); err != nil {
+		slog.Error("failed to load the text material", "error", err)
+		return err
+	}
+	if cache.textMaterialTransparent, err = mc.Material(assets.MaterialDefinitionText3DTransparent); err != nil {
+		slog.Error("failed to load the transparent text3d material", "error", err)
+		return err
+	}
+	if cache.textOrthoMaterialTransparent, err = mc.Material(assets.MaterialDefinitionTextTransparent); err != nil {
+		slog.Error("failed to load the transparent text material", "error", err)
+		return err
+	}
+	cache.renderCaches = caches
+	return nil
+}
+
+func (cache *FontCache) RenderMeshes(caches RenderCaches,
+	text string, x, y, z, scale, maxWidth float32, fgColor, bgColor matrix.Color,
+	justify FontJustify, baseline FontBaseline, rootScale matrix.Vec3, instanced,
+	is3D bool, face FontFace, lineHeight float32, cam *cameras.Container) []Drawing {
+	return cache.RenderMeshesWithLetterSpacing(caches, text, x, y, z, scale, maxWidth,
+		fgColor, bgColor, justify, baseline, rootScale, instanced, is3D, face,
+		lineHeight, 0, cam)
+}
+
+func (cache *FontCache) RenderMeshesWithLetterSpacing(caches RenderCaches,
+	text string, x, y, z, scale, maxWidth float32, fgColor, bgColor matrix.Color,
+	justify FontJustify, baseline FontBaseline, rootScale matrix.Vec3, instanced,
+	is3D bool, face FontFace, lineHeight, letterSpacing float32, cam *cameras.Container) []Drawing {
+	defer tracing.NewRegion("FontCache.RenderMeshes").End()
+	cache.requireFace(face)
+	es := rootScale
+	left := -es.X() * 0.5
+	inverseWidth := 1.0 / es.X()
+	inverseHeight := 1.0 / es.Y()
+	cx := x * inverseWidth
+	cy := y * inverseHeight
+	fontFace := cache.fontFaces[face.string()]
+	var material *Material
+	if fgColor.A() < 1 || bgColor.A() < 1 {
+		if is3D {
+			material = cache.textMaterialTransparent
+		} else {
+			material = cache.textOrthoMaterialTransparent
+		}
+	} else {
+		if is3D {
+			material = cache.textMaterial
+		} else {
+			material = cache.textOrthoMaterial
+		}
+	}
+	// Iterate through all characters
+	runes := []rune(text)
+	textLen := len(runes)
+	charLen := textLen
+	//size_t lenLeft = textLen;
+	current := 0
+	fontMeshes := make([]Drawing, 0)
+	lineAdvance := fontFace.metrics.LineHeight * scale
+	if lineHeight > 0 {
+		lineAdvance = lineHeight
+	}
+	lineAdvanceNormalized := lineAdvance * inverseHeight
+	maxHeight := -lineAdvance
+	for current < textLen {
+		if maxWidth > 0 {
+			charLen = cache.charCountInWidth(fontFace, runes[current:], maxWidth, scale, letterSpacing)
+		}
+		lineWidth := float32(0.0)
+		if charLen > 0 || unicode.IsSpace(runes[current]) {
+			for i, c := range runes[current : current+charLen] {
+				if c != '\n' {
+					ch := findBinChar(fontFace, c)
+					lineWidth += ch.advance * scale
+					if i < charLen-1 {
+						lineWidth += letterSpacing
+					}
+				}
+			}
+		}
+		var xOffset, yOffset float32
+		switch justify {
+		case FontJustifyRight:
+			xOffset = left + (maxWidth - lineWidth)
+		case FontJustifyCenter:
+			xOffset = -(lineWidth * 0.5)
+		case FontJustifyJustify:
+			xOffset = left
+		case FontJustifyLeft:
+			xOffset = left
+		default:
+			xOffset = left
+		}
+		switch baseline {
+		case FontBaselineTop:
+			yOffset = (es.Y() * 0.5) + maxHeight
+		case FontBaselineCenter:
+			yOffset = maxHeight * 0.5
+		case FontBaselineBottom:
+		default:
+			yOffset = es.Y() * -0.5
+		}
+		xOffset *= inverseWidth
+		yOffset -= fontFace.metrics.Descender * scale
+		yOffset *= inverseHeight
+		justifySpaceAdvance := float32(0)
+		if justify == FontJustifyJustify && current+charLen < textLen && maxWidth > lineWidth {
+			spaceCount := 0
+			for _, c := range runes[current : current+charLen] {
+				if unicode.IsSpace(c) && c != '\n' {
+					spaceCount++
+				}
+			}
+			if spaceCount > 0 {
+				justifySpaceAdvance = (maxWidth - lineWidth) / float32(spaceCount)
+			}
+		}
+		if charLen > 0 || (unicode.IsSpace(runes[current]) && runes[current] != '\n') {
+			for i := current; i < current+charLen; i++ {
+				c := runes[i]
+				if c == '\n' {
+					continue
+				}
+				ch := findBinChar(fontFace, c)
+				xPos := cx + (ch.planeBounds[0] * scale * inverseWidth)
+				yPos := cy + (ch.planeBounds[1] * scale * inverseHeight)
+				xPos += xOffset
+				yPos += yOffset
+				w := ch.Width() * scale * inverseWidth
+				h := ch.Height() * scale * inverseHeight
+				pxRange := msdfAtlasPxRange()
+				var uvs matrix.Vec4
+				var clm *cachedLetterMesh = nil
+				if instanced {
+					clm = cache.cachedMeshLetter(fontFace, c, !is3D)
+					if clm == nil {
+						cache.createLetterMesh(fontFace, c, fontFace.letters[c], cache.renderCaches.MeshCache())
+						clm = cache.cachedMeshLetter(fontFace, c, !is3D)
+					}
+				}
+				var m *Mesh
+				model := matrix.Mat4Identity()
+				zPos := z
+				if slices.Contains(overlappingLetters, c) {
+					zPos -= 0.0001
+				}
+				if clm == nil {
+					var verts [4]Vertex
+					verts[0].Position = matrix.NewVec3(xPos, yPos, zPos)
+					verts[0].Normal = matrix.NewVec3(0.0, 0.0, 1.0)
+					verts[0].UV0 = matrix.Vec2{0.0, 1.0}
+					verts[0].Color = matrix.ColorWhite()
+					verts[1].Position = matrix.NewVec3(xPos, yPos+h, zPos)
+					verts[1].Normal = matrix.NewVec3(0.0, 0.0, 1.0)
+					verts[1].UV0 = matrix.Vec2{0.0, 0.0}
+					verts[1].Color = matrix.ColorWhite()
+					verts[2].Position = matrix.NewVec3(xPos+w, yPos+h, zPos)
+					verts[2].Normal = matrix.NewVec3(0.0, 0.0, 1.0)
+					verts[2].UV0 = matrix.Vec2{1.0, 0.0}
+					verts[2].Color = matrix.ColorWhite()
+					verts[3].Position = matrix.NewVec3(xPos+w, yPos, zPos)
+					verts[3].Normal = matrix.NewVec3(0.0, 0.0, 1.0)
+					verts[3].UV0 = matrix.Vec2{1.0, 1.0}
+					verts[3].Color = matrix.ColorWhite()
+					indexes := [6]uint32{0, 1, 2, 0, 2, 3}
+					m = caches.MeshCache().Mesh(cache.nextInstanceKey(c), verts[:], indexes[:])
+					uvx := ch.atlasBounds[0]
+					uvy := ch.atlasBounds[1]
+					uvw := ch.atlasBounds[2] - ch.atlasBounds[0]
+					uvh := ch.atlasBounds[3] - ch.atlasBounds[1]
+					uvs = matrix.NewVec4(
+						uvx/float32(fontFace.width), uvy/float32(fontFace.height),
+						uvw/float32(fontFace.width), uvh/float32(fontFace.height))
+				} else {
+					// TODO:  Scale and place the mesh based on justify, baseline, etc.
+					model.MultiplyAssign(clm.transformation)
+					model.Scale(matrix.Vec3{scale * inverseWidth, scale * inverseHeight, 1.0})
+					model.Translate(matrix.NewVec3(xPos, (yPos + h), zPos))
+					uvs = clm.uvs
+					m = clm.mesh
+				}
+				shaderData := &TextShaderData{
+					ShaderDataBase: NewShaderDataBase(),
+					FgColor:        fgColor,
+					BgColor:        bgColor,
+					PxRange:        pxRange,
+					UVs:            uvs,
+					Scissor:        matrix.Vec4{-matrix.FloatMax, -matrix.FloatMax, matrix.FloatMax, matrix.FloatMax},
+				}
+				shaderData.SetModel(model)
+				drawing := Drawing{
+					Material:   material.CreateInstance([]*Texture{fontFace.texture}),
+					Mesh:       m,
+					ShaderData: shaderData,
+					Transform:  nil,
+					ViewCuller: cam,
+				}
+				fontMeshes = append(fontMeshes, drawing)
+				cx += ch.advance * scale * inverseWidth
+				if i < current+charLen-1 {
+					cx += letterSpacing * inverseWidth
+				}
+				if justifySpaceAdvance > 0 && unicode.IsSpace(c) && c != '\n' {
+					cx += justifySpaceAdvance * inverseWidth
+				}
+			}
+		}
+		cx = x
+		cy -= lineAdvanceNormalized
+		//lenLeft -= charLen;
+		current += charLen
+	}
+	return fontMeshes
+}
+
+func (cache *FontCache) MeasureString(face FontFace, text string, scale float32) float32 {
+	return cache.MeasureStringWithLetterSpacing(face, text, scale, 0)
+}
+
+func (cache *FontCache) MeasureStringWithLetterSpacing(face FontFace, text string, scale, letterSpacing float32) float32 {
+	cache.requireFace(face)
+	x, maxX := float32(0.0), float32(0.0)
+	runes := []rune(text)
+	for i, r := range runes {
+		if r == '\n' {
+			x = 0.0
+		} else {
+			ch := findBinChar(cache.fontFaces[face.string()], r)
+			x += ch.advance * scale
+			if i < len(runes)-1 && runes[i+1] != '\n' {
+				x += letterSpacing
+			}
+			maxX = max(maxX, x)
+		}
+	}
+	return maxX
+}
+
+func (cache *FontCache) MeasureStringWithin(face FontFace, text string, scale, maxWidth float32, lineHeight float32) matrix.Vec2 {
+	return cache.MeasureStringWithinWithLetterSpacing(face, text, scale, maxWidth, lineHeight, 0)
+}
+
+func (cache *FontCache) MeasureStringWithinWithLetterSpacing(face FontFace, text string, scale, maxWidth float32, lineHeight float32, letterSpacing float32) matrix.Vec2 {
+	cache.requireFace(face)
+	fontFace := cache.fontFaces[face.string()]
+	maxHeight := fontFace.metrics.LineHeight * scale
+	if lineHeight != 0 {
+		maxHeight = lineHeight
+	}
+	var x, y float32 = 0.0, 0.0
+	clip := []rune(text)
+	for len(clip) > 0 {
+		count := klib.Clamp(cache.charCountInWidth(fontFace, clip, maxWidth, scale, letterSpacing), 0, len(clip))
+		x = max(x, cache.MeasureStringWithLetterSpacing(face, string(clip[:count]), scale, letterSpacing))
+		y += maxHeight
+		clip = []rune(clip)[count:]
+	}
+	return matrix.NewVec2(x, y)
+}
+
+func (cache *FontCache) StringRectsWithinNew(face FontFace, text string, scale, maxWidth float32) []matrix.Vec4 {
+	return cache.StringRectsWithinWithLetterSpacing(face, text, scale, maxWidth, 0, 0)
+}
+
+func (cache *FontCache) StringRectsWithinWithLetterSpacing(face FontFace, text string, scale, maxWidth, lineHeight, letterSpacing float32) []matrix.Vec4 {
+	defer tracing.NewRegion("FontCache.StringRectsWithinNew").End()
+	cache.requireFace(face)
+	fontFace := cache.fontFaces[face.string()]
+	rects := make([]matrix.Vec4, 0)
+	current := 0
+	var x, y float32 = 0.0, 0.0
+	height := fontFace.metrics.LineHeight * scale
+	if lineHeight > 0 {
+		height = lineHeight
+	}
+	runes := []rune(text)
+	for current < len(runes) {
+		offset := current
+		count := len(runes[current:])
+		if maxWidth > 0 {
+			count = cache.charCountInWidth(fontFace, runes[current:], maxWidth, scale, letterSpacing)
+		}
+		x = 0.0
+		for i, r := range runes[offset : offset+count] {
+			w := float32(0)
+			if r != '\n' {
+				ch := findBinChar(fontFace, r)
+				w = ch.advance * scale
+			}
+			rects = append(rects, matrix.NewVec4(x, y, w, height))
+			current++
+			if r == '\n' {
+				continue
+			}
+			x += w
+			if i < count-1 {
+				x += letterSpacing
+			}
+		}
+		y += height
+	}
+	return rects
+}
+
+func (cache *FontCache) LineCountWithin(face FontFace, text string, scale, maxWidth float32) int {
+	defer tracing.NewRegion("FontCache.LineCountWithin").End()
+	cache.requireFace(face)
+	lines := 0
+	runes := []rune(text)
+	textLen := len(runes)
+	current := 0
+	fontFace := cache.fontFaces[face.string()]
+	for current < textLen {
+		current += cache.charCountInWidth(fontFace, runes[current:], maxWidth, scale, 0)
+		lines++
+	}
+	return max(1, lines)
+}
+
+func (cache *FontCache) MeasureCharacter(face string, r rune, pixelSize float32) matrix.Vec2 {
+	ch := findBinChar(cache.fontFaces[face], r)
+	return matrix.NewVec2(ch.Width()*pixelSize, ch.Height()*pixelSize)
+}
+
+func (cache *FontCache) PointOffsetWithin(face FontFace, text string, point matrix.Vec2, scale, maxWidth float32) int {
+	return cache.PointOffsetWithinWithLetterSpacing(face, text, point, scale, maxWidth, 0, 0)
+}
+
+func (cache *FontCache) PointOffsetWithinWithLetterSpacing(face FontFace, text string, point matrix.Vec2, scale, maxWidth, lineHeight, letterSpacing float32) int {
+	defer tracing.NewRegion("FontCache.PointOffsetWithin").End()
+	cache.requireFace(face)
+	textLen := utf8.RuneCountInString(text)
+	idx := textLen
+	rects := cache.StringRectsWithinWithLetterSpacing(face, text, scale, maxWidth, lineHeight, letterSpacing)
+	for i := 0; i < textLen; i++ {
+		width := rects[i].Z()
+		height := rects[i].W()
+		if (rects[i].X()+width*0.5) > point.X() && ((rects[i].Y()+height) > point.Y() || point.Y() > rects[i].Y()) {
+			idx = i
+			break
+		}
+	}
+	return idx
+}
+
+func (cache *FontCache) Destroy() {
+	cache.textMaterial = nil
+	cache.textOrthoMaterial = nil
+	cache.textMaterialTransparent = nil
+	cache.textOrthoMaterialTransparent = nil
+	cache.fontFaces = make(map[string]fontBin)
+}

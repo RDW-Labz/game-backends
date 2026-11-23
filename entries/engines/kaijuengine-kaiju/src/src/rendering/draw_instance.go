@@ -1,0 +1,841 @@
+/******************************************************************************/
+/* draw_instance.go                                                           */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package rendering
+
+import (
+	"log/slog"
+	"reflect"
+	"sync/atomic"
+	"unsafe"
+
+	"kaijuengine.com/build"
+	"kaijuengine.com/engine/graviton"
+	"kaijuengine.com/klib"
+	"kaijuengine.com/matrix"
+	"kaijuengine.com/platform/profiler/tracing"
+)
+
+// drawDiag gates logging of the instance-buffer write guard. The guard itself
+// (skip a write that would run past the mapped buffer) is always on so a sizing
+// bug degrades to a missed draw instead of a SIGBUS/SIGSEGV. TEMP diagnostic.
+var drawDiag = build.Debug
+var drawDiagCount atomic.Int64
+
+type ViewCuller interface {
+	IsInView(box graviton.AABB) bool
+	ViewChanged() bool
+}
+
+type renderViewFrustumCamera interface {
+	Frustum() graviton.Frustum
+	IsDirty() bool
+}
+
+type renderViewCameraCuller struct {
+	camera renderViewFrustumCamera
+}
+
+func (c renderViewCameraCuller) IsInView(box graviton.AABB) bool {
+	return box.IntersectsFrustum(c.camera.Frustum())
+}
+
+func (c renderViewCameraCuller) ViewChanged() bool {
+	return c.camera.IsDirty()
+}
+
+func renderViewCuller(view *RenderView, fallback ViewCuller) ViewCuller {
+	if view == nil {
+		return fallback
+	}
+	camera := view.Camera()
+	if camera == nil {
+		return fallback
+	}
+	if culler, ok := camera.(ViewCuller); ok {
+		return culler
+	}
+	if camera, ok := camera.(renderViewFrustumCamera); ok {
+		return renderViewCameraCuller{camera: camera}
+	}
+	return fallback
+}
+
+func renderViewFrameCuller(view RenderViewFrame, fallback ViewCuller) ViewCuller {
+	camera := view.Camera()
+	if camera == nil {
+		return fallback
+	}
+	if culler, ok := camera.(ViewCuller); ok {
+		return culler
+	}
+	if camera, ok := camera.(renderViewFrustumCamera); ok {
+		return renderViewCameraCuller{camera: camera}
+	}
+	return fallback
+}
+
+type DrawInstance interface {
+	Base() *ShaderDataBase
+	SkinningHeader() *SkinnedShaderDataHeader
+	Destroy()
+	IsDestroyed() bool
+	Activate()
+	Deactivate()
+	IsInView() bool
+	Size() int
+	SetModel(model matrix.Mat4)
+	UpdateModel(viewCuller ViewCuller, container graviton.AABB)
+	DataPointer() unsafe.Pointer
+	// Returns true if it should write the data, otherwise false
+	UpdateBoundData() bool
+	BoundDataPointer() unsafe.Pointer
+	InstanceBoundDataSize() int
+	setTransform(transform *matrix.Transform)
+	SelectLights(lights LightsForRender)
+	addShadow(shadow DrawInstance)
+	renderBounds() graviton.AABB
+}
+
+func ReflectDuplicateDrawInstance(target DrawInstance) DrawInstance {
+	val := reflect.ValueOf(target)
+	if !val.IsValid() {
+		return nil
+	}
+	newVal := reflect.New(val.Elem().Type()).Elem()
+	newVal.Set(val.Elem())
+	dupe := newVal.Addr().Interface().(DrawInstance)
+	dupe.Base().viewCullStates = nil
+	return dupe
+}
+
+func LinkDrawInstanceLifecycle(owner, follower DrawInstance) {
+	if owner == nil || follower == nil {
+		return
+	}
+	if owner.IsDestroyed() {
+		follower.Destroy()
+		return
+	}
+	owner.addShadow(follower)
+}
+
+const ShaderBaseDataSize = unsafe.Sizeof(ShaderDataBase{}.model)
+
+type ShaderDataBase struct {
+	aabb           graviton.AABB
+	destroyed      bool
+	deactivated    bool
+	viewCulled     bool
+	_              [1]byte // Byte alignment
+	viewCullStates map[*RenderView]bool
+	shadows        []DrawInstance
+	transform      *matrix.Transform
+	InitModel      matrix.Mat4
+	model          matrix.Mat4
+}
+
+type ShaderDataCombine struct {
+	ShaderDataBase
+	Color matrix.Color
+}
+
+func (t ShaderDataCombine) Size() int {
+	return int(ShaderBaseDataSize +
+		unsafe.Sizeof(ShaderDataCombine{}.Color))
+}
+
+func NewShaderDataBase() ShaderDataBase {
+	sdb := ShaderDataBase{}
+	sdb.Setup()
+	return sdb
+}
+
+func (s *ShaderDataBase) Setup() {
+	s.SetModel(matrix.Mat4Identity())
+}
+
+func (s *ShaderDataBase) SelectLights(lights LightsForRender) {}
+func (s *ShaderDataBase) Transform() *matrix.Transform        { return s.transform }
+
+func (s *ShaderDataBase) Base() *ShaderDataBase                    { return s }
+func (s *ShaderDataBase) SkinningHeader() *SkinnedShaderDataHeader { return nil }
+func (s *ShaderDataBase) CancelDestroy()                           { s.destroyed = false }
+func (s *ShaderDataBase) IsDestroyed() bool                        { return s.destroyed }
+func (s *ShaderDataBase) IsInView() bool                           { return !s.deactivated && !s.viewCulled }
+func (s *ShaderDataBase) IsInViewForView(view *RenderView) bool {
+	if s.viewCullStates != nil {
+		if culled, ok := s.viewCullStates[view]; ok {
+			return !s.deactivated && !culled
+		}
+	}
+	return s.IsInView()
+}
+func (s *ShaderDataBase) Model() matrix.Mat4     { return s.model }
+func (s *ShaderDataBase) ModelPtr() *matrix.Mat4 { return &s.model }
+
+func (s *ShaderDataBase) Destroy() {
+	s.destroyed = true
+	for i := range s.shadows {
+		s.shadows[i].Destroy()
+	}
+}
+
+func (s *ShaderDataBase) Activate() {
+	s.deactivated = false
+	for i := range s.shadows {
+		s.shadows[i].Activate()
+	}
+}
+
+func (s *ShaderDataBase) Deactivate() {
+	s.deactivated = true
+	for i := range s.shadows {
+		s.shadows[i].Deactivate()
+	}
+}
+
+func (s *ShaderDataBase) setTransform(transform *matrix.Transform) {
+	s.transform = transform
+	s.forceUpdateTransformModel()
+	if s.transform != nil {
+		s.transform.SetDirty()
+	}
+}
+
+func (s *ShaderDataBase) addShadow(shadow DrawInstance) {
+	s.shadows = append(s.shadows, shadow)
+	if s.deactivated {
+		shadow.Deactivate()
+	}
+}
+
+func (s *ShaderDataBase) SetModel(model matrix.Mat4) {
+	s.InitModel = model
+	if s.transform == nil {
+		s.model = model
+	}
+}
+
+func (s *ShaderDataBase) forceUpdateTransformModel() {
+	if s.transform == nil {
+		return
+	}
+	s.model = matrix.Mat4Multiply(s.InitModel, s.transform.WorldMatrix())
+}
+
+func (s *ShaderDataBase) UpdateModel(viewCuller ViewCuller, container graviton.AABB) {
+	s.UpdateModelForView(nil, viewCuller, container)
+}
+
+func (s *ShaderDataBase) UpdateModelForView(view *RenderView, viewCuller ViewCuller, container graviton.AABB) bool {
+	recalcCulling := false
+	if viewCuller != nil {
+		recalcCulling = viewCuller.ViewChanged()
+	}
+	if s.transform != nil && s.transform.IsDirty() {
+		s.forceUpdateTransformModel()
+		s.aabb = container.Transform(s.model)
+		recalcCulling = true
+	} else if s.transform == nil {
+		// No Transform: the model matrix is authoritative — particles write their world
+		// position straight into it via ModelPtr/putWorldMatrix, bypassing transform. Cull
+		// by the model-transformed bounds, NOT the raw origin-centered container; otherwise
+		// the draw is culled by whether the WORLD ORIGIN is in the frustum, which flips the
+		// whole system on/off with a tiny camera turn when far from origin (e.g. rain on a
+		// Kelethin platform). model is identity by default, so static transform-less draws
+		// are unchanged. Recalc every frame — a directly-written model has no dirty flag.
+		s.aabb = container.Transform(s.model)
+		recalcCulling = true
+	}
+	if s.viewCullStates == nil {
+		s.viewCullStates = make(map[*RenderView]bool)
+	}
+	culled, known := s.viewCullStates[view]
+	if viewCuller == nil {
+		culled = false
+	} else if recalcCulling || !known {
+		culled = !viewCuller.IsInView(s.aabb)
+	}
+	s.viewCullStates[view] = culled
+	if view == nil {
+		s.viewCulled = culled
+	}
+	return !s.deactivated && !culled
+}
+
+func (s *ShaderDataBase) renderBounds() graviton.AABB { return s.aabb }
+
+func (s *ShaderDataBase) DataPointer() unsafe.Pointer {
+	return unsafe.Pointer(&s.model[0])
+}
+
+func (s *ShaderDataBase) UpdateBoundData() bool { return false }
+
+func (s *ShaderDataBase) BoundDataPointer() unsafe.Pointer { return nil }
+
+func (s *ShaderDataBase) InstanceBoundDataSize() int { return 0 }
+
+type InstanceCopyData struct {
+	byteMapping [maxFramesInFlight]unsafe.Pointer
+	padding     int
+	length      int
+}
+
+func InstanceCopyDataNew(padding int) InstanceCopyData {
+	return InstanceCopyData{
+		padding: padding,
+	}
+}
+
+type DrawInstanceViewState struct {
+	InstanceDriverData
+	rawData           InstanceCopyData
+	boundInstanceData []InstanceCopyData
+	lodBatches        []drawInstanceLodBatch
+	lodBuckets        []drawInstanceLodBucket
+	visibleCount      int
+	frameData         DrawInstanceFrameData
+	lastInstanceCount uintptr
+}
+
+type DrawInstanceFrameData struct {
+	raw          []byte
+	bound        [][]byte
+	lodBatches   []drawInstanceLodBatch
+	visibleCount int
+	ready        bool
+}
+
+type drawInstanceLodBatch struct {
+	Mesh          *Mesh
+	FirstInstance uint32
+	InstanceCount uint32
+}
+
+type drawInstanceLodBucket struct {
+	mesh      *Mesh
+	instances []DrawInstance
+}
+
+// meshLodFirstTransitionRadii is the camera distance, measured in the
+// instance's largest world-space AABB radius, at which LOD 1 becomes active.
+// Each subsequent LOD transition doubles this distance.
+const meshLodFirstTransitionRadii matrix.Float = 10
+
+func NewDrawInstanceViewState(dataSize int) DrawInstanceViewState {
+	return DrawInstanceViewState{
+		rawData:           InstanceCopyDataNew(dataSize % 16),
+		boundInstanceData: make([]InstanceCopyData, 0),
+	}
+}
+
+type DrawInstanceGroup struct {
+	Mesh *Mesh
+	InstanceDriverData
+	MaterialInstance  *Material
+	Layer             RenderLayerMask
+	viewCuller        ViewCuller
+	Instances         []DrawInstance
+	rawData           InstanceCopyData
+	boundInstanceData []InstanceCopyData
+	viewStates        map[*RenderView]*DrawInstanceViewState
+	instanceSize      int
+	visibleCount      int
+	sort              int
+	destroyed         bool
+}
+
+func NewDrawInstanceGroup(mesh *Mesh, dataSize int, viewCuller ViewCuller) DrawInstanceGroup {
+	return DrawInstanceGroup{
+		Mesh:              mesh,
+		Instances:         make([]DrawInstance, 0),
+		rawData:           InstanceCopyDataNew(dataSize % 16),
+		boundInstanceData: make([]InstanceCopyData, 0),
+		viewStates:        make(map[*RenderView]*DrawInstanceViewState),
+		instanceSize:      dataSize,
+		destroyed:         false,
+		viewCuller:        viewCuller,
+	}
+}
+
+func (d *DrawInstanceGroup) AlterPadding(blockSize int) {
+	newPadding := 0
+	remainder := d.instanceSize % blockSize
+	if remainder != 0 {
+		newPadding = blockSize - remainder
+	}
+	if d.rawData.padding != newPadding {
+		d.rawData.padding = newPadding
+		d.rawData.length = d.TotalSize()
+	}
+}
+
+func (d *DrawInstanceGroup) IsEmpty() bool {
+	return len(d.Instances) == 0
+}
+
+func (d *DrawInstanceGroup) EffectiveLayer() RenderLayerMask {
+	return normalizeRenderLayerMask(d.Layer)
+}
+
+func (d *DrawInstanceGroup) MatchesLayer(mask RenderLayerMask) bool {
+	return d.EffectiveLayer()&mask != 0
+}
+
+func (d *DrawInstanceGroup) IsReady() bool {
+	// TODO:  Check if textures are ready?
+	return d.Mesh.IsReady() && !d.IsEmpty()
+}
+
+func (d *DrawInstanceGroup) TotalSize() int {
+	return len(d.Instances) * (d.instanceSize + d.rawData.padding)
+}
+
+func (d *DrawInstanceGroup) viewStateForView(view *RenderView) *DrawInstanceViewState {
+	if d.viewStates == nil {
+		d.viewStates = make(map[*RenderView]*DrawInstanceViewState)
+	}
+	if state, ok := d.viewStates[view]; ok {
+		return state
+	}
+	state := NewDrawInstanceViewState(d.instanceSize)
+	state.rawData.length = d.rawData.length
+	state.rawData.padding = d.rawData.padding
+	state.boundInstanceData = make([]InstanceCopyData, len(d.boundInstanceData))
+	for i := range d.boundInstanceData {
+		state.boundInstanceData[i].padding = d.boundInstanceData[i].padding
+		state.boundInstanceData[i].length = d.boundInstanceData[i].length
+	}
+	d.viewStates[view] = &state
+	return &state
+}
+
+func (d *DrawInstanceGroup) syncViewStateTemplates() {
+	for _, state := range d.viewStates {
+		state.rawData.padding = d.rawData.padding
+		state.rawData.length = d.rawData.length
+		if len(state.boundInstanceData) < len(d.boundInstanceData) {
+			state.boundInstanceData = klib.SliceSetLen(state.boundInstanceData, len(d.boundInstanceData))
+		}
+		for i := range d.boundInstanceData {
+			state.boundInstanceData[i].padding = d.boundInstanceData[i].padding
+			state.boundInstanceData[i].length = d.boundInstanceData[i].length
+		}
+	}
+}
+
+func (d *DrawInstanceGroup) AddInstance(instance DrawInstance) {
+	d.Instances = append(d.Instances, instance)
+	d.rawData.length = d.TotalSize()
+	for i := range d.MaterialInstance.shaderInfo.LayoutGroups {
+		g := &d.MaterialInstance.shaderInfo.LayoutGroups[i]
+		for j := range g.Layouts {
+			if g.Layouts[j].IsBuffer() {
+				b := &g.Layouts[j]
+				if len(d.boundInstanceData) <= b.Binding {
+					d.boundInstanceData = klib.SliceSetLen(d.boundInstanceData, b.Binding+1)
+				}
+				s := &d.boundInstanceData[b.Binding]
+				if s.length < b.Capacity() {
+					s.length = instance.InstanceBoundDataSize() + s.padding
+				}
+			}
+		}
+	}
+	d.syncViewStateTemplates()
+}
+
+func (d *DrawInstanceGroup) AnyVisible() bool  { return d.visibleCount > 0 }
+func (d *DrawInstanceGroup) VisibleCount() int { return d.visibleCount }
+func (d *DrawInstanceGroup) AnyVisibleForView(view *RenderView) bool {
+	return d.viewStateForView(view).visibleCount > 0
+}
+func (d *DrawInstanceGroup) VisibleCountForView(view *RenderView) int {
+	return d.viewStateForView(view).visibleCount
+}
+
+func (d *DrawInstanceGroup) VisibleSize() int {
+	return d.visibleCount * (d.instanceSize + d.rawData.padding)
+}
+
+func (d *DrawInstanceGroup) updateBoundData(state *DrawInstanceViewState, index, bindingId int, instance DrawInstance, frame int) {
+	if !instance.UpdateBoundData() {
+		return
+	}
+	if ptr := instance.BoundDataPointer(); ptr != nil {
+		nb := state.boundBuffers[bindingId]
+		data := state.boundInstanceData[bindingId]
+		offset := uintptr((nb.stride) * index)
+		base := data.byteMapping[frame]
+		to := unsafe.Pointer(uintptr(base) + offset)
+		klib.Memcpy(to, ptr, uint64(nb.stride))
+	}
+}
+
+func (s *DrawInstanceViewState) resetLodBuckets() {
+	for i := range s.lodBuckets {
+		clear(s.lodBuckets[i].instances)
+		s.lodBuckets[i].instances = s.lodBuckets[i].instances[:0]
+	}
+}
+
+func (s *DrawInstanceViewState) addLodInstance(mesh *Mesh, instance DrawInstance) {
+	for i := range s.lodBuckets {
+		if s.lodBuckets[i].mesh == mesh {
+			s.lodBuckets[i].instances = append(s.lodBuckets[i].instances, instance)
+			return
+		}
+	}
+	s.lodBuckets = append(s.lodBuckets, drawInstanceLodBucket{
+		mesh:      mesh,
+		instances: []DrawInstance{instance},
+	})
+}
+
+type meshLodCamera interface {
+	Position() matrix.Vec3
+}
+
+type orthographicMeshLodCamera interface {
+	IsOrthographic() bool
+}
+
+func selectMeshLod(mesh *Mesh, bounds graviton.AABB, camera any) *Mesh {
+	if mesh == nil || !mesh.lods.IsValid() || len(mesh.lods.Levels) < 2 {
+		return mesh
+	}
+	positioner, ok := camera.(meshLodCamera)
+	if !ok {
+		return mesh
+	}
+	if orthographic, ok := camera.(orthographicMeshLodCamera); ok && orthographic.IsOrthographic() {
+		return mesh
+	}
+	radius := max(bounds.Extent.X(), bounds.Extent.Y(), bounds.Extent.Z())
+	if radius <= matrix.Tiny {
+		return mesh
+	}
+	normalizedDistance := positioner.Position().Distance(bounds.Center) / radius
+	level := 0
+	transition := meshLodFirstTransitionRadii
+	for next := 1; next < len(mesh.lods.Levels); next++ {
+		if normalizedDistance < transition {
+			break
+		}
+		level = next
+		transition *= 2
+	}
+	selected := mesh.lods.Levels[level].Mesh
+	if selected == nil {
+		return mesh
+	}
+	return selected
+}
+
+func (d *DrawInstanceGroup) collectVisibleInstancesForView(state *DrawInstanceViewState,
+	view *RenderView, viewCuller ViewCuller, camera any, lights LightsForRender) {
+	state.resetLodBuckets()
+	count := len(d.Instances)
+	for i := 0; i < count; i++ {
+		instance := d.Instances[i]
+		instanceBase := instance.Base()
+		if instanceBase.IsDestroyed() {
+			d.Instances[i] = d.Instances[count-1]
+			i--
+			count--
+			continue
+		}
+		if !instanceBase.UpdateModelForView(view, viewCuller, d.Mesh.Bounds()) {
+			continue
+		}
+		instance.SelectLights(lights)
+		mesh := d.Mesh
+		if d.EffectiveLayer() != RenderLayerUI {
+			mesh = selectMeshLod(d.Mesh, instanceBase.renderBounds(), camera)
+		}
+		state.addLodInstance(mesh, instance)
+	}
+	if count < len(d.Instances) {
+		d.rawData.length = count * (d.instanceSize + d.rawData.padding)
+		d.Instances = d.Instances[:count]
+		d.syncViewStateTemplates()
+	}
+}
+
+func (d *DrawInstanceGroup) UpdateData(device *GPUDevice, frame int, lights LightsForRender) {
+	d.UpdateDataForView(device, frame, lights, nil)
+}
+
+func (d *DrawInstanceGroup) UpdateDataForView(device *GPUDevice, frame int, lights LightsForRender, view *RenderView) {
+	defer tracing.NewRegion("DrawInstanceGroup.UpdateData").End()
+	state := d.viewStateForView(view)
+	if state.frameData.ready {
+		d.applyCapturedDataForView(device, frame, state)
+		return
+	}
+	base := state.rawData.byteMapping[frame]
+	offset := uintptr(0)
+	state.visibleCount = 0
+	state.lodBatches = state.lodBatches[:0]
+	instanceIndex := 0
+	viewCuller := renderViewCuller(view, d.viewCuller)
+	if d.EffectiveLayer() == RenderLayerUI {
+		viewCuller = d.viewCuller
+	}
+	var camera any
+	if view != nil {
+		camera = view.Camera()
+	}
+	d.collectVisibleInstancesForView(state, view, viewCuller, camera, lights)
+	for i := range state.lodBuckets {
+		bucket := &state.lodBuckets[i]
+		if len(bucket.instances) == 0 {
+			continue
+		}
+		batch := drawInstanceLodBatch{
+			Mesh:          bucket.mesh,
+			FirstInstance: uint32(instanceIndex),
+		}
+		for j := range bucket.instances {
+			instance := bucket.instances[j]
+			instanceBase := instance.Base()
+			if state.generatedSets && len(state.boundInstanceData) > 0 {
+				for binding := range state.boundInstanceData {
+					d.updateBoundData(state, instanceIndex, binding, instance, frame)
+				}
+			}
+			if drawDiag {
+				// Guard against writing past the mapped instance buffer. The buffer
+				// was allocated for state.lastInstanceCount instances of
+				// state.instanceBuffer.size bytes each; base is its frame mapping. A
+				// nil base or an offset past capacity means the buffer geometry
+				// disagrees with what we're about to write (e.g. a shader whose
+				// reflected instance stride is smaller than the instance data) — skip
+				// this write rather than fault. Use continue (NOT break) so the loop
+				// keeps scanning and the destroyed-instance compaction above still
+				// runs for the remaining instances; breaking here orphaned destroyed
+				// instances, leaking them into the group every frame.
+				// capBytes is only known when the buffer was sized via resizeBuffers
+				// (size>0); guard the overrun check on it so manually-mapped buffers
+				// (e.g. tests) aren't falsely skipped. A nil base always skips.
+				capBytes := state.instanceBuffer.size * uintptr(state.lastInstanceCount)
+				if base == nil || (capBytes > 0 && offset+uintptr(d.instanceSize) > capBytes) {
+					if drawDiagCount.Add(1)%120 == 1 {
+						slog.Warn("DrawInstanceGroup.UpdateDataForView: skipping out-of-bounds instance write (shader/instance stride mismatch?)",
+							"frame", frame, "baseNil", base == nil,
+							"offset", uint64(offset), "instanceSize", d.instanceSize,
+							"padding", state.rawData.padding, "stride", d.instanceSize+state.rawData.padding,
+							"capBytes", uint64(capBytes), "iSize", uint64(state.instanceBuffer.size),
+							"lastInstanceCount", state.lastInstanceCount,
+							"writtenSoFar", instanceIndex, "instances", len(d.Instances),
+							"layer", int(d.EffectiveLayer()), "hasView", view != nil)
+					}
+					continue
+				}
+			}
+			to := unsafe.Pointer(uintptr(base) + offset)
+			klib.Memcpy(to, instanceBase.DataPointer(), uint64(d.instanceSize))
+			offset += uintptr(d.instanceSize + state.rawData.padding)
+			state.visibleCount++
+			instanceIndex++
+			batch.InstanceCount++
+		}
+		if batch.InstanceCount > 0 {
+			state.lodBatches = append(state.lodBatches, batch)
+		}
+	}
+	d.visibleCount = state.visibleCount
+	d.bindInstanceDriverData(state)
+	if len(d.Instances) == 0 {
+		device.LogicalDevice.DestroyGroup(d)
+		d.destroyed = true
+	}
+}
+
+func (d *DrawInstanceGroup) CaptureDataForView(lights LightsForRender, view RenderViewFrame) {
+	defer tracing.NewRegion("DrawInstanceGroup.CaptureData").End()
+	state := d.viewStateForView(view.Key())
+	d.syncCapturePadding(state)
+	stride := d.instanceSize + state.rawData.padding
+	count := len(d.Instances)
+	if cap(state.frameData.raw) < count*stride {
+		state.frameData.raw = make([]byte, 0, count*stride)
+	}
+	state.frameData.raw = state.frameData.raw[:0]
+	state.frameData.lodBatches = state.frameData.lodBatches[:0]
+	if len(state.frameData.bound) < len(state.boundInstanceData) {
+		state.frameData.bound = make([][]byte, len(state.boundInstanceData))
+	}
+	for i := range state.boundInstanceData {
+		need := count * d.captureBoundStride(state, i)
+		if cap(state.frameData.bound[i]) < need {
+			state.frameData.bound[i] = make([]byte, 0, need)
+		}
+		state.frameData.bound[i] = state.frameData.bound[i][:0]
+	}
+	state.visibleCount = 0
+	viewCuller := renderViewFrameCuller(view, d.viewCuller)
+	if d.EffectiveLayer() == RenderLayerUI {
+		viewCuller = d.viewCuller
+	}
+	d.collectVisibleInstancesForView(state, view.Key(), viewCuller, view.Camera(), lights)
+	for i := range state.lodBuckets {
+		bucket := &state.lodBuckets[i]
+		if len(bucket.instances) == 0 {
+			continue
+		}
+		batch := drawInstanceLodBatch{
+			Mesh:          bucket.mesh,
+			FirstInstance: uint32(state.visibleCount),
+			InstanceCount: uint32(len(bucket.instances)),
+		}
+		for j := range bucket.instances {
+			instance := bucket.instances[j]
+			if len(state.boundInstanceData) > 0 {
+				for binding := range state.boundInstanceData {
+					d.captureBoundData(state, binding, instance)
+				}
+			}
+			start := len(state.frameData.raw)
+			state.frameData.raw = append(state.frameData.raw, make([]byte, stride)...)
+			copyFromPointer(state.frameData.raw[start:start+d.instanceSize],
+				instance.Base().DataPointer(), d.instanceSize)
+			state.visibleCount++
+		}
+		state.frameData.lodBatches = append(state.frameData.lodBatches, batch)
+	}
+	d.visibleCount = state.visibleCount
+	state.frameData.visibleCount = state.visibleCount
+	state.frameData.ready = true
+}
+
+func (d *DrawInstanceGroup) syncCapturePadding(state *DrawInstanceViewState) {
+	state.rawData.padding = d.rawData.padding
+	state.rawData.length = d.rawData.length
+	if len(state.boundInstanceData) < len(d.boundInstanceData) {
+		state.boundInstanceData = klib.SliceSetLen(state.boundInstanceData, len(d.boundInstanceData))
+	}
+	for i := range d.boundInstanceData {
+		state.boundInstanceData[i].padding = d.boundInstanceData[i].padding
+		state.boundInstanceData[i].length = d.boundInstanceData[i].length
+	}
+}
+
+func (d *DrawInstanceGroup) captureBoundData(state *DrawInstanceViewState, binding int, instance DrawInstance) {
+	if !instance.UpdateBoundData() || binding >= len(state.boundInstanceData) {
+		return
+	}
+	ptr := instance.BoundDataPointer()
+	if ptr == nil {
+		return
+	}
+	size := d.captureBoundStride(state, binding)
+	if size <= 0 {
+		return
+	}
+	start := len(state.frameData.bound[binding])
+	state.frameData.bound[binding] = append(state.frameData.bound[binding], make([]byte, size)...)
+	copyFromPointer(state.frameData.bound[binding][start:start+size], ptr, size)
+}
+
+func (d *DrawInstanceGroup) captureBoundStride(state *DrawInstanceViewState, binding int) int {
+	if binding < len(state.boundBuffers) && state.boundBuffers[binding].stride > 0 {
+		return state.boundBuffers[binding].stride
+	}
+	if d.MaterialInstance != nil {
+		for i := range d.MaterialInstance.shaderInfo.LayoutGroups {
+			group := &d.MaterialInstance.shaderInfo.LayoutGroups[i]
+			for j := range group.Layouts {
+				layout := &group.Layouts[j]
+				if layout.IsBuffer() && layout.Binding == binding {
+					return layout.Stride()
+				}
+			}
+		}
+	}
+	if binding < len(state.boundInstanceData) {
+		return state.boundInstanceData[binding].length
+	}
+	return 0
+}
+
+func (d *DrawInstanceGroup) applyCapturedDataForView(device *GPUDevice, frame int, state *DrawInstanceViewState) {
+	if state.generatedSets {
+		if base := state.rawData.byteMapping[frame]; base != nil && len(state.frameData.raw) > 0 {
+			copyToPointer(base, state.frameData.raw)
+		}
+		for binding := range state.frameData.bound {
+			if binding >= len(state.boundInstanceData) {
+				continue
+			}
+			base := state.boundInstanceData[binding].byteMapping[frame]
+			if base != nil && len(state.frameData.bound[binding]) > 0 {
+				copyToPointer(base, state.frameData.bound[binding])
+			}
+		}
+	}
+	state.visibleCount = state.frameData.visibleCount
+	state.lodBatches = append(state.lodBatches[:0], state.frameData.lodBatches...)
+	d.visibleCount = state.visibleCount
+	d.bindInstanceDriverData(state)
+	if len(d.Instances) == 0 {
+		device.LogicalDevice.DestroyGroup(d)
+		d.destroyed = true
+	}
+}
+
+func copyFromPointer(dst []byte, src unsafe.Pointer, size int) {
+	if src == nil || size <= 0 {
+		return
+	}
+	copy(dst, unsafe.Slice((*byte)(src), size))
+}
+
+func copyToPointer(dst unsafe.Pointer, src []byte) {
+	if dst == nil || len(src) == 0 {
+		return
+	}
+	copy(unsafe.Slice((*byte)(dst), len(src)), src)
+}
+
+func (d *DrawInstanceGroup) Clear() {
+	if d.destroyed {
+		return
+	}
+	for i := range d.Instances {
+		d.Instances[i].Destroy()
+	}
+}
+
+func (d *DrawInstanceGroup) DestroyViewState(device *GPUDevice, view *RenderView) {
+	if d.viewStates != nil {
+		if state, ok := d.viewStates[view]; ok {
+			if device != nil {
+				device.LogicalDevice.destroyGroupViewState(state)
+			}
+			delete(d.viewStates, view)
+		}
+	}
+	for i := range d.Instances {
+		base := d.Instances[i].Base()
+		if base.viewCullStates != nil {
+			delete(base.viewCullStates, view)
+		}
+	}
+}
+
+func (d *DrawInstanceGroup) Destroy(device *GPUDevice) {
+	if d.destroyed {
+		return
+	}
+	d.Clear()
+	d.Instances = klib.WipeSlice(d.Instances)
+	d.Mesh = nil
+	d.MaterialInstance = nil
+	device.LogicalDevice.DestroyGroup(d)
+	d.viewStates = nil
+}

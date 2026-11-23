@@ -1,0 +1,162 @@
+{
+  "name": "Kaiju",
+  "mainPath": "../",
+  "folders": [
+    "../"
+  ],
+  "languageServers": {
+    "enabledProfileIds": [
+      "gopls"
+    ],
+    "formatOnSave": true,
+    "formatOnSaveTimeoutMs": 3000
+  },
+  "debug": {
+    "version": 1,
+    "enabledAdapterProfileIds": [
+      "delve"
+    ],
+    "configurations": [
+      {
+        "id": "editor",
+        "name": "Editor",
+        "adapterProfileId": "delve",
+        "request": "launch",
+        "arguments": {
+          "buildFlags": "-tags=debug,editor,filedrop,rawsrc",
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "CGO_ENABLED": "1"
+          },
+          "mode": "auto",
+          "program": "${workspaceFolder}/src"
+        }
+      },
+      {
+        "id": "trace-editor",
+        "name": "Trace Editor",
+        "adapterProfileId": "delve",
+        "request": "launch",
+        "arguments": {
+          "args": [
+            "-trace"
+          ],
+          "buildFlags": "-tags=debug,editor,filedrop,rawsrc",
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "CGO_ENABLED": "1"
+          },
+          "mode": "auto",
+          "program": "${workspaceFolder}/src"
+        }
+      },
+      {
+        "id": "editor-release",
+        "name": "Editor Release",
+        "adapterProfileId": "delve",
+        "request": "launch",
+        "arguments": {
+          "buildFlags": "-tags=editor,filedrop",
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "CGO_ENABLED": "1"
+          },
+          "mode": "auto",
+          "program": "${workspaceFolder}/src"
+        }
+      },
+      {
+        "id": "raw-game",
+        "name": "Raw Game",
+        "adapterProfileId": "delve",
+        "request": "launch",
+        "arguments": {
+          "cwd": "${workspaceFolder}/src",
+          "env": {
+            "CGO_ENABLED": "1"
+          },
+          "mode": "auto",
+          "program": "${workspaceFolder}/src"
+        }
+      },
+      {
+        "id": "documentation-generator",
+        "name": "Documentation Generator",
+        "adapterProfileId": "delve",
+        "request": "launch",
+        "arguments": {
+          "buildFlags": "-tags=generator",
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "CGO_ENABLED": "1"
+          },
+          "mode": "auto",
+          "program": "${workspaceFolder}/src/generators/api"
+        }
+      },
+      {
+        "id": "copy-headers",
+        "name": "Copy Headers",
+        "adapterProfileId": "delve",
+        "request": "launch",
+        "arguments": {
+          "buildFlags": "-tags=generator",
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "CGO_ENABLED": "1"
+          },
+          "mode": "auto",
+          "program": "${workspaceFolder}/src/generators/copy_header"
+        }
+      },
+      {
+        "id": "debug-build-android",
+        "name": "Debug Build Android",
+        "adapterProfileId": "delve",
+        "request": "launch",
+        "arguments": {
+          "buildFlags": "-tags=debug,generator",
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "CGO_ENABLED": "1"
+          },
+          "mode": "auto",
+          "program": "${workspaceFolder}/src/generators/engine_builds/engine_builds_android"
+        }
+      },
+      {
+        "id": "spv-prebuilt-generator",
+        "name": "Spv Prebuilt Generator",
+        "adapterProfileId": "delve",
+        "request": "launch",
+        "arguments": {
+          "buildFlags": "-tags=generator",
+          "cwd": "${workspaceFolder}/src",
+          "env": {
+            "CGO_ENABLED": "1"
+          },
+          "mode": "auto",
+          "program": "${workspaceFolder}/src/generators/spirv/main.go"
+        }
+      },
+      {
+        "id": "integration-test",
+        "name": "Integration Test",
+        "adapterProfileId": "delve",
+        "request": "launch",
+        "arguments": {
+          "args": [
+            "-integrationtest=screenshot"
+          ],
+          "buildFlags": "-tags=debug,editor,filedrop,rawsrc",
+          "cwd": "${workspaceFolder}",
+          "env": {
+            "CGO_ENABLED": "1"
+          },
+          "mode": "auto",
+          "program": "${workspaceFolder}/src"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,148 @@
+/******************************************************************************/
+/* drawing_specification.go                                                   */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package framework
+
+import (
+	"fmt"
+
+	"kaijuengine.com/debug"
+	"kaijuengine.com/engine"
+	"kaijuengine.com/engine/assets"
+	"kaijuengine.com/matrix"
+	"kaijuengine.com/platform/profiler/tracing"
+	"kaijuengine.com/rendering"
+	"kaijuengine.com/rendering/loaders/load_result"
+	"kaijuengine.com/rendering/textures"
+)
+
+var drawingSpecifications = map[string]DrawingSpecification{}
+
+type DrawingSpecification struct {
+	Name       string
+	RenderInfo []DrawingSpecificationRenderInfo
+}
+
+type DrawingSpecificationRenderInfo struct {
+	Material    string
+	DataFactory func() rendering.DrawInstance
+}
+
+type DrawingSpecCreateInfo struct {
+	LoadedMesh    load_result.Result
+	Meshes        []*rendering.Mesh
+	Textures      []*rendering.Texture
+	SkipMatSearch bool
+}
+
+func RegisterDrawingSpecification(spec DrawingSpecification) {
+	drawingSpecifications[spec.Name] = spec
+}
+
+func FindDrawingSpecification(name string) DrawingSpecification {
+	return drawingSpecifications[name]
+}
+
+func (s DrawingSpecification) IsValid() bool { return s.Name != "" }
+
+func (s DrawingSpecification) CreateDrawings(host *engine.Host, info DrawingSpecCreateInfo) (ModelDrawingSlice, error) {
+	defer tracing.NewRegion("framework.CreateDrawings").End()
+	debug.Ensure(s.IsValid())
+	drawings := ModelDrawingSlice{}
+	if info.LoadedMesh.IsValid() {
+		for i := range info.LoadedMesh.Meshes {
+			m := info.LoadedMesh.Meshes[i]
+			matKey := ""
+			if !info.SkipMatSearch {
+				if matVal, ok := m.Node.Attributes["material"]; ok {
+					if mat, ok := matVal.(string); ok {
+						matKey = mat
+					}
+				}
+			}
+			if matKey != "" {
+				if subSpec, ok := drawingSpecifications[matKey]; ok {
+					cpy := info
+					cpy.LoadedMesh.Meshes = cpy.LoadedMesh.Meshes[i : i+1]
+					cpy.SkipMatSearch = true
+					ds, err := subSpec.CreateDrawings(host, cpy)
+					if err != nil {
+						return drawings, err
+					}
+					drawings = append(drawings, ds...)
+					continue
+				}
+			}
+			var tForm matrix.Transform
+			tForm.Initialize(host.WorkGroup())
+			tForm.SetLocalPosition(m.Node.Position)
+			tForm.SetRotation(m.Node.Rotation.ToEuler())
+			tForm.SetScale(m.Node.Scale)
+			mesh, ok := host.MeshCache().FindMesh(m.MeshName)
+			if !ok {
+				mesh = rendering.NewMesh(m.MeshName, m.Verts, m.Indexes)
+				host.MeshCache().AddMesh(mesh)
+			}
+			mTextures := []*rendering.Texture{}
+			for j := range m.Textures {
+				tex, _ := host.TextureCache().Texture(m.Textures[j], textures.TextureFilterLinear)
+				mTextures = append(mTextures, tex)
+			}
+			for j := range s.RenderInfo {
+				mat, err := host.MaterialCache().Material(s.RenderInfo[j].Material)
+				if err != nil {
+					return drawings, err
+				}
+				for k := len(mTextures); k < len(mat.Textures); k++ {
+					tex, _ := host.TextureCache().Texture(assets.TextureSquare, textures.TextureFilterLinear)
+					mTextures = append(mTextures, tex)
+				}
+				for i := range mTextures {
+					mTextures[i].MipLevels = 1
+				}
+				mat = mat.CreateInstance(mTextures[0:len(mat.Textures)])
+				drawings = append(drawings, ModelDrawing{
+					Node:     m.Node,
+					MeshName: m.Name,
+					Drawing: rendering.Drawing{
+						Material:   mat,
+						Mesh:       mesh,
+						Transform:  &tForm,
+						ViewCuller: &host.Cameras.Primary,
+						ShaderData: s.RenderInfo[j].DataFactory(),
+					},
+				})
+			}
+		}
+	} else {
+		drawings = make([]ModelDrawing, 0, len(s.RenderInfo)*len(info.Meshes))
+		for i := range s.RenderInfo {
+			var mat *rendering.Material
+			var err error
+			mat, err = host.MaterialCache().Material(s.RenderInfo[i].Material)
+			if err != nil {
+				return drawings, err
+			}
+			mat = mat.CreateInstance(info.Textures)
+			for j := range info.Meshes {
+				drawings = append(drawings, ModelDrawing{
+					Node:     nil,
+					MeshName: info.Meshes[j].Key(),
+					Drawing: rendering.Drawing{
+						Material:   mat,
+						Mesh:       info.Meshes[j],
+						ViewCuller: &host.Cameras.Primary,
+						ShaderData: s.RenderInfo[i].DataFactory(),
+					},
+				})
+			}
+		}
+	}
+	if len(drawings) == 0 {
+		return drawings, fmt.Errorf("no drawings to load from the mesh load result")
+	}
+	return drawings, nil
+}

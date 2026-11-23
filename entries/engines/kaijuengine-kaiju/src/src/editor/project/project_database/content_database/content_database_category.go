@@ -1,0 +1,108 @@
+/******************************************************************************/
+/* content_database_category.go                                               */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package content_database
+
+import (
+	"path/filepath"
+	"strings"
+
+	"kaijuengine.com/editor/project/project_file_system"
+	"kaijuengine.com/platform/profiler/tracing"
+)
+
+var (
+	// ContentCategories is a list of categories that the file system currently
+	// operates on. This is exported so that other parts of the editor can use
+	// it for filtering or generating menus and options.
+	ContentCategories = []ContentCategory{}
+
+	// ImportableTypes is a list of content types that the file system currently
+	// imports. This is exported so that other parts of the editor can use
+	// it for filtering or generating menus and options.
+	ImportableTypes = []string{}
+)
+
+// ContentCategory is the representation of a single category within the content
+// system for the engine. Different categories are things like "texture",
+// "mesh", "material", etc.
+type ContentCategory interface {
+	// Path returns the singular folder that all of the content of the category
+	// will be stored within the file database. This path is relative to the
+	// content/config folders. So, the "Texture" category would return "texture"
+	// as the path, whereas the "Music" category would return "audio/music".
+	Path() string
+
+	// TypeName will return the string-friendly type name that is used to store
+	// into the content's config data file. It could be used to test against a
+	// specific asset type. It is expected that you can create a ContentCategory
+	// instance and use this method without any state, for example:
+	// Css{}.TypeName().
+	TypeName() string
+
+	// ExtNames will return all of the file extensions that this content
+	// category operates on. Many formats need only return a single string here
+	// like ".html" for a HTML file, but others may have multiple like ".png",
+	// ".jpg", ".jpeg", etc. for the Texture category.
+	ExtNames() []string
+
+	// Import will read the source file and extract the relevant data that
+	// should be stored in the database. In some cases, this would just return
+	// the contents of the file directly. In other cases, this may need to do
+	// some processing of the file to extract the relevant information which is
+	// contained within (i.e. glTF files).
+	Import(src string, fs *project_file_system.FileSystem) (ProcessedImport, error)
+
+	// Reimport will mostly do the same thing as import, however it will also
+	// determine if the content can be re-imported. In some cases, like model
+	// files, there are multiple pices of content that match up in specific
+	// ways. This function will return an error if the re-import isn't possible.
+	Reimport(id string, cache *Cache, fs *project_file_system.FileSystem) (ProcessedImport, error)
+
+	// PostImportProcessing allows for any optional post-processing to be done
+	// now that the file and all of the dependencies have been imported into the
+	// project. This is called for each variant that has been imported. This is
+	// useful to do things like creating/importing new materials based on
+	// imported mesh files, for example.
+	PostImportProcessing(proc ProcessedImport, res *ImportResult, fs *project_file_system.FileSystem, cache *Cache, linkedId string) error
+}
+
+type storedExtensionNamer interface {
+	StoredExtName(src string) string
+}
+
+// CategoryFromTypeName is an auxiliary function for getting the category that
+// matches the type supplied. If the content is found, true will be returned,
+// otherwise false.
+func CategoryFromTypeName(typeName string) (ContentCategory, bool) {
+	defer tracing.NewRegion("content_database.CategoryFromTypeName").End()
+	for i := range ContentCategories {
+		if ContentCategories[i].TypeName() == typeName {
+			return ContentCategories[i], true
+		}
+	}
+	return nil, false
+}
+
+func selectCategoryForFile(path string) (ContentCategory, bool) {
+	defer tracing.NewRegion("content_database.selectCategoryForFile").End()
+	ext := strings.ToLower(filepath.Ext(path))
+	for i := range ContentCategories {
+		cat := ContentCategories[i]
+		exts := cat.ExtNames()
+		for j := range exts {
+			if ext == exts[j] {
+				return cat, true
+			}
+		}
+	}
+	return nil, false
+}
+
+func addCategory(cat ContentCategory) {
+	ContentCategories = append(ContentCategories, cat)
+	ImportableTypes = append(ImportableTypes, cat.ExtNames()...)
+}

@@ -1739,3 +1739,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/ikbencasdoei-godot-voip
   - reference engines/lootjunkieazza-nvforever
   - reference engines/optiroc-superfamiconv
+
+- **2026-11-23 03:50 UTC** — tick 664: +2 screened, +4 reference, 1 skipped, catalogue=566
+  - added engines/hajimehoshi-ebiten (Apache-2.0, vendored)
+  - added engines/kaijuengine-kaiju (MIT, vendored)
+  - reference engines/g3n-engine
+  - reference engines/xiaonanln-goworld
+  - reference engines/engoengine-engo
+  - reference engines/ikemen-engine-ikemen-go

@@ -1,0 +1,195 @@
+/******************************************************************************/
+/* controller.go                                                              */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package hid
+
+import (
+	"errors"
+
+	"kaijuengine.com/matrix"
+)
+
+type ControllerButton uint8
+
+// Based off XBOX controller
+const (
+	ControllerMaxDevices = 8
+)
+
+const (
+	ControllerButtonUp ControllerButton = iota
+	ControllerButtonDown
+	ControllerButtonLeft
+	ControllerButtonRight
+	ControllerButtonStart
+	ControllerButtonSelect
+	ControllerButtonLeftStick
+	ControllerButtonRightStick
+	ControllerButtonLeftBumper
+	ControllerButtonRightBumper
+	ControllerButtonEx1 // TODO:  Name this correctly
+	ControllerButtonEx2 // TODO:  Name this correctly
+	ControllerButtonA
+	ControllerButtonB
+	ControllerButtonX
+	ControllerButtonY
+	ControllerButtonMax
+)
+
+const (
+	ControllerAxisLeftVertical = iota
+	ControllerAxisLeftHorizontal
+	ControllerAxisRightVertical
+	ControllerAxisRightHorizontal
+	ControllerAxisLeftTrigger
+	ControllerAxisRightTrigger
+	ControllerAxisMax
+)
+
+const (
+	controllerButtonStateIdle = iota
+	controllerButtonStateDown
+	controllerButtonStateHeld
+	controllerButtonStateUp
+)
+
+type ControllerDevice struct {
+	buttons [ControllerButtonMax]int
+	axis    [ControllerAxisMax]float32
+	id      int
+}
+
+type Controller struct {
+	devices [ControllerMaxDevices]ControllerDevice
+}
+
+func validateJoystick(id int) error {
+	if id < 0 || id >= ControllerMaxDevices {
+		return errors.New("invalid joystick id")
+	} else {
+		return nil
+	}
+}
+
+// NewController creates a new controller. This is called
+// automatically by the system and should not be called by the end-developer
+func NewController() Controller {
+	c := Controller{}
+	for i := 0; i < ControllerMaxDevices; i++ {
+		c.devices[i].id = -1
+	}
+	return c
+}
+
+// Available returns true if the controller is available. This is called
+// automatically by the system and should not be called by the end-developer
+func (c *Controller) Available(id int) bool {
+	err := validateJoystick(id)
+	return err == nil && c.devices[id].id >= 0
+}
+
+// Connected returns true if the controller is connected. This is called
+// automatically by the system and should not be called by the end-developer
+func (c *Controller) Connected(id int) {
+	err := validateJoystick(id)
+	if err == nil && c.devices[id].id < 0 {
+		c.devices[id].id = id
+	}
+}
+
+// Disconnected returns true if the controller is disconnected. This is called
+// automatically by the system and should not be called by the end-developer
+func (c *Controller) Disconnected(id int) {
+	err := validateJoystick(id)
+	if err == nil && c.devices[id].id >= 0 {
+		c.devices[id].id = -1
+	}
+}
+
+func (device *ControllerDevice) endUpdate() {
+	if device.id >= 0 {
+		for i := ControllerButton(0); i < ControllerButtonMax; i++ {
+			switch device.buttons[i] {
+			case controllerButtonStateDown:
+				device.buttons[i] = controllerButtonStateHeld
+			case controllerButtonStateUp:
+				device.buttons[i] = controllerButtonStateIdle
+			}
+		}
+	}
+}
+
+// EndUpdate is called at the end of the frame. It updates the state of each
+// controller for the next frame. This is called automatically by the system
+// and should not be called by the end-developer
+func (c *Controller) EndUpdate() {
+	for i := 0; i < ControllerMaxDevices; i++ {
+		c.devices[i].endUpdate()
+	}
+}
+
+// SetButtonDown sets the button down on the given controller. This is called
+// automatically by the system and should not be called by the end-developer
+func (c *Controller) SetButtonDown(id int, button ControllerButton) {
+	if c.devices[id].buttons[button] == controllerButtonStateIdle {
+		c.devices[id].buttons[button] = controllerButtonStateDown
+	}
+}
+
+// SetButtonUp sets the button up on the given controller. This is called
+// automatically by the system and should not be called by the end-developer
+func (c *Controller) SetButtonUp(id int, button ControllerButton) {
+	if c.devices[id].buttons[button] != controllerButtonStateIdle {
+		c.devices[id].buttons[button] = controllerButtonStateUp
+	}
+}
+
+// SetAxis sets the axis on the given controller. This is called
+// automatically by the system and should not be called by the end-developer
+func (c *Controller) SetAxis(id, stick int, axis float32) {
+	if matrix.IsNaN(axis) {
+		return
+	}
+	c.devices[id].axis[stick] = axis
+}
+
+// Axis returns the axis value for the given controller and stick
+func (c *Controller) Axis(id, stick int) float32 {
+	return c.devices[id].axis[stick]
+}
+
+// IsButtonUp returns true if the button is up
+func (c *Controller) IsButtonUp(id, button ControllerButton) bool {
+	return c.devices[id].buttons[button] == controllerButtonStateUp
+}
+
+// IsButtonDown returns true if the button is down
+func (c *Controller) IsButtonDown(id, button ControllerButton) bool {
+	return c.devices[id].buttons[button] == controllerButtonStateDown
+}
+
+// IsButtonHeld returns true if the button is held
+func (c *Controller) IsButtonHeld(id, button ControllerButton) bool {
+	return c.devices[id].buttons[button] == controllerButtonStateHeld
+}
+
+// Reset will completely wipe the state of all controllers
+func (c *Controller) Reset() {
+	for i := 0; i < ControllerMaxDevices; i++ {
+		for j := ControllerButton(0); j < ControllerButtonMax; j++ {
+			if c.devices[i].buttons[j] == controllerButtonStateDown ||
+				c.devices[i].buttons[j] == controllerButtonStateHeld {
+				c.devices[i].buttons[j] = controllerButtonStateUp
+			}
+		}
+		c.devices[i].axis[ControllerAxisLeftVertical] = 0.0
+		c.devices[i].axis[ControllerAxisLeftHorizontal] = 0.0
+		c.devices[i].axis[ControllerAxisRightVertical] = 0.0
+		c.devices[i].axis[ControllerAxisRightHorizontal] = 0.0
+		c.devices[i].axis[ControllerAxisLeftTrigger] = 0.0
+		c.devices[i].axis[ControllerAxisRightTrigger] = 0.0
+	}
+}

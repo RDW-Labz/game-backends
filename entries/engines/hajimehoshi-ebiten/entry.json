@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T03:50:04Z",
+ "category": "engines",
+ "commit": "d438df689b19",
+ "delivery": "vendored",
+ "description": "hajimehoshi/ebiten \u2014 A dead simple 2D game engine for Go",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ebiten",
+ "size_bytes": 7388147,
+ "slug": "hajimehoshi-ebiten",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 13651,
+ "system": "A dead simple 2D game engine for Go",
+ "upstream": "https://github.com/hajimehoshi/ebiten",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

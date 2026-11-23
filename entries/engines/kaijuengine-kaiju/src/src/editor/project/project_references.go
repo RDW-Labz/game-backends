@@ -1,0 +1,409 @@
+/******************************************************************************/
+/* project_references.go                                                      */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package project
+
+import (
+	"bytes"
+	"encoding/json"
+	"io"
+	"io/fs"
+	"log/slog"
+	"os"
+	"path/filepath"
+	"reflect"
+	"strings"
+
+	"kaijuengine.com/editor/project/project_database/content_database"
+	"kaijuengine.com/editor/project/project_file_system"
+	"kaijuengine.com/engine"
+	"kaijuengine.com/engine/stages"
+	"kaijuengine.com/platform/profiler/tracing"
+)
+
+type ContentReference struct {
+	Id           string
+	Name         string
+	Source       string
+	SubReference []ContentReference
+}
+
+func (p *Project) FindReferences(id string) ([]ContentReference, error) {
+	defer tracing.NewRegion("Project.FindReferences").End()
+	refs := []ContentReference{}
+	err := p.FindReferencesWithCallback(id, func(ref ContentReference) {
+		refs = append(refs, ref)
+	})
+	return refs, err
+}
+
+// FindAllReferencedContentFromCache Identifies and returns a list of content entries from the cache that are
+// referenced in the project and therefore filtering out unreferenced content.
+func (p *Project) FindAllReferencedContentFromCache(cachedContent []content_database.CachedContent) []content_database.CachedContent {
+	var referencedContent []content_database.CachedContent
+
+	slog.Info("shake off all unreferenced content")
+	for _, content := range cachedContent {
+		references, _ := p.FindReferences(content.Id())
+		if len(references) > 0 {
+			referencedContent = append(referencedContent, content)
+		}
+	}
+	slog.Info("used project content",
+		"cached", len(cachedContent),
+		"referenced", len(referencedContent),
+	)
+
+	return referencedContent
+}
+
+func (p *Project) FindReferencesWithCallback(id string, onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.FindReferencesWithCallback").End()
+	var err error
+	funcs := []func(id string, onFound func(ref ContentReference)) error{
+		p.findReferencesStages,
+		p.findReferencesTemplates,
+		p.findReferencesMaterial,
+		p.findReferencesShader,
+		p.findReferencesTableOfContents,
+		p.findReferencesHtml,
+		p.findReferencesCss,
+		p.findReferencesCode,
+		p.findReferencesSettings,
+	}
+	for i := range funcs {
+		if err = funcs[i](id, onFound); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (p *Project) findReferencesStages(id string, onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.findReferencesStages").End()
+	return p.findRefsOnFolderAndDo(id, project_file_system.ContentStageFolder,
+		func(name string, src []byte) (ContentReference, error) {
+			ref := ContentReference{
+				Id:     name,
+				Source: content_database.Stage{}.TypeName(),
+			}
+			var ss stages.StageJson
+			if err := json.Unmarshal(src, &ss); err != nil {
+				return ref, err
+			}
+			s := stages.Stage{}
+			s.FromMinimized(ss)
+			for i := range s.Entities {
+				subs := p.findEntityRefs(&s.Entities[i], id)
+				if len(subs) > 0 {
+					ref.SubReference = append(ref.SubReference, subs...)
+				}
+			}
+			if len(ref.SubReference) == 0 {
+				return ContentReference{}, nil
+			}
+			return ref, nil
+		}, onFound)
+}
+
+func (p *Project) findReferencesTemplates(id string, onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.findReferencesTemplates").End()
+	return p.findRefsOnFolderAndDo(id, project_file_system.ContentTemplateFolder,
+		func(name string, src []byte) (ContentReference, error) {
+			ref := ContentReference{
+				Id:     name,
+				Source: content_database.Template{}.TypeName(),
+			}
+			var desc stages.EntityDescription
+			if err := json.Unmarshal(src, &desc); err != nil {
+				return ref, err
+			}
+			ref.SubReference = p.findEntityRefs(&desc, id)
+			if len(ref.SubReference) == 0 {
+				return ContentReference{}, nil
+			}
+			return ref, nil
+		}, onFound)
+}
+
+func (p *Project) findReferencesMaterial(id string, onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.findReferencesMaterial").End()
+	return p.findRefsOnFolderAndDo(id, project_file_system.ContentMaterialFolder,
+		func(name string, src []byte) (ContentReference, error) {
+			return ContentReference{
+				Id:     name,
+				Source: content_database.Material{}.TypeName(),
+			}, nil
+		}, onFound)
+}
+
+func (p *Project) findReferencesShader(id string, onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.findReferencesShader").End()
+	return p.findRefsOnFolderAndDo(id, project_file_system.ContentShaderFolder,
+		func(name string, src []byte) (ContentReference, error) {
+			return ContentReference{
+				Id:     name,
+				Source: content_database.Shader{}.TypeName(),
+			}, nil
+		}, onFound)
+}
+
+func (p *Project) findReferencesTableOfContents(id string, onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.findReferencesTableOfContents").End()
+	return p.findRefsOnFolderAndDo(id, project_file_system.ContentTableOfContentsFolder,
+		func(name string, src []byte) (ContentReference, error) {
+			return ContentReference{
+				Id:     name,
+				Source: content_database.TableOfContents{}.TypeName(),
+			}, nil
+		}, onFound)
+}
+
+func (p *Project) findReferencesHtml(id string, onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.findReferencesHtml").End()
+	return p.findRefsOnFolderAndDo(id, project_file_system.ContentHtmlFolder,
+		func(name string, src []byte) (ContentReference, error) {
+			return ContentReference{
+				Id:     name,
+				Source: content_database.Html{}.TypeName(),
+			}, nil
+		}, onFound)
+}
+
+func (p *Project) findReferencesCss(id string, onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.findReferencesCss").End()
+	return p.findRefsOnFolderAndDo(id, project_file_system.ContentCssFolder,
+		func(name string, src []byte) (ContentReference, error) {
+			return ContentReference{
+				Id:     name,
+				Source: content_database.Css{}.TypeName(),
+			}, nil
+		}, onFound)
+}
+
+func (p *Project) findReferencesCode(id string, onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.findReferencesSettings").End()
+	paths := []string{
+		p.fileSystem.FullPath(project_file_system.KaijuSrcFolder),
+		p.fileSystem.FullPath(project_file_system.ProjectCodeFolder),
+	}
+	var wErr error
+	buffer := bytes.NewBuffer([]byte{})
+	for i := range paths {
+		wErr = filepath.Walk(paths[i], func(path string, info fs.FileInfo, err error) error {
+			if info.IsDir() {
+				return err
+			}
+			f, err := os.Open(path)
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+			buffer.Reset()
+			if _, err = io.Copy(buffer, f); err != nil {
+				return err
+			}
+			if strings.Contains(buffer.String(), id) {
+				nml := p.fileSystem.NormalizePath(path)
+				onFound(ContentReference{
+					Id:     nml,
+					Name:   filepath.Base(nml),
+					Source: nml,
+				})
+			}
+			return err
+		})
+		if wErr != nil {
+			return wErr
+		}
+	}
+	return nil
+}
+
+func (p *Project) findReferencesSettings(id string, onFound func(ref ContentReference)) error {
+	if p.Settings.EntryPointStage == id {
+		onFound(ContentReference{
+			Id:     "ProjectSettings",
+			Name:   "ProjectSettings",
+			Source: "ProjectSettings",
+		})
+	}
+	return nil
+}
+
+func (p *Project) findRefsOnFolderAndDo(id, folder string, do func(name string, src []byte) (ContentReference, error), onFound func(ref ContentReference)) error {
+	defer tracing.NewRegion("Project.findRefsOnFolderAndDo").End()
+	dir := filepath.Join(project_file_system.ContentFolder, folder)
+	entries, err := p.fileSystem.ReadDir(dir)
+	if err != nil {
+		slog.Error("failed to read the target content", "error", err)
+		return err
+	}
+	buffer := bytes.NewBuffer([]byte{})
+	for i := range entries {
+		if entries[i].Name()[0] == '.' {
+			continue
+		}
+		entryName := entries[i].Name()
+		if entryName == id {
+			continue
+		}
+		name := filepath.Join(dir, entryName)
+		f, err := p.fileSystem.Open(name)
+		if err != nil {
+			slog.Error("failed to open the target content file", "file", name, "error", err)
+			return err
+		}
+		defer f.Close()
+		buffer.Reset()
+		if _, err := io.Copy(buffer, f); err != nil {
+			slog.Error("failed to read the target content file", "file", name, "error", err)
+			return err
+		}
+		data := buffer.Bytes()
+		if strings.Contains(string(data), id) {
+			r, err := do(entryName, data)
+			if err != nil {
+				return err
+			}
+			if r.Id == "" {
+				continue
+			}
+			if cc, err := p.cacheDatabase.Read(entryName); err == nil {
+				r.Name = cc.Config.Name
+			}
+			onFound(r)
+		}
+	}
+	return nil
+}
+
+func (p *Project) findEntityRefs(e *stages.EntityDescription, id string) []ContentReference {
+	refs := []ContentReference{}
+	sub := ContentReference{
+		Id:     e.Id,
+		Name:   e.Name,
+		Source: "entity",
+	}
+	if e.Material == id {
+		sub.SubReference = append(sub.SubReference, ContentReference{
+			Id:     id,
+			Name:   "<self>",
+			Source: content_database.Material{}.TypeName(),
+		})
+	}
+	for i := range e.Textures {
+		if e.Textures[i] == id {
+			sub.SubReference = append(sub.SubReference, ContentReference{
+				Id:     id,
+				Name:   "<self>",
+				Source: content_database.Texture{}.TypeName(),
+			})
+		}
+	}
+	if e.Mesh == id {
+		sub.SubReference = append(sub.SubReference, ContentReference{
+			Id:     id,
+			Name:   "<self>",
+			Source: content_database.Mesh{}.TypeName(),
+		})
+	}
+	if e.TemplateId == id {
+		sub.SubReference = append(sub.SubReference, ContentReference{
+			Id:     id,
+			Name:   "<self>",
+			Source: content_database.Template{}.TypeName(),
+		})
+	}
+	for i := range e.DataBinding {
+		for k, v := range e.DataBinding[i].Fields {
+			if !p.isContentIdDataBindingField(&e.DataBinding[i], k) {
+				continue
+			}
+			if s, ok := dataBindingReferenceString(v); ok && s == id {
+				sub.SubReference = append(sub.SubReference, ContentReference{
+					Id:     id,
+					Name:   k,
+					Source: "databind",
+				})
+			}
+		}
+	}
+	if e.Id == id || len(sub.SubReference) > 0 {
+		refs = append(refs, sub)
+	}
+	for i := range e.Children {
+		cr := p.findEntityRefs(&e.Children[i], id)
+		if len(cr) > 0 {
+			refs = append(refs, cr...)
+		}
+	}
+	return refs
+}
+
+func (p *Project) isContentIdDataBindingField(binding *stages.EntityDataBinding, fieldName string) bool {
+	g, ok := p.EntityDataBinding(binding.RegistraionKey)
+	if !ok {
+		return true
+	}
+	entityIdType := reflect.TypeFor[engine.EntityId]()
+	for i := range g.Fields {
+		if g.Fields[i].Name != fieldName {
+			continue
+		}
+		if g.Fields[i].Type == entityIdType {
+			return false
+		}
+		return g.Fields[i].Type.PkgPath() == "kaijuengine.com/engine_entity_data/content_id"
+	}
+	return false
+}
+
+func dataBindingReferenceString(value any) (string, bool) {
+	switch v := value.(type) {
+	case string:
+		return v, true
+	case engine.EntityId:
+		return string(v), true
+	default:
+		return "", false
+	}
+}
+
+func (p *Project) updateReferences(from, to string) error {
+	defer tracing.NewRegion("Project.updateReferences").End()
+	refs, err := p.FindReferences(from)
+	if err != nil {
+		return err
+	}
+	var fixRef func(ref *ContentReference) error
+	fixRef = func(ref *ContentReference) error {
+		cc, err := p.cacheDatabase.Read(ref.Id)
+		if err != nil {
+			return err
+		}
+		data, err := p.fileSystem.ReadFile(cc.ContentPath())
+		if err != nil {
+			return err
+		}
+		str := strings.ReplaceAll(string(data), from, to)
+		if err = p.fileSystem.WriteFile(cc.ContentPath(), []byte(str), os.ModePerm); err != nil {
+			return err
+		}
+		for i := range ref.SubReference {
+			if err := fixRef(&ref.SubReference[i]); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	for i := range refs {
+		if err := fixRef(&refs[i]); err != nil {
+			return err
+		}
+	}
+	return nil
+}

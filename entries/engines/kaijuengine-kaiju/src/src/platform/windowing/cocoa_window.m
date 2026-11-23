@@ -1,0 +1,1025 @@
+// Fixed Cocoa backend: single event ingestion model, no polling, no double-dispatch
+// APIs preserved as requested
+
+//go:build darwin
+// +build darwin
+
+#import <Cocoa/Cocoa.h>
+#import <CoreGraphics/CoreGraphics.h>
+#import <QuartzCore/CAMetalLayer.h>
+#import <objc/runtime.h>
+#include <string.h>
+#include "cocoa_window.h"
+#include "window_event.h"
+
+#pragma mark - File drop bridge (defined in window_darwin_filedrop.go)
+
+#if KAIJU_ENABLE_FILEDROP
+extern void goProcessFileDropDarwin(uint64_t goWindow, int32_t x, int32_t y, void* paths, uint32_t pathCount);
+static inline SharedMem* getSharedMem(NSWindow* window);
+#endif
+
+#pragma mark - Render/resize serialization
+
+// Binary semaphore (value 1) used as a cross-thread mutex between the AppKit main
+// thread (resizing the CAMetalLayer) and the render goroutine (submitting/presenting
+// via MoltenVK). dispatch_semaphore is used rather than os_unfair_lock/pthread_mutex
+// because a Go goroutine may migrate OS threads between the lock and unlock cgo
+// calls, and those lock types require release on the acquiring thread.
+static dispatch_semaphore_t renderSemaphore(void) {
+	static dispatch_semaphore_t sem;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{ sem = dispatch_semaphore_create(1); });
+	return sem;
+}
+
+// Set on the main thread for the duration of an AppKit live resize (window-edge
+// drag). While set, the render loop skips acquiring/submitting/presenting entirely,
+// so it never touches the CAMetalLayer concurrently with AppKit's resize. Plain
+// volatile int: a single-word flag written on the main thread and read on the render
+// thread; the exact frame the transition lands on does not matter.
+static volatile int g_inLiveResize = 0;
+int cocoa_in_live_resize(void) { return g_inLiveResize; }
+
+#pragma mark - Metal View
+
+@interface MetalView : NSView
+#if KAIJU_ENABLE_FILEDROP
+<NSDraggingDestination>
+#endif
+@end
+
+@implementation MetalView
+- (BOOL)mouseDownCanMoveWindow {
+	return NO;
+}
+
+- (instancetype)initWithFrame:(NSRect)frame {
+	self = [super initWithFrame:frame];
+	if (self) {
+		self.wantsLayer = YES;
+		self.layer = [[CAMetalLayer alloc] init];
+		((CAMetalLayer*)self.layer).pixelFormat = MTLPixelFormatBGRA8Unorm;
+	}
+	return self;
+}
+- (CALayer*)makeBackingLayer { return [[CAMetalLayer alloc] init]; }
+- (BOOL)wantsUpdateLayer { return YES; }
+
+// AppKit resizes the backing CAMetalLayer inside this call. Bracket it with the
+// render lock so it cannot run concurrently with a MoltenVK submit/present on the
+// render goroutine (which would corrupt the layer's drawable state and fault).
+- (void)setFrameSize:(NSSize)newSize {
+	dispatch_semaphore_t sem = renderSemaphore();
+	dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+	[super setFrameSize:newSize];
+	dispatch_semaphore_signal(sem);
+}
+
+// AppKit drives a live window-edge resize between these two calls (main thread). The
+// render loop pauses while the flag is set so it cannot touch the CAMetalLayer while
+// AppKit is mutating it; a single swap-chain rebuild happens on the first frame after
+// the drag ends (the acquire returns out-of-date).
+- (void)viewWillStartLiveResize {
+	[super viewWillStartLiveResize];
+	g_inLiveResize = 1;
+}
+- (void)viewDidEndLiveResize {
+	[super viewDidEndLiveResize];
+	g_inLiveResize = 0;
+}
+
+#if KAIJU_ENABLE_FILEDROP
+- (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+	NSPasteboard* pb = [sender draggingPasteboard];
+	if ([[pb types] containsObject:NSPasteboardTypeFileURL]) {
+		return NSDragOperationCopy;
+	}
+	return NSDragOperationNone;
+}
+
+- (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
+	return [self draggingEntered:sender];
+}
+
+- (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender {
+	return YES;
+}
+
+- (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
+	NSWindow* win = self.window;
+	if (!win) return NO;
+	SharedMem* sm = getSharedMem(win);
+	if (!sm) return NO;
+
+	NSArray<NSURL*>* urls = [[sender draggingPasteboard]
+		readObjectsForClasses:@[[NSURL class]] options:nil];
+	if (urls.count == 0) return NO;
+
+	uint32_t pathCount = (uint32_t)urls.count;
+	char** paths = (char**)calloc(pathCount, sizeof(char*));
+	if (!paths) return NO;
+
+	uint32_t actual = 0;
+	for (NSURL* u in urls) {
+		const char* utf8 = [[u path] UTF8String];
+		if (!utf8) continue;
+		paths[actual++] = strdup(utf8);
+	}
+
+	NSPoint loc = [self convertPoint:[sender draggingLocation] fromView:nil];
+	int32_t x = (int32_t)loc.x;
+	int32_t y = sm->windowHeight - (int32_t)loc.y;
+
+	if (actual > 0) {
+		goProcessFileDropDarwin((uint64_t)(uintptr_t)sm->goWindow, x, y, paths, actual);
+	}
+
+	for (uint32_t i = 0; i < actual; ++i) {
+		free(paths[i]);
+	}
+	free(paths);
+	return actual > 0;
+}
+#endif
+@end
+
+#pragma mark - App Delegate
+
+@interface AppDelegate : NSObject <NSApplicationDelegate>
+@end
+
+@implementation AppDelegate
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag {
+	for (NSWindow* w in [NSApp windows]) {
+		if ([w isMiniaturized]) [w deminiaturize:nil];
+		[w makeKeyAndOrderFront:nil];
+	}
+	[NSApp activateIgnoringOtherApps:YES];
+	return YES;
+}
+
+// Returning YES would terminate the process as soon as the last window
+// closes. The game loop runs on another thread and still needs to finish
+// Host.Teardown (Vulkan destroy). Window close is delivered to Go via
+// windowWillClose; main.darwin.go stops the run loop after teardown.
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {
+	(void)sender;
+	return NO;
+}
+@end
+
+#pragma mark - Helpers
+
+static inline SharedMem* getSharedMem(NSWindow* window) {
+	NSValue* v = objc_getAssociatedObject(window, "sharedMem");
+	return v ? (SharedMem*)[v pointerValue] : NULL;
+}
+
+static inline NSEventModifierFlags modifierFlagForKeyCode(unsigned short keyCode) {
+	switch (keyCode) {
+		case 0x36: case 0x37: return NSEventModifierFlagCommand;
+		case 0x3B: case 0x3E: return NSEventModifierFlagControl;
+		case 0x38: case 0x3C: return NSEventModifierFlagShift;
+		case 0x3A: case 0x3D: return NSEventModifierFlagOption;
+		case 0x39: return NSEventModifierFlagCapsLock;
+		default: return 0;
+	}
+}
+
+#pragma mark - Window Delegate
+
+@interface WindowDelegate : NSObject <NSWindowDelegate>
+@end
+
+@implementation WindowDelegate
+- (void)windowDidResize:(NSNotification *)n {
+	NSWindow* w = n.object;
+	SharedMem* sm = getSharedMem(w);
+	if (!sm) return;
+
+	NSRect cr = [w contentRectForFrameRect:w.frame];
+	int nw = (int)cr.size.width;
+	int nh = (int)cr.size.height;
+	if (nw == sm->windowWidth && nh == sm->windowHeight) return;
+
+	sm->windowWidth = nw;
+	sm->windowHeight = nh;
+
+	NSRect fr = w.frame;
+	sm->left = (int)fr.origin.x;
+	sm->bottom = (int)fr.origin.y;
+	sm->right = sm->left + (int)fr.size.width;
+	sm->top = sm->bottom + (int)fr.size.height;
+
+	shared_mem_add_event(sm, (WindowEvent){
+		.type = WINDOW_EVENT_TYPE_RESIZE,
+		.windowResize = { nw, nh, sm->left, sm->top, sm->right, sm->bottom }
+	});
+	shared_mem_flush_events(sm);
+}
+
+- (void)windowDidResignKey:(NSNotification *)n {
+	cocoa_unlock_cursor((__bridge void*)n.object);
+}
+
+- (void)windowWillClose:(NSNotification *)n {
+	NSWindow* w = n.object;
+	SharedMem* sm = getSharedMem(w);
+	if (sm) {
+		shared_mem_add_event(sm, (WindowEvent){
+			.type = WINDOW_EVENT_TYPE_ACTIVITY,
+			.windowActivity = { WINDOW_EVENT_ACTIVITY_TYPE_CLOSE }
+		});
+		shared_mem_flush_events(sm);
+	}
+	cocoa_unlock_cursor((__bridge void*)w);
+}
+@end
+
+#pragma mark - Event Monitor
+
+static id gEventMonitor = nil;
+
+static NSEvent* handleEvent(NSEvent* e) {
+	NSWindow* w = e.window;
+	if (!w) return e;
+	SharedMem* sm = getSharedMem(w);
+	if (!sm) return e;
+
+	switch (e.type) {
+		case NSEventTypeMouseMoved:
+		case NSEventTypeLeftMouseDragged:
+		case NSEventTypeRightMouseDragged:
+		case NSEventTypeOtherMouseDragged: {
+			NSPoint p = e.locationInWindow;
+			int32_t x = (int32_t)p.x;
+			int32_t y = sm->windowHeight - (int32_t)p.y;
+			if (sm->lockCursor.active) {
+				if (x != sm->lockCursor.x || y != sm->lockCursor.y) {
+					shared_mem_add_event(sm, (WindowEvent){
+						.type = WINDOW_EVENT_TYPE_MOUSE_MOVE,
+						.mouseMove = { x, y }
+					});
+				}
+				if (sm->lockCursor.active) {
+					NSRect r = NSMakeRect(sm->lockCursor.x, sm->lockCursor.y, 0, 0);
+					NSRect sr = [w convertRectToScreen:r];
+					CGWarpMouseCursorPosition(sr.origin);
+				}
+			} else {
+				shared_mem_add_event(sm, (WindowEvent){
+					.type = WINDOW_EVENT_TYPE_MOUSE_MOVE,
+					.mouseMove = { x, y }
+				});
+			}
+		} break;
+
+		case NSEventTypeLeftMouseDown:
+		case NSEventTypeLeftMouseUp:
+		case NSEventTypeRightMouseDown:
+		case NSEventTypeRightMouseUp:
+		case NSEventTypeOtherMouseDown:
+		case NSEventTypeOtherMouseUp: {
+			NSInteger btn = e.buttonNumber;
+			int32_t id = (btn==0)?MOUSE_BUTTON_LEFT:(btn==1)?MOUSE_BUTTON_RIGHT:(btn==2)?MOUSE_BUTTON_MIDDLE:(btn==3)?MOUSE_BUTTON_X1:MOUSE_BUTTON_X2;
+			int action = (e.type==NSEventTypeLeftMouseDown||e.type==NSEventTypeRightMouseDown||e.type==NSEventTypeOtherMouseDown)
+						 ? WINDOW_EVENT_BUTTON_TYPE_DOWN
+						 : WINDOW_EVENT_BUTTON_TYPE_UP;
+			NSPoint p = e.locationInWindow;
+			shared_mem_add_event(sm, (WindowEvent){
+				.type = WINDOW_EVENT_TYPE_MOUSE_BUTTON,
+				.mouseButton = { id, action, (int32_t)p.x, sm->windowHeight-(int32_t)p.y }
+			});
+		} break;
+
+		case NSEventTypeScrollWheel: {
+			double dx = e.hasPreciseScrollingDeltas ? e.scrollingDeltaX : e.deltaX;
+			double dy = e.hasPreciseScrollingDeltas ? e.scrollingDeltaY : e.deltaY;
+			if (e.isDirectionInvertedFromDevice) dy = -dy;
+			if (dx || dy) {
+				NSPoint p = e.locationInWindow;
+				shared_mem_add_event(sm, (WindowEvent){
+					.type = WINDOW_EVENT_TYPE_MOUSE_SCROLL,
+					.mouseScroll = { dx, dy, (int32_t)p.x, (int32_t)p.y }
+				});
+			}
+		} break;
+
+		case NSEventTypeFlagsChanged: {
+			// Caps‑Lock is the only modifier we want to treat as a toggle.
+			if (e.keyCode == 0x39) {
+				shared_mem_add_event(sm, (WindowEvent){
+					.type = WINDOW_EVENT_TYPE_KEYBOARD_BUTTON,
+					.keyboardButton = { e.keyCode, WINDOW_EVENT_BUTTON_TYPE_UP }
+				});
+				break;
+			}
+
+			// Existing handling for the other modifiers (Shift, Ctrl, …)
+			NSEventModifierFlags f = modifierFlagForKeyCode(e.keyCode);
+			if (!f) break;
+			BOOL down = (e.modifierFlags & f) != 0;
+			shared_mem_add_event(sm, (WindowEvent){
+				.type = WINDOW_EVENT_TYPE_KEYBOARD_BUTTON,
+				.keyboardButton = { e.keyCode,
+					down ? WINDOW_EVENT_BUTTON_TYPE_DOWN : WINDOW_EVENT_BUTTON_TYPE_UP }
+			});
+		} break;
+
+		case NSEventTypeKeyDown:
+		case NSEventTypeKeyUp:
+			// Skip auto‑repeat key‑down events
+			if (e.type == NSEventTypeKeyDown && e.isARepeat && e.keyCode != 0x7B && e.keyCode != 0x7C) {
+				break;
+			}
+			shared_mem_add_event(sm, (WindowEvent){
+				.type = WINDOW_EVENT_TYPE_KEYBOARD_BUTTON,
+				.keyboardButton = { e.keyCode, e.type==NSEventTypeKeyDown?WINDOW_EVENT_BUTTON_TYPE_DOWN:WINDOW_EVENT_BUTTON_TYPE_UP }
+			});
+			shared_mem_flush_events(sm);
+			return nil;
+		default: break;
+	}
+
+	shared_mem_flush_events(sm);
+	return e;
+}
+
+
+void cocoa_run_app(void) {
+	static BOOL started = NO;
+
+	if (started) {
+		return;
+	}
+	started = YES;
+
+	if (![NSThread isMainThread]) {
+		NSLog(@"cocoa_run_app MUST run on main thread");
+		abort();
+	}
+
+	@autoreleasepool {
+		[NSApplication sharedApplication];
+		[NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
+		static AppDelegate *delegate = nil;
+		delegate = [[AppDelegate alloc] init];
+		[NSApp setDelegate:delegate];
+		[NSApp finishLaunching];
+		[NSApp activateIgnoringOtherApps:YES];
+
+		// INSTALL MONITOR HERE
+		gEventMonitor =
+		[NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskAny
+			handler:^NSEvent*(NSEvent* e) {
+				return handleEvent(e);
+			}];
+
+		for (NSWindow* w in [NSApp windows]) {
+			[w makeKeyAndOrderFront:nil];
+		}
+
+		[NSApp run];
+	}
+}
+
+// Ends [NSApp run] after Go has finished Host.Teardown. Always hops to the
+// main queue so it is safe to call from the game-loop goroutine.
+void cocoa_stop_app(void) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[NSApp stop:nil];
+		// stop: only applies after the next event is processed.
+		NSEvent* event = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
+											location:NSMakePoint(0, 0)
+									   modifierFlags:0
+										   timestamp:0
+										windowNumber:0
+											 context:nil
+											 subtype:0
+											   data1:0
+											   data2:0];
+		[NSApp postEvent:event atStart:YES];
+	});
+}
+
+#pragma mark - Public API (unchanged)
+
+void* cocoa_create_window(const char* title,
+						  int x, int y, int w, int h,
+						  void** outWindow,
+						  void* goWindow)
+{
+	__block void* resultView = NULL;
+
+	// ALWAYS hop to main thread for AppKit
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+
+			// ❌ NO sharedApplication
+			// ❌ NO finishLaunching
+			// ❌ NO delegate setup
+			// ❌ NO event monitors here
+
+			NSRect frame = NSMakeRect(x, y, w, h);
+
+			NSWindow* win = [[NSWindow alloc]
+				initWithContentRect:frame
+						  styleMask:(NSWindowStyleMaskTitled |
+									 NSWindowStyleMaskClosable |
+									 NSWindowStyleMaskMiniaturizable |
+									 NSWindowStyleMaskResizable)
+							backing:NSBackingStoreBuffered
+							  defer:NO];
+
+			win.title = [NSString stringWithUTF8String:title];
+
+			if (x < 0 || y < 0) {
+				[win center];
+			}
+
+			// Window delegate (retained via associated object)
+			WindowDelegate* winDelegate = [WindowDelegate new];
+			objc_setAssociatedObject(win, "windowDelegate",
+									 winDelegate,
+									 OBJC_ASSOCIATION_RETAIN);
+			win.delegate = winDelegate;
+
+			// Metal view
+			MetalView* view = [[MetalView alloc] initWithFrame:NSMakeRect(0, 0, w, h)];
+			win.contentView = view;
+
+			[win makeKeyAndOrderFront:nil];
+			[NSApp activateIgnoringOtherApps:YES];
+
+			// Shared memory
+			SharedMem* sm = calloc(1, sizeof(SharedMem));
+			sm->goWindow = goWindow;
+			sm->windowWidth = w;
+			sm->windowHeight = h;
+
+			objc_setAssociatedObject(win,
+									 "sharedMem",
+									 [NSValue valueWithPointer:sm],
+									 OBJC_ASSOCIATION_RETAIN);
+
+			// Retain Cocoa objects for C side
+			void* retainedWindow = (void*)CFBridgingRetain(win);
+			void* retainedView   = (void*)CFBridgingRetain(view);
+
+			// Send SET_HANDLE event (matches Windows/Linux init flow)
+			shared_mem_add_event(sm, (WindowEvent){
+				.type = WINDOW_EVENT_TYPE_SET_HANDLE,
+				.setHandle = {
+					.hwnd     = retainedView,   // NSView*
+					.instance = retainedWindow // NSWindow*
+				}
+			});
+			shared_mem_flush_events(sm);
+
+			if (outWindow) {
+				*outWindow = retainedWindow;
+			}
+
+			resultView = retainedView;
+		}
+	});
+
+	return resultView;
+}
+
+void cocoa_poll_events(void* nsWindow) { (void)nsWindow; /* intentionally empty */ }
+
+void cocoa_render_lock(void* nsView) {
+	(void)nsView;
+	dispatch_semaphore_wait(renderSemaphore(), DISPATCH_TIME_FOREVER);
+}
+
+void cocoa_render_unlock(void* nsView) {
+	(void)nsView;
+	dispatch_semaphore_signal(renderSemaphore());
+}
+
+void cocoa_destroy_window(void* nsWindow) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)nsWindow;
+
+			SharedMem* sm = getSharedMem(window);
+			if (sm) {
+				free(sm);
+				objc_setAssociatedObject(window, "sharedMem", nil, OBJC_ASSOCIATION_ASSIGN);
+			}
+
+			[window orderOut:nil];
+			[window close];
+
+			// Release exactly what we retained in create
+			CFBridgingRelease((__bridge CFTypeRef)window);
+		}
+	});
+}
+
+// Remaining APIs unchanged (show, focus, cursor, clipboard, fullscreen, etc.)
+// They are safe because all AppKit calls remain on main thread
+
+void cocoa_show_window(void* nsWindow) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)nsWindow;
+			[window makeKeyAndOrderFront:nil];
+			[NSApp activateIgnoringOtherApps:YES];
+		}
+	});
+}
+
+int cocoa_get_screen_pixel_width(void* nsWindow) {
+	__block int result = 1920;
+
+	if (!nsWindow) {
+		return result;
+	}
+
+/*
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)nsWindow;
+			if (!window) return;
+
+			NSScreen* screen = window.screen ?: [NSScreen mainScreen];
+			if (!screen) return;
+
+			NSRect frame = screen.frame; // points
+			CGFloat scale = screen.backingScaleFactor;
+
+			int px = (int)(frame.size.width * scale);
+			if (px > 0) {
+				result = px;
+			}
+		}
+	});
+*/
+	return result;
+}
+
+int cocoa_get_screen_pixel_height(void* nsWindow) {
+	__block int result = 1080;
+
+	if (!nsWindow) {
+		return result;
+	}
+/*
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)nsWindow;
+			if (!window) return;
+
+			NSScreen* screen = window.screen ?: [NSScreen mainScreen];
+			if (!screen) return;
+
+			NSRect frame = screen.frame;
+			CGFloat scale = screen.backingScaleFactor;
+
+			int px = (int)(frame.size.height * scale);
+			if (px > 0) {
+				result = px;
+			}
+		}
+	});
+
+*/
+	return result;
+}
+
+double cocoa_get_backing_scale_factor(void* nsWindow) {
+	__block double result = 1.0;
+
+	if (!nsWindow) {
+		return result;
+	}
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)nsWindow;
+			if (!window) return;
+
+			NSScreen* screen = window.screen ?: [NSScreen mainScreen];
+			if (!screen) return;
+
+			CGFloat scale = screen.backingScaleFactor;
+			if (scale > 0) {
+				result = scale;
+			}
+		}
+	});
+	return result;
+}
+
+int cocoa_screen_count(void* nsWindow) {
+	return cocoa_screen_resolutions(nsWindow, NULL, 0);
+}
+
+int cocoa_screen_resolutions(
+	void* nsWindow, MonitorResolution* resolutions, int capacity)
+{
+	if (!nsWindow) return 0;
+
+	__block int count = 0;
+	void (^collect)(void) = ^{
+		@autoreleasepool {
+			NSArray<NSScreen*>* screens = [NSScreen screens];
+			count = (int)screens.count;
+			int limit = MIN(count, capacity);
+			for (int i = 0; i < limit; i++) {
+				NSScreen* screen = screens[i];
+				NSNumber* screenNumber =
+					screen.deviceDescription[@"NSScreenNumber"];
+				CGDirectDisplayID displayID =
+					(CGDirectDisplayID)screenNumber.unsignedIntValue;
+				CGDisplayModeRef mode = CGDisplayCopyDisplayMode(displayID);
+				if (mode) {
+					resolutions[i].width =
+						(int)CGDisplayModeGetPixelWidth(mode);
+					resolutions[i].height =
+						(int)CGDisplayModeGetPixelHeight(mode);
+					CGDisplayModeRelease(mode);
+				} else {
+					NSRect frame = screen.frame;
+					CGFloat scale = screen.backingScaleFactor;
+					resolutions[i].width =
+						(int)(frame.size.width * scale);
+					resolutions[i].height =
+						(int)(frame.size.height * scale);
+				}
+			}
+		}
+	};
+	if ([NSThread isMainThread]) {
+		collect();
+	} else {
+		dispatch_sync(dispatch_get_main_queue(), collect);
+	}
+	return count;
+}
+
+void cocoa_get_position(void* nsWindow, int* x, int* y) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			NSRect frame = [window frame];
+			*x = (int)frame.origin.x;
+			*y = (int)frame.origin.y;
+		}
+	});
+}
+
+void cocoa_set_position(void* nsWindow, int x, int y) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			NSPoint point = NSMakePoint(x, y);
+			[window setFrameOrigin:point];
+		}
+	});
+}
+
+void cocoa_set_size(void* nsWindow, int width, int height) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			NSRect frame = [window frame];
+			frame.size.width = width;
+			frame.size.height = height;
+			[window setFrame:frame display:YES animate:NO];
+		}
+	});
+}
+
+void cocoa_set_title(void* nsWindow, const char* title) {
+	if (!nsWindow || !title) return;
+
+	// COPY the string immediately
+	char* titleCopy = strdup(title);
+	if (!titleCopy) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)nsWindow;
+
+			NSString* str = [[NSString alloc] initWithUTF8String:titleCopy];
+			free(titleCopy);
+
+			if (!str) return; // invalid UTF-8 safety
+
+			[window setTitle:str];
+		}
+	});
+}
+
+void cocoa_copy_to_clipboard(const char* text) {
+	@autoreleasepool {
+		NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+		[pasteboard clearContents];
+		[pasteboard setString:[NSString stringWithUTF8String:text] forType:NSPasteboardTypeString];
+	}
+}
+
+char* cocoa_clipboard_contents(void) {
+	@autoreleasepool {
+		NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];
+		NSString* content = [pasteboard stringForType:NSPasteboardTypeString];
+		if (content == nil) {
+			return strdup("");
+		}
+		return strdup([content UTF8String]);
+	}
+}
+
+void cocoa_cursor_standard(void) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			[[NSCursor arrowCursor] set];
+		}
+	});
+}
+
+void cocoa_cursor_ibeam(void) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			[[NSCursor IBeamCursor] set];
+		}
+	});
+}
+
+void cocoa_cursor_size_all(void) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			[[NSCursor closedHandCursor] set];
+		}
+	});
+}
+
+void cocoa_cursor_size_ns(void) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			[[NSCursor resizeUpDownCursor] set];
+		}
+	});
+}
+
+void cocoa_cursor_size_we(void) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			[[NSCursor resizeLeftRightCursor] set];
+		}
+	});
+}
+
+void cocoa_show_cursor(void) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			[NSCursor unhide];
+		}
+	});
+}
+
+void cocoa_hide_cursor(void) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			[NSCursor hide];
+		}
+	});
+}
+
+void cocoa_focus_window(void* nsWindow) {
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			[window makeKeyAndOrderFront:nil];
+			[NSApp activateIgnoringOtherApps:YES];
+		}
+	});
+}
+
+void cocoa_get_bundle_resource_path(const char* resourceName, void** outPath) {
+	@autoreleasepool {
+		NSString* name = [NSString stringWithUTF8String:resourceName];
+		NSString* path = [[NSBundle mainBundle] pathForResource:name ofType:nil];
+
+		if (path == nil) {
+			// Try with extension separated
+			NSString* extension = [name pathExtension];
+			NSString* basename = [name stringByDeletingPathExtension];
+			path = [[NSBundle mainBundle] pathForResource:basename ofType:extension];
+		}
+
+		if (path != nil) {
+			*outPath = (void*)strdup([path UTF8String]);
+		} else {
+			*outPath = NULL;
+		}
+	}
+}
+
+void cocoa_remove_border(void* nsWindow) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			NSWindowStyleMask styleMask = [window styleMask];
+			// Remove title bar and border decorations
+			styleMask &= ~(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+						   NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable);
+			styleMask |= NSWindowStyleMaskBorderless;
+			[window setStyleMask:styleMask];
+		}
+	});
+}
+
+void cocoa_add_border(void* nsWindow) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			NSWindowStyleMask styleMask = [window styleMask];
+			// Add title bar and border decorations
+			styleMask &= ~NSWindowStyleMaskBorderless;
+			styleMask |= (NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+						  NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable);
+			[window setStyleMask:styleMask];
+		}
+	});
+}
+
+void cocoa_set_fullscreen(void* nsWindow) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			// Check if already in fullscreen
+			if (([window styleMask] & NSWindowStyleMaskFullScreen) == 0) {
+				[window toggleFullScreen:nil];
+			}
+		}
+	});
+}
+
+void cocoa_set_windowed(void* nsWindow, int width, int height) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			// Exit fullscreen if needed
+			if (([window styleMask] & NSWindowStyleMaskFullScreen) != 0) {
+				[window toggleFullScreen:nil];
+			}
+			// Set the requested window size
+			NSRect frame = [window frame];
+			frame.size.width = width;
+			frame.size.height = height;
+			[window setFrame:frame display:YES animate:YES];
+		}
+	});
+}
+
+void cocoa_lock_cursor(void* nsWindow, int x, int y) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			SharedMem* sm = getSharedMem(window);
+			if (sm == NULL) return;
+
+			sm->lockCursor.x = x;
+			sm->lockCursor.y = y;
+			sm->lockCursor.active = true;
+		}
+	});
+}
+
+void cocoa_unlock_cursor(void* nsWindow) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			SharedMem* sm = getSharedMem(window);
+			if (sm == NULL) return;
+
+			sm->lockCursor.active = false;
+		}
+	});
+}
+
+
+// Enable raw mouse input for game mode (mouselook): hides and decouples cursor
+void cocoa_enable_raw_mouse(void* nsWindow) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			SharedMem* sm = getSharedMem(window);
+			if (sm == NULL) return;
+			if (sm->rawInputRequested) {
+				CGAssociateMouseAndMouseCursorPosition(NO);
+				[NSCursor hide];
+			}
+		}
+	});
+}
+
+// Disable raw mouse input: restores normal cursor behavior
+void cocoa_disable_raw_mouse(void* nsWindow) {
+	if (!nsWindow) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSWindow* window = (__bridge NSWindow*)(nsWindow);
+			SharedMem* sm = getSharedMem(window);
+			if (sm == NULL) return;
+			sm->rawInputRequested = false;
+			CGAssociateMouseAndMouseCursorPosition(YES);
+			[NSCursor unhide];
+		}
+	});
+}
+
+// Get the current state of the Caps Lock toggle key
+bool cocoa_get_caps_lock_toggle_key_state(void) {
+    @autoreleasepool {
+        NSEventModifierFlags flags = [NSEvent modifierFlags];
+        return (flags & NSEventModifierFlagCapsLock) != 0;
+    }
+}
+
+#if KAIJU_ENABLE_FILEDROP
+void cocoa_set_file_drop_enabled(void* nsView, bool enabled) {
+	if (!nsView) return;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			NSView* view = (__bridge NSView*)nsView;
+			if (enabled) {
+				[view registerForDraggedTypes:@[NSPasteboardTypeFileURL]];
+			} else {
+				[view unregisterDraggedTypes];
+			}
+		}
+	});
+}
+#endif
+
+void cocoa_set_icon(void* nsWindow, int width, int height, const uint8_t* pixelData) {
+	if (!pixelData || width <= 0 || height <= 0) {
+		return;
+	}
+
+	(void)nsWindow; // nsWindow kept for potential future per-window icons
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		@autoreleasepool {
+			// Create CGImage from raw RGBA pixel data
+			CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, pixelData, (size_t)width * height * 4, NULL);
+			if (!provider) {
+				return;
+			}
+			CGImageRef cgImage = CGImageCreate(
+				(size_t)width,
+				(size_t)height,
+				8,                          // bits per component
+				32,                         // bits per pixel
+				(size_t)width * 4,         // bytes per row
+				CGColorSpaceCreateDeviceRGB(),
+				(CGBitmapInfo)kCGImageAlphaPremultipliedLast,
+				provider,
+				NULL,
+				0,
+				kCGRenderingIntentDefault
+			);
+			CGDataProviderRelease(provider);
+			if (!cgImage) {
+				return;
+			}
+			NSImage* image = [[NSImage alloc] initWithCGImage:cgImage size:NSMakeSize(width, height)];
+			CGImageRelease(cgImage);
+			// Set the application dock icon
+			[NSApp setApplicationIconImage:image];
+		}
+	});
+}

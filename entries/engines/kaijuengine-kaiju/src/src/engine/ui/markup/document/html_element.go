@@ -1,0 +1,333 @@
+/******************************************************************************/
+/* html_element.go                                                            */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package document
+
+import (
+	"slices"
+	"strings"
+	"weak"
+
+	"kaijuengine.com/engine"
+	"kaijuengine.com/engine/systems/events"
+	"kaijuengine.com/engine/ui"
+	"kaijuengine.com/matrix"
+
+	"golang.org/x/net/html"
+)
+
+type Element struct {
+	Type       html.NodeType
+	Data       string
+	namespace  string
+	attr       []html.Attribute
+	UI         *ui.UI
+	UIPanel    *ui.Panel
+	Parent     weak.Pointer[Element]
+	Children   []*Element
+	Stylizer   ElementLayoutStylizer
+	UIEventIds [ui.EventTypeEnd][]events.Id
+}
+
+func (e *Element) ClassList() []string {
+	return strings.Split(e.Attribute("class"), " ")
+}
+
+func (e *Element) HasClass(class string) bool {
+	all := e.ClassList()
+	for i := range all {
+		if all[i] == class {
+			return true
+		}
+	}
+	return false
+}
+
+// SetAttribute sets an attribute on the HTML element. If the attribute key is
+// "class", it parses the value as space-separated class names and sets them
+// using SetClasses. Otherwise, it updates the existing attribute or adds a new
+// one to the element's attribute list.
+func (e *Element) SetAttribute(key, value string) {
+	if key == "class" {
+		e.SetClasses(strings.Split(value, " ")...)
+	} else {
+		found := false
+		for i := 0; i < len(e.attr) && !found; i++ {
+			if e.attr[i].Key == key {
+				found = true
+				e.attr[i].Val = value
+			}
+		}
+		if !found {
+			e.attr = append(e.attr, html.Attribute{
+				Key: key,
+				Val: value,
+			})
+		}
+	}
+}
+
+func (e *Element) RemoveAttribute(key string) {
+	for i := range e.attr {
+		if e.attr[i].Key == key {
+			e.attr = slices.Delete(e.attr, i, i+1)
+			return
+		}
+	}
+}
+
+func (e *Element) SetClasses(classes ...string) {
+	const classKey = "class"
+	for i := range e.attr {
+		if e.attr[i].Key == classKey {
+			e.attr = slices.Delete(e.attr, i, i+1)
+			break
+		}
+	}
+	e.attr = append(e.attr, html.Attribute{
+		Key: classKey,
+		Val: strings.Join(classes, " "),
+	})
+}
+
+func (d *Element) IndexOfChild(child *Element) int {
+	for i := range d.Children {
+		if d.Children[i] == child {
+			return i
+		}
+	}
+	return -1
+}
+
+func (d Element) InnerLabel() *ui.Label {
+	if len(d.Children) > 0 {
+		if lbl := d.Children[0].UI.ToLabel(); lbl != nil {
+			return lbl
+		}
+	}
+	return nil
+}
+
+func (d *Element) EnforceColor(color matrix.Color) {
+	d.UIPanel.EnforceColor(color)
+	setChildTextBackgroundColor(d, color)
+}
+
+func (d *Element) UnEnforceColor() {
+	d.UIPanel.UnEnforceColor()
+	color := d.UIPanel.Base().ShaderData().FgColor
+	setChildTextBackgroundColor(d, color)
+}
+
+func setChildTextBackgroundColor(elm *Element, color matrix.Color) {
+	for _, c := range elm.Children {
+		if c.IsText() {
+			c.UI.ToLabel().SetBGColor(color)
+		}
+		setChildTextBackgroundColor(c, color)
+	}
+}
+
+func (e *Element) IsText() bool {
+	return e.Type == html.TextNode && (e.Parent.Value() == nil || e.Parent.Value().Data != "option")
+}
+
+func (e *Element) IsButton() bool {
+	return e.Data == "button" ||
+		(e.Data == "input" && e.Attribute("type") == "submit")
+}
+
+func (e *Element) IsInput() bool {
+	return e.Data == "input"
+}
+
+func (e *Element) IsTextArea() bool {
+	return e.Data == "textarea"
+}
+
+func (e *Element) IsImage() bool {
+	return e.Data == "img"
+}
+
+func (e *Element) IsSelect() bool {
+	return e.Data == "select"
+}
+
+func (e *Element) IsSelectOption() bool {
+	// Must be an <option> ELEMENT, not a text node whose content happens to be
+	// the word "option" (html.Node stores tag name and text in the same .Data
+	// field). Misclassifying such text skipped its Label UI — leaving the label
+	// blank and nil-dereferencing when the subtree is cloned (e.g. a popover row
+	// proto whose label text is "option").
+	return e.Type == html.ElementNode && e.Data == "option"
+}
+
+func NewHTML(htmlStr string) *Element {
+	doc, _ := html.Parse(strings.NewReader(htmlStr))
+	return createElement(doc)
+}
+
+func createElement(node *html.Node) *Element {
+	root := toElement(node)
+	root.setParents(nil)
+	return root
+}
+
+func (e *Element) setParents(parent *Element) {
+	e.Parent = weak.Make(parent)
+	for i := range e.Children {
+		e.Children[i].setParents(e)
+	}
+}
+
+func toElement(node *html.Node) *Element {
+	elm := &Element{
+		Type:      node.Type,
+		Data:      node.Data,
+		namespace: node.Namespace,
+		attr:      node.Attr,
+		Children:  make([]*Element, 0),
+	}
+	elm.Stylizer = ElementLayoutStylizer{element: weak.Make(elm)}
+	for c := node.FirstChild; c != nil; c = c.NextSibling {
+		if len(strings.TrimSpace(c.Data)) > 0 {
+			elm.Children = append(elm.Children, toElement(c))
+		}
+	}
+	return elm
+}
+
+func (e *Element) Root() *Element {
+	if e.Parent.Value() == nil {
+		return e
+	}
+	return e.Parent.Value().Root()
+}
+
+func (e *Element) Html() *Element {
+	if e.Parent.Value() == nil {
+		return e.Children[len(e.Children)-1]
+	}
+	return e.Parent.Value().Html()
+}
+
+func (e *Element) Head() *Element {
+	res := e.Html()
+	for i, c := range res.Children {
+		if c.Data == "head" {
+			return res.Children[i]
+		}
+	}
+	return nil
+}
+
+func (e *Element) Body() *Element {
+	res := e.Html()
+	for i, c := range res.Children {
+		if c.Data == "body" {
+			return res.Children[i]
+		}
+	}
+	return nil
+}
+
+func (e *Element) Attribute(key string) string {
+	for i := range e.attr {
+		if e.attr[i].Key == key {
+			return e.attr[i].Val
+		}
+	}
+	return ""
+}
+
+func (e *Element) HasAttribute(key string) bool {
+	for i := range e.attr {
+		if e.attr[i].Key == key {
+			return true
+		}
+	}
+	return false
+}
+
+func (e *Element) FindElementById(id string) *Element {
+	if e.Attribute("id") == id {
+		return e
+	}
+	for _, c := range e.Children {
+		if elm := c.FindElementById(id); elm != nil {
+			return elm
+		}
+	}
+	return nil
+}
+
+func (e *Element) FindElementLabelById(id string) *ui.Label {
+	elm := e.FindElementById(id)
+	return elm.InnerLabel()
+}
+
+func (e *Element) FindElementByTag(tag string) *Element {
+	if !e.IsText() && e.Data == tag {
+		return e
+	}
+	for _, c := range e.Children {
+		if elm := c.FindElementByTag(tag); elm != nil {
+			return elm
+		}
+	}
+	return nil
+}
+
+func (e *Element) FindElementsByTag(tag string) []*Element {
+	elements := make([]*Element, 0)
+	if !e.IsText() && e.Data == tag {
+		elements = append(elements, e)
+	}
+	for _, c := range e.Children {
+		elements = append(elements, c.FindElementsByTag(tag)...)
+	}
+	return elements
+}
+
+func (e *Element) Clone(parent *Element) *Element {
+	elm := &Element{
+		Type:      e.Type,
+		Data:      e.Data,
+		namespace: e.namespace,
+	}
+	elm.attr = append(elm.attr, e.attr...)
+	for i := range e.UIEventIds {
+		elm.UIEventIds[i] = make([]events.Id, 0, len(e.UIEventIds[i]))
+	}
+	if parent != nil {
+		parent.Children = append(parent.Children, elm)
+		elm.Parent = weak.Make(parent)
+	}
+	var eParent *engine.Entity
+	if parent != nil && parent.UI != nil {
+		eParent = parent.UI.Entity()
+	}
+	// Some elements intentionally have no UI (createUIElement returns early for
+	// select options), so mirror that here instead of nil-dereferencing e.UI /
+	// elm.UI when cloning a subtree that contains one (e.g. the MultiSelect
+	// popover rows). Children are still cloned so any UI-bearing descendants are
+	// reproduced.
+	if e.UI != nil {
+		elm.UI = e.UI.Clone(eParent)
+		if !elm.UI.IsType(ui.ElementTypeLabel) {
+			elm.UIPanel = elm.UI.ToPanel()
+		}
+	}
+	elm.Children = make([]*Element, 0, len(e.Children))
+	for i := range e.Children {
+		e.Children[i].Clone(elm)
+	}
+	e.Stylizer.cloneInto(elm)
+	if elm.UI != nil {
+		elm.UI.Layout().Stylizer = &elm.Stylizer
+	}
+	return elm
+}

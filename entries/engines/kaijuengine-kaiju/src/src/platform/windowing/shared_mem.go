@@ -1,0 +1,222 @@
+/******************************************************************************/
+/* shared_mem.go                                                              */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package windowing
+
+import "unsafe"
+
+type WindowEventType = uint8
+type WindowEventActivityType = uint32
+type WindowEventButtonType = uint32
+type WindowEventControllerConnectionType = uint32
+type TouchActionState = int32
+type StylusActionState = int32
+
+const (
+	sharedMemWindowActivity  = 0xF9
+	sharedMemWindowMove      = 0xFA
+	sharedMemWindowResize    = 0xFB
+	sharedMemAwaitingContext = 0xFC
+	sharedMemAwaitingStart   = 0xFD
+	sharedMemFatal           = 0xFE
+	sharedMemQuit            = 0xFF
+)
+
+const (
+	nativeMouseButtonLeft   = 0
+	nativeMouseButtonMiddle = 1
+	nativeMouseButtonRight  = 2
+	nativeMouseButtonX1     = 3
+	nativeMouseButtonX2     = 4
+)
+
+const (
+	windowEventTypeSetHandle       = WindowEventType(1)
+	windowEventTypeActivity        = WindowEventType(2)
+	windowEventTypeMove            = WindowEventType(3)
+	windowEventTypeResize          = WindowEventType(4)
+	windowEventTypeMouseMove       = WindowEventType(5)
+	windowEventTypeMouseScroll     = WindowEventType(6)
+	windowEventTypeMouseButton     = WindowEventType(7)
+	windowEventTypeKeyboardButton  = WindowEventType(8)
+	windowEventTypeControllerState = WindowEventType(9)
+	windowEventTypeTouchState      = WindowEventType(10)
+	windowEventTypeStylusState     = WindowEventType(11)
+	windowEventTypeFatal           = WindowEventType(12)
+)
+
+const (
+	windowEventActivityTypeMinimize = WindowEventActivityType(1)
+	windowEventActivityTypeMaximize = WindowEventActivityType(2)
+	windowEventActivityTypeClose    = WindowEventActivityType(3)
+	windowEventActivityTypeFocus    = WindowEventActivityType(4)
+	windowEventActivityTypeBlur     = WindowEventActivityType(5)
+)
+
+const (
+	windowEventButtonTypeDown = WindowEventButtonType(1)
+	windowEventButtonTypeUp   = WindowEventButtonType(2)
+)
+
+const (
+	windowEventControllerConnectionTypeDisconnected = WindowEventControllerConnectionType(1)
+	windowEventControllerConnectionTypeConnected    = WindowEventControllerConnectionType(2)
+)
+
+const (
+	touchActionStateUp     = TouchActionState(1)
+	touchActionStateMove   = TouchActionState(2)
+	touchActionStateCancel = TouchActionState(3)
+)
+
+const (
+	stylusActionStateNone       = StylusActionState(1)
+	stylusActionStateHoverEnter = StylusActionState(2)
+	stylusActionStateHoverMove  = StylusActionState(3)
+	stylusActionStateHoverExit  = StylusActionState(4)
+	stylusActionStateDown       = StylusActionState(5)
+	stylusActionStateMove       = StylusActionState(6)
+	stylusActionStateUp         = StylusActionState(7)
+)
+
+type SetHandleEvent struct {
+	hwnd     unsafe.Pointer
+	instance unsafe.Pointer
+}
+
+type WindowActivityEvent struct {
+	activityType WindowEventActivityType
+	_            [4]byte
+}
+
+type WindowMoveEvent struct {
+	x int32
+	y int32
+}
+
+type WindowResizeEvent struct {
+	width  int32
+	height int32
+	left   int32
+	top    int32
+	right  int32
+	bottom int32
+}
+
+type MouseMoveWindowEvent struct {
+	x int32
+	y int32
+}
+
+type MouseScrollWindowEvent struct {
+	deltaX int32
+	deltaY int32
+	x      int32
+	y      int32
+}
+
+type MouseButtonWindowEvent struct {
+	buttonId int32
+	action   WindowEventButtonType
+	x        int32
+	y        int32
+}
+
+type KeyboardButtonWindowEvent struct {
+	buttonId int32
+	action   WindowEventButtonType
+}
+
+type ControllerStateWindowEvent struct {
+	controllerId   uint8
+	leftTrigger    uint8
+	rightTrigger   uint8
+	_              byte
+	connectionType WindowEventControllerConnectionType
+	buttons        uint16
+	thumbLX        int16
+	thumbLY        int16
+	thumbRX        int16
+	thumbRY        int16
+	_              [6]byte
+}
+
+type TouchStateWindowEvent struct {
+	x           float32
+	y           float32
+	pressure    float32
+	index       int32
+	actionState TouchActionState
+}
+
+type StylusStateWindowEvent struct {
+	x           float32
+	y           float32
+	pressure    float32
+	distance    float32
+	actionState StylusActionState
+}
+
+const evtUnionSize = max(
+	unsafe.Sizeof(SetHandleEvent{}),
+	unsafe.Sizeof(WindowActivityEvent{}),
+	unsafe.Sizeof(WindowMoveEvent{}),
+	unsafe.Sizeof(WindowResizeEvent{}),
+	unsafe.Sizeof(MouseMoveWindowEvent{}),
+	unsafe.Sizeof(MouseScrollWindowEvent{}),
+	unsafe.Sizeof(MouseButtonWindowEvent{}),
+	unsafe.Sizeof(KeyboardButtonWindowEvent{}),
+	unsafe.Sizeof(ControllerStateWindowEvent{}),
+)
+
+func readType(head unsafe.Pointer) (WindowEventType, unsafe.Pointer) {
+	eType := WindowEventType(*(*uint64)(head))
+	return eType, unsafe.Pointer(uintptr(head) + unsafe.Sizeof(uint64(0)))
+}
+
+func asSetHandleEvent(data unsafe.Pointer) *SetHandleEvent {
+	return (*SetHandleEvent)(data)
+}
+
+func asWindowActivityEvent(data unsafe.Pointer) *WindowActivityEvent {
+	return (*WindowActivityEvent)(data)
+}
+
+func asWindowMoveEvent(data unsafe.Pointer) *WindowMoveEvent {
+	return (*WindowMoveEvent)(data)
+}
+
+func asWindowResizeEvent(data unsafe.Pointer) *WindowResizeEvent {
+	return (*WindowResizeEvent)(data)
+}
+
+func asMouseMoveWindowEvent(data unsafe.Pointer) *MouseMoveWindowEvent {
+	return (*MouseMoveWindowEvent)(data)
+}
+
+func asMouseScrollWindowEvent(data unsafe.Pointer) *MouseScrollWindowEvent {
+	return (*MouseScrollWindowEvent)(data)
+}
+
+func asMouseButtonWindowEvent(data unsafe.Pointer) *MouseButtonWindowEvent {
+	return (*MouseButtonWindowEvent)(data)
+}
+
+func asKeyboardButtonWindowEvent(data unsafe.Pointer) *KeyboardButtonWindowEvent {
+	return (*KeyboardButtonWindowEvent)(data)
+}
+
+func asControllerStateWindowEvent(data unsafe.Pointer) *ControllerStateWindowEvent {
+	return (*ControllerStateWindowEvent)(data)
+}
+
+func asTouchStateWindowEvent(data unsafe.Pointer) *TouchStateWindowEvent {
+	return (*TouchStateWindowEvent)(data)
+}
+
+func asStylusStateWindowEvent(data unsafe.Pointer) *StylusStateWindowEvent {
+	return (*StylusStateWindowEvent)(data)
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T03:50:07Z",
+ "category": "engines",
+ "commit": "c5b49f65571f",
+ "delivery": "vendored",
+ "description": "KaijuEngine/kaiju \u2014 General purpose 3D and 2D game engine using Go (golang) and Vulkan with built in editor",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "kaiju",
+ "size_bytes": 10157496,
+ "slug": "kaijuengine-kaiju",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 4758,
+ "system": "General purpose 3D and 2D game engine using Go (golang) and Vulkan with built in editor",
+ "upstream": "https://github.com/KaijuEngine/kaiju",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

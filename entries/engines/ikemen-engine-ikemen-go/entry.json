@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T03:50:09Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ikemen-engine/Ikemen-GO \u2014 An open-source fighting game engine that supports MUGEN resources.",
+ "language": "go",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Ikemen-GO",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ikemen-engine-ikemen-go",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 1706,
+ "system": "An open-source fighting game engine that supports MUGEN resources.",
+ "upstream": "https://github.com/ikemen-engine/Ikemen-GO",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,329 @@
+/******************************************************************************/
+/* render_pass_test.go                                                        */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package rendering
+
+import (
+	"math"
+	"os"
+	"strings"
+	"testing"
+
+	"kaijuengine.com/matrix"
+	"kaijuengine.com/rendering/gpu_enums"
+	"kaijuengine.com/rendering/gpu_types"
+)
+
+func TestNewRenderPassData(t *testing.T) {
+	data, err := NewRenderPassData(`{"Name":"main","Sort":3,"Width":640,"Height":480,"SkipCombine":true}`)
+	if err != nil {
+		t.Fatalf("NewRenderPassData returned error: %v", err)
+	}
+	if data.Name != "main" || data.Sort != 3 || data.Width != 640 || data.Height != 480 || !data.SkipCombine {
+		t.Fatalf("unexpected render pass data: %+v", data)
+	}
+	if _, err := NewRenderPassData(`{`); err == nil {
+		t.Fatalf("invalid JSON should return an error")
+	}
+}
+
+func TestShadowCascadeIndex(t *testing.T) {
+	tests := map[string]int{
+		"light_offscreen":      0,
+		"light_offscreen_csm1": 1,
+		"light_offscreen_csm2": 2,
+	}
+	for name, want := range tests {
+		got, ok := shadowCascadeIndex(name)
+		if !ok || got != want {
+			t.Fatalf("shadowCascadeIndex(%q) = %d, %v; want %d, true", name, got, ok, want)
+		}
+	}
+	if got, ok := shadowCascadeIndex("light_offscreen_unknown"); ok {
+		t.Fatalf("unknown shadow pass returned %d, true", got)
+	}
+}
+
+func TestRenderPassAttachmentImageInvalid(t *testing.T) {
+	if !(&RenderPassAttachmentImage{}).IsInvalid() {
+		t.Fatalf("empty source image should be invalid")
+	}
+	if (&RenderPassAttachmentImage{Usage: []string{"SampledBit"}, MipLevels: 1, LayerCount: 1}).IsInvalid() {
+		t.Fatalf("complete source image should be valid")
+	}
+	if !(&RenderPassAttachmentImageCompiled{}).IsInvalid() {
+		t.Fatalf("empty compiled image should be invalid")
+	}
+	if (&RenderPassAttachmentImageCompiled{Usage: gpu_types.ImageUsageSampledBit, MipLevels: 1, LayerCount: 1}).IsInvalid() {
+		t.Fatalf("complete compiled image should be valid")
+	}
+}
+
+func TestRenderPassAttachmentConversions(t *testing.T) {
+	img := RenderPassAttachmentImage{
+		Tiling:         "Optimal",
+		Filter:         "Linear",
+		Usage:          []string{"SampledBit", "ColorAttachmentBit"},
+		MemoryProperty: []string{"DeviceLocalBit"},
+		Aspect:         []string{"ColorBit"},
+		Access:         []string{"ShaderReadBit", "ColorAttachmentWriteBit"},
+	}
+	if img.TilingToGpu() != gpu_types.ImageTilingOptimal ||
+		img.FilterToGpu() != gpu_types.FilterLinear ||
+		img.UsageToGpu() != gpu_types.ImageUsageSampledBit|gpu_types.ImageUsageColorAttachmentBit ||
+		img.MemoryPropertyToGpu() != gpu_types.MemoryPropertyDeviceLocalBit ||
+		img.AspectToGpu() != gpu_types.ImageAspectColorBit ||
+		img.AccessToGpu() != gpu_types.AccessShaderReadBit|gpu_types.AccessColorAttachmentWriteBit {
+		t.Fatalf("unexpected image conversion")
+	}
+	desc := RenderPassAttachmentDescription{
+		Format:         "R8g8b8a8Unorm",
+		Samples:        "1Bit",
+		LoadOp:         "Clear",
+		StoreOp:        "Store",
+		StencilLoadOp:  "DontCare",
+		StencilStoreOp: "DontCare",
+		InitialLayout:  "Undefined",
+		FinalLayout:    "ShaderReadOnlyOptimal",
+	}
+	if desc.FormatToGpu(nil) != gpu_types.FormatR8g8b8a8Unorm ||
+		desc.SamplesToGpu(nil) != gpu_types.SampleCount1Bit ||
+		desc.LoadOpToGpu() != gpu_types.AttachmentLoadOpClear ||
+		desc.StoreOpToGpu() != gpu_types.AttachmentStoreOpStore ||
+		desc.StencilLoadOpToGpu() != gpu_types.AttachmentLoadOpDontCare ||
+		desc.StencilStoreOpToGpu() != gpu_types.AttachmentStoreOpDontCare ||
+		desc.InitialLayoutToGpu() != gpu_types.ImageLayoutUndefined ||
+		desc.FinalLayoutToGpu() != gpu_types.ImageLayoutShaderReadOnlyOptimal {
+		t.Fatalf("unexpected attachment conversion")
+	}
+}
+
+func TestRenderPassSubpassConversions(t *testing.T) {
+	ref := RenderPassAttachmentReference{Attachment: 2, Layout: "ColorAttachmentOptimal"}
+	if ref.LayoutToGpu() != gpu_types.ImageLayoutColorAttachmentOptimal {
+		t.Fatalf("LayoutToGpu = %v", ref.LayoutToGpu())
+	}
+	subpass := RenderPassSubpassDescription{PipelineBindPoint: "Graphics"}
+	if subpass.PipelineBindPointToGpu() != gpu_enums.PipelineBindPointGraphics {
+		t.Fatalf("PipelineBindPointToGpu = %v", subpass.PipelineBindPointToGpu())
+	}
+}
+
+func TestRenderPassSubpassDependencyConversions(t *testing.T) {
+	dep := RenderPassSubpassDependency{
+		SrcStageMask:    []string{"FragmentShaderBit"},
+		DstStageMask:    []string{"ColorAttachmentOutputBit"},
+		SrcAccessMask:   []string{"ShaderReadBit"},
+		DstAccessMask:   []string{"ColorAttachmentWriteBit"},
+		DependencyFlags: []string{"ByRegionBit"},
+	}
+	if dep.SrcStageMaskToGpu() != gpu_types.PipelineStageFragmentShaderBit ||
+		dep.DstStageMaskToGpu() != gpu_types.PipelineStageColorAttachmentOutputBit ||
+		dep.SrcAccessMaskToGpu() != gpu_types.AccessShaderReadBit ||
+		dep.DstAccessMaskToGpu() != gpu_types.AccessColorAttachmentWriteBit ||
+		dep.DependencyFlagsToGpu() != gpu_enums.DependencyByRegionBit {
+		t.Fatalf("unexpected dependency conversion")
+	}
+}
+
+func TestRenderPassAttachmentDescriptionIsDepthFormat(t *testing.T) {
+	if !(&RenderPassAttachmentDescriptionCompiled{Format: gpu_types.FormatD16Unorm}).IsDepthFormat() {
+		t.Fatalf("D16Unorm should be a depth format")
+	}
+	if (&RenderPassAttachmentDescriptionCompiled{Format: gpu_types.FormatR8g8b8a8Unorm}).IsDepthFormat() {
+		t.Fatalf("R8g8b8a8Unorm should not be a depth format")
+	}
+}
+
+func TestRenderPassDataCompile(t *testing.T) {
+	data := RenderPassData{
+		Name:        "pass",
+		Sort:        7,
+		Width:       320,
+		Height:      200,
+		SkipCombine: true,
+		AttachmentDescriptions: []RenderPassAttachmentDescription{{
+			Format:        "D16Unorm",
+			Samples:       "1Bit",
+			LoadOp:        "Clear",
+			StoreOp:       "Store",
+			InitialLayout: "Undefined",
+			FinalLayout:   "DepthStencilAttachmentOptimal",
+			Image: RenderPassAttachmentImage{
+				Name:           "depth",
+				MipLevels:      1,
+				LayerCount:     1,
+				Tiling:         "Optimal",
+				Filter:         "Linear",
+				Usage:          []string{"DepthStencilAttachmentBit"},
+				MemoryProperty: []string{"DeviceLocalBit"},
+				Aspect:         []string{"DepthBit"},
+				Access:         []string{"DepthStencilAttachmentWriteBit"},
+				Clear:          RenderPassAttachmentImageClear{Depth: 1},
+			},
+		}},
+		SubpassDescriptions: []RenderPassSubpassDescription{
+			{PipelineBindPoint: "Graphics"},
+			{
+				PipelineBindPoint: "Graphics",
+				ColorAttachmentReferences: []RenderPassAttachmentReference{{
+					Attachment: 0,
+					Layout:     "DepthStencilAttachmentOptimal",
+				}},
+				Subpass: RenderPassSubpassData{
+					Shader:         "combine.shader",
+					ShaderPipeline: "combine.pipeline",
+					SampledImages:  []RenderPassSubpassImageData{{SampledImage: "0"}},
+				},
+			},
+		},
+		SubpassDependencies: []RenderPassSubpassDependency{{
+			SrcSubpass:    -1,
+			DstSubpass:    0,
+			SrcStageMask:  []string{"TopOfPipeBit"},
+			DstStageMask:  []string{"FragmentShaderBit"},
+			SrcAccessMask: []string{"MemoryReadBit"},
+			DstAccessMask: []string{"ShaderReadBit"},
+		}},
+	}
+	compiled := data.Compile(&GPUDevice{})
+	if compiled.Name != "pass" || compiled.Sort != 7 || compiled.Width != 320 ||
+		compiled.Height != 200 || !compiled.SkipCombine {
+		t.Fatalf("unexpected compiled metadata: %+v", compiled)
+	}
+	if len(compiled.ImageClears) != 1 || !compiled.ImageClears[0].IsDepth {
+		t.Fatalf("image clears = %+v", compiled.ImageClears)
+	}
+	if compiled.SubpassDependencies[0].SrcSubpass != math.MaxUint32 {
+		t.Fatalf("external source subpass = %d", compiled.SubpassDependencies[0].SrcSubpass)
+	}
+	if len(compiled.Subpass) != 1 ||
+		compiled.Subpass[0].Shader != "combine.shader" ||
+		compiled.Subpass[0].SampledImages[0] != 0 {
+		t.Fatalf("subpass data = %+v", compiled.Subpass)
+	}
+}
+
+func TestRenderPassDataCompiledSetClearColor(t *testing.T) {
+	compiled := RenderPassDataCompiled{
+		ImageClears: []RenderPassAttachmentImageClear{
+			{Depth: 1, IsDepth: true},
+			{R: 1, G: 1, B: 1, A: 0},
+		},
+	}
+	color := matrix.NewColor(0.1, 0.2, 0.3, 1)
+	if !compiled.setClearColor(color) {
+		t.Fatalf("setClearColor should update the first color clear")
+	}
+	if compiled.ImageClears[0].R != 0 || compiled.ImageClears[0].Depth != 1 {
+		t.Fatalf("depth clear was changed: %+v", compiled.ImageClears[0])
+	}
+	got := compiled.ImageClears[1]
+	if got.R != 0.1 || got.G != 0.2 || got.B != 0.3 || got.A != 1 {
+		t.Fatalf("color clear = %+v, want %v", got, color)
+	}
+}
+
+func TestSetSwapChainClearColorUpdatesCachedFinalPasses(t *testing.T) {
+	color := matrix.NewColor(0.25, 0.5, 0.75, 1)
+	combine := &RenderPass{construction: RenderPassDataCompiled{
+		Name:        combineRenderPassName,
+		ImageClears: []RenderPassAttachmentImageClear{{R: 1, G: 1, B: 1, A: 1}},
+	}}
+	swapchain := &RenderPass{construction: RenderPassDataCompiled{
+		Name:        swapChainRenderPassName,
+		ImageClears: []RenderPassAttachmentImageClear{{R: 1, G: 1, B: 1, A: 1}},
+	}}
+	opaque := &RenderPass{construction: RenderPassDataCompiled{
+		Name:        "opaque",
+		ImageClears: []RenderPassAttachmentImageClear{{R: 1, G: 1, B: 1, A: 0}},
+	}}
+	device := &GPUDevice{}
+	device.LogicalDevice.renderPassCache = map[string]*RenderPass{
+		combineRenderPassName:   combine,
+		swapChainRenderPassName: swapchain,
+		"opaque":                opaque,
+	}
+
+	device.SetSwapChainClearColor(color)
+
+	combineClear := matrix.Color{
+		matrix.Float(combine.construction.ImageClears[0].R),
+		matrix.Float(combine.construction.ImageClears[0].G),
+		matrix.Float(combine.construction.ImageClears[0].B),
+		matrix.Float(combine.construction.ImageClears[0].A),
+	}
+	if !combineClear.Equals(color) {
+		t.Fatalf("combine clear = %+v, want %v", combine.construction.ImageClears[0], color)
+	}
+	swapChainClear := matrix.Color{
+		matrix.Float(swapchain.construction.ImageClears[0].R),
+		matrix.Float(swapchain.construction.ImageClears[0].G),
+		matrix.Float(swapchain.construction.ImageClears[0].B),
+		matrix.Float(swapchain.construction.ImageClears[0].A),
+	}
+	if !swapChainClear.Equals(color) {
+		t.Fatalf("swapchain clear = %+v, want %v", swapchain.construction.ImageClears[0], color)
+	}
+	if opaque.construction.ImageClears[0].A != 0 {
+		t.Fatalf("non-final pass clear was changed: %+v", opaque.construction.ImageClears[0])
+	}
+	if !device.SwapChainClearColor().Equals(color) {
+		t.Fatalf("device clear color = %v, want %v", device.SwapChainClearColor(), color)
+	}
+}
+
+func TestEditorPickRenderPassAsset(t *testing.T) {
+	data, err := os.ReadFile("../editor/editor_embedded_content/editor_content/renderer/passes/editor_pick.renderpass")
+	if err != nil {
+		t.Fatalf("failed to read editor_pick.renderpass: %v", err)
+	}
+	pass, err := NewRenderPassData(string(data))
+	if err != nil {
+		t.Fatalf("NewRenderPassData returned error: %v", err)
+	}
+	if pass.Name != "editor_pick" || !pass.SkipCombine {
+		t.Fatalf("unexpected pass metadata: %+v", pass)
+	}
+	if len(pass.AttachmentDescriptions) != 2 {
+		t.Fatalf("attachment count = %d, want 2", len(pass.AttachmentDescriptions))
+	}
+	if pass.AttachmentDescriptions[0].Format != "R32Uint" ||
+		pass.AttachmentDescriptions[0].Image.Clear.R != 0 {
+		t.Fatalf("unexpected id attachment: %+v", pass.AttachmentDescriptions[0])
+	}
+	if pass.AttachmentDescriptions[1].Format != "<DetectDepthFormat>" ||
+		pass.AttachmentDescriptions[1].Image.Clear.Depth != 1 {
+		t.Fatalf("unexpected depth attachment: %+v", pass.AttachmentDescriptions[1])
+	}
+	if len(pass.SubpassDescriptions) != 1 ||
+		len(pass.SubpassDescriptions[0].ColorAttachmentReferences) != 1 ||
+		len(pass.SubpassDescriptions[0].DepthStencilAttachment) != 1 {
+		t.Fatalf("unexpected subpass attachments: %+v", pass.SubpassDescriptions)
+	}
+}
+
+func TestCombineShaderSamplesGBufferByTextureSize(t *testing.T) {
+	data, err := os.ReadFile("../editor/editor_embedded_content/editor_content/renderer/src/combine.frag")
+	if err != nil {
+		t.Fatalf("failed to read combine.frag: %v", err)
+	}
+	src := string(data)
+	for _, needle := range []string{
+		"textureSize(textures[1], 0)",
+		"gl_FragCoord.xy / gBufferSize",
+		"1.0 / gBufferSize.x",
+		"1.0 / gBufferSize.y",
+	} {
+		if !strings.Contains(src, needle) {
+			t.Fatalf("combine shader should contain %q", needle)
+		}
+	}
+	if strings.Contains(src, "gl_FragCoord.xy / screenSize") ||
+		strings.Contains(src, "1.0 / screenSize") {
+		t.Fatalf("combine shader should not use screenSize for G-buffer sampling")
+	}
+}

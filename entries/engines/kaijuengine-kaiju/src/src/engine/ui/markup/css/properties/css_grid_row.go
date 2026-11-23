@@ -1,0 +1,107 @@
+/******************************************************************************/
+/* css_grid_row.go                                                            */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package properties
+
+import (
+	"fmt"
+	"strconv"
+	"strings"
+
+	"kaijuengine.com/engine"
+	"kaijuengine.com/engine/ui"
+	"kaijuengine.com/engine/ui/markup/css/rules"
+	"kaijuengine.com/engine/ui/markup/document"
+)
+
+type gridLineValue struct {
+	line   int
+	span   int
+	isSpan bool
+}
+
+func (p GridRow) Process(panel *ui.Panel, elm *document.Element, values []rules.PropertyValue, host *engine.Host) error {
+	if len(values) == 0 {
+		return nil
+	}
+	startValues, endValues := splitGridLineValues(values)
+	start, err := parseGridLineValue(startValues, p.Key())
+	if err != nil {
+		return err
+	}
+	end, err := parseGridLineValue(endValues, p.Key())
+	if err != nil {
+		return err
+	}
+	startLine := start.line
+	endLine := end.line
+	if start.isSpan {
+		if endLine == 0 {
+			return fmt.Errorf("grid-row start span requires an explicit end line")
+		}
+		startLine = endLine - start.span
+		if startLine < 1 {
+			startLine = 1
+		}
+	}
+	if end.isSpan {
+		if startLine == 0 {
+			return fmt.Errorf("grid-row end span requires an explicit start line")
+		}
+		endLine = startLine + end.span
+	}
+	if startLine > 0 && endLine > 0 && endLine <= startLine {
+		return fmt.Errorf("grid-row end line must be greater than start line")
+	}
+	panel.Base().Layout().SetGridRow(startLine, endLine)
+	return nil
+}
+
+func splitGridLineValues(values []rules.PropertyValue) ([]rules.PropertyValue, []rules.PropertyValue) {
+	for i := range values {
+		if values[i].Str == "/" {
+			return values[:i], values[i+1:]
+		}
+	}
+	return values, nil
+}
+
+func parseGridLineValue(values []rules.PropertyValue, property string) (gridLineValue, error) {
+	if len(values) == 0 {
+		return gridLineValue{}, nil
+	}
+	parts := make([]string, 0, len(values))
+	for i := range values {
+		part := strings.TrimSpace(values[i].Str)
+		if part != "" {
+			parts = append(parts, part)
+		}
+	}
+	if len(parts) == 0 {
+		return gridLineValue{}, nil
+	}
+	if len(parts) == 1 {
+		switch parts[0] {
+		case "auto", "initial", "inherit", "unset":
+			return gridLineValue{}, nil
+		case "span":
+			return gridLineValue{}, fmt.Errorf("%s span requires a positive integer", property)
+		}
+		line, err := strconv.Atoi(parts[0])
+		if err != nil || line <= 0 {
+			return gridLineValue{}, fmt.Errorf("%s line must be a positive integer", property)
+		}
+		return gridLineValue{line: line}, nil
+	}
+	if len(parts) == 2 && parts[0] == "span" {
+		span, err := strconv.Atoi(parts[1])
+		if err != nil || span <= 0 {
+			return gridLineValue{}, fmt.Errorf("%s span must be a positive integer", property)
+		}
+		return gridLineValue{span: span, isSpan: true}, nil
+	}
+	return gridLineValue{}, fmt.Errorf("unsupported %s line value %q", property, strings.Join(parts, " "))
+}

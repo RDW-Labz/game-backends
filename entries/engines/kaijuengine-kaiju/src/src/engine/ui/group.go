@@ -1,0 +1,209 @@
+/******************************************************************************/
+/* group.go                                                                   */
+/******************************************************************************/
+/* MIT License, Copyright (c) 2015-present Brent Farris, (John 4:13-14)       */
+/******************************************************************************/
+
+package ui
+
+import (
+	"log/slog"
+	"sort"
+	"sync"
+	"weak"
+
+	"kaijuengine.com/engine"
+	"kaijuengine.com/klib"
+	"kaijuengine.com/platform/profiler/tracing"
+)
+
+type requestState = int
+
+const (
+	requestStateNone = requestState(iota)
+	requestStateStarted
+	requestStateProcessed
+)
+
+type groupRequest struct {
+	target    *UI
+	eventType EventType
+}
+
+type Group struct {
+	requests     []groupRequest
+	focus        *UI
+	updateId     engine.UpdateId
+	lock         sync.Mutex
+	hadRequests  requestState
+	isThreaded   bool
+	isProcessing bool
+}
+
+func (group *Group) HasRequests() bool {
+	return group.hadRequests != requestStateNone ||
+		group.IsFocusedOnInput()
+}
+
+func (group *Group) triggerRequestStartState() {
+	if group.hadRequests != requestStateStarted {
+		group.lock.Lock()
+		group.hadRequests = requestStateStarted
+		group.lock.Unlock()
+	}
+}
+
+func (group *Group) requestEvent(ui *UI, eType EventType) {
+	if eType <= EventTypeInvalid || eType >= EventTypeEnd {
+		slog.Error("Invalid UI event type", "eventType", eType)
+		return
+	}
+	if group.hadRequests != requestStateStarted {
+		if eType != EventTypeMiss {
+			group.triggerRequestStartState()
+		}
+	}
+	if ui.events[eType].IsEmpty() {
+		return
+	}
+	if group.isProcessing {
+		ui.Host().RunAfterFrames(0, func() {
+			group.requestEvent(ui, eType)
+		})
+	} else {
+		if group.isThreaded {
+			group.lock.Lock()
+		}
+		group.requests = append(group.requests, groupRequest{
+			target:    ui,
+			eventType: eType,
+		})
+		if group.isThreaded {
+			group.lock.Unlock()
+		}
+	}
+}
+
+func (group *Group) setFocus(ui *UI) {
+	if group.focus != nil && group.focus != ui {
+		group.focus.ExecuteEvent(EventTypeMiss)
+	}
+	group.focus = ui
+	if group.focus != nil {
+		group.focus.ExecuteEvent(EventTypeClick)
+	}
+}
+
+func (group *Group) IsFocusedOnInput() bool {
+	if group.focus == nil || !group.focus.IsActive() {
+		return false
+	}
+	return group.focus.IsType(ElementTypeInput) || group.focus.IsType(ElementTypeTextArea)
+}
+
+// ClearFocus releases the currently focused element through its normal miss
+// handler so inputs can submit and blur just as they do when clicking elsewhere.
+func (group *Group) ClearFocus() {
+	group.setFocus(nil)
+}
+
+func (group *Group) Attach(host *engine.Host) {
+	wGroup := weak.Make(group)
+	group.updateId = host.UILateUpdater.AddUpdate(func(dt float64) {
+		if wGroup.Value() != nil {
+			wGroup.Value().lateUpdate()
+		}
+	})
+}
+
+func (group *Group) Detach(host *engine.Host) {
+	host.UILateUpdater.RemoveUpdate(&group.updateId)
+}
+
+func sortElements(a *UI, b *UI) bool { return a.IsInFrontOf(b) }
+
+func sortRequests(a *groupRequest, b *groupRequest) bool {
+	return sortElements(a.target, b.target)
+}
+
+func (group *Group) lateUpdate() {
+	defer tracing.NewRegion("ui.Group.lateUpdate").End()
+	if len(group.requests) > 0 {
+		sort.Slice(group.requests, func(i, j int) bool {
+			return sortRequests(&group.requests[i], &group.requests[j])
+		})
+		requestSets := [EventTypeEnd][]groupRequest{}
+		for i := range group.requests {
+			r := &group.requests[i]
+			requestSets[r.eventType] = append(requestSets[r.eventType], *r)
+		}
+		var top *UI
+		{
+			hovered := group.requests[0].target.man.Value().Hovered()
+			sort.Slice(hovered, func(i, j int) bool {
+				return sortElements(hovered[i], hovered[j])
+			})
+			for i := 0; i < len(hovered) && top == nil; i++ {
+				if !hovered[i].IsType(ElementTypeLabel) && !hovered[i].ToPanel().PanelData().flags.allowClickThrough() {
+					top = hovered[i]
+				}
+			}
+		}
+		group.isProcessing = true
+		defer func() {
+			group.requests = klib.WipeSlice(group.requests)
+			group.isProcessing = false
+		}()
+		for i := range requestSets {
+			g := requestSets[i]
+			shouldContinue := true
+			for j := range g {
+				req := &g[j]
+				if shouldContinue {
+					if req.target.disabledBlocksEvent(req.eventType) {
+						if req.target.disabledEventBlocksSiblings(req.eventType) {
+							shouldContinue = false
+						}
+						continue
+					}
+					switch req.eventType {
+					case EventTypeMiss, EventTypeFocus, EventTypeBlur,
+						EventTypeKeyDown, EventTypeKeyUp, EventTypeChange,
+						EventTypeSubmit:
+						req.target.ExecuteEvent(req.eventType)
+					case EventTypeEnter, EventTypeMove, EventTypeDown, EventTypeUp,
+						EventTypeRightDown, EventTypeRightUp, EventTypeDropEnter,
+						EventTypeDragStart:
+						if top == nil || req.target.IsInFrontOf(top) {
+							if req.target.ExecuteEvent(req.eventType) {
+								shouldContinue = false
+							}
+						}
+					case EventTypeExit, EventTypeDropExit:
+						req.target.ExecuteEvent(req.eventType)
+					case EventTypeClick, EventTypeRightClick, EventTypeDoubleClick,
+						EventTypeDragEnd, EventTypeDrop, EventTypeScroll:
+						if req.target.ExecuteEvent(req.eventType) {
+							shouldContinue = false
+						}
+					default:
+						slog.Error("Invalid UI event type", "eventType", req.eventType)
+						return
+					}
+				}
+			}
+		}
+	}
+	switch group.hadRequests {
+	case requestStateStarted:
+		group.hadRequests = requestStateProcessed
+	case requestStateProcessed:
+		group.hadRequests = requestStateNone
+	}
+}
+
+func (g *Group) SetThreaded() {
+	if !g.isThreaded {
+		g.isThreaded = true
+	}
+}
