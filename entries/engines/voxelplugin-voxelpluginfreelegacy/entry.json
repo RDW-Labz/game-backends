@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T11:02:44Z",
+ "category": "engines",
+ "commit": "7e64a89ce827",
+ "delivery": "reference",
+ "description": "VoxelPlugin/VoxelPluginFreeLegacy \u2014 Voxel Plugin Legacy for Unreal Engine",
+ "language": "c++",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "VoxelPluginFreeLegacy",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 4289444,
+ "slug": "voxelplugin-voxelpluginfreelegacy",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 1772,
+ "system": "Voxel Plugin Legacy for Unreal Engine",
+ "upstream": "https://github.com/VoxelPlugin/VoxelPluginFreeLegacy",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

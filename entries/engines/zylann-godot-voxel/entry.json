@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T11:02:15Z",
+ "category": "engines",
+ "commit": "4b29b0781723",
+ "delivery": "reference",
+ "description": "Zylann/godot_voxel \u2014 Voxel module for Godot Engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "godot_voxel",
+ "reference_reason": "size gate: 15 MB",
+ "size_bytes": 15858369,
+ "slug": "zylann-godot-voxel",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 4150,
+ "system": "Voxel module for Godot Engine",
+ "upstream": "https://github.com/Zylann/godot_voxel",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

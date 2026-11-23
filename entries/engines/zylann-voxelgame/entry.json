@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:02:45Z",
+ "category": "engines",
+ "commit": "2025-12-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Zylann/voxelgame \u2014 Voxel world prototype made with Godot Engine",
+ "language": "gdscript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "voxelgame",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "zylann-voxelgame",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 777,
+ "system": "Voxel world prototype made with Godot Engine",
+ "upstream": "https://github.com/Zylann/voxelgame",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

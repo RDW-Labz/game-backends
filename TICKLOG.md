@@ -1955,3 +1955,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/orange-cpp-omath
   - reference engines/harfang3d-dogfight-sandbox-hg2
   - reference engines/hellofangaming-hellomarioframework
+
+- **2026-11-23 11:02 UTC** — tick 691: +2 screened, +4 reference, 1 skipped, catalogue=728
+  - added engines/zylann-godot-voxel (MIT, reference)
+  - added engines/voxelplugin-voxelpluginfreelegacy (none, reference)
+  - reference engines/scallyw4g-bonsai
+  - reference engines/max-mapper-voxel-engine
+  - reference engines/zylann-voxelgame
+  - reference engines/voxelize-voxelize

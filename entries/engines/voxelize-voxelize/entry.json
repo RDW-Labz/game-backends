@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:02:45Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "voxelize/voxelize \u2014 :mushroom: Full stack voxel engine",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "voxelize",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "voxelize-voxelize",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 697,
+ "system": ":mushroom: Full stack voxel engine",
+ "upstream": "https://github.com/voxelize/voxelize",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
