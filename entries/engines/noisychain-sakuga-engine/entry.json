@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T05:26:04Z",
+ "category": "engines",
+ "commit": "866ce24da7c2",
+ "delivery": "vendored",
+ "description": "NoisyChain/Sakuga-Engine \u2014 A fighting game engine made for Godot 4 written in C#",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Sakuga-Engine",
+ "size_bytes": 1038635,
+ "slug": "noisychain-sakuga-engine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 261,
+ "system": "A fighting game engine made for Godot 4 written in C#",
+ "upstream": "https://github.com/NoisyChain/Sakuga-Engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

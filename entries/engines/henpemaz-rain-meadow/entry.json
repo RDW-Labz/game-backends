@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:26:08Z",
+ "category": "engines",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "henpemaz/Rain-Meadow \u2014 Rain World multiplayer engine and custom game mode",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Rain-Meadow",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "henpemaz-rain-meadow",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 252,
+ "system": "Rain World multiplayer engine and custom game mode",
+ "upstream": "https://github.com/henpemaz/Rain-Meadow",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

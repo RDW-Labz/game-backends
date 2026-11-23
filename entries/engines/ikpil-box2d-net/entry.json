@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:26:08Z",
+ "category": "engines",
+ "commit": "2026-10-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ikpil/Box2D.NET \u2014 Box2D.NET - a C# port of Box2D, is a 2D physics engine for games, .NET, Unity3D, servers",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Box2D.NET",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ikpil-box2d-net",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 226,
+ "system": "Box2D.NET - a C# port of Box2D, is a 2D physics engine for games, .NET, Unity3D, servers",
+ "upstream": "https://github.com/ikpil/Box2D.NET",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

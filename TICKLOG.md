@@ -1787,3 +1787,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/eumario-godot-manager
   - reference engines/ivanmurzak-godot-mcp
   - reference engines/ollelogdahl-consolegameengine
+
+- **2026-11-23 05:26 UTC** — tick 670: +2 screened, +4 reference, 1 skipped, catalogue=602
+  - added engines/noisychain-sakuga-engine (MIT, vendored)
+  - added engines/ezfndev-ueaeskeyfinder (none, reference)
+  - reference engines/henpemaz-rain-meadow
+  - reference engines/elringus-unity-raw-input
+  - reference engines/ikpil-box2d-net
+  - reference engines/genaray-zeroallocjobscheduler

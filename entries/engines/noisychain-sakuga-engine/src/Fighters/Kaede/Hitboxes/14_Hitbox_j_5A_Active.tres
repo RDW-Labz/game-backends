@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="HitboxSettings" format=3 uid="uid://ce3o0bxbt0cg2"]
+
+[ext_resource type="Script" uid="uid://c0y740kryylcs" path="res://Scripts/SakugaEngine/Resources/HitboxElement.cs" id="1_vtckm"]
+[ext_resource type="Resource" uid="uid://bwffnan18ibt8" path="res://Fighters/Shared/HitboxPresets/Pushbox_Idle.tres" id="2_m2a8h"]
+[ext_resource type="Script" uid="uid://dxuwyhds75mce" path="res://Scripts/SakugaEngine/Resources/HitboxSettings.cs" id="2_waswl"]
+
+[sub_resource type="Resource" id="Resource_1w6fv"]
+script = ExtResource("1_vtckm")
+Center = Vector2i(0, 6250)
+Size = Vector2i(5000, 12500)
+
+[sub_resource type="Resource" id="Resource_24boc"]
+script = ExtResource("1_vtckm")
+Center = Vector2i(1460, 12000)
+Size = Vector2i(3000, 3000)
+
+[sub_resource type="Resource" id="Resource_b4af1"]
+script = ExtResource("1_vtckm")
+Center = Vector2i(10000, 5000)
+Size = Vector2i(15000, 8000)
+HitboxType = 2
+
+[sub_resource type="Resource" id="Resource_aqr4w"]
+script = ExtResource("1_vtckm")
+Center = Vector2i(4000, 10600)
+Size = Vector2i(4000, 8000)
+HitboxType = 1
+SelectedAttackProfile = 0
+
+[resource]
+script = ExtResource("2_waswl")
+Pushbox = ExtResource("2_m2a8h")
+Hitboxes = [SubResource("Resource_1w6fv"), SubResource("Resource_24boc"), SubResource("Resource_b4af1"), SubResource("Resource_aqr4w")]

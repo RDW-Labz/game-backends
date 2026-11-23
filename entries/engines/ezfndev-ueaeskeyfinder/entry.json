@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T05:26:06Z",
+ "category": "engines",
+ "commit": "eeacbb1f0e7d",
+ "delivery": "reference",
+ "description": "EZFNDEV/UEAESKeyFinder \u2014 This tool can find the AES Key of probably any Unreal Engine game",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "UEAESKeyFinder",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 24743,
+ "slug": "ezfndev-ueaeskeyfinder",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 256,
+ "system": "This tool can find the AES Key of probably any Unreal Engine game",
+ "upstream": "https://github.com/EZFNDEV/UEAESKeyFinder",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
