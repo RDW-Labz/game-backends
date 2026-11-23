@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T14:32:10Z",
+ "category": "engines",
+ "commit": "5e09918565e7",
+ "delivery": "vendored",
+ "description": "Corrosive-Games/bevy-parallax \u2014 Parallax background plugin for Bevy",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "bevy-parallax",
+ "size_bytes": 65456,
+ "slug": "corrosive-games-bevy-parallax",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 121,
+ "system": "Parallax background plugin for Bevy",
+ "upstream": "https://github.com/Corrosive-Games/bevy-parallax",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

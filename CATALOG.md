@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 14:16 UTC · 799 entries · 215 vendored, 584 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 14:32 UTC · 805 entries · 217 vendored, 588 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 373 | 82 | 291 |
+| [engines](#engines) — Game engines and engine subsystems | 379 | 84 | 295 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 14:16 UTC · 799 entries · 215 vendored, 584 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 373 entries
+**Game engines and engine subsystems** — 379 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -48,9 +48,14 @@ _Generated 2026-11-23 14:16 UTC · 799 entries · 215 vendored, 584 reference-on
 | [Bevy](entries/engines/bevy/README.md) | ECS-first engine: schedules, asset pipeline, render graph | rust | Apache-2.0 | reference | [bevyengine/bevy](https://github.com/bevyengine/bevy) @ `7ea4827e16d5` |
 | [bevy-cheatbook](entries/engines/bevy-cheatbook-bevy-cheatbook/README.md) | Unofficial Reference Book for the Bevy Game Engine | rust | unknown | reference | [bevy-cheatbook/bevy-cheatbook](https://github.com/bevy-cheatbook/bevy-cheatbook) @ `2025-12-03 (branch tip at catalogue time)` |
 | [bevy-inspector-egui](entries/engines/jakobhellermann-bevy-inspector-egui/README.md) | Inspector plugin for the bevy game engine | rust | Apache-2.0 | vendored | [jakobhellermann/bevy-inspector-egui](https://github.com/jakobhellermann/bevy-inspector-egui) @ `9ac848f7a128` |
+| [bevy-kajiya](entries/engines/sebasjham-bevy-kajiya/README.md) | A plugin to use the kajiya renderer with bevy  | rust | Apache-2.0 | vendored | [sebasjham/bevy-kajiya](https://github.com/sebasjham/bevy-kajiya) @ `fff0f4426a3a` |
+| [bevy-parallax](entries/engines/corrosive-games-bevy-parallax/README.md) | Parallax background plugin for Bevy | rust | MIT | vendored | [Corrosive-Games/bevy-parallax](https://github.com/Corrosive-Games/bevy-parallax) @ `5e09918565e7` |
 | [bevy-sequential-actions](entries/engines/hikikones-bevy-sequential-actions/README.md) | A Bevy library for executing various actions in a sequence. | rust | Apache-2.0 | reference | [hikikones/bevy-sequential-actions](https://github.com/hikikones/bevy-sequential-actions) @ `2026-10-09 (branch tip at catalogue time)` |
+| [bevy_aabb_instancing](entries/engines/fslabs-bevy-aabb-instancing/README.md) | Fast AABB rendering plugin for Bevy Engine. | rust | Apache-2.0 | reference | [fslabs/bevy_aabb_instancing](https://github.com/fslabs/bevy_aabb_instancing) @ `2024-04-10 (branch tip at catalogue time)` |
+| [bevy_app_compute](entries/engines/kjolnyr-bevy-app-compute/README.md) | App compute plugin for Bevy | rust | unknown | reference | [Kjolnyr/bevy_app_compute](https://github.com/Kjolnyr/bevy_app_compute) @ `2026-02-02 (branch tip at catalogue time)` |
 | [bevy_aseprite_ultra](entries/engines/lommix-bevy-aseprite-ultra/README.md) | The ultimate bevy aseprite binary plugin. Featuring animations and static atlas loading with pivots. Full support for hot reloading! | rust | MIT | vendored | [Lommix/bevy_aseprite_ultra](https://github.com/Lommix/bevy_aseprite_ultra) @ `1ac745b70382` |
 | [bevy_config_cam](entries/engines/blackphlox-bevy-config-cam/README.md) | A Swiss Army knife of a camera plugin that allows for easy setup and configuration of a wide variety of types of moveable cameras and player cameras for a scene | rust | unknown | reference | [BlackPhlox/bevy_config_cam](https://github.com/BlackPhlox/bevy_config_cam) @ `2023-09-17 (branch tip at catalogue time)` |
+| [bevy_crossterm](entries/engines/octotep-bevy-crossterm/README.md) | Crossterm plugin for the bevy game engine | rust | MIT | reference | [octotep/bevy_crossterm](https://github.com/octotep/bevy_crossterm) @ `2021-12-02 (branch tip at catalogue time)` |
 | [bevy_ecs_ldtk](entries/engines/trouv-bevy-ecs-ldtk/README.md) | ECS-friendly ldtk plugin for bevy, leveraging bevy_ecs_tilemap | rust | unknown | reference | [Trouv/bevy_ecs_ldtk](https://github.com/Trouv/bevy_ecs_ldtk) @ `2026-10-25 (branch tip at catalogue time)` |
 | [bevy_entitiles](entries/engines/443eb9-bevy-entitiles/README.md) | A 2d tilemap library for bevy. With many useful algorithms/tools built in. | rust | MIT | reference | [443eb9/bevy_entitiles](https://github.com/443eb9/bevy_entitiles) @ `2024-11-07 (branch tip at catalogue time)` |
 | [bevy_flycam](entries/engines/sburris0-bevy-flycam/README.md) | Basic first-person fly camera for the Bevy game engine | rust | ISC | vendored | [sburris0/bevy_flycam](https://github.com/sburris0/bevy_flycam) @ `c8a573879011` |
@@ -61,6 +66,7 @@ _Generated 2026-11-23 14:16 UTC · 799 entries · 215 vendored, 584 reference-on
 | [bevy_pancam](entries/engines/johanhelsing-bevy-pancam/README.md) | A  bevy plugin for panning orthographic cameras  | rust | Apache-2.0 | vendored | [johanhelsing/bevy_pancam](https://github.com/johanhelsing/bevy_pancam) @ `c9e527a85e72` |
 | [bevy_pkv](entries/engines/johanhelsing-bevy-pkv/README.md) | Cross-platform (including wasm) persistent key value store plugin for rust games/apps | rust | unknown | reference | [johanhelsing/bevy_pkv](https://github.com/johanhelsing/bevy_pkv) @ `2026-10-23 (branch tip at catalogue time)` |
 | [bevy_quinnet](entries/engines/henauxg-bevy-quinnet/README.md) | A Client/Server game networking plugin using QUIC, for the Bevy game engine. | rust | Apache-2.0 | vendored | [Henauxg/bevy_quinnet](https://github.com/Henauxg/bevy_quinnet) @ `d8b985eb8f96` |
+| [bevy_rand](entries/engines/bluefinger-bevy-rand/README.md) | A plugin to integrate rand for ECS optimised RNG for the Bevy game engine. | rust | Apache-2.0 | reference | [Bluefinger/bevy_rand](https://github.com/Bluefinger/bevy_rand) @ `2026-10-11 (branch tip at catalogue time)` |
 | [bevy_tween](entries/engines/multirious-bevy-tween/README.md) | Flexible tweening plugin library for Bevy. | rust | Apache-2.0 | reference | [Multirious/bevy_tween](https://github.com/Multirious/bevy_tween) @ `2026-11-16 (branch tip at catalogue time)` |
 | [bevy_tweening](entries/engines/djeedai-bevy-tweening/README.md) | Tweening animation plugin for the Bevy game engine. | rust | Apache-2.0 | reference | [djeedai/bevy_tweening](https://github.com/djeedai/bevy_tweening) @ `2026-11-01 (branch tip at catalogue time)` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |

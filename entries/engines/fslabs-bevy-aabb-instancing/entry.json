@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:32:11Z",
+ "category": "engines",
+ "commit": "2024-04-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fslabs/bevy_aabb_instancing \u2014 Fast AABB rendering plugin for Bevy Engine.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_aabb_instancing",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "fslabs-bevy-aabb-instancing",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 108,
+ "system": "Fast AABB rendering plugin for Bevy Engine.",
+ "upstream": "https://github.com/fslabs/bevy_aabb_instancing",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

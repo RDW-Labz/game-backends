@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:32:11Z",
+ "category": "engines",
+ "commit": "2026-02-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Kjolnyr/bevy_app_compute \u2014 App compute plugin for Bevy",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "bevy_app_compute",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "kjolnyr-bevy-app-compute",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 112,
+ "system": "App compute plugin for Bevy",
+ "upstream": "https://github.com/Kjolnyr/bevy_app_compute",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2058,3 +2058,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/blackphlox-bevy-config-cam
   - reference engines/multirious-bevy-tween
   - reference engines/johanhelsing-bevy-pkv
+
+- **2026-11-23 14:32 UTC** — tick 704: +2 screened, +4 reference, 3 skipped, catalogue=805
+  - added engines/sebasjham-bevy-kajiya (Apache-2.0, vendored)
+  - added engines/corrosive-games-bevy-parallax (MIT, vendored)
+  - reference engines/kjolnyr-bevy-app-compute
+  - reference engines/bluefinger-bevy-rand
+  - reference engines/fslabs-bevy-aabb-instancing
+  - reference engines/octotep-bevy-crossterm

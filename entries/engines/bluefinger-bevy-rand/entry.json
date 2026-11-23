@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:32:11Z",
+ "category": "engines",
+ "commit": "2026-10-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Bluefinger/bevy_rand \u2014 A plugin to integrate rand for ECS optimised RNG for the Bevy game engine.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_rand",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "bluefinger-bevy-rand",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 112,
+ "system": "A plugin to integrate rand for ECS optimised RNG for the Bevy game engine.",
+ "upstream": "https://github.com/Bluefinger/bevy_rand",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

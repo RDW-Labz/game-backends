@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T14:32:05Z",
+ "category": "engines",
+ "commit": "fff0f4426a3a",
+ "delivery": "vendored",
+ "description": "sebasjham/bevy-kajiya \u2014 A plugin to use the kajiya renderer with bevy",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "bevy-kajiya",
+ "size_bytes": 53842,
+ "slug": "sebasjham-bevy-kajiya",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 124,
+ "system": "A plugin to use the kajiya renderer with bevy ",
+ "upstream": "https://github.com/sebasjham/bevy-kajiya",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
