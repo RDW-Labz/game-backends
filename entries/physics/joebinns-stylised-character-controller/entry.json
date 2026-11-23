@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:34:09Z",
+ "category": "physics",
+ "commit": "2024-05-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "joebinns/stylised-character-controller \u2014 A stylised physics based character controller made in Unity 3D.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "stylised-character-controller",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "joebinns-stylised-character-controller",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 225,
+ "system": "A stylised physics based character controller made in Unity 3D.",
+ "upstream": "https://github.com/joebinns/stylised-character-controller",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

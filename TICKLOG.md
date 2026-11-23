@@ -2178,3 +2178,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/dimforge-ncollide
   - reference physics/dimforge-parry
   - reference physics/jriecken-sat-js
+
+- **2026-11-23 18:34 UTC** — tick 719: +2 screened, +4 reference, 1 skipped, catalogue=895
+  - added physics/viblo-pymunk (MIT, vendored)
+  - added physics/rasmusbarr-nudge (MIT, vendored)
+  - reference physics/mshoe-parc
+  - reference physics/ashleve-activeragdoll
+  - reference physics/joebinns-stylised-character-controller
+  - reference physics/jan-ott-charactermovementfundamentals

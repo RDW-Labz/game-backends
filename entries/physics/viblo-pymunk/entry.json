@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T18:34:05Z",
+ "category": "physics",
+ "commit": "b993f9b3ef2d",
+ "delivery": "vendored",
+ "description": "viblo/pymunk \u2014 Pymunk is a easy-to-use pythonic 2d physics library that can be used whenever  you need 2d rigid body physics from Python",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "pymunk",
+ "size_bytes": 867015,
+ "slug": "viblo-pymunk",
+ "source": "github-search:rigid body physics library stars:>40",
+ "stars": 1081,
+ "system": "Pymunk is a easy-to-use pythonic 2d physics library that can be used whenever  you need 2d rigid body physics from Python",
+ "upstream": "https://github.com/viblo/pymunk",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

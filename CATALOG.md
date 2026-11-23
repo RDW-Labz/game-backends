@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 18:18 UTC · 889 entries · 237 vendored, 652 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 18:34 UTC · 895 entries · 239 vendored, 656 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
-| [physics](#physics) — Physics | 97 | 26 | 71 |
+| [physics](#physics) — Physics | 103 | 28 | 75 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
@@ -420,10 +420,11 @@ _Generated 2026-11-23 18:18 UTC · 889 entries · 237 vendored, 652 reference-on
 
 ## physics
 
-**Physics** — 97 entries
+**Physics** — 103 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
+| [ActiveRagdoll](entries/physics/ashleve-activeragdoll/README.md) | From-scratch implementation of physically simulated character animation with proportional-integral-derivative controllers (PID) | c# | MIT | reference | [ashleve/ActiveRagdoll](https://github.com/ashleve/ActiveRagdoll) @ `2023-03-05 (branch tip at catalogue time)` |
 | [ammo.js](entries/physics/kripken-ammo-js/README.md) | Direct port of the Bullet physics engine to JavaScript using Emscripten | c++ | unknown | reference | [kripken/ammo.js](https://github.com/kripken/ammo.js) @ `2026-09-22 (branch tip at catalogue time)` |
 | [anki-3d-engine](entries/physics/godlikepanos-anki-3d-engine/README.md) | AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more | c++ | unknown | reference | [godlikepanos/anki-3d-engine](https://github.com/godlikepanos/anki-3d-engine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [apollonia](entries/physics/wgtdkp-apollonia/README.md) | Tiny 2D physics engine | c++ | MIT | reference | [wgtdkp/apollonia](https://github.com/wgtdkp/apollonia) @ `2022-01-28 (branch tip at catalogue time)` |
@@ -445,6 +446,7 @@ _Generated 2026-11-23 18:18 UTC · 889 entries · 237 vendored, 652 reference-on
 | [bump.lua](entries/physics/kikito-bump-lua/README.md) | A collision detection library for Lua | lua | MIT | vendored | [kikito/bump.lua](https://github.com/kikito/bump.lua) @ `95d9e40b8aee` |
 | [CadetEngine-as](entries/physics/cadeteditor-cadetengine-as/README.md) | CadetEngine is a component-based AS3 Scene Engine supporting 2D and 3D GPU accelerated rendering, physics, custom behaviours and 3rd party library integration.  | actionscript | unknown | reference | [CadetEditor/CadetEngine-as](https://github.com/CadetEditor/CadetEngine-as) @ `2014-07-10 (branch tip at catalogue time)` |
 | [cannon.js](entries/physics/schteppe-cannon-js/README.md) | A lightweight 3D physics engine written in JavaScript. | javascript | MIT | reference | [schteppe/cannon.js](https://github.com/schteppe/cannon.js) @ `2023-08-04 (branch tip at catalogue time)` |
+| [CharacterMovementFundamentals](entries/physics/jan-ott-charactermovementfundamentals/README.md) | A physics-based character controller system for Unity | c# | MIT | reference | [Jan-Ott/CharacterMovementFundamentals](https://github.com/Jan-Ott/CharacterMovementFundamentals) @ `2025-02-09 (branch tip at catalogue time)` |
 | [Chipmunk2D](entries/physics/chipmunk2d/README.md) | 2D rigid bodies, constraints, spatial index | c | MIT | vendored | [slembcke/Chipmunk2D](https://github.com/slembcke/Chipmunk2D) @ `f2f3d66220b8` |
 | [cirobb](entries/physics/joncodeofficial-cirobb/README.md) | A small, readable 2D rigid body physics engine in C++, built around one state-of-the-art solver. | c++ | MIT | reference | [joncodeofficial/cirobb](https://github.com/joncodeofficial/cirobb) @ `2026-10-27 (branch tip at catalogue time)` |
 | [crashcat](entries/physics/isaac-mason-crashcat/README.md) | physics engine for javascript, built for games, simulations, and creative websites | typescript | MIT | reference | [isaac-mason/crashcat](https://github.com/isaac-mason/crashcat) @ `2026-10-30 (branch tip at catalogue time)` |
@@ -478,11 +480,13 @@ _Generated 2026-11-23 18:18 UTC · 889 entries · 237 vendored, 652 reference-on
 | [nexus](entries/physics/dimforge-nexus/README.md) | 2D and 3D cross-platform GPU multi-physics engine in Rust | rust | Apache-2.0 | reference | [dimforge/nexus](https://github.com/dimforge/nexus) @ `2026-11-01 (branch tip at catalogue time)` |
 | [nimblephysics](entries/physics/keenon-nimblephysics/README.md) | Nimble: Physics Engine for Biomechanics and Deep Learning | c++ | unknown | reference | [keenon/nimblephysics](https://github.com/keenon/nimblephysics) @ `2025-09-14 (branch tip at catalogue time)` |
 | [nphysics](entries/physics/dimforge-nphysics/README.md) | 2 and 3-dimensional rigid body physics engine for Rust. | rust | Apache-2.0 | vendored | [dimforge/nphysics](https://github.com/dimforge/nphysics) @ `65aa85c5470a` |
+| [nudge](entries/physics/rasmusbarr-nudge/README.md) | A small data-oriented and SIMD-optimized 3D rigid body physics library. | c | MIT | vendored | [rasmusbarr/nudge](https://github.com/rasmusbarr/nudge) @ `bb00cb2985aa` |
 | [numbat](entries/physics/sharkdp-numbat/README.md) | A statically typed programming language for scientific computations with first class support for physical dimensions and units | rust | Apache-2.0 | vendored | [sharkdp/numbat](https://github.com/sharkdp/numbat) @ `e8abf32b975f` |
 | [NVIDIA PhysX](entries/physics/physx/README.md) | GPU/CPU 3D rigid body, cloth, particles, vehicles | c++ | BSD-3-Clause | reference | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX) @ `7d6f6ac8b83e` |
 | [OpenBSE](entries/physics/bbrannon4-openbse/README.md) | Open-source building energy simulation engine — modern architecture, validated physics, built for programmatic and AI-assisted workflows. | rust | AGPL-3.0 | reference | [bbrannon4/OpenBSE](https://github.com/bbrannon4/OpenBSE) @ `2026-11-20 (branch tip at catalogue time)` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [panda-gym](entries/physics/qgallouedec-panda-gym/README.md) | Set of robotic environments based on PyBullet physics engine and gymnasium. | python | MIT | reference | [qgallouedec/panda-gym](https://github.com/qgallouedec/panda-gym) @ `2024-07-23 (branch tip at catalogue time)` |
+| [PARC](entries/physics/mshoe-parc/README.md) | PARC: Physics-based Augmentation with Reinforcement Learning for Character Controllers | python | unknown | reference | [mshoe/PARC](https://github.com/mshoe/PARC) @ `2026-02-04 (branch tip at catalogue time)` |
 | [parry](entries/physics/dimforge-parry/README.md) | 2D and 3D collision-detection library for Rust. | rust | Apache-2.0 | reference | [dimforge/parry](https://github.com/dimforge/parry) @ `2026-10-06 (branch tip at catalogue time)` |
 | [ParticlePhysics2D-Unity](entries/physics/pan-pawka-particlephysics2d-unity/README.md) | A fast and stable particle based physics 2D engine for Unity 3D. | c# | none | reference | [pan-pawka/ParticlePhysics2D-Unity](https://github.com/pan-pawka/ParticlePhysics2D-Unity) @ `0930754b74e4` |
 | [phaser-box2d](entries/physics/phaserjs-phaser-box2d/README.md) | A high-performance, industry-standard 2D physics engine built on Box2D v3, delivering incredibly realistic and engaging web game experiences. | javascript | MIT | reference | [phaserjs/phaser-box2d](https://github.com/phaserjs/phaser-box2d) @ `2025-04-03 (branch tip at catalogue time)` |
@@ -492,6 +496,7 @@ _Generated 2026-11-23 18:18 UTC · 889 entries · 237 vendored, 652 reference-on
 | [PositionBasedDynamics](entries/physics/interactivecomputergraphics-positionbaseddynamics/README.md) | PositionBasedDynamics is a library for the physically-based simulation of rigid bodies, deformable solids and fluids. | c++ | MIT | reference | [InteractiveComputerGraphics/PositionBasedDynamics](https://github.com/InteractiveComputerGraphics/PositionBasedDynamics) @ `10a70bc146a9` |
 | [Principia — lib](entries/physics/principia-lib/README.md) | Box2D-derived 2D physics with custom collision handling | c++ | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b127c2` |
 | [project_superdex](entries/physics/facebookresearch-project-superdex/README.md) | SuperDex brings together a purpose-built physics engine, robotics authoring tools, and a scalable reinforcement learning interface in a unified simulation platf | c++ | Apache-2.0 | reference | [facebookresearch/project_superdex](https://github.com/facebookresearch/project_superdex) @ `2026-11-23 (branch tip at catalogue time)` |
+| [pymunk](entries/physics/viblo-pymunk/README.md) | Pymunk is a easy-to-use pythonic 2d physics library that can be used whenever  you need 2d rigid body physics from Python | python | MIT | vendored | [viblo/pymunk](https://github.com/viblo/pymunk) @ `b993f9b3ef2d` |
 | [QuarkPhysics](entries/physics/erayzesen-quarkphysics/README.md) | A 2D Soft Body and Rigid Body Physics Engine. | c++ | MIT | reference | [erayzesen/QuarkPhysics](https://github.com/erayzesen/QuarkPhysics) @ `2025-10-17 (branch tip at catalogue time)` |
 | [Rapier](entries/physics/rapier/README.md) | Rust 2D/3D physics with deterministic solver + WASM build | rust | Apache-2.0 | reference | [dimforge/rapier](https://github.com/dimforge/rapier) @ `475caa3ff464` |
 | [react-babylonjs](entries/physics/brianzinn-react-babylonjs/README.md) | React for Babylon 3D engine | typescript | none | reference | [brianzinn/react-babylonjs](https://github.com/brianzinn/react-babylonjs) @ `97595cd62895` |
@@ -508,6 +513,7 @@ _Generated 2026-11-23 18:18 UTC · 889 entries · 237 vendored, 652 reference-on
 | [SIMple-Mechanics](entries/physics/mkhan45-simple-mechanics/README.md) | An educational physics sim for high school physics, part of the SIMple Physics project | rust | GPL-3.0 | reference | [mkhan45/SIMple-Mechanics](https://github.com/mkhan45/SIMple-Mechanics) @ `b5b2b8ed6ba1` |
 | [slice-4d-shooter](entries/physics/maffi44-slice-4d-shooter/README.md) | Slice: 4D Shooter - the first multiplayer action shooter set in four-dimensional space | rust | MIT | reference | [maffi44/slice-4d-shooter](https://github.com/maffi44/slice-4d-shooter) @ `2026-11-23 (branch tip at catalogue time)` |
 | [spintronics](entries/physics/cool-japan-spintronics/README.md) | A pure Rust library for simulating spin dynamics, spin current generation, and conversion phenomena in magnetic and topological materials. | rust | Apache-2.0 | reference | [cool-japan/spintronics](https://github.com/cool-japan/spintronics) @ `2026-11-12 (branch tip at catalogue time)` |
+| [stylised-character-controller](entries/physics/joebinns-stylised-character-controller/README.md) | A stylised physics based character controller made in Unity 3D. | c# | MIT | reference | [joebinns/stylised-character-controller](https://github.com/joebinns/stylised-character-controller) @ `2024-05-05 (branch tip at catalogue time)` |
 | [supertux — collision](entries/physics/supertux-collision/README.md) | rigid-body collision and dynamics | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [symbolica](entries/physics/symbolica-dev-symbolica/README.md) | Symbolica is a high-performance computer algebra library for Python and Rust. Manipulate large expressions, match patterns, and generate optimized numerical cod | rust | none | reference | [symbolica-dev/symbolica](https://github.com/symbolica-dev/symbolica) @ `bf6e4e2813db` |
 | [tabletop-club](entries/physics/drwhut-tabletop-club/README.md) | An open-source platform for playing tabletop games in a physics-based 3D environment for Windows, macOS, and Linux! Made with the Godot Engine. | gdscript | MIT | reference | [drwhut/tabletop-club](https://github.com/drwhut/tabletop-club) @ `2026-08-30 (branch tip at catalogue time)` |

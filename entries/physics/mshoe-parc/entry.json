@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:34:09Z",
+ "category": "physics",
+ "commit": "2026-02-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mshoe/PARC \u2014 PARC: Physics-based Augmentation with Reinforcement Learning for Character Controllers",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "PARC",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mshoe-parc",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 367,
+ "system": "PARC: Physics-based Augmentation with Reinforcement Learning for Character Controllers",
+ "upstream": "https://github.com/mshoe/PARC",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T18:34:07Z",
+ "category": "physics",
+ "commit": "bb00cb2985aa",
+ "delivery": "vendored",
+ "description": "rasmusbarr/nudge \u2014 A small data-oriented and SIMD-optimized 3D rigid body physics library.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "nudge.cpp",
+ "license_verdict": "clean",
+ "name": "nudge",
+ "size_bytes": 1026298,
+ "slug": "rasmusbarr-nudge",
+ "source": "github-search:rigid body physics library stars:>40",
+ "stars": 276,
+ "system": "A small data-oriented and SIMD-optimized 3D rigid body physics library.",
+ "upstream": "https://github.com/rasmusbarr/nudge",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

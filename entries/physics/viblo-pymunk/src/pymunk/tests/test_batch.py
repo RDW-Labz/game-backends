@@ -1,0 +1,402 @@
+import array
+import math
+import gc
+import platform
+import struct
+import unittest
+import weakref
+
+import pymunk
+import pymunk.batch
+
+_BUFFER_TYPES = [
+    ("float", "d", "d"),
+    ("int", "Q" if struct.calcsize("P") == 8 else "I", "P"),
+]
+
+
+class UnitTestBatch(unittest.TestCase):
+
+    @unittest.skipUnless(
+        platform.python_implementation() == "CPython",
+        "CFFI only locks buffers against resizing on CPython",
+    )
+    def test_borrowed_buffers_prevent_resize(self) -> None:
+        for kind, code, cast in _BUFFER_TYPES:
+            with self.subTest(kind=kind):
+                data = pymunk.batch.Buffer()
+                source = array.array(code, [1, 2])
+                getattr(data, "set_" + kind + "_buf")(source)
+                with self.assertRaises(BufferError):
+                    source.append(3)
+                source[0] = 4
+                self.assertEqual(
+                    list(memoryview(getattr(data, kind + "_buf")()).cast(cast)),
+                    [4, 2],
+                )
+                getattr(data, "set_" + kind + "_buf")(array.array(code, [5, 6]))
+                gc.collect()
+                source.append(3)
+                self.assertEqual(list(source), [4, 2, 3])
+
+    def test_failed_buffer_replacement_keeps_source(self) -> None:
+        for kind, code, cast in _BUFFER_TYPES:
+            with self.subTest(kind=kind):
+                data = pymunk.batch.Buffer()
+                source = array.array(code, [1, 2])
+                reference = weakref.ref(source)
+                getattr(data, "set_" + kind + "_buf")(source)
+                del source
+                with self.assertRaises(TypeError):
+                    getattr(data, "set_" + kind + "_buf")(object())
+                gc.collect()
+                self.assertIsNotNone(reference())
+                self.assertEqual(
+                    list(memoryview(getattr(data, kind + "_buf")()).cast(cast)),
+                    [1, 2],
+                )
+
+    def test_buffer_views_keep_source_alive(self) -> None:
+        for kind, code, cast in _BUFFER_TYPES:
+            with self.subTest(kind=kind):
+                data = pymunk.batch.Buffer()
+                source = array.array(code, [1, 2])
+                reference = weakref.ref(source)
+                getattr(data, "set_" + kind + "_buf")(source)
+                view = getattr(data, kind + "_buf")()
+                # Feeding a view back into the buffer must retain its owner too.
+                getattr(data, "set_" + kind + "_buf")(view)
+                del data, source
+                gc.collect()
+                self.assertIsNotNone(reference())
+                self.assertEqual(list(memoryview(view).cast(cast)), [1, 2])
+                del view
+                gc.collect()
+                self.assertIsNone(reference())
+
+    def test_set_pose_with_offset_center_of_gravity(self) -> None:
+        fields = pymunk.batch.BodyFields
+        for selected in [fields.POSITION | fields.ANGLE, fields.ALL]:
+            with self.subTest(fields=selected):
+                space = pymunk.Space()
+                bodies = [pymunk.Body(2, 3), pymunk.Body(4, 5)]
+                for i, body in enumerate(bodies):
+                    body.center_of_gravity = (2 + i, 3 - i)
+                    body.angle = 0.5 + i
+                    body.position = (7 + i, 8 - i)
+                    body.velocity = (1 + i, 2 - i)
+                    space.add(body)
+
+                data = pymunk.batch.Buffer()
+                pymunk.batch.get_space_bodies(space, selected, data)
+                saved = bytes(data.float_buf())
+                for body in bodies:
+                    body.angle += 1
+                    body.position = (-10, -20)
+
+                pymunk.batch.set_space_bodies(space, selected, data)
+
+                for i, body in enumerate(bodies):
+                    self.assertAlmostEqual(body.position.x, 7 + i)
+                    self.assertAlmostEqual(body.position.y, 8 - i)
+                    self.assertEqual(body.angle, 0.5 + i)
+                    self.assertEqual(body.velocity, (1 + i, 2 - i))
+                self.assertEqual(bytes(data.float_buf()), saved)
+
+    def test_buffer(self) -> None:
+        b = pymunk.batch.Buffer()
+        arr = array.array("d", [1.2, 3.4])
+        b.set_float_buf(arr)
+
+        arr2 = b.float_buf()
+        self.assertEqual([1.2, 3.4], list(memoryview(arr2).cast("d")))
+
+        b.set_float_buf(arr2)
+        self.assertEqual([1.2, 3.4], list(memoryview(b.float_buf()).cast("d")))
+
+        b.set_float_buf(array.array("d", [5.6, 7.8]))
+        self.assertEqual([5.6, 7.8], list(memoryview(b.float_buf()).cast("d")))
+
+    def test_empty(self) -> None:
+        s = pymunk.Space()
+
+        data = pymunk.batch.Buffer()
+        pymunk.batch.get_space_bodies(s, pymunk.batch.BodyFields.BODY_ID, data)
+
+        self.assertEqual(list(memoryview(data.float_buf()).cast("d")), [])
+        self.assertEqual(list(memoryview(data.int_buf()).cast("P")), [])
+
+        pymunk.batch.set_space_bodies(s, pymunk.batch.BodyFields.BODY_ID, data)
+
+        data = pymunk.batch.Buffer()
+        pymunk.batch.get_space_arbiters(s, pymunk.batch.ArbiterFields.BODY_A_ID, data)
+
+        self.assertEqual(list(memoryview(data.float_buf()).cast("d")), [])
+        self.assertEqual(list(memoryview(data.int_buf()).cast("P")), [])
+
+    def test_get_bodies(self) -> None:
+        s = pymunk.Space()
+
+        b1 = pymunk.Body(1, 1)
+        b1.position = 1, 2
+        b1.velocity = 3, 4
+        b1.force = (6, 7)
+        b1.angle = 0.1
+        b1.angular_velocity = 5
+        b1.torque = 8
+        s.add(b1, pymunk.Circle(b1, 4))
+
+        b2 = pymunk.Body(1, 1)
+        b2.position = 11, 12
+        b2.velocity = 13, 14
+        b2.force = (16, 17)
+        b2.angle = 0.11
+        b2.angular_velocity = 15
+        b2.torque = 18
+        s.add(b2, pymunk.Circle(b2, 4))
+
+        data = pymunk.batch.Buffer()
+
+        pymunk.batch.get_space_bodies(
+            s, pymunk.batch.BodyFields.BODY_ID | pymunk.batch.BodyFields.POSITION, data
+        )
+
+        self.assertEqual(
+            list(memoryview(data.float_buf()).cast("d")), [1.0, 2.0, 11.0, 12.0]
+        )
+        self.assertEqual(list(memoryview(data.int_buf()).cast("P")), [b1.id, b2.id])
+
+        data = pymunk.batch.Buffer()
+        pymunk.batch.get_space_bodies(s, pymunk.batch.BodyFields.ALL, data)
+
+        self.assertEqual(
+            list(memoryview(data.float_buf()).cast("d")),
+            [
+                0.1,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
+                5.0,
+                6.0,
+                7.0,
+                8.0,
+                0.11,
+                11.0,
+                12.0,
+                13.0,
+                14.0,
+                15.0,
+                16.0,
+                17.0,
+                18.0,
+            ],
+        )
+        self.assertEqual(list(memoryview(data.int_buf()).cast("P")), [b1.id, b2.id])
+
+    def test_set_bodies(self) -> None:
+        s = pymunk.Space()
+
+        b1 = pymunk.Body(1, 1)
+        b1id = b1.id
+        b1.angle = 1.2
+        s.add(b1, pymunk.Circle(b1, 4))
+
+        b2 = pymunk.Body(1, 1)
+        b2id = b2.id
+        b2.angle = 3.4
+        s.add(b2, pymunk.Circle(b2, 4))
+
+        data = pymunk.batch.Buffer()
+        angle_buf = array.array("d", [5.6, 7.8])
+        data.set_float_buf(angle_buf)
+
+        int_buf = array.array("Q", [4, 5])
+        data.set_int_buf(int_buf)
+
+        pymunk.batch.set_space_bodies(
+            s, pymunk.batch.BodyFields.BODY_ID | pymunk.batch.BodyFields.ANGLE, data
+        )
+
+        self.assertEqual(b1.angle, 5.6)
+        self.assertEqual(b2.angle, 7.8)
+        self.assertEqual(b1.id, b1id)
+        self.assertEqual(b2.id, b2id)
+
+        v = [
+            0.1,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0,
+            7.0,
+            8.0,
+            0.11,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+            16.0,
+            17.0,
+            18.0,
+        ]
+        arr = array.array("d", v)
+        data.set_float_buf(arr)
+        pymunk.batch.set_space_bodies(s, pymunk.batch.BodyFields.ALL, data)
+
+        data = pymunk.batch.Buffer()
+        pymunk.batch.get_space_bodies(s, pymunk.batch.BodyFields.ALL, data)
+
+        self.assertEqual(list(memoryview(data.float_buf()).cast("d")), v)
+
+    def test_get_arbiters(self) -> None:
+        s = pymunk.Space()
+
+        b1 = pymunk.Body(1, 1)
+        b1.position = 1, 2
+        b1.velocity = (1, 0)
+
+        s1 = pymunk.Circle(b1, 40)
+        s.add(b1, s1)
+
+        b2 = pymunk.Body(1, 1)
+        b2.position = 11, 12
+
+        s2 = pymunk.Poly.create_box(b2)
+        s.add(b2, s2)
+
+        b3 = pymunk.Body(1, 1)
+        b3.position = 21, 22
+        b3.velocity = (-1, 0)
+        s3 = pymunk.Poly.create_box(b3)
+        s.add(b3, s3)
+
+        # Exercise finite tangential effective masses in the energy comparison.
+        for shape in s.shapes:
+            shape.friction = 0.5
+        s.step(0.1)
+
+        data = pymunk.batch.Buffer()
+        pymunk.batch.get_space_arbiters(
+            s,
+            pymunk.batch.ArbiterFields.BODY_A_ID | pymunk.batch.ArbiterFields.BODY_B_ID,
+            data,
+        )
+
+        self.assertEqual(list(memoryview(data.float_buf()).cast("d")), [])
+
+        actual_ids = sorted(memoryview(data.int_buf()).cast("P"))
+        expected_ids = sorted([b1.id, b1.id, b2.id, b2.id, b3.id, b3.id])
+        self.assertSequenceEqual(actual_ids, expected_ids)
+
+        data.clear()
+
+        pymunk.batch.get_space_arbiters(s, pymunk.batch.ArbiterFields.ALL, data)
+
+        floats = memoryview(data.float_buf()).cast("d")
+        ints = memoryview(data.int_buf()).cast("P")
+
+        # CFFI suppresses exceptions raised in each_arbiter callbacks. Collect
+        # scalar values only, then run every assertion in ordinary unittest code.
+        records = []
+        callback_errors = []
+
+        def collect_arb_data(arb: pymunk.Arbiter) -> None:
+            try:
+                sa, sb = arb.shapes
+                if sa.body is None or sb.body is None:
+                    raise ValueError("arbiter shape has no body")
+                points = arb.contact_point_set.points
+                values = [
+                    arb.total_impulse.x,
+                    arb.total_impulse.y,
+                    arb.total_ke,
+                    arb.normal.x,
+                    arb.normal.y,
+                ]
+                for point in points:
+                    values.extend(
+                        [
+                            point.point_a.x,
+                            point.point_a.y,
+                            point.point_b.x,
+                            point.point_b.y,
+                            point.distance,
+                        ]
+                    )
+                values.extend([0.0] * (5 * (2 - len(points))))
+                records.append(
+                    (
+                        sa.body.id,
+                        sb.body.id,
+                        int(arb.is_first_contact),
+                        len(points),
+                        values,
+                    )
+                )
+            except Exception as exc:
+                callback_errors.append(exc)
+
+        b1.each_arbiter(collect_arb_data)
+        b2.each_arbiter(collect_arb_data)
+        b3.each_arbiter(collect_arb_data)
+        self.assertEqual(callback_errors, [])
+        self.assertEqual(len(ints), 12)
+        self.assertEqual(len(floats), 45)
+        by_ids = {(ints[i * 4], ints[i * 4 + 1]): i for i in range(3)}
+        checked = set()
+        for a_id, b_id, first, count, values in records:
+            # each_arbiter also returns mirrored views; compare the orientation
+            # used by the native cached-arbiter iterator.
+            if (a_id, b_id) not in by_ids:
+                continue
+            idx = by_ids[(a_id, b_id)]
+            checked.add(idx)
+            self.assertEqual(first, ints[idx * 4 + 2])
+            self.assertEqual(count, ints[idx * 4 + 3])
+            for offset, value in enumerate(values):
+                actual = floats[idx * 15 + offset]
+                self.assertTrue(math.isfinite(value))
+                self.assertTrue(math.isfinite(actual))
+                self.assertAlmostEqual(value, actual, places=10)
+        self.assertEqual(checked, {0, 1, 2})
+
+    def test_get_arbiter_sensor(self) -> None:
+        s = pymunk.Space()
+
+        b1 = pymunk.Body(1, 1)
+        s1 = pymunk.Circle(b1, 40)
+        s.add(b1, s1)
+
+        b2 = pymunk.Body(1, 1)
+        b2.position = 1, 0
+        s2 = pymunk.Poly.create_box(b2)
+        s2.sensor = True
+        s.add(b2, s2)
+
+        s.step(0.1)
+
+        data = pymunk.batch.Buffer()
+        pymunk.batch.get_space_arbiters(
+            s,
+            pymunk.batch.ArbiterFields.BODY_A_ID
+            | pymunk.batch.ArbiterFields.BODY_B_ID
+            | pymunk.batch.ArbiterFields.CONTACT_COUNT
+            | pymunk.batch.ArbiterFields.DISTANCE_1
+            | pymunk.batch.ArbiterFields.DISTANCE_2
+            | pymunk.batch.ArbiterFields.POINT_A_1
+            | pymunk.batch.ArbiterFields.POINT_A_2
+            | pymunk.batch.ArbiterFields.POINT_B_1
+            | pymunk.batch.ArbiterFields.POINT_B_2,
+            data,
+        )
+
+        self.assertEqual(list(memoryview(data.int_buf()).cast("P")), [b1.id, b2.id, 0])
+
+        self.assertEqual(
+            list(memoryview(data.float_buf()).cast("d")),
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        )
