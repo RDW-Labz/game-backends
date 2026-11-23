@@ -1,0 +1,38 @@
+[package]
+name    = "nphysics-examples-3d"
+version = "0.1.0"
+authors = [ "Sébastien Crozet <developer@crozet.re>" ]
+edition = "2018"
+
+[features]
+improved_fixed_point_support = [ "nphysics3d/improved_fixed_point_support" ]
+
+
+[dependencies]
+rand       = "0.8"
+rand_distr = "0.4"
+num-traits = "0.2"
+Inflector  = "0.11"
+nalgebra   = "0.26"
+ncollide3d = "0.29"
+kiss3d     = "0.31"
+simba      = { version = "0.4", features = [ "partial_fixed_point_support" ]}
+
+[target.wasm32-unknown-unknown.dependencies]
+stdweb = "0.4"
+
+[target.wasm32-unknown-emscripten.dependencies]
+stdweb = "0.4"
+
+[target.asmjs-unknown-emscripten.dependencies]
+stdweb = "0.4"
+
+[dependencies.nphysics3d]
+path = "../build/nphysics3d"
+
+[dependencies.nphysics_testbed3d]
+path = "../build/nphysics_testbed3d"
+
+[[bin]]
+name = "all_examples3"
+path = "./all_examples3.rs"

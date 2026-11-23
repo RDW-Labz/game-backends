@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:52:07Z",
+ "category": "physics",
+ "commit": "2026-05-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "margelo/react-native-filament \u2014 \ud83d\udc27 A real-time physically based 3D rendering engine for React Native",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "react-native-filament",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "margelo-react-native-filament",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 1435,
+ "system": "\ud83d\udc27 A real-time physically based 3D rendering engine for React Native",
+ "upstream": "https://github.com/margelo/react-native-filament",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

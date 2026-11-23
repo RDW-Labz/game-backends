@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:52:07Z",
+ "category": "physics",
+ "commit": "2025-05-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "misyltoad/VPhysics-Jolt \u2014 Volt (VPhysics Jolt) is a replacement physics module for the Source Engine.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "VPhysics-Jolt",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "misyltoad-vphysics-jolt",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 1450,
+ "system": "Volt (VPhysics Jolt) is a replacement physics module for the Source Engine.",
+ "upstream": "https://github.com/misyltoad/VPhysics-Jolt",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

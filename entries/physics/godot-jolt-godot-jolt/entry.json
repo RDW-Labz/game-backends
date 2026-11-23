@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T15:52:03Z",
+ "category": "physics",
+ "commit": "7f225894706b",
+ "delivery": "vendored",
+ "description": "godot-jolt/godot-jolt \u2014 Godot Jolt is a Godot extension that integrates the Jolt physics engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "godot-jolt",
+ "size_bytes": 809367,
+ "slug": "godot-jolt-godot-jolt",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 2605,
+ "system": "Godot Jolt is a Godot extension that integrates the Jolt physics engine",
+ "upstream": "https://github.com/godot-jolt/godot-jolt",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

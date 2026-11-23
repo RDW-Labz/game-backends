@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T15:52:05Z",
+ "category": "physics",
+ "commit": "65aa85c5470a",
+ "delivery": "vendored",
+ "description": "dimforge/nphysics \u2014 2 and 3-dimensional rigid body physics engine for Rust.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "nphysics",
+ "size_bytes": 1281575,
+ "slug": "dimforge-nphysics",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 1650,
+ "system": "2 and 3-dimensional rigid body physics engine for Rust.",
+ "upstream": "https://github.com/dimforge/nphysics",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

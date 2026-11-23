@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:52:07Z",
+ "category": "physics",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "godlikepanos/anki-3d-engine \u2014 AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "anki-3d-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "godlikepanos-anki-3d-engine",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 1631,
+ "system": "AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more",
+ "upstream": "https://github.com/godlikepanos/anki-3d-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

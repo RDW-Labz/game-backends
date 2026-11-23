@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:52:07Z",
+ "category": "physics",
+ "commit": "2026-08-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "drwhut/tabletop-club \u2014 An open-source platform for playing tabletop games in a physics-based 3D environment for Windows, macOS, and Linux! Made with the Godot Engine.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "tabletop-club",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "drwhut-tabletop-club",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 1474,
+ "system": "An open-source platform for playing tabletop games in a physics-based 3D environment for Windows, macOS, and Linux! Made with the Godot Engine.",
+ "upstream": "https://github.com/drwhut/tabletop-club",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

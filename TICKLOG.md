@@ -2098,3 +2098,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/kripken-ammo-js
   - reference physics/google-deepmind-mujoco-menagerie
   - reference physics/subprotocol-verlet-js
+
+- **2026-11-23 15:52 UTC** — tick 709: +2 screened, +4 reference, 2 skipped, catalogue=835
+  - added physics/godot-jolt-godot-jolt (MIT, vendored)
+  - added physics/dimforge-nphysics (Apache-2.0, vendored)
+  - reference physics/godlikepanos-anki-3d-engine
+  - reference physics/drwhut-tabletop-club
+  - reference physics/misyltoad-vphysics-jolt
+  - reference physics/margelo-react-native-filament
