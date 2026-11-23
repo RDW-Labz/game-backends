@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 08:38 UTC · 674 entries · 183 vendored, 491 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 08:54 UTC · 680 entries · 185 vendored, 495 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 248 | 50 | 198 |
+| [engines](#engines) — Game engines and engine subsystems | 254 | 52 | 202 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 08:38 UTC · 674 entries · 183 vendored, 491 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 248 entries
+**Game engines and engine subsystems** — 254 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -31,6 +31,7 @@ _Generated 2026-11-23 08:38 UTC · 674 entries · 183 vendored, 491 reference-on
 | [AndEngine](entries/engines/nicolasgramlich-andengine/README.md) | Free Android 2D OpenGL Game Engine | java | Apache-2.0 | reference | [nicolasgramlich/AndEngine](https://github.com/nicolasgramlich/AndEngine) @ `2018-11-16 (branch tip at catalogue time)` |
 | [AnyRPGCore](entries/engines/anyrpg-anyrpgcore/README.md) | Open source Role Playing Game engine for Unity 3D written in C#. | c# | MIT | reference | [AnyRPG/AnyRPGCore](https://github.com/AnyRPG/AnyRPGCore) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
+| [arche](entries/engines/mlange-42-arche/README.md) | Arche -- Archetype-based Entity Component System (ECS) for Go. | go | MIT | reference | [mlange-42/arche](https://github.com/mlange-42/arche) @ `2025-04-01 (branch tip at catalogue time)` |
 | [armory](entries/engines/armory3d-armory/README.md) | 3D Engine with Blender Integration | c++ | Zlib | reference | [armory3d/armory](https://github.com/armory3d/armory) @ `7f7f588b5a50` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
 | [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
@@ -72,7 +73,10 @@ _Generated 2026-11-23 08:38 UTC · 674 entries · 183 vendored, 491 reference-on
 | [DuckEngine](entries/engines/art-emini-duckengine/README.md) | A 2D Game Engine for the web. | typescript | MIT | reference | [art-emini/DuckEngine](https://github.com/art-emini/DuckEngine) @ `2023-08-25 (branch tip at catalogue time)` |
 | [ebiten](entries/engines/hajimehoshi-ebiten/README.md) | A dead simple 2D game engine for Go | go | Apache-2.0 | vendored | [hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) @ `d438df689b19` |
 | [echo](entries/engines/timi-liuliang-echo/README.md) | A New Cross-Platform 2D 3D Game Engine | c++ | MIT | reference | [timi-liuliang/echo](https://github.com/timi-liuliang/echo) @ `2026-09-16 (branch tip at catalogue time)` |
+| [ecs](entries/engines/sergeymakeev-ecs/README.md) | Thoughts about entity-component-system | c++ | MIT | reference | [SergeyMakeev/ecs](https://github.com/SergeyMakeev/ecs) @ `2018-11-25 (branch tip at catalogue time)` |
+| [ECS](entries/engines/shangdibaozi-ecs/README.md) | Entity-Component-System | typescript | MIT | reference | [shangdibaozi/ECS](https://github.com/shangdibaozi/ECS) @ `2024-08-12 (branch tip at catalogue time)` |
 | [ecs-faq](entries/engines/sandermertens-ecs-faq/README.md) | Frequently asked questions about Entity Component Systems | n/a | unknown | reference | [SanderMertens/ecs-faq](https://github.com/SanderMertens/ecs-faq) @ `2026-07-01 (branch tip at catalogue time)` |
+| [ecs-lib](entries/engines/nidorx-ecs-lib/README.md) | Tiny and easy to use ECS (Entity Component System) library for game programming | typescript | MIT | vendored | [nidorx/ecs-lib](https://github.com/nidorx/ecs-lib) @ `e4738e088e46` |
 | [ecst](entries/engines/vittorioromeo-ecst/README.md) | [WIP] Experimental C++14 multithreaded compile-time entity-component-system library. | c++ | unknown | reference | [vittorioromeo/ecst](https://github.com/vittorioromeo/ecst) @ `2019-09-03 (branch tip at catalogue time)` |
 | [egret-core](entries/engines/egret-labs-egret-core/README.md) | Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows. | javascript | unknown | reference | [egret-labs/egret-core](https://github.com/egret-labs/egret-core) @ `2022-07-20 (branch tip at catalogue time)` |
 | [EgretGameEngine](entries/engines/yicaoyimuys-egretgameengine/README.md) | A game client engine in Egret | typescript | none | reference | [yicaoyimuys/EgretGameEngine](https://github.com/yicaoyimuys/EgretGameEngine) @ `d60a02cfaee2` |
@@ -93,6 +97,7 @@ _Generated 2026-11-23 08:38 UTC · 674 entries · 183 vendored, 491 reference-on
 | [estella](entries/engines/esengine-estella/README.md) | A fast 2D and 3D game engine — TypeScript SDK, C++/WebAssembly core, visual editor. Ship one project to web, desktop, WeChat MiniGames, playable ads, and native | typescript | Apache-2.0 | reference | [esengine/estella](https://github.com/esengine/estella) @ `2026-11-23 (branch tip at catalogue time)` |
 | [ET](entries/engines/egametang-et/README.md) | Unity3D Client And C# Server Framework | c# | unknown | reference | [egametang/ET](https://github.com/egametang/ET) @ `2026-08-26 (branch tip at catalogue time)` |
 | [evennia](entries/engines/evennia-evennia/README.md) | Python MUD/MUX/MUSH/MU* development system | python | BSD-3-Clause | reference | [evennia/evennia](https://github.com/evennia/evennia) @ `2026-11-14 (branch tip at catalogue time)` |
+| [evolved.lua](entries/engines/blackmatov-evolved-lua/README.md) | Evolved ECS (Entity-Component-System) for Lua | lua | MIT | vendored | [BlackMATov/evolved.lua](https://github.com/BlackMATov/evolved.lua) @ `f8eb1f4cadc3` |
 | [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
 | [ezEngine](entries/engines/ezengine-ezengine/README.md) | An open source C++ game engine. | c++ | MIT | reference | [ezEngine/ezEngine](https://github.com/ezEngine/ezEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [F8Framework](entries/engines/tippinggame-f8framework/README.md) | F8 Framework是一个优雅，轻量，符合直觉的基于Unity引擎的游戏框架，组件围绕F8一键启动，框架整体遵循以极少的使用成本开发游戏。F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity  | c# | MIT | reference | [TippingGame/F8Framework](https://github.com/TippingGame/F8Framework) @ `2026-09-15 (branch tip at catalogue time)` |
@@ -167,6 +172,7 @@ _Generated 2026-11-23 08:38 UTC · 674 entries · 183 vendored, 491 reference-on
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
+| [NomadECS](entries/engines/taurheim-nomadecs/README.md) | NomadECS - An entity component system implementation | c++ | MIT | reference | [taurheim/NomadECS](https://github.com/taurheim/NomadECS) @ `2026-11-15 (branch tip at catalogue time)` |
 | [NVForever](entries/engines/lootjunkieazza-nvforever/README.md) | NVForever Rebuilt New Vegas Game Engine in Rust | rust | GPL-3.0 | reference | [LootJunkieAzza/NVForever](https://github.com/LootJunkieAzza/NVForever) @ `2026-11-23 (branch tip at catalogue time)` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |

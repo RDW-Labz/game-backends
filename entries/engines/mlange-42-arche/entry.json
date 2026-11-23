@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:54:07Z",
+ "category": "engines",
+ "commit": "2025-04-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mlange-42/arche \u2014 Arche -- Archetype-based Entity Component System (ECS) for Go.",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "arche",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mlange-42-arche",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 197,
+ "system": "Arche -- Archetype-based Entity Component System (ECS) for Go.",
+ "upstream": "https://github.com/mlange-42/arche",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

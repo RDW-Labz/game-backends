@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:54:07Z",
+ "category": "engines",
+ "commit": "2026-11-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "taurheim/NomadECS \u2014 NomadECS - An entity component system implementation",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "NomadECS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "taurheim-nomadecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 207,
+ "system": "NomadECS - An entity component system implementation",
+ "upstream": "https://github.com/taurheim/NomadECS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

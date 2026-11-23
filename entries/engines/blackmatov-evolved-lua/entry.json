@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T08:54:03Z",
+ "category": "engines",
+ "commit": "f8eb1f4cadc3",
+ "delivery": "vendored",
+ "description": "BlackMATov/evolved.lua \u2014 Evolved ECS (Entity-Component-System) for Lua",
+ "language": "lua",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "evolved.lua",
+ "size_bytes": 913738,
+ "slug": "blackmatov-evolved-lua",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 228,
+ "system": "Evolved ECS (Entity-Component-System) for Lua",
+ "upstream": "https://github.com/BlackMATov/evolved.lua",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

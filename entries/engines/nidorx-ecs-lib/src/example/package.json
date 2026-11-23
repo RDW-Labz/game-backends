@@ -1,0 +1,32 @@
+{
+  "name": "ecs-lib-example-web-ts",
+  "version": "1.0.0",
+  "description": "ecs-lib web example with Typescript",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "webpack --mode=production"
+  },
+  "keywords": [],
+  "author": "Alex Rodin <contato@alexrodin.info>",
+  "license": "MIT",
+  "dependencies": {
+    "dat.gui": "0.7.6",
+    "ecs-lib": "0.8.0-pre.0",
+    "three": "0.137.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "devDependencies": {
+    "@types/dat.gui": "0.7.5",
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.9.4",
+    "copy-webpack-plugin": "5.1.0",
+    "ts-loader": "6.2.1",
+    "typescript": "3.7.2",
+    "webpack": "4.41.2",
+    "webpack-cli": "3.3.10",
+    "webpack-dev-server": "3.9.0"
+  }
+}

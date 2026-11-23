@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:54:07Z",
+ "category": "engines",
+ "commit": "2018-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SergeyMakeev/ecs \u2014 Thoughts about entity-component-system",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ecs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sergeymakeev-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 189,
+ "system": "Thoughts about entity-component-system",
+ "upstream": "https://github.com/SergeyMakeev/ecs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T08:54:05Z",
+ "category": "engines",
+ "commit": "e4738e088e46",
+ "delivery": "vendored",
+ "description": "nidorx/ecs-lib \u2014 Tiny and easy to use ECS (Entity Component System) library for game programming",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ecs-lib",
+ "size_bytes": 430912,
+ "slug": "nidorx-ecs-lib",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 216,
+ "system": "Tiny and easy to use ECS (Entity Component System) library for game programming",
+ "upstream": "https://github.com/nidorx/ecs-lib",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

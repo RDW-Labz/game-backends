@@ -1891,3 +1891,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/judelco-entitas-cpp
   - reference engines/indra-db-flecs-rust
   - reference engines/dcfapixels-dragonecs
+
+- **2026-11-23 08:54 UTC** — tick 683: +2 screened, +4 reference, 2 skipped, catalogue=680
+  - added engines/blackmatov-evolved-lua (MIT, vendored)
+  - added engines/nidorx-ecs-lib (MIT, vendored)
+  - reference engines/taurheim-nomadecs
+  - reference engines/mlange-42-arche
+  - reference engines/sergeymakeev-ecs
+  - reference engines/shangdibaozi-ecs
