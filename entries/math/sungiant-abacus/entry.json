@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:00:08Z",
+ "category": "math",
+ "commit": "2026-02-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sungiant/abacus \u2014 :triangular_ruler: C# cross precision 3D maths library.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "abacus",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sungiant-abacus",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 54,
+ "system": ":triangular_ruler: C# cross precision 3D maths library.",
+ "upstream": "https://github.com/sungiant/abacus",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

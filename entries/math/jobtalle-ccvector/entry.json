@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T21:00:04Z",
+ "category": "math",
+ "commit": "ffefafe5a0b9",
+ "delivery": "vendored",
+ "description": "jobtalle/ccVector \u2014 A vector and matrix math library",
+ "language": "c",
+ "license": "Public-Domain",
+ "license_file": "ccVector.h",
+ "license_verdict": "clean",
+ "name": "ccVector",
+ "size_bytes": 30443,
+ "slug": "jobtalle-ccvector",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 58,
+ "system": "A vector and matrix math library",
+ "upstream": "https://github.com/jobtalle/ccVector",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

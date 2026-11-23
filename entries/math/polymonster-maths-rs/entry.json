@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T21:00:06Z",
+ "category": "math",
+ "commit": "d1980e43c875",
+ "delivery": "vendored",
+ "description": "polymonster/maths-rs \u2014 Linear algebra library for graphics and gamedev.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "license.md",
+ "license_verdict": "clean",
+ "name": "maths-rs",
+ "size_bytes": 557889,
+ "slug": "polymonster-maths-rs",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 57,
+ "system": "Linear algebra library for graphics and gamedev.",
+ "upstream": "https://github.com/polymonster/maths-rs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:00:08Z",
+ "category": "math",
+ "commit": "2022-02-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "zmij/math \u2014 Small C++17 library for vector and matrix computations",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "math",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "zmij-math",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 55,
+ "system": "Small C++17 library for vector and matrix computations",
+ "upstream": "https://github.com/zmij/math",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2250,3 +2250,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/jrl-umi3218-spacevecalg
   - reference math/datenwolf-linmath-h
   - reference math/ericlengyel-terathon-math-library
+
+- **2026-11-23 21:00 UTC** — tick 728: +2 screened, +4 reference, 2 skipped, catalogue=949
+  - added math/jobtalle-ccvector (Public-Domain, vendored)
+  - added math/polymonster-maths-rs (MIT, vendored)
+  - reference math/zmij-math
+  - reference math/sungiant-abacus
+  - reference math/rawify-trackball-js
+  - reference math/barerose-dvector

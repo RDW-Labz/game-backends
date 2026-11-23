@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:00:08Z",
+ "category": "math",
+ "commit": "2025-09-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rawify/Trackball.js \u2014 The RAW library to add a virtual Trackball to your DOM",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Trackball.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rawify-trackball-js",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 50,
+ "system": "The RAW library to add a virtual Trackball to your DOM",
+ "upstream": "https://github.com/rawify/Trackball.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

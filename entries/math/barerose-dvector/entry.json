@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:00:08Z",
+ "category": "math",
+ "commit": "2021-01-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BareRose/dvector \u2014 Portable, single-file, 2D/3D vector/quaternion/matrix math library",
+ "language": "c",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "dvector",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "barerose-dvector",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 47,
+ "system": "Portable, single-file, 2D/3D vector/quaternion/matrix math library",
+ "upstream": "https://github.com/BareRose/dvector",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
