@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:32:09Z",
+ "category": "math",
+ "commit": "2026-07-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LMP88959/NTSC-CRT \u2014 NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time applications.",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "NTSC-CRT",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "lmp88959-ntsc-crt",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 579,
+ "system": "NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time application",
+ "upstream": "https://github.com/LMP88959/NTSC-CRT",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

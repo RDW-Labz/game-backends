@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T21:32:06Z",
+ "category": "math",
+ "commit": "3fbfb3e399b2",
+ "delivery": "vendored",
+ "description": "PaulRBerg/prb-math \u2014 Solidity library for advanced fixed-point math",
+ "language": "solidity",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "prb-math",
+ "size_bytes": 2586,
+ "slug": "paulrberg-prb-math",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 1007,
+ "system": "Solidity library for advanced fixed-point math",
+ "upstream": "https://github.com/PaulRBerg/prb-math",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

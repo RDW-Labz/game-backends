@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:32:09Z",
+ "category": "math",
+ "commit": "2021-04-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "danielmansson/Unity.Mathematics.FixedPoint \u2014 Fixed-point extension of Unity's C# math library based on FixedMath.Net and Unity.Mathematics.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Unity.Mathematics.FixedPoint",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "danielmansson-unity-mathematics-fixedpoint",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 206,
+ "system": "Fixed-point extension of Unity's C# math library based on FixedMath.Net and Unity.Mathematics.",
+ "upstream": "https://github.com/danielmansson/Unity.Mathematics.FixedPoint",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

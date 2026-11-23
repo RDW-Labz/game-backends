@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:32:09Z",
+ "category": "math",
+ "commit": "2021-11-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RomanZhu/FixedPoint-Sharp \u2014 Fixed point math with 48.16 precision (based on lib by https://github.com/fholm)",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "FixedPoint-Sharp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "romanzhu-fixedpoint-sharp",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 187,
+ "system": "Fixed point math with 48.16 precision (based on lib by https://github.com/fholm)",
+ "upstream": "https://github.com/RomanZhu/FixedPoint-Sharp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

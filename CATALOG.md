@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 21:16 UTC · 955 entries · 255 vendored, 700 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 21:32 UTC · 961 entries · 257 vendored, 704 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
-| [math](#math) — Math libraries | 48 | 21 | 27 |
+| [math](#math) — Math libraries | 54 | 23 | 31 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
@@ -558,7 +558,7 @@ _Generated 2026-11-23 21:16 UTC · 955 entries · 255 vendored, 700 reference-on
 
 ## math
 
-**Math libraries** — 48 entries
+**Math libraries** — 54 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -576,6 +576,8 @@ _Generated 2026-11-23 21:16 UTC · 955 entries · 255 vendored, 700 reference-on
 | [dvector](entries/math/barerose-dvector/README.md) | Portable, single-file, 2D/3D vector/quaternion/matrix math library | c | CC0-1.0 | reference | [BareRose/dvector](https://github.com/BareRose/dvector) @ `2021-01-12 (branch tip at catalogue time)` |
 | [Eigen](entries/math/eigen/README.md) | dense/sparse linear algebra (MPL-2.0) | c++ | GPL-3.0 | reference | [eigenteam/eigen-git-mirror](https://github.com/eigenteam/eigen-git-mirror) @ `36b95962756c` |
 | [eigen](entries/math/px4-eigen/README.md) | Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms. | c++ | unknown | reference | [PX4/eigen](https://github.com/PX4/eigen) @ `2023-10-18 (branch tip at catalogue time)` |
+| [FixedPoint-Sharp](entries/math/romanzhu-fixedpoint-sharp/README.md) | Fixed point math with 48.16 precision (based on lib by https://github.com/fholm) | c# | MIT | reference | [RomanZhu/FixedPoint-Sharp](https://github.com/RomanZhu/FixedPoint-Sharp) @ `2021-11-15 (branch tip at catalogue time)` |
+| [fpm](entries/math/mikelankamp-fpm/README.md) | C++ header-only fixed-point math library | c++ | MIT | vendored | [MikeLankamp/fpm](https://github.com/MikeLankamp/fpm) @ `b46537fe9697` |
 | [glam-rs](entries/math/bitshifter-glam-rs/README.md) | A simple and fast linear algebra library for games and graphics | rust | Apache-2.0 | reference | [bitshifter/glam-rs](https://github.com/bitshifter/glam-rs) @ `2026-11-08 (branch tip at catalogue time)` |
 | [glas — math](entries/math/glas-math/README.md) | vector/matrix/quaternion math substrate | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
 | [GLM](entries/math/glm/README.md) | header-only GLSL-style vector/matrix/quaternion math | c++ | MIT | vendored | [g-truc/glm](https://github.com/g-truc/glm) @ `6f14f4792a0c` |
@@ -596,7 +598,10 @@ _Generated 2026-11-23 21:16 UTC · 955 entries · 255 vendored, 700 reference-on
 | [MathFu](entries/math/mathfu/README.md) | vector/matrix/quaternion math with SIMD backends | c++ | Apache-2.0 | vendored | [google/mathfu](https://github.com/google/mathfu) @ `da23a1227bb6` |
 | [maths-rs](entries/math/polymonster-maths-rs/README.md) | Linear algebra library for graphics and gamedev. | rust | MIT | vendored | [polymonster/maths-rs](https://github.com/polymonster/maths-rs) @ `d1980e43c875` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
+| [NTSC-CRT](entries/math/lmp88959-ntsc-crt/README.md) | NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time application | c | unknown | reference | [LMP88959/NTSC-CRT](https://github.com/LMP88959/NTSC-CRT) @ `2026-07-19 (branch tip at catalogue time)` |
 | [optick — simd](entries/math/optick-simd/README.md) | vector/matrix/quaternion math substrate | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
+| [PL3D-KC](entries/math/lmp88959-pl3d-kc/README.md) | A very fast and simple software renderer using only integers and fixed point math. PiSHi LE (PL) is a subset of the 3D software graphics library used in King's  | c | unknown | reference | [LMP88959/PL3D-KC](https://github.com/LMP88959/PL3D-KC) @ `2024-05-30 (branch tip at catalogue time)` |
+| [prb-math](entries/math/paulrberg-prb-math/README.md) | Solidity library for advanced fixed-point math | solidity | MIT | vendored | [PaulRBerg/prb-math](https://github.com/PaulRBerg/prb-math) @ `3fbfb3e399b2` |
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
 | [russell](entries/math/cpmech-russell/README.md) | Rust Scientific Library. ODE, DAE, and PDE solvers. Special functions (Bessel, Elliptic, Beta, Gamma, Erf). Linear algebra. Sparse solvers. Probability distribu | rust | MIT | vendored | [cpmech/russell](https://github.com/cpmech/russell) @ `261fc91f7592` |
 | [sh4zam](entries/math/gyrovorbis-sh4zam/README.md) | Fast linear algebra and math library for the Hitachi SuperH4 Processor (used by the Sega Dreamcast). | c | MIT | vendored | [gyrovorbis/sh4zam](https://github.com/gyrovorbis/sh4zam) @ `5b7dfc22a91f` |
@@ -608,6 +613,7 @@ _Generated 2026-11-23 21:16 UTC · 955 entries · 255 vendored, 700 reference-on
 | [Tessel-A-tile-game — geom](entries/math/tessel-a-tile-game-geom/README.md) | vector/matrix/quaternion math substrate | ts | GPL-3.0 | reference | [gvtulder/tessel](https://github.com/gvtulder/tessel) @ `6249857` |
 | [tpp-mlir](entries/math/libxsmm-tpp-mlir/README.md) | TPP experimentation on MLIR for linear algebra | mlir | Apache-2.0 | vendored | [libxsmm/tpp-mlir](https://github.com/libxsmm/tpp-mlir) @ `14368326a83f` |
 | [Trackball.js](entries/math/rawify-trackball-js/README.md) | The RAW library to add a virtual Trackball to your DOM | javascript | MIT | reference | [rawify/Trackball.js](https://github.com/rawify/Trackball.js) @ `2025-09-12 (branch tip at catalogue time)` |
+| [Unity.Mathematics.FixedPoint](entries/math/danielmansson-unity-mathematics-fixedpoint/README.md) | Fixed-point extension of Unity's C# math library based on FixedMath.Net and Unity.Mathematics. | c# | MIT | reference | [danielmansson/Unity.Mathematics.FixedPoint](https://github.com/danielmansson/Unity.Mathematics.FixedPoint) @ `2021-04-22 (branch tip at catalogue time)` |
 | [vec-mat-comp-quat](entries/math/mrmcsoftware-vec-mat-comp-quat/README.md) | C++ 2d/3d/4d Vector, 2x2/3x3/4x4 Matrix, Complex Number, Quaternion, and 3d Transformation Classes / Functions (Header Only libraries) | c++ | LGPL-3.0 | reference | [mrmcsoftware/vec-mat-comp-quat](https://github.com/mrmcsoftware/vec-mat-comp-quat) @ `2024-06-23 (branch tip at catalogue time)` |
 | [vgMath](entries/math/brutpitt-vgmath/README.md) | vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ... | c++ | BSD-2-Clause | reference | [BrutPitt/vgMath](https://github.com/BrutPitt/vgMath) @ `2025-03-16 (branch tip at catalogue time)` |
 

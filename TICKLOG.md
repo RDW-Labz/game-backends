@@ -2266,3 +2266,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/giorgiomedico-interpolatepy
   - reference math/mrmcsoftware-vec-mat-comp-quat
   - reference math/brutpitt-vgmath
+
+- **2026-11-23 21:32 UTC** — tick 730: +2 screened, +4 reference, 3 skipped, catalogue=961
+  - added math/paulrberg-prb-math (MIT, vendored)
+  - added math/mikelankamp-fpm (MIT, vendored)
+  - reference math/lmp88959-ntsc-crt
+  - reference math/danielmansson-unity-mathematics-fixedpoint
+  - reference math/romanzhu-fixedpoint-sharp
+  - reference math/lmp88959-pl3d-kc

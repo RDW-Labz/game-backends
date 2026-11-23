@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T21:32:08Z",
+ "category": "math",
+ "commit": "b46537fe9697",
+ "delivery": "vendored",
+ "description": "MikeLankamp/fpm \u2014 C++ header-only fixed-point math library",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "fpm",
+ "size_bytes": 1510316,
+ "slug": "mikelankamp-fpm",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 848,
+ "system": "C++ header-only fixed-point math library",
+ "upstream": "https://github.com/MikeLankamp/fpm",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
