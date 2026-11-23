@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T05:58:03Z",
+ "category": "engines",
+ "commit": "7be7242a0d46",
+ "delivery": "vendored",
+ "description": "ukanwat/overtime \u2014 Give a coding agent a brief, not a chat, and it works on its own across sessions. Includes an example run: an open-world city built in a real game engine with no human help. In early development.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "overtime",
+ "size_bytes": 1342653,
+ "slug": "ukanwat-overtime",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 403,
+ "system": "Give a coding agent a brief, not a chat, and it works on its own across sessions. Includes an example run: an open-world city built in a real game engine with n",
+ "upstream": "https://github.com/ukanwat/overtime",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

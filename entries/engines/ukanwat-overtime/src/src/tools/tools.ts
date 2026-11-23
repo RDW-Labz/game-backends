@@ -1,0 +1,367 @@
+import { z } from "zod";
+import { readFile } from "node:fs/promises";
+import { isAbsolute, relative, resolve } from "node:path";
+import { realpath } from "node:fs/promises";
+import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { ToolContext, ToolHost } from "./host.js";
+import { clampWake, MAX_SLEEP_MS, MIN_SLEEP_MS, parseDuration } from "../store/store.js";
+import { parseFrontMatter } from "../agent/frontmatter.js";
+import { isPublic, publicAgents } from "../agent/agent.js";
+import { paths } from "../paths.js";
+import { listSkills, readSkill } from "../skills.js";
+import { home } from "../paths.js";
+import { homedir } from "node:os";
+
+const tildeHome = () => (home().startsWith(homedir() + "/") ? "~" + home().slice(homedir().length) : home());
+import { describeAttachment } from "../store/attachments.js";
+
+type Result = { content: { type: "text"; text: string }[]; isError?: boolean };
+const ok = (text: string): Result => ({ content: [{ type: "text", text }] });
+const fail = (text: string): Result => ({ content: [{ type: "text", text }], isError: true });
+
+/** A bug in a tool must never crash the session: errors come back as a readable tool error. */
+function safe<A>(fn: (a: A) => Promise<Result>): (a: A) => Promise<Result> {
+  return async (a: A) => {
+    try {
+      return await fn(a);
+    } catch (e: any) {
+      return fail(String(e?.message ?? e));
+    }
+  };
+}
+
+const when = (d: Date) => `${d.toISOString()} (${d.toString()})`;
+
+/**
+ * Overtime's tools: deliberately few. Main sessions get wake, cancel, ask, send, spawn, tell, helpers.
+ * Chat sessions get ask and send. Helpers get done; they hand results back and don't start their own.
+ */
+export function registerTools(mcp: McpServer, ctx: ToolContext, host: ToolHost): void {
+  // Always in the model's view, never hidden behind a tool search, so the agent reaches for Overtime's
+  // send and wake rather than a backend's own look-alikes.
+  // Each call also tells the app what the agent is doing, from here rather than from how a backend
+  // happens to title the call.
+  const reg: McpServer["registerTool"] = ((name: string, config: any, cb: any) =>
+    mcp.registerTool(name, { ...config, _meta: { ...(config._meta ?? {}), "anthropic/alwaysLoad": true } }, (...args: any[]) => {
+      host.toolStarted?.(ctx, name);
+      return cb(...args);
+    })) as any;
+  const store = host.store(ctx.agent);
+  const dir = host.agentDir(ctx.agent);
+  const main = ctx.kind === "main";
+  const chat = ctx.kind === "chat";
+  const helper = ctx.kind === "helper";
+
+  if (main) {
+    reg(
+      "wake",
+      {
+        description: `Decide when you wake up next. One of:
+- at / in: once, at a time ("2026-10-04T09:00:00Z") or after a delay ("20m", "6h", "2d"). Between ${MIN_SLEEP_MS / 60000} minute and ${MAX_SLEEP_MS / 86400000} days. Set this before ending a turn.
+- every: repeatedly, e.g. "1d". Minimum 1 minute. With at, the first time it fires (every "1d" at "2026-10-04T09:00:00+05:30" is every day at 9).
+- watch: a shell command Overtime runs for you in your folder, without the model, that wakes you when something happens. Alone, it keeps running and every line it prints wakes you (e.g. "tail -F app.log | grep --line-buffered ERROR"). With every, it runs on that schedule and wakes you when its output changes.
+Messages, answers and finished helpers always wake you early.`,
+        inputSchema: {
+          reason: z.string().describe("Why: a note to your future self, shown when it fires."),
+          at: z.string().optional(),
+          in: z.string().optional(),
+          every: z.string().optional(),
+          watch: z.string().optional(),
+          cooldown: z.string().optional().describe('For watch: least time between wake-ups (default "10m").'),
+        },
+      },
+      safe(async ({ reason, at, in: delay, every, watch, cooldown }) => {
+        if (watch) {
+          const everyMs = every ? Math.max(10_000, parseDuration(every)) : null;
+          const m = await store.addMonitor({ run: watch, everyMs, why: reason, cooldownMs: cooldown ? parseDuration(cooldown) : 10 * 60_000 });
+          host.startMonitor(ctx.agent, m.id);
+          host.changed(ctx.agent, "monitors");
+          return ok(`Watching (${m.id}), ${everyMs ? `every ${every}, waking you when the output changes` : "continuously, waking you on each line"}.`);
+        }
+        if (every) {
+          const firstAt = at ? new Date(at) : undefined;
+          if (firstAt && Number.isNaN(firstAt.getTime())) return fail(`Couldn't read "${at}" as a time.`);
+          const loop = await store.addLoop(parseDuration(every), reason, firstAt);
+          host.changed(ctx.agent, "schedule");
+          return ok(`Repeating (${loop.id}) every ${every}; first at ${when(new Date(loop.nextAt))}.`);
+        }
+        let target: Date;
+        if (at) target = new Date(at);
+        else if (delay) target = new Date(Date.now() + parseDuration(delay));
+        else return fail("Give one of: at, in, every, watch.");
+        if (Number.isNaN(target.getTime())) return fail(`Couldn't read "${at}" as a time.`);
+        const clamped = clampWake(target);
+        await store.setWake(clamped, reason, true);
+        ctx.wakeChosen = true;
+        host.changed(ctx.agent, "schedule");
+        const note = clamped.getTime() !== target.getTime() ? " (moved to stay within 1 minute to 3 days)" : "";
+        return ok(`You'll wake at ${when(clamped)}${note}.`);
+      }),
+    );
+
+    reg(
+      "cancel",
+      {
+        description:
+          "Stop a repeating wake-up, a watch or a running helper, or withdraw a question you asked that no longer applies, by its id. When withdrawing a question, give a short why (e.g. \"you gave me full access\"): the person sees it on the question, so they know it was dropped as moot and not refused.",
+        inputSchema: {
+          id: z.string(),
+          why: z.string().optional().describe("For a question: in a few words, why it no longer needs an answer. Shown to the person."),
+        },
+      },
+      safe(async ({ id, why }) => {
+        if (id.startsWith("m_")) {
+          return (await host.withdrawQuestion(ctx.agent, id, why?.trim() || undefined)) ? ok(`Withdrew question ${id}; it no longer waits on the person.`) : fail(`No open question ${id}.`);
+        }
+        if (id.startsWith("helper_")) {
+          return (await host.cancelHelper(ctx.agent, id)) ? ok(`Cancelling ${id}. Its result (what it got done) will come to you.`) : fail(`No running helper ${id}.`);
+        }
+        if (id.startsWith("mon_")) {
+          host.stopMonitor(ctx.agent, id);
+          const removed = await store.removeMonitor(id);
+          host.changed(ctx.agent, "monitors");
+          return removed ? ok(`Stopped ${id}.`) : fail(`No watch ${id}.`);
+        }
+        const removed = await store.removeLoop(id);
+        host.changed(ctx.agent, "schedule");
+        return removed ? ok(`Stopped ${id}.`) : fail(`No repeating wake-up ${id}.`);
+      }),
+    );
+  }
+
+  if (main || chat) {
+    reg(
+      "ask",
+      {
+        description:
+          "Ask the person something without stopping: only the thing you asked about waits on the answer; carry on with everything else. It shows in your conversation with them, with any other open questions, and they answer when they can; the answer reaches you later, naming the question it's for. You can ask more at any time: several questions can be open at once, and none replaces another. Only for what is genuinely theirs to decide or genuinely unsafe. Give your recommendation and short options so they can answer with one key. They may pick several options unless you set single. Batch related questions into one ask (questions) rather than asking them one after another: they answer them together.",
+        inputSchema: {
+          question: z.string().optional().describe("The question. With questions: an optional heading for the card."),
+          why: z.string().optional(),
+          recommendation: z.string().optional(),
+          options: z.array(z.string()).max(9).optional().describe("Short choices in your own words, without numbers: Overtime numbers them 1, 2, 3 for the person."),
+          single: z.boolean().optional().describe("Only when the options exclude each other: the person picks exactly one. Otherwise they may pick several."),
+          questions: z
+            .array(
+              z.object({
+                question: z.string(),
+                why: z.string().optional(),
+                recommendation: z.string().optional(),
+                options: z.array(z.string()).max(9).optional(),
+                single: z.boolean().optional(),
+              }),
+            )
+            .max(8)
+            .optional()
+            .describe("Several related questions on one card, each with its own options, recommendation and single. The answers come back to you together."),
+          category: z.string().optional().describe('Short label for this kind of decision, e.g. "dependency-update".'),
+          urgent: z.boolean().optional().describe("Only if it needs them soon: sends a notification."),
+        },
+      },
+      safe(async ({ question, why, recommendation, options, single, questions, category, urgent }) => {
+        // One question given as a list of one is just that question.
+        const one = questions?.length === 1 && !question && !options?.length ? questions[0] : undefined;
+        if (one) ({ question, why, recommendation, options, single } = one);
+        const several = !one && questions?.length ? questions.map((q) => ({ text: q.question, why: q.why, recommendation: q.recommendation, options: q.options, single: q.single || undefined })) : undefined;
+        if (!question && !several) return fail("Give a question, or questions.");
+        ctx.sent = true;
+        const m = several
+          ? await store.addMessage({ from: "agent", kind: "question", title: question, text: several.map((q, i) => `${i + 1}. ${q.text}`).join("\n"), questions: several, urgent, category, baseDir: dir })
+          : await store.addMessage({ from: "agent", kind: "question", text: question!, why, recommendation, options, single: single || undefined, urgent, category, baseDir: dir });
+        // A question always needs you, so it always notifies: once for the whole card.
+        host.notify(several ? `${ctx.agent} has ${several.length} questions` : `${ctx.agent} has a question`, several ? question || several[0].text : question!);
+        host.changed(ctx.agent, "messages");
+        return ok(`Asked (${m.id}). Carry on with everything else; only what depends on this answer waits for it. If it stops applying (you decided, or asked something else instead), withdraw it with cancel ${m.id} so it doesn't keep waiting on the person.`);
+      }),
+    );
+
+    reg(
+      "send",
+      {
+        description: chat
+          ? 'Reply to the person (text). files: paths of files to share with them. To hand something to your main work session, a change of plan or real work to do, use to: "main" and then tell the person you have.'
+          : "Message the person; you have one conversation with them. text: what to say. report: true for finished work or something they should see (give a title); plain messages for replies. files: paths of files to share (images show as previews). status: one short line shown next to your name for what you're doing now. Keep routine progress in your own notes, not in messages. Mention files and links by full path or URL.",
+        inputSchema: {
+          text: z.string().optional(),
+          to: z.literal("main").optional(),
+          report: z.boolean().optional(),
+          title: z.string().optional(),
+          files: z.array(z.string()).max(20).optional(),
+          status: z.string().max(80).optional(),
+          urgent: z.boolean().optional(),
+        },
+      },
+      safe(async ({ text, to, report, title, files, status, urgent }) => {
+        if (status) {
+          await host.setActivity(ctx.agent, status);
+          await store.addReport(status);
+        }
+        if (!text && !files?.length) return status ? ok("Status updated.") : fail("Nothing to send: give text, files or status.");
+        if (chat && to === "main") {
+          await store.pushInbox({ type: "message", text: text ?? "", messageId: undefined, data: { fromChat: true } });
+          host.wakeMain(ctx.agent, "your chat session passed you something from the conversation");
+          return ok("Passed to your main session.");
+        }
+        const attachments = files?.length ? await Promise.all(files.map((f) => describeAttachment(f, dir))) : undefined;
+        const kind = report || title ? "report" : "message";
+        await store.addMessage({ from: "agent", kind, title: kind === "report" ? title ?? (text ?? "").split("\n")[0] : undefined, text: text ?? "", urgent, attachments, baseDir: dir });
+        // Finished work (a report) and anything urgent notify; ordinary replies don't, you're usually right there.
+        if (urgent || kind === "report") host.notify(ctx.agent, title ?? (text ?? "").split("\n")[0]);
+        if (text) await store.addReport(text);
+        ctx.sent = true;
+        host.changed(ctx.agent, "messages");
+        return ok("Sent.");
+      }),
+    );
+  }
+
+  if (main) {
+    reg(
+      "spawn",
+      {
+        description:
+          "Start a helper: a separate session that does one task in parallel and hands the result back to you. It starts clean, so put everything it needs in task. For a helper you'll want again, write its role (what it does, what done means) to a file in your folder and pass role_file; optional settings at the top of that file (backend, model) choose what it runs on: a model belongs to its backend, so set both together, or neither to use yours. If the backend or model can't run, the helper runs on what can and you're told. Parallel helpers each get their own copy of the workspace: for a git repo, a worktree of the last commit (commit first if they need your uncommitted changes); otherwise a copy of a small workspace. You review and merge their work.",
+        inputSchema: {
+          task: z.string(),
+          role_file: z.string().optional().describe("Path of a role you wrote, inside your folder (relative to it, or absolute)."),
+          backend: z.string().optional(),
+          model: z.string().optional(),
+          with_context: z.boolean().optional().describe("Start it knowing what you know: what you were told, did and said in your recent sessions is given to it, instead of a clean start. It costs more; use it when the context matters more than a clean start."),
+        },
+      },
+      safe(async ({ task, role_file, backend, model, with_context }) => {
+        let instructions = "";
+        let roleBackend: string | undefined;
+        let roleModel: string | undefined;
+        if (role_file) {
+          const p = await insideFolder(dir, role_file);
+          const { data, body } = parseFrontMatter(await readFile(p, "utf8"));
+          instructions = body;
+          roleBackend = typeof data.backend === "string" ? data.backend : undefined;
+          roleModel = typeof data.model === "string" ? data.model : undefined;
+        }
+        const h = await host.spawnHelper(ctx, { task, instructions, role: role_file, backend: backend ?? roleBackend, model: model ?? roleModel, withContext: !!with_context });
+        host.changed(ctx.agent, "helpers");
+        return ok(`Helper ${h.id} started in ${h.workdir}. Its result will come to you.${h.note ? `\n\nNote: ${h.note}` : ""}`);
+      }),
+    );
+
+    reg(
+      "tell",
+      {
+        description:
+          "Tell one of your helpers something, by its id. A running helper reads it as soon as its current step finishes (a running command is never cut off) and carries on in the same session: a correction, more detail, a change of plan. A helper that finished, failed, was cancelled or was cut off carries on from where it was, in the same session with what it knew and its folder: a follow-up, a fix to its work, finishing what was left. Its result comes to you again. Prefer this to starting a new helper for the same work.",
+        inputSchema: {
+          helper: z.string().describe("The helper's id."),
+          text: z.string().describe("What to tell it."),
+        },
+      },
+      safe(async ({ helper, text }) => {
+        const r = await host.tellHelper(ctx.agent, helper, text);
+        host.changed(ctx.agent, "helpers");
+        return ok(r);
+      }),
+    );
+
+    // Public agents can message each other; a private one isn't listed, can't be messaged and has no tool.
+    // Whether this one is public comes from its settings, not its job: a new agent gets the tool in the
+    // first session too, which goes on after it has written AGENT.md.
+    const others = publicAgents().filter((a) => a.name !== ctx.agent);
+    if (others.length && isPublic(ctx.agent)) {
+      reg(
+        "message",
+        {
+          description:
+            "Message another agent (never the person): it lands in their inbox, marked as from you, and wakes them. Only when the person asked you to or your AGENT.md says when; when the person tells you, write that rule into AGENT.md. Otherwise don't. You may read an agent's AGENT.md and conversation (.overtime/messages.jsonl), in its folder below, but never write to them. Agents:\n" +
+            others.map((a) => `- ${a.name}: ${a.job} (${paths.agent(a.name)})`).join("\n"),
+          inputSchema: {
+            to: z.string().describe("The agent's name."),
+            text: z.string(),
+          },
+        },
+        safe(async ({ to, text }) => {
+          await host.messageAgent(ctx.agent, to, text);
+          return ok(`Sent to ${to}.`);
+        }),
+      );
+    }
+
+    reg(
+      "helpers",
+      {
+        description: "Your helpers right now: each running one (what it's doing this moment and what it last reported), then the ones that finished recently, with their ids, results and folders.",
+        inputSchema: {},
+      },
+      safe(async () => ok(await host.helpersReport(ctx.agent))),
+    );
+
+  }
+
+  // Every kind of session can load skills: know-how written down by Overtime, the person, or the agent.
+  reg(
+    "skill",
+    {
+      description:
+        "Load a skill: written-down know-how (how Overtime works, how to do a task you've done before). Give its name to get its full instructions and the paths of its other files; leave the name out to list the skills you have. Write your own as skills/<name>/SKILL.md in your folder (front matter: name, description).",
+      inputSchema: { name: z.string().optional().describe("The skill's name, as listed. Leave out to list them all.") },
+    },
+    safe(async ({ name }) => {
+      if (!name) {
+        const all = listSkills(dir);
+        return ok(all.length ? all.map((s) => `${s.name} (${s.source}): ${s.description}\n  ${s.file}`).join("\n") : "No skills yet. Write one as skills/<name>/SKILL.md in your folder.");
+      }
+      const r = readSkill(dir, name);
+      if (!r) return fail(`No skill called "${name}". Skills you have: ${listSkills(dir).map((s) => s.name).join(", ") || "none"}.`);
+      const files = r.files.length ? `\n\n---\nOther files in this skill (read or run them as the skill says):\n${r.files.join("\n")}` : "";
+      // Overtime's manual is written for the default home; show this machine's real paths instead.
+      const text = r.skill.source === "built-in" ? r.text.replaceAll("~/overtime", tildeHome()) : r.text;
+      return ok(`${text.trim()}\n\n---\nThis skill is at ${r.skill.file} (${r.skill.source}).${files}`);
+    }),
+  );
+
+  if (helper) {
+    reg(
+      "done",
+      {
+        description: 'Hand your result back: what you did, where the output is, what you checked, anything left open, and last, what the agent should remember: lines starting "learned: " (a fact about the person or their setup, a correction, a command that finally worked), or the one line "learned: nothing new". Then end your turn.',
+        inputSchema: { result: z.string() },
+      },
+      safe(async ({ result }) => {
+        // The learned lines are what outlives the helper: without them, it's asked once to add them. This
+        // result stands meanwhile, so it isn't lost if no second done comes (it stops, or runs out of time).
+        ctx.result = result;
+        if (!/^\s*(?:[-*]\s*)?\**learned\**\s*:/im.test(result) && !ctx.learnedAsked) {
+          ctx.learnedAsked = true;
+          return fail('Your result has no learned lines. Add them at the end: one line for each thing the agent should remember next time, each starting "learned: ", or the one line "learned: nothing new". Then call done again with the whole result.');
+        }
+        // Asked once per result: a later result (after a note) is asked again.
+        ctx.learnedAsked = false;
+        return ok("Thanks. End your turn now.");
+      }),
+    );
+
+    reg(
+      "update",
+      {
+        description:
+          "Tell the agent that started you how it's going, while you keep working: progress, something it should know now, a question you're stuck on. It reads it at its next turn; urgent wakes it now (only when you're blocked or it must act). Keep working afterwards; your result still goes in done.",
+        inputSchema: { text: z.string(), urgent: z.boolean().optional() },
+      },
+      safe(async ({ text, urgent }) => {
+        await host.helperUpdate(ctx, text, !!urgent);
+        return ok(urgent ? "Sent, and it was woken for it. Keep working (or wait for its answer if you're blocked)." : "Sent. Keep working.");
+      }),
+    );
+  }
+}
+
+/** Resolve a path the agent gave, and refuse it unless it is inside the agent's folder. */
+async function insideFolder(dir: string, p: string): Promise<string> {
+  const full = await realpath(isAbsolute(p) ? p : resolve(dir, p)).catch(() => {
+    throw new Error(`There is no file at ${p}.`);
+  });
+  const root = await realpath(dir);
+  const rel = relative(root, full);
+  if (rel.startsWith("..") || isAbsolute(rel)) throw new Error(`Role files must be inside your folder (${dir}).`);
+  return full;
+}

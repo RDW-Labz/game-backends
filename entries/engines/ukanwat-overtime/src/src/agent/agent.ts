@@ -1,0 +1,455 @@
+import { readFileSync, readdirSync } from "node:fs";
+import { mkdir, readFile, readdir, stat } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import { Lexer, type Token } from "marked";
+import { paths } from "../paths.js";
+import { readJson, writeAtomic, writeJson } from "../fsutil.js";
+import { withLock } from "../store/mutex.js";
+import { parseFrontMatter } from "./frontmatter.js";
+import { loadSettings, type McpServerConfig } from "../settings.js";
+
+export const FORMAT_VERSION = 1;
+
+/** Settings an agent carries at the top of its AGENT.md. All optional; defaults come from settings.json. */
+export interface AgentSettings {
+  backend?: string;
+  model?: string | null;
+  dailyBudgetUsd?: number;
+  dailyTokenBudget?: number | null;
+  /** Where the work lives. Defaults to the agent's own folder. */
+  workspace?: string;
+  /** Extra MCP servers for this agent only. */
+  mcpServers?: McpServerConfig[];
+  /** Names of shared MCP servers this agent should not get. */
+  disableMcp?: string[];
+  /** Paths this agent may not write to, on top of the ones protected for all agents. */
+  protect?: string[];
+  /** Whether other agents can see and message it (default public). A private agent has no message tool. */
+  visibility?: "public" | "private";
+  /** false: no reflect passes for it (default: as settings.json's reflect, which is on). */
+  reflect?: boolean;
+  /** The model its reflect passes run on, on its own backend (default: its model). */
+  reflectModel?: string;
+}
+
+export type AgentStatus = "new" | "working" | "asleep" | "paused" | "stopped" | "error";
+
+export interface AgentState {
+  formatVersion: number;
+  status: AgentStatus;
+  /** Overtime's one line on what it's doing (what this turn is about, resting, paused...). */
+  activity: string;
+  /**
+   * The agent's own status line (set with send status), shown in the agent list. Only the agent changes
+   * it: a pause, a limit or trouble shows in the state, and its line is there again once that clears.
+   */
+  ownStatus?: string;
+  /** Before ownStatus: whether activity was the agent's own line. Read once, into ownStatus. */
+  activityByAgent?: boolean;
+  /** Why it is paused: the daily budget is used, or the backend's usage limit was hit. */
+  pauseReason?: "budget" | "limit" | null;
+  /** When paused by a usage limit: when the backend said it resets (it's tried again before that too). */
+  limitResetsAt?: string | null;
+  /** ISO time of the next wake-up, or null when stopped. */
+  nextWake: string | null;
+  /** ACP session id of the current main session, if any. */
+  mainSessionId: string | null;
+  /** Backend the main session belongs to; a backend change forces a fresh session. */
+  mainSessionBackend: string | null;
+  /** The model the main session was started on; a different model means a fresh session. */
+  mainSessionModel?: string | null;
+  /** Fingerprints of AGENT.md, INDEX.md and memory/MEMORY.md when the main session last ended. */
+  mainSessionFiles?: { agent: string; index: string; memory?: string };
+  /** The version of Overtime's instructions the main session started with (see promptVersion). */
+  mainSessionPrompt?: string;
+  /** The backend a "doesn't report cost" alert was already raised for. */
+  noCostNoticeFor?: string;
+  /** The backend/model a "model isn't available" alert was already raised for. */
+  modelIssueFor?: string;
+  createdAt: string;
+  lastRunAt: string | null;
+  lastError: string | null;
+  /** When paused by a subscription usage limit: when it resumes. */
+  pausedUntil?: string | null;
+  /** When the current pause began: a limit pause lifts early only for a turn on its model that got through after it. */
+  pausedAt?: string | null;
+  /** When its latest turns in a row ended on a usage limit (the last few; cleared by a turn that gets through). */
+  limitHits?: string[];
+  /** Consecutive failed turns, for back-off. */
+  failures?: number;
+  /** Turns that hit a passing provider problem (a 502, overloaded): retried, never counted as failures. */
+  transientFailures?: number;
+  /** When the current run of provider problems began. */
+  troubleSince?: string | null;
+  /** Its backend said (by its sign-in code) that it isn't signed in: which, since when, and turns tried since. Not counted as failures. */
+  signedOut?: { backend: string; since: string; tries: number } | null;
+  /** When Claude's own memories for its folder were copied into memory/ (done once). */
+  memoryImportedAt?: string;
+  /** When the memories Claude kept in its helpers' folders were copied into memory/ (done once). */
+  helperMemoryImportedAt?: string;
+  /** Main turns finished since its last reflect pass (no longer used to decide when one runs). */
+  turnsSinceReflect?: number;
+  /** When its last reflect pass finished. */
+  lastReflectAt?: string | null;
+  /** Its backend compacted the main session since the last reflect pass: one is due once it's idle. */
+  compactedSinceReflect?: boolean;
+  /** The last run (turn or chat) a reflect pass has read: the next one reads on from there. Unset: none yet. */
+  reflectCursor?: string | null;
+  /** Reflect passes in a row that were stopped (for real work) or failed, for backing off. */
+  reflectStops?: number;
+  /** When the last of those stopped. */
+  reflectStoppedAt?: string | null;
+  /** Failed passes in a row at the current cursor: past a few, that part of its history is passed over. */
+  reflectFailures?: number;
+  /** Reflect passes started today (the person's local day), against the daily cap. */
+  reflectDay?: { day: string; passes: number };
+  /**
+   * The main turn running now: set as it starts, cleared once it has ended. Still set when the daemon starts
+   * means Overtime restarted (an update, a crash, the app replacing it) in the middle of it, so it's resumed.
+   */
+  inflightTurn?: { runId: string; reason: string; sessionId?: string | null; at: string } | null;
+}
+
+export interface Agent {
+  name: string;
+  dir: string;
+  settings: AgentSettings;
+  /** The body of AGENT.md: who it is and its job. */
+  identity: string;
+  /** Contents of INDEX.md, or "" if the agent hasn't written one yet. */
+  index: string;
+  /** Contents of memory/MEMORY.md, its index of what it has learned, or "" if there's none yet. */
+  memory: string;
+  state: AgentState;
+}
+
+/** Resolved settings: the agent's own values over the global defaults. */
+export interface EffectiveSettings {
+  backend: string;
+  model: string | null;
+  dailyBudgetUsd: number;
+  dailyTokenBudget: number | null;
+  workspace: string;
+  mcpServers: McpServerConfig[];
+  /** Every path this agent may not write to (all agents' plus its own). */
+  protect: string[];
+  /** Folders this agent may not read: other agents' that are private. */
+  hidden: string[];
+  /** Whether reflect passes run for it (its setting, else the global one; on by default). */
+  reflect: boolean;
+  /** The model its reflect passes run on: its reflectModel, else its model. */
+  reflectModel: string | null;
+}
+
+export function expandHome(p: string): string {
+  return p === "~" ? (process.env.HOME ?? p) : p.startsWith("~/") ? join(process.env.HOME ?? "", p.slice(2)) : p;
+}
+
+const NAME_RE = /^[a-z0-9][a-z0-9-]{0,39}$/;
+
+export function validateName(name: string): string | null {
+  if (!NAME_RE.test(name)) return "Use lowercase letters, numbers and dashes (up to 40 characters), starting with a letter or number.";
+  return null;
+}
+
+/** The AGENT.md a brand-new agent starts with: no identity yet. It replaces this itself after its first conversation. */
+export function blankAgentMd(name: string): string {
+  return `# ${name}\n\nNo identity yet. This agent was just created. In its first conversation it will learn who it is and what it's for, and rewrite this file itself.\n`;
+}
+
+export async function createAgent(name: string, settings: AgentSettings = {}): Promise<Agent> {
+  const err = validateName(name);
+  if (err) throw new Error(err);
+  const dir = paths.agent(name);
+  if (existsSync(dir)) throw new Error(`An agent called "${name}" already exists.`);
+  await mkdir(paths.meta(name), { recursive: true });
+  const { stringifyFrontMatter } = await import("./frontmatter.js");
+  await writeAtomic(join(dir, "AGENT.md"), stringifyFrontMatter(settings as Record<string, unknown>, blankAgentMd(name), settingsComment(name)));
+  await writeSettingsSnapshot(name, settings);
+  const state: AgentState = {
+    formatVersion: FORMAT_VERSION,
+    status: "new",
+    activity: "waiting for its job",
+    nextWake: null,
+    mainSessionId: null,
+    mainSessionBackend: null,
+    createdAt: new Date().toISOString(),
+    lastRunAt: null,
+    lastError: null,
+  };
+  await writeJson(join(paths.meta(name), "state.json"), state);
+  return loadAgent(name);
+}
+
+export async function loadAgent(name: string): Promise<Agent> {
+  const dir = paths.agent(name);
+  if (!existsSync(join(dir, "AGENT.md"))) throw new Error(`No agent called "${name}".`);
+  const { data, body } = parseFrontMatter(await readFile(join(dir, "AGENT.md"), "utf8"));
+  const snapshot = await readSettingsSnapshot(name);
+  let index = "";
+  try {
+    index = await readFile(join(dir, "INDEX.md"), "utf8");
+  } catch {}
+  const memory = await readFile(join(dir, "memory", "MEMORY.md"), "utf8").catch(() => "");
+  const state = await readJson<AgentState>(join(paths.meta(name), "state.json"), {
+    formatVersion: FORMAT_VERSION,
+    status: "new",
+    activity: "",
+    nextWake: null,
+    mainSessionId: null,
+    mainSessionBackend: null,
+    createdAt: (await stat(dir)).birthtime.toISOString(),
+    lastRunAt: null,
+    lastError: null,
+  });
+  // Saved before the agent's own line had a place of its own: it was activity, marked as the agent's.
+  if (state.ownStatus === undefined && "activityByAgent" in state) {
+    state.ownStatus = state.activityByAgent ? state.activity : "";
+    delete state.activityByAgent;
+  }
+  return { name, dir, settings: snapshot ?? (data as AgentSettings), identity: body, index, memory, state };
+}
+
+export async function listAgents(): Promise<Agent[]> {
+  let names: string[] = [];
+  try {
+    names = (await readdir(paths.agentsDir(), { withFileTypes: true })).filter((d) => d.isDirectory() && !d.name.startsWith(".")).map((d) => d.name);
+  } catch {}
+  const agents: Agent[] = [];
+  for (const n of names.sort()) {
+    try {
+      agents.push(await loadAgent(n));
+    } catch {}
+  }
+  return agents;
+}
+
+/**
+ * The agents that can message each other: public ones that have been given their job, each with its job
+ * in one line (the first line of AGENT.md's body that isn't a heading). Read synchronously, because tools
+ * are listed synchronously; it's a few small files.
+ */
+export function publicAgents(): { name: string; job: string }[] {
+  return rosterOf().filter((a) => a.job !== null) as { name: string; job: string }[];
+}
+
+/** Whether there's a public agent of this name that hasn't been given its job yet (so isn't in the roster). */
+export function publicButNew(name: string): boolean {
+  return rosterOf().some((a) => a.name === name && a.job === null);
+}
+
+/**
+ * Whether this agent is public, by its settings alone, given its job or not: a new agent's first session
+ * starts before it has written AGENT.md and carries on after, so its tools can't wait for its job.
+ */
+export function isPublic(name: string): boolean {
+  return rosterOf().some((a) => a.name === name);
+}
+
+/** Every public agent; job is null for one that hasn't been given its job yet. */
+function rosterOf(): { name: string; job: string | null }[] {
+  let names: string[] = [];
+  try {
+    names = readdirSync(paths.agentsDir(), { withFileTypes: true }).filter((d) => d.isDirectory() && !d.name.startsWith(".")).map((d) => d.name).sort();
+  } catch {}
+  const out: { name: string; job: string | null }[] = [];
+  for (const name of names) {
+    try {
+      const { data, body } = parseFrontMatter(readFileSync(join(paths.agent(name), "AGENT.md"), "utf8"));
+      const settings = readJsonSync<AgentSettings | null>(settingsFile(name), null) ?? (data as AgentSettings);
+      if (settings.visibility === "private") continue;
+      if (!hasIdentity({ identity: body } as Agent)) {
+        out.push({ name, job: null });
+        continue;
+      }
+      const job = firstLine(body);
+      out.push({ name, job: job.length > 140 ? job.slice(0, 139) + "…" : job });
+    } catch {}
+  }
+  return out;
+}
+
+/** The first line of text under the title, as plain text: markdown like **Role:** reads as noise in a list. */
+function firstLine(body: string): string {
+  const text = (t: Token): string =>
+    "tokens" in t && t.tokens ? t.tokens.map(text).join("") : "items" in t ? (t.items as Token[]).map(text).join("\n") : t.type === "br" ? "\n" : "text" in t ? String(t.text) : "";
+  for (const t of new Lexer().lex(body)) {
+    if (t.type === "heading" || t.type === "html" || t.type === "code") continue;
+    const line = text(t).split("\n").map((l) => l.trim()).find(Boolean);
+    if (line) return line;
+  }
+  return "";
+}
+
+function readJsonSync<T>(file: string, fallback: T): T {
+  try {
+    return JSON.parse(readFileSync(file, "utf8")) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+export async function saveState(name: string, state: AgentState): Promise<void> {
+  await writeJson(join(paths.meta(name), "state.json"), state);
+}
+
+/**
+ * Change an agent's state. Serialised per agent. A stopped agent stays stopped: nothing but an explicit
+ * start (allowStopped) can move it out of "stopped", so a turn finishing late can't undo a stop.
+ */
+export async function updateState(name: string, patch: Partial<AgentState>, opts: { allowStopped?: boolean } = {}): Promise<AgentState> {
+  return withLock(`state:${name}`, async () => {
+    const cur = (await loadAgent(name)).state;
+    const p = { ...patch };
+    if (cur.status === "stopped" && !opts.allowStopped && p.status && p.status !== "stopped") delete p.status;
+    const next = { ...cur, ...p };
+    await saveState(name, next);
+    return next;
+  });
+}
+
+const settingsFile = (name: string) => join(paths.meta(name), "settings.json");
+
+/**
+ * The person's settings for an agent: the only copy that counts. AGENT.md's front matter shows them for
+ * reference, and is put back to match whenever anything else changes it.
+ */
+export async function readSettingsSnapshot(name: string): Promise<AgentSettings | null> {
+  return readJson<AgentSettings | null>(settingsFile(name), null);
+}
+
+export async function writeSettingsSnapshot(name: string, s: AgentSettings): Promise<void> {
+  await writeJson(settingsFile(name), s);
+}
+
+async function frontMatterOf(name: string): Promise<{ data: AgentSettings; body: string } | null> {
+  try {
+    const { data, body } = parseFrontMatter(await readFile(join(paths.agent(name), "AGENT.md"), "utf8"));
+    return { data: data as AgentSettings, body };
+  } catch {
+    return null;
+  }
+}
+
+/** The line at the top of AGENT.md's settings block saying where they're changed. */
+function settingsComment(name: string): string {
+  return `Shown for reference. Change these in the app (→), with overtime set ${name} key=value, or in .overtime/settings.json`;
+}
+
+/**
+ * Make AGENT.md's settings block exactly the person's settings again, whoever changed it (the agent, a
+ * helper, a script, git, or a hand edit). Settings change only through setSettings.
+ */
+export async function restoreSettings(name: string): Promise<boolean> {
+  return withLock(`settings:${name}`, () => restoreSettingsNow(name));
+}
+
+/** restoreSettings, for callers already holding the settings lock. */
+async function restoreSettingsNow(name: string): Promise<boolean> {
+  const fm = await frontMatterOf(name);
+  if (!fm) return false;
+  const saved = await readSettingsSnapshot(name);
+  if (!saved) {
+    // No copy (lost or damaged): AGENT.md's block is the best record left, so keep it rather than wipe it.
+    await writeSettingsSnapshot(name, fm.data ?? {});
+    return false;
+  }
+  const snap = saved;
+  if (JSON.stringify(sortKeys(fm.data as Record<string, unknown>)) === JSON.stringify(sortKeys(snap as Record<string, unknown>))) return false;
+  const { stringifyFrontMatter } = await import("./frontmatter.js");
+  // Atomic: a crash mid-write must never leave the agent without its AGENT.md.
+  await writeAtomic(join(paths.agent(name), "AGENT.md"), stringifyFrontMatter(snap as Record<string, unknown>, fm.body, settingsComment(name)));
+  return true;
+}
+
+/** Whether the agent has been given its job yet (it rewrites the placeholder AGENT.md when it has). */
+export function hasIdentity(agent: Agent): boolean {
+  return !agent.identity.includes("No identity yet. This agent was just created.");
+}
+
+function sortKeys(o: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(Object.keys(o).sort().map((k) => [k, o[k]]));
+}
+
+/**
+ * MCP servers the agent added for itself: mcp.json in its folder ({"servers": [...]} or a plain list),
+ * in the same shape as settings.json. The agent manages this file; the person turns servers on and off.
+ */
+export function agentMcpServers(dir: string): McpServerConfig[] {
+  try {
+    const raw = JSON.parse(readFileSync(join(dir, "mcp.json"), "utf8"));
+    const list = Array.isArray(raw) ? raw : Array.isArray(raw?.servers) ? raw.servers : Array.isArray(raw?.mcpServers) ? raw.mcpServers : [];
+    return list.filter((x: any) => x && typeof x.name === "string" && (typeof x.command === "string" || typeof x.url === "string"));
+  } catch {
+    return [];
+  }
+}
+
+/** Every MCP server an agent has, by where it came from (shared, the person's for it, its own); first name wins. */
+export async function allMcpServers(agent: Agent): Promise<{ server: McpServerConfig; source: "shared" | "person" | "agent" }[]> {
+  const g = await loadSettings();
+  const out: { server: McpServerConfig; source: "shared" | "person" | "agent" }[] = [];
+  const seen = new Set<string>(["overtime"]);
+  const add = (list: McpServerConfig[], source: "shared" | "person" | "agent") => {
+    for (const server of list) if (!seen.has(server.name)) (seen.add(server.name), out.push({ server, source }));
+  };
+  add(g.mcpServers, "shared");
+  add(agent.settings.mcpServers ?? [], "person");
+  add(agentMcpServers(agent.dir), "agent");
+  return out;
+}
+
+export async function effectiveSettings(agent: Agent): Promise<EffectiveSettings> {
+  const g = await loadSettings();
+  const disabled = new Set(agent.settings.disableMcp ?? []);
+  return {
+    backend: agent.settings.backend ?? g.backend,
+    model: agent.settings.model ?? g.model,
+    dailyBudgetUsd: agent.settings.dailyBudgetUsd ?? g.dailyBudgetUsd,
+    dailyTokenBudget: agent.settings.dailyTokenBudget !== undefined ? agent.settings.dailyTokenBudget : g.dailyTokenBudget,
+    workspace: agent.settings.workspace ? expandHome(agent.settings.workspace) : agent.dir,
+    // Shared, the person's for this agent, and the agent's own mcp.json; minus what the person turned off.
+    mcpServers: (await allMcpServers(agent)).map((x) => x.server).filter((x) => !disabled.has(x.name)),
+    protect: [...new Set([...(g.protect ?? []), ...(agent.settings.protect ?? [])])],
+    hidden: await privateFolders(agent),
+    reflect: agent.settings.reflect ?? g.reflect ?? true,
+    reflectModel: agent.settings.reflectModel ?? agent.settings.model ?? g.model,
+  };
+}
+
+/**
+ * Other agents' folders that are private, for this agent to be kept out of. Never one that holds this
+ * agent's own folder or workspace: an agent never loses access to its own work.
+ */
+async function privateFolders(agent: Agent): Promise<string[]> {
+  let names: string[] = [];
+  try {
+    names = (await readdir(paths.agentsDir(), { withFileTypes: true })).filter((d) => d.isDirectory() && !d.name.startsWith(".") && d.name !== agent.name).map((d) => d.name);
+  } catch {}
+  const own = [agent.dir, agent.settings.workspace ? expandHome(agent.settings.workspace) : agent.dir];
+  const out: string[] = [];
+  for (const n of names) {
+    if ((await readSettingsSnapshot(n))?.visibility !== "private") continue;
+    const dir = paths.agent(n);
+    if (own.some((p) => p === dir || p.startsWith(dir + "/"))) continue;
+    out.push(dir);
+  }
+  return out;
+}
+
+/** The person changed an agent's settings (from the app or the CLI): update the copy that counts and AGENT.md. */
+export async function setSettings(name: string, patch: { [K in keyof AgentSettings]?: AgentSettings[K] | null }): Promise<AgentSettings> {
+  return withLock(`settings:${name}`, async () => {
+    const cur = (await readSettingsSnapshot(name)) ?? {};
+    const next: AgentSettings = { ...cur };
+    for (const [k, v] of Object.entries(patch)) {
+      if (v === undefined) continue;
+      if (v === null || v === "") delete (next as any)[k];
+      else (next as any)[k] = v;
+    }
+    await writeSettingsSnapshot(name, next);
+    await restoreSettingsNow(name);
+    return next;
+  });
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T05:58:14Z",
+ "category": "engines",
+ "commit": "d60a02cfaee2",
+ "delivery": "reference",
+ "description": "yicaoyimuys/EgretGameEngine \u2014 A game client engine in Egret",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "EgretGameEngine",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 2021535,
+ "slug": "yicaoyimuys-egretgameengine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 400,
+ "system": "A game client engine in Egret",
+ "upstream": "https://github.com/yicaoyimuys/EgretGameEngine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

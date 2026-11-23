@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:58:15Z",
+ "category": "engines",
+ "commit": "2026-06-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "axaq/traviso.js \u2014 Traviso is an open source JS engine that makes it easy to build isometric applications that run in a web browser.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "traviso.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "axaq-traviso-js",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 339,
+ "system": "Traviso is an open source JS engine that makes it easy to build isometric applications that run in a web browser.",
+ "upstream": "https://github.com/axaq/traviso.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

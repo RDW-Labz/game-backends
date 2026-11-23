@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:58:15Z",
+ "category": "engines",
+ "commit": "2026-05-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ct-js/ct-js \u2014 Ct.js is a desktop game engine that makes learning programming fun and game development easy by its visual editors and well-documented code library",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ct-js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ct-js-ct-js",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 353,
+ "system": "Ct.js is a desktop game engine that makes learning programming fun and game development easy by its visual editors and well-documented code library",
+ "upstream": "https://github.com/ct-js/ct-js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

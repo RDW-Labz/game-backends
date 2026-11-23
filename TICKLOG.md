@@ -1803,3 +1803,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/genex-games-genex-desktop
   - reference engines/soonfx-engine-core
   - reference engines/jamesroutley-24a2
+
+- **2026-11-23 05:58 UTC** — tick 672: +2 screened, +4 reference, 1 skipped, catalogue=614
+  - added engines/ukanwat-overtime (MIT, vendored)
+  - added engines/yicaoyimuys-egretgameengine (none, reference)
+  - reference engines/ct-js-ct-js
+  - reference engines/axaq-traviso-js
+  - reference engines/yunyoujun-advjs
+  - reference engines/runejs-server

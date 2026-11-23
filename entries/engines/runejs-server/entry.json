@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:58:15Z",
+ "category": "engines",
+ "commit": "2026-09-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "runejs/server \u2014 RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing simple and easy to use content development systems and APIs.",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "server",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "runejs-server",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 300,
+ "system": "RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing s",
+ "upstream": "https://github.com/runejs/server",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

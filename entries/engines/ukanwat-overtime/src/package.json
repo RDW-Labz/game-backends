@@ -1,0 +1,69 @@
+{
+  "name": "@ukanwat/overtime",
+  "version": "0.7.9",
+  "description": "Agents that exist, not sessions. Brief a coding agent once; it works on its own, keeps its own folder, and checks in only when it needs you.",
+  "keywords": [
+    "agents",
+    "autonomous-agents",
+    "acp",
+    "agent-client-protocol",
+    "claude",
+    "codex",
+    "gemini",
+    "mcp",
+    "daemon",
+    "cli",
+    "tui"
+  ],
+  "author": "Utkarsh Kanwat (https://utkarshkanwat.com)",
+  "license": "MIT",
+  "homepage": "https://github.com/ukanwat/overtime",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ukanwat/overtime.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ukanwat/overtime/issues"
+  },
+  "type": "module",
+  "bin": {
+    "overtime": "dist/bin.js"
+  },
+  "engines": {
+    "node": ">=22.19"
+  },
+  "files": [
+    "dist",
+    "skills",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p . && node -e \"require('fs').chmodSync('dist/bin.js', 0o755)\"",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p . --noEmit",
+    "prepack": "rm -rf dist && npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@agentclientprotocol/claude-agent-acp": "^0.85.1",
+    "@agentclientprotocol/sdk": "^1.7.0",
+    "@earendil-works/pi-tui": "^1.0.0",
+    "@modelcontextprotocol/client": "2.3.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
+    "@modelcontextprotocol/server": "2.3.0",
+    "marked": "18.0.11",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "@xterm/headless": "^6.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  }
+}

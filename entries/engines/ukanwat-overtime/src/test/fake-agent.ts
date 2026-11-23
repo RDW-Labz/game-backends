@@ -1,0 +1,375 @@
+import { spawn } from "node:child_process";
+/**
+ * A scripted ACP backend for tests: speaks real ACP on stdio and calls Overtime's real tools over MCP,
+ * so the daemon can be tested end to end without a model. Behaviour is driven by words in the prompt.
+ */
+import * as acp from "@agentclientprotocol/sdk";
+import { Readable, Writable } from "node:stream";
+import { randomUUID } from "node:crypto";
+import { writeFileSync, mkdirSync, rmSync, existsSync, readFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+
+/** --stdio-mcp: act like a backend that only runs MCP servers as local commands (Overtime must bridge). */
+const STDIO_ONLY = process.argv.includes("--stdio-mcp");
+
+interface S {
+  cwd: string;
+  /** Overtime's tools server: a URL, or (for a stdio-only backend) the command to start. */
+  tools?: string | { command: string; args: string[] };
+  cost: number;
+  /** The model Overtime chose for the session ("default" until it chooses one). */
+  model: string;
+  /** The MCP servers Overtime gave the session, by name. */
+  servers?: string[];
+}
+const sessions = new Map<string, S>();
+let cancelled = false;
+/** SLOW: wait up to a minute, ending early (as a real backend does) when the turn is cancelled. */
+async function slow(): Promise<boolean> {
+  // By the clock, not by counting ticks: a busy machine stretches each tick.
+  for (const start = Date.now(); Date.now() - start < 60_000 && !cancelled; ) await new Promise((r) => setTimeout(r, 100));
+  return cancelled;
+}
+
+async function tools(where: string | { command: string; args: string[] }) {
+  const c = new Client({ name: "fake-agent", version: "1" });
+  await c.connect(typeof where === "string" ? new StreamableHTTPClientTransport(new URL(where)) : new StdioClientTransport({ command: where.command, args: where.args }));
+  return {
+    list: async () => (await c.listTools()).tools.map((t) => t.name),
+    describe: async (name: string) => (await c.listTools()).tools.find((t) => t.name === name)?.description,
+    call: async (name: string, args: Record<string, unknown>) => {
+      const r: any = await c.callTool({ name, arguments: args });
+      const text = (r.content ?? []).map((x: any) => x.text).join("");
+      if (r.isError) throw new Error(`${name}: ${text}`);
+      return text;
+    },
+    close: () => c.close(),
+  };
+}
+
+/**
+ * A helper's done, the way a model does it: a result without learned lines is refused once, and it
+ * calls again with them added. LEARNED <text> in the task: that line is in the result from the start.
+ */
+async function done(t: Awaited<ReturnType<typeof tools>>, result: string, task: string): Promise<void> {
+  const given = /LEARNED ([^\n]+)/.exec(task)?.[1];
+  const first = given ? `${result}\n\nlearned: ${given}` : result;
+  try {
+    await t.call("done", { result: first });
+  } catch (e: any) {
+    if (!/no learned lines/.test(String(e?.message))) throw e;
+    // DONE_ONCE: a helper that never calls done twice; its first result has to stand.
+    if (/DONE_ONCE/.test(task)) return;
+    writeFileSync(join(process.env.OVERTIME_FAKE_NOTES ?? process.cwd(), `learned-asked-${process.pid}`), String(e.message));
+    await t.call("done", { result: `${first}\n\nlearned: nothing new` });
+  }
+}
+
+async function turn(sessionId: string, text: string, cx: any): Promise<acp.PromptResponse> {
+  const s = sessions.get(sessionId)!;
+  const say = (t: string) => cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: "agent_message_chunk", content: { type: "text", text: t } } });
+  if (/NOT_SIGNED_IN/.test(text)) throw new acp.RequestError(-32000, "Authentication required");
+  // Signed out for as long as a `signed-out` file is in the session's folder (the test signs in by deleting it).
+  if (existsSync(join(s.cwd, "signed-out"))) throw new acp.RequestError(-32000, "Authentication required");
+  // A turn that fails on something a tool or website said ("401 Unauthorized"), with no sign-in code.
+  if (/TOOL_UNAUTHORIZED/.test(text)) throw new acp.RequestError(-32603, "Internal error", { message: "MCP server runpod: HTTP 401 Unauthorized. Authentication required to list pods; please log in" });
+  if (/COSTLY_FAIL/.test(text)) {
+    s.cost += 0.25;
+    await cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: "usage_update", used: 1000, size: 100000, cost: { amount: s.cost, currency: "USD" } } as any });
+    throw new acp.RequestError(-32603, "Internal error", { message: "scripted costly failure" });
+  }
+  // Claude's way, per model: while `limit-model-<model>` exists (holding when it resets, in epoch seconds),
+  // that model is over its weekly limit. The first turn to hit it gets the structured "rejected" report;
+  // later ones only the error, of the same kind as a passing rate limit (as Claude does).
+  const modelLimit = process.env.OVERTIME_HOME ? join(process.env.OVERTIME_HOME, `limit-model-${s.model}`) : "";
+  if (modelLimit && existsSync(modelLimit)) {
+    if (!existsSync(`${modelLimit}.told`)) {
+      writeFileSync(`${modelLimit}.told`, "1");
+      await cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: "usage_update", used: 1000, size: 100000, _meta: { "_claude/rateLimit": { status: "rejected", rateLimitType: "seven_day", resetsAt: Number(readFileSync(modelLimit, "utf8")) } } } as any });
+    }
+    throw new acp.RequestError(-32603, "Internal error", { errorKind: "rate_limit", message: "You've hit your weekly limit" });
+  }
+  // The account is over its limit for as long as this file exists (the test lifts it by deleting it).
+  if (process.env.OVERTIME_HOME && existsSync(join(process.env.OVERTIME_HOME, "limit-on"))) throw new acp.RequestError(-32603, "Internal error", { message: "You've hit your usage limit.", codexErrorInfo: "usageLimitExceeded" });
+  // A usage limit, as Codex reports it (structured) and as a backend that sends only words would.
+  if (/LIMIT_CODEX/.test(text)) throw new acp.RequestError(-32603, "Internal error", { message: "You've hit your usage limit.", codexErrorInfo: "usageLimitExceeded" });
+  if (/LIMIT_WORDS/.test(text)) throw new acp.RequestError(-32603, "Internal error", { message: "Quota exceeded for this model; try again later" });
+  if (/RATE_LIMITED_TURN/.test(text)) throw new acp.RequestError(-32603, "Internal error", { errorKind: "rate_limit", message: "You've hit your session limit" }); // Claude's shape
+  if (/OVERLOADED_TURN/.test(text)) throw new acp.RequestError(-32603, "Internal error", { errorKind: "overloaded", message: "API Error: 529" }); // Claude's shape
+  if (/FAIL_TURN/.test(text) && !/RECOVERED/.test(text)) throw new acp.RequestError(-32603, "Internal error", { message: "scripted failure" });
+  if (/SAVE_ON_EXIT/.test(text)) {
+    // Like a CLI the backend runs underneath (Claude Code), which saves the session as it shuts down,
+    // after the backend itself has exited. Same process group, not detached.
+    spawn("/bin/sh", ["-c", `trap '' HUP; sleep 1; echo saved > "${join(s.cwd, "saved.txt")}"`], { stdio: "ignore" }).unref();
+  }
+  if (!s.tools) {
+    await say("no overtime tools");
+    return { stopReason: "end_turn" };
+  }
+  const t = await tools(s.tools);
+  const names = await t.list();
+  const folder = /# Your folder\n\n(.+)/.exec(text)?.[1];
+  try {
+    // A reflect pass: note what it was given and which tools it had, then edit memory/ as a reflect pass
+    // does. REFLECT_TAMPER (in what it reads): also try to change AGENT.md and write outside memory/,
+    // which it must not. Its notes go to the test's own folder: everything of Overtime's is read-only to it.
+    if (/You are running a reflect pass/.test(text)) {
+      const home = process.env.OVERTIME_FAKE_NOTES ?? process.env.OVERTIME_HOME ?? s.cwd;
+      const who = /reflect pass for (\S+),/.exec(text)?.[1] ?? "x";
+      writeFileSync(join(home, `reflect-seen-${who}.txt`), `${names.join(",")}\nservers: ${(s.servers ?? []).join(",")}\nmodel: ${s.model}\n${text}`);
+      // A reflect-fail file (once): the pass fails as a backend reports an overload, a usage limit (Claude's
+      // way: a rejected limit report, then the error) or a plain error.
+      const failMark = join(home, "reflect-fail");
+      if (existsSync(failMark)) {
+        const how = readFileSync(failMark, "utf8").trim();
+        rmSync(failMark);
+        if (how === "overloaded") throw new acp.RequestError(-32603, "Internal error", { errorKind: "overloaded", message: "API Error: 529" });
+        if (how === "limit") {
+          await cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: "usage_update", used: 1000, size: 100000, _meta: { "_claude/rateLimit": { status: "rejected", rateLimitType: "seven_day", resetsAt: Math.floor(Date.now() / 1000) + 3600 } } } as any });
+          throw new acp.RequestError(-32603, "Internal error", { errorKind: "rate_limit", message: "You've hit your weekly limit" });
+        }
+        throw new acp.RequestError(-32603, "Internal error", { message: "scripted failure" });
+      }
+      // REFLECT_HOLD: a pass that runs until it's stopped.
+      if (/REFLECT_HOLD/.test(text) && (await slow())) return { stopReason: "cancelled" };
+      // A reflect-slow file in Overtime's home (once): a pass still running when the agent gets work, so it
+      // is cancelled. Its content "cost" reports a cost first, as a backend that has already spent does.
+      const slowMark = join(home, "reflect-slow");
+      if (existsSync(slowMark)) {
+        const costly = readFileSync(slowMark, "utf8").trim() === "cost";
+        rmSync(slowMark);
+        if (costly) {
+          s.cost += 0.02;
+          await cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: "usage_update", used: 1000, size: 100000, cost: { amount: s.cost, currency: "USD" } } as any });
+        }
+        if (await slow()) {
+          // Still writing for a moment after the cancel, as a real backend finishing a tool call does.
+          await new Promise((r) => setTimeout(r, 1500));
+          writeFileSync(join(home, "reflect-stopped-at"), String(Date.now()));
+          return { stopReason: "cancelled" };
+        }
+      }
+      mkdirSync(join(s.cwd, "memory"), { recursive: true });
+      const run = /\(run (main_[^)]+)\)/.exec(text)?.[1] ?? "unknown";
+      writeFileSync(join(s.cwd, "memory", "reflected.md"), `---\ntype: feedback\nsource: observed\ndate: 2026-10-17\nlast-verified: 2026-10-17\nruns: [${run}]\n---\n\nCheck the render before sending.\n`);
+      const idx = join(s.cwd, "memory", "MEMORY.md");
+      writeFileSync(idx, `${existsSync(idx) ? readFileSync(idx, "utf8") : ""}- [Check renders](reflected.md) — watch the whole render before sending it\n`);
+      // REFLECT_INFER: also infer two patterns, one with enough support and one without.
+      if (/REFLECT_INFER/.test(text)) {
+        writeFileSync(join(s.cwd, "memory", "pattern-good.md"), `---\ntype: person\nsource: inferred\nruns: [${run}, main_b, main_c]\n---\n\nKeeps rejecting tall layouts.\n`);
+        writeFileSync(join(s.cwd, "memory", "pattern-thin.md"), `---\ntype: person\nsource: inferred\nruns: [${run}]\n---\n\nLikes purple.\n`);
+        writeFileSync(idx, `${readFileSync(idx, "utf8")}- [Tall layouts](pattern-good.md) — avoid designs that use vertical space\n- [Purple](pattern-thin.md) — prefers purple\n`);
+      }
+      if (/REFLECT_TAMPER/.test(text)) {
+        // Reported as its file tools report a write, the way a backend that doesn't ask first would.
+        const edit = (status: string) => cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: status === "pending" ? "tool_call" : "tool_call_update", toolCallId: "t1", title: "Write AGENT.md", kind: "edit", status, locations: [{ path: join(s.cwd, "AGENT.md") }] } as any });
+        await edit("pending");
+        let r = "denied";
+        try {
+          writeFileSync(join(s.cwd, "AGENT.md"), "# tampered\n");
+          r = "written";
+        } catch {}
+        await edit("completed");
+        writeFileSync(join(home, `reflect-tamper-${who}.txt`), r);
+      }
+      try {
+        writeFileSync(join(s.cwd, "notes-outside-memory.txt"), "scratch\n");
+      } catch {}
+      await say("reflected: added reflected.md");
+      return { stopReason: "end_turn", usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 } as any };
+    }
+    // COMPACT: the backend compacts the session's context, reported as Claude's adapter does.
+    if (/COMPACT/.test(text)) await cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: "tool_call", toolCallId: "c1", title: "Compact conversation", kind: "think", status: "completed", _meta: { claudeCode: { toolName: "compact" } } } as any });
+    // A helper's session: its first prompt says so; later prompts in the same session (notes) don't.
+    const helperMark = join(s.cwd, ".fake-helper");
+    if (/You are a helper/.test(text) || /a helper working for/.test(text)) writeFileSync(helperMark, "1");
+    if (/A note from /.test(text) && existsSync(helperMark)) {
+      const note = /who started you:\n\n([\s\S]*?)\n\n/.exec(text)?.[1] ?? "";
+      writeFileSync(join(s.cwd, "notes.txt"), `${existsSync(join(s.cwd, "notes.txt")) ? readFileSync(join(s.cwd, "notes.txt"), "utf8") : ""}${note}\n`);
+      await done(t, `handled note: ${note}${/This is a new session/.test(text) ? " (new session)" : ""}`, text);
+      await say("note handled");
+    } else if (existsSync(helperMark)) {
+      // HELPER_SIGNIN_WAIT: signed out while `helper-signed-out` is in Overtime's home.
+      if (/HELPER_SIGNIN_WAIT/.test(text) && process.env.OVERTIME_HOME && existsSync(join(process.env.OVERTIME_HOME, "helper-signed-out"))) throw new acp.RequestError(-32000, "Authentication required");
+      // FLAKY: the provider fails once with a 502, then works (the retry continues from the folder).
+      if (/FLAKY/.test(text)) {
+        const mark = join(s.cwd, ".flaky-once");
+        if (!existsSync(mark)) {
+          writeFileSync(mark, "1");
+          throw new acp.RequestError(-32603, "Internal error", { message: "stream error", codexErrorInfo: { responseStreamConnectionFailed: { httpStatusCode: 502 } } }); // Codex's shape
+        }
+      }
+      // READ_PARENT_MEMORY: read the memory/ of the agent that started it (it may only read it).
+      if (/READ_PARENT_MEMORY/.test(text)) {
+        const mem = /'s memory is in (\S+)\/ \(/.exec(text)?.[1];
+        const r = !mem ? "no path" : existsSync(join(mem, "MEMORY.md")) ? `read:${readFileSync(join(mem, "MEMORY.md"), "utf8").trim()}\n` : "read:none\n";
+        writeFileSync(join(s.cwd, ".parent-memory"), r);
+      }
+      if (/UPDATE/.test(text)) await t.call("update", { text: "halfway there", urgent: /UPDATE_URGENT/.test(text) });
+      // Started with the agent's context: keep what it was given, so tests can check it.
+      const given = /has been doing lately \(for context: you know what it knows\)\n\n([\s\S]*)$/.exec(text)?.[1];
+      if (given) writeFileSync(join(s.cwd, ".context-given"), given);
+      // TOOLWAIT: a tool call that takes a few seconds, then slow thinking. Notes it whether the turn was
+      // cancelled while the tool was still running.
+      if (/TOOLWAIT/.test(text)) {
+        const update = (status: string) => cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: status === "in_progress" ? "tool_call" : "tool_call_update", toolCallId: "long1", title: "Render", kind: "execute", status } as any });
+        await update("in_progress");
+        writeFileSync(join(s.cwd, "tool-started.txt"), "1");
+        for (const start = Date.now(); Date.now() - start < 4_000; ) await new Promise((r) => setTimeout(r, 100));
+        writeFileSync(join(s.cwd, "tool-cut.txt"), String(cancelled));
+        await update("completed");
+        if (await slow()) return { stopReason: "cancelled" };
+      }
+      if (/SLOW/.test(text)) {
+        await done(t, "partial: got halfway", text);
+        if (await slow()) return { stopReason: "cancelled" };
+      }
+      writeFileSync(join(s.cwd, "result.txt"), "helper output\n");
+      await done(t, `wrote ${join(s.cwd, "result.txt")}`, text);
+      await say("helper done");
+    } else if (/The person just wrote:/.test(text)) {
+      const msg = /The person just wrote:\n\n([\s\S]*?)\n\nAnswer them/.exec(text)?.[1] ?? text.split("\n").pop();
+      if (/PASS/.test(msg ?? "")) await t.call("send", { to: "main", text: `do this: ${msg}` });
+      if (!/NOREPLYTOOL/.test(msg ?? "")) await t.call("send", { text: `chat reply to: ${msg}` });
+      else await say(`final words as reply to: ${msg}`);
+    } else {
+      if (/This is your first conversation/.test(text) && folder) {
+        // Real backends report their file writes as tool calls; so does the fake.
+        await cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: "tool_call", toolCallId: "w1", title: "Write AGENT.md", kind: "edit", status: "completed", locations: [{ path: join(folder, "AGENT.md") }] } as any });
+        writeFileSync(join(folder, "AGENT.md"), "# fake\n\n## Job\nTest job.\n\n## Rules\n- Ask before publishing.\n");
+        mkdirSync(join(folder, "notes"), { recursive: true });
+        writeFileSync(join(folder, "INDEX.md"), "# Index\n\n- notes/: what I learned\n");
+      }
+      if (/Message from the person|The person answered|Passed on from your conversation/.test(text)) {
+        // Echo each thing the person said, so tests can tell which message got which reply.
+        for (const m of text.matchAll(/(?:Message from the person|The person answered)[^\n]*\n([^\n]*)/g)) {
+          const said = m[1];
+          if (/NOREPLYTOOL/.test(said)) await say(`final words as reply to: ${said}`);
+          else await t.call("send", { text: `main reply to: ${said}` });
+        }
+      }
+      // FAIL_AFTER_REPLY: answers the person, then the provider fails (the turn doesn't finish).
+      if (/FAIL_AFTER_REPLY/.test(text) && !/RECOVERED/.test(text)) throw new acp.RequestError(-32603, "Internal error", { message: "scripted failure after replying" });
+      // Agents messaging each other: note what this session's tools were and what it was told.
+      if (/MSG_TO|another agent, not the person/.test(text)) writeFileSync(join(s.cwd, ".message-desc"), `${names.join(",")}\n${(await t.describe("message")) ?? ""}`);
+      if (/another agent, not the person/.test(text)) writeFileSync(join(s.cwd, ".agent-inbox"), text);
+      const msgTo = /MSG_TO (\S+): ([^\n]*)/.exec(text);
+      if (msgTo) {
+        let r: string;
+        try {
+          r = await t.call("message", { to: msgTo[1], text: msgTo[2] });
+        } catch (e: any) {
+          r = `ERROR ${e?.message ?? e}`;
+        }
+        writeFileSync(join(s.cwd, ".message-result"), r);
+      }
+      // READ_FILE <path>: whether this session (and what it runs) can read a file.
+      const readFile = /READ_FILE (\S+)/.exec(text);
+      if (readFile) {
+        let r = "denied";
+        try {
+          readFileSync(readFile[1], "utf8");
+          r = "read";
+        } catch {}
+        writeFileSync(join(s.cwd, ".read-result"), r);
+      }
+      if (/SKILLCHECK/.test(text)) writeFileSync(join(s.cwd, "skill-result.txt"), await t.call("skill", { name: "overtime-docs" }));
+      if (/ESCAPE/.test(text)) {
+        // Try to write into a protected path, as a script or program it wrote would.
+        const target = join(process.env.OVERTIME_HOME ?? homedir(), "protected", `escape-${process.pid}`);
+        let result = "denied";
+        try {
+          writeFileSync(target, "x");
+          result = "LEAKED";
+          rmSync(target, { force: true });
+        } catch {}
+        writeFileSync(join(s.cwd, "escape-result.txt"), result);
+      }
+      if (/SPAWN_MISSING/.test(text) && names.includes("spawn")) writeFileSync(join(s.cwd, "spawn-note.txt"), await t.call("spawn", { task: "write result.txt", backend: "not-installed-cli", model: "some-model" }));
+      else if (/SPAWN_MEMREAD/.test(text) && names.includes("spawn")) await t.call("spawn", { task: "READ_PARENT_MEMORY write result.txt" });
+      else if (/SPAWN_DONE_ONCE/.test(text) && names.includes("spawn")) await t.call("spawn", { task: "DONE_ONCE write result.txt" });
+      else if (/SPAWN_FLAKY/.test(text) && names.includes("spawn")) await t.call("spawn", { task: "FLAKY write result.txt" });
+      else if (/SPAWN_SIGNIN/.test(text) && names.includes("spawn")) await t.call("spawn", { task: "HELPER_SIGNIN_WAIT write result.txt" });
+      else if (/SPAWN_SLOW/.test(text) && names.includes("spawn")) await t.call("spawn", { task: "SLOW write result.txt" });
+      else if (/SPAWN_TOOLWAIT/.test(text) && names.includes("spawn")) await t.call("spawn", { task: "TOOLWAIT write result.txt" });
+      else if (/SPAWN/.test(text) && names.includes("spawn")) await t.call("spawn", { task: "write result.txt" });
+      // Carried on after Overtime restarted, it finishes: what it was doing slowly was cut off by the restart.
+      if (/SLOW/.test(text) && !/SPAWN_SLOW/.test(text) && !/Helper result/.test(text) && !/Overtime restarted/.test(text) && (await slow())) return { stopReason: "cancelled" };
+      if (/WATCH_LONG/.test(text)) await t.call("wake", { watch: "for i in 1 2 3; do echo tick $i; sleep 1; done; sleep 600", reason: "long test", cooldown: "1s" });
+      if (/WATCH_REPEAT/.test(text)) await t.call("wake", { watch: "cat watched.txt 2>/dev/null || echo none", every: "10s", reason: "repeat test", cooldown: "1s" });
+      if (/Message from the person[^\n]*\n[^\n]*\bASK\b/.test(text)) await t.call("ask", { question: "Bridge or ferry?", why: "test", recommendation: "Bridge", options: ["Bridge", "Ferry"], category: "test-choice" });
+      if (/LOOP/.test(text)) await t.call("wake", { every: "1m", reason: "loop task" });
+      if (!/KEEPSTATUS/.test(text)) await t.call("send", { status: "fake is working" });
+      if (/NOTIFY/.test(text)) await t.call("send", { title: "Fake update", text: "Did a fake thing." });
+      if (!/NOSLEEP/.test(text)) await t.call("wake", { in: "30m", reason: "fake rest" });
+      await say("main turn done");
+    }
+  } finally {
+    await t.close();
+  }
+  s.cost += 0.01;
+  // With `report-limits`, each turn that gets through reports its model's limits as allowed, as Claude does.
+  const allowed = (rateLimitType: string) => ({ "_claude/rateLimit": { status: "allowed", rateLimitType, resetsAt: Math.floor(Date.now() / 1000) + 3600 } });
+  if (process.env.OVERTIME_HOME && existsSync(join(process.env.OVERTIME_HOME, "report-limits"))) {
+    for (const w of ["five_hour", "seven_day"]) await cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: "usage_update", used: 1000, size: 100000, _meta: allowed(w) } as any });
+  }
+  await cx.notify(acp.methods.client.session.update, { sessionId, update: { sessionUpdate: "usage_update", used: 1000, size: 100000, cost: { amount: s.cost, currency: "USD" } } as any });
+  return { stopReason: "end_turn", usage: { inputTokens: 10, outputTokens: 5, totalTokens: 15 } as any };
+}
+
+/** A session's model, kept by the run of this backend that set it (each turn runs a new one). */
+function savedModel(sessionId: string): string {
+  const f = process.env.OVERTIME_HOME ? join(process.env.OVERTIME_HOME, `.fake-model-${sessionId}`) : "";
+  return f && existsSync(f) ? readFileSync(f, "utf8") : "default";
+}
+
+/** Where Overtime's tools are, as this backend was given them. A stdio-only backend must be given a command. */
+function toolsServer(servers: any[] = []): S["tools"] {
+  const m = servers.find((x) => x.name === "overtime");
+  if (!m) return undefined;
+  if (m.type === "http") return STDIO_ONLY ? undefined : m.url;
+  return { command: m.command, args: m.args };
+}
+
+const stream = acp.ndJsonStream(Writable.toWeb(process.stdout) as WritableStream<Uint8Array>, Readable.toWeb(process.stdin) as ReadableStream<Uint8Array>);
+acp
+  .agent({ name: "fake-agent" })
+  .onRequest("initialize", () => ({ protocolVersion: acp.PROTOCOL_VERSION, agentCapabilities: { loadSession: true, mcpCapabilities: { http: !STDIO_ONLY } } }) as any)
+  .onRequest("session/new", (ctx: any) => {
+    const id = randomUUID();
+    const http = toolsServer(ctx.params.mcpServers);
+    sessions.set(id, { cwd: ctx.params.cwd, tools: http, cost: 0, model: "default", servers: (ctx.params.mcpServers ?? []).map((m: any) => m.name) });
+    // Record which MCP servers this session was given, so tests can check what reached the backend.
+    try {
+      writeFileSync(join(ctx.params.cwd, ".mcp-seen"), (ctx.params.mcpServers ?? []).map((m: any) => m.name).join(",") + "\n");
+    } catch {}
+    return { sessionId: id, modes: { availableModes: [{ id: "default", name: "Default" }, { id: "bypassPermissions", name: "Bypass" }], currentModeId: "default" } } as any;
+  })
+  .onRequest("session/load", (ctx: any) => {
+    // A continued session gets the current MCP servers too: record them, as for a new one.
+    try {
+      writeFileSync(join(ctx.params.cwd, ".mcp-seen"), (ctx.params.mcpServers ?? []).map((m: any) => m.name).join(",") + "\n");
+    } catch {}
+    const http = toolsServer(ctx.params.mcpServers);
+    const prev = sessions.get(ctx.params.sessionId);
+    sessions.set(ctx.params.sessionId, { cwd: ctx.params.cwd, tools: http, cost: prev?.cost ?? 0.05, model: prev?.model ?? savedModel(ctx.params.sessionId) });
+    return {} as any;
+  })
+  .onRequest("session/set_mode", () => ({}) as any)
+  .onRequest("session/set_model" as any, (p: any) => p, (ctx: any) => {
+    const s = sessions.get(ctx.params.sessionId);
+    if (s) s.model = ctx.params.modelId;
+    if (process.env.OVERTIME_HOME) writeFileSync(join(process.env.OVERTIME_HOME, `.fake-model-${ctx.params.sessionId}`), ctx.params.modelId);
+    return {} as any;
+  })
+  .onRequest("session/prompt", (ctx: any) => turn(ctx.params.sessionId, ctx.params.prompt.map((p: any) => p.text ?? "").join("\n"), ctx.client))
+  .onNotification("session/cancel", () => {
+    cancelled = true;
+  })
+  .connect(stream);
+// Like real adapters: input closed means the client is done with it, so it exits.
+process.stdin.on("end", () => process.exit(0));

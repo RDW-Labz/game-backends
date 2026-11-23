@@ -1,0 +1,544 @@
+import { homedir } from "node:os";
+import { DaemonClient, ensureDaemon } from "./daemon/client.js";
+import { personOnly, type AgentSummary } from "./daemon/control.js";
+import { AGENT_MARKER } from "./runtime/leftovers.js";
+import { validateName } from "./agent/agent.js";
+import { accent, ago, bold, clean, cleanDeep, fit, friendly, gray, green, italic, money, red, stamp, statusLine, yellow } from "./tui/style.js";
+import { askedAt, closedLine, headed, humanBytes, questionParts, replyTo, shortQuestion, type AgentSettingsView, type Message } from "./tui/types.js";
+
+const [, , cmd, ...rest] = process.argv;
+
+// ---------- output ----------
+
+/** Styling only when a person is looking at a terminal; plain text for pipes and files. */
+const tty = !!process.stdout.isTTY;
+const strip = (s: string) => s.replace(/\x1b\[[0-9;]*m|\x1b\]8;;[^\x07]*\x07/g, "");
+const print = (s = "") => console.log(tty ? s : strip(s));
+const ok = (s: string) => print(`${green("✓")} ${s}`);
+const cmdText = (s: string) => accent(s);
+
+function fail(msg: string, hint?: string): never {
+  const err = (s: string) => (process.stderr.isTTY ? s : strip(s));
+  console.error(err(`${red("✗")} ${msg}`));
+  if (hint) console.error(err(`  ${gray(hint)}`));
+  process.exit(1);
+}
+
+/** A table whose columns size to their contents; the last column takes what's left of the width. */
+function table(rows: string[][], head?: string[]): void {
+  const all = head ? [head, ...rows] : rows;
+  const widths = all[0].map((_, i) => Math.max(...all.map((r) => strip(r[i] ?? "").length)));
+  const total = process.stdout.columns || 120;
+  const line = (r: string[]) =>
+    r
+      .map((c, i) => {
+        if (i === r.length - 1) {
+          const used = widths.slice(0, i).reduce((a, b) => a + b + 2, 0);
+          return tty ? fit(c, Math.max(10, total - used - 1)).trimEnd() : c;
+        }
+        return c + " ".repeat(Math.max(0, widths[i] - strip(c).length));
+      })
+      .join("  ");
+  if (head) print(gray(line(head.map((h) => h.toUpperCase()))));
+  for (const r of rows) print(line(r));
+}
+
+function HELP(): string {
+  const sections: [string, [string, string][]][] = [
+    ["Start here", [["overtime", "open the live app"]]],
+    [
+      "Agents",
+      [
+        ["overtime new <name> [key=value…]", "create an agent; it starts with no job (settings as for set)"],
+        ["overtime ls", "list your agents"],
+        ['overtime send <name> "<message>"', "message an agent  (--attach <file>, repeatable)"],
+        ["overtime messages <name>", "read your messages with an agent"],
+        ["overtime answer <name> [<question>] <n>[,<n>…] [note]", "answer its open question with option n (or several: 1,3); with several open, say which (its number or id)"],
+        ["overtime stop|start|wake <name>", "stop it, start it again, or wake it now"],
+        ["overtime settings <name>", "show its backend, model, budgets and workspace"],
+        ["overtime set <name> key=value…", "backend=  model=  budget=  tokens=  workspace=  protect=~/a,~/b"],
+        ["overtime models [backend]", "the models a backend offers"],
+        ["overtime set autoUpdate=on|off", "whether Overtime updates itself to new versions (on by default)"],
+        ["overtime archive <name>", "stop an agent for good and move its folder away"],
+      ],
+    ],
+    [
+      "Background process",
+      [
+        ["overtime daemon", "run it in the foreground"],
+        ["overtime daemon stop", "stop it (agents carry on when it starts again)"],
+        ["overtime daemon install", "start it when you log in"],
+        ["overtime daemon uninstall", "stop starting it at login"],
+      ],
+    ],
+    ["Editors", [["overtime acp", "speak ACP on stdio, for Zed, JetBrains, VS Code"]]],
+  ];
+  const width = Math.max(...sections.flatMap(([, rows]) => rows.map(([c]) => c.length))) + 3;
+  const styleCmd = (c: string) => {
+    const m = /^(overtime(?: [a-z|]+)?)(.*)$/.exec(c)!;
+    return accent(m[1]) + m[2].replace(/(<[^>]+>|\[[^\]]+\]|key=value…)/g, (x) => gray(x));
+  };
+  const out = [`${accent("◆")} ${bold("overtime")} ${gray("· agents that exist, not sessions")}`];
+  for (const [title, rows] of sections) {
+    out.push("", gray(title));
+    for (const [c, d] of rows) out.push(`  ${styleCmd(c)}${" ".repeat(width - c.length)}${d}`);
+  }
+  return out.join("\n");
+}
+
+async function confirm(q: string, dflt: boolean): Promise<boolean> {
+  if (!process.stdin.isTTY) return dflt;
+  const { createInterface } = await import("node:readline/promises");
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  const a = (await rl.question(`${q} ${gray(dflt ? "(Y/n)" : "(y/N)")} `)).trim().toLowerCase();
+  rl.close();
+  return a ? a.startsWith("y") : dflt;
+}
+
+/** Asked once, the first time the app is opened in a terminal: keep agents running across restarts? */
+async function maybeAskAutostart(): Promise<void> {
+  if (!process.stdin.isTTY || !process.stdout.isTTY) return;
+  const { loadSettings, saveSettings } = await import("./settings.js");
+  const s = await loadSettings();
+  if (s.autostartAsked) return;
+  const { autostartSupported, autostartInstalled, installAutostart } = await import("./daemon/install.js");
+  if (!autostartSupported() || autostartInstalled()) return;
+  print();
+  print(`  ${accent("◆")} ${bold("Welcome to Overtime")}`);
+  print();
+  print("  Your agents live in a small background process, so they keep");
+  print("  working after you close this window.");
+  print();
+  const yes = await confirm(`  ${bold("Start it automatically when you log in?")}`, true);
+  await saveSettings({ ...s, autostartAsked: true });
+  if (yes) {
+    try {
+      await installAutostart();
+      print(`  ${green("✓")} Done. Turn it off any time with ${cmdText("overtime daemon uninstall")}${gray(".")}`);
+    } catch (e) {
+      print(`  ${yellow("!")} Couldn't set that up (${friendly(e)}). Overtime still runs until you log out.`);
+    }
+  } else {
+    print(`  ${gray("Okay. It runs until you log out. Turn it on later with")} ${cmdText("overtime daemon install")}${gray(".")}`);
+  }
+  await new Promise((r) => setTimeout(r, 600));
+}
+
+// ---------- formatting ----------
+
+function agentRow(a: AgentSummary): string[] {
+  const unread = a.unread && !a.waiting ? " " + accent(`${a.unread} new`) : "";
+  const name = bold(a.name) + (a.waiting ? " " + yellow(`${a.waiting} need${a.waiting === 1 ? "s" : ""} you`) : unread);
+  const state = statusLine(a);
+  // Its own status line (not once stopped: it would read as if it were still at it), else, while it works,
+  // what the turn is about, grayed as Overtime's words.
+  const doing = (a.status !== "stopped" && a.ownStatus) || (a.turnAbout ? gray(italic(a.turnAbout)) : "");
+  return [name, state, gray(money(a)), doing || gray("—")];
+}
+
+/** One message as plain lines, in the same voice as the app: yours marked with a bar, questions as cards. */
+/** How to answer this question from the command line, in its own numbers; which, when several are open. */
+function answerHint(name: string, q: Message, which?: number): string {
+  const parts = questionParts(q);
+  const cmd = `overtime answer ${name}${which ? ` ${which}` : ""}`;
+  if (parts.length > 1) return `Answer with: ${cmd} ${parts.map((_, i) => `<Q${i + 1}>`).join(" ")} ["note"]  (each: option numbers like 1,3, or - to leave it)`;
+  const n = q.options?.length;
+  if (!n) return `Answer with: ${cmd} "your answer"`;
+  return `Answer with: ${cmd} <1-${n}>${q.single || n === 1 ? "" : " (or several, like 1,3)"} ["note"]`;
+}
+
+function printMessage(name: string, m: Message, open: boolean, asked: Map<string, Message>): void {
+  const time = gray(stamp(m.t));
+  if (m.from === "you") {
+    // An answer says which question it was for, as several can be open and others come in between.
+    const q = m.replyTo ? asked.get(m.replyTo) : undefined;
+    print(`${accent("┃")} ${bold("You")}  ${time}${m.replyTo ? gray(q ? `  answered "${shortQuestion(q, 60)}"` : "  answered") : ""}`);
+    for (const l of (m.text || "").split("\n")) if (m.text) print(`${accent("┃")} ${l}`);
+    for (const a of m.attachments ?? []) print(`${accent("┃")} ${attachmentLine(a)}`);
+    print();
+    return;
+  }
+  if (m.kind === "question") {
+    const bar = open ? yellow("┃") : gray("┃");
+    const parts = questionParts(m);
+    const card = parts.length > 1;
+    const h = headed(m, "A question");
+    print(`${bar} ${open ? yellow(bold("?")) : gray("?")} ${bold(card ? m.title || `${parts.length} questions` : h.title)}  ${time}`);
+    parts.forEach((p, i) => {
+      const r = m.answer && !m.answer.closed ? replyTo(m.answer, i) : {};
+      if (card) print(`${bar}${i ? "\n" + bar : ""} ${bold(`Q${i + 1}`)} ${p.text}`);
+      else if (h.body) for (const l of h.body.split("\n")) print(`${bar} ${l}`);
+      if (p.why) print(`${bar} ${gray(`Why it matters: ${p.why}`)}`);
+      if (p.recommendation) print(`${bar} ${bold("Recommended:")} ${p.recommendation}`);
+      if (open && p.options && p.options.length > 1) print(`${bar} ${gray(p.single ? "Pick one:" : "Pick any:")}`);
+      p.options?.forEach((o, k) => {
+        const chosen = r.choices?.includes(k + 1);
+        print(`${bar}  ${open ? accent(bold(String(k + 1))) : chosen ? accent("✓") : gray(String(k + 1))}  ${m.answer && !chosen ? gray(o) : o}`);
+      });
+      // Your own words: on the question they answer (older answers kept only the whole text).
+      if (r.note) print(`${bar} ${gray(`You: ${r.note}`)}`);
+      else if (!card && m.answer && !m.answer.closed && !r.choices?.length) print(`${bar} ${gray(`You: ${m.answer.text}`)}`);
+      else if (card && m.answer && !m.answer.closed && !r.choices?.length) print(`${bar} ${gray("(left unanswered)")}`);
+    });
+    if (card && m.answer?.note && !m.answer.closed) print(`${bar} ${gray(`You: ${m.answer.note}`)}`);
+    if (m.answer?.closed) print(`${bar} ${gray(closedLine(m.answer, name))}`);
+    for (const l of m.links ?? []) print(`${bar} ${accent("↗")} ${l.target}`);
+    print();
+    return;
+  }
+  if (m.kind === "agent-message") {
+    print(`${gray(`${m.fromAgent} → ${m.toAgent}`)}  ${time}  ${gray("between agents")}`);
+    for (const l of m.text.split("\n")) print(`  ${gray(l)}`);
+    print();
+    return;
+  }
+  if (m.kind === "alert") {
+    const h = headed(m, "Something went wrong");
+    print(`${red("┃")} ${red(bold(h.title))}  ${time}`);
+    if (h.body) for (const l of h.body.split("\n")) print(`${red("┃")} ${l}`);
+    print();
+    return;
+  }
+  print(`${m.from === "agent" ? accent(bold(name)) : gray(bold("Overtime"))}  ${time}`);
+  if (m.kind === "report" && m.title) print(`  ${accent("▣")} ${bold(m.title)}`);
+  const text = m.kind === "report" && m.title && m.text.startsWith(m.title) ? m.text.slice(m.title.length).trim() : m.text;
+  for (const l of text.split("\n")) if (text) print(`  ${m.from === "overtime" ? gray(l) : l}`);
+  for (const l of m.links ?? []) print(`  ${accent("↗")} ${l.target}`);
+  for (const a of m.attachments ?? []) print(`  ${attachmentLine(a)}`);
+  print();
+}
+
+function attachmentLine(a: NonNullable<Message["attachments"]>[number]): string {
+  const icon = a.kind === "image" ? "🖼" : a.kind === "folder" ? "🗀" : "📎";
+  return `${icon} ${a.name}${a.bytes != null ? gray(`  ${humanBytes(a.bytes)}`) : ""}  ${gray(a.path)}`;
+}
+
+/** How each setting's value is read, by its friendly name. The error hint lists these keys, so it can't leave one out. */
+const SETTINGS: Record<string, (v: string) => [string, unknown]> = {
+  backend: (v) => ["backend", v],
+  model: (v) => ["model", v === "" || v === "default" ? null : v],
+  budget: (v) => {
+    const n = Number(v.replace(/^\$/, ""));
+    if (!Number.isFinite(n) || n < 0) fail(`"${v}" isn't a budget.`, "Give dollars per day, e.g. budget=20");
+    return ["dailyBudgetUsd", n];
+  },
+  tokens: (v) => {
+    if (v === "" || /^(none|off)$/i.test(v)) return ["dailyTokenBudget", null];
+    const m = /^([\d.]+)([km])?$/i.exec(v.replace(/[,_]/g, ""));
+    const n = m ? Number(m[1]) * (m[2]?.toLowerCase() === "m" ? 1e6 : m[2]?.toLowerCase() === "k" ? 1e3 : 1) : NaN;
+    if (!Number.isFinite(n) || n <= 0) fail(`"${v}" isn't a token budget.`, "e.g. tokens=500k, or tokens=none");
+    return ["dailyTokenBudget", Math.round(n)];
+  },
+  workspace: (v) => {
+    if (v === "" || v === "default") return ["workspace", null];
+    const p = v === "~" || v.startsWith("~/") ? homedir() + v.slice(1) : v;
+    if (!p.startsWith("/")) fail(`"${v}" isn't a full path.`, "e.g. workspace=~/code/my-repo");
+    return ["workspace", p];
+  },
+  visibility: (v) => {
+    if (!/^(public|private)$/.test(v)) fail(`"${v}" isn't a visibility.`, "visibility=public (other agents see it and can message it) or visibility=private");
+    return ["visibility", v];
+  },
+  reflect: (v) => {
+    if (/^(on|true|yes)$/i.test(v)) return ["reflect", true];
+    if (/^(off|false|no)$/i.test(v)) return ["reflect", false];
+    fail(`"${v}" isn't on or off.`, "reflect=on (reflect passes keep its memory current) or reflect=off");
+  },
+  reflectModel: (v) => ["reflectModel", v === "" || v === "default" ? null : v],
+  protect: (v) => {
+    if (v === "" || /^(none|nothing)$/i.test(v)) return ["protect", null];
+    const list = v.split(",").map((x) => x.trim()).filter(Boolean).map((x) => (x === "~" || x.startsWith("~/") ? homedir() + x.slice(1) : x));
+    const rel = list.find((x) => !x.startsWith("/"));
+    if (rel) fail(`"${rel}" isn't a full path.`, "e.g. protect=~/Documents,~/.ssh");
+    return ["protect", list];
+  },
+};
+/** The stored names work too. */
+const SETTING_ALIASES: Record<string, string> = { dailyBudgetUsd: "budget", dailyTokenBudget: "tokens" };
+
+/** key=value arguments, with friendly names for the settings people change most. */
+function parseSettings(args: string[]): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const a of args) {
+    const m = /^([a-zA-Z]+)=(.*)$/.exec(a);
+    if (!m) fail(`Couldn't read "${a}".`, "Use key=value, e.g. overtime set scout model=opus budget=20");
+    const [, k, v] = m;
+    const read = Object.hasOwn(SETTINGS, SETTING_ALIASES[k] ?? k) ? SETTINGS[SETTING_ALIASES[k] ?? k] : undefined;
+    if (!read) {
+      const keys = Object.keys(SETTINGS);
+      fail(`There's no setting "${k}".`, `You can set ${keys.slice(0, -1).join(", ")} and ${keys.at(-1)}.`);
+    }
+    const [key, value] = read(v);
+    out[key] = value;
+  }
+  if (!Object.keys(out).length) fail("Nothing to change.", "e.g. overtime set scout backend=codex model=default budget=20");
+  return out;
+}
+
+// ---------- commands ----------
+
+const KNOWN = ["new", "ls", "list", "send", "messages", "answer", "settings", "stop", "start", "wake", "set", "models", "archive"];
+
+/** What may be run from inside an agent (its shell carries OVERTIME_AGENT): reading only. */
+const AGENT_OK = ["help", "--help", "-h", "version", "--version", "-v", "ls", "list", "messages", "settings", "models"];
+
+async function main() {
+  const caller = process.env[AGENT_MARKER];
+  if (caller && !AGENT_OK.includes(cmd ?? "")) {
+    // Anything else would act as the person: a message sent this way would arrive as theirs.
+    fail(personOnly(`overtime ${cmd ?? ""}`.trim(), cmd, caller, rest[0]), "From inside an agent you can only read: overtime ls, messages, settings, models.");
+  }
+  if (!cmd) {
+    await maybeAskAutostart();
+    const { runApp } = await import("./tui/app.js");
+    await runApp();
+    return;
+  }
+  if (cmd === "help" || cmd === "--help" || cmd === "-h") return void print(HELP());
+  if (cmd === "--version" || cmd === "-v" || cmd === "version") {
+    const { readFileSync } = await import("node:fs");
+    return void print(JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8")).version);
+  }
+  if (cmd === "acp") {
+    // For editors: speak ACP on stdio. Nothing else may be printed to stdout here.
+    const { runAcpServer } = await import("./acp/server.js");
+    await runAcpServer();
+    return;
+  }
+  if (cmd === "daemon") {
+    if (rest[0] === "install") {
+      const { installAutostart, autostartDescription } = await import("./daemon/install.js");
+      print(autostartDescription());
+      if (!(await confirm(bold("Install it?"), false))) return void print(gray("Nothing installed."));
+      await installAutostart();
+      return void ok("Installed. Overtime will start when you log in.");
+    }
+    if (rest[0] === "uninstall") {
+      const { uninstallAutostart } = await import("./daemon/install.js");
+      await uninstallAutostart();
+      return void ok("Removed. Overtime no longer starts at login; your agents keep their folders.");
+    }
+    if (rest[0] === "stop") {
+      try {
+        const c = await DaemonClient.connect();
+        await c.call("shutdown");
+        c.close();
+        ok("Stopped the background process. Agents carry on when it starts again.");
+      } catch {
+        print(gray("The background process isn't running."));
+      }
+      return;
+    }
+    if (rest[0]) fail(`There's no daemon command "${rest[0]}".`, "Use: overtime daemon [stop|install|uninstall]");
+    await import("./daemon/main.js");
+    return;
+  }
+  if (!KNOWN.includes(cmd)) fail(`There's no command "${cmd}".`, "See all commands with: overtime help");
+
+  const c = await ensureDaemon();
+  const call = async <T = any>(m: string, p: Record<string, unknown> = {}, timeout?: number): Promise<T> => cleanDeep(await c.call<T>(m, p, timeout));
+  const need = (v: string | undefined, usage: string): string => v || fail("Missing an argument.", `Usage: ${usage}`);
+  try {
+    switch (cmd) {
+      case "new": {
+        const name = need(rest[0], "overtime new <name> [backend=…] [model=…] [budget=…]");
+        const err = validateName(name);
+        if (err) fail(err);
+        // Settings chosen up front, with the same keys as `overtime set`.
+        const settings = rest.length > 1 ? parseSettings(rest.slice(1)) : {};
+        const r = await call("new", { name, ...settings }, 120_000); // checking a model name may start the backend
+        ok(`Created ${bold(r.name)}. It has no job yet; tell it what it's for:`);
+        print(`  ${cmdText(`overtime send ${r.name} "…"`)}  ${gray("or open the app:")} ${cmdText("overtime")}`);
+        break;
+      }
+      case "ls":
+      case "list": {
+        const agents: AgentSummary[] = await call("agents");
+        if (!agents.length) {
+          print(gray("No agents yet. Create one with ") + cmdText("overtime new <name>"));
+          break;
+        }
+        table(agents.map(agentRow), ["agent", "status", "today", "doing"]);
+        break;
+      }
+      case "send": {
+        const [name, ...args] = rest;
+        const attach: string[] = [];
+        const words: string[] = [];
+        for (let i = 0; i < args.length; i++) {
+          if (args[i] === "--attach" || args[i] === "-a") {
+            const f = args[++i];
+            if (!f) fail("--attach needs a file.", 'Usage: overtime send <name> "message" --attach <file>');
+            attach.push(f);
+          } else words.push(args[i]);
+        }
+        if (!name || (!words.length && !attach.length)) fail("Missing an argument.", 'Usage: overtime send <name> "message" [--attach <file>]…');
+        const { resolve } = await import("node:path");
+        const { existsSync } = await import("node:fs");
+        const files = attach.map((f) => resolve(f.replace(/^~(?=\/|$)/, process.env.HOME ?? "~")));
+        for (const f of files) if (!existsSync(f)) fail(`There's no file at ${f}.`);
+        await call("send", files.length ? { name, text: words.join(" "), attachments: files } : { name, text: words.join(" ") });
+        ok(`Sent to ${bold(name)}${files.length ? ` with ${files.length} file${files.length === 1 ? "" : "s"}` : ""}. ${gray(`Read the reply with: overtime messages ${name}`)}`);
+        break;
+      }
+      case "messages": {
+        const name = need(rest[0], "overtime messages <name>");
+        const r = await call<{ messages: Message[]; hasMore: boolean; open?: Message[] }>("messages", { name, markRead: true, limit: Number(rest[1]) || 50 });
+        const ms = r?.messages ?? [];
+        if (!ms.length) {
+          // An empty list could also mean there's no such agent: say so, as send and stop do.
+          const agents: AgentSummary[] = await call("agents");
+          if (!agents.some((x) => x.name === name)) fail(`No agent called "${name}".`, "See your agents with: overtime ls");
+          print(gray(`No messages with ${name} yet. Send one with: `) + cmdText(`overtime send ${name} "…"`));
+          break;
+        }
+        if (r.hasMore) print(gray(`(showing the latest ${ms.length}; add a number for more: overtime messages ${name} 200)\n`));
+        // Every open question, however far back: several can be open at once, numbered oldest first.
+        const open = r.open ?? ms.filter((m) => m.kind === "question" && !m.answer);
+        const asked = new Map(ms.filter((m) => m.kind === "question").map((m) => [m.id, m]));
+        // A question's withdrawal or dismissal shows on the question itself, as in the app.
+        for (const m of ms) if (!m.closes) printMessage(name, m, open.some((o) => o.id === m.id), asked);
+        if (open.length === 1) print(gray(answerHint(name, open[0])));
+        else if (open.length) {
+          print(yellow(bold(`${open.length} open questions`)));
+          open.forEach((q, i) => print(`  ${accent(bold(String(i + 1)))}  ${shortQuestion(q)} ${gray(`(asked ${askedAt(q.t)})`)}\n     ${gray(answerHint(name, q, i + 1))}`));
+        }
+        break;
+      }
+      case "answer": {
+        const [name, ...given] = rest;
+        const usage = 'Usage: overtime answer <name> [<question>] <option-number>[,<option-number>…] ["note"]';
+        if (!name || !given.length) fail("Missing an argument.", usage);
+        // Which open question: by its id, or its number (oldest first, as overtime messages lists them).
+        // With one open it needs no saying, so a lone number stays an option, as it always was.
+        const open = (await call<{ open?: Message[] }>("messages", { name, limit: 1 }))?.open ?? [];
+        const sel = /^#?(\d+)$/.exec(given[0])?.[1];
+        let q = open.find((m) => m.id === given[0]);
+        let named = !!q || (open.length === 1 && given[0] === "#1");
+        if (!q && open.length > 1) {
+          q = sel ? open[Number(sel) - 1] : undefined;
+          if (!q) {
+            const list = open.map((m, i) => `  ${i + 1}  ${shortQuestion(m)} (asked ${askedAt(m.t)})`).join("\n");
+            fail(`${name} has ${open.length} open questions; say which one first:\n${list}`, `Usage: overtime answer ${name} <1-${open.length}> <option-number>… ["note"]`);
+          }
+          named = true;
+        }
+        q ??= open[0];
+        const args = named ? given.slice(1) : given;
+        if (!args.length) fail(q ? `Missing your answer to "${shortQuestion(q)}".` : "Missing an answer.", q ? answerHint(name, q, open.length > 1 ? open.indexOf(q) + 1 : undefined) : usage);
+        const num = /^[-+]?(\d+\.?\d*|\.\d+)$/;
+        const looksLikePicks = (a: string) => a.split(",").every((x) => num.test(x.trim()));
+        // A number that can't be an option (0, -1, 1.5) is a typo, not an answer the agent should act on.
+        for (const x of looksLikePicks(args[0]) ? args[0].split(",") : []) {
+          const n = Number(x);
+          if (!(Number.isInteger(n) && n > 0)) fail(`There is no option ${x.trim()}.`, usage);
+        }
+        const parts = q ? questionParts(q) : [];
+        // Leading option numbers answer the questions in order (1,3 picks two); "-" leaves one on a card unanswered.
+        const picks: number[][] = [];
+        while (picks.length < Math.max(1, parts.length) && picks.length < args.length) {
+          const a = args[picks.length];
+          if (a === "-" && parts.length > 1) {
+            picks.push([]);
+            continue;
+          }
+          if (!looksLikePicks(a)) break;
+          const ns = [...new Set(a.split(",").map(Number))];
+          const p = parts[picks.length];
+          const where = parts.length > 1 ? `Question ${picks.length + 1} of ${name}'s card` : `${name}'s question`;
+          for (const n of ns) if (!(Number.isInteger(n) && n > 0)) fail(`There is no option ${n}.`, usage);
+          // Past the last option: the same refusal, checked against the question it would answer.
+          const over = ns.find((n) => p?.options?.length && n > p.options.length);
+          if (over) fail(`There is no option ${over}. ${where} has ${p!.options!.length}.`, usage);
+          if (p?.single && ns.length > 1) fail(`${where} takes one option.`, usage);
+          picks.push(ns);
+        }
+        const text = args.slice(picks.length).join(" ") || undefined;
+        const params =
+          parts.length > 1
+            ? { name, questionId: q!.id, replies: picks.map((c) => ({ choices: c })), text }
+            : picks.length
+              ? { name, ...(q ? { questionId: q.id } : {}), ...(picks[0].length > 1 ? { choices: picks[0] } : { choice: picks[0][0] }), text }
+              : { name, text };
+        await call("answer", params);
+        ok("Answered.");
+        break;
+      }
+      case "settings": {
+        const name = need(rest[0], "overtime settings <name>");
+        const s = await call<AgentSettingsView>("settings", { name });
+        const row = (k: string, v: string, note = "") => print(`  ${gray(k.padEnd(14))}${v}${note ? gray(`   ${note}`) : ""}`);
+        print(bold(name));
+        row("backend", s.backend);
+        row("model", s.model ?? "default", s.model ? "" : "the backend's own choice");
+        row("budget", `$${s.dailyBudgetUsd} a day`, s.costReported ? `$${s.spentUsd.toFixed(2)} spent today` : "");
+        row("tokens", s.dailyTokenBudget ? `${s.dailyTokenBudget.toLocaleString()} a day` : "no limit", `${s.tokensToday.toLocaleString()} used today`);
+        row("workspace", s.workspace, s.workspaceIsDefault ? "its own folder" : "");
+        row("visibility", s.visibility, s.visibility === "public" ? "other agents see it and can message it" : "hidden from other agents");
+        row("reflect", s.reflect ? "on" : "off", s.reflect ? `passes run on ${s.reflectModel ?? "its own model"}` : "no reflect passes");
+        row("protected", s.protect?.length ? s.protect.join(", ") : "nothing", s.protect?.length ? "read-only for it" : "it can write anywhere you can");
+        print();
+        print(gray("Change with: ") + cmdText(`overtime set ${name} budget=20 model=… workspace=~/code/…`));
+        break;
+      }
+      case "stop":
+      case "start":
+      case "wake": {
+        const name = need(rest[0], `overtime ${cmd} <name>`);
+        await call(cmd, { name });
+        ok(cmd === "stop" ? `Stopped ${bold(name)}. Start it again with ${cmdText(`overtime start ${name}`)}.` : cmd === "start" ? `Started ${bold(name)}.` : `Waking ${bold(name)} now.`);
+        break;
+      }
+      case "set": {
+        // No agent named: a setting for all of Overtime.
+        if (rest[0] && /^autoUpdate=/i.test(rest[0])) {
+          const v = rest[0].slice(rest[0].indexOf("=") + 1);
+          const on = /^(on|true|yes)$/i.test(v) ? true : /^(off|false|no)$/i.test(v) ? false : fail(`"${v}" isn't on or off.`, "overtime set autoUpdate=off (or on)");
+          await call("setGlobal", { autoUpdate: on });
+          ok(on ? "Auto-update on: Overtime updates itself when a new version is out." : `Auto-update off. Update by hand with ${cmdText("npm i -g @ukanwat/overtime")}${gray(".")}`);
+          break;
+        }
+        const name = need(rest[0], "overtime set <name> [backend=…] [model=…] [budget=…]");
+        const changes = parseSettings(rest.slice(1));
+        await call("set", { name, ...changes }, 120_000); // checking a model name may start the backend
+        const label: Record<string, string> = { dailyBudgetUsd: "budget", dailyTokenBudget: "tokens" };
+        const said = Object.entries(changes).map(([k, v]) => `${label[k] ?? k} ${bold(v === null ? (k === "dailyTokenBudget" ? "no limit" : "default") : k === "dailyBudgetUsd" ? `$${v}/day` : k === "dailyTokenBudget" ? `${Number(v).toLocaleString()} a day` : Array.isArray(v) ? v.join(", ") : String(v))}`);
+        ok(`${bold(name)}: ${said.join(", ")}. ${gray("Applies from its next session.")}`);
+        break;
+      }
+      case "models": {
+        const backends: string[] = rest[0] ? [rest[0]] : await call("backends");
+        for (const b of backends) {
+          let models: { id: string; name: string }[] | null = null;
+          try {
+            models = await call("models", { backend: b }, 90_000);
+          } catch (e) {
+            print(`${bold(b)}  ${red(friendly(e))}`);
+            print();
+            continue;
+          }
+          print(bold(b));
+          if (!models?.length) print(gray("  doesn't list its models; its default is used"));
+          for (const m of models ?? []) print(`  ${fit(m.id, 26)}${m.name && m.name !== m.id ? gray(m.name) : ""}`);
+          print();
+        }
+        print(gray("Choose one with: overtime set <name> backend=<backend> model=<id>"));
+        break;
+      }
+      case "archive": {
+        const name = need(rest[0], "overtime archive <name>");
+        if (process.stdin.isTTY && !(await confirm(`Archive ${bold(name)}? It stops for good and its folder moves to the archive.`, false))) {
+          print(gray("Nothing changed."));
+          break;
+        }
+        const r = await call("archive", { name });
+        ok(`Archived ${bold(name)}.${r?.dir ? ` Its folder is now ${clean(r.dir)}` : ""}`);
+        break;
+      }
+    }
+  } finally {
+    c.close();
+  }
+}
+
+main().catch((e) => fail(friendly(e)));

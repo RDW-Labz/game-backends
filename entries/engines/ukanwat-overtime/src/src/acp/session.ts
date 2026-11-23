@@ -1,0 +1,449 @@
+import { existsSync } from "node:fs";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { createRequire } from "node:module";
+import { spawn, type ChildProcess } from "node:child_process";
+import { sandboxLaunch, type WriteLayer } from "../runtime/sandbox.js";
+import { Readable, Writable } from "node:stream";
+import * as acp from "@agentclientprotocol/sdk";
+import type { McpServerConfig } from "../settings.js";
+import { backendCommand, commandExists, type BackendCommand } from "./backends.js";
+import { BackendError, BackendExitedError } from "../runtime/errors.js";
+
+/** Per backend, the arguments that worked last (when it has alternatives for older versions). */
+const workingArgs = new Map<string, string[]>();
+
+export type SessionUpdate = acp.SessionNotification["update"];
+export type PermissionRequest = acp.RequestPermissionRequest;
+export type PermissionResponse = acp.RequestPermissionResponse;
+export type PromptResult = acp.PromptResponse;
+
+export interface OpenOptions {
+  backend: string;
+  cwd: string;
+  mcpServers: McpServerConfig[];
+  env?: Record<string, string>;
+  /** Every streamed update for this session. */
+  onUpdate?: (update: SessionUpdate) => void;
+  /** Must answer at once; a session must never wait on a human here. */
+  onPermission: (req: PermissionRequest) => PermissionResponse | Promise<PermissionResponse>;
+  /** Backend stderr, for the daemon log. */
+  onStderr?: (line: string) => void;
+  /** Paths the backend and everything it starts may not write to (enforced by the operating system). */
+  protect?: string[];
+  /** Paths the backend and everything it starts may not read (macOS only; see runtime/sandbox.ts). */
+  hide?: string[];
+  /** Claude Code tools this session doesn't get, on top of CLAUDE_BUILTINS_OFF. */
+  disallowedTools?: string[];
+  /** Write rules for a session that may change only some folders (see runtime/write-scope.ts). */
+  writeLayers?: WriteLayer[];
+}
+
+/** Protected paths are set but this machine can't enforce them; the turn doesn't run unprotected. */
+export class SandboxUnavailableError extends Error {
+  constructor(why: string) {
+    super(`Can't protect the paths in your settings: ${why}. Install it, or remove the protected paths.`);
+  }
+}
+
+/** A readable message from an ACP error: JSON-RPC errors often carry the real reason in `data`. */
+export function describeAcpError(e: any, backend: string): string {
+  const base = String(e?.message ?? e);
+  const d = e?.data;
+  const detail = typeof d === "string" ? d : d?.message ?? d?.details ?? d?.error ?? (d ? JSON.stringify(d).slice(0, 300) : "");
+  return detail && !base.includes(String(detail)) ? `${backend}: ${base}: ${detail}` : `${backend}: ${base}`;
+}
+
+/** How to run the stdio ⇄ HTTP bridge: the built file, or the source through tsx when running from source. */
+function bridgeCommand(): { command: string; args: string[] } {
+  const js = fileURLToPath(new URL("../tools/bridge.js", import.meta.url));
+  if (existsSync(js)) return { command: process.execPath, args: [js] };
+  // Running from source (tests): load tsx by absolute path, since the bridge runs in the agent's folder.
+  const tsx = pathToFileURL(createRequire(import.meta.url).resolve("tsx")).href;
+  return { command: process.execPath, args: ["--import", tsx, fileURLToPath(new URL("../tools/bridge.ts", import.meta.url))] };
+}
+
+/** The name of Overtime's own MCP server (its tools). */
+export const OVERTIME_SERVER = "overtime";
+
+/**
+ * MCP servers in ACP form. A backend that can't connect to HTTP MCP servers itself gets each one through
+ * a local bridge command instead, so Overtime's own tools (and URL servers you added) reach every backend.
+ */
+export function toAcpMcp(servers: McpServerConfig[], http = true): acp.McpServer[] {
+  return servers.map((s): acp.McpServer => {
+    // Overtime's own tools: straight to it, when the backend can.
+    if (s.url && http && s.name === OVERTIME_SERVER) {
+      return { type: "http", name: s.name, url: s.url, headers: Object.entries(s.headers ?? {}).map(([name, value]) => ({ name, value })) };
+    }
+    // Every other URL server goes through Overtime's own connection to it (see tools/bridge.ts), so
+    // every backend gets the same transport handling and Overtime's sign-in, not its own.
+    if (s.url) {
+      const b = bridgeCommand();
+      return { name: s.name, command: b.command, args: [...b.args, s.url, s.name], env: s.headers && Object.keys(s.headers).length ? [{ name: "OVERTIME_MCP_HEADERS", value: JSON.stringify(s.headers) }] : [] };
+    }
+    if (!s.command) throw new Error(`MCP server "${s.name}" needs either a url or a command.`);
+    return { name: s.name, command: s.command, args: s.args ?? [], env: Object.entries(s.env ?? {}).map(([name, value]) => ({ name, value })) };
+  });
+}
+
+/**
+ * Claude Code's own tools that do Overtime's jobs across sessions (messaging, waking, scheduling, subagents,
+ * asking) or wait on a person in an interactive app. Inside Overtime they do nothing useful, or never
+ * return, and the model mistakes them for the real ones; the agent uses Overtime's send, wake, ask and
+ * spawn instead. Unknown names are ignored, so the list is safe across Claude Code versions.
+ */
+export const CLAUDE_BUILTINS_OFF = [
+  "Agent", "Task", "SendMessage", "ListAgents", "ScheduleWakeup", "CronCreate", "CronDelete", "CronList",
+  "Skill", "RemoteTrigger", "PushNotification", "AskUserQuestion", "EnterPlanMode", "ExitPlanMode", "EnterWorktree", "ExitWorktree",
+  "Workflow", "Artifact", "SendFeedback", "ClaudeDesign", "Projects", "ProposeGoal", "ProposeSkills", "ShowOnboardingRolePicker", "ReadNotifications",
+  // Anything that publishes, uploads or reaches a service or UI outside Overtime: sharing links, design
+  // sync, review findings, messaging and files for Claude's own apps, connector and MCP-registry lookups.
+  // An agent must never publish unasked, and reaches the person only through Overtime.
+  "ShareOnboardingGuide", "ReportFindings", "DesignSync", "SendUserMessage", "SendUserFile", "SendFile", "Brief",
+  "SuggestConnectors", "ListConnectors", "SearchMcpRegistry", "FetchInboxMessage", "EndConversation", "Poll",
+];
+
+/**
+ * Backend-specific session options. Overtime agents get only what Overtime gives them:
+ * no personal settings, instructions or MCP servers from the person's own CLI setup, and no memory of
+ * Claude's own: an agent keeps what it learns in its folder (memory/), the same on every backend.
+ */
+export function isolationMeta(backend: string, disallowed: string[] = []): Record<string, unknown> | undefined {
+  if (backend === "claude") return { claudeCode: { options: { settingSources: [], strictMcpConfig: true, disallowedTools: [...CLAUDE_BUILTINS_OFF, ...disallowed], settings: { autoMemoryEnabled: false, autoDreamEnabled: false } } } };
+  return undefined;
+}
+
+/**
+ * Overtime is the one that answers permission requests, instantly (see runtime/permissions.ts).
+ * So sessions run in the backend's normal mode, where risky actions come to Overtime first,
+ * rather than a bypass mode where the backend would skip asking.
+ */
+// Mode names by backend: Claude and Gemini "default"; Codex "workspace-write" (asks the client to step
+// outside its sandbox; its "agent" mode would have its own reviewer decide instead, unseen by Overtime).
+// A backend with none of these keeps its own default mode.
+const ASKING_MODES = ["default", "ask", "workspace-write"];
+/**
+ * Inside Overtime's own macOS sandbox (protected paths are set), a backend that runs its commands in a
+ * sandbox of its own can't: macOS refuses a sandbox inside a sandbox, so every command would fail.
+ * There, such a backend runs in its mode without that inner sandbox (Codex: "agent-full-access"), and
+ * Overtime's sandbox is what keeps the protected paths read-only.
+ */
+const UNSANDBOXED_MODES = ["agent-full-access"];
+
+/** Every open backend session, so a shutdown can close them all. */
+const open = new Set<AcpSession>();
+const INIT_TIMEOUT_MS = 90_000;
+
+function withTimeout<T>(p: Promise<T>, ms: number, what: string): Promise<T> {
+  let t: NodeJS.Timeout;
+  return Promise.race([p, new Promise<T>((_, rej) => (t = setTimeout(() => rej(new Error(`${what} timed out after ${Math.round(ms / 1000)}s`)), ms)))]).finally(() => clearTimeout(t));
+}
+
+/**
+ * One backend process speaking ACP, holding one session.
+ * Overtime opens one of these per active main session, chat and helper, and closes it when the turn is over.
+ */
+export class AcpSession {
+  private constructor(
+    private readonly proc: ChildProcess,
+    private readonly conn: acp.ClientConnection,
+    readonly init: acp.InitializeResponse,
+    readonly backend: string,
+    private readonly opts: OpenOptions,
+    public sessionId: string = "",
+    public newSessionInfo: acp.NewSessionResponse | null = null,
+    /** While loading an old session the backend replays history; don't treat that as new activity. */
+    private replaying = false,
+    /** Running inside Overtime's macOS sandbox, where a second sandbox can't be applied. */
+    private readonly inSeatbelt = false,
+  ) {}
+
+  static async open(opts: OpenOptions): Promise<AcpSession> {
+    const base = await backendCommand(opts.backend);
+    // Checked before starting, so a missing backend is reported as missing even when it would be
+    // started inside the sandbox (where the sandbox itself, not the backend, is what gets spawned).
+    if (!commandExists(base.command)) {
+      throw new BackendError(`Could not start backend "${opts.backend}": ${base.command} isn't installed or isn't on your PATH.`, opts.backend, "ENOENT", undefined, true);
+    }
+    const all = [base.args, ...(base.fallbackArgs ?? [])];
+    const known = workingArgs.get(opts.backend);
+    const tries = known ? [known, ...all.filter((x) => x.join("\0") !== known.join("\0"))] : all;
+    for (let i = 0; ; i++) {
+      try {
+        const s = await AcpSession.start(opts, { command: base.command, args: tries[i] });
+        if (tries.length > 1) workingArgs.set(opts.backend, tries[i]);
+        return s;
+      } catch (e) {
+        // Exited straight away: an older version that doesn't know these arguments. Try the next ones.
+        if (e instanceof BackendExitedError && i + 1 < tries.length) continue;
+        throw e;
+      }
+    }
+  }
+
+  private static async start(opts: OpenOptions, base: BackendCommand): Promise<AcpSession> {
+    const protect = opts.protect ?? [];
+    const cmd = sandboxLaunch(base.command, base.args, protect, opts.hide ?? [], opts.writeLayers ?? []);
+    if ((protect.length || opts.writeLayers?.length) && !cmd.sandboxed) throw new SandboxUnavailableError(cmd.why ?? "the sandbox can't start here");
+    // Its own process group, so closing it also ends everything it started (CLI, MCP servers, shells).
+    const proc = spawn(cmd.command, cmd.args, {
+      cwd: opts.cwd,
+      stdio: ["pipe", "pipe", "pipe"],
+      env: { ...process.env, ...opts.env },
+      detached: true,
+    });
+    const stderrTail: string[] = [];
+    proc.stderr?.setEncoding("utf8");
+    proc.stderr?.on("data", (chunk: string) => {
+      for (const line of chunk.split("\n")) {
+        if (!line.trim()) continue;
+        stderrTail.push(line);
+        if (stderrTail.length > 40) stderrTail.shift();
+        opts.onStderr?.(line);
+      }
+    });
+    const spawned = await new Promise<Error | null>((resolve) => {
+      proc.once("spawn", () => resolve(null));
+      proc.once("error", (e) => resolve(e));
+    });
+    if (spawned) throw new BackendError(`Could not start backend "${opts.backend}" (${cmd.command}): ${spawned.message}`, opts.backend, (spawned as NodeJS.ErrnoException).code, undefined, true);
+
+    let self: AcpSession | undefined;
+    const app = acp
+      .client({ name: "overtime" })
+      .onNotification(acp.methods.client.session.update, (ctx) => {
+        if (self && !self.replaying && ctx.params.sessionId === self.sessionId) opts.onUpdate?.(ctx.params.update);
+      })
+      .onRequest(acp.methods.client.session.requestPermission, async (ctx) => opts.onPermission(ctx.params));
+    const stream = acp.ndJsonStream(Writable.toWeb(proc.stdin!) as WritableStream<Uint8Array>, Readable.toWeb(proc.stdout!) as ReadableStream<Uint8Array>);
+    const conn = app.connect(stream);
+    const exited = new Promise<void>((r) => proc.once("exit", () => r()));
+    let init: acp.InitializeResponse;
+    try {
+      init = await AcpSession.explain(
+        withTimeout(
+          conn.agent.request(acp.methods.agent.initialize, {
+            protocolVersion: acp.PROTOCOL_VERSION,
+            // notices: backend notes (like "Auto mode unavailable") arrive as their own updates, not mixed into replies.
+            clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: false, session: { notices: {} } } as any,
+          }),
+          INIT_TIMEOUT_MS,
+          `Starting ${opts.backend}`,
+        ),
+        proc,
+        stderrTail,
+        opts.backend,
+        exited,
+      );
+    } catch (e) {
+      killGroup(proc, "SIGKILL");
+      throw e;
+    }
+    self = new AcpSession(proc, conn, init, opts.backend, opts, "", null, false, cmd.sandboxed && process.platform === "darwin");
+    open.add(self);
+    self.stderrTail = stderrTail;
+    self.exited = exited;
+    self.sandboxed = cmd.sandboxed;
+    return self;
+  }
+
+  stderrTail: string[] = [];
+  exited: Promise<void> = Promise.resolve();
+  /** Whether the backend runs inside Overtime's sandbox (protected paths, hidden folders or write rules). */
+  sandboxed = false;
+
+  /** Turn "connection closed" into the backend's own last words, so failures say what actually went wrong. */
+  static async explain<T>(p: Promise<T>, proc: ChildProcess, tail: string[], backend: string, exited: Promise<void>): Promise<T> {
+    try {
+      return await p;
+    } catch (e: any) {
+      await Promise.race([exited, new Promise((r) => setTimeout(r, 500))]);
+      if (proc.exitCode !== null || proc.signalCode) {
+        const last = tail.filter((l) => !/^\s+at /.test(l)).slice(-6).join(" | ");
+        throw new BackendExitedError(`The ${backend} backend stopped (${proc.signalCode ?? `exit ${proc.exitCode}`})${last ? `: ${last}` : ""}`, backend);
+      }
+      // Keep the error's code and data: they say what kind of trouble it is, better than its wording.
+      throw new BackendError(describeAcpError(e, backend), backend, e?.code, e?.data);
+    }
+  }
+
+  private wrap<T>(p: Promise<T>): Promise<T> {
+    return AcpSession.explain(p, this.proc, this.stderrTail, this.backend, this.exited);
+  }
+
+  /** Whether the backend connects to HTTP MCP servers itself (ACP mcpCapabilities.http). */
+  get httpMcp(): boolean {
+    return !!(this.init.agentCapabilities as any)?.mcpCapabilities?.http;
+  }
+
+  get canLoad(): boolean {
+    return !!this.init.agentCapabilities?.loadSession;
+  }
+
+  async newSession(): Promise<string> {
+    const res: acp.NewSessionResponse = await this.wrap(
+      withTimeout(
+        this.conn.agent.request<acp.NewSessionResponse>(acp.methods.agent.session.new, {
+          cwd: this.opts.cwd,
+          mcpServers: toAcpMcp(this.opts.mcpServers, this.httpMcp),
+          _meta: isolationMeta(this.backend, this.opts.disallowedTools),
+        } as any),
+        INIT_TIMEOUT_MS,
+        "Creating a session",
+      ),
+    );
+    this.sessionId = res.sessionId;
+    this.newSessionInfo = res;
+    await this.goAutonomous(res.modes as any, (res as any).configOptions);
+    return res.sessionId;
+  }
+
+  /** Continue an earlier session. Returns false if the backend can't, so the caller starts fresh instead. */
+  async loadSession(sessionId: string): Promise<boolean> {
+    if (!this.canLoad) return false;
+    this.sessionId = sessionId;
+    this.replaying = true;
+    try {
+      const res: any = await withTimeout(
+        this.conn.agent.request(acp.methods.agent.session.load, {
+          sessionId,
+          cwd: this.opts.cwd,
+          mcpServers: toAcpMcp(this.opts.mcpServers, this.httpMcp),
+          _meta: isolationMeta(this.backend, this.opts.disallowedTools),
+        } as any),
+        INIT_TIMEOUT_MS,
+        "Loading the session",
+      );
+      // The model options come with a loaded session too; keep them, so the model can be changed on it.
+      this.newSessionInfo = { sessionId, ...(res ?? {}) };
+      await this.goAutonomous(res?.modes, res?.configOptions);
+      return true;
+    } catch {
+      this.sessionId = "";
+      return false;
+    } finally {
+      this.replaying = false;
+    }
+  }
+
+  private async goAutonomous(modes: { availableModes?: { id: string }[]; currentModeId?: string } | undefined, configOptions?: any[]): Promise<void> {
+    const wanted = this.inSeatbelt ? [...UNSANDBOXED_MODES, ...ASKING_MODES] : ASKING_MODES;
+    const ids = modes?.availableModes?.map((m) => m.id) ?? [];
+    const target = wanted.find((m) => ids.includes(m));
+    if (target && modes?.currentModeId !== target) {
+      try {
+        await this.conn.agent.request(acp.methods.agent.session.setMode, { sessionId: this.sessionId, modeId: target });
+      } catch {}
+      return;
+    }
+    if (target) return;
+    // Backends that offer the mode as a config option instead of session modes.
+    const opt = configOptions?.find((o: any) => o?.category === "mode" && Array.isArray(o.options));
+    const value = opt && wanted.find((m) => opt.options.some((x: any) => (x.value ?? x.id) === m));
+    if (!opt || !value || opt.currentValue === value) return;
+    try {
+      await this.conn.agent.request(acp.methods.agent.session.setConfigOption, { sessionId: this.sessionId, configId: opt.id, value } as any);
+    } catch {}
+  }
+
+  /**
+   * Pick a model through the backend's own config options; the older set_model call only for a backend
+   * that offers models that way (or says nothing about them).
+   */
+  async setModel(model: string): Promise<boolean> {
+    const opt = this.newSessionInfo?.configOptions?.find((o: any) => o.category === "model");
+    try {
+      if (opt) {
+        await this.conn.agent.request(acp.methods.agent.session.setConfigOption, { sessionId: this.sessionId, configId: (opt as any).id, value: model } as any);
+      } else {
+        await this.conn.agent.request("session/set_model", { sessionId: this.sessionId, modelId: model });
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /** Models the backend says it offers, for the model picker. */
+  availableModels(): { id: string; name: string }[] {
+    const opt: any = this.newSessionInfo?.configOptions?.find((o: any) => o.category === "model");
+    if (opt?.options) return opt.options.map((o: any) => ({ id: o.value, name: o.name ?? o.value }));
+    const legacy: any = (this.newSessionInfo as any)?.models?.availableModels;
+    return legacy ? legacy.map((m: any) => ({ id: m.modelId, name: m.name ?? m.modelId })) : [];
+  }
+
+  async prompt(text: string): Promise<PromptResult> {
+    return this.wrap(
+      this.conn.agent.request(acp.methods.agent.session.prompt, {
+        sessionId: this.sessionId,
+        prompt: [{ type: "text", text }],
+      }),
+    );
+  }
+
+  async cancel(): Promise<void> {
+    try {
+      await this.conn.agent.notify(acp.methods.agent.session.cancel, { sessionId: this.sessionId });
+    } catch {}
+  }
+
+  /** Close the connection and make sure the backend and everything it started are gone. */
+  async close(): Promise<void> {
+    open.delete(this);
+    // Politely first: end its input and keep reading what it still writes (a closing backend often
+    // sends final updates), so it exits on its own instead of crashing on a closed pipe.
+    if (this.proc.exitCode === null && this.proc.signalCode === null) {
+      try {
+        this.proc.stdin?.end();
+      } catch {}
+      await Promise.race([this.exited, new Promise((r) => setTimeout(r, 2000))]);
+    }
+    try {
+      this.conn.close();
+    } catch {}
+    if (this.proc.exitCode === null && this.proc.signalCode === null) {
+      killGroup(this.proc, "SIGTERM");
+      const t = setTimeout(() => killGroup(this.proc, "SIGKILL"), 3000);
+      await Promise.race([this.exited, new Promise((r) => setTimeout(r, 5000))]);
+      clearTimeout(t);
+    }
+    // The backend's own processes (a CLI it runs underneath, like Claude Code's) often finish after it:
+    // saving the session, including the running cost total the next turn starts from. Give them a few
+    // seconds to finish on their own, so nothing is cut off mid-save; whatever is still there then goes.
+    await groupGone(this.proc, GROUP_GRACE_MS);
+    killGroup(this.proc, "SIGKILL");
+  }
+
+  /** Close every open backend session (daemon shutdown). */
+  static async closeAll(): Promise<void> {
+    await Promise.allSettled([...open].map((s) => s.close()));
+  }
+}
+
+/** How long a closed backend's remaining processes get to finish by themselves. */
+const GROUP_GRACE_MS = 5_000;
+
+/** Wait until no process is left in the backend's group, or the time is up. */
+async function groupGone(p: ChildProcess, ms: number): Promise<void> {
+  if (!p.pid) return;
+  const until = Date.now() + ms;
+  while (Date.now() < until) {
+    try {
+      process.kill(-p.pid, 0);
+    } catch {
+      return; // the group is empty
+    }
+    await new Promise((r) => setTimeout(r, 50));
+  }
+}
+
+function killGroup(p: ChildProcess, sig: NodeJS.Signals): void {
+  if (!p.pid) return;
+  try {
+    process.kill(-p.pid, sig);
+  } catch {
+    try {
+      p.kill(sig);
+    } catch {}
+  }
+}

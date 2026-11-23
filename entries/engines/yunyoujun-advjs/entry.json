@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:58:15Z",
+ "category": "engines",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "YunYouJun/advjs \u2014 \ud83c\udfae ADV.JS Web AVG Engine \u9762\u5411\u672a\u6765\u4e0e\u524d\u7aef\u7684\u6587\u5b57\u5192\u9669\u6e38\u620f\u5f15\u64ce\uff08WIP\uff09",
+ "language": "typescript",
+ "license": "MPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "advjs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MPL-2.0)",
+ "slug": "yunyoujun-advjs",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 331,
+ "system": "\ud83c\udfae ADV.JS Web AVG Engine \u9762\u5411\u672a\u6765\u4e0e\u524d\u7aef\u7684\u6587\u5b57\u5192\u9669\u6e38\u620f\u5f15\u64ce\uff08WIP\uff09",
+ "upstream": "https://github.com/YunYouJun/advjs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

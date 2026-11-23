@@ -1,0 +1,125 @@
+/** Shapes the app and the command line read from the daemon. Everything in them is agent-written text, cleaned before display. */
+import type { Answer, QuestionPart } from "../store/types.js";
+export { askedAt, questionParts, replyTo, shortQuestion, type Answer, type QuestionPart, type Reply } from "../store/types.js";
+
+export interface Attachment {
+  name: string;
+  /** The copy in the agent's folder. */
+  path: string;
+  /** Where it came from. */
+  original?: string;
+  kind: "image" | "file" | "folder";
+  bytes?: number;
+}
+
+export interface Link {
+  kind: string;
+  target: string;
+  label: string;
+}
+
+/** One message in an agent's DM. */
+export interface Message {
+  id: string;
+  t: string;
+  from: "you" | "agent" | "overtime";
+  kind: "message" | "question" | "report" | "alert" | "agent-message";
+  text: string;
+  title?: string;
+  why?: string;
+  recommendation?: string;
+  options?: string[];
+  /** On a question: only one option may be picked. */
+  single?: boolean;
+  /** On a card of several questions: each of them. */
+  questions?: QuestionPart[];
+  urgent?: boolean;
+  links?: Link[];
+  attachments?: Attachment[];
+  /** On a question, once answered. */
+  answer?: Answer;
+  closes?: "withdrawn" | "dismissed";
+  /** On your answer: the question it answers. */
+  replyTo?: string;
+  /** On a message between agents: who sent it and who it was for. */
+  fromAgent?: string;
+  toAgent?: string;
+}
+
+export interface AgentSettingsView {
+  backend: string;
+  model: string | null;
+  dailyBudgetUsd: number;
+  dailyTokenBudget: number | null;
+  workspace: string;
+  workspaceIsDefault: boolean;
+  /** Paths it may not write to: all agents' plus its own. */
+  protect: string[];
+  /** Just this agent's own protected paths. */
+  protectOwn: string[];
+  /** Whether other agents see it and can message it. */
+  visibility: "public" | "private";
+  /** Whether reflect passes run for it, and the model they run on when it isn't its own (null). */
+  reflect: boolean;
+  reflectModel: string | null;
+  spentUsd: number;
+  costReported: boolean;
+  tokensToday: number;
+}
+
+/** A session that is running right now, streamed from the daemon (text so far, current step). */
+export interface LiveState {
+  agent: string;
+  kind: "main" | "chat" | "helper";
+  helperId?: string;
+  text: string;
+  step: string | null;
+  startedAt: string;
+  done?: boolean;
+}
+
+/** An option's own words, without any numbering the agent put in front ("3 — Borrowed Sun" -> "Borrowed Sun"). */
+export function optionLabel(o: string): string {
+  return o.replace(/^\s*(\d{1,2}|[a-zA-Z])\s*[—–\-.):]\s+/, "").trim() || o;
+}
+
+/** Which option the agent recommended, if its recommendation names one; -1 if none does. */
+export function recommendedOption(options: string[] | undefined, recommendation: string | undefined): number {
+  if (!options?.length || !recommendation) return -1;
+  const r = optionLabel(recommendation).toLowerCase();
+  return options.findIndex((o) => {
+    const l = optionLabel(o).toLowerCase();
+    return l === r || l.startsWith(r) || r.startsWith(l);
+  });
+}
+
+/** The questions still waiting for an answer, oldest first: several can be open at once. */
+export function openQuestions(messages: Message[]): Message[] {
+  return messages.filter((m) => m.kind === "question" && !m.answer);
+}
+
+export function humanBytes(n: number | undefined): string {
+  if (n == null) return "";
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / 1024 / 1024).toFixed(n < 10 * 1024 * 1024 ? 1 : 0)} MB`;
+  return `${(n / 1024 / 1024 / 1024).toFixed(1)} GB`;
+}
+
+/** A card's heading and body: its title, or else its first line; the body never repeats the heading. */
+export function headed(m: Message, fallback: string): { title: string; body: string } {
+  const text = (m.text ?? "").trim();
+  const title = (m.title ?? "").trim() || text.split("\n")[0] || fallback;
+  const body = text.startsWith(title) ? text.slice(title.length).trim() : text;
+  return { title, body };
+}
+
+/**
+ * How a question closed without an answer reads, the same in the app and `overtime messages`. A withdrawal
+ * says why (or that it's no longer needed), so it never reads as the person's question being refused.
+ */
+export function closedLine(answer: Answer, agent: string): string {
+  if (answer.closed === "dismissed") return "✕ You dismissed this question";
+  const why = answer.note?.trim();
+  return why ? `✕ ${agent} withdrew this: ${why}` : `✕ ${agent} withdrew this question (no longer needed)`;
+}
