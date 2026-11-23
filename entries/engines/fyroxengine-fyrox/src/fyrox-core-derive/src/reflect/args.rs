@@ -1,0 +1,303 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! Derive input types defined with `darling`.
+
+#![allow(clippy::redundant_field_names)]
+
+use darling::*;
+use proc_macro2::TokenStream as TokenStream2;
+use quote::quote;
+use syn::__private::bool;
+use syn::*;
+use uuid::Uuid;
+
+pub type Fields = ast::Fields<FieldArgs>;
+
+#[derive(FromDeriveInput)]
+#[darling(
+    attributes(reflect),
+    supports(struct_any, enum_any),
+    forward_attrs(doc)
+)]
+pub struct TypeArgs {
+    pub ident: Ident,
+    pub generics: Generics,
+    pub data: ast::Data<VariantArgs, FieldArgs>,
+
+    /// Hides all fields and creates an empty impl
+    #[darling(default)]
+    pub hide_all: bool,
+
+    /// A list of forwarded attributes (only doc comments).
+    pub attrs: Vec<Attribute>,
+
+    /// Custom `Reflect` impl type boundary. It's useful if you mark some field as `deref` or
+    /// `hidden` but the type needs to be `Reflect` to implement `Reflect`.
+    #[darling(default)]
+    pub bounds: Option<Vec<WherePredicate>>,
+
+    #[darling(default, rename = "ReflectArray")]
+    pub impl_as_array: bool,
+
+    #[darling(default, rename = "ReflectList")]
+    pub impl_as_list: bool,
+
+    #[darling(multiple)]
+    pub derived_type: Vec<Path>,
+
+    #[darling(default)]
+    pub non_cloneable: bool,
+
+    #[darling(default)]
+    pub non_comparable: bool,
+
+    #[darling(default)]
+    pub clone_fn: Option<Path>,
+
+    #[darling(default)]
+    pub ignore_generics_type_uuid: bool,
+
+    #[darling(default)]
+    pub type_uuid: String,
+}
+
+impl TypeArgs {
+    pub fn validate(&mut self) {
+        if self.type_uuid.is_empty() {
+            panic!(
+                "Type UUID is not set, use #[reflect(type_uuid = \"some_uuid\")].\n\
+            A UUID can be generated using an IDE plugin, or online - https://www.uuidgenerator.net/\n\
+            You can also use a stub UUID, like so #[reflect(type_uuid = \"00000000-0000-0000-0000-000000000000\")],\n\
+            but it is strongly advised to use a truly unique id."
+            );
+        }
+
+        if let Err(err) = Uuid::try_parse(&self.type_uuid) {
+            panic!(
+                "Type UUID in #[reflect(type_uuid = \"{}\")] attribute is invalid!\n\
+            Reason: {err}.\nAn example of a valid UUID: f21566c8-fda7-4cef-bcbe-06f00c6fe8e9",
+                self.type_uuid
+            )
+        }
+
+        match &mut self.data {
+            ast::Data::Enum(vs) => {
+                vs.iter_mut()
+                    .for_each(|v| v.fields.fields.iter_mut().for_each(|f| f.validate()));
+            }
+            ast::Data::Struct(s) => {
+                s.fields.iter_mut().for_each(|f| f.validate());
+            }
+        }
+    }
+
+    /// Creates impl [`Generics`] adding bounds
+    pub fn impl_generics(&self) -> Generics {
+        let mut generics = self.generics.clone();
+
+        let clause = generics.make_where_clause();
+
+        clause.predicates.push(parse_quote! { Self: 'static });
+        if let Some(bounds) = &self.bounds {
+            clause.predicates.extend(bounds.iter().cloned());
+        }
+
+        if self.hide_all {
+            return generics;
+        }
+
+        generics
+    }
+
+    pub fn as_list_impl(&self) -> TokenStream2 {
+        if !self.impl_as_list {
+            return quote!();
+        }
+
+        quote! {
+            fn as_list(&self) -> Option<&dyn ReflectList> {
+                Some(self)
+            }
+
+            fn as_list_mut(&mut self) -> Option<&mut dyn ReflectList> {
+                Some(self)
+            }
+        }
+    }
+
+    pub fn as_array_impl(&self) -> TokenStream2 {
+        if !self.impl_as_array {
+            return quote!();
+        }
+
+        quote! {
+            fn as_array(&self) -> Option<&dyn ReflectArray> {
+                Some(self)
+            }
+
+            fn as_array_mut(&mut self) -> Option<&mut dyn ReflectArray> {
+                Some(self)
+            }
+        }
+    }
+}
+
+#[derive(FromField, Clone, PartialEq)]
+#[darling(attributes(reflect), forward_attrs(doc))]
+pub struct FieldArgs {
+    pub ident: Option<Ident>,
+    pub ty: Type,
+
+    /// `#[reflect(name = .. )]`
+    ///
+    /// Property name override for a field (default: snake_case)
+    #[darling(default)]
+    pub name: Option<String>,
+
+    /// A list of forwarded attributes (only doc comments).
+    pub attrs: Vec<Attribute>,
+
+    /// `#[reflect(hidden)]`
+    ///
+    /// Do not expose the property key
+    #[darling(default)]
+    pub hidden: bool,
+
+    /// `#[reflect(deref)]`
+    ///
+    /// Sets `field` and `field_mut` attributes with `deref()` and `deref_mut()`
+    #[darling(default)]
+    pub deref: bool,
+
+    /// `#[reflect(field = "<method call>")]
+    ///
+    /// Implement `Reflect::field` with the method call
+    #[darling(default)]
+    pub field: Option<Expr>,
+
+    /// `#[reflect(field_mut = "<method call>")]
+    ///
+    /// Implement `Reflect::field_mut` with the method call
+    #[darling(default)]
+    pub field_mut: Option<Expr>,
+
+    /// `#[reflect(setter = "<method name>")]
+    ///
+    /// **STRUCT-ONLY (for now)**
+    ///
+    /// Setter method name used in `Reflect::set_field`.
+    /// Expected signature: `fn(&mut self, value: T)`
+    #[darling(default)]
+    pub setter: Option<Path>,
+
+    /// #[reflect(display_name = "<name>")]
+    ///
+    /// A human-readable name.
+    #[darling(default)]
+    pub display_name: Option<String>,
+
+    /// #[reflect(tag = "<tag>")]
+    ///
+    /// Tag of the property. Could be used to group properties by a certain criteria or to find a
+    /// specific property by its tag.
+    #[darling(default)]
+    pub tag: Option<String>,
+
+    /// `#[reflect(read_only)]`
+    ///
+    /// The field is not meant to be edited.
+    #[darling(default)]
+    pub read_only: bool,
+
+    /// `#[reflect(immutable_collection)]`
+    ///
+    /// Only for dynamic collections (Vec, etc) - means that its size cannot be changed, however the
+    /// _items_ of the collection can still be changed.
+    #[darling(default)]
+    pub immutable_collection: bool,
+
+    /// `#[reflect(min_value = "0.0")]`
+    ///
+    /// Minimal value of the field. Works only for numeric fields!
+    #[darling(default)]
+    pub min_value: Option<f64>,
+
+    /// `#[reflect(max_value = "1.0")]`
+    ///
+    /// Maximal value of the field. Works only for numeric fields!
+    #[darling(default)]
+    pub max_value: Option<f64>,
+
+    /// `#[reflect(step = "0.1")]`
+    ///
+    /// Increment/decrement step of the field. Works only for numeric fields!
+    #[darling(default)]
+    pub step: Option<f64>,
+
+    /// `#[reflect(precision = "3")]`
+    ///
+    /// Maximum amount of decimal places for a numeric property.
+    #[darling(default)]
+    pub precision: Option<usize>,
+}
+
+impl FieldArgs {
+    pub fn validate(&mut self) {
+        if self.deref {
+            assert!(
+                self.field.is_none() || self.field_mut.is_none(),
+                "can't use both `deref` and `field` + `field_mut`"
+            );
+        }
+
+        assert!(
+            !(self.field.is_none() ^ self.field_mut.is_none()),
+            "use both `field` and `field_mut`"
+        );
+
+        if self.deref {
+            self.field = Some(parse_quote!(deref()));
+            self.field_mut = Some(parse_quote!(deref_mut()));
+        }
+    }
+}
+
+#[derive(FromVariant)]
+#[darling(attributes(reflect))]
+pub struct VariantArgs {
+    pub ident: Ident,
+    pub fields: ast::Fields<FieldArgs>,
+}
+
+pub fn fetch_doc_comment(attrs: &[Attribute]) -> String {
+    let mut doc = String::new();
+
+    for attr in attrs.iter() {
+        if let Ok(Meta::NameValue(name_value)) = attr.parse_meta()
+            && let Lit::Str(doc_comment) = name_value.lit
+        {
+            doc += doc_comment.value().as_str();
+            doc += "\n";
+        }
+    }
+
+    doc
+}

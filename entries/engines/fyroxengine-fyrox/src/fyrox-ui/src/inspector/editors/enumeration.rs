@@ -1,0 +1,516 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+use crate::inspector::InspectorEnvironmentContainer;
+use crate::{
+    BuildContext, Control, Thickness, UiNode, UserInterface,
+    core::{pool::Handle, reflect::prelude::*, visitor::prelude::*},
+    dropdown_list::{DropdownList, DropdownListBuilder, DropdownListMessage},
+    inspector::{
+        FieldAction, Inspector, InspectorBuilder, InspectorContext, InspectorContextArgs,
+        InspectorError, InspectorMessage, PropertyChanged, PropertyFilter,
+        editors::{
+            PropertyEditorBuildContext, PropertyEditorDefinition,
+            PropertyEditorDefinitionContainer, PropertyEditorInstance,
+            PropertyEditorMessageContext, PropertyEditorTranslationContext,
+        },
+        make_expander_container,
+    },
+    message::{MessageData, UiMessage},
+    utils::make_dropdown_list_option,
+    widget::{Widget, WidgetBuilder},
+};
+use fyrox_graph::SceneGraph;
+use std::{
+    any::TypeId,
+    fmt::{Debug, Formatter},
+    ops::{Deref, DerefMut},
+    str::FromStr,
+    sync::Arc,
+};
+use strum::VariantNames;
+
+const LOCAL_SYNC_FLAG: u64 = 0xFF;
+
+pub trait InspectableEnum: Debug + Reflect + PartialEq + Clone + Send + 'static {}
+
+impl<T: Debug + Reflect + PartialEq + Clone + Send + 'static> InspectableEnum for T {}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum EnumPropertyEditorMessage {
+    Variant(usize),
+    PropertyChanged(PropertyChanged),
+}
+impl MessageData for EnumPropertyEditorMessage {}
+
+#[derive(Visit, PartialEq, Reflect)]
+#[reflect(
+    derived_type = "UiNode",
+    type_uuid = "0dbefddc-70fa-45a9-96f0-8fe25f6c1669"
+)]
+pub struct EnumPropertyEditor<T: InspectableEnum> {
+    pub widget: Widget,
+    pub variant_selector: Handle<UiNode>,
+    pub inspector: Handle<Inspector>,
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub definition: EnumPropertyEditorDefinition<T>,
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub definition_container: Arc<PropertyEditorDefinitionContainer>,
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub environment: Option<InspectorEnvironmentContainer>,
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub layer_index: usize,
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub generate_property_string_values: bool,
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub filter: PropertyFilter,
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub name_column_width: f32,
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub base_path: String,
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub has_parent_object: bool,
+}
+
+impl<T: InspectableEnum> Debug for EnumPropertyEditor<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "EnumPropertyEditor")
+    }
+}
+
+impl<T: InspectableEnum> Clone for EnumPropertyEditor<T> {
+    fn clone(&self) -> Self {
+        Self {
+            widget: self.widget.clone(),
+            variant_selector: self.variant_selector,
+            inspector: self.inspector,
+            definition: self.definition.clone(),
+            definition_container: self.definition_container.clone(),
+            environment: self.environment.clone(),
+            layer_index: self.layer_index,
+            generate_property_string_values: self.generate_property_string_values,
+            filter: self.filter.clone(),
+            name_column_width: self.name_column_width,
+            base_path: self.base_path.clone(),
+            has_parent_object: self.has_parent_object,
+        }
+    }
+}
+
+impl<T: InspectableEnum> Deref for EnumPropertyEditor<T> {
+    type Target = Widget;
+
+    fn deref(&self) -> &Self::Target {
+        &self.widget
+    }
+}
+
+impl<T: InspectableEnum> DerefMut for EnumPropertyEditor<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.widget
+    }
+}
+
+impl<T: InspectableEnum> Control for EnumPropertyEditor<T> {
+    fn handle_routed_message(&mut self, ui: &mut UserInterface, message: &mut UiMessage) {
+        self.widget.handle_routed_message(ui, message);
+
+        if let Some(EnumPropertyEditorMessage::Variant(variant)) = message.data_for(self.handle) {
+            let variant = (self.definition.variant_generator)(*variant);
+
+            let ctx = InspectorContext::from_object(InspectorContextArgs {
+                // There's impossible to get the real root object.
+                // TODO. Send context in Variant message instead of creating it here.
+                root_object: &variant,
+                object: &variant,
+                ctx: &mut ui.build_ctx(),
+                definition_container: self.definition_container.clone(),
+                environment: self.environment.clone(),
+                layer_index: self.layer_index,
+                generate_property_string_values: self.generate_property_string_values,
+                filter: self.filter.clone(),
+                name_column_width: self.name_column_width,
+                hide_name_column: false,
+                base_path: self.base_path.clone(),
+                has_parent_object: self.has_parent_object,
+            });
+
+            ui.send(self.inspector, InspectorMessage::Context(ctx));
+            ui.try_send_response(message);
+        } else if let Some(InspectorMessage::PropertyChanged(property_changed)) =
+            message.data_from(self.inspector)
+        {
+            ui.post(
+                self.handle,
+                EnumPropertyEditorMessage::PropertyChanged(property_changed.clone()),
+            )
+        }
+    }
+
+    fn preview_message(&self, ui: &UserInterface, message: &mut UiMessage) {
+        if message.flags != LOCAL_SYNC_FLAG
+            && let Some(DropdownListMessage::Selection(Some(index))) =
+                message.data_from(self.variant_selector)
+        {
+            ui.send(self.handle, EnumPropertyEditorMessage::Variant(*index));
+        }
+    }
+}
+
+pub struct EnumPropertyEditorBuilder {
+    widget_builder: WidgetBuilder,
+    definition_container: Option<Arc<PropertyEditorDefinitionContainer>>,
+    environment: Option<InspectorEnvironmentContainer>,
+    variant_selector: Handle<UiNode>,
+    layer_index: usize,
+    generate_property_string_values: bool,
+    filter: PropertyFilter,
+}
+
+impl EnumPropertyEditorBuilder {
+    pub fn new(widget_builder: WidgetBuilder) -> Self {
+        Self {
+            widget_builder,
+            definition_container: None,
+            environment: None,
+            variant_selector: Handle::NONE,
+            layer_index: 0,
+            generate_property_string_values: false,
+            filter: Default::default(),
+        }
+    }
+
+    pub fn with_definition_container(
+        mut self,
+        definition_container: Arc<PropertyEditorDefinitionContainer>,
+    ) -> Self {
+        self.definition_container = Some(definition_container);
+        self
+    }
+
+    pub fn with_environment(mut self, environment: Option<InspectorEnvironmentContainer>) -> Self {
+        self.environment = environment;
+        self
+    }
+
+    pub fn with_variant_selector(mut self, variant_selector: Handle<UiNode>) -> Self {
+        self.variant_selector = variant_selector;
+        self
+    }
+
+    pub fn with_layer_index(mut self, layer_index: usize) -> Self {
+        self.layer_index = layer_index;
+        self
+    }
+
+    pub fn with_filter(mut self, filter: PropertyFilter) -> Self {
+        self.filter = filter;
+        self
+    }
+
+    pub fn with_generate_property_string_values(
+        mut self,
+        generate_property_string_values: bool,
+    ) -> Self {
+        self.generate_property_string_values = generate_property_string_values;
+        self
+    }
+
+    pub fn build<T: InspectableEnum>(
+        self,
+        ctx: &mut BuildContext,
+        root_object: &dyn Reflect,
+        definition: &EnumPropertyEditorDefinition<T>,
+        value: &T,
+        name_column_width: f32,
+        base_path: String,
+        has_parent_object: bool,
+    ) -> Handle<EnumPropertyEditor<T>> {
+        let definition_container = self
+            .definition_container
+            .unwrap_or_else(|| Arc::new(PropertyEditorDefinitionContainer::with_default_editors()));
+
+        let context = InspectorContext::from_object(InspectorContextArgs {
+            root_object,
+            object: value,
+            ctx,
+            definition_container: definition_container.clone(),
+            environment: self.environment.clone(),
+            layer_index: self.layer_index,
+            generate_property_string_values: self.generate_property_string_values,
+            filter: self.filter.clone(),
+            name_column_width,
+            hide_name_column: false,
+            base_path: base_path.clone(),
+            has_parent_object,
+        });
+
+        let inspector = InspectorBuilder::new(WidgetBuilder::new())
+            .with_context(context)
+            .build(ctx);
+
+        let editor = EnumPropertyEditor {
+            widget: self
+                .widget_builder
+                .with_preview_messages(true)
+                .with_child(inspector)
+                .build(ctx),
+            variant_selector: self.variant_selector,
+            inspector,
+            definition: definition.clone(),
+            definition_container,
+            environment: self.environment,
+            layer_index: self.layer_index,
+            generate_property_string_values: self.generate_property_string_values,
+            filter: self.filter,
+            name_column_width,
+            base_path,
+            has_parent_object,
+        };
+
+        ctx.add(editor)
+    }
+}
+
+#[derive(PartialEq)]
+#[allow(unpredictable_function_pointer_comparisons)]
+pub struct EnumPropertyEditorDefinition<T: InspectableEnum> {
+    pub variant_generator: fn(usize) -> T,
+    pub index_generator: fn(&T) -> usize,
+    pub names_generator: fn() -> Vec<String>,
+}
+
+impl<T: InspectableEnum + Default> EnumPropertyEditorDefinition<T> {
+    pub fn new_optional() -> EnumPropertyEditorDefinition<Option<T>> {
+        EnumPropertyEditorDefinition {
+            variant_generator: |i| match i {
+                0 => None,
+                1 => Some(Default::default()),
+                _ => unreachable!(),
+            },
+            index_generator: |v| match v {
+                None => 0,
+                Some(_) => 1,
+            },
+            names_generator: || vec!["None".to_string(), "Some".to_string()],
+        }
+    }
+}
+
+impl<T, E: Debug> EnumPropertyEditorDefinition<T>
+where
+    T: InspectableEnum + VariantNames + AsRef<str> + FromStr<Err = E> + Debug,
+{
+    pub fn new() -> Self {
+        Self {
+            variant_generator: |i| T::from_str(T::VARIANTS[i]).unwrap(),
+            index_generator: |in_var| {
+                T::VARIANTS
+                    .iter()
+                    .position(|v| v == &in_var.as_ref())
+                    .unwrap()
+            },
+            names_generator: || T::VARIANTS.iter().map(|v| v.to_string()).collect(),
+        }
+    }
+}
+
+impl<T: InspectableEnum> Clone for EnumPropertyEditorDefinition<T> {
+    fn clone(&self) -> Self {
+        Self {
+            variant_generator: self.variant_generator,
+            index_generator: self.index_generator,
+            names_generator: self.names_generator,
+        }
+    }
+}
+
+impl<T> Debug for EnumPropertyEditorDefinition<T>
+where
+    T: InspectableEnum,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "EnumPropertyEditorDefinition")
+    }
+}
+
+impl<T> PropertyEditorDefinition for EnumPropertyEditorDefinition<T>
+where
+    T: InspectableEnum,
+{
+    fn value_type_id(&self) -> TypeId {
+        TypeId::of::<T>()
+    }
+
+    fn create_instance(
+        &self,
+        ctx: PropertyEditorBuildContext,
+    ) -> Result<PropertyEditorInstance, InspectorError> {
+        let value = ctx.property_info.cast_value::<T>()?;
+        let names = (self.names_generator)();
+
+        let variant_selector = DropdownListBuilder::new(
+            WidgetBuilder::new()
+                .on_column(1)
+                .with_margin(Thickness::top_bottom(1.0)),
+        )
+        .with_selected((self.index_generator)(value))
+        .with_items(
+            names
+                .into_iter()
+                .map(|name| make_dropdown_list_option(ctx.build_context, &name))
+                .collect::<Vec<_>>(),
+        )
+        .with_close_on_selection(true)
+        .build(ctx.build_context)
+        .to_base();
+
+        let editor = EnumPropertyEditorBuilder::new(WidgetBuilder::new())
+            .with_variant_selector(variant_selector)
+            .with_layer_index(ctx.layer_index + 1)
+            .with_definition_container(ctx.definition_container.clone())
+            .with_environment(ctx.environment.clone())
+            .with_generate_property_string_values(ctx.generate_property_string_values)
+            .with_filter(ctx.filter)
+            .build(
+                ctx.build_context,
+                ctx.root_object,
+                self,
+                value,
+                ctx.name_column_width,
+                ctx.base_path.clone(),
+                ctx.has_parent_object,
+            );
+
+        let container = make_expander_container(
+            ctx.layer_index,
+            ctx.property_info.display_name,
+            ctx.property_info.doc,
+            variant_selector,
+            editor,
+            ctx.name_column_width,
+            ctx.hide_name_column,
+            None,
+            value.type_info_ref().type_name,
+            ctx.build_context,
+        );
+
+        Ok(PropertyEditorInstance::Custom {
+            container,
+            editor: editor.to_base(),
+        })
+    }
+
+    fn create_message(
+        &self,
+        ctx: PropertyEditorMessageContext,
+    ) -> Result<Option<UiMessage>, InspectorError> {
+        let value = ctx.property_info.cast_value::<T>()?;
+
+        let instance_ref = ctx
+            .ui
+            .node(ctx.instance)
+            .cast::<EnumPropertyEditor<T>>()
+            .expect("Must be EnumPropertyEditor!");
+
+        let variant_selector_ref = ctx
+            .ui
+            .node(instance_ref.variant_selector)
+            .cast::<DropdownList>()
+            .expect("Must be a DropDownList");
+
+        let variant_index = (self.index_generator)(value);
+        if Some(variant_index) != *variant_selector_ref.selection {
+            let environment = ctx.ui[instance_ref.inspector].context().environment.clone();
+            let mut selection_message = UiMessage::for_widget(
+                instance_ref.variant_selector,
+                DropdownListMessage::Selection(Some(variant_index)),
+            );
+            selection_message.flags = LOCAL_SYNC_FLAG;
+            ctx.ui.send_message(selection_message);
+
+            let inspector = instance_ref.inspector;
+
+            let context = InspectorContext::from_object(InspectorContextArgs {
+                root_object: ctx.root_object,
+                object: value,
+                ctx: &mut ctx.ui.build_ctx(),
+                definition_container: ctx.definition_container.clone(),
+                environment,
+                layer_index: ctx.layer_index + 1,
+                generate_property_string_values: ctx.generate_property_string_values,
+                filter: ctx.filter,
+                name_column_width: ctx.name_column_width,
+                hide_name_column: false,
+                base_path: ctx.base_path.clone(),
+                has_parent_object: ctx.has_parent_object,
+            });
+
+            Ok(Some(UiMessage::for_widget(
+                inspector,
+                InspectorMessage::Context(context),
+            )))
+        } else {
+            let layer_index = ctx.layer_index;
+            let inspector_ctx = ctx.ui[instance_ref.inspector].context().clone();
+            if let Err(e) = inspector_ctx.sync(
+                value,
+                ctx.ui,
+                ctx.root_object,
+                layer_index + 1,
+                ctx.generate_property_string_values,
+                ctx.filter,
+                ctx.base_path.clone(),
+            ) {
+                Err(InspectorError::Group(e))
+            } else {
+                Ok(None)
+            }
+        }
+    }
+
+    fn translate_message(&self, ctx: PropertyEditorTranslationContext) -> Option<PropertyChanged> {
+        if let Some(msg) = ctx.message.data::<EnumPropertyEditorMessage>() {
+            return match msg {
+                EnumPropertyEditorMessage::PropertyChanged(property_changed) => {
+                    Some(PropertyChanged {
+                        name: ctx.name.to_string(),
+                        action: FieldAction::InspectableAction(Box::new(property_changed.clone())),
+                    })
+                }
+                EnumPropertyEditorMessage::Variant(index) => Some(PropertyChanged {
+                    name: ctx.name.to_string(),
+                    action: FieldAction::object((self.variant_generator)(*index)),
+                }),
+            };
+        }
+
+        None
+    }
+}

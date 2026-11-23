@@ -1,0 +1,572 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+pub mod bbcode;
+pub mod clipboard;
+pub mod commands;
+pub mod interaction;
+pub mod menu;
+pub mod selection;
+pub mod utils;
+
+use crate::{
+    Message,
+    asset::item::AssetItem,
+    command::{Command, CommandGroup, CommandStack},
+    fyrox::{
+        core::{
+            algebra::{Vector2, Vector3},
+            color::Color,
+            futures::executor::block_on,
+            log::Log,
+            make_relative_path,
+            math::Rect,
+            pool::{ErasedHandle, Handle},
+        },
+        core::{ok_or_continue, some_or_return},
+        engine::{Engine, GraphicsContext},
+        fxhash::FxHashSet,
+        graph::SceneGraph,
+        gui::{
+            UiNode, UiUpdateSwitches, UserInterface, UserInterfaceResourceExtension,
+            brush::Brush,
+            clipboard::ClipboardContainer,
+            draw::{CommandTexture, Draw},
+            file_browser::FileType,
+            message::{KeyCode, MessageDirection, MouseButton, UiMessage},
+        },
+        renderer::ui_renderer::UiRenderInfo,
+        resource::texture::{TextureKind, TextureResource, TextureResourceExtension},
+        scene::SceneContainer,
+    },
+    game_scene::{
+        Selection, commands::ChangeSelectionCommand, controller::SceneController,
+        selector::HierarchyNode,
+    },
+    message::MessageSender,
+    plugins::inspector::editors::handle::{
+        HandlePropertyEditorHierarchyMessage, HandlePropertyEditorNameMessage,
+    },
+    settings::{Settings, keys::KeyBindings},
+    ui_scene::{
+        clipboard::UiSceneClipboardPayload,
+        commands::{UiSceneContext, graph::AddUiPrefabCommand, graph::PasteWidgetCommand},
+        selection::UiSelection,
+        utils::make_widget_name,
+    },
+};
+use std::{fs::File, io::Write, path::Path};
+
+pub struct PreviewInstance {
+    pub instance: Handle<UiNode>,
+    pub nodes: FxHashSet<Handle<UiNode>>,
+}
+
+pub struct UiScene {
+    pub ui: UserInterface,
+    pub render_target: TextureResource,
+    pub message_sender: MessageSender,
+    pub preview_instance: Option<PreviewInstance>,
+    pub ui_update_switches: UiUpdateSwitches,
+}
+
+impl UiScene {
+    pub fn new(ui: UserInterface, message_sender: MessageSender) -> Self {
+        Self {
+            ui,
+            render_target: TextureResource::new_render_target(200, 200),
+            message_sender,
+            preview_instance: None,
+            ui_update_switches: UiUpdateSwitches {
+                // Disable update for everything.
+                node_overrides: Some(Default::default()),
+            },
+        }
+    }
+
+    fn select_object(&mut self, handle: ErasedHandle) {
+        if self.ui.try_get_node(handle.into()).is_ok() {
+            self.message_sender
+                .do_command(ChangeSelectionCommand::new(Selection::new(
+                    UiSelection::single_or_empty(handle.into()),
+                )))
+        }
+    }
+
+    fn invalidate_selection(&mut self, selection: &mut Selection) {
+        let ui_selection = some_or_return!(selection.as_ui());
+        for widget in ui_selection.widgets.iter() {
+            let widget = ok_or_continue!(self.ui.try_get_mut(*widget));
+            widget.invalidate_layout();
+            widget.request_update_visibility();
+        }
+    }
+}
+
+impl SceneController for UiScene {
+    fn on_key_up(
+        &mut self,
+        _key: KeyCode,
+        _engine: &mut Engine,
+        _key_bindings: &KeyBindings,
+    ) -> bool {
+        false
+    }
+
+    fn on_key_down(
+        &mut self,
+        _key: KeyCode,
+        _engine: &mut Engine,
+        _key_bindings: &KeyBindings,
+    ) -> bool {
+        false
+    }
+
+    fn on_mouse_move(
+        &mut self,
+        _pos: Vector2<f32>,
+        _offset: Vector2<f32>,
+        _screen_bounds: Rect<f32>,
+        _engine: &mut Engine,
+        _settings: &Settings,
+    ) {
+    }
+
+    fn on_mouse_up(
+        &mut self,
+        _button: MouseButton,
+        _pos: Vector2<f32>,
+        _screen_bounds: Rect<f32>,
+        _engine: &mut Engine,
+        _settings: &Settings,
+    ) {
+    }
+
+    fn on_mouse_down(
+        &mut self,
+        _button: MouseButton,
+        _pos: Vector2<f32>,
+        _screen_bounds: Rect<f32>,
+        _engine: &mut Engine,
+        _settings: &Settings,
+    ) {
+    }
+
+    fn on_mouse_wheel(&mut self, _amount: f32, _engine: &mut Engine, _settings: &Settings) {}
+
+    fn on_mouse_leave(&mut self, _engine: &mut Engine, _settings: &Settings) {
+        if let Some(preview) = self.preview_instance.take() {
+            self.ui.remove_node(preview.instance);
+        }
+    }
+
+    fn on_drag_over(
+        &mut self,
+        handle: Handle<UiNode>,
+        screen_bounds: Rect<f32>,
+        engine: &mut Engine,
+        settings: &Settings,
+    ) {
+        match self.preview_instance.as_ref() {
+            None => {
+                if let Some(item) = engine
+                    .user_interfaces
+                    .first_mut()
+                    .node(handle)
+                    .cast::<AssetItem>()
+                {
+                    // Make sure all resources loaded with relative paths only.
+                    // This will make scenes portable.
+                    if let Ok(relative_path) = make_relative_path(&item.path) {
+                        // No model was loaded yet, do it.
+                        if let Some(prefab) = engine
+                            .resource_manager
+                            .try_request::<UserInterface>(relative_path)
+                            .and_then(|m| block_on(m).ok())
+                        {
+                            // Instantiate the model.
+                            let (instance, _) = prefab.instantiate(&mut self.ui);
+
+                            let nodes = self
+                                .ui
+                                .traverse_handle_iter(instance)
+                                .collect::<FxHashSet<Handle<UiNode>>>();
+
+                            self.preview_instance = Some(PreviewInstance { instance, nodes });
+                        }
+                    }
+                }
+            }
+            Some(preview) => {
+                let cursor_pos = engine.user_interfaces.first_mut().cursor_position();
+                let rel_pos = cursor_pos - screen_bounds.position;
+
+                let root = self.ui.node_mut(preview.instance);
+                root.set_desired_local_position(
+                    settings
+                        .move_mode_settings
+                        .try_snap_vector_to_grid(Vector3::new(rel_pos.x, rel_pos.y, 0.0))
+                        .xy(),
+                );
+                root.invalidate_layout();
+            }
+        }
+    }
+
+    fn on_drop(
+        &mut self,
+        handle: Handle<UiNode>,
+        _screen_bounds: Rect<f32>,
+        _engine: &mut Engine,
+        _settings: &Settings,
+    ) {
+        if handle.is_none() {
+            return;
+        }
+
+        if let Some(preview) = self.preview_instance.take() {
+            // Immediately after extract if from the scene to subgraph. This is required to not violate
+            // the rule of one place of execution, only commands allowed to modify the scene.
+            let sub_graph = self.ui.take_reserve_sub_graph(preview.instance);
+
+            let group = vec![
+                Command::new(AddUiPrefabCommand::new(sub_graph)),
+                // We also want to select newly instantiated model.
+                Command::new(ChangeSelectionCommand::new(Selection::new(
+                    UiSelection::single_or_empty(preview.instance),
+                ))),
+            ];
+
+            self.message_sender.do_command(CommandGroup::from(group));
+        }
+    }
+
+    fn render_target(&self, _engine: &Engine) -> Option<TextureResource> {
+        Some(self.render_target.clone())
+    }
+
+    fn file_type(&self) -> FileType {
+        FileType {
+            description: "UI Scene".to_string(),
+            extension: "ui".to_string(),
+        }
+    }
+
+    fn save(
+        &mut self,
+        path: &Path,
+        settings: &Settings,
+        _engine: &mut Engine,
+    ) -> Result<String, String> {
+        match self.ui.save(path) {
+            Ok(visitor) => {
+                if settings.debugging.save_scene_in_text_form {
+                    let text = visitor.save_ascii_to_string();
+                    let mut path = path.to_path_buf();
+                    path.set_extension("txt");
+                    if let Ok(mut file) = File::create(path) {
+                        Log::verify(file.write_all(text.as_bytes()));
+                    }
+                }
+
+                Ok(format!(
+                    "Ui scene was successfully saved to {}",
+                    path.display()
+                ))
+            }
+            Err(e) => Err(format!(
+                "Unable to save the ui scene to {} file. Reason: {:?}",
+                path.display(),
+                e
+            )),
+        }
+    }
+
+    fn do_command(
+        &mut self,
+        command_stack: &mut CommandStack,
+        command: Command,
+        selection: &mut Selection,
+        _engine: &mut Engine,
+        clipboard: &mut ClipboardContainer,
+    ) {
+        UiSceneContext::exec(
+            &mut self.ui,
+            selection,
+            self.message_sender.clone(),
+            clipboard,
+            |ctx| {
+                command_stack.do_command(command, ctx);
+            },
+        );
+
+        self.invalidate_selection(selection);
+    }
+
+    fn undo(
+        &mut self,
+        command_stack: &mut CommandStack,
+        selection: &mut Selection,
+        _engine: &mut Engine,
+        clipboard: &mut ClipboardContainer,
+    ) {
+        UiSceneContext::exec(
+            &mut self.ui,
+            selection,
+            self.message_sender.clone(),
+            clipboard,
+            |ctx| command_stack.undo(ctx),
+        );
+
+        self.invalidate_selection(selection);
+    }
+
+    fn redo(
+        &mut self,
+        command_stack: &mut CommandStack,
+        selection: &mut Selection,
+        _engine: &mut Engine,
+        clipboard: &mut ClipboardContainer,
+    ) {
+        UiSceneContext::exec(
+            &mut self.ui,
+            selection,
+            self.message_sender.clone(),
+            clipboard,
+            |ctx| command_stack.redo(ctx),
+        );
+
+        self.invalidate_selection(selection);
+    }
+
+    fn clear_command_stack(
+        &mut self,
+        command_stack: &mut CommandStack,
+        selection: &mut Selection,
+        _scenes: &mut SceneContainer,
+        clipboard: &mut ClipboardContainer,
+    ) {
+        UiSceneContext::exec(
+            &mut self.ui,
+            selection,
+            self.message_sender.clone(),
+            clipboard,
+            |ctx| command_stack.clear(ctx),
+        );
+
+        self.invalidate_selection(selection);
+    }
+
+    fn on_before_render(&mut self, editor_selection: &Selection, engine: &mut Engine) {
+        // Draw selection on top.
+        if let Some(selection) = editor_selection.as_ui() {
+            for node in selection.widgets.iter() {
+                if let Ok(node) = self.ui.try_get_node(*node) {
+                    let bounds = node.screen_bounds();
+                    let clip_bounds = node.clip_bounds();
+                    let drawing_context = &mut self.ui.drawing_context;
+                    drawing_context.push_rect(&bounds, 1.0);
+                    drawing_context.commit(
+                        clip_bounds,
+                        Brush::Solid(Color::GREEN),
+                        CommandTexture::None,
+                        &self.ui.standard_material,
+                        None,
+                    );
+                }
+            }
+        }
+
+        // Render to texture.
+        if let GraphicsContext::Initialized(ref mut graphics_context) = engine.graphics_context {
+            Log::verify(graphics_context.renderer.render_ui(UiRenderInfo {
+                ui: &self.ui,
+                render_target: Some(self.render_target.clone()),
+                clear_color: Color::DIM_GRAY,
+                resource_manager: &engine.resource_manager,
+            }));
+        }
+    }
+
+    fn on_after_render(&mut self, _engine: &mut Engine) {}
+
+    fn update(
+        &mut self,
+        _editor_selection: &Selection,
+        _engine: &mut Engine,
+        dt: f32,
+        _path: Option<&Path>,
+        _settings: &mut Settings,
+        screen_bounds: Rect<f32>,
+    ) -> Option<TextureResource> {
+        self.ui
+            .update(screen_bounds.size, dt, &self.ui_update_switches);
+
+        // Create new render target if preview frame has changed its size.
+        let mut new_render_target = None;
+        if let TextureKind::Rectangle { width, height } =
+            self.render_target.clone().data_ref().kind()
+        {
+            let frame_size = screen_bounds.size;
+            if width != frame_size.x as u32 || height != frame_size.y as u32 {
+                self.render_target =
+                    TextureResource::new_render_target(frame_size.x as u32, frame_size.y as u32);
+                new_render_target = Some(self.render_target.clone());
+
+                self.ui.invalidate_layout();
+            }
+        }
+
+        while self.ui.poll_message().is_some() {}
+
+        new_render_target
+    }
+
+    fn is_interacting(&self) -> bool {
+        false
+    }
+
+    fn on_destroy(
+        &mut self,
+        command_stack: &mut CommandStack,
+        _engine: &mut Engine,
+        selection: &mut Selection,
+        clipboard: &mut ClipboardContainer,
+    ) {
+        UiSceneContext::exec(
+            &mut self.ui,
+            selection,
+            self.message_sender.clone(),
+            clipboard,
+            |ctx| command_stack.clear(ctx),
+        );
+    }
+
+    fn on_message(
+        &mut self,
+        message: &Message,
+        _selection: &Selection,
+        engine: &mut Engine,
+    ) -> bool {
+        match message {
+            Message::SelectObject { handle } => {
+                self.select_object(*handle);
+            }
+            Message::SyncNodeHandleName { view, handle } => {
+                engine.user_interfaces.first_mut().send_message(
+                    UiMessage::with_data(HandlePropertyEditorNameMessage(
+                        self.ui
+                            .try_get_node((*handle).into())
+                            .ok()
+                            .map(|n| make_widget_name(n, &engine.resource_manager)),
+                    ))
+                    .with_destination(*view)
+                    .with_direction(MessageDirection::ToWidget),
+                );
+            }
+            Message::ProvideSceneHierarchy { view } => {
+                engine.user_interfaces.first_mut().send_message(
+                    UiMessage::with_data(HandlePropertyEditorHierarchyMessage(
+                        HierarchyNode::from_scene_node(self.ui.root(), Handle::NONE, &self.ui),
+                    ))
+                    .with_destination(*view)
+                    .with_direction(MessageDirection::ToWidget),
+                );
+            }
+            _ => {}
+        }
+
+        false
+    }
+
+    fn command_names(
+        &mut self,
+        command_stack: &mut CommandStack,
+        selection: &mut Selection,
+        _engine: &mut Engine,
+        clipboard: &mut ClipboardContainer,
+    ) -> Vec<String> {
+        command_stack
+            .commands
+            .iter_mut()
+            .map(|c| {
+                let mut name = String::new();
+                UiSceneContext::exec(
+                    &mut self.ui,
+                    selection,
+                    self.message_sender.clone(),
+                    clipboard,
+                    |ctx| {
+                        name = c.name(ctx);
+                    },
+                );
+                name
+            })
+            .collect::<Vec<_>>()
+    }
+
+    fn selection_external_refs(
+        &self,
+        editor_selection: &Selection,
+        _engine: &Engine,
+    ) -> Option<String> {
+        editor_selection
+            .as_ui()
+            .and_then(|s| self.ui.external_refs_summary(&s.widgets))
+    }
+
+    fn copy_selection_to_clipboard(
+        &self,
+        editor_selection: &Selection,
+        clipboard: &mut ClipboardContainer,
+        _engine: &Engine,
+    ) {
+        if let Some(ui_selection) = editor_selection.as_ui() {
+            let mut data = UiSceneClipboardPayload::default();
+            data.fill_from_selection(ui_selection, &self.ui);
+            clipboard.set_content(data);
+        }
+    }
+
+    fn paste_from_clipboard(
+        &self,
+        sender: &MessageSender,
+        editor_selection: &Selection,
+        clipboard: &mut ClipboardContainer,
+    ) {
+        if let Some(ui_selection) = editor_selection.as_ui()
+            && let Some(data) = clipboard.content_ref::<UiSceneClipboardPayload>()
+            && !data.is_empty()
+        {
+            let parent = ui_selection
+                .widgets
+                .first()
+                .cloned()
+                .unwrap_or(self.ui.root());
+            sender.do_command(PasteWidgetCommand::new(parent));
+        }
+    }
+
+    fn can_be_pasted(&self, clipboard: &ClipboardContainer) -> bool {
+        clipboard
+            .content_ref::<UiSceneClipboardPayload>()
+            .is_some_and(|data| !data.is_empty())
+    }
+}

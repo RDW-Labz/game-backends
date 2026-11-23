@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T02:46:04Z",
+ "category": "engines",
+ "commit": "e47bf0f35c9e",
+ "delivery": "vendored",
+ "description": "FyroxEngine/Fyrox \u2014 3D and 2D game engine written in Rust",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "Fyrox",
+ "size_bytes": 10681827,
+ "slug": "fyroxengine-fyrox",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 9695,
+ "system": "3D and 2D game engine written in Rust",
+ "upstream": "https://github.com/FyroxEngine/Fyrox",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

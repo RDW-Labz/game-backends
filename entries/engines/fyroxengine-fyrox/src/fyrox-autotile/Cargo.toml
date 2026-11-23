@@ -1,0 +1,18 @@
+[package]
+name = "fyrox-autotile"
+license = "MIT"
+version = "2.0.0-rc.1"
+authors = ["Dmitry Stepanov <d1maxa@yandex.ru>", "Brendan Guild <bguildjava@gmail.com>"]
+edition = "2024"
+rust-version = "1.94"
+description = "An autotiler for Fyrox game engine"
+keywords = ["tilemap", "autotile", "wave", "function", "collapse"]
+categories = ["game-development"]
+repository = "https://github.com/FyroxEngine/Fyrox"
+readme = "README.md"
+include = ["/src/**/*", "/Cargo.toml", "/LICENSE", "/README.md"]
+
+[dependencies]
+nalgebra = { version = "0.35", features = ["bytemuck", "convert-glam030"] }
+fxhash = "0.2.1"
+rand = "0.8"

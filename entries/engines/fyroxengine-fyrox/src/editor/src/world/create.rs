@@ -1,0 +1,648 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+use crate::{
+    command::{Command, CommandGroup},
+    fyrox::{
+        core::{
+            ImmutableString,
+            algebra::Vector3,
+            pool::{Handle, ObjectOrVariant},
+        },
+        engine::Engine,
+        fxhash::FxHashMap,
+        graph::{
+            SceneGraph,
+            constructor::{ConstructorVariantId, GraphNodeConstructorContainer, VariantResult},
+        },
+        gui::{
+            BuildContext, HorizontalAlignment, Orientation, Thickness, UiNode, UserInterface,
+            border::BorderBuilder,
+            button::{Button, ButtonBuilder, ButtonMessage},
+            formatted_text::WrapMode,
+            grid::{Column, Grid, GridBuilder, Row},
+            list_view::{ListView, ListViewBuilder, ListViewMessage},
+            markdown,
+            message::{KeyCode, UiMessage},
+            scroll_viewer::{ScrollViewer, ScrollViewerBuilder, ScrollViewerMessage},
+            searchbar::{SearchBar, SearchBarBuilder, SearchBarMessage},
+            stack_panel::StackPanelBuilder,
+            style::{Style, resource::StyleResourceExt},
+            text::TextBuilder,
+            text_box::EmptyTextPlaceholder,
+            tree::{
+                Tree, TreeBuilder, TreeExpansionStrategy, TreeMessage, TreeRoot, TreeRootBuilder,
+                TreeRootMessage,
+            },
+            utils,
+            widget::{UserData, WidgetBuilder, WidgetMessage},
+            window::{Window, WindowAlignment, WindowBuilder, WindowMessage, WindowTitle},
+        },
+        scene::{graph::Graph, node::Node},
+    },
+    game_scene::{
+        GameScene, Selection,
+        commands::graph::{
+            AddNodeCommand, LinkNodesCommand, MoveNodeCommand, ReplaceNodeCommand,
+            SetGraphRootCommand,
+        },
+    },
+    message::MessageSender,
+    settings::{Settings, scene::SceneSettings},
+    ui_scene::{UiScene, commands::graph::AddWidgetCommand},
+};
+use fyrox::core::uuid::{Uuid, uuid};
+use std::{collections::BTreeMap, path::PathBuf};
+
+#[derive(Default, Eq, PartialEq, Copy, Clone, Debug)]
+pub enum EntityCreatorMode {
+    #[default]
+    CreateChild,
+    CreateParent,
+    CreateReplacement,
+}
+
+pub struct EntityCreator {
+    window: Handle<Window>,
+    recent_list: Handle<ListView>,
+    groups_tree: Handle<TreeRoot>,
+    items_map: FxHashMap<Handle<Tree>, ConstructorVariantId>,
+    create: Handle<Button>,
+    cancel: Handle<Button>,
+    selection: Option<ConstructorVariantId>,
+    mode: EntityCreatorMode,
+    search_bar: Handle<SearchBar>,
+    groups_scroll_viewer: Handle<ScrollViewer>,
+    description_scroll_viewer: Handle<ScrollViewer>,
+}
+
+type VariantName = ImmutableString;
+
+#[derive(Clone)]
+struct TreeData {
+    variant_name: VariantName,
+}
+
+fn make_tree_item(ui: &mut UserInterface, variant_name: VariantName, text: &str) -> Handle<Tree> {
+    let ctx = &mut ui.build_ctx();
+    TreeBuilder::new(WidgetBuilder::new().with_user_data(UserData::new(TreeData { variant_name })))
+        .with_content(
+            TextBuilder::new(WidgetBuilder::new())
+                .with_text(text)
+                .build(ctx),
+        )
+        .build(ctx)
+}
+
+fn make_recent_item(ui: &mut UserInterface, variant_name: &VariantName) -> Handle<UiNode> {
+    utils::make_dropdown_list_option_universal(
+        &mut ui.build_ctx(),
+        variant_name.as_str(),
+        24.0,
+        variant_name.clone(),
+    )
+}
+
+fn make_section(
+    ctx: &mut BuildContext,
+    name: &str,
+    row: usize,
+    column: usize,
+    height: f32,
+    content: Handle<impl ObjectOrVariant<UiNode>>,
+) -> Handle<Grid> {
+    GridBuilder::new(
+        WidgetBuilder::new()
+            .on_row(row)
+            .on_column(column)
+            .with_margin(Thickness::uniform(2.0))
+            .with_child(
+                TextBuilder::new(WidgetBuilder::new().on_row(0))
+                    .with_text(name)
+                    .build(ctx),
+            )
+            .with_child(
+                BorderBuilder::new(
+                    WidgetBuilder::new()
+                        .on_row(1)
+                        .with_height(height)
+                        .with_background(ctx.style.property(Style::BRUSH_DARK))
+                        .with_child(content),
+                )
+                .with_corner_radius(4.0.into())
+                .build(ctx),
+            ),
+    )
+    .add_row(Row::auto())
+    .add_row(Row::stretch())
+    .add_column(Column::stretch())
+    .build(ctx)
+}
+
+impl EntityCreator {
+    const TITLE: &str = "Entity Creator";
+
+    pub const WINDOW: Uuid = uuid!("d0b56802-f63d-43e6-9c7d-d6da38111104");
+    pub const SEARCH_BAR: Uuid = uuid!("ffee97fa-8f13-4d70-9a3f-a53fc36da704");
+    pub const CREATE: Uuid = uuid!("d280acd2-fe1b-48ea-8422-f5e54cd47cd8");
+
+    pub fn new(ctx: &mut BuildContext) -> Self {
+        let search_bar = SearchBarBuilder::new(
+            WidgetBuilder::new()
+                .with_tab_index(Some(0))
+                .on_row(0)
+                .with_id(Self::SEARCH_BAR)
+                .with_margin(Thickness::uniform(2.0)),
+        )
+        .with_empty_text_placeholder(EmptyTextPlaceholder::Text("Search for an Entity"))
+        .build(ctx);
+
+        let recent_list = ListViewBuilder::new(WidgetBuilder::new()).build(ctx);
+        let recent_list_container =
+            make_section(ctx, "Recently Created", 0, 0, f32::NAN, recent_list);
+
+        let groups_tree = TreeRootBuilder::new(WidgetBuilder::new()).build(ctx);
+
+        let groups_scroll_viewer = ScrollViewerBuilder::new(WidgetBuilder::new().on_column(1))
+            .with_content(groups_tree)
+            .build(ctx);
+
+        let groups_scroll_viewer_container =
+            make_section(ctx, "Matches", 0, 1, f32::NAN, groups_scroll_viewer);
+
+        let create = ButtonBuilder::new(
+            WidgetBuilder::new()
+                .with_id(Self::CREATE)
+                .with_tab_index(Some(1))
+                .with_enabled(false)
+                .with_width(100.0)
+                .with_margin(Thickness::uniform(2.0)),
+        )
+        .with_ok_back(ctx)
+        .with_text("Create")
+        .build(ctx);
+        let cancel = ButtonBuilder::new(
+            WidgetBuilder::new()
+                .with_width(100.0)
+                .with_margin(Thickness::uniform(2.0)),
+        )
+        .with_text("Cancel")
+        .build(ctx);
+
+        let buttons = StackPanelBuilder::new(
+            WidgetBuilder::new()
+                .with_height(28.0)
+                .with_horizontal_alignment(HorizontalAlignment::Right)
+                .on_row(3)
+                .with_child(create)
+                .with_child(cancel),
+        )
+        .with_orientation(Orientation::Horizontal)
+        .build(ctx);
+
+        let grid = GridBuilder::new(
+            WidgetBuilder::new()
+                .on_row(1)
+                .with_margin(Thickness::uniform(2.0))
+                .with_child(recent_list_container)
+                .with_child(groups_scroll_viewer_container),
+        )
+        .add_column(Column::strict(150.0))
+        .add_column(Column::stretch())
+        .add_row(Row::stretch())
+        .build(ctx);
+
+        let description = TextBuilder::new(WidgetBuilder::new())
+            .with_wrap(WrapMode::Word)
+            .build(ctx);
+        let description_scroll_viewer = ScrollViewerBuilder::new(WidgetBuilder::new())
+            .with_content(description)
+            .build(ctx);
+        let description_container =
+            make_section(ctx, "Description", 2, 0, 100.0, description_scroll_viewer);
+
+        let content = GridBuilder::new(
+            WidgetBuilder::new()
+                .with_child(search_bar)
+                .with_child(grid)
+                .with_child(description_container)
+                .with_child(buttons),
+        )
+        .add_column(Column::stretch())
+        .add_row(Row::auto())
+        .add_row(Row::stretch())
+        .add_row(Row::auto())
+        .add_row(Row::auto())
+        .build(ctx);
+
+        let window = WindowBuilder::new(
+            WidgetBuilder::new()
+                .with_id(Self::WINDOW)
+                .with_width(500.0)
+                .with_height(600.0),
+        )
+        .with_content(content)
+        .open(false)
+        .with_close_by_esc(true)
+        .with_title(WindowTitle::text(Self::TITLE))
+        .build(ctx);
+
+        Self {
+            window,
+            recent_list,
+            groups_tree,
+            items_map: FxHashMap::default(),
+            create,
+            cancel,
+            selection: None,
+            mode: EntityCreatorMode::default(),
+            search_bar,
+            groups_scroll_viewer,
+            description_scroll_viewer,
+        }
+    }
+
+    pub fn open(&mut self, mode: EntityCreatorMode, ui: &UserInterface) {
+        self.mode = mode;
+        ui.send(
+            self.window,
+            WindowMessage::Open {
+                alignment: WindowAlignment::Center,
+                modal: true,
+                focus_content: false,
+            },
+        );
+        let title = match self.mode {
+            EntityCreatorMode::CreateChild => "Create Child Node",
+            EntityCreatorMode::CreateParent => "Create Parent Node",
+            EntityCreatorMode::CreateReplacement => "Create Node Replacement",
+        };
+        ui.send(
+            self.window,
+            WindowMessage::Title(WindowTitle::text(format!("{} - {}", Self::TITLE, title))),
+        );
+        ui.send(self.search_bar, WidgetMessage::Focus);
+    }
+
+    pub fn on_constructors_changed<N, C>(
+        &mut self,
+        ui: &mut UserInterface,
+        constructors: &GraphNodeConstructorContainer<N, C>,
+    ) {
+        self.selection = None;
+        ui.send(self.create, WidgetMessage::Enabled(false));
+        ui.send(self.groups_tree, TreeRootMessage::Items(Vec::new()));
+        self.items_map.clear();
+        let constructors = constructors.map();
+        let mut groups = FxHashMap::default();
+        let mut root_items = BTreeMap::default();
+        for (type_uuid, constructor) in constructors.iter() {
+            for (variant_index, variant) in constructor.variants.iter().enumerate() {
+                let item = make_tree_item(ui, variant.name.clone(), &variant.name);
+                self.items_map
+                    .insert(item, ConstructorVariantId::new(type_uuid, variant_index));
+                if constructor.group.is_empty() {
+                    root_items.insert(variant.name.as_str(), item);
+                } else {
+                    let group = *groups.entry(constructor.group).or_insert_with(|| {
+                        let item = make_tree_item(
+                            ui,
+                            VariantName::new(constructor.group),
+                            constructor.group,
+                        );
+                        root_items.insert(constructor.group, item);
+                        item
+                    });
+                    ui.send(group, TreeMessage::AddItem(item))
+                }
+            }
+        }
+        // Insert in sorted order.
+        for group in root_items.values() {
+            ui.send(self.groups_tree, TreeRootMessage::AddItem(*group));
+        }
+    }
+
+    pub fn on_scene_changed(&self, ui: &mut UserInterface, scene_settings: &SceneSettings) {
+        let mut new_items = Vec::with_capacity(scene_settings.recently_created_entities.len());
+        for recent_entity in scene_settings.recently_created_entities.iter() {
+            let recent_item = make_recent_item(ui, &ImmutableString::new(recent_entity));
+            new_items.push(recent_item);
+        }
+        ui.send(self.recent_list, ListViewMessage::Items(new_items));
+        if let Some(most_recent_entity) = scene_settings.recently_created_entities.first() {
+            ui.send(self.recent_list, ListViewMessage::Selection(vec![0]));
+            ui.send(
+                self.search_bar,
+                SearchBarMessage::Text(most_recent_entity.clone()),
+            );
+        }
+    }
+
+    fn has_recent_item(&self, ui: &UserInterface, name: &str) -> bool {
+        if let Ok(recent_list) = ui.try_get(self.recent_list) {
+            for item in recent_list.items.iter() {
+                if let Ok(item_ref) = ui.try_get(*item)
+                    && let Some(existing_name) = item_ref.user_data_cloned::<VariantName>()
+                    && existing_name.as_str() == name
+                {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    fn on_recent_item_selected(&self, ui: &UserInterface, selection: &[usize]) {
+        if let Some(name) = ui
+            .try_get(self.recent_list)
+            .ok()
+            .and_then(|list| selection.first().and_then(|n| list.items.get(*n)))
+            .and_then(|item| ui.try_get(*item).ok())
+            .and_then(|item_ref| item_ref.user_data_cloned::<VariantName>())
+        {
+            let query = name.as_str().to_owned();
+            ui.send(self.search_bar, SearchBarMessage::Text(query));
+        }
+    }
+
+    fn on_create_clicked<N, Ctx>(
+        &self,
+        constructors: &GraphNodeConstructorContainer<N, Ctx>,
+        ui: &mut UserInterface,
+        ctx: &mut Ctx,
+        settings: &mut Settings,
+        scene_path: Option<&PathBuf>,
+    ) -> Option<VariantResult<N>> {
+        let constructor_id = self.selection.as_ref()?;
+        ui.send(self.window, WindowMessage::Close);
+        let variant = constructors.try_get_variant(constructor_id)?;
+        if !self.has_recent_item(ui, variant.name.as_str()) {
+            let recent_item = make_recent_item(ui, &variant.name);
+            ui.send(
+                self.recent_list,
+                ListViewMessage::AddItem {
+                    node: recent_item,
+                    in_front: true,
+                },
+            );
+            if let Some(scene_settings) =
+                scene_path.and_then(|p| settings.scene_settings.get_mut(p))
+            {
+                // Insert at the top.
+                scene_settings
+                    .recently_created_entities
+                    .insert(0, variant.name.as_str().to_owned());
+            }
+        }
+        Some((variant.constructor)(ctx))
+    }
+
+    fn on_filter_changed(&self, filter_text: &str, ui: &UserInterface) {
+        fn apply_filter_recursive(
+            node: Handle<UiNode>,
+            filter: &str,
+            ui: &UserInterface,
+            first_match_selected: &mut bool,
+            tree_root: Handle<TreeRoot>,
+        ) -> bool {
+            let node_ref = ui.node(node);
+
+            let mut is_any_match = false;
+            for &child in node_ref.children() {
+                is_any_match |=
+                    apply_filter_recursive(child, filter, ui, first_match_selected, tree_root)
+            }
+
+            if let Some(data) = node_ref
+                .self_or_field_ref::<Tree>()
+                .and_then(|n| n.user_data_cloned::<TreeData>())
+            {
+                is_any_match |= data.variant_name.to_lowercase().contains(filter);
+
+                if !*first_match_selected && is_any_match {
+                    ui.send(tree_root, TreeRootMessage::Select(vec![node.to_variant()]));
+                    ui.send(
+                        node,
+                        TreeMessage::Expand {
+                            expand: true,
+                            expansion_strategy: TreeExpansionStrategy::RecursiveAncestors,
+                        },
+                    );
+                    *first_match_selected = true;
+                }
+
+                ui.send(node, WidgetMessage::Visibility(is_any_match));
+            }
+
+            is_any_match
+        }
+
+        let mut first_match_selected = false;
+        apply_filter_recursive(
+            self.groups_tree.to_base(),
+            &filter_text.to_lowercase(),
+            ui,
+            &mut first_match_selected,
+            self.groups_tree,
+        );
+
+        // Bring first item of current selection in the view when clearing the filter.
+        if filter_text.is_empty() {
+            if let Some(first) = ui[self.groups_tree].selected.first() {
+                ui.send(
+                    self.groups_scroll_viewer,
+                    ScrollViewerMessage::BringIntoView(first.to_base()),
+                );
+            }
+
+            ui.send(self.recent_list, ListViewMessage::Selection(vec![]));
+        }
+    }
+
+    fn on_constructor_selected<N, Ctx>(
+        &mut self,
+        constructors: &GraphNodeConstructorContainer<N, Ctx>,
+        selection: &[Handle<Tree>],
+        ui: &mut UserInterface,
+    ) {
+        if let Some(first) = selection.first() {
+            let constructor_id = self.items_map.get(first);
+            if let Some(constructor_id) = constructor_id {
+                self.selection = Some(constructor_id.clone());
+                if let Some(constructor) =
+                    constructors.try_get_constructor(&constructor_id.type_uuid)
+                {
+                    let content = markdown::markdown_to_visual_tree(ui, constructor.description);
+                    ui.send(
+                        self.description_scroll_viewer,
+                        ScrollViewerMessage::Content(content),
+                    );
+                    ui.send(
+                        self.description_scroll_viewer,
+                        ScrollViewerMessage::VerticalScroll(0.0),
+                    )
+                }
+            }
+            let can_create = constructor_id.is_some();
+            ui.send(self.create, WidgetMessage::Enabled(can_create));
+        }
+    }
+
+    fn handle_ui_message_internal<N, Ctx>(
+        &mut self,
+        constructors: &GraphNodeConstructorContainer<N, Ctx>,
+        message: &UiMessage,
+        ui: &mut UserInterface,
+        ctx: &mut Ctx,
+        settings: &mut Settings,
+        scene_path: Option<&PathBuf>,
+    ) -> Option<VariantResult<N>> {
+        if let Some(TreeRootMessage::Select(selection)) = message.data_from(self.groups_tree) {
+            self.on_constructor_selected(constructors, selection, ui)
+        } else if let Some(ButtonMessage::Click) = message.data_from(self.create) {
+            return self.on_create_clicked(constructors, ui, ctx, settings, scene_path);
+        } else if let Some(ButtonMessage::Click) = message.data_from(self.cancel) {
+            ui.send(self.window, WindowMessage::Close);
+        } else if let Some(SearchBarMessage::Text(filter_text)) = message.data_from(self.search_bar)
+        {
+            self.on_filter_changed(filter_text, ui);
+        } else if let Some(ListViewMessage::Selection(selection)) =
+            message.data_from(self.recent_list)
+        {
+            self.on_recent_item_selected(ui, selection)
+        } else if let Some(WidgetMessage::KeyDown(code)) = message.data() {
+            // Commit selected entity creation by hitting Enter.
+            if ui.is_node_child_of(message.destination(), self.window) && *code == KeyCode::Enter {
+                return self.on_create_clicked(constructors, ui, ctx, settings, scene_path);
+            }
+        }
+        None
+    }
+
+    pub fn handle_ui_message_with_game_scene(
+        &mut self,
+        game_scene: &GameScene,
+        engine: &mut Engine,
+        message: &UiMessage,
+        editor_selection: &Selection,
+        sender: &MessageSender,
+        settings: &mut Settings,
+        scene_path: Option<&PathBuf>,
+    ) -> Option<()> {
+        let graph = engine
+            .scenes
+            .try_get_mut(game_scene.scene)
+            .ok()
+            .map(|s| &mut s.graph)?;
+        if let Some(VariantResult::Owned(node)) = self.handle_ui_message_internal::<Node, Graph>(
+            &engine.serialization_context.node_constructors,
+            message,
+            engine.user_interfaces.first_mut(),
+            graph,
+            settings,
+            scene_path,
+        ) {
+            let graph_selection = editor_selection.as_graph()?;
+            let first_selected_node = graph_selection.nodes().first().cloned()?;
+
+            match self.mode {
+                EntityCreatorMode::CreateChild => {
+                    sender.do_command(AddNodeCommand::new(node, first_selected_node, true));
+                }
+                EntityCreatorMode::CreateParent => {
+                    let position = game_scene
+                        .camera_controller
+                        .placement_position(graph, first_selected_node);
+
+                    let first_ref = graph.try_get(first_selected_node).ok()?;
+                    let parent = if first_ref.parent().is_some() {
+                        first_ref.parent()
+                    } else {
+                        game_scene.scene_content_root
+                    };
+
+                    let new_parent_handle = graph.generate_free_handles(1)[0];
+                    let mut commands = CommandGroup::from(vec![
+                        Command::new(AddNodeCommand::new(node, parent, true)),
+                        Command::new(LinkNodesCommand::new(
+                            first_selected_node,
+                            new_parent_handle,
+                        )),
+                    ]);
+
+                    if parent == game_scene.scene_content_root {
+                        commands.push(MoveNodeCommand::new(
+                            new_parent_handle,
+                            Vector3::default(),
+                            position,
+                        ));
+                    }
+
+                    if first_selected_node == game_scene.scene_content_root {
+                        commands.push(SetGraphRootCommand {
+                            root: new_parent_handle,
+                            link_scheme: Default::default(),
+                        })
+                    }
+                    sender.do_command(commands);
+                }
+                EntityCreatorMode::CreateReplacement => {
+                    sender.do_command(ReplaceNodeCommand {
+                        handle: first_selected_node,
+                        node,
+                    });
+                }
+            }
+        }
+        None
+    }
+
+    pub fn handle_ui_message_with_ui_scene(
+        &mut self,
+        ui_scene: &mut UiScene,
+        engine: &mut Engine,
+        message: &UiMessage,
+        editor_selection: &Selection,
+        sender: &MessageSender,
+        settings: &mut Settings,
+        scene_path: Option<&PathBuf>,
+    ) {
+        if let Some(VariantResult::Handle(ui_node_handle)) = self
+            .handle_ui_message_internal::<UiNode, UserInterface>(
+                &engine.widget_constructors,
+                message,
+                engine.user_interfaces.first_mut(),
+                &mut ui_scene.ui,
+                settings,
+                scene_path,
+            )
+            && let EntityCreatorMode::CreateChild = self.mode
+        {
+            let sub_graph = ui_scene.ui.take_reserve_sub_graph(ui_node_handle);
+            let parent = if let Some(selection) = editor_selection.as_ui() {
+                selection.widgets.first().cloned().unwrap_or_default()
+            } else {
+                Handle::NONE
+            };
+            sender.do_command(AddWidgetCommand::new(sub_graph, parent, true));
+        }
+    }
+}

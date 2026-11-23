@@ -1,0 +1,778 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! Test cases for `fyrox_core::reflect::Reflect`
+
+#![allow(clippy::disallowed_names)] // Useless in tests
+
+use std::{
+    collections::HashMap,
+    ops::{Deref, DerefMut},
+};
+
+use fyrox_core::reflect::GetField;
+use fyrox_core::{parking_lot::Mutex, reflect::prelude::*};
+
+/// Struct doc comment.
+#[allow(dead_code)]
+#[derive(Reflect, Debug, PartialEq, Clone)]
+#[reflect(type_uuid = "ad7fce64-1e1d-4751-b7c7-63b0f981443d")]
+pub struct Struct {
+    /// This is a
+    /// multiline doc comment.
+    field: usize,
+    #[reflect(hidden)]
+    hidden: usize,
+}
+
+#[derive(Reflect, Clone, PartialEq, Debug)]
+#[reflect(type_uuid = "56bb558c-3e75-44ed-b249-dfe1dc4ae00d")]
+pub struct Tuple(usize, usize);
+
+#[derive(Reflect, Clone, PartialEq, Debug)]
+#[reflect(type_uuid = "e11dd933-5fe0-4e19-9183-e116c438eb0f")]
+pub enum Enum {
+    Named { field: usize },
+    Tuple(usize),
+    Unit,
+}
+
+#[test]
+fn property_constants() {
+    assert_eq!(Struct::FIELD, "field");
+
+    // hidden fields don't expose their keys
+    // assert_eq!(SStruct::HIDDEN, "hidden");
+
+    assert_eq!(Tuple::F_0, "0");
+    assert_eq!(Tuple::F_1, "1");
+
+    assert_eq!(Enum::NAMED_FIELD, "Named@field");
+    assert_eq!(Enum::TUPLE_F_0, "Tuple@0");
+}
+
+#[test]
+fn doc_comments() {
+    let s = Struct {
+        field: 0,
+        hidden: 0,
+    };
+    s.fields_ref(&mut |infos| {
+        assert_eq!(infos[0].doc, " This is a\n multiline doc comment.\n");
+    });
+    assert_eq!(s.type_info_ref().doc_comment, " Struct doc comment.\n");
+}
+
+#[test]
+fn reflect_field_accessors() {
+    let mut s = Struct {
+        field: 10,
+        hidden: 10,
+    };
+
+    s.get_field::<usize>(Struct::FIELD, &mut |field| assert_eq!(field, Some(&10)));
+    s.get_field_mut::<usize>(Struct::FIELD, &mut |field| assert_eq!(field, Some(&mut 10)));
+    s.get_field_mut::<usize>(Struct::FIELD, &mut |field| *field.unwrap() = 100);
+    s.get_field::<usize>(Struct::FIELD, &mut |field| assert_eq!(field, Some(&100)));
+
+    s.get_field::<usize>("HIDDEN", &mut |field| assert!(field.is_none()));
+
+    let mut t = Tuple(0, 1);
+
+    t.get_field::<usize>(Tuple::F_0, &mut |field| assert_eq!(field, Some(&0)));
+    t.get_field::<usize>(Tuple::F_1, &mut |field| assert_eq!(field, Some(&1)));
+
+    t.get_field_mut::<usize>(Tuple::F_0, &mut |field| *field.unwrap() += 10);
+    t.get_field_mut::<usize>(Tuple::F_1, &mut |field| *field.unwrap() += 10);
+
+    t.get_field::<usize>(Tuple::F_0, &mut |field| assert_eq!(field, Some(&10)));
+    t.get_field::<usize>(Tuple::F_1, &mut |field| assert_eq!(field, Some(&11)));
+
+    let mut e_named = Enum::Named { field: 10 };
+
+    e_named.get_field::<usize>(Enum::NAMED_FIELD, &mut |field| assert_eq!(field, Some(&10)));
+    e_named.get_field::<usize>(Enum::TUPLE_F_0, &mut |field| assert_eq!(field, None));
+    e_named.get_field_mut::<usize>(Enum::NAMED_FIELD, &mut |field| *field.unwrap() = 20usize);
+    e_named.get_field::<usize>(Enum::NAMED_FIELD, &mut |field| assert_eq!(field, Some(&20)));
+
+    let mut e_tuple = Enum::Tuple(30);
+
+    e_tuple.get_field::<usize>(Enum::NAMED_FIELD, &mut |field| assert_eq!(field, None));
+    e_tuple.get_field::<usize>(Enum::TUPLE_F_0, &mut |field| assert_eq!(field, Some(&30)));
+    e_tuple.get_field_mut::<usize>(Enum::TUPLE_F_0, &mut |field| *field.unwrap() = 40usize);
+    e_tuple.get_field::<usize>(Enum::TUPLE_F_0, &mut |field| assert_eq!(field, Some(&40)));
+}
+
+#[test]
+fn reflect_containers() {
+    #[derive(Debug, PartialEq, Clone)]
+    struct DerefContainer<T> {
+        data: T,
+    }
+
+    impl<T> Deref for DerefContainer<T> {
+        type Target = T;
+        fn deref(&self) -> &Self::Target {
+            &self.data
+        }
+    }
+
+    impl<T> DerefMut for DerefContainer<T> {
+        fn deref_mut(&mut self) -> &mut Self::Target {
+            &mut self.data
+        }
+    }
+
+    #[derive(Reflect, PartialEq, Clone, Debug)]
+    #[reflect(type_uuid = "414ec606-65bc-478e-94ea-326f477818aa")]
+    struct X {
+        #[reflect(deref)]
+        container: DerefContainer<Struct>,
+    }
+
+    let x = X {
+        container: DerefContainer {
+            data: Struct {
+                field: 0,
+                hidden: 1,
+            },
+        },
+    };
+
+    x.get_resolve_path::<usize>("container.data.field", &mut |result| {
+        assert!(result.is_err())
+    });
+
+    x.get_resolve_path::<usize>("container.field", &mut |result| assert_eq!(result, Ok(&0)));
+
+    #[derive(Reflect, PartialEq, Clone, Debug)]
+    #[reflect(bounds = "T: Reflect + Clone + PartialEq")]
+    #[reflect(type_uuid = "b3120e24-2c01-40ef-9c89-6ca40e713260")]
+    struct B<T> {
+        #[reflect(deref)]
+        data: Box<T>,
+    }
+
+    let b = B {
+        data: Box::new(Struct {
+            field: 10,
+            hidden: 11,
+        }),
+    };
+
+    b.get_resolve_path::<usize>("data.field", &mut |result| assert_eq!(result, Ok(&10)));
+    x.get_resolve_path::<usize>("data.hidden", &mut |result| assert!(result.is_err()));
+}
+
+#[test]
+fn reflect_path() {
+    #[derive(Reflect, PartialEq, Clone, Debug)]
+    #[reflect(type_uuid = "d539b45a-c8be-4009-95ff-3ac0dfeaa47f")]
+    struct Hierarchy {
+        s: Struct,
+        e: Enum,
+    }
+
+    let mut hie = Hierarchy {
+        s: Struct {
+            field: 1,
+            hidden: 2,
+        },
+        e: Enum::Tuple(10),
+    };
+
+    hie.get_resolve_path::<usize>("s.field", &mut |result| assert_eq!(result, Ok(&1)));
+    hie.get_resolve_path::<usize>("e.Tuple@0", &mut |result| assert_eq!(result, Ok(&10)));
+
+    hie.get_resolve_path_mut::<usize>("s.field", &mut |result| assert_eq!(result, Ok(&mut 1)));
+    hie.get_resolve_path_mut::<usize>("e.Tuple@0", &mut |result| assert_eq!(result, Ok(&mut 10)));
+}
+
+#[test]
+fn reflect_list() {
+    let mut data = vec![10usize, 11usize];
+
+    let data = &mut data as &mut dyn Reflect;
+    let data = data.as_list_mut().unwrap();
+    data.get_reflect_index(0, &mut |result| assert_eq!(result, Some(&10usize)));
+    data.get_reflect_index::<usize>(2, &mut |result| assert_eq!(result, None));
+
+    data.reflect_push(Box::new(12usize)).unwrap();
+    data.get_reflect_index(2, &mut |result| assert_eq!(result, Some(&12usize)));
+}
+
+#[test]
+fn reflect_list_path() {
+    let data = vec![vec![0usize, 1], vec![2, 3, 4]];
+    data.get_resolve_path("[0][1]", &mut |result| assert_eq!(result, Ok(&1usize)));
+
+    #[derive(Reflect, PartialEq, Clone, Debug)]
+    #[reflect(type_uuid = "19d84906-550f-4dcd-82f8-1261ddc86139")]
+    struct X {
+        data: Vec<usize>,
+    }
+
+    #[derive(Reflect, PartialEq, Clone, Debug)]
+    #[reflect(type_uuid = "29da25ee-14ae-42b3-89f7-bca518188600")]
+    struct A {
+        xs: Vec<X>,
+    }
+
+    let a = A {
+        xs: vec![
+            X { data: vec![0, 1] },
+            X {
+                data: vec![2, 3, 4],
+            },
+        ],
+    };
+
+    a.get_resolve_path("xs[0].data[1]", &mut |result| {
+        assert_eq!(result, Ok(&1usize))
+    });
+}
+
+#[test]
+fn reflect_custom_setter() {
+    #[derive(Reflect, PartialEq, Clone, Debug)]
+    #[reflect(bounds = "T: Reflect + Clone + PartialEq")]
+    #[reflect(type_uuid = "9b23adf0-e9dd-4fbc-b410-8f9c0da26a20")]
+    pub struct Wrapper<T> {
+        #[reflect(setter = "set_value")]
+        value: T,
+        is_dirty: bool,
+    }
+
+    impl<T> Wrapper<T> {
+        pub fn set_value(&mut self, value: T) -> T {
+            self.is_dirty = true;
+            std::mem::replace(&mut self.value, value)
+        }
+    }
+
+    let mut wrapper = Wrapper {
+        value: 0.0f32,
+        is_dirty: false,
+    };
+
+    let value = 10.0f32;
+    wrapper.set_field(Wrapper::<()>::VALUE, Box::new(value), &mut |result| {
+        assert!(result.is_ok())
+    });
+    assert!(wrapper.is_dirty);
+}
+
+#[test]
+fn reflect_fields_list_of_struct() {
+    #[derive(Reflect, PartialEq, Clone, Debug)]
+    #[reflect(type_uuid = "45204fc1-ca94-4349-a6b8-f8a812545052")]
+    struct Foo {
+        field_a: f32,
+        field_b: String,
+    }
+
+    let foo = Foo {
+        field_a: 1.23,
+        field_b: "Foobar".to_string(),
+    };
+
+    foo.fields_ref(&mut |fields| assert_eq!(fields.len(), 2));
+    foo.fields_ref(&mut |fields| {
+        assert_eq!(fields[0].value.downcast_ref::<f32>().cloned(), Some(1.23))
+    });
+    foo.fields_ref(&mut |fields| {
+        assert_eq!(
+            fields[1].value.downcast_ref::<String>().cloned(),
+            Some("Foobar".to_string())
+        )
+    });
+}
+
+#[test]
+fn reflect_fields_list_of_enum() {
+    #[derive(Reflect, PartialEq, Clone, Debug)]
+    #[reflect(type_uuid = "ea3d20cf-7f77-40d1-b1f3-38cb9f2ccc06")]
+    enum Foo {
+        Bar { field_a: f32 },
+        Baz { field_b: u32, field_c: String },
+    }
+
+    let bar_variant = Foo::Bar { field_a: 1.23 };
+
+    bar_variant.fields_ref(&mut |fields| assert_eq!(fields.len(), 1));
+    bar_variant.fields_ref(&mut |fields| {
+        assert_eq!(fields[0].value.downcast_ref::<f32>().cloned(), Some(1.23))
+    });
+
+    let baz_variant = Foo::Baz {
+        field_b: 321,
+        field_c: "Foobar".to_string(),
+    };
+
+    baz_variant.fields_ref(&mut |fields| assert_eq!(fields.len(), 2));
+    baz_variant.fields_ref(&mut |fields| {
+        assert_eq!(fields[0].value.downcast_ref::<u32>().cloned(), Some(321))
+    });
+    baz_variant.fields_ref(&mut |fields| {
+        assert_eq!(
+            fields[1].value.downcast_ref::<String>().cloned(),
+            Some("Foobar".to_string())
+        )
+    });
+}
+
+fn default_prop_metadata() -> FieldMetadata<'static> {
+    FieldMetadata {
+        name: "",
+        display_name: "",
+        read_only: false,
+        immutable_collection: false,
+        min_value: None,
+        max_value: None,
+        step: None,
+        precision: None,
+        tag: "",
+        doc: "",
+    }
+}
+
+#[test]
+fn inspect_default() {
+    #[derive(Debug, Default, Clone, PartialEq, Reflect)]
+    #[reflect(type_uuid = "51374579-08e8-4233-930e-239b00938371")]
+    pub struct Data {
+        the_field: String,
+        another_field: f32,
+    }
+
+    let data = Data::default();
+
+    let the_field_metadata = FieldMetadata {
+        name: "the_field",
+        display_name: "The Field",
+        ..default_prop_metadata()
+    };
+
+    let another_field_metadata = FieldMetadata {
+        name: "another_field",
+        display_name: "Another Field",
+        ..default_prop_metadata()
+    };
+
+    let expected = vec![
+        FieldRef {
+            metadata: &the_field_metadata,
+            value: &data.the_field,
+        },
+        FieldRef {
+            metadata: &another_field_metadata,
+            value: &data.another_field,
+        },
+    ];
+
+    data.fields_ref(&mut |fields_ref| assert_eq!(fields_ref, expected));
+}
+
+#[test]
+fn inspect_attributes() {
+    #[derive(Debug, Default, Clone, PartialEq, Reflect)]
+    #[reflect(type_uuid = "e8bb7752-6ff6-4cbb-87fd-e7c10e5ec970")]
+    struct Foobar {
+        foo: u32,
+        bar: u32,
+    }
+
+    let foobar = Foobar::default();
+
+    assert_eq!(foobar.fields_count(), 2);
+
+    #[derive(Debug, Default, Clone, PartialEq, Reflect)]
+    #[reflect(type_uuid = "4e0709c6-b89a-47cb-ab06-f19b01b85ec1")]
+    struct Data {
+        // NOTE: Even though this field is skipped, the next field is given index `1` for simplicity
+        #[reflect(hidden)]
+        _skipped: u32,
+        #[reflect(display_name = "Super X")]
+        x: f32,
+        /// This is a property description.
+        #[reflect(
+            read_only,
+            min_value = 0.1,
+            max_value = 1.1,
+            step = 0.1,
+            precision = 3,
+            tag = "SomeTag"
+        )]
+        y: f32,
+    }
+
+    let data = Data::default();
+
+    assert_eq!(data.fields_count(), 2);
+
+    let x_metadata = FieldMetadata {
+        name: "x",
+        display_name: "Super X",
+        ..default_prop_metadata()
+    };
+
+    let expected = vec![
+        FieldRef {
+            metadata: &x_metadata,
+            value: &data.x,
+        },
+        FieldRef {
+            metadata: &FieldMetadata {
+                name: "y",
+                display_name: "Y",
+                read_only: true,
+                immutable_collection: false,
+                min_value: Some(0.1),
+                max_value: Some(1.1),
+                step: Some(0.1),
+                precision: Some(3),
+                tag: "SomeTag",
+                doc: "",
+            },
+            value: &data.y,
+        },
+    ];
+
+    data.fields_ref(&mut |fields_ref| assert_eq!(fields_ref[0..2], expected));
+}
+
+#[test]
+fn inspect_struct() {
+    #[derive(Debug, Default, Clone, PartialEq, Reflect)]
+    #[reflect(type_uuid = "488c51be-b7d8-4d2b-ad70-fbfd688f372f")]
+    struct Tuple(f32, f32);
+
+    let x = Tuple::default();
+
+    x.fields_ref(&mut |fields_ref| {
+        assert_eq!(
+            fields_ref,
+            vec![
+                FieldRef {
+                    metadata: &FieldMetadata {
+                        name: "0",
+                        display_name: "0",
+                        ..default_prop_metadata()
+                    },
+                    value: &x.0,
+                },
+                FieldRef {
+                    metadata: &FieldMetadata {
+                        name: "1",
+                        display_name: "1",
+                        ..default_prop_metadata()
+                    },
+                    value: &x.1,
+                },
+            ]
+        )
+    });
+
+    #[derive(Debug, Default, Clone, PartialEq, Reflect)]
+    #[reflect(type_uuid = "ea0a8630-f6ca-45b1-84f4-e49f523328b5")]
+    struct Unit;
+
+    let x = Unit;
+    x.fields_ref(&mut |fields_ref| assert_eq!(fields_ref, vec![]));
+}
+
+#[test]
+fn inspect_enum() {
+    #[derive(Debug, Clone, PartialEq, Reflect)]
+    #[reflect(type_uuid = "3c045962-be82-4655-8444-ec5867fc8244")]
+    pub struct NonCopy {
+        inner: u32,
+    }
+
+    #[derive(Debug, Clone, PartialEq, Reflect)]
+    #[reflect(type_uuid = "1948ec80-47d6-4607-ac39-aa92b225e2a8")]
+    pub enum Data {
+        Named { x: u32, y: u32, z: NonCopy },
+        Tuple(f32, f32),
+        Unit,
+    }
+
+    let data = Data::Named {
+        x: 0,
+        y: 1,
+        z: NonCopy { inner: 10 },
+    };
+
+    data.fields_ref(&mut |fields_ref| {
+        assert_eq!(
+            fields_ref,
+            vec![
+                FieldRef {
+                    metadata: &FieldMetadata {
+                        name: "Named@x",
+                        display_name: "X",
+                        ..default_prop_metadata()
+                    },
+                    value: match data {
+                        Data::Named { ref x, .. } => x,
+                        _ => unreachable!(),
+                    },
+                },
+                FieldRef {
+                    metadata: &FieldMetadata {
+                        name: "Named@y",
+                        display_name: "Y",
+                        ..default_prop_metadata()
+                    },
+                    value: match data {
+                        Data::Named { ref y, .. } => y,
+                        _ => unreachable!(),
+                    },
+                },
+                FieldRef {
+                    metadata: &FieldMetadata {
+                        name: "Named@z",
+                        display_name: "Z",
+                        ..default_prop_metadata()
+                    },
+                    value: match data {
+                        Data::Named { ref z, .. } => z,
+                        _ => unreachable!(),
+                    },
+                },
+            ]
+        )
+    });
+
+    let data = Data::Tuple(10.0, 20.0);
+
+    data.fields_ref(&mut |fields_ref| {
+        assert_eq!(
+            fields_ref,
+            vec![
+                FieldRef {
+                    metadata: &FieldMetadata {
+                        name: "Tuple@0",
+                        display_name: "0",
+                        ..default_prop_metadata()
+                    },
+                    value: match data {
+                        Data::Tuple(ref f0, ref _f1) => f0,
+                        _ => unreachable!(),
+                    },
+                },
+                FieldRef {
+                    metadata: &FieldMetadata {
+                        name: "Tuple@1",
+                        display_name: "1",
+                        ..default_prop_metadata()
+                    },
+                    value: match data {
+                        Data::Tuple(ref _f0, ref f1) => f1,
+                        _ => unreachable!(),
+                    },
+                },
+            ]
+        )
+    });
+
+    // unit variants don't have fields
+    let data = Data::Unit;
+    data.fields_ref(&mut |fields_ref| assert_eq!(fields_ref, vec![]));
+}
+
+#[test]
+fn test_direct_field_refs() {
+    #[derive(PartialEq, Reflect, Clone, Debug)]
+    #[reflect(type_uuid = "7a97f35b-3919-4ad8-bf7a-72f21c8639c4")]
+    pub struct MyStruct {
+        field: usize,
+        #[reflect(hidden)]
+        hidden: usize,
+        another_field: f32,
+    }
+    let my_struct = MyStruct {
+        field: 123,
+        hidden: 0,
+        another_field: 321.123,
+    };
+
+    assert_eq!(my_struct.fields_count(), 2);
+    assert_eq!(
+        my_struct
+            .field_direct_ref(0)
+            .and_then(|v| v.value.downcast_ref::<usize>())
+            .cloned(),
+        Some(123usize)
+    );
+    assert_eq!(
+        my_struct
+            .field_direct_ref(1)
+            .and_then(|v| v.value.downcast_ref::<f32>())
+            .cloned(),
+        Some(321.123f32)
+    );
+    assert_eq!(
+        (&my_struct as &dyn Reflect)
+            .first_field_ref::<f32>()
+            .cloned(),
+        Some(321.123f32)
+    );
+}
+
+#[test]
+fn inspect_prop_key_constants() {
+    #[allow(dead_code)]
+    #[derive(PartialEq, Reflect, Clone, Debug)]
+    #[reflect(type_uuid = "7a97f35b-3919-4ad8-bf7a-72f21c8639c4")]
+    pub struct SStruct {
+        field: usize,
+        #[reflect(hidden)]
+        hidden: usize,
+    }
+
+    // NOTE: property names are in snake_case (not Title Case)
+    assert_eq!(SStruct::FIELD, "field");
+
+    // hidden properties
+    // assert_eq!(SStruct::HIDDEN, "hidden");
+
+    #[derive(PartialEq, Reflect, Clone, Debug)]
+    #[reflect(type_uuid = "16aeb5c7-e3cd-49bd-999f-5d54c159dc20")]
+    pub struct STuple(usize);
+    assert_eq!(STuple::F_0, "0");
+
+    #[derive(PartialEq, Reflect, Clone, Debug)]
+    #[reflect(type_uuid = "272d8a6f-59dd-412e-a28a-0e9b63df40cc")]
+    #[allow(unused)]
+    pub enum E {
+        Tuple(usize),
+        Struct { field: usize },
+        Unit,
+    }
+
+    assert_eq!(E::TUPLE_F_0, "Tuple@0");
+    E::Tuple(0).fields_ref(&mut |fields_ref| assert_eq!(E::TUPLE_F_0, fields_ref[0].name));
+
+    assert_eq!(E::STRUCT_FIELD, "Struct@field");
+
+    E::Struct { field: 0 }
+        .fields_ref(&mut |fields_ref| assert_eq!(E::STRUCT_FIELD, fields_ref[0].name));
+}
+
+#[test]
+fn test_reflect_mutex() {
+    let foo = Mutex::new(Struct {
+        field: 123,
+        hidden: 0,
+    });
+
+    foo.get_resolve_path::<usize>("Content.field", &mut |result| {
+        assert_eq!(result, Ok(&123));
+    });
+
+    foo.get_resolve_path::<u32>("hidden", &mut |result| {
+        assert!(result.is_err());
+    });
+}
+
+#[test]
+fn test_hash_map() {
+    let mut hash_map = HashMap::new();
+
+    let foo_key = "foo".to_string();
+    hash_map.insert(
+        foo_key.clone(),
+        Struct {
+            field: 123,
+            hidden: 0,
+        },
+    );
+
+    let bar_key = "bar".to_string();
+    hash_map.insert(
+        bar_key.clone(),
+        Struct {
+            field: 321,
+            hidden: 0,
+        },
+    );
+
+    {
+        let hash_map = hash_map.as_hash_map().unwrap();
+        assert_eq!(hash_map.reflect_len(), 2);
+        assert_eq!(
+            hash_map
+                .reflect_get(&foo_key)
+                .unwrap()
+                .downcast_ref::<Struct>()
+                .unwrap()
+                .field,
+            123
+        );
+    }
+
+    {
+        let hash_map = hash_map.as_hash_map_mut().unwrap();
+        hash_map
+            .reflect_get_mut(&bar_key)
+            .unwrap()
+            .downcast_mut::<Struct>()
+            .unwrap()
+            .field = 555;
+    }
+
+    // Check path resolution.
+    #[derive(PartialEq, Reflect, Clone, Debug)]
+    #[reflect(type_uuid = "89281d16-93d1-4669-8006-f7d371cb28f3")]
+    struct Something {
+        hash_map: HashMap<String, Struct>,
+    }
+
+    let mut hash_map2 = hash_map.clone();
+    let something = Something { hash_map };
+
+    something.get_resolve_path::<usize>("hash_map[foo].field", &mut |result| {
+        assert_eq!(*result.unwrap(), 123)
+    });
+    something.get_resolve_path::<usize>("hash_map[bar].field", &mut |result| {
+        assert_eq!(*result.unwrap(), 555)
+    });
+
+    // Check key replacement.
+    let baz_key = "baz".to_string();
+    hash_map2
+        .reflect_replace_key(&bar_key, Box::new(baz_key.clone()))
+        .unwrap();
+
+    {
+        assert_eq!(hash_map2.reflect_len(), 2);
+        assert!(hash_map2.reflect_get(&bar_key).is_none());
+        assert_eq!(
+            hash_map2
+                .reflect_get(&baz_key)
+                .unwrap()
+                .downcast_ref::<Struct>()
+                .unwrap()
+                .field,
+            555
+        );
+    }
+}

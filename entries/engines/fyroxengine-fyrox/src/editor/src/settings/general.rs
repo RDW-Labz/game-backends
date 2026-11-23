@@ -1,0 +1,136 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+use crate::fyrox::core::reflect::prelude::*;
+use crate::fyrox::core::visitor::prelude::*;
+use std::path::PathBuf;
+use strum_macros::{AsRefStr, EnumString, VariantNames};
+
+#[derive(
+    Copy,
+    Clone,
+    Hash,
+    PartialOrd,
+    PartialEq,
+    Eq,
+    Ord,
+    Debug,
+    Visit,
+    Reflect,
+    AsRefStr,
+    EnumString,
+    VariantNames,
+)]
+#[reflect(type_uuid = "35e8d30d-1213-4d87-905e-19d48550e6d5")]
+pub enum EditorStyle {
+    Dark,
+    Light,
+}
+
+#[derive(Visit, PartialEq, Clone, Debug, Reflect)]
+#[reflect(type_uuid = "9f97ae95-85bd-4fe8-9b80-7d45417df7c8")]
+pub struct GeneralSettings {
+    /// Defines whether the editor checks for references to an object that is about to be deleted or not.
+    pub show_node_removal_dialog: bool,
+
+    /// When set, suspends the editor execution if its main window is unfocused. Use this option to reduce \
+    /// CPU/GPU resources consumption when you don't need the editor to run in the background.
+    pub suspend_unfocused_editor: bool,
+
+    /// When set, suspends the editor will update and render itself on every frame. By default, this
+    /// option is disabled.
+    pub keep_editor_active: bool,
+
+    pub script_editor: ScriptEditor,
+
+    /// Maximum capacity of actions history stack stored by the editor. Default is 512. Large numbers
+    /// will increase maximum amount of memory needed for the editor.
+    pub max_history_entries: usize,
+
+    /// Enables or disables preview generation for assets in the asset browser. This feature could
+    /// be disabled, if you're getting performance issues when there's a lot of assets in a folder.
+    /// Due to technical difficulties, preview generation will be done on main thread, which could
+    /// cause lag spikes.
+    pub generate_previews: bool,
+
+    /// Maximum amount of log entries. Large values could harm performance and increase memory usage.
+    /// Typical values are 200-500
+    pub max_log_entries: usize,
+
+    pub style: EditorStyle,
+
+    /// A list of scenes that will be loaded at the editor start.
+    pub startup_scenes: Vec<PathBuf>,
+}
+
+impl GeneralSettings {
+    pub fn add_startup_scene(&mut self, path: &PathBuf) {
+        if self.startup_scenes.contains(path) {
+            return;
+        }
+        self.startup_scenes.push(path.clone());
+    }
+
+    pub fn remove_startup_scene(&mut self, path: &PathBuf) {
+        while let Some(pos) = self.startup_scenes.iter().position(|p| p == path) {
+            self.startup_scenes.remove(pos);
+        }
+    }
+}
+
+#[derive(
+    Copy,
+    Clone,
+    Hash,
+    PartialOrd,
+    PartialEq,
+    Eq,
+    Ord,
+    Debug,
+    Visit,
+    Reflect,
+    AsRefStr,
+    EnumString,
+    VariantNames,
+)]
+#[reflect(type_uuid = "d0c942e8-24e4-40f2-ad2e-1b9f189d3ca2")]
+pub enum ScriptEditor {
+    SystemDefault,
+    VSCode,
+    Emacs,
+    XCode,
+    Zed,
+}
+
+impl Default for GeneralSettings {
+    fn default() -> Self {
+        Self {
+            show_node_removal_dialog: true,
+            suspend_unfocused_editor: true,
+            keep_editor_active: false,
+            script_editor: ScriptEditor::SystemDefault,
+            max_history_entries: 512,
+            generate_previews: true,
+            max_log_entries: 256,
+            style: EditorStyle::Dark,
+            startup_scenes: Default::default(),
+        }
+    }
+}

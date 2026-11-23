@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T02:46:14Z",
+ "category": "engines",
+ "commit": "2026-10-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "PistonDevelopers/hematite \u2014 A simple Minecraft written in Rust with the Piston game engine",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "hematite",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "pistondevelopers-hematite",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 1920,
+ "system": "A simple Minecraft written in Rust with the Piston game engine",
+ "upstream": "https://github.com/PistonDevelopers/hematite",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

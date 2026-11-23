@@ -1,0 +1,27 @@
+[package]
+name = "fyrox-core-derive"
+version = "2.0.0-rc.1"
+authors = ["toyboot4e <toyboot4e@gmail.com>, Dmitry Stepanov <d1maxa@yandex.ru>"]
+edition = "2024"
+license = "MIT"
+description = "Proc-macro for the Visit trait"
+repository = "https://github.com/FyroxEngine/Fyrox"
+include = ["/src/**/*", "/Cargo.toml", "/README.md"]
+readme = "README.md"
+rust-version = "1.94"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+convert_case = "0.6.0"
+proc-macro2 = "1.0.33"
+quote = "1.0.10"
+syn = "1.0.82"
+darling = "0.14.0"
+fxhash = "0.2.1"
+uuid = { version = "1.29.3", features = ["v4"] }
+
+[dev-dependencies]
+fyrox-core = { path = "../fyrox-core" }
+futures = "0.3.16"

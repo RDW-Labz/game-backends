@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T02:46:12Z",
+ "category": "engines",
+ "commit": "8d602d3f8ebb",
+ "delivery": "vendored",
+ "description": "not-fl3/macroquad \u2014 Cross-platform game engine in Rust.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "macroquad",
+ "size_bytes": 732188,
+ "slug": "not-fl3-macroquad",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 4737,
+ "system": "Cross-platform game engine in Rust. ",
+ "upstream": "https://github.com/not-fl3/macroquad",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1707,3 +1707,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/elnormous-ouzel
   - reference engines/krkrz-krkrz
   - reference engines/utopia-rise-fmod-gdextension
+
+- **2026-11-23 02:46 UTC** — tick 660: +2 screened, +4 reference, 5 skipped, catalogue=542
+  - added engines/fyroxengine-fyrox (MIT, vendored)
+  - added engines/not-fl3-macroquad (Apache-2.0, vendored)
+  - reference engines/ggez-ggez
+  - reference engines/ambientrun-ambient
+  - reference engines/bevy-cheatbook-bevy-cheatbook
+  - reference engines/pistondevelopers-hematite

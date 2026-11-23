@@ -1,0 +1,32 @@
+[package]
+name = "fyroxed_base"
+license = "MIT"
+version = "2.0.0-rc.1"
+authors = ["Dmitry Stepanov <d1maxa@yandex.ru>"]
+edition = "2024"
+rust-version = "1.94"
+description = "A scene editor for Fyrox game engine"
+keywords = ["fyrox", "editor", "rust"]
+repository = "https://github.com/FyroxEngine/Fyrox"
+readme = "README.md"
+include = ["/src/**/*", "/Cargo.toml", "/LICENSE", "/README.md", "/resources/**/*"]
+
+[dependencies]
+fyrox = { version = "2.0.0-rc.1", path = "../fyrox", default-features = false }
+fyrox-build-tools = { version = "2.0.0-rc.1", path = "../fyrox-build-tools" }
+toml_edit = "0.23"
+strum = "0.27"
+strum_macros = "0.27"
+open = "5"
+opener = { version = "0.8", default-features = false, features = ["reveal"] }
+rust-fuzzy-search = "0.1.1"
+image = { version = "0.25.1", default-features = false, features = ["gif", "jpeg", "png", "tga", "tiff", "bmp"] }
+imageproc = "0.25.0"
+notify = "8"
+bitflags = "2.9.1"
+
+[features]
+default = ["fyrox/default", "backend_opengl"]
+dylib_engine = ["fyrox/dylib"]
+backend_opengl = ["fyrox/backend_opengl"]
+backend_wgpu = ["fyrox/backend_wgpu"]

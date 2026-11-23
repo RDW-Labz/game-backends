@@ -1,0 +1,188 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! UUID editor is used to show an arbitrary UUID and give an ability to generate a new value. See [`UuidEditor`] docs for
+//! more info and usage examples.
+
+#![warn(missing_docs)]
+
+use crate::{
+    BuildContext, Control, Thickness, UiNode, UserInterface, VerticalAlignment,
+    button::{Button, ButtonMessage},
+    core::{pool::Handle, reflect::prelude::*, visitor::prelude::*},
+    define_widget_deref,
+    grid::{Column, GridBuilder, Row},
+    message::{MessageData, UiMessage},
+    resources,
+    text::{Text, TextBuilder, TextMessage},
+    utils::ImageButtonBuilder,
+    widget::{Widget, WidgetBuilder},
+};
+
+use fyrox_graph::constructor::{ConstructorProvider, GraphNodeConstructor};
+
+/// A set of messages that is used to fetch or modify values of [`UuidEditor`] widgets.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum UuidEditorMessage {
+    /// Fetches or modifies the value of a [`UuidEditor`] widget.
+    Value(Uuid),
+}
+impl MessageData for UuidEditorMessage {}
+
+/// UUID editor is used to show an arbitrary UUID and give an ability to generate a new value. It is widely used in
+/// [`crate::inspector::Inspector`] to show and edit UUIDs.
+///
+/// ## Example
+///
+/// ```rust
+/// # use fyrox_ui::{
+/// #     core::{pool::Handle, uuid::Uuid},
+/// #     uuid::UuidEditorBuilder,
+/// #     widget::WidgetBuilder,
+/// #     BuildContext, UiNode,
+/// # };
+/// # use fyrox_ui::uuid::UuidEditor;
+///
+/// fn create_uuid_editor(ctx: &mut BuildContext) -> Handle<UuidEditor> {
+///     UuidEditorBuilder::new(WidgetBuilder::new())
+///         .with_value(Uuid::new_v4())
+///         .build(ctx)
+/// }
+/// ```
+#[derive(Default, Clone, Visit, PartialEq, Reflect, Debug)]
+#[reflect(
+    derived_type = "UiNode",
+    type_uuid = "667f7f48-2448-42da-91dd-cd743ca7117e"
+)]
+pub struct UuidEditor {
+    widget: Widget,
+    value: Uuid,
+    text: Handle<Text>,
+    generate: Handle<Button>,
+}
+
+impl ConstructorProvider<UiNode, UserInterface> for UuidEditor {
+    fn constructor() -> GraphNodeConstructor<UiNode, UserInterface> {
+        GraphNodeConstructor::new::<Self>()
+            .with_variant("Uuid Editor", |ui| {
+                UuidEditorBuilder::new(WidgetBuilder::new().with_name("Uuid Editor"))
+                    .build(&mut ui.build_ctx())
+                    .to_base()
+                    .into()
+            })
+            .with_group("Input")
+    }
+}
+
+define_widget_deref!(UuidEditor);
+
+impl Control for UuidEditor {
+    fn handle_routed_message(&mut self, ui: &mut UserInterface, message: &mut UiMessage) {
+        self.widget.handle_routed_message(ui, message);
+
+        if let Some(UuidEditorMessage::Value(value)) = message.data_for(self.handle) {
+            if self.value != *value {
+                self.value = *value;
+                ui.try_send_response(message);
+                ui.send(self.text, TextMessage::Text(value.to_string()));
+            }
+        } else if let Some(ButtonMessage::Click) = message.data_from(self.generate) {
+            ui.send(self.handle, UuidEditorMessage::Value(Uuid::new_v4()));
+        }
+    }
+}
+
+/// Creates [`UuidEditor`] widgets and add them to the user interface.
+pub struct UuidEditorBuilder {
+    widget_builder: WidgetBuilder,
+    value: Uuid,
+}
+
+impl UuidEditorBuilder {
+    /// Creates new builder instance.
+    pub fn new(widget_builder: WidgetBuilder) -> Self {
+        Self {
+            widget_builder,
+            value: Default::default(),
+        }
+    }
+
+    /// Sets a desired value of the [`UuidEditor`].
+    pub fn with_value(mut self, value: Uuid) -> Self {
+        self.value = value;
+        self
+    }
+
+    /// Finishes widget building.
+    pub fn build(self, ctx: &mut BuildContext) -> Handle<UuidEditor> {
+        let text;
+        let generate;
+        let grid = GridBuilder::new(
+            WidgetBuilder::new()
+                .with_child({
+                    text = TextBuilder::new(
+                        WidgetBuilder::new()
+                            .on_column(0)
+                            .on_row(0)
+                            .with_margin(Thickness::uniform(1.0))
+                            .with_vertical_alignment(VerticalAlignment::Center),
+                    )
+                    .with_text(self.value.to_string())
+                    .build(ctx);
+                    text
+                })
+                .with_child({
+                    generate = ImageButtonBuilder::default()
+                        .on_column(1)
+                        .on_row(0)
+                        .with_size(20.0)
+                        .with_image_size(14.0)
+                        .with_image(resources::SHUFFLE.resource_opt().into())
+                        .with_tooltip("New Random UUID")
+                        .build_button(ctx);
+                    generate
+                }),
+        )
+        .add_row(Row::stretch())
+        .add_column(Column::stretch())
+        .add_column(Column::auto())
+        .build(ctx);
+
+        let uuid_editor = UuidEditor {
+            widget: self.widget_builder.with_child(grid).build(ctx),
+            value: self.value,
+            text,
+            generate,
+        };
+
+        ctx.add(uuid_editor)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::uuid::UuidEditorBuilder;
+    use crate::{test::test_widget_deletion, widget::WidgetBuilder};
+
+    #[test]
+    fn test_deletion() {
+        test_widget_deletion(|ctx| UuidEditorBuilder::new(WidgetBuilder::new()).build(ctx));
+    }
+}

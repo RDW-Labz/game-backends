@@ -1,0 +1,1060 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+use crate::{
+    DropdownListBuilder, GameScene, Message, Mode, SceneContainer, Settings,
+    fyrox::{
+        core::{algebra::Vector2, color::Color, math::Rect, pool::Handle, uuid::Uuid},
+        engine::Engine,
+        fxhash::FxHashMap,
+        graph::SceneGraph,
+        graphics::PolygonFillMode,
+        gui::{
+            BuildContext, HorizontalAlignment, Orientation, Thickness, UserInterface,
+            VerticalAlignment,
+            border::{Border, BorderBuilder},
+            brush::Brush,
+            button::{Button, ButtonBuilder, ButtonMessage},
+            canvas::CanvasBuilder,
+            check_box::{CheckBox, CheckBoxBuilder, CheckBoxMessage},
+            decorator::DecoratorMessage,
+            dropdown_list::{DropdownList, DropdownListMessage},
+            dropdown_menu::{DropdownMenu, DropdownMenuBuilder},
+            formatted_text::WrapMode,
+            grid::{Column, GridBuilder, Row},
+            image::{Image, ImageBuilder, ImageMessage},
+            message::{MessageDirection, MouseButton, UiMessage},
+            numeric::{NumericUpDown, NumericUpDownBuilder, NumericUpDownMessage},
+            stack_panel::{StackPanel, StackPanelBuilder},
+            style::{Style, resource::StyleResourceExt},
+            tab_control::{TabControl, TabControlBuilder, TabControlMessage, TabDefinition},
+            text::{Text, TextBuilder, TextMessage},
+            utils::{
+                ImageButtonBuilder, make_dropdown_list_option, make_dropdown_list_option_universal,
+                make_dropdown_list_option_with_height, make_simple_tooltip,
+            },
+            widget::{WidgetBuilder, WidgetMessage},
+            window::{Window, WindowBuilder, WindowMessage, WindowTitle},
+        },
+        resource::texture::TextureResource,
+        scene::camera::Projection,
+    },
+    game_scene::container::EditorSceneEntry,
+    load_image,
+    message::MessageSender,
+    scene_viewer::{
+        gizmo::{SceneGizmo, SceneGizmoAction},
+        menu::{SceneItemAction, SceneItemMenu},
+    },
+    settings::SettingsMessage,
+    utils::{self, enable_widget},
+};
+use fyrox::scene;
+use std::{
+    ops::Deref,
+    sync::mpsc::{self, Receiver},
+};
+use strum::{IntoEnumIterator, VariantNames};
+use strum_macros::{AsRefStr, EnumIter, EnumString, VariantNames};
+
+mod gizmo;
+mod menu;
+
+#[derive(Default, Clone, Debug, EnumIter, AsRefStr, EnumString, VariantNames)]
+pub enum GraphicsDebugSwitches {
+    #[default]
+    Shaded,
+    Wireframe,
+}
+
+struct GridSnappingMenu {
+    menu: Handle<DropdownMenu>,
+    button: Handle<Button>,
+    enabled: Handle<CheckBox>,
+    x_step: Handle<NumericUpDown<f32>>,
+    y_step: Handle<NumericUpDown<f32>>,
+    z_step: Handle<NumericUpDown<f32>>,
+    receiver: Receiver<SettingsMessage>,
+}
+
+impl GridSnappingMenu {
+    fn new(ctx: &mut BuildContext, settings: &mut Settings) -> Self {
+        let (sender, receiver) = mpsc::channel();
+
+        settings.subscribers.push(sender);
+
+        let button;
+        let enabled;
+        let x_step;
+        let y_step;
+        let z_step;
+        let grid_snap_menu = DropdownMenuBuilder::new(WidgetBuilder::new())
+            .with_header({
+                button = ImageButtonBuilder::default()
+                    .with_image(load_image!("../../resources/grid_snapping.png").into())
+                    .with_tooltip("Snapping Options")
+                    .build_button(ctx);
+                button.to_base()
+            })
+            .with_content(
+                GridBuilder::new(
+                    WidgetBuilder::new()
+                        .with_margin(Thickness::uniform(2.0))
+                        .with_child(
+                            TextBuilder::new(WidgetBuilder::new().on_row(0).on_column(0))
+                                .with_text("Grid Snapping")
+                                .build(ctx),
+                        )
+                        .with_child({
+                            enabled = CheckBoxBuilder::new(
+                                WidgetBuilder::new()
+                                    .on_row(0)
+                                    .on_column(1)
+                                    .with_tab_index(Some(0)),
+                            )
+                            .checked(Some(settings.move_mode_settings.grid_snapping))
+                            .build(ctx);
+                            enabled
+                        })
+                        .with_child(
+                            TextBuilder::new(WidgetBuilder::new().on_row(1).on_column(0))
+                                .with_text("X Step")
+                                .build(ctx),
+                        )
+                        .with_child({
+                            x_step = NumericUpDownBuilder::<f32>::new(
+                                WidgetBuilder::new()
+                                    .on_row(1)
+                                    .on_column(1)
+                                    .with_tab_index(Some(1)),
+                            )
+                            .with_value(settings.move_mode_settings.x_snap_step)
+                            .build(ctx);
+                            x_step
+                        })
+                        .with_child(
+                            TextBuilder::new(WidgetBuilder::new().on_row(2).on_column(0))
+                                .with_text("Y Step")
+                                .build(ctx),
+                        )
+                        .with_child({
+                            y_step = NumericUpDownBuilder::<f32>::new(
+                                WidgetBuilder::new()
+                                    .on_row(2)
+                                    .on_column(1)
+                                    .with_tab_index(Some(2)),
+                            )
+                            .with_value(settings.move_mode_settings.y_snap_step)
+                            .build(ctx);
+                            y_step
+                        })
+                        .with_child(
+                            TextBuilder::new(WidgetBuilder::new().on_row(3).on_column(0))
+                                .with_text("Z Step")
+                                .build(ctx),
+                        )
+                        .with_child({
+                            z_step = NumericUpDownBuilder::<f32>::new(
+                                WidgetBuilder::new()
+                                    .on_row(3)
+                                    .on_column(1)
+                                    .with_tab_index(Some(3)),
+                            )
+                            .with_value(settings.move_mode_settings.z_snap_step)
+                            .build(ctx);
+                            z_step
+                        }),
+                )
+                .add_row(Row::auto())
+                .add_row(Row::auto())
+                .add_row(Row::auto())
+                .add_row(Row::auto())
+                .add_column(Column::auto())
+                .add_column(Column::auto())
+                .build(ctx),
+            )
+            .build(ctx);
+
+        Self {
+            menu: grid_snap_menu,
+            button,
+            enabled,
+            x_step,
+            y_step,
+            z_step,
+            receiver,
+        }
+    }
+
+    fn update(&self, settings: &Settings, ui: &UserInterface) {
+        for message in self.receiver.try_iter() {
+            match message {
+                SettingsMessage::Changed => {
+                    ui.send_many(
+                        *ui[self.button].decorator,
+                        [
+                            DecoratorMessage::SelectedBrush(
+                                ui.style.property(Style::BRUSH_BRIGHT_BLUE),
+                            ),
+                            DecoratorMessage::Select(settings.move_mode_settings.grid_snapping),
+                        ],
+                    );
+
+                    ui.send(
+                        self.enabled,
+                        CheckBoxMessage::Check(Some(settings.move_mode_settings.grid_snapping)),
+                    );
+                    ui.send(
+                        self.x_step,
+                        NumericUpDownMessage::Value(settings.move_mode_settings.x_snap_step),
+                    );
+                    ui.send(
+                        self.y_step,
+                        NumericUpDownMessage::Value(settings.move_mode_settings.y_snap_step),
+                    );
+                    ui.send(
+                        self.z_step,
+                        NumericUpDownMessage::Value(settings.move_mode_settings.z_snap_step),
+                    );
+                }
+            }
+        }
+    }
+
+    fn handle_ui_message(&self, message: &UiMessage, settings: &mut Settings) {
+        if message.direction() != MessageDirection::FromWidget {
+            return;
+        }
+
+        if let Some(CheckBoxMessage::Check(Some(value))) = message.data() {
+            if message.destination() == self.enabled {
+                settings.move_mode_settings.grid_snapping = *value;
+            }
+        } else if let Some(NumericUpDownMessage::Value(value)) = message.data() {
+            if message.destination() == self.x_step {
+                settings.move_mode_settings.x_snap_step = *value;
+            } else if message.destination() == self.y_step {
+                settings.move_mode_settings.y_snap_step = *value;
+            } else if message.destination() == self.z_step {
+                settings.move_mode_settings.z_snap_step = *value;
+            }
+        }
+    }
+}
+
+pub struct SceneViewer {
+    frame: Handle<Image>,
+    window: Handle<Window>,
+    selection_frame: Handle<Border>,
+    interaction_modes: FxHashMap<Uuid, Handle<Button>>,
+    camera_projection: Handle<DropdownList>,
+    play: Handle<Button>,
+    build: Handle<Button>,
+    stop: Handle<Button>,
+    build_profile: Handle<DropdownList>,
+    sender: MessageSender,
+    interaction_mode_panel: Handle<StackPanel>,
+    contextual_actions: Handle<StackPanel>,
+    no_scene_reminder: Handle<Text>,
+    tab_control: Handle<TabControl>,
+    scene_gizmo: SceneGizmo,
+    scene_gizmo_image: Handle<Image>,
+    debug_switches: Handle<DropdownList>,
+    grid_snap_menu: GridSnappingMenu,
+    scene_item_menu: SceneItemMenu,
+}
+
+impl SceneViewer {
+    pub fn new(engine: &mut Engine, sender: MessageSender, settings: &mut Settings) -> Self {
+        let scene_gizmo = SceneGizmo::new(engine);
+
+        let ctx = &mut engine.user_interfaces.first_mut().build_ctx();
+
+        let frame;
+        let selection_frame;
+        let camera_projection;
+        let play;
+        let build;
+        let stop;
+        let build_profile;
+
+        let interaction_mode_panel = StackPanelBuilder::new(
+            WidgetBuilder::new()
+                .with_margin(Thickness::uniform(1.0))
+                .with_vertical_alignment(VerticalAlignment::Top)
+                .with_horizontal_alignment(HorizontalAlignment::Left),
+        )
+        .with_orientation(Orientation::Horizontal)
+        .build(ctx);
+
+        let grid_snap_menu = GridSnappingMenu::new(ctx, settings);
+
+        let debug_switches;
+        let contextual_actions = StackPanelBuilder::new(
+            WidgetBuilder::new()
+                .with_height(27.0)
+                .on_column(1)
+                .with_horizontal_alignment(HorizontalAlignment::Right)
+                .with_child({
+                    camera_projection = DropdownListBuilder::new(
+                        WidgetBuilder::new().with_margin(Thickness::uniform(1.0)),
+                    )
+                    .with_items(vec![
+                        make_dropdown_list_option_with_height(ctx, "3D", 22.0),
+                        make_dropdown_list_option_with_height(ctx, "2D", 22.0),
+                    ])
+                    .with_close_on_selection(true)
+                    .with_selected(0)
+                    .build(ctx);
+                    camera_projection
+                })
+                .with_child(grid_snap_menu.menu)
+                .with_child({
+                    debug_switches = DropdownListBuilder::new(
+                        WidgetBuilder::new().with_margin(Thickness::uniform(1.0)),
+                    )
+                    .with_items(
+                        GraphicsDebugSwitches::iter()
+                            .zip(GraphicsDebugSwitches::VARIANTS.iter())
+                            .map(|(variant, v)| {
+                                make_dropdown_list_option_universal(ctx, v, 22.0, variant)
+                            })
+                            .collect::<Vec<_>>(),
+                    )
+                    .with_close_on_selection(true)
+                    .with_selected(0)
+                    .build(ctx);
+                    debug_switches
+                }),
+        )
+        .with_orientation(Orientation::Horizontal)
+        .build(ctx);
+
+        let build_tooltip = "Build Project.\nBuilds the game, but does not run it. Could be \
+        useful for hot reloading - change the source code and then press this button. The new version \
+        of the game DLL will be built and automagically loaded by the editor and the running game.";
+
+        let top_ribbon = GridBuilder::new(
+            WidgetBuilder::new()
+                .with_child(interaction_mode_panel)
+                .with_child({
+                    StackPanelBuilder::new(
+                        WidgetBuilder::new()
+                            .with_height(27.0)
+                            .with_horizontal_alignment(HorizontalAlignment::Right)
+                            .with_child({
+                                build_profile = DropdownListBuilder::new(
+                                    WidgetBuilder::new()
+                                        .with_tooltip(make_simple_tooltip(
+                                            ctx,
+                                            "Current Build Profile\nYou can configure \
+                                            build profiles in editor settings.",
+                                        ))
+                                        .with_margin(Thickness::uniform(1.0)),
+                                )
+                                .with_items(
+                                    settings
+                                        .build
+                                        .profiles
+                                        .iter()
+                                        .map(|p| make_dropdown_list_option(ctx, &p.name))
+                                        .collect::<Vec<_>>(),
+                                )
+                                .with_close_on_selection(true)
+                                .with_selected(settings.build.selected_profile)
+                                .build(ctx);
+                                build_profile
+                            })
+                            .with_child({
+                                play = ButtonBuilder::new(
+                                    WidgetBuilder::new()
+                                        .with_margin(Thickness::uniform(1.0))
+                                        .with_width(26.0)
+                                        .with_tooltip(make_simple_tooltip(ctx, "Play")),
+                                )
+                                .with_content(
+                                    ImageBuilder::new(
+                                        WidgetBuilder::new()
+                                            .with_width(16.0)
+                                            .with_height(16.0)
+                                            .with_margin(Thickness::uniform(4.0))
+                                            .with_background(
+                                                Brush::Solid(Color::opaque(0, 200, 0)).into(),
+                                            ),
+                                    )
+                                    .with_opt_texture(
+                                        load_image!("../../resources/play.png").into(),
+                                    )
+                                    .build(ctx),
+                                )
+                                .build(ctx);
+                                play
+                            })
+                            .with_child({
+                                build = ButtonBuilder::new(
+                                    WidgetBuilder::new()
+                                        .with_margin(Thickness::uniform(1.0))
+                                        .with_width(26.0)
+                                        .with_tooltip(make_simple_tooltip(ctx, build_tooltip)),
+                                )
+                                .with_content(
+                                    ImageBuilder::new(
+                                        WidgetBuilder::new()
+                                            .with_width(16.0)
+                                            .with_height(16.0)
+                                            .with_margin(Thickness::uniform(4.0))
+                                            .with_background(
+                                                Brush::Solid(Color::opaque(0, 200, 0)).into(),
+                                            ),
+                                    )
+                                    .with_opt_texture(
+                                        load_image!("../../resources/hammer.png").into(),
+                                    )
+                                    .build(ctx),
+                                )
+                                .build(ctx);
+                                build
+                            })
+                            .with_child({
+                                stop = ButtonBuilder::new(
+                                    WidgetBuilder::new()
+                                        .with_enabled(false)
+                                        .with_margin(Thickness::uniform(1.0))
+                                        .with_width(26.0),
+                                )
+                                .with_content(
+                                    ImageBuilder::new(
+                                        WidgetBuilder::new()
+                                            .with_width(16.0)
+                                            .with_height(16.0)
+                                            .with_margin(Thickness::uniform(4.0))
+                                            .with_background(
+                                                Brush::Solid(Color::opaque(200, 0, 0)).into(),
+                                            ),
+                                    )
+                                    .with_opt_texture(
+                                        load_image!("../../resources/stop.png").into(),
+                                    )
+                                    .build(ctx),
+                                )
+                                .build(ctx);
+                                stop
+                            }),
+                    )
+                    .with_orientation(Orientation::Horizontal)
+                    .build(ctx)
+                })
+                .with_child(contextual_actions),
+        )
+        .add_column(Column::stretch())
+        .add_column(Column::auto())
+        .add_column(Column::auto())
+        .add_row(Row::stretch())
+        .build(ctx);
+
+        let no_scene_reminder = TextBuilder::new(
+            WidgetBuilder::new()
+                .with_hit_test_visibility(false)
+                .with_foreground(ctx.style.property(Style::BRUSH_DARKEST)),
+        )
+        .with_text("No scene loaded. Create a new scene (File -> New Scene) or load existing (File -> Load Scene)")
+        .with_vertical_text_alignment(VerticalAlignment::Center)
+        .with_horizontal_text_alignment(HorizontalAlignment::Center)
+        .with_wrap(WrapMode::Word)
+        .build(ctx);
+
+        let scene_gizmo_image = ImageBuilder::new(
+            WidgetBuilder::new()
+                .with_width(85.0)
+                .with_height(85.0)
+                .with_horizontal_alignment(HorizontalAlignment::Right)
+                .with_vertical_alignment(VerticalAlignment::Top)
+                .with_margin(Thickness::uniform(1.0)),
+        )
+        .with_flip(true)
+        .with_texture(scene_gizmo.render_target.clone())
+        .build(ctx);
+
+        let tab_control;
+        let window = WindowBuilder::new(WidgetBuilder::new().with_name("SceneViewer"))
+            .can_close(false)
+            .with_content(
+                GridBuilder::new(
+                    WidgetBuilder::new()
+                        .with_min_size(Vector2::new(0.0, 21.0))
+                        .on_row(0)
+                        .with_child(top_ribbon)
+                        .with_child({
+                            tab_control = TabControlBuilder::new(WidgetBuilder::new().on_row(1))
+                                .with_tab_drag(true)
+                                .build(ctx);
+                            tab_control
+                        })
+                        .with_child(
+                            GridBuilder::new(
+                                WidgetBuilder::new()
+                                    .on_row(2)
+                                    .with_child({
+                                        frame = ImageBuilder::new(
+                                            WidgetBuilder::new()
+                                                .with_child(no_scene_reminder)
+                                                .with_child(scene_gizmo_image)
+                                                .with_allow_drop(true),
+                                        )
+                                        .with_flip(true)
+                                        .build(ctx);
+                                        frame
+                                    })
+                                    .with_child(
+                                        CanvasBuilder::new(WidgetBuilder::new().with_child({
+                                            selection_frame = BorderBuilder::new(
+                                                WidgetBuilder::new()
+                                                    .with_visibility(false)
+                                                    .with_background(
+                                                        Brush::Solid(Color::from_rgba(
+                                                            255, 255, 255, 40,
+                                                        ))
+                                                        .into(),
+                                                    )
+                                                    .with_foreground(
+                                                        Brush::Solid(Color::opaque(0, 255, 0))
+                                                            .into(),
+                                                    ),
+                                            )
+                                            .with_stroke_thickness(Thickness::uniform(1.0).into())
+                                            .build(ctx);
+                                            selection_frame
+                                        }))
+                                        .build(ctx),
+                                    ),
+                            )
+                            .add_row(Row::stretch())
+                            .add_column(Column::stretch())
+                            .build(ctx),
+                        ),
+                )
+                .add_row(Row::strict(30.0))
+                .add_row(Row::auto())
+                .add_row(Row::stretch())
+                .add_column(Column::stretch())
+                .build(ctx),
+            )
+            .with_title(WindowTitle::text("Scene Preview"))
+            .with_tab_label("Scene")
+            .build(ctx);
+
+        let scene_item_menu = SceneItemMenu::new(ctx);
+
+        Self {
+            sender,
+            window,
+            frame,
+            interaction_modes: Default::default(),
+            selection_frame,
+            camera_projection,
+            play,
+            interaction_mode_panel,
+            contextual_actions,
+            build_profile,
+            stop,
+            no_scene_reminder,
+            tab_control,
+            scene_gizmo,
+            scene_gizmo_image,
+            debug_switches,
+            grid_snap_menu,
+            build,
+            scene_item_menu,
+        }
+    }
+}
+
+impl SceneViewer {
+    pub fn window(&self) -> Handle<Window> {
+        self.window
+    }
+
+    pub fn frame(&self) -> Handle<Image> {
+        self.frame
+    }
+
+    pub fn selection_frame(&self) -> Handle<Border> {
+        self.selection_frame
+    }
+
+    pub fn handle_message(&mut self, message: &Message, engine: &mut Engine) {
+        if let Message::SetInteractionMode(mode) = message
+            && let Some(&active_button) = self.interaction_modes.get(mode)
+        {
+            for &mode_button in self.interaction_modes.values() {
+                let decorator = *engine.user_interfaces.first_mut()[mode_button].decorator;
+                engine.user_interfaces.first().send(
+                    decorator,
+                    DecoratorMessage::Select(mode_button == active_button),
+                );
+            }
+        }
+    }
+
+    pub fn sync_interaction_modes(&mut self, scene: &mut EditorSceneEntry, ui: &mut UserInterface) {
+        // Remove interaction mode buttons first.
+        for (_, button) in self.interaction_modes.drain() {
+            ui.send(button, WidgetMessage::Remove);
+        }
+
+        // Create new buttons for each mode.
+        let scene_entry = scene;
+        for mode in scene_entry.interaction_modes.iter_mut() {
+            let button = mode.make_button(
+                &mut ui.build_ctx(),
+                scene_entry.current_interaction_mode.unwrap_or_default() == mode.uuid(),
+            );
+            ui.send(
+                button,
+                WidgetMessage::link_with(self.interaction_mode_panel),
+            );
+            self.interaction_modes.insert(mode.uuid(), button);
+        }
+    }
+
+    fn sync_with_game_scene(
+        &mut self,
+        game_scene: &GameScene,
+        ui: &UserInterface,
+        scenes: &scene::SceneContainer,
+    ) {
+        let scene = &scenes[game_scene.scene];
+
+        let index = match scene.graph[game_scene.camera_controller.camera].projection() {
+            Projection::Perspective(_) => Some(0),
+            Projection::Orthographic(_) => Some(1),
+        };
+        ui.send(
+            self.camera_projection,
+            DropdownListMessage::Selection(index),
+        );
+
+        let mode = match scene.rendering_options.polygon_rasterization_mode {
+            PolygonFillMode::Fill => Some(0),
+            PolygonFillMode::Line => Some(1),
+            _ => None,
+        };
+        ui.send(self.debug_switches, DropdownListMessage::Selection(mode));
+
+        for widget in [self.camera_projection, self.debug_switches] {
+            ui.send(widget, WidgetMessage::Visibility(true));
+        }
+    }
+
+    pub fn on_current_scene_changed(
+        &mut self,
+        new_scene: &mut EditorSceneEntry,
+        engine: &mut Engine,
+    ) {
+        let ui = engine.user_interfaces.first_mut();
+
+        if let Some(game_scene) = new_scene.controller.downcast_ref::<GameScene>() {
+            self.sync_with_game_scene(game_scene, ui, &engine.scenes)
+        } else {
+            for widget in [self.camera_projection, self.debug_switches] {
+                ui.send(widget, WidgetMessage::Visibility(false));
+            }
+        }
+
+        self.sync_interaction_modes(new_scene, ui)
+    }
+
+    fn close_scene(&self, scenes: &mut SceneContainer, uuid: &Uuid) {
+        if let Some(entry) = scenes.entry_by_scene_id(*uuid) {
+            if entry.need_save() {
+                self.sender
+                    .send(Message::OpenSaveSceneConfirmationDialog { scene_id: entry.id });
+            } else {
+                self.sender.send(Message::CloseScene(entry.id));
+            }
+        }
+    }
+
+    pub fn handle_ui_message(
+        &mut self,
+        message: &mut UiMessage,
+        engine: &mut Engine,
+        scenes: &mut SceneContainer,
+        settings: &mut Settings,
+        mode: &Mode,
+    ) {
+        self.grid_snap_menu.handle_ui_message(message, settings);
+
+        let ui = engine.user_interfaces.first_mut();
+
+        match self.scene_item_menu.handle_ui_message(ui, message) {
+            SceneItemAction::None => {}
+            SceneItemAction::Close(scene_id) => self.close_scene(scenes, &scene_id),
+            SceneItemAction::ShowInExplorer(scene_id) => {
+                if let Some(entry) = scenes.entry_by_scene_id(scene_id)
+                    && let Some(entry_path) = entry.path.as_ref()
+                    && let Ok(canonical_path) = entry_path.canonicalize()
+                {
+                    utils::show_in_explorer(canonical_path);
+                }
+            }
+            SceneItemAction::MarkAsStartup(scene_id) => {
+                if let Some(entry) = scenes.entry_by_scene_id(scene_id)
+                    && let Some(entry_path) = entry.path.as_ref()
+                {
+                    settings.general.add_startup_scene(entry_path);
+                    self.sender.send(Message::ForceSync);
+                }
+            }
+            SceneItemAction::UnmarkAsStartup(scene_id) => {
+                if let Some(entry) = scenes.entry_by_scene_id(scene_id)
+                    && let Some(entry_path) = entry.path.as_ref()
+                {
+                    settings.general.remove_startup_scene(entry_path);
+                    self.sender.send(Message::ForceSync);
+                }
+            }
+        }
+
+        if let Some(ButtonMessage::Click) = message.data::<ButtonMessage>() {
+            for (mode_id, mode_button) in self.interaction_modes.iter() {
+                if message.destination() == *mode_button {
+                    self.sender.send(Message::SetInteractionMode(*mode_id));
+                }
+            }
+
+            if message.destination() == self.play {
+                self.sender.send(Message::SwitchToBuildMode {
+                    play_after_build: true,
+                });
+            } else if message.destination() == self.build {
+                self.sender.send(Message::SwitchToBuildMode {
+                    play_after_build: false,
+                });
+            } else if message.destination() == self.stop {
+                self.sender.send(Message::SwitchToEditMode);
+            }
+        } else if let Some(DropdownListMessage::Selection(Some(index))) = message.data() {
+            if message.direction == MessageDirection::FromWidget {
+                if message.destination() == self.camera_projection {
+                    if *index == 0 {
+                        self.sender.send(Message::SetEditorCameraProjection(
+                            Projection::Perspective(Default::default()),
+                        ))
+                    } else {
+                        self.sender.send(Message::SetEditorCameraProjection(
+                            Projection::Orthographic(Default::default()),
+                        ))
+                    }
+                } else if message.destination() == self.build_profile {
+                    settings.build.selected_profile = *index;
+                } else if message.destination() == self.debug_switches {
+                    let items = ui[self.debug_switches].items.deref();
+                    if let Some(item) = items.get(*index)
+                        && let Some(variant) =
+                            ui.node(*item).user_data_cloned::<GraphicsDebugSwitches>()
+                    {
+                        let entry = scenes.current_scene_entry_mut();
+                        if let Some(game_scene) = entry.controller.downcast_ref::<GameScene>() {
+                            let scene = &mut engine.scenes[game_scene.scene];
+                            match variant {
+                                GraphicsDebugSwitches::Shaded => {
+                                    scene.rendering_options.polygon_rasterization_mode =
+                                        PolygonFillMode::Fill;
+                                }
+                                GraphicsDebugSwitches::Wireframe => {
+                                    scene.rendering_options.polygon_rasterization_mode =
+                                        PolygonFillMode::Line;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else if let Some(msg) = message.data::<TabControlMessage>()
+            && message.destination() == self.tab_control
+            && message.direction() == MessageDirection::FromWidget
+        {
+            match msg {
+                TabControlMessage::CloseTab(uuid) => self.close_scene(scenes, uuid),
+                TabControlMessage::ActiveTab(Some(uuid)) => {
+                    if let Some(entry) = scenes.entry_by_scene_id(*uuid) {
+                        self.sender.send(Message::SetCurrentScene(entry.id));
+                    }
+                }
+                _ => (),
+            }
+        }
+
+        let entry = scenes.current_scene_entry_mut();
+        if let (Some(msg), Mode::Edit) = (message.data::<WidgetMessage>(), mode) {
+            if message.destination() == self.frame() {
+                let screen_bounds = self.frame_bounds(engine.user_interfaces.first());
+                match *msg {
+                    WidgetMessage::MouseDown { button, pos, .. } => {
+                        engine
+                            .user_interfaces
+                            .first_mut()
+                            .capture_mouse(self.frame());
+
+                        entry.on_mouse_down(button, pos, screen_bounds, engine, settings)
+                    }
+                    WidgetMessage::MouseUp { button, pos, .. } => {
+                        engine.user_interfaces.first_mut().release_mouse_capture();
+                        entry.on_mouse_up(button, pos, screen_bounds, engine, settings)
+                    }
+                    WidgetMessage::MouseWheel { amount, .. } => {
+                        entry.on_mouse_wheel(amount, engine, settings);
+                    }
+                    WidgetMessage::MouseMove { pos, .. } => {
+                        entry.on_mouse_move(pos, screen_bounds, engine, settings);
+                    }
+                    WidgetMessage::KeyUp(key)
+                        if entry.on_key_up(key, engine, &settings.key_bindings) =>
+                    {
+                        message.set_handled(true);
+                    }
+                    WidgetMessage::KeyDown(key)
+                        if entry.on_key_down(key, engine, &settings.key_bindings) =>
+                    {
+                        message.set_handled(true);
+                    }
+                    WidgetMessage::MouseEnter => {
+                        entry.on_mouse_enter(screen_bounds, engine, settings);
+                    }
+                    WidgetMessage::MouseLeave => {
+                        entry.on_mouse_leave(screen_bounds, engine, settings);
+                    }
+                    WidgetMessage::DragOver(handle) => {
+                        entry.on_drag_over(handle, screen_bounds, engine, settings);
+                    }
+                    WidgetMessage::Drop(handle) => {
+                        entry.on_drop(handle, screen_bounds, engine, settings);
+                    }
+                    _ => {}
+                }
+            } else if message.destination() == self.scene_gizmo_image
+                && let Some(game_scene) = entry.controller.downcast_mut::<GameScene>()
+            {
+                match *msg {
+                    WidgetMessage::MouseDown {
+                        button: MouseButton::Left,
+                        pos,
+                        ..
+                    } => {
+                        let rel_pos = pos - ui[self.scene_gizmo_image].screen_position();
+                        self.scene_gizmo.drag_context = Some(gizmo::DragContext {
+                            initial_click_pos: rel_pos,
+                            initial_rotation: gizmo::CameraRotation {
+                                pitch: game_scene.camera_controller.pitch(),
+                                yaw: game_scene.camera_controller.yaw(),
+                            },
+                        });
+                        ui.capture_mouse(self.scene_gizmo_image);
+                    }
+                    WidgetMessage::MouseUp { pos, button } => {
+                        if button == MouseButton::Left {
+                            self.scene_gizmo.drag_context = None;
+                            ui.release_mouse_capture();
+                        }
+                        let rel_pos = pos - ui[self.scene_gizmo_image].screen_position();
+                        if let Some(action) = self.scene_gizmo.on_click(rel_pos, &engine.scenes) {
+                            match action {
+                                SceneGizmoAction::Rotate(rotation) => {
+                                    game_scene.camera_controller.set_pitch(rotation.pitch);
+                                    game_scene.camera_controller.set_yaw(rotation.yaw);
+                                }
+                                SceneGizmoAction::SwitchProjection => {
+                                    let graph = &engine.scenes[game_scene.scene].graph;
+                                    match graph[game_scene.camera_controller.camera].projection() {
+                                        Projection::Perspective(_) => {
+                                            ui.send(
+                                                self.camera_projection,
+                                                DropdownListMessage::Selection(Some(1)),
+                                            );
+                                        }
+                                        Projection::Orthographic(_) => {
+                                            ui.send(
+                                                self.camera_projection,
+                                                DropdownListMessage::Selection(Some(0)),
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    WidgetMessage::MouseMove { pos, .. } => {
+                        let rel_pos = pos
+                            - engine.user_interfaces.first()[self.scene_gizmo_image]
+                                .screen_position();
+                        self.scene_gizmo.on_mouse_move(
+                            rel_pos,
+                            engine,
+                            &mut game_scene.camera_controller,
+                        );
+                    }
+                    _ => (),
+                }
+            }
+        }
+    }
+
+    pub fn sync_to_model(&self, scenes: &SceneContainer, settings: &Settings, engine: &mut Engine) {
+        // Sync tabs first.
+
+        // Remove any excess tabs.
+        let ui = engine.user_interfaces.first();
+        for tab in ui[self.tab_control].tabs.iter() {
+            if !scenes.has_scene(tab.uuid) {
+                ui.send_sync(self.tab_control, TabControlMessage::RemoveTab(tab.uuid));
+            }
+        }
+
+        // Add any missing tabs.
+        for entry in scenes.iter() {
+            if engine.user_interfaces.first()[self.tab_control].has_tab(entry.id) {
+                continue;
+            }
+
+            let ui = engine.user_interfaces.first_mut();
+
+            let header = TextBuilder::new(WidgetBuilder::new().with_margin(Thickness {
+                left: 4.0,
+                top: 2.0,
+                right: 4.0,
+                bottom: 2.0,
+            }))
+            .with_text(entry.name())
+            .build(&mut ui.build_ctx())
+            .to_base();
+
+            ui.send_sync(
+                self.tab_control,
+                TabControlMessage::AddTab(TabDefinition {
+                    uuid: entry.id,
+                    header,
+                    content: Default::default(),
+                    can_be_closed: true,
+                    user_data: None,
+                    context_menu: Some(self.scene_item_menu.menu.clone()),
+                }),
+            );
+        }
+
+        let ui = engine.user_interfaces.first();
+
+        for tab in ui[self.tab_control].tabs.iter() {
+            if let Some(scene) = scenes.entry_by_scene_id(tab.uuid) {
+                let mut title = String::with_capacity(64);
+                if scene.need_save() {
+                    title += "* ";
+                }
+                let is_startup = scene
+                    .path
+                    .as_ref()
+                    .is_some_and(|p| settings.general.startup_scenes.contains(p));
+                if is_startup {
+                    title += "[";
+                }
+                title += scene.name().as_str();
+                if is_startup {
+                    title += "]";
+                }
+                ui.send(tab.header_content, TextMessage::Text(title));
+            }
+        }
+
+        let current_entry = scenes.current_scene_entry_ref();
+
+        ui.send_sync(
+            self.tab_control,
+            TabControlMessage::ActiveTab(Some(current_entry.id)),
+        );
+
+        // Then sync to the current scene.
+        let title = if scenes.has_active_scene() {
+            let path = current_entry
+                .path
+                .as_ref()
+                .map_or("Unnamed Scene".to_string(), |p| {
+                    p.to_string_lossy().to_string()
+                });
+            format!("Scene Preview - {path}")
+        } else {
+            "Scene Preview".into()
+        };
+
+        self.set_title(ui, title);
+        self.set_render_target(ui, current_entry.controller.render_target(engine));
+        ui.send_sync(
+            self.scene_gizmo_image,
+            WidgetMessage::Visibility(
+                current_entry
+                    .controller
+                    .downcast_ref::<GameScene>()
+                    .is_some(),
+            ),
+        );
+        ui.send_sync(
+            self.no_scene_reminder,
+            WidgetMessage::Visibility(!scenes.has_active_scene()),
+        );
+    }
+
+    pub fn on_mode_changed(&self, ui: &UserInterface, mode: &Mode) {
+        let enabled = mode.is_edit();
+        for widget in [self.interaction_mode_panel, self.contextual_actions] {
+            enable_widget(widget, enabled, ui);
+        }
+
+        ui.send(self.play, WidgetMessage::Enabled(mode.is_edit()));
+        ui.send(self.stop, WidgetMessage::Enabled(!mode.is_edit()));
+    }
+
+    pub fn set_render_target(&self, ui: &UserInterface, render_target: Option<TextureResource>) {
+        ui.send(self.frame, ImageMessage::Texture(render_target.into()));
+    }
+
+    pub fn set_title(&self, ui: &UserInterface, title: String) {
+        ui.send(self.window, WindowMessage::Title(WindowTitle::text(title)));
+    }
+
+    pub fn reset_camera_projection(&self, ui: &UserInterface) {
+        // Default camera projection is Perspective.
+        ui.send(
+            self.camera_projection,
+            DropdownListMessage::Selection(Some(0)),
+        );
+    }
+
+    pub fn frame_bounds(&self, ui: &UserInterface) -> Rect<f32> {
+        ui[self.frame].screen_bounds()
+    }
+
+    pub fn pre_update(&self, settings: &Settings, engine: &mut Engine) {
+        self.grid_snap_menu
+            .update(settings, engine.user_interfaces.first());
+    }
+
+    pub fn update(&self, game_scene: &GameScene, engine: &mut Engine) {
+        self.scene_gizmo.sync_rotations(game_scene, engine);
+    }
+}

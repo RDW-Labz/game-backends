@@ -1,0 +1,325 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! Wrap panel is used to stack children widgets either in vertical or horizontal direction with overflow. See [`WrapPanel`]
+//! docs for more info and usage examples.
+
+#![warn(missing_docs)]
+#![allow(clippy::reversed_empty_ranges)]
+
+use crate::{
+    BuildContext, Control, Orientation, UiNode, UserInterface,
+    core::{algebra::Vector2, math::Rect, pool::Handle, reflect::prelude::*, visitor::prelude::*},
+    message::UiMessage,
+    widget::{Widget, WidgetBuilder},
+};
+
+use crate::message::MessageData;
+
+use fyrox_core::variable::InheritableVariable;
+use fyrox_graph::SceneGraph;
+use fyrox_graph::constructor::{ConstructorProvider, GraphNodeConstructor};
+use std::{cell::RefCell, ops::Range};
+
+/// A set of possible [`WrapPanel`] widget messages.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum WrapPanelMessage {
+    /// The message is used to change the orientation of the wrap panel.
+    Orientation(Orientation),
+}
+impl MessageData for WrapPanelMessage {}
+
+/// Wrap panel is used to stack children widgets either in vertical or horizontal direction with overflow - every widget
+/// that does not have enough space on the current line, will automatically be placed on the next line (either vertical or
+/// horizontal, depending on the orientation).
+///
+/// ## How to create
+///
+/// Use `WrapPanelBuilder` to create new wrap panel instance:
+///
+/// ```rust,no_run
+/// # use fyrox_ui::{
+/// #     core::pool::Handle,
+/// #     widget::WidgetBuilder, wrap_panel::WrapPanelBuilder, BuildContext, Orientation, UiNode,
+/// # };
+/// # use fyrox_ui::wrap_panel::WrapPanel;
+/// #
+/// fn create_wrap_panel(ctx: &mut BuildContext) -> Handle<WrapPanel> {
+///     WrapPanelBuilder::new(WidgetBuilder::new())
+///         .with_orientation(Orientation::Horizontal)
+///         .build(ctx)
+/// }
+/// ```
+///
+/// All widgets, that needs to be arranged, should be direct children of the wrap panel. Use [`WidgetBuilder::with_children`]
+/// or [`WidgetBuilder::with_child`] to add children nodes.
+///
+/// ## Orientation
+///
+/// Wrap panel can stack your widgets either in vertical or horizontal direction. Use `.with_orientation` while building
+/// the panel to switch orientation to desired.
+#[derive(Default, Clone, Debug, Visit, PartialEq, Reflect)]
+#[reflect(
+    derived_type = "UiNode",
+    type_uuid = "f488ab8e-8f8b-473c-a450-5ac33f1afb39"
+)]
+pub struct WrapPanel {
+    /// Base widget of the wrap panel.
+    pub widget: Widget,
+    /// Current orientation of the wrap panel.
+    pub orientation: InheritableVariable<Orientation>,
+    /// Internal lines storage.
+    #[visit(skip)]
+    #[reflect(hidden)]
+    pub lines: RefCell<Vec<Line>>,
+}
+
+impl ConstructorProvider<UiNode, UserInterface> for WrapPanel {
+    fn constructor() -> GraphNodeConstructor<UiNode, UserInterface> {
+        GraphNodeConstructor::new::<Self>()
+            .with_variant("Wrap Panel", |ui| {
+                WrapPanelBuilder::new(WidgetBuilder::new().with_name("Wrap Panel"))
+                    .build(&mut ui.build_ctx())
+                    .to_base()
+                    .into()
+            })
+            .with_group("Layout")
+    }
+}
+
+crate::define_widget_deref!(WrapPanel);
+
+/// Represents a single line (either vertical or horizontal) with arranged widgets.
+#[derive(Clone, PartialEq, Debug)]
+pub struct Line {
+    /// Indices of the children widgets that belongs to this line.
+    pub children: Range<usize>,
+    /// Bounds of this line.
+    pub bounds: Rect<f32>,
+}
+
+impl Default for Line {
+    fn default() -> Self {
+        Self {
+            children: 0..0,
+            bounds: Default::default(),
+        }
+    }
+}
+
+impl Control for WrapPanel {
+    fn measure_override(&self, ui: &UserInterface, available_size: Vector2<f32>) -> Vector2<f32> {
+        let mut measured_size: Vector2<f32> = Vector2::default();
+        let mut line_size = Vector2::default();
+        for child_handle in self.widget.children() {
+            let child = ui.node(*child_handle);
+            ui.measure_node(*child_handle, Vector2::new(f32::INFINITY, f32::INFINITY));
+            let desired = child.desired_size();
+            match *self.orientation {
+                Orientation::Vertical => {
+                    if line_size.y + desired.y > available_size.y {
+                        // Commit column.
+                        measured_size.y = measured_size.y.max(line_size.y);
+                        measured_size.x += line_size.x;
+                        line_size = Vector2::default();
+                    }
+                    line_size.x = line_size.x.max(desired.x);
+                    line_size.y += desired.y;
+                }
+                Orientation::Horizontal => {
+                    if line_size.x + desired.x > available_size.x {
+                        // Commit row.
+                        measured_size.x = measured_size.x.max(line_size.x);
+                        measured_size.y += line_size.y;
+                        line_size = Vector2::default();
+                    }
+                    line_size.x += desired.x;
+                    line_size.y = line_size.y.max(desired.y);
+                }
+            }
+        }
+
+        // Commit rest.
+        match *self.orientation {
+            Orientation::Vertical => {
+                measured_size.y = measured_size.y.max(line_size.y);
+                measured_size.x += line_size.x;
+            }
+            Orientation::Horizontal => {
+                measured_size.x = measured_size.x.max(line_size.x);
+                measured_size.y += line_size.y;
+            }
+        }
+
+        measured_size
+    }
+
+    fn arrange_override(&self, ui: &UserInterface, final_size: Vector2<f32>) -> Vector2<f32> {
+        // First pass - arrange lines.
+        let mut lines = self.lines.borrow_mut();
+        lines.clear();
+        let mut line = Line::default();
+        for child_handle in self.widget.children() {
+            let child = ui.node(*child_handle);
+            let desired = child.desired_size();
+            match *self.orientation {
+                Orientation::Vertical => {
+                    if line.bounds.h() + desired.y > final_size.y {
+                        // Commit column.
+                        lines.push(line.clone());
+                        // Advance column.
+                        line.bounds.position.x += line.bounds.w();
+                        line.bounds.position.y = 0.0;
+                        line.bounds.size.x = desired.x;
+                        line.bounds.size.y = desired.y;
+                        // Reset children.
+                        line.children.start = line.children.end;
+                        line.children.end = line.children.start + 1;
+                    } else {
+                        line.bounds.size.y += desired.y;
+                        line.bounds.size.x = line.bounds.w().max(desired.x);
+                        line.children.end += 1;
+                    }
+                }
+                Orientation::Horizontal => {
+                    if line.bounds.w() + desired.x > final_size.x {
+                        // Commit row.
+                        lines.push(line.clone());
+                        // Advance row.
+                        line.bounds.position.x = 0.0;
+                        line.bounds.position.y += line.bounds.h();
+                        line.bounds.size.x = desired.x;
+                        line.bounds.size.y = desired.y;
+                        // Reset children.
+                        line.children.start = line.children.end;
+                        line.children.end = line.children.start + 1;
+                    } else {
+                        line.bounds.size.x += desired.x;
+                        line.bounds.size.y = line.bounds.h().max(desired.y);
+                        line.children.end += 1;
+                    }
+                }
+            }
+        }
+
+        // Commit rest.
+        lines.push(line);
+
+        // Second pass - arrange children of lines.
+        let mut full_size = Vector2::default();
+        for line in lines.iter() {
+            let mut cursor = line.bounds.position;
+            for child_index in line.children.clone() {
+                let child_handle = self.children()[child_index];
+                let child = ui.node(child_handle);
+                let desired = child.desired_size();
+                match *self.orientation {
+                    Orientation::Vertical => {
+                        let child_bounds =
+                            Rect::new(line.bounds.x(), cursor.y, line.bounds.w(), desired.y);
+                        ui.arrange_node(child_handle, &child_bounds);
+                        cursor.y += desired.y;
+                    }
+                    Orientation::Horizontal => {
+                        let child_bounds =
+                            Rect::new(cursor.x, line.bounds.y(), desired.x, line.bounds.h());
+                        ui.arrange_node(child_handle, &child_bounds);
+                        cursor.x += desired.x;
+                    }
+                }
+            }
+            match *self.orientation {
+                Orientation::Vertical => {
+                    full_size.x += line.bounds.w();
+                    full_size.y = final_size.y.max(line.bounds.h());
+                }
+                Orientation::Horizontal => {
+                    full_size.x = final_size.x.max(line.bounds.w());
+                    full_size.y += line.bounds.h();
+                }
+            }
+        }
+
+        full_size
+    }
+
+    fn handle_routed_message(&mut self, ui: &mut UserInterface, message: &mut UiMessage) {
+        self.widget.handle_routed_message(ui, message);
+
+        if let Some(WrapPanelMessage::Orientation(orientation)) = message.data_for(self.handle)
+            && *orientation != *self.orientation
+        {
+            self.orientation.set_value_and_mark_modified(*orientation);
+            self.invalidate_layout();
+        }
+    }
+}
+
+/// Wrap panel builder creates [`WrapPanel`] widget and adds it to the user interface.
+pub struct WrapPanelBuilder {
+    widget_builder: WidgetBuilder,
+    orientation: Option<Orientation>,
+}
+
+impl WrapPanelBuilder {
+    /// Creates a new wrap panel builder.
+    pub fn new(widget_builder: WidgetBuilder) -> Self {
+        Self {
+            widget_builder,
+            orientation: None,
+        }
+    }
+
+    /// Sets the desired orientation of the wrap panel.
+    pub fn with_orientation(mut self, orientation: Orientation) -> Self {
+        self.orientation = Some(orientation);
+        self
+    }
+
+    /// Finishes wrap panel building and returns its instance.
+    pub fn build_wrap_panel(self, ctx: &BuildContext) -> WrapPanel {
+        WrapPanel {
+            widget: self.widget_builder.build(ctx),
+            orientation: self.orientation.unwrap_or(Orientation::Vertical).into(),
+            lines: Default::default(),
+        }
+    }
+
+    /// Finishes wrap panel building and returns its instance.
+    pub fn build_node(self, ctx: &BuildContext) -> UiNode {
+        UiNode::new(self.build_wrap_panel(ctx))
+    }
+
+    /// Finishes wrap panel building, adds it to the user interface and returns its handle.
+    pub fn build(self, ctx: &mut BuildContext) -> Handle<WrapPanel> {
+        ctx.add(self.build_wrap_panel(ctx))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::wrap_panel::WrapPanelBuilder;
+    use crate::{test::test_widget_deletion, widget::WidgetBuilder};
+
+    #[test]
+    fn test_deletion() {
+        test_widget_deletion(|ctx| WrapPanelBuilder::new(WidgetBuilder::new()).build(ctx));
+    }
+}

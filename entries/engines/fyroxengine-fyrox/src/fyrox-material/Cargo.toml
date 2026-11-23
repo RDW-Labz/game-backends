@@ -1,0 +1,34 @@
+[package]
+name = "fyrox-material"
+version = "2.0.0-rc.1"
+authors = ["Dmitry Stepanov <d1maxa@yandex.ru>"]
+edition = "2024"
+license = "MIT"
+description = "Material and shader utilities for Fyrox Engine"
+keywords = ["graphics"]
+categories = ["game-development"]
+include = ["/src/**/*", "/Cargo.toml", "/LICENSE", "/README.md"]
+homepage = "https://fyrox.rs"
+documentation = "https://docs.rs/fyrox-material"
+repository = "https://github.com/FyroxEngine/Fyrox"
+rust-version = "1.94"
+
+[dependencies]
+fyrox-core = { version = "2.0.0-rc.1", path = "../fyrox-core" }
+fyrox-resource = { version = "2.0.0-rc.1", path = "../fyrox-resource" }
+fyrox-texture = { version = "2.0.0-rc.1", path = "../fyrox-texture" }
+fyrox-graphics = { version = "2.0.0-rc.1", path = "../fyrox-graphics" }
+strum = "0.27"
+strum_macros = "0.27"
+fxhash = "0.2.1"
+uuid = "1"
+serde = { version = "1", features = ["derive"] }
+ron = "0.11.0"
+regex = "1"
+
+[dev-dependencies]
+fyrox-texture = { version = "2.0.0-rc.1", path = "../fyrox-texture" }
+
+[features]
+backend_opengl = []
+backend_wgpu = []

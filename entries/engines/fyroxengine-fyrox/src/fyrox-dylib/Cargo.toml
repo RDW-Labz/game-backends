@@ -1,0 +1,24 @@
+[package]
+name = "fyrox-dylib"
+version = "2.0.0-rc.1"
+edition = "2024"
+authors = ["Dmitry Stepanov <d1maxa@yandex.ru>", "Fyrox Engine Contributors"]
+license = "MIT"
+description = "Dynamic library for Fyrox Game Engine"
+keywords = ["sound", "game", "engine", "3d", "gui"]
+categories = ["game-engines", "graphics", "gui", "rendering", "wasm"]
+include = ["/src/**/*", "/Cargo.toml", "/LICENSE", "/README.md"]
+homepage = "https://fyrox.rs"
+documentation = "https://docs.rs/fyrox-dylib"
+repository = "https://github.com/FyroxEngine/Fyrox"
+readme = "README.md"
+rust-version = "1.94"
+
+[lib]
+crate-type = ["dylib"]
+
+[features]
+mesh_analysis = ["fyrox-impl/mesh_analysis"]
+
+[dependencies]
+fyrox-impl = { path = "../fyrox-impl", version = "2.0.0-rc.1" }

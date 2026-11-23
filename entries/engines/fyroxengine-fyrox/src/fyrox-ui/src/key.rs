@@ -1,0 +1,540 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! A set of editors for hot keys and key bindings. See [`HotKeyEditor`] and [`KeyBindingEditor`] widget's docs
+//! for more info and usage examples.
+
+#![warn(missing_docs)]
+
+use crate::message::MessageData;
+use crate::text::Text;
+use crate::{
+    BuildContext, Control, UiNode, UserInterface,
+    brush::Brush,
+    core::{color::Color, pool::Handle, reflect::prelude::*, visitor::prelude::*},
+    define_widget_deref,
+    draw::{CommandTexture, Draw, DrawingContext},
+    message::{KeyCode, KeyboardModifiers, MouseButton, UiMessage},
+    text::{TextBuilder, TextMessage},
+    widget::{Widget, WidgetBuilder, WidgetMessage},
+};
+use fyrox_core::variable::InheritableVariable;
+use fyrox_graph::constructor::{ConstructorProvider, GraphNodeConstructor};
+use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
+
+/// Hot key is a combination of a key code with an arbitrary set of keyboard modifiers (such as Ctrl, Shift, Alt keys).
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Reflect, Default, Visit)]
+#[reflect(type_uuid = "ce03ca6f-078a-42bb-98ac-232f5427da2a")]
+pub enum HotKey {
+    /// Unset hot key. Does nothing. This is the default value.
+    #[default]
+    NotSet,
+    /// Some hot key.
+    Some {
+        /// Physical key code.
+        code: KeyCode,
+        /// A set of keyboard modifiers.
+        modifiers: KeyboardModifiers,
+    },
+}
+
+impl HotKey {
+    /// Creates a new hot key that consists of a single key, without any modifiers.
+    pub fn from_key_code(key: KeyCode) -> Self {
+        Self::Some {
+            code: key,
+            modifiers: Default::default(),
+        }
+    }
+
+    /// Creates a new hot key with from the given key code and a set of keyboard modifiers (such
+    /// as `Ctrl`, `Alt`, `Shift`, `System`).
+    pub fn key_with_modifiers(key: KeyCode, modifiers: KeyboardModifiers) -> Self {
+        Self::Some {
+            code: key,
+            modifiers,
+        }
+    }
+
+    /// Creates a new hot key, that consists of combination `Ctrl + Key`.
+    pub fn ctrl_key(key: KeyCode) -> Self {
+        Self::Some {
+            code: key,
+            modifiers: KeyboardModifiers {
+                control: true,
+                ..Default::default()
+            },
+        }
+    }
+
+    /// Creates a new hot key, that consists of combination `Shift + Key`.
+    pub fn shift_key(key: KeyCode) -> Self {
+        Self::Some {
+            code: key,
+            modifiers: KeyboardModifiers {
+                shift: true,
+                ..Default::default()
+            },
+        }
+    }
+
+    /// Creates a new hot key, that consists of combination `Alt + Key`.
+    pub fn alt_key(key: KeyCode) -> Self {
+        Self::Some {
+            code: key,
+            modifiers: KeyboardModifiers {
+                shift: true,
+                ..Default::default()
+            },
+        }
+    }
+
+    /// Creates a new hot key, that consists of combination `System + Key`.
+    /// `System` is an OS-dependent key, which is `Windows` key on Windows and `Cmd` key on macOS.
+    pub fn sys_key(key: KeyCode) -> Self {
+        Self::Some {
+            code: key,
+            modifiers: KeyboardModifiers {
+                system: true,
+                ..Default::default()
+            },
+        }
+    }
+}
+
+impl Display for HotKey {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            HotKey::NotSet => f.write_str("Not Set"),
+            HotKey::Some { code, modifiers } => {
+                if modifiers.control {
+                    f.write_str("Ctrl+")?;
+                }
+                if modifiers.alt {
+                    f.write_str("Alt+")?;
+                }
+                if modifiers.shift {
+                    f.write_str("Shift+")?;
+                }
+                if modifiers.system {
+                    f.write_str("Sys+")?;
+                }
+                write!(f, "{}", code.as_ref())
+            }
+        }
+    }
+}
+
+/// A set of messages, that is used to alternate the state of [`HotKeyEditor`] widget or to listen to its changes.
+#[derive(Debug, Clone, PartialEq)]
+pub enum HotKeyEditorMessage {
+    /// A message, that is either used to modify the current value of a [`HotKey`] widget instance (with [`crate::message::MessageDirection::ToWidget`])
+    /// or to listen to its changes (with [`crate::message::MessageDirection::FromWidget`]).
+    Value(HotKey),
+}
+impl MessageData for HotKeyEditorMessage {}
+
+/// Hot key editor is used to provide a unified way of editing an arbitrary combination of modifiers keyboard keys (such
+/// as Ctrl, Shift, Alt) with any other key. It could be used if you need a simple way to add an editor for [`HotKey`].
+///
+/// ## Examples
+///
+/// The following example creates a new hot key editor with a `Ctrl+C` hot key as default value:
+///
+/// ```rust
+/// # use fyrox_ui::{
+/// #     core::pool::Handle,
+/// #     key::{HotKey, HotKeyEditor, HotKeyEditorBuilder},
+/// #     message::{KeyCode, KeyboardModifiers},
+/// #     widget::WidgetBuilder,
+/// #     BuildContext, UiNode,
+/// # };
+/// #
+/// fn create_hot_key_editor(ctx: &mut BuildContext) -> Handle<HotKeyEditor> {
+///     HotKeyEditorBuilder::new(WidgetBuilder::new())
+///         .with_value(
+///             // Ctrl+C hot key.
+///             HotKey::Some {
+///                 code: KeyCode::KeyC,
+///                 modifiers: KeyboardModifiers {
+///                     control: true,
+///                     ..Default::default()
+///                 },
+///             },
+///         )
+///         .build(ctx)
+/// }
+/// ```
+///
+/// ## Messages
+///
+/// Use [`HotKeyEditorMessage`] message to alternate the state of a hot key widget, or to listen to its changes.
+#[derive(Default, Clone, Visit, PartialEq, Reflect, Debug)]
+#[reflect(
+    derived_type = "UiNode",
+    type_uuid = "7bc49843-1302-4e36-b901-63af5cea6c60"
+)]
+pub struct HotKeyEditor {
+    widget: Widget,
+    text: InheritableVariable<Handle<Text>>,
+    value: InheritableVariable<HotKey>,
+    editing: InheritableVariable<bool>,
+}
+
+impl ConstructorProvider<UiNode, UserInterface> for HotKeyEditor {
+    fn constructor() -> GraphNodeConstructor<UiNode, UserInterface> {
+        GraphNodeConstructor::new::<Self>()
+            .with_variant("Hot Key Editor", |ui| {
+                HotKeyEditorBuilder::new(WidgetBuilder::new().with_name("Hot Key Editor"))
+                    .build(&mut ui.build_ctx())
+                    .to_base()
+                    .into()
+            })
+            .with_group("Input")
+    }
+}
+
+define_widget_deref!(HotKeyEditor);
+
+impl HotKeyEditor {
+    fn set_editing(&mut self, editing: bool, ui: &UserInterface) {
+        self.editing.set_value_and_mark_modified(editing);
+        let text = if *self.editing {
+            "[WAITING INPUT]".to_string()
+        } else {
+            format!("{}", *self.value)
+        };
+        ui.send(*self.text, TextMessage::Text(text));
+    }
+}
+
+impl Control for HotKeyEditor {
+    fn draw(&self, drawing_context: &mut DrawingContext) {
+        // Make background clickable.
+        drawing_context.push_rect_filled(&self.bounding_rect(), None);
+        drawing_context.commit(
+            self.clip_bounds(),
+            Brush::Solid(Color::TRANSPARENT),
+            CommandTexture::None,
+            &self.material,
+            None,
+        );
+    }
+
+    fn handle_routed_message(&mut self, ui: &mut UserInterface, message: &mut UiMessage) {
+        self.widget.handle_routed_message(ui, message);
+
+        if let Some(msg) = message.data::<WidgetMessage>() {
+            match msg {
+                WidgetMessage::KeyDown(key)
+                    if *self.editing
+                        && !matches!(
+                            *key,
+                            KeyCode::ControlLeft
+                                | KeyCode::ControlRight
+                                | KeyCode::ShiftLeft
+                                | KeyCode::ShiftRight
+                                | KeyCode::AltLeft
+                                | KeyCode::AltRight
+                        ) =>
+                {
+                    ui.send(
+                        self.handle,
+                        HotKeyEditorMessage::Value(HotKey::Some {
+                            code: *key,
+                            modifiers: ui.keyboard_modifiers,
+                        }),
+                    );
+
+                    message.set_handled(true);
+                }
+                WidgetMessage::MouseDown { button, .. } if *button == MouseButton::Left => {
+                    if *self.editing {
+                        self.set_editing(false, ui);
+                    } else {
+                        self.set_editing(true, ui);
+                    }
+                }
+                WidgetMessage::Unfocus if *self.editing => {
+                    self.set_editing(false, ui);
+                }
+                _ => (),
+            }
+        }
+
+        if let Some(HotKeyEditorMessage::Value(value)) = message.data_for(self.handle)
+            && value != &*self.value
+        {
+            self.value.set_value_and_mark_modified(value.clone());
+            ui.send(*self.text, TextMessage::Text(format!("{}", *self.value)));
+            ui.try_send_response(message);
+        }
+    }
+}
+
+/// Hot key editor builder creates [`HotKeyEditor`] widget instances and adds them to the user interface.
+pub struct HotKeyEditorBuilder {
+    widget_builder: WidgetBuilder,
+    value: HotKey,
+}
+
+impl HotKeyEditorBuilder {
+    /// Creates a new hot key editor builder.
+    pub fn new(widget_builder: WidgetBuilder) -> Self {
+        Self {
+            widget_builder,
+            value: HotKey::NotSet,
+        }
+    }
+
+    /// Sets the desired default value of the hot key editor.
+    pub fn with_value(mut self, hot_key: HotKey) -> Self {
+        self.value = hot_key;
+        self
+    }
+
+    /// Finishes widget building and adds it to the user interface, returning a handle to the new instance.
+    pub fn build(self, ctx: &mut BuildContext) -> Handle<HotKeyEditor> {
+        let text = TextBuilder::new(WidgetBuilder::new())
+            .with_text(format!("{}", self.value))
+            .build(ctx);
+
+        let editor = HotKeyEditor {
+            widget: self.widget_builder.with_child(text).build(ctx),
+            text: text.into(),
+            editing: false.into(),
+            value: self.value.into(),
+        };
+
+        ctx.add(editor)
+    }
+}
+
+/// Key binding is a simplified version of [`HotKey`] that consists of a single physical key code. It is usually
+/// used for "unconditional" (independent of modifier keys state) triggering of some action.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Reflect, Visit, Default)]
+#[reflect(type_uuid = "c27da844-b57f-4e29-93b8-2426c981f7e4")]
+pub enum KeyBinding {
+    /// Unset key binding. Does nothing.
+    #[default]
+    NotSet,
+    /// Some physical key binding.
+    Some(KeyCode),
+}
+
+impl PartialEq<KeyCode> for KeyBinding {
+    fn eq(&self, other: &KeyCode) -> bool {
+        match self {
+            KeyBinding::NotSet => false,
+            KeyBinding::Some(code) => code == other,
+        }
+    }
+}
+
+impl KeyBinding {
+    /// Creates a new key binding from a physical key code.
+    pub fn from_key_code(key: KeyCode) -> Self {
+        Self::Some(key)
+    }
+}
+
+impl Display for KeyBinding {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::NotSet => f.write_str("Not Set"),
+            Self::Some(code) => write!(f, "{}", code.as_ref()),
+        }
+    }
+}
+
+/// A set of messages, that is used to modify [`KeyBindingEditor`] state or to listen to its changes.
+#[derive(Debug, Clone, PartialEq)]
+pub enum KeyBindingEditorMessage {
+    /// A message, that is used to fetch a new value of a key binding, or to set a new one.
+    Value(KeyBinding),
+}
+impl MessageData for KeyBindingEditorMessage {}
+
+/// Key binding editor is used to provide a unified way of setting a key binding.
+///
+/// ## Examples
+///
+/// The following example creates a new key binding editor with a `W` key binding as a value.
+///
+/// ```rust
+/// # use fyrox_ui::{
+/// #     core::pool::Handle,
+/// #     key::{KeyBinding, KeyBindingEditor, KeyBindingEditorBuilder},
+/// #     message::KeyCode,
+/// #     widget::WidgetBuilder,
+/// #     BuildContext, UiNode,
+/// # };
+/// #
+/// fn create_key_binding_editor(ctx: &mut BuildContext) -> Handle<KeyBindingEditor> {
+///     KeyBindingEditorBuilder::new(WidgetBuilder::new())
+///         .with_value(KeyBinding::Some(KeyCode::KeyW))
+///         .build(ctx)
+/// }
+/// ```
+///
+/// ## Messages
+///
+/// Use [`KeyBindingEditorMessage`] message to alternate the state of a key binding widget, or to listen to its changes.
+#[derive(Default, Clone, Visit, PartialEq, Reflect, Debug)]
+#[reflect(
+    derived_type = "UiNode",
+    type_uuid = "150113ce-f95e-4c76-9ac9-4503e78b960f"
+)]
+pub struct KeyBindingEditor {
+    widget: Widget,
+    text: InheritableVariable<Handle<Text>>,
+    value: InheritableVariable<KeyBinding>,
+    editing: InheritableVariable<bool>,
+}
+
+impl ConstructorProvider<UiNode, UserInterface> for KeyBindingEditor {
+    fn constructor() -> GraphNodeConstructor<UiNode, UserInterface> {
+        GraphNodeConstructor::new::<Self>()
+            .with_variant("Key Binding Editor", |ui| {
+                KeyBindingEditorBuilder::new(WidgetBuilder::new().with_name("Key Binding Editor"))
+                    .build(&mut ui.build_ctx())
+                    .to_base()
+                    .into()
+            })
+            .with_group("Input")
+    }
+}
+
+define_widget_deref!(KeyBindingEditor);
+
+impl KeyBindingEditor {
+    fn set_editing(&mut self, editing: bool, ui: &UserInterface) {
+        self.editing.set_value_and_mark_modified(editing);
+        ui.send(
+            *self.text,
+            TextMessage::Text(if *self.editing {
+                "[WAITING INPUT]".to_string()
+            } else {
+                format!("{}", *self.value)
+            }),
+        );
+    }
+}
+
+impl Control for KeyBindingEditor {
+    fn draw(&self, drawing_context: &mut DrawingContext) {
+        // Make background clickable.
+        drawing_context.push_rect_filled(&self.bounding_rect(), None);
+        drawing_context.commit(
+            self.clip_bounds(),
+            Brush::Solid(Color::TRANSPARENT),
+            CommandTexture::None,
+            &self.material,
+            None,
+        );
+    }
+
+    fn handle_routed_message(&mut self, ui: &mut UserInterface, message: &mut UiMessage) {
+        self.widget.handle_routed_message(ui, message);
+
+        if let Some(msg) = message.data::<WidgetMessage>() {
+            match msg {
+                WidgetMessage::KeyDown(key) => {
+                    ui.send(
+                        self.handle,
+                        KeyBindingEditorMessage::Value(KeyBinding::Some(*key)),
+                    );
+
+                    message.set_handled(true);
+                }
+                WidgetMessage::MouseDown { button, .. } if *button == MouseButton::Left => {
+                    if *self.editing {
+                        self.set_editing(false, ui);
+                    } else {
+                        self.set_editing(true, ui);
+                    }
+                }
+                WidgetMessage::Unfocus if *self.editing => {
+                    self.set_editing(false, ui);
+                }
+                _ => (),
+            }
+        }
+
+        if let Some(KeyBindingEditorMessage::Value(value)) = message.data_for(self.handle)
+            && value != &*self.value
+        {
+            self.value.set_value_and_mark_modified(value.clone());
+            ui.send(*self.text, TextMessage::Text(format!("{}", *self.value)));
+            ui.try_send_response(message);
+        }
+    }
+}
+
+/// Key binding editor builder is used to create [`KeyBindingEditor`] widgets and add them to the user interface.
+pub struct KeyBindingEditorBuilder {
+    widget_builder: WidgetBuilder,
+    value: KeyBinding,
+}
+
+impl KeyBindingEditorBuilder {
+    /// Creates a new key binding editor builder.
+    pub fn new(widget_builder: WidgetBuilder) -> Self {
+        Self {
+            widget_builder,
+            value: KeyBinding::NotSet,
+        }
+    }
+
+    /// Sets the desired key binding value.
+    pub fn with_value(mut self, key_binding: KeyBinding) -> Self {
+        self.value = key_binding;
+        self
+    }
+
+    /// Finishes widget building and adds the new widget instance to the user interface, returning a handle of it.
+    pub fn build(self, ctx: &mut BuildContext) -> Handle<KeyBindingEditor> {
+        let text = TextBuilder::new(WidgetBuilder::new())
+            .with_text(format!("{}", self.value))
+            .build(ctx);
+
+        let editor = KeyBindingEditor {
+            widget: self.widget_builder.with_child(text).build(ctx),
+            text: text.into(),
+            editing: false.into(),
+            value: self.value.into(),
+        };
+
+        ctx.add(editor)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::key::{HotKeyEditorBuilder, KeyBindingEditorBuilder};
+    use crate::{test::test_widget_deletion, widget::WidgetBuilder};
+
+    #[test]
+    fn test_deletion() {
+        test_widget_deletion(|ctx| KeyBindingEditorBuilder::new(WidgetBuilder::new()).build(ctx));
+        test_widget_deletion(|ctx| HotKeyEditorBuilder::new(WidgetBuilder::new()).build(ctx));
+    }
+}

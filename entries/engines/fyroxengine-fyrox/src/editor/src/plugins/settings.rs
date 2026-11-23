@@ -1,0 +1,452 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! Settings window plugin.
+
+use crate::asset::preview::cache::IconRequest;
+use crate::menu::create_menu_item_shortcut;
+use crate::message::MessageSender;
+use crate::plugins::inspector::EditorEnvironment;
+use crate::{
+    Editor,
+    fyrox::{
+        core::{log::Log, pool::Handle, some_or_return},
+        engine::Engine,
+        graph::SceneGraph,
+        gui::{
+            HorizontalAlignment, Orientation, Thickness, UserInterface,
+            button::{ButtonBuilder, ButtonMessage},
+            dock::DockingManagerMessage,
+            grid::{Column, GridBuilder, Row},
+            inspector::{
+                Inspector, InspectorBuilder, InspectorContext, InspectorContextArgs,
+                InspectorMessage, PropertyAction, editors::PropertyEditorDefinitionContainer,
+            },
+            menu::MenuItemMessage,
+            message::UiMessage,
+            scroll_viewer::{ScrollViewerBuilder, ScrollViewerMessage},
+            searchbar::{SearchBarBuilder, SearchBarMessage},
+            stack_panel::StackPanelBuilder,
+            widget::{WidgetBuilder, WidgetMessage},
+            window::{WindowBuilder, WindowMessage, WindowTitle},
+        },
+    },
+    load_image,
+    plugin::EditorPlugin,
+    settings::Settings,
+};
+use fyrox::asset::manager::ResourceManager;
+use fyrox::core::dyntype::DynTypeConstructorContainer;
+use fyrox::core::uuid::{Uuid, uuid};
+use fyrox::engine::{GraphicsContext, SerializationContext};
+use fyrox::gui::button::Button;
+use fyrox::gui::clipboard::ClipboardContainer;
+use fyrox::gui::dock::DockingManager;
+use fyrox::gui::inspector::InspectorEnvironmentContainer;
+use fyrox::gui::menu::MenuItem;
+use fyrox::gui::scroll_viewer::ScrollViewer;
+use fyrox::gui::searchbar::SearchBar;
+use fyrox::gui::stack_panel::StackPanel;
+use fyrox::gui::text_box::EmptyTextPlaceholder;
+use fyrox::gui::widget::UserData;
+use fyrox::gui::window::{Window, WindowAlignment};
+use std::sync::Arc;
+use std::sync::mpsc::Sender;
+
+#[derive(Clone, PartialEq)]
+struct GroupName(String);
+
+pub struct SettingsWindow {
+    pub window: Handle<Window>,
+    ok: Handle<Button>,
+    default: Handle<Button>,
+    inspector: Handle<Inspector>,
+    groups: Handle<StackPanel>,
+    scroll_viewer: Handle<ScrollViewer>,
+    search_bar: Handle<SearchBar>,
+}
+
+impl SettingsWindow {
+    pub fn new(engine: &mut Engine) -> Self {
+        let ok;
+        let default;
+
+        let ctx = &mut engine.user_interfaces.first_mut().build_ctx();
+
+        let search_bar = SearchBarBuilder::new(
+            WidgetBuilder::new()
+                .on_row(0)
+                .on_column(0)
+                .with_uniform_margin(2.0),
+        )
+        .with_empty_text_placeholder(EmptyTextPlaceholder::Text("Search for a setting"))
+        .build(ctx);
+
+        let inspector = InspectorBuilder::new(WidgetBuilder::new()).build(ctx);
+
+        let groups = StackPanelBuilder::new(
+            WidgetBuilder::new()
+                .on_row(0)
+                .on_column(0)
+                .with_uniform_margin(2.0),
+        )
+        .with_orientation(Orientation::Vertical)
+        .build(ctx);
+
+        let scroll_viewer = ScrollViewerBuilder::new(
+            WidgetBuilder::new()
+                .with_margin(Thickness::uniform(2.0))
+                .on_row(0)
+                .on_column(1),
+        )
+        .with_content(inspector)
+        .build(ctx);
+
+        let inner_content = GridBuilder::new(
+            WidgetBuilder::new()
+                .on_row(1)
+                .on_column(0)
+                .with_child(groups)
+                .with_child(scroll_viewer),
+        )
+        .add_column(Column::auto())
+        .add_column(Column::stretch())
+        .add_row(Row::stretch())
+        .build(ctx);
+
+        let window = WindowBuilder::new(WidgetBuilder::new().with_width(700.0).with_height(800.0))
+            .open(false)
+            .with_title(WindowTitle::text("Settings"))
+            .with_tab_label("Settings")
+            .with_content(
+                GridBuilder::new(
+                    WidgetBuilder::new()
+                        .with_child(search_bar)
+                        .with_child(inner_content)
+                        .with_child(
+                            StackPanelBuilder::new(
+                                WidgetBuilder::new()
+                                    .on_row(2)
+                                    .with_horizontal_alignment(HorizontalAlignment::Right)
+                                    .with_child({
+                                        default = ButtonBuilder::new(
+                                            WidgetBuilder::new()
+                                                .with_width(80.0)
+                                                .with_margin(Thickness::uniform(1.0)),
+                                        )
+                                        .with_text("Default")
+                                        .build(ctx);
+                                        default
+                                    })
+                                    .with_child({
+                                        ok = ButtonBuilder::new(
+                                            WidgetBuilder::new()
+                                                .with_width(80.0)
+                                                .with_margin(Thickness::uniform(1.0)),
+                                        )
+                                        .with_text("OK")
+                                        .build(ctx);
+                                        ok
+                                    }),
+                            )
+                            .with_orientation(Orientation::Horizontal)
+                            .build(ctx),
+                        ),
+                )
+                .add_row(Row::strict(25.0))
+                .add_row(Row::stretch())
+                .add_row(Row::strict(25.0))
+                .add_column(Column::stretch())
+                .build(ctx),
+            )
+            .build(ctx);
+
+        Self {
+            window,
+            ok,
+            default,
+            inspector,
+            groups,
+            scroll_viewer,
+            search_bar,
+        }
+    }
+
+    pub fn open(
+        &self,
+        ui: &mut UserInterface,
+        settings: &Settings,
+        resource_manager: ResourceManager,
+        serialization_context: Arc<SerializationContext>,
+        dyn_type_constructors: Arc<DynTypeConstructorContainer>,
+        sender: &MessageSender,
+        icon_request_sender: Sender<IconRequest>,
+        property_editors: Arc<PropertyEditorDefinitionContainer>,
+    ) {
+        ui.send(
+            self.window,
+            WindowMessage::Open {
+                alignment: WindowAlignment::Center,
+                modal: false,
+                focus_content: true,
+            },
+        );
+
+        self.sync_to_model(
+            ui,
+            settings,
+            resource_manager,
+            serialization_context,
+            dyn_type_constructors,
+            sender,
+            icon_request_sender,
+            property_editors,
+        );
+    }
+
+    fn sync_to_model(
+        &self,
+        ui: &mut UserInterface,
+        settings: &Settings,
+        resource_manager: ResourceManager,
+        serialization_context: Arc<SerializationContext>,
+        dyn_type_constructors: Arc<DynTypeConstructorContainer>,
+        sender: &MessageSender,
+        icon_request_sender: Sender<IconRequest>,
+        property_editors: Arc<PropertyEditorDefinitionContainer>,
+    ) {
+        let environment = Arc::new(EditorEnvironment {
+            resource_manager,
+            serialization_context,
+            available_animations: Default::default(),
+            sender: sender.clone(),
+            icon_request_sender,
+            dyn_type_constructors,
+            script_editor: settings.general.script_editor,
+        });
+
+        let ctx = &mut ui.build_ctx();
+        let context = InspectorContext::from_object(InspectorContextArgs {
+            root_object: &**settings,
+            object: &**settings,
+            ctx,
+            definition_container: property_editors,
+            environment: Some(InspectorEnvironmentContainer(environment)),
+            layer_index: 0,
+            generate_property_string_values: true,
+            filter: Default::default(),
+            name_column_width: 250.0,
+            hide_name_column: false,
+            base_path: Default::default(),
+            has_parent_object: false,
+        });
+        let groups = context
+            .entries
+            .iter()
+            .map(|entry| {
+                ButtonBuilder::new(
+                    WidgetBuilder::new()
+                        .with_user_data(UserData::new(GroupName(entry.property_tag.clone()))),
+                )
+                .with_text(&entry.property_display_name)
+                .build(ctx)
+                .to_base()
+            })
+            .collect::<Vec<_>>();
+        ui.send(self.groups, WidgetMessage::ReplaceChildren(groups));
+        ui.send(self.inspector, InspectorMessage::Context(context));
+    }
+
+    pub fn handle_ui_message(
+        self,
+        message: &UiMessage,
+        engine: &mut Engine,
+        settings: &mut Settings,
+        docking_manager: Handle<DockingManager>,
+        sender: &MessageSender,
+        icon_request_sender: Sender<IconRequest>,
+        property_editors: Arc<PropertyEditorDefinitionContainer>,
+        clipboard: &mut ClipboardContainer,
+    ) -> Option<Self> {
+        let ui = engine.user_interfaces.first_mut();
+
+        if message.data::<InspectorMessage>().is_some() {
+            // This is tricky - since Settings has DerefMut impl, it causes infinite syncing loop
+            // if called on each message.
+            let settings_data = &mut **settings;
+            Inspector::handle_context_menu_message(
+                self.inspector,
+                message,
+                ui,
+                settings_data,
+                clipboard,
+            );
+        }
+
+        if let Some(ButtonMessage::Click) = message.data::<ButtonMessage>() {
+            if message.destination() == self.ok {
+                ui.send(self.window, WindowMessage::Close);
+            } else if message.destination() == self.default {
+                **settings = Default::default();
+
+                self.sync_to_model(
+                    ui,
+                    settings,
+                    engine.resource_manager.clone(),
+                    engine.serialization_context.clone(),
+                    engine.dyn_type_constructors.clone(),
+                    sender,
+                    icon_request_sender,
+                    property_editors,
+                );
+            }
+
+            if let Ok(node) = ui.try_get_node(message.destination())
+                && let Some(user_data) = node.user_data_cloned::<GroupName>()
+            {
+                let inspector = &ui[self.inspector];
+                if let Some(entry) = inspector.context.find_property_editor_by_tag(&user_data.0) {
+                    ui.send(
+                        self.scroll_viewer,
+                        ScrollViewerMessage::BringIntoView(entry.property_container),
+                    );
+                }
+            }
+        } else if let Some(InspectorMessage::PropertyChanged(property_changed)) = message.data() {
+            if message.destination() == self.inspector {
+                PropertyAction::from_field_action(&property_changed.action).apply(
+                    &property_changed.path(),
+                    &mut **settings,
+                    &mut Log::verify,
+                );
+                self.sync_to_model(
+                    ui,
+                    settings,
+                    engine.resource_manager.clone(),
+                    engine.serialization_context.clone(),
+                    engine.dyn_type_constructors.clone(),
+                    sender,
+                    icon_request_sender,
+                    property_editors,
+                );
+            }
+        } else if let Some(WindowMessage::Close) = message.data() {
+            if message.destination() == self.window {
+                ui.send(self.window, WidgetMessage::Remove);
+                ui.send(
+                    docking_manager,
+                    DockingManagerMessage::RemoveFloatingWindow(self.window),
+                );
+                return None;
+            }
+        } else if let Some(SearchBarMessage::Text(search_text)) = message.data_from(self.search_bar)
+        {
+            let filter = search_text.to_lowercase();
+            ui[self.inspector].apply_filter(&filter, ui);
+        }
+
+        if let GraphicsContext::Initialized(ref mut graphics_context) = engine.graphics_context
+            && settings.graphics.quality != graphics_context.renderer.get_quality_settings()
+        {
+            if let Err(e) = graphics_context
+                .renderer
+                .set_quality_settings(&settings.graphics.quality)
+            {
+                Log::err(format!(
+                    "An error occurred at attempt to set new graphics settings: {e:?}"
+                ));
+            } else {
+                Log::info("New graphics quality settings were successfully set!");
+            }
+        }
+
+        Some(self)
+    }
+}
+
+#[derive(Default)]
+pub struct SettingsPlugin {
+    window: Option<SettingsWindow>,
+    open_settings: Handle<MenuItem>,
+}
+
+impl SettingsPlugin {
+    pub const SETTINGS: Uuid = uuid!("7c7799e9-d15e-44be-a70a-8e280d55ff18");
+
+    fn on_open_settings_clicked(&mut self, editor: &mut Editor) {
+        let window = self
+            .window
+            .get_or_insert_with(|| SettingsWindow::new(&mut editor.engine));
+        let ui = editor.engine.user_interfaces.first_mut();
+        window.open(
+            ui,
+            &editor.settings,
+            editor.engine.resource_manager.clone(),
+            editor.engine.serialization_context.clone(),
+            editor.engine.dyn_type_constructors.clone(),
+            &editor.message_sender,
+            editor.asset_browser.preview_sender.clone(),
+            editor.property_editors.clone(),
+        );
+        ui.send(
+            editor.docking_manager,
+            DockingManagerMessage::AddFloatingWindow(window.window),
+        );
+    }
+}
+
+impl EditorPlugin for SettingsPlugin {
+    fn on_start(&mut self, editor: &mut Editor) {
+        let ui = editor.engine.user_interfaces.first_mut();
+        let ctx = &mut ui.build_ctx();
+        self.open_settings = create_menu_item_shortcut(
+            "Editor Settings...",
+            load_image!("../../resources/settings.png"),
+            Self::SETTINGS,
+            "",
+            vec![],
+            ctx,
+        );
+        ui.send(
+            editor.menu.file_menu.menu,
+            MenuItemMessage::AddItemAt(self.open_settings, 12),
+        );
+    }
+
+    fn on_ui_message(&mut self, message: &mut UiMessage, editor: &mut Editor) {
+        if let Some(MenuItemMessage::Click) = message.data()
+            && message.destination() == self.open_settings
+        {
+            self.on_open_settings_clicked(editor);
+        }
+
+        let window = some_or_return!(self.window.take());
+        self.window = window.handle_ui_message(
+            message,
+            &mut editor.engine,
+            &mut editor.settings,
+            editor.docking_manager,
+            &editor.message_sender,
+            editor.asset_browser.preview_sender.clone(),
+            editor.property_editors.clone(),
+            &mut editor.clipboard,
+        );
+    }
+}

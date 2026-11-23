@@ -1,0 +1,1398 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! The Window widget provides a standard window that can contain another widget. See [`Window`] docs
+//! for more info and usage examples.
+
+use crate::button::Button;
+use crate::grid::Grid;
+use crate::message::MessageData;
+use crate::vector_image::VectorImage;
+use crate::{
+    BuildContext, Control, HorizontalAlignment, RestrictionEntry, Thickness, UiNode, UserInterface,
+    VerticalAlignment,
+    border::BorderBuilder,
+    brush::Brush,
+    button::{ButtonBuilder, ButtonMessage},
+    core::{
+        algebra::Vector2, color::Color, log::Log, math::Rect, pool::Handle, reflect::prelude::*,
+        visitor::prelude::*,
+    },
+    decorator::DecoratorBuilder,
+    font::FontResource,
+    grid::{Column, GridBuilder, Row},
+    message::{CursorIcon, KeyCode, UiMessage},
+    navigation::NavigationLayerBuilder,
+    style::{Style, StyledProperty, resource::StyleResourceExt},
+    text::{Text, TextBuilder, TextMessage},
+    vector_image::{Primitive, VectorImageBuilder},
+    widget::{Widget, WidgetBuilder, WidgetMessage},
+};
+use fyrox_core::pool::ObjectOrVariant;
+use fyrox_graph::{
+    SceneGraph,
+    constructor::{ConstructorProvider, GraphNodeConstructor},
+};
+use std::cell::RefCell;
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum WindowAlignment {
+    /// No specific alignment.
+    None,
+    /// Center of the parent widget (in most cases - center of the screen, if the parent is not
+    /// specified).
+    Center,
+    /// Position (in local coordinates) relative to the left top corner of the parent widget
+    /// bounds. In most cases, it is just screen coordinates.
+    Position(Vector2<f32>),
+    /// Relative alignment to the specified widget.
+    Relative {
+        /// A handle of a node to which the sender of this message should be aligned to.
+        relative_to: Handle<UiNode>,
+        /// Horizontal alignment of the widget.
+        horizontal_alignment: HorizontalAlignment,
+        /// Vertical alignment of the widget.
+        vertical_alignment: VerticalAlignment,
+        /// Margins for each side.
+        margin: Thickness,
+    },
+}
+
+/// A set of possible messages that can be used to modify the state of a window or listen to changes
+/// in the window.
+#[derive(Debug, Clone, PartialEq)]
+pub enum WindowMessage {
+    /// Opens a window.
+    Open {
+        /// A flag that defines whether the window should be centered or not.
+        alignment: WindowAlignment,
+        /// Should the window be opened in modal mode or not.
+        modal: bool,
+        /// A flag that defines whether the content of the window should be focused when the window
+        /// is opening.
+        focus_content: bool,
+    },
+
+    /// Closes a window.
+    Close,
+
+    /// Minimizes a window - it differs from classic minimization in window managers,
+    /// instead of putting window in system tray, it just collapses internal content panel.
+    Minimize(bool),
+
+    /// Forces the window to take the inner size of the main application window.
+    Maximize(bool),
+
+    /// Whether window can be minimized by _ mark. false hides _ mark.
+    CanMinimize(bool),
+
+    /// Whether window can be closed by X mark. false hides X mark.
+    CanClose(bool),
+
+    /// Whether window can be resized by resize grips.
+    CanResize(bool),
+
+    /// Indicates that move has been started. You should never send this message by hand.
+    MoveStart,
+
+    /// Moves window to a new position in local coordinates.
+    Move(Vector2<f32>),
+
+    /// Indicated that move has ended. You should never send this message by hand.
+    MoveEnd,
+
+    /// Sets new window title.
+    Title(WindowTitle),
+
+    /// Safe border size defines "part" of a window that should always be on screen when dragged.
+    /// It is used to prevent moving window outside of main application window bounds, to still
+    /// be able to drag it.
+    SafeBorderSize(Option<Vector2<f32>>),
+}
+impl MessageData for WindowMessage {}
+
+/// The state of a window's size, as controlled by the buttons in the top-right corner.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Visit, Reflect)]
+#[reflect(type_uuid = "6fe81569-a19a-4034-9ae3-392a2c3fb656")]
+pub enum WindowSizeState {
+    /// The window is neither maximized nor minimized, showing its content and free to move around the screen.
+    #[default]
+    Normal,
+    /// The window is hiding its content.
+    Minimized,
+    /// The window is filling the screen.
+    Maximized,
+}
+
+/// The Window widget provides a standard window that can contain another widget. Based on setting,
+/// windows can be configured so users can do any of the following:
+///
+/// * Movable by the user. Not configurable.
+/// * Have title text on the title bar. Set by the *with_title* function.
+/// * Able to be exited by the user. Set by the *can_close* function.
+/// * Able to be minimized to just the Title bar, and of course maximized again. Set by the
+/// *can_minimize* function.
+/// * Able to resize the window. Set by the *can_resize* function.
+///
+/// As with other UI elements, you create and configure the window using the WindowBuilder.
+///
+/// ```rust,no_run
+/// # use fyrox_ui::{
+/// #     core::{pool::Handle, algebra::Vector2},
+/// #     window::{WindowBuilder, WindowTitle},
+/// #     text::TextBuilder,
+/// #     widget::WidgetBuilder,
+/// #     UiNode,
+/// #     UserInterface
+/// # };
+/// fn create_window(ui: &mut UserInterface) {
+///     WindowBuilder::new(
+///         WidgetBuilder::new()
+///             .with_desired_position(Vector2::new(300.0, 0.0))
+///             .with_width(300.0),
+///     )
+///     .with_content(
+///         TextBuilder::new(WidgetBuilder::new())
+///             .with_text("Example Window content.")
+///             .build(&mut ui.build_ctx())
+///     )
+///     .with_title(WindowTitle::text("Window"))
+///     .can_close(true)
+///     .can_minimize(true)
+///     .open(true)
+///     .can_resize(false)
+///     .build(&mut ui.build_ctx());
+/// }
+/// ```
+///
+/// You will likely want to constrain the initial size of the window to something as shown in the
+/// example by providing a set width and/or height to the base WidgetBuilder. Otherwise, it will
+/// expand to fit its content.
+///
+/// You may also want to set an initial position with the *with_desired_position* function called
+/// on the base WidgetBuilder which sets the position of the window's top-left corner. Otherwise, all
+/// your windows will start with its top-left corner at 0,0 and be stacked on top of each other.
+///
+/// Windows can only contain a single direct child widget, set by using the *with_content* function.
+/// Additional calls to *with_content* replace the widgets given in previous calls, and the old
+/// widgets exist outside the window, so you should delete old widgets before changing a window's
+/// widget. If you want multiple widgets, you need to use one of the layout container widgets like
+/// the Grid, Stack Panel, etc. then add the additional widgets to that widget as needed.
+///
+/// The Window is a user editable object, but can only be affected by UI Messages they trigger if
+/// the message's corresponding variable has been set to true aka what is set by the *can_close*,
+/// *can_minimize*, and *can_resize* functions.
+///
+/// ## Initial Open State
+///
+/// By default, the window will be created in the open, or maximized, state. You can manually set
+/// this state via the *open* function providing a true or false as desired.
+///
+/// ## Styling the Buttons
+///
+/// The window close and minimize buttons can be configured with the *with_close_button* and
+/// *with_minimize_button* functions. You will want to pass them a button widget, but can do anything
+/// else you like past that.
+///
+/// ## Modal (AKA Forced Focus)
+///
+/// A Modal in UI design terms indicates a window or box that has forced focus. The user is not able
+/// to interact with anything else until the modal is dismissed.
+///
+/// Any window can be set and unset as a modal via the *modal* function.
+#[derive(Default, Clone, PartialEq, Visit, Reflect, Debug)]
+#[reflect(
+    derived_type = "UiNode",
+    type_uuid = "9331bf32-8614-4005-874c-5239e56bb15e"
+)]
+pub struct Window {
+    /// Base widget of the window.
+    pub widget: Widget,
+    /// The text to put in the tab for this window.
+    tab_label: String,
+    /// Mouse click position.
+    pub mouse_click_pos: Vector2<f32>,
+    /// Initial mouse position.
+    pub initial_position: Vector2<f32>,
+    /// Initial size of the window.
+    pub initial_size: Vector2<f32>,
+    /// Whether the window is being dragged or not.
+    pub is_dragging: bool,
+    /// Whether the window is minimized, maximized, or normal.
+    pub size_state: WindowSizeState,
+    /// Whether the window can be minimized or not.
+    pub can_minimize: bool,
+    /// Whether the window can be maximized or not.
+    pub can_maximize: bool,
+    /// Whether the window can be closed or not.
+    pub can_close: bool,
+    /// Whether the window can be resized or not.
+    pub can_resize: bool,
+    /// Handle of a header widget.
+    pub header: Handle<UiNode>,
+    /// Handle of a minimize button.
+    pub minimize_button: Handle<Button>,
+    /// Handle of a maximize button.
+    pub maximize_button: Handle<Button>,
+    /// Handle of a close button.
+    pub close_button: Handle<Button>,
+    /// A distance per each axis when the dragging starts.
+    pub drag_delta: Vector2<f32>,
+    /// Handle of a current content.
+    pub content: Handle<UiNode>,
+    /// Eight grips of the window that are used to resize the window.
+    pub grips: RefCell<[Grip; 8]>,
+    /// Handle of a title widget of the window.
+    pub title: Handle<UiNode>,
+    /// Handle of a container widget of the title.
+    pub title_grid: Handle<Grid>,
+    /// Optional size of the border around the screen in which the window will be forced to stay.
+    pub safe_border_size: Option<Vector2<f32>>,
+    /// Bounds of the window before maximization, it is used to return the window to previous
+    /// size when it is either "unmaximized" or dragged.
+    pub prev_bounds: Option<Rect<f32>>,
+    /// If `true`, then the window can be closed using `Esc` key. Default is `true`. Works only if
+    /// `can_close` is also `true`.
+    pub close_by_esc: bool,
+    /// If `true`, then the window will be deleted after closing.
+    pub remove_on_close: bool,
+}
+
+impl ConstructorProvider<UiNode, UserInterface> for Window {
+    fn constructor() -> GraphNodeConstructor<UiNode, UserInterface> {
+        GraphNodeConstructor::new::<Self>()
+            .with_variant("Window", |ui| {
+                WindowBuilder::new(WidgetBuilder::new().with_name("Window"))
+                    .build(&mut ui.build_ctx())
+                    .to_base()
+                    .into()
+            })
+            .with_group("Layout")
+    }
+}
+
+const GRIP_SIZE: f32 = 6.0;
+const CORNER_GRIP_SIZE: f32 = GRIP_SIZE * 2.0;
+
+/// Kind of a resizing grip.
+#[derive(Copy, Clone, Debug, Visit, PartialEq, Reflect, Default)]
+#[reflect(type_uuid = "fea2073e-f44e-45db-a373-c9fcee201c2d")]
+pub enum GripKind {
+    /// Left-top corner grip.
+    #[default]
+    LeftTopCorner = 0,
+    /// Right-top corner grip.
+    RightTopCorner = 1,
+    /// Right-bottom corner grip.
+    RightBottomCorner = 2,
+    /// Left-bottom corner grip.
+    LeftBottomCorner = 3,
+    /// Left corner grip.
+    Left = 4,
+    /// Top corner grip.
+    Top = 5,
+    /// Right corner grip.
+    Right = 6,
+    /// Bottom corner grip.
+    Bottom = 7,
+}
+
+/// Resizing grip.
+#[derive(Clone, Visit, PartialEq, Default, Debug, Reflect)]
+#[reflect(type_uuid = "373815d8-77d2-4624-80de-2d851f7fd6e5")]
+pub struct Grip {
+    /// Kind of the grip.
+    pub kind: GripKind,
+    /// Bounds of the grip in local-space.
+    pub bounds: Rect<f32>,
+    /// A flag, that is raised when the grip is being dragged.
+    pub is_dragging: bool,
+    /// Cursor type of the grip.
+    pub cursor: CursorIcon,
+}
+
+impl Grip {
+    fn new(kind: GripKind, cursor: CursorIcon) -> Self {
+        Self {
+            kind,
+            bounds: Default::default(),
+            is_dragging: false,
+            cursor,
+        }
+    }
+}
+
+crate::define_widget_deref!(Window);
+
+impl Control for Window {
+    fn arrange_override(&self, ui: &UserInterface, final_size: Vector2<f32>) -> Vector2<f32> {
+        let size = self.widget.arrange_override(ui, final_size);
+
+        let mut grips = self.grips.borrow_mut();
+
+        // Adjust grips.
+        grips[GripKind::Left as usize].bounds =
+            Rect::new(0.0, GRIP_SIZE, GRIP_SIZE, final_size.y - GRIP_SIZE * 2.0);
+        grips[GripKind::Top as usize].bounds =
+            Rect::new(GRIP_SIZE, 0.0, final_size.x - GRIP_SIZE * 2.0, GRIP_SIZE);
+        grips[GripKind::Right as usize].bounds = Rect::new(
+            final_size.x - GRIP_SIZE,
+            GRIP_SIZE,
+            GRIP_SIZE,
+            final_size.y - GRIP_SIZE * 2.0,
+        );
+        grips[GripKind::Bottom as usize].bounds = Rect::new(
+            GRIP_SIZE,
+            final_size.y - GRIP_SIZE,
+            final_size.x - GRIP_SIZE * 2.0,
+            GRIP_SIZE,
+        );
+
+        // Corners have different size to improve usability.
+        grips[GripKind::LeftTopCorner as usize].bounds =
+            Rect::new(0.0, 0.0, CORNER_GRIP_SIZE, CORNER_GRIP_SIZE);
+        grips[GripKind::RightTopCorner as usize].bounds = Rect::new(
+            final_size.x - GRIP_SIZE,
+            0.0,
+            CORNER_GRIP_SIZE,
+            CORNER_GRIP_SIZE,
+        );
+        grips[GripKind::RightBottomCorner as usize].bounds = Rect::new(
+            final_size.x - CORNER_GRIP_SIZE,
+            final_size.y - CORNER_GRIP_SIZE,
+            CORNER_GRIP_SIZE,
+            CORNER_GRIP_SIZE,
+        );
+        grips[GripKind::LeftBottomCorner as usize].bounds = Rect::new(
+            0.0,
+            final_size.y - CORNER_GRIP_SIZE,
+            CORNER_GRIP_SIZE,
+            CORNER_GRIP_SIZE,
+        );
+
+        size
+    }
+
+    fn handle_routed_message(&mut self, ui: &mut UserInterface, message: &mut UiMessage) {
+        self.widget.handle_routed_message(ui, message);
+
+        if let Some(msg) = message.data::<WidgetMessage>() {
+            // Grip interaction have higher priority than other actions.
+            if self.can_resize && !self.is_dragging {
+                match msg {
+                    &WidgetMessage::MouseDown { pos, .. } => {
+                        ui.send(self.handle(), WidgetMessage::Topmost);
+
+                        if !self.maximized() {
+                            // Check grips.
+                            for grip in self.grips.borrow_mut().iter_mut() {
+                                let screen_bounds = grip.bounds.transform(&self.visual_transform);
+                                if screen_bounds.contains(pos) {
+                                    grip.is_dragging = true;
+                                    self.initial_position = self.screen_position();
+                                    self.initial_size = self.actual_local_size();
+                                    self.mouse_click_pos = pos;
+                                    ui.capture_mouse(self.handle());
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    WidgetMessage::MouseUp { .. } => {
+                        for grip in self.grips.borrow_mut().iter_mut() {
+                            if grip.is_dragging {
+                                ui.release_mouse_capture();
+                                grip.is_dragging = false;
+                                break;
+                            }
+                        }
+                    }
+                    &WidgetMessage::MouseMove { pos, .. } => {
+                        let mut new_cursor = None;
+
+                        if !self.maximized() {
+                            for grip in self.grips.borrow().iter() {
+                                let screen_bounds = grip.bounds.transform(&self.visual_transform);
+                                if grip.is_dragging || screen_bounds.contains(pos) {
+                                    new_cursor = Some(grip.cursor);
+                                }
+
+                                if grip.is_dragging {
+                                    let parent = ui.node(self.parent());
+                                    let click_pos = parent.screen_to_local(self.mouse_click_pos);
+                                    let current_pos = parent.screen_to_local(pos);
+                                    let delta = click_pos - current_pos;
+                                    let (dx, dy, dw, dh) = match grip.kind {
+                                        GripKind::Left => (-1.0, 0.0, 1.0, 0.0),
+                                        GripKind::Top => (0.0, -1.0, 0.0, 1.0),
+                                        GripKind::Right => (0.0, 0.0, -1.0, 0.0),
+                                        GripKind::Bottom => (0.0, 0.0, 0.0, -1.0),
+                                        GripKind::LeftTopCorner => (-1.0, -1.0, 1.0, 1.0),
+                                        GripKind::RightTopCorner => (0.0, -1.0, -1.0, 1.0),
+                                        GripKind::RightBottomCorner => (0.0, 0.0, -1.0, -1.0),
+                                        GripKind::LeftBottomCorner => (-1.0, 0.0, 1.0, -1.0),
+                                    };
+
+                                    let initial_position =
+                                        parent.screen_to_local(self.initial_position);
+                                    let new_pos = if self.minimized() {
+                                        initial_position + Vector2::new(delta.x * dx, 0.0)
+                                    } else {
+                                        initial_position + Vector2::new(delta.x * dx, delta.y * dy)
+                                    };
+                                    let new_size = self.initial_size
+                                        + Vector2::new(delta.x * dw, delta.y * dh);
+                                    let mut clamped_size = self.initial_size;
+                                    let mut clamped_pos = new_pos;
+
+                                    if dw != 0.0 {
+                                        clamped_size.x =
+                                            new_size.x.clamp(self.min_width(), self.max_width());
+                                        if dx != 0.0 {
+                                            let right_edge =
+                                                initial_position.x + self.initial_size.x;
+                                            clamped_pos.x = right_edge - clamped_size.x;
+                                        }
+                                    }
+
+                                    if dh != 0.0 {
+                                        clamped_size.y =
+                                            new_size.y.clamp(self.min_height(), self.max_height());
+                                        if dy != 0.0 {
+                                            let bottom_edge =
+                                                initial_position.y + self.initial_size.y;
+                                            clamped_pos.y = bottom_edge - clamped_size.y;
+                                        }
+                                    }
+
+                                    ui.send_many(
+                                        self.handle(),
+                                        [
+                                            WidgetMessage::DesiredPosition(clamped_pos),
+                                            WidgetMessage::Width(clamped_size.x),
+                                        ],
+                                    );
+                                    if !self.minimized() {
+                                        ui.send(
+                                            self.handle(),
+                                            WidgetMessage::Height(clamped_size.y),
+                                        );
+                                    }
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        self.set_cursor(new_cursor);
+                    }
+                    _ => {}
+                }
+            } else {
+                // The window cannot be resized, so leave the cursor unset.
+                self.set_cursor(None);
+            }
+
+            if (message.destination() == self.header
+                || ui
+                    .node(self.header)
+                    .has_descendant(message.destination(), ui))
+                && !self.maximized()
+                && !message.handled()
+                && !self.has_active_grip()
+            {
+                match msg {
+                    WidgetMessage::MouseDown { pos, .. } => {
+                        self.mouse_click_pos = *pos;
+                        ui.send(self.handle, WindowMessage::MoveStart);
+                        message.set_handled(true);
+                    }
+                    WidgetMessage::MouseUp { .. } => {
+                        ui.send(self.handle, WindowMessage::MoveEnd);
+                        message.set_handled(true);
+                    }
+                    WidgetMessage::MouseMove { pos, .. } => {
+                        if self.is_dragging {
+                            self.drag_delta = *pos - self.mouse_click_pos;
+                            let new_pos = self.initial_position + self.drag_delta;
+                            ui.send(
+                                self.handle(),
+                                WindowMessage::Move(ui.screen_to_root_canvas_space(new_pos)),
+                            );
+                        }
+                        message.set_handled(true);
+                    }
+                    _ => (),
+                }
+            }
+            match msg {
+                WidgetMessage::Unlink if message.destination() == self.handle() => {
+                    self.initial_position = self.screen_position();
+                }
+                WidgetMessage::KeyDown(key_code)
+                    if self.close_by_esc
+                        && !self.is_docked(ui)
+                        && self.can_close
+                        && *key_code == KeyCode::Escape
+                        && !message.handled() =>
+                {
+                    ui.send(self.handle, WindowMessage::Close);
+                    message.set_handled(true);
+                }
+                _ => {}
+            }
+        } else if let Some(ButtonMessage::Click) = message.data::<ButtonMessage>() {
+            if message.destination() == self.minimize_button {
+                ui.send(self.handle(), WindowMessage::Minimize(!self.minimized()));
+            } else if message.destination() == self.maximize_button {
+                ui.send(self.handle(), WindowMessage::Maximize(!self.maximized()));
+            } else if message.destination() == self.close_button {
+                ui.send(self.handle(), WindowMessage::Close);
+            }
+        } else if let Some(msg) = message.data_for::<WindowMessage>(self.handle()) {
+            match msg {
+                &WindowMessage::Open {
+                    alignment,
+                    modal,
+                    focus_content,
+                } => {
+                    // Only manage this window's visibility if it is at the root.
+                    // Otherwise, it is part of something like a tile, and that parent should decide
+                    // whether the window is visible.
+                    if !self.visibility() && self.parent() == ui.root() {
+                        ui.send(self.handle(), WidgetMessage::Visibility(true));
+                        // If we are opening the window with non-finite width and height, something
+                        // has gone wrong, so correct it.
+                        if !self.width().is_finite() {
+                            Log::err(format!("Window width was {}", self.width()));
+                            self.set_width(200.0);
+                        }
+                        if !self.height().is_finite() {
+                            Log::err(format!("Window height was {}", self.height()));
+                            self.set_height(200.0);
+                        }
+                    }
+                    ui.send(self.handle(), WidgetMessage::Topmost);
+                    if focus_content {
+                        ui.send(self.content_to_focus(), WidgetMessage::Focus);
+                    }
+                    if modal && !ui.restricts_picking(self.handle()) {
+                        ui.push_picking_restriction(RestrictionEntry {
+                            handle: self.handle(),
+                            stop: true,
+                        });
+                    }
+                    match alignment {
+                        WindowAlignment::None => {}
+                        WindowAlignment::Center => {
+                            if self.parent() == ui.root() {
+                                ui.send(self.handle(), WidgetMessage::Center);
+                            }
+                        }
+                        WindowAlignment::Position(position) => {
+                            ui.send(self.handle(), WidgetMessage::DesiredPosition(position));
+                        }
+                        WindowAlignment::Relative {
+                            relative_to,
+                            horizontal_alignment,
+                            vertical_alignment,
+                            margin,
+                        } => {
+                            ui.send(
+                                self.handle(),
+                                WidgetMessage::Align {
+                                    relative_to,
+                                    horizontal_alignment,
+                                    vertical_alignment,
+                                    margin,
+                                },
+                            );
+                        }
+                    }
+                }
+                WindowMessage::Close => {
+                    if self.visibility() {
+                        ui.send(self.handle(), WidgetMessage::Visibility(false));
+                        ui.remove_picking_restriction(self.handle());
+                        if self.remove_on_close {
+                            ui.send(self.handle(), WidgetMessage::Remove);
+                        }
+                    }
+                }
+                &WindowMessage::Minimize(minimized) => {
+                    if minimized {
+                        self.update_size_state(WindowSizeState::Minimized, ui);
+                    } else {
+                        self.update_size_state(WindowSizeState::Normal, ui);
+                    }
+                }
+                &WindowMessage::Maximize(maximized) => {
+                    if maximized {
+                        self.update_size_state(WindowSizeState::Maximized, ui);
+                    } else {
+                        self.update_size_state(WindowSizeState::Normal, ui);
+                    }
+                }
+                &WindowMessage::CanMinimize(value) => {
+                    if self.can_minimize != value {
+                        self.can_minimize = value;
+                        if self.minimize_button.is_some() {
+                            ui.send(self.minimize_button, WidgetMessage::Visibility(value));
+                        }
+                    }
+                }
+                &WindowMessage::CanClose(value) => {
+                    if self.can_close != value {
+                        self.can_close = value;
+                        if self.close_button.is_some() {
+                            ui.send(self.close_button, WidgetMessage::Visibility(value));
+                        }
+                    }
+                }
+                &WindowMessage::CanResize(value) => {
+                    if self.can_resize != value {
+                        self.can_resize = value;
+                        ui.try_send_response(message);
+                    }
+                }
+                &WindowMessage::Move(mut new_pos) => {
+                    if let Some(safe_border) = self.safe_border_size {
+                        // Clamp new position in allowed bounds. This will prevent moving the window outside the main
+                        // application window, thus leaving an opportunity to drag the window to some other place.
+                        new_pos.x = new_pos.x.clamp(
+                            -(self.actual_local_size().x - safe_border.x).abs(),
+                            (ui.screen_size().x - safe_border.x).abs(),
+                        );
+                        new_pos.y = new_pos
+                            .y
+                            .clamp(0.0, (ui.screen_size().y - safe_border.y).abs());
+                    }
+
+                    if self.is_dragging && self.desired_local_position() != new_pos {
+                        ui.send(self.handle(), WidgetMessage::DesiredPosition(new_pos));
+                        ui.try_send_response(message);
+                    }
+                }
+                WindowMessage::MoveStart => {
+                    if !self.is_dragging {
+                        ui.capture_mouse(self.header);
+                        let initial_position = self.screen_position();
+                        self.initial_position = initial_position;
+                        self.is_dragging = true;
+
+                        if self.size_state == WindowSizeState::Maximized {
+                            self.size_state = WindowSizeState::Normal;
+                            if let Some(prev_bounds) = self.prev_bounds.take() {
+                                ui.send_many(
+                                    self.handle,
+                                    [
+                                        WidgetMessage::Width(prev_bounds.w()),
+                                        WidgetMessage::Height(prev_bounds.h()),
+                                    ],
+                                );
+                            }
+                        }
+
+                        ui.try_send_response(message);
+                    }
+                }
+                WindowMessage::MoveEnd => {
+                    if self.is_dragging {
+                        ui.release_mouse_capture();
+                        self.is_dragging = false;
+
+                        ui.try_send_response(message);
+                    }
+                }
+                WindowMessage::Title(title) => {
+                    match title {
+                        WindowTitle::Text {
+                            text,
+                            font,
+                            font_size,
+                        } => {
+                            if ui.try_get_of_type::<Text>(self.title).is_ok() {
+                                // Just modify existing text, this is much faster than
+                                // re-create text everytime.
+                                ui.send(self.title, TextMessage::Text(text.clone()));
+                                if let Some(font) = font {
+                                    ui.send(self.title, TextMessage::Font(font.clone()))
+                                }
+                                if let Some(font_size) = font_size {
+                                    ui.send(self.title, TextMessage::FontSize(font_size.clone()));
+                                }
+                            } else {
+                                ui.send(self.title, WidgetMessage::Remove);
+                                let font = font.clone().unwrap_or_else(|| ui.default_font.clone());
+                                let ctx = &mut ui.build_ctx();
+                                self.title = make_text_title(
+                                    ctx,
+                                    text,
+                                    font,
+                                    font_size
+                                        .clone()
+                                        .unwrap_or_else(|| ctx.style.property(Style::FONT_SIZE)),
+                                )
+                                .to_base();
+                                ui.send(self.title, WidgetMessage::link_with(self.title_grid));
+                            }
+                        }
+                        WindowTitle::Node(node) => {
+                            if self.title.is_some() {
+                                // Remove old title.
+                                ui.send(self.title, WidgetMessage::Remove);
+                            }
+
+                            if node.is_some() {
+                                self.title = *node;
+
+                                // Attach new one.
+                                ui.send(self.title, WidgetMessage::link_with(self.title_grid));
+                            }
+                        }
+                    }
+                }
+                WindowMessage::SafeBorderSize(size) => {
+                    if &self.safe_border_size != size {
+                        self.safe_border_size = *size;
+                        ui.try_send_response(message);
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl Window {
+    pub fn tab_label(&self) -> &str {
+        &self.tab_label
+    }
+    pub fn minimized(&self) -> bool {
+        self.size_state == WindowSizeState::Minimized
+    }
+    pub fn maximized(&self) -> bool {
+        self.size_state == WindowSizeState::Maximized
+    }
+    pub fn normal(&self) -> bool {
+        self.size_state == WindowSizeState::Normal
+    }
+    fn update_size_state(&mut self, new_state: WindowSizeState, ui: &mut UserInterface) {
+        if self.size_state == new_state {
+            return;
+        }
+        if new_state == WindowSizeState::Maximized && !self.can_resize {
+            return;
+        }
+        let current_size = self.actual_global_size();
+        let current_position = self.screen_position();
+        match self.size_state {
+            WindowSizeState::Normal => {
+                self.prev_bounds = Some(Rect::new(
+                    current_position.x,
+                    current_position.y,
+                    current_size.x,
+                    current_size.y,
+                ));
+            }
+            WindowSizeState::Minimized => {
+                self.prev_bounds = Some(Rect::new(
+                    current_position.x,
+                    current_position.y,
+                    current_size.x,
+                    self.prev_bounds.map(|b| b.size.y).unwrap_or(current_size.y),
+                ));
+            }
+            _ => (),
+        }
+        let new_bounds = match new_state {
+            WindowSizeState::Normal | WindowSizeState::Minimized => {
+                self.prev_bounds.unwrap_or_else(|| {
+                    Rect::new(
+                        current_position.x,
+                        current_position.y,
+                        current_size.x,
+                        current_size.y,
+                    )
+                })
+            }
+            WindowSizeState::Maximized => Rect::new(0.0, 0.0, ui.screen_size.x, ui.screen_size.y),
+        };
+
+        if self.content.is_some() {
+            ui.send(
+                self.content,
+                WidgetMessage::Visibility(new_state != WindowSizeState::Minimized),
+            );
+        }
+
+        if new_state == WindowSizeState::Minimized {
+            self.set_desired_local_position(new_bounds.position);
+            if self.can_resize {
+                self.set_width(new_bounds.w());
+            }
+            self.set_height(f32::NAN);
+            self.invalidate_layout();
+        } else {
+            ui.send(
+                self.handle,
+                WidgetMessage::DesiredPosition(new_bounds.position),
+            );
+            if self.can_resize {
+                ui.send_many(
+                    self.handle,
+                    [
+                        WidgetMessage::Width(new_bounds.w()),
+                        WidgetMessage::Height(new_bounds.h()),
+                    ],
+                );
+            }
+        }
+        self.size_state = new_state;
+    }
+    /// Checks whether any resizing grip is active or not.
+    pub fn has_active_grip(&self) -> bool {
+        for grip in self.grips.borrow().iter() {
+            if grip.is_dragging {
+                return true;
+            }
+        }
+        false
+    }
+
+    fn content_to_focus(&self) -> Handle<UiNode> {
+        if self.content.is_some() {
+            self.content
+        } else {
+            self.handle
+        }
+    }
+
+    fn is_docked(&self, ui: &UserInterface) -> bool {
+        self.parent() != ui.root_canvas
+    }
+}
+
+/// Window builder creates [`Window`] instances and adds them to the user interface.
+pub struct WindowBuilder {
+    /// Base widget builder.
+    pub widget_builder: WidgetBuilder,
+    /// Content of the window.
+    pub content: Handle<UiNode>,
+    /// Optional title of the window.
+    pub title: Option<WindowTitle>,
+    /// Label for the window's tab.
+    pub tab_label: String,
+    /// Whether the window can be closed or not.
+    pub can_close: bool,
+    /// Whether the window can be minimized or not.
+    pub can_minimize: bool,
+    /// Whether the window can be maximized or not.
+    pub can_maximize: bool,
+    /// Whether the window should be created open or not.
+    pub open: bool,
+    /// Optional custom closing button, if not specified, then a default button will be created.
+    pub close_button: Option<Handle<Button>>,
+    /// Optional custom minimization button, if not specified, then a default button will be created.
+    pub minimize_button: Option<Handle<Button>>,
+    /// Optional custom maximization button, if not specified, then a default button will be created.
+    pub maximize_button: Option<Handle<Button>>,
+    /// Whether the window should be created as modal or not. Warning: Any independent builders must
+    /// take this into account!
+    pub modal: bool,
+    /// Whether the window should be resizable or not.
+    pub can_resize: bool,
+    /// Optional size of the border around the screen in which the window will be forced to stay.
+    pub safe_border_size: Option<Vector2<f32>>,
+    /// If `true`, then the window can be closed using `Esc` key. Default is `true`. Works only if
+    /// `can_close` is also `true`.
+    pub close_by_esc: bool,
+    /// If `true`, then the window will be deleted after closing.
+    pub remove_on_close: bool,
+}
+
+/// Window title can be either text or node.
+///
+/// If `Text` is used, then builder will automatically create [`Text`] node with specified text,
+/// but with default font.
+///
+/// If you need more flexibility (i.e. put a picture near text) then [`WindowTitle::Node`] option
+/// is for you: it allows to put any UI node hierarchy you want to.
+#[derive(Debug, Clone, PartialEq)]
+pub enum WindowTitle {
+    Text {
+        /// Actual text of the title.
+        text: String,
+        /// Optional font, if [`None`], then the default font will be used.
+        font: Option<FontResource>,
+        /// Optional size of the text. Default is [`None`] (in this case default size defined by the
+        /// current style will be used).
+        font_size: Option<StyledProperty<f32>>,
+    },
+    Node(Handle<UiNode>),
+}
+
+impl WindowTitle {
+    /// A shortcut to create [`WindowTitle::Text`]
+    pub fn text<P: AsRef<str>>(text: P) -> Self {
+        WindowTitle::Text {
+            text: text.as_ref().to_owned(),
+            font: None,
+            font_size: None,
+        }
+    }
+
+    /// A shortcut to create [`WindowTitle::Text`] with custom font.
+    pub fn text_with_font<P: AsRef<str>>(text: P, font: FontResource) -> Self {
+        WindowTitle::Text {
+            text: text.as_ref().to_owned(),
+            font: Some(font),
+            font_size: None,
+        }
+    }
+
+    /// A shortcut to create [`WindowTitle::Text`] with custom font and size.
+    pub fn text_with_font_size<P: AsRef<str>>(
+        text: P,
+        font: FontResource,
+        size: StyledProperty<f32>,
+    ) -> Self {
+        WindowTitle::Text {
+            text: text.as_ref().to_owned(),
+            font: Some(font),
+            font_size: Some(size),
+        }
+    }
+
+    /// A shortcut to create [`WindowTitle::Node`]
+    pub fn node(node: Handle<UiNode>) -> Self {
+        Self::Node(node)
+    }
+}
+
+fn make_text_title(
+    ctx: &mut BuildContext,
+    text: &str,
+    font: FontResource,
+    size: StyledProperty<f32>,
+) -> Handle<Text> {
+    TextBuilder::new(
+        WidgetBuilder::new()
+            .with_margin(Thickness::left(5.0))
+            .on_row(0)
+            .on_column(0),
+    )
+    .with_font_size(size)
+    .with_font(font)
+    .with_vertical_text_alignment(VerticalAlignment::Center)
+    .with_horizontal_text_alignment(HorizontalAlignment::Left)
+    .with_text(text)
+    .build(ctx)
+}
+
+enum HeaderButton {
+    Close,
+    Minimize,
+    Maximize,
+}
+
+fn make_mark(ctx: &mut BuildContext, button: HeaderButton) -> Handle<VectorImage> {
+    let size = 12.0;
+
+    VectorImageBuilder::new(
+        WidgetBuilder::new()
+            .with_horizontal_alignment(HorizontalAlignment::Center)
+            .with_vertical_alignment(match button {
+                HeaderButton::Close => VerticalAlignment::Center,
+                HeaderButton::Minimize => VerticalAlignment::Bottom,
+                HeaderButton::Maximize => VerticalAlignment::Center,
+            })
+            .with_width(size)
+            .with_height(size)
+            .with_foreground(ctx.style.property(Style::BRUSH_BRIGHT)),
+    )
+    .with_primitives(match button {
+        HeaderButton::Close => {
+            vec![
+                Primitive::Line {
+                    begin: Vector2::new(0.0, 0.0),
+                    end: Vector2::new(size, size),
+                    thickness: 1.0,
+                },
+                Primitive::Line {
+                    begin: Vector2::new(size, 0.0),
+                    end: Vector2::new(0.0, size),
+                    thickness: 1.0,
+                },
+            ]
+        }
+        HeaderButton::Minimize => {
+            let bottom_spacing = 3.0;
+
+            vec![Primitive::Line {
+                begin: Vector2::new(0.0, size - bottom_spacing),
+                end: Vector2::new(size, size - bottom_spacing),
+                thickness: 1.0,
+            }]
+        }
+        HeaderButton::Maximize => {
+            let thickness = 1.25;
+            let half_thickness = thickness * 0.5;
+
+            vec![
+                Primitive::Line {
+                    begin: Vector2::new(0.0, half_thickness),
+                    end: Vector2::new(size, half_thickness),
+                    thickness,
+                },
+                Primitive::Line {
+                    begin: Vector2::new(size - half_thickness, 0.0),
+                    end: Vector2::new(size - half_thickness, size),
+                    thickness,
+                },
+                Primitive::Line {
+                    begin: Vector2::new(size, size - half_thickness),
+                    end: Vector2::new(0.0, size - half_thickness),
+                    thickness,
+                },
+                Primitive::Line {
+                    begin: Vector2::new(half_thickness, size),
+                    end: Vector2::new(half_thickness, 0.0),
+                    thickness,
+                },
+            ]
+        }
+    })
+    .build(ctx)
+}
+
+fn make_header_button(ctx: &mut BuildContext, button: HeaderButton) -> Handle<Button> {
+    ButtonBuilder::new(WidgetBuilder::new().with_margin(Thickness::uniform(2.0)))
+        .with_back(
+            DecoratorBuilder::new(
+                BorderBuilder::new(WidgetBuilder::new())
+                    .with_stroke_thickness(Thickness::uniform(0.0).into())
+                    .with_pad_by_corner_radius(false)
+                    .with_corner_radius(4.0f32.into()),
+            )
+            .with_normal_brush(Brush::Solid(Color::TRANSPARENT).into())
+            .with_hover_brush(ctx.style.property(Style::BRUSH_LIGHT))
+            .with_pressed_brush(ctx.style.property(Style::BRUSH_LIGHTEST))
+            .build(ctx),
+        )
+        .with_content(make_mark(ctx, button))
+        .build(ctx)
+}
+
+impl WindowBuilder {
+    /// Creates new window builder.
+    pub fn new(widget_builder: WidgetBuilder) -> Self {
+        Self {
+            widget_builder,
+            content: Handle::NONE,
+            title: None,
+            tab_label: String::default(),
+            can_close: true,
+            can_minimize: true,
+            can_maximize: true,
+            open: true,
+            close_button: None,
+            minimize_button: None,
+            maximize_button: None,
+            modal: false,
+            can_resize: true,
+            safe_border_size: Some(Vector2::new(25.0, 20.0)),
+            close_by_esc: true,
+            remove_on_close: false,
+        }
+    }
+
+    /// Sets a desired window content.
+    pub fn with_content(mut self, content: Handle<impl ObjectOrVariant<UiNode>>) -> Self {
+        self.content = content.to_base();
+        self
+    }
+
+    /// Sets a desired window title.
+    pub fn with_title(mut self, title: WindowTitle) -> Self {
+        self.title = Some(title);
+        self
+    }
+
+    pub fn with_tab_label<S: Into<String>>(mut self, label: S) -> Self {
+        self.tab_label = label.into();
+        self
+    }
+
+    /// Sets a desired minimization button.
+    pub fn with_minimize_button(mut self, button: Handle<Button>) -> Self {
+        self.minimize_button = Some(button);
+        self
+    }
+
+    /// Sets a desired maximization button.
+    pub fn with_maximize_button(mut self, button: Handle<Button>) -> Self {
+        self.minimize_button = Some(button);
+        self
+    }
+
+    /// Sets a desired closing button.
+    pub fn with_close_button(mut self, button: Handle<Button>) -> Self {
+        self.close_button = Some(button);
+        self
+    }
+
+    /// Sets whether the window can be closed or not.
+    pub fn can_close(mut self, can_close: bool) -> Self {
+        self.can_close = can_close;
+        self
+    }
+
+    /// Sets whether the window can be minimized or not.
+    pub fn can_minimize(mut self, can_minimize: bool) -> Self {
+        self.can_minimize = can_minimize;
+        self
+    }
+
+    /// Sets whether the window can be maximized or not.
+    pub fn can_maximize(mut self, can_minimize: bool) -> Self {
+        self.can_maximize = can_minimize;
+        self
+    }
+
+    /// Sets whether the window should be open or not.
+    pub fn open(mut self, open: bool) -> Self {
+        self.open = open;
+        self
+    }
+
+    /// Sets whether the window should be modal or not.
+    pub fn modal(mut self, modal: bool) -> Self {
+        self.modal = modal;
+        self
+    }
+
+    /// Sets whether the window can be resized or not.
+    pub fn can_resize(mut self, can_resize: bool) -> Self {
+        self.can_resize = can_resize;
+        self
+    }
+
+    /// Sets a desired safe border size.
+    pub fn with_safe_border_size(mut self, size: Option<Vector2<f32>>) -> Self {
+        self.safe_border_size = size.map(|s| Vector2::new(s.x.abs(), s.y.abs()));
+        self
+    }
+
+    /// Defines, whether the window can be closed using `Esc` key or not. Works only if `can_close`
+    /// is also `true`.
+    pub fn with_close_by_esc(mut self, close: bool) -> Self {
+        self.close_by_esc = close;
+        self
+    }
+
+    /// Defines, whether the window should be deleted after closing or not. Default is `false`.
+    pub fn with_remove_on_close(mut self, close: bool) -> Self {
+        self.remove_on_close = close;
+        self
+    }
+
+    /// Finishes window building and returns its instance.
+    pub fn build_window(self, ctx: &mut BuildContext) -> Window {
+        let minimize_button;
+        let maximize_button;
+        let close_button;
+        let title;
+        let title_grid;
+        let header = BorderBuilder::new(
+            WidgetBuilder::new()
+                .with_horizontal_alignment(HorizontalAlignment::Stretch)
+                .with_height(22.0)
+                .with_background(ctx.style.property(Style::BRUSH_DARKER))
+                .with_child({
+                    title_grid = GridBuilder::new(
+                        WidgetBuilder::new()
+                            .with_child({
+                                title = match self.title {
+                                    None => Handle::NONE,
+                                    Some(window_title) => match window_title {
+                                        WindowTitle::Node(node) => node,
+                                        WindowTitle::Text {
+                                            text,
+                                            font,
+                                            font_size,
+                                        } => make_text_title(
+                                            ctx,
+                                            &text,
+                                            font.unwrap_or_else(|| ctx.default_font()),
+                                            font_size.unwrap_or_else(|| {
+                                                ctx.style.property(Style::FONT_SIZE)
+                                            }),
+                                        )
+                                        .to_base(),
+                                    },
+                                };
+                                title
+                            })
+                            .with_child({
+                                minimize_button = self.minimize_button.unwrap_or_else(|| {
+                                    make_header_button(ctx, HeaderButton::Minimize)
+                                });
+                                ctx[minimize_button]
+                                    .set_visibility(self.can_minimize)
+                                    .set_width(20.0)
+                                    .set_row(0)
+                                    .set_column(1);
+                                minimize_button
+                            })
+                            .with_child({
+                                maximize_button = self.maximize_button.unwrap_or_else(|| {
+                                    make_header_button(ctx, HeaderButton::Maximize)
+                                });
+                                ctx[maximize_button]
+                                    .set_visibility(self.can_maximize)
+                                    .set_width(20.0)
+                                    .set_row(0)
+                                    .set_column(2);
+                                maximize_button
+                            })
+                            .with_child({
+                                close_button = self.close_button.unwrap_or_else(|| {
+                                    make_header_button(ctx, HeaderButton::Close)
+                                });
+                                ctx[close_button]
+                                    .set_width(20.0)
+                                    .set_visibility(self.can_close)
+                                    .set_row(0)
+                                    .set_column(3);
+                                close_button
+                            }),
+                    )
+                    .add_column(Column::stretch())
+                    .add_column(Column::auto())
+                    .add_column(Column::auto())
+                    .add_column(Column::auto())
+                    .add_row(Row::stretch())
+                    .build(ctx);
+                    title_grid
+                })
+                .on_row(0),
+        )
+        .with_pad_by_corner_radius(false)
+        .with_corner_radius(4.0f32.into())
+        .with_stroke_thickness(Thickness::uniform(0.0).into())
+        .build(ctx)
+        .to_base();
+
+        let border = BorderBuilder::new(
+            WidgetBuilder::new()
+                .with_foreground(ctx.style.property(Style::BRUSH_DARKER))
+                .with_child(
+                    GridBuilder::new(
+                        WidgetBuilder::new()
+                            .with_child(
+                                NavigationLayerBuilder::new(
+                                    WidgetBuilder::new().on_row(1).with_child(self.content),
+                                )
+                                .build(ctx),
+                            )
+                            .with_child(header),
+                    )
+                    .add_column(Column::stretch())
+                    .add_row(Row::auto())
+                    .add_row(Row::stretch())
+                    .build(ctx),
+                ),
+        )
+        .with_pad_by_corner_radius(false)
+        .with_corner_radius(4.0f32.into())
+        .with_stroke_thickness(Thickness::uniform(1.0).into())
+        .build(ctx);
+
+        Window {
+            widget: self
+                .widget_builder
+                .with_visibility(self.open)
+                .with_child(border)
+                .build(ctx),
+            mouse_click_pos: Vector2::default(),
+            initial_position: Vector2::default(),
+            initial_size: Default::default(),
+            is_dragging: false,
+            size_state: WindowSizeState::default(),
+            can_minimize: self.can_minimize,
+            can_maximize: self.can_maximize,
+            can_close: self.can_close,
+            can_resize: self.can_resize,
+            header,
+            tab_label: self.tab_label,
+            minimize_button,
+            maximize_button,
+            close_button,
+            drag_delta: Default::default(),
+            content: self.content,
+            safe_border_size: self.safe_border_size,
+            grips: RefCell::new([
+                // Corners have priority
+                Grip::new(GripKind::LeftTopCorner, CursorIcon::NwResize),
+                Grip::new(GripKind::RightTopCorner, CursorIcon::NeResize),
+                Grip::new(GripKind::RightBottomCorner, CursorIcon::SeResize),
+                Grip::new(GripKind::LeftBottomCorner, CursorIcon::SwResize),
+                Grip::new(GripKind::Left, CursorIcon::WResize),
+                Grip::new(GripKind::Top, CursorIcon::NResize),
+                Grip::new(GripKind::Right, CursorIcon::EResize),
+                Grip::new(GripKind::Bottom, CursorIcon::SResize),
+            ]),
+            title,
+            title_grid,
+            prev_bounds: None,
+            close_by_esc: self.close_by_esc,
+            remove_on_close: self.remove_on_close,
+        }
+    }
+
+    /// Finishes window building and returns its handle.
+    pub fn build(self, ctx: &mut BuildContext) -> Handle<Window> {
+        let modal = self.modal;
+        let open = self.open;
+
+        let node = self.build_window(ctx);
+        let handle = ctx.add(node);
+
+        if modal && open {
+            ctx.push_picking_restriction(RestrictionEntry {
+                handle: handle.to_base(),
+                stop: true,
+            });
+        }
+
+        handle.to_variant()
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::window::WindowBuilder;
+    use crate::{test::test_widget_deletion, widget::WidgetBuilder};
+
+    #[test]
+    fn test_deletion() {
+        test_widget_deletion(|ctx| WindowBuilder::new(WidgetBuilder::new()).build(ctx));
+    }
+}

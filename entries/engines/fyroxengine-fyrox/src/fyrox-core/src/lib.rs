@@ -1,0 +1,870 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! Core data structures and algorithms used throughout Fyrox.
+//!
+//! Some of them can be useful separately outside the engine.
+
+#![allow(clippy::upper_case_acronyms)]
+#![allow(clippy::from_over_into)]
+#![allow(clippy::doc_lazy_continuation)]
+#![allow(mismatched_lifetime_syntaxes)]
+
+pub use arrayvec;
+pub use byteorder;
+pub use nalgebra as algebra;
+pub use num_traits;
+pub use parking_lot;
+pub use rand;
+pub use sstorage::ImmutableString;
+pub use uuid;
+
+use crate::visitor::prelude::*;
+use bytemuck::Pod;
+use fxhash::FxHashMap;
+pub use safelock::*;
+use std::collections::hash_map::Entry;
+use std::ffi::OsString;
+use std::hash::Hasher;
+use std::{
+    borrow::Borrow,
+    cmp,
+    hash::Hash,
+    path::{Path, PathBuf},
+};
+pub mod color;
+pub mod color_gradient;
+pub mod dyntype;
+pub mod early;
+pub mod io;
+pub mod log;
+pub mod math;
+pub mod net;
+pub mod numeric_range;
+pub mod platform;
+pub mod pool;
+pub mod quadtree;
+pub mod rectpack;
+pub mod reflect;
+mod safelock;
+pub mod sparse;
+pub mod sstorage;
+pub mod task;
+pub mod variable;
+pub mod visitor;
+pub mod watcher;
+
+pub use futures;
+pub use instant;
+
+pub use notify;
+
+#[cfg(target_arch = "wasm32")]
+pub use js_sys;
+use std::marker::PhantomData;
+#[cfg(target_arch = "wasm32")]
+pub use wasm_bindgen;
+#[cfg(target_arch = "wasm32")]
+pub use wasm_bindgen_futures;
+#[cfg(target_arch = "wasm32")]
+pub use web_sys;
+
+/// Defines as_(variant), as_mut_(variant) and is_(variant) methods.
+#[macro_export]
+macro_rules! define_is_as {
+    ($typ:tt : $kind:ident -> ref $result:path => fn $is:ident, fn $as_ref:ident, fn $as_mut:ident) => {
+        /// Returns true if node is instance of given type.
+        pub fn $is(&self) -> bool {
+            match self {
+                $typ::$kind(_) => true,
+                _ => false,
+            }
+        }
+
+        /// Tries to cast shared reference to a node to given type, panics if
+        /// cast is not possible.
+        pub fn $as_ref(&self) -> &$result {
+            match self {
+                $typ::$kind(ref val) => val,
+                _ => panic!("Cast to {} failed!", stringify!($kind)),
+            }
+        }
+
+        /// Tries to cast mutable reference to a node to given type, panics if
+        /// cast is not possible.
+        pub fn $as_mut(&mut self) -> &mut $result {
+            match self {
+                $typ::$kind(ref mut val) => val,
+                _ => panic!("Cast to {} failed!", stringify!($kind)),
+            }
+        }
+    };
+}
+
+/// Utility function that replaces back slashes \ to forward /. Internally, it converts the input
+/// path to string (lossy - see [`Path::to_string_lossy`]) and replaces the slashes in the string.
+/// Finally, it converts the string to the PathBuf and returns it. This method is intended to be
+/// used only for paths, that does not contain non-unicode characters.
+pub fn replace_slashes<P: AsRef<Path>>(path: P) -> PathBuf {
+    PathBuf::from(
+        path.as_ref()
+            .to_string_lossy()
+            .to_string()
+            .replace('\\', "/"),
+    )
+}
+
+/// Appends specified extension to the path.
+///
+/// # Examples
+///
+/// ```rust
+/// # use std::path::Path;
+/// # use fyrox_core::append_extension;
+/// let path = Path::new("foo.bar");
+/// let new_path = append_extension(path, "baz");
+/// assert_eq!(new_path, Path::new("foo.bar.baz"))
+/// ```
+#[must_use]
+pub fn append_extension<P: AsRef<Path>, E: AsRef<str>>(
+    path: P,
+    additional_extension: E,
+) -> PathBuf {
+    let mut final_path = path.as_ref().to_path_buf();
+    let new_extension = final_path
+        .extension()
+        .map(|e| {
+            let mut ext = e.to_owned();
+            ext.push(".");
+            ext.push(additional_extension.as_ref());
+            ext
+        })
+        .unwrap_or_else(|| OsString::from(additional_extension.as_ref()));
+    final_path.set_extension(new_extension);
+    final_path
+}
+
+#[derive(Clone, Debug)]
+pub struct BiDirHashMap<K, V> {
+    forward_map: FxHashMap<K, V>,
+    backward_map: FxHashMap<V, K>,
+}
+
+impl<K: Hash + Eq + Clone, V: Hash + Eq + Clone> BiDirHashMap<K, V> {
+    pub fn insert(&mut self, key: K, value: V) -> Option<V> {
+        let existing = self.forward_map.insert(key.clone(), value.clone());
+        self.backward_map.insert(value, key);
+        existing
+    }
+
+    pub fn remove_by_key(&mut self, key: &K) -> Option<V> {
+        if let Some(value) = self.forward_map.remove(key) {
+            self.backward_map.remove(&value);
+            Some(value)
+        } else {
+            None
+        }
+    }
+
+    pub fn contains_key<Q: ?Sized + Hash + Eq>(&self, key: &Q) -> bool
+    where
+        K: Borrow<Q>,
+    {
+        self.forward_map.contains_key(key)
+    }
+
+    pub fn remove_by_value(&mut self, value: &V) -> Option<K> {
+        if let Some(key) = self.backward_map.remove(value) {
+            self.forward_map.remove(&key);
+            Some(key)
+        } else {
+            None
+        }
+    }
+
+    pub fn contains_value<Q: ?Sized + Hash + Eq>(&self, value: &Q) -> bool
+    where
+        V: Borrow<Q>,
+    {
+        self.backward_map.contains_key(value)
+    }
+
+    pub fn value_of(&self, node: &K) -> Option<&V> {
+        self.forward_map.get(node)
+    }
+
+    pub fn key_of(&self, value: &V) -> Option<&K> {
+        self.backward_map.get(value)
+    }
+
+    pub fn len(&self) -> usize {
+        self.forward_map.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.forward_map.is_empty()
+    }
+
+    pub fn clear(&mut self) {
+        self.forward_map.clear();
+        self.backward_map.clear();
+    }
+
+    pub fn forward_map(&self) -> &FxHashMap<K, V> {
+        &self.forward_map
+    }
+
+    pub fn backward_map(&self) -> &FxHashMap<V, K> {
+        &self.backward_map
+    }
+
+    pub fn into_inner(self) -> (FxHashMap<K, V>, FxHashMap<V, K>) {
+        (self.forward_map, self.backward_map)
+    }
+}
+
+impl<K, V> Default for BiDirHashMap<K, V> {
+    fn default() -> Self {
+        Self {
+            forward_map: Default::default(),
+            backward_map: Default::default(),
+        }
+    }
+}
+
+impl<K: Hash + Eq + Clone, V: Hash + Eq + Clone> From<FxHashMap<K, V>> for BiDirHashMap<K, V> {
+    fn from(forward_map: FxHashMap<K, V>) -> Self {
+        let mut backward_map = FxHashMap::default();
+        for (k, v) in forward_map.iter() {
+            backward_map.insert(v.clone(), k.clone());
+        }
+        Self {
+            forward_map,
+            backward_map,
+        }
+    }
+}
+
+impl<K, V> Visit for BiDirHashMap<K, V>
+where
+    K: Hash + Eq + Clone + Default + Visit,
+    V: Hash + Eq + Clone + Default + Visit,
+{
+    fn visit(&mut self, name: &str, visitor: &mut Visitor) -> VisitResult {
+        let mut region = visitor.enter_region(name)?;
+
+        self.forward_map.visit("ForwardMap", &mut region)?;
+        self.backward_map.visit("BackwardMap", &mut region)?;
+
+        Ok(())
+    }
+}
+
+impl<K, V> FromIterator<(K, V)> for BiDirHashMap<K, V>
+where
+    K: Hash + Eq + Clone,
+    V: Hash + Eq + Clone,
+{
+    fn from_iter<T: IntoIterator<Item = (K, V)>>(iter: T) -> Self {
+        let mut hm = Self::default();
+        for (k, v) in iter {
+            hm.forward_map.insert(k.clone(), v.clone());
+            hm.backward_map.insert(v, k);
+        }
+        hm
+    }
+}
+
+#[inline]
+pub fn hash_combine(lhs: u64, rhs: u64) -> u64 {
+    lhs ^ (rhs
+        .wrapping_add(0x9e3779b9)
+        .wrapping_add(lhs << 6)
+        .wrapping_add(lhs >> 2))
+}
+
+/// Strip working directory from file name. The function may fail for one main reason -
+/// input path is not valid, does not exist, or there is some other issues with it.
+/// The last component of the path is permitted to not exist, so long as the rest of the path exists.
+pub fn make_relative_path<P: AsRef<Path>>(path: P) -> Result<PathBuf, std::io::Error> {
+    let path = path.as_ref();
+    if path.as_os_str() == "." {
+        return Ok(path.to_path_buf());
+    }
+    // Canonicalization requires the full path to exist, so remove the file name before
+    // calling canonicalize.
+    let file_name = path.file_name().ok_or(std::io::Error::new(
+        std::io::ErrorKind::InvalidData,
+        format!("Invalid path: {}", path.display()),
+    ))?;
+    let dir = path.parent();
+    let dir = if let Some(dir) = dir {
+        if dir.as_os_str().is_empty() {
+            Path::new(".")
+        } else {
+            dir
+        }
+    } else {
+        Path::new(".")
+    };
+
+    let cwd = std::env::current_dir()?;
+
+    // Try without canonicalization first to preserve symlinks.
+    let non_canon_dir = if dir.is_absolute() {
+        dir.to_path_buf()
+    } else {
+        cwd.join(dir)
+    };
+    if non_canon_dir.is_dir() {
+        let non_canon_path = non_canon_dir.join(file_name);
+        if let Ok(relative_path) = non_canon_path.strip_prefix(&cwd) {
+            return Ok(replace_slashes(relative_path));
+        }
+    }
+
+    // Canonicalize to resolve `.` and `..` components.
+    let canon_path = dir
+        .canonicalize()
+        .map_err(|err| {
+            std::io::Error::other(format!(
+                "Unable to canonicalize '{}'. Reason: {err}",
+                dir.display()
+            ))
+        })?
+        .join(file_name);
+    let canon_cwd = cwd.canonicalize()?;
+    if let Ok(relative_path) = canon_path.strip_prefix(&canon_cwd) {
+        return Ok(replace_slashes(relative_path));
+    }
+
+    // Last resort: resolve via symlinks in cwd to map canonical paths back to project-relative paths.
+    if let Some(relative) = find_symlink_relative_path(&cwd, &canon_path) {
+        return Ok(replace_slashes(relative));
+    }
+
+    Err(std::io::Error::other(format!(
+        "unable to strip prefix from '{}'! Reason: prefix not found",
+        canon_path.display()
+    )))
+}
+
+/// Searches `base_dir` (up to 4 levels deep) for a symlink whose target is a prefix of
+/// `canon_path`, returning the relative path through that symlink.
+fn find_symlink_relative_path(base_dir: &Path, canon_path: &Path) -> Option<PathBuf> {
+    fn walk(dir: &Path, prefix: &Path, canon_path: &Path, depth: u32) -> Option<PathBuf> {
+        const MAX_DEPTH: u32 = 4;
+        if depth > MAX_DEPTH {
+            return None;
+        }
+        let entries = std::fs::read_dir(dir).ok()?;
+        for entry in entries.flatten() {
+            let entry_path = entry.path();
+            if entry_path.is_symlink() {
+                if let Ok(link_target) = entry_path.canonicalize()
+                    && let Ok(rest) = canon_path.strip_prefix(&link_target)
+                {
+                    let relative_link = entry_path.strip_prefix(prefix).ok()?;
+                    return Some(relative_link.join(rest));
+                }
+            } else if entry_path.is_dir()
+                && let Some(result) = walk(&entry_path, prefix, canon_path, depth + 1)
+            {
+                return Some(result);
+            }
+        }
+        None
+    }
+    walk(base_dir, base_dir, canon_path, 0)
+}
+
+/// "Transmutes" array of any sized type to a slice of bytes.
+pub fn array_as_u8_slice<T: Sized + Pod>(v: &[T]) -> &'_ [u8] {
+    // SAFETY: It is safe to reinterpret data to read it.
+    unsafe { std::slice::from_raw_parts(v.as_ptr() as *const u8, std::mem::size_of_val(v)) }
+}
+
+/// "Transmutes" array of any sized type to a slice of bytes.
+pub fn array_as_u8_slice_mut<T: Sized + Pod>(v: &mut [T]) -> &'_ mut [u8] {
+    // SAFETY: It is safe to reinterpret memory region of POD type.
+    unsafe { std::slice::from_raw_parts_mut(v.as_mut_ptr() as *mut u8, std::mem::size_of_val(v)) }
+}
+
+/// "Transmutes" array of any sized type to a slice of some other type.
+pub fn transmute_slice<T: Sized, U: Sized>(v: &[T]) -> &'_ [U] {
+    // SAFETY: It is safe to reinterpret data to read it.
+    unsafe {
+        std::slice::from_raw_parts(
+            v.as_ptr() as *const U,
+            std::mem::size_of_val(v) / std::mem::size_of::<U>(),
+        )
+    }
+}
+
+/// "Transmutes" value of any sized type to a slice of bytes.
+pub fn value_as_u8_slice<T: Sized + Pod>(v: &T) -> &'_ [u8] {
+    // SAFETY: It is safe to reinterpret data to read it.
+    unsafe { std::slice::from_raw_parts(v as *const T as *const u8, std::mem::size_of::<T>()) }
+}
+
+/// Takes a vector of trivially-copyable values and turns it into a vector of bytes.
+pub fn transmute_vec_as_bytes<T: Pod>(vec: Vec<T>) -> Vec<u8> {
+    unsafe {
+        let mut vec = std::mem::ManuallyDrop::new(vec);
+        Vec::from_raw_parts(
+            vec.as_mut_ptr() as *mut u8,
+            vec.len() * std::mem::size_of::<T>(),
+            vec.capacity() * std::mem::size_of::<T>(),
+        )
+    }
+}
+
+/// Performs hashing of a sized value by interpreting it as raw memory.
+pub fn hash_as_bytes<T: Sized + Pod, H: Hasher>(value: &T, hasher: &mut H) {
+    hasher.write(value_as_u8_slice(value))
+}
+
+/// Compares two strings using case-insensitive comparison. This function does not allocate any
+/// any memory and significantly faster than `a.to_lowercase() == b.to_lowercase()`.
+pub fn cmp_strings_case_insensitive(a: impl AsRef<str>, b: impl AsRef<str>) -> bool {
+    let a_ref = a.as_ref();
+    let b_ref = b.as_ref();
+
+    if a_ref.len() != b_ref.len() {
+        return false;
+    }
+
+    a_ref
+        .chars()
+        .zip(b_ref.chars())
+        .all(|(ca, cb)| ca.to_lowercase().eq(cb.to_lowercase()))
+}
+
+pub fn make_pretty_type_name(type_name: &str) -> &str {
+    let mut colon_position = None;
+    let mut byte_pos = 0;
+    for c in type_name.chars() {
+        byte_pos += c.len_utf8();
+        if c == ':' {
+            colon_position = Some(byte_pos);
+        } else if c == '<' {
+            break;
+        }
+    }
+    if let Some(colon_position) = colon_position {
+        type_name.split_at(colon_position).1
+    } else {
+        type_name
+    }
+}
+
+#[repr(transparent)]
+#[derive(Debug)]
+pub struct PhantomDataSendSync<T: ?Sized>(PhantomData<T>);
+
+// SAFETY: PhantomDataSendSync does not hold any data.
+unsafe impl<T: ?Sized> Send for PhantomDataSendSync<T> {}
+// SAFETY: PhantomDataSendSync does not hold any data.
+unsafe impl<T: ?Sized> Sync for PhantomDataSendSync<T> {}
+
+impl<T: ?Sized> Hash for PhantomDataSendSync<T> {
+    #[inline]
+    fn hash<H: Hasher>(&self, _: &mut H) {}
+}
+
+impl<T: ?Sized> PartialEq for PhantomDataSendSync<T> {
+    fn eq(&self, _other: &PhantomDataSendSync<T>) -> bool {
+        true
+    }
+}
+
+impl<T: ?Sized> Eq for PhantomDataSendSync<T> {}
+
+impl<T: ?Sized> PartialOrd for PhantomDataSendSync<T> {
+    fn partial_cmp(&self, _other: &PhantomDataSendSync<T>) -> Option<cmp::Ordering> {
+        Some(self.cmp(_other))
+    }
+}
+
+impl<T: ?Sized> Ord for PhantomDataSendSync<T> {
+    fn cmp(&self, _other: &PhantomDataSendSync<T>) -> cmp::Ordering {
+        cmp::Ordering::Equal
+    }
+}
+
+impl<T: ?Sized> Copy for PhantomDataSendSync<T> {}
+
+impl<T: ?Sized> Clone for PhantomDataSendSync<T> {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+
+impl<T: ?Sized> Default for PhantomDataSendSync<T> {
+    fn default() -> Self {
+        Self(PhantomData)
+    }
+}
+
+/// A trait for entities that have name.
+pub trait NameProvider {
+    /// Returns a reference to the name of the entity.
+    fn name(&self) -> &str;
+}
+
+/// Tries to find an entity by its name in a series of entities produced by an iterator.
+pub fn find_by_name_ref<'a, T, I, S, K>(mut iter: I, name: S) -> Option<(K, &'a T)>
+where
+    T: NameProvider,
+    I: Iterator<Item = (K, &'a T)>,
+    S: AsRef<str>,
+{
+    iter.find(|(_, value)| value.name() == name.as_ref())
+}
+
+/// Tries to find an entity by its name in a series of entities produced by an iterator.
+pub fn find_by_name_mut<'a, T, I, S, K>(mut iter: I, name: S) -> Option<(K, &'a mut T)>
+where
+    T: NameProvider,
+    I: Iterator<Item = (K, &'a mut T)>,
+    S: AsRef<str>,
+{
+    iter.find(|(_, value)| value.name() == name.as_ref())
+}
+
+/// Swaps the content of a hash map entry with the content of an `Option`.
+pub fn swap_hash_map_entry<K, V>(entry: Entry<K, V>, value: &mut Option<V>) {
+    match (entry, value) {
+        (Entry::Occupied(entry), p @ None) => *p = Some(entry.remove()),
+        (Entry::Occupied(mut entry), Some(p)) => std::mem::swap(entry.get_mut(), p),
+        (Entry::Vacant(_), None) => (),
+        (Entry::Vacant(entry), p @ Some(_)) => drop(entry.insert(p.take().unwrap())),
+    }
+}
+
+/// Swaps the content of two hash map entries.
+pub fn swap_hash_map_entries<K0, K1, V>(entry0: Entry<K0, V>, entry1: Entry<K1, V>) {
+    match (entry0, entry1) {
+        (Entry::Occupied(e0), Entry::Vacant(e1)) => drop(e1.insert(e0.remove())),
+        (Entry::Occupied(mut e0), Entry::Occupied(mut e1)) => {
+            std::mem::swap(e0.get_mut(), e1.get_mut())
+        }
+        (Entry::Vacant(_), Entry::Vacant(_)) => (),
+        (Entry::Vacant(e0), Entry::Occupied(e1)) => drop(e0.insert(e1.remove())),
+    }
+}
+
+#[macro_export]
+macro_rules! define_as_any_trait {
+    ($trait_name:ident => $derived_trait:ident) => {
+        /// A base trait that provides useful methods for trait downcasting.
+        pub trait $trait_name: std::any::Any {
+            /// Casts `self` as `&dyn Any`.
+            fn as_any(&self) -> &dyn std::any::Any;
+
+            /// Casts `self` as `&mut dyn Any`.
+            fn as_any_mut(&mut self) -> &mut dyn std::any::Any;
+
+            /// Casts `Box<Self>` as `Box<dyn Any>`.
+            fn into_any(self: Box<Self>) -> Box<dyn std::any::Any>;
+        }
+
+        impl<T: $derived_trait> $trait_name for T {
+            fn as_any(&self) -> &dyn std::any::Any {
+                self
+            }
+
+            fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
+                self
+            }
+
+            fn into_any(self: Box<Self>) -> Box<dyn std::any::Any> {
+                self
+            }
+        }
+    };
+    ($trait_name:ident: $($sub_trait:ident),* => $derived_trait:ident) => {
+        /// A base trait that provides useful methods for trait downcasting.
+        pub trait $trait_name: std::any::Any + $($sub_trait),* {
+            fn as_any(&self) -> &dyn std::any::Any;
+
+            fn as_any_mut(&mut self) -> &mut dyn std::any::Any;
+
+            fn into_any(self: Box<Self>) -> Box<dyn std::any::Any>;
+        }
+
+        impl<T: $derived_trait> $trait_name for T {
+            fn as_any(&self) -> &dyn std::any::Any {
+                self
+            }
+
+            fn as_any_mut(&mut self) -> &mut dyn std::any::Any {
+                self
+            }
+
+            fn into_any(self: Box<Self>) -> Box<dyn std::any::Any> {
+                self
+            }
+        }
+    };
+}
+
+#[cfg(test)]
+mod test {
+    use std::path::Path;
+
+    use crate::{
+        BiDirHashMap, append_extension, cmp_strings_case_insensitive, hash_combine,
+        make_relative_path,
+        reflect::prelude::*,
+        transmute_vec_as_bytes,
+        visitor::{Visit, Visitor},
+    };
+    use fxhash::FxHashMap;
+    use std::mem::size_of;
+    use uuid::uuid;
+
+    #[test]
+    fn test_combine_uuids() {
+        let a = uuid!("d1a45bd5-5066-4b28-b103-95c59c230e77");
+        let b = uuid!("0a06591a-1c66-4299-ba6f-2b205b795575");
+
+        assert_ne!(combine_uuids(a, b), a);
+        assert_ne!(combine_uuids(a, b), b);
+    }
+
+    #[test]
+    fn test_append_extension() {
+        let path = Path::new("foo.bar");
+        let new_path = append_extension(path, "baz");
+        assert_eq!(new_path, Path::new("foo.bar.baz"));
+    }
+
+    #[test]
+    fn bi_dir_hash_map_insert() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+
+        assert!(map.forward_map.is_empty());
+        assert!(map.backward_map.is_empty());
+
+        let result = map.insert(1, 42);
+
+        assert_eq!(result, None);
+        assert_eq!(map.forward_map.get_key_value(&1), Some((&1, &42)));
+        assert_eq!(map.backward_map.get_key_value(&42), Some((&42, &1)));
+    }
+
+    #[test]
+    fn bi_dir_hash_map_remove_by_key() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+        map.insert(1, 42);
+
+        assert_eq!(map.forward_map.get_key_value(&1), Some((&1, &42)));
+        assert_eq!(map.backward_map.get_key_value(&42), Some((&42, &1)));
+
+        let result = map.remove_by_key(&42);
+        assert_eq!(result, None);
+
+        let result = map.remove_by_key(&1);
+        assert_eq!(result, Some(42));
+        assert!(map.forward_map.is_empty());
+        assert!(map.backward_map.is_empty());
+    }
+
+    #[test]
+    fn bi_dir_hash_map_remove_by_value() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+        map.insert(1, 42);
+
+        assert_eq!(map.forward_map.get_key_value(&1), Some((&1, &42)));
+        assert_eq!(map.backward_map.get_key_value(&42), Some((&42, &1)));
+
+        let result = map.remove_by_value(&1);
+        assert_eq!(result, None);
+
+        let result = map.remove_by_value(&42);
+        assert_eq!(result, Some(1));
+        assert!(map.forward_map.is_empty());
+        assert!(map.backward_map.is_empty());
+    }
+
+    #[test]
+    fn bi_dir_hash_map_contains_key() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+        map.insert(1, 42);
+
+        assert!(map.contains_key(&1));
+        assert!(!map.contains_key(&42));
+    }
+
+    #[test]
+    fn bi_dir_hash_map_contains_value() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+        map.insert(1, 42);
+
+        assert!(map.contains_value(&42));
+        assert!(!map.contains_value(&1));
+    }
+
+    #[test]
+    fn bi_dir_hash_map_value_of() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+        map.insert(1, 42);
+
+        assert_eq!(map.value_of(&1), Some(&42));
+        assert_eq!(map.value_of(&42), None);
+    }
+
+    #[test]
+    fn bi_dir_hash_map_key_of() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+        map.insert(1, 42);
+
+        assert_eq!(map.key_of(&1), None);
+        assert_eq!(map.key_of(&42), Some(&1));
+    }
+
+    #[test]
+    fn bi_dir_hash_map_getters() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+        assert!(map.is_empty());
+
+        map.insert(1, 42);
+        assert_eq!(map.len(), 1);
+
+        assert!(map.forward_map().eq(&map.forward_map));
+        assert!(map.backward_map().eq(&map.backward_map));
+
+        map.clear();
+        assert!(map.is_empty());
+    }
+
+    #[test]
+    fn bi_dir_hash_map_into_inner() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+        map.insert(1, 42);
+
+        let (f, b) = map.clone().into_inner();
+        assert!(map.forward_map().eq(&f));
+        assert!(map.backward_map().eq(&b));
+    }
+
+    #[test]
+    fn from_fx_hash_map_for_bi_dir_hash_map() {
+        let mut h = FxHashMap::default();
+        h.insert(1, 42);
+
+        let map = BiDirHashMap::from(h);
+        assert_eq!(map.forward_map.get_key_value(&1), Some((&1, &42)));
+        assert_eq!(map.backward_map.get_key_value(&42), Some((&42, &1)));
+    }
+
+    #[test]
+    fn test_visit_for_bi_dir_hash_map() {
+        let mut map = BiDirHashMap::<u32, u32>::default();
+        let mut visitor = Visitor::default();
+
+        assert!(map.visit("name", &mut visitor).is_ok());
+    }
+
+    #[test]
+    fn from_iter_for_bi_dir_hash_map() {
+        let map = BiDirHashMap::from_iter(vec![(1, 42)]);
+
+        assert_eq!(map.forward_map.get_key_value(&1), Some((&1, &42)));
+        assert_eq!(map.backward_map.get_key_value(&42), Some((&42, &1)));
+    }
+
+    #[test]
+    fn test_hash_combine() {
+        assert_eq!(hash_combine(1, 1), 0x9E3779FB);
+    }
+
+    #[test]
+    fn test_make_relative_path() {
+        assert!(make_relative_path(Path::new("fake_dir").join(Path::new("foo.txt"))).is_err());
+        make_relative_path(Path::new("Cargo.toml")).unwrap();
+        make_relative_path(Path::new("Cargo.toml").canonicalize().unwrap()).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn test_make_relative_path_with_symlinks() {
+        use std::os::unix::fs::symlink;
+
+        let cwd = std::env::current_dir().unwrap();
+        let tmp = std::env::temp_dir().join("fyrox_symlink_test");
+        let _ = std::fs::remove_dir_all(&tmp);
+
+        let project_dir = tmp.join("project");
+        let real_assets = tmp.join("real_assets");
+        std::fs::create_dir_all(&project_dir).unwrap();
+        std::fs::create_dir_all(&real_assets).unwrap();
+        std::fs::write(real_assets.join("test.txt"), "hello").unwrap();
+        symlink(&real_assets, project_dir.join("data")).unwrap();
+
+        std::env::set_current_dir(&project_dir).unwrap();
+
+        let real_path = real_assets.join("test.txt");
+        let result = make_relative_path(&real_path).unwrap();
+        assert_eq!(result, Path::new("data/test.txt"));
+
+        let symlink_path = project_dir.join("data").join("test.txt");
+        let result = make_relative_path(&symlink_path).unwrap();
+        assert_eq!(result, Path::new("data/test.txt"));
+
+        let real_textures = tmp.join("real_textures");
+        let assets_dir = project_dir.join("assets");
+        std::fs::create_dir_all(&assets_dir).unwrap();
+        std::fs::create_dir_all(&real_textures).unwrap();
+        std::fs::write(real_textures.join("brick.png"), "img").unwrap();
+        symlink(&real_textures, assets_dir.join("textures")).unwrap();
+
+        let real_path = real_textures.join("brick.png");
+        let result = make_relative_path(&real_path).unwrap();
+        assert_eq!(result, Path::new("assets/textures/brick.png"));
+
+        std::env::set_current_dir(cwd).unwrap();
+        let _ = std::fs::remove_dir_all(&tmp);
+    }
+
+    #[test]
+    fn tests_case_insensitive_str_comparison() {
+        assert!(cmp_strings_case_insensitive("FooBar", "FOOBaR"));
+        assert!(!cmp_strings_case_insensitive("FooBaz", "FOOBaR"));
+        assert!(cmp_strings_case_insensitive("foobar", "foobar"));
+    }
+
+    #[test]
+    fn test_transmute_vec_as_bytes_length_new_f32() {
+        let vec = vec![1.0f32, 2.0, 3.0];
+        let byte_vec = transmute_vec_as_bytes(vec.clone());
+        let expected_length = vec.len() * size_of::<f32>();
+        assert_eq!(byte_vec.len(), expected_length);
+    }
+
+    #[test]
+    fn test_transmute_vec_as_bytes_length_new_usize() {
+        let vec = vec![1usize, 2, 3];
+        let byte_vec = transmute_vec_as_bytes(vec.clone());
+        let expected_length = vec.len() * size_of::<usize>();
+        assert_eq!(byte_vec.len(), expected_length);
+    }
+}

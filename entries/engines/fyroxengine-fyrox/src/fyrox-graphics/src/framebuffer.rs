@@ -1,0 +1,385 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+#![warn(missing_docs)]
+
+//! Framebuffer objects are user-defined framebuffers which allow one to render to memory locations
+//! instead of the screen. First a framebuffer is created, and then textures are attached to it in order
+//! to control where the rendering data is stored. There are attachments for color, attachments for depth,
+//! and attachments for stencil, thereby providing memory for everything that is required for rendering.
+//! See [`GpuFrameBufferTrait`] docs for more info.
+
+use crate::sampler::GpuSampler;
+use crate::{
+    DrawParameters, ElementRange,
+    buffer::GpuBuffer,
+    core::{color::Color, math::Rect},
+    define_shared_wrapper,
+    error::FrameworkError,
+    geometry_buffer::GpuGeometryBuffer,
+    gpu_program::GpuProgram,
+    gpu_texture::{CubeMapFace, GpuTexture},
+};
+use bytemuck::Pod;
+use fyrox_core::define_as_any_trait;
+use std::cell::Cell;
+
+/// Frame buffer attachment kind.
+#[derive(Copy, Clone, PartialOrd, PartialEq, Hash, Debug, Eq)]
+pub enum AttachmentKind {
+    /// Color attachment, it should have a format that supports rendering (for example it cannot be
+    /// a compressed texture format).
+    Color,
+    /// Combined depth + stencil (usually it is 24 bits for depth and 8 for stencil) attachment.
+    DepthStencil,
+    /// Depth-only attachment. Usually it is 16 or 32 bits texture.
+    Depth,
+}
+
+/// A frame buffer attachment that tells the frame buffer object where to store the results of rendering.
+pub struct Attachment {
+    /// Current kind of attachment. Tells the renderer how the texture should be used
+    /// when rendering to the frame buffer. For example, is it color or depth?
+    pub kind: AttachmentKind,
+    /// A texture the renderer writes to. It may be writing the actual image, or it may just be writing
+    /// the depth, or stencil, depending on `kind`.
+    pub texture: GpuTexture,
+    /// Mip level of the texture where the rendering should happen. In most cases, it can be zero,
+    /// but this allows us to render multiple mipmap levels into a texture.
+    level: Cell<usize>,
+    /// Face of the cube map. This field is used only if the `texture` is a cube map.
+    /// This indicates which face of the cube will be rendered to.
+    cube_map_face: Cell<Option<CubeMapFace>>,
+}
+
+impl Attachment {
+    /// Mip level of the texture where the rendering should happen. In most cases, it can be zero.
+    pub fn level(&self) -> usize {
+        self.level.get()
+    }
+    /// Face of the cube map, this field is used only if the `texture` is a cube map.
+    /// This indicates which face of the cube will be rendered to.
+    pub fn cube_map_face(&self) -> Option<CubeMapFace> {
+        self.cube_map_face.get()
+    }
+    /// Mip level of the texture where the rendering should happen. In most cases, it can be zero.
+    pub fn set_level(&self, level: usize) {
+        self.level.set(level)
+    }
+    /// Face of the cube map, this field is used only if the `texture` is a cube map.
+    /// This indicates which face of the cube will be rendered to.
+    pub fn set_cube_map_face(&self, face: Option<CubeMapFace>) {
+        self.cube_map_face.set(face)
+    }
+    /// Creates a new [`AttachmentKind::Color`] attachment with the given texture.
+    pub fn color(texture: GpuTexture) -> Self {
+        Self {
+            kind: AttachmentKind::Color,
+            texture,
+            level: Cell::new(0),
+            cube_map_face: Cell::new(None),
+        }
+    }
+
+    /// Creates a new [`AttachmentKind::Color`] attachment with the given texture and the mip level.
+    pub fn color_with_level(texture: GpuTexture, level: usize) -> Self {
+        Self {
+            kind: AttachmentKind::Color,
+            texture,
+            level: Cell::new(level),
+            cube_map_face: Cell::new(None),
+        }
+    }
+
+    /// Creates a new [`AttachmentKind::Color`] attachment with the given texture and the cube map
+    /// face. The texture must be a cube map.
+    pub fn color_with_face(texture: GpuTexture, cube_map_face: CubeMapFace) -> Self {
+        Self {
+            kind: AttachmentKind::Color,
+            texture,
+            level: Cell::new(0),
+            cube_map_face: Cell::new(Some(cube_map_face)),
+        }
+    }
+
+    /// Creates a new [`AttachmentKind::Depth`] attachment with the given texture.
+    pub fn depth(texture: GpuTexture) -> Self {
+        Self {
+            kind: AttachmentKind::Depth,
+            texture,
+            level: Cell::new(0),
+            cube_map_face: Cell::new(None),
+        }
+    }
+
+    /// Creates a new [`AttachmentKind::DepthStencil`] attachment with the given texture.
+    pub fn depth_stencil(texture: GpuTexture) -> Self {
+        Self {
+            kind: AttachmentKind::DepthStencil,
+            texture,
+            level: Cell::new(0),
+            cube_map_face: Cell::new(None),
+        }
+    }
+}
+
+/// Defines a range of data in a particular buffer.
+#[derive(Default)]
+pub enum BufferDataUsage {
+    /// Use everything at once.
+    #[default]
+    UseEverything,
+    /// Use just a segment of data starting from the given `offset` with `size` bytes. It is used
+    /// in cases where you have a large buffer with lots of small blocks of information about
+    /// different objects. Instead of having a number of small buffers (which is memory- and performance
+    /// inefficient), you put everything into a large buffer and fill it lots of info at once and then
+    /// binding segments of the data the to the pipeline.
+    UseSegment {
+        /// Offset from the beginning of the buffer in bytes.
+        offset: usize,
+        /// Size of the data block in bytes.
+        size: usize,
+    },
+}
+
+/// A resource binding defines where to bind specific GPU resources.
+pub enum ResourceBinding {
+    /// Texture binding.
+    Texture {
+        /// A shared reference to a texture.
+        texture: GpuTexture,
+        /// A sampler that will be used to fetch the data from the texture.
+        sampler: GpuSampler,
+        /// Binding mode for the texture.
+        /// `glUniform1i` is used to assign this binding point to a texture uniform.
+        binding: usize,
+    },
+    /// Generic data buffer binding.
+    Buffer {
+        /// A shared reference to a buffer.
+        buffer: GpuBuffer,
+        /// Binding mode for the buffer.
+        binding: usize,
+        /// Data portion to use.
+        data_usage: BufferDataUsage,
+    },
+}
+
+impl ResourceBinding {
+    /// Creates a new explicit texture binding.
+    pub fn texture(texture: &GpuTexture, sampler: &GpuSampler, binding: usize) -> Self {
+        Self::Texture {
+            texture: texture.clone(),
+            sampler: sampler.clone(),
+            binding,
+        }
+    }
+
+    /// Creates a new explicit buffer binding.
+    pub fn buffer(buffer: &GpuBuffer, binding: usize, data_usage: BufferDataUsage) -> Self {
+        Self::Buffer {
+            buffer: buffer.clone(),
+            binding,
+            data_usage,
+        }
+    }
+}
+
+/// Resource binding group defines a set of bindings.
+pub struct ResourceBindGroup<'a> {
+    /// A reference to resource bindings array.
+    pub bindings: &'a [ResourceBinding],
+}
+
+/// Statistics for a single GPU draw call.
+#[derive(Debug, Copy, Clone, Default)]
+#[must_use]
+pub struct DrawCallStatistics {
+    /// Total number of rendered triangles.
+    pub triangles: usize,
+}
+
+define_as_any_trait!(GpuFrameBufferAsAny => GpuFrameBufferTrait);
+
+/// A part of a frame buffer from which to read the data.
+pub enum ReadTarget {
+    /// Read the depth attachment.
+    Depth,
+    /// Read the stencil attachment.
+    Stencil,
+    /// Read from one of the color attachments.
+    Color(usize),
+}
+
+/// Frame buffer is a set of images that is used as a storage for an image generated by a renderer.
+/// It consists of one or more color buffers and an optional depth/stencil buffer. Frame buffer is
+/// a high level abstraction that consolidates multiple images and supports drawing meshes to them
+/// with various drawing options.
+pub trait GpuFrameBufferTrait: GpuFrameBufferAsAny {
+    /// Returns a list of color attachments.
+    fn color_attachments(&self) -> &[Attachment];
+
+    /// Returns an optional depth/stencil attachment.
+    fn depth_attachment(&self) -> Option<&Attachment>;
+
+    /// Chooses a different face and mipmap level for the texture attached at the given index.
+    /// When the texture is a cubemap texture, this allows the framebuffer to render to a different
+    /// face of the cube. This method must not be called if the texture is not a cubemap.
+    fn set_cubemap_face(&self, attachment_index: usize, face: CubeMapFace, level: usize);
+
+    /// Performs data transfer from one frame buffer to another with scaling. It copies a region
+    /// defined by `src_x0`, `src_y0`, `src_x1`, `src_y1` coordinates from the frame buffer and
+    /// "pastes" it to the other frame buffer into a region defined by `dst_x0`, `dst_y0`, `dst_x1`,
+    /// `dst_y1` coordinates. If the source rectangle does not match the destination, the image will
+    /// be interpolated using nearest interpolation.
+    ///
+    /// This method can copy only specific parts of the image: `copy_color` tells the method to copy
+    /// the data from
+    fn blit_to(
+        &self,
+        dest: &GpuFrameBuffer,
+        src_x0: i32,
+        src_y0: i32,
+        src_x1: i32,
+        src_y1: i32,
+        dst_x0: i32,
+        dst_y0: i32,
+        dst_x1: i32,
+        dst_y1: i32,
+        copy_color: bool,
+        copy_depth: bool,
+        copy_stencil: bool,
+    );
+
+    /// Clears the frame buffer in the given viewport with the given set of optional values. This
+    /// method clears multiple attachments at once. What will be cleared defined by the provided
+    /// values. If `color` is not [`None`], then all the color attachments will be cleared with the
+    /// given color. The same applies to depth and stencil buffers.
+    fn clear(
+        &self,
+        viewport: Rect<i32>,
+        color: Option<Color>,
+        depth: Option<f32>,
+        stencil: Option<i32>,
+    );
+
+    /// Reads texture pixels.
+    fn read_pixels(&self, read_target: ReadTarget) -> Option<Vec<u8>>;
+
+    /// Draws the specified geometry buffer using the given GPU program and a set of resources. This
+    /// method the main method to draw anything.
+    ///
+    /// `geometry` - defines a [`GpuGeometryBuffer`], that contains vertices and index buffers and
+    /// essentially defines a mesh to render.
+    /// `viewport` - defines an area on screen that will be used to draw.
+    /// `program` - a [`GpuProgram`] defines a set of shaders (usually a pair of vertex + fragment)
+    /// that will define how the mesh will be rendered.
+    /// `params` - [`DrawParameters`] defines the state of graphics pipeline and essentially sets
+    /// a bunch of various parameters (such as backface culling, blending mode, various tests, etc.)
+    /// that will define how the rendering process is performed.
+    /// `resources` - a set of resource bind groups, that in their turn provides a set of resources
+    /// that bound to specific binding points.
+    /// `element_range` - defines which range of elements to draw.
+    fn draw(
+        &self,
+        geometry: &GpuGeometryBuffer,
+        viewport: Rect<i32>,
+        program: &GpuProgram,
+        params: &DrawParameters,
+        resources: &[ResourceBindGroup],
+        element_range: ElementRange,
+    ) -> Result<DrawCallStatistics, FrameworkError>;
+
+    /// Almost the same as [`Self::draw`], but draws multiple instances at once. The caller must
+    /// supply all the required data per each instance, it could be done in different ways. The data
+    /// could be supplied in vertex attributes, uniform buffers, textures, etc.
+    fn draw_instances(
+        &self,
+        instance_count: usize,
+        geometry: &GpuGeometryBuffer,
+        viewport: Rect<i32>,
+        program: &GpuProgram,
+        params: &DrawParameters,
+        resources: &[ResourceBindGroup],
+        element_range: ElementRange,
+    ) -> Result<DrawCallStatistics, FrameworkError>;
+}
+
+/// Owned, typed view of pixels read back from a [`GpuFrameBufferTrait`]. Preserves the
+/// original byte allocation (and therefore its memory layout) so it is dropped with the
+/// same `Layout` it was allocated with, while exposing a `&[T]` view of the contents.
+///
+/// This avoids the UB of reinterpreting a `Vec<u8>` allocation directly as `Vec<T>`
+/// (which would deallocate with `Layout::array::<T>(cap)` instead of the original
+/// `Layout::array::<u8>(cap)`) without copying the data.
+pub struct TypedPixels<T: Pod> {
+    bytes: Vec<u8>,
+    _marker: std::marker::PhantomData<T>,
+}
+
+impl<T: Pod> TypedPixels<T> {
+    /// Returns the pixels as a typed slice.
+    #[inline]
+    pub fn as_slice(&self) -> &[T] {
+        bytemuck::cast_slice(&self.bytes)
+    }
+
+    /// Number of `T` elements in the readback.
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.bytes.len() / std::mem::size_of::<T>()
+    }
+
+    /// Whether the readback contains zero elements.
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+impl<T: Pod> std::ops::Deref for TypedPixels<T> {
+    type Target = [T];
+
+    #[inline]
+    fn deref(&self) -> &[T] {
+        self.as_slice()
+    }
+}
+
+impl dyn GpuFrameBufferTrait {
+    /// Reads the pixels and reinterprets them using the given type.
+    ///
+    /// Returns an owning [`TypedPixels<T>`] that derefs to `&[T]`. The underlying byte
+    /// buffer is preserved as-is, so it is freed with the same memory layout it was
+    /// allocated with (avoiding the UB of dropping a `Vec<u8>` allocation as a `Vec<T>`),
+    /// and no extra copy is made when constructing the typed view.
+    pub fn read_pixels_of_type<T>(&self, read_target: ReadTarget) -> Option<TypedPixels<T>>
+    where
+        T: Pod,
+    {
+        let bytes = self.read_pixels(read_target)?;
+        Some(TypedPixels {
+            bytes,
+            _marker: std::marker::PhantomData,
+        })
+    }
+}
+
+define_shared_wrapper!(GpuFrameBuffer<dyn GpuFrameBufferTrait>);

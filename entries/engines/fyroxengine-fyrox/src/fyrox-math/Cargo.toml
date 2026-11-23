@@ -1,0 +1,22 @@
+[package]
+name = "fyrox-math"
+version = "2.0.0-rc.1"
+authors = ["Dmitry Stepanov <d1maxa@yandex.ru>"]
+edition = "2024"
+license = "MIT"
+description = "Math utils for the Fyrox engine"
+keywords = ["octree", "plane", "ray", "aabb", "frustum"]
+categories = ["game-development"]
+include = ["/src/**/*", "/Cargo.toml", "/LICENSE"]
+homepage = "https://fyrox.rs"
+documentation = "https://docs.rs/fyrox-math"
+repository = "https://github.com/FyroxEngine/Fyrox"
+rust-version = "1.94"
+
+[dependencies]
+rectutils = "0.7.0"
+nalgebra = { version = "0.35", features = ["bytemuck", "convert-glam030"] }
+arrayvec = "0.7.4"
+num-traits = "0.2.18"
+uuid = { version = "1", features = ["v4"] }
+bytemuck = { version = "1.23.2", features = ["derive"] }

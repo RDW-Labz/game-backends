@@ -1,0 +1,20 @@
+[package]
+name = "fyrox-graphics"
+version = "2.0.0-rc.1"
+edition = "2024"
+license = "MIT"
+description = "Graphics API abstraction for Fyrox Game Engine"
+keywords = ["graphics", "gapi"]
+categories = ["graphics", "rendering::graphics-api"]
+include = ["/src/**/*", "/Cargo.toml", "/LICENSE", "/README.md"]
+homepage = "https://fyrox.rs"
+documentation = "https://docs.rs/fyrox-graphics"
+repository = "https://github.com/FyroxEngine/Fyrox"
+rust-version = "1.94"
+
+[dependencies]
+fyrox-core = { path = "../fyrox-core", version = "2.0.0-rc.1", features = ["serde"] }
+serde = { version = "1", features = ["derive"] }
+strum = "0.27"
+strum_macros = "0.27"
+bytemuck = { version = "1.23.2", features = ["derive"] }

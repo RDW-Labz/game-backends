@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T02:46:14Z",
+ "category": "engines",
+ "commit": "2026-10-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ggez/ggez \u2014 Rust library to create a Good Game Easily",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ggez",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ggez-ggez",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 4723,
+ "system": "Rust library to create a Good Game Easily",
+ "upstream": "https://github.com/ggez/ggez",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

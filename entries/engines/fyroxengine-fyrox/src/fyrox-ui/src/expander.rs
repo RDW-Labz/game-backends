@@ -1,0 +1,327 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! Expander is a simple container that has a header and collapsible/expandable content zone. It is used to
+//! create collapsible regions with headers. See [`Expander`] docs for more info and usage examples.
+
+#![warn(missing_docs)]
+
+use crate::check_box::CheckBox;
+use crate::message::MessageData;
+use crate::{
+    BuildContext, Control, UiNode, UserInterface, VerticalAlignment,
+    check_box::{CheckBoxBuilder, CheckBoxMessage},
+    core::pool::Handle,
+    core::{reflect::prelude::*, visitor::prelude::*},
+    grid::{Column, GridBuilder, Row},
+    message::UiMessage,
+    utils::{ArrowDirection, make_arrow},
+    widget::{Widget, WidgetBuilder, WidgetMessage},
+};
+use fyrox_core::pool::ObjectOrVariant;
+
+use fyrox_core::variable::InheritableVariable;
+use fyrox_graph::constructor::{ConstructorProvider, GraphNodeConstructor};
+
+/// A set messages that can be used to either alternate the state of an [`Expander`] widget, or to listen for
+/// state changes.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ExpanderMessage {
+    /// A message, that could be used to either switch expander state (with [`crate::message::MessageDirection::ToWidget`]) or
+    /// to get its new state [`crate::message::MessageDirection::FromWidget`].
+    Expand(bool),
+}
+impl MessageData for ExpanderMessage {}
+
+/// Expander is a simple container that has a header and collapsible/expandable content zone. It is used to
+/// create collapsible regions with headers.
+///
+/// ## Examples
+///
+/// The following example creates a simple expander with a textual header and a stack panel widget with few
+/// buttons a content:
+///
+/// ```rust
+/// # use fyrox_ui::{
+/// #     button::ButtonBuilder, core::pool::Handle, expander::ExpanderBuilder,
+/// #     stack_panel::StackPanelBuilder, text::TextBuilder, widget::WidgetBuilder, BuildContext,
+/// #     UiNode,
+/// # };
+/// # use fyrox_ui::expander::Expander;
+/// #
+/// fn create_expander(ctx: &mut BuildContext) -> Handle<Expander> {
+///     ExpanderBuilder::new(WidgetBuilder::new())
+///         // The Header is visible all the time.
+///         .with_header(
+///             TextBuilder::new(WidgetBuilder::new())
+///                 .with_text("Foobar")
+///                 .build(ctx),
+///         )
+///         // Define a content of collapsible area.
+///         .with_content(
+///             StackPanelBuilder::new(
+///                 WidgetBuilder::new()
+///                     .with_child(
+///                         ButtonBuilder::new(WidgetBuilder::new())
+///                             .with_text("Button 1")
+///                             .build(ctx),
+///                     )
+///                     .with_child(
+///                         ButtonBuilder::new(WidgetBuilder::new())
+///                             .with_text("Button 2")
+///                             .build(ctx),
+///                     ),
+///             )
+///             .build(ctx),
+///         )
+///         .build(ctx)
+/// }
+/// ```
+///
+/// ## Customization
+///
+/// It is possible to completely change the arrow of the header of the expander. By default, the arrow consists
+/// of [`CheckBox`] widget. By changing the arrow, you can customize the look of the header.
+/// For example, you can set the new checkbox with image check marks, which will use custom graphics:
+///
+/// ```rust
+/// # use fyrox_ui::{
+/// #     check_box::CheckBoxBuilder, core::pool::Handle, expander::ExpanderBuilder,
+/// #     image::ImageBuilder, widget::WidgetBuilder, BuildContext, UiNode,
+/// # };
+/// # use fyrox_ui::expander::Expander;
+/// #
+/// fn create_expander(ctx: &mut BuildContext) -> Handle<Expander> {
+///     ExpanderBuilder::new(WidgetBuilder::new())
+///         .with_checkbox(
+///             CheckBoxBuilder::new(WidgetBuilder::new())
+///                 .with_check_mark(
+///                     ImageBuilder::new(WidgetBuilder::new().with_height(16.0).with_height(16.0))
+///                         .with_opt_texture(None.into()) // Set this to the required image.
+///                         .build(ctx),
+///                 )
+///                 .with_uncheck_mark(
+///                     ImageBuilder::new(WidgetBuilder::new().with_height(16.0).with_height(16.0))
+///                         .with_opt_texture(None.into()) // Set this to the required image.
+///                         .build(ctx),
+///                 )
+///                 .build(ctx),
+///         )
+///         // The rest is omitted.
+///         .build(ctx)
+/// }
+/// ```
+///
+/// ## Messages
+///
+/// Use [`ExpanderMessage::Expand`] message to catch the moment when its state changes:
+///
+/// ```rust
+/// # use fyrox_ui::{core::pool::Handle, expander::ExpanderMessage, message::{MessageDirection, UiMessage}, UiNode};
+/// fn on_ui_message(message: &UiMessage) {
+///     let your_expander_handle = Handle::<UiNode>::NONE;
+///     if let Some(ExpanderMessage::Expand(expanded)) = message.data() {
+///         if message.destination() == your_expander_handle && message.direction() == MessageDirection::FromWidget {
+///             println!(
+///                 "{} expander has changed its state to {}!",
+///                 message.destination(),
+///                 expanded
+///             );
+///         }
+///     }
+/// }
+/// ```
+///
+/// To switch expander state at runtime, send [`ExpanderMessage::Expand`] to your Expander widget instance with
+/// [`crate::message::MessageDirection::ToWidget`].
+#[derive(Default, Clone, Visit, PartialEq, Reflect, Debug)]
+#[reflect(
+    derived_type = "UiNode",
+    type_uuid = "24976179-b338-4c55-84c3-72d21663efd2"
+)]
+pub struct Expander {
+    /// Base widget of the expander.
+    pub widget: Widget,
+    /// Current content of the expander.
+    pub content: InheritableVariable<Handle<UiNode>>,
+    /// Current expander check box of the expander.
+    pub expander: InheritableVariable<Handle<CheckBox>>,
+    /// A flag, that indicates whether the expander is expanded or collapsed.
+    pub is_expanded: InheritableVariable<bool>,
+}
+
+impl ConstructorProvider<UiNode, UserInterface> for Expander {
+    fn constructor() -> GraphNodeConstructor<UiNode, UserInterface> {
+        GraphNodeConstructor::new::<Self>()
+            .with_variant("Expander", |ui| {
+                ExpanderBuilder::new(WidgetBuilder::new().with_name("Expander"))
+                    .build(&mut ui.build_ctx())
+                    .to_base()
+                    .into()
+            })
+            .with_group("Visual")
+    }
+}
+
+crate::define_widget_deref!(Expander);
+
+impl Control for Expander {
+    fn handle_routed_message(&mut self, ui: &mut UserInterface, message: &mut UiMessage) {
+        if let Some(&ExpanderMessage::Expand(expand)) = message.data_for(self.handle()) {
+            if *self.is_expanded != expand {
+                // Switch state of expander.
+                ui.send(*self.expander, CheckBoxMessage::Check(Some(expand)));
+                // Show or hide content.
+                ui.send(*self.content, WidgetMessage::Visibility(expand));
+                self.is_expanded.set_value_and_mark_modified(expand);
+            }
+        } else if let Some(CheckBoxMessage::Check(value)) =
+            message.data_from::<CheckBoxMessage>(*self.expander)
+        {
+            ui.send(self.handle, ExpanderMessage::Expand(value.unwrap_or(false)));
+        }
+        self.widget.handle_routed_message(ui, message);
+    }
+}
+
+/// Expander builder allows you to create [`Expander`] widgets and add them to the user interface.
+pub struct ExpanderBuilder {
+    /// Base builder.
+    pub widget_builder: WidgetBuilder,
+    header: Handle<UiNode>,
+    content: Handle<UiNode>,
+    check_box: Handle<CheckBox>,
+    is_expanded: bool,
+    expander_column: Option<Column>,
+}
+
+impl ExpanderBuilder {
+    /// Creates a new expander builder.
+    pub fn new(widget_builder: WidgetBuilder) -> Self {
+        Self {
+            widget_builder,
+            header: Handle::NONE,
+            content: Handle::NONE,
+            check_box: Default::default(),
+            is_expanded: true,
+            expander_column: None,
+        }
+    }
+
+    /// Sets the desired header of the expander.
+    pub fn with_header(mut self, header: Handle<impl ObjectOrVariant<UiNode>>) -> Self {
+        self.header = header.to_base();
+        self
+    }
+
+    /// Sets the desired content of the expander.
+    pub fn with_content(mut self, content: Handle<impl ObjectOrVariant<UiNode>>) -> Self {
+        self.content = content.to_base();
+        self
+    }
+
+    /// Sets the desired state of the expander.
+    pub fn with_expanded(mut self, expanded: bool) -> Self {
+        self.is_expanded = expanded;
+        self
+    }
+
+    /// Sets the desired checkbox (arrow part) of the expander.
+    pub fn with_checkbox(mut self, check_box: Handle<CheckBox>) -> Self {
+        self.check_box = check_box;
+        self
+    }
+
+    /// Sets the desired expander column properties of the expander.
+    pub fn with_expander_column(mut self, expander_column: Column) -> Self {
+        self.expander_column = Some(expander_column);
+        self
+    }
+
+    /// Finishes widget building and adds it to the user interface, returning a handle to the new instance.
+    pub fn build(self, ctx: &mut BuildContext<'_>) -> Handle<Expander> {
+        let expander = if self.check_box.is_some() {
+            self.check_box
+        } else {
+            CheckBoxBuilder::new(
+                WidgetBuilder::new().with_vertical_alignment(VerticalAlignment::Center),
+            )
+            .with_check_mark(make_arrow(ctx, ArrowDirection::Bottom, 8.0))
+            .with_uncheck_mark(make_arrow(ctx, ArrowDirection::Right, 8.0))
+            .checked(Some(self.is_expanded))
+            .build(ctx)
+        };
+
+        ctx[expander].set_row(0).set_column(0);
+
+        if self.header.is_some() {
+            ctx[self.header].set_row(0).set_column(1);
+        }
+
+        let grid = GridBuilder::new(
+            WidgetBuilder::new()
+                .with_child(expander)
+                .with_child(self.header),
+        )
+        .add_row(Row::auto())
+        .add_column(self.expander_column.unwrap_or_else(Column::auto))
+        .add_column(Column::stretch())
+        .build(ctx);
+
+        if self.content.is_some() {
+            ctx[self.content]
+                .set_row(1)
+                .set_column(0)
+                .set_visibility(self.is_expanded);
+        }
+
+        let e = Expander {
+            widget: self
+                .widget_builder
+                .with_child(
+                    GridBuilder::new(
+                        WidgetBuilder::new()
+                            .with_child(grid)
+                            .with_child(self.content),
+                    )
+                    .add_column(Column::stretch())
+                    .add_row(Row::auto())
+                    .add_row(Row::stretch())
+                    .build(ctx),
+                )
+                .build(ctx),
+            content: self.content.into(),
+            expander: expander.into(),
+            is_expanded: self.is_expanded.into(),
+        };
+        ctx.add(e)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::expander::ExpanderBuilder;
+    use crate::{test::test_widget_deletion, widget::WidgetBuilder};
+
+    #[test]
+    fn test_deletion() {
+        test_widget_deletion(|ctx| ExpanderBuilder::new(WidgetBuilder::new()).build(ctx));
+    }
+}

@@ -1,0 +1,358 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+use crate::{
+    BuildContext, Control, Thickness, UiNode, UserInterface, Widget,
+    border::BorderBuilder,
+    brush::Brush,
+    core::{
+        algebra::SVector, color::Color, num_traits, pool::Handle, reflect::prelude::*,
+        visitor::prelude::*,
+    },
+    grid::{Column, GridBuilder, Row},
+    message::{MessageDirection, UiMessage},
+    numeric::{NumericType, NumericUpDownBuilder, NumericUpDownMessage},
+    widget::WidgetBuilder,
+};
+
+use crate::border::Border;
+use crate::message::MessageData;
+use crate::numeric::NumericUpDown;
+use fyrox_graph::constructor::{ConstructorProvider, GraphNodeConstructor};
+use std::ops::{Deref, DerefMut};
+
+fn make_numeric_input<T: NumericType>(
+    ctx: &mut BuildContext,
+    column: usize,
+    value: T,
+    min: T,
+    max: T,
+    step: T,
+    editable: bool,
+    precision: usize,
+) -> Handle<NumericUpDown<T>> {
+    NumericUpDownBuilder::new(
+        WidgetBuilder::new()
+            .on_row(0)
+            .on_column(column)
+            .with_margin(Thickness {
+                left: 1.0,
+                top: 0.0,
+                right: 1.0,
+                bottom: 0.0,
+            }),
+    )
+    .with_precision(precision)
+    .with_value(value)
+    .with_min_value(min)
+    .with_max_value(max)
+    .with_step(step)
+    .with_editable(editable)
+    .build(ctx)
+}
+
+pub fn make_mark(ctx: &mut BuildContext, column: usize, color: Color) -> Handle<Border> {
+    BorderBuilder::new(
+        WidgetBuilder::new()
+            .on_row(0)
+            .on_column(column)
+            .with_background(Brush::Solid(color).into())
+            .with_foreground(Brush::Solid(Color::TRANSPARENT).into())
+            .with_width(4.0),
+    )
+    .with_corner_radius(2.0f32.into())
+    .with_pad_by_corner_radius(false)
+    .build(ctx)
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum VecEditorMessage<T, const D: usize>
+where
+    T: NumericType,
+{
+    Value(SVector<T, D>),
+}
+impl<T: NumericType, const D: usize> MessageData for VecEditorMessage<T, D> {}
+
+#[derive(Clone, Visit, PartialEq, Reflect, Debug)]
+#[reflect(
+    derived_type = "UiNode",
+    type_uuid = "0332144f-c70e-456a-812b-f9b89980d2ba"
+)]
+pub struct VecEditor<T, const D: usize>
+where
+    T: NumericType,
+{
+    pub widget: Widget,
+    pub fields: Vec<Handle<NumericUpDown<T>>>,
+    #[reflect(hidden)]
+    #[visit(skip)]
+    pub value: SVector<T, D>,
+    #[reflect(hidden)]
+    #[visit(skip)]
+    pub min: SVector<T, D>,
+    #[reflect(hidden)]
+    #[visit(skip)]
+    pub max: SVector<T, D>,
+    #[reflect(hidden)]
+    #[visit(skip)]
+    pub step: SVector<T, D>,
+}
+
+impl<T: NumericType, const D: usize> ConstructorProvider<UiNode, UserInterface>
+    for VecEditor<T, D>
+{
+    fn constructor() -> GraphNodeConstructor<UiNode, UserInterface> {
+        GraphNodeConstructor::new::<Self>()
+            .with_variant(
+                format!("Vec Editor<{}, {}>", std::any::type_name::<T>(), D),
+                |ui| {
+                    VecEditorBuilder::<T, D>::new(WidgetBuilder::new().with_name("Vec Editor"))
+                        .build(&mut ui.build_ctx())
+                        .to_base()
+                        .into()
+                },
+            )
+            .with_group("Vector")
+    }
+}
+
+impl<T, const D: usize> Default for VecEditor<T, D>
+where
+    T: NumericType,
+{
+    fn default() -> Self {
+        Self {
+            widget: Default::default(),
+            fields: Default::default(),
+            value: SVector::from([T::default(); D]),
+            min: SVector::from([T::default(); D]),
+            max: SVector::from([T::default(); D]),
+            step: SVector::from([T::default(); D]),
+        }
+    }
+}
+
+impl<T, const D: usize> Deref for VecEditor<T, D>
+where
+    T: NumericType,
+{
+    type Target = Widget;
+
+    fn deref(&self) -> &Self::Target {
+        &self.widget
+    }
+}
+
+impl<T, const D: usize> DerefMut for VecEditor<T, D>
+where
+    T: NumericType,
+{
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.widget
+    }
+}
+
+impl<T, const D: usize> Control for VecEditor<T, D>
+where
+    T: NumericType,
+{
+    fn handle_routed_message(&mut self, ui: &mut UserInterface, message: &mut UiMessage) {
+        self.widget.handle_routed_message(ui, message);
+
+        if let Some(&NumericUpDownMessage::Value(value)) = message.data::<NumericUpDownMessage<T>>()
+        {
+            if message.direction() == MessageDirection::FromWidget {
+                for (i, field) in self.fields.iter().enumerate() {
+                    if message.destination() == *field {
+                        let mut new_value = self.value;
+                        new_value[i] = value;
+                        ui.send(self.handle(), VecEditorMessage::Value(new_value));
+                    }
+                }
+            }
+        } else if let Some(&VecEditorMessage::Value(new_value)) =
+            message.data::<VecEditorMessage<T, D>>()
+            && message.direction() == MessageDirection::ToWidget
+        {
+            let mut changed = false;
+
+            for i in 0..D {
+                let editor = self.fields[i];
+                let current = &mut self.value[i];
+                let min = self.min[i];
+                let max = self.max[i];
+                let new = num_traits::clamp(new_value[i], min, max);
+
+                if *current != new {
+                    *current = new;
+                    ui.send(editor, NumericUpDownMessage::Value(new));
+                    changed = true;
+                }
+            }
+
+            if changed {
+                ui.try_send_response(message);
+            }
+        }
+    }
+}
+
+pub struct VecEditorBuilder<T, const D: usize>
+where
+    T: NumericType,
+{
+    widget_builder: WidgetBuilder,
+    value: SVector<T, D>,
+    editable: bool,
+    min: SVector<T, D>,
+    max: SVector<T, D>,
+    step: SVector<T, D>,
+    precision: usize,
+}
+
+impl<T, const D: usize> VecEditorBuilder<T, D>
+where
+    T: NumericType,
+{
+    pub fn new(widget_builder: WidgetBuilder) -> Self {
+        Self {
+            widget_builder,
+            value: SVector::repeat(Default::default()),
+            editable: true,
+            min: SVector::repeat(T::min_value()),
+            max: SVector::repeat(T::max_value()),
+            step: SVector::repeat(T::one()),
+            precision: 3,
+        }
+    }
+
+    pub fn with_value(mut self, value: SVector<T, D>) -> Self {
+        self.value = value;
+        self
+    }
+
+    pub fn with_editable(mut self, editable: bool) -> Self {
+        self.editable = editable;
+        self
+    }
+
+    pub fn with_min(mut self, min: SVector<T, D>) -> Self {
+        self.min = min;
+        self
+    }
+
+    pub fn with_max(mut self, max: SVector<T, D>) -> Self {
+        self.max = max;
+        self
+    }
+
+    pub fn with_step(mut self, step: SVector<T, D>) -> Self {
+        self.step = step;
+        self
+    }
+
+    pub fn with_precision(mut self, precision: usize) -> Self {
+        self.precision = precision;
+        self
+    }
+
+    pub fn build(self, ctx: &mut BuildContext) -> Handle<VecEditor<T, D>> {
+        let mut fields = Vec::new();
+        let mut children = Vec::new();
+        let mut columns = Vec::new();
+
+        let colors = [
+            Color::opaque(120, 0, 0),
+            Color::opaque(0, 120, 0),
+            Color::opaque(0, 0, 120),
+            Color::opaque(120, 0, 120),
+            Color::opaque(0, 120, 120),
+            Color::opaque(120, 120, 0),
+        ];
+
+        for i in 0..D {
+            children.push(
+                make_mark(ctx, i * 2, colors.get(i).cloned().unwrap_or(Color::ORANGE)).to_base(),
+            );
+
+            let field = make_numeric_input(
+                ctx,
+                i * 2 + 1,
+                self.value[i],
+                self.min[i],
+                self.max[i],
+                self.step[i],
+                self.editable,
+                self.precision,
+            );
+            children.push(field.to_base());
+            fields.push(field);
+
+            columns.push(Column::auto());
+            columns.push(Column::stretch());
+        }
+
+        let grid = GridBuilder::new(WidgetBuilder::new().with_children(children))
+            .add_row(Row::stretch())
+            .add_columns(columns)
+            .build(ctx);
+
+        let node = VecEditor {
+            widget: self.widget_builder.with_child(grid).build(ctx),
+            fields,
+            value: self.value,
+            min: self.min,
+            max: self.max,
+            step: self.step,
+        };
+
+        ctx.add(node)
+    }
+}
+
+pub type Vec2Editor<T> = VecEditor<T, 2>;
+pub type Vec3Editor<T> = VecEditor<T, 3>;
+pub type Vec4Editor<T> = VecEditor<T, 4>;
+pub type Vec5Editor<T> = VecEditor<T, 5>;
+pub type Vec6Editor<T> = VecEditor<T, 6>;
+
+pub type Vec2EditorMessage<T> = VecEditorMessage<T, 2>;
+pub type Vec3EditorMessage<T> = VecEditorMessage<T, 3>;
+pub type Vec4EditorMessage<T> = VecEditorMessage<T, 4>;
+pub type Vec5EditorMessage<T> = VecEditorMessage<T, 5>;
+pub type Vec6EditorMessage<T> = VecEditorMessage<T, 6>;
+
+pub type Vec2EditorBuilder<T> = VecEditorBuilder<T, 2>;
+pub type Vec3EditorBuilder<T> = VecEditorBuilder<T, 3>;
+pub type Vec4EditorBuilder<T> = VecEditorBuilder<T, 4>;
+pub type Vec5EditorBuilder<T> = VecEditorBuilder<T, 5>;
+pub type Vec6EditorBuilder<T> = VecEditorBuilder<T, 6>;
+
+#[cfg(test)]
+mod test {
+    use crate::vec::Vec2EditorBuilder;
+    use crate::{test::test_widget_deletion, widget::WidgetBuilder};
+
+    #[test]
+    fn test_deletion() {
+        test_widget_deletion(|ctx| Vec2EditorBuilder::<f32>::new(WidgetBuilder::new()).build(ctx));
+    }
+}

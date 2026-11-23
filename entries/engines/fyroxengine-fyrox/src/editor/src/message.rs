@@ -1,0 +1,194 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+use crate::{
+    command::{Command, CommandGroup, CommandTrait},
+    fyrox::{
+        core::{
+            log::Log,
+            pool::{ErasedHandle, Handle},
+            reflect::prelude::*,
+            uuid::Uuid,
+        },
+        gui::{UiNode, UserInterface, file_browser::FileType, inspector::PropertyChanged},
+        material::MaterialResource,
+        scene::{
+            Scene,
+            camera::Projection,
+            node::Node,
+            tilemap::{brush::TileMapBrushResource, tileset::TileSetResource},
+        },
+    },
+    game_scene::Selection,
+    world::create::EntityCreatorMode,
+};
+use std::{path::PathBuf, sync::mpsc::Sender, sync::mpsc::channel};
+
+#[derive(Debug)]
+pub enum Message {
+    DoCommand(Command),
+    UndoCurrentSceneCommand,
+    RedoCurrentSceneCommand,
+    ClearCurrentSceneCommandStack,
+    SelectionChanged {
+        old_selection: Selection,
+    },
+    SaveScene {
+        id: Uuid,
+        path: PathBuf,
+    },
+    SaveAllScenes,
+    AddScene {
+        scene: Scene,
+        path: PathBuf,
+    },
+    AddUiScene {
+        ui: UserInterface,
+        path: PathBuf,
+    },
+    LoadScene(PathBuf),
+    CloseScene(Uuid),
+    SetInteractionMode(Uuid),
+    Configure {
+        working_directory: PathBuf,
+    },
+    NewScene,
+    NewUiScene,
+    Exit {
+        force: bool,
+    },
+    OpenAnimationEditor,
+    OpenAbsmEditor,
+    OpenMaterialEditor(MaterialResource),
+    OpenMaterialEditorFromPath(PathBuf),
+    OpenTileSetEditor(TileSetResource),
+    OpenTileMapBrushEditor(TileMapBrushResource),
+    OpenNodeRemovalDialog {
+        delete_command: Command,
+        refs: String,
+    },
+    ShowInAssetBrowser(PathBuf),
+    LocateObject {
+        handle: ErasedHandle,
+    },
+    SelectObject {
+        handle: ErasedHandle,
+    },
+    SetCurrentScene(Uuid),
+    FocusObject(Handle<Node>),
+    SetEditorCameraProjection(Projection),
+    SwitchToBuildMode {
+        play_after_build: bool,
+    },
+    SwitchToEditMode,
+    SwitchMode,
+    OpenLoadSceneDialog,
+    OpenSaveSceneDialog {
+        default_file_info: (PathBuf, FileType),
+    },
+    OpenSaveSceneConfirmationDialog {
+        scene_id: Uuid,
+    },
+    SaveSelectionAsPrefab(PathBuf),
+    SyncNodeHandleName {
+        view: Handle<UiNode>,
+        handle: ErasedHandle,
+    },
+    ProvideSceneHierarchy {
+        view: Handle<UiNode>,
+    },
+    ForceSync,
+    SaveLayout,
+    LoadLayout,
+    ResetLayout,
+    SyncInteractionModes,
+    SetAssetBrowserCurrentDir(PathBuf),
+    OpenEntityCreator(EntityCreatorMode),
+    Any(Box<dyn Any>),
+}
+
+impl Message {
+    pub fn try_cast_any<T: Any>(&self) -> Option<&T> {
+        if let Self::Any(any) = self {
+            any.downcast_ref()
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Clone, Debug, Reflect)]
+#[reflect(hide_all, type_uuid = "86eed637-0d96-4ad2-9566-a451f0b00237")]
+pub struct MessageSender(pub Sender<Message>);
+
+impl PartialEq for MessageSender {
+    fn eq(&self, _other: &Self) -> bool {
+        true
+    }
+}
+
+impl Default for MessageSender {
+    fn default() -> Self {
+        let (rx, _) = channel();
+        Self(rx)
+    }
+}
+
+unsafe impl Send for MessageSender {}
+unsafe impl Sync for MessageSender {}
+
+impl MessageSender {
+    pub fn do_command<C>(&self, cmd: C)
+    where
+        C: CommandTrait,
+    {
+        self.send(Message::DoCommand(Command::new(cmd)))
+    }
+
+    pub fn send(&self, message: Message) {
+        Log::verify(self.0.send(message));
+    }
+
+    pub fn send_any<T: Any>(&self, message: T) {
+        Log::verify(self.0.send(Message::Any(Box::new(message))));
+    }
+
+    pub fn send_command(&self, command: Command) {
+        self.send(Message::DoCommand(command))
+    }
+
+    pub fn do_command_group(&self, group: Vec<Command>) {
+        if group.len() == 1 {
+            self.send(Message::DoCommand(group.into_iter().next().unwrap()))
+        } else {
+            self.do_command(CommandGroup::from(group));
+        }
+    }
+
+    pub fn do_command_group_with_inheritance(&self, group: Vec<Command>, args: &PropertyChanged) {
+        if group.is_empty() {
+            if !args.is_inheritable() {
+                Log::err(format!("Failed to handle a property {}", args.path()))
+            }
+        } else {
+            self.do_command_group(group);
+        }
+    }
+}

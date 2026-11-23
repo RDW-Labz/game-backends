@@ -1,0 +1,489 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+use crate::{
+    BuildContext, Control, Thickness, UiNode, UserInterface,
+    core::{PhantomDataSendSync, pool::Handle, reflect::prelude::*, visitor::prelude::*},
+    inspector::{
+        CollectionAction, FieldAction, InspectorError, PropertyChanged,
+        editors::{
+            PropertyEditorBuildContext, PropertyEditorDefinition,
+            PropertyEditorDefinitionContainer, PropertyEditorInstance,
+            PropertyEditorMessageContext, PropertyEditorTranslationContext,
+        },
+        make_expander_container,
+    },
+    inspector::{PropertyFilter, make_property_margin},
+    message::{MessageDirection, UiMessage},
+    stack_panel::StackPanelBuilder,
+    widget::{Widget, WidgetBuilder},
+};
+
+use crate::inspector::{HEADER_MARGIN, InspectorEnvironmentContainer, LAYER_OFFSET};
+use crate::message::{DeliveryMode, MessageData};
+use fyrox_graph::SceneGraph;
+use std::sync::Arc;
+use std::{any::TypeId, fmt::Debug};
+
+#[derive(Clone, Debug, PartialEq, Visit, Reflect, Default)]
+#[reflect(type_uuid = "5c6e4785-8e2d-441f-8478-523900394b93")]
+pub struct Item {
+    pub editor_instance: PropertyEditorInstance,
+}
+
+#[derive(Debug, PartialEq, Clone)]
+pub enum ArrayEditorMessage {
+    ItemChanged { index: usize, message: UiMessage },
+}
+impl MessageData for ArrayEditorMessage {}
+
+#[derive(Clone, Debug, Visit, PartialEq, Reflect)]
+#[reflect(
+    derived_type = "UiNode",
+    type_uuid = "5c6e4785-8e2d-441f-8478-523900394b93"
+)]
+pub struct ArrayEditor {
+    pub widget: Widget,
+    pub items: Vec<Item>,
+}
+
+crate::define_widget_deref!(ArrayEditor);
+
+impl Control for ArrayEditor {
+    fn handle_routed_message(&mut self, ui: &mut UserInterface, message: &mut UiMessage) {
+        self.widget.handle_routed_message(ui, message);
+
+        if let Some(index) = self
+            .items
+            .iter()
+            .position(|i| i.editor_instance.editor() == message.destination())
+        {
+            ui.post(
+                self.handle,
+                ArrayEditorMessage::ItemChanged {
+                    index,
+                    message: message.clone(),
+                },
+            );
+        }
+    }
+}
+
+pub struct ArrayEditorBuilder<'a, T, I>
+where
+    T: Reflect,
+    I: IntoIterator<Item = &'a T>,
+{
+    widget_builder: WidgetBuilder,
+    collection: Option<I>,
+    environment: Option<InspectorEnvironmentContainer>,
+    definition_container: Option<Arc<PropertyEditorDefinitionContainer>>,
+    layer_index: usize,
+    generate_property_string_values: bool,
+    filter: PropertyFilter,
+}
+
+fn create_item_views(items: &[Item]) -> Vec<Handle<UiNode>> {
+    items
+        .iter()
+        .map(|item| match item.editor_instance {
+            PropertyEditorInstance::Simple { editor } => editor,
+            PropertyEditorInstance::Custom { container, .. } => container,
+        })
+        .collect::<Vec<_>>()
+}
+
+fn create_items<'a, 'b, T, I>(
+    iter: I,
+    object: &'a dyn Reflect,
+    environment: Option<InspectorEnvironmentContainer>,
+    definition_container: Arc<PropertyEditorDefinitionContainer>,
+    property_info: &FieldRef<'a, 'b>,
+    ctx: &mut BuildContext,
+    layer_index: usize,
+    generate_property_string_values: bool,
+    filter: PropertyFilter,
+    name_column_width: f32,
+    hide_name_column: bool,
+    base_path: String,
+    has_parent_object: bool,
+) -> Result<Vec<Item>, InspectorError>
+where
+    T: Reflect,
+    I: IntoIterator<Item = &'a T>,
+{
+    let mut items = Vec::new();
+
+    for (index, item) in iter.into_iter().enumerate() {
+        if let Some(definition) = definition_container.get::<T>() {
+            let name = format!("{}[{index}]", property_info.name);
+            let display_name = format!("{}[{index}]", property_info.display_name);
+
+            let metadata = FieldMetadata {
+                name: &name,
+                display_name: &display_name,
+                read_only: property_info.read_only,
+                immutable_collection: property_info.immutable_collection,
+                min_value: property_info.min_value,
+                max_value: property_info.max_value,
+                step: property_info.step,
+                precision: property_info.precision,
+                tag: property_info.tag,
+                doc: property_info.doc,
+            };
+
+            let proxy_property_info = FieldRef {
+                metadata: &metadata,
+                value: item,
+            };
+
+            let editor =
+                definition
+                    .property_editor
+                    .create_instance(PropertyEditorBuildContext {
+                        root_object: object,
+                        build_context: ctx,
+                        property_info: &proxy_property_info,
+                        environment: environment.clone(),
+                        definition_container: definition_container.clone(),
+                        layer_index: layer_index + 1,
+                        generate_property_string_values,
+                        filter: filter.clone(),
+                        name_column_width,
+                        hide_name_column,
+                        base_path: format!("{base_path}[{index}]"),
+                        has_parent_object,
+                    })?;
+
+            if let PropertyEditorInstance::Simple { editor } = editor {
+                ctx[editor].set_margin(make_property_margin(
+                    name_column_width - LAYER_OFFSET - HEADER_MARGIN.left,
+                    0,
+                ));
+            }
+
+            items.push(Item {
+                editor_instance: editor,
+            });
+        } else {
+            return Err(InspectorError::Custom(format!(
+                "Missing property editor of type {}",
+                std::any::type_name::<T>()
+            )));
+        }
+    }
+
+    Ok(items)
+}
+
+impl<'a, T, I> ArrayEditorBuilder<'a, T, I>
+where
+    T: Reflect,
+    I: IntoIterator<Item = &'a T>,
+{
+    pub fn new(widget_builder: WidgetBuilder) -> Self {
+        Self {
+            widget_builder,
+            collection: None,
+            environment: None,
+            definition_container: None,
+            layer_index: 0,
+            generate_property_string_values: false,
+            filter: Default::default(),
+        }
+    }
+
+    pub fn with_collection(mut self, collection: I) -> Self {
+        self.collection = Some(collection);
+        self
+    }
+
+    pub fn with_environment(mut self, environment: Option<InspectorEnvironmentContainer>) -> Self {
+        self.environment = environment;
+        self
+    }
+
+    pub fn with_generate_property_string_values(
+        mut self,
+        generate_property_string_values: bool,
+    ) -> Self {
+        self.generate_property_string_values = generate_property_string_values;
+        self
+    }
+
+    pub fn with_definition_container(
+        mut self,
+        definition_container: Arc<PropertyEditorDefinitionContainer>,
+    ) -> Self {
+        self.definition_container = Some(definition_container);
+        self
+    }
+
+    pub fn with_layer_index(mut self, layer_index: usize) -> Self {
+        self.layer_index = layer_index;
+        self
+    }
+
+    pub fn with_filter(mut self, filter: PropertyFilter) -> Self {
+        self.filter = filter;
+        self
+    }
+
+    pub fn build(
+        self,
+        ctx: &mut BuildContext,
+        object: &'a dyn Reflect,
+        property_info: &FieldRef<'a, '_>,
+        name_column_width: f32,
+        hide_name_column: bool,
+        base_path: String,
+        has_parent_object: bool,
+    ) -> Result<Handle<ArrayEditor>, InspectorError> {
+        let definition_container = self
+            .definition_container
+            .unwrap_or_else(|| Arc::new(PropertyEditorDefinitionContainer::with_default_editors()));
+
+        let environment = self.environment;
+        let items = if let Some(collection) = self.collection {
+            create_items(
+                collection,
+                object,
+                environment,
+                definition_container,
+                property_info,
+                ctx,
+                self.layer_index,
+                self.generate_property_string_values,
+                self.filter,
+                name_column_width,
+                hide_name_column,
+                base_path,
+                has_parent_object,
+            )?
+        } else {
+            Vec::new()
+        };
+
+        let panel =
+            StackPanelBuilder::new(WidgetBuilder::new().with_children(create_item_views(&items)))
+                .build(ctx);
+
+        let ce = ArrayEditor {
+            widget: self.widget_builder.with_child(panel).build(ctx),
+            items,
+        };
+
+        Ok(ctx.add(ce))
+    }
+}
+
+#[derive(Debug)]
+pub struct ArrayPropertyEditorDefinition<T, const N: usize>
+where
+    T: Reflect,
+{
+    #[allow(dead_code)]
+    phantom: PhantomDataSendSync<T>,
+}
+
+impl<T, const N: usize> ArrayPropertyEditorDefinition<T, N>
+where
+    T: Reflect + Clone,
+{
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl<T, const N: usize> Default for ArrayPropertyEditorDefinition<T, N>
+where
+    T: Reflect + Clone,
+{
+    fn default() -> Self {
+        Self {
+            phantom: Default::default(),
+        }
+    }
+}
+
+impl<T, const N: usize> PropertyEditorDefinition for ArrayPropertyEditorDefinition<T, N>
+where
+    T: Reflect + Clone + PartialEq,
+{
+    fn value_type_id(&self) -> TypeId {
+        TypeId::of::<[T; N]>()
+    }
+
+    fn create_instance(
+        &self,
+        ctx: PropertyEditorBuildContext,
+    ) -> Result<PropertyEditorInstance, InspectorError> {
+        let value = ctx.property_info.cast_value::<[T; N]>()?;
+
+        let editor =
+            ArrayEditorBuilder::new(WidgetBuilder::new().with_margin(Thickness::uniform(1.0)))
+                .with_collection(value.iter())
+                .with_environment(ctx.environment.clone())
+                .with_layer_index(ctx.layer_index + 1)
+                .with_definition_container(ctx.definition_container.clone())
+                .with_generate_property_string_values(ctx.generate_property_string_values)
+                .with_filter(ctx.filter)
+                .build(
+                    ctx.build_context,
+                    ctx.root_object,
+                    ctx.property_info,
+                    ctx.name_column_width,
+                    ctx.hide_name_column,
+                    ctx.base_path.clone(),
+                    ctx.has_parent_object,
+                )?;
+
+        let container = make_expander_container(
+            ctx.layer_index,
+            ctx.property_info.display_name,
+            ctx.property_info.doc,
+            Handle::<UiNode>::NONE,
+            editor,
+            ctx.name_column_width,
+            false,
+            None,
+            value.type_info_ref().type_name,
+            ctx.build_context,
+        );
+
+        Ok(PropertyEditorInstance::Custom {
+            container,
+            editor: editor.to_base(),
+        })
+    }
+
+    fn create_message(
+        &self,
+        ctx: PropertyEditorMessageContext,
+    ) -> Result<Option<UiMessage>, InspectorError> {
+        let PropertyEditorMessageContext {
+            root_object: object,
+            instance,
+            ui,
+            layer_index,
+            generate_property_string_values,
+            property_info,
+            filter,
+            definition_container,
+            environment,
+            name_column_width,
+            hide_name_column,
+            base_path,
+            has_parent_object,
+        } = ctx;
+
+        let instance_ref = if let Some(instance) = ui.node(instance).cast::<ArrayEditor>() {
+            instance
+        } else {
+            return Err(InspectorError::Custom(
+                "Property editor is not ArrayEditor!".to_string(),
+            ));
+        };
+
+        let value = property_info.cast_value::<[T; N]>()?;
+
+        if let Some(definition) = definition_container.get::<T>() {
+            for (index, (item, obj)) in instance_ref
+                .items
+                .clone()
+                .iter()
+                .zip(value.iter())
+                .enumerate()
+            {
+                let name = format!("{}[{index}]", property_info.name);
+                let display_name = format!("{}[{index}]", property_info.display_name);
+
+                let metadata = FieldMetadata {
+                    name: &name,
+                    display_name: &display_name,
+                    read_only: property_info.read_only,
+                    immutable_collection: property_info.immutable_collection,
+                    min_value: property_info.min_value,
+                    max_value: property_info.max_value,
+                    step: property_info.step,
+                    precision: property_info.precision,
+                    tag: property_info.tag,
+                    doc: property_info.doc,
+                };
+
+                let proxy_property_info = FieldRef {
+                    metadata: &metadata,
+                    value: obj,
+                };
+
+                if let Some(message) =
+                    definition
+                        .property_editor
+                        .create_message(PropertyEditorMessageContext {
+                            root_object: object,
+                            property_info: &proxy_property_info,
+                            environment: environment.clone(),
+                            definition_container: definition_container.clone(),
+                            instance: item.editor_instance.editor(),
+                            layer_index: layer_index + 1,
+                            ui,
+                            generate_property_string_values,
+                            filter: filter.clone(),
+                            name_column_width,
+                            hide_name_column,
+                            base_path: format!("{base_path}[{index}]"),
+                            has_parent_object,
+                        })?
+                {
+                    // TODO: Refactor `create_message` into `create_messages` to support multiple
+                    // messages. Otherwise this looks like a hack.
+                    ui.send_message(message.with_delivery_mode(DeliveryMode::SyncOnly))
+                }
+            }
+        }
+
+        Ok(None)
+    }
+
+    fn translate_message(&self, ctx: PropertyEditorTranslationContext) -> Option<PropertyChanged> {
+        if ctx.message.direction() == MessageDirection::FromWidget
+            && let Some(ArrayEditorMessage::ItemChanged { index, message }) = ctx.message.data()
+            && let Some(definition) = ctx.definition_container.get::<T>()
+        {
+            return Some(PropertyChanged {
+                name: ctx.name.to_string(),
+
+                action: FieldAction::CollectionAction(Box::new(CollectionAction::ItemChanged {
+                    index: *index,
+                    action: definition
+                        .property_editor
+                        .translate_message(PropertyEditorTranslationContext {
+                            environment: ctx.environment.clone(),
+                            name: "",
+                            message,
+                            definition_container: ctx.definition_container.clone(),
+                        })?
+                        .action,
+                })),
+            });
+        }
+        None
+    }
+}

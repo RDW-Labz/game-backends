@@ -1,0 +1,83 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+pub mod graph;
+pub mod widget;
+
+use crate::fyrox::{core::reflect::prelude::*, gui::UserInterface};
+use crate::{command::CommandContext, game_scene::Selection, message::MessageSender};
+use fyrox::core::pool::Handle;
+use fyrox::graph::NodeWrapper;
+use fyrox::gui::UiNode;
+use fyrox::gui::clipboard::ClipboardContainer;
+
+#[derive(Reflect, Debug)]
+#[reflect(non_cloneable)]
+#[reflect(type_uuid = "32b695b1-7c5d-4cfd-b53b-2e879b78b749")]
+pub struct UiSceneContext {
+    pub ui: &'static mut UserInterface,
+    pub selection: &'static mut Selection,
+    pub message_sender: MessageSender,
+    pub clipboard: &'static mut ClipboardContainer,
+}
+
+impl PartialEq for UiSceneContext {
+    fn eq(&self, other: &Self) -> bool {
+        std::ptr::addr_eq(self.ui, other.ui)
+            && std::ptr::addr_eq(self.selection, other.selection)
+            && std::ptr::addr_eq(self.clipboard, other.clipboard)
+            && self.message_sender == other.message_sender
+    }
+}
+
+impl UiSceneContext {
+    pub fn exec<'a, F>(
+        ui: &'a mut UserInterface,
+        selection: &'a mut Selection,
+        message_sender: MessageSender,
+        clipboard: &'a mut ClipboardContainer,
+        func: F,
+    ) where
+        F: FnOnce(&mut UiSceneContext),
+    {
+        // SAFETY: Temporarily extend lifetime to 'static and execute external closure with it.
+        // The closure accepts this extended context by reference, so there's no way it escapes to
+        // outer world. The initial lifetime is still preserved by this function call.
+        let mut ctx = unsafe {
+            Self {
+                ui: std::mem::transmute::<&'a mut _, &'static mut _>(ui),
+                selection: std::mem::transmute::<&'a mut _, &'static mut _>(selection),
+                message_sender,
+                clipboard: std::mem::transmute::<&'a mut _, &'static mut _>(clipboard),
+            }
+        };
+
+        func(&mut ctx);
+    }
+
+    pub fn widget_mut(&mut self, handle: Handle<UiNode>) -> Option<&mut dyn Reflect> {
+        self.ui
+            .try_get_node_mut(handle)
+            .ok()
+            .map(|widget| widget.inner_mut())
+    }
+}
+
+impl CommandContext for UiSceneContext {}

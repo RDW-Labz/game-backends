@@ -1,0 +1,49 @@
+[workspace]
+members = [
+    "fyrox-core-derive",
+    "fyrox-core",
+    "fyrox-sound",
+    "fyrox-ui",
+    "fyrox-resource",
+    "fyrox-scripts",
+    "fyrox-animation",
+    "editor",
+    "editor-standalone",
+    "template-core",
+    "template",
+    "fyrox-graph",
+    "fyrox-math",
+    "fyrox-dylib",
+    "fyrox",
+    "fyrox-impl",
+    "project-manager",
+    "fyrox-graphics",
+    "fyrox-build-tools",
+    "fyrox-texture",
+    "fyrox-autotile",
+    "fyrox-material",
+    "fyrox-graphics-gl",
+    "fyrox-graphics-wgpu"]
+resolver = "2"
+
+[profile.editor-standalone]
+inherits = "dev"
+opt-level = 1
+
+[profile.release]
+opt-level = 3
+debug = true
+
+[profile.project-manager]
+inherits = "release"
+opt-level = "z"
+debug = false
+strip = true
+panic = "abort"
+lto = true
+
+[profile.github-ci]
+inherits = "dev"
+strip = "symbols"
+debug = false
+opt-level = 3

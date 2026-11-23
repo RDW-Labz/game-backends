@@ -1,0 +1,425 @@
+// Copyright (c) 2019-present Dmitry Stepanov and Fyrox Engine contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+//! A module that handles resource states.
+
+use crate::{ResourceData, ResourceLoadError, TypedResourceData, core::reflect::prelude::*};
+use std::any::Any;
+use std::fmt::{Debug, Display};
+use std::path::PathBuf;
+use std::{
+    ops::{Deref, DerefMut},
+    sync::Arc,
+    task::Waker,
+};
+
+#[doc(hidden)]
+#[derive(Reflect, Debug, Default, Clone)]
+#[reflect(hide_all, type_uuid = "238a5490-6627-48ef-8035-4b589497293b")]
+pub struct WakersList(Vec<Waker>);
+
+impl PartialEq for WakersList {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.len() == other.0.len()
+    }
+}
+
+impl Deref for WakersList {
+    type Target = Vec<Waker>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl WakersList {
+    pub fn add_waker(&mut self, cx_waker: &Waker) {
+        if let Some(pos) = self.iter().position(|waker| waker.will_wake(cx_waker)) {
+            self[pos].clone_from(cx_waker);
+        } else {
+            self.push(cx_waker.clone())
+        }
+    }
+}
+
+impl DerefMut for WakersList {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+/// Arbitrary loading error, that could be optionally be empty.
+#[derive(Reflect, Debug, Clone, Default)]
+#[reflect(hide_all, type_uuid = "cb2257dc-b344-49e6-972e-cd99be4c3615")]
+pub struct LoadError(pub Option<Arc<dyn ResourceLoadError>>);
+
+impl PartialEq for LoadError {
+    fn eq(&self, other: &Self) -> bool {
+        if let (Some(a), Some(b)) = (&self.0, &other.0) {
+            Arc::ptr_eq(a, b)
+        } else {
+            false
+        }
+    }
+}
+
+impl std::error::Error for LoadError {}
+
+impl LoadError {
+    /// Creates new loading error from a value of the given type.
+    pub fn new<T: ResourceLoadError>(value: T) -> Self {
+        Self(Some(Arc::new(value)))
+    }
+}
+
+impl Display for LoadError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.0 {
+            None => f.write_str("None"),
+            Some(x) => Display::fmt(x, f),
+        }
+    }
+}
+
+#[doc(hidden)]
+#[derive(Debug, Reflect)]
+#[reflect(type_uuid = "e7675337-0b9b-49b4-962a-03cc571a0ab7")]
+pub struct ResourceDataWrapper(
+    #[reflect(deref, display_name = "Resource Data")] pub Box<dyn ResourceData>,
+);
+
+impl ResourceDataWrapper {
+    pub fn inner_ref(&self) -> &dyn ResourceData {
+        &*self.0
+    }
+
+    pub fn inner_mut(&mut self) -> &mut dyn ResourceData {
+        &mut *self.0
+    }
+}
+
+impl PartialEq for ResourceDataWrapper {
+    fn eq(&self, other: &Self) -> bool {
+        self.0
+            .try_compare(other.0.deref() as &dyn Reflect)
+            .unwrap_or_default()
+    }
+}
+
+impl Clone for ResourceDataWrapper {
+    fn clone(&self) -> Self {
+        Self(ResourceData::try_clone_box(&*self.0).unwrap())
+    }
+}
+
+/// Resource could be in three possible states (a small state machine):
+///
+/// 1. Pending - it is loading or queued for loading.
+/// 2. LoadError - an error has occurred during the load.
+/// 3. Ok - resource is fully loaded and ready to use.
+///
+/// ## Why is it so complex?
+///
+/// Short answer: asynchronous loading.
+/// Long answer: when you're loading a scene, you expect it to be loaded as fast as possible, use
+/// all available power of the CPU. To achieve that, each resource ideally should be loaded on
+/// separate core of the CPU, but since this is asynchronous, we must be able to track the state
+/// of the resource.
+///
+/// ## Path
+///
+/// Resources do not store their paths to respective files in the file system, instead resource only
+/// stores their unique identifiers (UUID). Use [`crate::registry::ResourceRegistry`] to get a path
+/// associated with the resource uuid.
+///
+/// ## UUID
+///
+/// Resource UUID is available only if the resource is fully loaded. This is because there's no way
+/// to get the UUID earlier: the UUID is stored in a metadata file which exists only if the resource
+/// is present. It is somewhat possible to get a UUID when a resource is failed to load, but not in
+/// 100% cases.
+#[derive(Clone, PartialEq, Reflect)]
+#[reflect(type_uuid = "3d49c715-4a48-4b41-b8c6-45bcb8b3fd17")]
+pub enum ResourceState {
+    /// Resource is not loaded. In some situations, having a handle to a resource
+    /// can be sufficient even without the resource's data.
+    Unloaded,
+    /// Resource is loading from external resource or in the queue to load.
+    Pending {
+        /// List of wakers to wake future when resource is fully loaded.
+        wakers: WakersList,
+    },
+    /// An error has occurred during the load.
+    LoadError {
+        /// A resource path, it is stored only to be able to reload the resources that failed to
+        /// load previously.
+        path: PathBuf,
+        /// An error. This wrapped in Option only to be Default_ed.
+        error: LoadError,
+    },
+    /// Actual resource data when it is fully loaded.
+    Ok {
+        /// Actual data of the resource.
+        data: ResourceDataWrapper,
+    },
+}
+
+impl Debug for ResourceState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Unloaded => write!(f, "Unloaded"),
+            Self::Pending { .. } => write!(f, "Pending"),
+            Self::LoadError { path, error } => write!(f, "LoadError {:?}: {:?}", error, path),
+            Self::Ok { .. } => write!(f, "Ok"),
+        }
+    }
+}
+
+impl Display for ResourceState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Unloaded => write!(f, "Unloaded"),
+            Self::Pending { .. } => write!(f, "Pending"),
+            Self::LoadError { path, error } => {
+                if path.as_os_str().is_empty() {
+                    write!(f, "{} (for unknown path)", error)
+                } else {
+                    write!(f, "{} (for {:?})", error, path)
+                }
+            }
+            Self::Ok { .. } => write!(f, "Ok"),
+        }
+    }
+}
+
+impl Default for ResourceState {
+    fn default() -> Self {
+        ResourceState::new_load_error(
+            Default::default(),
+            LoadError::new("Default resource state of unknown type."),
+        )
+    }
+}
+
+impl Drop for ResourceState {
+    fn drop(&mut self) {
+        if let ResourceState::Pending { wakers, .. } = self {
+            assert_eq!(wakers.len(), 0);
+        }
+    }
+}
+
+impl ResourceState {
+    /// Creates new resource in pending state.
+    #[inline]
+    pub fn new_pending() -> Self {
+        Self::Pending {
+            wakers: Default::default(),
+        }
+    }
+
+    /// Creates new resource in error state.
+    #[inline]
+    pub fn new_load_error(path: PathBuf, error: LoadError) -> Self {
+        Self::LoadError { path, error }
+    }
+
+    /// Creates new resource in [`ResourceState::Ok`] state.
+    #[inline]
+    pub fn new_ok<T: ResourceData>(data: T) -> Self {
+        Self::Ok {
+            data: ResourceDataWrapper(Box::new(data)),
+        }
+    }
+
+    /// Creates a new resource in [`ResourceState::Ok`] state using arbitrary data.
+    #[inline]
+    pub fn new_ok_untyped(data: Box<dyn ResourceData>) -> Self {
+        Self::Ok {
+            data: ResourceDataWrapper(data),
+        }
+    }
+
+    /// Checks whether the resource is still loading or not.
+    pub fn is_loading(&self) -> bool {
+        matches!(self, ResourceState::Pending { .. })
+    }
+
+    /// Checks whether the resource is loaded without errors.
+    pub fn is_ok(&self) -> bool {
+        matches!(self, ResourceState::Ok { .. })
+    }
+
+    /// Switches the internal state of the resource to [`ResourceState::Pending`].
+    pub fn switch_to_pending_state(&mut self) {
+        *self = ResourceState::Pending {
+            wakers: Default::default(),
+        };
+    }
+
+    /// Changes ResourceState::Pending state to ResourceState::Ok(data) with given `data`.
+    /// Additionally it wakes all futures.
+    #[inline]
+    pub fn commit(&mut self, state: ResourceState) {
+        assert!(!matches!(state, ResourceState::Pending { .. }));
+
+        let wakers = if let ResourceState::Pending { wakers, .. } = self {
+            std::mem::take(wakers)
+        } else {
+            WakersList::default()
+        };
+
+        *self = state;
+
+        for waker in wakers.0 {
+            waker.wake();
+        }
+    }
+
+    /// Changes internal state to [`ResourceState::Ok`]
+    pub fn commit_ok<T: ResourceData>(&mut self, data: T) {
+        self.commit(ResourceState::Ok {
+            data: ResourceDataWrapper(Box::new(data)),
+        })
+    }
+
+    /// Changes internal state to [`ResourceState::LoadError`].
+    pub fn commit_error<E: ResourceLoadError>(&mut self, path: PathBuf, error: E) {
+        self.commit(ResourceState::LoadError {
+            path,
+            error: LoadError::new(error),
+        })
+    }
+
+    /// Tries to get the resource data. Will fail if the resource is not in [`ResourceState::Ok`].
+    pub fn data_ref(&self) -> Option<&ResourceDataWrapper> {
+        match self {
+            ResourceState::Pending { .. }
+            | ResourceState::LoadError { .. }
+            | ResourceState::Unloaded => None,
+            ResourceState::Ok { data, .. } => Some(data),
+        }
+    }
+
+    /// Tries to get the resource data. Will fail if the resource is not in [`ResourceState::Ok`].
+    pub fn data_mut(&mut self) -> Option<&mut ResourceDataWrapper> {
+        match self {
+            ResourceState::Pending { .. }
+            | ResourceState::LoadError { .. }
+            | ResourceState::Unloaded => None,
+            ResourceState::Ok { data, .. } => Some(data),
+        }
+    }
+
+    /// Tries to get the resource data of the given type. Will fail if the resource is not in
+    /// [`ResourceState::Ok`].
+    pub fn data_ref_of_type<T: TypedResourceData>(&self) -> Option<&T> {
+        match self {
+            ResourceState::Pending { .. }
+            | ResourceState::LoadError { .. }
+            | ResourceState::Unloaded => None,
+            ResourceState::Ok { data, .. } => (data.inner_ref() as &dyn Any).downcast_ref::<T>(),
+        }
+    }
+
+    /// Tries to get the resource data of the given type. Will fail if the resource is not in
+    /// [`ResourceState::Ok`].
+    pub fn data_mut_of_type<T: TypedResourceData>(&mut self) -> Option<&mut T> {
+        match self {
+            ResourceState::Pending { .. }
+            | ResourceState::LoadError { .. }
+            | ResourceState::Unloaded => None,
+            ResourceState::Ok { data, .. } => {
+                (data.inner_mut() as &mut dyn Any).downcast_mut::<T>()
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use fyrox_core::{reflect::prelude::*, visitor::prelude::*};
+    use std::error::Error;
+    use std::path::Path;
+
+    use super::*;
+
+    #[derive(Debug, Default, Clone, Reflect, PartialEq, Visit)]
+    #[reflect(type_uuid = "96a59120-b174-4b2c-9069-1770ec495011")]
+    struct Stub {}
+
+    impl ResourceData for Stub {
+        fn save(&mut self, _path: &Path) -> Result<(), Box<dyn Error>> {
+            Err("Saving is not supported!".to_string().into())
+        }
+
+        fn can_be_saved(&self) -> bool {
+            false
+        }
+
+        fn try_clone_box(&self) -> Option<Box<dyn ResourceData>> {
+            Some(Box::new(self.clone()))
+        }
+    }
+
+    #[test]
+    fn resource_state_new_pending() {
+        let state = ResourceState::new_pending();
+
+        assert!(matches!(state, ResourceState::Pending { .. }));
+        assert!(state.is_loading());
+    }
+
+    #[test]
+    fn resource_state_new_load_error() {
+        let state = ResourceState::new_load_error(Default::default(), Default::default());
+
+        assert!(matches!(state, ResourceState::LoadError { .. }));
+        assert!(!state.is_loading());
+    }
+
+    #[test]
+    fn resource_state_new_ok() {
+        let state = ResourceState::new_ok(Stub {});
+        assert!(matches!(state, ResourceState::Ok { .. }));
+        assert!(!state.is_loading());
+    }
+
+    #[test]
+    fn resource_state_switch_to_pending_state() {
+        // from Ok
+        let mut state = ResourceState::new_ok(Stub {});
+        state.switch_to_pending_state();
+
+        assert!(matches!(state, ResourceState::Pending { .. }));
+
+        // from LoadError
+        let mut state = ResourceState::new_load_error(Default::default(), Default::default());
+        state.switch_to_pending_state();
+
+        assert!(matches!(state, ResourceState::Pending { .. }));
+
+        // from Pending
+        let mut state = ResourceState::new_pending();
+        state.switch_to_pending_state();
+
+        assert!(matches!(state, ResourceState::Pending { .. }));
+    }
+}
