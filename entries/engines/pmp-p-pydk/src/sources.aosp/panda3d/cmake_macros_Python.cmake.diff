@@ -1,0 +1,16 @@
+--- panda3d-webgl-port/cmake/macros/Python.cmake	2022-05-10 16:33:18.000000000 +0200
++++ panda3d/cmake/macros/Python.cmake	2022-06-13 04:42:28.012707726 +0200
+@@ -48,7 +48,12 @@
+   string(REPLACE "." "/" slash_namespace "${namespace}")
+ 
+   add_library(${target} ${MODULE_TYPE} ${sources})
+-  target_link_libraries(${target} PKG::PYTHON)
++
++  if (ANDROID)
++    target_link_libraries(${target} "python${PYMAJOR}.${PYMINOR}" "ffi" "z"  "bz2" "lzma" "brokenthings")
++  else()
++    target_link_libraries(${target} PKG::PYTHON)
++  endif()
+ 
+   if(BUILD_SHARED_LIBS)
+     set(_outdir "${PANDA_OUTPUT_DIR}/${slash_namespace}")

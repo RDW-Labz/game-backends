@@ -1,0 +1,12 @@
+--- panda3d-webgl-port/panda/src/display/graphicsStateGuardian.I	2022-05-10 16:33:18.000000000 +0200
++++ panda3d/panda/src/display/graphicsStateGuardian.I	2022-06-13 04:42:28.016707690 +0200
+@@ -78,6 +78,9 @@
+  */
+ INLINE void GraphicsStateGuardian::
+ set_active(bool active) {
++#if __ANDROID__
++    _is_valid = true;
++#endif
+   _active = active;
+ }
+ 

@@ -1867,3 +1867,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/tacticalmetaphysics-lisien
   - reference engines/codesmile-0000011110110111-lunyscript-rfc
   - reference engines/ludicdynamics-worldlines
+
+- **2026-11-23 08:06 UTC** — tick 680: +2 screened, +4 reference, 2 skipped, catalogue=662
+  - added engines/pmp-p-pydk (MIT, vendored)
+  - added engines/filipeabperes-py3ode (LGPL-2.1, reference)
+  - reference engines/yuehaowang-pylash-engine
+  - reference engines/underpig1-neuro-bge
+  - reference engines/qsjl11-pyera
+  - reference engines/katelouie-bardic

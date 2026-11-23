@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T08:06:03Z",
+ "category": "engines",
+ "commit": "9aeec40679e2",
+ "delivery": "vendored",
+ "description": "pmp-p/pydk \u2014 An universal Python/pip+Panda3d build framework for Pythons Everywhere ( and Everyone )",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "pydk",
+ "size_bytes": 1535406,
+ "slug": "pmp-p-pydk",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 40,
+ "system": "An universal Python/pip+Panda3d build framework for Pythons Everywhere ( and Everyone )",
+ "upstream": "https://github.com/pmp-p/pydk",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

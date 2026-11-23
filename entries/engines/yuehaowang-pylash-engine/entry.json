@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:06:06Z",
+ "category": "engines",
+ "commit": "2021-03-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "yuehaowang/pylash_engine \u2014 A lightweight and relaxed game engine for Python.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pylash_engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "yuehaowang-pylash-engine",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 36,
+ "system": "A lightweight and relaxed game engine for Python.",
+ "upstream": "https://github.com/yuehaowang/pylash_engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

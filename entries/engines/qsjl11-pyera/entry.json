@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:06:06Z",
+ "category": "engines",
+ "commit": "2017-08-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "qsjl11/pyera \u2014 Era-like game engine by python",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "pyera",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "qsjl11-pyera",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 36,
+ "system": "Era-like game engine by python",
+ "upstream": "https://github.com/qsjl11/pyera",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

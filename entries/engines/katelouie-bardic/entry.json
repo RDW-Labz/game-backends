@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:06:06Z",
+ "category": "engines",
+ "commit": "2026-05-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "katelouie/bardic \u2014 A Python-first interactive fiction engine and authoring system. Frontend-agnostic and portable.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bardic",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "katelouie-bardic",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 35,
+ "system": "A Python-first interactive fiction engine and authoring system. Frontend-agnostic and portable.",
+ "upstream": "https://github.com/katelouie/bardic",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

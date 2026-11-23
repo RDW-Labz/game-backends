@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T08:06:05Z",
+ "category": "engines",
+ "commit": "50675f543d35",
+ "delivery": "reference",
+ "description": "filipeabperes/Py3ODE \u2014 Port of PyODE for Python 3",
+ "language": "python",
+ "license": "LGPL-2.1",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Py3ODE",
+ "reference_reason": "licence: LGPL-2.1 (copyleft-reference)",
+ "size_bytes": 130813,
+ "slug": "filipeabperes-py3ode",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 37,
+ "system": "Port of PyODE for Python 3",
+ "upstream": "https://github.com/filipeabperes/Py3ODE",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

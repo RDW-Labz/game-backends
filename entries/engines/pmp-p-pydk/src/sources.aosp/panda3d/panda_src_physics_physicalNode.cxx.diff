@@ -1,0 +1,11 @@
+--- panda3d-webgl-port/panda/src/physics/physicalNode.cxx	2022-05-10 16:33:18.000000000 +0200
++++ panda3d/panda/src/physics/physicalNode.cxx	2022-06-13 04:42:28.016707690 +0200
+@@ -16,7 +16,7 @@
+ #include "patomic.h"
+ 
+ // static stuff.
+-static patomic_flag warned_copy_physical_node = ATOMIC_FLAG_INIT;
++static std::atomic_flag warned_copy_physical_node = ATOMIC_FLAG_INIT;
+ 
+ TypeHandle PhysicalNode::_type_handle;
+ 

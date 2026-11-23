@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:06:06Z",
+ "category": "engines",
+ "commit": "2021-06-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "underpig1/neuro-bge \u2014 Node-based Blender game engine and logic editor addon for Blender",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "neuro-bge",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "underpig1-neuro-bge",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 36,
+ "system": "Node-based Blender game engine and logic editor addon for Blender",
+ "upstream": "https://github.com/underpig1/neuro-bge",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
