@@ -1,0 +1,177 @@
+//===- TensorInitInt.h - MLIR Tensor Initialization -----------------------===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+//
+// Initializes tensors for kernel input/output handling with some reasonable
+// distribution to allow for layout testing (reorder, pad) without vanishing
+// or exploding values at the end of a large model - uses quantization range
+// within <0 - 255> integer values.
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef TPP_TRANSFORMS_UTILS_TENSORINITINT_H
+#define TPP_TRANSFORMS_UTILS_TENSORINITINT_H
+
+#include "TPP/Transforms/Utils/TensorInit.h"
+#include "TPP/Transforms/Utils/TensorInitRNG.h"
+#include "mlir/IR/BuiltinOps.h"
+#include "mlir/IR/Types.h"
+
+#include <algorithm>
+
+// Base class for integer values.
+struct TensorInitInt : public TensorInit<llvm::APInt> {
+  // Supported data types.
+  // TODO: Support signed (si32) and unsinged (ui32) integers
+  enum class DataType { AUTO, I8, I16, I32, I64 };
+
+  static bool isTypeSupported(const mlir::Type &type) {
+    return type.isSignlessInteger(8) || type.isSignlessInteger(16) ||
+           type.isSignlessInteger(32) || type.isSignlessInteger(64);
+  }
+
+  // Get data type from element type.
+  static DataType getTensorInitDataType(mlir::Type type);
+
+  // Get bit width from data type.
+  static unsigned getDataTypeBitWidth(DataType type);
+
+  // True if the data type is signed.
+  static bool isDataTypeSigned(DataType type);
+
+  TensorInitInt(DataType type)
+      : type(type), bitWidth(getDataTypeBitWidth(type)),
+        isSigned(isDataTypeSigned(type)) {}
+  virtual ~TensorInitInt() = default;
+
+protected:
+  // Tensor element data type.
+  DataType type;
+
+  // Bit width of the data type.
+  unsigned bitWidth;
+
+  // True if the data type is signed.
+  bool isSigned;
+
+  // Insert element indexed on the buffer.
+  using TensorInit::insert;
+  virtual void insert(size_t index, uint64_t value);
+
+  // Insert element at the end of the buffer.
+  using TensorInit::push;
+  virtual void push(uint64_t value);
+
+  // Convert value to the tensor's data type (by reference).
+  void convertType(llvm::APInt &value) override final;
+
+  // Actual implementation that fills the buffer
+  // To be implemented by derived classes.
+  virtual void fillData() override = 0;
+};
+
+// Constant init (all-ones).
+struct ConstantTensorInitInt : TensorInitInt {
+  ConstantTensorInitInt(DataType type) : TensorInitInt(type) {}
+
+  // Return a dense<1> repeated throughout the shape.
+  mlir::FailureOr<mlir::DenseElementsAttr> get(mlir::ShapedType shape) override;
+
+  void fillData() override { assert(false && "Should not be called"); }
+};
+
+// Random init (uniform).
+struct RandomTensorInitInt : TensorInitInt {
+  RandomTensorInitInt(DataType type, int seed)
+      : TensorInitInt(type), generator(seed),
+        upperBound(type == DataType::I8 ? 127 : 255) {}
+
+  // Next random uniform number.
+  float next() { return generator.uniformInt(0, upperBound); }
+
+  // Return a dense<uniform(0, distribution)> throughout the shape.
+  void fillData() override;
+
+private:
+  // Random generator.
+  TensorInitRNG generator;
+  // Inclusive upper bound of the generated range.
+  uint64_t upperBound;
+};
+
+// Random init (normal).
+struct NormalTensorInitInt : TensorInitInt {
+  NormalTensorInitInt(DataType type, int seed)
+      : TensorInitInt(type), generator(seed),
+        trials(type == DataType::I8 ? 127 : 255) {}
+
+  // Next random number.
+  float next() { return generator.binomial(trials, 0.5); }
+
+  // Return a dense<normal(0, distribution)> throughout the shape.
+  void fillData() override;
+
+private:
+  // Random generator.
+  TensorInitRNG generator;
+  // Number of Bernoulli trials backing the binomial distribution.
+  uint64_t trials;
+};
+
+// Identity init.
+struct IdentityTensorInitInt : TensorInitInt {
+  IdentityTensorInitInt(DataType type)
+      : TensorInitInt(type) {}
+
+  // Makes sure the shape is "square"
+  bool checkShape(mlir::ShapedType shape) override {
+    if (!TensorInit::checkShape(shape))
+      return false;
+    // Now the fields are set, compare all dims to be equal, 2D only for now
+    return dims.size() == 2 && dims[0] == dims[1];
+  }
+
+  // Should not be called.
+  float next() { assert(false && "Should not be called"); }
+
+  // Return a diagonal of <1.0>s throughout the shape.
+  void fillData() override;
+};
+
+struct QuantScaleTensorInitFloat;
+// Random init (normal).
+struct QuantTensorInitInt : TensorInitInt {
+  QuantTensorInitInt(DataType type, mlir::Type scaleDataType, int seed,
+                     TensorInitPtr floatScaleInit)
+      : TensorInitInt(type), scaleDataType(scaleDataType), generator(seed),
+        floatScaleInit(floatScaleInit) {}
+
+  // Indicate which matrix it being initialized, input or weight
+  bool isInputMatrix = true;
+  mlir::Type scaleDataType;
+
+  // Should not be called.
+  float next() { assert(false && "Should not be called"); }
+
+  // Return a dense<normal(0, distribution)> throughout the shape.
+  void fillData() override;
+
+  std::vector<int> computeScales(const std::vector<float> &samples,
+                                 bool isRowWiseReduce = true);
+
+  std::vector<llvm::APInt>
+  quantizeDFP(const std::vector<float> &samples,
+              const std::vector<int> &channelwiseScales,
+              bool isRowWiseReduce = true);
+
+private:
+  // Random generator.
+  TensorInitRNG generator;
+  TensorInitPtr floatScaleInit;
+};
+
+#endif // TPP_TRANSFORMS_UTILS_TENSORINITINT_H

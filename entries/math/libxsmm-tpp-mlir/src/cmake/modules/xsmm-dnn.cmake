@@ -1,0 +1,47 @@
+# This needs to run *after* xsmm.cmake
+if (NOT LIBXSMMROOT)
+  message(FATAL_ERROR "LIBXSMM is a hard dependency for LIBXSMM-DNN")
+endif()
+
+# Make to pass full path to LIBXSMM_DNNROOT
+if(EXISTS ${LIBXSMM_DNNROOT})
+  message(STATUS "Found LIBXSMM_DNN (${LIBXSMM_DNNROOT})")
+else()
+  message(STATUS "Fetching LIBXSMM_DNN")
+  include(FetchContent)
+
+  FetchContent_Declare(
+    xsmm_dnn
+    URL https://github.com/libxsmm/libxsmm-dnn/archive/a595dd2d550657a90cad3a94ed0d0b1ceb57b6ab.tar.gz
+    URL_HASH SHA256=aab2733a2012a064eb50f48029f6f127a3c2891bada999655215d84fd6edd744
+  )
+
+  FetchContent_GetProperties(xsmm_dnn)
+  if(NOT xsmm_dnn_POPULATED)
+    FetchContent_Populate(xsmm_dnn)
+  endif()
+
+  set(LIBXSMM_DNNROOT ${xsmm_dnn_SOURCE_DIR})
+endif()
+
+# Global settings
+set(XSMM_DNN_INCLUDE_DIRS ${LIBXSMM_DNNROOT}/include)
+file(GLOB XSMM_DNN_SRCS LIST_DIRECTORIES false CONFIGURE_DEPENDS ${LIBXSMM_DNNROOT}/src/*.c)
+
+# Create the MLP runner
+add_executable(xsmm_dnn_mlp
+  ${XSMM_DNN_SRCS}
+  ${LIBXSMM_DNNROOT}/tests/mlp/mlp_example.c
+)
+set_property(TARGET xsmm_dnn_mlp PROPERTY COMPILE_WARNING_AS_ERROR ON)
+
+set_Target_properties(xsmm_dnn_mlp PROPERTIES RUNTIME_OUTPUT_DIRECTORY bin)
+target_include_directories(xsmm_dnn_mlp PRIVATE ${XSMM_INCLUDE_DIRS})
+target_include_directories(xsmm_dnn_mlp PRIVATE ${XSMM_INCLUDE_DIRS}/../src/template)
+target_include_directories(xsmm_dnn_mlp PRIVATE ${XSMM_DNN_INCLUDE_DIRS})
+target_link_libraries(xsmm_dnn_mlp PRIVATE xsmm)
+if (OPENMP_FOUND)
+  target_compile_options(xsmm_dnn_mlp PRIVATE ${OpenMP_C_FLAGS})
+  target_link_libraries(xsmm_dnn_mlp PRIVATE ${OpenMP_C_LIBRARIES})
+endif()
+install(TARGETS xsmm_dnn_mlp RUNTIME DESTINATION bin)

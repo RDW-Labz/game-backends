@@ -2234,3 +2234,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/rustgd-cgmath
   - reference math/px4-eigen
   - reference math/ddemidov-amgcl
+
+- **2026-11-23 20:28 UTC** — tick 726: +2 screened, +4 reference, 0 skipped, catalogue=937
+  - added math/cpmech-russell (MIT, vendored)
+  - added math/libxsmm-tpp-mlir (Apache-2.0, vendored)
+  - reference math/python-graphblas-python-graphblas
+  - reference math/bbrister-sift3d
+  - reference math/alexandertar-laswift
+  - reference math/icl-utk-edu-slate

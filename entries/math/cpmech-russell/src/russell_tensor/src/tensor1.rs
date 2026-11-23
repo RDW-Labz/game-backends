@@ -1,0 +1,356 @@
+use russell_lab::{AsArray1D, Vector, format_scientific};
+use serde::{Deserialize, Serialize};
+use std::cmp;
+use std::fmt::{self, Write};
+
+/// Defines a first-order tensor (vector) in R³
+///
+/// The "standard" components are recorded here where "standard" means with respect to a Cartesian system.
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(transparent)]
+pub struct Tensor1 {
+    /// Holds the 3 standard components (stack)
+    ///
+    /// Stack version => fixed size memory
+    pub(crate) vec: [f64; 3],
+}
+
+impl Tensor1 {
+    /// Allocates a new instance
+    pub fn new() -> Self {
+        Tensor1 { vec: [0.0, 0.0, 0.0] }
+    }
+
+    /// Allocates a new instance from a standard (dense) array
+    ///
+    /// # Input
+    ///
+    /// * `inp` -- the standard components; a 1D array (fixed-size array, slice, or vector)
+    ///   with exactly 3 components
+    ///
+    /// # Panics
+    ///
+    /// A panic will occur if `inp` does not have exactly 3 components
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use russell_tensor::Tensor1;
+    ///
+    /// let u = Tensor1::from(&[1.0, 2.0, 3.0]);
+    /// assert_eq!(u.get(0), 1.0);
+    /// assert_eq!(u.get(1), 2.0);
+    /// assert_eq!(u.get(2), 3.0);
+    /// ```
+    pub fn from<'a, S>(inp: &'a S) -> Self
+    where
+        S: AsArray1D<'a, f64>,
+    {
+        assert_eq!(inp.size(), 3, "the input array must have exactly 3 components");
+        let mut tensor = Tensor1::new();
+        tensor.vec[0] = inp.at(0);
+        tensor.vec[1] = inp.at(1);
+        tensor.vec[2] = inp.at(2);
+        tensor
+    }
+
+    /// Sets the i-th standard component
+    ///
+    /// # Input
+    ///
+    /// * `i` -- The index must be 0, 1, or 2
+    /// * `value` -- The standard component value
+    ///
+    /// # Panics
+    ///
+    /// A panic may occur if the index is out of range
+    #[inline]
+    pub fn set(&mut self, i: usize, value: f64) {
+        self.vec[i] = value;
+    }
+
+    /// Adds a value to the i-th standard component
+    ///
+    /// # Input
+    ///
+    /// * `i` -- The index must be 0, 1, or 2
+    /// * `value` -- The standard component value to be added
+    ///
+    /// # Panics
+    ///
+    /// A panic may occur if the index is out of range
+    #[inline]
+    pub fn add(&mut self, i: usize, value: f64) {
+        self.vec[i] += value;
+    }
+
+    /// Set all values to zero
+    #[inline]
+    pub fn clear(&mut self) {
+        self.vec.fill(0.0);
+    }
+
+    /// Scales this tensor in-place
+    ///
+    /// ```text
+    /// self := α self
+    /// ```
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use russell_lab::vec_approx_eq;
+    /// use russell_tensor::Tensor1;
+    ///
+    /// let mut u = Tensor1::from(&[1.0, 2.0, 3.0]);
+    /// u.scale(2.0);
+    /// vec_approx_eq(&u.as_vector(), &[2.0, 4.0, 6.0], 1e-15);
+    /// ```
+    #[inline]
+    pub fn scale(&mut self, alpha: f64) {
+        self.vec[0] *= alpha;
+        self.vec[1] *= alpha;
+        self.vec[2] *= alpha;
+    }
+
+    /// Gets the i-th standard component
+    ///
+    /// # Input
+    ///
+    /// * `i` -- The index must be 0, 1, or 2
+    ///
+    /// # Panics
+    ///
+    /// A panic may occur if the index is out of range
+    #[inline]
+    pub fn get(&self, i: usize) -> f64 {
+        self.vec[i]
+    }
+
+    /// Performs the cross product between this tensor and another
+    ///
+    /// ```text
+    /// result = this × other
+    /// ```
+    pub fn cross(&self, result: &mut Tensor1, other: &Tensor1) {
+        result.vec[0] = self.vec[1] * other.vec[2] - self.vec[2] * other.vec[1];
+        result.vec[1] = self.vec[2] * other.vec[0] - self.vec[0] * other.vec[2];
+        result.vec[2] = self.vec[0] * other.vec[1] - self.vec[1] * other.vec[0];
+    }
+
+    /// Calculates the dot (inner) product between this tensor and another
+    ///
+    /// ```text
+    /// result = this . other
+    /// ```
+    pub fn dot(&self, other: &Tensor1) -> f64 {
+        self.vec[0] * other.vec[0] + self.vec[1] * other.vec[1] + self.vec[2] * other.vec[2]
+    }
+
+    /// Calculates the Euclidean norm
+    ///
+    /// ```text
+    /// norm(u) = √(u·u) = √(u₀² + u₁² + u₂²)
+    /// ```
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use russell_lab::approx_eq;
+    /// use russell_tensor::Tensor1;
+    ///
+    /// let u = Tensor1::from(&[3.0, 4.0, 12.0]);
+    /// approx_eq(u.norm(), 13.0, 1e-13);
+    /// ```
+    #[inline]
+    pub fn norm(&self) -> f64 {
+        f64::sqrt(self.vec[0] * self.vec[0] + self.vec[1] * self.vec[1] + self.vec[2] * self.vec[2])
+    }
+
+    /// Returns this Tensor1 as a Vector object from russell_lab
+    ///
+    /// This function is useful for integration with `russell_lab` and for unit testing
+    pub fn as_vector(&self) -> Vector {
+        Vector::from(&self.vec)
+    }
+
+    /// Returns the components in scientific notation
+    ///
+    /// The returned [String] can be printed (e.g., `println!("{}", ...)`) or
+    /// saved to a log file.
+    ///
+    /// # Input
+    ///
+    /// * `label` -- a label (e.g., a description of the tensor)
+    /// * `factor` -- a factor to multiply the components before printing (e.g., a unit conversion factor)
+    /// * `width` -- the field width used to print each component
+    /// * `precision` -- the number of digits after the decimal point
+    pub fn scientific(&self, label: &str, factor: f64, width: usize, precision: usize) -> String {
+        let mut buf = String::new();
+        writeln!(&mut buf, "{} =", label).unwrap();
+        writeln!(&mut buf, "┌{:1$}┐", " ", width + 1).unwrap();
+        for m in 0..3 {
+            if m > 0 {
+                writeln!(&mut buf, " │").unwrap();
+            }
+            write!(&mut buf, "│").unwrap();
+            let val = self.vec[m] * factor;
+            write!(&mut buf, "{:>1$}", format_scientific(val, width, precision), width).unwrap();
+        }
+        writeln!(&mut buf, " │").unwrap();
+        writeln!(&mut buf, "└{:1$}┘", " ", width + 1).unwrap();
+        buf
+    }
+}
+
+impl fmt::Display for Tensor1 {
+    /// Generates a string representation of the standard components associated with this Tensor1
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // find largest width
+        let mut width = 0;
+        let mut buf = String::new();
+        for m in 0..3 {
+            let val = self.get(m);
+            match f.precision() {
+                Some(v) => write!(&mut buf, "{:.1$}", val, v).unwrap(),
+                None => write!(&mut buf, "{}", val).unwrap(),
+            }
+            width = cmp::max(buf.chars().count(), width);
+            buf.clear();
+        }
+        // draw vector
+        width += 1;
+        writeln!(f, "┌{:1$}┐", " ", width + 1).unwrap();
+        for m in 0..3 {
+            if m > 0 {
+                writeln!(f, " │").unwrap();
+            }
+            write!(f, "│").unwrap();
+            let val = self.get(m);
+            match f.precision() {
+                Some(v) => write!(f, "{:>1$.2$}", val, width, v).unwrap(),
+                None => write!(f, "{:>1$}", val, width).unwrap(),
+            }
+        }
+        writeln!(f, " │").unwrap();
+        write!(f, "└{:1$}┘", " ", width + 1).unwrap();
+        Ok(())
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[cfg(test)]
+mod tests {
+    use super::Tensor1;
+    use russell_lab::{approx_eq, vec_approx_eq};
+
+    #[test]
+    fn norm_works() {
+        let u = Tensor1::from(&[3.0, 4.0, 12.0]);
+        approx_eq(u.norm(), 13.0, 1e-13);
+    }
+
+    #[test]
+    fn scale_works() {
+        let mut u = Tensor1::from(&[1.0, -2.0, 3.0]);
+        u.scale(2.0);
+        vec_approx_eq(&u.as_vector(), &[2.0, -4.0, 6.0], 1e-15);
+    }
+
+    #[test]
+    fn clone_and_serialize_work() {
+        let u = Tensor1::from(&[1.0, -2.0, 3.0]);
+        // clone
+        let mut cloned = u.clone();
+        cloned.set(0, -1.0);
+        assert_eq!(u.get(0), 1.0);
+        assert_eq!(cloned.get(0), -1.0);
+        // transparent: the tensor is serialized as a bare [f64; 3] array
+        let json = serde_json::to_string(&u).unwrap();
+        assert_eq!(json, "[1.0,-2.0,3.0]");
+        let back: Tensor1 = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.get(0), 1.0);
+        assert_eq!(back.get(1), -2.0);
+        assert_eq!(back.get(2), 3.0);
+    }
+
+    #[test]
+    fn clear_works() {
+        let mut u = Tensor1::from(&[1.0, -2.0, 3.0]);
+        u.clear();
+        for i in 0..3 {
+            assert_eq!(u.get(i), 0.0);
+        }
+    }
+
+    #[test]
+    fn debug_works() {
+        let u = Tensor1::from(&[1.0, -2.0, 3.0]);
+        let dbg = format!("{:?}", u);
+        assert!(dbg.contains("1.0") && dbg.contains("-2.0") && dbg.contains("3.0"));
+    }
+
+    #[test]
+    fn scientific_works() {
+        let u = Tensor1::from(&[1.0, -2.0, 3.0]);
+        assert_eq!(
+            u.scientific("u", 1.0, 10, 2),
+            "u =\n\
+             ┌           ┐\n\
+             │  1.00E+00 │\n\
+             │ -2.00E+00 │\n\
+             │  3.00E+00 │\n\
+             └           ┘\n"
+        );
+        // factor
+        assert_eq!(
+            u.scientific("u", 2.0, 10, 2),
+            "u =\n\
+             ┌           ┐\n\
+             │  2.00E+00 │\n\
+             │ -4.00E+00 │\n\
+             │  6.00E+00 │\n\
+             └           ┘\n"
+        );
+    }
+
+    #[test]
+    fn new_set_get_work() {
+        let mut u = Tensor1::new();
+        u.set(0, 123.0);
+        u.set(1, 456.0);
+        u.set(2, 789.0);
+        assert_eq!(u.get(0), 123.0);
+        vec_approx_eq(&u.as_vector(), &[123.0, 456.0, 789.0], 1e-15);
+        assert_eq!(
+            format!("{}", u),
+            "┌     ┐\n\
+             │ 123 │\n\
+             │ 456 │\n\
+             │ 789 │\n\
+             └     ┘"
+        );
+        assert_eq!(
+            format!("{:.1}", u),
+            "┌       ┐\n\
+             │ 123.0 │\n\
+             │ 456.0 │\n\
+             │ 789.0 │\n\
+             └       ┘"
+        );
+    }
+
+    #[test]
+    fn cross_and_dot_work() {
+        let u = Tensor1::from(&[1.0, -2.0, 3.0]);
+        let v = Tensor1::from(&[-1.0, 0.0, 1.0]);
+        let mut w = Tensor1::new();
+        u.cross(&mut w, &v);
+        assert_eq!(w.get(0), -2.0);
+        assert_eq!(w.get(1), -4.0);
+        assert_eq!(w.get(2), -2.0);
+        assert_eq!(u.dot(&w), 0.0);
+        assert_eq!(v.dot(&w), 0.0);
+    }
+}

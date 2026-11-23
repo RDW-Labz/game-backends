@@ -1,0 +1,92 @@
+use super::ComplexVector;
+use crate::Norm;
+
+/// Returns the vector norm
+///
+/// Here:
+///
+/// ```text
+/// abs(z) = |z| = z.norm() = sqrt(z.real² + z.imag²)
+/// ```
+///
+/// Euclidean-norm (Euc or Fro):
+///
+/// ```text
+/// ‖u‖_2 = sqrt(Σ_i uᵢ ⋅ conjugate(uᵢ))
+/// ```
+///
+/// Max-norm (Max or Inf):
+///
+/// ```text
+/// ‖u‖_max = max_i ( |uᵢ| ) == ‖u‖_∞
+/// ```
+///
+/// 1-norm (One, taxicab or sum of abs values):
+///
+/// ```text
+/// ‖u‖_1 := sum_i |uᵢ|
+/// ```
+///
+/// # Examples
+///
+/// ```
+/// use russell_lab::*;
+///
+/// fn main() {
+///     let u = ComplexVector::from(&[cpx!(1.0, 1.0), cpx!(3.0, 1.0), cpx!(5.0, -1.0)]);
+///     approx_eq(complex_vec_norm(&u, Norm::One), 9.67551073613426, 1e-15);
+///     approx_eq(complex_vec_norm(&u, Norm::Euc), 6.164414002968976, 1e-15);
+///     approx_eq(complex_vec_norm(&u, Norm::Max), 5.099019513592784, 1e-15);
+/// }
+/// ```
+pub fn complex_vec_norm(v: &ComplexVector, kind: Norm) -> f64 {
+    if v.dim() == 0 {
+        return 0.0;
+    }
+    match kind {
+        // The Euclidean norm is the one BLAS has an entry for, so it goes
+        // through the dispatch; the other kinds are combinatorial and were
+        // always computed in Rust, on the accelerated path too.
+        Norm::Euc | Norm::Fro => crate::base::blas_dispatch::dznrm2(v.as_data()),
+        Norm::Inf | Norm::Max => v.as_data().iter().fold(0.0f64, |acc, z| acc.max(z.norm())),
+        Norm::One => v.as_data().iter().fold(0.0f64, |acc, z| acc + z.norm()),
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[cfg(test)]
+mod tests {
+    use super::complex_vec_norm;
+    use crate::{ComplexVector, Norm, approx_eq, cpx};
+
+    #[test]
+    fn complex_vec_norm_works() {
+        let u0 = ComplexVector::new(0);
+        assert_eq!(complex_vec_norm(&u0, Norm::Euc), 0.0);
+        assert_eq!(complex_vec_norm(&u0, Norm::Fro), 0.0);
+        assert_eq!(complex_vec_norm(&u0, Norm::Inf), 0.0);
+        assert_eq!(complex_vec_norm(&u0, Norm::Max), 0.0);
+        assert_eq!(complex_vec_norm(&u0, Norm::One), 0.0);
+
+        let u = ComplexVector::from(&[cpx!(-3.0, 0.0), cpx!(2.0, 0.0), cpx!(1.0, 0.0), cpx!(1.0, 0.0), cpx!(1.0, 0.0)]);
+        assert_eq!(complex_vec_norm(&u, Norm::Euc), 4.0);
+        assert_eq!(complex_vec_norm(&u, Norm::Fro), 4.0);
+        assert_eq!(complex_vec_norm(&u, Norm::Inf), 3.0);
+        assert_eq!(complex_vec_norm(&u, Norm::Max), 3.0);
+        assert_eq!(complex_vec_norm(&u, Norm::One), 8.0);
+
+        let u = ComplexVector::from(&[cpx!(-3.0, 1.0), cpx!(2.0, -1.0), cpx!(1.0, 1.0), cpx!(1.0, -1.0), cpx!(1.0, 1.0)]);
+        approx_eq(complex_vec_norm(&u, Norm::Euc), 4.58257569495584, 1e-15);
+        approx_eq(complex_vec_norm(&u, Norm::Fro), 4.58257569495584, 1e-15);
+        approx_eq(complex_vec_norm(&u, Norm::Inf), 3.1622776601683795, 1e-15);
+        approx_eq(complex_vec_norm(&u, Norm::Max), 3.1622776601683795, 1e-15);
+        approx_eq(complex_vec_norm(&u, Norm::One), 9.640986324787455, 1e-15);
+
+        // example from https://netlib.org/lapack/lug/node75.html
+        let diff = ComplexVector::from(&[cpx!(-0.1, 0.0), cpx!(1.0, 0.0), cpx!(-2.0, 0.0)]);
+        approx_eq(complex_vec_norm(&diff, Norm::Euc), 2.238, 0.001);
+        assert_eq!(complex_vec_norm(&diff, Norm::Inf), 2.0);
+        assert_eq!(complex_vec_norm(&diff, Norm::One), 3.1);
+    }
+}

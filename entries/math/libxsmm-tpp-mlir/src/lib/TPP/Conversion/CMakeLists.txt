@@ -1,0 +1,5 @@
+add_subdirectory(ConvertCheckToLoops)
+add_subdirectory(ConvertLinalgToXsmm)
+add_subdirectory(ConvertPerfToFunc)
+add_subdirectory(ConvertPerfToLoops)
+add_subdirectory(ConvertXsmmToFunc)

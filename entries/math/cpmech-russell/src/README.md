@@ -1,0 +1,841 @@
+# Russell - Rust Scientific Library <!-- omit from toc --> 
+
+<p align="center">
+  Sparse and dense linear algebra, differential equations, statistics, and continuum mechanics in Rust.
+</p>
+
+<p align="center">
+<a href="https://github.com/cpmech/russell"><img src="assets/logo.svg" alt="Russell"></a>
+</p>
+
+---
+
+<p align="left">
+  <img src="assets/web-assembly-logo.png" width="96" alt="WebAssembly logo"><br>
+  <sub>Compiles for <code>wasm32-unknown-unknown</code> and <code>wasm32-wasip1</code></sub>
+</p>
+
+[![Arch](https://github.com/cpmech/russell/actions/workflows/arch.yml/badge.svg)](https://github.com/cpmech/russell/actions/workflows/arch.yml)
+[![Ubuntu](https://github.com/cpmech/russell/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/cpmech/russell/actions/workflows/ubuntu.yml)
+[![Rocky](https://github.com/cpmech/russell/actions/workflows/rocky.yml/badge.svg)](https://github.com/cpmech/russell/actions/workflows/rocky.yml)
+[![macOS](https://github.com/cpmech/russell/actions/workflows/macos.yml/badge.svg)](https://github.com/cpmech/russell/actions/workflows/macos.yml)
+[![Windows](https://github.com/cpmech/russell/actions/workflows/windows.yml/badge.svg)](https://github.com/cpmech/russell/actions/workflows/windows.yml)
+
+---
+
+[![doc: lab](https://img.shields.io/badge/russell_lab-documentation-blue)](https://docs.rs/russell_lab)
+[![doc: nonlin](https://img.shields.io/badge/russell_nonlin-documentation-blue)](https://docs.rs/russell_nonlin)
+[![doc: ode](https://img.shields.io/badge/russell_ode-documentation-blue)](https://docs.rs/russell_ode)
+[![doc: pde](https://img.shields.io/badge/russell_pde-documentation-blue)](https://docs.rs/russell_pde)
+[![doc: sparse](https://img.shields.io/badge/russell_sparse-documentation-blue)](https://docs.rs/russell_sparse)
+[![doc: stat](https://img.shields.io/badge/russell_stat-documentation-blue)](https://docs.rs/russell_stat)
+[![doc: tensor](https://img.shields.io/badge/russell_tensor-documentation-blue)](https://docs.rs/russell_tensor)
+
+---
+
+## Contents <!-- omit from toc --> 
+
+- [Introduction](#introduction)
+  - [External associated and recommended crates](#external-associated-and-recommended-crates)
+  - [Features](#features)
+- [WebAssembly](#webassembly)
+- [Installation](#installation)
+  - [Arch Linux](#arch-linux)
+    - [Option 1: OpenBLAS and SuiteSparse from the package manager](#option-1-openblas-and-suitesparse-from-the-package-manager)
+    - [Option 2: Locally compiled SuiteSparse and MUMPS with OpenBLAS](#option-2-locally-compiled-suitesparse-and-mumps-with-openblas)
+    - [Option 3: Locally compiled SuiteSparse and MUMPS with Intel MKL](#option-3-locally-compiled-suitesparse-and-mumps-with-intel-mkl)
+  - [Debian/Ubuntu Linux](#debianubuntu-linux)
+    - [Option 1: OpenBLAS and SuiteSparse from the package manager](#option-1-openblas-and-suitesparse-from-the-package-manager-1)
+    - [Option 2: Locally compiled SuiteSparse and MUMPS with OpenBLAS](#option-2-locally-compiled-suitesparse-and-mumps-with-openblas-1)
+    - [Option 3: Locally compiled SuiteSparse and MUMPS with Intel MKL](#option-3-locally-compiled-suitesparse-and-mumps-with-intel-mkl-1)
+  - [Rocky Linux](#rocky-linux)
+    - [Option 1: OpenBLAS and SuiteSparse from the package manager](#option-1-openblas-and-suitesparse-from-the-package-manager-2)
+  - [macOS](#macos)
+    - [Option 1: OpenBLAS and SuiteSparse from the package manager](#option-1-openblas-and-suitesparse-from-the-package-manager-3)
+    - [Option 2: Locally compiled MUMPS](#option-2-locally-compiled-mumps)
+  - [Windows](#windows)
+  - [Number of threads](#number-of-threads)
+- [🌟 Examples](#-examples)
+  - [(lab) Numerical integration (quadrature)](#lab-numerical-integration-quadrature)
+  - [(lab) Solution of PDEs using spectral collocation](#lab-solution-of-pdes-using-spectral-collocation)
+  - [(lab) Matrix visualization](#lab-matrix-visualization)
+  - [(lab) Singular value decomposition](#lab-singular-value-decomposition)
+  - [(lab) Cholesky factorization](#lab-cholesky-factorization)
+  - [(lab) Solution of a (dense) linear system](#lab-solution-of-a-dense-linear-system)
+  - [(lab) Reading table-formatted data files](#lab-reading-table-formatted-data-files)
+  - [(lab) Line search for optimization](#lab-line-search-for-optimization)
+  - [(nonlin) Numerical continuation of a B-spline curve](#nonlin-numerical-continuation-of-a-b-spline-curve)
+  - [(sparse) Solution of a sparse linear system](#sparse-solution-of-a-sparse-linear-system)
+  - [(sparse) Solution of a complex sparse linear system](#sparse-solution-of-a-complex-sparse-linear-system)
+  - [(ode) Solution of the Brusselator ODE](#ode-solution-of-the-brusselator-ode)
+  - [(ode) Solution of the Brusselator PDE](#ode-solution-of-the-brusselator-pde)
+  - [(pde) Spectral collocation in 2D with transfinite mapping](#pde-spectral-collocation-in-2d-with-transfinite-mapping)
+  - [(stat) Generate the Frechet distribution](#stat-generate-the-frechet-distribution)
+  - [(tensor) Allocate second-order tensors](#tensor-allocate-second-order-tensors)
+- [Roadmap](#roadmap)
+- [For developers](#for-developers)
+  - [Naming conventions](#naming-conventions)
+  - [russell\_lab — BLAS/LAPACK](#russell_lab--blaslapack)
+  - [russell\_sparse — sparse solvers](#russell_sparse--sparse-solvers)
+- [About the name](#about-the-name)
+
+
+
+## Introduction
+
+**Russell** (Rust Scientific Library) helps develop high-performance computations involving linear algebra, sparse linear systems, numerical mathematics (continuation), differential equations, statistics, and continuum mechanics using the Rust programming language. While applications built with Russell mainly focus on computational mechanics, its foundation in fundamental mathematics and numerics makes it useful for other disciplines as well.
+
+This project aims to deliver efficient, reliable, and easy-to-maintain code. To support this, Russell includes unit and integration tests, with test coverage required to be over 95%. For better code maintenance, Russell avoids overly complex Rust constructions. However, it still makes use of Rust features such as generics, traits, enums, options, and results. Another goal of Russell is to provide examples of all computations in the documentation to assist users and developers.
+
+This project is split into the following crates:
+
+1. [![Crates.io](https://img.shields.io/crates/v/russell_lab.svg)](https://crates.io/crates/russell_lab) [russell_lab](https://github.com/cpmech/russell/tree/main/russell_lab) — Core mathematical and linear algebra laboratory:
+    - Data structures: NumVector, NumMatrix (column-major layout for direct BLAS/LAPACK interoperability), and stack-allocated SmallVector/SmallMatrix.
+    - Linear Algebra: BLAS 1/2/3 and LAPACK routines (dense solves, SVD, Cholesky, symmetric and general eigenvalues/eigenvectors for real and complex numbers).
+    - Numerics & Special Functions: Bessel, modified Bessel, Beta, Gamma, Erf, Elliptic integrals, Chebyshev/Legendre polynomials, Lagrange interpolation, B-splines, quadrature, Brent's root-finding, Newton solver, cubic solver, and numerical derivatives/Jacobians.
+    - Backends: pure-Rust BLAS/LAPACK from the [`algebra_linear`](https://crates.io/crates/algebra_linear) crate by default; OpenBLAS (`open_blas`) or Intel oneAPI MKL (`intel_mkl`) as opt-in accelerators.
+2. [![Crates.io](https://img.shields.io/crates/v/russell_tensor.svg)](https://crates.io/crates/russell_tensor) [russell_tensor](https://github.com/cpmech/russell/tree/main/russell_tensor) — Tensor calculus and continuum mechanics:
+    - Tensor types: Tensor1 (3D vectors), Tensor2 (2nd-order), Tensor3 (3rd-order), Tensor4 (4th-order).
+    - Kelvin-Mandel representation: Maps tensors to vector/matrix spaces preserving Euclidean norms.
+    - Operations & Calculus: Dot/ddot contractions, dyadic products, polar decompositions, principal/deviatoric/octahedral invariants, Lode invariant, first and second derivatives of invariants and tensor functions, linear elasticity / Hooke's law.
+3. [![Crates.io](https://img.shields.io/crates/v/russell_sparse.svg)](https://crates.io/crates/russell_sparse) [russell_sparse](https://github.com/cpmech/russell/tree/main/russell_sparse) — Sparse matrix structures and solvers:
+    - Formats: CooMatrix, CscMatrix, CsrMatrix (both real f64 and Complex64).
+    - Direct Solvers: pure-Rust Faer (`Genie::Faer`, always available), UMFPACK (SuiteSparse), and MUMPS (`mumps`).
+    - Utilities: Matrix Market I/O, vismatrix exporter, numerical Jacobian assembly, linear system verification.
+4. [![Crates.io](https://img.shields.io/crates/v/russell_ode.svg)](https://crates.io/crates/russell_ode) [russell_ode](https://github.com/cpmech/russell/tree/main/russell_ode) — ODE and Index-1 DAE solvers:
+    - Explicit Runge-Kutta (DoPri5, DoPri8, Forward Euler) with stiffness detection and dense output.
+    - Implicit solvers: Backward Euler and Radau5 (supports mass matrices, DAEs, and concurrent real/complex linear solves).
+5. [![Crates.io](https://img.shields.io/crates/v/russell_pde.svg)](https://crates.io/crates/russell_pde) [russell_pde](https://github.com/cpmech/russell/tree/main/russell_pde) — Partial differential equation tools:
+    - 1D/2D Finite Difference Methods (FDM) and Spectral Collocation (SPC) on Chebyshev/Legendre-Lobatto nodes.
+    - Transfinite mappings for deformed/curved domains.
+    - Essential boundary conditions via System Partitioning (SPS) or Lagrange Multipliers (LMM).
+6. [![Crates.io](https://img.shields.io/crates/v/russell_nonlin.svg)](https://crates.io/crates/russell_nonlin) [russell_nonlin](https://github.com/cpmech/russell/tree/main/russell_nonlin) — Continuation methods for parameterized nonlinear systems $G(u, \lambda) = 0$:
+    - Predictor-corrector continuation: Natural continuation and Pseudo-arclength continuation (handling folds/limit points).
+7. [![Crates.io](https://img.shields.io/crates/v/russell_stat.svg)](https://crates.io/crates/russell_stat) [russell_stat](https://github.com/cpmech/russell/tree/main/russell_stat) — Engineering statistics and extreme value distributions
+    - Frechet, Gumbel, Lognormal, Normal, Uniform, quantiles, IQR, ASCII histogram generation.
+
+Below is a summary of internal dependencies:
+
+| Crate            | Key dependencies                                |
+| ---------------- | ----------------------------------------------- |
+| `russell_lab`    | `num-complex`, `serde`                          |
+| `russell_sparse` | `russell_lab`                                   |
+| `russell_stat`   | `russell_lab`, `rand`                           |
+| `russell_tensor` | `russell_lab`, `serde`                          |
+| `russell_pde`    | `russell_lab`, `russell_sparse`                 |
+| `russell_ode`    | `russell_lab`, `russell_sparse`, `russell_pde`  |
+| `russell_nonlin` | `russell_lab`, `russell_sparse`, `russell_stat` |
+
+```text
+russell_lab
+  ├── russell_stat
+  ├── russell_tensor
+  ├── russell_sparse
+  │     ├── russell_pde
+  │     │     └── russell_ode
+  │     └── russell_nonlin
+```
+
+### External associated and recommended crates
+
+The following crates are not part of `russell` but are associated with it and recommended:
+
+- [plotpy](https://github.com/cpmech/plotpy) Plotting tools using Python3/Matplotlib as an engine (for quality graphics)
+- [tritet](https://github.com/cpmech/tritet) Triangle and tetrahedron mesh generators (with Triangle and Tetgen)
+- [gemlab](https://github.com/cpmech/gemlab) Geometry, meshes, and numerical integration for finite element analyses
+- [benchmark-russell](https://github.com/cpmech/benchmark-russell) Performance benchmarks for this project
+
+### Features
+
+This project can use [SuiteSparse](https://github.com/DrTimothyAldenDavis/SuiteSparse) (or [MUMPS](https://mumps-solver.org)) for the solution of large (sparse) linear systems of equations. Dense linear algebra comes from `russell_lab`'s own Rust implementation, and [OpenBLAS](https://github.com/OpenMathLib/OpenBLAS) or [Intel MKL](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html) may be selected as accelerators.
+
+**The default build needs no external library.** `russell_lab` ships pure-Rust BLAS/LAPACK kernels and `russell_sparse` has the Faer solver (pure Rust), so `cargo build` works on every platform, WebAssembly included. The external libraries are optional, and each one is selected by a Cargo feature:
+
+| Feature | What it adds | Linux | macOS | Windows MSVC | Windows GNU |
+| --- | --- | :--: | :--: | :--: | :--: |
+| `open_blas` | OpenBLAS for the dense kernels | ✓ | ✓ | — | ✓ |
+| `intel_mkl` | Intel oneAPI MKL for the dense kernels | ✓ | — | — | — |
+| `umfpack` | UMFPACK (SuiteSparse), sparse direct solver | ✓ | ✓ | ✓ (vcpkg) | ✓ (MSYS2) |
+| `mumps` | MUMPS, sparse direct solver | ✓ | ✓ | — | ✓ (MSYS2) |
+
+- `open_blas` and `intel_mkl` fill the same slot; `intel_mkl` takes precedence when both are enabled.
+- `umfpack` and `mumps` are independent of each other and of the kernels above, and any combination is valid — including none of them.
+- MUMPS is never taken from a package manager. The distributions rarely ship the sequential build this project uses, so it is compiled locally and found through `RUSSELL_LOCAL_PREFIX`; see the per-OS options below.
+- On Windows the two Rust toolchains have different sources: MSVC takes UMFPACK from [vcpkg](https://vcpkg.io), and only the GNU toolchain under MSYS2 can link MUMPS. See [windows.md](https://github.com/cpmech/russell/blob/main/windows.md).
+
+An accelerator is worth it for large problems but is never required: the native kernels reach about half of OpenBLAS's throughput per core, and dense solves are further behind because `dgetrf` is not blocked yet. The [russell_lab README](russell_lab/README.md#performance-of-the-backends) has the measured table.
+
+The following table summarizes which features each crate forwards:
+
+|                  | `open_blas` | `intel_mkl` | `umfpack` | `mumps` |
+| ---------------- | :---------: | :---------: | :-------------: | :-----: |
+| `russell_lab`    |      ✓      |      ✓      |                 |         |
+| `russell_nonlin` |      ✓      |      ✓      |        ✓        |    ✓    |
+| `russell_ode`    |      ✓      |      ✓      |        ✓        |    ✓    |
+| `russell_pde`    |      ✓      |      ✓      |        ✓        |    ✓    |
+| `russell_sparse` |      ✓      |      ✓      |        ✓        |    ✓    |
+| `russell_stat`   |      ✓      |      ✓      |                 |         |
+| `russell_tensor` |      ✓      |      ✓      |                 |         |
+
+Below is an example of how to enable the `intel_mkl`, `umfpack` and `mumps` features with the `russell_sparse` crate in the `Cargo.toml` file:
+
+```toml
+[dependencies]
+russell_lab = { version = "*", features = ["intel_mkl"] }
+russell_sparse = { version = "*", features = ["intel_mkl", "umfpack", "mumps"] }
+```
+
+Replace "*" with the desired version. Note that `russell_sparse` (and all other crates in this project) require `russell_lab` as a dependency.
+
+
+
+## WebAssembly
+
+The workspace builds for both WebAssembly targets with the default features, i.e. with the Faer solver (pure Rust) and no external libraries:
+
+```bash
+cargo check --workspace --target wasm32-unknown-unknown
+cargo check --workspace --target wasm32-wasip1
+```
+
+The browser target has no filesystem: the Matrix Market readers/writers and the JSON statistics helpers compile, but they return errors when called. WASI exposes the filesystem when the runtime preopens a directory. Timers work in both: `wasm32-unknown-unknown` uses [`web-time`](https://crates.io/crates/web-time) (`performance.now()`), while WASI uses the standard library clock. Enabling `umfpack` or `mumps` is only possible on native targets.
+
+## Installation
+
+Every option below is optional: the default build needs no external library, and the `Cargo.toml` snippet under each option lists the features that make the build actually use the libraries installed by it. Without those features, the libraries are present but unused, and the build keeps the Rust kernels and the Faer solver (pure Rust).
+
+`RUSSELL_LOCAL_PREFIX` is the single variable that locates locally compiled solvers. With `umfpack` it is optional: when set to a directory containing the UMFPACK layout below, that installation is used; otherwise the build falls back to the system library. With `mumps` it is required. The layout is fixed:
+
+```text
+$RUSSELL_LOCAL_PREFIX/include/umfpack     $RUSSELL_LOCAL_PREFIX/lib/umfpack
+$RUSSELL_LOCAL_PREFIX/include/mumps       $RUSSELL_LOCAL_PREFIX/lib/mumps
+```
+
+The compilation scripts below install into exactly that layout: the Linux scripts use `/usr/local`, the macOS script takes the prefix as its argument, and the Windows MUMPS script installs into the MSYS2 root (see [windows.md](https://github.com/cpmech/russell/blob/main/windows.md)). Two SuiteSparse builds share the `libumfpack.so.6` soname, so the directory of the selected one must also be reachable by the dynamic loader at run time (`ldconfig` on a system prefix, or `LD_LIBRARY_PATH`); the binaries built inside this workspace carry a run path instead. A prefix that is set but does not contain UMFPACK produces a warning and the system fallback; a missing MUMPS installation stops the build with the expected paths.
+
+Using Intel MKL with `russell_lab` and OpenBLAS with `russell_sparse` is possible but not advantageous, since MKL is slightly faster than OpenBLAS [(see this article)](https://onlinelibrary.wiley.com/doi/full/10.1002/nme.7545). If MKL is already installed, Option 3 below compiles both SuiteSparse and MUMPS against it; there is no fourth option mixing the two.
+
+### Arch Linux
+
+#### Option 1: OpenBLAS and SuiteSparse from the package manager
+
+Run the following command to install OpenBLAS and SuiteSparse:
+
+```bash
+pacman -Syu rust blas-openblas suitesparse
+```
+
+Set `Cargo.toml` as follows, so that the installed libraries are used:
+
+```toml
+[dependencies]
+russell_lab = { version = "*", features = ["open_blas"] }
+russell_sparse = { version = "*", features = ["open_blas", "umfpack"] }
+```
+
+`open_blas` selects the packaged OpenBLAS and `umfpack` the packaged SuiteSparse. Drop `umfpack` if you only want the dense accelerator, or both features for the default Rust kernels and the Faer solver (pure Rust).
+
+#### Option 2: Locally compiled SuiteSparse and MUMPS with OpenBLAS
+
+Run the following commands to compile and install SuiteSparse and MUMPS with OpenBLAS (*use these scripts at your own risk; carefully check the scripts before running them*):
+
+```bash
+export RUSSELL_LOCAL_PREFIX=/usr/local   # where both scripts install
+bash zscripts/arch-compile-mumps.bash 
+bash zscripts/arch-compile-suitesparse.bash 
+```
+
+Set `Cargo.toml` as follows:
+
+```toml
+russell_sparse = { version = "*", features = ["open_blas", "umfpack", "mumps"] }
+```
+
+#### Option 3: Locally compiled SuiteSparse and MUMPS with Intel MKL
+
+Run the following commands to compile and install SuiteSparse and MUMPS with Intel MKL (*use these scripts at your own risk; carefully check the scripts before running them*):
+
+```bash
+bash zscripts/arch-install-intel-toolkit.bash
+export RUSSELL_LOCAL_PREFIX=/usr/local   # where both scripts install
+bash zscripts/arch-compile-mumps.bash 1
+bash zscripts/arch-compile-suitesparse.bash 1
+```
+
+Set `Cargo.toml` as follows:
+
+```toml
+russell_sparse = { version = "*", features = ["intel_mkl", "umfpack", "mumps"] }
+```
+
+
+
+### Debian/Ubuntu Linux
+
+#### Option 1: OpenBLAS and SuiteSparse from the package manager
+
+Run the following command to install OpenBLAS and SuiteSparse:
+
+```bash
+sudo apt-get install -y --no-install-recommends \
+    liblapacke-dev \
+    libopenblas-dev \
+    libsuitesparse-dev
+```
+
+Set `Cargo.toml` as follows, so that the installed libraries are used:
+
+```toml
+[dependencies]
+russell_lab = { version = "*", features = ["open_blas"] }
+russell_sparse = { version = "*", features = ["open_blas", "umfpack"] }
+```
+
+`open_blas` selects the packaged OpenBLAS and `umfpack` the packaged SuiteSparse. Drop `umfpack` if you only want the dense accelerator, or both features for the default Rust kernels and the Faer solver (pure Rust).
+
+#### Option 2: Locally compiled SuiteSparse and MUMPS with OpenBLAS
+
+Run the following commands to compile and install SuiteSparse and MUMPS with OpenBLAS (*use these scripts at your own risk; carefully check the scripts before running them*):
+
+```bash
+export RUSSELL_LOCAL_PREFIX=/usr/local   # where both scripts install
+bash zscripts/debian-compile-mumps.bash 
+bash zscripts/debian-compile-suitesparse.bash 
+```
+
+Set `Cargo.toml` as follows:
+
+```toml
+russell_sparse = { version = "*", features = ["open_blas", "umfpack", "mumps"] }
+```
+
+#### Option 3: Locally compiled SuiteSparse and MUMPS with Intel MKL
+
+Run the following commands to compile and install SuiteSparse and MUMPS with Intel MKL (*use these scripts at your own risk; carefully check the scripts before running them*):
+
+```bash
+bash zscripts/debian-install-intel-toolkit.bash
+export RUSSELL_LOCAL_PREFIX=/usr/local   # where both scripts install
+bash zscripts/debian-compile-mumps.bash 1
+bash zscripts/debian-compile-suitesparse.bash 1
+```
+
+Set `Cargo.toml` as follows:
+
+```toml
+russell_sparse = { version = "*", features = ["intel_mkl", "umfpack", "mumps"] }
+```
+
+
+
+### Rocky Linux
+
+#### Option 1: OpenBLAS and SuiteSparse from the package manager
+
+```bash
+dnf update -y
+dnf install epel-release -y
+crb enable
+dnf install -y \
+  lapack-devel \
+  openblas-devel \
+  suitesparse-devel
+```
+
+Set `Cargo.toml` as follows, so that the installed libraries are used:
+
+```toml
+[dependencies]
+russell_lab = { version = "*", features = ["open_blas"] }
+russell_sparse = { version = "*", features = ["open_blas", "umfpack"] }
+```
+
+The locally compiled options (2 and 3) are not provided for Rocky Linux.
+
+
+
+### macOS
+
+First, install [Homebrew](https://brew.sh/).
+
+#### Option 1: OpenBLAS and SuiteSparse from the package manager
+
+```bash
+brew install lapack openblas suite-sparse
+```
+
+Set `Cargo.toml` as follows, so that the installed libraries are used:
+
+```toml
+[dependencies]
+russell_lab = { version = "*", features = ["open_blas"] }
+russell_sparse = { version = "*", features = ["open_blas", "umfpack"] }
+```
+
+Intel MKL is not available for macOS (Intel discontinued it for that platform), so `open_blas` is the accelerator to use there.
+
+#### Option 2: Locally compiled MUMPS
+
+MUMPS is not packaged for macOS in the sequential form this project uses, so it is compiled from source with Homebrew's `gfortran` against Apple's Accelerate framework (*use the script at your own risk; carefully check it before running it*):
+
+```bash
+brew install gcc                        # provides gfortran
+export RUSSELL_LOCAL_PREFIX="$HOME/local"
+bash zscripts/macos-compile-mumps.bash "$RUSSELL_LOCAL_PREFIX"
+```
+
+Set `Cargo.toml` as follows; UMFPACK still comes from Homebrew, as in Option 1:
+
+```toml
+russell_sparse = { version = "*", features = ["open_blas", "umfpack", "mumps"] }
+```
+
+The script installs into `$RUSSELL_LOCAL_PREFIX/include/mumps` and `lib/mumps`, and rewrites the dylibs' install names to `@rpath`, which the run path emitted by `russell_sparse` resolves. Test binaries of crates that only depend on `russell_sparse` do not get that run path, so export `DYLD_LIBRARY_PATH="$RUSSELL_LOCAL_PREFIX/lib/mumps"` when testing the whole workspace.
+
+
+
+### Windows
+
+Two toolchains work on Windows, and the features differ between them:
+
+- **MSVC**, the default Rust toolchain there. The Faer solver (pure Rust) needs nothing installed; add UMFPACK with [vcpkg](https://vcpkg.io) (`vcpkg install suitesparse-umfpack[core]:x64-windows`, with `VCPKG_ROOT` set) and enable `umfpack`. MUMPS, `open_blas` and `intel_mkl` are not available with this toolchain.
+- **MSYS2 with the GNU toolchain**, which provides OpenBLAS, SuiteSparse and the MinGW/gfortran build of MUMPS. It supports `open_blas`, `umfpack` and `mumps`; it is the only way to use MUMPS on Windows.
+
+See [windows.md](https://github.com/cpmech/russell/blob/main/windows.md) for step-by-step instructions for both.
+
+
+
+### Number of threads
+
+By default, OpenBLAS will use all available threads, including Hyper-Threads that may worsen the performance. Thus, it is recommended to set the following environment variable:
+
+```bash
+export OPENBLAS_NUM_THREADS=<real-core-number>
+```
+
+Substitute `<real-core-number>` with the correct value from your system.
+
+Furthermore, if working on a multi-threaded application where the solver should not be multi-threaded on its own (e.g., running parallel calculations in an optimization tool), you may set:
+
+```bash
+export OPENBLAS_NUM_THREADS=1
+```
+
+This variable only affects builds that link OpenBLAS (`open_blas`). The Rust kernels, Intel MKL, and the sparse solvers do not read it; `mumps_num_threads`, in `LinSolParams`, controls the MUMPS thread count.
+
+## 🌟 Examples
+
+See also:
+
+* [russell_lab/examples](https://github.com/cpmech/russell/tree/main/russell_lab/examples)
+* [russell_nonlin/examples](https://github.com/cpmech/russell/tree/main/russell_nonlin/examples)
+* [russell_ode/examples](https://github.com/cpmech/russell/tree/main/russell_ode/examples)
+* [russell_pde/examples](https://github.com/cpmech/russell/tree/main/russell_pde/examples)
+* [russell_sparse/examples](https://github.com/cpmech/russell/tree/main/russell_sparse/examples)
+* [russell_stat/examples](https://github.com/cpmech/russell/tree/main/russell_stat/examples)
+* [russell_tensor/examples](https://github.com/cpmech/russell/tree/main/russell_tensor/examples)
+
+
+
+### (lab) Numerical integration (quadrature)
+
+The code below determines the perimeter `P` of an ellipse of length 2 and width 1:
+
+```text
+     2π
+    ⌠   ____________________
+P = │ \╱ ¼ sin²(θ) + cos²(θ)  dθ
+    ⌡
+   0
+```
+
+[See the code: algo_quadrature_integrate_1d.rs](https://github.com/cpmech/russell/tree/main/russell_lab/examples/algo_quadrature_integrate_1d.rs)
+
+
+
+### (lab) Solution of PDEs using spectral collocation
+
+This example illustrates the solution of a 1D PDE using the spectral collocation method. It employs the InterpLagrange struct.
+
+```text
+d²u     du          x
+——— - 4 —— + 4 u = e  + C
+dx²     dx
+
+    -4 e
+C = ——————
+    1 + e²
+
+x ∈ [-1, 1]
+```
+
+Boundary conditions:
+
+```text
+u(-1) = 0  and  u(1) = 0
+```
+
+Reference solution:
+
+```text
+        x   sinh(1)  2x   C
+u(x) = e  - ——————— e   + —
+            sinh(2)       4
+```
+
+[See the code: algo_lorene_1d_pde_spectral_collocation.rs](https://github.com/cpmech/russell/tree/main/russell_lab/examples/algo_lorene_1d_pde_spectral_collocation.rs)
+
+Results:
+
+![algo_lorene_1d_pde_spectral_collocation](russell_lab/data/figures/algo_lorene_1d_pde_spectral_collocation.svg)
+
+
+
+### (lab) Matrix visualization
+
+We can use the fantastic tool named [vismatrix](https://github.com/cpmech/vismatrix/) to visualize the pattern of non-zero values of a matrix. With `vismatrix`, we can click on each circle and investigate the numeric values as well.
+
+The function `mat_write_vismatrix` writes the input data file for `vismatrix`.
+
+[See the code: matrix_visualization.rs](https://github.com/cpmech/russell/tree/main/russell_lab/examples/matrix_visualization.rs)
+
+After generating the "dot-smat" file, run the following command:
+
+```bash
+vismatrix /tmp/russell_lab/matrix_visualization.smat
+```
+
+Output:
+
+![Matrix visualization](russell_lab/data/figures/matrix_vizualization.png)
+
+
+
+### (lab) Singular value decomposition
+
+[See the code: matrix_singular_value_decomposition.rs](https://github.com/cpmech/russell/tree/main/russell_lab/examples/matrix_singular_value_decomposition.rs)
+
+
+
+### (lab) Cholesky factorization
+
+[See the code: matrix_cholesky_4x4.rs](https://github.com/cpmech/russell/tree/main/russell_lab/examples/matrix_cholesky_4x4.rs)
+
+
+
+### (lab) Solution of a (dense) linear system
+
+
+[See the code: matvec_solve_linear_system.rs](https://github.com/cpmech/russell/tree/main/russell_lab/examples/matvec_solve_linear_system.rs)
+
+
+### (lab) Reading table-formatted data files
+
+The goal is to read the following file (`clay-data.txt`):
+
+```text
+# Fujinomori clay test results
+
+     sr        ea        er   # header
+1.00000  -6.00000   0.10000   
+2.00000   7.00000   0.20000   
+3.00000   8.00000   0.20000   # << look at this line
+
+# comments plus new lines are OK
+
+4.00000   9.00000   0.40000   
+5.00000  10.00000   0.50000   
+
+# bye
+```
+
+Each column (`sr`, `ea`, `er`) is accessible via the `get` method of the [HashMap].
+
+[See the code: base_read_table.rs](https://github.com/cpmech/russell/tree/main/russell_lab/examples/base_read_table.rs)
+
+Alternatively, we can use the simpler `read_data` function:
+
+[See the code: base_read_data.rs](https://github.com/cpmech/russell/tree/main/russell_lab/examples/base_read_data.rs)
+
+
+### (lab) Line search for optimization
+
+Line search is used in gradient-based optimization methods to find an appropriate step size.
+
+[See the code: algo_line_search.rs](https://github.com/cpmech/russell/tree/main/russell_lab/examples/algo_line_search.rs)
+
+
+
+### (nonlin) Numerical continuation of a B-spline curve
+
+This example traces a B-spline curve defined by `G(u, λ) = 0` using the Pseudo-arclength continuation method.
+
+The nonlinear problem is defined as follows:
+
+```text
+G(u, λ) = u - C(λ)
+```
+
+where C(λ) is a point on a 2D B-spline curve parametrized by λ ∈ `[0,1]`.
+
+[See the code: arclength_bspline.rs](https://github.com/cpmech/russell/tree/main/russell_nonlin/examples/arclength_bspline.rs)
+
+The plot looks like this:
+
+![B-spline curve](russell_nonlin/data/figures/doc_arclength_bspline.svg)
+
+
+
+### (sparse) Solution of a sparse linear system
+
+[See the code: doc_umfpack_quickstart_coo.rs](https://github.com/cpmech/russell/tree/main/russell_sparse/examples/doc_umfpack_quickstart_coo.rs)
+
+
+
+
+### (sparse) Solution of a complex sparse linear system
+
+[See the code: doc_complex_umfpack_tiny.rs](https://github.com/cpmech/russell/tree/main/russell_sparse/examples/doc_complex_umfpack_tiny.rs)
+
+
+### (ode) Solution of the Brusselator ODE
+
+The system is:
+
+```text
+y0' = 1 - 4 y0 + y0² y1
+y1' = 3 y0 - y0² y1
+
+with  y0(x=0) = 3/2  and  y1(x=0) = 3
+```
+
+Solving with DoPri8 -- 8(5,3):
+
+[See the code: brusselator_ode_dopri8.rs](https://github.com/cpmech/russell/tree/main/russell_ode/examples/brusselator_ode_dopri8.rs)
+
+A plot of the (dense) solution is shown below:
+
+![Brusselator results: DoPri8](russell_ode/data/figures/brusselator_dopri8.svg)
+
+
+
+### (ode) Solution of the Brusselator PDE
+
+This example solves the Brusselator PDE described in (Hairer E, Wanner G (2002) Solving Ordinary Differential Equations II Stiff and Differential-Algebraic Problems. Second Revised Edition. Corrected 2nd printing 2002. Springer Series in Computational Mathematics, 614p).
+
+[See the code: brusselator_pde_radau5_2nd.rs](https://github.com/cpmech/russell/tree/main/russell_ode/examples/brusselator_pde_radau5_2nd.rs).
+
+The results are shown below for the `U` field:
+
+![brusselator_pde_radau5_2nd_u.jpg](russell_ode/data/figures/brusselator_pde_radau5_2nd_u.jpg)
+
+And below for the `V` field:
+
+![brusselator_pde_radau5_2nd_v.jpg](russell_ode/data/figures/brusselator_pde_radau5_2nd_v.jpg)
+
+[See the code: brusselator_pde_2nd_comparison.rs](https://github.com/cpmech/russell/tree/main/russell_ode/examples/brusselator_pde_2nd_comparison.rs) compares `russell` results with Mathematica results.
+
+The figure below shows the `russell` (black dashed lines) and Mathematica (red solid lines) results for the `U` field:
+
+![comparison U](russell_ode/data/figures/brusselator_pde_2nd_comparison_t1_u.svg)
+
+The figure below shows the `russell` (black dashed lines) and Mathematica (red solid lines) results for the `V` field:
+
+![comparison V](russell_ode/data/figures/brusselator_pde_2nd_comparison_t1_v.svg)
+
+
+
+### (pde) Spectral collocation in 2D with transfinite mapping
+
+Example: Solving a 2D Poisson equation on a rotated square domain
+
+This example employs spectral collocation with transfinite mapping to solve the Poisson equation:
+
+```text
+  -k · ∇²u = f    on a unit square rotated by angle α
+  u = g           on the boundary (Dirichlet conditions)
+```
+
+The analytical solution used for verification is:
+```text
+  u(x,y) = sin(π·x·cos(α) + π·y·sin(α)) · exp(π·y·cos(α) - π·x·sin(α))
+```
+
+The domain is mapped from the reference square (r,s) ∈ [-1,1]×[-1,1] to the physical rotated square via transfinite interpolation.
+
+[See the code: doc_example_spc_map.rs](https://github.com/cpmech/russell/tree/main/russell_pde/examples/doc_example_spc_map.rs)
+
+The plot looks like this:
+
+![Solution](russell_pde/data/figures/doc_example_spc_map.svg)
+
+
+
+### (stat) Generate the Frechet distribution
+
+[See the code: distribution_frechet.rs](https://github.com/cpmech/russell/tree/main/russell_stat/examples/distribution_frechet.rs)
+
+Sample output:
+
+```text
+min = 0.11845731988882305
+max = 26248.036672205748
+mean = 12.268212841918867
+std_dev = 312.7131690782321
+
+[  0,0.5) | 1370 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
+[0.5,  1) | 2313 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
+[  1,1.5) | 1451 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
+[1.5,  2) |  971 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦
+[  2,2.5) |  659 🟦🟦🟦🟦🟦🟦🟦🟦
+[2.5,  3) |  460 🟦🟦🟦🟦🟦
+[  3,3.5) |  345 🟦🟦🟦🟦
+[3.5,  4) |  244 🟦🟦🟦
+[  4,4.5) |  216 🟦🟦
+[4.5,  5) |  184 🟦🟦
+[  5,5.5) |  133 🟦
+[5.5,  6) |  130 🟦
+[  6,6.5) |  115 🟦
+[6.5,  7) |  108 🟦
+[  7,7.5) |   70 
+[7.5,  8) |   75 
+[  8,8.5) |   57 
+[8.5,  9) |   48 
+[  9,9.5) |   59 
+      sum = 9008
+```
+
+
+
+### (tensor) Allocate second-order tensors
+
+[See the code: allocating_second_order_tensors.rs](https://github.com/cpmech/russell/tree/main/russell_tensor/examples/allocating_second_order_tensors.rs)
+
+
+
+## Roadmap
+
+- [ ] Improve `russell_lab`
+    - [x] Implement more integration tests for linear algebra
+    - [x] Implement more examples
+    - [ ] Implement more performance benchmarks
+    - [x] Wrap more BLAS/LAPACK functions
+        - [x] Implement dggev, zggev, zheev, and zgeev
+    - [x] Wrap Intel MKL (alternative to OpenBLAS)
+    - [x] Add more complex number functions
+    - [x] Add fundamental functions to `russell_lab`
+        - [x] Implement the Bessel functions
+        - [x] Implement the modified Bessel functions
+        - [x] Implement the elliptical integral functions
+        - [x] Implement Beta, Gamma and Erf functions (and associated)
+        - [x] Implement orthogonal polynomial functions
+    - [ ] Implement some numerical methods in `russell_lab`
+        - [x] Implement Brent's solver
+        - [x] Implement a solver for the cubic equation
+        - [x] Implement numerical derivation
+        - [x] Implement numerical Jacobian function
+        - [x] Implement line search
+        - [x] Implement Newton's method for nonlinear systems
+        - [x] Implement numerical quadrature
+        - [ ] Implement multidimensional data interpolation
+    - [ ] Add interpolation and polynomials to `russell_lab`
+        - [x] Implement Chebyshev polynomials
+        - [x] Implement Chebyshev interpolation
+        - [x] Implement Orthogonal polynomials
+        - [x] Implement Lagrange interpolation
+        - [x] Implement Legendre polynomials
+        - [ ] Implement Fourier interpolation
+- [x] Improve `russell_sparse`
+    - [x] Implement support for complex numbers
+    - [x] Implement the Compressed Sparse Column format (CSC)
+    - [x] Implement the Compressed Sparse Row format (CSR)
+    - [x] Improve the C-interface to UMFPACK and MUMPS
+    - [x] Write the conversion from COO to CSC in Rust
+- [x] Improve `russell_ode`
+    - [x] Implement explicit Runge-Kutta solvers
+    - [x] Implement Radau5 for DAEs
+    - [ ] Implement extrapolation methods
+    - [ ] Implement multi-step methods
+    - [ ] Implement general linear methods
+- [x] Implement `russell_pde`
+    - [x] Implement 1D and 2D spectral collocation methods
+    - [x] Implement 1D and 2D finite difference methods
+- [x] Implement `russell_nonlin`
+    - [x] Implement natural continuation for nonlinear systems
+    - [x] Implement pseudo-arclength continuation for nonlinear systems
+    - [x] Study better methods for step size control in continuation methods
+- [ ] Improve `russell_stat`
+    - [x] Add probability distribution functions
+    - [x] Implement drawing of ASCII histograms
+    - [ ] Implement FORM (first-order reliability method)
+    - [ ] Add more examples
+- [ ] Improve `russell_tensor`
+    - [x] Implement functions to calculate invariants
+    - [x] Implement first and second-order derivatives of invariants
+    - [x] Implement some high-order derivatives
+    - [ ] Implement standard continuum mechanics tensors
+- [ ] General improvements
+    - [x] Compile on Linux (Arch, Debian/Ubuntu, Rocky)
+    - [x] Compile on macOS
+    - [x] Compile on Windows
+    - [x] Study the compilation of MUMPS on Windows
+    - [x] Write scripts to compile on Windows
+
+
+
+## For developers
+
+This section summarizes the `build.rs` files, which compile and link the non-Rust C dependencies at build time.
+
+### Naming conventions
+
+The code adopts the convention that **double lower-case letters denote a single capital letter**, matching the symbols used in the documentation and the mathematical formulas:
+
+- `aa` ⇔ `A`
+- `bb` ⇔ `B`
+- `pp` ⇔ `P`
+- `ii` ⇔ `I`
+- `jj` ⇔ `J`
+
+For example, the scalar coefficients `A`, `B`, and `C` in the second-derivative formulas of the invariants are coded as `aa`, `bb`, and `cc`.
+
+### russell_lab — BLAS/LAPACK
+
+With neither accelerator feature enabled, `russell_lab/build.rs` compiles no C code: the kernels come from `algebra_linear`. When `open_blas` or `intel_mkl` is enabled, it compiles a single C shim (`c_code/interface_blas.c`) that wraps BLAS/LAPACK and selects one of two paths:
+
+- `intel_mkl` — builds against Intel oneAPI MKL: resolves `MKL_VERSION` (env var, default `latest`), adds `/opt/intel/oneapi/mkl/{version}` to the include path, defines `USE_INTEL_MKL`, and links `mkl_intel_lp64`, `mkl_intel_thread`, `mkl_core`, `pthread`, `m`, `dl`, `iomp5`.
+- `open_blas` (used only when `intel_mkl` is off) — split by OS:
+  - Windows: locates headers/libraries via the `MSYS2_PREFIX` environment variable.
+  - Other OS: probes `pkg-config` (`probe_blas_lapack`), trying `openblas` first and then the `cblas` + `lapack` pair (Nix). Before trusting a probe, it verifies the headers (`cblas.h`, `lapack.h`) actually exist — this avoids the RHEL/Rocky case where `lapack.pc` exists but ships no `lapack.h`. It falls back to hardcoded Homebrew/system paths (filtered via `existing_dirs` to drop non-existent directories) and links the `openblas` and `lapack` shared libraries.
+
+Build-dependencies: `cc`, `pkg-config`.
+
+### russell_sparse — sparse solvers
+
+`russell_sparse/build.rs` compiles the C shims for the sparse solvers. UMFPACK is optional and off by default (`umfpack`); MUMPS joins it when `mumps` is enabled. The features select which solvers are present, and the build selects the UMFPACK source:
+
+- `umfpack` on: a local install under `$RUSSELL_LOCAL_PREFIX/include/umfpack` and `.../lib/umfpack` is used when `RUSSELL_LOCAL_PREFIX` is set and contains it, with no `pkg-config` lookup in that case; otherwise the build falls back to the package-manager library (`pkg-config`, trying both `UMFPACK` and `umfpack` spellings, then the built-in directory list). If neither answers, the build stops naming the package to install. A prefix that is set but incomplete prints a warning and falls back.
+- `umfpack` off: no UMFPACK shims are compiled and nothing is linked; the Faer solver (pure Rust) remains available.
+- `mumps` on: MUMPS from `$RUSSELL_LOCAL_PREFIX/include/mumps` and `.../lib/mumps`, independently of UMFPACK, shared on Unix and static on Windows (`dmumps_cpmech`, `zmumps_cpmech`, `mumps_common_cpmech`, `mpiseq_cpmech`, `pord_cpmech`, `metis`, `gfortran`, `gomp`). A missing prefix fails the build naming the exact path it expected.
+- `RUSSELL_LOCAL_PREFIX` is trimmed of trailing separators.
+- The selected UMFPACK is recorded with `cargo:rustc-env`, so `get_library_versions()` reports whether it is the `system` or the `local` one, or that it was not compiled in.
+
+Build-dependencies: `cc`, `pkg-config`.
+
+## About the name
+
+<p align="left">
+  <img src="assets/bertrand-russell.jpeg" alt="Bertrand Russell' book">
+</p>
+
+The library is named after [Bertrand Russell](https://en.wikipedia.org/wiki/Bertrand_Russell) (1872–1970), a distinguished British philosopher, logician, mathematician, and pacifist. Among his many influential works is *Principia Mathematica* (1910–1913), co-authored with Alfred North Whitehead—an ambitious attempt to derive mathematics from logic and widely regarded as one of the twentieth century's most important contributions to mathematical logic. The book cover shown features [Introduction to Mathematical Philosophy](https://en.wikipedia.org/wiki/Introduction_to_Mathematical_Philosophy), in which Russell explains the principal ideas of *Principia Mathematica* in a more accessible, less technical manner.
+
+<p align="left">
+  <img src="assets/bertrand-russell-stamp-200.jpg" alt="Bertrand Russell on a stamp">
+</p>
+
+The photo of the stamp corresponds to India's commemorative postage stamp issued on 16 October 1972 for the birth centenary of Bertrand Russell, as part of the "Centenary Series" introduced that year by the Indian Posts and Telegraphs Department to mark the centenaries falling during the year ([issue note](https://istampgallery.com/india-on-bertrand-russell/)). Four personalities were honored on that date — the Telugu poet Vemana (300th birth anniversary), T. Prakasam and Bhai Vir Singh (birth centenaries), and Russell (₹1.45) — and all four stamps were released together on a single first day cover ([list of Indian stamps of 1972](https://en.wikipedia.org/wiki/List_of_postage_stamps_of_India_%281971%E2%80%931980%29)). India's reason for including a British philosopher was political as much as intellectual: Russell became chairman of the [India League](https://en.wikipedia.org/wiki/India_League) in Britain in 1932, presiding over its meetings and heading it during the delegation it sent to India that autumn, and he wrote the introduction to the delegation's report, *The Condition of India* (1932) ([South Asian Britain](https://southasianbritain.org/people/bertrand-russell/)). The department's own issue note puts it plainly: "Temperamentally sympathetic to the Indian struggle for liberty, Russell became Chairman of the Indian League formed in Britain to help the Indians and their claim for self-government." The stamp reproduces a photograph supplied with the courtesy of M/s Keystone Press Agency Ltd., London, and was designed and printed by photogravure at the India Security Press, Nasik Road, in a print run of three million (42 stamps per issue sheet, perforation 13½ × 14) ([technical data](https://thephilatelist.in/stamps/personality-centenary-series-bertrand-russell-1872-1970/)). The portrait is accompanied by the dates 1872–1970 and the legend बर्ट्रेंड रसल / भारत INDIA. The author of this Rust project is a proud owner of the stamp featured in the photo.
+
+---
+
+[![Track Awesome List](https://www.trackawesomelist.com/badge.svg)](https://www.trackawesomelist.com/rust-unofficial/awesome-rust/)

@@ -1,0 +1,63 @@
+#![warn(missing_docs)]
+
+//! Russell - Rust Scientific Library
+//!
+//! `russell_stat`: Statistics calculations and (engineering) probability distributions
+//!
+//! **The default build needs no external library:** `russell_lab` ships pure-Rust
+//! BLAS/LAPACK kernels, so the crate builds on every platform, WebAssembly
+//! included. The optional `open_blas` and `intel_mkl` features link an accelerator
+//! instead; see the
+//! [Installation Instructions on the GitHub Repository](https://github.com/cpmech/russell)
+//! for the platform-specific steps.
+//!
+//! This library assists in developing statistical computations and simulations aiming at engineering applications, such as reliability analyses. This library provides a light interface to [rand_distr](https://crates.io/crates/rand_distr) and implements extra functionality.
+//!
+//! It also provides tools for descriptive statistics, including quantiles, inter-quartile range (IQR), and outlier detection, as well as a text-based histogram generator.
+//!
+//! Some essential distributions considered in this library are those classified as [Extreme Value Distributions](https://en.wikipedia.org/wiki/Generalized_extreme_value_distribution).
+
+/// Defines the error output as a static string
+pub type StrError = &'static str;
+
+use rand::rngs::ThreadRng;
+
+/// Returns the thread-local random number generator, seeded by the system
+///
+/// See more information here: [rand::rng()]
+#[inline]
+pub fn get_rng() -> ThreadRng {
+    // re-exported for convenience
+    rand::rng()
+}
+
+mod distribution_frechet;
+mod distribution_gumbel;
+mod distribution_lognormal;
+mod distribution_normal;
+mod distribution_uniform;
+mod histogram;
+mod inter_quartile_range;
+mod outliers;
+mod probability_distribution;
+mod quantile;
+mod quartiles;
+mod statistics;
+
+pub use distribution_frechet::*;
+pub use distribution_gumbel::*;
+pub use distribution_lognormal::*;
+pub use distribution_normal::*;
+pub use distribution_uniform::*;
+pub use histogram::*;
+pub use inter_quartile_range::*;
+pub use outliers::*;
+pub use probability_distribution::*;
+pub use quantile::*;
+pub use quartiles::*;
+pub use statistics::*;
+
+// run code from README file
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctest;

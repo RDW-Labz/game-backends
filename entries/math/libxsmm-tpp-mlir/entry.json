@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T20:28:08Z",
+ "category": "math",
+ "commit": "14368326a83f",
+ "delivery": "vendored",
+ "description": "libxsmm/tpp-mlir \u2014 TPP experimentation on MLIR for linear algebra",
+ "language": "mlir",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "tpp-mlir",
+ "size_bytes": 1215546,
+ "slug": "libxsmm-tpp-mlir",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 166,
+ "system": "TPP experimentation on MLIR for linear algebra",
+ "upstream": "https://github.com/libxsmm/tpp-mlir",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

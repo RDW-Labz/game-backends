@@ -1,0 +1,141 @@
+//===- PassBundles.td --------------------------------------*- Tablegen -*-===//
+//
+// Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
+// See https://llvm.org/LICENSE.txt for license information.
+// SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef TPP_DIALECT_TPP_PASSBUNDLES
+#define TPP_DIALECT_TPP_PASSBUNDLES
+
+include "mlir/Pass/PassBase.td"
+
+def DefaultPipeline : Pass<"default-pipeline", "ModuleOp"> {
+  let summary = "The default compiler lowering pipeline";
+  let description = [{
+    A collection of passes that lower everything to MLIR LLVM IR.
+  }];
+  let options = [
+    Option<"pipelineCpuTargetFeature", "target-feature", "std::string",
+            /*default=*/"",
+           "Optional CPU target feature.">,
+  ];
+}
+
+def DefaultTppPasses : Pass<"default-tpp-passes", "ModuleOp"> {
+  let summary = "Collection of default TPP passes";
+  let description = [{
+    A collection of passes that lower everything TPP-related
+    to standard low-level dialects.
+  }];
+  let options= [
+    Option<"linalgToLoops", "linalg-to-loops",
+           "bool", /*default=*/"false",
+           "Skip all TPP transformations. Lower linalg directly to loops.">,
+    Option<"sfcOrder", "sfc-order",
+           "bool", /*default=*/"true",
+           "use sfc order">,
+    ListOption<"parallelTaskGrid", "parallel-task-grid",
+           "unsigned", "Grid-sizes for parallel tasks.">,
+    Option<"nanoKernel", "nano-kernel",
+           "bool", /*default=*/"false",
+           "Lower vector.contract patterns to nano-kernels.">,
+    Option<"defBundleCpuTargetFeature", "target-feature", "std::string", "",
+                "Target feature for a given architecture">,
+    Option<"lowerPackUnpackWithoutTranspose", "lower-pack-unpack-without-transpose",
+           "bool", /*default=*/"false",
+           "Lower non-constant packs and unpacks reverting any dim permutations.">,
+    Option<"disableVnniPacking", "disable-vnni-packing",
+           "bool", /*default=*/"false",
+           "Disables VNNI packing for packed types.">,
+    Option<"disableTileElementwiseOps", "disable-tile-elementwise-ops",
+           "bool", /*default=*/"false",
+           "Disables tiling of elementwise operations.">,
+    Option<"enableStreamingStores", "enable-streaming-stores",
+           "bool", /*default=*/"false",
+           "Enables converting write-only stores to nontemporal streaming "
+           "stores.">,
+    ListOption<"registerBlocking", "registerBlocking",
+           "unsigned", "Register blocking tile sizes for brgemm operation.">,
+    ListOption<"gemmUnroll", "gemm-unroll", "int64_t",
+               "GEMM unroll sizes for the innermost dims: [M, N, K]">,
+  ];
+}
+
+def TppMapping : Pass<"tpp-mapping", "ModuleOp"> {
+  let summary = "Map operations to be TPP compatible";
+  let description = [{
+    Apply collection of TPP rewriting passes to map eligble operations
+    into equivalent TPP-compatible forms.
+  }];
+  let dependentDialects = ["linalg::LinalgDialect",
+                           "memref::MemRefDialect",
+                           "scf::SCFDialect",
+                           "tensor::TensorDialect"];
+  let options= [
+    Option<"lowerPackUnpackWithoutTranspose", "lower-pack-unpack-without-transpose",
+           "bool", /*default=*/"false",
+           "Lower non-constant packs and unpacks reverting any dim permutations.">,
+    Option<"disableVnniPacking", "disable-vnni-packing",
+           "bool", /*default=*/"false",
+           "Disables VNNI packing for packed types.">,
+    Option<"disableTileElementwiseOps", "disable-tile-elementwise-ops",
+           "bool", /*default=*/"false",
+           "Disables tiling of elementwise operations.">,
+  ];
+}
+
+def LinalgLowering : Pass<"linalg-lowering", "func::FuncOp"> {
+  let summary = "Lower Linalg operations to XSMM operations.";
+  let dependentDialects = ["xsmm::XsmmDialect",
+                           "scf::SCFDialect",
+                           "memref::MemRefDialect"];
+}
+
+def LowLevelParallelization : Pass<"low-level-parallel", "ModuleOp"> {
+  let summary = "Low level parallelization (multi-threading, AMX config).";
+  let dependentDialects = ["affine::AffineDialect",
+                           "arith::ArithDialect",
+                           "func::FuncDialect",
+                           "memref::MemRefDialect",
+                           "scf::SCFDialect",
+                           "xsmm::XsmmDialect",
+                           "LLVM::LLVMDialect"];
+  let options = [
+    ListOption<"parallelTaskGrid", "parallel-task-grid",
+           "unsigned", "Grid-sizes for parallel tasks.">
+
+  ];
+}
+
+def LocalDialectsLowering : Pass<"lower-local-dialects", "ModuleOp"> {
+  let summary = "Lower all local dialects (XSMM, check etc.).";
+  let dependentDialects = ["affine::AffineDialect",
+                           "arith::ArithDialect",
+                           "func::FuncDialect",
+                           "memref::MemRefDialect",
+                           "check::CheckDialect",
+                           "perf::PerfDialect",
+                           "scf::SCFDialect",
+                           "tensor::TensorDialect",
+                           "xsmm::XsmmDialect",
+                           "LLVM::LLVMDialect"];
+}
+
+def Postprocessing : Pass<"postprocess", "func::FuncOp"> {
+  let summary = "IR postprocessing pass";
+  let description = [{
+    Apply various postprocessing passes such parallel loop fusion,
+    buffer deallocation, general cleanup etc.
+  }];
+  let dependentDialects = ["bufferization::BufferizationDialect",
+                           "scf::SCFDialect",
+                           "memref::MemRefDialect"];
+}
+
+def Cleanup : Pass<"cleanup"> {
+  let summary = "General IR cleanup e.g., canonicalization, CSE etc.";
+}
+
+#endif // TPP_DIALECT_TPP_PASSBUNDLES

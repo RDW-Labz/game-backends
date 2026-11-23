@@ -1,0 +1,65 @@
+add_subdirectory(Utils)
+
+add_mlir_library(TPPTransforms
+  Bufferize.cpp
+  ConstantFoldPack.cpp
+  ConvertForAllToParallelOp.cpp
+  DecomposeAggregatedOps.cpp
+  ReplicateBenchArgs.cpp
+  LinalgDeGeneralize.cpp
+  LowerPacksAndUnpacks.cpp
+  LowerPacksAndUnpacksWithoutTranspose.cpp
+  RewriteBatchMatmulToMatmul.cpp
+  RewriteToBatchReduceGemm.cpp
+  TileConsumerAndFuseProducers.cpp
+  ToBlockLayoutAndBack.cpp
+  TransformUtils.cpp
+  CombineXsmmPass.cpp
+  SCFParallelLoopTiling.cpp
+  SCFForAllLoopFlattenSFC.cpp
+  IntelAMXTileConfig.cpp
+  IntelAMXTileConfigHoisting.cpp
+  LinalgConvertCompareSelectToMaximumfPass.cpp
+  ConvertLinalgToInplace.cpp
+  FoldIntoEltwise.cpp
+  FoldAddIntoDest.cpp
+  Vectorization.cpp
+  RegisterTiling.cpp
+  SplitReductionDim.cpp
+  VectorContractToOuterproduct.cpp
+  HoistVectorTransfers.cpp
+  RegisterBlocking.cpp
+  LinalgVectorize.cpp
+  VectorDropUnitDims.cpp
+  ConvertVectorToX86.cpp
+  RegisterUnroll.cpp
+  HoistLoopInvariantSubsets.cpp
+  VectorContractToNanoKernels.cpp
+  FlattenVectorOps.cpp
+  ConvertToStreamingStore.cpp
+  TileDequantElementwiseOps.cpp
+  ConvertLinalgGenericTo32BitAccumulation.cpp
+
+  ADDITIONAL_HEADER_DIRS
+    ${PROJECT_SOURCE_DIR}/include/TPP
+
+  DEPENDS
+    MLIRPerfOpsIncGen
+    MLIRXsmmOpsIncGen
+    MLIRXsmmAttrDefIncGen
+    TPPCompilerPassIncGen
+
+  LINK_LIBS PUBLIC
+    ${mlir_dialect_libs}
+    MLIRIR
+    MLIRSupport
+    MLIRBufferizationToMemRef
+    MLIRBufferizationPipelines
+    TPPTransformsUtils
+    TPPIR
+    TPPXsmmDialect
+    TPPCheckToLoops
+    TPPPerfToFunc
+    TPPPerfToLoop
+    TPPXsmmToFunc
+  )

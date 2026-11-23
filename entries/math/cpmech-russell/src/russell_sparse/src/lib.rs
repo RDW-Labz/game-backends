@@ -1,0 +1,416 @@
+#![warn(missing_docs)]
+
+//! Russell - Rust Scientific Library
+//!
+//! `russell_sparse`: Solvers for large sparse linear systems, with a pure-Rust Faer backend and optional MUMPS and UMFPACK
+//!
+//! **The default build needs no external library:** the sparse solver is pure Rust
+//! (the Faer backend), so the crate builds on every platform, WebAssembly
+//! included. The optional `open_blas` and `intel_mkl` features accelerate the dense
+//! kernels, while `umfpack` and `mumps` add the external sparse solvers; see the
+//! [Installation Instructions on the GitHub Repository](https://github.com/cpmech/russell)
+//! for the platform-specific steps.
+//!
+//! # Introduction
+//!
+//! This crate implements three storage formats for sparse matrices (see the figure below):
+//!
+//! * [NumCooMatrix] (COO) -- COOrdinates matrix, also known as a sparse triplet.
+//! * [NumCscMatrix] (CSC) -- Compressed Sparse Column matrix
+//! * [NumCsrMatrix] (CSR) -- Compressed Sparse Row matrix
+//!
+//!
+//! For convenience, this crate defines the following type aliases for Real and Complex matrices (with double precision):
+//!
+//! * [CooMatrix], [CscMatrix], [CsrMatrix] -- For real numbers represented by `f64`
+//! * [ComplexCooMatrix], [ComplexCscMatrix], [ComplexCsrMatrix] -- For complex numbers represented by [russell_lab::Complex64]
+//!
+//! The COO matrix is the best when we need to update the values of the matrix because it has easy access to the triples (i, j, aij). For instance, the repetitive access is the primary use case for codes based on the finite element method (FEM) for approximating partial differential equations. Moreover, the COO matrix allows storing duplicate entries; for example, the triple `(0, 0, 123.0)` can be stored as two triples `(0, 0, 100.0)` and `(0, 0, 23.0)`. Again, this is the primary need for FEM codes because of the so-called assembly process where elements add to the same positions in the "global stiffness" matrix. Nonetheless, the duplicate entries must be summed up at some stage for the linear solver (e.g., MUMPS, UMFPACK). These linear solvers also use the more memory-efficient storage formats CSC and CSR. The following is the default input for these solvers:
+//!
+//! * [MUMPS](https://mumps-solver.org) -- requires a COO matrix as input internally
+//! * [UMFPACK](https://github.com/DrTimothyAldenDavis/SuiteSparse) -- requires a CSC matrix as input internally
+//!
+//! The best way to use a COO matrix is to initialize it with the maximum possible number of non-zero values and repetitively call the [CooMatrix::put()] function to insert triples (i, j, aij) into the data structure. This procedure is computationally efficient. Later, we can create a Compressed Sparse Column (CSC) or a Compressed Sparse Row (CSR) matrix from the COO matrix. The CSC and CSR will sum up any duplicates in the COO matrix during the conversion process. To reinitialize the counter for "putting" entries into the triplet structure, we can call the [CooMatrix::reset()] function (e.g., to recreate the global stiffness matrix in FEM simulations).
+//!
+//! The three individual sparse matrix structures ([CooMatrix], [CscMatrix], and [CsrMatrix]) have functions to calculate the (sparse) matrix-vector product, which, albeit not computer optimized, are convenient for checking the solution to the linear problem A * x = b (see also the VerifyLinSys structure).
+//!
+//! We call the actual linear system solver implementations [Genie] because they work like "magic" after being "wrapped" via a C-interface. Note that these fantastic solvers are implemented in Fortran and C. You may easily access the linear solvers directly via the following structures:
+//!
+//! * [SolverFaer] -- pure-Rust LU factorization from `algebra_linear` (always available)
+//! * **SolverMUMPS** (optional) -- thin wrapper to the MUMPS solver
+//! * `SolverUMFPACK` (optional, behind the `umfpack` feature) -- thin wrapper to the UMFPACK solver
+//!
+//! This library also provides a unifying Trait called [LinSolTrait], which the above structures implement. In addition, the [LinSolver] structure holds a "pointer" to one of the above structures and is a more convenient way to use the linear solvers in generic codes when we need to switch from solver to solver (e.g., for benchmarking). After allocating a [LinSolver], if needed, we can access the actual implementations (interfaces/thin wrappers) via the [LinSolver::actual] data member.
+//!
+//! The [LinSolTrait] has two main functions (that should be called in this order):
+//!
+//! * [LinSolTrait::preprocess()] -- performs the initialization of the linear solver, if needed, analysis, and symbolic and numerical factorization of the coefficient matrix A from A * x = b
+//! * [LinSolTrait::solve()] -- find x from the linear system A * x = b after completing the factorization.
+//!
+//! If the **structure** of the coefficient matrix remains constant, but its values change during a simulation, we can repeatedly call `preprocess` again to perform the factorization. However, if the structure changes, the solver must be **dropped** and another solver allocated to force the **initialization** process. This rule applies to the direct solvers.
+//!
+//! We call the **structure** of the coefficient matrix A from A * x = b the set with the following characteristics:
+//!
+//! * `nrow` -- number of rows
+//! * `ncol` -- number of columns
+//! * `nnz` -- number of non-zero values
+//! * `symmetric` -- the [Sym] type
+//! * the locations of the non-zero values
+//!
+//! If neither the structure nor the values of the coefficient matrix change, we can call `solve` repeatedly if needed (e.g., in a simulation of linear dynamics using the FEM).
+//!
+//! The linear solvers have numerous configuration parameters; however, we can use the default parameters initially. The configuration parameters are collected in the [LinSolParams] structure, which is an input to the [LinSolTrait::preprocess()]. The parameters include options such as [Ordering] and [Scaling].
+//!
+//! This library also provides functions to read and write Matrix Market files containing (huge) sparse matrices that can be used in performance benchmarking or other studies. The [read_matrix_market()] function reads a Matrix Market file and returns a [CooMatrix]. To write a Matrix Market file, we can use [CscMatrix::write_matrix_market()] (and similar), which automatically converts COO to CSC or COO to CSR, also performing the sum of duplicates. The `write_matrix_market` can also write an SMAT file (almost like the Matrix Market format) without the header and with zero-based indices. The SMAT file can be given to the fantastic [Vismatrix](https://github.com/cpmech/vismatrix) tool to visualize the sparse matrix structure and values interactively; see the example below.
+//!
+//! ![doc-example-vismatrix](https://raw.githubusercontent.com/cpmech/russell/main/russell_sparse/data/figures/doc-example-vismatrix.png)
+//!
+//! # Examples
+//!
+//! ## Create CSR matrix from COO
+//!
+//! ```
+//! use russell_sparse::prelude::*;
+//! use russell_sparse::StrError;
+//!
+//! fn main() -> Result<(), StrError> {
+//!     // allocate a square matrix and store as COO matrix
+//!     // ┌          ┐
+//!     // │  1  0  2 │
+//!     // │  0  0  3 │
+//!     // │  4  5  6 │
+//!     // └          ┘
+//!     let (nrow, ncol, nnz) = (3, 3, 6);
+//!     let mut coo = CooMatrix::new(nrow, ncol, nnz, Sym::No)?;
+//!     coo.put(0, 0, 1.0)?;
+//!     coo.put(0, 2, 2.0)?;
+//!     coo.put(1, 2, 3.0)?;
+//!     coo.put(2, 0, 4.0)?;
+//!     coo.put(2, 1, 5.0)?;
+//!     coo.put(2, 2, 6.0)?;
+//!
+//!     // convert to CSC matrix
+//!     let csc = CscMatrix::from_coo(&coo)?;
+//!     let correct_v = &[
+//!         //                               p
+//!         1.0, 4.0, //      j = 0, count = 0, 1
+//!         5.0, //           j = 1, count = 2
+//!         2.0, 3.0, 6.0, // j = 2, count = 3, 4, 5
+//!              //                  count = 6
+//!     ];
+//!     let correct_i = &[
+//!         //                         p
+//!         0, 2, //    j = 0, count = 0, 1
+//!         2, //       j = 1, count = 2
+//!         0, 1, 2, // j = 2, count = 3, 4, 5
+//!            //              count = 6
+//!     ];
+//!     let correct_p = &[0, 2, 3, 6];
+//!
+//!     // check
+//!     assert_eq!(csc.get_col_pointers(), correct_p);
+//!     assert_eq!(csc.get_row_indices(), correct_i);
+//!     assert_eq!(csc.get_values(), correct_v);
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ## Solving a tiny sparse linear system using LinSolver (Faer)
+//!
+//! ```
+//! use russell_lab::{vec_approx_eq, Vector};
+//! use russell_sparse::prelude::*;
+//! use russell_sparse::StrError;
+//!
+//! fn main() -> Result<(), StrError> {
+//!     // constants
+//!     let ndim = 3; // number of rows = number of columns
+//!     let nnz = 5; // number of non-zero values
+//!
+//!     // allocate the linear solver
+//!     let mut solver = LinSolver::new(Genie::Faer)?;
+//!
+//!     // allocate the coefficient matrix
+//!     let mut coo = CooMatrix::new(ndim, ndim, nnz, Sym::No)?;
+//!     coo.put(0, 0, 0.2)?;
+//!     coo.put(0, 1, 0.2)?;
+//!     coo.put(1, 0, 0.5)?;
+//!     coo.put(1, 1, -0.25)?;
+//!     coo.put(2, 2, 0.25)?;
+//!
+//!     // print matrix
+//!     let mut a = coo.as_dense();
+//!     let correct = "┌                   ┐\n\
+//!                    │   0.2   0.2     0 │\n\
+//!                    │   0.5 -0.25     0 │\n\
+//!                    │     0     0  0.25 │\n\
+//!                    └                   ┘";
+//!     assert_eq!(format!("{}", a), correct);
+//!
+//!     // call preprocess
+//!     solver.actual.preprocess(&coo, None)?;
+//!
+//!     // allocate two right-hand side vectors
+//!     let rhs1 = Vector::from(&[1.0, 1.0, 1.0]);
+//!     let rhs2 = Vector::from(&[2.0, 2.0, 2.0]);
+//!
+//!     // calculate the solution
+//!     let mut x1 = Vector::new(ndim);
+//!     solver.actual.solve(&mut x1, &rhs1, false)?;
+//!     let correct = vec![3.0, 2.0, 4.0];
+//!     vec_approx_eq(&x1, &correct, 1e-14);
+//!
+//!     // calculate the solution again
+//!     let mut x2 = Vector::new(ndim);
+//!     solver.actual.solve(&mut x2, &rhs2, false)?;
+//!     let correct = vec![6.0, 4.0, 8.0];
+//!     vec_approx_eq(&x2, &correct, 1e-14);
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ## Solving a tiny sparse linear system using SolverFaer
+//!
+//! ```
+//! use russell_lab::{vec_approx_eq, Vector};
+//! use russell_sparse::prelude::*;
+//! use russell_sparse::StrError;
+//!
+//! fn main() -> Result<(), StrError> {
+//!     // constants
+//!     let ndim = 5; // number of rows = number of columns
+//!     let nnz = 13; // number of non-zero values, including duplicates
+//!
+//!     // allocate solver
+//!     let mut solver = SolverFaer::new()?;
+//!
+//!     // allocate the coefficient matrix
+//!     // ┌                ┐
+//!     // │  2  3  0  0  0 │
+//!     // │  3  0  4  0  6 │
+//!     // │  0 -1 -3  2  0 │
+//!     // │  0  0  1  0  0 │
+//!     // │  0  4  2  0  1 │
+//!     // └                ┘
+//!     let mut coo = CooMatrix::new(ndim, ndim, nnz, Sym::No)?;
+//!     coo.put(0, 0, 1.0)?; // << (0, 0, a00/2) duplicate
+//!     coo.put(0, 0, 1.0)?; // << (0, 0, a00/2) duplicate
+//!     coo.put(1, 0, 3.0)?;
+//!     coo.put(0, 1, 3.0)?;
+//!     coo.put(2, 1, -1.0)?;
+//!     coo.put(4, 1, 4.0)?;
+//!     coo.put(1, 2, 4.0)?;
+//!     coo.put(2, 2, -3.0)?;
+//!     coo.put(3, 2, 1.0)?;
+//!     coo.put(4, 2, 2.0)?;
+//!     coo.put(2, 3, 2.0)?;
+//!     coo.put(1, 4, 6.0)?;
+//!     coo.put(4, 4, 1.0)?;
+//!
+//!     // parameters
+//!     let mut params = LinSolParams::new();
+//!     params.verbose = false;
+//!
+//!     // call preprocess
+//!     solver.preprocess(&coo, Some(params))?;
+//!
+//!     // allocate x and rhs
+//!     let mut x = Vector::new(ndim);
+//!     let rhs = Vector::from(&[8.0, 45.0, -3.0, 3.0, 19.0]);
+//!
+//!     // calculate the solution
+//!     solver.solve(&mut x, &rhs, false)?;
+//!     println!("x =\n{}", x);
+//!
+//!     // check the results
+//!     let correct = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+//!     vec_approx_eq(&x, &correct, 1e-14);
+//!
+//!     // analysis
+//!     let stats = solver.stats().expect("statistics");
+//!     println!("fill ratio = {}", stats.fill_ratio);
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ## Solving a tiny complex sparse linear system using ComplexLinSolver (Faer)
+//!
+//! ```
+//! use russell_lab::{complex_vec_approx_eq, cpx, ComplexVector};
+//! use russell_sparse::prelude::*;
+//! use russell_sparse::StrError;
+//!
+//! fn main() -> Result<(), StrError> {
+//!     let ndim = 3;
+//!     let nnz = 7;
+//!
+//!     let mut solver = ComplexLinSolver::new(Genie::Faer)?;
+//!
+//!     // allocate the coefficient matrix
+//!     //   ┌                      ┐
+//!     //   │  2+1i  -1-1i     0   │
+//!     //   │ -1-1i   2+2i  -1+1i  │
+//!     //   │   0    -1+1i   2-1i  │
+//!     //   └                      ┘
+//!     let mut coo = ComplexCooMatrix::new(ndim, ndim, nnz, Sym::No)?;
+//!     coo.put(0, 0, cpx!(2.0, 1.0))?;
+//!     coo.put(0, 1, cpx!(-1.0, -1.0))?;
+//!     coo.put(1, 0, cpx!(-1.0, -1.0))?;
+//!     coo.put(1, 1, cpx!(2.0, 2.0))?;
+//!     coo.put(1, 2, cpx!(-1.0, 1.0))?;
+//!     coo.put(2, 1, cpx!(-1.0, 1.0))?;
+//!     coo.put(2, 2, cpx!(2.0, -1.0))?;
+//!
+//!     solver.actual.preprocess(&coo, None)?;
+//!
+//!     let rhs = ComplexVector::from(&[cpx!(-3.0, 3.0), cpx!(2.0, -2.0), cpx!(9.0, 7.0)]);
+//!
+//!     let mut x = ComplexVector::new(ndim);
+//!     solver.actual.solve(&mut x, &rhs, false)?;
+//!
+//!     let correct = &[cpx!(1.0, 1.0), cpx!(2.0, -2.0), cpx!(3.0, 3.0)];
+//!     complex_vec_approx_eq(&x, correct, 1e-14);
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ## Solving a tiny complex sparse linear system using ComplexSolverFaer
+//!
+//! ```
+//! use russell_lab::{complex_vec_approx_eq, cpx, ComplexVector};
+//! use russell_sparse::prelude::*;
+//! use russell_sparse::StrError;
+//!
+//! fn main() -> Result<(), StrError> {
+//!     let ndim = 5;
+//!     let nnz = 13;
+//!
+//!     let mut solver = ComplexSolverFaer::new()?;
+//!
+//!     // allocate the coefficient matrix
+//!     // ┌                                              ┐
+//!     // │  2+0.5i   3+1i       0         0         0   │
+//!     // │  3+1i       0      4+1i        0       6+1i  │
+//!     // │     0    -1+0.5i  -3+1i     2+0.5i       0   │
+//!     // │     0       0      1+0.5i      0         0   │
+//!     // │     0     4+0.5i   2+0.5i      0      1+0.5i │
+//!     // └                                              ┘
+//!     let mut coo = ComplexCooMatrix::new(ndim, ndim, nnz, Sym::No)?;
+//!     coo.put(0, 0, cpx!(1.0, 0.25))?; // << (0, 0, a00/2) duplicate
+//!     coo.put(0, 0, cpx!(1.0, 0.25))?; // << (0, 0, a00/2) duplicate
+//!     coo.put(1, 0, cpx!(3.0, 1.0))?;
+//!     coo.put(0, 1, cpx!(3.0, 1.0))?;
+//!     coo.put(2, 1, cpx!(-1.0, 0.5))?;
+//!     coo.put(4, 1, cpx!(4.0, 0.5))?;
+//!     coo.put(1, 2, cpx!(4.0, 1.0))?;
+//!     coo.put(2, 2, cpx!(-3.0, 1.0))?;
+//!     coo.put(3, 2, cpx!(1.0, 0.5))?;
+//!     coo.put(4, 2, cpx!(2.0, 0.5))?;
+//!     coo.put(2, 3, cpx!(2.0, 0.5))?;
+//!     coo.put(1, 4, cpx!(6.0, 1.0))?;
+//!     coo.put(4, 4, cpx!(1.0, 0.5))?;
+//!
+//!     let mut params = LinSolParams::new();
+//!     params.verbose = false;
+//!
+//!     solver.preprocess(&coo, Some(params))?;
+//!
+//!     let mut x = ComplexVector::new(ndim);
+//!     let rhs = ComplexVector::from(&[
+//!         cpx!(5.5, 10.5),
+//!         cpx!(36.0, 54.0),
+//!         cpx!(-9.0, 3.0),
+//!         cpx!(1.5, 4.5),
+//!         cpx!(14.0, 24.0),
+//!     ]);
+//!
+//!     solver.solve(&mut x, &rhs, false)?;
+//!
+//!     let correct = &[
+//!         cpx!(1.0, 1.0),
+//!         cpx!(2.0, 2.0),
+//!         cpx!(3.0, 3.0),
+//!         cpx!(4.0, 4.0),
+//!         cpx!(5.0, 5.0),
+//!     ];
+//!     complex_vec_approx_eq(&x, correct, 1e-14);
+//!
+//!     let stats = solver.stats().expect("statistics");
+//!     println!("fill ratio = {}", stats.fill_ratio);
+//!     Ok(())
+//! }
+//! ```
+//!
+/// Defines the error output as a static string
+pub type StrError = &'static str;
+
+mod aliases;
+mod complex_coo_matrix;
+mod complex_lin_solver;
+mod complex_solver_faer;
+#[cfg(feature = "umfpack")]
+mod complex_solver_umfpack;
+#[cfg_attr(not(any(feature = "umfpack", feature = "mumps")), allow(dead_code))]
+mod constants;
+mod coo_matrix;
+mod csc_matrix;
+mod csr_matrix;
+mod enums;
+mod library_info;
+mod lin_sol_params;
+mod lin_solver;
+mod numerical_jacobian;
+pub mod prelude;
+mod read_matrix_market;
+mod samples;
+mod solver_faer;
+#[cfg(feature = "umfpack")]
+mod solver_umfpack;
+mod stats_lin_sol;
+mod stats_lin_sol_mumps;
+mod verify_lin_sys;
+mod write_matrix_market;
+
+pub use aliases::*;
+pub use complex_lin_solver::*;
+pub use complex_solver_faer::*;
+#[cfg(feature = "umfpack")]
+pub use complex_solver_umfpack::*;
+use constants::*;
+pub use coo_matrix::*;
+pub use csc_matrix::*;
+pub use csr_matrix::*;
+pub use enums::*;
+pub use library_info::*;
+pub use lin_sol_params::*;
+pub use lin_solver::*;
+pub use numerical_jacobian::*;
+pub use read_matrix_market::*;
+pub use samples::*;
+pub use solver_faer::*;
+#[cfg(feature = "umfpack")]
+pub use solver_umfpack::*;
+pub use stats_lin_sol::*;
+pub use stats_lin_sol_mumps::*;
+pub use verify_lin_sys::*;
+
+// ----- MUMPS
+
+#[cfg(feature = "mumps")]
+mod complex_solver_mumps;
+
+#[cfg(feature = "mumps")]
+mod solver_mumps;
+
+#[cfg(feature = "mumps")]
+pub use complex_solver_mumps::*;
+
+#[cfg(feature = "mumps")]
+pub use solver_mumps::*;
+
+// ------ README file
+
+// run code from README file
+#[doc = include_str!("../README.md")]
+#[cfg(doctest)]
+pub struct ReadmeDoctest;

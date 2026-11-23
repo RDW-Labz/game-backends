@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T20:28:05Z",
+ "category": "math",
+ "commit": "261fc91f7592",
+ "delivery": "vendored",
+ "description": "cpmech/russell \u2014 Rust Scientific Library. ODE, DAE, and PDE solvers. Special functions (Bessel, Elliptic, Beta, Gamma, Erf). Linear algebra. Sparse solvers. Probability distributions. Tensor analysis. Numerical continuation.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "russell",
+ "size_bytes": 5958985,
+ "slug": "cpmech-russell",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 209,
+ "system": "Rust Scientific Library. ODE, DAE, and PDE solvers. Special functions (Bessel, Elliptic, Beta, Gamma, Erf). Linear algebra. Sparse solvers. Probability distribu",
+ "upstream": "https://github.com/cpmech/russell",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

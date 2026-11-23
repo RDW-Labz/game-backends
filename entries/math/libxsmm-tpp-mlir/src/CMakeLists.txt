@@ -1,0 +1,122 @@
+message(STATUS "TPP Project CMakeLists.txt BEGIN")
+
+cmake_minimum_required(VERSION 3.13.4)
+
+# CMP0116: Ninja generators transform `DEPFILE`s from `add_custom_command()`
+# New in CMake 3.20. https://cmake.org/cmake/help/latest/policy/CMP0116.html
+if(POLICY CMP0116)
+  cmake_policy(SET CMP0116 OLD)
+endif()
+
+project(tpp-dialect LANGUAGES CXX C)
+
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard to conform to")
+
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  message(STATUS "TPP-MLIR out-of-tree build.")
+
+  find_package(MLIR REQUIRED CONFIG)
+  message(STATUS "Using MLIRConfig.cmake in: ${MLIR_DIR}")
+  message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+  set(LLVM_RUNTIME_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/bin)
+  set(LLVM_LIBRARY_OUTPUT_INTDIR ${CMAKE_BINARY_DIR}/lib)
+
+  list(APPEND CMAKE_MODULE_PATH "${MLIR_CMAKE_DIR}")
+  list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
+  include(TableGen)
+  include(AddLLVM)
+  include(AddMLIR)
+  include(HandleLLVMOptions)
+else()
+  message(STATUS "TPP-MLIR in-tree build.")
+
+  set(MLIR_MAIN_SRC_DIR ${LLVM_MAIN_SRC_DIR}/../mlir)
+  set(MLIR_INCLUDE_DIR ${LLVM_MAIN_SRC_DIR}/../mlir/include)
+  set(MLIR_GENERATED_INCLUDE_DIR ${LLVM_BINARY_DIR}/tools/mlir/include)
+  set(MLIR_INCLUDE_DIRS "${MLIR_INCLUDE_DIR};${MLIR_GENERATED_INCLUDE_DIR}")
+endif()
+
+set(MLIR_BINARY_DIR ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
+
+set(TPP_MAIN_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+set(TPP_GEN_INCLUDE_DIR "${PROJECT_BINARY_DIR}/include")
+
+include_directories(${LLVM_INCLUDE_DIRS})
+include_directories(${MLIR_INCLUDE_DIRS})
+include_directories(${TPP_MAIN_INCLUDE_DIR})
+include_directories(${TPP_GEN_INCLUDE_DIR})
+link_directories(${LLVM_BUILD_LIBRARY_DIR})
+add_definitions(${LLVM_DEFINITIONS})
+
+set(LLVM_LIT_ARGS "-sv" CACHE STRING "lit default options")
+include(openmp)
+
+# libxsmm
+include(xsmm)
+message (STATUS "LIBXSMM Include dir: ${XSMM_INCLUDE_DIRS}")
+include(xsmm-dnn)
+message (STATUS "LIBXSMM-DNN Include dir: ${XSMM_DNN_INCLUDE_DIRS}")
+
+# LLVM Lighthouse Python integration (opt-in via -DTPP_ENABLE_LIGHTHOUSE=ON)
+include(lighthouse)
+
+# Sanitizers (include as late as possible aka append)
+include(sanitizers)
+
+# Sub directories
+add_subdirectory(include)
+add_subdirectory(lib)
+add_subdirectory(runtime)
+add_subdirectory(tools)
+add_subdirectory(test)
+
+# Benchmarks
+set(BENCHMARK_DIR "${PROJECT_SOURCE_DIR}/benchmarks")
+set(CONFIG_DIR "${BENCHMARK_DIR}/config")
+
+# Run baseline benchmarks with default iterations to track simple performance
+set(BENCH_CFGS
+  ${CONFIG_DIR}/base/base.json
+  ${CONFIG_DIR}/base/mha.json
+  ${CONFIG_DIR}/base/torch-dynamo.json
+)
+string(JOIN ',' BENCH_CFGS_STR ${BENCH_CFGS})
+# Run a small set of benchmarks with small iterations to test the benchmarks and run locally on small machines
+add_custom_target(benchmarks ${BENCHMARK_DIR}/driver.py -vvv --build ${PROJECT_BINARY_DIR} -n 10
+                  -c ${BENCH_CFGS_STR}
+                  DEPENDS tpp-opt tpp-run xsmm_dnn_mlp
+                  WORKING_DIRECTORY ${BENCHMARK_DIR}
+                  COMMENT Run Base Benchmarks)
+
+# Run OpenMP benchmarks with default iterations to track simple performance
+set(BENCH_OMP_CFGS
+  ${CONFIG_DIR}/omp/dnn-fp32.json
+  ${CONFIG_DIR}/omp/dnn-bf16.json
+  ${CONFIG_DIR}/omp/mlir-xsmm-fp32.json
+  ${CONFIG_DIR}/omp/mlir-xsmm-bf16.json
+  ${CONFIG_DIR}/omp/mlir-vector-fp32.json
+  ${CONFIG_DIR}/omp/mlir-vector-fp32-avx2.json
+  ${CONFIG_DIR}/omp/mlir-vector-bf16.json
+  ${CONFIG_DIR}/omp/mlir-vector-amx.json
+  ${CONFIG_DIR}/omp/torch-dynamo-xsmm.json
+  ${CONFIG_DIR}/omp/torch-dynamo-vector.json
+)
+string(JOIN ',' BENCH_OMP_CFGS_STR ${BENCH_OMP_CFGS})
+add_custom_target(benchmarks-omp ${BENCHMARK_DIR}/driver.py -vvv --build ${PROJECT_BINARY_DIR} -n 10
+                  -c ${BENCH_OMP_CFGS_STR}
+                  DEPENDS tpp-opt tpp-run xsmm_dnn_mlp
+                  WORKING_DIRECTORY ${BENCHMARK_DIR}
+                  COMMENT Run Benchmarks)
+
+# Code reformat
+set(CI_DIR "${PROJECT_SOURCE_DIR}/scripts/ci")
+add_custom_target(reformat-python ${CI_DIR}/lint-python.sh -i)
+add_custom_target(reformat-clang  ${CI_DIR}/lint-clang.sh -i)
+add_custom_target(reformat DEPENDS reformat-clang reformat-python)
+
+# Code format checks
+add_custom_target(check-python ${CI_DIR}/lint-python.sh)
+add_custom_target(check-clang  ${CI_DIR}/lint-clang.sh)
+add_custom_target(check-format DEPENDS check-clang check-python)

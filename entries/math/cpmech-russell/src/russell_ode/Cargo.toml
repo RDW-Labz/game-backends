@@ -1,0 +1,36 @@
+[package]
+name = "russell_ode"
+version = "5.6.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+description = "Solvers for ordinary differential equations and differential algebraic equations"
+homepage = "https://github.com/cpmech/russell"
+repository = "https://github.com/cpmech/russell"
+documentation = "https://docs.rs/russell_ode"
+readme = "README.md"
+categories = ["mathematics", "science"]
+keywords = ["differential", "numerical", "solver"]
+
+[features]
+# Links an external BLAS/LAPACK through `russell_lab`; off for targets
+# that have none, such as `wasm32-unknown-unknown`.
+open_blas = ["russell_lab/open_blas"]
+intel_mkl = ["russell_lab/intel_mkl", "russell_sparse/intel_mkl"]
+umfpack = ["russell_sparse/umfpack"]
+mumps = ["russell_sparse/mumps"]
+
+[dependencies]
+russell_lab = { path = "../russell_lab", version = "5.6" }
+russell_pde = { path = "../russell_pde", version = "5.6" }
+russell_sparse = { path = "../russell_sparse", version = "5.6" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+structopt = "0.3"
+
+[dev-dependencies]
+plotpy = "1.24"
+rayon = "1.12"
+
+[lints]
+workspace = true

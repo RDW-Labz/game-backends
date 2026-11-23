@@ -1,0 +1,267 @@
+use super::Matrix;
+use crate::StrError;
+
+/// (dsyrk) Performs a symmetric rank k operation
+///
+/// Performs one of the symmetric rank k operations:
+///
+/// ```text
+/// First case:
+///
+///   c   := α ⋅ a   ⋅  aᵀ + β ⋅ c
+/// (n,n)      (n,k)  (k,n)    (n,n)
+/// ```
+///
+/// or
+///
+/// ```text
+/// Second case:
+///
+///   c   := α ⋅  aᵀ  ⋅  a + β ⋅ c
+/// (n,n)       (n,k)  (k,n)   (n,n)
+/// ```
+///
+/// where `c = cᵀ`
+///
+/// See also: <https://www.netlib.org/lapack/explore-html/dc/d05/dsyrk_8f.html>
+///
+/// # Input
+///
+/// * `c` -- the (n,n) **symmetric** matrix (will be modified)
+/// * `a` -- the (n,k) matrix on the first case or (k,n) on the second case
+/// * `alpha` -- the α coefficient
+/// * `beta` -- the β coefficient
+/// * `upper` -- whether the upper triangle of `a` must be considered instead of the lower triangle
+/// * `second_case` -- indicates the second case illustrated above
+///
+/// # Examples
+///
+/// ```
+/// use russell_lab::*;
+///
+/// fn main() -> Result<(), StrError> {
+///     //  -1   2   0,
+///     //   2   1   2,
+///     //   0   2   1,
+///     let ___ = 0.0;
+///     let mut c_lower = Matrix::from(&[
+///         [-1.0, ___, ___],
+///         [ 2.0, 1.0, ___],
+///         [ 0.0, 2.0, 1.0],
+///     ]);
+///
+///     let a = Matrix::from(&[
+///         [ 1.0,  2.0, -1.0],
+///         [-1.0,  2.0,  0.0],
+///     ]);
+///
+///     let (alpha, beta) = (-1.0, 2.0);
+///
+///     // c := -1 aᵀ⋅a + 2 c
+///     mat_sym_rank_op(&mut c_lower, &a, alpha, beta, false, true).unwrap();
+///
+///     let c_ref = Matrix::from(&[
+///         [-4.0,  ___,  ___],
+///         [ 4.0, -6.0,  ___],
+///         [ 1.0,  6.0,  1.0],
+///     ]);
+///     mat_approx_eq(&c_lower, &c_ref, 1e-15);
+///     Ok(())
+/// }
+/// ```
+pub fn mat_sym_rank_op(c: &mut Matrix, a: &Matrix, alpha: f64, beta: f64, upper: bool, second_case: bool) -> Result<(), StrError> {
+    let (m, n) = c.dims();
+    if m != n {
+        return Err("[c] matrix must be square");
+    }
+    // The two cases contract over *different* lengths, so they are not the same
+    // call with a flag on the shapes alone:
+    //
+    //   case 1, trans = 'N': c := a aᵀ, a is (n, k), contraction over a's columns
+    //   case 2, trans = 'T': c := aᵀ a, a is (k, n), contraction over a's rows
+    //
+    // `k` is a's column count in case 1 and its row count in case 2, and it is
+    // the caller's `second_case` that says which -- a's length is n*k either way,
+    // so the flag cannot be inferred from the shape. See
+    // `blas_dispatch::dsyrk`, which asserts exactly that.
+    let (row, col) = a.dims();
+    let k = if !second_case {
+        //   c   := α ⋅ a   ⋅  aᵀ + β ⋅ c
+        // (n,n)      (n,k)  (k,n)    (n,n)
+        if row != n {
+            return Err("[a] matrix is incompatible");
+        }
+        col
+    } else {
+        //   c   := α ⋅  aᵀ  ⋅  a + β ⋅ c
+        // (n,n)       (n,k)  (k,n)   (n,n)
+        if col != n {
+            return Err("[a] matrix is incompatible");
+        }
+        row
+    };
+    crate::base::blas_dispatch::dsyrk(alpha, a.as_data(), beta, c.as_mut_data(), n, k, upper, second_case);
+    Ok(())
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#[cfg(test)]
+mod tests {
+    use super::{Matrix, mat_sym_rank_op};
+    use crate::mat_approx_eq;
+
+    #[test]
+    fn mat_sym_rank_op_fail_on_wrong_dims() {
+        let mut c_2x2 = Matrix::new(2, 2);
+        let mut c_3x2 = Matrix::new(3, 2);
+        let a_2x3 = Matrix::new(2, 3);
+        let a_3x2 = Matrix::new(3, 2);
+        assert_eq!(
+            mat_sym_rank_op(&mut c_3x2, &a_3x2, 2.0, 3.0, false, false).err(),
+            Some("[c] matrix must be square")
+        );
+        assert_eq!(
+            mat_sym_rank_op(&mut c_2x2, &a_3x2, 2.0, 3.0, false, false).err(),
+            Some("[a] matrix is incompatible")
+        );
+        assert_eq!(
+            mat_sym_rank_op(&mut c_2x2, &a_2x3, 2.0, 3.0, false, true).err(),
+            Some("[a] matrix is incompatible")
+        );
+    }
+
+    #[test]
+    fn mat_sym_rank_op_works_first_case() {
+        // c matrix
+        // #[rustfmt::skip]
+        // let c = Matrix::from(&[
+        //     [ 3.0,  0.0, -3.0,  0.0],
+        //     [ 0.0,  3.0,  1.0,  2.0],
+        //     [-3.0,  1.0,  4.0,  1.0],
+        //     [ 0.0,  2.0,  1.0,  3.0],
+        // ]);
+        #[rustfmt::skip]
+        let mut c_lower = Matrix::from(&[
+            [ 3.0,  0.0,  0.0,  0.0],
+            [ 0.0,  3.0,  0.0,  0.0],
+            [-3.0,  1.0,  4.0,  0.0],
+            [ 0.0,  2.0,  1.0,  3.0],
+        ]);
+        #[rustfmt::skip]
+        let mut c_upper = Matrix::from(&[
+            [ 3.0,  0.0, -3.0,  0.0],
+            [ 0.0,  3.0,  1.0,  2.0],
+            [ 0.0,  0.0,  4.0,  1.0],
+            [ 0.0,  0.0,  0.0,  3.0],
+        ]);
+
+        // a matrix
+        #[rustfmt::skip]
+        let a = Matrix::from(&[
+            [ 1.0,  2.0,  1.0,  1.0, -1.0,  0.0],
+            [ 2.0,  2.0,  1.0,  0.0,  0.0,  0.0],
+            [ 3.0,  1.0,  3.0,  1.0,  2.0, -1.0],
+            [ 1.0,  0.0,  1.0, -1.0,  0.0,  0.0],
+        ]);
+
+        // constants
+        let (alpha, beta) = (3.0, -1.0);
+
+        // lower: c := 3 a⋅aᵀ - c
+        mat_sym_rank_op(&mut c_lower, &a, alpha, beta, false, false).unwrap();
+        // println!("{}", c_lower);
+        #[rustfmt::skip]
+        let c_ref = Matrix::from(&[
+            [21.0,  0.0,  0.0,  0.0],
+            [21.0, 24.0,  0.0,  0.0],
+            [24.0, 32.0, 71.0,  0.0],
+            [ 3.0,  7.0, 14.0,  6.0],
+        ]);
+        mat_approx_eq(&c_lower, &c_ref, 1e-15);
+
+        // upper: c := 3 a⋅aᵀ - c
+        mat_sym_rank_op(&mut c_upper, &a, alpha, beta, true, false).unwrap();
+        // println!("{}", c_upper);
+        #[rustfmt::skip]
+        let c_ref = Matrix::from(&[
+            [21.0, 21.0, 24.0,  3.0],
+            [ 0.0, 24.0, 32.0,  7.0],
+            [ 0.0,  0.0, 71.0, 14.0],
+            [ 0.0,  0.0,  0.0,  6.0],
+        ]);
+        mat_approx_eq(&c_upper, &c_ref, 1e-15);
+    }
+
+    #[test]
+    fn mat_sym_rank_op_works_second_case() {
+        // c matrix
+        // #[rustfmt::skip]
+        // let c = Matrix::from(&[
+        //     [ 3.0, 0.0, -3.0, 0.0, 0.0, 0.0],
+        //     [ 0.0, 3.0,  1.0, 2.0, 2.0, 2.0],
+        //     [-3.0, 1.0,  4.0, 1.0, 1.0, 1.0],
+        //     [ 0.0, 2.0,  1.0, 3.0, 3.0, 3.0],
+        //     [ 0.0, 2.0,  1.0, 3.0, 4.0, 3.0],
+        //     [ 0.0, 2.0,  1.0, 3.0, 3.0, 4.0],
+        // ]);
+        #[rustfmt::skip]
+        let mut c_lower = Matrix::from(&[
+            [ 3.0, 0.0,  0.0, 0.0, 0.0, 0.0],
+            [ 0.0, 3.0,  0.0, 0.0, 0.0, 0.0],
+            [-3.0, 1.0,  4.0, 0.0, 0.0, 0.0],
+            [ 0.0, 2.0,  1.0, 3.0, 0.0, 0.0],
+            [ 0.0, 2.0,  1.0, 3.0, 4.0, 0.0],
+            [ 0.0, 2.0,  1.0, 3.0, 3.0, 4.0],
+        ]);
+        #[rustfmt::skip]
+        let mut c_upper = Matrix::from(&[
+            [ 3.0, 0.0, -3.0, 0.0, 0.0, 0.0],
+            [ 0.0, 3.0,  1.0, 2.0, 2.0, 2.0],
+            [ 0.0, 0.0,  4.0, 1.0, 1.0, 1.0],
+            [ 0.0, 0.0,  0.0, 3.0, 3.0, 3.0],
+            [ 0.0, 0.0,  0.0, 0.0, 4.0, 3.0],
+            [ 0.0, 0.0,  0.0, 0.0, 0.0, 4.0],
+        ]);
+
+        // a matrix
+        #[rustfmt::skip]
+        let a = Matrix::from(&[
+            [ 1.0,  2.0,  1.0,  1.0, -1.0,  0.0],
+            [ 2.0,  2.0,  1.0,  0.0,  0.0,  0.0],
+            [ 3.0,  1.0,  3.0,  1.0,  2.0, -1.0],
+            [ 1.0,  0.0,  1.0, -1.0,  0.0,  0.0],
+        ]);
+
+        // constants
+        let (alpha, beta) = (3.0, 1.0);
+
+        // lower: c := 3 aᵀ⋅a + c
+        mat_sym_rank_op(&mut c_lower, &a, alpha, beta, false, true).unwrap();
+        // println!("{}", c_lower);
+        #[rustfmt::skip]
+        let c_ref = Matrix::from(&[
+            [48.0,  0.0,  0.0,  0.0,  0.0,  0.0],
+            [27.0, 30.0,  0.0,  0.0,  0.0,  0.0],
+            [36.0, 22.0, 40.0,  0.0,  0.0,  0.0],
+            [ 9.0, 11.0, 10.0, 12.0,  0.0,  0.0],
+            [15.0,  2.0, 16.0,  6.0, 19.0,  0.0],
+            [-9.0, -1.0, -8.0,  0.0, -3.0,  7.0],
+        ]);
+        mat_approx_eq(&c_lower, &c_ref, 1e-15);
+
+        // upper: c := 3 aᵀ⋅a + c
+        mat_sym_rank_op(&mut c_upper, &a, alpha, beta, true, true).unwrap();
+        // println!("{}", c_upper);
+        #[rustfmt::skip]
+        let c_ref = Matrix::from(&[
+            [48.0, 27.0, 36.0,  9.0, 15.0, -9.0],
+            [ 0.0, 30.0, 22.0, 11.0,  2.0, -1.0],
+            [ 0.0,  0.0, 40.0, 10.0, 16.0, -8.0],
+            [ 0.0,  0.0,  0.0, 12.0,  6.0,  0.0],
+            [ 0.0,  0.0,  0.0,  0.0, 19.0, -3.0],
+            [ 0.0,  0.0,  0.0,  0.0,  0.0,  7.0],
+        ]);
+        mat_approx_eq(&c_upper, &c_ref, 1e-15);
+    }
+}

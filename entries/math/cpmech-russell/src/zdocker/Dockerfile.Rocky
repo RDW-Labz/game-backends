@@ -1,0 +1,25 @@
+FROM rockylinux/rockylinux
+
+# initialize
+RUN dnf update -y
+RUN dnf install epel-release -y
+RUN crb enable
+RUN dnf install cmake gcc make curl clang -y
+
+# dependencies
+RUN dnf install -y \
+  lapack-devel \
+  openblas-devel \
+  suitesparse-devel
+
+# install rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# copy files
+COPY . /tmp/russell
+WORKDIR /tmp/russell
+
+# run tests
+ENV RUST_BACKTRACE=1
+RUN cargo test && cargo test --features umfpack

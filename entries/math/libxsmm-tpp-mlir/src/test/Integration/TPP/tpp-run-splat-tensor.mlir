@@ -1,0 +1,169 @@
+// RUN: tpp-run %s -e entry -entry-point-result=void -print-mlir=early 2>&1 | \
+// RUN: FileCheck %s --check-prefix=SPLAT
+// RUN: tpp-run %s -e entry -entry-point-result=void -print-mlir=early -seed 123 2>&1 | \
+// RUN: FileCheck %s --check-prefix=RANDOM
+// RUN: tpp-run %s -e entry -entry-point-result=void -print-mlir=early -seed 123 -splat-to-random 2>&1 | \
+// RUN: FileCheck %s --check-prefix=RANDOM-SPLAT
+
+// Options for -init-type
+// RUN: tpp-run %s -e entry -entry-point-result=void -print-mlir=early -seed 123 -splat-to-random -init-type=const 2>&1 | \
+// RUN: FileCheck %s --check-prefix=OPT-CONST
+// RUN: tpp-run %s -e entry -entry-point-result=void -print-mlir=early -seed 123 -splat-to-random -init-type=random 2>&1 | \
+// RUN: FileCheck %s --check-prefix=OPT-RANDOM
+// RUN: tpp-run %s -e entry -entry-point-result=void -print-mlir=early -seed 123 -splat-to-random -init-type=normal 2>&1 | \
+// RUN: FileCheck %s --check-prefix=OPT-NORMAL
+
+func.func @entry(%arg0: tensor<4x2xf32>, %arg1: tensor<4x2xi32>, %arg2: tensor<4x2xi32>, %arg3: tensor<4x2xf16>, %arg4: tensor<4x2xi8>) {
+  %0 = arith.constant dense<1.0> : tensor<2x16xf32>
+  %5 = arith.constant dense<1.0> : tensor<2x16xf64>
+  %1 = arith.constant dense<2.0> : tensor<4x16xf32>
+  %10 = arith.constant dense<2.0> : tensor<4x4xf32>
+  %2 = arith.constant dense<0.0> : tensor<4x8xf32>
+  %3 = arith.constant dense<[[0.0, 1.0],[2.0, 3.0]]> : tensor<2x2xf32>
+  %13 = arith.constant dense<1> : tensor<4x2xi8>
+  %4 = arith.constant dense<0> : tensor<4x8xi32>
+  %6 = arith.constant dense<1> : tensor<4x8xi32>
+  %11 = arith.constant dense<1> : tensor<4x8xi32>
+  %7 = arith.constant dense<1> : tensor<4x8xi64>
+  %8 = arith.constant dense<[[0, 1],[2, 3]]> : tensor<2x2xi32>
+  %9 = arith.constant 1.0 : f32
+  %12 = arith.constant dense<1.0> : tensor<4x8xf16>
+  return
+}
+
+// Constants
+// SPLAT-DAG: memref.global "private" @__wrapper_0 : memref<4x2xf32> = dense<1.000000e+00>
+// SPLAT-DAG: memref.global "private" @__wrapper_1 : memref<4x2xi32> = dense<1>
+// SPLAT-DAG: memref.global "private" @__wrapper_2 : memref<4x2xi32> = dense<1>
+// SPLAT-DAG: memref.global "private" @__wrapper_3 : memref<4x2xf16> = dense<1.000000e+00>
+// SPLAT-DAG: memref.global "private" @__wrapper_4 : memref<4x2xi8> = dense<1>
+// SPLAT-LABEL: @_entry
+// SPLAT: arith.constant dense<1.000000e+00> : tensor<2x16xf32>
+// SPLAT: arith.constant dense<1.000000e+00> : tensor<2x16xf64>
+// SPLAT: arith.constant dense<2.000000e+00> : tensor<4x16xf32>
+// SPLAT: arith.constant dense<2.000000e+00> : tensor<4x4xf32>
+// SPLAT: arith.constant dense<0.000000e+00> : tensor<4x8xf32>
+// SPLAT: arith.constant dense<{{.*}}0.000000e+00, 1.000000e+00], [2.000000e+00, 3.000000e+00{{.*}}> : tensor<2x2xf32>
+// SPLAT: arith.constant dense<1> : tensor<4x2xi8>
+// SPLAT: arith.constant dense<0> : tensor<4x8xi32>
+// SPLAT: arith.constant dense<1> : tensor<4x8xi32>
+// SPLAT: arith.constant dense<1> : tensor<4x8xi32>
+// SPLAT: arith.constant dense<1> : tensor<4x8xi64>
+// SPLAT: arith.constant dense<{{\[}}{{\[}}0, 1], [2, 3]]> : tensor<2x2xi32>
+// SPLAT: arith.constant 1.000000e+00 : f32
+// SPLAT: arith.constant dense<1.000000e+00> : tensor<4x8xf16>
+// Input
+// SPLAT-LABEL: @entry
+// SPLAT: memref.get_global @__wrapper_0
+
+// Constants
+// RANDOM-DAG: memref.global "private" @__wrapper_0 : memref<4x2xf32> = dense<{{\[}}{{\[}}0.000000e+00, 0.000000e+00], [0.0942792892, 0.268279642]
+// RANDOM-DAG: memref.global "private" @__wrapper_1 : memref<4x2xi32> = dense<{{\[}}{{\[}}114, 125], [131, 127], [133, 127], [114, 128]]>
+// RANDOM-DAG: memref.global "private" @__wrapper_2 : memref<4x2xi32> = dense<{{\[}}{{\[}}133, 121], [143, 112], [136, 124], [126, 131]]>
+// RANDOM-DAG: memref.global "private" @__wrapper_3 : memref<4x2xf16> = dense<{{\[}}{{\[}}0.000000e+00, 0.000000e+00], [9.429930e-02, 2.683110e-01]
+// RANDOM-DAG: memref.global "private" @__wrapper_4 : memref<4x2xi8> = dense<{{\[}}{{\[}}56, 57], [65, 60], [68, 62], [74, 53]]>
+// RANDOM-LABEL: @_entry
+// RANDOM: arith.constant dense<1.000000e+00> : tensor<2x16xf32>
+// RANDOM: arith.constant dense<1.000000e+00> : tensor<2x16xf64>
+// RANDOM: arith.constant dense<2.000000e+00> : tensor<4x16xf32>
+// RANDOM: arith.constant dense<2.000000e+00> : tensor<4x4xf32>
+// RANDOM: arith.constant dense<0.000000e+00> : tensor<4x8xf32>
+// RANDOM: arith.constant dense<{{.*}}0.000000e+00, 1.000000e+00], [2.000000e+00, 3.000000e+00{{.*}}> : tensor<2x2xf32>
+// RANDOM: arith.constant dense<1> : tensor<4x2xi8>
+// RANDOM: arith.constant dense<0> : tensor<4x8xi32>
+// RANDOM: arith.constant dense<1> : tensor<4x8xi32>
+// RANDOM: arith.constant dense<1> : tensor<4x8xi32>
+// RANDOM: arith.constant dense<1> : tensor<4x8xi64>
+// RANDOM: arith.constant dense<{{\[}}{{\[}}0, 1], [2, 3]]> : tensor<2x2xi32>
+// RANDOM: arith.constant 1.000000e+00 : f32
+// RANDOM: arith.constant dense<1.000000e+00> : tensor<4x8xf16>
+// Input
+// RANDOM-LABEL: @entry
+// RANDOM: memref.get_global @__wrapper_0
+
+// Constants
+// RANDOM-SPLAT-NOT: memref.global "private" @__wrapper_0 : memref<4x2xf32> = dense<1.000000e+00>
+// RANDOM-SPLAT-NOT: memref.global "private" @__wrapper_1 : memref<4x2xi32> = dense<1>
+// RANDOM-SPLAT-NOT: memref.global "private" @__wrapper_2 : memref<4x2xi32> = dense<1>
+// RANDOM-SPLAT-NOT: memref.global "private" @__wrapper_3 : memref<4x2xf16> = dense<1.000000e+00>
+// RANDOM-SPLAT-NOT: memref.global "private" @__wrapper_4 : memref<4x2xi8> = dense<1>
+// RANDOM-SPLAT-LABEL: @_entry
+// RANDOM-SPLAT-NOT: arith.constant dense<1.000000e+00> : tensor<2x16xf32>
+// RANDOM-SPLAT-NOT: arith.constant dense<1.000000e+00> : tensor<2x16xf64>
+// RANDOM-SPLAT-NOT: arith.constant dense<2.000000e+00> : tensor<4x16xf32>
+// RANDOM-SPLAT-NOT: arith.constant dense<2.000000e+00> : tensor<4x4xf32>
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}0.000000e+00, 0.000000e+00, 0.0942792892{{.*}}: tensor<2x16xf32>
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}0.000000e+00, 0.000000e+00, 0.094279289245605468{{.*}}: tensor<2x16xf64>
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}0.429697633, 0.0734116063, 0.000000e+00{{.*}}: tensor<4x16xf32>
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}0.675067961, 0.134137794, 0.152208611{{.*}}: tensor<4x4xf32>
+// RANDOM-SPLAT: arith.constant dense<0.000000e+00> : tensor<4x8xf32>
+// RANDOM-SPLAT: arith.constant dense<{{.*}}0.000000e+00, 1.000000e+00], [2.000000e+00, 3.000000e+00{{.*}}> : tensor<2x2xf32>
+// RANDOM-SPLAT-NOT: arith.constant dense<1> : tensor<4x2xi8>
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}56, 57{{.*}}> : tensor<4x2xi8>
+// RANDOM-SPLAT-NOT: arith.constant dense<1> : tensor<4x2xi8>
+// RANDOM-SPLAT: arith.constant dense<0> : tensor<4x8xi32>
+// RANDOM-SPLAT-NOT: arith.constant dense<1> : tensor<4x8xi32>
+// RANDOM-SPLAT-NOT: arith.constant dense<1> : tensor<4x8xi64>
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}114, 125, 131{{.*}}> : tensor<4x8xi32>
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}122, 142, 127{{.*}}> : tensor<4x8xi32>
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}114, 125, 131{{.*}}> : tensor<4x8xi64>
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}0, 1], [2, 3]]> : tensor<2x2xi32>
+// RANDOM-SPLAT: arith.constant 1.000000e+00 : f32
+// RANDOM-SPLAT: arith.constant dense<{{\[}}{{\[}}0.000000e+00, 0.000000e+00, 9.429930e-02{{.*}}: tensor<4x8xf16>
+// Input
+// RANDOM-SPLAT-LABEL: @entry
+// RANDOM-SPLAT: memref.get_global @__wrapper_0
+
+// OPT-CONST-LABEL: @_entry
+// OPT-CONST: arith.constant dense<1.000000e+00> : tensor<2x16xf32>
+// OPT-CONST: arith.constant dense<1.000000e+00> : tensor<2x16xf64>
+// OPT-CONST: arith.constant dense<1.000000e+00> : tensor<4x16xf32>
+// OPT-CONST: arith.constant dense<1.000000e+00> : tensor<4x4xf32>
+// OPT-CONST: arith.constant dense<0.000000e+00> : tensor<4x8xf32>
+// OPT-CONST: arith.constant dense<{{.*}}0.000000e+00, 1.000000e+00], [2.000000e+00, 3.000000e+00{{.*}}>
+// OPT-CONST: arith.constant dense<1> : tensor<4x2xi8>
+// OPT-CONST: arith.constant dense<0> : tensor<4x8xi32>
+// OPT-CONST: arith.constant dense<1> : tensor<4x8xi32>
+// OPT-CONST: arith.constant dense<1> : tensor<4x8xi32>
+// OPT-CONST: arith.constant dense<1> : tensor<4x8xi64>
+// OPT-CONST: arith.constant dense<{{\[}}{{\[}}0, 1], [2, 3]]> : tensor<2x2xi32>
+// OPT-CONST: arith.constant 1.000000e+00 : f32
+// OPT-CONST: arith.constant dense<1.000000e+00> : tensor<4x8xf16>
+
+// OPT-RANDOM-LABEL: @_entry
+// OPT-RANDOM: arith.constant dense<{{.*}}0.399367571, 0.620291352, 0.283779263, {{.*}}> : tensor<2x16xf32>
+// OPT-RANDOM: arith.constant dense<{{.*}}0.3993675708770752, 0.62029135227203369, 0.28377926349639893, {{.*}}> : tensor<2x16xf64>
+// OPT-RANDOM: arith.constant dense<{{.*}}0.742205619, 0.866122126, 0.143635035, {{.*}}> : tensor<4x16xf32>
+// OPT-RANDOM: arith.constant dense<{{.*}}0.539847493, 0.872240662, 0.478001595, {{.*}}> : tensor<4x4xf32>
+// OPT-RANDOM: arith.constant dense<0.000000e+00> : tensor<4x8xf32>
+// OPT-RANDOM: arith.constant dense<{{.*}}0.000000e+00, 1.000000e+00], [2.000000e+00, 3.000000e+00{{.*}}>
+// OPT-RANDOM: arith.constant dense<{{\[}}{{\[}}122, 23{{.*}}> : tensor<4x2xi8>
+// OPT-RANDOM-NOT: arith.constant dense<1> : tensor<4x2xi8>
+// OPT-RANDOM: arith.constant dense<0> : tensor<4x8xi32>
+// OPT-RANDOM-NOT: arith.constant dense<1> : tensor<4x8xi32>
+// OPT-RANDOM-NOT: arith.constant dense<1> : tensor<4x8xi64>
+// OPT-RANDOM: arith.constant dense<{{\[}}{{\[}}122, 23, 162, 67, 128{{.*}}> : tensor<4x8xi32>
+// OPT-RANDOM: arith.constant dense<{{\[}}{{\[}}252, 73, 0, 9, 178{{.*}}> : tensor<4x8xi32>
+// OPT-RANDOM: arith.constant dense<{{\[}}{{\[}}122, 23, 162, 67, 128{{.*}}> : tensor<4x8xi64>
+// OPT-RANDOM: arith.constant dense<{{\[}}{{\[}}0, 1], [2, 3]]> : tensor<2x2xi32>
+// OPT-RANDOM: arith.constant 1.000000e+00 : f32
+// OPT-RANDOM: arith.constant dense<{{.*}}3.994140e-01, 6.201170e-01, 2.836910e-01, {{.*}}> : tensor<4x8xf16>
+
+// OPT-NORMAL-LABEL: @_entry
+// OPT-NORMAL: arith.constant dense<{{.*}}0.000000e+00, 0.000000e+00, 0.0942792892, {{.*}}> : tensor<2x16xf32>
+// OPT-NORMAL: arith.constant dense<{{.*}}0.000000e+00, 0.000000e+00, 0.094279289245605468, {{.*}}> : tensor<2x16xf64>
+// OPT-NORMAL: arith.constant dense<{{.*}}0.429697633, 0.0734116063, 0.000000e+00, {{.*}}> : tensor<4x16xf32>
+// OPT-NORMAL: arith.constant dense<{{.*}}0.675067961, 0.134137794, 0.152208611, {{.*}}> : tensor<4x4xf32>
+// OPT-NORMAL: arith.constant dense<0.000000e+00> : tensor<4x8xf32>
+// OPT-NORMAL: arith.constant dense<{{.*}}0.000000e+00, 1.000000e+00], [2.000000e+00, 3.000000e+00{{.*}}>
+// OPT-NORMAL-NOT: arith.constant dense<1> : tensor<4x2xi8>
+// OPT-NORMAL: arith.constant dense<{{\[}}{{\[}}56, 57{{.*}}> : tensor<4x2xi8>
+// OPT-NORMAL: arith.constant dense<0> : tensor<4x8xi32>
+// OPT-NORMAL-NOT: arith.constant dense<1> : tensor<4x8xi32>
+// OPT-NORMAL-NOT: arith.constant dense<1> : tensor<4x8xi64>
+// OPT-NORMAL: arith.constant dense<{{\[}}{{\[}}114, 125, 131, 127, 133{{.*}}> : tensor<4x8xi32>
+// OPT-NORMAL: arith.constant dense<{{\[}}{{\[}}122, 142, 127, 130, 134{{.*}}> : tensor<4x8xi32>
+// OPT-NORMAL: arith.constant dense<{{\[}}{{\[}}114, 125, 131, 127, 133{{.*}}> : tensor<4x8xi64>
+// OPT-NORMAL: arith.constant dense<{{\[}}{{\[}}0, 1], [2, 3]]> : tensor<2x2xi32>
+// OPT-NORMAL: arith.constant 1.000000e+00 : f32
+// OPT-NORMAL: arith.constant dense<{{.*}}0.000000e+00, 0.000000e+00, 9.429930e-02, {{.*}}> : tensor<4x8xf16>

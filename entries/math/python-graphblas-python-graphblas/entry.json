@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T20:28:10Z",
+ "category": "math",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "python-graphblas/python-graphblas \u2014 Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics",
+ "language": "jupyter notebook",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "python-graphblas",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "python-graphblas-python-graphblas",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 163,
+ "system": "Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics",
+ "upstream": "https://github.com/python-graphblas/python-graphblas",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

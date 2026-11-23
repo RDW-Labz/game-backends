@@ -1,0 +1,171 @@
+//! Compares the accuracy of the available eigenvalue methods on the benchmark
+//! cases described in the Habera-Zilian and Harari-Albocher papers.
+//!
+//! The benchmark paths are:
+//!
+//! * `D1 = diag(1, 1, 1 + δ)` — a double eigenvalue moving toward a triple
+//!   eigenvalue (`J2 → 0` and `J3 → 0`)
+//! * `D2 = diag(-1, 1, 1 + δ)` — a double eigenvalue (the discriminant `Δ → 0`
+//!   while `J2` and `J3` stay finite)
+//!
+//! The methods are `HZ` (the closed-form expressions of Habera & Zilian 2026,
+//! Equations (2) and (4)), `HA22` (Harari & Albocher 2022), `HA23` (Harari &
+//! Albocher 2023), the `Jacobi` iteration, and a `Naive` cubic formula.
+//!
+//! The matrices are built as `A = Q ⋅ diag(d) ⋅ Qᵀ` with the orthogonal
+//! transformation `Q_sym` used in the papers. The prescribed eigenvalues
+//! `d` are used as the reference.
+
+use russell_tensor::{EigenValMethod, EigenValuesT2, StrError, Tensor2};
+use std::f64::consts::PI;
+
+// Expected output:
+// D1: diag(1, 1, 1 + δ)  (double → triple eigenvalue)
+//        δ       HZ     HA22     HA23      Jacobi       Naive
+//     1e-1    2.22e-16    2.22e-16    2.22e-16    2.22e-16    2.22e-16
+//     1e-2    1.11e-16    3.33e-16    2.22e-16    1.11e-16    4.97e-10
+//     1e-3    2.22e-16    3.33e-16    3.33e-16    2.22e-16    1.57e-10
+//     1e-4    1.11e-16    1.11e-16    1.11e-16    1.11e-16    1.11e-16
+//     1e-5    2.22e-16    3.33e-16    3.33e-16    2.22e-16    1.57e-11
+//     1e-6    3.33e-16    2.22e-16    2.22e-16    4.44e-16    3.33e-16
+//     1e-8    4.44e-16    5.55e-16    4.44e-16    3.33e-16    7.03e-13
+//    1e-10      0.00e0    1.11e-16      0.00e0    2.22e-16      0.00e0
+//    1e-12      0.00e0    1.11e-16    1.11e-16    2.22e-16      0.00e0
+//    1e-14    6.66e-15    6.66e-15    6.66e-15    6.66e-15    1.11e-16
+//
+// D2: diag(-1, 1, 1 + δ) (double eigenvalue)
+//        δ       HZ     HA22     HA23      Jacobi       Naive
+//     1e-1    8.88e-16    2.22e-16    4.44e-16    4.44e-16    1.22e-15
+//     1e-2    4.44e-16    2.22e-16    2.22e-16    4.44e-16    2.89e-15
+//     1e-3    8.88e-16    2.22e-16    2.22e-16    2.22e-16    2.01e-13
+//     1e-4    2.22e-16    2.22e-16    2.22e-16    4.44e-16    1.67e-12
+//     1e-5    6.66e-16    2.22e-16    2.22e-16    4.44e-16    1.65e-11
+//     1e-6    4.44e-16    2.22e-16    4.44e-16    4.44e-16    1.17e-10
+//     1e-8    5.55e-16    2.22e-16    2.22e-16    3.33e-16     2.45e-9
+//    1e-10    6.66e-16    2.22e-16    2.22e-16    3.33e-16    5.00e-11
+//    1e-12    1.11e-15    2.22e-16    2.22e-16    2.22e-16     9.12e-9
+//    1e-14    8.88e-16    2.22e-16    2.22e-16    2.22e-16     5.27e-9
+
+fn main() -> Result<(), StrError> {
+    let q = q_sym();
+    let deltas = [1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-8, 1e-10, 1e-12, 1e-14];
+
+    let mut calc = EigenValuesT2::new();
+
+    for (label, is_d1) in [
+        ("D1: diag(1, 1, 1 + δ)  (double → triple eigenvalue)", true),
+        ("D2: diag(-1, 1, 1 + δ) (double eigenvalue)", false),
+    ] {
+        println!("\n{}", label);
+        println!(
+            "{:>8}  {:>10}  {:>10}  {:>10}  {:>10}  {:>10}",
+            "δ", "HZ", "HA22", "HA23", "Jacobi", "Naive"
+        );
+        for &delta in &deltas {
+            let d = if is_d1 { [1.0, 1.0, 1.0 + delta] } else { [-1.0, 1.0, 1.0 + delta] };
+            let a = build_a(&q, &d);
+            let tt = Tensor2::<6>::from_std_matrix(&a)?;
+            let mut exact = d;
+            exact.sort_by(|x, y| x.partial_cmp(y).unwrap());
+
+            let mut errs = [0.0; 5];
+            let methods = [
+                EigenValMethod::AnalyticalHZ,
+                EigenValMethod::AnalyticalHA22,
+                EigenValMethod::AnalyticalHA23,
+                EigenValMethod::Iterative,
+            ];
+            for (i, method) in methods.iter().enumerate() {
+                let mut ll = [0.0; 3];
+                calc.calculate_mx(&mut ll, &tt, *method)?;
+                errs[i] = max_error(&ll, &exact);
+            }
+            errs[4] = max_error(&naive_eig_vals(&a), &exact);
+
+            println!(
+                "{:>8.0e}  {:>10.2e}  {:>10.2e}  {:>10.2e}  {:>10.2e}  {:>10.2e}",
+                delta, errs[0], errs[1], errs[2], errs[3], errs[4]
+            );
+        }
+    }
+    Ok(())
+}
+
+/// Orthogonal transformation matrix from the papers
+fn q_sym() -> [[f64; 3]; 3] {
+    let r2 = f64::sqrt(2.0);
+    [[1.0 / r2, -0.5, 0.5], [1.0 / r2, 0.5, -0.5], [0.0, 1.0 / r2, 1.0 / r2]]
+}
+
+/// Builds the symmetric matrix A = Q ⋅ diag(d) ⋅ Qᵀ (and symmetrizes it)
+fn build_a(q: &[[f64; 3]; 3], d: &[f64; 3]) -> [[f64; 3]; 3] {
+    let mut a = [[0.0; 3]; 3];
+    for i in 0..3 {
+        for j in 0..3 {
+            for k in 0..3 {
+                a[i][j] += q[i][k] * d[k] * q[j][k];
+            }
+        }
+    }
+    for i in 0..3 {
+        for j in (i + 1)..3 {
+            let m = 0.5 * (a[i][j] + a[j][i]);
+            a[i][j] = m;
+            a[j][i] = m;
+        }
+    }
+    a
+}
+
+/// Returns the maximum absolute difference between two (sorted) set of eigenvalues
+fn max_error(w: &[f64; 3], exact: &[f64; 3]) -> f64 {
+    let mut ws = *w;
+    ws.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    let mut e = 0.0;
+    for i in 0..3 {
+        let d = f64::abs(ws[i] - exact[i]);
+        if d > e {
+            e = d;
+        }
+    }
+    e
+}
+
+/// Naive eigenvalue computation based on the cubic formula
+///
+/// This is the unstable baseline analogous to `impl_naive.py` from the `eig3x3`
+/// library: the deviatoric invariants and the discriminant are computed with the
+/// naive expressions, which suffer from catastrophic cancellation.
+fn naive_eig_vals(a: &[[f64; 3]; 3]) -> [f64; 3] {
+    let i1 = a[0][0] + a[1][1] + a[2][2];
+    let m = i1 / 3.0;
+    let s = [
+        [a[0][0] - m, a[0][1], a[0][2]],
+        [a[1][0], a[1][1] - m, a[1][2]],
+        [a[2][0], a[2][1], a[2][2] - m],
+    ];
+    // J2 = ½ tr(s²)
+    let mut j2 = 0.0;
+    for i in 0..3 {
+        for j in 0..3 {
+            j2 += 0.5 * s[i][j] * s[j][i];
+        }
+    }
+    // J3 = det(s)
+    let j3 = s[0][0] * (s[1][1] * s[2][2] - s[1][2] * s[2][1]) - s[0][1] * (s[1][0] * s[2][2] - s[1][2] * s[2][0])
+        + s[0][2] * (s[1][0] * s[2][1] - s[1][1] * s[2][0]);
+    // discriminant (naive)
+    let mut disc = 4.0 * j2 * j2 * j2 - 27.0 * j3 * j3;
+    if disc < 0.0 {
+        disc = 0.0;
+    }
+    let j2 = if j2 < 0.0 { 0.0 } else { j2 };
+    let phi = f64::atan2(f64::sqrt(27.0 * disc), 27.0 * j3);
+    let sqrt_3j2 = f64::sqrt(3.0 * j2);
+    let mut w = [0.0; 3];
+    for k in 0..3 {
+        let angle = (phi + 2.0 * PI * ((k + 1) as f64)) / 3.0;
+        w[k] = (i1 + 2.0 * sqrt_3j2 * f64::cos(angle)) / 3.0;
+    }
+    w
+}

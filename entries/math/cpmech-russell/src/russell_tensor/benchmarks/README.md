@@ -1,0 +1,76 @@
+# Russell Tensor — Benchmarks
+
+This directory contains [Criterion](https://github.com/bheisler/criterion.rs) benchmarks for the
+`russell_tensor` crate.
+
+## Polar decomposition benchmark
+
+`polar_decomp_benchmark` compares the speed of the polar-decomposition algorithms:
+
+| algorithm    | description                                                                     |
+| ------------ | ------------------------------------------------------------------------------- |
+| `iterative`  | `PolarAlgo::Iterative` — Brannon's iterative fixed-point (3×3)                  |
+| `quaternion` | `PolarAlgo::Quaternion` — Higham & Noferini quaternion-based, direct (3×3)      |
+| `eigen`      | `PolarAlgo::Eigen` — eigen-decomposition of `C = Fᵀ F` via `EigenProjsT2` (3×3) |
+| `svd`        | `PolarAlgo::SVD` — classic: singular value decomposition (3×3)                  |
+
+> **Note:** all algorithms are benchmarked through the unified `polar_decomp_mx`
+> dispatcher, which computes the rotation `R` and the right stretch `U` together
+> for every algorithm.
+
+Mildly-, well-, moderately-, and ill-conditioned `F` are benchmarked, plus an in-plane `F`.
+The `eigen` algorithm squares the condition number (via `C = Fᵀ F`), so it is not
+benchmarked for the ill-conditioned case.
+
+### How to run
+
+```bash
+cargo bench -p russell_tensor --features intel_mkl --bench polar_decomp_benchmark
+```
+
+---
+
+## Eigen benchmark
+
+`eigen_values_benchmark` benchmarks the three eigen-evaluation stages of the crate:
+
+1. `eigenvalues_{case}` — `EigenValuesT2::calculate_mx` (values only)
+2. `eigen_projectors_{case}` — `EigenProjsT2::calculate_mx` (values + Sylvester projectors)
+3. `eigen_proj_derivs_distinct` — the `EigenProjDerivsT2` derivative algorithms
+
+The four eigenvalue methods are:
+
+| method            | description                                                                           |
+| ----------------- | ------------------------------------------------------------------------------------- |
+| `analytical_hz`   | `EigenValMethod::AnalyticalHZ` — stable closed-form (Habera & Zilian 2025)            |
+| `analytical_ha22` | `EigenValMethod::AnalyticalHA22` — Box-1 discriminant (Harari & Albocher 2022)        |
+| `analytical_ha23` | `EigenValMethod::AnalyticalHA23` — seven-square discriminant (Harari & Albocher 2023) |
+| `iterative`       | `EigenValMethod::Iterative` — iterative Jacobi rotations                              |
+
+Two symmetric input tensors are used: `distinct` (well-separated eigenvalues) and
+`coalescent` (two nearly equal eigenvalues).
+
+The eigenprojector derivatives are only defined for distinct eigenvalues, so they use the
+`distinct` input and compare the two algorithms (both with Habera-Zilian eigenvalues):
+
+| algorithm   | description                                                             |
+| ----------- | ----------------------------------------------------------------------- |
+| `char_poly` | `calc_with_char_poly` — Panteghini's characteristic-polynomial approach |
+| `with_inv`  | `calc_with_inv` — Miehe's inverse-based approach                        |
+
+### How to run
+
+```bash
+cargo bench -p russell_tensor --features intel_mkl --bench eigen_values_benchmark
+```
+
+---
+
+## Results
+
+The full results (system information and the median times for every benchmark above)
+are auto-generated into [`RESULTS.md`](RESULTS.md). To regenerate it, run:
+
+```bash
+python3 run_all.py
+```

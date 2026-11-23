@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 20:11 UTC · 931 entries · 247 vendored, 684 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 20:28 UTC · 937 entries · 249 vendored, 688 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
-| [math](#math) — Math libraries | 24 | 13 | 11 |
+| [math](#math) — Math libraries | 30 | 15 | 15 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
@@ -558,7 +558,7 @@ _Generated 2026-11-23 20:11 UTC · 931 entries · 247 vendored, 684 reference-on
 
 ## math
 
-**Math libraries** — 24 entries
+**Math libraries** — 30 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -576,6 +576,7 @@ _Generated 2026-11-23 20:11 UTC · 931 entries · 247 vendored, 684 reference-on
 | [Handmade Math](entries/math/handmademath/README.md) | single-header 3D math for games | c | CC0-1.0 | vendored | [HandmadeMath/HandmadeMath](https://github.com/HandmadeMath/HandmadeMath) @ `661fef0893bc` |
 | [hlslpp](entries/math/redorav-hlslpp/README.md) | Math library using HLSL syntax with multiplatform SIMD support | c++ | MIT | vendored | [redorav/hlslpp](https://github.com/redorav/hlslpp) @ `3d9af2e77a89` |
 | [hypersomnia — math](entries/math/hypersomnia-math/README.md) | vector/matrix/quaternion math substrate | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
+| [LASwift](entries/math/alexandertar-laswift/README.md) | Fast linear algebra for Swift on Apple platforms, powered by Accelerate (BLAS, LAPACK, vDSP) | swift | BSD-3-Clause | reference | [AlexanderTar/LASwift](https://github.com/AlexanderTar/LASwift) @ `2026-11-19 (branch tip at catalogue time)` |
 | [libfixmath](entries/math/libfixmath/README.md) | fixed-point math for deterministic simulation | c | MIT | vendored | [PetteriAimonen/libfixmath](https://github.com/PetteriAimonen/libfixmath) @ `46e89b748b1f` |
 | [math](entries/math/fireblade-engine-math/README.md) | A dependency free, lightweight, fast math library for 2D and 3D vectors, quaternions and matrices in Swift with (optional) SIMD support. | swift | MIT | reference | [fireblade-engine/math](https://github.com/fireblade-engine/math) @ `2026-11-14 (branch tip at catalogue time)` |
 | [math-php](entries/math/markrogoyski-math-php/README.md) | Powerful modern math library for PHP: Features descriptive statistics and regressions; Continuous and discrete probability distributions; Linear algebra with ma | php | MIT | vendored | [markrogoyski/math-php](https://github.com/markrogoyski/math-php) @ `1b53720fca6d` |
@@ -583,9 +584,14 @@ _Generated 2026-11-23 20:11 UTC · 931 entries · 247 vendored, 684 reference-on
 | [MathFu](entries/math/mathfu/README.md) | vector/matrix/quaternion math with SIMD backends | c++ | Apache-2.0 | vendored | [google/mathfu](https://github.com/google/mathfu) @ `da23a1227bb6` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
 | [optick — simd](entries/math/optick-simd/README.md) | vector/matrix/quaternion math substrate | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
+| [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
+| [russell](entries/math/cpmech-russell/README.md) | Rust Scientific Library. ODE, DAE, and PDE solvers. Special functions (Bessel, Elliptic, Beta, Gamma, Erf). Linear algebra. Sparse solvers. Probability distribu | rust | MIT | vendored | [cpmech/russell](https://github.com/cpmech/russell) @ `261fc91f7592` |
 | [sh4zam](entries/math/gyrovorbis-sh4zam/README.md) | Fast linear algebra and math library for the Hitachi SuperH4 Processor (used by the Sega Dreamcast). | c | MIT | vendored | [gyrovorbis/sh4zam](https://github.com/gyrovorbis/sh4zam) @ `5b7dfc22a91f` |
+| [SIFT3D](entries/math/bbrister-sift3d/README.md) | Analogue of the scale-invariant feature transform (SIFT) for three-dimensional images. Includes an image processing and linear algebra library with feature matc | c | MIT | reference | [bbrister/SIFT3D](https://github.com/bbrister/SIFT3D) @ `2020-08-28 (branch tip at catalogue time)` |
+| [slate](entries/math/icl-utk-edu-slate/README.md) | SLATE is a distributed, GPU-accelerated, dense linear algebra library targetting current and upcoming high-performance computing (HPC) systems. It is developed  | c++ | BSD-3-Clause | reference | [icl-utk-edu/slate](https://github.com/icl-utk-edu/slate) @ `2026-08-27 (branch tip at catalogue time)` |
 | [supertux — math](entries/math/supertux-math/README.md) | vector/matrix/quaternion math substrate | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [Tessel-A-tile-game — geom](entries/math/tessel-a-tile-game-geom/README.md) | vector/matrix/quaternion math substrate | ts | GPL-3.0 | reference | [gvtulder/tessel](https://github.com/gvtulder/tessel) @ `6249857` |
+| [tpp-mlir](entries/math/libxsmm-tpp-mlir/README.md) | TPP experimentation on MLIR for linear algebra | mlir | Apache-2.0 | vendored | [libxsmm/tpp-mlir](https://github.com/libxsmm/tpp-mlir) @ `14368326a83f` |
 
 ## loot-economy
 

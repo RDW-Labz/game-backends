@@ -1,0 +1,19 @@
+
+// RUN: tpp-opt --convert-to-llvm %s | FileCheck %s --check-prefix=CHECK-AMX-BF16
+
+// CHECK-AMX-BF16-LABEL:   llvm.func @entry
+// CHECK-AMX-BF16:         llvm.call_intrinsic "llvm.x86.tileloadd64.internal"{{.*}} -> !llvm.x86_amx
+// CHECK-AMX-BF16:         llvm.call_intrinsic "llvm.x86.tileloadd64.internal"{{.*}} -> !llvm.x86_amx
+// CHECK-AMX-BF16:         llvm.call_intrinsic "llvm.x86.tilezero.internal"{{.*}} -> !llvm.x86_amx
+// CHECK-AMX-BF16:         llvm.call_intrinsic "llvm.x86.tdpbf16ps.internal"{{.*}} -> !llvm.x86_amx
+func.func @entry(%arg0: memref<16x32xbf16>,
+             %arg1: memref<16x32xbf16>,
+             %arg2: memref<16x16xf32>) {
+  %0 = arith.constant 0 : index
+  %1 = x86.amx.tile_load %arg0[%0, %0] : memref<16x32xbf16>  into !x86.amx.tile<16x32xbf16>
+  %2 = x86.amx.tile_load %arg1[%0, %0] : memref<16x32xbf16>  into !x86.amx.tile<16x32xbf16>
+  %3 = x86.amx.tile_zero : !x86.amx.tile<16x16xf32>
+  %4 = x86.amx.tile_mulf %1, %2, %3 : !x86.amx.tile<16x32xbf16>, !x86.amx.tile<16x32xbf16>, !x86.amx.tile<16x16xf32>
+  x86.amx.tile_store %arg2[%0, %0], %4 : memref<16x16xf32>, !x86.amx.tile<16x16xf32>
+  return
+}

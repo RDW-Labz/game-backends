@@ -1,0 +1,35 @@
+[
+  {
+    "torch_dynamo" : {
+      "gemm_fp32_torch" : {
+        "type": "MLIR",
+        "benchmark": "pytorch/torch-dynamo-gemm-fp32-3x1024.mlir",
+        "environment": {}, 
+        "flags": [ "-n", "50" ],
+        "extensions": [ ] 
+      },
+      "gemm_bf16_torch" : {
+        "type": "MLIR",
+        "benchmark": "pytorch/torch-dynamo-gemm-bf16-3x1024.mlir",
+        "environment": {}, 
+        "flags": [ "-n", "50" ],
+        "extensions": [ ] 
+      },
+      "mlp_fp32_torch" : {
+        "type": "MLIR",
+        "benchmark": "pytorch/torch-dynamo-mlp-fp32-3x1024.mlir",
+        "environment": {}, 
+        "flags": [ "-n", "50" ],
+        "extensions": [ ] 
+      },
+      "mlp_bf16_torch" : {
+        "type": "MLIR",
+        "benchmark": "pytorch/torch-dynamo-mlp-bf16-3x1024.mlir",
+        "environment": {}, 
+        "flags": [ "-n", "50" ],
+        "extensions": [ ] 
+      }
+    }
+  }
+]
+
