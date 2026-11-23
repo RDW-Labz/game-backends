@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T00:36:04Z",
+ "category": "procgen",
+ "commit": "85bc9cea4764",
+ "delivery": "vendored",
+ "description": "aleksandrbazhin/mazegen \u2014 Maze generation header-only C++ library",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "mazegen",
+ "size_bytes": 22487,
+ "slug": "aleksandrbazhin-mazegen",
+ "source": "github-search:maze generation library stars:>20",
+ "stars": 22,
+ "system": "Maze generation header-only C++ library",
+ "upstream": "https://github.com/aleksandrbazhin/mazegen",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

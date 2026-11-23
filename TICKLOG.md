@@ -1643,3 +1643,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/kettle11-open-world-game
   - reference procgen/runevision-locomotionsystem
   - reference procgen/adamallsebrook-godot-procedural-tree-generation
+
+- **2026-11-23 00:36 UTC** — tick 652: +2 screened, +4 reference, 14 skipped, catalogue=494
+  - added procgen/aleksandrbazhin-mazegen (MIT, vendored)
+  - added procgen/cookiephone-libnoise-rs (MIT, vendored)
+  - reference procgen/lingdong-okb-js
+  - reference procgen/jaysmito101-terraforge3d
+  - reference procgen/manankarnik-bevy-generative
+  - reference procgen/bubblebrainbb-afternoon-light

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T00:36:06Z",
+ "category": "procgen",
+ "commit": "41ac16c660af",
+ "delivery": "vendored",
+ "description": "cookiephone/libnoise-rs \u2014 Simple and customizable procedural noise generation library written in Rust.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "libnoise-rs",
+ "size_bytes": 281869,
+ "slug": "cookiephone-libnoise-rs",
+ "source": "github-search:noise generation library stars:>40",
+ "stars": 64,
+ "system": "Simple and customizable procedural noise generation library written in Rust.",
+ "upstream": "https://github.com/cookiephone/libnoise-rs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

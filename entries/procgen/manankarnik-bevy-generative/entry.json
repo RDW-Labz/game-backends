@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:36:07Z",
+ "category": "procgen",
+ "commit": "2025-10-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "manankarnik/bevy_generative \u2014 Real-time procedural generation of maps, textures, terrain, planets and more!",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_generative",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "manankarnik-bevy-generative",
+ "source": "github-search:procedural texture generation stars:>20",
+ "stars": 135,
+ "system": "Real-time procedural generation of maps, textures, terrain, planets and more!",
+ "upstream": "https://github.com/manankarnik/bevy_generative",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

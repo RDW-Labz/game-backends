@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:36:07Z",
+ "category": "procgen",
+ "commit": "2022-12-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LingDong-/Okb.js \u2014 Procedural generation toolkit for Javascript - noises, randomness, curves, and more",
+ "language": "html",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Okb.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "lingdong-okb-js",
+ "source": "github-search:noise generation library stars:>40",
+ "stars": 63,
+ "system": "Procedural generation toolkit for Javascript - noises, randomness, curves, and more",
+ "upstream": "https://github.com/LingDong-/Okb.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

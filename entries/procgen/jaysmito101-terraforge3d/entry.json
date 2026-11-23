@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:36:07Z",
+ "category": "procgen",
+ "commit": "2026-10-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Jaysmito101/TerraForge3D \u2014 Cross Platform Professional Procedural Terrain Generation & Texturing Tool",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "TerraForge3D",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jaysmito101-terraforge3d",
+ "source": "github-search:procedural texture generation stars:>20",
+ "stars": 1267,
+ "system": "Cross Platform Professional Procedural Terrain Generation & Texturing Tool",
+ "upstream": "https://github.com/Jaysmito101/TerraForge3D",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

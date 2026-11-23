@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:36:07Z",
+ "category": "procgen",
+ "commit": "2026-11-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BubbleBrainBB/afternoon-light \u2014 \u5348\u540e \u00b7 Afternoon Light \u2014 a still image computed entirely by code: a from-scratch C++ path tracer and a fully procedural scene. No image-generation model, no texture images, no 3D software.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "afternoon-light",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "bubblebrainbb-afternoon-light",
+ "source": "github-search:procedural texture generation stars:>20",
+ "stars": 23,
+ "system": "\u5348\u540e \u00b7 Afternoon Light \u2014 a still image computed entirely by code: a from-scratch C++ path tracer and a fully procedural scene. No image-generation model, no textu",
+ "upstream": "https://github.com/BubbleBrainBB/afternoon-light",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
