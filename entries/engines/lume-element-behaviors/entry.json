@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:10:16Z",
+ "category": "engines",
+ "commit": "2024-10-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "lume/element-behaviors \u2014 An entity-component system for HTML elements.",
+ "language": "typescript",
+ "license": "LGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "element-behaviors",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-3.0)",
+ "slug": "lume-element-behaviors",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 115,
+ "system": "An entity-component system for HTML elements.",
+ "upstream": "https://github.com/lume/element-behaviors",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

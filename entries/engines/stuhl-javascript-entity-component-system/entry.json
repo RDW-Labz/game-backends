@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:10:16Z",
+ "category": "engines",
+ "commit": "2024-07-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Stuhl/javascript-entity-component-system \u2014 A simple and small sized Entity Component System for HTML5 games",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "javascript-entity-component-system",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "stuhl-javascript-entity-component-system",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 108,
+ "system": "A simple and small sized Entity Component System for HTML5 games",
+ "upstream": "https://github.com/Stuhl/javascript-entity-component-system",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1899,3 +1899,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/mlange-42-arche
   - reference engines/sergeymakeev-ecs
   - reference engines/shangdibaozi-ecs
+
+- **2026-11-23 09:10 UTC** — tick 684: +2 screened, +4 reference, 0 skipped, catalogue=686
+  - added engines/yagl-ecs (MIT, vendored)
+  - added engines/arturonereu-ecs-101 (MIT, vendored)
+  - reference engines/lume-element-behaviors
+  - reference engines/stuhl-javascript-entity-component-system
+  - reference engines/flame-engine-oxygen
+  - reference engines/amethyst-specs-physics

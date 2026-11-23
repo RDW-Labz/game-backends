@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:10:16Z",
+ "category": "engines",
+ "commit": "2024-03-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "flame-engine/oxygen \u2014 A lightweight Entity Component System written in Dart.",
+ "language": "dart",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "oxygen",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "flame-engine-oxygen",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 102,
+ "system": "A lightweight Entity Component System written in Dart.",
+ "upstream": "https://github.com/flame-engine/oxygen",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

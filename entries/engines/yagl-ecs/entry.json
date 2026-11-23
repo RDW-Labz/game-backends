@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T09:10:02Z",
+ "category": "engines",
+ "commit": "90b3ba1868a3",
+ "delivery": "vendored",
+ "description": "yagl/ecs \u2014 Entity / Component / System pattern for ES6",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "README.md",
+ "license_verdict": "clean",
+ "name": "ecs",
+ "size_bytes": 58405,
+ "slug": "yagl-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 122,
+ "system": "Entity / Component / System pattern for ES6",
+ "upstream": "https://github.com/yagl/ecs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:10:16Z",
+ "category": "engines",
+ "commit": "2020-05-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "amethyst/specs-physics \u2014 nphysics integration for the Specs entity component system",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "specs-physics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "amethyst-specs-physics",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 95,
+ "system": "nphysics integration for the Specs entity component system",
+ "upstream": "https://github.com/amethyst/specs-physics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
