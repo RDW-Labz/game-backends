@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:52:08Z",
+ "category": "math",
+ "commit": "2022-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "giladfrid009/SimpleSIMD \u2014 Easy to use SIMD accelerated Array and Span methods",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SimpleSIMD",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "giladfrid009-simplesimd",
+ "source": "github-search:simd math library stars:>40",
+ "stars": 93,
+ "system": "Easy to use SIMD accelerated Array and Span methods",
+ "upstream": "https://github.com/giladfrid009/SimpleSIMD",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

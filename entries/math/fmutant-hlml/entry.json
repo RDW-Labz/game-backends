@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:52:08Z",
+ "category": "math",
+ "commit": "2019-06-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fmutant/hlml \u2014 vectorized high-level math library",
+ "language": "c++",
+ "license": "WTFPL",
+ "license_verdict": "gated-reference",
+ "name": "hlml",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (WTFPL)",
+ "slug": "fmutant-hlml",
+ "source": "github-search:simd math library stars:>40",
+ "stars": 42,
+ "system": "vectorized high-level math library",
+ "upstream": "https://github.com/fmutant/hlml",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

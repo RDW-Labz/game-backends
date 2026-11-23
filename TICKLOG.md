@@ -2306,3 +2306,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/umontreal-simul-testu01-2009
   - reference math/ar1st0crat-nwaves
   - reference math/jiepengtan-unity-raymarching-framework
+
+- **2026-11-23 22:52 UTC** — tick 735: +2 screened, +4 reference, 3 skipped, catalogue=991
+  - added math/mrunbelievable92-maxmath (Apache-2.0, reference)
+  - added math/zig-gamedev-zmath (MIT, vendored)
+  - reference math/cincinesh-tue
+  - reference math/giladfrid009-simplesimd
+  - reference math/swiftgfx-swiftmath
+  - reference math/fmutant-hlml

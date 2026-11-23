@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:52:08Z",
+ "category": "math",
+ "commit": "2022-07-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SwiftGFX/SwiftMath \u2014 Cross-platform math library with SIMD support",
+ "language": "swift",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "SwiftMath",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "swiftgfx-swiftmath",
+ "source": "github-search:simd math library stars:>40",
+ "stars": 67,
+ "system": "Cross-platform math library with SIMD support",
+ "upstream": "https://github.com/SwiftGFX/SwiftMath",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

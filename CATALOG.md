@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 22:36 UTC · 985 entries · 263 vendored, 722 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 22:52 UTC · 991 entries · 264 vendored, 727 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
-| [math](#math) — Math libraries | 78 | 29 | 49 |
+| [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
@@ -558,7 +558,7 @@ _Generated 2026-11-23 22:36 UTC · 985 entries · 263 vendored, 722 reference-on
 
 ## math
 
-**Math libraries** — 78 entries
+**Math libraries** — 84 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -595,6 +595,7 @@ _Generated 2026-11-23 22:36 UTC · 985 entries · 263 vendored, 722 reference-on
 | [glas — math](entries/math/glas-math/README.md) | vector/matrix/quaternion math substrate | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
 | [GLM](entries/math/glm/README.md) | header-only GLSL-style vector/matrix/quaternion math | c++ | MIT | vendored | [g-truc/glm](https://github.com/g-truc/glm) @ `6f14f4792a0c` |
 | [Handmade Math](entries/math/handmademath/README.md) | single-header 3D math for games | c | CC0-1.0 | vendored | [HandmadeMath/HandmadeMath](https://github.com/HandmadeMath/HandmadeMath) @ `661fef0893bc` |
+| [hlml](entries/math/fmutant-hlml/README.md) | vectorized high-level math library | c++ | WTFPL | reference | [fmutant/hlml](https://github.com/fmutant/hlml) @ `2019-06-24 (branch tip at catalogue time)` |
 | [hlslpp](entries/math/redorav-hlslpp/README.md) | Math library using HLSL syntax with multiplatform SIMD support | c++ | MIT | vendored | [redorav/hlslpp](https://github.com/redorav/hlslpp) @ `3d9af2e77a89` |
 | [hypercomplex](entries/math/discretegames-hypercomplex/README.md) | A Python library for working with arbitrary-dimension hypercomplex numbers following the Cayley-Dickson construction of algebras. | python | MIT | reference | [discretegames/hypercomplex](https://github.com/discretegames/hypercomplex) @ `2022-08-14 (branch tip at catalogue time)` |
 | [hypersomnia — math](entries/math/hypersomnia-math/README.md) | vector/matrix/quaternion math substrate | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
@@ -611,6 +612,7 @@ _Generated 2026-11-23 22:36 UTC · 985 entries · 263 vendored, 722 reference-on
 | [mathbench-rs](entries/math/bitshifter-mathbench-rs/README.md) | Comparing performance of Rust math libraries for common 3D game and graphics tasks | rust | unknown | reference | [bitshifter/mathbench-rs](https://github.com/bitshifter/mathbench-rs) @ `2026-10-13 (branch tip at catalogue time)` |
 | [MathFu](entries/math/mathfu/README.md) | vector/matrix/quaternion math with SIMD backends | c++ | Apache-2.0 | vendored | [google/mathfu](https://github.com/google/mathfu) @ `da23a1227bb6` |
 | [maths-rs](entries/math/polymonster-maths-rs/README.md) | Linear algebra library for graphics and gamedev. | rust | MIT | vendored | [polymonster/maths-rs](https://github.com/polymonster/maths-rs) @ `d1980e43c875` |
+| [MaxMath](entries/math/mrunbelievable92-maxmath/README.md) | A successor to the SIMD math library Unity.Mathematics, extending it to all C# numeric types while adding many new types and functions. Written entirely with ha | c# | Apache-2.0 | reference | [MrUnbelievable92/MaxMath](https://github.com/MrUnbelievable92/MaxMath) @ `bfeaf2875e07` |
 | [miniply](entries/math/vilya-miniply/README.md) | A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file | c++ | MIT | reference | [vilya/miniply](https://github.com/vilya/miniply) @ `2023-03-14 (branch tip at catalogue time)` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
 | [NTSC-CRT](entries/math/lmp88959-ntsc-crt/README.md) | NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time application | c | unknown | reference | [LMP88959/NTSC-CRT](https://github.com/LMP88959/NTSC-CRT) @ `2026-07-19 (branch tip at catalogue time)` |
@@ -625,10 +627,12 @@ _Generated 2026-11-23 22:36 UTC · 985 entries · 263 vendored, 722 reference-on
 | [russell](entries/math/cpmech-russell/README.md) | Rust Scientific Library. ODE, DAE, and PDE solvers. Special functions (Bessel, Elliptic, Beta, Gamma, Erf). Linear algebra. Sparse solvers. Probability distribu | rust | MIT | vendored | [cpmech/russell](https://github.com/cpmech/russell) @ `261fc91f7592` |
 | [sh4zam](entries/math/gyrovorbis-sh4zam/README.md) | Fast linear algebra and math library for the Hitachi SuperH4 Processor (used by the Sega Dreamcast). | c | MIT | vendored | [gyrovorbis/sh4zam](https://github.com/gyrovorbis/sh4zam) @ `5b7dfc22a91f` |
 | [SIFT3D](entries/math/bbrister-sift3d/README.md) | Analogue of the scale-invariant feature transform (SIFT) for three-dimensional images. Includes an image processing and linear algebra library with feature matc | c | MIT | reference | [bbrister/SIFT3D](https://github.com/bbrister/SIFT3D) @ `2020-08-28 (branch tip at catalogue time)` |
+| [SimpleSIMD](entries/math/giladfrid009-simplesimd/README.md) | Easy to use SIMD accelerated Array and Span methods | c# | MIT | reference | [giladfrid009/SimpleSIMD](https://github.com/giladfrid009/SimpleSIMD) @ `2022-11-19 (branch tip at catalogue time)` |
 | [slate](entries/math/icl-utk-edu-slate/README.md) | SLATE is a distributed, GPU-accelerated, dense linear algebra library targetting current and upcoming high-performance computing (HPC) systems. It is developed  | c++ | BSD-3-Clause | reference | [icl-utk-edu/slate](https://github.com/icl-utk-edu/slate) @ `2026-08-27 (branch tip at catalogue time)` |
 | [soroban-fixed-point-math](entries/math/script3-soroban-fixed-point-math/README.md) | Fixed point math library for Soroban smart contracts. | rust | MIT | reference | [script3/soroban-fixed-point-math](https://github.com/script3/soroban-fixed-point-math) @ `2026-04-28 (branch tip at catalogue time)` |
 | [SpaceVecAlg](entries/math/jrl-umi3218-spacevecalg/README.md) | Implementation of spatial vector algebra with the Eigen3 linear algebra library. | c++ | BSD-2-Clause | reference | [jrl-umi3218/SpaceVecAlg](https://github.com/jrl-umi3218/SpaceVecAlg) @ `2026-11-18 (branch tip at catalogue time)` |
 | [supertux — math](entries/math/supertux-math/README.md) | vector/matrix/quaternion math substrate | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
+| [SwiftMath](entries/math/swiftgfx-swiftmath/README.md) | Cross-platform math library with SIMD support | swift | BSD-2-Clause | reference | [SwiftGFX/SwiftMath](https://github.com/SwiftGFX/SwiftMath) @ `2022-07-30 (branch tip at catalogue time)` |
 | [Terathon-Math-Library](entries/math/ericlengyel-terathon-math-library/README.md) | C++ math library for 2D/3D/4D vector, matrix, quaternion, and geometric algebra. | c++ | MIT | reference | [EricLengyel/Terathon-Math-Library](https://github.com/EricLengyel/Terathon-Math-Library) @ `2026-07-27 (branch tip at catalogue time)` |
 | [Tessel-A-tile-game — geom](entries/math/tessel-a-tile-game-geom/README.md) | vector/matrix/quaternion math substrate | ts | GPL-3.0 | reference | [gvtulder/tessel](https://github.com/gvtulder/tessel) @ `6249857` |
 | [TestU01-2009](entries/math/umontreal-simul-testu01-2009/README.md) | This is the 2009 version of TestU01, a software library, implemented in the ANSI C language, and offering a collection of utilities for the empirical statistica | c | Apache-2.0 | reference | [umontreal-simul/TestU01-2009](https://github.com/umontreal-simul/TestU01-2009) @ `2026-04-12 (branch tip at catalogue time)` |
@@ -636,10 +640,12 @@ _Generated 2026-11-23 22:36 UTC · 985 entries · 263 vendored, 722 reference-on
 | [tpp-mlir](entries/math/libxsmm-tpp-mlir/README.md) | TPP experimentation on MLIR for linear algebra | mlir | Apache-2.0 | vendored | [libxsmm/tpp-mlir](https://github.com/libxsmm/tpp-mlir) @ `14368326a83f` |
 | [Trackball.js](entries/math/rawify-trackball-js/README.md) | The RAW library to add a virtual Trackball to your DOM | javascript | MIT | reference | [rawify/Trackball.js](https://github.com/rawify/Trackball.js) @ `2025-09-12 (branch tip at catalogue time)` |
 | [trng4](entries/math/rabauke-trng4/README.md) | state-of-the-art C++ pseudo-random number generator library for sequential and parallel Monte Carlo simulations | c++ | BSD-3-Clause | reference | [rabauke/trng4](https://github.com/rabauke/trng4) @ `2026-11-21 (branch tip at catalogue time)` |
+| [tue](entries/math/cincinesh-tue/README.md) | The Tuesday C++ Vector Math and SIMD Library | c++ | BSL-1.0 | reference | [Cincinesh/tue](https://github.com/Cincinesh/tue) @ `2017-04-17 (branch tip at catalogue time)` |
 | [Unity-Raymarching-Framework](entries/math/jiepengtan-unity-raymarching-framework/README.md) | A framework to easy implement raymarching in unity. Include lots of hash,noise,fbm,SDF,rotate functions | hlsl | MIT | reference | [JiepengTan/Unity-Raymarching-Framework](https://github.com/JiepengTan/Unity-Raymarching-Framework) @ `2018-04-27 (branch tip at catalogue time)` |
 | [Unity.Mathematics.FixedPoint](entries/math/danielmansson-unity-mathematics-fixedpoint/README.md) | Fixed-point extension of Unity's C# math library based on FixedMath.Net and Unity.Mathematics. | c# | MIT | reference | [danielmansson/Unity.Mathematics.FixedPoint](https://github.com/danielmansson/Unity.Mathematics.FixedPoint) @ `2021-04-22 (branch tip at catalogue time)` |
 | [vec-mat-comp-quat](entries/math/mrmcsoftware-vec-mat-comp-quat/README.md) | C++ 2d/3d/4d Vector, 2x2/3x3/4x4 Matrix, Complex Number, Quaternion, and 3d Transformation Classes / Functions (Header Only libraries) | c++ | LGPL-3.0 | reference | [mrmcsoftware/vec-mat-comp-quat](https://github.com/mrmcsoftware/vec-mat-comp-quat) @ `2024-06-23 (branch tip at catalogue time)` |
 | [vgMath](entries/math/brutpitt-vgmath/README.md) | vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ... | c++ | BSD-2-Clause | reference | [BrutPitt/vgMath](https://github.com/BrutPitt/vgMath) @ `2025-03-16 (branch tip at catalogue time)` |
+| [zmath](entries/math/zig-gamedev-zmath/README.md) | SIMD math library for Zig game developers | zig | MIT | vendored | [zig-gamedev/zmath](https://github.com/zig-gamedev/zmath) @ `43250209495c` |
 
 ## loot-economy
 

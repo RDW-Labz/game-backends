@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T22:52:07Z",
+ "category": "math",
+ "commit": "43250209495c",
+ "delivery": "vendored",
+ "description": "zig-gamedev/zmath \u2014 SIMD math library for Zig game developers",
+ "language": "zig",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "zmath",
+ "size_bytes": 202221,
+ "slug": "zig-gamedev-zmath",
+ "source": "github-search:simd math library stars:>40",
+ "stars": 134,
+ "system": "SIMD math library for Zig game developers",
+ "upstream": "https://github.com/zig-gamedev/zmath",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

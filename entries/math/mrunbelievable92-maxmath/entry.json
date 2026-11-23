@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T22:52:05Z",
+ "category": "math",
+ "commit": "bfeaf2875e07",
+ "delivery": "reference",
+ "description": "MrUnbelievable92/MaxMath \u2014 A successor to the SIMD math library Unity.Mathematics, extending it to all C# numeric types while adding many new types and functions. Written entirely with hardware intrinsics, using Unity.Burst.",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "MaxMath",
+ "reference_reason": "size gate: 43 MB",
+ "size_bytes": 45458623,
+ "slug": "mrunbelievable92-maxmath",
+ "source": "github-search:simd math library stars:>40",
+ "stars": 169,
+ "system": "A successor to the SIMD math library Unity.Mathematics, extending it to all C# numeric types while adding many new types and functions. Written entirely with ha",
+ "upstream": "https://github.com/MrUnbelievable92/MaxMath",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
