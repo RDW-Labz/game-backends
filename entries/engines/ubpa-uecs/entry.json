@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T08:38:06Z",
+ "category": "engines",
+ "commit": "98feb3939e66",
+ "delivery": "vendored",
+ "description": "Ubpa/UECS \u2014 Ubpa Entity-Component-System (U ECS) in Unity3D-style",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "UECS",
+ "size_bytes": 170012,
+ "slug": "ubpa-uecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 382,
+ "system": "Ubpa Entity-Component-System (U ECS) in Unity3D-style",
+ "upstream": "https://github.com/Ubpa/UECS",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

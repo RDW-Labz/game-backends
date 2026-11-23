@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:38:07Z",
+ "category": "engines",
+ "commit": "2026-07-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Indra-db/Flecs-Rust \u2014 Rust API for Flecs: A Fast and Flexible Entity Component System (ECS)",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Flecs-Rust",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "indra-db-flecs-rust",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 344,
+ "system": "Rust API for Flecs: A Fast and Flexible Entity Component System (ECS)",
+ "upstream": "https://github.com/Indra-db/Flecs-Rust",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

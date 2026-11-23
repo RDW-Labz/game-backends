@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:38:07Z",
+ "category": "engines",
+ "commit": "2023-07-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JuDelCo/Entitas-Cpp \u2014 Entitas++ is a fast Entity Component System (ECS) C++11 port of Entitas C#",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Entitas-Cpp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "judelco-entitas-cpp",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 356,
+ "system": "Entitas++ is a fast Entity Component System (ECS) C++11 port of Entitas C#",
+ "upstream": "https://github.com/JuDelCo/Entitas-Cpp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

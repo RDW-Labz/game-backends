@@ -1883,3 +1883,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/cronza-heartbeatengine
   - reference engines/badhope-world-walker
   - reference engines/ichabod801-t-games
+
+- **2026-11-23 08:38 UTC** — tick 682: +2 screened, +4 reference, 21 skipped, catalogue=674
+  - added engines/dominion-dev-dominion-ecs-java (MIT, vendored)
+  - added engines/ubpa-uecs (MIT, vendored)
+  - reference engines/godothub-godot-ecs
+  - reference engines/judelco-entitas-cpp
+  - reference engines/indra-db-flecs-rust
+  - reference engines/dcfapixels-dragonecs

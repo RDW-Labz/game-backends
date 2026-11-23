@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 08:22 UTC · 668 entries · 181 vendored, 487 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 08:38 UTC · 674 entries · 183 vendored, 491 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 242 | 48 | 194 |
+| [engines](#engines) — Game engines and engine subsystems | 248 | 50 | 198 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 08:22 UTC · 668 entries · 181 vendored, 487 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 242 entries
+**Game engines and engine subsystems** — 248 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -65,8 +65,10 @@ _Generated 2026-11-23 08:22 UTC · 668 entries · 181 vendored, 487 reference-on
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
 | [dip](entries/engines/diptools-dip/README.md) | Rust application framework focuses on composability, ECS and Web3.  Powered by Bevy game engine, Tauri, and Dioxus. From desktop apps to the Metaverse. | rust | unknown | reference | [diptools/dip](https://github.com/diptools/dip) @ `2026-04-13 (branch tip at catalogue time)` |
+| [dominion-ecs-java](entries/engines/dominion-dev-dominion-ecs-java/README.md) | Insanely fast ECS (Entity Component System) for Java | java | MIT | vendored | [dominion-dev/dominion-ecs-java](https://github.com/dominion-dev/dominion-ecs-java) @ `e3c99d10ffcc` |
 | [doriax](entries/engines/doriaxengine-doriax/README.md) | Game engine for 2D and 3D projects with entity component system (ECS) and data-oriented design | c++ | MIT | reference | [doriaxengine/doriax](https://github.com/doriaxengine/doriax) @ `2026-11-15 (branch tip at catalogue time)` |
 | [dragon-mud](entries/engines/bbuck-dragon-mud/README.md) | A text-based game engine written in Go and scripted with Lua. | go | none | reference | [bbuck/dragon-mud](https://github.com/bbuck/dragon-mud) @ `3e8c854b7aff` |
+| [DragonECS](entries/engines/dcfapixels-dragonecs/README.md) | Pure C# Entity Component System framework | c# | MIT | reference | [DCFApixels/DragonECS](https://github.com/DCFApixels/DragonECS) @ `2026-09-20 (branch tip at catalogue time)` |
 | [DuckEngine](entries/engines/art-emini-duckengine/README.md) | A 2D Game Engine for the web. | typescript | MIT | reference | [art-emini/DuckEngine](https://github.com/art-emini/DuckEngine) @ `2023-08-25 (branch tip at catalogue time)` |
 | [ebiten](entries/engines/hajimehoshi-ebiten/README.md) | A dead simple 2D game engine for Go | go | Apache-2.0 | vendored | [hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) @ `d438df689b19` |
 | [echo](entries/engines/timi-liuliang-echo/README.md) | A New Cross-Platform 2D 3D Game Engine | c++ | MIT | reference | [timi-liuliang/echo](https://github.com/timi-liuliang/echo) @ `2026-09-16 (branch tip at catalogue time)` |
@@ -80,6 +82,7 @@ _Generated 2026-11-23 08:22 UTC · 668 entries · 181 vendored, 487 reference-on
 | [engine](entries/engines/playcanvas-engine/README.md) | Open-source web graphics engine built on WebGPU and WebGL2 | javascript | MIT | reference | [playcanvas/engine](https://github.com/playcanvas/engine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [engo](entries/engines/engoengine-engo/README.md) | Engo is an open-source 2D game engine written in Go. | go | MIT | reference | [EngoEngine/engo](https://github.com/EngoEngine/engo) @ `2026-03-30 (branch tip at catalogue time)` |
 | [Entitas](entries/engines/sschmid-entitas/README.md) | Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity | c# | MIT | vendored | [sschmid/Entitas](https://github.com/sschmid/Entitas) @ `37547d1bd280` |
+| [Entitas-Cpp](entries/engines/judelco-entitas-cpp/README.md) | Entitas++ is a fast Entity Component System (ECS) C++11 port of Entitas C# | c++ | MIT | reference | [JuDelCo/Entitas-Cpp](https://github.com/JuDelCo/Entitas-Cpp) @ `2023-07-01 (branch tip at catalogue time)` |
 | [EntityComponentSystemSamples](entries/engines/unity-technologies-entitycomponentsystemsamples/README.md) | see upstream | c# | none | reference | [Unity-Technologies/EntityComponentSystemSamples](https://github.com/Unity-Technologies/EntityComponentSystemSamples) @ `6786a741ee1f` |
 | [EnTT](entries/engines/entt/README.md) | header-only ECS: registry, views, groups, signals | c++ | MIT | vendored | [skypjack/entt](https://github.com/skypjack/entt) @ `1dcd7aab6548` |
 | [eos_plugin_for_unity](entries/engines/eos-contrib-eos-plugin-for-unity/README.md) | Repository for EOS Plugin for Unity, bringing the functionality of Epic Online Services to the Unity Game Engine. | c# | MIT | reference | [EOS-Contrib/eos_plugin_for_unity](https://github.com/EOS-Contrib/eos_plugin_for_unity) @ `c5167a5fa86d` |
@@ -97,6 +100,7 @@ _Generated 2026-11-23 08:22 UTC · 668 entries · 181 vendored, 487 reference-on
 | [flame](entries/engines/flame-engine-flame/README.md) | A Flutter based game engine. | dart | MIT | vendored | [flame-engine/flame](https://github.com/flame-engine/flame) @ `c4c6b3f163d5` |
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
 | [Flecs](entries/engines/flecs/README.md) | ECS with prefabs, pipelines, hierarchies, REST explorer | c | MIT | reference | [SanderMertens/flecs](https://github.com/SanderMertens/flecs) @ `fa6554710d0d` |
+| [Flecs-Rust](entries/engines/indra-db-flecs-rust/README.md) | Rust API for Flecs: A Fast and Flexible Entity Component System (ECS) | rust | MIT | reference | [Indra-db/Flecs-Rust](https://github.com/Indra-db/Flecs-Rust) @ `2026-07-26 (branch tip at catalogue time)` |
 | [FlexEngine](entries/engines/ajweeks-flexengine/README.md) | Cross-platform game engine with Vulkan backend | c++ | MIT | reference | [ajweeks/FlexEngine](https://github.com/ajweeks/FlexEngine) @ `03aab462249b` |
 | [flint](entries/engines/zoeesilcock-flint/README.md) | Building blocks for the game engine your game actually needs. | zig | MIT | reference | [zoeesilcock/flint](https://github.com/zoeesilcock/flint) @ `2026-11-15 (branch tip at catalogue time)` |
 | [fmod-gdextension](entries/engines/utopia-rise-fmod-gdextension/README.md) | FMOD Studio GDExtension bindings for the Godot game engine | c++ | unknown | reference | [utopia-rise/fmod-gdextension](https://github.com/utopia-rise/fmod-gdextension) @ `2026-11-07 (branch tip at catalogue time)` |
@@ -117,6 +121,7 @@ _Generated 2026-11-23 08:22 UTC · 668 entries · 181 vendored, 487 reference-on
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
 | [godot-cpp (GDExtension bindings)](entries/engines/godot-cpp/README.md) | C++ bindings/extension ABI for Godot | c++ | MIT | reference | [godotengine/godot-cpp](https://github.com/godotengine/godot-cpp) @ `2a4c066e1e8c` |
 | [godot-docs](entries/engines/godotengine-godot-docs/README.md) | Godot Engine official documentation | restructuredtext | unknown | reference | [godotengine/godot-docs](https://github.com/godotengine/godot-docs) @ `2026-11-22 (branch tip at catalogue time)` |
+| [godot-ecs](entries/engines/godothub-godot-ecs/README.md) | A lightweight yet powerful Entity Component System (ECS) framework designed specifically for Godot 4. | gdscript | MIT | reference | [godothub/godot-ecs](https://github.com/godothub/godot-ecs) @ `2026-08-21 (branch tip at catalogue time)` |
 | [godot-manager](entries/engines/eumario-godot-manager/README.md) | A Project, Version and Addons/Plugins manager for Godot Game Engine. | c# | MIT | reference | [eumario/godot-manager](https://github.com/eumario/godot-manager) @ `2026-03-31 (branch tip at catalogue time)` |
 | [godot-mcp](entries/engines/coding-solo-godot-mcp/README.md) | MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output. | javascript | MIT | vendored | [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) @ `1209744fad78` |
 | [Godot-MCP](entries/engines/ivanmurzak-godot-mcp/README.md) | Godot-MCP — Model Context Protocol (MCP) integration for the Godot Engine. AI tools for the Godot Editor in C#, with cloud connection to ai-game.dev. Apache-2.0 | c# | Apache-2.0 | reference | [IvanMurzak/Godot-MCP](https://github.com/IvanMurzak/Godot-MCP) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -239,6 +244,7 @@ _Generated 2026-11-23 08:22 UTC · 668 entries · 181 vendored, 487 reference-on
 | [traviso.js](entries/engines/axaq-traviso-js/README.md) | Traviso is an open source JS engine that makes it easy to build isometric applications that run in a web browser. | typescript | MIT | reference | [axaq/traviso.js](https://github.com/axaq/traviso.js) @ `2026-06-17 (branch tip at catalogue time)` |
 | [turbulenz_engine](entries/engines/turbulenz-turbulenz-engine/README.md) | Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices. | typescript | MIT | reference | [turbulenz/turbulenz_engine](https://github.com/turbulenz/turbulenz_engine) @ `2023-05-28 (branch tip at catalogue time)` |
 | [UEAESKeyFinder](entries/engines/ezfndev-ueaeskeyfinder/README.md) | This tool can find the AES Key of probably any Unreal Engine game | c# | none | reference | [EZFNDEV/UEAESKeyFinder](https://github.com/EZFNDEV/UEAESKeyFinder) @ `eeacbb1f0e7d` |
+| [UECS](entries/engines/ubpa-uecs/README.md) | Ubpa Entity-Component-System (U ECS) in Unity3D-style | c++ | MIT | vendored | [Ubpa/UECS](https://github.com/Ubpa/UECS) @ `98feb3939e66` |
 | [umodel_tools](entries/engines/skarndev-umodel-tools/README.md) | A Blender add-on featuring import of Unreal Engine games static meshes and maps. It provides basic support for many UE games, while some have dedicated improved | python | GPL-3.0 | reference | [skarndev/umodel_tools](https://github.com/skarndev/umodel_tools) @ `c76ebf73bf17` |
 | [unity-ecs-navmesh](entries/engines/zulfajuniadi-unity-ecs-navmesh/README.md) | A demo implementation of Unity Entity Component System with NavMesh | c# | MIT | vendored | [zulfajuniadi/unity-ecs-navmesh](https://github.com/zulfajuniadi/unity-ecs-navmesh) @ `bb4fe6ed2f84` |
 | [unity-google-drive](entries/engines/elringus-unity-google-drive/README.md) | Google Drive SDK for the Unity game engine | c# | MIT | vendored | [elringus/unity-google-drive](https://github.com/elringus/unity-google-drive) @ `ac3f7da2013c` |

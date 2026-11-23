@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:38:07Z",
+ "category": "engines",
+ "commit": "2026-08-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "godothub/godot-ecs \u2014 A lightweight yet powerful Entity Component System (ECS) framework designed specifically for Godot 4.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-ecs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "godothub-godot-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 378,
+ "system": "A lightweight yet powerful Entity Component System (ECS) framework designed specifically for Godot 4.",
+ "upstream": "https://github.com/godothub/godot-ecs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

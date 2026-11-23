@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T08:38:04Z",
+ "category": "engines",
+ "commit": "e3c99d10ffcc",
+ "delivery": "vendored",
+ "description": "dominion-dev/dominion-ecs-java \u2014 Insanely fast ECS (Entity Component System) for Java",
+ "language": "java",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "dominion-ecs-java",
+ "size_bytes": 426850,
+ "slug": "dominion-dev-dominion-ecs-java",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 401,
+ "system": "Insanely fast ECS (Entity Component System) for Java",
+ "upstream": "https://github.com/dominion-dev/dominion-ecs-java",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

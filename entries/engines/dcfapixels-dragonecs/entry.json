@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T08:38:07Z",
+ "category": "engines",
+ "commit": "2026-09-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "DCFApixels/DragonECS \u2014 Pure C# Entity Component System framework",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "DragonECS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dcfapixels-dragonecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 341,
+ "system": "Pure C# Entity Component System framework",
+ "upstream": "https://github.com/DCFApixels/DragonECS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
