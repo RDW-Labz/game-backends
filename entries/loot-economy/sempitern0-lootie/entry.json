@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T23:08:04Z",
+ "category": "loot-economy",
+ "commit": "ab2b6065789b",
+ "delivery": "vendored",
+ "description": "sempitern0/Lootie \u2014 Portable loot table for Godot class that facilitates generating random loot based on specified items and their associated probabilities.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Lootie",
+ "size_bytes": 22258,
+ "slug": "sempitern0-lootie",
+ "source": "github-search:loot table stars:>10",
+ "stars": 126,
+ "system": "Portable loot table for Godot class that facilitates generating random loot based on specified items and their associated probabilities.",
+ "upstream": "https://github.com/sempitern0/Lootie",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

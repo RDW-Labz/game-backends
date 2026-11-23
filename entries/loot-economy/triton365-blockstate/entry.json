@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:08:08Z",
+ "category": "loot-economy",
+ "commit": "2026-09-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Triton365/BlockState \u2014 A very, very large loot-table that extracts the BlockState data of any block at given position",
+ "language": "mcfunction",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "BlockState",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "triton365-blockstate",
+ "source": "github-search:loot table stars:>10",
+ "stars": 41,
+ "system": "A very, very large loot-table that extracts the BlockState data of any block at given position",
+ "upstream": "https://github.com/Triton365/BlockState",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

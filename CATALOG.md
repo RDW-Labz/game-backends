@@ -1,13 +1,13 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 22:52 UTC · 991 entries · 264 vendored, 727 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 23:08 UTC · 997 entries · 266 vendored, 731 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
-| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
+| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 21 | 6 | 15 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
@@ -649,23 +649,29 @@ _Generated 2026-11-23 22:52 UTC · 991 entries · 264 vendored, 727 reference-on
 
 ## loot-economy
 
-**Loot / drop and economy rolls** — 15 entries
+**Loot / drop and economy rolls** — 21 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
+| [BlockState](entries/loot-economy/triton365-blockstate/README.md) | A very, very large loot-table that extracts the BlockState data of any block at given position | mcfunction | MIT | reference | [Triton365/BlockState](https://github.com/Triton365/BlockState) @ `2026-09-26 (branch tip at catalogue time)` |
 | [Cataclysm-DDA — itemgroups](entries/loot-economy/cataclysm-dda-data-json-itemgroups/README.md) | item group / loot tables (JSON) | json | CC-BY-SA-3.0 | reference | [CleverRaven/Cataclysm-DDA.git](https://github.com/CleverRaven/Cataclysm-DDA.git) @ `2599825ebb8c` |
 | [crawl — source](entries/loot-economy/crawl-crawl-ref-source/README.md) | item generation (makeitem) and drop logic | c++ | GPL-2.0 | reference | [crawl/crawl.git](https://github.com/crawl/crawl.git) @ `cf8c9bca9065` |
 | [cyber-acid](entries/loot-economy/stateless-minds-cyber-acid/README.md) | Liquid democracy political simulator based on the automated data feed from the moneyless economy simulator Cyber Stasis. | go | MIT | reference | [stateless-minds/cyber-acid](https://github.com/stateless-minds/cyber-acid) @ `2024-12-04 (branch tip at catalogue time)` |
 | [cyber-stasis](entries/loot-economy/stateless-minds-cyber-stasis/README.md) | Post-money economy simulator in the form of a free fictional game based on gift economy that tests the hypothesis of having a market system without any exchange | go | MIT | vendored | [stateless-minds/cyber-stasis](https://github.com/stateless-minds/cyber-stasis) @ `cd2585927609` |
+| [DayZEditor](entries/loot-economy/mrx13415-dayzeditor/README.md) | A loot table editor for DayZ (Standalone) | c# | MIT | vendored | [MrX13415/DayZEditor](https://github.com/MrX13415/DayZEditor) @ `40f6eaa76eba` |
 | [DevilutionX — Source](entries/loot-economy/devilutionx-source/README.md) | Diablo item generation, affixes, quest drops | c++ | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996a89c5` |
 | [die-gulde](entries/loot-economy/europa1400-community-die-gulde/README.md) | A middle age economy simulation game made with Unity. Based on the classic medieval economy simulation game Europa 1400 - The Guild. | c# | MIT | reference | [europa1400-community/die-gulde](https://github.com/europa1400-community/die-gulde) @ `2025-03-26 (branch tip at catalogue time)` |
 | [konzole](entries/loot-economy/marostcs-konzole/README.md) | 09:17:02 Steam Console Client (c) Valve Corporation 09:17:02 -- type 'quit' to exit -- 09:17:02 Loading Steam API...OK. 09:17:02  09:17:03 Connecting anonymousl | n/a | unknown | reference | [marostcs/konzole](https://github.com/marostcs/konzole) @ `2021-01-15 (branch tip at catalogue time)` |
 | [loot-table (rue-williams)](entries/loot-economy/loot-table-gpl/README.md) | loot table random generator | typescript | GPL-3.0 | reference | [rue-williams/loot-table](https://github.com/rue-williams/loot-table) @ `586ff23677ae` |
 | [Loot-Tables (JS)](entries/loot-economy/loot-tables-js/README.md) | declarative weighted loot tables with nested rolls | javascript | MIT | vendored | [Mopolo/Loot-Tables](https://github.com/Mopolo/Loot-Tables) @ `8de49aeab208` |
+| [Lootie](entries/loot-economy/sempitern0-lootie/README.md) | Portable loot table for Godot class that facilitates generating random loot based on specified items and their associated probabilities. | gdscript | MIT | vendored | [sempitern0/Lootie](https://github.com/sempitern0/Lootie) @ `ab2b6065789b` |
+| [LootTable.js](entries/loot-economy/jotson-loottable-js/README.md) | A loot drop table implementation in JavaScript | javascript | MIT | reference | [jotson/LootTable.js](https://github.com/jotson/LootTable.js) @ `2023-10-11 (branch tip at catalogue time)` |
 | [Major-project-list](entries/loot-economy/manojkumarpatnaik-major-project-list/README.md) | A list of practical projects that anyone can solve in any programming language (See solutions). These projects are divided into multiple categories, and each ca | n/a | MIT | vendored | [ManojKumarPatnaik/Major-project-list](https://github.com/ManojKumarPatnaik/Major-project-list) @ `1bc6f5724b21` |
 | [openmu — Trade](entries/loot-economy/openmu-src-gamelogic-views-trade/README.md) | player trade/market views and pricing | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
 | [Prosperity-Wars](entries/loot-economy/nashet-prosperity-wars/README.md) | Game-like agent based economy simulator | c# | GPL-3.0 | reference | [Nashet/Prosperity-Wars](https://github.com/Nashet/Prosperity-Wars) @ `6c521ec46378` |
+| [StewBeet](entries/loot-economy/stoupy51-stewbeet/README.md) | A beet framework for generating Minecraft datapacks: declare an item once, and its models, recipes, loot tables, translations and in-game manual page are writte | python | unknown | reference | [Stoupy51/StewBeet](https://github.com/Stoupy51/StewBeet) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Surviv.io](entries/loot-economy/ronald106-surviv-io/README.md) |  <!doctype html> <html lang='en'>   <head>     <!-- Meta Properties -->     <meta charset='UTF-8'>     <title>surviv.io - 2d battle royale game</title>     <met | n/a | none | reference | [Ronald106/Surviv.io](https://github.com/Ronald106/Surviv.io) @ `HEAD` |
+| [ultraloot](entries/loot-economy/manticorp-ultraloot/README.md) | Highly functional loot table implementation in Javascript. Extendable, inheritance based tables with multiple pools and a flexible workflow. | typescript | MIT | reference | [manticorp/ultraloot](https://github.com/manticorp/ultraloot) @ `2026-11-22 (branch tip at catalogue time)` |
 | [widelands — economy](entries/loot-economy/widelands-economy/README.md) | loot, drop-rate, trade or economy simulation | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
 | [widelands — economy](entries/loot-economy/widelands-src-economy/README.md) | economy simulation: production chains, ware routing, markets | c++ | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `29753773d9c1` |
 

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T23:08:06Z",
+ "category": "loot-economy",
+ "commit": "40f6eaa76eba",
+ "delivery": "vendored",
+ "description": "MrX13415/DayZEditor \u2014 A loot table editor for DayZ (Standalone)",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "DayZEditor",
+ "size_bytes": 17520,
+ "slug": "mrx13415-dayzeditor",
+ "source": "github-search:loot table stars:>10",
+ "stars": 95,
+ "system": "A loot table editor for DayZ (Standalone)",
+ "upstream": "https://github.com/MrX13415/DayZEditor",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

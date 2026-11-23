@@ -2314,3 +2314,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/giladfrid009-simplesimd
   - reference math/swiftgfx-swiftmath
   - reference math/fmutant-hlml
+
+- **2026-11-23 23:08 UTC** — tick 736: +2 screened, +4 reference, 2 skipped, catalogue=997
+  - added loot-economy/sempitern0-lootie (MIT, vendored)
+  - added loot-economy/mrx13415-dayzeditor (MIT, vendored)
+  - reference loot-economy/stoupy51-stewbeet
+  - reference loot-economy/jotson-loottable-js
+  - reference loot-economy/triton365-blockstate
+  - reference loot-economy/manticorp-ultraloot

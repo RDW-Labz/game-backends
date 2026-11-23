@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:08:08Z",
+ "category": "loot-economy",
+ "commit": "2023-10-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jotson/LootTable.js \u2014 A loot drop table implementation in JavaScript",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "LootTable.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jotson-loottable-js",
+ "source": "github-search:loot table stars:>10",
+ "stars": 46,
+ "system": "A loot drop table implementation in JavaScript",
+ "upstream": "https://github.com/jotson/LootTable.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

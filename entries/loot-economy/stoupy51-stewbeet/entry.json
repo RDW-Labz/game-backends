@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T23:08:08Z",
+ "category": "loot-economy",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Stoupy51/StewBeet \u2014 A beet framework for generating Minecraft datapacks: declare an item once, and its models, recipes, loot tables, translations and in-game manual page are written on every build.",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "StewBeet",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "stoupy51-stewbeet",
+ "source": "github-search:loot table stars:>10",
+ "stars": 52,
+ "system": "A beet framework for generating Minecraft datapacks: declare an item once, and its models, recipes, loot tables, translations and in-game manual page are writte",
+ "upstream": "https://github.com/Stoupy51/StewBeet",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
