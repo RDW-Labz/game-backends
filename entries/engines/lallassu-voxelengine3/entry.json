@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T11:18:03Z",
+ "category": "engines",
+ "commit": "bb80288743a1",
+ "delivery": "vendored",
+ "description": "Lallassu/voxelengine3 \u2014 Voxel-engine in Javascript",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "voxelengine3",
+ "size_bytes": 1811567,
+ "slug": "lallassu-voxelengine3",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 352,
+ "system": "Voxel-engine in Javascript",
+ "upstream": "https://github.com/Lallassu/voxelengine3",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

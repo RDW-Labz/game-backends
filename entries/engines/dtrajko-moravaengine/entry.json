@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T11:18:37Z",
+ "category": "engines",
+ "commit": "535e8fb78cad",
+ "delivery": "reference",
+ "description": "dtrajko/MoravaEngine \u2014 C++ 2D/3D graphics engine and scene editor for Vulkan 1.4, OpenGL and DirectX 11, on Windows and Linux. Physically based rendering, global illumination, ray-traced reflections and ambient occlusion, a path tracer for reference. A playground for real-time rendering techniques.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "MoravaEngine",
+ "reference_reason": "size gate: 26 MB",
+ "size_bytes": 27819289,
+ "slug": "dtrajko-moravaengine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 313,
+ "system": "C++ 2D/3D graphics engine and scene editor for Vulkan 1.4, OpenGL and DirectX 11, on Windows and Linux. Physically based rendering, global illumination, ray-tra",
+ "upstream": "https://github.com/dtrajko/MoravaEngine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1963,3 +1963,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/max-mapper-voxel-engine
   - reference engines/zylann-voxelgame
   - reference engines/voxelize-voxelize
+
+- **2026-11-23 11:18 UTC** — tick 692: +2 screened, +4 reference, 3 skipped, catalogue=734
+  - added engines/lallassu-voxelengine3 (MIT, vendored)
+  - added engines/dtrajko-moravaengine (Apache-2.0, reference)
+  - reference engines/utilforever-cubbyflow
+  - reference engines/gregcman-sucle
+  - reference engines/davidwilliams81-cubiquity
+  - reference engines/darbycostello-nav3d

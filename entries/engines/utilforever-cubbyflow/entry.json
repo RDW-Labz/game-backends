@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:18:38Z",
+ "category": "engines",
+ "commit": "2026-11-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "utilForever/CubbyFlow \u2014 Voxel-based fluid simulation engine for computer games",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "CubbyFlow",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "utilforever-cubbyflow",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 310,
+ "system": "Voxel-based fluid simulation engine for computer games",
+ "upstream": "https://github.com/utilForever/CubbyFlow",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:18:38Z",
+ "category": "engines",
+ "commit": "2026-07-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "DavidWilliams81/cubiquity \u2014 Cubiquity is an experimental micro-voxel engine written in C++ and released into the public domain.",
+ "language": "c++",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "cubiquity",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "davidwilliams81-cubiquity",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 291,
+ "system": "Cubiquity is an experimental micro-voxel engine written in C++ and released into the public domain.",
+ "upstream": "https://github.com/DavidWilliams81/cubiquity",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

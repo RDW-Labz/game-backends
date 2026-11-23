@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:18:38Z",
+ "category": "engines",
+ "commit": "2026-01-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "darbycostello/Nav3D \u2014 3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Nav3D",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "darbycostello-nav3d",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 291,
+ "system": "3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning",
+ "upstream": "https://github.com/darbycostello/Nav3D",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

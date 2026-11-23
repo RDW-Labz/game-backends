@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T11:18:38Z",
+ "category": "engines",
+ "commit": "2022-07-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gregcman/sucle \u2014 Common Lisp Voxel Game Engine",
+ "language": "common lisp",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "sucle",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gregcman-sucle",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 307,
+ "system": "Common Lisp Voxel Game Engine",
+ "upstream": "https://github.com/gregcman/sucle",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
