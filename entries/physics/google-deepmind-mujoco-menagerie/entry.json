@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:36:10Z",
+ "category": "physics",
+ "commit": "2026-11-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "google-deepmind/mujoco_menagerie \u2014 A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind.",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "mujoco_menagerie",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "google-deepmind-mujoco-menagerie",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 4409,
+ "system": "A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind.",
+ "upstream": "https://github.com/google-deepmind/mujoco_menagerie",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

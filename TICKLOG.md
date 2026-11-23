@@ -2090,3 +2090,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/payne911-piemenu
   - reference engines/libgdx-gdx-jnigen
   - reference engines/vrekt-lunargdx
+
+- **2026-11-23 15:36 UTC** — tick 708: +2 screened, +4 reference, 8 skipped, catalogue=829
+  - added physics/erincatto-box3d (MIT, vendored)
+  - added physics/newton-physics-newton (Apache-2.0, reference)
+  - reference physics/schteppe-cannon-js
+  - reference physics/kripken-ammo-js
+  - reference physics/google-deepmind-mujoco-menagerie
+  - reference physics/subprotocol-verlet-js

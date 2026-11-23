@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:36:10Z",
+ "category": "physics",
+ "commit": "2019-10-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "subprotocol/verlet-js \u2014 A simple Verlet physics engine written in javascript",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "verlet-js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "subprotocol-verlet-js",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 3793,
+ "system": "A simple Verlet physics engine written in javascript",
+ "upstream": "https://github.com/subprotocol/verlet-js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T15:36:10Z",
+ "category": "physics",
+ "commit": "2026-09-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kripken/ammo.js \u2014 Direct port of the Bullet physics engine to JavaScript using Emscripten",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ammo.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "kripken-ammo-js",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 4609,
+ "system": "Direct port of the Bullet physics engine to JavaScript using Emscripten",
+ "upstream": "https://github.com/kripken/ammo.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

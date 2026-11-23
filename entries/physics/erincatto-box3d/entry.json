@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T15:36:04Z",
+ "category": "physics",
+ "commit": "e48b902fee41",
+ "delivery": "vendored",
+ "description": "erincatto/box3d \u2014 Box3D is a 3D physics engine for games",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "box3d",
+ "size_bytes": 11565109,
+ "slug": "erincatto-box3d",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 6807,
+ "system": "Box3D is a 3D physics engine for games",
+ "upstream": "https://github.com/erincatto/box3d",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

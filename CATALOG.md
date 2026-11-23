@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 15:20 UTC · 823 entries · 222 vendored, 601 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 15:36 UTC · 829 entries · 223 vendored, 606 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
-| [physics](#physics) — Physics | 31 | 11 | 20 |
+| [physics](#physics) — Physics | 37 | 12 | 25 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
@@ -420,16 +420,19 @@ _Generated 2026-11-23 15:20 UTC · 823 entries · 222 vendored, 601 reference-on
 
 ## physics
 
-**Physics** — 31 entries
+**Physics** — 37 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
+| [ammo.js](entries/physics/kripken-ammo-js/README.md) | Direct port of the Bullet physics engine to JavaScript using Emscripten | c++ | unknown | reference | [kripken/ammo.js](https://github.com/kripken/ammo.js) @ `2026-09-22 (branch tip at catalogue time)` |
 | [avian](entries/physics/avianphysics-avian/README.md) | ECS-driven 2D and 3D physics engine for the Bevy game engine. | rust | Apache-2.0 | reference | [avianphysics/avian](https://github.com/avianphysics/avian) @ `2026-11-04 (branch tip at catalogue time)` |
 | [Box2D](entries/physics/box2d/README.md) | 2D rigid-body collision + dynamics solver | c++ | MIT | vendored | [erincatto/box2d](https://github.com/erincatto/box2d) @ `dd8bd3fb525f` |
 | [box2d](entries/physics/bytearena-box2d/README.md) | Box2D.go - Go port of Box2D - a 2D Physics Engine for Games. | go | Zlib | vendored | [ByteArena/box2d](https://github.com/ByteArena/box2d) @ `acbde413692f` |
 | [box2d-lite](entries/physics/erincatto-box2d-lite/README.md) | A small 2D physics engine | c++ | MIT | vendored | [erincatto/box2d-lite](https://github.com/erincatto/box2d-lite) @ `227b71b6974e` |
 | [box2d-netstandard](entries/physics/codingben-box2d-netstandard/README.md) | C# port of Box2D - Erin Catto's 2D Physics Engine | c# | MIT | vendored | [codingben/box2d-netstandard](https://github.com/codingben/box2d-netstandard) @ `b34d6238011a` |
+| [box3d](entries/physics/erincatto-box3d/README.md) | Box3D is a 3D physics engine for games | c | MIT | vendored | [erincatto/box3d](https://github.com/erincatto/box3d) @ `e48b902fee41` |
 | [Bullet Physics](entries/physics/bullet3/README.md) | 3D collision/dynamics + soft body + ML | c++ | Zlib | reference | [bulletphysics/bullet3](https://github.com/bulletphysics/bullet3) @ `d3afe76132fc` |
+| [cannon.js](entries/physics/schteppe-cannon-js/README.md) | A lightweight 3D physics engine written in JavaScript. | javascript | MIT | reference | [schteppe/cannon.js](https://github.com/schteppe/cannon.js) @ `2023-08-04 (branch tip at catalogue time)` |
 | [Chipmunk2D](entries/physics/chipmunk2d/README.md) | 2D rigid bodies, constraints, spatial index | c | MIT | vendored | [slembcke/Chipmunk2D](https://github.com/slembcke/Chipmunk2D) @ `f2f3d66220b8` |
 | [engine](entries/physics/galacean-engine/README.md) | A typescript interactive engine, support 2D, 3D, animation, physics, built on WebGL and glTF. | typescript | MIT | reference | [galacean/engine](https://github.com/galacean/engine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [engine](entries/physics/renzora-engine/README.md) | 2D & 3D game engine & scene editor using bevy 0.20 | rust | Apache-2.0 | reference | [renzora/engine](https://github.com/renzora/engine) @ `2026-11-05 (branch tip at catalogue time)` |
@@ -442,6 +445,8 @@ _Generated 2026-11-23 15:20 UTC · 823 entries · 222 vendored, 601 reference-on
 | [libccd](entries/physics/libccd/README.md) | convex collision detection (GJK/EPA) library | c | BSD-3-Clause | vendored | [danfis/libccd](https://github.com/danfis/libccd) @ `7931e764a19e` |
 | [matter-js](entries/physics/liabru-matter-js/README.md) | a 2D rigid body physics engine for the web ▲● ■ | javascript | MIT | vendored | [liabru/matter-js](https://github.com/liabru/matter-js) @ `b8ee71cd7f9b` |
 | [melonJS](entries/physics/melonjs-melonjs/README.md) | A modern & fully featured HTML5 game engine (2D & 3D) for JavaScript/TypeScript, with WebGL/WebGPU rendering, built-in physics, Tiled map & glTF support and Web | javascript | MIT | reference | [melonjs/melonJS](https://github.com/melonjs/melonJS) @ `91f4396452e0` |
+| [mujoco_menagerie](entries/physics/google-deepmind-mujoco-menagerie/README.md) | A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind. | python | unknown | reference | [google-deepmind/mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie) @ `2026-11-10 (branch tip at catalogue time)` |
+| [newton](entries/physics/newton-physics-newton/README.md) | An open-source, GPU-accelerated physics simulation engine built upon NVIDIA Warp, specifically targeting roboticists and simulation researchers. | python | Apache-2.0 | reference | [newton-physics/newton](https://github.com/newton-physics/newton) @ `f27aea83286e` |
 | [NVIDIA PhysX](entries/physics/physx/README.md) | GPU/CPU 3D rigid body, cloth, particles, vehicles | c++ | BSD-3-Clause | reference | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX) @ `7d6f6ac8b83e` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [planck.js](entries/physics/piqnt-planck-js/README.md) | 2D JavaScript Physics Engine | typescript | MIT | reference | [piqnt/planck.js](https://github.com/piqnt/planck.js) @ `2026-11-14 (branch tip at catalogue time)` |
@@ -455,6 +460,7 @@ _Generated 2026-11-23 15:20 UTC · 823 entries · 222 vendored, 601 reference-on
 | [thrive — physics](entries/physics/thrive-physics/README.md) | rigid-body collision and dynamics | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [thrive — physics](entries/physics/thrive-src-native-physics/README.md) | custom rigid-body physics for a sim game | c++ | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f4f2e0` |
 | [VectorizedMultiAgentSimulator](entries/physics/proroklab-vectorizedmultiagentsimulator/README.md) | VMAS is a vectorized differentiable simulator designed for efficient Multi-Agent Reinforcement Learning benchmarking. It is comprised of a vectorized 2D physics | python | GPL-3.0 | reference | [proroklab/VectorizedMultiAgentSimulator](https://github.com/proroklab/VectorizedMultiAgentSimulator) @ `2026-05-19 (branch tip at catalogue time)` |
+| [verlet-js](entries/physics/subprotocol-verlet-js/README.md) | A simple Verlet physics engine written in javascript | javascript | unknown | reference | [subprotocol/verlet-js](https://github.com/subprotocol/verlet-js) @ `2019-10-18 (branch tip at catalogue time)` |
 
 ## math
 
