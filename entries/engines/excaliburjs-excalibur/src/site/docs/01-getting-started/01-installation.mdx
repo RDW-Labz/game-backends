@@ -1,0 +1,256 @@
+---
+slug: /installation
+---
+
+# Installation
+
+:::tip First time here?
+
+If this is your first time using Excalibur, we recommend you start with our [Excalibird](/docs/excalibird-flappy-bird) tutorial where you can learn Excalibur in the browser.
+
+:::
+
+:::info Prerequisite for NPM
+
+Install [node.js](https://nodejs.org/en)
+
+:::
+
+
+NPM is the most common way to install Excalibur
+```sh
+npm install excalibur@latest
+```
+
+But there are several ways you can start from scratch with Excalibur
+- [From `npm`](#npm-package) or [`nuget`](#nuget-package)
+- Using a template from the [Excalibur CLI](/docs/quick-start)
+- [as an ES module script](#esm-javascript) with no build step, from a CDN or downloaded from our [releases page](https://github.com/excaliburjs/Excalibur/releases)
+- [by using a script CDN](#using-a-cdn) - e.g. for working with [`Deno`](https://deno.land/)
+
+:::info Excalibur v1 is ES modules only
+
+Since v1 Excalibur ships only as an ES module, there is no UMD/global `ex` script anymore. Load it with `import` from a bundler or a `<script type="module">`. Upgrading from v0.x? See the [migration guide](/docs/migration).
+
+:::
+
+
+## Start From a Template
+
+If you want to get up and running quickly with a familiar toolchain, we have several templates and samples available on GitHub. These examples allow you to simply clone and start building your game! They are also a great way to learn how to integrate Excalibur into your existing toolchain.
+
+Check out the [Excalibur CLI](/docs/quick-start) to spin up a template or sample quickly!
+
+### Templates
+
+- [Vite and TypeScript](https://github.com/excaliburjs/template-ts-vite)
+- [Parcel 2 and TypeScript](https://github.com/excaliburjs/template-ts-parcel-v2)
+- [Rollup and TypeScript](https://github.com/excaliburjs/template-ts-rollup)
+- [Webpack and TypeScript](https://github.com/excaliburjs/template-ts-webpack)
+- [Electron](https://github.com/excaliburjs/template-electron)
+- [Capacitor](https://github.com/excaliburjs/template-capacitorjs)
+
+### Samples
+
+- [Sample Platformer](https://github.com/excaliburjs/sample-platformer)
+- [Sample Shootem-Up](https://github.com/excaliburjs/sample-shootemup)
+- [Sample Brick Breaker](https://github.com/excaliburjs/sample-breakout)
+
+## Starting from Scratch
+
+There are several ways you can start from scratch with Excalibur:
+
+- as standalone packages [from `npm`](#npm-package) or [`nuget`](#nuget-package)
+- [as an ES module script](#esm-javascript) from a CDN or a downloaded file
+- [by using a CDN](#using-a-cdn) - e.g. for working with [`Deno`](https://deno.land/)
+
+:::note
+
+Excalibur is a client-side library and cannot be used in a
+server-side Node.js, however it can be downloaded with npm.
+
+:::
+
+### npm Package
+
+:::note
+
+Best for JavaScript/TypeScript projects
+
+:::
+
+If you’re using Node.js or intend to use Excalibur in a primarily JavaScript project, you can install it via [npm](https://docs.npmjs.com/getting-started/what-is-npm).
+
+With [Node installed](https://nodejs.org/en/download/), run the following on the command-line:
+
+```bash
+npm install excalibur
+```
+
+This will add excalibur to your package.json as a project dependency and will create a folder structure like:
+
+```
+/node_modules
+    /excalibur
+        /build
+            /esm
+                excalibur.js
+                excalibur.min.js
+                excalibur.development.js
+                /src/engine/excalibur.d.ts
+                ...other files
+```
+
+Then import it like any other package, your bundler will pick the production or development build based on its mode:
+
+```typescript
+import * as ex from 'excalibur';
+```
+
+View the [excalibur](https://www.npmjs.com/package/excalibur) package on npm.
+
+:::tip
+
+We recommend [Vite](https://vitejs.dev/) for new projects, the [Excalibur CLI](/docs/quick-start) templates are set up with it. Read more about [builds and bundlers](/docs/bundlers)
+
+:::
+
+### ESM JavaScript
+
+Excalibur publishes an ESM build that you can use with modern ES module syntax.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excalibur Vanilla JS</title>
+</head>
+<body>
+    <script type="importmap">
+        {
+            "imports": {
+                "excalibur": "https://unpkg.com/excalibur@1.0.0/build/esm/excalibur.min.js"
+            }
+        }
+    </script>
+    <script type="module" src="src/game.js"></script>
+</body>
+</html>
+```
+
+Then `src/game.js` can import Excalibur by name:
+
+```javascript
+import * as ex from 'excalibur';
+
+const game = new ex.Engine();
+game.start();
+```
+
+### Script tag without a bundler
+
+:::note
+
+Best for quick prototypes or small projects
+
+:::
+
+If you do not want an import map, [unpkg](https://unpkg.com/) serves the published npm package and you can import it by URL from a module script.
+
+It is recommended you pin your version of excalibur to a specific version like `excalibur@1.0.0`, however you can get the latest with `https://unpkg.com/excalibur@latest`
+
+```html
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <script type="module">
+      import * as ex from 'https://unpkg.com/excalibur@1.0.0/build/esm/excalibur.min.js';
+
+      const game = new ex.Engine();
+      game.start();
+    </script>
+  </body>
+</html>
+```
+
+You can also download the compiled module from the [Excalibur releases](https://github.com/excaliburjs/excalibur/releases) and serve it next to your game. A `<script type="module">` must be served over `http://`, opening the file directly from disk will not work.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head></head>
+  <body>
+    <script type="module">
+      import * as ex from './excalibur.min.js';
+
+      const game = new ex.Engine();
+      game.start();
+    </script>
+  </body>
+</html>
+```
+
+### Nuget Package
+
+:::note
+
+Best for .NET projects
+
+:::
+
+If you intend to use Excalibur in a primarily .NET-based project (like Xamarin, Windows 10, etc.), you can use [Nuget](https://www.nuget.org/).
+
+With the [.NET SDK installed](https://docs.microsoft.com/en-us/dotnet/framework/install/), run the following on the command-line:
+
+    ```bash
+    Install-Package Excalibur
+    ```
+
+Nuget will automatically place the Excalibur files in the `Content/Scripts` folder of your project:
+
+```
+/Content
+    /Scripts
+        excalibur.js
+        excalibur.min.js
+        excalibur.development.js
+        /src/engine/excalibur.d.ts
+        ...other declaration files
+```
+
+The scripts are ES modules, load them with `<script type="module">` as shown in [ESM JavaScript](#esm-javascript).
+
+See below for how to reference these files in your project after Excalibur is installed.
+
+View the [Excalibur](https://www.nuget.org/packages/Excalibur/) package on Nuget.
+
+### Using a CDN
+
+If you want to use Excalibur in a [`Deno`](https://deno.land/) environment, use a content delivery network like [`esm.sh`](https://esm.sh/) or [`skypack.dev`](https://www.skypack.dev/). They transform our `NPM` package into an `ES Module`. That may sound complicated, but it's really just one line of code:
+
+```typescript
+// index.ts
+
+import { Engine } from 'https://esm.sh/excalibur';
+
+// and Tada!
+const game = new Engine();
+game.start();
+```
+
+:::tip
+
+To see the full instructions on setting up Excalibur with `Deno`, check out [our `Deno` guide](https://excaliburjs.com/docs/bundlers#deno).
+
+:::
+
+### Unstable Builds
+
+If you want to live on the edge and get the latest unreleased and possibly unstable builds, you can download -alpha `npm` [packages](https://www.npmjs.com/package/excalibur).
+
+The latest documentation for the [Unstable Builds](https://excaliburjs.com/docs).
+

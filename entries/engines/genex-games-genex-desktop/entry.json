@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:42:15Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "genex-games/genex-desktop \u2014 Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "genex-desktop",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "genex-games-genex-desktop",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 906,
+ "system": "Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models.",
+ "upstream": "https://github.com/genex-games/genex-desktop",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

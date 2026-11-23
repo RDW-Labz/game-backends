@@ -1795,3 +1795,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/elringus-unity-raw-input
   - reference engines/ikpil-box2d-net
   - reference engines/genaray-zeroallocjobscheduler
+
+- **2026-11-23 05:42 UTC** — tick 671: +2 screened, +4 reference, 6 skipped, catalogue=608
+  - added engines/piqnt-stage-js (MIT, vendored)
+  - added engines/excaliburjs-excalibur (BSD-2-Clause, vendored)
+  - reference engines/esengine-estella
+  - reference engines/genex-games-genex-desktop
+  - reference engines/soonfx-engine-core
+  - reference engines/jamesroutley-24a2

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T05:42:02Z",
+ "category": "engines",
+ "commit": "2535352e89cd",
+ "delivery": "vendored",
+ "description": "piqnt/stage.js \u2014 2D HTML5 rendering and layout engine for game development",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "stage.js",
+ "size_bytes": 668331,
+ "slug": "piqnt-stage-js",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 2583,
+ "system": "2D HTML5 rendering and layout engine for game development",
+ "upstream": "https://github.com/piqnt/stage.js",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

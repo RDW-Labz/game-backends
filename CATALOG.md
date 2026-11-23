@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 05:26 UTC · 602 entries · 170 vendored, 432 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 05:42 UTC · 608 entries · 172 vendored, 436 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 176 | 37 | 139 |
+| [engines](#engines) — Game engines and engine subsystems | 182 | 39 | 143 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,10 +16,11 @@ _Generated 2026-11-23 05:26 UTC · 602 entries · 170 vendored, 432 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 176 entries
+**Game engines and engine subsystems** — 182 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
+| [24a2](entries/engines/jamesroutley-24a2/README.md) | 🏵 An ultra-minimalist game engine | typescript | MIT | reference | [jamesroutley/24a2](https://github.com/jamesroutley/24a2) @ `2026-03-01 (branch tip at catalogue time)` |
 | [AAAAXY — engine](entries/engines/aaaaxy-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | go | Apache-2.0 | vendored | [divVerent/aaaaxy](https://github.com/divVerent/aaaaxy) @ `07d7252` |
 | [AbyssEngine](entries/engines/opendiablo2-abyssengine/README.md) | A 2D ARPG game engine. | go | GPL-3.0 | reference | [OpenDiablo2/AbyssEngine](https://github.com/OpenDiablo2/AbyssEngine) @ `2025-12-05 (branch tip at catalogue time)` |
 | [ActionRoguelike](entries/engines/tomlooman-actionroguelike/README.md) | Project Orion - Co-op Action Roguelike in Unreal Engine C++ | c++ | none | reference | [tomlooman/ActionRoguelike](https://github.com/tomlooman/ActionRoguelike) @ `b7aef7d0f8ef` |
@@ -44,6 +45,7 @@ _Generated 2026-11-23 05:26 UTC · 602 entries · 170 vendored, 432 reference-on
 | [Cocos2d-x](entries/engines/cocos2d-x/README.md) | mobile-first 2D/3D engine core | c++ | MIT | reference | [cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x) @ `7a5282a301a1` |
 | [comfy](entries/engines/darthdeus-comfy/README.md) | Comfy is a fun 2D game engine built in Rust. It's designed to be opinionated, productive, and easy to use. | rust | Apache-2.0 | vendored | [darthdeus/comfy](https://github.com/darthdeus/comfy) @ `31aa6efce135` |
 | [ConsoleGameEngine](entries/engines/ollelogdahl-consolegameengine/README.md) | .NET Console Graphics Engine | c# | Unlicense | reference | [ollelogdahl/ConsoleGameEngine](https://github.com/ollelogdahl/ConsoleGameEngine) @ `2021-06-14 (branch tip at catalogue time)` |
+| [core](entries/engines/soonfx-engine-core/README.md) | 🎮 TypeScript game numeric engine for RPG & strategy games. Zero dependencies, type-safe formula parsing, battle system simulation, and expression evaluation.  基 | typescript | Apache-2.0 | reference | [soonfx-engine/core](https://github.com/soonfx-engine/core) @ `2025-12-30 (branch tip at catalogue time)` |
 | [corona](entries/engines/coronalabs-corona/README.md) | Solar2D Game Engine main repository (ex Corona SDK) | c++ | MIT | reference | [coronalabs/corona](https://github.com/coronalabs/corona) @ `22368dfc1209` |
 | [cpp-game-engine-book](entries/engines/thisisgame-cpp-game-engine-book/README.md) | 从零编写游戏引擎教程 Writing a game engine tutorial from scratch | c++ | GPL-3.0 | reference | [ThisisGame/cpp-game-engine-book](https://github.com/ThisisGame/cpp-game-engine-book) @ `c7f9f8095274` |
 | [crossbow](entries/engines/dodorare-crossbow/README.md) | Cross-Platform build tools and toolkit for games and game engines written in Rust! 🦀 | rust | Apache-2.0 | reference | [dodorare/crossbow](https://github.com/dodorare/crossbow) @ `2026-11-16 (branch tip at catalogue time)` |
@@ -69,6 +71,8 @@ _Generated 2026-11-23 05:26 UTC · 602 entries · 170 vendored, 432 reference-on
 | [EpicSurvivalGame](entries/engines/tomlooman-epicsurvivalgame/README.md) | Third-person Survival Game for Unreal Engine (Sample Project) | c++ | MIT | vendored | [tomlooman/EpicSurvivalGame](https://github.com/tomlooman/EpicSurvivalGame) @ `23159c1c8560` |
 | [EQAI](entries/engines/ahmadhassan-bted-eqai/README.md) | A highly specialized reverse-engineering pipeline designed to structurally transplant original Vanilla character models into the EverQuest Online Adventures: Fr | python | unknown | reference | [AhmadHassan-BTed/EQAI](https://github.com/AhmadHassan-BTed/EQAI) @ `2026-07-03 (branch tip at catalogue time)` |
 | [esper](entries/engines/benmoran56-esper/README.md) | An ECS (Entity Component System) for Python | python | MIT | reference | [benmoran56/esper](https://github.com/benmoran56/esper) @ `2026-09-20 (branch tip at catalogue time)` |
+| [estella](entries/engines/esengine-estella/README.md) | A fast 2D and 3D game engine — TypeScript SDK, C++/WebAssembly core, visual editor. Ship one project to web, desktop, WeChat MiniGames, playable ads, and native | typescript | Apache-2.0 | reference | [esengine/estella](https://github.com/esengine/estella) @ `2026-11-23 (branch tip at catalogue time)` |
+| [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
 | [ezEngine](entries/engines/ezengine-ezengine/README.md) | An open source C++ game engine. | c++ | MIT | reference | [ezEngine/ezEngine](https://github.com/ezEngine/ezEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [F8Framework](entries/engines/tippinggame-f8framework/README.md) | F8 Framework是一个优雅，轻量，符合直觉的基于Unity引擎的游戏框架，组件围绕F8一键启动，框架整体遵循以极少的使用成本开发游戏。F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity  | c# | MIT | reference | [TippingGame/F8Framework](https://github.com/TippingGame/F8Framework) @ `2026-09-15 (branch tip at catalogue time)` |
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -85,6 +89,7 @@ _Generated 2026-11-23 05:26 UTC · 602 entries · 170 vendored, 432 reference-on
 | [gamezone — core](entries/engines/gamezone-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | Apache-2.0 | vendored | [kunjgit/GameZone](https://github.com/kunjgit/GameZone) @ `ac4ce20` |
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
+| [genex-desktop](entries/engines/genex-games-genex-desktop/README.md) | Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models. | typescript | MIT | reference | [genex-games/genex-desktop](https://github.com/genex-games/genex-desktop) @ `2026-11-22 (branch tip at catalogue time)` |
 | [ggez](entries/engines/ggez-ggez/README.md) | Rust library to create a Good Game Easily | rust | MIT | reference | [ggez/ggez](https://github.com/ggez/ggez) @ `2026-10-26 (branch tip at catalogue time)` |
 | [ggpoker](entries/engines/anthdm-ggpoker/README.md) | A decentralized poker game engine written in Golang and Solidity | go | unknown | reference | [anthdm/ggpoker](https://github.com/anthdm/ggpoker) @ `2024-01-27 (branch tip at catalogue time)` |
 | [glas — core](entries/engines/glas-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
@@ -168,6 +173,7 @@ _Generated 2026-11-23 05:26 UTC · 602 entries · 170 vendored, 432 reference-on
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
 | [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
+| [stage.js](entries/engines/piqnt-stage-js/README.md) | 2D HTML5 rendering and layout engine for game development | typescript | MIT | vendored | [piqnt/stage.js](https://github.com/piqnt/stage.js) @ `2535352e89cd` |
 | [stride](entries/engines/stride3d-stride/README.md) | Stride (formerly Xenko), a free and open-source cross-platform C# game engine. | c# | MIT | reference | [stride3d/stride](https://github.com/stride3d/stride) @ `852da2345e76` |
 | [SuperFamiconv](entries/engines/optiroc-superfamiconv/README.md) | Flexible and composable tile graphics converter supporting Super Nintendo, Game Boy, Game Boy Color, Game Boy Advance, Mega Drive, Master System, Game Gear, PC  | rust | MIT | reference | [Optiroc/SuperFamiconv](https://github.com/Optiroc/SuperFamiconv) @ `2026-11-16 (branch tip at catalogue time)` |
 | [Sustenet](entries/engines/quaint-studios-sustenet/README.md) | Sustenet is a networking solution built with Rust and Zig, formerly C#, for game engines like Unity3D, Godot, and Unreal Engine. The primary focus is on scaling | zig | MIT | reference | [Quaint-Studios/Sustenet](https://github.com/Quaint-Studios/Sustenet) @ `2025-08-09 (branch tip at catalogue time)` |

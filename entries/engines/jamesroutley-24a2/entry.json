@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:42:15Z",
+ "category": "engines",
+ "commit": "2026-03-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jamesroutley/24a2 \u2014 \ud83c\udff5 An ultra-minimalist game engine",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "24a2",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jamesroutley-24a2",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 711,
+ "system": "\ud83c\udff5 An ultra-minimalist game engine",
+ "upstream": "https://github.com/jamesroutley/24a2",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

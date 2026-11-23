@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T05:42:14Z",
+ "category": "engines",
+ "commit": "0c5a49cb596a",
+ "delivery": "vendored",
+ "description": "excaliburjs/Excalibur \u2014 \ud83c\udfae Your friendly TypeScript 2D game engine for the web \ud83d\udde1\ufe0f",
+ "language": "typescript",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "Excalibur",
+ "size_bytes": 5676443,
+ "slug": "excaliburjs-excalibur",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 2383,
+ "system": "\ud83c\udfae Your friendly TypeScript 2D game engine for the web \ud83d\udde1\ufe0f",
+ "upstream": "https://github.com/excaliburjs/Excalibur",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

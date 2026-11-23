@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T05:42:15Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "esengine/estella \u2014 A fast 2D and 3D game engine \u2014 TypeScript SDK, C++/WebAssembly core, visual editor. Ship one project to web, desktop, WeChat MiniGames, playable ads, and native Android / iOS.",
+ "language": "typescript",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "estella",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "esengine-estella",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 1296,
+ "system": "A fast 2D and 3D game engine \u2014 TypeScript SDK, C++/WebAssembly core, visual editor. Ship one project to web, desktop, WeChat MiniGames, playable ads, and native",
+ "upstream": "https://github.com/esengine/estella",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
