@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:18:08Z",
+ "category": "physics",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jslee02/awesome-collision-detection \u2014 :sunglasses: A curated list of awesome collision detection libraries and resources",
+ "language": "python",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "awesome-collision-detection",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "jslee02-awesome-collision-detection",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 1048,
+ "system": ":sunglasses: A curated list of awesome collision detection libraries and resources",
+ "upstream": "https://github.com/jslee02/awesome-collision-detection",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

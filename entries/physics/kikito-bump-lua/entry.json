@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T18:18:03Z",
+ "category": "physics",
+ "commit": "95d9e40b8aee",
+ "delivery": "vendored",
+ "description": "kikito/bump.lua \u2014 A collision detection library for Lua",
+ "language": "lua",
+ "license": "MIT",
+ "license_file": "MIT-LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "bump.lua",
+ "size_bytes": 44782,
+ "slug": "kikito-bump-lua",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 1108,
+ "system": "A collision detection library for Lua",
+ "upstream": "https://github.com/kikito/bump.lua",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

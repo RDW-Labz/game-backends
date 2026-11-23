@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T18:18:07Z",
+ "category": "physics",
+ "commit": "86fb5ab21cc3",
+ "delivery": "vendored",
+ "description": "entropyconquers/react-native-reanimated-dnd \u2014 A powerful, performant drag-and-drop library for React Native built on Reanimated 4 and Gesture Handler. Smooth 60fps animations, sortable lists & grids, collision detection, and full TypeScript support.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "react-native-reanimated-dnd",
+ "size_bytes": 754239,
+ "slug": "entropyconquers-react-native-reanimated-dnd",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 1078,
+ "system": "A powerful, performant drag-and-drop library for React Native built on Reanimated 4 and Gesture Handler. Smooth 60fps animations, sortable lists & grids, collis",
+ "upstream": "https://github.com/entropyconquers/react-native-reanimated-dnd",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

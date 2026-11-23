@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T18:18:08Z",
+ "category": "physics",
+ "commit": "2021-04-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jriecken/sat-js \u2014 A simple JavaScript library for performing 2D collision detection",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "sat-js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jriecken-sat-js",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 795,
+ "system": "A simple JavaScript library for performing 2D collision detection",
+ "upstream": "https://github.com/jriecken/sat-js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

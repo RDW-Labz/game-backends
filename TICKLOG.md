@@ -2170,3 +2170,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/bbrannon4-openbse
   - reference physics/rsasaki0109-robotnativeengine
   - reference physics/muni-works-phyz
+
+- **2026-11-23 18:18 UTC** — tick 718: +2 screened, +4 reference, 1 skipped, catalogue=889
+  - added physics/kikito-bump-lua (MIT, vendored)
+  - added physics/entropyconquers-react-native-reanimated-dnd (MIT, vendored)
+  - reference physics/jslee02-awesome-collision-detection
+  - reference physics/dimforge-ncollide
+  - reference physics/dimforge-parry
+  - reference physics/jriecken-sat-js
