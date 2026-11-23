@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T06:46:02Z",
+ "category": "engines",
+ "commit": "77fe4588e6af",
+ "delivery": "vendored",
+ "description": "ocornut/imgui \u2014 Dear ImGui: Bloat-free Graphical User interface for C++ with minimal dependencies",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "imgui",
+ "size_bytes": 5655875,
+ "slug": "ocornut-imgui",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 77240,
+ "system": "Dear ImGui: Bloat-free Graphical User interface for C++ with minimal dependencies",
+ "upstream": "https://github.com/ocornut/imgui",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 06:30 UTC · 626 entries · 174 vendored, 452 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 06:46 UTC · 632 entries · 176 vendored, 456 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 200 | 41 | 159 |
+| [engines](#engines) — Game engines and engine subsystems | 206 | 43 | 163 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 06:30 UTC · 626 entries · 174 vendored, 452 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 200 entries
+**Game engines and engine subsystems** — 206 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -25,6 +25,7 @@ _Generated 2026-11-23 06:30 UTC · 626 entries · 174 vendored, 452 reference-on
 | [AbyssEngine](entries/engines/opendiablo2-abyssengine/README.md) | A 2D ARPG game engine. | go | GPL-3.0 | reference | [OpenDiablo2/AbyssEngine](https://github.com/OpenDiablo2/AbyssEngine) @ `2025-12-05 (branch tip at catalogue time)` |
 | [ActionRoguelike](entries/engines/tomlooman-actionroguelike/README.md) | Project Orion - Co-op Action Roguelike in Unreal Engine C++ | c++ | none | reference | [tomlooman/ActionRoguelike](https://github.com/tomlooman/ActionRoguelike) @ `b7aef7d0f8ef` |
 | [advjs](entries/engines/yunyoujun-advjs/README.md) | 🎮 ADV.JS Web AVG Engine 面向未来与前端的文字冒险游戏引擎（WIP） | typescript | MPL-2.0 | reference | [YunYouJun/advjs](https://github.com/YunYouJun/advjs) @ `2026-11-20 (branch tip at catalogue time)` |
+| [aframe](entries/engines/aframevr-aframe/README.md) | :a: Web framework for building virtual reality experiences. | javascript | MIT | reference | [aframevr/aframe](https://github.com/aframevr/aframe) @ `2026-07-13 (branch tip at catalogue time)` |
 | [Ambient](entries/engines/ambientrun-ambient/README.md) | The multiplayer game engine | rust | Apache-2.0 | reference | [AmbientRun/Ambient](https://github.com/AmbientRun/Ambient) @ `2025-01-07 (branch tip at catalogue time)` |
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AnyRPGCore](entries/engines/anyrpg-anyrpgcore/README.md) | Open source Role Playing Game engine for Unity 3D written in C#. | c# | MIT | reference | [AnyRPG/AnyRPGCore](https://github.com/AnyRPG/AnyRPGCore) @ `2026-10-26 (branch tip at catalogue time)` |
@@ -69,6 +70,7 @@ _Generated 2026-11-23 06:30 UTC · 626 entries · 174 vendored, 452 reference-on
 | [engine](entries/engines/g3n-engine/README.md) | Go 3D Game Engine (http://g3n.rocks) | go | BSD-2-Clause | reference | [g3n/engine](https://github.com/g3n/engine) @ `2026-11-21 (branch tip at catalogue time)` |
 | [engine](entries/engines/overreactjs-engine/README.md) | Browser-based game engine, built on top of React. | typescript | MIT | reference | [overreactjs/engine](https://github.com/overreactjs/engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [engine](entries/engines/pkmn-engine/README.md) | A minimal, complete, Pokémon battle simulation engine optimized for performance | zig | MIT | vendored | [pkmn/engine](https://github.com/pkmn/engine) @ `df3c333f0947` |
+| [engine](entries/engines/playcanvas-engine/README.md) | Open-source web graphics engine built on WebGPU and WebGL2 | javascript | MIT | reference | [playcanvas/engine](https://github.com/playcanvas/engine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [engo](entries/engines/engoengine-engo/README.md) | Engo is an open-source 2D game engine written in Go. | go | MIT | reference | [EngoEngine/engo](https://github.com/EngoEngine/engo) @ `2026-03-30 (branch tip at catalogue time)` |
 | [Entitas](entries/engines/sschmid-entitas/README.md) | Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity | c# | MIT | vendored | [sschmid/Entitas](https://github.com/sschmid/Entitas) @ `37547d1bd280` |
 | [EntityComponentSystemSamples](entries/engines/unity-technologies-entitycomponentsystemsamples/README.md) | see upstream | c# | none | reference | [Unity-Technologies/EntityComponentSystemSamples](https://github.com/Unity-Technologies/EntityComponentSystemSamples) @ `6786a741ee1f` |
@@ -114,6 +116,7 @@ _Generated 2026-11-23 06:30 UTC · 626 entries · 174 vendored, 452 reference-on
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
 | [Ikemen-GO](entries/engines/ikemen-engine-ikemen-go/README.md) | An open-source fighting game engine that supports MUGEN resources. | go | unknown | reference | [ikemen-engine/Ikemen-GO](https://github.com/ikemen-engine/Ikemen-GO) @ `2026-11-22 (branch tip at catalogue time)` |
+| [imgui](entries/engines/ocornut-imgui/README.md) | Dear ImGui: Bloat-free Graphical User interface for C++ with minimal dependencies | c++ | MIT | vendored | [ocornut/imgui](https://github.com/ocornut/imgui) @ `77fe4588e6af` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
 | [kaiju](entries/engines/kaijuengine-kaiju/README.md) | General purpose 3D and 2D game engine using Go (golang) and Vulkan with built in editor | go | MIT | vendored | [KaijuEngine/kaiju](https://github.com/KaijuEngine/kaiju) @ `c5b49f65571f` |
@@ -123,9 +126,11 @@ _Generated 2026-11-23 06:30 UTC · 626 entries · 174 vendored, 452 reference-on
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
+| [luanti](entries/engines/luanti-org-luanti/README.md) | Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation | c++ | unknown | reference | [luanti-org/luanti](https://github.com/luanti-org/luanti) @ `2026-11-20 (branch tip at catalogue time)` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Lumos](entries/engines/jmorton06-lumos/README.md) | Cross-Platform C++ 2D/3D game engine | c++ | MIT | reference | [jmorton06/Lumos](https://github.com/jmorton06/Lumos) @ `2026-11-10 (branch tip at catalogue time)` |
 | [macroquad](entries/engines/not-fl3-macroquad/README.md) | Cross-platform game engine in Rust.  | rust | Apache-2.0 | vendored | [not-fl3/macroquad](https://github.com/not-fl3/macroquad) @ `8d602d3f8ebb` |
+| [magictools](entries/engines/ellisonleao-magictools/README.md) | :video_game: :pencil: A list of Game Development resources to make magic happen. | markdown | MIT | vendored | [ellisonleao/magictools](https://github.com/ellisonleao/magictools) @ `7ea0640f128c` |
 | [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
@@ -139,6 +144,7 @@ _Generated 2026-11-23 06:30 UTC · 626 entries · 174 vendored, 452 reference-on
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
 | [open_spiel — core](entries/engines/open-spiel-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
+| [openage](entries/engines/sfttech-openage/README.md) | Clone of the Age of Empires II engine 🚀  | python | unknown | reference | [SFTtech/openage](https://github.com/SFTtech/openage) @ `2026-11-22 (branch tip at catalogue time)` |
 | [OpenAI-Unity](entries/engines/srcnalt-openai-unity/README.md) | An unofficial OpenAI Unity Package that aims to help you use OpenAI API directly in Unity Game engine. | c# | MIT | reference | [srcnalt/OpenAI-Unity](https://github.com/srcnalt/OpenAI-Unity) @ `2024-11-27 (branch tip at catalogue time)` |
 | [openblack](entries/engines/openblack-openblack/README.md) | openblack is an open-source game engine that supports playing Black & White (2001). | c++ | GPL-3.0 | reference | [openblack/openblack](https://github.com/openblack/openblack) @ `744c0febf53b` |
 | [OpenGameAgent](entries/engines/ericsun0218-opengameagent/README.md) | MIT-licensed TypeScript runtime for AI-native game characters and worlds, with durable state, reliable actions, memory, tools, and Unity, Godot, and Unreal Engi | typescript | MIT | vendored | [EricSun0218/OpenGameAgent](https://github.com/EricSun0218/OpenGameAgent) @ `06294f101b5d` |

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:46:06Z",
+ "category": "engines",
+ "commit": "2026-07-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "aframevr/aframe \u2014 :a: Web framework for building virtual reality experiences.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "aframe",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "aframevr-aframe",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 17716,
+ "system": ":a: Web framework for building virtual reality experiences.",
+ "upstream": "https://github.com/aframevr/aframe",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

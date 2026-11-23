@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:46:06Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "playcanvas/engine \u2014 Open-source web graphics engine built on WebGPU and WebGL2",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "playcanvas-engine",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 17351,
+ "system": "Open-source web graphics engine built on WebGPU and WebGL2",
+ "upstream": "https://github.com/playcanvas/engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

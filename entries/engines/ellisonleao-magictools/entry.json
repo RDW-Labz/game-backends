@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T06:46:04Z",
+ "category": "engines",
+ "commit": "7ea0640f128c",
+ "delivery": "vendored",
+ "description": "ellisonleao/magictools \u2014 :video_game: :pencil: A list of Game Development resources to make magic happen.",
+ "language": "markdown",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "magictools",
+ "size_bytes": 0,
+ "slug": "ellisonleao-magictools",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 17856,
+ "system": ":video_game: :pencil: A list of Game Development resources to make magic happen.",
+ "upstream": "https://github.com/ellisonleao/magictools",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

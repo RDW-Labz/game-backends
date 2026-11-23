@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:46:06Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SFTtech/openage \u2014 Clone of the Age of Empires II engine \ud83d\ude80",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "openage",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "sfttech-openage",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 14642,
+ "system": "Clone of the Age of Empires II engine \ud83d\ude80 ",
+ "upstream": "https://github.com/SFTtech/openage",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

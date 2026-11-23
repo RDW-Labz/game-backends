@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:46:06Z",
+ "category": "engines",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "luanti-org/luanti \u2014 Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "luanti",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "luanti-org-luanti",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 13886,
+ "system": "Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation",
+ "upstream": "https://github.com/luanti-org/luanti",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

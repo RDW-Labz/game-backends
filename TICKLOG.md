@@ -1827,3 +1827,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/endohizumi-webtalekit
   - reference engines/overreactjs-engine
   - reference engines/anjmao-phaser-candy-crush
+
+- **2026-11-23 06:46 UTC** — tick 675: +2 screened, +4 reference, 11 skipped, catalogue=632
+  - added engines/ocornut-imgui (MIT, vendored)
+  - added engines/ellisonleao-magictools (MIT, vendored)
+  - reference engines/aframevr-aframe
+  - reference engines/playcanvas-engine
+  - reference engines/sfttech-openage
+  - reference engines/luanti-org-luanti
