@@ -2066,3 +2066,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/bluefinger-bevy-rand
   - reference engines/fslabs-bevy-aabb-instancing
   - reference engines/octotep-bevy-crossterm
+
+- **2026-11-23 14:48 UTC** — tick 705: +2 screened, +4 reference, 1 skipped, catalogue=811
+  - added engines/aloisdeniel-awesome-monogame (none, reference)
+  - added engines/myraui-myra (MIT, vendored)
+  - reference engines/simondarksidej-xnagamestudio
+  - reference engines/digitalrune-digitalrune
+  - reference engines/apostolique-apos-gui
+  - reference engines/thebonejarmer-tiledcs

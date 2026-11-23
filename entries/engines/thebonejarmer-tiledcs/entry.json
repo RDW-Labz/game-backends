@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:48:07Z",
+ "category": "engines",
+ "commit": "2024-08-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "TheBoneJarmer/TiledCS \u2014 TiledCS is a dotnet library for loading Tiled tilesets and maps",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "TiledCS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "thebonejarmer-tiledcs",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 166,
+ "system": "TiledCS is a dotnet library for loading Tiled tilesets and maps",
+ "upstream": "https://github.com/TheBoneJarmer/TiledCS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

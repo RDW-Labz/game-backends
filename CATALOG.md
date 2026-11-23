@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 14:32 UTC · 805 entries · 217 vendored, 588 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 14:48 UTC · 811 entries · 218 vendored, 593 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 379 | 84 | 295 |
+| [engines](#engines) — Game engines and engine subsystems | 385 | 85 | 300 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 14:32 UTC · 805 entries · 217 vendored, 588 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 379 entries
+**Game engines and engine subsystems** — 385 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -30,6 +30,7 @@ _Generated 2026-11-23 14:32 UTC · 805 entries · 217 vendored, 588 reference-on
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AndEngine](entries/engines/nicolasgramlich-andengine/README.md) | Free Android 2D OpenGL Game Engine | java | Apache-2.0 | reference | [nicolasgramlich/AndEngine](https://github.com/nicolasgramlich/AndEngine) @ `2018-11-16 (branch tip at catalogue time)` |
 | [AnyRPGCore](entries/engines/anyrpg-anyrpgcore/README.md) | Open source Role Playing Game engine for Unity 3D written in C#. | c# | MIT | reference | [AnyRPG/AnyRPGCore](https://github.com/AnyRPG/AnyRPGCore) @ `2026-10-26 (branch tip at catalogue time)` |
+| [Apos.Gui](entries/engines/apostolique-apos-gui/README.md) | UI library for MonoGame. | c# | MIT | reference | [Apostolique/Apos.Gui](https://github.com/Apostolique/Apos.Gui) @ `2026-11-03 (branch tip at catalogue time)` |
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
 | [arche](entries/engines/mlange-42-arche/README.md) | Arche -- Archetype-based Entity Component System (ECS) for Go. | go | MIT | reference | [mlange-42/arche](https://github.com/mlange-42/arche) @ `2025-04-01 (branch tip at catalogue time)` |
 | [Arduino-JoyCon-Library-for-Nintendo-Switch](entries/engines/squirelo-arduino-joycon-library-for-nintendo-switch/README.md) | Transform your ATmega32u4 based Arduino boards into Nintendo Switch-compatible gamepads! This library enables the Arduino Leonardo, Micro, or compatible clones  | c++ | LGPL-3.0 | reference | [squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch](https://github.com/squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch) @ `459b332cf47e` |
@@ -38,6 +39,7 @@ _Generated 2026-11-23 14:32 UTC · 805 entries · 217 vendored, 588 reference-on
 | [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
 | [awesome-game-mashups](entries/engines/bailo167-awesome-game-mashups/README.md) | Curated list of games rebuilt inside other games — cross-game mechanics, engine/runtime mashups, playable ports, and verified viral projects. | python | CC0-1.0 | reference | [bailo167/awesome-game-mashups](https://github.com/bailo167/awesome-game-mashups) @ `2026-11-09 (branch tip at catalogue time)` |
 | [awesome-godot](entries/engines/calinou-awesome-godot/README.md) | A curated list of free/libre plugins, scripts and add-ons for Godot | n/a | CC-BY-4.0 | vendored | [Calinou/awesome-godot](https://github.com/Calinou/awesome-godot) @ `3e8526d9e676` |
+| [awesome-monogame](entries/engines/aloisdeniel-awesome-monogame/README.md) | A collection of interesting libraries/tools for Monogame based game projects | n/a | none | reference | [aloisdeniel/awesome-monogame](https://github.com/aloisdeniel/awesome-monogame) @ `c6210d600bdd` |
 | [awesome-PICO-8](entries/engines/pico-8-awesome-pico-8/README.md) | A curated list of awesome PICO-8 resources, carts, tools and more | n/a | CC0-1.0 | reference | [pico-8/awesome-PICO-8](https://github.com/pico-8/awesome-PICO-8) @ `2026-07-28 (branch tip at catalogue time)` |
 | [axmol](entries/engines/axmolengine-axmol/README.md) | Open-source C++ game engine with Lua for 2D and 3D games across mobile, desktop, WebAssembly, and Xbox (UWP). | c++ | unknown | reference | [axmolengine/axmol](https://github.com/axmolengine/axmol) @ `2026-11-23 (branch tip at catalogue time)` |
 | [azeroth-survivors-re](entries/engines/outthislife-azeroth-survivors-re/README.md) | A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy). | rust | Apache-2.0 | reference | [OutThisLife/azeroth-survivors-re](https://github.com/OutThisLife/azeroth-survivors-re) @ `2026-10-26 (branch tip at catalogue time)` |
@@ -96,6 +98,7 @@ _Generated 2026-11-23 14:32 UTC · 805 entries · 217 vendored, 588 reference-on
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
 | [dialogic](entries/engines/dialogic-godot-dialogic/README.md) | 💬 Create Dialogs, Visual Novels, RPGs, and manage Characters with Godot to create your Game! | gdscript | MIT | reference | [dialogic-godot/dialogic](https://github.com/dialogic-godot/dialogic) @ `2026-11-19 (branch tip at catalogue time)` |
+| [DigitalRune](entries/engines/digitalrune-digitalrune/README.md) | DigitalRune Engine - .NET libraries for developing 3D games with XNA and MonoGame | c# | unknown | reference | [DigitalRune/DigitalRune](https://github.com/DigitalRune/DigitalRune) @ `2016-06-05 (branch tip at catalogue time)` |
 | [dip](entries/engines/diptools-dip/README.md) | Rust application framework focuses on composability, ECS and Web3.  Powered by Bevy game engine, Tauri, and Dioxus. From desktop apps to the Metaverse. | rust | unknown | reference | [diptools/dip](https://github.com/diptools/dip) @ `2026-04-13 (branch tip at catalogue time)` |
 | [dogfight-sandbox-hg2](entries/engines/harfang3d-dogfight-sandbox-hg2/README.md) | Air to air combat sandbox, created in Python 3 using the HARFANG 3D 2 framework. | python | GPL-3.0 | reference | [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2) @ `2026-04-01 (branch tip at catalogue time)` |
 | [dominion-ecs-java](entries/engines/dominion-dev-dominion-ecs-java/README.md) | Insanely fast ECS (Entity Component System) for Java | java | MIT | vendored | [dominion-dev/dominion-ecs-java](https://github.com/dominion-dev/dominion-ecs-java) @ `e3c99d10ffcc` |
@@ -244,6 +247,7 @@ _Generated 2026-11-23 14:32 UTC · 805 entries · 217 vendored, 588 reference-on
 | [multiplayer-voxel-browser-game-engine](entries/engines/kevzettler-multiplayer-voxel-browser-game-engine/README.md) | A multiplayer voxel browser game engine | typescript | unknown | reference | [kevzettler/multiplayer-voxel-browser-game-engine](https://github.com/kevzettler/multiplayer-voxel-browser-game-engine) @ `2023-04-24 (branch tip at catalogue time)` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
 | [MusicEngine](entries/engines/geekdrums-musicengine/README.md) | make music synced game with Unity / ADX2 / Wwise | c# | unknown | reference | [geekdrums/MusicEngine](https://github.com/geekdrums/MusicEngine) @ `2023-01-09 (branch tip at catalogue time)` |
+| [Myra](entries/engines/myraui-myra/README.md) | UI Library for MonoGame, FNA and Stride | c# | MIT | vendored | [MyraUI/Myra](https://github.com/MyraUI/Myra) @ `f605da2bba59` |
 | [Nav3D](entries/engines/darbycostello-nav3d/README.md) | 3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning | c++ | MIT | reference | [darbycostello/Nav3D](https://github.com/darbycostello/Nav3D) @ `2026-01-12 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
@@ -347,6 +351,7 @@ _Generated 2026-11-23 14:32 UTC · 805 entries · 217 vendored, 588 reference-on
 | [tetra](entries/engines/17cupsofcoffee-tetra/README.md) | 🎮 A simple 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/tetra](https://github.com/17cupsofcoffee/tetra) @ `2026-07-22 (branch tip at catalogue time)` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
 | [thrive — engine](entries/engines/thrive-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
+| [TiledCS](entries/engines/thebonejarmer-tiledcs/README.md) | TiledCS is a dotnet library for loading Tiled tilesets and maps | c# | MIT | reference | [TheBoneJarmer/TiledCS](https://github.com/TheBoneJarmer/TiledCS) @ `2024-08-31 (branch tip at catalogue time)` |
 | [tocenter](entries/engines/silentsokolov-tocenter/README.md) | ToCenter is a video game written in Rust using the ggez engine and the ECS library. | rust | unknown | reference | [silentsokolov/tocenter](https://github.com/silentsokolov/tocenter) @ `2022-11-14 (branch tip at catalogue time)` |
 | [Torque2D](entries/engines/garagegames-torque2d/README.md) | MIT Licensed Open Source version of Torque 2D game engine from GarageGames | c++ | MIT | reference | [GarageGames/Torque2D](https://github.com/GarageGames/Torque2D) @ `72c8891f192b` |
 | [totk-pc-recomp — runtime](entries/engines/totk-pc-recomp-runtime/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | reference | [valentderah/totk-pc-recomp](https://github.com/valentderah/totk-pc-recomp) @ `ae30a61` |
@@ -395,6 +400,7 @@ _Generated 2026-11-23 14:32 UTC · 805 entries · 217 vendored, 588 reference-on
 | [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |
 | [world-walker](entries/engines/badhope-world-walker/README.md) | A single-player AI tabletop RPG engine: deterministic rules own the numbers, saves and replay; any OpenAI-compatible model writes the scene. | python | MIT | reference | [badhope/world-walker](https://github.com/badhope/world-walker) @ `2026-11-22 (branch tip at catalogue time)` |
 | [WorldLines](entries/engines/ludicdynamics-worldlines/README.md) | Agents for Role Play. Agents for Game. Agents as a Game. An orchestrator-agents engine for living worlds — file-backed, event-sourced. | python | unknown | reference | [LudicDynamics/WorldLines](https://github.com/LudicDynamics/WorldLines) @ `2026-10-26 (branch tip at catalogue time)` |
+| [XNAGameStudio](entries/engines/simondarksidej-xnagamestudio/README.md) | The Education library from the Xbox Live Indie games repository, valuable for MonoGame Developers for advanced samples | n/a | MIT | reference | [SimonDarksideJ/XNAGameStudio](https://github.com/SimonDarksideJ/XNAGameStudio) @ `2025-11-14 (branch tip at catalogue time)` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |
 | [z_impact](entries/engines/scemino-z-impact/README.md) | A 2d game engine written in ZIG | zig | MIT | reference | [scemino/z_impact](https://github.com/scemino/z_impact) @ `2025-07-17 (branch tip at catalogue time)` |

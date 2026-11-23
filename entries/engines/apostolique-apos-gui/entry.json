@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:48:07Z",
+ "category": "engines",
+ "commit": "2026-11-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Apostolique/Apos.Gui \u2014 UI library for MonoGame.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Apos.Gui",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "apostolique-apos-gui",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 222,
+ "system": "UI library for MonoGame.",
+ "upstream": "https://github.com/Apostolique/Apos.Gui",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

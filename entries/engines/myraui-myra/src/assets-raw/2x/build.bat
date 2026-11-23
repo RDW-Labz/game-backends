@@ -1,0 +1,1 @@
+myratexpack . ..\output\default_ui_skin_2x.png 1024 1024

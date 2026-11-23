@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);PLATFORM_AGNOSTIC</DefineConstants>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Myra</AssemblyName>
+    <PackageId>Myra.PlatformAgnostic</PackageId>
+    <OutputPath>bin\PlatformAgnostic\$(Configuration)</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\**\*.*" />
+  </ItemGroup>  
+
+  <ItemGroup>
+    <PackageReference Include="AssetManagementBase" Version="$(AMBVersion)" />
+    <PackageReference Include="FontStashSharp.PlatformAgnostic" Version="$(FontStashSharpVersion)" />
+  </ItemGroup>  
+</Project>

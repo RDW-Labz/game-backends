@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T14:48:03Z",
+ "category": "engines",
+ "commit": "c6210d600bdd",
+ "delivery": "reference",
+ "description": "aloisdeniel/awesome-monogame \u2014 A collection of interesting libraries/tools for Monogame based game projects",
+ "language": "n/a",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "awesome-monogame",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "aloisdeniel-awesome-monogame",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 1473,
+ "system": "A collection of interesting libraries/tools for Monogame based game projects",
+ "upstream": "https://github.com/aloisdeniel/awesome-monogame",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

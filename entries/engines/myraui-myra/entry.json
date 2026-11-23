@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T14:48:05Z",
+ "category": "engines",
+ "commit": "f605da2bba59",
+ "delivery": "vendored",
+ "description": "MyraUI/Myra \u2014 UI Library for MonoGame, FNA and Stride",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "Myra",
+ "size_bytes": 1789527,
+ "slug": "myraui-myra",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 890,
+ "system": "UI Library for MonoGame, FNA and Stride",
+ "upstream": "https://github.com/MyraUI/Myra",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

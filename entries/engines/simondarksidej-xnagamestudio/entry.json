@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:48:07Z",
+ "category": "engines",
+ "commit": "2025-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SimonDarksideJ/XNAGameStudio \u2014 The Education library from the Xbox Live Indie games repository, valuable for MonoGame Developers for advanced samples",
+ "language": "n/a",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "XNAGameStudio",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "simondarksidej-xnagamestudio",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 844,
+ "system": "The Education library from the Xbox Live Indie games repository, valuable for MonoGame Developers for advanced samples",
+ "upstream": "https://github.com/SimonDarksideJ/XNAGameStudio",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
