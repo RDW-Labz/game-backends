@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:20:09Z",
+ "category": "procgen",
+ "commit": "2022-01-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AdamAllsebrook/godot-procedural-tree-generation \u2014 Procedural generation of trees using L-Systems in Godot.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-procedural-tree-generation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "adamallsebrook-godot-procedural-tree-generation",
+ "source": "github-search:l-system procedural stars:>10",
+ "stars": 53,
+ "system": "Procedural generation of trees using L-Systems in Godot.",
+ "upstream": "https://github.com/AdamAllsebrook/godot-procedural-tree-generation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

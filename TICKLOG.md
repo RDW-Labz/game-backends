@@ -1635,3 +1635,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/solarlune-dngn
   - reference procgen/parcel-bundler-source-map
   - reference procgen/coryleach-unityprocgen
+
+- **2026-11-23 00:20 UTC** — tick 651: +2 screened, +4 reference, 1 skipped, catalogue=488
+  - added procgen/mathielo-dst-dedicated-server (MIT, vendored)
+  - added procgen/aigeeksgroup-code2games (none, reference)
+  - reference procgen/michalczemierowski-unity-voxel-terrain-generator
+  - reference procgen/kettle11-open-world-game
+  - reference procgen/runevision-locomotionsystem
+  - reference procgen/adamallsebrook-godot-procedural-tree-generation

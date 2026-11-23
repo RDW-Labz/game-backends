@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:20:09Z",
+ "category": "procgen",
+ "commit": "2023-04-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kettle11/open_world_game \u2014 Just a quick terrain generation experiment.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "open_world_game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "kettle11-open-world-game",
+ "source": "github-search:world generation game stars:>30",
+ "stars": 44,
+ "system": "Just a quick terrain generation experiment.",
+ "upstream": "https://github.com/kettle11/open_world_game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

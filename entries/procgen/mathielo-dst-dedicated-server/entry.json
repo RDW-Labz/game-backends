@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T00:20:05Z",
+ "category": "procgen",
+ "commit": "a91bf982e271",
+ "delivery": "vendored",
+ "description": "mathielo/dst-dedicated-server \u2014 Don't Starve Together dedicated server guide for all platforms (Linux, Mac, Windows) with Docker. Extensive documentation covering mods installation, server config and performance, world generation and setting up admins.",
+ "language": "lua",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "dst-dedicated-server",
+ "size_bytes": 13036,
+ "slug": "mathielo-dst-dedicated-server",
+ "source": "github-search:world generation game stars:>30",
+ "stars": 341,
+ "system": "Don't Starve Together dedicated server guide for all platforms (Linux, Mac, Windows) with Docker. Extensive documentation covering mods installation, server con",
+ "upstream": "https://github.com/mathielo/dst-dedicated-server",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T00:20:07Z",
+ "category": "procgen",
+ "commit": "c2f25b9751b0",
+ "delivery": "reference",
+ "description": "AIGeeksGroup/Code2Games \u2014 Code2Games: Enabling Coding Agents for Gaming World Generation",
+ "language": "python",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Code2Games",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 447949,
+ "slug": "aigeeksgroup-code2games",
+ "source": "github-search:world generation game stars:>30",
+ "stars": 89,
+ "system": "Code2Games: Enabling Coding Agents for Gaming World Generation",
+ "upstream": "https://github.com/AIGeeksGroup/Code2Games",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

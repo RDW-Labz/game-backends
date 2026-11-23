@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:20:09Z",
+ "category": "procgen",
+ "commit": "2025-02-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "runevision/LocomotionSystem \u2014 Automated semi-procedural walking and running on uneven terrain",
+ "language": "c#",
+ "license": "MPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "LocomotionSystem",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MPL-2.0)",
+ "slug": "runevision-locomotionsystem",
+ "source": "github-search:l-system procedural stars:>10",
+ "stars": 123,
+ "system": "Automated semi-procedural walking and running on uneven terrain",
+ "upstream": "https://github.com/runevision/LocomotionSystem",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

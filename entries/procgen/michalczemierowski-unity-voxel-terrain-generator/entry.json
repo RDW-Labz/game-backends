@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T00:20:09Z",
+ "category": "procgen",
+ "commit": "2021-10-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "michalczemierowski/Unity--voxel-terrain-generator \u2014 3D game with procedural world made of cubes. (world generation/mesh creation/physx baking is multi threaded)",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Unity--voxel-terrain-generator",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "michalczemierowski-unity-voxel-terrain-generator",
+ "source": "github-search:world generation game stars:>30",
+ "stars": 51,
+ "system": "3D game with procedural world made of cubes. (world generation/mesh creation/physx baking is multi threaded)",
+ "upstream": "https://github.com/michalczemierowski/Unity--voxel-terrain-generator",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
