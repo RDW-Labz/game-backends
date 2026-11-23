@@ -1987,3 +1987,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/bonsairobo-feldspar
   - reference engines/fenomas-voxel-physics-engine
   - reference engines/kosshi-net-voxplat
+
+- **2026-11-23 12:06 UTC** — tick 695: +2 screened, +4 reference, 1 skipped, catalogue=752
+  - added engines/jaysmito101-cgl (MIT, vendored)
+  - added engines/flopp-go-staticmaps (MIT, vendored)
+  - reference engines/aristurtledev-monogame-aseprite
+  - reference engines/443eb9-bevy-entitiles
+  - reference engines/alexanderfast-unitytilemap
+  - reference engines/ycarowr-unityhexagonlibrary2d

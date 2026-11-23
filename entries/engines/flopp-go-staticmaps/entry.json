@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T12:06:10Z",
+ "category": "engines",
+ "commit": "8cdef9842aeb",
+ "delivery": "vendored",
+ "description": "flopp/go-staticmaps \u2014 A go (golang) library and command line tool to render static map images using OpenStreetMap tiles.",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "go-staticmaps",
+ "size_bytes": 72893,
+ "slug": "flopp-go-staticmaps",
+ "source": "github-search:tilemap library stars:>15",
+ "stars": 383,
+ "system": "A go (golang) library and command line tool to render static map images using OpenStreetMap tiles.",
+ "upstream": "https://github.com/flopp/go-staticmaps",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

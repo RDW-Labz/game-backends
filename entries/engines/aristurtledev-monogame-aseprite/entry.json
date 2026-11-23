@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:06:11Z",
+ "category": "engines",
+ "commit": "2026-10-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AristurtleDev/monogame-aseprite \u2014 A Cross Platform C# Library That Adds Support For Aseprite Files in MonoGame Projects.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "monogame-aseprite",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "aristurtledev-monogame-aseprite",
+ "source": "github-search:tilemap library stars:>15",
+ "stars": 231,
+ "system": "A Cross Platform C# Library That Adds Support For Aseprite Files in MonoGame Projects. ",
+ "upstream": "https://github.com/AristurtleDev/monogame-aseprite",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

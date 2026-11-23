@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T12:06:07Z",
+ "category": "engines",
+ "commit": "bca6e65157a7",
+ "delivery": "vendored",
+ "description": "Jaysmito101/cgl \u2014 CGL (C Game Library) is a multipurpose library mainly for recreational coding / demo scenes / prototyping / small games / experimentation.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cgl",
+ "size_bytes": 8077088,
+ "slug": "jaysmito101-cgl",
+ "source": "github-search:tilemap library stars:>15",
+ "stars": 464,
+ "system": "CGL (C Game Library) is a multipurpose library mainly for recreational coding / demo scenes / prototyping / small games / experimentation. ",
+ "upstream": "https://github.com/Jaysmito101/cgl",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

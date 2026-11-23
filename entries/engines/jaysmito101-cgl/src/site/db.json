@@ -1,0 +1,512 @@
+[
+    {
+      "name": "Creating A Window",
+      "path": "builds/window_creation",
+      "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/creating_window.c",
+      "tags": ["cgl", "basics", "window", "simple"],
+      "views": 123,
+      "description": "A project to show how to create a basic window.",
+      "image": "assets/window_creation/thumb.png",
+      "published_date": "2024-02-01",
+      "author": "Jaysmito101",
+      "difficulty": 2
+    },
+    {
+      "name": "2D Collision Detection",
+      "path": "builds/2d_collision_detection",
+      "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/2d_collision_detection.c",
+      "tags": ["cgl", "2d", "collision", "sat", "gjk", "physics"],
+      "views": 456,
+      "description": "A project to show how to implement 2D collision detection using SAT and GJK algorithms.",
+      "image": "assets/2d_collision_detection/thumb.png",
+      "published_date": "2024-02-01",
+      "author": "Jaysmito101",
+      "difficulty": 4
+    },
+    {
+      "name": "2D Procedural Trees",
+      "path": "builds/2d_procedural_trees",
+      "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/2d_procedural_trees.c",
+      "tags": ["cgl", "2d", "procedural", "creative", "trees"],
+      "views": 789,
+      "description": "An Interactive application to procedurally generate 2D trees.",
+      "image": "assets/2d_procedural_trees/thumb.png",
+      "published_date": "2024-02-01",
+      "author": "Jaysmito101",
+      "difficulty": 4
+    },
+    {
+      "name": "3D Maze Game",
+      "path": "builds/3d_maze_game",
+      "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/3d_maze_game.c",
+      "tags": ["3d", "maze", "algorithm", "creative", "game", "procedural"],
+      "views": 321,
+      "description": "A 3D maze game with procedurally generated levels.",
+      "image": "assets/3d_maze_game/thumb.png",
+      "published_date": "2024-02-01",
+      "author": "Jaysmito101",
+      "difficulty": 3,
+      "youtube": "https://www.youtube.com/shorts/QNfG7SoRcog"
+    },
+    {
+        "name": "3D Pipes",
+        "path": "builds/3d_pipes",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/3d_pipes.c",
+        "tags": ["3d", "pipes", "oldschool", "windows", "screensaver", "creative"],
+        "views": 121,
+        "description": "The 3D pipes screensaver from old windows versions.",
+        "image": "assets/3d_pipes/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "s-mackeo",
+        "difficulty": 4
+    },
+    {
+        "name": "3D Widgets",
+        "path": "builds/3d_widgets",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/3d_widgets.c",
+        "tags": ["3d", "widgets", "simple", "creative", "tutorial"],
+        "views": 121,
+        "description": "A simple example of how to render 3D meshes using CGL widgets API.",
+        "image": "assets/3d_widgets/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 1
+    },
+    {
+        "name": "Advanced Widgets",
+        "path": "builds/advanced_widgets",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/advanced_widgets.c",
+        "tags": ["cgl", "advanced", "widgets", "creative", "tutorial"],
+        "views": 121,
+        "description": "An example of some advanced usage of the CGL widgets API.",
+        "image": "assets/advanced_widgets/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2
+    },
+    {
+        "name": "Approximating Pi",
+        "path": "builds/approximating_pi",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/approximating_pi.c",
+        "tags": ["cgl", "math", "monte carlo", "pi", "creative", "tutorial"],
+        "views": 121,
+        "description": "A creative coding and interesting mathematical challenge to approximate pi using monte carlo method.",
+        "image": "assets/approximating_pi/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2
+    },
+    {
+        "name": "Audio Visualizer",
+        "path": "builds/audio_visualizer",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/audio_visualizer.c",
+        "tags": ["cgl", "audio", "visualizer", "creative", "tutorial"],
+        "views": 121,
+        "description": "An creative application that visualized a audio file using brilliant looking visuals.",
+        "image": "assets/audio_visualizer/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 3,
+        "web_page": {
+          "instructions": [
+            "Drag and drop any WAV file to play",
+            "Or, choose:"
+          ],
+          "file_actions": [
+            {
+              "label": "1. Sample Wav 1",
+              "url": "sample1.wav",
+              "virtual_path": "sample.wav",
+              "function": "load_file"
+            },
+            {
+              "label": "2. Sample Wav 2",
+              "url": "sample2.wav",
+              "virtual_path": "sample.wav",
+              "function": "load_file"
+            }
+          ]
+        }
+    },
+    {
+        "name": "Barnsley Fern",
+        "path": "builds/barnsley_fern",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/barnsley_fern.c",
+        "tags": ["cgl", "math", "fractal", "fern", "creative", "tutorial"],
+        "views": 121,
+        "description": "An example of how to render the barnsley fern fractal using CGL.",
+        "image": "assets/barnsley_fern/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2
+    },
+    {
+        "name": "Basic Node Editor",
+        "path": "builds/basic_node_editor",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/basic_node_editor.c",
+        "tags": ["cgl", "node_editor", "simple", "creative", "tutorial"],
+        "views": 121,
+        "description": "A simple example of how to create a basic node editor using CGL's node editor API.",
+        "image": "assets/basic_node_editor/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 5,
+        "web_page": {
+          "instructions": [
+            "Press A to add a Node",
+            "Click to select and drag to move",
+            "Shift to multi select",
+            "Delete to delete",
+            "You can drag and connect points",
+            "Drag out of a connrected point to disconnect"
+          ]
+        }
+    },
+    {
+        "name": "Basic Plotting",
+        "path": "builds/basic_plotting",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/basic_plotting.c",
+        "tags": ["cgl", "math", "plotting", "simple", "creative", "tutorial"],
+        "views": 121,
+        "description": "A simple example of how to use CGL's plotting API to plot graphs, curves, chats, scatter plots.",
+        "image": "assets/basic_plotting/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "Press 1 for Curve Plots",
+            "Press 2 for Scatter Plot",
+            "Press 3 for Pie Chart",
+            "Press 4 for Bar Graphs"
+          ]
+        }
+    },
+    {
+        "name": "Basic Raycast 2D Lighting",
+        "path": "builds/basic_raycast_2d_lighting",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/basic_raycast_2d_lighting.c",
+        "tags": ["cgl", "2d", "raycast", "lighting", "creative", "tutorial"],
+        "views": 121,
+        "description": "A simple example of how to use CGL's 2D raycasting API to create a 2D lighting system.",
+        "image": "assets/basic_raycast_2d_lighting/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 4,
+        "web_page": {
+          "instructions": [
+            "Click and drag to add wall",
+            "Press C to clear all walls",
+            "W/S -> to move around",
+            "Q/E-> To rotate direction",
+            "R -> to shoot ray",
+            "T -> to visualize mesh"
+          ]
+        }
+    },
+    {
+        "name": "Bezier Curve Widget",
+        "path": "builds/bezier_curve_widget",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/bezier_curve_widget.c",
+        "tags": ["cgl", "bezier", "curve", "widget", "creative", "tutorial"],
+        "views": 121,
+        "description": "A special widget called a Curve Editor that gives an interactive experience of the cgl bezier_curve_widget API.",
+        "image": "assets/bezier_curve_widget/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "Up/Down Arrow to increase line resolution",
+            "Use mosue to drag around the points"
+          ]
+        }
+    },
+    {
+        "name": "Christmas Tree",
+        "path": "builds/christmas_tree01",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/christmas_tree01.c",
+        "tags": ["cgl", "christmas", "tree", "creative", "tutorial"],
+        "views": 121,
+        "description": "A creative coding example of a christmas tree using CGL.",
+        "image": "assets/christmas_tree01/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "Press Space to Start"
+          ]
+        }
+    },
+    {
+        "name": "Climate Spiral",
+        "path": "builds/climate_spiral",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/climate_spiral.c",
+        "tags": ["cgl", "climate", "spiral", "creative", "tutorial"],
+        "views": 121,
+        "description": "A creative coding example of a climate spiral that visualizes the change in temperature over time from 1880 to 2023.",
+        "image": "assets/climate_spiral/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "Press Space to Start"
+          ]
+        }
+    },
+    {
+        "name": "Fireworks",
+        "path": "builds/fireworks",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/fireworks.c",
+        "tags": ["cgl", "fireworks", "creative", "tutorial"],
+        "views": 121,
+        "description": "A creative coding example of a fireworks simulation using CGL.",
+        "image": "assets/fireworks/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "This demo might take a while to load, once screen is black, its loaded",
+            "Press Space to start"
+          ]
+        }
+    },
+    {
+        "name": "Flappy Bird",
+        "path": "builds/flappy_bird",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/flappy_bird.c",
+        "tags": ["cgl", "flappy", "bird", "game", "creative", "tutorial"],
+        "views": 121,
+        "description": "A creative coding example of a flappy bird game using CGL.",
+        "image": "assets/flappy_bird/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 3,
+        "web_page": {
+          "instructions": [
+            "Space to play",
+            "R to restart if lost"
+          ]
+        }
+    },
+    { 
+        "name": "Flappy Bird AI",
+        "path": "builds/flappy_bird_ai",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/flappy_bird_ai.c",
+        "tags": ["cgl", "flappy", "bird", "game", "ai", "neural network", "genetic algorithm", "creative", "tutorial"],
+        "views": 121,
+        "description": "A creative coding example of a flappy bird game using CGL with AI (neural networks trained with genetic algorithms).",
+        "image": "assets/flappy_bird_ai/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 5,
+        "web_page": {
+          "instructions": [
+            "Press Space to start training",
+            "You can introduce noise by spacing space while the AI plays"
+          ]
+        }
+    },
+    {
+        "name": "Interactive 2D Triangulation",
+        "path": "builds/interactive_2d_triangulation",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/interactive_2d_triangulation.c",
+        "tags": ["cgl", "2d", "triangulation", "interactive", "creative", "tutorial"],
+        "views": 121,
+        "description": "An interactive example of how to use CGL's 2D triangulation API to create a 2D triangulation system.",
+        "image": "assets/interactive_2d_triangulation/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 3,
+        "web_page": {
+          "instructions": [
+            "Left click to add a point",
+            "Right click on a point to remove it",
+            "Click and drag a point to move it"
+          ]
+        }
+    },
+    {
+        "name": "Interactive Content Aware Crop",
+        "path": "builds/interactive_content_aware_crop",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/interactive_content_aware_crop.c",
+        "tags": ["cgl", "interactive", "content aware", "crop", "creative", "tutorial"],
+        "views": 121,
+        "description": "An interactive example of how to use CGL's content aware crop API to create a content aware crop system.",
+        "image": "assets/interactive_content_aware_crop/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 5,
+        "web_page": {
+          "instructions": [
+            "Drag and drop any image on the canvas",
+            "Press H + (Up/Down Arrow) to Increase/Decrease Height",
+            "Press W + (Left/Right Arrow) to Increase/Decrease Width",
+            "Note: This algorithm is pretty slow so be patient",
+            "Note: This algorithm is uses a lot of memory so dont drop a huge image"
+          ]
+        }
+    },
+    {
+        "name": "Interactive Linear Regression",
+        "path": "builds/interactive_linear_regression",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/interactive_linear_regression.c",
+        "tags": ["cgl", "interactive", "linear regression", "creative", "ai", "tutorial"],
+        "views": 121,
+        "description": "An interactive example of how to use CGL's linear regression API to create a linear regression system.",
+        "image": "assets/interactive_linear_regression/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "Left click to add points",
+            "Right click to remove points",
+            "Click and drag to move points",
+            "Keep adding and moving points the Line will try to auto adjust"
+          ]
+        }
+    },
+    {
+        "name": "Interactive Polynomial Regression",
+        "path": "builds/interactive_polynomial_regression",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/interactive_polynomial_regression.c",
+        "tags": ["cgl", "interactive", "polynomial regression", "creative", "ai", "tutorial"],
+        "views": 121,
+        "description": "An interactive example of how to use CGL's polynomial regression API to create a polynomial regression system.",
+        "image": "assets/interactive_polynomial_regression/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "Left click to add points",
+            "Right click to remove points",
+            "Click and drag to move points",
+            "Keep adding and moving points the Curve will try to auto adjust"
+          ]
+        }
+    },
+    {
+        "name": "Menger Sponge Fractal",
+        "path": "builds/menger_sponge_fractal",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/menger_sponge_fractal.c",
+        "tags": ["cgl", "fractal", "menger sponge", "creative", "tutorial"],
+        "views": 121,
+        "description": "An example of how to render the menger sponge fractal using CGL.",
+        "image": "assets/menger_sponge_fractal/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "Up Arrow or Down Arrow to Subdivide or Un-Subdivide",
+            "Press space to invert",
+            "Left Arrow or Right Arrow to scale"
+          ]
+        }
+    },
+    {
+        "name": "Neopeed",
+        "path": "builds/neopeed",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/neopeed.c",
+        "tags": ["cgl", "game", "creative", "tutorial"],
+        "views": 121,
+        "description": "A full fledged infinite runner game made from scratch using CGL.",
+        "image": "assets/neopeed/thumb.png",
+        "published_date": "2024-02-02",
+        "author": "Jaysmito101",
+        "difficulty": 5,
+        "web_page": {
+          "instructions": [
+            "Left/Right Arrow to move",
+            "Up/Down Arrow to change camera angle",
+            "R to restart after Game Over",
+            "Avoid the Red, Collect the Blue",
+            "NOTE: The Web version does not suppoer postprocessing(bloom & toon shading) so looks much shabbier than the native version"
+          ]
+        }
+    },
+    {
+        "name": "Newton Equation Root Approximator",
+        "path": "builds/newton_equation_root_appximator",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/newton_equation_root_appximator.c",
+        "tags": ["cgl", "math", "newton", "equation", "root", "creative", "tutorial"],
+        "views": 121,
+        "description": "An example of how to approximate the root of an equation using newton's method.",
+        "image": "assets/newton_equation_root_appximator/thumb.png",
+        "published_date": "2024-02-01",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "Newton's Approximate Solver",
+            "Press R - Generate new random equation",
+            "Press S - Start solving from random point",
+            "The solver uses Newton's method to find roots of the plotted function"
+          ]
+        }
+    },
+    {
+        "name": "Noise Generator",
+        "path": "builds/noise_generator",
+        "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/noise_generator.c",
+        "tags": ["cgl", "perlin", "noise", "interactive", "creative", "procedural"],
+        "views": 0,
+        "description": "An interactive noise generator with adjustable parameters. Features different noise types and fractal patterns.",
+        "image": "assets/noise_generator/thumb.png",
+        "published_date": "2024-02-02",
+        "author": "Jaysmito101",
+        "difficulty": 2,
+        "web_page": {
+          "instructions": [
+            "Perlin Noise Controls",
+            "Arrow Keys - Move around",
+            "S + Up/Down - Zoom in/out",
+            "T + [0-9] - Change noise type",
+            "F + [0-9] - Change fractal type",
+            "Interactive Perlin noise visualization"
+          ]
+        }
+    },
+    {
+      "name": "Quad Tree Visualizer",
+      "path": "builds/simple_quad_tree",
+      "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/simple_quad_tree.c",
+      "tags": ["cgl", "quad", "tree", "visualizer", "creative"],
+      "views": 0,
+      "description": "A demonstration of quad tree usage and debugging in CGL.",
+      "image": "assets/simple_quad_tree/thumb.png",
+      "published_date": "2024-02-02",
+      "author": "Jaysmito101",
+      "difficulty": 5,
+      "web_page": {
+        "instructions": [
+          "Press SPACE - Toggle quad tree / normal mode",
+          "Press Q (hold) - Debug render quad tree",
+          "Press F - Toggle some quad tree configurations"
+        ]
+      }
+    },
+    {
+      "name": "Trail Renderer",
+      "path": "builds/trail_renderer",
+      "source_code": "https://github.com/Jaysmito101/cgl/blob/main/examples/c/trail_renderer.c",
+      "tags": ["cgl", "3d", "trails", "creative", "render"],
+      "views": 42,
+      "description": "A mesmerizing trail renderer with floating trails in 3D space.",
+      "image": "assets/trail_renderer/thumb.png",
+      "published_date": "2024-02-01",
+      "author": "Jaysmito101",
+      "difficulty": 3,
+      "web_page": {
+        "instructions": [
+          "This page showcases the Trail Renderer.",
+          "In the WebGL build, bloom is disabled, so it might look a bit less fancy compared to the native build."
+        ]
+      }
+    }
+]

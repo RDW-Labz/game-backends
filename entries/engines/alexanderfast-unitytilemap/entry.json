@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:06:11Z",
+ "category": "engines",
+ "commit": "2015-04-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "alexanderfast/UnityTileMap \u2014 A TileMap library for Unity written in C#.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "UnityTileMap",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "alexanderfast-unitytilemap",
+ "source": "github-search:tilemap library stars:>15",
+ "stars": 110,
+ "system": "A TileMap library for Unity written in C#.",
+ "upstream": "https://github.com/alexanderfast/UnityTileMap",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

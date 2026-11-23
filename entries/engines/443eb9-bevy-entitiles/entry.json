@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:06:11Z",
+ "category": "engines",
+ "commit": "2024-11-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "443eb9/bevy_entitiles \u2014 A 2d tilemap library for bevy. With many useful algorithms/tools built in.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy_entitiles",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "443eb9-bevy-entitiles",
+ "source": "github-search:tilemap library stars:>15",
+ "stars": 157,
+ "system": "A 2d tilemap library for bevy. With many useful algorithms/tools built in.",
+ "upstream": "https://github.com/443eb9/bevy_entitiles",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
