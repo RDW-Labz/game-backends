@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T14:16:05Z",
+ "category": "engines",
+ "commit": "1ac745b70382",
+ "delivery": "vendored",
+ "description": "Lommix/bevy_aseprite_ultra \u2014 The ultimate bevy aseprite binary plugin. Featuring animations and static atlas loading with pivots. Full support for hot reloading!",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "bevy_aseprite_ultra",
+ "size_bytes": 76005,
+ "slug": "lommix-bevy-aseprite-ultra",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 204,
+ "system": "The ultimate bevy aseprite binary plugin. Featuring animations and static atlas loading with pivots. Full support for hot reloading!",
+ "upstream": "https://github.com/Lommix/bevy_aseprite_ultra",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

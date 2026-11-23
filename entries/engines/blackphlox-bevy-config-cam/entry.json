@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:16:06Z",
+ "category": "engines",
+ "commit": "2023-09-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BlackPhlox/bevy_config_cam \u2014 A Swiss Army knife of a camera plugin that allows for easy setup and configuration of a wide variety of types of moveable cameras and player cameras for a scene.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "bevy_config_cam",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "blackphlox-bevy-config-cam",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 189,
+ "system": "A Swiss Army knife of a camera plugin that allows for easy setup and configuration of a wide variety of types of moveable cameras and player cameras for a scene",
+ "upstream": "https://github.com/BlackPhlox/bevy_config_cam",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

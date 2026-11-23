@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:16:06Z",
+ "category": "engines",
+ "commit": "2026-10-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "johanhelsing/bevy_pkv \u2014 Cross-platform (including wasm) persistent key value store plugin for rust games/apps",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "bevy_pkv",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "johanhelsing-bevy-pkv",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 180,
+ "system": "Cross-platform (including wasm) persistent key value store plugin for rust games/apps",
+ "upstream": "https://github.com/johanhelsing/bevy_pkv",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

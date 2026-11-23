@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:16:06Z",
+ "category": "engines",
+ "commit": "2022-05-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sdfgeoff/blender_bevy_toolkit \u2014 A blender addon and bevy plugin to use Blender as an editor for Bevy",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "blender_bevy_toolkit",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "sdfgeoff-blender-bevy-toolkit",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 199,
+ "system": "A blender addon and bevy plugin to use Blender as an editor for Bevy",
+ "upstream": "https://github.com/sdfgeoff/blender_bevy_toolkit",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

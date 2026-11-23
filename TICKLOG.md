@@ -2050,3 +2050,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/makspll-bevy-mod-scripting
   - reference engines/niklasei-bevy-kira-audio
   - reference engines/gschup-bevy-ggrs
+
+- **2026-11-23 14:16 UTC** — tick 703: +2 screened, +4 reference, 1 skipped, catalogue=799
+  - added engines/johanhelsing-bevy-pancam (Apache-2.0, vendored)
+  - added engines/lommix-bevy-aseprite-ultra (MIT, vendored)
+  - reference engines/sdfgeoff-blender-bevy-toolkit
+  - reference engines/blackphlox-bevy-config-cam
+  - reference engines/multirious-bevy-tween
+  - reference engines/johanhelsing-bevy-pkv

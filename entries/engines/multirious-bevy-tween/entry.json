@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T14:16:06Z",
+ "category": "engines",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Multirious/bevy_tween \u2014 Flexible tweening plugin library for Bevy.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_tween",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "multirious-bevy-tween",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 184,
+ "system": "Flexible tweening plugin library for Bevy.",
+ "upstream": "https://github.com/Multirious/bevy_tween",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

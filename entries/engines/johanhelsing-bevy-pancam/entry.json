@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T14:16:03Z",
+ "category": "engines",
+ "commit": "c9e527a85e72",
+ "delivery": "vendored",
+ "description": "johanhelsing/bevy_pancam \u2014 A  bevy plugin for panning orthographic cameras",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "bevy_pancam",
+ "size_bytes": 36296,
+ "slug": "johanhelsing-bevy-pancam",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 229,
+ "system": "A  bevy plugin for panning orthographic cameras ",
+ "upstream": "https://github.com/johanhelsing/bevy_pancam",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
