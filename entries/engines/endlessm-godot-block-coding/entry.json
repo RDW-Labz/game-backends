@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T13:28:03Z",
+ "category": "engines",
+ "commit": "006e31ebe795",
+ "delivery": "vendored",
+ "description": "endlessm/godot-block-coding \u2014 Block-based visual programming plugin for Godot",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-block-coding",
+ "size_bytes": 682704,
+ "slug": "endlessm-godot-block-coding",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 479,
+ "system": "Block-based visual programming plugin for Godot",
+ "upstream": "https://github.com/endlessm/godot-block-coding",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

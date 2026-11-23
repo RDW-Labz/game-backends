@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T13:28:10Z",
+ "category": "engines",
+ "commit": "2026-10-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tomyud1/godot-mcp \u2014 MCP Server and Godot Plugin for AI-assisted game development",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-mcp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "tomyud1-godot-mcp",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 454,
+ "system": "MCP Server and Godot Plugin for AI-assisted game development",
+ "upstream": "https://github.com/tomyud1/godot-mcp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

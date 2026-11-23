@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 13:12 UTC · 775 entries · 207 vendored, 568 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 13:28 UTC · 781 entries · 209 vendored, 572 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 349 | 74 | 275 |
+| [engines](#engines) — Game engines and engine subsystems | 355 | 76 | 279 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 13:12 UTC · 775 entries · 207 vendored, 568 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 349 entries
+**Game engines and engine subsystems** — 355 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -143,6 +143,7 @@ _Generated 2026-11-23 13:12 UTC · 775 entries · 207 vendored, 568 reference-on
 | [GameStringer](entries/engines/rouges78-gamestringer/README.md) | Desktop app that auto-detects a game's engine, extracts the text, translates it with local or cloud AI, and re-applies the patch. 20+ engines, 20+ AI providers, | typescript | unknown | reference | [rouges78/GameStringer](https://github.com/rouges78/GameStringer) @ `2026-11-23 (branch tip at catalogue time)` |
 | [gamezone — core](entries/engines/gamezone-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | Apache-2.0 | vendored | [kunjgit/GameZone](https://github.com/kunjgit/GameZone) @ `ac4ce20` |
 | [GBM2K-Framework](entries/engines/oplexitie-gbm2k-framework/README.md) | A 2D Grid Based Movement framework made for the Godot game engine. | gdscript | MIT | reference | [Oplexitie/GBM2K-Framework](https://github.com/Oplexitie/GBM2K-Framework) @ `2026-10-09 (branch tip at catalogue time)` |
+| [gdcef](entries/engines/lecrapouille-gdcef/README.md) | [Godot Plugin][Version 0.21.0][Functional] Chromium Embedded Framework Webview for Godot 4 | c++ | MIT | reference | [Lecrapouille/gdcef](https://github.com/Lecrapouille/gdcef) @ `2026-11-05 (branch tip at catalogue time)` |
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
 | [genex-desktop](entries/engines/genex-games-genex-desktop/README.md) | Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models. | typescript | MIT | reference | [genex-games/genex-desktop](https://github.com/genex-games/genex-desktop) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -153,7 +154,9 @@ _Generated 2026-11-23 13:12 UTC · 775 entries · 207 vendored, 568 reference-on
 | [Go2D](entries/engines/pikedev-go2d/README.md) | GoLang 2D Game Library based on SDL 1.3. This can be used to easily write games using Go (www.golang.org) using SDL 1.3 for hardware-accelerated rendering (Open | go | unknown | reference | [PikeDev/Go2D](https://github.com/PikeDev/Go2D) @ `2011-09-18 (branch tip at catalogue time)` |
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
 | [godot-2d-space-game](entries/engines/gdquest-demos-godot-2d-space-game/README.md) | A 2D space exploration and mining game made with Godot and our AI framework | gdscript | unknown | reference | [gdquest-demos/godot-2d-space-game](https://github.com/gdquest-demos/godot-2d-space-game) @ `2026-05-16 (branch tip at catalogue time)` |
+| [godot-block-coding](entries/engines/endlessm-godot-block-coding/README.md) | Block-based visual programming plugin for Godot | gdscript | MIT | vendored | [endlessm/godot-block-coding](https://github.com/endlessm/godot-block-coding) @ `006e31ebe795` |
 | [godot-cpp (GDExtension bindings)](entries/engines/godot-cpp/README.md) | C++ bindings/extension ABI for Godot | c++ | MIT | reference | [godotengine/godot-cpp](https://github.com/godotengine/godot-cpp) @ `2a4c066e1e8c` |
+| [godot-deformablemesh](entries/engines/cloudofoz-godot-deformablemesh/README.md) | Addon to deform 3D meshes using customizable deformers at run-time. | gdscript | MIT | reference | [cloudofoz/godot-deformablemesh](https://github.com/cloudofoz/godot-deformablemesh) @ `2025-10-21 (branch tip at catalogue time)` |
 | [godot-docs](entries/engines/godotengine-godot-docs/README.md) | Godot Engine official documentation | restructuredtext | unknown | reference | [godotengine/godot-docs](https://github.com/godotengine/godot-docs) @ `2026-11-22 (branch tip at catalogue time)` |
 | [godot-ecs](entries/engines/godothub-godot-ecs/README.md) | A lightweight yet powerful Entity Component System (ECS) framework designed specifically for Godot 4. | gdscript | MIT | reference | [godothub/godot-ecs](https://github.com/godothub/godot-ecs) @ `2026-08-21 (branch tip at catalogue time)` |
 | [godot-engine.easy-charts](entries/engines/fenix-hub-godot-engine-easy-charts/README.md) | A Godot Engine addon for plotting general purpose charts. A collection of Control, 2D and 3D Nodes to plot every chart possible. | gdscript | MIT | reference | [fenix-hub/godot-engine.easy-charts](https://github.com/fenix-hub/godot-engine.easy-charts) @ `2026-10-10 (branch tip at catalogue time)` |
@@ -161,8 +164,10 @@ _Generated 2026-11-23 13:12 UTC · 775 entries · 207 vendored, 568 reference-on
 | [godot-manager](entries/engines/eumario-godot-manager/README.md) | A Project, Version and Addons/Plugins manager for Godot Game Engine. | c# | MIT | reference | [eumario/godot-manager](https://github.com/eumario/godot-manager) @ `2026-03-31 (branch tip at catalogue time)` |
 | [godot-mcp](entries/engines/coding-solo-godot-mcp/README.md) | MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output. | javascript | MIT | vendored | [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) @ `1209744fad78` |
 | [Godot-MCP](entries/engines/ivanmurzak-godot-mcp/README.md) | Godot-MCP — Model Context Protocol (MCP) integration for the Godot Engine. AI tools for the Godot Editor in C#, with cloud connection to ai-game.dev. Apache-2.0 | c# | Apache-2.0 | reference | [IvanMurzak/Godot-MCP](https://github.com/IvanMurzak/Godot-MCP) @ `2026-11-21 (branch tip at catalogue time)` |
+| [godot-mcp](entries/engines/tomyud1-godot-mcp/README.md) | MCP Server and Godot Plugin for AI-assisted game development | gdscript | MIT | reference | [tomyud1/godot-mcp](https://github.com/tomyud1/godot-mcp) @ `2026-10-17 (branch tip at catalogue time)` |
 | [Godot-MCP-Native](entries/engines/yurineko73-godot-mcp-native/README.md) | 一款支持godot开源引擎的的mcp插件，支持常见godot引擎操作，使用Godot原生实现MCPServer，无需安装依赖，开箱即用，支持多种AI工具调用。An MCP plugin that supports the open-source Godot engine, enabling common Godot e | gdscript | MIT | reference | [yurineko73/Godot-MCP-Native](https://github.com/yurineko73/Godot-MCP-Native) @ `2026-08-03 (branch tip at catalogue time)` |
 | [godot-minimal-theme](entries/engines/passivestar-godot-minimal-theme/README.md) | Godot Minimal Theme | n/a | MIT | vendored | [passivestar/godot-minimal-theme](https://github.com/passivestar/godot-minimal-theme) @ `3250c3c79860` |
+| [godot-ply](entries/engines/jarneson-godot-ply/README.md) | Godot plugin for in-editor box modeling | gdscript | MIT | reference | [jarneson/godot-ply](https://github.com/jarneson/godot-ply) @ `2024-12-20 (branch tip at catalogue time)` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
 | [godot-voip](entries/engines/ikbencasdoei-godot-voip/README.md) | godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project. | rust | MIT | reference | [ikbencasdoei/godot-voip](https://github.com/ikbencasdoei/godot-voip) @ `2024-09-22 (branch tip at catalogue time)` |
 | [godot-vscode-plugin](entries/engines/godotengine-godot-vscode-plugin/README.md) | Godot development tools for VSCode | typescript | MIT | reference | [godotengine/godot-vscode-plugin](https://github.com/godotengine/godot-vscode-plugin) @ `2026-09-10 (branch tip at catalogue time)` |
@@ -293,6 +298,7 @@ _Generated 2026-11-23 13:12 UTC · 775 entries · 207 vendored, 568 reference-on
 | [sbox-public](entries/engines/facepunch-sbox-public/README.md) | s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games | c# | unknown | reference | [Facepunch/sbox-public](https://github.com/Facepunch/sbox-public) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Serious-Engine](entries/engines/croteam-official-serious-engine/README.md) | An open source version of a game engine developed by Croteam for the classic Serious Sam games. | c++ | GPL-2.0 | reference | [Croteam-official/Serious-Engine](https://github.com/Croteam-official/Serious-Engine) @ `2020-10-31 (branch tip at catalogue time)` |
 | [server](entries/engines/runejs-server/README.md) | RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing s | typescript | GPL-3.0 | reference | [runejs/server](https://github.com/runejs/server) @ `2026-09-03 (branch tip at catalogue time)` |
+| [Shaker](entries/engines/eneskp3441-shaker/README.md) | shake plugin for godot | gdscript | MIT | vendored | [Eneskp3441/Shaker](https://github.com/Eneskp3441/Shaker) @ `c127bcc49416` |
 | [SharpLibHid](entries/engines/slion-sharplibhid/README.md) | C# HID Library using Windows Raw Input. | c# | unknown | reference | [Slion/SharpLibHid](https://github.com/Slion/SharpLibHid) @ `2022-06-22 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sketch](entries/engines/vydd-sketch/README.md) | A Common Lisp framework for the creation of electronic art, visual design, game prototyping, game making, computer graphics, exploration of human-computer inter | common lisp | MIT | reference | [vydd/sketch](https://github.com/vydd/sketch) @ `2026-01-18 (branch tip at catalogue time)` |

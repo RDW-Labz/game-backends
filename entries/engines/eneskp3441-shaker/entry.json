@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T13:28:08Z",
+ "category": "engines",
+ "commit": "c127bcc49416",
+ "delivery": "vendored",
+ "description": "Eneskp3441/Shaker \u2014 shake plugin for godot",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Shaker",
+ "size_bytes": 117497,
+ "slug": "eneskp3441-shaker",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 462,
+ "system": "shake plugin for godot",
+ "upstream": "https://github.com/Eneskp3441/Shaker",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

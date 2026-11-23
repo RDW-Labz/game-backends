@@ -2026,3 +2026,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/fenix-hub-godot-engine-easy-charts
   - reference engines/portponky-better-terrain
   - reference engines/octod-godot-gameplay-systems
+
+- **2026-11-23 13:28 UTC** — tick 700: +2 screened, +4 reference, 1 skipped, catalogue=781
+  - added engines/endlessm-godot-block-coding (MIT, vendored)
+  - added engines/eneskp3441-shaker (MIT, vendored)
+  - reference engines/tomyud1-godot-mcp
+  - reference engines/cloudofoz-godot-deformablemesh
+  - reference engines/lecrapouille-gdcef
+  - reference engines/jarneson-godot-ply

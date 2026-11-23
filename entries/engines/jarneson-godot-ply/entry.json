@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T13:28:10Z",
+ "category": "engines",
+ "commit": "2024-12-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jarneson/godot-ply \u2014 Godot plugin for in-editor box modeling",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-ply",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jarneson-godot-ply",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 427,
+ "system": "Godot plugin for in-editor box modeling",
+ "upstream": "https://github.com/jarneson/godot-ply",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
