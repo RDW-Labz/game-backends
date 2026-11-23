@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T03:02:12Z",
+ "category": "engines",
+ "commit": "2026-11-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "djeedai/bevy_tweening \u2014 Tweening animation plugin for the Bevy game engine.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_tweening",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "djeedai-bevy-tweening",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 579,
+ "system": "Tweening animation plugin for the Bevy game engine.",
+ "upstream": "https://github.com/djeedai/bevy_tweening",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

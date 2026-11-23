@@ -1715,3 +1715,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/ambientrun-ambient
   - reference engines/bevy-cheatbook-bevy-cheatbook
   - reference engines/pistondevelopers-hematite
+
+- **2026-11-23 03:02 UTC** — tick 661: +2 screened, +4 reference, 5 skipped, catalogue=548
+  - added engines/leafwing-studios-leafwing-input-manager (Apache-2.0, vendored)
+  - added engines/darthdeus-comfy (Apache-2.0, vendored)
+  - reference engines/outthislife-azeroth-survivors-re
+  - reference engines/djeedai-bevy-tweening
+  - reference engines/thereddeveloper-ply-engine
+  - reference engines/lasa01-plumber

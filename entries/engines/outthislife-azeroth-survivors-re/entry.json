@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T03:02:12Z",
+ "category": "engines",
+ "commit": "2026-10-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OutThisLife/azeroth-survivors-re \u2014 A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy).",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "azeroth-survivors-re",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "outthislife-azeroth-survivors-re",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 696,
+ "system": "A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy).",
+ "upstream": "https://github.com/OutThisLife/azeroth-survivors-re",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

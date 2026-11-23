@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 02:46 UTC · 542 entries · 158 vendored, 384 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 03:02 UTC · 548 entries · 160 vendored, 388 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 116 | 25 | 91 |
+| [engines](#engines) — Game engines and engine subsystems | 122 | 27 | 95 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 02:46 UTC · 542 entries · 158 vendored, 384 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 116 entries
+**Game engines and engine subsystems** — 122 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -27,14 +27,17 @@ _Generated 2026-11-23 02:46 UTC · 542 entries · 158 vendored, 384 reference-on
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
 | [axmol](entries/engines/axmolengine-axmol/README.md) | Open-source C++ game engine with Lua for 2D and 3D games across mobile, desktop, WebAssembly, and Xbox (UWP). | c++ | unknown | reference | [axmolengine/axmol](https://github.com/axmolengine/axmol) @ `2026-11-23 (branch tip at catalogue time)` |
+| [azeroth-survivors-re](entries/engines/outthislife-azeroth-survivors-re/README.md) | A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy). | rust | Apache-2.0 | reference | [OutThisLife/azeroth-survivors-re](https://github.com/OutThisLife/azeroth-survivors-re) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Babylon.js](entries/engines/babylonjs-babylon-js/README.md) | Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework. | typescript | Apache-2.0 | reference | [BabylonJS/Babylon.js](https://github.com/BabylonJS/Babylon.js) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Bevy](entries/engines/bevy/README.md) | ECS-first engine: schedules, asset pipeline, render graph | rust | Apache-2.0 | reference | [bevyengine/bevy](https://github.com/bevyengine/bevy) @ `7ea4827e16d5` |
 | [bevy-cheatbook](entries/engines/bevy-cheatbook-bevy-cheatbook/README.md) | Unofficial Reference Book for the Bevy Game Engine | rust | unknown | reference | [bevy-cheatbook/bevy-cheatbook](https://github.com/bevy-cheatbook/bevy-cheatbook) @ `2025-12-03 (branch tip at catalogue time)` |
+| [bevy_tweening](entries/engines/djeedai-bevy-tweening/README.md) | Tweening animation plugin for the Bevy game engine. | rust | Apache-2.0 | reference | [djeedai/bevy_tweening](https://github.com/djeedai/bevy_tweening) @ `2026-11-01 (branch tip at catalogue time)` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [carp — core](entries/engines/carp-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | Apache-2.0 | vendored | [carp-lang/Carp](https://github.com/carp-lang/Carp) @ `ad5a96e` |
 | [CBG----Clavierhaus-BackGammon — engine-core](entries/engines/cbg-clavierhaus-backgammon-engine-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [clavierhaus/gnubg-android](https://github.com/clavierhaus/gnubg-android) @ `6202857` |
 | [cocos-engine](entries/engines/cocos-cocos-engine/README.md) | Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create | c++ | MIT | reference | [cocos/cocos-engine](https://github.com/cocos/cocos-engine) @ `90ad7072a332` |
 | [Cocos2d-x](entries/engines/cocos2d-x/README.md) | mobile-first 2D/3D engine core | c++ | MIT | reference | [cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x) @ `7a5282a301a1` |
+| [comfy](entries/engines/darthdeus-comfy/README.md) | Comfy is a fun 2D game engine built in Rust. It's designed to be opinionated, productive, and easy to use. | rust | Apache-2.0 | vendored | [darthdeus/comfy](https://github.com/darthdeus/comfy) @ `31aa6efce135` |
 | [corona](entries/engines/coronalabs-corona/README.md) | Solar2D Game Engine main repository (ex Corona SDK) | c++ | MIT | reference | [coronalabs/corona](https://github.com/coronalabs/corona) @ `22368dfc1209` |
 | [cpp-game-engine-book](entries/engines/thisisgame-cpp-game-engine-book/README.md) | 从零编写游戏引擎教程 Writing a game engine tutorial from scratch | c++ | GPL-3.0 | reference | [ThisisGame/cpp-game-engine-book](https://github.com/ThisisGame/cpp-game-engine-book) @ `c7f9f8095274` |
 | [crown](entries/engines/crownengine-crown/README.md) | A complete and cross-platform game engine designed for flexibility, performance and fast iteration. | c++ | unknown | reference | [crownengine/crown](https://github.com/crownengine/crown) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -79,6 +82,7 @@ _Generated 2026-11-23 02:46 UTC · 542 entries · 158 vendored, 384 reference-on
 | [kengine](entries/engines/phisko-kengine/README.md) | Game engine with an Entity-Component-System (ECS) architecture. Focus on ease-of-use, runtime extensibility and compile-time type safety. | c++ | MIT | vendored | [phisko/kengine](https://github.com/phisko/kengine) @ `5a0ad085cdef` |
 | [KlayGE](entries/engines/gongminmin-klayge/README.md) | KlayGE is a cross-platform open source game engine with plugin-based architecture. | c++ | GPL-2.0 | reference | [gongminmin/KlayGE](https://github.com/gongminmin/KlayGE) @ `2026-07-17 (branch tip at catalogue time)` |
 | [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
+| [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -106,6 +110,8 @@ _Generated 2026-11-23 02:46 UTC · 542 entries · 158 vendored, 384 reference-on
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
 | [pixijs](entries/engines/pixijs-pixijs/README.md) | The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer. | typescript | MIT | vendored | [pixijs/pixijs](https://github.com/pixijs/pixijs) @ `16011d73d816` |
+| [Plumber](entries/engines/lasa01-plumber/README.md) | A Blender addon for importing Source 1 engine maps, models, materials and textures.  This addon makes it possible to import full CS:GO, TF2, CS:S or other Sourc | rust | GPL-3.0 | reference | [lasa01/Plumber](https://github.com/lasa01/Plumber) @ `2026-06-13 (branch tip at catalogue time)` |
+| [ply-engine](entries/engines/thereddeveloper-ply-engine/README.md) | Beautiful UIs in Rust. Cross-platform. Dead simple. | rust | 0BSD | reference | [TheRedDeveloper/ply-engine](https://github.com/TheRedDeveloper/ply-engine) @ `2026-08-31 (branch tip at catalogue time)` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
 | [pyrite64](entries/engines/hailtododongo-pyrite64/README.md) | N64 Game-Engine and Editor using libdragon & tiny3d | c++ | MIT | reference | [HailToDodongo/pyrite64](https://github.com/HailToDodongo/pyrite64) @ `2026-11-22 (branch tip at catalogue time)` |
 | [pyxel](entries/engines/kitao-pyxel/README.md) | A retro game engine for Python | rust | unknown | reference | [kitao/pyxel](https://github.com/kitao/pyxel) @ `2026-11-23 (branch tip at catalogue time)` |

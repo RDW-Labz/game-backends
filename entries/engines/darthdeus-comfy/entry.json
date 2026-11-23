@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T03:02:10Z",
+ "category": "engines",
+ "commit": "31aa6efce135",
+ "delivery": "vendored",
+ "description": "darthdeus/comfy \u2014 Comfy is a fun 2D game engine built in Rust. It's designed to be opinionated, productive, and easy to use.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "comfy",
+ "size_bytes": 730587,
+ "slug": "darthdeus-comfy",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 737,
+ "system": "Comfy is a fun 2D game engine built in Rust. It's designed to be opinionated, productive, and easy to use.",
+ "upstream": "https://github.com/darthdeus/comfy",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

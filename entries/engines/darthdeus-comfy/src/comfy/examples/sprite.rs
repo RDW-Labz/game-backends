@@ -1,0 +1,37 @@
+use comfy::*;
+
+simple_game!("Sprite Example", setup, update);
+
+fn setup(c: &mut EngineContext) {
+    c.load_texture_from_bytes(
+        // Every texture gets a string name later used to reference it.
+        "comfy",
+        include_bytes!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/../assets/comfy.png"
+        )),
+    );
+}
+
+fn update(_c: &mut EngineContext) {
+    draw_sprite(
+        // Drawing sprites/textures requires a TextureHandle which can be calculated from its
+        // string name. This incurs a non-measurable overhead in hashing the string, but saves
+        // a lot of boilerplate in user code that would have to store asset handles.
+        texture_id("comfy"),
+        Vec2::ZERO,
+        WHITE,
+        0,
+        splat(5.0),
+    );
+
+    // You might also want to use regular comfy sprites/textures within egui.
+    // This is a bit more advanced, and if you don't know what egui is don't worry
+    // about the following bit of code.
+    egui::Window::new("Egui image").show(egui(), |ui| {
+        ui.image((
+            cached_loader_mut().image_or_err(egui(), "comfy"),
+            egui::vec2(16.0, 16.0),
+        ));
+    });
+}

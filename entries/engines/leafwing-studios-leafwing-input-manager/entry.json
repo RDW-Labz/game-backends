@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T03:02:07Z",
+ "category": "engines",
+ "commit": "ae5dc59809cc",
+ "delivery": "vendored",
+ "description": "Leafwing-Studios/leafwing-input-manager \u2014 A straightforward stateful input manager for the Bevy game engine.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE.md",
+ "license_verdict": "clean",
+ "name": "leafwing-input-manager",
+ "size_bytes": 761252,
+ "slug": "leafwing-studios-leafwing-input-manager",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 976,
+ "system": "A straightforward stateful input manager for the Bevy game engine.",
+ "upstream": "https://github.com/Leafwing-Studios/leafwing-input-manager",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

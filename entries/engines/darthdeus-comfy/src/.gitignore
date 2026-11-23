@@ -1,0 +1,7 @@
+/target
+.ra_target/
+image.png
+output.gif
+.direnv/
+.idea
+screenshot-history/
