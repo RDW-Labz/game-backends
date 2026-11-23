@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:40:06Z",
+ "category": "engines",
+ "commit": "2022-06-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Slion/SharpLibHid \u2014 C# HID Library using Windows Raw Input.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "SharpLibHid",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "slion-sharplibhid",
+ "source": "github-search:input library gamepad stars:>20",
+ "stars": 64,
+ "system": "C# HID Library using Windows Raw Input.",
+ "upstream": "https://github.com/Slion/SharpLibHid",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

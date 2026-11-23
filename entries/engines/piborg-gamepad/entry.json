@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T12:40:04Z",
+ "category": "engines",
+ "commit": "016628623078",
+ "delivery": "vendored",
+ "description": "piborg/Gamepad \u2014 A simple library for getting game controller and joystick inputs into Python in Linux.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Gamepad",
+ "size_bytes": 55560,
+ "slug": "piborg-gamepad",
+ "source": "github-search:input library gamepad stars:>20",
+ "stars": 108,
+ "system": "A simple library for getting game controller and joystick inputs into Python in Linux.",
+ "upstream": "https://github.com/piborg/Gamepad",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

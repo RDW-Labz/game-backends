@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 12:23 UTC · 757 entries · 202 vendored, 555 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 12:40 UTC · 763 entries · 203 vendored, 560 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 331 | 69 | 262 |
+| [engines](#engines) — Game engines and engine subsystems | 337 | 70 | 267 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 12:23 UTC · 757 entries · 202 vendored, 555 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 331 entries
+**Game engines and engine subsystems** — 337 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -32,6 +32,7 @@ _Generated 2026-11-23 12:23 UTC · 757 entries · 202 vendored, 555 reference-on
 | [AnyRPGCore](entries/engines/anyrpg-anyrpgcore/README.md) | Open source Role Playing Game engine for Unity 3D written in C#. | c# | MIT | reference | [AnyRPG/AnyRPGCore](https://github.com/AnyRPG/AnyRPGCore) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
 | [arche](entries/engines/mlange-42-arche/README.md) | Arche -- Archetype-based Entity Component System (ECS) for Go. | go | MIT | reference | [mlange-42/arche](https://github.com/mlange-42/arche) @ `2025-04-01 (branch tip at catalogue time)` |
+| [Arduino-JoyCon-Library-for-Nintendo-Switch](entries/engines/squirelo-arduino-joycon-library-for-nintendo-switch/README.md) | Transform your ATmega32u4 based Arduino boards into Nintendo Switch-compatible gamepads! This library enables the Arduino Leonardo, Micro, or compatible clones  | c++ | LGPL-3.0 | reference | [squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch](https://github.com/squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch) @ `459b332cf47e` |
 | [armory](entries/engines/armory3d-armory/README.md) | 3D Engine with Blender Integration | c++ | Zlib | reference | [armory3d/armory](https://github.com/armory3d/armory) @ `7f7f588b5a50` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
 | [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
@@ -131,6 +132,8 @@ _Generated 2026-11-23 12:23 UTC · 757 entries · 202 vendored, 555 reference-on
 | [Fyrox](entries/engines/fyroxengine-fyrox/README.md) | 3D and 2D game engine written in Rust | rust | MIT | vendored | [FyroxEngine/Fyrox](https://github.com/FyroxEngine/Fyrox) @ `e47bf0f35c9e` |
 | [GameDevMind](entries/engines/gonglei007-gamedevmind/README.md) | 最全面的游戏开发技术图谱(Game Development Map)。帮助游戏开发者们在已知问题上节省时间，省出更多的精力投入到更有创造性的工作中去。 | python | MIT | vendored | [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) @ `652be106e9df` |
 | [GameFramework](entries/engines/ellanjiang-gameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | vendored | [EllanJiang/GameFramework](https://github.com/EllanJiang/GameFramework) @ `d0c010b05167` |
+| [Gamepad](entries/engines/piborg-gamepad/README.md) | A simple library for getting game controller and joystick inputs into Python in Linux. | python | MIT | vendored | [piborg/Gamepad](https://github.com/piborg/Gamepad) @ `016628623078` |
+| [GamepadMotionHelpers](entries/engines/jibbsmart-gamepadmotionhelpers/README.md) | Lightweight header-only library for sensor fusion, gyro calibration, etc. BYO input library (eg SDL2). | c++ | MIT | reference | [JibbSmart/GamepadMotionHelpers](https://github.com/JibbSmart/GamepadMotionHelpers) @ `2026-07-13 (branch tip at catalogue time)` |
 | [gameplay](entries/engines/gameplay3d-gameplay/README.md) | Open-source, cross-platform, C++ game engine for creating 2D/3D games. | c++ | unknown | reference | [gameplay3d/gameplay](https://github.com/gameplay3d/gameplay) @ `2025-02-25 (branch tip at catalogue time)` |
 | [GameStringer](entries/engines/rouges78-gamestringer/README.md) | Desktop app that auto-detects a game's engine, extracts the text, translates it with local or cloud AI, and re-applies the patch. 20+ engines, 20+ AI providers, | typescript | unknown | reference | [rouges78/GameStringer](https://github.com/rouges78/GameStringer) @ `2026-11-23 (branch tip at catalogue time)` |
 | [gamezone — core](entries/engines/gamezone-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | Apache-2.0 | vendored | [kunjgit/GameZone](https://github.com/kunjgit/GameZone) @ `ac4ce20` |
@@ -194,10 +197,12 @@ _Generated 2026-11-23 12:23 UTC · 757 entries · 202 vendored, 555 reference-on
 | [Meridian](entries/engines/naxela-meridian/README.md) | Bridging Godot and Blender | python | unknown | reference | [Naxela/Meridian](https://github.com/Naxela/Meridian) @ `2026-06-08 (branch tip at catalogue time)` |
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
+| [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
 | [monogame-aseprite](entries/engines/aristurtledev-monogame-aseprite/README.md) | A Cross Platform C# Library That Adds Support For Aseprite Files in MonoGame Projects.  | c# | MIT | reference | [AristurtleDev/monogame-aseprite](https://github.com/AristurtleDev/monogame-aseprite) @ `2026-10-08 (branch tip at catalogue time)` |
 | [MonoGameFramework.Net8](entries/engines/catfortman-monogameframework-net8/README.md) | Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development. | c# | MIT | reference | [CatFortman/MonoGameFramework.Net8](https://github.com/CatFortman/MonoGameFramework.Net8) @ `2026-07-17 (branch tip at catalogue time)` |
 | [MoravaEngine](entries/engines/dtrajko-moravaengine/README.md) | C++ 2D/3D graphics engine and scene editor for Vulkan 1.4, OpenGL and DirectX 11, on Windows and Linux. Physically based rendering, global illumination, ray-tra | c++ | Apache-2.0 | reference | [dtrajko/MoravaEngine](https://github.com/dtrajko/MoravaEngine) @ `535e8fb78cad` |
+| [MPG](entries/engines/feralai-mpg/README.md) | C++ library for handling USB gamepad inputs on multiple platforms. | c | MIT | reference | [FeralAI/MPG](https://github.com/FeralAI/MPG) @ `2022-02-02 (branch tip at catalogue time)` |
 | [multiplayer-voxel-browser-game-engine](entries/engines/kevzettler-multiplayer-voxel-browser-game-engine/README.md) | A multiplayer voxel browser game engine | typescript | unknown | reference | [kevzettler/multiplayer-voxel-browser-game-engine](https://github.com/kevzettler/multiplayer-voxel-browser-game-engine) @ `2023-04-24 (branch tip at catalogue time)` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
 | [MusicEngine](entries/engines/geekdrums-musicengine/README.md) | make music synced game with Unity / ADX2 / Wwise | c# | unknown | reference | [geekdrums/MusicEngine](https://github.com/geekdrums/MusicEngine) @ `2023-01-09 (branch tip at catalogue time)` |
@@ -276,6 +281,7 @@ _Generated 2026-11-23 12:23 UTC · 757 entries · 202 vendored, 555 reference-on
 | [sbox-public](entries/engines/facepunch-sbox-public/README.md) | s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games | c# | unknown | reference | [Facepunch/sbox-public](https://github.com/Facepunch/sbox-public) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Serious-Engine](entries/engines/croteam-official-serious-engine/README.md) | An open source version of a game engine developed by Croteam for the classic Serious Sam games. | c++ | GPL-2.0 | reference | [Croteam-official/Serious-Engine](https://github.com/Croteam-official/Serious-Engine) @ `2020-10-31 (branch tip at catalogue time)` |
 | [server](entries/engines/runejs-server/README.md) | RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing s | typescript | GPL-3.0 | reference | [runejs/server](https://github.com/runejs/server) @ `2026-09-03 (branch tip at catalogue time)` |
+| [SharpLibHid](entries/engines/slion-sharplibhid/README.md) | C# HID Library using Windows Raw Input. | c# | unknown | reference | [Slion/SharpLibHid](https://github.com/Slion/SharpLibHid) @ `2022-06-22 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sketch](entries/engines/vydd-sketch/README.md) | A Common Lisp framework for the creation of electronic art, visual design, game prototyping, game making, computer graphics, exploration of human-computer inter | common lisp | MIT | reference | [vydd/sketch](https://github.com/vydd/sketch) @ `2026-01-18 (branch tip at catalogue time)` |
 | [skia4delphi](entries/engines/skia4delphi-skia4delphi/README.md) | Skia4Delphi is a cross-platform 2D graphics API for Delphi platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be use | pascal | MIT | vendored | [skia4delphi/skia4delphi](https://github.com/skia4delphi/skia4delphi) @ `7bf46ee53de2` |

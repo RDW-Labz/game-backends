@@ -2002,3 +2002,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/a-e-k-canvas-ity
   - reference engines/kevinroast-phoria-js
   - reference engines/angusjohnson-image32
+
+- **2026-11-23 12:40 UTC** — tick 697: +2 screened, +4 reference, 4 skipped, catalogue=763
+  - added engines/squirelo-arduino-joycon-library-for-nintendo-switch (LGPL-3.0, reference)
+  - added engines/piborg-gamepad (MIT, vendored)
+  - reference engines/slion-sharplibhid
+  - reference engines/jibbsmart-gamepadmotionhelpers
+  - reference engines/feralai-mpg
+  - reference engines/colleagueriley-minigamepad

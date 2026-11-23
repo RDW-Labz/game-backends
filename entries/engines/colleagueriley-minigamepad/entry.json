@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:40:06Z",
+ "category": "engines",
+ "commit": "2026-06-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ColleagueRiley/minigamepad \u2014 A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support.",
+ "language": "c",
+ "license": "Zlib",
+ "license_verdict": "clean",
+ "name": "minigamepad",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Zlib)",
+ "slug": "colleagueriley-minigamepad",
+ "source": "github-search:input library gamepad stars:>20",
+ "stars": 61,
+ "system": "A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support.",
+ "upstream": "https://github.com/ColleagueRiley/minigamepad",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

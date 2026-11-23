@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:40:06Z",
+ "category": "engines",
+ "commit": "2022-02-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "FeralAI/MPG \u2014 C++ library for handling USB gamepad inputs on multiple platforms.",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "MPG",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "feralai-mpg",
+ "source": "github-search:input library gamepad stars:>20",
+ "stars": 61,
+ "system": "C++ library for handling USB gamepad inputs on multiple platforms.",
+ "upstream": "https://github.com/FeralAI/MPG",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

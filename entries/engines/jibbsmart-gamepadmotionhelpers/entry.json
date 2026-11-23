@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:40:06Z",
+ "category": "engines",
+ "commit": "2026-07-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JibbSmart/GamepadMotionHelpers \u2014 Lightweight header-only library for sensor fusion, gyro calibration, etc. BYO input library (eg SDL2).",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "GamepadMotionHelpers",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jibbsmart-gamepadmotionhelpers",
+ "source": "github-search:input library gamepad stars:>20",
+ "stars": 61,
+ "system": "Lightweight header-only library for sensor fusion, gyro calibration, etc. BYO input library (eg SDL2).",
+ "upstream": "https://github.com/JibbSmart/GamepadMotionHelpers",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
