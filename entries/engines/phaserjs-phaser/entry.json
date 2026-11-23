@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T09:42:05Z",
+ "category": "engines",
+ "commit": "02d8931b626d",
+ "delivery": "reference",
+ "description": "phaserjs/phaser \u2014 Phaser is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "phaser",
+ "reference_reason": "size gate: 51 MB",
+ "size_bytes": 54259155,
+ "slug": "phaserjs-phaser",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 40774,
+ "system": "Phaser is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering.",
+ "upstream": "https://github.com/phaserjs/phaser",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

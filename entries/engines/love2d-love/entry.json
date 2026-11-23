@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T09:42:08Z",
+ "category": "engines",
+ "commit": "def245102c67",
+ "delivery": "reference",
+ "description": "love2d/love \u2014 L\u00d6VE is an awesome 2D game framework for Lua.",
+ "language": "c++",
+ "license": "Zlib",
+ "license_file": "license.txt",
+ "license_verdict": "clean",
+ "name": "love",
+ "reference_reason": "size gate: 36 MB",
+ "size_bytes": 37960145,
+ "slug": "love2d-love",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 8996,
+ "system": "L\u00d6VE is an awesome 2D game framework for Lua.",
+ "upstream": "https://github.com/love2d/love",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

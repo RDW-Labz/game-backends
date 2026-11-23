@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:42:09Z",
+ "category": "engines",
+ "commit": "2026-05-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gdquest-demos/godot-2d-space-game \u2014 A 2D space exploration and mining game made with Godot and our AI framework",
+ "language": "gdscript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "godot-2d-space-game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "gdquest-demos-godot-2d-space-game",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 1113,
+ "system": "A 2D space exploration and mining game made with Godot and our AI framework",
+ "upstream": "https://github.com/gdquest-demos/godot-2d-space-game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

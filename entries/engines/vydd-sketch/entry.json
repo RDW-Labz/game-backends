@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:42:09Z",
+ "category": "engines",
+ "commit": "2026-01-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vydd/sketch \u2014 A Common Lisp framework for the creation of electronic art, visual design, game prototyping, game making, computer graphics, exploration of human-computer interaction, and more.",
+ "language": "common lisp",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "sketch",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "vydd-sketch",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 1505,
+ "system": "A Common Lisp framework for the creation of electronic art, visual design, game prototyping, game making, computer graphics, exploration of human-computer inter",
+ "upstream": "https://github.com/vydd/sketch",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

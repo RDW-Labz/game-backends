@@ -1915,3 +1915,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/ten3roberts-flax
   - reference engines/hikikones-bevy-sequential-actions
   - reference engines/silentsokolov-tocenter
+
+- **2026-11-23 09:42 UTC** — tick 686: +2 screened, +4 reference, 4 skipped, catalogue=698
+  - added engines/phaserjs-phaser (MIT, reference)
+  - added engines/love2d-love (Zlib, reference)
+  - reference engines/vydd-sketch
+  - reference engines/phaserjs-phaser-ce
+  - reference engines/gdquest-demos-godot-2d-space-game
+  - reference engines/17cupsofcoffee-tetra
