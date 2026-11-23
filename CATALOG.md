@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 00:52 UTC · 500 entries · 151 vendored, 349 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 01:08 UTC · 506 entries · 153 vendored, 353 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 74 | 18 | 56 |
+| [engines](#engines) — Game engines and engine subsystems | 80 | 20 | 60 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 00:52 UTC · 500 entries · 151 vendored, 349 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 74 entries
+**Game engines and engine subsystems** — 80 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -46,6 +46,8 @@ _Generated 2026-11-23 00:52 UTC · 500 entries · 151 vendored, 349 reference-on
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
 | [Flecs](entries/engines/flecs/README.md) | ECS with prefabs, pipelines, hierarchies, REST explorer | c | MIT | reference | [SanderMertens/flecs](https://github.com/SanderMertens/flecs) @ `fa6554710d0d` |
+| [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
+| [GameFramework](entries/engines/ellanjiang-gameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | vendored | [EllanJiang/GameFramework](https://github.com/EllanJiang/GameFramework) @ `d0c010b05167` |
 | [gameplay](entries/engines/gameplay3d-gameplay/README.md) | Open-source, cross-platform, C++ game engine for creating 2D/3D games. | c++ | unknown | reference | [gameplay3d/gameplay](https://github.com/gameplay3d/gameplay) @ `2025-02-25 (branch tip at catalogue time)` |
 | [gamezone — core](entries/engines/gamezone-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | Apache-2.0 | vendored | [kunjgit/GameZone](https://github.com/kunjgit/GameZone) @ `ac4ce20` |
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
@@ -53,12 +55,14 @@ _Generated 2026-11-23 00:52 UTC · 500 entries · 151 vendored, 349 reference-on
 | [glas — core](entries/engines/glas-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
 | [godot-cpp (GDExtension bindings)](entries/engines/godot-cpp/README.md) | C++ bindings/extension ABI for Godot | c++ | MIT | reference | [godotengine/godot-cpp](https://github.com/godotengine/godot-cpp) @ `2a4c066e1e8c` |
+| [godot-mcp](entries/engines/coding-solo-godot-mcp/README.md) | MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output. | javascript | MIT | vendored | [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) @ `1209744fad78` |
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
 | [kengine](entries/engines/phisko-kengine/README.md) | Game engine with an Entity-Component-System (ECS) architecture. Focus on ease-of-use, runtime extensibility and compile-time type safety. | c++ | MIT | vendored | [phisko/kengine](https://github.com/phisko/kengine) @ `5a0ad085cdef` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
+| [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
@@ -80,6 +84,7 @@ _Generated 2026-11-23 00:52 UTC · 500 entries · 151 vendored, 349 reference-on
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
+| [sbox-public](entries/engines/facepunch-sbox-public/README.md) | s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games | c# | unknown | reference | [Facepunch/sbox-public](https://github.com/Facepunch/sbox-public) @ `2026-11-22 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
@@ -89,6 +94,7 @@ _Generated 2026-11-23 00:52 UTC · 500 entries · 151 vendored, 349 reference-on
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
 | [thrive — engine](entries/engines/thrive-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [totk-pc-recomp — runtime](entries/engines/totk-pc-recomp-runtime/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | reference | [valentderah/totk-pc-recomp](https://github.com/valentderah/totk-pc-recomp) @ `ae30a61` |
+| [turbulenz_engine](entries/engines/turbulenz-turbulenz-engine/README.md) | Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices. | typescript | MIT | reference | [turbulenz/turbulenz_engine](https://github.com/turbulenz/turbulenz_engine) @ `2023-05-28 (branch tip at catalogue time)` |
 | [unity-ecs-navmesh](entries/engines/zulfajuniadi-unity-ecs-navmesh/README.md) | A demo implementation of Unity Entity Component System with NavMesh | c# | MIT | vendored | [zulfajuniadi/unity-ecs-navmesh](https://github.com/zulfajuniadi/unity-ecs-navmesh) @ `bb4fe6ed2f84` |
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |

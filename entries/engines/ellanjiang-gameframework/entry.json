@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T01:08:02Z",
+ "category": "engines",
+ "commit": "d0c010b05167",
+ "delivery": "vendored",
+ "description": "EllanJiang/GameFramework \u2014 This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardises the process, enhances the development speed and ensures the product quality.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "GameFramework",
+ "size_bytes": 2229704,
+ "slug": "ellanjiang-gameframework",
+ "source": "github-search:game engine stars:>200",
+ "stars": 6938,
+ "system": "This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi",
+ "upstream": "https://github.com/EllanJiang/GameFramework",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:08:06Z",
+ "category": "engines",
+ "commit": "2026-10-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AlmasB/FXGL \u2014 Java / JavaFX / Kotlin Game Library (Engine)",
+ "language": "kotlin",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "FXGL",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "almasb-fxgl",
+ "source": "github-search:game engine stars:>200",
+ "stars": 4879,
+ "system": "Java / JavaFX / Kotlin Game Library (Engine)",
+ "upstream": "https://github.com/AlmasB/FXGL",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

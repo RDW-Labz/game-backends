@@ -1659,3 +1659,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/dujltqzv-some-many-books
   - reference engines/kitao-pyxel
   - reference engines/openra-openra
+
+- **2026-11-23 01:08 UTC** — tick 654: +2 screened, +4 reference, 9 skipped, catalogue=506
+  - added engines/ellanjiang-gameframework (MIT, vendored)
+  - added engines/coding-solo-godot-mcp (MIT, vendored)
+  - reference engines/facepunch-sbox-public
+  - reference engines/rodzill4-material-maker
+  - reference engines/turbulenz-turbulenz-engine
+  - reference engines/almasb-fxgl

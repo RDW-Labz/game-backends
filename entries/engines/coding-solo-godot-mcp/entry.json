@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T01:08:04Z",
+ "category": "engines",
+ "commit": "1209744fad78",
+ "delivery": "vendored",
+ "description": "Coding-Solo/godot-mcp \u2014 MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-mcp",
+ "size_bytes": 140956,
+ "slug": "coding-solo-godot-mcp",
+ "source": "github-search:game engine stars:>200",
+ "stars": 6739,
+ "system": "MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output.",
+ "upstream": "https://github.com/Coding-Solo/godot-mcp",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

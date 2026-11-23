@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:08:06Z",
+ "category": "engines",
+ "commit": "2026-11-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RodZill4/material-maker \u2014 A procedural textures authoring and 3D model painting tool based on the Godot game engine",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "material-maker",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rodzill4-material-maker",
+ "source": "github-search:game engine stars:>200",
+ "stars": 6291,
+ "system": "A procedural textures authoring and 3D model painting tool based on the Godot game engine",
+ "upstream": "https://github.com/RodZill4/material-maker",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

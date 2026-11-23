@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:08:06Z",
+ "category": "engines",
+ "commit": "2023-05-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "turbulenz/turbulenz_engine \u2014 Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "turbulenz_engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "turbulenz-turbulenz-engine",
+ "source": "github-search:game engine stars:>200",
+ "stars": 5149,
+ "system": "Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices.",
+ "upstream": "https://github.com/turbulenz/turbulenz_engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

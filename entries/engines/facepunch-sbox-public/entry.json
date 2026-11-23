@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:08:06Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Facepunch/sbox-public \u2014 s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "sbox-public",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "facepunch-sbox-public",
+ "source": "github-search:game engine stars:>200",
+ "stars": 6547,
+ "system": "s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games",
+ "upstream": "https://github.com/Facepunch/sbox-public",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
