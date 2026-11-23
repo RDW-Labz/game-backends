@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:20:09Z",
+ "category": "math",
+ "commit": "2024-09-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "msteinbeck/tinyspline \u2014 ANSI C library for NURBS, B-Splines, and B\u00e9zier curves with interfaces for C++, C#, D, Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby.",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "tinyspline",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "msteinbeck-tinyspline",
+ "source": "github-search:spline curve library stars:>20",
+ "stars": 1356,
+ "system": "ANSI C library for NURBS, B-Splines, and B\u00e9zier curves with interfaces for C++, C#, D, Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby.",
+ "upstream": "https://github.com/msteinbeck/tinyspline",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

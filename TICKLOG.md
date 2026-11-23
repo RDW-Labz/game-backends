@@ -2290,3 +2290,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/openmvg-openmvg
   - reference math/pymesh-pymesh
   - reference math/gradientspace-geometry3sharp
+
+- **2026-11-23 22:20 UTC** — tick 733: +2 screened, +4 reference, 0 skipped, catalogue=979
+  - added math/lukasbanana-geometronlib (BSD-3-Clause, vendored)
+  - added math/gouminghao-geometry3d (GPL-3.0, reference)
+  - reference math/vilya-miniply
+  - reference math/tomstewart89-geometry
+  - reference math/georust-earcut
+  - reference math/msteinbeck-tinyspline

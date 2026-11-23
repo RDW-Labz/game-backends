@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:20:09Z",
+ "category": "math",
+ "commit": "2022-02-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tomstewart89/Geometry \u2014 An Arduino library for representing where things are in relation to other things in 3D space",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Geometry",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "tomstewart89-geometry",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 76,
+ "system": "An Arduino library for representing where things are in relation to other things in 3D space",
+ "upstream": "https://github.com/tomstewart89/Geometry",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

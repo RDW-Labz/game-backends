@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:20:09Z",
+ "category": "math",
+ "commit": "2023-03-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vilya/miniply \u2014 A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "miniply",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "vilya-miniply",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 92,
+ "system": "A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file",
+ "upstream": "https://github.com/vilya/miniply",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

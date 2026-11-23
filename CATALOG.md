@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 22:04 UTC · 973 entries · 261 vendored, 712 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 22:20 UTC · 979 entries · 262 vendored, 717 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
-| [math](#math) — Math libraries | 66 | 27 | 39 |
+| [math](#math) — Math libraries | 72 | 28 | 44 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
@@ -558,7 +558,7 @@ _Generated 2026-11-23 22:04 UTC · 973 entries · 261 vendored, 712 reference-on
 
 ## math
 
-**Math libraries** — 66 entries
+**Math libraries** — 72 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -577,6 +577,7 @@ _Generated 2026-11-23 22:04 UTC · 973 entries · 261 vendored, 712 reference-on
 | [DirectXMath](entries/math/directxmath/README.md) | SIMD math library (SSE/AVX/NEON) for games | c++ | MIT | vendored | [microsoft/DirectXMath](https://github.com/microsoft/DirectXMath) @ `fef99048e3da` |
 | [dungeons-of-noudar](entries/math/thefakemontyontherun-dungeons-of-noudar/README.md) | A first person dungeon-crawler for DOS, written in C++, using software rendering and fixed point math | c++ | BSD-2-Clause | vendored | [TheFakeMontyOnTheRun/dungeons-of-noudar](https://github.com/TheFakeMontyOnTheRun/dungeons-of-noudar) @ `03e94de32261` |
 | [dvector](entries/math/barerose-dvector/README.md) | Portable, single-file, 2D/3D vector/quaternion/matrix math library | c | CC0-1.0 | reference | [BareRose/dvector](https://github.com/BareRose/dvector) @ `2021-01-12 (branch tip at catalogue time)` |
+| [earcut](entries/math/georust-earcut/README.md) | A Rust port of the Earcut polygon triangulation library | rust | Apache-2.0 | reference | [georust/earcut](https://github.com/georust/earcut) @ `2026-11-02 (branch tip at catalogue time)` |
 | [Eigen](entries/math/eigen/README.md) | dense/sparse linear algebra (MPL-2.0) | c++ | GPL-3.0 | reference | [eigenteam/eigen-git-mirror](https://github.com/eigenteam/eigen-git-mirror) @ `36b95962756c` |
 | [eigen](entries/math/px4-eigen/README.md) | Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms. | c++ | unknown | reference | [PX4/eigen](https://github.com/PX4/eigen) @ `2023-10-18 (branch tip at catalogue time)` |
 | [en_cl_fix](entries/math/enclustra-en-cl-fix/README.md) | Fixed-point math library with VHDL, Python and MATLAB support | vhdl | MIT | reference | [enclustra/en_cl_fix](https://github.com/enclustra/en_cl_fix) @ `2026-08-12 (branch tip at catalogue time)` |
@@ -586,6 +587,9 @@ _Generated 2026-11-23 22:04 UTC · 973 entries · 261 vendored, 712 reference-on
 | [fpm](entries/math/mikelankamp-fpm/README.md) | C++ header-only fixed-point math library | c++ | MIT | vendored | [MikeLankamp/fpm](https://github.com/MikeLankamp/fpm) @ `b46537fe9697` |
 | [fptc-lib](entries/math/mgetka-fptc-lib/README.md) | Modified version of Fixed Point Math Library for C | c++ | BSD-2-Clause | reference | [mgetka/fptc-lib](https://github.com/mgetka/fptc-lib) @ `2024-04-09 (branch tip at catalogue time)` |
 | [fr_math](entries/math/deftio-fr-math/README.md) | Fixed-point math library (integer / no FPU)  for embedded C.  Trig, log/exp, sqrt, 2D transforms, wave generators, ADSR and variable radix support.  ~4.5 KB  | c++ | BSD-2-Clause | vendored | [deftio/fr_math](https://github.com/deftio/fr_math) @ `2c5d2e362386` |
+| [GeometronLib](entries/math/lukasbanana-geometronlib/README.md) | A basic geometry C++ library for 2D and 3D applications | c++ | BSD-3-Clause | vendored | [LukasBanana/GeometronLib](https://github.com/LukasBanana/GeometronLib) @ `844c8f5aae9c` |
+| [Geometry](entries/math/tomstewart89-geometry/README.md) | An Arduino library for representing where things are in relation to other things in 3D space | c++ | MIT | reference | [tomstewart89/Geometry](https://github.com/tomstewart89/Geometry) @ `2022-02-19 (branch tip at catalogue time)` |
+| [Geometry3D](entries/math/gouminghao-geometry3d/README.md) | Geometry3D: 3D Computational Geometrics Library | python | GPL-3.0 | reference | [GouMinghao/Geometry3D](https://github.com/GouMinghao/Geometry3D) @ `b2b907e054d8` |
 | [geometry3Sharp](entries/math/gradientspace-geometry3sharp/README.md) | C# library for 2D/3D geometric computation, mesh algorithms, and so on. Boost license. | c# | BSL-1.0 | reference | [gradientspace/geometry3Sharp](https://github.com/gradientspace/geometry3Sharp) @ `2026-01-09 (branch tip at catalogue time)` |
 | [glam-rs](entries/math/bitshifter-glam-rs/README.md) | A simple and fast linear algebra library for games and graphics | rust | Apache-2.0 | reference | [bitshifter/glam-rs](https://github.com/bitshifter/glam-rs) @ `2026-11-08 (branch tip at catalogue time)` |
 | [glas — math](entries/math/glas-math/README.md) | vector/matrix/quaternion math substrate | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
@@ -606,6 +610,7 @@ _Generated 2026-11-23 22:04 UTC · 973 entries · 261 vendored, 712 reference-on
 | [mathbench-rs](entries/math/bitshifter-mathbench-rs/README.md) | Comparing performance of Rust math libraries for common 3D game and graphics tasks | rust | unknown | reference | [bitshifter/mathbench-rs](https://github.com/bitshifter/mathbench-rs) @ `2026-10-13 (branch tip at catalogue time)` |
 | [MathFu](entries/math/mathfu/README.md) | vector/matrix/quaternion math with SIMD backends | c++ | Apache-2.0 | vendored | [google/mathfu](https://github.com/google/mathfu) @ `da23a1227bb6` |
 | [maths-rs](entries/math/polymonster-maths-rs/README.md) | Linear algebra library for graphics and gamedev. | rust | MIT | vendored | [polymonster/maths-rs](https://github.com/polymonster/maths-rs) @ `d1980e43c875` |
+| [miniply](entries/math/vilya-miniply/README.md) | A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file | c++ | MIT | reference | [vilya/miniply](https://github.com/vilya/miniply) @ `2023-03-14 (branch tip at catalogue time)` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
 | [NTSC-CRT](entries/math/lmp88959-ntsc-crt/README.md) | NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time application | c | unknown | reference | [LMP88959/NTSC-CRT](https://github.com/LMP88959/NTSC-CRT) @ `2026-07-19 (branch tip at catalogue time)` |
 | [openMVG](entries/math/openmvg-openmvg/README.md) | open Multiple View Geometry library. Basis for 3D computer vision and Structure from Motion. | c++ | MPL-2.0 | reference | [openMVG/openMVG](https://github.com/openMVG/openMVG) @ `2026-11-07 (branch tip at catalogue time)` |
@@ -623,6 +628,7 @@ _Generated 2026-11-23 22:04 UTC · 973 entries · 261 vendored, 712 reference-on
 | [supertux — math](entries/math/supertux-math/README.md) | vector/matrix/quaternion math substrate | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [Terathon-Math-Library](entries/math/ericlengyel-terathon-math-library/README.md) | C++ math library for 2D/3D/4D vector, matrix, quaternion, and geometric algebra. | c++ | MIT | reference | [EricLengyel/Terathon-Math-Library](https://github.com/EricLengyel/Terathon-Math-Library) @ `2026-07-27 (branch tip at catalogue time)` |
 | [Tessel-A-tile-game — geom](entries/math/tessel-a-tile-game-geom/README.md) | vector/matrix/quaternion math substrate | ts | GPL-3.0 | reference | [gvtulder/tessel](https://github.com/gvtulder/tessel) @ `6249857` |
+| [tinyspline](entries/math/msteinbeck-tinyspline/README.md) | ANSI C library for NURBS, B-Splines, and Bézier curves with interfaces for C++, C#, D, Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby. | c | MIT | reference | [msteinbeck/tinyspline](https://github.com/msteinbeck/tinyspline) @ `2024-09-03 (branch tip at catalogue time)` |
 | [tpp-mlir](entries/math/libxsmm-tpp-mlir/README.md) | TPP experimentation on MLIR for linear algebra | mlir | Apache-2.0 | vendored | [libxsmm/tpp-mlir](https://github.com/libxsmm/tpp-mlir) @ `14368326a83f` |
 | [Trackball.js](entries/math/rawify-trackball-js/README.md) | The RAW library to add a virtual Trackball to your DOM | javascript | MIT | reference | [rawify/Trackball.js](https://github.com/rawify/Trackball.js) @ `2025-09-12 (branch tip at catalogue time)` |
 | [Unity.Mathematics.FixedPoint](entries/math/danielmansson-unity-mathematics-fixedpoint/README.md) | Fixed-point extension of Unity's C# math library based on FixedMath.Net and Unity.Mathematics. | c# | MIT | reference | [danielmansson/Unity.Mathematics.FixedPoint](https://github.com/danielmansson/Unity.Mathematics.FixedPoint) @ `2021-04-22 (branch tip at catalogue time)` |

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T22:20:09Z",
+ "category": "math",
+ "commit": "2026-11-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "georust/earcut \u2014 A Rust port of the Earcut polygon triangulation library",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "earcut",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "georust-earcut",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 64,
+ "system": "A Rust port of the Earcut polygon triangulation library",
+ "upstream": "https://github.com/georust/earcut",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

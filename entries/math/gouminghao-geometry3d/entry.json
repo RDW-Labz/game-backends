@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T22:20:07Z",
+ "category": "math",
+ "commit": "b2b907e054d8",
+ "delivery": "reference",
+ "description": "GouMinghao/Geometry3D \u2014 Geometry3D: 3D Computational Geometrics Library",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Geometry3D",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 173856,
+ "slug": "gouminghao-geometry3d",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 96,
+ "system": "Geometry3D: 3D Computational Geometrics Library",
+ "upstream": "https://github.com/GouMinghao/Geometry3D",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

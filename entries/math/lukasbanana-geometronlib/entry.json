@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T22:20:04Z",
+ "category": "math",
+ "commit": "844c8f5aae9c",
+ "delivery": "vendored",
+ "description": "LukasBanana/GeometronLib \u2014 A basic geometry C++ library for 2D and 3D applications",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "GeometronLib",
+ "size_bytes": 391662,
+ "slug": "lukasbanana-geometronlib",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 98,
+ "system": "A basic geometry C++ library for 2D and 3D applications",
+ "upstream": "https://github.com/LukasBanana/GeometronLib",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
