@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:58:07Z",
+ "category": "engines",
+ "commit": "2021-08-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SirFroweey/PyDark \u2014 PyDark is a 2D and Online Multiplayer video game framework written on-top of Python and PyGame.",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "PyDark",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "sirfroweey-pydark",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 220,
+ "system": "PyDark is a 2D and Online Multiplayer video game framework written on-top of Python and PyGame.",
+ "upstream": "https://github.com/SirFroweey/PyDark",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

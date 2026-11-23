@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T09:58:05Z",
+ "category": "engines",
+ "commit": "d3ed0ff0e0fa",
+ "delivery": "reference",
+ "description": "ippa/chingu \u2014 OpenGL accelerated 2D game framework for Ruby",
+ "language": "ruby",
+ "license": "LGPL-2.1",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "chingu",
+ "reference_reason": "licence: LGPL-2.1 (copyleft-reference)",
+ "size_bytes": 0,
+ "slug": "ippa-chingu",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 307,
+ "system": "OpenGL accelerated 2D game framework for Ruby",
+ "upstream": "https://github.com/ippa/chingu",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

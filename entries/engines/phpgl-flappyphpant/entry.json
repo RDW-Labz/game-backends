@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T09:58:03Z",
+ "category": "engines",
+ "commit": "764e716a1080",
+ "delivery": "vendored",
+ "description": "phpgl/flappyphpant \u2014 A very simple Flappy Bird-like game written in PHP, built on PHP-GLFW and the VISU framework.",
+ "language": "php",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "flappyphpant",
+ "size_bytes": 2452,
+ "slug": "phpgl-flappyphpant",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 351,
+ "system": "A very simple Flappy Bird-like game written in PHP, built on PHP-GLFW and the VISU framework.",
+ "upstream": "https://github.com/phpgl/flappyphpant",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

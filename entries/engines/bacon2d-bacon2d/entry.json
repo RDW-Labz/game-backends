@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:58:07Z",
+ "category": "engines",
+ "commit": "2019-12-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Bacon2D/Bacon2D \u2014 Bacon2D is a framework to ease 2D game development, providing ready-to-use QML elements representing basic game entities needed by most of games.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Bacon2D",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "bacon2d-bacon2d",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 214,
+ "system": "Bacon2D is a framework to ease 2D game development, providing ready-to-use QML elements representing basic game entities needed by most of games.",
+ "upstream": "https://github.com/Bacon2D/Bacon2D",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

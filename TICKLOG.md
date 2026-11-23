@@ -1923,3 +1923,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/phaserjs-phaser-ce
   - reference engines/gdquest-demos-godot-2d-space-game
   - reference engines/17cupsofcoffee-tetra
+
+- **2026-11-23 09:58 UTC** — tick 687: +2 screened, +4 reference, 1 skipped, catalogue=704
+  - added engines/phpgl-flappyphpant (MIT, vendored)
+  - added engines/ippa-chingu (LGPL-2.1, reference)
+  - reference engines/o2-engine-o2
+  - reference engines/felixangell-strife
+  - reference engines/sirfroweey-pydark
+  - reference engines/bacon2d-bacon2d

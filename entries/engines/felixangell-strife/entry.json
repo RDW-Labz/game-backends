@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T09:58:07Z",
+ "category": "engines",
+ "commit": "2022-07-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "felixangell/strife \u2014 a simple 2d game framework",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "strife",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "felixangell-strife",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 253,
+ "system": "a simple 2d game framework",
+ "upstream": "https://github.com/felixangell/strife",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
