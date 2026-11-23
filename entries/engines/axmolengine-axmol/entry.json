@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T02:12:15Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "axmolengine/axmol \u2014 Open-source C++ game engine with Lua for 2D and 3D games across mobile, desktop, WebAssembly, and Xbox (UWP).",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "axmol",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "axmolengine-axmol",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1507,
+ "system": "Open-source C++ game engine with Lua for 2D and 3D games across mobile, desktop, WebAssembly, and Xbox (UWP).",
+ "upstream": "https://github.com/axmolengine/axmol",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T02:12:11Z",
+ "category": "engines",
+ "commit": "72c8891f192b",
+ "delivery": "reference",
+ "description": "GarageGames/Torque2D \u2014 MIT Licensed Open Source version of Torque 2D game engine from GarageGames",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "Torque2D",
+ "reference_reason": "size gate: 31 MB",
+ "size_bytes": 33187748,
+ "slug": "garagegames-torque2d",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1662,
+ "system": "MIT Licensed Open Source version of Torque 2D game engine from GarageGames",
+ "upstream": "https://github.com/GarageGames/Torque2D",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T02:12:14Z",
+ "category": "engines",
+ "commit": "744c0febf53b",
+ "delivery": "reference",
+ "description": "openblack/openblack \u2014 openblack is an open-source game engine that supports playing Black & White (2001).",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "license",
+ "license_verdict": "copyleft-reference",
+ "name": "openblack",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 47190913,
+ "slug": "openblack-openblack",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1614,
+ "system": "openblack is an open-source game engine that supports playing Black & White (2001).",
+ "upstream": "https://github.com/openblack/openblack",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

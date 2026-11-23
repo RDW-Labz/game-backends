@@ -1691,3 +1691,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/gongminmin-klayge
   - reference engines/wheybags-freeablo
   - reference engines/ezengine-ezengine
+
+- **2026-11-23 02:12 UTC** — tick 658: +2 screened, +4 reference, 0 skipped, catalogue=530
+  - added engines/garagegames-torque2d (MIT, reference)
+  - added engines/openblack-openblack (GPL-3.0, reference)
+  - reference engines/jmorton06-lumos
+  - reference engines/hugoam-toy
+  - reference engines/axmolengine-axmol
+  - reference engines/mihailris-voxelcore

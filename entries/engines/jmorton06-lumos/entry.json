@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T02:12:15Z",
+ "category": "engines",
+ "commit": "2026-11-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jmorton06/Lumos \u2014 Cross-Platform C++ 2D/3D game engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Lumos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jmorton06-lumos",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1604,
+ "system": "Cross-Platform C++ 2D/3D game engine",
+ "upstream": "https://github.com/jmorton06/Lumos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
