@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T17:14:08Z",
+ "category": "physics",
+ "commit": "bf6e4e2813db",
+ "delivery": "reference",
+ "description": "symbolica-dev/symbolica \u2014 Symbolica is a high-performance computer algebra library for Python and Rust. Manipulate large expressions, match patterns, and generate optimized numerical code \u2014 at unprecedented speed.",
+ "language": "rust",
+ "license": "none",
+ "license_file": "License.md",
+ "license_verdict": "unlicensed-reference",
+ "name": "symbolica",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 11530250,
+ "slug": "symbolica-dev-symbolica",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 1015,
+ "system": "Symbolica is a high-performance computer algebra library for Python and Rust. Manipulate large expressions, match patterns, and generate optimized numerical cod",
+ "upstream": "https://github.com/symbolica-dev/symbolica",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T17:14:09Z",
+ "category": "physics",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "project-blinc/Blinc \u2014 A declarative, reactive UI system with first-class state machines, spring physics animations, and GPU-accelerated rendering",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "Blinc",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "project-blinc-blinc",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 580,
+ "system": "A declarative, reactive UI system with first-class state machines, spring physics animations, and GPU-accelerated rendering",
+ "upstream": "https://github.com/project-blinc/Blinc",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2138,3 +2138,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/joncodeofficial-cirobb
   - reference physics/twobitcoder101-flatphysics
   - reference physics/darkroomengineering-elastica
+
+- **2026-11-23 17:14 UTC** — tick 714: +2 screened, +4 reference, 7 skipped, catalogue=865
+  - added physics/sharkdp-numbat (Apache-2.0, vendored)
+  - added physics/symbolica-dev-symbolica (none, reference)
+  - reference physics/ad-si-woxi
+  - reference physics/dimforge-salva
+  - reference physics/project-blinc-blinc
+  - reference physics/unrust-unrust

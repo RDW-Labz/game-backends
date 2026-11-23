@@ -1,0 +1,153 @@
+[project]
+site_name = "Numbat"
+site_url = "https://numbat.dev/docs/"
+site_description = "Scientific calculator with full support for physical units"
+site_author = "David Peter"
+repo_url = "https://github.com/sharkdp/numbat"
+docs_dir = "src"
+site_dir = "site"
+language = "en"
+edit_uri = "edit/main/book/src/"
+extra_css = ["stylesheets/extra.css"]
+extra_javascript = [
+  "javascripts/mathjax.js",
+  "https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js",
+]
+
+nav = [
+  { "Getting started" = [
+    "index.md",
+    "tutorial.md",
+    { "Example programs" = [
+      "examples/index.md",
+      "examples/example-acidity.md",
+      "examples/example-barometric_formula.md",
+      "examples/example-body_mass_index.md",
+      "examples/example-factorial.md",
+      "examples/example-pipe_flow_rate.md",
+      "examples/example-medication_dosage.md",
+      "examples/example-molarity.md",
+      "examples/example-musical_note_frequency.md",
+      "examples/example-paper_size.md",
+      "examples/example-population_growth.md",
+      "examples/example-recipe.md",
+      "examples/example-voyager.md",
+      "examples/example-xkcd_681.md",
+      "examples/example-xkcd_687.md",
+      "examples/example-xkcd_2585.md",
+      "examples/example-xkcd_2812.md",
+    ] },
+  ] },
+
+  { "Numbat basics" = [
+    "basics/index.md",
+    "basics/number-notation.md",
+    "basics/unit-notation.md",
+    "basics/conversions.md",
+    "basics/operations.md",
+    "basics/variables.md",
+    "basics/printing-strings.md",
+    "basics/lists.md",
+    "basics/structs.md",
+    "basics/conditionals.md",
+    "basics/functions.md",
+    "basics/date-and-time.md",
+    "basics/testing-debugging.md",
+  ] },
+
+
+  { "Advanced topics" = [
+    "advanced/index.md",
+    "advanced/dimension-definitions.md",
+    "advanced/unit-definitions.md",
+    "examples/example-numbat_syntax.md",
+    "advanced/type-system.md",
+    "advanced/typed-holes.md",
+  ] },
+
+  { "Standard library" = [
+    "prelude/index.md",
+    { "List of functions" = [
+      "prelude/functions/index.md",
+      "prelude/functions/math.md",
+      "prelude/functions/lists.md",
+      "prelude/functions/strings.md",
+      "prelude/functions/datetime.md",
+      "prelude/functions/other.md",
+    ] },
+    { "List of constants" = "prelude/list-constants.md" },
+    { "List of units" = "prelude/list-units.md" },
+  ] },
+
+
+  { "Command-line version" = [
+    "cli/index.md",
+    "cli/installation.md",
+    "cli/usage.md",
+    "cli/customization.md",
+  ], "icon" = "lucide/terminal" },
+
+  { "Web version" = [
+    "web/index.md",
+    "web/usage.md",
+  ] },
+
+  { "Other topics" = [
+    "unicode-input.md",
+    "editor-integration.md",
+    "comparison.md",
+  ] },
+
+  { "Support" = [
+    "contact-us.md",
+  ] },
+]
+
+[project.theme]
+favicon = "assets/favicon.svg"
+logo = "assets/favicon.svg"
+font.code = "Fira Mono"
+features = [
+  "navigation.footer",
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.tracking",
+  "navigation.sections",
+  "navigation.indexes",
+  "navigation.top",
+  "toc.follow",
+  "content.action.edit",
+]
+palette.primary = "custom"
+palette.accent = "custom"
+
+[project.theme.icon]
+repo = "fontawesome/brands/github"
+
+[project.markdown_extensions.admonition]
+
+[project.markdown_extensions.attr_list]
+
+[project.markdown_extensions.pymdownx.emoji]
+emoji_index = "zensical.extensions.emoji.twemoji"
+emoji_generator = "zensical.extensions.emoji.to_svg"
+
+[project.markdown_extensions.pymdownx.arithmatex]
+generic = true
+
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+
+[project.markdown_extensions.pymdownx.superfences]
+
+[project.markdown_extensions.pymdownx.details]
+
+[project.markdown_extensions.pymdownx.keys]
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/sharkdp/numbat"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/discord"
+link = "https://discord.gg/kAaVTsat4D"

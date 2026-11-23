@@ -1,0 +1,50 @@
+[package]
+name = "numbat-cli"
+description = "A statically typed programming language for scientific computations with first class support for physical dimensions and units."
+authors = ["David Peter <mail@david-peter.de>"]
+categories = ["command-line-utilities", "science", "mathematics", "compilers"]
+keywords = ["language", "compiler", "physics", "units", "calculation"]
+homepage = "https://numbat.dev/"
+repository = "https://github.com/sharkdp/numbat"
+version = "1.24.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+readme = "../README.md"
+rust-version = "1.88"
+
+[dependencies]
+anyhow = "1"
+rustyline = { version = "16.0.0", features = ["derive"] }
+dirs = "6"
+numbat = { version = "1.24.0", path = "../numbat" }
+colored = "3"
+itertools = "0.14"
+toml = { version = "0.8.8", features = ["parse"] }
+serde = { version = "1.0.195", features = ["derive"] }
+terminal_size = "0.4.2"
+jiff = "0.2"
+termcolor = "1.4.1"
+
+[dependencies.clap]
+version = "4"
+features = ["suggestions", "color", "wrap_help", "derive"]
+
+[dev-dependencies]
+assert_cmd = "2"
+predicates = "3"
+
+
+[[bin]]
+name = "numbat"
+path = "src/main.rs"
+
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/v{ version }/numbat-v{ version }-{ target }{ archive-suffix }"
+bin-dir = "numbat-v{ version }-{ target }/{ bin }{ binary-ext }"
+pkg-fmt = "tgz"
+
+[package.metadata.binstall.overrides.x86_64-pc-windows-msvc]
+pkg-fmt = "zip"
+
+[package.metadata.binstall.overrides.i686-pc-windows-msvc]
+pkg-fmt = "zip"

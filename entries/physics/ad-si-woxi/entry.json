@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T17:14:09Z",
+ "category": "physics",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ad-si/Woxi \u2014 Wolfram Language / Mathematica reimplementation in Rust (Wolfram oxidized)",
+ "language": "rust",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Woxi",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "ad-si-woxi",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 994,
+ "system": "Wolfram Language / Mathematica reimplementation in Rust (Wolfram oxidized)",
+ "upstream": "https://github.com/ad-si/Woxi",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

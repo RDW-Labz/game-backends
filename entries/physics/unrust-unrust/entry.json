@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T17:14:09Z",
+ "category": "physics",
+ "commit": "2018-08-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "unrust/unrust \u2014 unrust - A pure rust based (webgl 2.0 / native) game engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "unrust",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "unrust-unrust",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 382,
+ "system": "unrust - A pure rust based (webgl 2.0 / native) game engine",
+ "upstream": "https://github.com/unrust/unrust",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T17:14:09Z",
+ "category": "physics",
+ "commit": "2026-11-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dimforge/salva \u2014 2 and 3-dimensional fluid simulation library in Rust.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "salva",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "dimforge-salva",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 715,
+ "system": "2 and 3-dimensional fluid simulation library in Rust.",
+ "upstream": "https://github.com/dimforge/salva",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

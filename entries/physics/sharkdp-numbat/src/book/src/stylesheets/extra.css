@@ -1,0 +1,96 @@
+/* Custom Numbat color scheme */
+
+:root {
+  /* Primary color: #7d80da */
+  --md-primary-fg-color: #7d80da;
+  --md-primary-fg-color--light: #9a9ce3;
+  --md-primary-fg-color--dark: #6264c7;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: #ffffffb3;
+
+  /* Accent color: #EF767A */
+  --md-accent-fg-color: #EF767A;
+  --md-accent-fg-color--transparent: #EF767A1a;
+  --md-accent-bg-color: #ffffff;
+  --md-accent-bg-color--light: #ffffffb3;
+}
+
+/* Syntax highlighting */
+
+.highlight,
+.highlight>pre,
+.highlight>pre>code {
+  background: #f7f7f7 !important;
+  background-color: #f7f7f7 !important;
+}
+
+.highlight code {
+  color: #333;
+}
+
+/* Keywords: bright purple */
+.highlight .k {
+  color: #c802ff !important;
+}
+
+/* Strings: green */
+.highlight .s,
+.highlight .s1,
+.highlight .s2,
+.highlight .sd {
+  color: #27a85f !important;
+}
+
+/* Numbers/Values: blue */
+.highlight .mi,
+.highlight .mf,
+.highlight .mh,
+.highlight .mo,
+.highlight .mb {
+  color: #0040ff !important;
+}
+
+/* Types/Dimensions: magenta-pink */
+.highlight .nc,
+.highlight .kt {
+  color: #ca3b63 !important;
+}
+
+/* Variables/Units: black */
+.highlight .nv,
+.highlight .n {
+  color: #333 !important;
+}
+
+/* Operators: red */
+.highlight .o {
+  color: #db2828 !important;
+}
+
+/* Comments: gray */
+.highlight .c,
+.highlight .c1,
+.highlight .cm {
+  color: #757575 !important;
+}
+
+/* REPL prompts: gray */
+.highlight .cs,
+.highlight .gp {
+  color: #8c8c8c !important;
+}
+
+/* Decorators: green */
+.highlight .nd {
+  color: #27a85f !important;
+}
+
+/* Punctuation */
+.highlight .p {
+  color: #333 !important;
+}
+
+/* Other names (Greek letters, etc.) */
+.highlight .no {
+  color: #5c12a6 !important;
+}

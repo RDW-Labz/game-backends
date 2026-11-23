@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 16:58 UTC · 859 entries · 230 vendored, 629 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 17:14 UTC · 865 entries · 231 vendored, 634 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
-| [physics](#physics) — Physics | 67 | 19 | 48 |
+| [physics](#physics) — Physics | 73 | 20 | 53 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
@@ -420,7 +420,7 @@ _Generated 2026-11-23 16:58 UTC · 859 entries · 230 vendored, 629 reference-on
 
 ## physics
 
-**Physics** — 67 entries
+**Physics** — 73 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -428,6 +428,7 @@ _Generated 2026-11-23 16:58 UTC · 859 entries · 230 vendored, 629 reference-on
 | [anki-3d-engine](entries/physics/godlikepanos-anki-3d-engine/README.md) | AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more | c++ | unknown | reference | [godlikepanos/anki-3d-engine](https://github.com/godlikepanos/anki-3d-engine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [apollonia](entries/physics/wgtdkp-apollonia/README.md) | Tiny 2D physics engine | c++ | MIT | reference | [wgtdkp/apollonia](https://github.com/wgtdkp/apollonia) @ `2022-01-28 (branch tip at catalogue time)` |
 | [avian](entries/physics/avianphysics-avian/README.md) | ECS-driven 2D and 3D physics engine for the Bevy game engine. | rust | Apache-2.0 | reference | [avianphysics/avian](https://github.com/avianphysics/avian) @ `2026-11-04 (branch tip at catalogue time)` |
+| [Blinc](entries/physics/project-blinc-blinc/README.md) | A declarative, reactive UI system with first-class state machines, spring physics animations, and GPU-accelerated rendering | rust | Apache-2.0 | reference | [project-blinc/Blinc](https://github.com/project-blinc/Blinc) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Box2D](entries/physics/box2d/README.md) | 2D rigid-body collision + dynamics solver | c++ | MIT | vendored | [erincatto/box2d](https://github.com/erincatto/box2d) @ `dd8bd3fb525f` |
 | [box2d](entries/physics/bytearena-box2d/README.md) | Box2D.go - Go port of Box2D - a 2D Physics Engine for Games. | go | Zlib | vendored | [ByteArena/box2d](https://github.com/ByteArena/box2d) @ `acbde413692f` |
 | [box2d-lite](entries/physics/erincatto-box2d-lite/README.md) | A small 2D physics engine | c++ | MIT | vendored | [erincatto/box2d-lite](https://github.com/erincatto/box2d-lite) @ `227b71b6974e` |
@@ -465,6 +466,7 @@ _Generated 2026-11-23 16:58 UTC · 859 entries · 230 vendored, 629 reference-on
 | [nexus](entries/physics/dimforge-nexus/README.md) | 2D and 3D cross-platform GPU multi-physics engine in Rust | rust | Apache-2.0 | reference | [dimforge/nexus](https://github.com/dimforge/nexus) @ `2026-11-01 (branch tip at catalogue time)` |
 | [nimblephysics](entries/physics/keenon-nimblephysics/README.md) | Nimble: Physics Engine for Biomechanics and Deep Learning | c++ | unknown | reference | [keenon/nimblephysics](https://github.com/keenon/nimblephysics) @ `2025-09-14 (branch tip at catalogue time)` |
 | [nphysics](entries/physics/dimforge-nphysics/README.md) | 2 and 3-dimensional rigid body physics engine for Rust. | rust | Apache-2.0 | vendored | [dimforge/nphysics](https://github.com/dimforge/nphysics) @ `65aa85c5470a` |
+| [numbat](entries/physics/sharkdp-numbat/README.md) | A statically typed programming language for scientific computations with first class support for physical dimensions and units | rust | Apache-2.0 | vendored | [sharkdp/numbat](https://github.com/sharkdp/numbat) @ `e8abf32b975f` |
 | [NVIDIA PhysX](entries/physics/physx/README.md) | GPU/CPU 3D rigid body, cloth, particles, vehicles | c++ | BSD-3-Clause | reference | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX) @ `7d6f6ac8b83e` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [panda-gym](entries/physics/qgallouedec-panda-gym/README.md) | Set of robotic environments based on PyBullet physics engine and gymnasium. | python | MIT | reference | [qgallouedec/panda-gym](https://github.com/qgallouedec/panda-gym) @ `2024-07-23 (branch tip at catalogue time)` |
@@ -482,15 +484,19 @@ _Generated 2026-11-23 16:58 UTC · 859 entries · 230 vendored, 629 reference-on
 | [ReactPhysics3D](entries/physics/reactphysics3d/README.md) | 3D physics: broadphase, constraints, raycast | c++ | Zlib | vendored | [DanielChappuis/reactphysics3d](https://github.com/DanielChappuis/reactphysics3d) @ `7000610a244e` |
 | [rigs-of-rods — physics](entries/physics/rigs-of-rods-physics/README.md) | rigid-body collision and dynamics | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
 | [Rythe-Engine](entries/physics/rythe-interactive-rythe-engine/README.md) | Rythe is a data-oriented C++20 game engine built to make optimal use of modern hardware. | c++ | MIT | vendored | [Rythe-Interactive/Rythe-Engine](https://github.com/Rythe-Interactive/Rythe-Engine) @ `0bcddef74693` |
+| [salva](entries/physics/dimforge-salva/README.md) | 2 and 3-dimensional fluid simulation library in Rust. | rust | Apache-2.0 | reference | [dimforge/salva](https://github.com/dimforge/salva) @ `2026-11-01 (branch tip at catalogue time)` |
 | [supertux — collision](entries/physics/supertux-collision/README.md) | rigid-body collision and dynamics | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
+| [symbolica](entries/physics/symbolica-dev-symbolica/README.md) | Symbolica is a high-performance computer algebra library for Python and Rust. Manipulate large expressions, match patterns, and generate optimized numerical cod | rust | none | reference | [symbolica-dev/symbolica](https://github.com/symbolica-dev/symbolica) @ `bf6e4e2813db` |
 | [tabletop-club](entries/physics/drwhut-tabletop-club/README.md) | An open-source platform for playing tabletop games in a physics-based 3D environment for Windows, macOS, and Linux! Made with the Godot Engine. | gdscript | MIT | reference | [drwhut/tabletop-club](https://github.com/drwhut/tabletop-club) @ `2026-08-30 (branch tip at catalogue time)` |
 | [taro](entries/physics/cloud9c-taro/README.md) | A lightweight 3D game engine for the web. | javascript | MIT | reference | [cloud9c/taro](https://github.com/cloud9c/taro) @ `2025-02-13 (branch tip at catalogue time)` |
 | [thetawave](entries/physics/thetawavegame-thetawave/README.md) | A physics based, space shooter game made with Rust and the Bevy engine. | rust | MIT | vendored | [thetawavegame/thetawave](https://github.com/thetawavegame/thetawave) @ `94fad04fb913` |
 | [thrive — physics](entries/physics/thrive-physics/README.md) | rigid-body collision and dynamics | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [thrive — physics](entries/physics/thrive-src-native-physics/README.md) | custom rigid-body physics for a sim game | c++ | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f4f2e0` |
+| [unrust](entries/physics/unrust-unrust/README.md) | unrust - A pure rust based (webgl 2.0 / native) game engine | rust | Apache-2.0 | reference | [unrust/unrust](https://github.com/unrust/unrust) @ `2018-08-13 (branch tip at catalogue time)` |
 | [VectorizedMultiAgentSimulator](entries/physics/proroklab-vectorizedmultiagentsimulator/README.md) | VMAS is a vectorized differentiable simulator designed for efficient Multi-Agent Reinforcement Learning benchmarking. It is comprised of a vectorized 2D physics | python | GPL-3.0 | reference | [proroklab/VectorizedMultiAgentSimulator](https://github.com/proroklab/VectorizedMultiAgentSimulator) @ `2026-05-19 (branch tip at catalogue time)` |
 | [verlet-js](entries/physics/subprotocol-verlet-js/README.md) | A simple Verlet physics engine written in javascript | javascript | unknown | reference | [subprotocol/verlet-js](https://github.com/subprotocol/verlet-js) @ `2019-10-18 (branch tip at catalogue time)` |
 | [VPhysics-Jolt](entries/physics/misyltoad-vphysics-jolt/README.md) | Volt (VPhysics Jolt) is a replacement physics module for the Source Engine. | c++ | MIT | reference | [misyltoad/VPhysics-Jolt](https://github.com/misyltoad/VPhysics-Jolt) @ `2025-05-18 (branch tip at catalogue time)` |
+| [Woxi](entries/physics/ad-si-woxi/README.md) | Wolfram Language / Mathematica reimplementation in Rust (Wolfram oxidized) | rust | AGPL-3.0 | reference | [ad-si/Woxi](https://github.com/ad-si/Woxi) @ `2026-11-23 (branch tip at catalogue time)` |
 
 ## math
 

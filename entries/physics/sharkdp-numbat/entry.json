@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T17:14:04Z",
+ "category": "physics",
+ "commit": "e8abf32b975f",
+ "delivery": "vendored",
+ "description": "sharkdp/numbat \u2014 A statically typed programming language for scientific computations with first class support for physical dimensions and units",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "numbat",
+ "size_bytes": 2254083,
+ "slug": "sharkdp-numbat",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 2847,
+ "system": "A statically typed programming language for scientific computations with first class support for physical dimensions and units",
+ "upstream": "https://github.com/sharkdp/numbat",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

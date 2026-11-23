@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "numbat",
+    "numbat-exchange-rates",
+    "numbat-cli",
+]
+
+exclude = [
+    "numbat-wasm"
+]
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1
