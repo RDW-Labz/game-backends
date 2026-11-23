@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:23:23Z",
+ "category": "engines",
+ "commit": "2026-11-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kevinroast/phoria.js \u2014 JavaScript library for simple 3D graphics and visualisation on a HTML5 canvas 2D renderer. It does not use WebGL. Works on all HTML5 browsers, including desktop, iOS and Android.",
+ "language": "javascript",
+ "license": "BSD-3-Clause",
+ "license_verdict": "clean",
+ "name": "phoria.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-3-Clause)",
+ "slug": "kevinroast-phoria-js",
+ "source": "github-search:graphics renderer library 2d stars:>80",
+ "stars": 511,
+ "system": "JavaScript library for simple 3D graphics and visualisation on a HTML5 canvas 2D renderer. It does not use WebGL. Works on all HTML5 browsers, including desktop",
+ "upstream": "https://github.com/kevinroast/phoria.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

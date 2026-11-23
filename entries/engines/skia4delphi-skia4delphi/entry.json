@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T12:23:21Z",
+ "category": "engines",
+ "commit": "7bf46ee53de2",
+ "delivery": "vendored",
+ "description": "skia4delphi/skia4delphi \u2014 Skia4Delphi is a cross-platform 2D graphics API for Delphi platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be used across mobile, server and desktop models to render images.",
+ "language": "pascal",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "skia4delphi",
+ "size_bytes": 144500,
+ "slug": "skia4delphi-skia4delphi",
+ "source": "github-search:graphics renderer library 2d stars:>80",
+ "stars": 796,
+ "system": "Skia4Delphi is a cross-platform 2D graphics API for Delphi platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be use",
+ "upstream": "https://github.com/skia4delphi/skia4delphi",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,153 @@
+{************************************************************************}
+{                                                                        }
+{                              Skia4Delphi                               }
+{                                                                        }
+{ Copyright (c) 2021-2026 Skia4Delphi Project.                           }
+{                                                                        }
+{ Use of this source code is governed by the MIT license that can be     }
+{ found in the LICENSE file.                                             }
+{                                                                        }
+{************************************************************************}
+unit Skia.Tests.Skottie;
+
+interface
+
+{$SCOPEDENUMS ON}
+
+uses
+  { Delphi }
+  System.SysUtils,
+  System.Types,
+  DUnitX.TestFramework,
+
+  { Skia }
+  System.Skia,
+
+  { Tests }
+  Skia.Tests.Foundation;
+
+type
+  { TSkSkottieTests }
+
+  [TestFixture]
+  TSkSkottieTests = class(TTestBase)
+  protected
+    procedure Render(const ASkottie: ISkottieAnimation; const ACanvas: ISkCanvas; const ADest: TRectF);
+  public
+    [TestCase('check.json', 'check.json,5.1.1,1.67999994754791,25,150,150')]
+    [TestCase('rocket.json', 'rocket.json,5.7.6,5,30,600,600')]
+    procedure TestLoadLottie(const ALottieFileName, AVersion: string; const ADuration, AFPS, AWidth, AHeight: Double);
+    [Test]
+    procedure TestInOutPoint;
+    [Test]
+    procedure TestSeekFrame;
+    [TestCase('check.json', 'check.json,300,250,0.6,uXMxfQTn605A9943kIb4ZtAuv/Gem7D+7/prof8Z2ycg/OMIlM77+y+8z4b8st8evA8FxL49GQ')]
+    [TestCase('rocket.json', 'rocket.json,300,250,0.6,4hdi9g7Mi+/95b+D3wbhE1T/Pvj6x9F+5A9A8cMXFaxOf/HeZ9CBAjiMP4Xu2fd+uAcoxI27Cw')]
+    procedure TestRenderLottie(const ALottieFileName: string; const AWidth, AHeight: Integer; const AFrameTime: Double; const AExpectedImageHash: string);
+  end;
+
+implementation
+
+uses
+  { Delphi }
+  System.Classes,
+  System.UITypes,
+  System.IOUtils,
+  System.Math,
+  System.Math.Vectors;
+
+{ TSkSkottieTests }
+
+procedure TSkSkottieTests.Render(const ASkottie: ISkottieAnimation;
+  const ACanvas: ISkCanvas; const ADest: TRectF);
+var
+  LLottieRect: TRectF;
+begin
+  if ADest.IsEmpty then
+    Exit;
+  LLottieRect := TRectF.Create(PointF(0, 0), ASkottie.Size).FitInto(ADest);
+  if LLottieRect.IsEmpty then
+    Exit;
+  if SameValue(ADest.Width / LLottieRect.Width, ADest.Height / LLottieRect.Height, TEpsilon.Matrix) then
+    ASkottie.Render(ACanvas, ADest)
+  else
+  begin
+    ACanvas.Save;
+    try
+      ACanvas.Scale(ADest.Width / LLottieRect.Width, ADest.Height / LLottieRect.Height);
+      ACanvas.Translate((LLottieRect.Width - ADest.Width) / 2, (LLottieRect.Height - ADest.Height) / 2);
+      ASkottie.Render(ACanvas, ADest);
+    finally
+      ACanvas.Restore;
+    end;
+  end;
+end;
+
+procedure TSkSkottieTests.TestInOutPoint;
+var
+  LSkottie: ISkottieAnimation;
+begin
+  LSkottie := TSkottieAnimation.MakeFromFile(AssetsPath + 'rocket.json');
+  Assert.IsNotNull(LSkottie, 'Invalid ISkottieAnimation (nil)');
+  Assert.IsTrue(LSkottie.OutPoint > LSkottie.InPoint, 'The animation should end after it starts');
+  Assert.AreSameValue(LSkottie.Duration, (LSkottie.OutPoint - LSkottie.InPoint) / LSkottie.FPS, TEpsilon.Matrix,
+    'The duration should be the frame range divided by the frame rate');
+end;
+
+procedure TSkSkottieTests.TestSeekFrame;
+
+  function RenderFrame(const ASkottie: ISkottieAnimation; const AFrame: Double): TBytes;
+  var
+    LSurface: ISkSurface;
+  begin
+    SetLength(Result, 100 * 100 * 4);
+    LSurface := TSkSurface.MakeRasterDirect(TSkImageInfo.Create(100, 100), Result, 100 * 4);
+    LSurface.Canvas.Clear(TAlphaColors.Null);
+    ASkottie.SeekFrame(AFrame);
+    ASkottie.Render(LSurface.Canvas, RectF(0, 0, 100, 100));
+  end;
+
+var
+  LSkottie: ISkottieAnimation;
+begin
+  LSkottie := TSkottieAnimation.MakeFromFile(AssetsPath + 'rocket.json');
+  Assert.IsNotNull(LSkottie, 'Invalid ISkottieAnimation (nil)');
+  Assert.IsFalse(CompareMem(@RenderFrame(LSkottie, LSkottie.InPoint)[0],
+    @RenderFrame(LSkottie, LSkottie.OutPoint / 2)[0], 100 * 100 * 4),
+    'Seeking should change the rendered frame');
+end;
+
+procedure TSkSkottieTests.TestLoadLottie(const ALottieFileName,
+  AVersion: string; const ADuration, AFPS, AWidth, AHeight: Double);
+var
+  LSkottie: ISkottieAnimation;
+begin
+  LSkottie := TSkottieAnimation.MakeFromFile(AssetsPath + ALottieFileName);
+  Assert.IsNotNull(LSkottie, 'Invalid ISkottieAnimation (nil)');
+  Assert.AreEqual(AVersion, LSkottie.Version);
+  Assert.AreSameValue(ADuration, LSkottie.Duration, TEpsilon.Matrix, 'in duration');
+  Assert.AreSameValue(AFPS, LSkottie.FPS, TEpsilon.Matrix, 'in fps');
+  Assert.AreSameValue(AWidth, LSkottie.Size.Width, TEpsilon.Matrix, 'in size.width');
+  Assert.AreSameValue(AHeight, LSkottie.Size.Height, TEpsilon.Matrix, 'in size.height');
+end;
+
+procedure TSkSkottieTests.TestRenderLottie(const ALottieFileName: string;
+  const AWidth, AHeight: Integer; const AFrameTime: Double;
+  const AExpectedImageHash: string);
+var
+  LSkottie: ISkottieAnimation;
+  LSurface: ISkSurface;
+begin
+  LSurface := TSkSurface.MakeRaster(AWidth, AHeight);
+  Assert.IsNotNull(LSurface, 'Invalid ISkSurface (nil)');
+  LSurface.Canvas.Clear(TAlphaColors.Null);
+  LSkottie := TSkottieAnimation.MakeFromFile(AssetsPath + ALottieFileName);
+  Assert.IsNotNull(LSkottie, 'Invalid ISkottieAnimation (nil)');
+  LSkottie.SeekFrameTime(AFrameTime);
+  Render(LSkottie, LSurface.Canvas, RectF(0, 0, AWidth, AHeight));
+  Assert.AreSimilar(AExpectedImageHash, LSurface.MakeImageSnapshot);
+end;
+
+initialization
+  TDUnitX.RegisterTestFixture(TSkSkottieTests);
+end.

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T12:22:12Z",
+ "category": "engines",
+ "commit": "0cd43f16dd4b",
+ "delivery": "reference",
+ "description": "mono/SkiaSharp \u2014 SkiaSharp is a cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be used across mobile, server and desktop models to render images.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "SkiaSharp",
+ "reference_reason": "size gate: 12 MB",
+ "size_bytes": 13096308,
+ "slug": "mono-skiasharp",
+ "source": "github-search:graphics renderer library 2d stars:>80",
+ "stars": 5640,
+ "system": "SkiaSharp is a cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be used ac",
+ "upstream": "https://github.com/mono/SkiaSharp",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

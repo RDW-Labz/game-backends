@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:23:23Z",
+ "category": "engines",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AngusJohnson/Image32 \u2014 A comprehensive 2D graphics library written in Delphi Pascal",
+ "language": "pascal",
+ "license": "BSL-1.0",
+ "license_verdict": "gated-reference",
+ "name": "Image32",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSL-1.0)",
+ "slug": "angusjohnson-image32",
+ "source": "github-search:graphics renderer library 2d stars:>80",
+ "stars": 195,
+ "system": "A comprehensive 2D graphics library written in Delphi Pascal",
+ "upstream": "https://github.com/AngusJohnson/Image32",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

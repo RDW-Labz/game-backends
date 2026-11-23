@@ -1,0 +1,226 @@
+{************************************************************************}
+{                                                                        }
+{                              Skia4Delphi                               }
+{                                                                        }
+{ Copyright (c) 2021-2026 Skia4Delphi Project.                           }
+{                                                                        }
+{ Use of this source code is governed by the MIT license that can be     }
+{ found in the LICENSE file.                                             }
+{                                                                        }
+{************************************************************************}
+unit Skia.Tests.Picture;
+
+interface
+
+{$SCOPEDENUMS ON}
+
+uses
+  { Delphi }
+  System.SysUtils,
+  DUnitX.TestFramework,
+
+  { Skia }
+  System.Skia,
+
+  { Tests }
+  Skia.Tests.Foundation;
+
+type
+  { TSkPictureTests }
+
+  [TestFixture]
+  TSkPictureTests = class(TTestBase)
+  public
+    [Test]
+    procedure TestApproximateSizeAndOpCount;
+    [TestCase('1', '0.99,56M+AgIzfJH/+Mw/wHnatR/BPeX2lxEF0/aL/4MDSqTPAOzT01H+977vrkL59hOutgV7IA04+A')]
+    procedure TestBasicSquare(const AMinSimilarity: Double; const AExpectedImageHash: string);
+    [TestCase('1', '0.99,yKMeBuw5uPACEpovQDztFOiP/tuXu5CEzqGLv/0GCzyQu98xDAF08M0f74fz36e+Nwb7G168Cw')]
+    procedure TestCullRect(const AMinSimilarity: Double; const AExpectedImageHash: string);
+    [TestCase('1', '0.99,7Guy+f27n36/8qSbn0X1lawOPvCVV1A96OCDUb0lqoP/u+UWVA96+GDIn8jp+ZseeQbx913/EQ')]
+    procedure TestDraw(const AMinSimilarity: Double; const AExpectedImageHash: string);
+    [TestCase('1', '0.99,56M+AgIzfJH/+Mw/wHnatR/BPeX2lxEF0/aL/4MDSqTPAOzT01H+977vrkL59hOutgV7IA04+A')]
+    procedure TestImageFromPicture(const AMinSimilarity: Double; const AExpectedImageHash: string);
+    [TestCase('1', 'simple-picture.skp')]
+    procedure TestSerialize(const AExpectedSerializedOutputFileName: string);
+  end;
+
+implementation
+
+uses
+  { Delphi }
+  System.Math,
+  System.Math.Vectors,
+  System.Classes,
+  System.Types,
+  System.UITypes,
+  System.IOUtils;
+
+{ TSkPictureTests }
+
+procedure TSkPictureTests.TestApproximateSizeAndOpCount;
+var
+  I: Integer;
+  LPaint: ISkPaint;
+  LPicture: ISkPicture;
+  LPictureCanvas: ISkCanvas;
+  LPictureRecorder: ISkPictureRecorder;
+begin
+  LPaint := TSkPaint.Create;
+  LPictureRecorder := TSkPictureRecorder.Create;
+  LPictureCanvas := LPictureRecorder.BeginRecording(100, 100);
+  for I := 0 to 9 do
+    LPictureCanvas.DrawRect(RectF(I, I, I + 10, I + 10), LPaint);
+  LPicture := LPictureRecorder.FinishRecording;
+  Assert.IsNotNull(LPicture, 'Invalid ISkPicture (nil)');
+  Assert.IsTrue(LPicture.ApproximateOpCount >= 10, 'The picture should report the recorded operations');
+  Assert.IsTrue(LPicture.ApproximateBytesUsed > 0, 'The picture should report its memory usage');
+  Assert.IsTrue(LPicture.ApproximateOpCount(True) >= LPicture.ApproximateOpCount,
+    'Counting the nested pictures should not reduce the count');
+end;
+
+procedure TSkPictureTests.TestBasicSquare(const AMinSimilarity: Double;
+  const AExpectedImageHash: string);
+var
+  LSurface: ISkSurface;
+  LPaint: ISkPaint;
+  LRecorder: ISkPictureRecorder;
+  LPictureCanvas: ISkCanvas;
+  LPicture: ISkPicture;
+  LPictureCopy: ISkPicture;
+begin
+  LSurface := TSkSurface.MakeRaster(256, 256);
+  Assert.IsNotNull(LSurface, 'Invalid ISkSurface (nil)');
+  LSurface.Canvas.Clear(TAlphaColors.Null);
+
+  LRecorder := TSkPictureRecorder.Create;
+  LPictureCanvas := LRecorder.BeginRecording(256, 256);
+  LPaint := TSkPaint.Create;
+  LPictureCanvas.DrawRect(RectF(0, 0, 200, 200), LPaint);
+  LPaint.Color := TAlphaColors.White;
+  LPictureCanvas.DrawRect(RectF(20, 20, 180, 180), LPaint);
+  LPicture := LRecorder.FinishRecording;
+  LPictureCopy := TSkPicture.MakeFromBytes(LPicture.Serialize);
+  LPictureCopy.Playback(LSurface.Canvas);
+
+  Assert.AreSimilar(AExpectedImageHash, LSurface.MakeImageSnapshot, AMinSimilarity);
+end;
+
+procedure TSkPictureTests.TestCullRect(const AMinSimilarity: Double;
+  const AExpectedImageHash: string);
+var
+  LSurface: ISkSurface;
+  LPaint: ISkPaint;
+  LRecorder: ISkPictureRecorder;
+  LPictureCanvas: ISkCanvas;
+  LPicture: ISkPicture;
+begin
+  LSurface := TSkSurface.MakeRaster(256, 256);
+  Assert.IsNotNull(LSurface, 'Invalid ISkSurface (nil)');
+  LSurface.Canvas.Clear(TAlphaColors.Null);
+
+  LRecorder := TSkPictureRecorder.Create;
+  LPictureCanvas := LRecorder.BeginRecording(RectF(64, 64, 192, 192));
+  LPaint := TSkPaint.Create;
+  LPictureCanvas.DrawRect(RectF(0, 0, 200, 200), LPaint);
+  LPaint.Color := TAlphaColors.White;
+  LPictureCanvas.DrawRect(RectF(20, 20, 180, 180), LPaint);
+  LPicture := LRecorder.FinishRecording;
+  LPicture.Playback(LSurface.Canvas);
+  LPaint.Blender := TSkBlender.MakeMode(TSkBlendMode.Modulate);
+  LPaint.Color := $40404040;
+  LSurface.Canvas.DrawRect(LPicture.CullRect, LPaint);
+
+  Assert.AreSimilar(AExpectedImageHash, LSurface.MakeImageSnapshot, AMinSimilarity);
+end;
+
+procedure TSkPictureTests.TestDraw(const AMinSimilarity: Double;
+  const AExpectedImageHash: string);
+var
+  LSurface: ISkSurface;
+  LPaint: ISkPaint;
+  LRecorder: ISkPictureRecorder;
+  LPictureCanvas: ISkCanvas;
+  LPicture: ISkPicture;
+  LColor: TAlphaColor;
+  LMatrix: TMatrix;
+  LAlpha: Byte;
+begin
+  LSurface := TSkSurface.MakeRaster(256, 256);
+  Assert.IsNotNull(LSurface, 'Invalid ISkSurface (nil)');
+  LSurface.Canvas.Clear(TAlphaColors.Null);
+
+  LRecorder := TSkPictureRecorder.Create;
+  LPictureCanvas := LRecorder.BeginRecording(50, 50);
+  LPaint := TSkPaint.Create;
+
+  for LColor in TArray<TAlphaColor>.Create(TAlphaColors.Red, TAlphaColors.Blue, $ff007f00) do
+  begin
+    LPaint.Color := LColor;
+    LPictureCanvas.DrawRect(RectF(10, 10, 30, 40), LPaint);
+    LPictureCanvas.Translate(10, 10);
+    LPictureCanvas.Scale(1.2, 1.4);
+  end;
+  LPicture := LRecorder.FinishRecording;
+  LMatrix := TMatrix.Identity;
+  for LAlpha in [70, 140, 210] do
+  begin
+    LPaint.Alpha := LAlpha;
+    LSurface.Canvas.DrawPicture(LPicture, LMatrix, LPaint);
+    LMatrix := LMatrix * LMatrix.CreateTranslation(70, 70);
+  end;
+
+  Assert.AreSimilar(AExpectedImageHash, LSurface.MakeImageSnapshot, AMinSimilarity);
+end;
+
+procedure TSkPictureTests.TestImageFromPicture(const AMinSimilarity: Double; const AExpectedImageHash: string);
+var
+  LImage: ISkImage;
+  LPaint: ISkPaint;
+  LRecorder: ISkPictureRecorder;
+  LPictureCanvas: ISkCanvas;
+  LPicture: ISkPicture;
+begin
+  LRecorder := TSkPictureRecorder.Create;
+  LPictureCanvas := LRecorder.BeginRecording(256, 256);
+  LPaint := TSkPaint.Create;
+  LPictureCanvas.DrawRect(RectF(0, 0, 200, 200), LPaint);
+  LPaint.Color := TAlphaColors.White;
+  LPictureCanvas.DrawRect(RectF(20, 20, 180, 180), LPaint);
+  LPicture := LRecorder.FinishRecording;
+
+  LImage := TSkImage.MakeFromPicture(LPicture, TSize.Create(256, 256), TSkColorSpace.MakeSRGB);
+  Assert.AreSimilar(AExpectedImageHash, LImage, AMinSimilarity);
+end;
+
+procedure TSkPictureTests.TestSerialize(
+  const AExpectedSerializedOutputFileName: string);
+var
+  LPaint: ISkPaint;
+  LRecorder: ISkPictureRecorder;
+  LPictureCanvas: ISkCanvas;
+  LPicture: ISkPicture;
+  LStream: TBytesStream;
+begin
+  LRecorder := TSkPictureRecorder.Create;
+  LPictureCanvas := LRecorder.BeginRecording(256, 256);
+  LPaint := TSkPaint.Create;
+  LPictureCanvas.DrawRect(RectF(0, 0, 200, 200), LPaint);
+  LPaint.Color := TAlphaColors.White;
+  LPictureCanvas.DrawRect(RectF(20, 20, 180, 180), LPaint);
+  LPicture := LRecorder.FinishRecording;
+  LStream := TBytesStream.Create;
+  try
+    LPicture.SerializeToStream(LStream);
+    Assert.IsTrue(LStream.Size > 0);
+    Assert.AreEqualBytes(LPicture.Serialize, Copy(LStream.Bytes, 0, LStream.Size));
+  finally
+    LStream.Free;
+  end;
+
+  Assert.AreEqualBytes(TFile.ReadAllBytes(AssetsPath + AExpectedSerializedOutputFileName), LPicture.Serialize);
+end;
+
+initialization
+  TDUnitX.RegisterTestFixture(TSkPictureTests);
+end.

@@ -1,0 +1,802 @@
+{************************************************************************}
+{                                                                        }
+{                              Skia4Delphi                               }
+{                                                                        }
+{ Copyright (c) 2021-2026 Skia4Delphi Project.                           }
+{                                                                        }
+{ Use of this source code is governed by the MIT license that can be     }
+{ found in the LICENSE file.                                             }
+{                                                                        }
+{************************************************************************}
+unit Skia.Tests.Foundation.Runner;
+
+interface
+
+{$SCOPEDENUMS ON}
+
+uses
+  { Delphi }
+  DUnitX.TestFramework, DUnitX.Extensibility;
+
+type
+  { ITestRunnerLogger }
+
+  ITestRunnerLogger = interface
+    ['{C0544B4A-7928-49CD-BA56-D8F863193DCE}']
+    procedure OnEndTest(const AThreadId: TThreadID; const ATest: ITestResult);
+    procedure OnEndTestFixture(const AThreadId: TThreadID; const AResults: IFixtureResult);
+    procedure OnLog(const ALogType: TLogLevel; const AMessage: string);
+    procedure OnTestingEnds(const ARunResults: IRunResults);
+    procedure OnTestingStarts(const AThreadId: TThreadID; ATestCount, ATestActiveCount: Cardinal);
+  end;
+
+  { IAsyncTestRunner }
+
+  IAsyncTestRunner = interface
+    ['{0399B7E2-A927-4312-9440-BCEB4AC6BECD}']
+    procedure AddLogger(const ALogger: ITestRunnerLogger);
+    function GetExpectedImageFileName(const ATestResult: ITestResult): string;
+    function GetFixtureList: ITestFixtureList;
+    function GetGenerateExpectedImages: Boolean;
+    function GetWrongImageFileName(const ATestResult: ITestResult): string;
+    procedure Execute;
+    procedure RemoveLogger(const ALogger: ITestRunnerLogger);
+    procedure SetGenerateExpectedImages(const AValue: Boolean);
+    procedure Wait;
+    property FixtureList: ITestFixtureList read GetFixtureList;
+    property GenerateExpectedImages: Boolean read GetGenerateExpectedImages write SetGenerateExpectedImages;
+  end;
+
+function CIOutputFileName(const ADefaultFileName: string): string;
+function IsBuildExpectedImagesMode: Boolean;
+function IsCIMode: Boolean;
+procedure WriteCIResults(const AFileName, ARunnerName: string; const ARunResults: IRunResults);
+
+var
+  FAsyncTestRunner: IAsyncTestRunner;
+
+implementation
+
+uses
+  { Delphi }
+  System.SysUtils,
+  System.Classes,
+  System.Threading,
+  System.Generics.Collections,
+  System.SyncObjs,
+  System.IOUtils,
+  System.JSON,
+  System.TypInfo,
+  System.Zip,
+  {$IF CompilerVersion >= 29}
+  System.Hash,
+  {$ELSE}
+  IdHashMessageDigest,
+  {$ENDIF}
+
+  { Skia }
+  System.Skia,
+
+  { Tests }
+  Skia.Tests.Foundation;
+
+const
+  CImagesNotSimilarMessagePrefix = 'Images are not similar.';
+  CExpectedImagesSharedNames: array[0..7] of string = ('01', '23', '45',
+    '67', '89', 'ab', 'cd', 'ef');
+
+function TestHash(const ATest: ITestInfo): string; forward;
+
+function ExpectedImageSharedIndex(const AEntryName: string): Integer;
+var
+  I: Integer;
+  LPrefix: string;
+begin
+  if AEntryName.IsEmpty then
+    raise EArgumentException.Create('The expected-image entry name cannot be empty.');
+  LPrefix := AEntryName.Substring(0, 1).ToLower;
+  for I := Low(CExpectedImagesSharedNames) to High(CExpectedImagesSharedNames) do
+    if CExpectedImagesSharedNames[I].Contains(LPrefix) then
+      Exit(I);
+  raise EArgumentException.CreateFmt('Invalid expected-image entry name: %s', [AEntryName]);
+end;
+
+function JSONBoolean(const AValue: Boolean): TJSONValue;
+begin
+  if AValue then
+    Result := TJSONTrue.Create
+  else
+    Result := TJSONFalse.Create;
+end;
+
+function ExpectedImageEntryName(const ATest: ITestInfo): string;
+begin
+  Result := TestHash(ATest).ToLower + '.png';
+end;
+
+function CIOutputFileName(const ADefaultFileName: string): string;
+var
+  LFileName: string;
+begin
+  if (FindCmdLineSwitch('ci-output', LFileName) or FindCmdLineSwitch('-ci-output', LFileName)) and
+    not LFileName.IsEmpty then
+  begin
+    if LFileName.StartsWith('=') then
+      LFileName := LFileName.Substring(1);
+    Result := TPath.GetFullPath(LFileName);
+  end
+  else
+    Result := TPath.GetFullPath(TPath.Combine(GetCurrentDir, ADefaultFileName));
+end;
+
+function IsCIMode: Boolean;
+begin
+  Result := FindCmdLineSwitch('ci', True) or FindCmdLineSwitch('-ci', True);
+end;
+
+function IsBuildExpectedImagesMode: Boolean;
+begin
+  Result := FindCmdLineSwitch('build-expected-images', True) or
+    FindCmdLineSwitch('-build-expected-images', True);
+end;
+
+procedure WriteCIResults(const AFileName, ARunnerName: string; const ARunResults: IRunResults);
+var
+  LDirectoryName: string;
+  LResultObject: TJSONObject;
+  LResultsArray: TJSONArray;
+  LRootObject: TJSONObject;
+  LTestResult: ITestResult;
+begin
+  LRootObject := TJSONObject.Create;
+  try
+    LRootObject.AddPair('schema_version', TJSONNumber.Create(1));
+    LRootObject.AddPair('runner', ARunnerName);
+    LRootObject.AddPair('all_passed', JSONBoolean(ARunResults.AllPassed));
+    LRootObject.AddPair('duration_ms', TJSONNumber.Create(ARunResults.Duration.TotalMilliseconds));
+    LRootObject.AddPair('test_count', TJSONNumber.Create(ARunResults.TestCount));
+    LRootObject.AddPair('passed', TJSONNumber.Create(ARunResults.PassCount));
+    LRootObject.AddPair('failures', TJSONNumber.Create(ARunResults.FailureCount));
+    LRootObject.AddPair('errors', TJSONNumber.Create(ARunResults.ErrorCount));
+    LRootObject.AddPair('ignored', TJSONNumber.Create(ARunResults.IgnoredCount));
+    LRootObject.AddPair('memory_leaks', TJSONNumber.Create(ARunResults.MemoryLeakCount));
+    LResultsArray := TJSONArray.Create;
+    LRootObject.AddPair('tests', LResultsArray);
+    for LTestResult in ARunResults.GetAllTestResults do
+    begin
+      LResultObject := TJSONObject.Create;
+      LResultObject.AddPair('name', LTestResult.Test.FullName);
+      LResultObject.AddPair('status', LowerCase(GetEnumName(TypeInfo(TTestResultType), Ord(LTestResult.ResultType))));
+      LResultObject.AddPair('duration_ms', TJSONNumber.Create(LTestResult.Duration.TotalMilliseconds));
+      if not LTestResult.Message.IsEmpty then
+        LResultObject.AddPair('message', LTestResult.Message);
+      if LTestResult.Message.StartsWith(CImagesNotSimilarMessagePrefix) then
+        LResultObject.AddPair('expected-image', ExpectedImageEntryName(LTestResult.Test));
+      if not LTestResult.StackTrace.IsEmpty then
+        LResultObject.AddPair('stack_trace', LTestResult.StackTrace);
+      LResultsArray.Add(LResultObject);
+    end;
+    LDirectoryName := ExtractFilePath(AFileName);
+    if not LDirectoryName.IsEmpty and not TDirectory.Exists(LDirectoryName) then
+      TDirectory.CreateDirectory(LDirectoryName);
+    TFile.WriteAllText(AFileName, LRootObject.ToJSON, TEncoding.UTF8);
+  finally
+    LRootObject.Free;
+  end;
+end;
+
+type
+  { TAsyncTestRunner }
+
+  TAsyncTestRunner = class(TInterfacedObject, ITestLogger, IAsyncTestRunner)
+  private const
+    ImagesExtension = '.png';
+  private class var
+    FExpectedImagesPath: string;
+    FExpectedImagesPathWasCreated: Boolean;
+    FWrongImagesPath: string;
+    FWrongImagesPathWasCreated: Boolean;
+    class destructor Destroy;
+    class function ExpectedImagesPath: string; static;
+    class function ExpectedImagesSharedPath(const ASharedIndex: Integer): string; static;
+    class function ExpectedImagesZipFile(const ASharedIndex: Integer): string; static;
+    class function WrongImagesPath: string; static;
+  private
+    FCanceled: Boolean;
+    FEvent: TEvent;
+    FExecuting: Boolean;
+    FExecuteFinishedEvent: TEvent;
+    FExtractedExpectedImagesShareds: Byte;
+    FGenerateExpectedImages: Boolean;
+    FLastImageChecking: ISkImage;
+    FLock: TCriticalSection;
+    FLoggers: TList<ITestRunnerLogger>;
+    FTask: ITask;
+    FTestRunner: ITestRunner;
+    procedure ExtractExpectedImages(const ASharedIndex: Integer);
+    function GetExpectedImageFileName(const ATestResult: ITestResult): string;
+    function GetExpectedImageSharedIndex(const ATestResult: ITestResult): Integer;
+    function GetFixtureList: ITestFixtureList;
+    function GetGenerateExpectedImages: Boolean;
+    function GetLoggers: TArray<ITestRunnerLogger>;
+    function GetWrongImageFileName(const ATestResult: ITestResult): string;
+    property Loggers: TArray<ITestRunnerLogger> read GetLoggers;
+    procedure SetGenerateExpectedImages(const AValue: Boolean);
+  protected
+    { ITestLogger }
+    procedure OnBeginTest(const AThreadId: TThreadID; const ATest: ITestInfo);
+    procedure OnEndSetupFixture(const AThreadId: TThreadID; const AFixture: ITestFixtureInfo);
+    procedure OnEndSetupTest(const AThreadId: TThreadID; const ATest: ITestInfo);
+    procedure OnEndTearDownFixture(const AThreadId: TThreadID; const AFixture: ITestFixtureInfo);
+    procedure OnEndTearDownTest(const AThreadId: TThreadID; const ATest: ITestInfo);
+    procedure OnEndTest(const AThreadId: TThreadID; const ATest: ITestResult);
+    procedure OnEndTestFixture(const AThreadId: TThreadID; const AResults: IFixtureResult);
+    procedure OnExecuteTest(const AThreadId: TThreadID; const ATest: ITestInfo);
+    procedure OnImageChecking(const AImage: ISkImage);
+    procedure OnLog(const ALogType: TLogLevel; const AMessage: string);
+    procedure OnSetupFixture(const AThreadId: TThreadID; const AFixture: ITestFixtureInfo);
+    procedure OnSetupTest(const AThreadId: TThreadID; const ATest: ITestInfo);
+    procedure OnStartTestFixture(const AThreadId: TThreadID; const AFixture: ITestFixtureInfo);
+    procedure OnTearDownFixture(const AThreadId: TThreadID; const AFixture: ITestFixtureInfo);
+    procedure OnTearDownTest(const AThreadId: TThreadID; const ATest: ITestInfo);
+    procedure OnTestError(const AThreadId: TThreadID; const AError: ITestError);
+    procedure OnTestFailure(const AThreadId: TThreadID; const AFailure: ITestError);
+    procedure OnTestIgnored(const AThreadId: TThreadID; const AIgnored: ITestResult);
+    procedure OnTestingEnds(const ARunResults: IRunResults);
+    {$IF CompilerVersion = 29}
+    procedure OnTestingStarts(const AThreadId, ATestCount, ATestActiveCount: Cardinal);
+    {$ELSE}
+    procedure OnTestingStarts(const AThreadId: TThreadID; ATestCount, ATestActiveCount: Cardinal);
+    {$ENDIF}
+    procedure OnTestMemoryLeak(const AThreadId: TThreadID; const AIgnored: ITestResult);
+    procedure OnTestSuccess(const AThreadId: TThreadID; const ATest: ITestResult);
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure AddLogger(const ALogger: ITestRunnerLogger);
+    procedure Execute;
+    procedure RemoveLogger(const ALogger: ITestRunnerLogger);
+    procedure Wait;
+    property FixtureList: ITestFixtureList read GetFixtureList;
+    property GenerateExpectedImages: Boolean read GetGenerateExpectedImages write SetGenerateExpectedImages;
+  end;
+
+  {$IF CompilerVersion < 32}
+  { TSkThreadHelper }
+
+  TSkThreadHelper = class helper for TThread
+  public
+    class procedure ForceQueue(AThread: TThread; AThreadProc: TThreadProcedure); static;
+  end;
+  {$ENDIF}
+
+function TestHash(const ATest: ITestInfo): string;
+{$IF CompilerVersion >= 29}
+begin
+  Result := THashMD5.GetHashString(ATest.FullName);
+{$ELSE}
+var
+  LMD5: TIdHashMessageDigest5;
+begin
+  LMD5 := TIdHashMessageDigest5.Create;
+  try
+    Result := LMD5.HashStringAsHex(ATest.FullName);
+  finally
+    LMD5.Free;
+  end;
+{$ENDIF}
+end;
+
+{ TAsyncTestRunner }
+
+procedure TAsyncTestRunner.AddLogger(const ALogger: ITestRunnerLogger);
+begin
+  if ALogger = nil then
+    Exit;
+  FLock.Enter;
+  try
+    FLoggers.Add(ALogger);
+  finally
+    FLock.Leave;
+  end;
+end;
+
+constructor TAsyncTestRunner.Create;
+var
+  LSelfPointer: Pointer;
+begin
+  inherited Create;
+  FEvent := TEvent.Create(nil, False, False, '');
+  FExecuteFinishedEvent := TEvent.Create(nil, True, True, '');
+  FLock := TCriticalSection.Create;
+  FLoggers := TList<ITestRunnerLogger>.Create;
+  FTestRunner := TDUnitX.CreateRunner;
+  FTestRunner.UseRTTI := True;
+  FTestRunner.FailsOnNoAsserts := False;
+  FTestRunner.AddLogger(Self);
+  _Release;
+  LSelfPointer := Self;
+  FTask := TTask.Run(
+    procedure
+    var
+      LSelf: TAsyncTestRunner;
+    begin
+      LSelf := TAsyncTestRunner(LSelfPointer);
+      try
+        repeat
+          LSelf.FEvent.WaitFor;
+          if LSelf.FExecuting and not LSelf.FCanceled then
+          begin
+            LSelf.FExecuteFinishedEvent.ResetEvent;
+            LSelf.FTestRunner.Execute;
+            LSelf.FExecuting := False;
+            LSelf.FExecuteFinishedEvent.SetEvent;
+          end;
+        until LSelf.FCanceled;
+      finally
+        LSelf.FExecuting := False;
+        LSelf.FExecuteFinishedEvent.SetEvent;
+      end;
+    end);
+end;
+
+class destructor TAsyncTestRunner.Destroy;
+begin
+  if FExpectedImagesPathWasCreated and TDirectory.Exists(FExpectedImagesPath) then
+    TDirectory.Delete(FExpectedImagesPath, True);
+  if FWrongImagesPathWasCreated and TDirectory.Exists(FWrongImagesPath) then
+    TDirectory.Delete(FWrongImagesPath);
+end;
+
+destructor TAsyncTestRunner.Destroy;
+var
+  LFileName: string;
+begin
+  Wait;
+  FCanceled := True;
+  FEvent.SetEvent;
+  FTask.Wait;
+  FLoggers.Free;
+  FEvent.Free;
+  FExecuteFinishedEvent.Free;
+  FLock.Free;
+  if TDirectory.Exists(ExpectedImagesPath) then
+    TDirectory.Delete(ExpectedImagesPath, True);
+  if TDirectory.Exists(WrongImagesPath) then
+    for LFileName in TDirectory.GetFiles(WrongImagesPath, '*' + ImagesExtension, TSearchOption.soTopDirectoryOnly) do
+      TFile.Delete(LFileName);
+  inherited Destroy;
+end;
+
+procedure TAsyncTestRunner.Execute;
+var
+  LSelfWeak: Pointer;
+begin
+  if FExecuting then
+    Exit;
+
+  if FExpectedImagesPathWasCreated and TDirectory.Exists(FExpectedImagesPath) then
+  begin
+    TDirectory.Delete(FExpectedImagesPath, True);
+    FExpectedImagesPathWasCreated := False;
+    FExtractedExpectedImagesShareds := 0;
+  end;
+  if FWrongImagesPathWasCreated and TDirectory.Exists(FWrongImagesPath) then
+  begin
+    TDirectory.Delete(FWrongImagesPath, True);
+    FWrongImagesPathWasCreated := False;
+  end;
+
+  LSelfWeak := Self;
+  Assert.OnImageChecking :=
+    procedure(const AImage: ISkImage)
+    var
+      LSelf: TAsyncTestRunner;
+    begin
+      LSelf := TAsyncTestRunner(LSelfWeak);
+      LSelf.OnImageChecking(AImage);
+    end;
+
+  FExecuting := True;
+  FEvent.SetEvent;
+end;
+
+class function TAsyncTestRunner.ExpectedImagesPath: string;
+begin
+  if FExpectedImagesPath = '' then
+  begin
+    {$IF defined(IOS) or defined(ANDROID)}
+    FExpectedImagesPath := TPath.Combine(TPath.GetTempPath, 'Expected');
+    if not FExpectedImagesPath.EndsWith(TPath.DirectorySeparatorChar) then
+      FExpectedImagesPath := FExpectedImagesPath + TPath.DirectorySeparatorChar;
+    {$ELSE}
+    FExpectedImagesPath := TPath.Combine(TPath.GetTempPath, TPath.GetGUIDFileName(False) + TPath.DirectorySeparatorChar);
+    {$ENDIF}
+    if not TDirectory.Exists(FExpectedImagesPath) then
+    begin
+      TDirectory.CreateDirectory(FExpectedImagesPath);
+      FExpectedImagesPathWasCreated := True;
+    end;
+  end;
+  Result := FExpectedImagesPath;
+end;
+
+class function TAsyncTestRunner.ExpectedImagesSharedPath(
+  const ASharedIndex: Integer): string;
+begin
+  Result := TPath.Combine(ExpectedImagesPath,
+    CExpectedImagesSharedNames[ASharedIndex]);
+end;
+
+class function TAsyncTestRunner.ExpectedImagesZipFile(
+  const ASharedIndex: Integer): string;
+begin
+  Result := TPath.Combine(TTestBase.RootAssetsPath, Format('Expected-%s.zip',
+    [CExpectedImagesSharedNames[ASharedIndex]]));
+end;
+
+procedure TAsyncTestRunner.ExtractExpectedImages(const ASharedIndex: Integer);
+var
+  LExpectedImagesSharedPath: string;
+begin
+  if (FExtractedExpectedImagesShareds and Byte(1 shl ASharedIndex)) <> 0 then
+    Exit;
+  LExpectedImagesSharedPath := ExpectedImagesSharedPath(ASharedIndex);
+  if TDirectory.Exists(LExpectedImagesSharedPath) then
+    TDirectory.Delete(LExpectedImagesSharedPath, True);
+  TDirectory.CreateDirectory(LExpectedImagesSharedPath);
+  FExpectedImagesPathWasCreated := True;
+  TZipFile.ExtractZipFile(ExpectedImagesZipFile(ASharedIndex), LExpectedImagesSharedPath);
+  FExtractedExpectedImagesShareds := FExtractedExpectedImagesShareds or
+    Byte(1 shl ASharedIndex);
+end;
+
+function TAsyncTestRunner.GetExpectedImageFileName(
+  const ATestResult: ITestResult): string;
+var
+  LEntryName: string;
+begin
+  LEntryName := ExpectedImageEntryName(ATestResult.Test);
+  Result := TPath.Combine(ExpectedImagesSharedPath(
+    ExpectedImageSharedIndex(LEntryName)), LEntryName);
+end;
+
+function TAsyncTestRunner.GetExpectedImageSharedIndex(
+  const ATestResult: ITestResult): Integer;
+begin
+  Result := ExpectedImageSharedIndex(ExpectedImageEntryName(ATestResult.Test));
+end;
+
+function TAsyncTestRunner.GetFixtureList: ITestFixtureList;
+begin
+  Supports(FTestRunner.BuildFixtures, ITestFixtureList, Result);
+end;
+
+function TAsyncTestRunner.GetGenerateExpectedImages: Boolean;
+begin
+  Result := FGenerateExpectedImages;
+end;
+
+function TAsyncTestRunner.GetLoggers: TArray<ITestRunnerLogger>;
+begin
+  FLock.Enter;
+  try
+    Result := FLoggers.ToArray;
+  finally
+    FLock.Leave;
+  end;
+end;
+
+function TAsyncTestRunner.GetWrongImageFileName(
+  const ATestResult: ITestResult): string;
+begin
+  Result := WrongImagesPath + ExpectedImageEntryName(ATestResult.Test);
+end;
+
+procedure TAsyncTestRunner.OnBeginTest(const AThreadId: TThreadID;
+  const ATest: ITestInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnEndSetupFixture(const AThreadId: TThreadID;
+  const AFixture: ITestFixtureInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnEndSetupTest(const AThreadId: TThreadID;
+  const ATest: ITestInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnEndTearDownFixture(const AThreadId: TThreadID;
+  const AFixture: ITestFixtureInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnEndTearDownTest(const AThreadId: TThreadID;
+  const ATest: ITestInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnEndTest(const AThreadId: TThreadID;
+  const ATest: ITestResult);
+var
+  LExpectedImageFileName: string;
+  LExpectedImageSharedIndex: Integer;
+begin
+  LExpectedImageFileName := '';
+  LExpectedImageSharedIndex := -1;
+  if FGenerateExpectedImages then
+  begin
+    LExpectedImageFileName := GetExpectedImageFileName(ATest);
+    LExpectedImageSharedIndex := GetExpectedImageSharedIndex(ATest);
+    if TFile.Exists(LExpectedImageFileName) then
+      TFile.Delete(LExpectedImageFileName);
+  end;
+  if FLastImageChecking <> nil then
+  begin
+    try
+      case ATest.ResultType of
+        TTestResultType.Pass:
+          if FGenerateExpectedImages then
+          begin
+            if not TDirectory.Exists(ExpectedImagesSharedPath(
+              LExpectedImageSharedIndex)) then
+            begin
+              TDirectory.CreateDirectory(ExpectedImagesSharedPath(
+                LExpectedImageSharedIndex));
+              FExpectedImagesPathWasCreated := True;
+            end;
+            FLastImageChecking.EncodeToFile(LExpectedImageFileName);
+          end;
+        {$IF CompilerVersion >= 32}
+        TTestResultType.Warning,
+        {$ENDIF}
+        TTestResultType.Failure,
+        TTestResultType.Error:
+          begin
+            if LExpectedImageFileName.IsEmpty then
+            begin
+              LExpectedImageFileName := GetExpectedImageFileName(ATest);
+              LExpectedImageSharedIndex := GetExpectedImageSharedIndex(ATest);
+            end;
+            if not TDirectory.Exists(WrongImagesPath) then
+            begin
+              TDirectory.CreateDirectory(WrongImagesPath);
+              FWrongImagesPathWasCreated := True;
+            end;
+            FLastImageChecking.EncodeToFile(GetWrongImageFileName(ATest));
+            if (not FGenerateExpectedImages) and
+              TFile.Exists(ExpectedImagesZipFile(LExpectedImageSharedIndex)) and
+              not TFile.Exists(LExpectedImageFileName) then
+              ExtractExpectedImages(LExpectedImageSharedIndex);
+          end;
+      else
+      end;
+    except
+    end;
+    FLastImageChecking := nil;
+  end;
+  TThread.ForceQueue(nil,
+    procedure
+    var
+      LLogger: ITestRunnerLogger;
+    begin
+      if Assigned(FAsyncTestRunner) then
+        for LLogger in TAsyncTestRunner(FAsyncTestRunner).Loggers do
+          LLogger.OnEndTest(AThreadId, ATest);
+    end);
+end;
+
+procedure TAsyncTestRunner.OnEndTestFixture(const AThreadId: TThreadID;
+  const AResults: IFixtureResult);
+begin
+  TThread.ForceQueue(nil,
+    procedure
+    var
+      LLogger: ITestRunnerLogger;
+    begin
+      if Assigned(FAsyncTestRunner) then
+        for LLogger in TAsyncTestRunner(FAsyncTestRunner).Loggers do
+          LLogger.OnEndTestFixture(AThreadId, AResults);
+    end);
+end;
+
+procedure TAsyncTestRunner.OnExecuteTest(const AThreadId: TThreadID;
+  const ATest: ITestInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnImageChecking(const AImage: ISkImage);
+begin
+  FLastImageChecking := AImage;
+end;
+
+procedure TAsyncTestRunner.OnLog(const ALogType: TLogLevel;
+  const AMessage: string);
+begin
+end;
+
+procedure TAsyncTestRunner.OnSetupFixture(const AThreadId: TThreadID;
+  const AFixture: ITestFixtureInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnSetupTest(const AThreadId: TThreadID;
+  const ATest: ITestInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnStartTestFixture(const AThreadId: TThreadID;
+  const AFixture: ITestFixtureInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnTearDownFixture(const AThreadId: TThreadID;
+  const AFixture: ITestFixtureInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnTearDownTest(const AThreadId: TThreadID;
+  const ATest: ITestInfo);
+begin
+end;
+
+procedure TAsyncTestRunner.OnTestError(const AThreadId: TThreadID;
+  const AError: ITestError);
+begin
+end;
+
+procedure TAsyncTestRunner.OnTestFailure(const AThreadId: TThreadID;
+  const AFailure: ITestError);
+begin
+end;
+
+procedure TAsyncTestRunner.OnTestIgnored(const AThreadId: TThreadID;
+  const AIgnored: ITestResult);
+begin
+end;
+
+procedure TAsyncTestRunner.OnTestingEnds(const ARunResults: IRunResults);
+var
+  I: Integer;
+  LExpectedImagesZipFile: string;
+  LTemporaryZipFile: string;
+begin
+  if FGenerateExpectedImages then
+  begin
+    for I := Low(CExpectedImagesSharedNames) to High(CExpectedImagesSharedNames) do
+    begin
+      LExpectedImagesZipFile := ExpectedImagesZipFile(I);
+      LTemporaryZipFile := ChangeFileExt(LExpectedImagesZipFile, '.tmp.zip');
+      if TFile.Exists(LTemporaryZipFile) then
+        TFile.Delete(LTemporaryZipFile);
+      if TDirectory.Exists(ExpectedImagesSharedPath(I)) then
+        TZipFile.ZipDirectoryContents(LTemporaryZipFile,
+          ExpectedImagesSharedPath(I), TZipCompression.zcStored);
+    end;
+    for I := Low(CExpectedImagesSharedNames) to High(CExpectedImagesSharedNames) do
+    begin
+      LExpectedImagesZipFile := ExpectedImagesZipFile(I);
+      LTemporaryZipFile := ChangeFileExt(LExpectedImagesZipFile, '.tmp.zip');
+      if TFile.Exists(LTemporaryZipFile) then
+      begin
+        if TFile.Exists(LExpectedImagesZipFile) then
+          TFile.Delete(LExpectedImagesZipFile);
+        TFile.Move(LTemporaryZipFile, LExpectedImagesZipFile);
+      end;
+    end;
+  end;
+  TThread.ForceQueue(nil,
+    procedure
+    var
+      LLogger: ITestRunnerLogger;
+    begin
+      if Assigned(FAsyncTestRunner) then
+        for LLogger in TAsyncTestRunner(FAsyncTestRunner).Loggers do
+          LLogger.OnTestingEnds(ARunResults);
+    end);
+end;
+
+{$IF CompilerVersion = 29}
+procedure TAsyncTestRunner.OnTestingStarts(const AThreadId, ATestCount,
+  ATestActiveCount: Cardinal);
+{$ELSE}
+procedure TAsyncTestRunner.OnTestingStarts(const AThreadId: TThreadID;
+  ATestCount, ATestActiveCount: Cardinal);
+{$ENDIF}
+var
+  I: Integer;
+begin
+  if FGenerateExpectedImages then
+    for I := Low(CExpectedImagesSharedNames) to High(CExpectedImagesSharedNames) do
+      if TFile.Exists(ExpectedImagesZipFile(I)) then
+        ExtractExpectedImages(I);
+  TThread.ForceQueue(nil,
+    procedure
+    var
+      LLogger: ITestRunnerLogger;
+    begin
+      if Assigned(FAsyncTestRunner) then
+        for LLogger in TAsyncTestRunner(FAsyncTestRunner).Loggers do
+          LLogger.OnTestingStarts(AThreadId, ATestCount, ATestActiveCount);
+    end);
+end;
+
+procedure TAsyncTestRunner.OnTestMemoryLeak(const AThreadId: TThreadID;
+  const AIgnored: ITestResult);
+begin
+end;
+
+procedure TAsyncTestRunner.OnTestSuccess(const AThreadId: TThreadID;
+  const ATest: ITestResult);
+begin
+end;
+
+procedure TAsyncTestRunner.RemoveLogger(const ALogger: ITestRunnerLogger);
+var
+  I: Integer;
+begin
+  if ALogger = nil then
+    Exit;
+  FLock.Enter;
+  try
+    for I := FLoggers.Count - 1 downto 0 do
+      if TObject(ALogger) = TObject(FLoggers[I]) then
+        FLoggers.Delete(I);
+  finally
+    FLock.Leave;
+  end;
+end;
+
+procedure TAsyncTestRunner.SetGenerateExpectedImages(const AValue: Boolean);
+begin
+  FGenerateExpectedImages := AValue;
+end;
+
+procedure TAsyncTestRunner.Wait;
+begin
+  if not FExecuting then
+    Exit;
+  FExecuteFinishedEvent.WaitFor;
+  if not FExecuting then
+    FExecuteFinishedEvent.SetEvent;
+end;
+
+class function TAsyncTestRunner.WrongImagesPath: string;
+begin
+  if FWrongImagesPath = '' then
+  begin
+    {$IF defined(IOS) or defined(ANDROID)}
+    FWrongImagesPath := TPath.Combine(TPath.GetTempPath, 'Wrong');
+    if not FWrongImagesPath.EndsWith(TPath.DirectorySeparatorChar) then
+      FWrongImagesPath := FWrongImagesPath + TPath.DirectorySeparatorChar;
+    {$ELSE}
+    FWrongImagesPath := TPath.Combine(TPath.GetTempPath, TPath.GetGUIDFileName(False) + TPath.DirectorySeparatorChar);
+    {$ENDIF}
+  end;
+  Result := FWrongImagesPath;
+end;
+
+{$IF CompilerVersion < 32}
+{ TSkThreadHelper }
+
+class procedure TSkThreadHelper.ForceQueue(AThread: TThread; AThreadProc: TThreadProcedure);
+begin
+  if not Assigned(AThreadProc) then
+    Exit;
+  TThread.CreateAnonymousThread(
+    procedure
+    begin
+      TThread.Queue(AThread,
+        procedure()
+        begin
+          AThreadProc;
+        end);
+    end).Start;
+end;
+{$ENDIF}
+
+initialization
+  FAsyncTestRunner := TAsyncTestRunner.Create;
+end.

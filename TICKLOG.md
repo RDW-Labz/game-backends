@@ -1995,3 +1995,10 @@ One line per 15-minute extension tick, newest last.
   - reference engines/443eb9-bevy-entitiles
   - reference engines/alexanderfast-unitytilemap
   - reference engines/ycarowr-unityhexagonlibrary2d
+
+- **2026-11-23 12:23 UTC** — tick 696: +2 screened, +3 reference, 2 skipped, catalogue=757
+  - added engines/mono-skiasharp (MIT, reference)
+  - added engines/skia4delphi-skia4delphi (MIT, vendored)
+  - reference engines/a-e-k-canvas-ity
+  - reference engines/kevinroast-phoria-js
+  - reference engines/angusjohnson-image32

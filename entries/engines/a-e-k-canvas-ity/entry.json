@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:23:23Z",
+ "category": "engines",
+ "commit": "2024-02-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "a-e-k/canvas_ity \u2014 A tiny, single-header <canvas>-like 2D rasterizer for C++",
+ "language": "c++",
+ "license": "ISC",
+ "license_verdict": "clean",
+ "name": "canvas_ity",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (ISC)",
+ "slug": "a-e-k-canvas-ity",
+ "source": "github-search:graphics renderer library 2d stars:>80",
+ "stars": 627,
+ "system": "A tiny, single-header <canvas>-like 2D rasterizer for C++",
+ "upstream": "https://github.com/a-e-k/canvas_ity",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

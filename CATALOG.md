@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 12:06 UTC · 752 entries · 201 vendored, 551 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 12:23 UTC · 757 entries · 202 vendored, 555 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 326 | 68 | 258 |
+| [engines](#engines) — Game engines and engine subsystems | 331 | 69 | 262 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 12:06 UTC · 752 entries · 201 vendored, 551 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 326 entries
+**Game engines and engine subsystems** — 331 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -53,6 +53,7 @@ _Generated 2026-11-23 12:06 UTC · 752 entries · 201 vendored, 551 reference-on
 | [bonsai](entries/engines/scallyw4g-bonsai/README.md) | The procedural generation voxel engine | c | WTFPL | reference | [scallyw4g/bonsai](https://github.com/scallyw4g/bonsai) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Box2D.NET](entries/engines/ikpil-box2d-net/README.md) | Box2D.NET - a C# port of Box2D, is a 2D physics engine for games, .NET, Unity3D, servers | c# | MIT | reference | [ikpil/Box2D.NET](https://github.com/ikpil/Box2D.NET) @ `2026-10-01 (branch tip at catalogue time)` |
 | [BRING](entries/engines/eva-e1-bring/README.md) | Next generation role-playing with LLM - with AI world and intelligent NPCs and multi-faceted Graph memory for all entities and a rich pipline and multi agent | python | Apache-2.0 | vendored | [Eva-E1/BRING](https://github.com/Eva-E1/BRING) @ `e907dee1b2a5` |
+| [canvas_ity](entries/engines/a-e-k-canvas-ity/README.md) | A tiny, single-header <canvas>-like 2D rasterizer for C++ | c++ | ISC | reference | [a-e-k/canvas_ity](https://github.com/a-e-k/canvas_ity) @ `2024-02-29 (branch tip at catalogue time)` |
 | [carp — core](entries/engines/carp-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | Apache-2.0 | vendored | [carp-lang/Carp](https://github.com/carp-lang/Carp) @ `ad5a96e` |
 | [cat-game-engine](entries/engines/kayjames196-cat-game-engine/README.md) | Cat Game Engine: three-level abstraction game engine with unbound architecture | typescript | none | reference | [KayJames196/cat-game-engine](https://github.com/KayJames196/cat-game-engine) @ `dba965822d7d` |
 | [CBG----Clavierhaus-BackGammon — engine-core](entries/engines/cbg-clavierhaus-backgammon-engine-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [clavierhaus/gnubg-android](https://github.com/clavierhaus/gnubg-android) @ `6202857` |
@@ -162,6 +163,7 @@ _Generated 2026-11-23 12:06 UTC · 752 entries · 201 vendored, 551 reference-on
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
 | [Ikemen-GO](entries/engines/ikemen-engine-ikemen-go/README.md) | An open-source fighting game engine that supports MUGEN resources. | go | unknown | reference | [ikemen-engine/Ikemen-GO](https://github.com/ikemen-engine/Ikemen-GO) @ `2026-11-22 (branch tip at catalogue time)` |
+| [Image32](entries/engines/angusjohnson-image32/README.md) | A comprehensive 2D graphics library written in Delphi Pascal | pascal | BSL-1.0 | reference | [AngusJohnson/Image32](https://github.com/AngusJohnson/Image32) @ `2026-11-16 (branch tip at catalogue time)` |
 | [imgui](entries/engines/ocornut-imgui/README.md) | Dear ImGui: Bloat-free Graphical User interface for C++ with minimal dependencies | c++ | MIT | vendored | [ocornut/imgui](https://github.com/ocornut/imgui) @ `77fe4588e6af` |
 | [Infernux](entries/engines/chenlizheme-infernux/README.md) | Building a Neural Network-Native Engine (3N). Python authoring, C++ runtime, Vulkan/WebGPU. Windows, Linux, Android and Web. | python | MIT | reference | [ChenlizheMe/Infernux](https://github.com/ChenlizheMe/Infernux) @ `b5eba5c42ea0` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
@@ -234,6 +236,7 @@ _Generated 2026-11-23 12:06 UTC · 752 entries · 201 vendored, 551 reference-on
 | [phaser](entries/engines/phaserjs-phaser/README.md) | Phaser is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser](https://github.com/phaserjs/phaser) @ `02d8931b626d` |
 | [phaser-candy-crush](entries/engines/anjmao-phaser-candy-crush/README.md) | Candy crush like game made with Phaser HTML5 game engine | typescript | MIT | reference | [anjmao/phaser-candy-crush](https://github.com/anjmao/phaser-candy-crush) @ `2022-09-27 (branch tip at catalogue time)` |
 | [phaser-ce](entries/engines/phaserjs-phaser-ce/README.md) | Phaser CE is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser-ce](https://github.com/phaserjs/phaser-ce) @ `2026-11-19 (branch tip at catalogue time)` |
+| [phoria.js](entries/engines/kevinroast-phoria-js/README.md) | JavaScript library for simple 3D graphics and visualisation on a HTML5 canvas 2D renderer. It does not use WebGL. Works on all HTML5 browsers, including desktop | javascript | BSD-3-Clause | reference | [kevinroast/phoria.js](https://github.com/kevinroast/phoria.js) @ `2026-11-05 (branch tip at catalogue time)` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
 | [Pixelwave](entries/engines/spiralstorm-pixelwave/README.md) | A native 2D OpenGL game framework for iOS. Inspired by the ActionScript 3.0 API | c | Zlib | vendored | [spiralstorm/Pixelwave](https://github.com/spiralstorm/Pixelwave) @ `ccfbc9d240b6` |
@@ -275,6 +278,8 @@ _Generated 2026-11-23 12:06 UTC · 752 entries · 201 vendored, 551 reference-on
 | [server](entries/engines/runejs-server/README.md) | RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing s | typescript | GPL-3.0 | reference | [runejs/server](https://github.com/runejs/server) @ `2026-09-03 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sketch](entries/engines/vydd-sketch/README.md) | A Common Lisp framework for the creation of electronic art, visual design, game prototyping, game making, computer graphics, exploration of human-computer inter | common lisp | MIT | reference | [vydd/sketch](https://github.com/vydd/sketch) @ `2026-01-18 (branch tip at catalogue time)` |
+| [skia4delphi](entries/engines/skia4delphi-skia4delphi/README.md) | Skia4Delphi is a cross-platform 2D graphics API for Delphi platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be use | pascal | MIT | vendored | [skia4delphi/skia4delphi](https://github.com/skia4delphi/skia4delphi) @ `7bf46ee53de2` |
+| [SkiaSharp](entries/engines/mono-skiasharp/README.md) | SkiaSharp is a cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be used ac | c# | MIT | reference | [mono/SkiaSharp](https://github.com/mono/SkiaSharp) @ `0cd43f16dd4b` |
 | [skylicht-engine](entries/engines/skylicht-lab-skylicht-engine/README.md) | Skylicht Engine is C++ Game Engine based on Irrlicht 3D. And my goal is to create a high-performance and lightweight Game Framework that can seamlessly function | c++ | MIT | reference | [skylicht-lab/skylicht-engine](https://github.com/skylicht-lab/skylicht-engine) @ `d27288111de5` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
 | [SolarWM](entries/engines/junchao-cs-solarwm/README.md) | Open data and scalable training for long-horizon video world models. | python | Apache-2.0 | reference | [Junchao-cs/SolarWM](https://github.com/Junchao-cs/SolarWM) @ `2026-11-20 (branch tip at catalogue time)` |
