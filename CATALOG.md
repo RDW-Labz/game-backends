@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 21:32 UTC · 961 entries · 257 vendored, 704 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 21:48 UTC · 967 entries · 259 vendored, 708 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
-| [math](#math) — Math libraries | 54 | 23 | 31 |
+| [math](#math) — Math libraries | 60 | 25 | 35 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
@@ -558,7 +558,7 @@ _Generated 2026-11-23 21:32 UTC · 961 entries · 257 vendored, 704 reference-on
 
 ## math
 
-**Math libraries** — 54 entries
+**Math libraries** — 60 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -566,6 +566,7 @@ _Generated 2026-11-23 21:32 UTC · 961 entries · 257 vendored, 704 reference-on
 | [amgcl](entries/math/ddemidov-amgcl/README.md) | C++ library for solving large sparse linear systems with algebraic multigrid method | c++ | MIT | reference | [ddemidov/amgcl](https://github.com/ddemidov/amgcl) @ `2026-11-18 (branch tip at catalogue time)` |
 | [biomes-game — math](entries/math/biomes-game-math/README.md) | vector/matrix/quaternion math substrate | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [ccVector](entries/math/jobtalle-ccvector/README.md) | A vector and matrix math library | c | Public-Domain | vendored | [jobtalle/ccVector](https://github.com/jobtalle/ccVector) @ `ffefafe5a0b9` |
+| [cfmm-math-libraries](entries/math/0xosiris-cfmm-math-libraries/README.md) | CFMM Fixed Point Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. | solidity | unknown | reference | [0xOsiris/cfmm-math-libraries](https://github.com/0xOsiris/cfmm-math-libraries) @ `2023-01-21 (branch tip at catalogue time)` |
 | [cglm](entries/math/cglm/README.md) | SIMD-accelerated C math (vec/mat/quat/affine/euler) | c | MIT | vendored | [recp/cglm](https://github.com/recp/cglm) @ `b9b570b78d58` |
 | [cgmath](entries/math/rustgd-cgmath/README.md) | A linear algebra and mathematics library for computer graphics. | rust | Apache-2.0 | reference | [rustgd/cgmath](https://github.com/rustgd/cgmath) @ `2024-12-07 (branch tip at catalogue time)` |
 | [cmath3d](entries/math/jpreiss-cmath3d/README.md) | 3d math library for C. Vectors, 3x3 matrices, quaternions, polytopes. | c | MIT | vendored | [jpreiss/cmath3d](https://github.com/jpreiss/cmath3d) @ `39f4fcdc8ec4` |
@@ -573,11 +574,16 @@ _Generated 2026-11-23 21:32 UTC · 961 entries · 257 vendored, 704 reference-on
 | [crystaledge](entries/math/unn4m3d-crystaledge/README.md) | A pure Crystal Vector Math library | crystal | MIT | vendored | [unn4m3d/crystaledge](https://github.com/unn4m3d/crystaledge) @ `0f5e82952b95` |
 | [cute_headers](entries/math/randygaul-cute-headers/README.md) | Collection of cross-platform one-file C/C++ libraries with no dependencies, primarily used for games | c | unknown | reference | [RandyGaul/cute_headers](https://github.com/RandyGaul/cute_headers) @ `2026-11-03 (branch tip at catalogue time)` |
 | [DirectXMath](entries/math/directxmath/README.md) | SIMD math library (SSE/AVX/NEON) for games | c++ | MIT | vendored | [microsoft/DirectXMath](https://github.com/microsoft/DirectXMath) @ `fef99048e3da` |
+| [dungeons-of-noudar](entries/math/thefakemontyontherun-dungeons-of-noudar/README.md) | A first person dungeon-crawler for DOS, written in C++, using software rendering and fixed point math | c++ | BSD-2-Clause | vendored | [TheFakeMontyOnTheRun/dungeons-of-noudar](https://github.com/TheFakeMontyOnTheRun/dungeons-of-noudar) @ `03e94de32261` |
 | [dvector](entries/math/barerose-dvector/README.md) | Portable, single-file, 2D/3D vector/quaternion/matrix math library | c | CC0-1.0 | reference | [BareRose/dvector](https://github.com/BareRose/dvector) @ `2021-01-12 (branch tip at catalogue time)` |
 | [Eigen](entries/math/eigen/README.md) | dense/sparse linear algebra (MPL-2.0) | c++ | GPL-3.0 | reference | [eigenteam/eigen-git-mirror](https://github.com/eigenteam/eigen-git-mirror) @ `36b95962756c` |
 | [eigen](entries/math/px4-eigen/README.md) | Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms. | c++ | unknown | reference | [PX4/eigen](https://github.com/PX4/eigen) @ `2023-10-18 (branch tip at catalogue time)` |
+| [en_cl_fix](entries/math/enclustra-en-cl-fix/README.md) | Fixed-point math library with VHDL, Python and MATLAB support | vhdl | MIT | reference | [enclustra/en_cl_fix](https://github.com/enclustra/en_cl_fix) @ `2026-08-12 (branch tip at catalogue time)` |
 | [FixedPoint-Sharp](entries/math/romanzhu-fixedpoint-sharp/README.md) | Fixed point math with 48.16 precision (based on lib by https://github.com/fholm) | c# | MIT | reference | [RomanZhu/FixedPoint-Sharp](https://github.com/RomanZhu/FixedPoint-Sharp) @ `2021-11-15 (branch tip at catalogue time)` |
+| [fplib](entries/math/skyworkssolutionsinc-fplib/README.md) | Fixed point math library for SystemVerilog | systemverilog | Apache-2.0 | reference | [SkyworksSolutionsInc/fplib](https://github.com/SkyworksSolutionsInc/fplib) @ `2024-11-14 (branch tip at catalogue time)` |
 | [fpm](entries/math/mikelankamp-fpm/README.md) | C++ header-only fixed-point math library | c++ | MIT | vendored | [MikeLankamp/fpm](https://github.com/MikeLankamp/fpm) @ `b46537fe9697` |
+| [fptc-lib](entries/math/mgetka-fptc-lib/README.md) | Modified version of Fixed Point Math Library for C | c++ | BSD-2-Clause | reference | [mgetka/fptc-lib](https://github.com/mgetka/fptc-lib) @ `2024-04-09 (branch tip at catalogue time)` |
+| [fr_math](entries/math/deftio-fr-math/README.md) | Fixed-point math library (integer / no FPU)  for embedded C.  Trig, log/exp, sqrt, 2D transforms, wave generators, ADSR and variable radix support.  ~4.5 KB  | c++ | BSD-2-Clause | vendored | [deftio/fr_math](https://github.com/deftio/fr_math) @ `2c5d2e362386` |
 | [glam-rs](entries/math/bitshifter-glam-rs/README.md) | A simple and fast linear algebra library for games and graphics | rust | Apache-2.0 | reference | [bitshifter/glam-rs](https://github.com/bitshifter/glam-rs) @ `2026-11-08 (branch tip at catalogue time)` |
 | [glas — math](entries/math/glas-math/README.md) | vector/matrix/quaternion math substrate | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
 | [GLM](entries/math/glm/README.md) | header-only GLSL-style vector/matrix/quaternion math | c++ | MIT | vendored | [g-truc/glm](https://github.com/g-truc/glm) @ `6f14f4792a0c` |

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:48:08Z",
+ "category": "math",
+ "commit": "2024-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SkyworksSolutionsInc/fplib \u2014 Fixed point math library for SystemVerilog",
+ "language": "systemverilog",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "fplib",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "skyworkssolutionsinc-fplib",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 45,
+ "system": "Fixed point math library for SystemVerilog",
+ "upstream": "https://github.com/SkyworksSolutionsInc/fplib",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,344 @@
+# Releases
+
+Release highlights. For the full per-symbol change log, see
+[release_notes.md](https://github.com/deftio/fr_math/blob/master/release_notes.md)
+in the repo.
+
+## v2.0.11 — 2026
+
+Maintenance release: CodeQL code-scanning cleanup. No library or API changes.
+
+- CI workflow now runs with a read-only `GITHUB_TOKEN` (`permissions: contents: read`).
+- `tools/fr_coef-gen.cpp`: fixed printf format specifiers for `long` arguments and a missing `%` that dropped a value from its output.
+
+---
+
+## v2.0.10 — 2026
+
+Optional s16-safe trig crest. Default sin/cos crest remains exact ±1.0 in s15.16 (±65536).
+
+- **`FR_TRIG_S16_SAFE` (default off)**: when compiling `FR_math.c`, crest becomes ±65534 so `(s16)(x >> 1)` does not wrap. Still s15.16, not q1.15. Leave off unless you need that cast.
+- New `examples/trig-crest/` pair shows exact vs safe. Tests cover both configs.
+- Examples now compile `FR_math.c` as C and build with `-Werror`; library, tests and examples build with zero warnings under gcc and clang.
+- Fixed `make size-update` (CRLF line endings in `scripts/crossbuild_sizes.sh`); size tables regenerated. Code size unchanged.
+- Doc fixes: `FR_TRIG_S16_SAFE` in the build guide; API reference names the sine table and the cos/sin relationship correctly.
+
+---
+
+## v2.0.9 — 2026
+
+Arduino/ESP32 build fix and a saturating-add correctness fix. No API changes.
+
+- **Arduino `u8`/`u16` type error fixed** ([issue #11](https://github.com/deftio/fr_math/issues/11)): sketches failed to compile on ESP32 — and on any core other than AVR/SAM/SAMD — with `'u16' does not name a type`. `FR_defs.h` had skipped its typedefs in Arduino C++ builds, assuming `USBAPI.h` always provides them; it now emits them using `USBAPI.h`'s exact underlying types, which works whether or not that header is present. Thanks to [@beaka](https://github.com/beaka) for the report.
+- **`FR_FixAddSat` correctness**: the overflow check relied on signed-overflow UB and was optimized away at `-Os`, so negative overflow returned a wrapped positive value instead of `FR_OVERFLOW_NEG`. Also, `FR_FixAddSat(0, 0)` wrongly returned `FR_OVERFLOW_POS`. Both fixed.
+- **New `test_arduino_compat` suite**: compiles the headers as each Arduino core family does (with and without `USBAPI.h` typedefs, both include orders, C and C++), catching core-specific type clashes without a board toolchain.
+- **Coverage**: 98% of library source lines, every mathematically reachable branch exercised.
+
+---
+
+## v2.0.8 — 2026
+
+Tangent accuracy rewrite and trig rounding fix.
+
+- **BAM-native tangent**: new `fr_tan_bam(u16 bam)` with 65-entry octant table (130 bytes). No 64-bit math. `FR_TanI`, `FR_Tan`, `fr_tan` are now thin wrappers.
+- **Round-to-nearest fix**: radian/degree trig wrappers now round instead of truncating when converting to BAM. Peak error drops from ~1.03% to 0.16% on the radian path, matching BAM-native accuracy.
+- **Conversion macro trimming**: `FR_DEG2BAM` and `FR_RAD2BAM` reduced to ~18-21 bits (from ~28 bits). Verified: no measurable accuracy impact.
+- **`FR_TRIG_MINVAL` fixed**: now `-FR_TRIG_MAXVAL` (was `-FR_TRIG_MASK`)
+
+---
+
+## v2.0.7 — 2026
+
+README restructure, accuracy table cleanup, expanded cross-compile support.
+
+- **`FR_CORE_ONLY` convenience define** — single `#define` strips both print helpers and wave generators
+- **Accuracy table cleanup** — removed LSB column (percent error is the user-facing metric)
+- **New cross-compile targets** — RP2040 (Cortex-M0+), STM32 (Cortex-M4), 68HC11, MIPS32 added to Docker build
+- **Three-column size table** — Lean / Core / Full for every target, sorted 8-bit → 64-bit
+- **Consolidated `scripts/crossbuild_sizes.sh`** — single script runs Docker, builds, writes CSV + markdown, patches docs (replaces three separate scripts)
+- README reordered and cleaned up: accuracy table first, badges as standard markdown, concise build flavor descriptions
+
+---
+
+## v2.0.6 — 2026
+
+Accuracy improvements, lean-build options, library cleanup.
+
+- **FR_acos boundary fix** — 12x better accuracy near ±1.0 via deferred quantization
+- **FR_atan2 rewrite** — asin/acos + hypot_fast8, 0.41% peak error (was 20% in libfixmath)
+- **Lean build guards** — `FR_NO_PRINT` (~1.3 KB) and `FR_NO_WAVES` (~0.6 KB) for ROM-constrained targets
+- **Removed FR_hypot_fast** (4-segment) — FR_hypot_fast8 is strictly better; 4-seg was dead weight
+- libfixmath comparison benchmark added to repo (`compare_lfm/`)
+
+---
+
+## v2.0.5 — 2026
+
+Release pipeline fixes. Fixed squash-merge divergence handling and
+on-master push/CI sequencing in `tools/make_release.sh`.
+
+---
+
+## v2.0.4 — 2026
+
+CI fix release. Fixed `release.yml` coverage step, release pipeline
+auto-commits badge/version changes, removed conflicting auto-release
+job from `ci.yml`.
+
+---
+
+## v2.0.3 — 2026
+
+CI and release pipeline cleanup. Guided release script
+(`tools/make_release.sh`) that validates, merges, tags, and publishes
+to PlatformIO and ESP-IDF in one flow.
+
+---
+
+## v2.0.2 — 2026
+
+Embedded library publishing support. No functional changes to the
+math library — adds Arduino, PlatformIO, and ESP-IDF package manager
+integration.
+
+- Arduino Library Manager, PlatformIO Registry, and ESP-IDF Component
+  Registry metadata files
+- Reorganized examples with focused Arduino `.ino` sketches
+- Added `llms.txt` and `agents.md` for AI coding agents
+- Tag-triggered release workflow (`.github/workflows/release.yml`)
+
+---
+
+## v2.0.1 — 2026
+
+Precision and accuracy release. All changes are backward-compatible
+with v2.0.0 except where noted.
+
+### Trig output precision
+
+- `fr_cos_bam` / `fr_sin_bam` now return **s15.16** (was s0.15).
+  Exact values at cardinal angles: `cos(0°) = 65536`, `cos(90°) = 0`.
+  `FR_TRIG_ONE = 65536`.
+- `FR_TanI` / `fr_tan` return s15.16 (was s16.15). Saturation
+  is now `±INT32_MAX`.
+- All wrappers updated: `FR_Cos`, `FR_Sin`, `FR_CosI`, `FR_SinI`,
+  `FR_TanI`, `FR_Tan`.
+
+### Inverse trig now returns radians
+
+- `FR_acos`, `FR_asin`, `FR_atan` gain an `out_radix` parameter
+  and return radians at that radix (was degrees as `s16`).
+- `FR_atan2(y, x, out_radix)` also returns radians.
+- `FR_BAM2RAD` macro corrected (was off by a factor of 1024).
+
+### Rounding improvements
+
+- `FR_FixMuls` / `FR_FixMulSat`: add 0.5 LSB (`+0x8000`) before
+  the `>>16` shift. Both now **round to nearest** instead of
+  truncating.
+- `FR_sqrt` / `FR_hypot`: the internal `fr_isqrt64` now rounds to
+  nearest (remainder > root → +1). Worst-case error drops from
+  <1 LSB to **≤ 0.5 LSB**.
+
+### Improved exp / log accuracy
+
+- **`FR_pow2` table expanded** from 17 entries (16 segments) to
+  65 entries (64 segments, 260 bytes). Interpolation error drops
+  by ~16×.
+- **`FR_log2` table expanded** from 33 entries to 65 entries
+  (6-bit index / 24-bit interpolation). Worst-case error ≤ 4 LSB
+  at Q16.16.
+- **`FR_MULK28` macro** added: multiplies any fixed-point value
+  by a radix-28 constant using a 64-bit intermediate with
+  round-to-nearest. ~9 decimal digits of precision in the
+  constant.
+- `FR_EXP` and `FR_POW10` now use `FR_MULK28` for the base
+  conversion instead of shift-only macros. Much lower error.
+- `FR_ln` and `FR_log10` also use `FR_MULK28` internally.
+- **`FR_EXP_FAST`** and **`FR_POW10_FAST`** added as shift-only
+  alternatives for 8-bit targets where 64-bit multiply is
+  expensive.
+- Four radix-28 constants added: `FR_kLOG2E_28`,
+  `FR_krLOG2E_28`, `FR_kLOG2_10_28`, `FR_krLOG2_10_28`.
+
+### New utility macros
+
+- `FR_MIN`, `FR_MAX`, `FR_CLAMP` — standard min/max/clamp.
+- `FR_DIV(x, xr, y, yr)` — fixed-point division with 64-bit
+  pre-scaling. Now **rounds to nearest** (≤ 0.5 LSB error)
+  instead of truncating. `FR_DIV_TRUNC` preserves the old
+  truncating behavior for backward compatibility. `FR_DIV32` is
+  the 32-bit-only truncating path.
+- `FR_MOD(x, xr, y, yr)` — fixed-point modulus.
+
+### Infrastructure
+
+- Docker cross-compile size report (9 targets).
+- `sync_version.sh` rewrite — `FR_MATH_VERSION_HEX` is the
+  single source of truth for version numbers.
+- CI auto-release job, Dependabot config.
+- Documentation audit: 14 errors fixed across header, source,
+  markdown, and HTML docs.
+
+### Breaking changes from v2.0.0
+
+| Change | v2.0.0 | v2.0.1 |
+|--------|--------|--------|
+| sin/cos return type | `s16` (s0.15) | `s32` (s15.16) |
+| sin/cos 1.0 value | 32767 | 65536 (exact) |
+| tan return format | s16.15 (radix 15) | s15.16 (radix 16) |
+| tan saturation | `±(32767 << 15)` | `±INT32_MAX` |
+| FR_acos/asin signature | `(input, radix)` → s16 degrees | `(input, radix, out_radix)` → s32 radians |
+| FR_atan signature | `(input, radix)` → s16 degrees | `(input, radix, out_radix)` → s32 radians |
+| FR_atan2 signature | `(y, x)` → s16 degrees | `(y, x, out_radix)` → s32 radians |
+| FR_BAM2RAD | off by 1024× (bug) | correct |
+| FR_DIV rounding | truncates toward zero | rounds to nearest (use `FR_DIV_TRUNC` for old behavior) |
+
+---
+
+## v2.0.0 — 2026
+
+The first major revision in more than twenty years. v2 is a
+bug-fix, precision, and feature release with a full test suite and
+99% line coverage.
+
+### 64-bit safety
+
+v1 defined `s32` as `signed long`, which is
+64 bits on LP64 platforms (Linux x64, macOS arm64). Every
+fixed-point path that assumed `s32` was exactly 32 bits
+silently produced wrong results on desktop hosts. v2 migrates all
+typedefs to `<stdint.h>`
+(`int8_t`…`int32_t`). C99 is now
+mandatory.
+
+### Numerical fixes
+
+- `FR_FixMulSat` / `FR_FixMuls`: rewritten
+  on an `int64_t` fast path with explicit saturation;
+  v1 had an algebraic bug in the sign-combination logic.
+- `FR_log2` / `FR_ln` / `FR_log10`:
+  new leading-bit-position + 33-entry mantissa table with linear
+  interpolation. v1 returned wrong values for non-power-of-2
+  inputs.
+- `FR_pow2` / `FR_EXP` / `FR_POW10`:
+  corrected floor-toward-−∞ integer-part extraction.
+  v1 gave wrong answers for negative non-integer inputs.
+- `FR_atan2`: v1 was a placeholder that returned
+  garbage. v2 is a correct octant-reduced arctan with max error
+  ≤ 1°. The vestigial `radix` argument was
+  dropped.
+- `FR_atan`, `FR_Tan`, `FR_TanI`:
+  wiring and overflow fixes.
+- `FR_printNumD/F/H`: fixed undefined behavior on
+  `INT_MIN` and a broken fraction extraction in the
+  v1 code.
+- `FR_DEG2RAD` / `FR_RAD2DEG`: macro bodies
+  were swapped in v1. v2 fixes them and adds missing parentheses.
+
+### New functionality
+
+- **Radian-native trig**: `fr_sin`,
+  `fr_cos`, `fr_tan`,
+  `fr_sin_bam`, `fr_cos_bam`,
+  `fr_sin_deg`, `fr_cos_deg`. Uses a new
+  129-entry quadrant cosine table with round-to-nearest linear
+  interpolation. Max error ≤ 1 LSB of s0.15 (~3e−5).
+- **BAM macros**: `FR_DEG2BAM`,
+  `FR_BAM2DEG`, `FR_RAD2BAM`,
+  `FR_BAM2RAD`. BAM (16 bits per full circle) is the
+  natural integer representation for phase accumulators and
+  gives zero quantization at the wraparound.
+- **Square root and hypot**: `FR_sqrt`
+  uses a digit-by-digit integer isqrt on `int64_t`;
+  `FR_hypot` computes `sqrt(x² + y²)`
+  with no intermediate overflow across the full `s32`
+  range.
+- **Wave generator family**: `fr_wave_sqr`,
+  `fr_wave_pwm`, `fr_wave_tri`,
+  `fr_wave_saw`, `fr_wave_tri_morph`,
+  `fr_wave_noise`. All are stateless and take a
+  `u16` BAM phase. Suitable for embedded audio, LFOs,
+  and control signals.
+- **ADSR envelope generator**: linear-segment
+  attack/decay/sustain/release with s1.30 internal state so very
+  long durations at high sample rates still have non-zero
+  per-sample increments.
+- **Compile-time table size**:
+  `-DFR_TRIG_TABLE_BITS=8` doubles table precision at
+  the cost of a larger (257-entry) table. Default is 7 / 129
+  entries.
+
+### New documentation
+
+- [API Reference](api-reference.md) —
+  complete per-symbol reference with inputs, outputs, radix
+  handling, and worst-case error.
+- `CONTRIBUTING.md` — PR expectations,
+  portability rules, commit format.
+- `tools/interp_analysis.html` — interactive
+  Chart.js comparison of seven interpolation methods on the trig
+  table.
+- This documentation site (the one you're reading).
+
+### Breaking changes
+
+- `FR_NUM(i, f, r)` → `FR_NUM(i, f, d, r)`. The v1 form was broken (it ignored `f`
+  entirely), so any caller was already getting wrong results.
+- `FR_atan2(y, x, radix)` → `FR_atan2(y, x)`. The `radix` parameter was vestigial.
+- `FR_RESULT` and the `FR_E_*` codes are
+  gone. `inv()` returns `bool`;
+  `add()` / `sub()` /
+  `setrotate()` return `void`. Math
+  functions use named sentinels `FR_DOMAIN_ERROR`,
+  `FR_OVERFLOW_POS`, `FR_OVERFLOW_NEG`.
+- `FR_SQUARE` and `FR_FIXMUL32u` removed
+  — use `FR_FixMuls` / `FR_FixMulSat`,
+  which now have an `int64_t` fast path and work at any
+  radix.
+- `FR_NO_INT64` and `FR_NO_STDINT` build
+  flags removed. Every modern C99 toolchain ships
+  `<stdint.h>` and 64-bit arithmetic.
+
+### Test suite
+
+v2 ships with a full test suite covering **99%** of library
+source lines, plus a characterization suite (`test_tdd.cpp`)
+that pins numerical behavior to bit-exact reference values.
+
+## v1.0.3 — 2025
+
+Test-coverage release. Overall line coverage went from 4% to 72%
+with four new test files
+(`test_comprehensive.c`,
+`test_overflow_saturation.c`,
+`test_full_coverage.c`,
+`test_2d_complete.cpp`). Added a GitHub Actions CI with
+multi-platform (Linux, macOS) and multi-compiler (gcc, clang)
+matrices, cross-compilation for ARM and RISC-V, and 32-bit
+compatibility testing.
+
+Also fixed a broken `FR_atan` implementation, corrected
+`FR_PI` / `FR_2PI` / `FR_E`
+declarations to use `const`, and fixed
+`XFormPtI` test assumptions.
+
+## v1.02 — first public release
+
+Basic fixed-point operations, 2D transforms, and integer-degree
+trigonometry. This is the version that shipped inside the original
+Palm Pilot Inkstorm application.
+
+## v1.01 — internal development
+
+Naming conventions cleanup and an initial test framework. Never
+released publicly.
+
+## Timeline
+
+FR_Math has been in continuous service since **2000**,
+when it was written to run 2D graphics transforms on 16 MHz 68k
+Palm Pilots for Trumpetsoft's *Inkstorm*. It has since
+been ported to ARM, x86, MIPS, RISC-V, and a menagerie of 8- and
+16-bit embedded targets. The current release has a full test
+suite, a bit-exact numerical specification, and CI on every push.

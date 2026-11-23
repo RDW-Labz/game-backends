@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Examples — FR_Math</title>
+  <meta name="description" content="Runnable FR_Math examples: conversions, trig, log/exp, sqrt, waves, ADSR, 2D transforms, atan2.">
+  <link rel="stylesheet" href="../assets/main.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main class="page-content">
+  <div class="wrapper">
+
+<h1>Examples</h1>
+
+<p>Short, runnable snippets for the most common FR_Math tasks. Each
+example compiles cleanly against the library with:</p>
+
+<pre><code class="language-bash">cc -Isrc example.c src/FR_math.c -o example
+./example</code></pre>
+
+<p>No <code>-lm</code> needed &mdash; nothing in FR_Math links the C
+math library. The 2D example additionally needs
+<code>src/FR_math_2D.cpp</code> and a C++ compiler
+(<code>c++</code> or <code>g++</code>).</p>
+
+<h2>1. Basic radix conversion</h2>
+
+<p>This first example walks through the three foundational moves:
+construct a fixed-point number from an integer literal, change its
+radix without losing data, and round-trip back. It&rsquo;s the
+simplest thing you can do with the library and it exercises the
+<code>I2FR</code>, <code>FR2I</code>, and <code>FR_CHRDX</code>
+macros.</p>
+
+<p><em>Caveats:</em> <code>I2FR</code> and <code>FR2I</code> are
+pure shift macros &mdash; they do no range-checking. Passing a
+value that overflows the integer-part bits will silently wrap.
+<code>FR_CHRDX</code> going from a higher radix to a lower one
+throws away the lowest bits, so the round-trip here is only
+lossless because we go up first.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "FR_defs.h"
+#include "FR_math.h"
+
+int main(void)
+{
+    /* 3.5 at radix 4 = (3 &lt;&lt; 4) + (0.5 * 16) = 48 + 8 = 56 = 0x38 */
+    s32 a = I2FR(3, 4) | (1 &lt;&lt; 3);       /* 3.5  at radix 4 */
+
+    printf("a = %d (raw) = %d + %d/16\n",
+           (int)a, (int)FR2I(a, 4), (int)(a &amp; 0xF));
+
+    /* Same 3.5 at radix 8: shift up by 4. */
+    s32 a_r8 = FR_CHRDX(a, 4, 8);
+    printf("a at radix 8 = %d\n", (int)a_r8);    /* 56 &lt;&lt; 4 = 896 */
+
+    /* Change back to radix 4 (no precision lost because 4 &lt; 8). */
+    s32 a_r4 = FR_CHRDX(a_r8, 8, 4);
+    printf("round-trip = %d (equals a: %s)\n",
+           (int)a_r4, a_r4 == a ? "yes" : "no");
+    return 0;
+}</code></pre>
+
+<h2>2. Trig &mdash; integer degrees vs radian vs BAM</h2>
+
+<p>FR_Math supports three angle conventions and this example hits
+all three: integer degrees through
+<code>fr_sin_deg</code> / <code>fr_cos_deg</code> (or the legacy
+aliases <code>FR_Sin</code> / <code>FR_Cos</code>), the radian-native
+<code>fr_sin</code> / <code>fr_cos</code> (radian at a chosen
+input radix), and BAM-native <code>fr_sin_bam</code> /
+<code>fr_cos_bam</code>. All three paths feed the same 129-entry
+quadrant cosine table under the hood and should produce nearly
+identical results.</p>
+
+<p><em>Caveats:</em> the <code>radix</code> parameter on
+<code>fr_sin_deg(deg, radix)</code> is the radix of the <em>degree
+input</em>, not the output. All sin/cos functions return
+<strong>s15.16</strong> &mdash; that is, <code>s32</code> at radix 16,
+where 1.0 = 65536 (<code>FR_TRIG_ONE</code>). The values compared
+below are all in the same s15.16 format.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "FR_math.h"
+
+int main(void)
+{
+    /* Integer-degree legacy API &mdash; returns s15.16 */
+    s32 s30_deg = FR_SinI(30);
+    s32 c60_deg = FR_CosI(60);
+
+    /* BAM-native core &mdash; same s15.16 output */
+    s32 s30_bam = fr_sin_bam(FR_DEG2BAM(30));
+    s32 c60_bam = fr_cos_bam(FR_DEG2BAM(60));
+
+    /* Radian-native: input is radians at whatever radix you pass.
+       Here we use FR_kPI at radix 16 to build pi/6 = 30 degrees. */
+    s32 pi_over_6 = FR_kPI / 6;             /* radix 16 */
+    s32 s30_rad   = fr_sin(pi_over_6, 16);  /* s15.16 out */
+
+    printf("FR_SinI(30)     = %d   (s15.16)\n", s30_deg);
+    printf("fr_sin_bam(30deg)= %d   (s15.16)\n", s30_bam);
+    printf("fr_sin(pi/6)    = %d   (s15.16)\n", s30_rad);
+    printf("FR_CosI(60)     = %d   (s15.16)\n", c60_deg);
+    printf("expected 0.5    = %d   (1 &lt;&lt; 15)\n", 1 &lt;&lt; 15);
+    return 0;
+}</code></pre>
+
+<p>All four answers should land within a couple of LSBs of
+<code>1 &lt;&lt; 15 = 32768</code>, which is 0.5 in s15.16.</p>
+
+<h2>3. Square root and hypotenuse</h2>
+
+<p>This example shows the integer-only root family. Both
+<code>FR_sqrt</code> and <code>FR_hypot</code> take a radix and
+return at the <strong>same</strong> radix &mdash; no mixed-radix
+output to worry about. <code>FR_hypot</code> is overflow-safe even
+when <code>x&sup2; + y&sup2;</code> would overflow a 32-bit
+intermediate: it promotes internally to <code>int64_t</code>.</p>
+
+<p><em>Caveats:</em> both functions return
+<code>FR_DOMAIN_ERROR</code> (which is
+<code>0x80000000</code>, the same bit pattern as
+<code>FR_OVERFLOW_NEG</code>) on a negative input. Test against
+the named sentinel explicitly, <strong>not</strong> with a
+<code>&lt; 0</code> test.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "FR_math.h"
+
+int main(void)
+{
+    const u16 r = 16;
+
+    /* sqrt(2) at radix 16 */
+    s32 two  = I2FR(2, r);
+    s32 root = FR_sqrt(two, r);
+    printf("sqrt(2) raw = 0x%x  (expect ~0x16a09 = 1.41421)\n",
+           (unsigned)root);
+
+    /* hypot(3, 4) = 5 exactly */
+    s32 three = I2FR(3, r);
+    s32 four  = I2FR(4, r);
+    s32 h     = FR_hypot(three, four, r);
+    printf("hypot(3,4)  = %d (integer part)\n", (int)FR2I(h, r));
+
+    /* Domain-error handling */
+    s32 bad = FR_sqrt(-1, r);
+    if (bad == FR_DOMAIN_ERROR)
+        printf("sqrt(-1) rejected, good.\n");
+
+    /* Fast approximate &mdash; no multiply, no 64-bit math */
+    s32 h_fast8 = FR_hypot_fast8(three, four);    /* 8-seg, ~0.14% err */
+    printf("hypot_fast8(3,4) = %d (integer part)\n", (int)FR2I(h_fast8, r));
+    return 0;
+}</code></pre>
+
+<h2>4. Logarithm, exponential, decibels</h2>
+
+<p>A realistic embedded-audio use case: turn a linear amplitude
+into dB so you can drive a VU meter with a log scale. This
+exercises <code>FR_log10</code> (the genuine mixed-radix logarithm
+&mdash; input radix and output radix are independent), and the
+macro <code>FR_POW10</code> (note: it&rsquo;s a macro, not a
+function, because it reduces to <code>FR_pow2</code> after a
+shift-only rescale).</p>
+
+<p><em>Caveats:</em> <code>FR_log10</code> takes
+<strong>three</strong> arguments: value, input radix, output
+radix. Passing two will not compile. The conversion constant
+<code>20</code> for amplitude-to-dB is multiplied by shifting
+because <code>20 = 16 + 4</code>, which is cheaper than calling
+<code>FR_FixMuls</code> on a tiny constant.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "FR_math.h"
+
+/* Convert a linear amplitude (radix 16) into dB at radix 8. */
+static s32 amplitude_to_db(s32 amp_r16)
+{
+    /* log10 output at radix 8 gives us ~0.004 dB resolution */
+    s32 l10 = FR_log10(amp_r16, 16, 8);
+
+    /* Multiply by 20: since 20 = 16 + 4, we can do two shifts + add. */
+    return (l10 &lt;&lt; 4) + (l10 &lt;&lt; 2);
+}
+
+int main(void)
+{
+    s32 half = I2FR(1, 16) &gt;&gt; 1;   /* 0.5 at radix 16 */
+    s32 db   = amplitude_to_db(half);
+    printf("0.5 -&gt; %d.%d dB  (expect ~ -6.02)\n",
+           (int)FR2I(db, 8),
+           (int)(FR_FRAC(db, 8) * 100 &gt;&gt; 8));
+
+    /* 10^(0.3) is approximately 2.0 */
+    s32 x = FR_POW10(FR_NUM(0, 3, 1, 16), 16);
+    printf("10^0.3 = 0x%x (expect ~0x20000 = 2.0 at radix 16)\n",
+           (unsigned)x);
+    return 0;
+}</code></pre>
+
+<h2>5. Arctangent and atan2</h2>
+
+<p>The inverse-trig functions in FR_Math return angles in
+<strong>radians</strong> at a caller-chosen output radix. This
+example exercises both <code>FR_atan</code> (single-argument
+ratio) and <code>FR_atan2</code> (full-circle, two-argument).</p>
+
+<p><em>Caveats:</em> all inverse-trig functions take an
+<code>out_radix</code> parameter that sets the radix of the
+<em>output</em>. <code>FR_atan2(y, x, out_radix)</code> returns
+radians in [&minus;&pi;, &pi;] as <code>s32</code> at the chosen
+radix. <code>FR_atan(input, radix, out_radix)</code> has
+separate radixes for input and output.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "FR_math.h"
+
+int main(void)
+{
+    const u16 r = 14;
+
+    /* atan(1) = pi/4 radians &asymp; 0.7854 */
+    s32 a = FR_atan(I2FR(1, r), r, r);
+    printf("atan(1) = %d (radix %d, expect ~%d)\n",
+           (int)a, r, (int)(12868));  /* pi/4 at r14 */
+
+    /* Full-circle atan2 */
+    s32 q2 = FR_atan2(I2FR( 1, r), I2FR(-1, r), r);  /*  3*pi/4 */
+    s32 q3 = FR_atan2(I2FR(-1, r), I2FR(-1, r), r);  /* -3*pi/4 */
+    printf("atan2( 1,-1) = %d (expect ~%d)\n", (int)q2, (int)(38603));
+    printf("atan2(-1,-1) = %d (expect ~%d)\n", (int)q3, (int)(-38603));
+
+    /* asin with out-of-domain input */
+    s32 bad = FR_asin(I2FR(2, r), r, r);
+    if (bad == FR_DOMAIN_ERROR)
+        printf("asin(2) rejected, good.\n");
+    return 0;
+}</code></pre>
+
+<h2>6. Wave generators + phase accumulator</h2>
+
+<p>A 16-sample snapshot of a 1&nbsp;kHz triangle wave at a
+48&nbsp;kHz sample rate, produced by the canonical NCO
+(numerically controlled oscillator) pattern: a <code>u16</code>
+phase that wraps naturally at <code>2<sup>16</sup></code>, driven
+by a per-sample increment from <code>FR_HZ2BAM_INC</code>.</p>
+
+<p><em>Caveats:</em> the wave functions are stateless, so you can
+drive as many voices as you like from independent phase
+accumulators. <code>fr_wave_tri</code> is bipolar in s0.15 but
+<code>fr_wave_tri_morph</code> is <em>unipolar</em> &mdash; watch
+the sign convention if you mix them. The phase accumulator must
+be <code>u16</code> for the free modular wrap to work.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "FR_math.h"
+
+int main(void)
+{
+    const u32 SR   = 48000;
+    const u32 FREQ = 1000;
+
+    u16 step = FR_HZ2BAM_INC(FREQ, SR);   /* ~1365 */
+    u16 phase = 0;
+
+    for (int i = 0; i &lt; 16; i++) {
+        s16 tri = fr_wave_tri(phase);
+        s16 sqr = fr_wave_sqr(phase);
+        printf("%2d: phase=%5u  tri=%6d  sqr=%6d\n",
+               i, phase, tri, sqr);
+        phase += step;            /* wraps at 2^16 for free */
+    }
+    return 0;
+}</code></pre>
+
+<h2>7. ADSR envelope</h2>
+
+<p>A linear-segment Attack-Decay-Sustain-Release envelope, the
+bread-and-butter of synth voices. The envelope is sample-rate
+agnostic &mdash; durations are in <em>samples</em>, not seconds
+&mdash; so the same code works at 1&nbsp;kHz or 192&nbsp;kHz. The
+internal level is held in s1.30, so even a 2-second attack at
+48&nbsp;kHz gets a non-zero per-sample increment.</p>
+
+<p><em>Caveats:</em> the sustain level is an <code>s16</code> in
+s0.15 format &mdash; pass a value in [0, 32767], not a raw
+register count. You must call <code>fr_adsr_init</code> once to
+set the times, <code>fr_adsr_trigger</code> for note-on, and
+<code>fr_adsr_release</code> for note-off. The envelope value
+returned by <code>fr_adsr_step</code> is unipolar &mdash;
+multiply it by your bipolar oscillator to get the amplitude-
+modulated voice.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "FR_math.h"
+
+int main(void)
+{
+    fr_adsr_t env;
+    fr_adsr_init(&amp;env,
+                 /* attack  */ 100,
+                 /* decay   */ 200,
+                 /* sustain */ 16384,          /* 0.5 in s0.15 */
+                 /* release */ 400);
+
+    fr_adsr_trigger(&amp;env);
+
+    for (int i = 0; i &lt; 500; i++) {
+        s16 y = fr_adsr_step(&amp;env);
+        if (i % 50 == 0) printf("t=%3d  amp=%d\n", i, y);
+    }
+
+    fr_adsr_release(&amp;env);
+
+    for (int i = 0; i &lt; 500; i++) {
+        s16 y = fr_adsr_step(&amp;env);
+        if (i % 50 == 0) printf("rel t=%3d  amp=%d\n", i, y);
+        if (env.state == FR_ADSR_IDLE) {
+            printf("envelope finished at rel t=%d\n", i);
+            break;
+        }
+    }
+    return 0;
+}</code></pre>
+
+<h2>8. 2D transforms</h2>
+
+<p>This example builds a 2D affine transform from rotation and
+translation and uses it to map a point. <code>FR_Matrix2D_CPT</code>
+is the &ldquo;coordinate point transform&rdquo; class from
+<code>FR_math_2D.h</code>. It stores only the top two rows of the
+affine matrix &mdash; the bottom row is always
+<code>[0, 0, 1]</code>, so the class saves both memory and
+multiplies.</p>
+
+<p><em>Caveats:</em> the class name is <code>FR_Matrix2D_CPT</code>
+(the trailing <code>T</code> is part of the name). The point
+transforms use explicit <code>x</code>, <code>y</code> arguments
+and output pointers &mdash; there is no packaged
+<code>Point</code> struct. Set the radix at construction; the
+default is <code>FR_MAT_DEFPREC = 8</code>.</p>
+
+<pre><code class="language-cpp">#include &lt;stdio.h&gt;
+#include "FR_math.h"
+#include "FR_math_2D.h"
+
+int main()
+{
+    FR_Matrix2D_CPT M(16);      /* work at radix 16 */
+
+    /* Rotate 30 degrees around the origin, then translate by (100, 50). */
+    M.setrotate(30);
+    M.XlateRelativeI(100, 50);  /* uses the matrix's own radix */
+
+    /* Transform the point (10, 0) integer-in / fixed-out at the matrix radix. */
+    s32 xp, yp;
+    M.XFormPtI((s32)10, (s32)0, &amp;xp, &amp;yp);
+    printf("transformed = (%d, %d)  (integer at radix 16)\n",
+           (int)FR2I(xp, 16), (int)FR2I(yp, 16));
+
+    /* Invert and round-trip the transformed point back */
+    if (M.inv()) {
+        s32 bx, by;
+        M.XFormPtI(xp, yp, &amp;bx, &amp;by);
+        printf("round trip = (%d, %d)\n",
+               (int)FR2I(bx, 16), (int)FR2I(by, 16));
+    }
+    return 0;
+}</code></pre>
+
+<h2>9. Formatted output without printf</h2>
+
+<p>On a deep-embedded target you often don&rsquo;t have
+<code>printf</code> &mdash; pulling it in can cost 10&nbsp;KB of
+flash. FR_Math&rsquo;s <code>FR_printNumF</code> takes a
+caller-supplied <code>putc</code> callback, so you can render a
+fixed-point number straight to a UART or into a local buffer
+without linking a single stdio symbol.</p>
+
+<p><em>Caveats:</em> the signature is
+<code>FR_printNumF(putc, value, radix, pad, prec)</code> &mdash;
+the sink comes <strong>first</strong>, not last. The sink is
+<code>int (*)(char)</code>; return value is ignored. The sink
+here writes into a static buffer; make sure the buffer is large
+enough for the worst-case output.</p>
+
+<pre><code class="language-c">#include "FR_math.h"
+
+/* Collect output into a local buffer so we don't need stdio. */
+static char buf[64];
+static int  cursor = 0;
+
+static int sink(char c)
+{
+    if (cursor &lt; (int)sizeof(buf) - 1) buf[cursor++] = c;
+    return (int)(unsigned char)c;
+}
+
+int main(void)
+{
+    /* pi at radix 16 using the built-in constant */
+    s32 x = FR_kPI;
+    FR_printNumF(sink, x, 16, /* pad */ 0, /* prec */ 6);
+    sink('\n');
+    sink('\0');
+
+    /* buf now contains the rendered number, no printf used. */
+    return 0;
+}</code></pre>
+
+<h2>10. Integer-only 2D transform for scanline renderers</h2>
+
+<p>The <code>XFormPtI16</code> fast path takes <code>s16</code>
+coordinates in and writes <code>s16</code> out. It&rsquo;s a tiny
+bit lossier than the <code>s32</code> form, but it sidesteps all
+the fixed-point conversion on the hot path &mdash; useful inside
+the inner loop of a scanline rasterizer where you already know
+your coordinates fit in 16 bits.</p>
+
+<p><em>Caveats:</em> the output is narrowed to <code>s16</code>,
+so extreme inputs or large matrix entries can overflow silently.
+The no-translate variant (<code>XFormPtI16NoTranslate</code>)
+applies only the linear part and is useful for transforming
+direction vectors rather than positions.</p>
+
+<pre><code class="language-cpp">#include &lt;stdio.h&gt;
+#include "FR_math.h"
+#include "FR_math_2D.h"
+
+int main()
+{
+    FR_Matrix2D_CPT M;           /* default radix 8 */
+    M.setrotate(45);
+
+    s16 xp, yp;
+    M.XFormPtI16(100, 0, &amp;xp, &amp;yp);  /* expect ~(71, 71) */
+    printf("rotated (100, 0) by 45 deg = (%d, %d)\n", xp, yp);
+    return 0;
+}</code></pre>
+
+<h2>11. String round-trip and radix precision</h2>
+
+<p><code>FR_numstr</code> parses a decimal string into a fixed-point value;
+<code>FR_printNumF</code> renders a fixed-point value back to a decimal
+string. Together they form a symmetric pair &mdash; the natural
+I/O layer for config files, serial protocols, or any situation
+where a human-readable number must survive a round trip through
+fixed-point representation.</p>
+
+<p>The key insight is that <strong>the radix controls how many
+fractional bits you have</strong>, and that directly determines how
+many decimal digits survive the round trip faithfully. The
+rule of thumb: every ~3.32 bits of radix give you one reliable
+decimal digit (<code>log10(2) &asymp; 0.301</code>, so
+<code>1 / 0.301 &asymp; 3.32</code>).</p>
+
+<table>
+<thead><tr><th>Radix</th><th>Fractional bits</th><th>Reliable decimal digits</th><th>Smallest step</th></tr></thead>
+<tbody>
+<tr><td>8</td><td>8</td><td>~2</td><td>1/256 &asymp; 0.0039</td></tr>
+<tr><td>16</td><td>16</td><td>~4&ndash;5</td><td>1/65536 &asymp; 0.0000153</td></tr>
+<tr><td>24</td><td>24</td><td>~7</td><td>1/16777216 &asymp; 0.0000001</td></tr>
+</tbody>
+</table>
+
+<p>This example parses the same string <code>"3.14159265"</code> at three
+different radixes and prints it back, so you can see exactly
+where each radix runs out of precision.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "FR_math.h"
+
+/* Buffer-based putc for FR_printNumF &mdash; collects output in buf[]. */
+static char buf[64];
+static int  pos;
+static int buf_putc(char c) { buf[pos++] = c; buf[pos] = '\0'; return 0; }
+
+int main(void)
+{
+    const char *input = "3.14159265";
+
+    printf("Round-trip: \"%s\" through three radixes\n\n", input);
+    printf("  radix  bits  parse-hex   printed-back\n");
+    printf("  -----  ----  ---------   ---------------\n");
+
+    /* ---- Radix 8: only ~2 reliable decimal digits ---- */
+    {
+        s32 val = FR_numstr(input, 8);
+        pos = 0;
+        FR_printNumF(buf_putc, val, 8, 0, 8);
+        printf("     8      8  0x%08x  %s\n", (unsigned)val, buf);
+        /* Expected: "3.14062500" &mdash; digits after the 2nd are
+         * unreliable because 8 bits can only distinguish 256
+         * fractional levels. 0.14159 rounds to 36/256 &asymp; 0.140625. */
+    }
+
+    /* ---- Radix 16: ~4&ndash;5 reliable decimal digits ---- */
+    {
+        s32 val = FR_numstr(input, 16);
+        pos = 0;
+        FR_printNumF(buf_putc, val, 16, 0, 8);
+        printf("    16     16  0x%08x  %s\n", (unsigned)val, buf);
+        /* Expected: "3.14158630" &mdash; good through 5 digits, then
+         * quantization noise appears.  This is the sweet spot for
+         * most embedded work: 16 bits of fraction fits in an s32
+         * with 15 bits of integer range (&plusmn;32767). */
+    }
+
+    /* ---- Radix 24: ~7 reliable decimal digits ---- */
+    {
+        s32 val = FR_numstr(input, 24);
+        pos = 0;
+        FR_printNumF(buf_putc, val, 24, 0, 8);
+        printf("    24     24  0x%08x  %s\n", (unsigned)val, buf);
+        /* Expected: "3.14159262" &mdash; good through 7+ digits.
+         * The trade-off: with 24 fractional bits you only have
+         * 7 integer bits (&plusmn;127), so the range is much smaller. */
+    }
+
+    /* ---- Practical guidance ----
+     *
+     * Choose your radix based on the precision you need to
+     * preserve through a round trip:
+     *
+     *   - Config file says "gain = 0.75"?  Radix 8 is plenty.
+     *   - Sensor calibration "offset = 1.2345"?  Radix 16.
+     *   - Scientific constant "k = 0.0000056"?  Radix 24,
+     *     or even radix 28 if you only need a small integer range.
+     *
+     * FR_numstr + FR_printNumF handle the string side;
+     * FR_CHRDX handles radix changes in between.
+     */
+
+    return 0;
+}</code></pre>
+
+<p>Expected output:</p>
+
+<pre><code>Round-trip: "3.14159265" through three radixes
+
+  radix  bits  parse-hex   printed-back
+  -----  ----  ---------   ---------------
+     8      8  0x00000324  3.14062500
+    16     16  0x0003243f  3.14158630
+    24     24  0x03243f6a  3.14159262</code></pre>
+
+<p>The hex column makes the bit-level reality visible:
+at radix 8 the value is <code>0x324</code> &mdash; only 10 significant bits &mdash;
+so the decimal rendering can only faithfully reproduce about two
+fractional digits. At radix 24 the value is <code>0x03243F6A</code> &mdash; 26
+significant bits &mdash; and seven decimal digits survive. The
+eighth digit (<code>5</code> vs <code>4</code>) shows the quantization floor:
+<code>2^&minus;24 &asymp; 6 &times; 10^&minus;8</code>, so the last digit is always
+uncertain.</p>
+
+<h2>Desktop example programs</h2>
+
+<p>In addition to the inline snippets above, the <code>examples/</code> directory
+contains five self-contained desktop programs. Each has its own
+<code>Makefile</code> and <code>README.md</code>; build artifacts stay within the
+example&rsquo;s directory.</p>
+
+<table>
+<thead><tr><th>Directory</th><th>What it does</th></tr></thead>
+<tbody>
+<tr>
+  <td><code>examples/fixed-point-basics/</code></td>
+  <td>Educational walkthrough of radix interpretation, <code>I2FR</code>/<code>FR2I</code>
+      round-trips, <code>FR_NUM</code> constant construction, aligned add/sub,
+      multiply precision, division, saturation, and <code>FR_printNumF</code>
+      formatted output.</td>
+</tr>
+<tr>
+  <td><code>examples/log-exp-curves/</code></td>
+  <td>Sweeps <code>FR_log2</code>, <code>FR_ln</code>, <code>FR_log10</code>,
+      <code>FR_pow2</code>, <code>FR_EXP</code>, <code>FR_POW10</code>, and
+      <code>FR_sqrt</code> against IEEE double reference values, printing
+      per-point and summary error tables.</td>
+</tr>
+<tr>
+  <td><code>examples/waveform-synth/</code></td>
+  <td>Generates square, triangle, sawtooth, PWM, sine, and noise waveforms plus
+      an ADSR envelope and amplitude-modulated combination. Default mode renders
+      ASCII art; <code>--csv</code> mode outputs machine-readable CSV.</td>
+</tr>
+<tr>
+  <td><code>examples/trig-crest/</code></td>
+  <td>One source built twice: default exact &plusmn;1.0 crest (&plusmn;65536) and
+      <code>-DFR_TRIG_S16_SAFE</code> (&plusmn;65534). Prints sin/cos at the cardinal
+      angles and shows where a blind <code>(s16)(x &gt;&gt; 1)</code> cast wraps.</td>
+</tr>
+<tr>
+  <td><code>examples/trig-accuracy/</code></td>
+  <td>Head-to-head comparison of FR_Math
+      (<code>FR_SinI</code>/<code>FR_CosI</code>/<code>FR_TanI</code>) vs
+      libfixmath (<code>fix16_sin</code>/<code>fix16_cos</code>/<code>fix16_tan</code>)
+      vs IEEE double over 0&ndash;360 degrees. Requires libfixmath source.</td>
+</tr>
+</tbody>
+</table>
+
+<p>Build all from the repo root:</p>
+
+<pre><code class="language-bash">make examples        # builds all desktop examples
+make run-examples    # builds and runs 1-4, plus 5 if libfixmath present</code></pre>
+
+<p>Or build any single example from its directory:</p>
+
+<pre><code class="language-bash">cd examples/waveform-synth
+make run             # ASCII art output
+make run-csv         # CSV output</code></pre>
+
+<h2>See also</h2>
+
+<ul>
+  <li><a href="api-reference.html">API Reference</a> &mdash; full
+      symbol table.</li>
+  <li><a href="fixed-point-primer.html">Fixed-Point Primer</a>
+      &mdash; background on why the code looks this way.</li>
+  <li><a href="building.html">Building &amp; Testing</a> &mdash; how
+      to compile, test, and cross-compile.</li>
+</ul>
+
+  </div>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

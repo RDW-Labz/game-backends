@@ -1,0 +1,81 @@
+# Build directories
+build/
+coverage/
+dist/
+lib/
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Coverage files
+*.gcda
+*.gcno
+*.gcov
+*.info
+coverage.xml
+htmlcov/
+
+# Editor files
+*~
+*.swp
+*.swo
+.vscode/
+.idea/
+*.sublime-*
+
+# Claude (Anthropic) project-local files — not part of the library
+CLAUDE*.md
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test outputs
+test_results/
+*.log
+
+# Documentation build
+docs/_build/
+docs/html/
+
+# Python cache (for tools)
+__pycache__/
+*.pyc
+*.pyo
+
+
+.compare

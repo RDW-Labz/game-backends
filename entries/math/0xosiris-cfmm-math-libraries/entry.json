@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:48:08Z",
+ "category": "math",
+ "commit": "2023-01-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "0xOsiris/cfmm-math-libraries \u2014 CFMM Fixed Point Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools.",
+ "language": "solidity",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "cfmm-math-libraries",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "0xosiris-cfmm-math-libraries",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 46,
+ "system": "CFMM Fixed Point Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools.",
+ "upstream": "https://github.com/0xOsiris/cfmm-math-libraries",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

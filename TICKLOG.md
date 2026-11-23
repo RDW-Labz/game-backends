@@ -2274,3 +2274,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/danielmansson-unity-mathematics-fixedpoint
   - reference math/romanzhu-fixedpoint-sharp
   - reference math/lmp88959-pl3d-kc
+
+- **2026-11-23 21:48 UTC** — tick 731: +2 screened, +4 reference, 1 skipped, catalogue=967
+  - added math/thefakemontyontherun-dungeons-of-noudar (BSD-2-Clause, vendored)
+  - added math/deftio-fr-math (BSD-2-Clause, vendored)
+  - reference math/0xosiris-cfmm-math-libraries
+  - reference math/skyworkssolutionsinc-fplib
+  - reference math/mgetka-fptc-lib
+  - reference math/enclustra-en-cl-fix

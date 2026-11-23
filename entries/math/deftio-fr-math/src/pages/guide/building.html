@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Building &amp; Testing — FR_Math</title>
+  <meta name="description" content="Build, test, cross-compile, and release FR_Math. Makefile targets, scripts, coverage, and release validation.">
+  <link rel="stylesheet" href="../assets/main.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main class="page-content">
+  <div class="wrapper">
+
+<h1>Building &amp; Testing</h1>
+
+<p>FR_Math has no dependencies beyond a C99 compiler and
+<code>&lt;stdint.h&gt;</code>. The provided build system wraps
+<code>make</code> with a few convenience scripts.</p>
+
+<h2>Requirements</h2>
+
+<ul>
+  <li>A C99 compiler (<code>gcc</code>, <code>clang</code>, MSVC, IAR,
+      Keil, sdcc, AVR-gcc, MSP430-gcc, RISC-V gcc).</li>
+  <li>A C++98 compiler if you want the 2D transform module
+      (<code>FR_math_2D.cpp</code>).</li>
+  <li><code>make</code> (GNU make recommended).</li>
+  <li>Optional: <code>lcov</code> / <code>gcov</code> for coverage
+      reports.</li>
+</ul>
+
+<p>There is no Autotools, no CMake, no Ninja, no package-manager
+integration. The library is small enough that the Makefile fits on
+one screen.</p>
+
+<h2>Makefile targets</h2>
+
+<table>
+<thead><tr><th>Target</th><th>What it builds</th></tr></thead>
+<tbody>
+<tr><td><code>make</code> (default)</td><td>Library + examples.</td></tr>
+<tr><td><code>make lib</code></td><td>Library only (<code>build/libfrmath.a</code>).</td></tr>
+<tr><td><code>make examples</code></td><td>Example programs into <code>build/</code>.</td></tr>
+<tr><td><code>make test</code></td><td>Build every test binary and run the full suite.</td></tr>
+<tr><td><code>make coverage</code></td><td>Build with <code>-ftest-coverage -fprofile-arcs</code>, run tests, emit lcov report.</td></tr>
+<tr><td><code>make clean</code></td><td>Remove <code>build/</code>.</td></tr>
+<tr><td><code>make cleanall</code></td><td>Remove <code>build/</code> plus editor backups.</td></tr>
+</tbody>
+</table>
+
+<p>All builds land in <code>build/</code>. Nothing is written inside
+<code>src/</code>.</p>
+
+<h2>Convenience scripts</h2>
+
+<h3><code>scripts/build.sh</code></h3>
+
+<p>One-shot clean rebuild.</p>
+
+<pre><code class="language-bash">./scripts/build.sh              # wipe build/, build lib + examples + tests, run tests
+./scripts/build.sh --no-test    # skip running the test suite
+./scripts/build.sh --lib        # library only</code></pre>
+
+<p>Returns non-zero on any failure. Suitable for use from a watch
+script or a pre-commit hook.</p>
+
+<h3><code>scripts/coverage_report.sh</code></h3>
+
+<p>Full gcov/lcov pipeline.</p>
+
+<pre><code class="language-bash">./scripts/coverage_report.sh</code></pre>
+
+<p>Cleans <code>build/</code>, instruments every source, runs every
+test binary (including <code>test_tdd</code> for the characterization
+suite), and emits an HTML report under
+<code>build/coverage/index.html</code>. Also prints per-file line
+coverage to the console so you can copy the numbers into badge
+updates or release notes.</p>
+
+<h3><code>tools/make_release.sh</code></h3>
+
+<p>Guided release pipeline. Handles everything from local validation
+through PR, merge, tagging, GitHub Release, and package-registry
+publishing (PlatformIO and ESP-IDF). Each outward-facing step
+pauses for confirmation.</p>
+
+<pre><code class="language-bash">./tools/make_release.sh              # full guided release
+./tools/make_release.sh --validate   # local validation only
+./tools/make_release.sh --skip-cross # skip cross-compile step</code></pre>
+
+<p>In full mode the pipeline runs 17 steps: extract version, sync
+manifests, strict compile + tests + coverage + badges, cross-compile
+sanity, commit pipeline-generated changes, check git state, push
+branch, open PR, wait for CI, merge PR, switch to master, verify
+on master, tag, wait for GitHub Release, publish to PlatformIO,
+publish to ESP-IDF, done.</p>
+
+<p>With <code>--validate</code>, only the local validation steps run
+(steps 1&ndash;4) &mdash; nothing is pushed, tagged, or published.</p>
+
+<p>See <code>release_management.md</code> for the full step-by-step
+reference.</p>
+
+<h2>The test suite</h2>
+
+<p>Tests live under <code>tests/</code> and are split into eight
+binaries to keep compile times low:</p>
+
+<table>
+<thead><tr><th>Binary</th><th>What it checks</th></tr></thead>
+<tbody>
+<tr><td><code>fr_test</code></td><td>Radix conversions, <code>FR_ADD</code>, <code>FR_FixMuls</code>, rounding (legacy harness).</td></tr>
+<tr><td><code>test_comprehensive</code></td><td>Trig (degree, radian, BAM), log/exp, sqrt, hypot.</td></tr>
+<tr><td><code>test_2d</code></td><td>2D transforms, determinants, inverses.</td></tr>
+<tr><td><code>test_overflow</code></td><td>Overflow sentinels, saturation, edge radixes.</td></tr>
+<tr><td><code>test_full</code></td><td>Full-coverage dark-corner cases and round-trips.</td></tr>
+<tr><td><code>test_2d_complete</code></td><td>Extended 2D: matrix composition, inverse, point transforms.</td></tr>
+<tr><td><code>test_tdd</code></td><td>Characterization tests pinned to bit-exact reference values.</td></tr>
+<tr><td><code>test_arduino_compat</code></td><td>Arduino build compatibility: compiles the headers as ESP32-style and AVR/USBAPI-style cores would (both include orders), plus type-size checks (issue #11).</td></tr>
+</tbody>
+</table>
+
+<p>The suite covers <strong>98%</strong> of the library source lines
+and every mathematically reachable branch; the remainder is defensive
+code (clamps and guards) that no input can trigger, kept in place as
+insurance against future edits.
+Every public symbol is exercised at least once.</p>
+
+<h3>Running a single binary</h3>
+
+<pre><code class="language-bash">make test-comprehensive
+./build/test_comprehensive
+
+# or all of them at once
+make test</code></pre>
+
+<h3>Running the TDD pins after a change</h3>
+
+<p><code>test_tdd.cpp</code> is a characterization suite. It records
+exact bit patterns for a sample of inputs and fails loudly if those
+patterns drift. Any change that modifies the numerical behavior of
+the library will break this suite &mdash; that&rsquo;s the point.</p>
+
+<p>If you <em>intended</em> to change the numerical behavior (e.g.
+you improved a polynomial approximation), update the pinned values in
+<code>tests/test_tdd.cpp</code> and note the change in
+<code>release_notes.md</code> along with any updates to the
+<a href="api-reference.html">API reference</a> precision entries.</p>
+
+<h2>Cross-compilation</h2>
+
+<p>The library has no CPU-specific code. It compiles and runs
+identically on all of the targets listed below. The only requirement
+is an integer pipeline and <code>&lt;stdint.h&gt;</code> (or define
+<code>FR_NO_STDINT</code> for bare-metal toolchains that lack it &mdash;
+<code>FR_defs.h</code> provides fallback typedefs). You do <em>not</em>
+need a floating-point unit, and you do <em>not</em> need
+<code>libm</code>.</p>
+
+<table>
+<thead><tr><th>Target</th><th>Toolchain</th><th>Tested?</th></tr></thead>
+<tbody>
+<tr><td>x86 / x86_64 Linux</td><td><code>gcc</code>, <code>clang</code>, <code>tcc</code></td><td>CI + Docker.</td></tr>
+<tr><td>macOS arm64 / x86_64</td><td>Apple <code>clang</code></td><td>CI.</td></tr>
+<tr><td>Windows x86_64</td><td>MSVC, <code>clang-cl</code>, MinGW</td><td>Manual.</td></tr>
+<tr><td>AArch64 (ARM64)</td><td><code>aarch64-linux-gnu-gcc</code></td><td>Docker.</td></tr>
+<tr><td>ARM32 / Thumb</td><td><code>arm-none-eabi-gcc</code>, IAR, Keil</td><td>Docker.</td></tr>
+<tr><td>RP2040 (Cortex-M0+)</td><td><code>arm-none-eabi-gcc</code></td><td>Docker.</td></tr>
+<tr><td>STM32 (Cortex-M4)</td><td><code>arm-none-eabi-gcc</code></td><td>Docker.</td></tr>
+<tr><td>RISC-V rv64 / rv32</td><td><code>riscv64-linux-gnu-gcc</code>, <code>riscv64-unknown-elf-gcc</code></td><td>Docker.</td></tr>
+<tr><td>AVR (ATmega328P, ATtiny85)</td><td><code>avr-gcc</code></td><td>Docker.</td></tr>
+<tr><td>Arduino (AVR, SAMD, etc.)</td><td><code>arduino-cli</code></td><td>Manual.</td></tr>
+<tr><td>MSP430</td><td><code>msp430-gcc</code></td><td>Docker.</td></tr>
+<tr><td>Motorola 68k</td><td><code>m68k-linux-gnu-gcc</code></td><td>Docker.</td></tr>
+<tr><td>Motorola 68HC11</td><td><code>m68hc11-gcc</code></td><td>Docker.</td></tr>
+<tr><td>PowerPC</td><td><code>powerpc-linux-gnu-gcc</code></td><td>Docker.</td></tr>
+<tr><td>MIPS32</td><td><code>mipsel-linux-gnu-gcc</code></td><td>Docker.</td></tr>
+<tr><td>Xtensa LX106 (ESP8266)</td><td><code>xtensa-lx106-elf-gcc</code></td><td>Docker.</td></tr>
+<tr><td>Xtensa LX7 (ESP32-S3)</td><td><code>xtensa-esp-elf-gcc</code></td><td>Docker (Espressif toolchain).</td></tr>
+<tr><td>8051</td><td><code>sdcc</code></td><td>Manual.</td></tr>
+</tbody>
+</table>
+
+<h3>Code size (<code>.text</code> section, compiled with <code>-Os</code>)</h3>
+
+<p>Sizes are for <code>FR_math.c</code> compiled with <code>-Os</code>.
+Lean = <code>-DFR_LEAN -DFR_NO_PRINT</code> (radian trig, inv trig, log/exp, sqrt).
+Core = <code>-DFR_CORE_ONLY</code> (+ degree trig, BAM tan, log10, hypot).
+Full = all features (+ print, waves, ADSR).
+With <code>-ffunction-sections</code> and linker <code>--gc-sections</code>,
+only the functions your application references are linked, so real flash
+usage will be smaller.</p>
+
+<!-- SIZE_TABLE_START -->
+<table>
+<thead><tr><th>Target</th><th>Lean</th><th>Core</th><th>Full</th></tr></thead>
+<tbody>
+<tr><td>AVR ATmega328P</td><td>9.2 KB</td><td>12.8 KB</td><td>15.4 KB</td></tr>
+<tr><td>AVR ATtiny85</td><td>9.4 KB</td><td>13.3 KB</td><td>16.0 KB</td></tr>
+<tr><td>68HC11</td><td>13.3 KB</td><td>18.4 KB</td><td>22.6 KB</td></tr>
+<tr><td>MSP430</td><td>7.8 KB</td><td>10.7 KB</td><td>12.8 KB</td></tr>
+<tr><td>Cortex-M4 (STM32)</td><td>3.3 KB</td><td>4.4 KB</td><td>5.5 KB</td></tr>
+<tr><td>Cortex-M0 (RP2040)</td><td>3.4 KB</td><td>4.5 KB</td><td>5.7 KB</td></tr>
+<tr><td>ARM Thumb</td><td>3.4 KB</td><td>4.7 KB</td><td>5.9 KB</td></tr>
+<tr><td>Xtensa LX7 (ESP32-S3)</td><td>3.9 KB</td><td>5.3 KB</td><td>6.5 KB</td></tr>
+<tr><td>RISC-V rv32</td><td>4.1 KB</td><td>5.5 KB</td><td>6.8 KB</td></tr>
+<tr><td>Xtensa LX106 (ESP8266)</td><td>4.2 KB</td><td>5.8 KB</td><td>7.3 KB</td></tr>
+<tr><td>ARM32</td><td>4.3 KB</td><td>5.8 KB</td><td>7.7 KB</td></tr>
+<tr><td>m68k</td><td>4.4 KB</td><td>6.2 KB</td><td>7.8 KB</td></tr>
+<tr><td>x86-32</td><td>5.3 KB</td><td>7.2 KB</td><td>9.2 KB</td></tr>
+<tr><td>MIPS32</td><td>5.5 KB</td><td>7.5 KB</td><td>9.6 KB</td></tr>
+<tr><td>PowerPC</td><td>5.8 KB</td><td>8.0 KB</td><td>10.4 KB</td></tr>
+<tr><td>TCC x86</td><td>8.2 KB</td><td>11.5 KB</td><td>15.1 KB</td></tr>
+<tr><td>RISC-V rv64</td><td>4.0 KB</td><td>5.5 KB</td><td>6.8 KB</td></tr>
+<tr><td>x86-64 (GCC)</td><td>4.6 KB</td><td>6.1 KB</td><td>8.0 KB</td></tr>
+<tr><td>AArch64 (ARM64)</td><td>4.8 KB</td><td>6.6 KB</td><td>8.7 KB</td></tr>
+<tr><td>x86-64 (Clang)</td><td>4.7 KB</td><td>6.6 KB</td><td>9.0 KB</td></tr>
+</tbody>
+</table>
+<!-- SIZE_TABLE_END -->
+
+<h3>Lean build options</h3>
+
+<p>Compile-time <code>#define</code> guards let you strip optional subsystems
+for ROM-constrained targets. Define them before including
+<code>FR_math.h</code> (or pass <code>-D</code> on the compiler command line):</p>
+
+<table>
+<thead><tr><th>Define</th><th>What it removes</th><th>Typical savings</th></tr></thead>
+<tbody>
+<tr><td><code>FR_LEAN</code></td><td>Degree trig, BAM tan, angle converters, <code>FR_log10</code>, <code>FR_hypot</code>, waves + ADSR</td><td>~3.7 KB</td></tr>
+<tr><td><code>FR_CORE_ONLY</code></td><td>Print + waves (shorthand for both below)</td><td>~1.9 KB</td></tr>
+<tr><td><code>FR_NO_PRINT</code></td><td><code>FR_printNumF</code>, <code>FR_printNumD</code>, <code>FR_printNumH</code>, <code>FR_numstr</code></td><td>~1.3 KB</td></tr>
+<tr><td><code>FR_NO_WAVES</code></td><td><code>fr_wave_*</code> (6 shapes), <code>fr_adsr_*</code> (ADSR envelope), <code>FR_HZ2BAM_INC</code></td><td>~0.6 KB</td></tr>
+</tbody>
+</table>
+
+<p><code>FR_LEAN</code> keeps only radian trig (sin, cos, tan), inverse trig, sqrt,
+log2, ln, exp, pow2, and arithmetic &mdash; comparable to libfixmath&rsquo;s API at
+4.7&nbsp;KB text. <code>FR_LEAN</code> implies <code>FR_NO_WAVES</code>.</p>
+
+<p><code>FR_CORE_ONLY</code> is a convenience shorthand that defines both
+<code>FR_NO_PRINT</code> and <code>FR_NO_WAVES</code> in one step.</p>
+
+<p><code>FR_TRIG_S16_SAFE</code> (default off) removes nothing; it changes the sin/cos
+crest from exact &plusmn;65536 to &plusmn;65534 so a blind <code>(s16)(x &gt;&gt; 1)</code> cast yields
+&plusmn;32767 instead of wrapping. Results stay s15.16. The sine table lives in
+<code>FR_math.c</code>, so the flag must be set when compiling that file (<code>-D</code> on
+the command line or in <code>build_flags</code>); a <code>#define</code> in your own source
+has no effect. See <code>examples/trig-crest/</code>.</p>
+
+<pre><code class="language-c">/* Example: headless sensor node &mdash; math only, no print, no audio */
+#define FR_CORE_ONLY
+#include "FR_math.h"</code></pre>
+
+<p>With <code>-ffunction-sections</code> and linker <code>--gc-sections</code>,
+the linker will also strip any unused functions automatically, so these guards
+are most useful when you include the library as a single <code>.c</code> file
+or static archive without section-level dead-code elimination.</p>
+
+<p>To regenerate this table, run the Docker cross-build
+(requires the <a href="https://github.com/deftio/xelp">xelp</a> Docker image):</p>
+
+<pre><code class="language-bash">scripts/crossbuild_sizes.sh</code></pre>
+
+<h3>Example: RISC-V</h3>
+
+<pre><code class="language-bash">riscv32-unknown-elf-gcc -Os -ffunction-sections -fdata-sections \
+  -march=rv32imc -mabi=ilp32 \
+  -Isrc -c src/FR_math.c -o FR_math.o
+
+riscv32-unknown-elf-size FR_math.o</code></pre>
+
+<h3>Example: AVR</h3>
+
+<pre><code class="language-bash">avr-gcc -Os -mmcu=atmega328p \
+  -Isrc -c src/FR_math.c -o FR_math.avr.o
+
+avr-size FR_math.avr.o</code></pre>
+
+<h3>Example: Arduino</h3>
+
+<pre><code class="language-bash">arduino-cli compile --fqbn arduino:avr:uno examples/arduino_smoke
+
+# Or try the focused examples:
+arduino-cli compile --fqbn arduino:avr:uno examples/basic-math
+arduino-cli compile --fqbn arduino:avr:uno examples/trig-functions
+arduino-cli compile --fqbn arduino:avr:uno examples/wave-generators
+
+# Non-AVR cores work the same way, e.g. ESP32:
+arduino-cli compile --fqbn esp32:esp32:esp32 examples/arduino_smoke</code></pre>
+
+<p><code>make test-arduino-compat</code> (part of <code>make test</code>)
+simulates the Arduino build environments on the host — ESP32-style
+cores with no USBAPI.h typedefs and AVR-style cores that predefine
+<code>u8</code>/<code>u16</code>, in both include orders — so
+core-specific type clashes like issue #11 are caught without any
+board toolchain installed.</p>
+
+<p>See the code size table above for exact numbers. With linker
+dead-code elimination, only the functions you call are linked.</p>
+
+<h2>CI</h2>
+
+<p>GitHub Actions runs on every push and every PR. The workflow file
+is <code>.github/workflows/ci.yml</code>. It builds with strict
+warnings, runs <code>make test</code>, and caches nothing &mdash;
+each run starts from a clean checkout.</p>
+
+<p>The CI status badge on the README links directly to the latest
+run.</p>
+
+<h2>Release checklist</h2>
+
+<ol>
+  <li>Create a feature branch and bump <code>FR_MATH_VERSION_HEX</code>
+      in <code>src/FR_math.h</code>.</li>
+  <li>Run <code>./scripts/sync_version.sh</code> to propagate the
+      version to all manifests (Arduino, PlatformIO, ESP-IDF,
+      docs).</li>
+  <li>Update <code>release_notes.md</code>,
+      <code>docs/releases.md</code>, and
+      <code>pages/releases.html</code> by hand.</li>
+  <li>Verify <code>llms.txt</code> and <code>agents.md</code> reflect
+      any API changes.</li>
+  <li>Commit everything and run <code>./tools/make_release.sh</code>.
+      The script handles validation, PR, CI wait, merge, tagging,
+      GitHub Release creation (via <code>release.yml</code>), and
+      publishing to PlatformIO and ESP-IDF registries.</li>
+</ol>
+
+<p>Arduino Library Manager indexes from GitHub tags automatically once
+the library is registered.</p>
+
+<p>See <a href="../releases.html">Releases</a> for the list of tagged
+versions and their highlights.</p>
+
+  </div>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="../assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:48:08Z",
+ "category": "math",
+ "commit": "2026-08-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "enclustra/en_cl_fix \u2014 Fixed-point math library with VHDL, Python and MATLAB support",
+ "language": "vhdl",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "en_cl_fix",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "enclustra-en-cl-fix",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 38,
+ "system": "Fixed-point math library with VHDL, Python and MATLAB support",
+ "upstream": "https://github.com/enclustra/en_cl_fix",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

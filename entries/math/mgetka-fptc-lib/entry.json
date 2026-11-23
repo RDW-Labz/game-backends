@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T21:48:08Z",
+ "category": "math",
+ "commit": "2024-04-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mgetka/fptc-lib \u2014 Modified version of Fixed Point Math Library for C",
+ "language": "c++",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "fptc-lib",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "mgetka-fptc-lib",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 43,
+ "system": "Modified version of Fixed Point Math Library for C",
+ "upstream": "https://github.com/mgetka/fptc-lib",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

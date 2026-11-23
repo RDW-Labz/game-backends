@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T21:48:04Z",
+ "category": "math",
+ "commit": "03e94de32261",
+ "delivery": "vendored",
+ "description": "TheFakeMontyOnTheRun/dungeons-of-noudar \u2014 A first person dungeon-crawler for DOS, written in C++, using software rendering and fixed point math",
+ "language": "c++",
+ "license": "BSD-2-Clause",
+ "license_file": "License.md",
+ "license_verdict": "clean",
+ "name": "dungeons-of-noudar",
+ "size_bytes": 324559,
+ "slug": "thefakemontyontherun-dungeons-of-noudar",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 64,
+ "system": "A first person dungeon-crawler for DOS, written in C++, using software rendering and fixed point math",
+ "upstream": "https://github.com/TheFakeMontyOnTheRun/dungeons-of-noudar",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

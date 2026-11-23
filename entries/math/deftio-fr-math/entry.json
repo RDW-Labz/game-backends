@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T21:48:06Z",
+ "category": "math",
+ "commit": "2c5d2e362386",
+ "delivery": "vendored",
+ "description": "deftio/fr_math \u2014 Fixed-point math library (integer / no FPU)  for embedded C.  Trig, log/exp, sqrt, 2D transforms, wave generators, ADSR and variable radix support.  ~4.5 KB",
+ "language": "c++",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "fr_math",
+ "size_bytes": 533156,
+ "slug": "deftio-fr-math",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 49,
+ "system": "Fixed-point math library (integer / no FPU)  for embedded C.  Trig, log/exp, sqrt, 2D transforms, wave generators, ADSR and variable radix support.  ~4.5 KB ",
+ "upstream": "https://github.com/deftio/fr_math",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
