@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T13:44:06Z",
+ "category": "engines",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "niklas2902/py4godot \u2014 Python scripting for Godot. This GDExtension plugin allows you to use Python like GDScript, accessing the Godot engine's features and benefiting from Python's vast ecosystem.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "py4godot",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "niklas2902-py4godot",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 334,
+ "system": "Python scripting for Godot. This GDExtension plugin allows you to use Python like GDScript, accessing the Godot engine's features and benefiting from Python's v",
+ "upstream": "https://github.com/niklas2902/py4godot",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

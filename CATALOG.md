@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 13:28 UTC · 781 entries · 209 vendored, 572 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 13:44 UTC · 787 entries · 211 vendored, 576 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 355 | 76 | 279 |
+| [engines](#engines) — Game engines and engine subsystems | 361 | 78 | 283 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 13:28 UTC · 781 entries · 209 vendored, 572 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 355 entries
+**Game engines and engine subsystems** — 361 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -96,6 +96,7 @@ _Generated 2026-11-23 13:28 UTC · 781 entries · 209 vendored, 572 reference-on
 | [ecst](entries/engines/vittorioromeo-ecst/README.md) | [WIP] Experimental C++14 multithreaded compile-time entity-component-system library. | c++ | unknown | reference | [vittorioromeo/ecst](https://github.com/vittorioromeo/ecst) @ `2019-09-03 (branch tip at catalogue time)` |
 | [egret-core](entries/engines/egret-labs-egret-core/README.md) | Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows. | javascript | unknown | reference | [egret-labs/egret-core](https://github.com/egret-labs/egret-core) @ `2022-07-20 (branch tip at catalogue time)` |
 | [EgretGameEngine](entries/engines/yicaoyimuys-egretgameengine/README.md) | A game client engine in Egret | typescript | none | reference | [yicaoyimuys/EgretGameEngine](https://github.com/yicaoyimuys/EgretGameEngine) @ `d60a02cfaee2` |
+| [EIRTeam.FFmpeg](entries/engines/eirteam-eirteam-ffmpeg/README.md) | Plugin for godot that adds an FFmpeg-based decoder. | c++ | MIT | reference | [EIRTeam/EIRTeam.FFmpeg](https://github.com/EIRTeam/EIRTeam.FFmpeg) @ `2026-11-20 (branch tip at catalogue time)` |
 | [element-behaviors](entries/engines/lume-element-behaviors/README.md) | An entity-component system for HTML elements. | typescript | LGPL-3.0 | reference | [lume/element-behaviors](https://github.com/lume/element-behaviors) @ `2024-10-02 (branch tip at catalogue time)` |
 | [Engine](entries/engines/boldtemplegaming-engine/README.md) | C++11 and SDL2 lightweight 2d game framework | c++ | unknown | reference | [boldtempleGaming/Engine](https://github.com/boldtempleGaming/Engine) @ `2020-03-01 (branch tip at catalogue time)` |
 | [engine](entries/engines/g3n-engine/README.md) | Go 3D Game Engine (http://g3n.rocks) | go | BSD-2-Clause | reference | [g3n/engine](https://github.com/g3n/engine) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -161,6 +162,7 @@ _Generated 2026-11-23 13:28 UTC · 781 entries · 209 vendored, 572 reference-on
 | [godot-ecs](entries/engines/godothub-godot-ecs/README.md) | A lightweight yet powerful Entity Component System (ECS) framework designed specifically for Godot 4. | gdscript | MIT | reference | [godothub/godot-ecs](https://github.com/godothub/godot-ecs) @ `2026-08-21 (branch tip at catalogue time)` |
 | [godot-engine.easy-charts](entries/engines/fenix-hub-godot-engine-easy-charts/README.md) | A Godot Engine addon for plotting general purpose charts. A collection of Control, 2D and 3D Nodes to plot every chart possible. | gdscript | MIT | reference | [fenix-hub/godot-engine.easy-charts](https://github.com/fenix-hub/godot-engine.easy-charts) @ `2026-10-10 (branch tip at catalogue time)` |
 | [godot-gameplay-systems](entries/engines/octod-godot-gameplay-systems/README.md) | ⚔️ A plugin for Godot to create your gameplay systems in a Godot way. | gdscript | MIT | reference | [OctoD/godot-gameplay-systems](https://github.com/OctoD/godot-gameplay-systems) @ `2025-06-06 (branch tip at catalogue time)` |
+| [godot-lua-pluginscript](entries/engines/gilzoide-godot-lua-pluginscript/README.md) | Godot 3.X PluginScript for the Lua language, based on LuaJIT's FFI | lua | MIT | vendored | [gilzoide/godot-lua-pluginscript](https://github.com/gilzoide/godot-lua-pluginscript) @ `610a8d4788ab` |
 | [godot-manager](entries/engines/eumario-godot-manager/README.md) | A Project, Version and Addons/Plugins manager for Godot Game Engine. | c# | MIT | reference | [eumario/godot-manager](https://github.com/eumario/godot-manager) @ `2026-03-31 (branch tip at catalogue time)` |
 | [godot-mcp](entries/engines/coding-solo-godot-mcp/README.md) | MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output. | javascript | MIT | vendored | [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) @ `1209744fad78` |
 | [Godot-MCP](entries/engines/ivanmurzak-godot-mcp/README.md) | Godot-MCP — Model Context Protocol (MCP) integration for the Godot Engine. AI tools for the Godot Editor in C#, with cloud connection to ai-game.dev. Apache-2.0 | c# | Apache-2.0 | reference | [IvanMurzak/Godot-MCP](https://github.com/IvanMurzak/Godot-MCP) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -175,10 +177,12 @@ _Generated 2026-11-23 13:28 UTC · 781 entries · 209 vendored, 572 reference-on
 | [godot_voxel](entries/engines/zylann-godot-voxel/README.md) | Voxel module for Godot Engine | c++ | MIT | reference | [Zylann/godot_voxel](https://github.com/Zylann/godot_voxel) @ `4b29b0781723` |
 | [golf-engine](entries/engines/bjatkin-golf-engine/README.md) | A small fantasy game engine in WASM using GoLang | go | MIT | reference | [bjatkin/golf-engine](https://github.com/bjatkin/golf-engine) @ `2021-11-27 (branch tip at catalogue time)` |
 | [goworld](entries/engines/xiaonanln-goworld/README.md) | Scalable Distributed Game Server Engine with Hot Swapping in Golang | go | Apache-2.0 | reference | [xiaonanln/goworld](https://github.com/xiaonanln/goworld) @ `2025-11-14 (branch tip at catalogue time)` |
+| [GPUTrail](entries/engines/celyk-gputrail/README.md) | A GPU based trail plugin for Godot 4 | gdscript | MIT | reference | [celyk/GPUTrail](https://github.com/celyk/GPUTrail) @ `2026-09-27 (branch tip at catalogue time)` |
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [HeartbeatEngine](entries/engines/cronza-heartbeatengine/README.md) | A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5 | python | GPL-3.0 | reference | [Cronza/HeartbeatEngine](https://github.com/Cronza/HeartbeatEngine) @ `2025-08-26 (branch tip at catalogue time)` |
 | [HelloMarioFramework](entries/engines/hellofangaming-hellomarioframework/README.md) | Create your own 3D Mario game with Hello Mario Framework for Unity! | c# | MIT | reference | [HelloFangaming/HelloMarioFramework](https://github.com/HelloFangaming/HelloMarioFramework) @ `2025-11-11 (branch tip at catalogue time)` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
+| [hoodie-legacy](entries/engines/greencrowdev-hoodie-legacy/README.md) | Hoodie is a plugin for Godot Engine 4 that offers a visual scripting interface for generating procedural geometry. | c++ | MIT | vendored | [GreenCrowDev/hoodie-legacy](https://github.com/GreenCrowDev/hoodie-legacy) @ `f860d4ce2afe` |
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
 | [Ikemen-GO](entries/engines/ikemen-engine-ikemen-go/README.md) | An open-source fighting game engine that supports MUGEN resources. | go | unknown | reference | [ikemen-engine/Ikemen-GO](https://github.com/ikemen-engine/Ikemen-GO) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Image32](entries/engines/angusjohnson-image32/README.md) | A comprehensive 2D graphics library written in Delphi Pascal | pascal | BSL-1.0 | reference | [AngusJohnson/Image32](https://github.com/AngusJohnson/Image32) @ `2026-11-16 (branch tip at catalogue time)` |
@@ -272,6 +276,7 @@ _Generated 2026-11-23 13:28 UTC · 781 entries · 209 vendored, 572 reference-on
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
 | [prototype](entries/engines/gonutz-prototype/README.md) | Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM. | c | MIT | vendored | [gonutz/prototype](https://github.com/gonutz/prototype) @ `d3732ae42e68` |
 | [Py3ODE](entries/engines/filipeabperes-py3ode/README.md) | Port of PyODE for Python 3 | python | LGPL-2.1 | reference | [filipeabperes/Py3ODE](https://github.com/filipeabperes/Py3ODE) @ `50675f543d35` |
+| [py4godot](entries/engines/niklas2902-py4godot/README.md) | Python scripting for Godot. This GDExtension plugin allows you to use Python like GDScript, accessing the Godot engine's features and benefiting from Python's v | python | MIT | reference | [niklas2902/py4godot](https://github.com/niklas2902/py4godot) @ `2026-11-21 (branch tip at catalogue time)` |
 | [PyDark](entries/engines/sirfroweey-pydark/README.md) | PyDark is a 2D and Online Multiplayer video game framework written on-top of Python and PyGame. | python | unknown | reference | [SirFroweey/PyDark](https://github.com/SirFroweey/PyDark) @ `2021-08-27 (branch tip at catalogue time)` |
 | [pydk](entries/engines/pmp-p-pydk/README.md) | An universal Python/pip+Panda3d build framework for Pythons Everywhere ( and Everyone ) | python | MIT | vendored | [pmp-p/pydk](https://github.com/pmp-p/pydk) @ `9aeec40679e2` |
 | [pyera](entries/engines/qsjl11-pyera/README.md) | Era-like game engine by python | python | unknown | reference | [qsjl11/pyera](https://github.com/qsjl11/pyera) @ `2017-08-31 (branch tip at catalogue time)` |
@@ -364,6 +369,7 @@ _Generated 2026-11-23 13:28 UTC · 781 entries · 209 vendored, 572 reference-on
 | [voxplat](entries/engines/kosshi-net-voxplat/README.md) | A hybrid voxel rendering engine | c | unknown | reference | [kosshi-net/voxplat](https://github.com/kosshi-net/voxplat) @ `2022-02-21 (branch tip at catalogue time)` |
 | [vx_bevy](entries/engines/game4all-vx-bevy/README.md) | 🧊 Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy. | rust | MIT | reference | [Game4all/vx_bevy](https://github.com/Game4all/vx_bevy) @ `2024-12-11 (branch tip at catalogue time)` |
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |
+| [wat](entries/engines/alexdarigan-wat/README.md) | A Testing Plugin for Godot Game Engine | gdscript | MIT | reference | [AlexDarigan/wat](https://github.com/AlexDarigan/wat) @ `2023-07-10 (branch tip at catalogue time)` |
 | [web-sdk](entries/engines/engineio-web-sdk/README.md) | About The Web Game Engine: Create your own web game with in a declarative way. | typescript | unknown | reference | [engineio/web-sdk](https://github.com/engineio/web-sdk) @ `2025-11-27 (branch tip at catalogue time)` |
 | [WebGAL](entries/engines/openwebgal-webgal/README.md) | A brand new web Visual Novel engine / 全新的网页端视觉小说引擎 | typescript | MPL-2.0 | reference | [OpenWebGAL/WebGAL](https://github.com/OpenWebGAL/WebGAL) @ `2026-11-21 (branch tip at catalogue time)` |
 | [webTaleKit](entries/engines/endohizumi-webtalekit/README.md) | A visual novel game engine written in JavaScript (TypeScript) that allows full customization of the UI. | typescript | MIT | reference | [EndoHizumi/webTaleKit](https://github.com/EndoHizumi/webTaleKit) @ `2026-11-17 (branch tip at catalogue time)` |

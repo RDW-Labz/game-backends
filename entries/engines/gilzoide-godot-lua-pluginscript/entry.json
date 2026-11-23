@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T13:44:05Z",
+ "category": "engines",
+ "commit": "610a8d4788ab",
+ "delivery": "vendored",
+ "description": "gilzoide/godot-lua-pluginscript \u2014 Godot 3.X PluginScript for the Lua language, based on LuaJIT's FFI",
+ "language": "lua",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-lua-pluginscript",
+ "size_bytes": 501772,
+ "slug": "gilzoide-godot-lua-pluginscript",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 336,
+ "system": "Godot 3.X PluginScript for the Lua language, based on LuaJIT's FFI",
+ "upstream": "https://github.com/gilzoide/godot-lua-pluginscript",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

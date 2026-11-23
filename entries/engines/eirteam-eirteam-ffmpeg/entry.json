@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T13:44:06Z",
+ "category": "engines",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "EIRTeam/EIRTeam.FFmpeg \u2014 Plugin for godot that adds an FFmpeg-based decoder.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "EIRTeam.FFmpeg",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "eirteam-eirteam-ffmpeg",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 320,
+ "system": "Plugin for godot that adds an FFmpeg-based decoder.",
+ "upstream": "https://github.com/EIRTeam/EIRTeam.FFmpeg",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

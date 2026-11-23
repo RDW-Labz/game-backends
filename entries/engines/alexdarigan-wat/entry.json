@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T13:44:06Z",
+ "category": "engines",
+ "commit": "2023-07-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AlexDarigan/wat \u2014 A Testing Plugin for Godot Game Engine",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "wat",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "alexdarigan-wat",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 314,
+ "system": "A Testing Plugin for Godot Game Engine",
+ "upstream": "https://github.com/AlexDarigan/wat",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

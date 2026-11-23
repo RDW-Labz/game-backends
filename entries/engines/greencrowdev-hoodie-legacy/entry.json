@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T13:44:03Z",
+ "category": "engines",
+ "commit": "f860d4ce2afe",
+ "delivery": "vendored",
+ "description": "GreenCrowDev/hoodie-legacy \u2014 Hoodie is a plugin for Godot Engine 4 that offers a visual scripting interface for generating procedural geometry.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "hoodie-legacy",
+ "size_bytes": 354692,
+ "slug": "greencrowdev-hoodie-legacy",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 349,
+ "system": "Hoodie is a plugin for Godot Engine 4 that offers a visual scripting interface for generating procedural geometry.",
+ "upstream": "https://github.com/GreenCrowDev/hoodie-legacy",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

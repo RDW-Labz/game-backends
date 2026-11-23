@@ -2034,3 +2034,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/cloudofoz-godot-deformablemesh
   - reference engines/lecrapouille-gdcef
   - reference engines/jarneson-godot-ply
+
+- **2026-11-23 13:44 UTC** — tick 701: +2 screened, +4 reference, 0 skipped, catalogue=787
+  - added engines/greencrowdev-hoodie-legacy (MIT, vendored)
+  - added engines/gilzoide-godot-lua-pluginscript (MIT, vendored)
+  - reference engines/niklas2902-py4godot
+  - reference engines/eirteam-eirteam-ffmpeg
+  - reference engines/celyk-gputrail
+  - reference engines/alexdarigan-wat

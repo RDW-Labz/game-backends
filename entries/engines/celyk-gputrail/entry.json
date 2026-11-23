@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T13:44:06Z",
+ "category": "engines",
+ "commit": "2026-09-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "celyk/GPUTrail \u2014 A GPU based trail plugin for Godot 4",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "GPUTrail",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "celyk-gputrail",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 314,
+ "system": "A GPU based trail plugin for Godot 4",
+ "upstream": "https://github.com/celyk/GPUTrail",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
