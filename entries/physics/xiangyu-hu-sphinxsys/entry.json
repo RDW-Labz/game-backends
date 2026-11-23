@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:07:59Z",
+ "category": "physics",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Xiangyu-Hu/SPHinXsys \u2014 SPHinXsys provides C++ APIs for engineering simulation and optimization. It aims at complex systems driven by fluid, structure, multi-body dynamics and beyond. The multi-physics library is based on a unique and unified computational framework by which strong coupling has been achieved for all involved physics.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "SPHinXsys",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "xiangyu-hu-sphinxsys",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 600,
+ "system": "SPHinXsys provides C++ APIs for engineering simulation and optimization. It aims at complex systems driven by fluid, structure, multi-body dynamics and beyond. ",
+ "upstream": "https://github.com/Xiangyu-Hu/SPHinXsys",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

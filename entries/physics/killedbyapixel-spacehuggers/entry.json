@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T19:07:57Z",
+ "category": "physics",
+ "commit": "c31a5aaa1168",
+ "delivery": "reference",
+ "description": "KilledByAPixel/SpaceHuggers \u2014 A roguelike platformer with destructible environments in 13KB of JavaScript",
+ "language": "javascript",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "SpaceHuggers",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 185638,
+ "slug": "killedbyapixel-spacehuggers",
+ "source": "github-search:destructible physics game stars:>10",
+ "stars": 289,
+ "system": "A roguelike platformer with destructible environments in 13KB of JavaScript",
+ "upstream": "https://github.com/KilledByAPixel/SpaceHuggers",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

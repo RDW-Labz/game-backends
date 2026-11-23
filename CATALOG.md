@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 18:50 UTC · 901 entries · 240 vendored, 661 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 19:07 UTC · 907 entries · 240 vendored, 667 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
-| [physics](#physics) — Physics | 109 | 29 | 80 |
+| [physics](#physics) — Physics | 115 | 29 | 86 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
@@ -420,7 +420,7 @@ _Generated 2026-11-23 18:50 UTC · 901 entries · 240 vendored, 661 reference-on
 
 ## physics
 
-**Physics** — 109 entries
+**Physics** — 115 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -450,6 +450,7 @@ _Generated 2026-11-23 18:50 UTC · 901 entries · 240 vendored, 661 reference-on
 | [CharacterMovementFundamentals](entries/physics/jan-ott-charactermovementfundamentals/README.md) | A physics-based character controller system for Unity | c# | MIT | reference | [Jan-Ott/CharacterMovementFundamentals](https://github.com/Jan-Ott/CharacterMovementFundamentals) @ `2025-02-09 (branch tip at catalogue time)` |
 | [Chipmunk2D](entries/physics/chipmunk2d/README.md) | 2D rigid bodies, constraints, spatial index | c | MIT | vendored | [slembcke/Chipmunk2D](https://github.com/slembcke/Chipmunk2D) @ `f2f3d66220b8` |
 | [cirobb](entries/physics/joncodeofficial-cirobb/README.md) | A small, readable 2D rigid body physics engine in C++, built around one state-of-the-art solver. | c++ | MIT | reference | [joncodeofficial/cirobb](https://github.com/joncodeofficial/cirobb) @ `2026-10-27 (branch tip at catalogue time)` |
+| [Claude-of-Tanks](entries/physics/kevin-liu-01-claude-of-tanks/README.md) | A World of Tanks-style armored combat simulator built directly with Three.js and Vite: 311 vehicles, 33 destructible battlefields, and 14 modes, with plate-leve | typescript | MIT | reference | [Kevin-Liu-01/Claude-of-Tanks](https://github.com/Kevin-Liu-01/Claude-of-Tanks) @ `c7d111fad41c` |
 | [cloth-physics](entries/physics/esimov-cloth-physics/README.md) | Desktop application for cloth physics simulation using Gio GUI. | go | MIT | reference | [esimov/cloth-physics](https://github.com/esimov/cloth-physics) @ `2026-06-29 (branch tip at catalogue time)` |
 | [Cloth-Simulation-With-python---Verlet-Integration](entries/physics/josephbakulikira-cloth-simulation-with-python-verlet-integration/README.md) | see upstream | python | unknown | reference | [Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration](https://github.com/Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration) @ `2023-02-03 (branch tip at catalogue time)` |
 | [ClothSimulation](entries/physics/johnbuffer-clothsimulation/README.md) | Basic cloth simulation using Verlet integration | c++ | MIT | vendored | [johnBuffer/ClothSimulation](https://github.com/johnBuffer/ClothSimulation) @ `ac5bbce045e8` |
@@ -493,9 +494,11 @@ _Generated 2026-11-23 18:50 UTC · 901 entries · 240 vendored, 661 reference-on
 | [PARC](entries/physics/mshoe-parc/README.md) | PARC: Physics-based Augmentation with Reinforcement Learning for Character Controllers | python | unknown | reference | [mshoe/PARC](https://github.com/mshoe/PARC) @ `2026-02-04 (branch tip at catalogue time)` |
 | [parry](entries/physics/dimforge-parry/README.md) | 2D and 3D collision-detection library for Rust. | rust | Apache-2.0 | reference | [dimforge/parry](https://github.com/dimforge/parry) @ `2026-10-06 (branch tip at catalogue time)` |
 | [ParticlePhysics2D-Unity](entries/physics/pan-pawka-particlephysics2d-unity/README.md) | A fast and stable particle based physics 2D engine for Unity 3D. | c# | none | reference | [pan-pawka/ParticlePhysics2D-Unity](https://github.com/pan-pawka/ParticlePhysics2D-Unity) @ `0930754b74e4` |
+| [pendulum](entries/physics/christophmark-pendulum/README.md) | A physics-inspired 2D browser game for both mobile and desktop that involves an alien swinging from a rope to avoid obstacles in randomly generated, fully destr | javascript | unknown | reference | [christophmark/pendulum](https://github.com/christophmark/pendulum) @ `2017-05-25 (branch tip at catalogue time)` |
 | [phaser-box2d](entries/physics/phaserjs-phaser-box2d/README.md) | A high-performance, industry-standard 2D physics engine built on Box2D v3, delivering incredibly realistic and engaging web game experiences. | javascript | MIT | reference | [phaserjs/phaser-box2d](https://github.com/phaserjs/phaser-box2d) @ `2025-04-03 (branch tip at catalogue time)` |
 | [Physix-go](entries/physics/rudransh61-physix-go/README.md) | A simple Physics engine in GoLang | go | MIT | vendored | [rudransh61/Physix-go](https://github.com/rudransh61/Physix-go) @ `345e56f833a5` |
 | [phyz](entries/physics/muni-works-phyz/README.md) | differentiable physics engine for rust | rust | MIT | reference | [muni-works/phyz](https://github.com/muni-works/phyz) @ `2026-11-10 (branch tip at catalogue time)` |
+| [PixelFlow](entries/physics/diwi-pixelflow/README.md) | A Processing/Java library for high performance GPU-Computing (GLSL). Fluid Simulation + SoftBody Dynamics + Optical Flow + Rendering + Image Processing + Partic | java | MIT | reference | [diwi/PixelFlow](https://github.com/diwi/PixelFlow) @ `2018-01-10 (branch tip at catalogue time)` |
 | [planck.js](entries/physics/piqnt-planck-js/README.md) | 2D JavaScript Physics Engine | typescript | MIT | reference | [piqnt/planck.js](https://github.com/piqnt/planck.js) @ `2026-11-14 (branch tip at catalogue time)` |
 | [PositionBasedDynamics](entries/physics/interactivecomputergraphics-positionbaseddynamics/README.md) | PositionBasedDynamics is a library for the physically-based simulation of rigid bodies, deformable solids and fluids. | c++ | MIT | reference | [InteractiveComputerGraphics/PositionBasedDynamics](https://github.com/InteractiveComputerGraphics/PositionBasedDynamics) @ `10a70bc146a9` |
 | [Principia — lib](entries/physics/principia-lib/README.md) | Box2D-derived 2D physics with custom collision handling | c++ | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b127c2` |
@@ -517,7 +520,10 @@ _Generated 2026-11-23 18:50 UTC · 901 entries · 240 vendored, 661 reference-on
 | [sat-js](entries/physics/jriecken-sat-js/README.md) | A simple JavaScript library for performing 2D collision detection | javascript | MIT | reference | [jriecken/sat-js](https://github.com/jriecken/sat-js) @ `2021-04-05 (branch tip at catalogue time)` |
 | [SIMple-Mechanics](entries/physics/mkhan45-simple-mechanics/README.md) | An educational physics sim for high school physics, part of the SIMple Physics project | rust | GPL-3.0 | reference | [mkhan45/SIMple-Mechanics](https://github.com/mkhan45/SIMple-Mechanics) @ `b5b2b8ed6ba1` |
 | [slice-4d-shooter](entries/physics/maffi44-slice-4d-shooter/README.md) | Slice: 4D Shooter - the first multiplayer action shooter set in four-dimensional space | rust | MIT | reference | [maffi44/slice-4d-shooter](https://github.com/maffi44/slice-4d-shooter) @ `2026-11-23 (branch tip at catalogue time)` |
+| [SpaceHuggers](entries/physics/killedbyapixel-spacehuggers/README.md) | A roguelike platformer with destructible environments in 13KB of JavaScript | javascript | GPL-3.0 | reference | [KilledByAPixel/SpaceHuggers](https://github.com/KilledByAPixel/SpaceHuggers) @ `c31a5aaa1168` |
+| [SPHinXsys](entries/physics/xiangyu-hu-sphinxsys/README.md) | SPHinXsys provides C++ APIs for engineering simulation and optimization. It aims at complex systems driven by fluid, structure, multi-body dynamics and beyond.  | c++ | Apache-2.0 | reference | [Xiangyu-Hu/SPHinXsys](https://github.com/Xiangyu-Hu/SPHinXsys) @ `2026-11-23 (branch tip at catalogue time)` |
 | [spintronics](entries/physics/cool-japan-spintronics/README.md) | A pure Rust library for simulating spin dynamics, spin current generation, and conversion phenomena in magnetic and topological materials. | rust | Apache-2.0 | reference | [cool-japan/spintronics](https://github.com/cool-japan/spintronics) @ `2026-11-12 (branch tip at catalogue time)` |
+| [SPlisHSPlasH](entries/physics/interactivecomputergraphics-splishsplash/README.md) | SPlisHSPlasH is an open-source library for the physically-based simulation of fluids. | c++ | MIT | reference | [InteractiveComputerGraphics/SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH) @ `2026-11-23 (branch tip at catalogue time)` |
 | [stylised-character-controller](entries/physics/joebinns-stylised-character-controller/README.md) | A stylised physics based character controller made in Unity 3D. | c# | MIT | reference | [joebinns/stylised-character-controller](https://github.com/joebinns/stylised-character-controller) @ `2024-05-05 (branch tip at catalogue time)` |
 | [supertux — collision](entries/physics/supertux-collision/README.md) | rigid-body collision and dynamics | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [symbolica](entries/physics/symbolica-dev-symbolica/README.md) | Symbolica is a high-performance computer algebra library for Python and Rust. Manipulate large expressions, match patterns, and generate optimized numerical cod | rust | none | reference | [symbolica-dev/symbolica](https://github.com/symbolica-dev/symbolica) @ `bf6e4e2813db` |

@@ -2194,3 +2194,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/esimov-cloth-physics
   - reference physics/niallhornfx-verletclothmeshcomponent
   - reference physics/josephbakulikira-cloth-simulation-with-python-verlet-integration
+
+- **2026-11-23 19:07 UTC** — tick 721: +2 screened, +4 reference, 2 skipped, catalogue=907
+  - added physics/kevin-liu-01-claude-of-tanks (MIT, reference)
+  - added physics/killedbyapixel-spacehuggers (GPL-3.0, reference)
+  - reference physics/christophmark-pendulum
+  - reference physics/interactivecomputergraphics-splishsplash
+  - reference physics/diwi-pixelflow
+  - reference physics/xiangyu-hu-sphinxsys

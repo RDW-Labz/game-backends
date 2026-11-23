@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:07:59Z",
+ "category": "physics",
+ "commit": "2017-05-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "christophmark/pendulum \u2014 A physics-inspired 2D browser game for both mobile and desktop that involves an alien swinging from a rope to avoid obstacles in randomly generated, fully destructible levels.",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "pendulum",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "christophmark-pendulum",
+ "source": "github-search:destructible physics game stars:>10",
+ "stars": 30,
+ "system": "A physics-inspired 2D browser game for both mobile and desktop that involves an alien swinging from a rope to avoid obstacles in randomly generated, fully destr",
+ "upstream": "https://github.com/christophmark/pendulum",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

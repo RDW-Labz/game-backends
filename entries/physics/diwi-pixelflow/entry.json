@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T19:07:59Z",
+ "category": "physics",
+ "commit": "2018-01-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "diwi/PixelFlow \u2014 A Processing/Java library for high performance GPU-Computing (GLSL). Fluid Simulation + SoftBody Dynamics + Optical Flow + Rendering + Image Processing + Particle Systems + Physics +...",
+ "language": "java",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "PixelFlow",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "diwi-pixelflow",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 1286,
+ "system": "A Processing/Java library for high performance GPU-Computing (GLSL). Fluid Simulation + SoftBody Dynamics + Optical Flow + Rendering + Image Processing + Partic",
+ "upstream": "https://github.com/diwi/PixelFlow",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

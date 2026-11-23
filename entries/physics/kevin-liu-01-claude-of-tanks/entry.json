@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T19:07:54Z",
+ "category": "physics",
+ "commit": "c7d111fad41c",
+ "delivery": "reference",
+ "description": "Kevin-Liu-01/Claude-of-Tanks \u2014 A World of Tanks-style armored combat simulator built directly with Three.js and Vite: 311 vehicles, 33 destructible battlefields, and 14 modes, with plate-level armor, ballistics, modules, spotting, and physics. Play in your browser on desktop or mobile. Built end-to-end by a multi-agent Claude/Codex pipeline.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Claude-of-Tanks",
+ "reference_reason": "size gate: 370 MB",
+ "size_bytes": 388840998,
+ "slug": "kevin-liu-01-claude-of-tanks",
+ "source": "github-search:destructible physics game stars:>10",
+ "stars": 550,
+ "system": "A World of Tanks-style armored combat simulator built directly with Three.js and Vite: 311 vehicles, 33 destructible battlefields, and 14 modes, with plate-leve",
+ "upstream": "https://github.com/Kevin-Liu-01/Claude-of-Tanks",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
