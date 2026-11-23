@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T20:11:08Z",
+ "category": "math",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ddemidov/amgcl \u2014 C++ library for solving large sparse linear systems with algebraic multigrid method",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "amgcl",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ddemidov-amgcl",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 887,
+ "system": "C++ library for solving large sparse linear systems with algebraic multigrid method",
+ "upstream": "https://github.com/ddemidov/amgcl",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T20:11:08Z",
+ "category": "math",
+ "commit": "2026-11-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bitshifter/glam-rs \u2014 A simple and fast linear algebra library for games and graphics",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "glam-rs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "bitshifter-glam-rs",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 2099,
+ "system": "A simple and fast linear algebra library for games and graphics",
+ "upstream": "https://github.com/bitshifter/glam-rs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

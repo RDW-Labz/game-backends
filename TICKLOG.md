@@ -2226,3 +2226,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/seerban-godot-vehicle
   - reference math/randygaul-cute-headers
   - reference math/bitshifter-mathbench-rs
+
+- **2026-11-23 20:11 UTC** — tick 725: +2 screened, +4 reference, 1 skipped, catalogue=931
+  - added math/dimforge-nalgebra (Apache-2.0, vendored)
+  - added math/markrogoyski-math-php (MIT, vendored)
+  - reference math/bitshifter-glam-rs
+  - reference math/rustgd-cgmath
+  - reference math/px4-eigen
+  - reference math/ddemidov-amgcl

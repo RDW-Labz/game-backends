@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T20:11:08Z",
+ "category": "math",
+ "commit": "2024-12-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rustgd/cgmath \u2014 A linear algebra and mathematics library for computer graphics.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "cgmath",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rustgd-cgmath",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 1203,
+ "system": "A linear algebra and mathematics library for computer graphics.",
+ "upstream": "https://github.com/rustgd/cgmath",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

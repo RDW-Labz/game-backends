@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T20:11:07Z",
+ "category": "math",
+ "commit": "1b53720fca6d",
+ "delivery": "vendored",
+ "description": "markrogoyski/math-php \u2014 Powerful modern math library for PHP: Features descriptive statistics and regressions; Continuous and discrete probability distributions; Linear algebra with matrices and vectors, Numerical analysis; special mathematical functions; Algebra",
+ "language": "php",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "math-php",
+ "size_bytes": 1487,
+ "slug": "markrogoyski-math-php",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 2415,
+ "system": "Powerful modern math library for PHP: Features descriptive statistics and regressions; Continuous and discrete probability distributions; Linear algebra with ma",
+ "upstream": "https://github.com/markrogoyski/math-php",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

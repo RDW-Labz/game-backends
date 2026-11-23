@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T20:11:04Z",
+ "category": "math",
+ "commit": "b2466e6c4070",
+ "delivery": "vendored",
+ "description": "dimforge/nalgebra \u2014 Linear algebra library for Rust.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "nalgebra",
+ "size_bytes": 3166337,
+ "slug": "dimforge-nalgebra",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 4817,
+ "system": "Linear algebra library for Rust.",
+ "upstream": "https://github.com/dimforge/nalgebra",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
