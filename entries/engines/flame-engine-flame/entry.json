@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T07:02:25Z",
+ "category": "engines",
+ "commit": "c4c6b3f163d5",
+ "delivery": "vendored",
+ "description": "flame-engine/flame \u2014 A Flutter based game engine.",
+ "language": "dart",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "flame",
+ "size_bytes": 524062,
+ "slug": "flame-engine-flame",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 10822,
+ "system": "A Flutter based game engine.",
+ "upstream": "https://github.com/flame-engine/flame",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

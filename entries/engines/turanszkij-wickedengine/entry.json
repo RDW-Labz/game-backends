@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:02:27Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "turanszkij/WickedEngine \u2014 3D engine with modern graphics",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "WickedEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "turanszkij-wickedengine",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 7377,
+ "system": "3D engine with modern graphics",
+ "upstream": "https://github.com/turanszkij/WickedEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

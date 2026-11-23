@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:02:27Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "renpy/renpy \u2014 The Ren'Py Visual Novel Engine",
+ "language": "ren'py",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "renpy",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "renpy-renpy",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 7054,
+ "system": "The Ren'Py Visual Novel Engine",
+ "upstream": "https://github.com/renpy/renpy",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

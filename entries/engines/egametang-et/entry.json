@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:02:27Z",
+ "category": "engines",
+ "commit": "2026-08-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "egametang/ET \u2014 Unity3D Client And C# Server Framework",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ET",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "egametang-et",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 9965,
+ "system": "Unity3D Client And C# Server Framework",
+ "upstream": "https://github.com/egametang/ET",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

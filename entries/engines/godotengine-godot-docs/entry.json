@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T07:02:27Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "godotengine/godot-docs \u2014 Godot Engine official documentation",
+ "language": "restructuredtext",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "godot-docs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "godotengine-godot-docs",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 5932,
+ "system": "Godot Engine official documentation",
+ "upstream": "https://github.com/godotengine/godot-docs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

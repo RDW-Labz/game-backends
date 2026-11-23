@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 06:46 UTC · 632 entries · 176 vendored, 456 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 07:02 UTC · 638 entries · 177 vendored, 461 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 206 | 43 | 163 |
+| [engines](#engines) — Game engines and engine subsystems | 212 | 44 | 168 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 06:46 UTC · 632 entries · 176 vendored, 456 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 206 entries
+**Game engines and engine subsystems** — 212 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -81,10 +81,12 @@ _Generated 2026-11-23 06:46 UTC · 632 entries · 176 vendored, 456 reference-on
 | [erajs](entries/engines/miswanting-erajs/README.md) | Text-based game engine: TypeScript/Vue front end, Python game scripts, Tauri desktop shell. v0.3 alpha, paused since 2022. | typescript | none | reference | [miswanting/erajs](https://github.com/miswanting/erajs) @ `029e756f07d6` |
 | [esper](entries/engines/benmoran56-esper/README.md) | An ECS (Entity Component System) for Python | python | MIT | reference | [benmoran56/esper](https://github.com/benmoran56/esper) @ `2026-09-20 (branch tip at catalogue time)` |
 | [estella](entries/engines/esengine-estella/README.md) | A fast 2D and 3D game engine — TypeScript SDK, C++/WebAssembly core, visual editor. Ship one project to web, desktop, WeChat MiniGames, playable ads, and native | typescript | Apache-2.0 | reference | [esengine/estella](https://github.com/esengine/estella) @ `2026-11-23 (branch tip at catalogue time)` |
+| [ET](entries/engines/egametang-et/README.md) | Unity3D Client And C# Server Framework | c# | unknown | reference | [egametang/ET](https://github.com/egametang/ET) @ `2026-08-26 (branch tip at catalogue time)` |
 | [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
 | [ezEngine](entries/engines/ezengine-ezengine/README.md) | An open source C++ game engine. | c++ | MIT | reference | [ezEngine/ezEngine](https://github.com/ezEngine/ezEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [F8Framework](entries/engines/tippinggame-f8framework/README.md) | F8 Framework是一个优雅，轻量，符合直觉的基于Unity引擎的游戏框架，组件围绕F8一键启动，框架整体遵循以极少的使用成本开发游戏。F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity  | c# | MIT | reference | [TippingGame/F8Framework](https://github.com/TippingGame/F8Framework) @ `2026-09-15 (branch tip at catalogue time)` |
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
+| [flame](entries/engines/flame-engine-flame/README.md) | A Flutter based game engine. | dart | MIT | vendored | [flame-engine/flame](https://github.com/flame-engine/flame) @ `c4c6b3f163d5` |
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
 | [Flecs](entries/engines/flecs/README.md) | ECS with prefabs, pipelines, hierarchies, REST explorer | c | MIT | reference | [SanderMertens/flecs](https://github.com/SanderMertens/flecs) @ `fa6554710d0d` |
 | [FlexEngine](entries/engines/ajweeks-flexengine/README.md) | Cross-platform game engine with Vulkan backend | c++ | MIT | reference | [ajweeks/FlexEngine](https://github.com/ajweeks/FlexEngine) @ `03aab462249b` |
@@ -106,6 +108,7 @@ _Generated 2026-11-23 06:46 UTC · 632 entries · 176 vendored, 456 reference-on
 | [Go2D](entries/engines/pikedev-go2d/README.md) | GoLang 2D Game Library based on SDL 1.3. This can be used to easily write games using Go (www.golang.org) using SDL 1.3 for hardware-accelerated rendering (Open | go | unknown | reference | [PikeDev/Go2D](https://github.com/PikeDev/Go2D) @ `2011-09-18 (branch tip at catalogue time)` |
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
 | [godot-cpp (GDExtension bindings)](entries/engines/godot-cpp/README.md) | C++ bindings/extension ABI for Godot | c++ | MIT | reference | [godotengine/godot-cpp](https://github.com/godotengine/godot-cpp) @ `2a4c066e1e8c` |
+| [godot-docs](entries/engines/godotengine-godot-docs/README.md) | Godot Engine official documentation | restructuredtext | unknown | reference | [godotengine/godot-docs](https://github.com/godotengine/godot-docs) @ `2026-11-22 (branch tip at catalogue time)` |
 | [godot-manager](entries/engines/eumario-godot-manager/README.md) | A Project, Version and Addons/Plugins manager for Godot Game Engine. | c# | MIT | reference | [eumario/godot-manager](https://github.com/eumario/godot-manager) @ `2026-03-31 (branch tip at catalogue time)` |
 | [godot-mcp](entries/engines/coding-solo-godot-mcp/README.md) | MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output. | javascript | MIT | vendored | [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) @ `1209744fad78` |
 | [Godot-MCP](entries/engines/ivanmurzak-godot-mcp/README.md) | Godot-MCP — Model Context Protocol (MCP) integration for the Godot Engine. AI tools for the Godot Editor in C#, with cloud connection to ai-game.dev. Apache-2.0 | c# | Apache-2.0 | reference | [IvanMurzak/Godot-MCP](https://github.com/IvanMurzak/Godot-MCP) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -115,6 +118,7 @@ _Generated 2026-11-23 06:46 UTC · 632 entries · 176 vendored, 456 reference-on
 | [goworld](entries/engines/xiaonanln-goworld/README.md) | Scalable Distributed Game Server Engine with Hot Swapping in Golang | go | Apache-2.0 | reference | [xiaonanln/goworld](https://github.com/xiaonanln/goworld) @ `2025-11-14 (branch tip at catalogue time)` |
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
+| [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
 | [Ikemen-GO](entries/engines/ikemen-engine-ikemen-go/README.md) | An open-source fighting game engine that supports MUGEN resources. | go | unknown | reference | [ikemen-engine/Ikemen-GO](https://github.com/ikemen-engine/Ikemen-GO) @ `2026-11-22 (branch tip at catalogue time)` |
 | [imgui](entries/engines/ocornut-imgui/README.md) | Dear ImGui: Bloat-free Graphical User interface for C++ with minimal dependencies | c++ | MIT | vendored | [ocornut/imgui](https://github.com/ocornut/imgui) @ `77fe4588e6af` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
@@ -178,6 +182,7 @@ _Generated 2026-11-23 06:46 UTC · 632 entries · 176 vendored, 456 reference-on
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
+| [renpy](entries/engines/renpy-renpy/README.md) | The Ren'Py Visual Novel Engine | ren'py | unknown | reference | [renpy/renpy](https://github.com/renpy/renpy) @ `2026-11-23 (branch tip at catalogue time)` |
 | [RigelEngine](entries/engines/lethal-guitar-rigelengine/README.md) | A modern re-implementation of the classic DOS game Duke Nukem II | c++ | GPL-2.0 | reference | [lethal-guitar/RigelEngine](https://github.com/lethal-guitar/RigelEngine) @ `30afeff8f0b1` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
 | [RPG-Core](entries/engines/delmarle-rpg-core/README.md) | UNITY engine RPG framework | c# | unknown | reference | [delmarle/RPG-Core](https://github.com/delmarle/RPG-Core) @ `2026-04-14 (branch tip at catalogue time)` |
@@ -221,6 +226,7 @@ _Generated 2026-11-23 06:46 UTC · 632 entries · 176 vendored, 456 reference-on
 | [web-sdk](entries/engines/engineio-web-sdk/README.md) | About The Web Game Engine: Create your own web game with in a declarative way. | typescript | unknown | reference | [engineio/web-sdk](https://github.com/engineio/web-sdk) @ `2025-11-27 (branch tip at catalogue time)` |
 | [WebGAL](entries/engines/openwebgal-webgal/README.md) | A brand new web Visual Novel engine / 全新的网页端视觉小说引擎 | typescript | MPL-2.0 | reference | [OpenWebGAL/WebGAL](https://github.com/OpenWebGAL/WebGAL) @ `2026-11-21 (branch tip at catalogue time)` |
 | [webTaleKit](entries/engines/endohizumi-webtalekit/README.md) | A visual novel game engine written in JavaScript (TypeScript) that allows full customization of the UI. | typescript | MIT | reference | [EndoHizumi/webTaleKit](https://github.com/EndoHizumi/webTaleKit) @ `2026-11-17 (branch tip at catalogue time)` |
+| [WickedEngine](entries/engines/turanszkij-wickedengine/README.md) | 3D engine with modern graphics | c++ | MIT | reference | [turanszkij/WickedEngine](https://github.com/turanszkij/WickedEngine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |

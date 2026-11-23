@@ -1835,3 +1835,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/playcanvas-engine
   - reference engines/sfttech-openage
   - reference engines/luanti-org-luanti
+
+- **2026-11-23 07:02 UTC** — tick 676: +2 screened, +4 reference, 15 skipped, catalogue=638
+  - added engines/horizon-rust-horizon (LGPL-3.0, reference)
+  - added engines/flame-engine-flame (MIT, vendored)
+  - reference engines/egametang-et
+  - reference engines/turanszkij-wickedengine
+  - reference engines/renpy-renpy
+  - reference engines/godotengine-godot-docs

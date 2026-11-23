@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T07:02:21Z",
+ "category": "engines",
+ "commit": "20f0212386b0",
+ "delivery": "reference",
+ "description": "horizon-rust/horizon \u2014 Minecraft 26.3 rewritten in Rust.",
+ "language": "rust",
+ "license": "LGPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "horizon",
+ "reference_reason": "licence: LGPL-3.0 (copyleft-reference)",
+ "size_bytes": 150619000,
+ "slug": "horizon-rust-horizon",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 11801,
+ "system": "Minecraft 26.3 rewritten in Rust.",
+ "upstream": "https://github.com/horizon-rust/horizon",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
