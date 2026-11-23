@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:30:06Z",
+ "category": "engines",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "overreactjs/engine \u2014 Browser-based game engine, built on top of React.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "overreactjs-engine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 57,
+ "system": "Browser-based game engine, built on top of React.",
+ "upstream": "https://github.com/overreactjs/engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

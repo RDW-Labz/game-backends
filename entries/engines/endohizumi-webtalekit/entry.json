@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:30:06Z",
+ "category": "engines",
+ "commit": "2026-11-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "EndoHizumi/webTaleKit \u2014 A visual novel game engine written in JavaScript (TypeScript) that allows full customization of the UI.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "webTaleKit",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "endohizumi-webtalekit",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 60,
+ "system": "A visual novel game engine written in JavaScript (TypeScript) that allows full customization of the UI.",
+ "upstream": "https://github.com/EndoHizumi/webTaleKit",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

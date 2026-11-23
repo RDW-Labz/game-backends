@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T06:30:06Z",
+ "category": "engines",
+ "commit": "2023-04-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kevzettler/multiplayer-voxel-browser-game-engine \u2014 A multiplayer voxel browser game engine",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "multiplayer-voxel-browser-game-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "kevzettler-multiplayer-voxel-browser-game-engine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 60,
+ "system": "A multiplayer voxel browser game engine",
+ "upstream": "https://github.com/kevzettler/multiplayer-voxel-browser-game-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

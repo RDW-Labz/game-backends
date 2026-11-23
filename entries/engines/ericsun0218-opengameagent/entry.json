@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T06:30:05Z",
+ "category": "engines",
+ "commit": "06294f101b5d",
+ "delivery": "vendored",
+ "description": "EricSun0218/OpenGameAgent \u2014 MIT-licensed TypeScript runtime for AI-native game characters and worlds, with durable state, reliable actions, memory, tools, and Unity, Godot, and Unreal Engine integrations.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "OpenGameAgent",
+ "size_bytes": 7443445,
+ "slug": "ericsun0218-opengameagent",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 61,
+ "system": "MIT-licensed TypeScript runtime for AI-native game characters and worlds, with durable state, reliable actions, memory, tools, and Unity, Godot, and Unreal Engi",
+ "upstream": "https://github.com/EricSun0218/OpenGameAgent",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

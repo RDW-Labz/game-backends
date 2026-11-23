@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 06:14 UTC · 620 entries · 173 vendored, 447 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 06:30 UTC · 626 entries · 174 vendored, 452 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 194 | 40 | 154 |
+| [engines](#engines) — Game engines and engine subsystems | 200 | 41 | 159 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 06:14 UTC · 620 entries · 173 vendored, 447 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 194 entries
+**Game engines and engine subsystems** — 200 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -67,6 +67,7 @@ _Generated 2026-11-23 06:14 UTC · 620 entries · 173 vendored, 447 reference-on
 | [egret-core](entries/engines/egret-labs-egret-core/README.md) | Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows. | javascript | unknown | reference | [egret-labs/egret-core](https://github.com/egret-labs/egret-core) @ `2022-07-20 (branch tip at catalogue time)` |
 | [EgretGameEngine](entries/engines/yicaoyimuys-egretgameengine/README.md) | A game client engine in Egret | typescript | none | reference | [yicaoyimuys/EgretGameEngine](https://github.com/yicaoyimuys/EgretGameEngine) @ `d60a02cfaee2` |
 | [engine](entries/engines/g3n-engine/README.md) | Go 3D Game Engine (http://g3n.rocks) | go | BSD-2-Clause | reference | [g3n/engine](https://github.com/g3n/engine) @ `2026-11-21 (branch tip at catalogue time)` |
+| [engine](entries/engines/overreactjs-engine/README.md) | Browser-based game engine, built on top of React. | typescript | MIT | reference | [overreactjs/engine](https://github.com/overreactjs/engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [engine](entries/engines/pkmn-engine/README.md) | A minimal, complete, Pokémon battle simulation engine optimized for performance | zig | MIT | vendored | [pkmn/engine](https://github.com/pkmn/engine) @ `df3c333f0947` |
 | [engo](entries/engines/engoengine-engo/README.md) | Engo is an open-source 2D game engine written in Go. | go | MIT | reference | [EngoEngine/engo](https://github.com/EngoEngine/engo) @ `2026-03-30 (branch tip at catalogue time)` |
 | [Entitas](entries/engines/sschmid-entitas/README.md) | Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity | c# | MIT | vendored | [sschmid/Entitas](https://github.com/sschmid/Entitas) @ `37547d1bd280` |
@@ -75,6 +76,7 @@ _Generated 2026-11-23 06:14 UTC · 620 entries · 173 vendored, 447 reference-on
 | [eos_plugin_for_unity](entries/engines/eos-contrib-eos-plugin-for-unity/README.md) | Repository for EOS Plugin for Unity, bringing the functionality of Epic Online Services to the Unity Game Engine. | c# | MIT | reference | [EOS-Contrib/eos_plugin_for_unity](https://github.com/EOS-Contrib/eos_plugin_for_unity) @ `c5167a5fa86d` |
 | [EpicSurvivalGame](entries/engines/tomlooman-epicsurvivalgame/README.md) | Third-person Survival Game for Unreal Engine (Sample Project) | c++ | MIT | vendored | [tomlooman/EpicSurvivalGame](https://github.com/tomlooman/EpicSurvivalGame) @ `23159c1c8560` |
 | [EQAI](entries/engines/ahmadhassan-bted-eqai/README.md) | A highly specialized reverse-engineering pipeline designed to structurally transplant original Vanilla character models into the EverQuest Online Adventures: Fr | python | unknown | reference | [AhmadHassan-BTed/EQAI](https://github.com/AhmadHassan-BTed/EQAI) @ `2026-07-03 (branch tip at catalogue time)` |
+| [erajs](entries/engines/miswanting-erajs/README.md) | Text-based game engine: TypeScript/Vue front end, Python game scripts, Tauri desktop shell. v0.3 alpha, paused since 2022. | typescript | none | reference | [miswanting/erajs](https://github.com/miswanting/erajs) @ `029e756f07d6` |
 | [esper](entries/engines/benmoran56-esper/README.md) | An ECS (Entity Component System) for Python | python | MIT | reference | [benmoran56/esper](https://github.com/benmoran56/esper) @ `2026-09-20 (branch tip at catalogue time)` |
 | [estella](entries/engines/esengine-estella/README.md) | A fast 2D and 3D game engine — TypeScript SDK, C++/WebAssembly core, visual editor. Ship one project to web, desktop, WeChat MiniGames, playable ads, and native | typescript | Apache-2.0 | reference | [esengine/estella](https://github.com/esengine/estella) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
@@ -128,6 +130,7 @@ _Generated 2026-11-23 06:14 UTC · 620 entries · 173 vendored, 447 reference-on
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
+| [multiplayer-voxel-browser-game-engine](entries/engines/kevzettler-multiplayer-voxel-browser-game-engine/README.md) | A multiplayer voxel browser game engine | typescript | unknown | reference | [kevzettler/multiplayer-voxel-browser-game-engine](https://github.com/kevzettler/multiplayer-voxel-browser-game-engine) @ `2023-04-24 (branch tip at catalogue time)` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
 | [MusicEngine](entries/engines/geekdrums-musicengine/README.md) | make music synced game with Unity / ADX2 / Wwise | c# | unknown | reference | [geekdrums/MusicEngine](https://github.com/geekdrums/MusicEngine) @ `2023-01-09 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
@@ -138,6 +141,7 @@ _Generated 2026-11-23 06:14 UTC · 620 entries · 173 vendored, 447 reference-on
 | [open_spiel — core](entries/engines/open-spiel-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
 | [OpenAI-Unity](entries/engines/srcnalt-openai-unity/README.md) | An unofficial OpenAI Unity Package that aims to help you use OpenAI API directly in Unity Game engine. | c# | MIT | reference | [srcnalt/OpenAI-Unity](https://github.com/srcnalt/OpenAI-Unity) @ `2024-11-27 (branch tip at catalogue time)` |
 | [openblack](entries/engines/openblack-openblack/README.md) | openblack is an open-source game engine that supports playing Black & White (2001). | c++ | GPL-3.0 | reference | [openblack/openblack](https://github.com/openblack/openblack) @ `744c0febf53b` |
+| [OpenGameAgent](entries/engines/ericsun0218-opengameagent/README.md) | MIT-licensed TypeScript runtime for AI-native game characters and worlds, with durable state, reliable actions, memory, tools, and Unity, Godot, and Unreal Engi | typescript | MIT | vendored | [EricSun0218/OpenGameAgent](https://github.com/EricSun0218/OpenGameAgent) @ `06294f101b5d` |
 | [openmw](entries/engines/openmw-openmw/README.md) | OpenMW is an open-source open-world RPG game engine that supports playing Morrowind. Main repo and issue tracker can be found here: https://gitlab.com/OpenMW/op | c++ | GPL-3.0 | reference | [OpenMW/openmw](https://github.com/OpenMW/openmw) @ `77eec0471802` |
 | [OpenRA](entries/engines/openra-openra/README.md) | Open Source real-time strategy game engine for early Westwood games such as Command & Conquer: Red Alert written in C# using SDL and OpenGL. Runs on Windows, Li | c# | GPL-3.0 | reference | [OpenRA/OpenRA](https://github.com/OpenRA/OpenRA) @ `2026-11-22 (branch tip at catalogue time)` |
 | [openrct2 — core](entries/engines/openrct2-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
@@ -153,6 +157,7 @@ _Generated 2026-11-23 06:14 UTC · 620 entries · 173 vendored, 447 reference-on
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
 | [Pekka-Kana-2 — engine](entries/engines/pekka-kana-2-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | vendored | [danilolc/pk2](https://github.com/danilolc/pk2) @ `b1c5597` |
 | [phase](entries/engines/phase-rs-phase/README.md) | A rules engine and game client — Rust + WASM + React | rust | Apache-2.0 | reference | [phase-rs/phase](https://github.com/phase-rs/phase) @ `2026-11-23 (branch tip at catalogue time)` |
+| [phaser-candy-crush](entries/engines/anjmao-phaser-candy-crush/README.md) | Candy crush like game made with Phaser HTML5 game engine | typescript | MIT | reference | [anjmao/phaser-candy-crush](https://github.com/anjmao/phaser-candy-crush) @ `2022-09-27 (branch tip at catalogue time)` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
 | [pixi-vn](entries/engines/drincs-productions-pixi-vn/README.md) | Create visual novels/story-driven game with a modern 2D rendering engine and your favorite JavaScript framework. | typescript | LGPL-2.1 | reference | [DRincs-Productions/pixi-vn](https://github.com/DRincs-Productions/pixi-vn) @ `e5fd8e15c912` |
@@ -209,6 +214,7 @@ _Generated 2026-11-23 06:14 UTC · 620 entries · 173 vendored, 447 reference-on
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |
 | [web-sdk](entries/engines/engineio-web-sdk/README.md) | About The Web Game Engine: Create your own web game with in a declarative way. | typescript | unknown | reference | [engineio/web-sdk](https://github.com/engineio/web-sdk) @ `2025-11-27 (branch tip at catalogue time)` |
 | [WebGAL](entries/engines/openwebgal-webgal/README.md) | A brand new web Visual Novel engine / 全新的网页端视觉小说引擎 | typescript | MPL-2.0 | reference | [OpenWebGAL/WebGAL](https://github.com/OpenWebGAL/WebGAL) @ `2026-11-21 (branch tip at catalogue time)` |
+| [webTaleKit](entries/engines/endohizumi-webtalekit/README.md) | A visual novel game engine written in JavaScript (TypeScript) that allows full customization of the UI. | typescript | MIT | reference | [EndoHizumi/webTaleKit](https://github.com/EndoHizumi/webTaleKit) @ `2026-11-17 (branch tip at catalogue time)` |
 | [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |

@@ -1819,3 +1819,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/rouges78-gamestringer
   - reference engines/engineio-web-sdk
   - reference engines/art-emini-duckengine
+
+- **2026-11-23 06:30 UTC** — tick 674: +2 screened, +4 reference, 1 skipped, catalogue=626
+  - added engines/miswanting-erajs (none, reference)
+  - added engines/ericsun0218-opengameagent (MIT, vendored)
+  - reference engines/kevzettler-multiplayer-voxel-browser-game-engine
+  - reference engines/endohizumi-webtalekit
+  - reference engines/overreactjs-engine
+  - reference engines/anjmao-phaser-candy-crush

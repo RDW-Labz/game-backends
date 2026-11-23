@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-23T06:30:03Z",
+ "category": "engines",
+ "commit": "029e756f07d6",
+ "delivery": "reference",
+ "description": "miswanting/erajs \u2014 Text-based game engine: TypeScript/Vue front end, Python game scripts, Tauri desktop shell. v0.3 alpha, paused since 2022.",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "erajs",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 4492,
+ "slug": "miswanting-erajs",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 67,
+ "system": "Text-based game engine: TypeScript/Vue front end, Python game scripts, Tauri desktop shell. v0.3 alpha, paused since 2022.",
+ "upstream": "https://github.com/miswanting/erajs",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
