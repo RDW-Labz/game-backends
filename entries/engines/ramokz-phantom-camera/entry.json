@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T12:56:07Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ramokz/phantom-camera \u2014 A Camera addon for Godot 4. Inspired by Cinemachine.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "phantom-camera",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ramokz-phantom-camera",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 3672,
+ "system": "A Camera addon for Godot 4. Inspired by Cinemachine. ",
+ "upstream": "https://github.com/ramokz/phantom-camera",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2010,3 +2010,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/jibbsmart-gamepadmotionhelpers
   - reference engines/feralai-mpg
   - reference engines/colleagueriley-minigamepad
+
+- **2026-11-23 12:56 UTC** — tick 698: +2 screened, +4 reference, 0 skipped, catalogue=769
+  - added engines/auburnsounds-game-mixer (MIT, vendored)
+  - added engines/calinou-awesome-godot (CC-BY-4.0, vendored)
+  - reference engines/dialogic-godot-dialogic
+  - reference engines/ramokz-phantom-camera
+  - reference engines/zylann-godot-heightmap-plugin
+  - reference engines/godotengine-godot-vscode-plugin

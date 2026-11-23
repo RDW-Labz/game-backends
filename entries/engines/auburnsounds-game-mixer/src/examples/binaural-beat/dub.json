@@ -1,0 +1,8 @@
+{
+    "name": "binaural-beat",
+
+    "dependencies":
+    {
+        "game-mixer": { "path": "../.."}
+    }
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T12:56:03Z",
+ "category": "engines",
+ "commit": "f64c464ab025",
+ "delivery": "vendored",
+ "description": "AuburnSounds/game-mixer \u2014 Audio mixer and playback library like SDL_mixer but without dependencies.",
+ "language": "d",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "game-mixer",
+ "size_bytes": 1113,
+ "slug": "auburnsounds-game-mixer",
+ "source": "github-search:audio mixer library game stars:>20",
+ "stars": 21,
+ "system": "Audio mixer and playback library like SDL_mixer but without dependencies.",
+ "upstream": "https://github.com/AuburnSounds/game-mixer",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

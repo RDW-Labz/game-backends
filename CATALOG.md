@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 12:40 UTC · 763 entries · 203 vendored, 560 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 12:56 UTC · 769 entries · 205 vendored, 564 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 337 | 70 | 267 |
+| [engines](#engines) — Game engines and engine subsystems | 343 | 72 | 271 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 12:40 UTC · 763 entries · 203 vendored, 560 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 337 entries
+**Game engines and engine subsystems** — 343 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -37,6 +37,7 @@ _Generated 2026-11-23 12:40 UTC · 763 entries · 203 vendored, 560 reference-on
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
 | [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
 | [awesome-game-mashups](entries/engines/bailo167-awesome-game-mashups/README.md) | Curated list of games rebuilt inside other games — cross-game mechanics, engine/runtime mashups, playable ports, and verified viral projects. | python | CC0-1.0 | reference | [bailo167/awesome-game-mashups](https://github.com/bailo167/awesome-game-mashups) @ `2026-11-09 (branch tip at catalogue time)` |
+| [awesome-godot](entries/engines/calinou-awesome-godot/README.md) | A curated list of free/libre plugins, scripts and add-ons for Godot | n/a | CC-BY-4.0 | vendored | [Calinou/awesome-godot](https://github.com/Calinou/awesome-godot) @ `3e8526d9e676` |
 | [awesome-PICO-8](entries/engines/pico-8-awesome-pico-8/README.md) | A curated list of awesome PICO-8 resources, carts, tools and more | n/a | CC0-1.0 | reference | [pico-8/awesome-PICO-8](https://github.com/pico-8/awesome-PICO-8) @ `2026-07-28 (branch tip at catalogue time)` |
 | [axmol](entries/engines/axmolengine-axmol/README.md) | Open-source C++ game engine with Lua for 2D and 3D games across mobile, desktop, WebAssembly, and Xbox (UWP). | c++ | unknown | reference | [axmolengine/axmol](https://github.com/axmolengine/axmol) @ `2026-11-23 (branch tip at catalogue time)` |
 | [azeroth-survivors-re](entries/engines/outthislife-azeroth-survivors-re/README.md) | A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy). | rust | Apache-2.0 | reference | [OutThisLife/azeroth-survivors-re](https://github.com/OutThisLife/azeroth-survivors-re) @ `2026-10-26 (branch tip at catalogue time)` |
@@ -75,6 +76,7 @@ _Generated 2026-11-23 12:40 UTC · 763 entries · 203 vendored, 560 reference-on
 | [DefaultEcs](entries/engines/doraku-defaultecs/README.md) | Entity Component System framework aiming for syntax and usage simplicity with maximum performance for game development. | c# | MIT | vendored | [Doraku/DefaultEcs](https://github.com/Doraku/DefaultEcs) @ `508033cfa22d` |
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
+| [dialogic](entries/engines/dialogic-godot-dialogic/README.md) | 💬 Create Dialogs, Visual Novels, RPGs, and manage Characters with Godot to create your Game! | gdscript | MIT | reference | [dialogic-godot/dialogic](https://github.com/dialogic-godot/dialogic) @ `2026-11-19 (branch tip at catalogue time)` |
 | [dip](entries/engines/diptools-dip/README.md) | Rust application framework focuses on composability, ECS and Web3.  Powered by Bevy game engine, Tauri, and Dioxus. From desktop apps to the Metaverse. | rust | unknown | reference | [diptools/dip](https://github.com/diptools/dip) @ `2026-04-13 (branch tip at catalogue time)` |
 | [dogfight-sandbox-hg2](entries/engines/harfang3d-dogfight-sandbox-hg2/README.md) | Air to air combat sandbox, created in Python 3 using the HARFANG 3D 2 framework. | python | GPL-3.0 | reference | [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2) @ `2026-04-01 (branch tip at catalogue time)` |
 | [dominion-ecs-java](entries/engines/dominion-dev-dominion-ecs-java/README.md) | Insanely fast ECS (Entity Component System) for Java | java | MIT | vendored | [dominion-dev/dominion-ecs-java](https://github.com/dominion-dev/dominion-ecs-java) @ `e3c99d10ffcc` |
@@ -130,6 +132,7 @@ _Generated 2026-11-23 12:40 UTC · 763 entries · 203 vendored, 560 reference-on
 | [freeablo](entries/engines/wheybags-freeablo/README.md) | [ARCHIVED] Modern reimplementation of the Diablo 1 game engine | c++ | GPL-3.0 | reference | [wheybags/freeablo](https://github.com/wheybags/freeablo) @ `2023-04-13 (branch tip at catalogue time)` |
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
 | [Fyrox](entries/engines/fyroxengine-fyrox/README.md) | 3D and 2D game engine written in Rust | rust | MIT | vendored | [FyroxEngine/Fyrox](https://github.com/FyroxEngine/Fyrox) @ `e47bf0f35c9e` |
+| [game-mixer](entries/engines/auburnsounds-game-mixer/README.md) | Audio mixer and playback library like SDL_mixer but without dependencies. | d | MIT | vendored | [AuburnSounds/game-mixer](https://github.com/AuburnSounds/game-mixer) @ `f64c464ab025` |
 | [GameDevMind](entries/engines/gonglei007-gamedevmind/README.md) | 最全面的游戏开发技术图谱(Game Development Map)。帮助游戏开发者们在已知问题上节省时间，省出更多的精力投入到更有创造性的工作中去。 | python | MIT | vendored | [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) @ `652be106e9df` |
 | [GameFramework](entries/engines/ellanjiang-gameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | vendored | [EllanJiang/GameFramework](https://github.com/EllanJiang/GameFramework) @ `d0c010b05167` |
 | [Gamepad](entries/engines/piborg-gamepad/README.md) | A simple library for getting game controller and joystick inputs into Python in Linux. | python | MIT | vendored | [piborg/Gamepad](https://github.com/piborg/Gamepad) @ `016628623078` |
@@ -157,6 +160,8 @@ _Generated 2026-11-23 12:40 UTC · 763 entries · 203 vendored, 560 reference-on
 | [godot-minimal-theme](entries/engines/passivestar-godot-minimal-theme/README.md) | Godot Minimal Theme | n/a | MIT | vendored | [passivestar/godot-minimal-theme](https://github.com/passivestar/godot-minimal-theme) @ `3250c3c79860` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
 | [godot-voip](entries/engines/ikbencasdoei-godot-voip/README.md) | godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project. | rust | MIT | reference | [ikbencasdoei/godot-voip](https://github.com/ikbencasdoei/godot-voip) @ `2024-09-22 (branch tip at catalogue time)` |
+| [godot-vscode-plugin](entries/engines/godotengine-godot-vscode-plugin/README.md) | Godot development tools for VSCode | typescript | MIT | reference | [godotengine/godot-vscode-plugin](https://github.com/godotengine/godot-vscode-plugin) @ `2026-09-10 (branch tip at catalogue time)` |
+| [godot_heightmap_plugin](entries/engines/zylann-godot-heightmap-plugin/README.md) | HeightMap terrain for Godot implemented in GDScript | gdscript | unknown | reference | [Zylann/godot_heightmap_plugin](https://github.com/Zylann/godot_heightmap_plugin) @ `2026-11-13 (branch tip at catalogue time)` |
 | [godot_voxel](entries/engines/zylann-godot-voxel/README.md) | Voxel module for Godot Engine | c++ | MIT | reference | [Zylann/godot_voxel](https://github.com/Zylann/godot_voxel) @ `4b29b0781723` |
 | [golf-engine](entries/engines/bjatkin-golf-engine/README.md) | A small fantasy game engine in WASM using GoLang | go | MIT | reference | [bjatkin/golf-engine](https://github.com/bjatkin/golf-engine) @ `2021-11-27 (branch tip at catalogue time)` |
 | [goworld](entries/engines/xiaonanln-goworld/README.md) | Scalable Distributed Game Server Engine with Hot Swapping in Golang | go | Apache-2.0 | reference | [xiaonanln/goworld](https://github.com/xiaonanln/goworld) @ `2025-11-14 (branch tip at catalogue time)` |
@@ -237,6 +242,7 @@ _Generated 2026-11-23 12:40 UTC · 763 entries · 203 vendored, 560 reference-on
 | [PainterEngine](entries/engines/matrixcascade-painterengine/README.md) | PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C | c | MIT | reference | [matrixcascade/PainterEngine](https://github.com/matrixcascade/PainterEngine) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
 | [Pekka-Kana-2 — engine](entries/engines/pekka-kana-2-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | vendored | [danilolc/pk2](https://github.com/danilolc/pk2) @ `b1c5597` |
+| [phantom-camera](entries/engines/ramokz-phantom-camera/README.md) | A Camera addon for Godot 4. Inspired by Cinemachine.  | gdscript | MIT | reference | [ramokz/phantom-camera](https://github.com/ramokz/phantom-camera) @ `2026-11-22 (branch tip at catalogue time)` |
 | [phase](entries/engines/phase-rs-phase/README.md) | A rules engine and game client — Rust + WASM + React | rust | Apache-2.0 | reference | [phase-rs/phase](https://github.com/phase-rs/phase) @ `2026-11-23 (branch tip at catalogue time)` |
 | [phaser](entries/engines/phaserjs-phaser/README.md) | Phaser is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser](https://github.com/phaserjs/phaser) @ `02d8931b626d` |
 | [phaser-candy-crush](entries/engines/anjmao-phaser-candy-crush/README.md) | Candy crush like game made with Phaser HTML5 game engine | typescript | MIT | reference | [anjmao/phaser-candy-crush](https://github.com/anjmao/phaser-candy-crush) @ `2022-09-27 (branch tip at catalogue time)` |

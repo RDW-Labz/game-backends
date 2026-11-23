@@ -1,0 +1,12 @@
+{
+    "name": "loopback",
+
+    "dependencies":
+    {
+        "game-mixer": { "path": "../.."}
+    },
+
+    "subConfigurations": {
+        "game-mixer": "only-loopback"
+    }
+}

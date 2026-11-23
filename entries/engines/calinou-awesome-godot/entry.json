@@ -1,0 +1,21 @@
+{
+ "added_at": "2026-11-23T12:56:05Z",
+ "attribution": "Calinou/awesome-godot is licensed CC BY 4.0 \u2014 attribution recorded here per policy.",
+ "category": "engines",
+ "commit": "3e8526d9e676",
+ "delivery": "vendored",
+ "description": "Calinou/awesome-godot \u2014 A curated list of free/libre plugins, scripts and add-ons for Godot",
+ "language": "n/a",
+ "license": "CC-BY-4.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean-with-attribution",
+ "name": "awesome-godot",
+ "size_bytes": 0,
+ "slug": "calinou-awesome-godot",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 11024,
+ "system": "A curated list of free/libre plugins, scripts and add-ons for Godot",
+ "upstream": "https://github.com/Calinou/awesome-godot",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
