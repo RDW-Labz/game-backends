@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T01:40:16Z",
+ "category": "engines",
+ "commit": "23159c1c8560",
+ "delivery": "vendored",
+ "description": "tomlooman/EpicSurvivalGame \u2014 Third-person Survival Game for Unreal Engine (Sample Project)",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "EpicSurvivalGame",
+ "size_bytes": 203505,
+ "slug": "tomlooman-epicsurvivalgame",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3401,
+ "system": "Third-person Survival Game for Unreal Engine (Sample Project)",
+ "upstream": "https://github.com/tomlooman/EpicSurvivalGame",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

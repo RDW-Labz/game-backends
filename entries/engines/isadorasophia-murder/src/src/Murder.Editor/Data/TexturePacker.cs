@@ -1,0 +1,930 @@
+﻿using Microsoft.Xna.Framework.Graphics;
+using Murder.Core.Geometry;
+using Murder.Core.Graphics;
+using Murder.Diagnostics;
+using Murder.Editor.Data.Graphics;
+using Murder.Editor.Services;
+using Murder.Serialization;
+using Murder.Services;
+using Murder.Utilities;
+using System.Diagnostics;
+using static Murder.Editor.Data.Graphics.Aseprite;
+
+namespace Murder.Editor.Data
+{
+    /// <summary>
+    /// Indicates in which direction to split an unused area when it gets used
+    /// </summary>
+    public enum SplitType
+    {
+        /// <summary>
+        /// Split Horizontally (textures are stacked up)
+        /// </summary>
+        Horizontal,
+
+        /// <summary>
+        /// Split verticaly (textures are side by side)
+        /// </summary>
+        Vertical,
+    }
+
+    /// <summary>
+    /// Different types of heuristics in how to use the available space
+    /// </summary>
+    public enum BestFitHeuristic
+    {
+        /// <summary>
+        ///
+        /// </summary>
+        Area,
+
+        /// <summary>
+        ///
+        /// </summary>
+        MaxOneAxis,
+    }
+
+    /// <summary>
+    /// A node in the Atlas structure
+    /// </summary>
+    public class Node
+    {
+        /// <summary>
+        /// Bounds of this node in the atlas
+        /// </summary>
+        public Rectangle Bounds;
+
+        /// <summary>
+        /// Texture this node represents
+        /// </summary>
+        public TextureInfo? Texture;
+
+        /// <summary>
+        /// If this is an empty node, indicates how to split it when it will  be used
+        /// </summary>
+        public SplitType SplitType;
+    }
+
+    /// <summary>
+    /// The texture atlas
+    /// </summary>
+    public class Atlas
+    {
+        /// <summary>
+        /// Width in pixels
+        /// </summary>
+        public int Width;
+
+        /// <summary>
+        /// Height in Pixel
+        /// </summary>
+        public int Height;
+
+        /// <summary>
+        /// List of the nodes in the Atlas. This will represent all the textures that are packed into it and all the remaining free space
+        /// </summary>
+        public List<Node> Nodes = new();
+    }
+
+    /// <summary>
+    /// Objects that performs the packing task. Takes a list of textures as input and generates a set of atlas textures/definition pairs
+    /// </summary>
+    public class Packer
+    {
+        /// <summary>
+        /// List of all the textures that need to be packed
+        /// </summary>
+        public List<TextureInfo> SourceTextures;
+
+        /// <summary>
+        /// Stream that recieves all the info logged
+        /// </summary>
+        public StringWriter Log;
+
+        /// <summary>
+        /// Stream that recieves all the error info
+        /// </summary>
+        public StringWriter Error;
+
+        /// <summary>
+        /// Number of pixels that separate textures in the atlas
+        /// </summary>
+        private int _padding;
+
+        /// <summary>
+        /// Size of the atlas in pixels. Represents one axis, as atlases are square
+        /// </summary>
+        private int _atlasSize;
+
+        /// <summary>
+        /// Toggle for debug mode, resulting in debug atlasses to check the packing algorithm
+        /// </summary>
+        private bool _debugMode;
+
+        /// <summary>
+        /// Which heuristic to use when doing the fit
+        /// </summary>
+        public BestFitHeuristic FitHeuristic;
+
+        /// <summary>
+        /// List of all the output atlases
+        /// </summary>
+        public List<Atlas> Atlasses;
+
+        /// <summary>
+        /// Maps duplicate frame IDs to their original frame IDs.
+        /// Used to create atlas coordinate aliases for deduplicated frames.
+        /// </summary>
+        public Dictionary<string, string> DuplicateFrameMapping { get; } = new();
+
+        private readonly Dictionary<TextureInfo, ulong> _textureHashes = new();
+        public readonly Dictionary<string, Aseprite> _asepriteCache = new();
+
+        public Packer()
+        {
+            SourceTextures = new List<TextureInfo>();
+            Log = new StringWriter();
+            Error = new StringWriter();
+
+            Atlasses = new();
+        }
+
+        // TODO: Dynamically calculate the size of the atlas
+        public void Process(List<string> files, int atlasSize, int padding, bool debugMode)
+        {
+            using PerfTimeRecorder ptr = new("Texture Packer");
+
+            _padding = padding;
+            _atlasSize = atlasSize;
+            _debugMode = debugMode;
+
+            //1: scan for all the textures we need to pack
+            ScanForTextures(files);
+
+            // 2: Deduplicate across entire atlas
+            DeduplicateTextures();
+
+            // 3: Clear hashes and aseprite caches
+            //_textureHashes.Clear();
+            //_asepriteCache.Clear();
+            // Moved this to ProcessAllFiles
+
+            // 4: Filter and pack
+            List<TextureInfo> textures = SourceTextures
+                .Where(t => t.CroppedBounds.Width > 0 && t.CroppedBounds.Height > 0)
+                .ToList();
+
+            //4 5: generate as many atlasses as needed (with the latest one as small as possible)
+            Atlasses = new List<Atlas>();
+            while (textures.Count > 0)
+            {
+                Atlas atlas = new Atlas();
+                atlas.Width = atlasSize;
+                atlas.Height = atlasSize;
+
+                List<TextureInfo> leftovers = LayoutAtlas(textures, atlas);
+
+                if (leftovers.Count == 0)
+                {
+                    // we reached the last atlas. Check if this last atlas could have been twice smaller
+                    while (leftovers.Count == 0)
+                    {
+                        atlas.Width /= 2;
+                        atlas.Height /= 2;
+                        leftovers = LayoutAtlas(textures, atlas);
+                    }
+                    // we need to go 1 step larger as we found the first size that is to small
+                    atlas.Width *= 2;
+                    atlas.Height *= 2;
+                    leftovers = LayoutAtlas(textures, atlas);
+
+                    foreach (var t in SourceTextures)
+                    {
+                        if (t.CroppedBounds.Width <= 0 || t.CroppedBounds.Height <= 0)
+                        {
+                            atlas.Nodes.Add(new Node()
+                            {
+                                Texture = t,
+                                Bounds = Rectangle.Empty
+                            });
+                        }
+                    }
+                }
+
+                Atlasses.Add(atlas);
+
+                textures = leftovers;
+            }
+        }
+        private void DeduplicateTextures()
+        {
+            using PerfTimeRecorder ptr = new("Deduplicating Textures");
+
+            Dictionary<(ulong hash, int offsetX, int offsetY, int w, int h), TextureInfo> uniqueTextures = new();
+            List<TextureInfo> duplicates = new();
+            int duplicateCount = 0;
+
+            foreach (var ti in SourceTextures)
+            {
+                if (ti.CroppedBounds.Width <= 0 || ti.CroppedBounds.Height <= 0)
+                    continue;
+
+                if (!_textureHashes.TryGetValue(ti, out ulong hash))
+                    continue;
+
+                var key = (hash, ti.TrimArea.X, ti.TrimArea.Y, ti.TrimArea.Width, ti.TrimArea.Height);
+
+                if (uniqueTextures.TryGetValue(key, out var original))
+                {
+                    string thisId = GetTextureAtlasId(ti);
+                    string originalId = GetTextureAtlasId(original);
+                    DuplicateFrameMapping[thisId] = originalId;
+                    duplicates.Add(ti);
+                    duplicateCount++;
+                }
+                else
+                {
+                    uniqueTextures[key] = ti;
+                }
+            }
+
+            var duplicateSet = new HashSet<TextureInfo>(duplicates);
+            SourceTextures = SourceTextures.Where(t => !duplicateSet.Contains(t)).ToList();
+
+            if (duplicateCount > 0)
+            {
+                GameLogger.Log($"Deduplicated {duplicateCount} duplicate frames across atlas");
+            }
+        }
+
+        private string GetTextureAtlasId(TextureInfo ti)
+        {
+            // Build the atlas ID that matches what's used in atlas coordinate generation
+            string baseName = Path.GetFileNameWithoutExtension(ti.Source);
+
+            // Handle relative path structure
+            string relativePath = Aseprite.GetRelativeToContent(
+                FileHelper.GetPathWithoutExtension(ti.Source));
+
+            string id = relativePath;
+
+            if (ti.HasLayers && !string.IsNullOrEmpty(ti.LayerName))
+            {
+                id = $"{id}_{ti.LayerName}";
+            }
+
+            if (ti.HasSlices && !string.IsNullOrEmpty(ti.SliceName))
+            {
+                id = $"{id}_{ti.SliceName}";
+            }
+
+            if (ti.IsAnimation)
+            {
+                id = $"{id}_{ti.Frame:0000}";
+            }
+
+            return id;
+        }
+
+        private static ulong ComputePixelHash(Microsoft.Xna.Framework.Color[] pixels, Point totalSize, IntRectangle crop)
+        {
+            // FNV-1a 64-bit hash
+            ulong hash = 14695981039346656037UL;
+            const ulong prime = 1099511628211UL;
+
+            for (int y = crop.Top; y < crop.Bottom; y++)
+            {
+                for (int x = crop.Left; x < crop.Right; x++)
+                {
+                    int idx = y * totalSize.X + x;
+                    if (idx >= 0 && idx < pixels.Length)
+                    {
+                        hash ^= pixels[idx].PackedValue;
+                        hash *= prime;
+                    }
+                }
+            }
+
+            return hash;
+        }
+        /// <summary>
+        /// Save the processed atlasses at <paramref name="targetFilePathWithoutExtension"/>.
+        /// </summary>
+        public (int count, int maxWidth, int maxHeight) SaveAtlasses(string targetFilePathWithoutExtension)
+        {
+            int atlasCount = 0;
+
+            GameLogger.Verify(Path.IsPathRooted(targetFilePathWithoutExtension));
+
+            if (Path.GetDirectoryName(targetFilePathWithoutExtension) is string directory)
+            {
+                FileManager.GetOrCreateDirectory(directory);
+            }
+
+            int width = 0;
+            int height = 0;
+            foreach (Atlas atlas in Atlasses)
+            {
+                string suffix = StringHelper.FormatSafe("{0:000}" + TextureServices.QOI_GZ_EXTENSION, atlasCount);
+                string filePath = targetFilePathWithoutExtension + suffix;
+
+                // 1: Save images
+                using Texture2D img = CreateAtlasImage(atlas);
+                EditorTextureServices.SaveAsQoiGz(img, filePath);
+
+                width = Math.Max(width, img.Width);
+                height = Math.Max(height, img.Height);
+
+                ++atlasCount;
+            }
+
+            var tw = new StreamWriter(targetFilePathWithoutExtension + ".log");
+
+            tw.WriteLine("--- LOG -------------------------------------------");
+            tw.WriteLine(Log.ToString());
+            tw.WriteLine("--- ERROR -----------------------------------------");
+            tw.WriteLine(Error.ToString());
+            tw.Close();
+
+            return (atlasCount, width, height);
+        }
+
+        private void ScanForTextures(List<string> files)
+        {
+            foreach (string path in files)
+            {
+                if (path.StartsWith("_"))
+                    continue;
+
+                switch (Path.GetExtension(path).ToLower())
+                {
+                    case ".ase":
+                    case ".aseprite":
+                        ScanAsepriteFile(path);
+                        break;
+
+                    case ".png":
+                        ScanPngFile(path);
+                        break;
+
+                    default:
+                        GameLogger.Log($"Unknown extension {Path.GetExtension(path)} ({path}), consider adding this to \"Ignored Texture Packing Extensions\" in the Editor Settings.");
+                        continue;
+                }
+            }
+        }
+        private void ScanAsepriteFile(string path)
+        {
+            var ase = new Aseprite(path);
+            _asepriteCache[path] = ase;
+
+            if (ase.Width <= _atlasSize && ase.Height <= _atlasSize)
+            {
+                for (int slice = 0; slice < Math.Max(1, ase.Slices.Count); slice++)
+                {
+                    for (int i = 0; i < ase.FrameCount; i++)
+                    {
+                        // First we export all layers that have a GUID
+                        for (int layerIndex = 0; layerIndex < ase.Layers.Count; layerIndex++)
+                        {
+                            Layer currentLayer = ase.Layers[layerIndex];
+
+                            // We skip reference layers
+                            if (currentLayer.Name.Equals("REF", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                continue;
+                            }
+
+                            // We skip empty Guid layers for now, they will be flattened in the next step
+                            if (currentLayer.Guid == Guid.Empty)
+                            {
+                                continue;
+                            }
+
+                            ScanAsepriteFrame(path, ase, i, layerIndex, slice);
+                        }
+
+                        // Now we try to export all the layers without a guid, merged down
+                        ScanAsepriteFrame(path, ase, i, -1, slice);
+                    }
+                }
+            }
+            else
+            {
+                var error = path + " is too large to fix in the atlas. Skipping!";
+                GameLogger.Error(error);
+                Error.WriteLine(error);
+            }
+        }
+
+        private void ScanAsepriteFrame(string path, Aseprite ase, int frame, int layer, int sliceIndex)
+        {
+            TextureInfo ti = new TextureInfo();
+            Slice slice = ase.Slices[sliceIndex];
+
+            ti.Source = path;
+            ti.SliceName = slice.Name;
+            ti.HasSlices = ase.Slices.Count > 1;
+            ti.SliceSize = new(slice.Width, slice.Height);
+
+            var startingCrop = new IntRectangle(slice.OriginX, slice.OriginY, slice.Width, slice.Height);
+            startingCrop = startingCrop.Intersection(new IntRectangle(0, 0, ase.Width, ase.Height));
+
+            Microsoft.Xna.Framework.Color[] pixels;
+
+            if (layer >= 0)
+            {
+
+                pixels = GetPixelsFromLayer(ase, frame, layer);
+            }
+            else
+            {
+                pixels = ase.Frames[frame].Pixels;
+            }
+
+            ti.CroppedBounds = CalculateCrop(pixels, new(ase.Width, ase.Height), startingCrop);
+
+            if (ti.CroppedBounds.Width <= 0 || ti.CroppedBounds.Height <= 0)
+            {
+                ti.CroppedBounds = IntRectangle.Empty;
+            }
+            else
+            {
+                // Store hash separately
+                ulong hash = ComputePixelHash(pixels, new(ase.Width, ase.Height), ti.CroppedBounds);
+                _textureHashes[ti] = hash;
+            }
+
+            ti.TrimArea = new IntRectangle(
+                ti.CroppedBounds.X - slice.OriginX,
+                ti.CroppedBounds.Y - slice.OriginY,
+                ti.CroppedBounds.Width,
+                ti.CroppedBounds.Height);
+
+            if (layer >= 0)
+            {
+                ti.HasLayers = true;
+                ti.Layer = layer;
+                ti.LayerName = ase.Layers[layer].Name;
+            }
+
+            ti.Frame = frame;
+            if (ase.FrameCount > 1)
+                ti.IsAnimation = true;
+
+            SourceTextures.Add(ti);
+        }
+
+        private void ScanPngFile(string path)
+        {
+            using Texture2D img = TextureServices.FromFile(Architect.GraphicsDevice, path);
+
+            if (img != null)
+            {
+                if (img.Width <= _atlasSize && img.Height <= _atlasSize)
+                {
+                    TextureInfo ti = new TextureInfo();
+
+                    ti.Source = path;
+                    ti.SliceSize = new(img.Width, img.Height);
+                    var pixels = new Microsoft.Xna.Framework.Color[img.Width * img.Height];
+                    img.GetData(pixels);
+                    ti.TrimArea = ti.CroppedBounds = CalculateCrop(pixels, ti.SliceSize, new(0, 0, ti.SliceSize.X, ti.SliceSize.Y));
+                    SourceTextures.Add(ti);
+
+                    Log.WriteLine("Added " + path);
+                }
+                else
+                {
+                    var error = path + " is too large to fix in the atlas. Skipping!";
+                    GameLogger.Error(error);
+                    Error.WriteLine(error);
+                }
+            }
+        }
+
+        private void HorizontalSplit(Node toSplit, int width, int height, Queue<Node> list)
+        {
+            Node n1 = new Node();
+            n1.Bounds.X = toSplit.Bounds.X + width + _padding;
+            n1.Bounds.Y = toSplit.Bounds.Y;
+            n1.Bounds.Width = toSplit.Bounds.Width - width - _padding;
+            n1.Bounds.Height = height;
+            n1.SplitType = SplitType.Vertical;
+
+            Node n2 = new Node();
+            n2.Bounds.X = toSplit.Bounds.X;
+            n2.Bounds.Y = toSplit.Bounds.Y + height + _padding;
+            n2.Bounds.Width = toSplit.Bounds.Width;
+            n2.Bounds.Height = toSplit.Bounds.Height - height - _padding;
+            n2.SplitType = SplitType.Horizontal;
+
+            if (n1.Bounds.Width > 0 && n1.Bounds.Height > 0)
+                list.Enqueue(n1);
+            if (n2.Bounds.Width > 0 && n2.Bounds.Height > 0)
+                list.Enqueue(n2);
+        }
+
+        private void VerticalSplit(Node toSplit, int width, int height, Queue<Node> list)
+        {
+            Node n1 = new Node();
+            n1.Bounds.X = toSplit.Bounds.X + width + _padding;
+            n1.Bounds.Y = toSplit.Bounds.Y;
+            n1.Bounds.Width = toSplit.Bounds.Width - width - _padding;
+            n1.Bounds.Height = toSplit.Bounds.Height;
+            n1.SplitType = SplitType.Vertical;
+
+            Node n2 = new Node();
+            n2.Bounds.X = toSplit.Bounds.X;
+            n2.Bounds.Y = toSplit.Bounds.Y + height + _padding;
+            n2.Bounds.Width = width;
+            n2.Bounds.Height = toSplit.Bounds.Height - height - _padding;
+            n2.SplitType = SplitType.Horizontal;
+
+            if (n1.Bounds.Width > 0 && n1.Bounds.Height > 0)
+                list.Enqueue(n1);
+            if (n2.Bounds.Width > 0 && n2.Bounds.Height > 0)
+                list.Enqueue(n2);
+        }
+
+        private TextureInfo? FindBestFitForNode(Node _Node, List<TextureInfo> textures)
+        {
+            TextureInfo? bestFit = null;
+
+            float nodeArea = _Node.Bounds.Width * _Node.Bounds.Height;
+            float maxCriteria = 0.0f;
+
+            foreach (TextureInfo ti in textures)
+            {
+                switch (FitHeuristic)
+                {
+                    // Max of Width and Height ratios
+                    case BestFitHeuristic.MaxOneAxis:
+                        if (ti.CroppedBounds.Width <= _Node.Bounds.Width && ti.CroppedBounds.Height <= _Node.Bounds.Height)
+                        {
+                            float wRatio = (float)ti.CroppedBounds.Width / (float)_Node.Bounds.Width;
+                            float hRatio = (float)ti.CroppedBounds.Height / (float)_Node.Bounds.Height;
+                            float ratio = wRatio > hRatio ? wRatio : hRatio;
+                            if (ratio > maxCriteria)
+                            {
+                                maxCriteria = ratio;
+                                bestFit = ti;
+                            }
+                        }
+                        break;
+
+                    // Maximize Area coverage
+                    case BestFitHeuristic.Area:
+
+                        if (ti.CroppedBounds.Width <= _Node.Bounds.Width && ti.CroppedBounds.Height <= _Node.Bounds.Height)
+                        {
+                            float textureArea = ti.CroppedBounds.Width * ti.CroppedBounds.Height;
+                            float coverage = textureArea / nodeArea;
+                            if (coverage > maxCriteria)
+                            {
+                                maxCriteria = coverage;
+                                bestFit = ti;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            return bestFit;
+        }
+
+        private List<TextureInfo> LayoutAtlas(List<TextureInfo> _Textures, Atlas _Atlas)
+        {
+            Queue<Node> freeList = new();
+
+            _Atlas.Nodes = new List<Node>();
+
+            List<TextureInfo> textures = _Textures.ToList();
+
+            Node root = new Node();
+            root.Bounds.Size = new Point(_Atlas.Width, _Atlas.Height);
+            root.SplitType = SplitType.Horizontal;
+
+            freeList.Enqueue(root);
+
+            while (freeList.Count > 0 && textures.Count > 0)
+            {
+                Node node = freeList.Dequeue();
+
+                TextureInfo? bestFit = FindBestFitForNode(node, textures);
+                if (bestFit != null)
+                {
+                    if (node.SplitType == SplitType.Horizontal)
+                    {
+                        HorizontalSplit(node, bestFit.CroppedBounds.Width, bestFit.CroppedBounds.Height, freeList);
+                    }
+                    else
+                    {
+                        VerticalSplit(node, bestFit.CroppedBounds.Width, bestFit.CroppedBounds.Height, freeList);
+                    }
+
+                    node.Texture = bestFit;
+                    node.Bounds.Width = bestFit.CroppedBounds.Width;
+                    node.Bounds.Height = bestFit.CroppedBounds.Height;
+
+                    textures.Remove(bestFit);
+                }
+
+                _Atlas.Nodes.Add(node);
+            }
+
+            return textures;
+        }
+
+        private Texture2D CreateAtlasImage(Atlas atlas)
+        {
+            //  This works on the CPU
+            // I'm still weighting the pros and cons of using the GPU for this
+            var pixels = new Microsoft.Xna.Framework.Color[atlas.Width * atlas.Height];
+
+            var nodesBySource = atlas.Nodes
+                .Where(n => n.Texture != null)
+                .GroupBy(n => n.Texture!.Source);
+
+            foreach (var group in nodesBySource)
+            {
+                string source = group.Key;
+                var extension = Path.GetExtension(source).ToLowerInvariant();
+
+                switch (extension)
+                {
+                    case ".ase":
+                    case ".aseprite":
+                        {
+                            var ase = GetOrLoadAseprite(source);
+
+                            foreach (var node in group)
+                            {
+                                var ti = node.Texture!;
+                                Microsoft.Xna.Framework.Color[]? sourcePixels = ti.Layer == -1
+                                    ? ase.Frames[ti.Frame].Pixels
+                                    : GetPixelsFromLayer(ase, ti.Frame, ti.Layer);
+
+
+                                if (sourcePixels == null)
+                                {
+                                    Error.WriteLine($"No pixel data for {ti.Source}");
+                                    continue;
+                                }
+
+                                // srcStride must be the full canvas width
+                                int expectedLength = ase.Width * ase.Height;
+                                if (sourcePixels.Length != expectedLength)
+                                {
+                                    Error.WriteLine($"Data length of {ti.Source} ({sourcePixels.Length}) " +
+                                                    $"doesn't match canvas size ({expectedLength}).");
+                                    continue;
+                                }
+
+                                // Blit just the cropped region directly into the atlas buffer
+                                BlitCropped(
+                                    pixels, atlas.Width,
+                                    sourcePixels, ase.Width,
+                                    destX: (int)node.Bounds.X,
+                                    destY: (int)node.Bounds.Y,
+                                    crop: ti.CroppedBounds
+                                );
+                            }
+                            break;
+                        }
+
+                    case TextureServices.PNG_EXTENSION:
+                    case TextureServices.QOI_GZ_EXTENSION:
+                        {
+                            foreach (var node in group)
+                            {
+                                var ti = node.Texture!;
+                                using var sourceImg = TextureServices.FromFile(Architect.GraphicsDevice, source);
+                                if (sourceImg != null)
+                                {
+                                    var sourcePixels = new Microsoft.Xna.Framework.Color[sourceImg.Width * sourceImg.Height];
+                                    sourceImg.GetData(sourcePixels);
+
+                                    BlitCropped(
+                                        pixels, atlas.Width,
+                                        sourcePixels, sourceImg.Width,
+                                        destX: (int)node.Bounds.X,
+                                        destY: (int)node.Bounds.Y,
+                                        crop: ti.CroppedBounds
+                                    );
+                                }
+                                else
+                                {
+                                    Error.WriteLine($"Failed to load image '{source}'.");
+                                }
+                            }
+                            break;
+                        }
+
+                    case ".clip":
+                    case ".psd":
+                        break;
+
+                    default:
+                        Error.WriteLine($"Image '{source}' has an unknown extension '{extension}'.");
+                        break;
+                }
+            }
+
+            // Single GPU upload at the very end
+            var texture = new Texture2D(Architect.GraphicsDevice, atlas.Width, atlas.Height);
+            texture.SetData(pixels);
+            return texture;
+        }
+
+        private static void BlitCropped(
+            Microsoft.Xna.Framework.Color[] dest, int destStride,
+            Microsoft.Xna.Framework.Color[] src, int srcStride,
+            int destX, int destY,
+            IntRectangle crop)
+        {
+            for (int y = 0; y < crop.Height; y++)
+            {
+                int srcOffset = (crop.Y + y) * srcStride + crop.X;
+                int dstOffset = (destY + y) * destStride + destX;
+
+                Array.Copy(src, srcOffset, dest, dstOffset, crop.Width);
+            }
+        }
+
+        private Texture2D? CreateTextureFromAseprite(Node n, Aseprite ase)
+        {
+            Debug.Assert(n.Texture is not null);
+
+            var sourceImg = new Texture2D(Architect.GraphicsDevice, ase.Width, ase.Height);
+            sourceImg.Name = $"Source:{n.Texture.Source}";
+
+            Microsoft.Xna.Framework.Color[]? data = n.Texture.Layer == -1
+                ? ase.Frames[n.Texture.Frame].Pixels
+                : GetPixelsFromLayer(ase, n.Texture.Frame, n.Texture.Layer);
+
+            if (data == null || data.Length != ase.Width * ase.Height)
+            {
+                Error.WriteLine($"Data length of {n.Texture.Source} is not equal to the size of the texture.");
+                sourceImg.Dispose();
+                return null;
+            }
+
+            sourceImg.SetData(data);
+
+            if (_debugMode)
+            {
+                RenderServices.DrawQuadOutline(
+                    new Rectangle(n.Bounds.X, n.Bounds.Y, n.Texture.CroppedBounds.Width, n.Texture.CroppedBounds.Height),
+                    Color.Magenta);
+            }
+
+            return sourceImg;
+        }
+
+        private static Microsoft.Xna.Framework.Color[] GetPixelsFromLayer(Aseprite ase, int frameIndex, int layerIndex)
+        {
+            // Is this layer a group? If so this will be a whole thing.
+            if (ase.Layers[layerIndex].Type == Layer.Types.Group)
+            {
+                return ase.MergeGroup(frameIndex, layerIndex);
+            }
+
+            // We can simplify this since it's just a single layer, we don't need to do any merging
+            Frame frame = ase.Frames[frameIndex];
+
+            if (frame.Cels.TryGetValue(layerIndex, out var cel))
+            {
+                if (cel.Link != null)
+                {
+                    if (cel.Pixels != null)
+                    {
+                        GameLogger.Warning($"Warning: Cel at frame {frame}, layer {layerIndex} is a linked cel but also has pixel data. This is unexpected, but we'll use the pixels from the linked cel.");
+                    }
+
+                    var pixels = ase.Frames[cel.Link.Value].Cels[layerIndex].Pixels;
+                    if (pixels != null)
+                    {
+                        return pixels;
+                    }
+
+                    GameLogger.Warning("Linked cell is empty, this is not great");
+                    return new Microsoft.Xna.Framework.Color[ase.Width * ase.Height];
+                }
+
+                return cel.Pixels ?? new Microsoft.Xna.Framework.Color[ase.Width * ase.Height];
+            }
+
+            return new Microsoft.Xna.Framework.Color[ase.Width * ase.Height];
+        }
+
+        private IntRectangle CalculateCrop(Microsoft.Xna.Framework.Color[] pixels, Point totalSize, IntRectangle startingCrop)
+        {
+            IntRectangle cropArea = new(-1, -1, -1, -1);
+            int xHeadstart1 = 0;
+            int xHeadstart2 = 0;
+            // Find top
+            for (int y = startingCrop.Top; y < startingCrop.Bottom; y++)
+            {
+                for (int x = startingCrop.Left; x < startingCrop.Right; x++)
+                {
+                    int pixelCoord = Calculator.OneD(x, y, totalSize.X);
+                    if (pixelCoord < 0 || pixelCoord >= pixels.Length)
+                    {
+                        continue;
+                    }
+                    if (pixels[pixelCoord].A != 0)
+                    {
+                        cropArea.Y = y;
+                        // Get a headstart on the left
+                        xHeadstart1 = x - 1;
+                        break;
+                    }
+                }
+                if (cropArea.Y >= 0)
+                    break;
+            }
+
+            // Find bottom
+            for (int y = startingCrop.Bottom - 1; y > startingCrop.Top; y--)
+            {
+                for (int x = startingCrop.Right - 1; x > startingCrop.Left; x--)
+                {
+                    int pixelCoord = Calculator.OneD(x, y, totalSize.X);
+                    if (pixelCoord < 0 || pixelCoord >= pixels.Length)
+                    {
+                        continue;
+                    }
+                    if (pixels[pixelCoord].A != 0)
+                    {
+                        cropArea.Height = (y - cropArea.Y) + 1;
+                        // Get a headstart on the right
+                        xHeadstart2 = x + 1;
+                        break;
+                    }
+                }
+                if (cropArea.Height >= 0)
+                    break;
+            }
+
+
+            // Find left
+            for (int x = startingCrop.Left; x < Math.Max(xHeadstart1, xHeadstart2); x++)
+            {
+                for (int y = cropArea.Top; y < cropArea.Bottom; y++)
+                {
+                    int pixelCoord = Calculator.OneD(x, y, totalSize.X);
+                    if (pixelCoord < 0 || pixelCoord >= pixels.Length)
+                    {
+                        continue;
+                    }
+                    if (pixels[pixelCoord].A != 0)
+                    {
+                        cropArea.X = x;
+                        break;
+                    }
+                }
+                if (cropArea.X >= 0)
+                    break;
+            }
+
+            // Find right
+            for (int x = startingCrop.Right - 1; x > Math.Min(xHeadstart1, xHeadstart2); x--)
+            {
+
+                for (int y = startingCrop.Bottom - 1; y > startingCrop.Top; y--)
+                {
+                    int pixelCoord = Calculator.OneD(x, y, totalSize.X);
+                    if (pixelCoord < 0 || pixelCoord >= pixels.Length)
+                    {
+                        continue;
+                    }
+                    if (pixels[pixelCoord].A != 0)
+                    {
+                        cropArea.Width = x - cropArea.X + 1;
+                        break;
+                    }
+                }
+                if (cropArea.Width >= 0)
+                    break;
+            }
+
+            return cropArea;
+        }
+
+        public Aseprite GetOrLoadAseprite(string path)
+        {
+            if (!_asepriteCache.TryGetValue(path, out var ase))
+            {
+                ase = new Aseprite(path);
+                _asepriteCache[path] = ase;
+            }
+            return ase;
+        }
+        public void ClearCache()
+        {
+            _asepriteCache.Clear();
+            _textureHashes.Clear();
+        }
+    }
+}

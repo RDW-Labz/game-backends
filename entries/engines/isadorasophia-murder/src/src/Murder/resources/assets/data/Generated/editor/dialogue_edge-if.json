@@ -1,0 +1,63 @@
+{
+  "$type": "Murder.Assets.Graphics.SpriteAsset",
+  "Animations": {
+    "": {
+      "Frames": [
+        0
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    }
+  },
+  "Atlas": "editor",
+  "Frames": [
+    {
+      "AtlasIndex": 0,
+      "Name": "dialogue_edge-if",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 194,
+        "Y": 152,
+        "Width": 13,
+        "Height": 9
+      },
+      "UV": {
+        "X": 0.37890625,
+        "Y": 0.296875,
+        "Width": 0.025390625,
+        "Height": 0.017578125
+      },
+      "TrimArea": {
+        "X": 2,
+        "Y": 4,
+        "Width": 13,
+        "Height": 9
+      },
+      "AtlasId": "editor"
+    }
+  ],
+  "Origin": {
+    "X": 8,
+    "Y": 8
+  },
+  "Size": {
+    "X": 16,
+    "Y": 16
+  },
+  "NineSlice": {
+    "X": 0,
+    "Y": 0,
+    "Width": 0,
+    "Height": 0
+  },
+  "Name": "dialogue_edge-if",
+  "Guid": "a8d14412-3b6a-f782-a94c-0acaf695e288",
+  "editorPath": "#\uF085Generated\\editor"
+}

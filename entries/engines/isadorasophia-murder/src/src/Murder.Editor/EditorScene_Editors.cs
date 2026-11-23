@@ -1,0 +1,531 @@
+﻿using ImGuiNET;
+using Microsoft.Xna.Framework.Input;
+using Murder.Assets;
+using Murder.Core.Graphics;
+using Murder.Diagnostics;
+using Murder.Editor.CustomComponents;
+using Murder.Editor.CustomEditors;
+using Murder.Editor.ImGuiExtended;
+using Murder.Editor.Utilities;
+using Murder.Serialization;
+using Murder.Utilities;
+using System.Collections.Immutable;
+using System.IO;
+using System.Numerics;
+
+namespace Murder.Editor
+{
+    public partial class EditorScene
+    {
+        private float _copiedTime = -1;
+        private record CustomEditorInstance : IDisposable
+        {
+            public readonly RenderContext SharedRenderContext;
+            public readonly CustomEditor Editor;
+            public int Counter = 1;
+
+            public CustomEditorInstance(Type t)
+            {
+                Editor = (CustomEditor)Activator.CreateInstance(t)!;
+
+                SharedRenderContext = Game.Instance.CreateRenderContext(Game.GraphicsDevice, new(320, 240), RenderContextFlags.Debug | RenderContextFlags.Editor);
+                SharedRenderContext.RenderToScreen = false;
+            }
+
+            public void Dispose()
+            {
+                SharedRenderContext.Dispose();
+                Editor.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Maps the assets guids to their corresponding editor type.
+        /// </summary>
+        private readonly Dictionary<Guid, Type> _guidToEditors = new();
+
+        /// <summary>
+        /// Maps the custom editor types with their active instance.
+        /// </summary>
+        private readonly Dictionary<Type, CustomEditorInstance> _editors = new();
+
+        private bool _initializedEditors = false;
+
+        private CustomEditorInstance? _lastActiveEditorInstance = null;
+
+        private float _lastTimeSavedEditorSettings;
+        public bool ShowReferencesWindow = false;
+
+        private void UpdateSelectedEditor()
+        {
+            if (_selectedTab != Guid.Empty)
+            {
+                UpdateSelectedAsset();
+            }
+
+            _lastActiveEditorInstance?.Editor.UpdateEditor();
+        }
+
+        private void DrawAssetEditors()
+        {
+            GameAsset? closeTab = null;
+
+            foreach (GameAsset currentAsset in _selectedAssets.Values.ToImmutableArray())
+            {
+                bool show = true;
+
+                ImGui.SetNextWindowDockID(EDITOR_DOCK_ID, ImGuiCond.Appearing);
+                ImGuiWindowFlags fileSaved = currentAsset.FileChanged ? ImGuiWindowFlags.UnsavedDocument : ImGuiWindowFlags.None;
+                ImGuiWindowFlags focus = ImGuiWindowFlags.NoFocusOnAppearing;
+
+                if (_openAsset == currentAsset.Guid || !_initializedEditors && Architect.EditorSettings.LastOpenedAsset == currentAsset.Guid)
+                {
+                    _openAsset = Guid.Empty;
+                    ImGui.SetNextWindowFocus();
+                }
+
+                if (ImGui.Begin($"{currentAsset.Icon} {currentAsset.GetSimplifiedName()}##{currentAsset.Guid}", ref show, fileSaved | focus) &&
+                    _initializedEditors)
+                {
+                    Architect.EditorSettings.LastOpenedAsset = currentAsset.Guid;
+
+                    if (_selectedTab != currentAsset.Guid)
+                    {
+                        _selectedTab = currentAsset.Guid;
+                        OpenAssetEditor(currentAsset, false);
+                    }
+
+                    DrawSelectedAsset(currentAsset);
+                }
+
+                ImGui.End();
+
+                if (!show)
+                {
+                    closeTab = currentAsset;
+                }
+            }
+
+            _initializedEditors = true;
+
+            if (closeTab != null)
+            {
+                DeleteAssetEditor(closeTab.Guid);
+                _selectedAssets.Remove(closeTab.Guid);
+                _selectedTab = Guid.Empty;
+            }
+        }
+
+        private void UpdateSelectedAsset()
+        {
+            CustomEditor? editor = _lastActiveEditorInstance?.Editor;
+            GameAsset? asset = editor?.Target as GameAsset ?? Game.Data.TryGetAsset<GameAsset>(_selectedTab);
+
+            if (asset is not null && asset.CanBeSaved && Architect.Input.Shortcut(Keys.S, InputHelpers.OSActionModifier))
+            {
+                editor?.PrepareForSaveAsset();
+
+                try
+                {
+                    Architect.EditorData.SaveAsset(asset);
+                }
+                catch
+                {
+                    GameLogger.Error($"Sorry, I was unable to save asset: {asset.Name} :(");
+                }
+            }
+        }
+
+        private void DrawSelectedAsset(GameAsset asset)
+        {
+            GameLogger.Verify(RenderContext is not null);
+
+            ImGui.Spacing();
+
+            CustomEditorInstance? customEditor = GetOrCreateAssetEditor(asset);
+            _lastActiveEditorInstance = customEditor;
+
+            // Draw the editor header
+            if (ImGui.BeginChild("Asset Editor", new System.Numerics.Vector2(-1, -1), ImGuiChildFlags.None))
+            {
+                bool isFavorite = Architect.EditorSettings.FavoriteAssets.Contains(asset.Guid);
+                ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, Vector4.Zero);
+                ImGui.PushStyleColor(ImGuiCol.ButtonActive, Vector4.Zero);
+
+                if (isFavorite)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, Game.Profile.Theme.Yellow);
+                    if (ImGuiHelpers.Button("\uf005###favouriteStar"))
+                    {
+                        Architect.EditorSettings.UnfavoriteAsset(asset.Guid);
+                    }
+                }
+                else
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, Game.Profile.Theme.Faded);
+                    if (ImGuiHelpers.Button("\uf005###favouriteStar"))
+                    {
+                        Architect.EditorSettings.FavoriteAsset(asset.Guid);
+                    }
+                }
+
+                ImGui.PopStyleColor(4);
+                ImGuiHelpers.HelpTooltip("Favorite asset");
+                ImGui.SameLine();
+
+                if (asset.FileChanged)
+                {
+                    ImGuiHelpers.ColorIcon('\uf0c7', Game.Profile.Theme.Red);
+                    ImGui.SameLine();
+                }
+
+                if (asset.IsStoredInSaveData)
+                {
+                    int slot = Architect.EditorData.GetSlotForSaveAsset(asset.Guid);
+                    ImGui.TextColored(Game.Profile.Theme.Faded, $"(FROM SAVE {slot})");
+                }
+                else if (string.IsNullOrWhiteSpace(asset.FilePath))
+                {
+                    ImGui.TextColored(Microsoft.Xna.Framework.Color.DarkRed.ToSysVector4(), $"(FILE NOT SAVED)");
+                }
+                else
+                {
+                    string path = $"({asset.FilePath}){(asset.FileChanged ? "*" : "")}";
+                    if (_copiedTime > 0 && Game.NowUnscaled - _copiedTime < 1)
+                    {
+                        string padding = new string('-', (path.Length - "Copied!".Length) / 2);
+                        ImGui.TextColored(Game.Profile.Theme.Green, $"{padding}Copied!{padding}");
+                    }
+                    else
+                    {
+                        ImGui.TextColored(Microsoft.Xna.Framework.Color.DarkGray.ToSysVector4(), path);
+                    }
+                }
+
+                ImGui.SameLine();
+                if (ImGui.IsItemHovered())
+                {
+                    ImGui.SetTooltip(asset.Guid.ToString());
+                    if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+                    {
+                        ImGui.SetClipboardText(asset.Guid.ToString());
+                        _copiedTime = Game.NowUnscaled;
+                    }
+
+                }
+
+                ImGui.TextColored(Microsoft.Xna.Framework.Color.DarkGray.ToSysVector4(), $"({asset.GetType().Name})");
+
+                ImGui.SameLine();
+                ImGui.PushStyleColor(ImGuiCol.Button, Vector4.Zero);
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, Game.Profile.Theme.BgFaded);
+                ImGui.PushStyleColor(ImGuiCol.ButtonActive, Vector4.Zero);
+                ImGui.PushStyleColor(ImGuiCol.Text, Game.Profile.Theme.Faded);
+                if (ImGui.Button("\uf0c1"))
+                {
+                    ShowReferencesWindow = !ShowReferencesWindow;
+                }
+                ImGui.PopStyleColor(4);
+                ImGuiHelpers.HelpTooltip("Show all references to this asset");
+
+                ImGui.SameLine();
+
+                if (asset.CanBeSaved && (ImGuiHelpers.Button("Save Asset")))
+                {
+                    customEditor?.Editor.PrepareForSaveAsset();
+
+                    try
+                    {
+                        Architect.EditorData.SaveAsset(asset);
+                    }
+                    catch
+                    {
+                        GameLogger.Error($"Sorry, I was unable to save asset: {asset.Name} :(");
+                    }
+                }
+
+                if (asset.CanBeDeleted)
+                {
+                    ImGui.SameLine();
+                    if (ImGuiHelpers.Button("Delete Asset") || Architect.Input.Shortcut(Keys.Delete, InputHelpers.OSActionModifier))
+                    {
+                        ImGui.OpenPopup("Delete?");
+                    }
+                }
+
+                if (asset.CanBeRenamed)
+                {
+                    ImGui.SameLine();
+                    if (ImGuiHelpers.Button("Rename") || Architect.Input.Shortcut(Keys.R, InputHelpers.OSActionModifier))
+                    {
+                        _newAssetName = asset.Name;
+                        ImGui.OpenPopup("Asset Name");
+                    }
+                }
+
+                ImGui.SameLine();
+                if (ImGuiHelpers.Button("Open Folder"))
+                {
+                    string? path = asset.GetEditorAssetDirectoryPath();
+                    if (path is not null)
+                    {
+                        EditorFileManager.OpenFolder(path);
+                    }
+                    else
+                    {
+                        GameLogger.Error($"Couldn't parse the path for {asset.Name}");
+                    }
+                }
+
+                if (asset.IsSavePacked)
+                {
+                    ImGui.SameLine();
+                    if (ImGuiHelpers.Button("Save as Text"))
+                    {
+                        string outputPath = Path.GetTempPath();
+                        string outputFile = Path.Combine(Path.GetTempPath(), "save.json");
+
+                        _ = Game.Data.FileManager.SaveSerializedAsync(asset, outputFile);
+
+                        GameLogger.Log($"Saved asset at {outputFile}.");
+                        EditorFileManager.OpenFolder(outputPath);
+                    }
+                }
+
+                customEditor?.Editor.DrawTopBar();
+                ImGui.SameLine();
+
+                ImGui.SameLine();
+                if (ImGuiHelpers.ColoredButton("Discard Changes"))
+                {
+                    ImGui.OpenPopup("Discard?");
+                }
+
+                //Draw modals
+                DrawDeleteModal(asset);
+                DrawRenameModal(asset);
+                DrawDiscardModal(asset);
+            }
+
+            // Draw the custom editor
+            if (customEditor is not null)
+            {
+                if (customEditor.Editor is AssetEditor assetEditor)
+                {
+                    ImGui.SameLine();
+                    bool showColliders = assetEditor.ShowColliders;
+                    ImGuiHelpers.Checkbox("\uf0c8", ref showColliders);
+                    ImGui.SetItemTooltip("Show colliders");
+                    assetEditor.ShowColliders = showColliders;
+
+                    ImGui.SameLine();
+                    bool showGrid = assetEditor.ShowGrid;
+                    ImGuiHelpers.Checkbox("\uf84c", ref showGrid);
+                    ImGui.SetItemTooltip("Show grid");
+                    assetEditor.ShowGrid = showGrid;
+
+                    ImGui.SameLine();
+                    bool showReflection = assetEditor.ShowReflection;
+                    ImGuiHelpers.Checkbox("\uf24d", ref showReflection);
+                    ImGui.SetItemTooltip($"{(showReflection ? "Show" : "Hide")} reflections");
+                    assetEditor.ShowReflection = showReflection;
+                }
+
+                if (customEditor.Editor is WorldAssetEditor worldEditor)
+                {
+                    ImGui.SameLine();
+                    if (ImGuiHelpers.Button("Reset Camera") || Game.Input.Shortcut(Keys.F12))
+                    {
+                        worldEditor.ResetCamera();
+                    }
+
+                    ImGui.SameLine();
+                    bool showCamera = worldEditor.ShowCameraBounds;
+                    ImGuiHelpers.Checkbox("Show Camera Bounds", ref showCamera);
+
+                    worldEditor.ShowCameraBounds = showCamera;
+
+                    if (worldEditor.ShowCameraBounds)
+                    {
+                        ImGui.SameLine();
+                        if (ImGuiHelpers.Button("Reset Camera Bounds"))
+                        {
+                            worldEditor.ResetCameraBounds();
+                        }
+                    }
+                }
+
+                if (CurrentAsset?.Guid != asset.Guid)
+                {
+                    customEditor.Editor.OpenEditor(Architect.Instance.ImGuiRenderer, customEditor.SharedRenderContext, asset, false);
+                }
+
+                if (Game.NowUnscaled > _lastTimeSavedEditorSettings + 5)
+                {
+                    SaveEditorState();
+                }
+
+                customEditor.Editor.DrawEditor();
+
+                DrawReferencesWindow(asset.Guid);
+            }
+            else
+            {
+                asset.FileChanged |= CustomComponent.ShowEditorOf(ref asset);
+            }
+
+            ImGui.EndChild();
+        }
+
+        private Guid? _referencesFetchGuid;
+        private Task<List<Guid>>? _referencesTask;
+        private void DrawReferencesWindow(Guid guid)
+        {
+            if (ShowReferencesWindow)
+            {
+                ShowReferencesWindow = false;
+                _referencesTask = null;
+                ImGui.OpenPopup("##ReferencesPopup");
+            }
+
+            if (ImGui.BeginPopup("##ReferencesPopup"))
+            {
+                DrawReferencesContents(guid);
+                ImGui.EndPopup();
+            }
+            else
+            {
+                _referencesTask = null;
+            }
+        }
+
+        private void DrawReferencesContents(Guid guid)
+        {
+            if (_referencesTask is null || _referencesFetchGuid != guid)
+            {
+                _referencesFetchGuid = guid;
+                _referencesTask = Task.Run(() => FilteredAssetsForCrossReference.FetchAssetReferences(guid));
+            }
+
+            if (!_referencesTask.IsCompleted)
+            {
+                ImGuiHelpers.LoadingSpinner(8f, 3f, ImGui.GetColorU32(Game.Profile.Theme.Faded));
+                ImGui.SameLine();
+                ImGui.TextColored(Game.Profile.Theme.Faded, "Searching for references...");
+                return;
+            }
+
+            if (!_referencesTask.IsCompletedSuccessfully)
+            {
+                ImGui.TextColored(Game.Profile.Theme.Red, "Failed to fetch references.");
+                return;
+            }
+
+            List<Guid> references = _referencesTask.Result;
+            if (references.Count == 0)
+            {
+                ImGui.TextColored(Game.Profile.Theme.Faded, "This item is not found anywhere else!");
+                return;
+            }
+
+            bool any = false;
+            foreach (Guid g in references)
+            {
+                if (g == guid)
+                {
+                    continue; // Skip self reference
+                }
+
+                if (Game.Data.TryGetAsset(g) is not GameAsset asset)
+                {
+                    continue;
+                }
+
+                any = true;
+                string path = string.Join('/', asset.GetSplitNameWithEditorPath());
+
+                if (ImGui.Selectable($"{path}##{g}"))
+                {
+                    OpenOnTreeView(asset, true);
+                    OpenAssetEditor(asset, false);
+                    ImGui.CloseCurrentPopup();
+                }
+            }
+
+            if (!any)
+            {
+                ImGui.TextColored(Game.Profile.Theme.Faded, "This item is not found anywhere else!");
+            }
+        }
+
+        private CustomEditorInstance? GetOrCreateAssetEditor(GameAsset asset)
+        {
+            if (_guidToEditors.TryGetValue(asset.Guid, out Type? editorType))
+            {
+                return _editors[editorType];
+            }
+
+            if (!CustomEditorsHelper.TryGetCustomEditor(asset.GetType(), out editorType))
+            {
+                // This means that there is no custom editor for this asset.
+                // We will manually serialize this by looking at its fields.
+                return null;
+            }
+
+            _guidToEditors.Add(asset.Guid, editorType);
+
+            if (_editors.TryGetValue(editorType, out CustomEditorInstance? editorInstance))
+            {
+                editorInstance.Counter++;
+                return editorInstance;
+            }
+
+            // Otherwise, create an editor instance.
+            editorInstance = new(editorType);
+            _editors.Add(editorType, editorInstance);
+
+            return editorInstance;
+        }
+
+        private void DeleteAssetEditor(Guid guid)
+        {
+            if (_guidToEditors.TryGetValue(guid, out Type? editorType) &&
+                _editors.TryGetValue(editorType, out CustomEditorInstance? editorInstance))
+            {
+                editorInstance.Editor.CloseEditor(guid);
+                editorInstance.Counter--;
+
+                if (editorInstance.Counter == 0)
+                {
+                    _editors.Remove(editorType);
+
+                    editorInstance.Dispose();
+                }
+            }
+
+            _guidToEditors.Remove(guid);
+        }
+        public Guid OpenAssetEditor(GameAsset asset, bool overwrite)
+        {
+            Architect.EditorSettings.IncrementTimesOpenedAsset(asset.Guid);
+            GameLogger.Verify(RenderContext is not null);
+
+            _selectedAssets[asset.Guid] = asset;
+            _openAsset = _tabToSelect = _tabToSelect == asset.Guid ? Guid.Empty : asset.Guid;
+            OpenOnTreeView(asset, false);
+
+            if (GetOrCreateAssetEditor(asset) is CustomEditorInstance editor)
+            {
+                editor.Editor.OpenEditor(Architect.Instance.ImGuiRenderer, editor.SharedRenderContext, asset, overwrite);
+            }
+
+            return asset.Guid;
+        }
+
+        public void OnViewportChanged()
+        {
+            _lastActiveEditorInstance?.SharedRenderContext.OnViewportChanged();
+        }
+    }
+}

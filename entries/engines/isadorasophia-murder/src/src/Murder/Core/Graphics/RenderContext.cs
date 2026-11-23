@@ -1,0 +1,708 @@
+﻿using Microsoft.Xna.Framework.Graphics;
+using Murder.Core.Geometry;
+using Murder.Diagnostics;
+using Murder.Save;
+using Murder.Serialization;
+using Murder.Services;
+using Murder.Utilities;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
+using System.Numerics;
+using Matrix = Microsoft.Xna.Framework.Matrix;
+
+namespace Murder.Core.Graphics;
+
+public class RenderContext : IDisposable
+{
+    /// <summary>
+    /// The active camera used for rendering scenes.
+    /// </summary>
+    public readonly Camera2D Camera;
+
+    protected readonly RenderContextFlags Settings;
+    protected static int DiagnosticsUpdateViewportCount = 0;
+
+    /// <summary>
+    /// Intended to be the main gameplay batch, influenced by the camera.
+    /// </summary>
+    public Batch2D GameplayBatch => GetBatch(Batches2D.GameplayBatchId);
+    /// <summary>
+    /// Renders behind the <see cref="GameplayBatch"/>, influenced by the camera.
+    /// </summary>
+    public Batch2D FloorBatch => GetBatch(Batches2D.FloorBatchId);
+    /// <summary>
+    /// Renders in front of the <see cref="GameplayBatch"/>, influenced by the camera.
+    /// </summary>
+    public Batch2D GameUiBatch => GetBatch(Batches2D.GameUiBatchId);
+    /// <summary>
+    /// Renders above everything, ignores any camera movement.
+    /// </summary>
+    public Batch2D UiBatch => GetBatch(Batches2D.UiBatchId);
+
+    public Vector2 SubPixelOffset => _subPixelOffset;
+    protected Vector2 _subPixelOffset;
+
+    /// <summary>
+    /// Only used if <see cref="RenderContextFlags.Debug"/> is set, has a nice effect to it. Influenced by the camera.
+    /// </summary>
+    public Batch2D DebugFxBatch => GetBatch(Batches2D.DebugFxBatchId);
+
+    /// <summary>
+    /// Only used if <see cref="RenderContextFlags.Debug"/> is set. Influenced by the camera.
+    /// </summary>
+    public Batch2D DebugBatch => GetBatch(Batches2D.DebugBatchId);
+
+    protected RenderTarget2D? _floorBufferTarget;
+    protected RenderTarget2D? _uiTarget;
+    protected RenderTarget2D? _mainTarget;
+
+    public RenderTarget2D? MainTarget => _mainTarget;
+
+    public BatchPreviewState PreviewState;
+    public bool PreviewStretch;
+
+    public Viewport Viewport = new();
+
+    /// <summary>
+    /// Not used by the base RenderContext, but can be used by derived classes.
+    /// </summary>
+    public float ScreenFade = 0;
+
+    public bool DoNotRender = false;
+
+    public enum BatchPreviewState
+    {
+        None,
+        Step1,
+        Step2,
+        Step3,
+        Gameplay,
+        Ui,
+        Lights,
+        Reflected,
+        Reflection,
+        Debug
+    }
+
+    protected RenderTarget2D? _debugTargetPreview = null;
+
+    protected RenderTarget2D? _debugTarget;
+    /// <summary>
+    /// Temporary buffer with the camera size. Used so we can apply effects
+    /// such as limited palette and bloom on a smaller screen before applying
+    /// it to the final target
+    /// </summary>
+    protected RenderTarget2D? _tempTarget;
+    /// <summary>
+    /// The final screen target, has the real screen size.
+    /// </summary>
+    protected RenderTarget2D? _finalTarget;
+
+    protected GraphicsDevice _graphicsDevice;
+
+    public Point GameBufferSize;
+
+    /// <summary>
+    /// Set when the window size has a change.
+    /// </summary>
+    protected WindowChangeSettings? _pendingWindowSettings = null;
+    protected bool _initializedViewport = false;
+
+    public RenderTarget2D? LastRenderTarget => _finalTarget;
+
+    public readonly CacheDictionary<string, Texture2D> CachedTextTextures = new(32);
+
+    public Batch2D[] _spriteBatches = new Batch2D[32];
+
+    public Batch2D GetBatch(int index)
+    {
+        if (index < _spriteBatches.Length && _spriteBatches[index] != null)
+        {
+            return _spriteBatches[index];
+        }
+
+        GameLogger.Error($"Trying to access invalid Batch2D '{index}' on RenderContext.");
+        return _spriteBatches[0];
+    }
+
+    public static readonly int CAMERA_BLEED = 4;
+
+    public static readonly Vector2 CAMERA_BLEED_VECTOR = new(CAMERA_BLEED, CAMERA_BLEED);
+
+    public bool RenderToScreen = true;
+
+    public Color BackColor => Game.Data.GameProfile.BackColor;
+
+    public Texture2D? ColorGrade;
+
+    protected readonly bool _useDebugBatches;
+    protected Rectangle? _pendingScreenshotAtArea;
+
+    /// <summary>
+    /// Countdown of frames until next screenshot.
+    /// </summary>
+    protected int _takeGameplayScreenShot = -1;
+    public bool TakingScreenshot => _takeGameplayScreenShot > 0;
+
+    protected bool _initialized = false;
+    public enum RenderTargets
+    {
+        MainBufferTarget,
+        FinalTarget,
+        UiTarget
+    }
+
+    /// <summary>
+    /// A context for how to render your game. Holds everything you need to draw on the screen.
+    /// To make your own, extend this class and add it to <see cref="Game.CreateRenderContext(GraphicsDevice, Camera2D, RenderContextFlags)"/>
+    /// Extending your <see cref="Batches2D"/> file is also recommended.
+    /// </summary>
+    public RenderContext(GraphicsDevice graphicsDevice, Camera2D camera, RenderContextFlags settings)
+    {
+        Camera = camera;
+        Settings = settings;
+
+        _useDebugBatches = settings.HasFlag(RenderContextFlags.Debug);
+        _graphicsDevice = graphicsDevice;
+
+        Initialize();
+    }
+
+    public virtual Texture2D GetRenderTargetFromEnum(RenderTargets inspectingRenderTarget)
+    {
+        return inspectingRenderTarget switch
+        {
+            RenderTargets.MainBufferTarget => _mainTarget,
+            RenderTargets.FinalTarget => _finalTarget,
+            RenderTargets.UiTarget => _uiTarget,
+            _ => default
+        } ?? throw new ArgumentException($"Unable to find a render target for {inspectingRenderTarget}.");
+    }
+
+    public virtual void Initialize()
+    {
+        if (_initialized)
+        {
+            GameLogger.Warning("RenderContext already initialized.");
+            return;
+        }
+        _initialized = true;
+        OnClientWindowChanged(new WindowChangeSettings(Game.Instance.GetWindowSize()));
+
+        RegisterSpriteBatch(Batches2D.GameplayBatchId,
+            new("Gameplay",
+            _graphicsDevice,
+            true,
+            Game.Data.ShaderSprite,
+            BatchMode.DepthSortDescending,
+            SamplerState.PointClamp
+            ));
+
+        RegisterSpriteBatch(Batches2D.FloorBatchId,
+            new("Floor",
+            _graphicsDevice,
+            true,
+            Game.Data.ShaderSprite,
+            BatchMode.DepthSortDescending,
+            SamplerState.PointClamp
+            ));
+
+        if (_useDebugBatches)
+        {
+            RegisterSpriteBatch(Batches2D.DebugFxBatchId,
+                new("DebugFx",
+                _graphicsDevice,
+                true,
+                Game.Data.ShaderSprite,
+                BatchMode.DrawOrder,
+                SamplerState.PointClamp
+                ));
+
+            RegisterSpriteBatch(Batches2D.DebugBatchId,
+                new("Debug",
+                _graphicsDevice,
+                true,
+                Game.Data.ShaderSprite,
+                BatchMode.DrawOrder,
+                SamplerState.PointClamp
+                ));
+        }
+
+        RegisterSpriteBatch(Batches2D.GameUiBatchId,
+            new("GameUi",
+            _graphicsDevice,
+            true,
+            Game.Data.ShaderSprite,
+            BatchMode.DepthSortDescending,
+            SamplerState.PointClamp
+            ));
+
+        RegisterSpriteBatch(Batches2D.UiBatchId,
+            new("Ui",
+            _graphicsDevice,
+            false,
+            Game.Data.ShaderSprite,
+            BatchMode.DepthSortDescending,
+            SamplerState.PointClamp
+            ));
+
+        RefreshWindow();
+    }
+
+    /// <summary>
+    /// Sets up a new RenderTarget2D, disposing of the existing one if necessary.
+    /// </summary>
+    /// <param name="existingTarget">The existing RenderTarget2D to be disposed.</param>
+    /// <param name="name">A debug name for the new RenderTarget2D.</param>
+    /// <param name="width">Width of the new RenderTarget2D.</param>
+    /// <param name="height">Height of the new RenderTarget2D.</param>
+    /// <param name="preserveContents">Whether to preserve the contents in the new RenderTarget2D.</param>
+    /// <returns>A new instance of RenderTarget2D.</returns>
+    protected RenderTarget2D SetupRenderTarget(RenderTarget2D? existingTarget, string name, int width, int height, bool preserveContents)
+    {
+        if (existingTarget != null && !existingTarget.IsDisposed)
+        {
+            existingTarget.Dispose();
+            // GameLogger.LogDebug($"Disposed existing RenderTarget2D {existingTarget.Name} of size {existingTarget.Width}x{existingTarget.Height}.");
+        }
+
+        var target = new RenderTarget2D(
+            _graphicsDevice,
+            width,
+            height,
+            mipMap: false,
+            SurfaceFormat.Color,
+            DepthFormat.None,
+            0,
+            preserveContents ? RenderTargetUsage.PreserveContents : RenderTargetUsage.DiscardContents
+        );
+        target.Name = name;
+
+        return target;
+    }
+
+    /// <summary>
+    /// Registers a SpriteBatch at a specified index. If the index is already taken, it will be overwritten.
+    /// </summary>
+    /// <remarks>
+    /// This will automatically trigger a <see cref="Batch2D.Begin(Matrix)"/> call on <see cref="Begin"/>, but will not trigger an <see cref="Batch2D.End()"/>.
+    /// For now you need to extend <see cref="Batch2D.End()"/> and include it yourself.
+    /// </remarks>
+    /// <param name="index">The index at which to register the SpriteBatch.</param>
+    /// <param name="batch">The SpriteBatch to register.</param>
+    protected void RegisterSpriteBatch(int index, Batch2D batch)
+    {
+        // Resize _spriteBatches array if index is out of bounds
+        if (index >= _spriteBatches.Length)
+        {
+            Batch2D[] newSpriteBatches = new Batch2D[index + 4];
+            _spriteBatches.CopyTo(newSpriteBatches, 0);
+            _spriteBatches = newSpriteBatches;
+        }
+
+        // Warn if overwriting an existing SpriteBatch
+        if (_spriteBatches[index] != null)
+        {
+            GameLogger.Warning($"Sprite batch {_spriteBatches[index].Name} is being overwritten by {batch.Name}. Was this on purpose?");
+        }
+
+        // Assign the new SpriteBatch to the specified index
+        _spriteBatches[index] = batch;
+    }
+
+    /// <summary>
+    /// Refreshes the window with the new viewport size and camera scale.
+    /// </summary>
+    /// <returns>
+    /// Whether the window actually required a refresh.
+    /// </returns>
+    protected bool RefreshWindow()
+    {
+        if (_pendingWindowSettings is not WindowChangeSettings settings)
+        {
+            // not really updated?
+            return false;
+        }
+
+        Point nativeResolution = settings.NativeResolution ?? new(Game.DefaultWidth, Game.DefaultHeight);
+
+        ScalingKind scaling = Game.Data.TryFetchPreferences()?.Scaling ?? ScalingKind.Auto;
+        if (Settings.HasFlag(RenderContextFlags.Editor))
+        {
+            scaling = ScalingKind.ThreeX;
+        }
+
+        Viewport = new Viewport(settings.Size, nativeResolution, scaling);
+
+        Camera.UpdateSize(Viewport.NativeResolution);
+
+        _initializedViewport = false;
+        _pendingWindowSettings = null;
+
+        return true;
+    }
+
+    public virtual void Begin()
+    {
+        if (_pendingWindowSettings is not null)
+        {
+            RefreshWindow();
+        }
+
+        if (!_initializedViewport)
+        {
+            UpdateViewport();
+            _initializedViewport = true;
+        }
+
+        // no one should interfere with camera settings at this point.
+        Camera.Lock();
+
+        if (DoNotRender)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _spriteBatches.Length; i++)
+        {
+            if (_spriteBatches[i] is Batch2D batch2D)
+            {
+                batch2D.Begin(Camera.WorldViewProjection);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Called right after <see cref="FloorBatch"/>, <see cref="GameplayBatch"/> and <see cref="GameUiBatch"/> end.
+    /// </summary>
+    /// <param name="mainTarget">Main target with the main game drawn in it. This target's size matches the game resolution.</param>
+    protected virtual void AfterMainRender(RenderTarget2D mainTarget) { }
+
+    /// <summary>
+    /// Called right after the <see cref="UiBatch"/> ends.
+    /// </summary>
+    /// <param name="uiTarget">UI target with the game UI drawn in it. This target's size matches the game resolution.</param>
+    protected virtual void AfterUiRender(RenderTarget2D uiTarget) { }
+
+    /// <summary>
+    /// Last chance to render anything before the contents are drawn on the screen!
+    /// </summary>
+    /// <param name="finalTarget">Final target containing everything that will be rendered on screen. This target's size is the size of the actual game window, since this is what will be rendered on screen.</param>
+    protected virtual void BeforeScreenRender(RenderTarget2D finalTarget) { }
+
+    public virtual void End()
+    {
+        if (DoNotRender)
+        {
+            Camera.Unlock();
+            return;
+        }
+
+        GameLogger.Verify(
+            _uiTarget is not null &&
+            _mainTarget is not null &&
+            _tempTarget is not null &&
+            _finalTarget is not null,
+            "Did not initialize buffer targets before calling RenderContext.End()?");
+
+        // =======================================================>
+        // Draw the floor to a temp batch
+        _graphicsDevice.SetRenderTarget(_tempTarget);
+        _graphicsDevice.Clear(BackColor);
+        FloorBatch.End();     // <=== Floor batch
+                              // =======================================================>
+
+        _graphicsDevice.SetRenderTarget(_mainTarget);
+        RenderServices.DrawTextureQuad(_tempTarget, _tempTarget.Bounds, _mainTarget.Bounds, Color.White, BlendState.Opaque, Game.Data.ShaderSimple);
+        CreateDebugPreviewIfNecessary(BatchPreviewState.Step1, _mainTarget);
+
+        // Draw all the gameplay graphics to _mainTarget
+        GameplayBatch.End();        // <=== Gameplay batch
+        if (_pendingScreenshotAtArea is Rectangle screenshotArea)
+        {
+            Point position = Camera.WorldToScreenPosition(screenshotArea.TopLeft).Round();
+            float scaleFactor = ((float)_finalTarget.Width / _mainTarget.Width);
+            Point screenShotSize = new(screenshotArea.Width, screenshotArea.Height);
+
+            TakeScreenshot(_mainTarget, new IntRectangle(position.X, position.Y, screenshotArea.Width, screenshotArea.Height), recoverRenderTargetOnEnd: true);
+        }
+
+        GameUiBatch.End();          // <=== Ui that follows the camera
+
+        CreateDebugPreviewIfNecessary(BatchPreviewState.Gameplay, _mainTarget);
+
+        AfterMainRender(_mainTarget);
+
+        _graphicsDevice.SetRenderTarget(_uiTarget);
+        _graphicsDevice.Clear(Color.Transparent);
+
+        UiBatch.End();              // <=== Static Ui
+
+        CreateDebugPreviewIfNecessary(BatchPreviewState.Ui, _uiTarget);
+
+        AfterUiRender(_uiTarget);
+
+        _graphicsDevice.SetRenderTarget(_finalTarget);
+
+        _subPixelOffset = new Vector2(
+            Camera.Position.Point().X - Camera.Position.X - CAMERA_BLEED / 2,
+            Camera.Position.Point().Y - Camera.Position.Y - CAMERA_BLEED / 2) * Viewport.Scale;
+
+
+        _graphicsDevice.SetRenderTarget(_finalTarget);
+
+        // Deprecated shader
+        // Game.Data.ShaderPixel?.TrySetParameter("viewportSize", (_mainTarget.Bounds.Size() * Viewport.Scale).ToXnaVector2());
+        // Game.Data.ShaderPixel?.TrySetParameter("texelsScale", _mainTarget.Bounds.Size());
+
+        var textureSize = _tempTarget.Bounds.Size();
+        float texelsScale = (_tempTarget.Bounds.Size() / Viewport.OutputRectangle.Size).X;
+        Game.Data.ShaderPixel?.TrySetParameter("textureSize", new Microsoft.Xna.Framework.Vector2(textureSize.X, textureSize.Y));
+        Game.Data.ShaderPixel?.TrySetParameter("texelsScale", new Microsoft.Xna.Framework.Vector2(texelsScale, texelsScale));
+
+        RenderServices.DrawTextureQuad(_mainTarget,     // <=== Draws the game buffer to the final buffer using a optimized pixel shader
+            _mainTarget.Bounds,
+            new Rectangle(_subPixelOffset, _mainTarget.Bounds.Size() * Viewport.Scale),
+            Color.White, Game.Data.ShaderPixel, BlendState.Opaque, true);
+
+        CreateDebugPreviewIfNecessary(BatchPreviewState.Step2, _finalTarget);
+
+        _graphicsDevice.SetRenderTarget(_finalTarget);
+
+        Game.Data.ShaderPixel?.TrySetParameter("viewportSize", (_uiTarget.Bounds.Size() * Viewport.Scale).ToXnaVector2());
+        Game.Data.ShaderPixel?.TrySetParameter("textureSize", _uiTarget.Bounds.Size());
+        RenderServices.DrawTextureQuad(_uiTarget,     // <=== Draws the ui buffer to the final buffer using a optimized pixel shader
+            _uiTarget.Bounds,
+            new Rectangle(Vector2.Zero, _uiTarget.Bounds.Size() * Viewport.Scale),
+            Color.White, Game.Data.ShaderPixel, BlendState.AlphaBlend, true);
+
+        CreateDebugPreviewIfNecessary(BatchPreviewState.Step3, _finalTarget);
+
+        if (_useDebugBatches)
+        {
+            GameLogger.Verify(_debugTarget is not null);
+
+            // Draw all the debug stuff in the main target again
+            _graphicsDevice.SetRenderTarget(_debugTarget);
+            _graphicsDevice.Clear(Color.Transparent);
+
+            Game.Data.ShaderSimple?.SetTechnique("DefaultTechnique");
+            Game.Data.ShaderSprite?.SetTechnique("DiagonalLines");
+            Game.Data.ShaderSprite?.SetParameter("inputTime", Game.Now);
+            DebugFxBatch.End();
+
+            Game.Data.ShaderSimple?.SetTechnique("DefaultTechnique");
+            Game.Data.ShaderSprite?.SetTechnique("Alpha");
+            GetBatch(Batches2D.DebugBatchId).End();
+
+            CreateDebugPreviewIfNecessary(BatchPreviewState.Debug, _debugTarget);
+            _graphicsDevice.SetRenderTarget(_finalTarget);
+
+            RenderServices.DrawTextureQuad(_debugTarget,     // <=== Draws the debug buffer to the final buffer
+                _debugTarget.Bounds,
+                new Rectangle(_subPixelOffset, _finalTarget.Bounds.Size() + Viewport.Scale * CAMERA_BLEED * 2),
+                Color.White, Game.Data.ShaderSimple, BlendState.AlphaBlend, false);
+        }
+        BeforeScreenRender(_finalTarget);
+
+        // =======================================================>
+        // Time to draw this game to the screen!!
+        // =======================================================>
+        if (_takeGameplayScreenShot > 0)
+        {
+            _takeGameplayScreenShot--;
+            if (_takeGameplayScreenShot == 0)
+            {
+                TakeScreenshot(_mainTarget, _mainTarget.Bounds, recoverRenderTargetOnEnd: false);
+            }
+        }
+
+        _graphicsDevice.SetRenderTarget(null);
+
+        if (RenderToScreen)
+        {
+            _graphicsDevice.Clear(Game.Profile.BackColor);
+
+            // Draw the game normally
+            if (_debugTargetPreview == null || PreviewState == BatchPreviewState.None)
+            {
+                // Draw the final buffer to the viewport output rectangle
+                RenderServices.DrawTextureQuad(_finalTarget,
+                    _finalTarget.Bounds,
+                    Viewport.OutputRectangle,
+                    Color.White, Game.Data.ShaderSimple, BlendState.Opaque, false);
+            }
+            // We are in preview mode, draw the preview buffer instead
+            else
+            {
+                RenderServices.DrawTextureQuad(_debugTargetPreview,
+                    _debugTargetPreview.Bounds, PreviewStretch ? _finalTarget.Bounds : _debugTargetPreview.Bounds,
+                    Color.White, Game.Data.ShaderSimple, BlendState.Opaque, false);
+            }
+        }
+
+        Camera.Unlock();
+    }
+
+    /// <summary>
+    /// Take a screenshot from <paramref name="source"/>.
+    /// </summary>
+    /// <param name="source">Current render target that screenshot will be taken from.</param>
+    /// <param name="clippingArea">Area which will take effect.</param>
+    /// <param name="recoverRenderTargetOnEnd">Whether <see cref="_graphicsDevice"/> should set the 
+    /// render target to null (false) or <paramref name="source"/> (true).</param>
+    protected void TakeScreenshot(RenderTarget2D source, IntRectangle clippingArea, bool recoverRenderTargetOnEnd)
+    {
+        float zoom = Math.Max(1f, Camera.Zoom);
+
+        // How many  pixels fit in the requested area.
+        Point outputSize = new Point(Math.Max(1, Calculator.FloorToInt(clippingArea.Width / zoom)), Math.Max(1, Calculator.FloorToInt(clippingArea.Height / zoom)));
+
+        // Snap the source rect;
+        Point sourceSize = new Point(Calculator.RoundToInt(outputSize.X * zoom), Calculator.RoundToInt(outputSize.Y * zoom));
+        Point sourcePosition = new Point(
+            Calculator.RoundToInt(Calculator.FloorToInt(clippingArea.X / zoom) * zoom),
+            Calculator.RoundToInt(Calculator.FloorToInt(clippingArea.Y / zoom) * zoom));
+
+        // Keep it inside the source so we don't get out of bounds
+        sourcePosition.X = Math.Clamp(sourcePosition.X, 0, Math.Max(0, source.Width - sourceSize.X));
+        sourcePosition.Y = Math.Clamp(sourcePosition.Y, 0, Math.Max(0, source.Height - sourceSize.Y));
+
+        IntRectangle sourceArea = new(sourcePosition.X, sourcePosition.Y, sourceSize.X, sourceSize.Y);
+
+        using RenderTarget2D screenshot = new(_graphicsDevice, outputSize.X, outputSize.Y);
+        _graphicsDevice.SetRenderTarget(screenshot);
+        _graphicsDevice.Clear(Color.Transparent);
+
+        RenderServices.DrawTextureQuad(source, sourceArea, screenshot.Bounds,
+            Color.White, Game.Data.ShaderSimple, BlendState.Opaque, false);
+
+        Game.Data.RecordScreenshot(screenshot);
+        _graphicsDevice.SetRenderTarget(recoverRenderTargetOnEnd ? source : null);
+        _pendingScreenshotAtArea = null;
+    }
+
+    public virtual bool OnClientWindowChanged(WindowChangeSettings settings)
+    {
+        Point nativeResolution = settings.NativeResolution ?? new(Game.DefaultWidth, Game.DefaultHeight);
+        if (!settings.Force && Viewport.Size == settings.Size && Viewport.NativeResolution == nativeResolution)
+        {
+            // No changes, skip
+            return false;
+        }
+
+        _pendingWindowSettings = settings;
+        return true;
+    }
+
+    public virtual void OnViewportChanged()
+    {
+        _initializedViewport = false;
+    }
+
+    [MemberNotNull(
+        nameof(_uiTarget),
+        nameof(_mainTarget),
+        nameof(_tempTarget),
+        nameof(_debugTarget),
+        nameof(_finalTarget))]
+    protected virtual void UpdateViewport()
+    {
+        _uiTarget = SetupRenderTarget(_uiTarget, "Ui", Camera.Width, Camera.Height, false);
+        _mainTarget = SetupRenderTarget(_mainTarget, "Main", Camera.Width + CAMERA_BLEED * 2, Camera.Height + CAMERA_BLEED * 2, true);
+        _tempTarget = SetupRenderTarget(_tempTarget, "Tempo", Camera.Width + CAMERA_BLEED * 2, Camera.Height + CAMERA_BLEED * 2, true);
+        _debugTarget = SetupRenderTarget(_debugTarget, "Debug", Camera.Width + CAMERA_BLEED * 2, Camera.Height + CAMERA_BLEED * 2, true);
+        _finalTarget = SetupRenderTarget(_finalTarget, $"Final-{DiagnosticsUpdateViewportCount++}", Viewport.OutputRectangle.Size.X + CAMERA_BLEED, Viewport.OutputRectangle.Size.Y + CAMERA_BLEED, true);
+
+        GameBufferSize = new Point(Camera.Width + CAMERA_BLEED * 2, Camera.Height + CAMERA_BLEED * 2);
+    }
+
+    /// <summary>
+    /// Unload the render context.
+    /// Called when the render context is no longer being actively displayed.
+    /// </summary>
+    public void Unload()
+    {
+        Dispose();
+
+        Camera.Reset();
+        UnloadImpl();
+
+        _graphicsDevice.SetRenderTarget(null);
+
+        // if we do that it will cause an issue while resizing the window.
+        // Game.GraphicsDevice.Reset();
+    }
+
+    /// <summary>
+    /// Override for custom unload implementations in derived classes.
+    /// </summary>
+    protected virtual void UnloadImpl() { }
+
+    /// <summary>
+    /// Disposes of all associated resources.
+    /// </summary>
+    public virtual void Dispose()
+    {
+        CachedTextTextures.Dispose();
+
+        _floorBufferTarget?.Dispose();
+        _uiTarget?.Dispose();
+        _mainTarget?.Dispose();
+        _debugTarget?.Dispose();
+        _tempTarget?.Dispose();
+        _finalTarget?.Dispose();
+    }
+
+    [Conditional("DEBUG")]
+    public void CreateDebugPreviewIfNecessary(BatchPreviewState currentState, RenderTarget2D target)
+    {
+        if (PreviewState == currentState)
+        {
+            if (_debugTargetPreview == null || _debugTargetPreview.Bounds != target.Bounds)
+            {
+                _debugTargetPreview?.Dispose();
+                _debugTargetPreview = new RenderTarget2D(_graphicsDevice, target.Width, target.Height);
+            }
+
+            _graphicsDevice.SetRenderTarget(_debugTargetPreview);
+            _graphicsDevice.Clear(Color.Transparent);
+            RenderServices.DrawTextureQuad(target,
+                target.Bounds,
+                target.Bounds,
+                Color.White, Game.Data.ShaderSimple, BlendState.NonPremultiplied, false);
+        }
+    }
+
+    /// <summary>
+    /// Record a screenshot capture in the specified area.
+    /// </summary>
+    /// <param name="cameraRect">Area of the camera to capture.</param>
+    public void TakeScreenshotAtArea(Rectangle cameraRect)
+    {
+        _pendingScreenshotAtArea = cameraRect;
+    }
+
+    public void SaveGameplayScreenshot()
+    {
+        _takeGameplayScreenShot = 2;
+    }
+
+    public virtual void OnShadersReloaded()
+    {
+
+    }
+}
+
+public struct WindowChangeSettings
+{
+    public Point Size;
+
+    public Point? NativeResolution { get; init; } = null;
+
+    public ScalingKind ScalingKind { get; init; } = ScalingKind.Auto;
+    public bool Force { get; init; } = false;
+
+    public WindowChangeSettings(Point size) => Size = size;
+}

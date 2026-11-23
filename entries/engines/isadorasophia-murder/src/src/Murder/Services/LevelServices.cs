@@ -1,0 +1,44 @@
+﻿using Bang;
+using Bang.StateMachines;
+using Murder.Assets;
+using Murder.Core.Sounds;
+
+namespace Murder.Services
+{
+    public static class LevelServices
+    {
+        public static ValueTask SwitchScene(Guid nextWorldGuid)
+        {
+            // TODO: Do something fancier?
+            Game.Instance.QueueWorldTransition(nextWorldGuid);
+
+            SaveData? save = MurderSaveServices.TryGetSave();
+            save?.OnBeforeMapSwitch(nextWorldGuid);
+
+            return default;
+        }
+
+        public static ValueTask SwitchSceneAfterSeconds(World world, Guid nextWorldGuid, float seconds)
+        {
+            if (seconds == 0)
+            {
+                // skip any coroutine.
+                SwitchScene(nextWorldGuid);
+                return default;
+            }
+
+            world.RunCoroutine(SwitchSceneOnSecondsCoroutine(nextWorldGuid, seconds));
+            return default;
+        }
+
+        public static IEnumerator<Wait> SwitchSceneOnSecondsCoroutine(Guid nextWorldGuid, float seconds)
+        {
+            yield return Wait.ForSeconds(seconds);
+
+            SoundServices.Stop(SoundLayer.Ambience, fadeOut: true);
+            SoundServices.Stop(SoundLayer.Sfx, fadeOut: true);
+
+            SwitchScene(nextWorldGuid);
+        }
+    }
+}

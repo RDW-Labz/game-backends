@@ -1,0 +1,63 @@
+{
+  "$type": "Murder.Assets.Graphics.SpriteAsset",
+  "Animations": {
+    "": {
+      "Frames": [
+        0
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    }
+  },
+  "Atlas": "editor",
+  "Frames": [
+    {
+      "AtlasIndex": 0,
+      "Name": "dialogue_action",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 0,
+        "Y": 294,
+        "Width": 13,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0,
+        "Y": 0.57421875,
+        "Width": 0.025390625,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 2,
+        "Y": 0,
+        "Width": 13,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    }
+  ],
+  "Origin": {
+    "X": 0,
+    "Y": 0
+  },
+  "Size": {
+    "X": 16,
+    "Y": 16
+  },
+  "NineSlice": {
+    "X": 0,
+    "Y": 0,
+    "Width": 0,
+    "Height": 0
+  },
+  "Name": "dialogue_action",
+  "Guid": "fa6c06b0-c493-d9a2-976d-aaa945e699e4",
+  "editorPath": "#\uF085Generated\\editor"
+}

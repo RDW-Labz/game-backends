@@ -1,0 +1,300 @@
+﻿using Bang;
+using Murder.Attributes;
+using Murder.Core.Geometry;
+using Murder.Core.Graphics;
+using Murder.Data;
+using Murder.Diagnostics;
+using Murder.Utilities;
+using System.Collections.Immutable;
+using System.Numerics;
+using System.Xml.Serialization;
+
+namespace Murder.Assets.Graphics;
+
+[SkipJsonFileIntegrityCheck]
+public class SpriteAsset : GameAsset, IPreview
+{
+    [Serialize]
+    public readonly string Atlas = string.Empty;
+
+    [Serialize]
+    public ImmutableArray<AtlasCoordinates> Frames { get; private set; } = ImmutableArray<AtlasCoordinates>.Empty;
+
+    [Serialize]
+    public ImmutableDictionary<string, Animation> Animations { get; private set; } = ImmutableDictionary<string, Animation>.Empty;
+
+    [Serialize]
+    public Point Origin { get; private set; }
+
+    [Serialize]
+    public Point Size { get; private set; }
+
+    [Serialize]
+    public readonly Rectangle NineSlice;
+
+    public override char Icon => '\uf1fc';
+
+    // we might rename when merging with another asset.
+    public override bool CanBeDeleted => true;
+    public override bool CanBeRenamed => true;
+
+    public override bool CanBeCreated => false;
+    public override string EditorFolder => _editorPath;
+    public override System.Numerics.Vector4 EditorColor => Game.Profile.Theme.Faded;
+
+    private const string _prefixGeneratedPath = "#\uf085Generated";
+
+    [Serialize]
+    [HideInEditor]
+    private string _editorPath = _prefixGeneratedPath;
+
+    public SpriteAsset() { }
+
+    public SpriteAsset(Guid guid, TextureAtlas atlas, string name, ImmutableArray<string> frames, ImmutableDictionary<string, Animation> animations, Point origin, Point size, Rectangle nineSlice)
+    {
+        Guid = guid;
+        Name = name;
+        Atlas = atlas.AtlasId;
+        Animations = animations;
+        Origin = origin;
+        NineSlice = nineSlice;
+
+        Size = size;
+
+        var builder = ImmutableArray.CreateBuilder<AtlasCoordinates>(frames.Length);
+        foreach (var frame in frames)
+        {
+            var coord = atlas.Get(frame);
+            builder.Add(coord);
+        }
+        Frames = builder.ToImmutable();
+    }
+
+    public SpriteAsset(Guid guid, string atlasId, string name, ImmutableArray<string> frames, ImmutableDictionary<string, Animation> animations, Point origin, Point size, Rectangle nineSlice)
+    {
+        Guid = guid;
+        Name = name;
+        Atlas = atlasId;
+        Animations = animations;
+        Origin = origin;
+        NineSlice = nineSlice;
+
+        var atlas = Game.Data.FetchAtlas(atlasId);
+        Size = size;
+
+        var builder = ImmutableArray.CreateBuilder<AtlasCoordinates>(frames.Length);
+        foreach (var frame in frames)
+        {
+            var coord = atlas.Get(frame);
+            builder.Add(coord);
+        }
+        Frames = builder.ToImmutable();
+    }
+
+    public (string, string) GetPreviewId() => (Atlas, Frames[0].Name);
+
+    public AtlasCoordinates GetFrame(int frame)
+    {
+        if (frame < 0 || frame >= Frames.Length)
+        {
+            GameLogger.Error($"Trying to get frame {frame} from sprite {Name} which only has {Frames.Length} frames. Returning empty coordinates.");
+            return AtlasCoordinates.Empty;
+        }
+        return Frames[frame];
+    }
+
+    /// <summary>
+    /// Set a directory prefix used for the editor folder.
+    /// </summary>
+    public void AppendEditorPath(string prefix)
+    {
+        _editorPath = Path.Join(_prefixGeneratedPath, prefix);
+    }
+
+    public bool AddMessageToAnimationFrame(string animationName, int frame, string message)
+    {
+        if (!Animations.TryGetValue(animationName, out Animation animation))
+        {
+            return false;
+        }
+
+        if (animation.Events is null)
+        {
+            return false;
+        }
+
+        // Check if the message was already added.
+        if (animation.Events.TryGetValue(frame, out string? previousMessage) && message == previousMessage)
+        {
+            return false;
+        }
+
+        animation = animation.WithMessageAt(frame, message);
+
+        // Update animations with the new value.
+        Animations = Animations.SetItem(animationName, animation);
+        FileChanged = true;
+
+        return true;
+    }
+
+    public bool RemoveMessageFromAnimationFrame(string animationName, int frame)
+    {
+        if (!Animations.TryGetValue(animationName, out Animation animation))
+        {
+            return false;
+        }
+
+        if (animation.Events is null)
+        {
+            return false;
+        }
+
+        if (!animation.Events.ContainsKey(frame))
+        {
+            return false;
+        }
+
+        animation = animation.WithoutMessageAt(frame);
+
+        // Update animations with the new value.
+        Animations = Animations.SetItem(animationName, animation);
+        FileChanged = true;
+
+        return true;
+    }
+
+    /// <summary>
+    /// This will merge a sprite asset with an existing one.
+    /// </summary>
+    /// <param name="other">Other sprite which will be merged.</param>
+    /// <param name="overwrite">Whether we allow overwriting on collision. Otherwise, emit an error and ignore.</param>
+    public void MergeWith(SpriteAsset other, bool overwrite)
+    {
+        int frameOffset = Frames.Length;
+
+        Frames = Frames.AddRange(other.Frames);
+
+        // iterate other's animations, decide what to do per key.
+        var builder = Animations.ToBuilder();
+        foreach ((string name, Animation anim) in other.Animations)
+        {
+            Animation remapped = ShiftAnimationFrames(anim, frameOffset);
+
+            if (string.IsNullOrEmpty(name))
+            {
+                // We ignore the empty name animation.
+                // Concatenated sprites don't care about those since we couldn't deal with the order of frames.
+                continue;
+            }
+
+            // Named animation: error on collision, keep first.
+            if (builder.ContainsKey(name) && overwrite is false)
+            {
+                GameLogger.Error(
+                    $"Merge conflict on sprite '{Name}' (GUID {Guid}): animation '{name}' " +
+                    $"exists in multiple source files. Keeping the first." +
+                    $"Existing source: {this.Name}, " +
+                    $"Rejected source: {other.Name}");
+
+                continue;
+            }
+
+            builder[name] = remapped;
+        }
+
+        Animations = builder.ToImmutable();
+
+        // When merging we need to choose the asset name
+        // If one of the names ends with underscore, we skip it (it's just an extension), otherwise we keep the shortest one.
+        if (Name.EndsWith('_') && !other.Name.EndsWith('_'))
+        {
+            Name = other.Name;
+        }
+        else if (!Name.EndsWith('_') && other.Name.EndsWith('_'))
+        {
+            // keep ours
+        }
+        else
+        {
+            Name = Name.Length <= other.Name.Length ? Name : other.Name;
+            Rename = true;
+        }
+
+        // Let's check for size and/or origin differences.
+        // If any of those differ we need to find the smallest union rectangle that can fit both
+        if (Size != other.Size || Origin != other.Origin)
+        {
+            IntRectangle myRectangle = new(-Origin.X, -Origin.Y, Size.X, Size.Y);
+            IntRectangle otherRectangle = new(-other.Origin.X, -other.Origin.Y, other.Size.X, other.Size.Y);
+            IntRectangle union = IntRectangle.Union(myRectangle, otherRectangle);
+
+            Point newSize = new(union.Width, union.Height);
+            Point newOrigin = new(-union.X, -union.Y);
+
+            Point thisDelta = newOrigin - Origin;
+            Point otherDelta = newOrigin - other.Origin;
+            var offsetBuilder = Frames.ToBuilder();
+
+            for (int i = 0; i < Frames.Length; i++)
+            {
+                Point delta = i < frameOffset ? thisDelta : otherDelta;
+                AtlasCoordinates original = Frames[i];
+
+                offsetBuilder[i] = original with
+                {
+                    Size = newSize,
+                    ContentOffset = new Point(
+                        original.ContentOffset.X + delta.X,
+                        original.ContentOffset.Y + delta.Y)
+                };
+            }
+
+            Frames = offsetBuilder.ToImmutable();
+            Size = newSize;
+            Origin = newOrigin;
+        }
+
+        // keep ours, warn on drift.
+        // different names are fine
+        WarnIfDifferent(nameof(NineSlice), NineSlice, other.NineSlice);
+    }
+
+    public void WarnIfDifferent(string whatsDifferent, Rectangle origin1, Rectangle origin2)
+    {
+        if (origin1 != origin2)
+        {
+            GameLogger.Warning($"Sprite '{Name}' (GUID {Guid}): {whatsDifferent} differs between sources. " +
+                               $"Existing: {origin1}, New: {origin2}");
+        }
+    }
+
+    private void WarnIfDifferent(string whatsDifferent, Point origin1, Point origin2)
+    {
+        if (origin1 != origin2)
+        {
+            GameLogger.Warning($"Sprite '{Name}' (GUID {Guid}): {whatsDifferent} differs between sources. " +
+                               $"Existing: {origin1}, New: {origin2}");
+        }
+    }
+
+    /// <summary>
+    /// Shifts an animation's Frames values by the given offset so they index
+    /// /// </summary>
+    private static Animation ShiftAnimationFrames(Animation anim, int globalFrameOffset)
+    {
+        var framesBuilder = ImmutableArray.CreateBuilder<int>(anim.Frames.Length);
+        for (int i = 0; i < anim.Frames.Length; i++)
+        {
+            framesBuilder.Add(anim.Frames[i] + globalFrameOffset);
+        }
+
+        return new Animation(
+            framesBuilder.ToImmutable(),
+            anim.FramesDuration,
+            anim.Events,
+            anim.AnimationDuration,
+            anim.NextAnimation);
+    }
+
+}

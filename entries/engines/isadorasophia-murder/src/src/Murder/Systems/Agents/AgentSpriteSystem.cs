@@ -1,0 +1,368 @@
+﻿using Bang;
+using Bang.Components;
+using Bang.Contexts;
+using Bang.Entities;
+using Bang.Systems;
+using Murder.Assets.Editor;
+using Murder.Assets.Graphics;
+using Murder.Attributes;
+using Murder.Components;
+using Murder.Components.Graphics;
+using Murder.Core;
+using Murder.Core.Geometry;
+using Murder.Core.Graphics;
+using Murder.Diagnostics;
+using Murder.Helpers;
+using Murder.Messages;
+using Murder.Services;
+using Murder.Utilities;
+using System;
+using System.Diagnostics;
+using System.Numerics;
+
+namespace Murder.Systems
+{
+    [Filter(ContextAccessorFilter.AllOf, typeof(PositionComponent), typeof(AgentSpriteComponent), typeof(FacingComponent), typeof(InCameraComponent))]
+    [Filter(ContextAccessorFilter.NoneOf, typeof(InvisibleComponent))]
+    [ShowInEditor]
+    public class AgentSpriteSystem : IMurderRenderSystem
+    {
+        public void Draw(RenderContext render, Context context)
+        {
+            foreach (var e in context.Entities)
+            {
+                Vector2 transform = e.GetGlobalPosition();
+
+                AgentSpriteComponent sprite = e.GetAgentSprite();
+
+                if (Game.Data.GetAsset<SpriteAsset>(sprite.AnimationGuid) is not SpriteAsset spriteAsset)
+                    continue;
+
+                VerticalPositionComponent? verticalPosition = e.TryGetVerticalPosition();
+
+                Vector2 renderPosition;
+                if (verticalPosition is not null)
+                {
+                    renderPosition = transform + new Vector2(0, -verticalPosition.Value.Z);
+                }
+                else
+                {
+                    renderPosition = transform;
+                }
+
+                FacingComponent facing = e.GetFacing();
+                bool isMoving = e.HasAgentImpulse();
+
+                float start = NoiseHelper.Value1D(e.EntityId * 10) * 5f;
+                var prefix = sprite.IdlePrefix;
+
+                if (isMoving && !e.HasDisableAgent() && !e.HasAgentPause() && !e.HasAgentPauseRuntime())
+                {
+                    prefix = sprite.WalkPrefix;
+                    SetParticleWalk(context.World, e, isWalking: true);
+                }
+                else
+                {
+                    SetParticleWalk(context.World, e, isWalking: false);
+                }
+
+                // Pause animation if this is a one-shot animation, like a spell cast.
+                // For looping animations we don't need to pause
+                // TODO: Check if this works for all animations
+                float ySortOffsetRaw = transform.Y + sprite.YSortOffset;
+
+                float angle = facing.Angle;
+                AnimationOverloadComponent? overload = null;
+                if (e.TryGetAnimationOverload() is AnimationOverloadComponent o)
+                {
+                    overload = o;
+                    prefix = $"{o.CurrentAnimation}_";
+
+                    start = o.Start;
+                    if (o.CustomSprite is SpriteAsset customSprite)
+                    {
+                        spriteAsset = customSprite;
+                    }
+
+                    ySortOffsetRaw += o.SortOffset;
+
+                    // todo: support more directions?
+                    if (o.SupportedDirections is int supportedOverloadDirections &&
+                        supportedOverloadDirections == 4)
+                    {
+                        angle = facing.Direction.RoundTo4Directions(Orientation.Both).ToAngle();
+                    }
+                    else if (o.SupportedOrientation == Orientation.Vertical)
+                    {
+                        angle = facing.Direction.RoundToVertical().ToAngle();
+                    }
+                    else if (o.SupportedOrientation == Orientation.Horizontal)
+                    {
+                        angle = facing.Direction.RoundToHorizontal().ToAngle();
+                    }
+                }
+
+                if (e.TryGetOverrideYOffset() is OverrideYOffsetComponent overrideYOffset)
+                {
+                    ySortOffsetRaw = transform.Y + overrideYOffset.YOffset;
+                }
+
+                float ySort = RenderServices.YSort(ySortOffsetRaw);
+
+                (string suffix, bool horizontalFlip) = DirectionHelper.GetSuffixFromAngle(e, prefix, angle);
+                ImageFlip imageFlip = horizontalFlip ? ImageFlip.Horizontal : ImageFlip.None;
+
+                if (overload is not null)
+                {
+                    if (overload.Value.IgnoreFacing)
+                    {
+                        suffix = string.Empty;
+
+                        // Ignore facing ignores the suffix for the animation, but still flips the sprite if facing left
+                        imageFlip = ImageFlip.None;
+                    }
+
+                    if (overload.Value.Flip != ImageFlip.None)
+                    {
+                        imageFlip = overload.Value.Flip;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(suffix))
+                {
+                    prefix = prefix.Trim('_');
+                }
+
+                float speed = overload?.Duration ?? -1;
+                AnimationSpeedOverload? speedOverload = e.TryGetAnimationSpeedOverload();
+
+                if (speedOverload is not null)
+                {
+                    if (speed > 0)
+                        speed *= speedOverload.Value.Rate;
+                    else
+                    {
+                        if (spriteAsset.Animations.TryGetValue(prefix + suffix, out var animation))
+                        {
+                            speed = animation.AnimationDuration / speedOverload.Value.Rate;
+                        }
+                    }
+                }
+
+                // Handle flashing
+                BlendStyle blend;
+                if (e.HasFlashSprite())
+                {
+                    blend = BlendStyle.Wash;
+                }
+                else
+                {
+                    blend = BlendStyle.Normal;
+                }
+
+                MurderBlendState blendState;
+                if (e.TryGetSpriteBlend() is SpriteBlendComponent spriteBlend)
+                {
+                    // Override blend style if the component has a value for it
+                    if (spriteBlend.BlendStyle != null)
+                    {
+                        blend = spriteBlend.BlendStyle.Value;
+                    }
+
+                    blendState = spriteBlend.BlendState;
+                }
+                else
+                {
+                    blendState = MurderBlendState.AlphaBlend;
+                }
+
+                // Handle alpha
+                Color color;
+                if (e.TryGetAlpha() is AlphaComponent alphaComponent)
+                {
+                    color = Color.White * alphaComponent.Alpha;
+                }
+                else
+                {
+                    color = Color.White;
+                }
+
+                // Handle tint
+                if (e.TryGetTint() is TintComponent tint)
+                {
+                    color *= tint.TintColor;
+                }
+
+                // Handle scaling
+                Vector2 scale = Vector2.One;
+                if (e.TryGetScale() is ScaleComponent scaleComponent)
+                {
+                    scale = scaleComponent.Scale;
+                }
+
+                int target = sprite.TargetSpriteBatch;
+                if (e.TryGetCustomTargetSpriteBatch() is CustomTargetSpriteBatchComponent renderTarget)
+                    target = renderTarget.TargetBatch;
+
+                if (isMoving && spriteAsset.Animations.TryGetValue(prefix + sprite.WalkPrefix + suffix, out _) &&
+                    !e.HasDisableAgent() && !e.HasAgentPause() && !e.HasAgentPauseRuntime())
+                {
+                    prefix += sprite.WalkPrefix;
+                }
+
+                AnimationInfo animationInfo = new()
+                {
+                    Name = prefix + suffix,
+                    Start = start,
+                    Duration = speed,
+                    Loop = overload == null || (overload.Value.AtLast && overload.Value.Loop),
+                    UseScaledTime = !e.HasUnscaledDeltaTime(),
+                };
+
+                if (e.TryGetSpritePaused() is SpritePausedComponent pauseAnimation)
+                {
+                    animationInfo = animationInfo with { OverrideCurrentTime = pauseAnimation.PausedAt };
+                }
+
+                // Make sure overloaded animations don't loop if they have a sequence.
+                if (overload != null)
+                {
+                    if (!spriteAsset.Animations.TryGetValue(animationInfo.Name, out Animation animation))
+                    {
+                        GameLogger.Log($"Couldn't find animation {animationInfo.Name} for {spriteAsset.Guid}.");
+
+                        RenderServices.CompleteAnimationOverload(e, overload.Value, frameInfo: null, speedOverload);
+                        overload = null;
+                    }
+
+                    if (animation.HasNextAnimation && animationInfo.Loop)
+                    {
+                        animationInfo = animationInfo with { Loop = false };
+                    }
+                }
+
+                if (e.TryGetForceAnimationOnChance() is ForceAnimationOnChanceComponent forceAnimationOnChance)
+                {
+                    // only apply after the animation changed
+                    if (e.TryGetRenderedSpriteCache()?.AnimInfo.Name is not string lastAnimation ||
+                        !lastAnimation.StartsWith(animationInfo.Name))
+                    {
+                        bool activeForceAnimation;
+
+                        if (forceAnimationOnChance.Animations.Contains(prefix))
+                        {
+                            activeForceAnimation = Game.Random.TryWithChanceOf(forceAnimationOnChance.Chance);
+                        }
+                        else
+                        {
+                            activeForceAnimation = false;
+                        }
+
+                        if (activeForceAnimation != forceAnimationOnChance.Active)
+                        {
+                            forceAnimationOnChance = forceAnimationOnChance with { Active = activeForceAnimation };
+                            e.SetForceAnimationOnChance(forceAnimationOnChance);
+                        }
+                    }
+
+                    if (forceAnimationOnChance.Active &&
+                        Game.Data.GetAsset<SpriteAsset>(forceAnimationOnChance.Sprite) is SpriteAsset forceSpriteAsset)
+                    {
+                        spriteAsset = forceSpriteAsset;
+                    }
+                }
+
+                Rectangle clip = Rectangle.Empty;
+                if (e.TryGetSpriteClippingRect() is SpriteClippingRectComponent spriteClippingRect)
+                {
+                    clip = spriteClippingRect.GetClippingRect(spriteAsset.Size, spriteAsset.Origin);
+                    renderPosition += new Vector2(clip.Left, clip.Top);
+                }
+
+                if (e.TryGetSpriteOffset() is SpriteOffsetComponent offset)
+                {
+                    renderPosition += offset.Offset;
+                }
+
+                Color? outlineColor = e.HasDeactivateHighlightSprite() ? null :
+                    e.TryGetHighlightSprite()?.Color;
+
+                Batch2D batch = render.GetBatch(target);
+                DrawInfo drawInfo = new(ySort)
+                {
+                    Clip = clip,
+                    ImageFlip = imageFlip,
+                    Color = color,
+                    Scale = scale,
+                    BlendMode = blend,
+                    BlendState = blendState,
+                    Sort = ySort,
+                    Outline = outlineColor,
+                };
+
+                // Draw to the sprite batch
+                FrameInfo frameInfo = RenderServices.DrawSprite(
+                    batch,
+                    spriteAsset,
+                    position: renderPosition,
+                    drawInfo,
+                    animationInfo);
+
+                AfterDraw(batch, e, renderPosition, ySortOffsetRaw, drawInfo, animationInfo, spriteAsset);
+
+                RenderServices.TriggerEventsIfNeeded(e, spriteAsset.Guid, animationInfo, frameInfo, AnimationEventsTriggerFlag.None);
+
+                RenderServices.UpdateRenderedSpriteCache(e, new RenderedSpriteCache() with
+                {
+                    RenderedSprite = spriteAsset.Guid,
+                    CurrentAnimation = frameInfo.Animation,
+                    RenderPosition = renderPosition,
+                    ImageFlip = imageFlip,
+                    Rotation = 0,
+                    Scale = scale,
+                    Color = color,
+                    Blend = blend,
+                    Outline = OutlineStyle.None,
+                    AnimInfo = animationInfo,
+                    Sorting = ySort,
+                    LastFrameForCurrentAnimation = frameInfo.FrameForCurrentAnimation,
+                    SpriteSize = spriteAsset.Size
+                });
+
+                // The animation overload is now done
+                if (frameInfo.Complete && overload != null)
+                {
+                    RenderServices.CompleteAnimationOverload(e, overload.Value, frameInfo, speedOverload);
+                }
+                else
+                {
+                    e.RemoveAnimationComplete();
+                }
+            }
+        }
+
+        protected virtual void AfterDraw(
+            Batch2D batch,
+            Entity e,
+            Vector2 position,
+            float ySortOffsetRaw,
+            DrawInfo drawInfo,
+            AnimationInfo animationInfo,
+            SpriteAsset spriteAsset)
+        { }
+
+        protected virtual void SetParticleWalk(World world, Entity e, bool isWalking)
+        {
+            Entity? walk = e.TryFetchChild("Particle");
+
+            if (isWalking)
+            {
+                walk?.RemoveDisableParticleSystem();
+            }
+            else
+            {
+                walk?.SetDisableParticleSystem();
+            }
+        }
+    }
+}

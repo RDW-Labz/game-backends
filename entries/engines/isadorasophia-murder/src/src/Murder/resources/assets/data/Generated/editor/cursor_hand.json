@@ -1,0 +1,63 @@
+{
+  "$type": "Murder.Assets.Graphics.SpriteAsset",
+  "Animations": {
+    "": {
+      "Frames": [
+        0
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    }
+  },
+  "Atlas": "editor",
+  "Frames": [
+    {
+      "AtlasIndex": 0,
+      "Name": "cursor_hand",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 388,
+        "Y": 34,
+        "Width": 14,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.7578125,
+        "Y": 0.06640625,
+        "Width": 0.02734375,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 0,
+        "Width": 14,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    }
+  ],
+  "Origin": {
+    "X": 8,
+    "Y": 8
+  },
+  "Size": {
+    "X": 16,
+    "Y": 16
+  },
+  "NineSlice": {
+    "X": 0,
+    "Y": 0,
+    "Width": 0,
+    "Height": 0
+  },
+  "Name": "cursor_hand",
+  "Guid": "eba43d66-d90a-b69e-5ecd-2eeca4d1162f",
+  "editorPath": "#\uF085Generated\\editor"
+}

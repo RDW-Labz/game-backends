@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:40:22Z",
+ "category": "engines",
+ "commit": "2026-10-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "matrixcascade/PainterEngine \u2014 PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "PainterEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "matrixcascade-painterengine",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3338,
+ "system": "PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C",
+ "upstream": "https://github.com/matrixcascade/PainterEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

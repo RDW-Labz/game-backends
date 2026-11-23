@@ -1,0 +1,63 @@
+{
+  "$type": "Murder.Assets.Graphics.SpriteAsset",
+  "Animations": {
+    "": {
+      "Frames": [
+        0
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    }
+  },
+  "Atlas": "editor",
+  "Frames": [
+    {
+      "AtlasIndex": 0,
+      "Name": "dialogue_rewind",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 388,
+        "Y": 51,
+        "Width": 12,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.7578125,
+        "Y": 0.099609375,
+        "Width": 0.0234375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 2,
+        "Width": 12,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    }
+  ],
+  "Origin": {
+    "X": 0,
+    "Y": 0
+  },
+  "Size": {
+    "X": 16,
+    "Y": 16
+  },
+  "NineSlice": {
+    "X": 0,
+    "Y": 0,
+    "Width": 0,
+    "Height": 0
+  },
+  "Name": "dialogue_rewind",
+  "Guid": "c12ca4eb-0635-525f-ef51-45bf92606eb9",
+  "editorPath": "#\uF085Generated\\editor"
+}

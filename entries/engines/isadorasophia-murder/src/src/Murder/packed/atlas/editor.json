@@ -1,0 +1,1842 @@
+{
+  "AtlasId": "editor",
+  "entries": {
+    "crow_0000": {
+      "AtlasIndex": 0,
+      "Name": "crow_0000",
+      "Size": {
+        "X": 96,
+        "Y": 80
+      },
+      "SourceRectangle": {
+        "X": 0,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "UV": {
+        "X": 0,
+        "Y": 0,
+        "Width": 0.1875,
+        "Height": 0.15625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "AtlasId": "editor"
+    },
+    "crow_0001": {
+      "AtlasIndex": 0,
+      "Name": "crow_0001",
+      "Size": {
+        "X": 96,
+        "Y": 80
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0,
+        "Width": 0.1875,
+        "Height": 0.15625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "AtlasId": "editor"
+    },
+    "crow_0002": {
+      "AtlasIndex": 0,
+      "Name": "crow_0002",
+      "Size": {
+        "X": 96,
+        "Y": 80
+      },
+      "SourceRectangle": {
+        "X": 0,
+        "Y": 81,
+        "Width": 96,
+        "Height": 80
+      },
+      "UV": {
+        "X": 0,
+        "Y": 0.15820312,
+        "Width": 0.1875,
+        "Height": 0.15625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "AtlasId": "editor"
+    },
+    "crow_0003": {
+      "AtlasIndex": 0,
+      "Name": "crow_0003",
+      "Size": {
+        "X": 96,
+        "Y": 80
+      },
+      "SourceRectangle": {
+        "X": 194,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "UV": {
+        "X": 0.37890625,
+        "Y": 0,
+        "Width": 0.1875,
+        "Height": 0.15625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "AtlasId": "editor"
+    },
+    "crow_0004": {
+      "AtlasIndex": 0,
+      "Name": "crow_0004",
+      "Size": {
+        "X": 96,
+        "Y": 80
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 81,
+        "Width": 96,
+        "Height": 80
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.15820312,
+        "Width": 0.1875,
+        "Height": 0.15625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "AtlasId": "editor"
+    },
+    "crow_0005": {
+      "AtlasIndex": 0,
+      "Name": "crow_0005",
+      "Size": {
+        "X": 96,
+        "Y": 80
+      },
+      "SourceRectangle": {
+        "X": 0,
+        "Y": 162,
+        "Width": 96,
+        "Height": 80
+      },
+      "UV": {
+        "X": 0,
+        "Y": 0.31640625,
+        "Width": 0.1875,
+        "Height": 0.15625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "AtlasId": "editor"
+    },
+    "crow_0006": {
+      "AtlasIndex": 0,
+      "Name": "crow_0006",
+      "Size": {
+        "X": 96,
+        "Y": 80
+      },
+      "SourceRectangle": {
+        "X": 291,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "UV": {
+        "X": 0.5683594,
+        "Y": 0,
+        "Width": 0.1875,
+        "Height": 0.15625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 96,
+        "Height": 80
+      },
+      "AtlasId": "editor"
+    },
+    "crow_loading": {
+      "AtlasIndex": 0,
+      "Name": "crow_loading",
+      "Size": {
+        "X": 96,
+        "Y": 80
+      },
+      "SourceRectangle": {
+        "X": 194,
+        "Y": 81,
+        "Width": 74,
+        "Height": 70
+      },
+      "UV": {
+        "X": 0.37890625,
+        "Y": 0.15820312,
+        "Width": 0.14453125,
+        "Height": 0.13671875
+      },
+      "TrimArea": {
+        "X": 12,
+        "Y": 4,
+        "Width": 74,
+        "Height": 70
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_step-back_0000": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-back_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 162,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.31640625,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_step-back_0001": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-back_0001",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 0,
+        "Y": 243,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0,
+        "Y": 0.47460938,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_step-back_0002": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-back_0002",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 388,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.7578125,
+        "Y": 0,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_step-back_0003": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-back_0003",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 269,
+        "Y": 81,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.5253906,
+        "Y": 0.15820312,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_edge-if": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_edge-if",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 194,
+        "Y": 152,
+        "Width": 13,
+        "Height": 9
+      },
+      "UV": {
+        "X": 0.37890625,
+        "Y": 0.296875,
+        "Width": 0.025390625,
+        "Height": 0.017578125
+      },
+      "TrimArea": {
+        "X": 2,
+        "Y": 4,
+        "Width": 13,
+        "Height": 9
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_step-forward_0000": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-forward_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 114,
+        "Y": 162,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.22265625,
+        "Y": 0.31640625,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_step-forward_0001": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-forward_0001",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 179,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.34960938,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_step-forward_0003": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-forward_0003",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 17,
+        "Y": 243,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.033203125,
+        "Y": 0.47460938,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_bg": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_bg",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 0,
+        "Y": 260,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0,
+        "Y": 0.5078125,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_flow": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_flow",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 405,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.7910156,
+        "Y": 0,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_bg-hovered": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_bg-hovered",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 388,
+        "Y": 17,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.7578125,
+        "Y": 0.033203125,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_bg-selected": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_bg-selected",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 286,
+        "Y": 81,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.55859375,
+        "Y": 0.15820312,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_bg-gray": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_bg-gray",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 269,
+        "Y": 98,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.5253906,
+        "Y": 0.19140625,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_edge-next": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_edge-next",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 208,
+        "Y": 152,
+        "Width": 8,
+        "Height": 9
+      },
+      "UV": {
+        "X": 0.40625,
+        "Y": 0.296875,
+        "Width": 0.015625,
+        "Height": 0.017578125
+      },
+      "TrimArea": {
+        "X": 5,
+        "Y": 4,
+        "Width": 8,
+        "Height": 9
+      },
+      "AtlasId": "editor"
+    },
+    "editor_Warning": {
+      "AtlasIndex": 0,
+      "Name": "editor_Warning",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 131,
+        "Y": 162,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.25585938,
+        "Y": 0.31640625,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "editor_audio": {
+      "AtlasIndex": 0,
+      "Name": "editor_audio",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 114,
+        "Y": 179,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.22265625,
+        "Y": 0.34960938,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "camera": {
+      "AtlasIndex": 0,
+      "Name": "camera",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 196,
+        "Width": 15,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.3828125,
+        "Width": 0.029296875,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 15,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_step-forward_0002": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-forward_0002",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 34,
+        "Y": 243,
+        "Width": 16,
+        "Height": 15
+      },
+      "UV": {
+        "X": 0.06640625,
+        "Y": 0.47460938,
+        "Width": 0.03125,
+        "Height": 0.029296875
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 1,
+        "Width": 16,
+        "Height": 15
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_bye": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_bye",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 17,
+        "Y": 260,
+        "Width": 15,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.033203125,
+        "Y": 0.5078125,
+        "Width": 0.029296875,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 15,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "editor_music": {
+      "AtlasIndex": 0,
+      "Name": "editor_music",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 0,
+        "Y": 277,
+        "Width": 15,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0,
+        "Y": 0.5410156,
+        "Width": 0.029296875,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 15,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "Cursor": {
+      "AtlasIndex": 0,
+      "Name": "Cursor",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 422,
+        "Y": 0,
+        "Width": 15,
+        "Height": 15
+      },
+      "UV": {
+        "X": 0.82421875,
+        "Y": 0,
+        "Width": 0.029296875,
+        "Height": 0.029296875
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 15,
+        "Height": 15
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_pencil": {
+      "AtlasIndex": 0,
+      "Name": "cursor_pencil",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 405,
+        "Y": 17,
+        "Width": 15,
+        "Height": 15
+      },
+      "UV": {
+        "X": 0.7910156,
+        "Y": 0.033203125,
+        "Width": 0.029296875,
+        "Height": 0.029296875
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 15,
+        "Height": 15
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_hand": {
+      "AtlasIndex": 0,
+      "Name": "cursor_hand",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 388,
+        "Y": 34,
+        "Width": 14,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.7578125,
+        "Y": 0.06640625,
+        "Width": 0.02734375,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 0,
+        "Width": 14,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_point": {
+      "AtlasIndex": 0,
+      "Name": "cursor_point",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 303,
+        "Y": 81,
+        "Width": 14,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.5917969,
+        "Y": 0.15820312,
+        "Width": 0.02734375,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 0,
+        "Width": 14,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "cutscene": {
+      "AtlasIndex": 0,
+      "Name": "cutscene",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 286,
+        "Y": 98,
+        "Width": 14,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.55859375,
+        "Y": 0.19140625,
+        "Width": 0.02734375,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 0,
+        "Width": 14,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_exit": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_exit",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 269,
+        "Y": 115,
+        "Width": 14,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.5253906,
+        "Y": 0.22460938,
+        "Width": 0.02734375,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 0,
+        "Width": 14,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "missingImage": {
+      "AtlasIndex": 0,
+      "Name": "missingImage",
+      "Size": {
+        "X": 8,
+        "Y": 8
+      },
+      "SourceRectangle": {
+        "X": 217,
+        "Y": 152,
+        "Width": 8,
+        "Height": 8
+      },
+      "UV": {
+        "X": 0.42382812,
+        "Y": 0.296875,
+        "Width": 0.015625,
+        "Height": 0.015625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 8,
+        "Height": 8
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_dialogue-line": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_dialogue-line",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 148,
+        "Y": 162,
+        "Width": 16,
+        "Height": 14
+      },
+      "UV": {
+        "X": 0.2890625,
+        "Y": 0.31640625,
+        "Width": 0.03125,
+        "Height": 0.02734375
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 1,
+        "Width": 16,
+        "Height": 14
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_add-component": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_add-component",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 131,
+        "Y": 179,
+        "Width": 14,
+        "Height": 15
+      },
+      "UV": {
+        "X": 0.25585938,
+        "Y": 0.34960938,
+        "Width": 0.02734375,
+        "Height": 0.029296875
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 0,
+        "Width": 14,
+        "Height": 15
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_cut": {
+      "AtlasIndex": 0,
+      "Name": "cursor_cut",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 114,
+        "Y": 196,
+        "Width": 13,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.22265625,
+        "Y": 0.3828125,
+        "Width": 0.025390625,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 2,
+        "Y": 0,
+        "Width": 13,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0000": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0011": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0011",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 51,
+        "Y": 243,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.099609375,
+        "Y": 0.47460938,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0012": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0012",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 33,
+        "Y": 260,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.064453125,
+        "Y": 0.5078125,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0013": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0013",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 16,
+        "Y": 277,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.03125,
+        "Y": 0.5410156,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_action": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_action",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 0,
+        "Y": 294,
+        "Width": 13,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0,
+        "Y": 0.57421875,
+        "Width": 0.025390625,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 2,
+        "Y": 0,
+        "Width": 13,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "point": {
+      "AtlasIndex": 0,
+      "Name": "point",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 438,
+        "Y": 0,
+        "Width": 14,
+        "Height": 14
+      },
+      "UV": {
+        "X": 0.85546875,
+        "Y": 0,
+        "Width": 0.02734375,
+        "Height": 0.02734375
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 1,
+        "Width": 14,
+        "Height": 14
+      },
+      "AtlasId": "editor"
+    },
+    "editor_ear": {
+      "AtlasIndex": 0,
+      "Name": "editor_ear",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 422,
+        "Y": 16,
+        "Width": 12,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.82421875,
+        "Y": 0.03125,
+        "Width": 0.0234375,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 0,
+        "Width": 12,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "vertical": {
+      "AtlasIndex": 0,
+      "Name": "vertical",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 405,
+        "Y": 33,
+        "Width": 11,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.7910156,
+        "Y": 0.064453125,
+        "Width": 0.021484375,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 2,
+        "Y": 0,
+        "Width": 11,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_rewind": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_rewind",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 388,
+        "Y": 51,
+        "Width": 12,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.7578125,
+        "Y": 0.099609375,
+        "Width": 0.0234375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 2,
+        "Width": 12,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_play_0000": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_play_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 318,
+        "Y": 81,
+        "Width": 11,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.62109375,
+        "Y": 0.15820312,
+        "Width": 0.021484375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 2,
+        "Width": 11,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_play_0001": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_play_0001",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 303,
+        "Y": 98,
+        "Width": 11,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.5917969,
+        "Y": 0.19140625,
+        "Width": 0.021484375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 2,
+        "Width": 11,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_play_0002": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_play_0002",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 286,
+        "Y": 115,
+        "Width": 11,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.55859375,
+        "Y": 0.22460938,
+        "Width": 0.021484375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 2,
+        "Width": 11,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue-button_play_0003": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_play_0003",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 269,
+        "Y": 132,
+        "Width": 11,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.5253906,
+        "Y": 0.2578125,
+        "Width": 0.021484375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 2,
+        "Width": 11,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    },
+    "dashed-line": {
+      "AtlasIndex": 0,
+      "Name": "dashed-line",
+      "Size": {
+        "X": 8,
+        "Y": 3
+      },
+      "SourceRectangle": {
+        "X": 226,
+        "Y": 152,
+        "Width": 5,
+        "Height": 3
+      },
+      "UV": {
+        "X": 0.44140625,
+        "Y": 0.296875,
+        "Width": 0.009765625,
+        "Height": 0.005859375
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 0,
+        "Width": 5,
+        "Height": 3
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_edge-choice": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_edge-choice",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 165,
+        "Y": 162,
+        "Width": 13,
+        "Height": 10
+      },
+      "UV": {
+        "X": 0.32226562,
+        "Y": 0.31640625,
+        "Width": 0.025390625,
+        "Height": 0.01953125
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 3,
+        "Width": 13,
+        "Height": 10
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_edge-score": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_edge-score",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 148,
+        "Y": 177,
+        "Width": 13,
+        "Height": 10
+      },
+      "UV": {
+        "X": 0.2890625,
+        "Y": 0.34570312,
+        "Width": 0.025390625,
+        "Height": 0.01953125
+      },
+      "TrimArea": {
+        "X": 2,
+        "Y": 3,
+        "Width": 13,
+        "Height": 10
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_edge-random": {
+      "AtlasIndex": 0,
+      "Name": "dialogue_edge-random",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 131,
+        "Y": 195,
+        "Width": 9,
+        "Height": 11
+      },
+      "UV": {
+        "X": 0.25585938,
+        "Y": 0.38085938,
+        "Width": 0.017578125,
+        "Height": 0.021484375
+      },
+      "TrimArea": {
+        "X": 4,
+        "Y": 3,
+        "Width": 9,
+        "Height": 11
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0001": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0002": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0003": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0004": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0005": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0006": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0007": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0008": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0009": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "cursor_eye_0010": {
+      "AtlasIndex": 0,
+      "Name": "cursor_eye_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 213,
+        "Width": 16,
+        "Height": 13
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.41601562,
+        "Width": 0.03125,
+        "Height": 0.025390625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 2,
+        "Width": 16,
+        "Height": 13
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_step-forward": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-forward_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 114,
+        "Y": 162,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.22265625,
+        "Y": 0.31640625,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_step-back": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_step-back_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 162,
+        "Width": 16,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.31640625,
+        "Width": 0.03125,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 16,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    },
+    "dialogue_play": {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_play_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 318,
+        "Y": 81,
+        "Width": 11,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.62109375,
+        "Y": 0.15820312,
+        "Width": 0.021484375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 2,
+        "Width": 11,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    }
+  },
+  "atlasMaxIndex": 0
+}

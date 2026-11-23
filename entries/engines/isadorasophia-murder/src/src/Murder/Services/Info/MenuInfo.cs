@@ -1,0 +1,524 @@
+﻿using Murder.Core.Sounds;
+using Murder.Services;
+using Murder.Utilities;
+using static Murder.Core.Input.PlayerInput;
+
+namespace Murder.Core.Input
+{
+    public struct GenericMenuInfo<T>
+    {
+        public T[] Options = [];
+
+        public int Scroll = 0;
+        public float SmoothScroll = 0;
+
+        public bool Canceled = false;
+        public bool Disabled = false;
+        public bool JustMoved = false;
+
+        public float LastPressed = 0;
+        public float LastMoved;
+
+        public int OverflowX = 0;
+        public int OverflowY = 0;
+        public int PreviousSelection;
+
+        /// <summary>
+        /// Number of visible options on the screen, 8 is the default.
+        /// </summary>
+        public int VisibleItems = 8;
+
+        public int Selection { get; private set; }
+
+        public MenuSounds Sounds = new();
+
+        /// <summary>
+        /// Number of options in this menu
+        /// </summary>
+        public int Length => Options.Length;
+
+        public GenericMenuInfo(T[] options)
+        {
+            Options = options;
+        }
+
+        /// <param name="option">The currently selected option. If -1, it means that is being initialized.</param>
+        /// <param name="direction">A sign number (1 or -1) with the direction.</param>
+        /// <returns>The next option that is available.</returns>
+        public int NextAvailableOption(int option, int direction)
+        {
+            int totalOptionsTried = 0;
+            while (totalOptionsTried < Length)
+            {
+                option += direction;
+                option = Calculator.WrapAround(option, 0, Length - 1);
+
+                // TODO: Support disabled options.
+                break;
+
+                // totalOptionsTried++;
+            }
+
+            return option;
+        }
+
+        public void Select(int index, float now)
+        {
+            JustMoved = Selection != index;
+
+            PreviousSelection = Selection;
+
+            Selection = index;
+            LastMoved = now;
+
+            if (JustMoved)
+            {
+                _ = SoundServices.Play(Sounds.SelectionChange);
+            }
+        }
+    }
+
+    public struct MenuInfo
+    {
+        public int PreviousSelection;
+        public int Selection { get; private set; }
+        public float CreatedAt;
+        public float LastMoved;
+        public float LastMovedSucessfully;
+        public float LastPressed;
+        public int AttemptedPressCurrentSelection;
+        public bool Canceled;
+        public bool Disabled = false;
+        public int OverflowX = 0;
+        public int OverflowY = 0;
+        public bool JustMoved = false;
+        public int Scroll = 0;
+
+        public bool AcceptPressInputFeedback = true;
+
+        public float SmoothScroll = 0;
+
+        /// <summary>
+        /// Number of options in this menu
+        /// </summary>
+        public int Length => !HasOptions ? 0 : Options.Length;
+
+        /// <summary>
+        /// Number of visible options on the screen, 8 is the default.
+        /// </summary>
+        public int VisibleItems = 8;
+
+        /// <summary>
+        /// This is the allowed size in view, used to calculate size of elements in the screen.
+        /// </summary>
+        public int CapacityToShowUi = 8;
+
+        public MenuSounds Sounds = new();
+
+        public MenuOption[] Options = [];
+
+        /// <summary>
+        /// Optional icons to be displayed near the options.
+        /// </summary>
+        public Portrait[] Icons = [];
+
+        public bool HasOptions => Options != null && Options.Length > 0;
+        public bool HasAvailableOptions => HasOptions && Options.Any(o => o.Enabled);
+
+        public float LargestOptionText
+        {
+            get
+            {
+                float largestTextWidth = 0;
+                foreach (var item in Options)
+                {
+                    largestTextWidth = Math.Max(MurderFonts.PixelFont.GetLineWidth(item.Text), largestTextWidth);
+                }
+                return largestTextWidth;
+            }
+        }
+
+        public MenuInfo()
+        {
+            CreatedAt = Game.NowUnscaled;
+            LastMoved = Game.NowUnscaled;
+        }
+
+        public MenuInfo(params MenuOption[] options) : this()
+        {
+            Options = options;
+
+            if (options.Length > 0 && !options[0].Enabled)
+            {
+                Selection = NextAvailableOption(0, 1);
+            }
+        }
+
+        public MenuInfo(IEnumerable<MenuOption> options) : this(options.ToArray()) { }
+
+        public MenuInfo(IEnumerable<MenuOption> options, int startSelectedAt) : this(options.ToArray())
+        {
+            PreviousSelection = startSelectedAt;
+            Selection = startSelectedAt;
+        }
+
+        public MenuInfo(params string[] options) : this()
+        {
+            Options = options.Select(s => new MenuOption(s, true)).ToArray();
+        }
+
+        public MenuInfo(IEnumerable<string> options) : this()
+        {
+            Options = options.Select(s => new MenuOption(s, true)).ToArray();
+        }
+
+        public MenuInfo(int size) : this()
+        {
+            Resize(size);
+        }
+
+        public MenuInfo(int size, int startSelectedAt) : this(size)
+        {
+            PreviousSelection = startSelectedAt;
+            Selection = startSelectedAt;
+        }
+
+        public MenuOption GetSelectedOption()
+        {
+            if (Selection < 0 || Selection >= Length)
+            {
+                return new();
+            }
+
+            return Options[Selection];
+        }
+
+        public void Clamp()
+        {
+            if (Selection < 0 || Selection >= Length || !Options[Selection].CanHover)
+            {
+                Selection = NextAvailableOption(Selection, direction: 1);
+            }
+        }
+
+        public MenuInfo Disable(bool disabled)
+        {
+            Disabled = disabled;
+            return this;
+        }
+
+        public void SnapRight(int width)
+        {
+            Selection = (Calculator.FloorToInt(Selection / width) + 1) * width - 1;
+        }
+
+        public void SnapLeft(int width)
+        {
+            Selection = (Calculator.FloorToInt(Selection / width)) * width;
+        }
+
+        public string GetSelectedOptionText()
+        {
+            return Options[Selection].Text;
+        }
+        public string GetOptionText(int index)
+        {
+            return Options[index % Options.Length].Text;
+        }
+
+        internal bool IsEnabled(int index)
+        {
+            return Options[index % Options.Length].Enabled;
+        }
+
+        public bool IsOptionAvailable(int option)
+        {
+            if (Options is null)
+            {
+                return true;
+            }
+
+            if (Options.Length <= option)
+            {
+                return false;
+            }
+
+            return Options[option].CanHover;
+        }
+
+        /// <param name="option">The currently selected option. If -1, it means that is being initialized.</param>
+        /// <param name="direction">A sign number (1 or -1) with the direction.</param>
+        /// <param name="flags">Clamp options.</param>
+        /// <returns>The next option that is available.</returns>
+        public int NextAvailableOption(int option, int direction, GridMenuFlags flags = GridMenuFlags.None)
+        {
+            int lastOption = option;
+
+            int totalOptionsTried = 0;
+            while (totalOptionsTried < Length)
+            {
+                option += direction;
+                if (direction == 0)
+                {
+                    direction = 1;
+                }
+
+                option = Calculator.WrapAround(option, 0, Length - 1);
+
+                if (option > lastOption && direction < 0 && flags.HasFlag(GridMenuFlags.ClampLeft))
+                {
+                    return lastOption;
+                }
+
+                if (option < lastOption && direction > 0 && flags.HasFlag(GridMenuFlags.ClampRight))
+                {
+                    return lastOption;
+                }
+
+                if (IsOptionAvailable(option))
+                {
+                    break;
+                }
+
+                totalOptionsTried++;
+            }
+
+            return option;
+        }
+
+        public (int option, bool wrapped) NextAvailableOptionHorizontal(in int option, int width, int direction, GridMenuFlags flags)
+        {
+            int startRow = Calculator.FloorToInt(option / (float)width);
+            int startColumn = option % width;
+
+            int totalColumns = width;
+            int totalAttempts = 0;
+
+            bool wrapped = false;
+            while (totalAttempts < width)
+            {
+                int column = Calculator.WrapAround(startColumn + direction * (totalAttempts + 1), 0, width - 1);
+                totalAttempts++;
+
+                // Did we wrap around?
+                if (column > startColumn && direction < 0)
+                {
+                    if (flags.HasFlag(GridMenuFlags.ClampLeft))
+                    {
+                        // do not allow clamping, but still allow it to pass over to the next check that skips rows
+                        continue;
+                    }
+
+                    wrapped = true;
+                }
+                if (column < startColumn && direction > 0)
+                {
+                    // do not allow clamping, but still allow it to pass over to the next check that skips rows
+                    if (flags.HasFlag(GridMenuFlags.ClampRight))
+                    {
+                        continue;
+                    }
+
+                    wrapped = true;
+                }
+
+                int nextOption = startRow * width + column;
+                if (nextOption >= 0 && nextOption < Length && IsOptionAvailable(nextOption))
+                {
+                    return (nextOption, wrapped);
+                }
+            }
+
+            totalAttempts = 0;
+            while (totalAttempts < width)
+            {
+                int column = Calculator.WrapAround(startColumn + direction * (totalAttempts + 1), 0, width - 1);
+
+                int totalRows = Calculator.CeilToInt(Length / width);
+                for (int i = 0; i < totalRows; i++)
+                {
+                    int checkRow = startRow;
+
+                    if (!flags.HasFlag(GridMenuFlags.ClampRight) || direction < 0)
+                    {
+                        checkRow = startRow - i;
+                        if (checkRow >= 0)
+                        {
+                            int nextOption = checkRow * width + column;
+                            if (nextOption >= 0 && nextOption < Length)
+                            {
+                                if (IsOptionAvailable(nextOption))
+                                {
+                                    return (nextOption, wrapped);
+                                }
+                            }
+                        }
+                    }
+
+                    if (!flags.HasFlag(GridMenuFlags.ClampLeft) || direction > 0)
+                    {
+                        checkRow = startRow + i;
+
+                        if (checkRow <= totalColumns)
+                        {
+                            int nextOption = checkRow * width + column;
+                            if (nextOption >= 0 && nextOption < Length)
+                            {
+                                if (IsOptionAvailable(nextOption))
+                                {
+                                    return (nextOption, wrapped);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                totalAttempts++;
+            }
+
+            return (option, false);
+        }
+
+        public (int option, bool wrapped) NextAvailableOptionVertical(in int option, int width, int direction, GridMenuFlags flags)
+        {
+            int totalRows = Calculator.CeilToInt(Length / (float)width);
+            int startRow = option / width;
+            int column = option % width;
+
+            for (int step = 1; step < totalRows; step++)
+            {
+                // Cyle through the rows in the given direction looking for the next available option in the same column.
+                int row = startRow + direction * step;
+                bool wrapped = row < 0 || row >= totalRows;
+                if (wrapped)
+                {
+                    // Break if we are clamping in the direction we are moving.
+                    if (flags.HasFlag(direction > 0 ? GridMenuFlags.ClampBottom : GridMenuFlags.ClampTop))
+                    {
+                        break;
+                    }
+
+                    // We wrapedp around, so we can check the adjacent ones
+                    for (int i = 0; i < width; i++)
+                    {
+                        if (IsAvailableAt(row, column - i, width))
+                        {
+                            return (row * width + column - i, wrapped);
+                        }
+
+                        if (i > 0 && IsAvailableAt(row, column + i, width))
+                        {
+                            return (row * width + column + i, wrapped);
+                        }
+                    }
+
+                    row = Calculator.WrapAround(row, 0, totalRows - 1);
+                }
+                else
+                {
+                    // First pass so we only check the same column
+                    if (IsAvailableAt(row, column, width))
+                    {
+                        return (row * width + column, wrapped);
+                    }
+                }
+
+            }
+
+            // We failed! Stay in place
+            return (option, false);
+        }
+        private bool IsAvailableAt(int row, int column, int width) =>
+    column >= 0 && column < width && row * width + column < Length && IsOptionAvailable(row * width + column);
+
+        /// <summary>
+        /// Resets the menu info selector to the first available option.
+        /// </summary>
+        public void Reset()
+        {
+            Selection = 0;
+            LastMoved = LastMovedSucessfully = Game.NowUnscaled;
+            PreviousSelection = -1;
+        }
+
+        public void Resize(int size)
+        {
+            Options = new MenuOption[size];
+            for (int i = 0; i < size; i++)
+            {
+                Options[i] = new MenuOption(true);
+            }
+
+            if (Selection == Options.Length && Selection != 0)
+            {
+                Select(Options.Length - 1);
+            }
+        }
+
+        public void Cancel()
+        {
+            // _ = SoundServices.Play(Sounds.Cancel);
+        }
+
+        public void Press(float now)
+        {
+            if (!AcceptPressInputFeedback)
+            {
+                return;
+            }
+
+            if (Options[Selection].SoundOnClick)
+            {
+                _ = SoundServices.Play(Sounds.MenuSubmit);
+            }
+
+            AttemptedPressCurrentSelection++;
+            LastPressed = now;
+        }
+
+        public void Select(int index) => Select(index, Game.NowUnscaled, true);
+
+        public void Select(int index, float now, bool updateScroll = true)
+        {
+            if (updateScroll)
+            {
+                if (index < Scroll)
+                {
+                    Scroll = index;
+                }
+                else if (index >= Scroll + VisibleItems)
+                {
+                    Scroll = index - VisibleItems + 1;
+                }
+            }
+
+            JustMoved = Selection != index;
+
+            if (JustMoved)
+            {
+                LastMovedSucessfully = now;
+            }
+            PreviousSelection = Selection;
+
+            Selection = index;
+            LastMoved = now;
+            LastPressed = now;
+
+            AttemptedPressCurrentSelection = 0;
+
+            if (Selection >= Options.Length)
+            {
+                Selection = Options.Length - 1;
+            }
+            if (Selection < 0)
+            {
+                Selection = 0;
+            }
+
+            if (JustMoved && (Selection >= Options.Length || Options[Selection].Enabled || Options[Selection].AllowHoverOnDisabled))
+            {
+                _ = SoundServices.Play(Sounds.SelectionChange);
+            }
+        }
+    }
+}

@@ -1,0 +1,63 @@
+{
+  "$type": "Murder.Assets.Graphics.SpriteAsset",
+  "Animations": {
+    "": {
+      "Frames": [
+        0
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    }
+  },
+  "Atlas": "editor",
+  "Frames": [
+    {
+      "AtlasIndex": 0,
+      "Name": "camera",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 97,
+        "Y": 196,
+        "Width": 15,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.18945312,
+        "Y": 0.3828125,
+        "Width": 0.029296875,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 15,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    }
+  ],
+  "Origin": {
+    "X": 8,
+    "Y": 8
+  },
+  "Size": {
+    "X": 16,
+    "Y": 16
+  },
+  "NineSlice": {
+    "X": 0,
+    "Y": 0,
+    "Width": 0,
+    "Height": 0
+  },
+  "Name": "camera",
+  "Guid": "e098676d-e88e-086a-42a8-b2cd0d42e217",
+  "editorPath": "#\uF085Generated\\editor"
+}

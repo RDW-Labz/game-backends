@@ -1,0 +1,170 @@
+﻿using Bang;
+using Bang.Contexts;
+using Bang.Entities;
+using Bang.Systems;
+using Murder.Components;
+using Murder.Core;
+using Murder.Core.Geometry;
+using Murder.Core.Graphics;
+using Murder.Diagnostics;
+using Murder.Services;
+using Murder.Utilities;
+using System.Collections.Immutable;
+using System.Numerics;
+
+namespace Murder.Systems
+{
+    /// <summary>
+    /// System responsible for fading in and out entities.
+    /// This is not responsible for the screen fade transition.
+    /// </summary>
+    [Filter(typeof(FadeScreenWithSolidColorComponent))]
+    [Watch(typeof(FadeScreenWithSolidColorComponent))]
+    [DoNotPause]
+    public class FadeScreenWithSolidColorSystem : IReactiveSystem, IMurderRenderSystem, IExitSystem
+    {
+        private float _fadeInTime = -1;
+        private float _fadeOutTime = -1;
+
+        private Color _color;
+        protected float _duration;
+
+        private float _currentAlpha = 0;
+        private float _currentSort = .05f;
+
+        private int _targetBatch = Batches2D.UiBatchId;
+
+        public void OnAdded(World world, ImmutableArray<Entity> entities)
+        {
+            OnModified(world, entities);
+        }
+
+        public void OnModified(World world, ImmutableArray<Entity> entities)
+        {
+            _fadeInTime = -1;
+            _fadeOutTime = -1;
+
+            Entity? candidate = null;
+            if (entities.Length > 1)
+            {
+                GameLogger.Warning("Received more than one FadeScreenWithSolidColorComponent in the same frame!?");
+
+                foreach (Entity e in entities)
+                {
+                    FadeScreenWithSolidColorComponent f = e.GetFadeScreenWithSolidColor();
+                    if (f.FadeType == FadeType.Out)
+                    {
+                        candidate = e;
+                    }
+                }
+
+                // just grab the first one, then.
+                candidate ??= entities[0];
+            }
+            else if (entities.Length > 0)
+            {
+                candidate = entities[0];
+            }
+            else
+            {
+                return;
+            }
+
+            FadeScreenWithSolidColorComponent fade = candidate.GetFadeScreenWithSolidColor();
+            switch (fade.FadeType)
+            {
+                case FadeType.In:
+                    // GameLogger.Log("Received fade in.");
+
+                    _fadeInTime = Game.NowUnscaled;
+                    break;
+
+                case FadeType.Out:
+                    // GameLogger.Log("Received fade out.");
+
+                    _fadeOutTime = Game.NowUnscaled;
+                    break;
+            }
+
+            _color = fade.Color;
+            _duration = fade.Duration;
+            _currentSort = fade.Sort;
+            _targetBatch = fade.BatchId;
+        }
+
+        public void OnRemoved(World world, ImmutableArray<Entity> entities) { }
+
+        public void Draw(RenderContext render, Context context)
+        {
+            if (_fadeInTime != -1 || _fadeOutTime != -1)
+            {
+                if (_fadeInTime != -1)
+                {
+                    _currentAlpha = _duration == 0 ? 1 : Math.Min(Game.NowUnscaled - _fadeInTime, _duration) / _duration;
+
+                    if (_currentAlpha == 1)
+                    {
+                        _fadeInTime = -1;
+                    }
+                }
+
+                if (_fadeOutTime != -1)
+                {
+                    _currentAlpha = _duration == 0 ? 0 : 1 - Math.Min(Game.NowUnscaled - _fadeOutTime, _duration) / _duration;
+
+                    if (_currentAlpha == 0)
+                    {
+                        _fadeOutTime = -1;
+                    }
+                }
+
+                if (_currentAlpha == 0)
+                {
+                    OnBeforeAlphaUpdate(render, alpha: 0);
+
+                    render.ScreenFade = 0;
+                    return;
+                }
+            }
+
+            Rectangle area = _targetBatch == Batches2D.GameUiBatchId ?
+                render.Camera.SafeBounds :
+                new Rectangle(Vector2.Zero, render.Camera.SafeBounds.Size);
+
+
+            RenderServices.DrawRectangle(
+                render.GetBatch(_targetBatch),
+                area,
+                _color * Calculator.Quantize(_currentAlpha, 64),
+                _currentSort);
+
+            OnBeforeAlphaUpdate(render, _currentAlpha);
+
+            render.ScreenFade = _currentAlpha;
+        }
+
+        private void OnBeforeAlphaUpdate(RenderContext render, float alpha)
+        {
+            // round this up
+            float ratioBefore = float.Round(render.ScreenFade, 2);
+            float ratio = float.Round(alpha, 2);
+
+            if (ratioBefore == ratio)
+            {
+                return;
+            }
+
+            OnAlphaUpdateImpl(ratio);
+        }
+
+        protected virtual void OnAlphaUpdateImpl(float alpha) { }
+
+        public void Exit(Context context)
+        {
+            if (Game.Instance.ActiveScene is Scene scene && scene.RenderContext is RenderContext render)
+            {
+                render.ScreenFade = 0;
+            }
+        }
+    }
+}

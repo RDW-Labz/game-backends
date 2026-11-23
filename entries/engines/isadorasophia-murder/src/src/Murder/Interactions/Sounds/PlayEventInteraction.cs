@@ -1,0 +1,86 @@
+﻿using Bang;
+using Bang.Entities;
+using Bang.Interactions;
+using Murder.Components;
+using Murder.Core.Sounds;
+using Murder.Services;
+using Murder.Utilities.Attributes;
+
+namespace Murder.Interactions;
+
+[Flags]
+public enum PlayEventSettings
+{
+    None = 0,
+    IgnoreEntitySource = 1,
+    PlayOnInteracted = 2
+}
+
+[Sound]
+[CustomName($"\uf2a2 {nameof(PlayEventInteraction)}")]
+public readonly struct PlayEventInteraction : IInteraction
+{
+    public readonly SoundEventId? Event { get; init; } = null;
+
+    public readonly SoundProperties Properties { get; init; } = SoundProperties.Persist;
+    public readonly SoundLayer Layer { get; init; } = SoundLayer.Ambience;
+    public readonly PlayEventSettings Settings { get; init; } = PlayEventSettings.None;
+
+    public PlayEventInteraction() { }
+
+    public void Interact(World world, Entity interactor, Entity? interacted)
+    {
+        if (Event is null)
+        {
+            return;
+        }
+
+        Entity target = interactor;
+        if (Settings.HasFlag(PlayEventSettings.PlayOnInteracted) && interacted is not null)
+        {
+            target = interacted;
+        }
+
+        int entityId = Settings.HasFlag(PlayEventSettings.IgnoreEntitySource) ? -1 : target.EntityId;
+
+        if (Properties.HasFlag(SoundProperties.StopOtherEventsInLayer))
+        {
+            SoundServices.Stop(Layer, fadeOut: true);
+        }
+
+        SoundProperties properties = Properties;
+        if (Properties.HasFlag(SoundProperties.Persist))
+        {
+            properties |= SoundProperties.Persist;
+        }
+        
+        if (Properties.HasFlag(SoundProperties.SkipIfAlreadyPlaying))
+        {
+            properties |= SoundProperties.SkipIfAlreadyPlaying;
+        }
+
+        if (interactor.HasOnExitMessage())
+        {
+            SoundServices.Stop(Event.Value, fadeOut: true, entityId);
+        }
+        else
+        {
+            if (world.TryGetUniqueBlockPlayEvents() is BlockPlayEventsComponent blockPlayEvents)
+            {
+                if (blockPlayEvents.Layer is null || blockPlayEvents.Layer == Layer)
+                {
+                    return;
+                }
+            }
+
+            if (entityId == -1)
+            {
+                _ = SoundServices.Play(Event.Value, Layer, properties);
+            }
+            else
+            {
+                _ = SoundServices.Play(Event.Value, target, Layer, properties);
+            }
+        }
+    }
+}

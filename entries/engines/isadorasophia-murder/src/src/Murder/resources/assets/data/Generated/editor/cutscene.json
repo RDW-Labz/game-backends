@@ -1,0 +1,63 @@
+{
+  "$type": "Murder.Assets.Graphics.SpriteAsset",
+  "Animations": {
+    "": {
+      "Frames": [
+        0
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    }
+  },
+  "Atlas": "editor",
+  "Frames": [
+    {
+      "AtlasIndex": 0,
+      "Name": "cutscene",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 286,
+        "Y": 98,
+        "Width": 14,
+        "Height": 16
+      },
+      "UV": {
+        "X": 0.55859375,
+        "Y": 0.19140625,
+        "Width": 0.02734375,
+        "Height": 0.03125
+      },
+      "TrimArea": {
+        "X": 1,
+        "Y": 0,
+        "Width": 14,
+        "Height": 16
+      },
+      "AtlasId": "editor"
+    }
+  ],
+  "Origin": {
+    "X": 8,
+    "Y": 8
+  },
+  "Size": {
+    "X": 16,
+    "Y": 16
+  },
+  "NineSlice": {
+    "X": 0,
+    "Y": 0,
+    "Width": 0,
+    "Height": 0
+  },
+  "Name": "cutscene",
+  "Guid": "e5084a6c-dcc6-09e0-628b-996637c46224",
+  "editorPath": "#\uF085Generated\\editor"
+}

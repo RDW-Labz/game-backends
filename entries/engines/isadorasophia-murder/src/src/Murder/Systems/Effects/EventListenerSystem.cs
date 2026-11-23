@@ -1,0 +1,183 @@
+﻿using Bang;
+using Bang.Components;
+using Bang.Contexts;
+using Bang.Entities;
+using Bang.Interactions;
+using Bang.Systems;
+using Murder.Attributes;
+using Murder.Components;
+using Murder.Core.Graphics;
+using Murder.Core.Sounds;
+using Murder.Diagnostics;
+using Murder.Prefabs;
+using Murder.Services;
+using System.Collections.Immutable;
+
+namespace Murder.Systems.Effects;
+
+[DefaultEditorSystem(startActive: false)]
+[Filter(typeof(EventListenerComponent))]
+[Filter(ContextAccessorFilter.NoneOf, typeof(MuteEventsComponent))]
+[Messager(typeof(AnimationEventMessage))]
+public class EventListenerSystem : IMessagerSystem
+{
+    public void OnMessage(World world, Entity entity, IMessage message)
+    {
+        if (message is not AnimationEventMessage animationEvent)
+        {
+            GameLogger.Error("How did we receive a message that is not AnimationEventMessage on EventListenerSystem?");
+            return;
+        }
+
+        if (world.TryGetUniqueEntityMuteAllEvents() is not null)
+        {
+            return;
+        }
+
+        // Were we actually listening to this particular event?
+        ImmutableDictionary<string, SpriteEventInfo> events = entity.GetEventListener().Events;
+
+        bool alwaysPlay = entity.HasPlayEvenOffScreen() || entity.HasUi() || entity.HasCutsceneAnchors();
+        bool canPlay = alwaysPlay || CanPlayFromEntity(world, entity);
+
+        // this is sort of wrong right now. we should find a better threshold and propagation from parent.
+        if (!alwaysPlay && canPlay && entity.TryFetchParent()?.TryGetAlpha()?.Alpha < .25f)
+        {
+            // don't play events for invisible entities!
+            canPlay = false;
+        }
+
+        if (canPlay && events.TryGetValue(animationEvent.Event, out SpriteEventInfo info))
+        {
+            // Start doing event actions.
+            if (info.Sound is SoundEventId sound)
+            {
+                Entity? target = entity;
+                SoundProperties properties = SoundProperties.None;
+                SoundLayer layer = SoundLayer.Sfx;
+
+                // For now, infer that any sound event id fired from a sprite that persists
+                // is actually an ambience sound.
+                if (info.Persisted is SoundLayer specificLayer)
+                {
+                    properties |= SoundProperties.Persist;
+                    layer = specificLayer;
+
+                    entity.SetPlayingPersistedEvent();
+                }
+                else if (alwaysPlay)
+                {
+                    target = null;
+                }
+
+                if (!OverridePlayEvent(world, target, animationEvent.Event, sound, layer, properties))
+                {
+                    _ = SoundServices.Play(sound, target, layer, properties);
+                }
+            }
+
+            if (info.Interactions is ImmutableArray<IInteractiveComponent> interactions)
+            {
+                foreach (IInteractiveComponent interaction in interactions)
+                {
+                    interaction.Interact(world, entity, entity);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Override whether you want to customize determining whether this message event can trigger a sound.
+    /// </summary>
+    protected virtual bool CanPlayFromEntity(World world, Entity e)
+    {
+        if (e.TryGetAlpha()?.Alpha is float alpha && alpha == 0)
+        {
+            // don't play events for invisible entities!
+            return false;
+        }
+
+        if (e.TryGetFadeTransition()?.TargetAlpha == 0 && e.HasMuteEventsOnAnyAlpha())
+        {
+            // if we're targeting alpha 0 instead, ignore any sounds if our threshold is minimum.
+            return false;
+        }
+
+        return e.IsInCamera(world);
+    }
+
+    /// <summary>
+    /// Override this for anything else that should be applied to the event that was 
+    /// just played, i.e. local parameters.
+    /// </summary>
+    protected virtual bool OverridePlayEvent(World world, Entity? target, string id, SoundEventId sound, SoundLayer layer, SoundProperties properties)
+    {
+        return false;
+    }
+}
+
+[DefaultEditorSystem(startActive: false)]
+[Filter(typeof(BroadcastEventMessageComponent))]
+[Filter(ContextAccessorFilter.NoneOf, typeof(MuteEventsComponent))]
+[Messager(typeof(AnimationEventMessage))]
+public class EventBroadcasterSystem : IMessagerSystem
+{
+    public void OnMessage(World world, Entity entity, IMessage message)
+    {
+        if (message is not AnimationEventMessage animationEvent)
+        {
+            GameLogger.Error("How did we receive a message that is not AnimationEventMessage on EventListenerSystem?");
+            return;
+        }
+
+        BroadcastEventMessageComponent broadcast = entity.GetBroadcastEventMessage();
+        if (entity.TryFetchChild(broadcast.Target) is Entity target)
+        {
+            target.SendAnimationEventMessage(animationEvent);
+        }
+
+        if (broadcast.OtherTargets is ImmutableArray<string> otherTargets)
+        {
+            foreach (string t in otherTargets)
+            {
+                if (entity.TryFetchChild(t) is Entity otherTarget)
+                {
+                    otherTarget.SendAnimationEventMessage(animationEvent);
+                }
+            }
+        }
+    }
+}
+
+[Filter(typeof(EventListenerComponent))]
+[Watch(typeof(PlayingPersistedEventComponent))]
+public class EventPersistedOnEntityListenerSystem : IReactiveSystem
+{
+    public void OnAdded(World world, ImmutableArray<Entity> entities) { }
+
+    public void OnModified(World world, ImmutableArray<Entity> entities) { }
+
+    public void OnRemoved(World world, ImmutableArray<Entity> entities)
+    {
+        foreach (Entity e in entities)
+        {
+            if (e.TryGetEventListener() is EventListenerComponent listener)
+            {
+                foreach ((string _, SpriteEventInfo info) in listener.Events)
+                {
+                    if (info.Sound is null)
+                    {
+                        continue;
+                    }
+
+                    SoundServices.Stop(info.Sound, fadeOut: true, entityId: e.EntityId);
+                }
+            }
+        }
+    }
+
+    public void OnDeactivated(World world, ImmutableArray<Entity> entities)
+    {
+        OnRemoved(world, entities);
+    }
+}

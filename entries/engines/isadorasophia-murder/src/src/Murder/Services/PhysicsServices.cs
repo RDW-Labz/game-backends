@@ -1,0 +1,1961 @@
+﻿using Bang;
+using Bang.Components;
+using Bang.Contexts;
+using Bang.Entities;
+using Murder.Components;
+using Murder.Core;
+using Murder.Core.Geometry;
+using Murder.Core.Graphics;
+using Murder.Core.Physics;
+using Murder.Diagnostics;
+using Murder.Utilities;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using static System.Formats.Asn1.AsnWriter;
+
+namespace Murder.Services;
+
+public static class PhysicsServices
+{
+    public readonly struct PhysicEntityCachedInfo
+    {
+        public readonly int EntityId;
+        public readonly Vector2 Scale;
+        public readonly Point GlobalPosition;
+        public readonly ColliderComponent Collider;
+
+        public PhysicEntityCachedInfo(int entityId, Vector2 scale, Point globalPosition, ColliderComponent collider)
+        {
+            EntityId = entityId;
+            Scale = scale;
+            GlobalPosition = globalPosition;
+            Collider = collider;
+        }
+    }
+    private static readonly ImmutableArray<PhysicEntityCachedInfo>.Builder _physicsInfoCacheBuilder = ImmutableArray.CreateBuilder<PhysicEntityCachedInfo>();
+
+    public static bool IsCollidingWith(this Entity a, Entity b)
+    {
+        if (a.TryGetCollisionCache() is CollisionCacheComponent collisionCache)
+        {
+            return collisionCache.CollidingWith.Contains(b.EntityId);
+        }
+        return false;
+    }
+    public static Map? TryGetMap(World world)
+    {
+        return world.TryGetUniqueMap()?.Map;
+    }
+
+    public static IntRectangle GetCarveBoundingBox(this ColliderComponent collider, Vector2 position, Vector2 scale)
+    {
+        Rectangle rect = collider.GetBoundingBox(position, scale);
+        return rect.GetCarveBoundingBox(occupiedThreshold: .75f);
+    }
+
+    public static IntRectangle[] GetCollidersBoundingBox(this ColliderComponent collider, Point position, bool gridCoordinates)
+    {
+        IntRectangle[] result = new IntRectangle[collider.Shapes.Length];
+        for (int i = 0; i < collider.Shapes.Length; ++i)
+        {
+            IShape shape = collider.Shapes[i];
+
+            if (gridCoordinates)
+            {
+                var rect = shape.GetBoundingBox();
+                int left = Grid.FloorToGrid(rect.X + position.X);
+                int top = Grid.FloorToGrid(rect.Y + position.Y);
+                int right = Grid.CeilToGrid(rect.X + rect.Width + position.X);
+                int bottom = Grid.CeilToGrid(rect.Y + rect.Height + position.Y);
+
+                result[i] = new IntRectangle(left, top, right - left, bottom - top);
+            }
+            else
+            {
+                result[i] = shape.GetBoundingBox().AddPosition(position);
+            }
+        }
+
+        return result;
+    }
+
+    public static Rectangle GetBoundingBox(this ColliderComponent collider, Vector2 position, Vector2 scale)
+    {
+        if (collider.Shapes.Length == 0)
+        {
+            return Rectangle.Empty;
+        }
+
+        float left = int.MaxValue;
+        float right = int.MinValue;
+        float top = int.MaxValue;
+        float bottom = int.MinValue;
+
+        foreach (var shape in collider.Shapes)
+        {
+            var rect = shape.GetBoundingBox();
+            left = Math.Min(left, rect.Left);
+            top = Math.Min(top, rect.Top);
+            right = Math.Max(right, rect.Right);
+            bottom = Math.Max(bottom, rect.Bottom);
+        }
+
+        // Handle negative scales (flipping)
+        float scaledLeft = (scale.X < 0 ? right : left) * scale.X;
+        float scaledTop = (scale.Y < 0 ? bottom : top) * scale.Y;
+        float width = Math.Abs((right - left) * scale.X);
+        float height = Math.Abs((bottom - top) * scale.Y);
+
+        return new Rectangle(scaledLeft + position.X, scaledTop + position.Y, width, height);
+    }
+
+    /// <summary>
+    /// Get bounding box of an entity that contains both <see cref="ColliderComponent"/>
+    /// and <see cref="PositionComponent"/>.
+    /// </summary>
+    public static IntRectangle GetColliderBoundingBox(this Entity target)
+    {
+        Point position = target.GetGlobalPosition().Point();
+
+        if (!target.HasCollider())
+        {
+            return new(position, Point.Zero);
+        }
+
+        ColliderComponent collider = target.GetCollider();
+        return collider.GetBoundingBox(position, target.FetchScale());
+    }
+
+    public readonly struct RaycastHit
+    {
+        public readonly Point Tile;
+        public readonly Entity? Entity;
+        public readonly Vector2 Point;
+
+        public RaycastHit()
+        {
+            Entity = null;
+            Tile = default;
+            Point = Vector2.Zero;
+        }
+
+        public RaycastHit(Point tile, Vector2 point)
+        {
+            Tile = tile;
+            Entity = null;
+            Point = point;
+        }
+
+        public RaycastHit(Entity? entity, Vector2 point) : this()
+        {
+            Tile = default;
+            Entity = entity;
+            Point = point;
+        }
+
+    }
+
+    /// <summary>
+    /// Tryies to raycast looking for tile collisions.
+    /// </summary>
+    public static bool RaycastTiles(
+        World world,
+        Vector2 startPos,
+        Vector2 endPos,
+        int flags,
+        out RaycastHit hit)
+    {
+        Map map = world.GetUniqueMap().Map;
+
+        // Convert to *grid* space once
+        Vector2 startGrid = startPos / Grid.CellSize;
+        Vector2 endGrid = endPos / Grid.CellSize;
+
+        int x = Calculator.FloorToInt(startGrid.X);
+        int y = Calculator.FloorToInt(startGrid.Y);
+        int endX = Calculator.FloorToInt(endGrid.X);
+        int endY = Calculator.FloorToInt(endGrid.Y);
+
+        int stepX = Math.Sign(endX - x); // −1, 0, or +1
+        int stepY = Math.Sign(endY - y);
+
+        // How far we must move along the ray to cross the first X / Y cell boundary
+        float tMaxX = (stepX != 0)
+            ? ((stepX > 0 ? (x + 1) - startGrid.X : startGrid.X - x) / MathF.Abs(endGrid.X - startGrid.X))
+            : float.PositiveInfinity;
+
+        float tMaxY = (stepY != 0)
+            ? ((stepY > 0 ? (y + 1) - startGrid.Y : startGrid.Y - y) / MathF.Abs(endGrid.Y - startGrid.Y))
+            : float.PositiveInfinity;
+
+        // Distance to cross one whole cell in X / Y
+        float tDeltaX = (stepX != 0) ? 1f / MathF.Abs(endGrid.X - startGrid.X) : float.PositiveInfinity;
+        float tDeltaY = (stepY != 0) ? 1f / MathF.Abs(endGrid.Y - startGrid.Y) : float.PositiveInfinity;
+        Vector2 dir = endPos - startPos;
+
+        // Handle start cell...
+        // TODO: Do we need or want to include the start cell? This could potentially make
+        // something "blind" if it ended up at a tile that has the collision flag.
+        //if (map.IsInsideGrid(x, y) && map.At(x, y).HasFlag(flags))
+        //{
+        //    hit = new RaycastHit(new Point(x, y), startPos);
+        //    return true;                                     // hit at t = 0
+        //}
+
+        // DDA traversal
+        while (true)
+        {
+            // Decide which grid line we cross first
+            bool stepInX = tMaxX < tMaxY;
+
+            if (stepInX)
+            {
+                x += stepX;
+                float tEntry = tMaxX;        // entry-time for the *new* cell
+                tMaxX += tDeltaX;            // prepare next crossing
+
+                if (!map.IsInsideGrid(x, y)) break;
+
+                if (map.At(x, y).HasFlag(flags))
+                {
+                    hit = new RaycastHit(new Point(x, y), startPos + dir * tEntry);
+                    return true;
+                }
+            }
+            else
+            {
+                y += stepY;
+                float tEntry = tMaxY;        // entry-time for the *new* cell
+                tMaxY += tDeltaY;
+
+                if (!map.IsInsideGrid(x, y)) break;
+
+                if (map.At(x, y).HasFlag(flags))
+                {
+                    hit = new RaycastHit(new Point(x, y), startPos + dir * tEntry);
+                    return true;
+                }
+            }
+
+            if (x == endX && y == endY) break;   // reached destination cell
+        }
+
+        hit = default;
+        return false;
+
+    }
+
+
+    public static bool HasLineOfSight(World world, Vector2 from, Vector2 to, int mask)
+    {
+        if (Raycast(world, from, to, mask, [], out RaycastHit hit))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static bool HasLineOfSight(World world, Vector2 from, Vector2 to)
+    {
+        return HasLineOfSight(world, from, to, CollisionLayersBase.BLOCK_VISION);
+    }
+    public static bool HasSolidLineOfSight(World world, Vector2 from, Vector2 to)
+    {
+        return HasLineOfSight(world, from, to, CollisionLayersBase.SOLID);
+    }
+
+    /// <summary>
+    /// Returns whether <paramref name="from"/> an see an entity <paramref name="targetEntityId"/> before
+    /// it gets to <paramref name="to"/>.
+    /// </summary>
+    public static bool CanSeeEntity(World world, Vector2 from, Vector2 to, int selfEntityId, int targetEntityId)
+    {
+        if (!Raycast(world, from, to, CollisionLayersBase.ACTOR, [selfEntityId], out RaycastHit hit))
+        {
+            return false;
+        }
+
+        if (hit.Entity?.EntityId == targetEntityId)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static readonly List<int> _lineOfSightCache = [];
+
+    public static bool HasLineOfSight(World world, Entity from, Entity to, int mask)
+    {
+        _lineOfSightCache.Clear();
+
+        _lineOfSightCache.Add(from.EntityId);
+        _lineOfSightCache.Add(to.EntityId);
+
+        Vector2 origin = from.GetGlobalPosition();
+        Vector2 target = to.GetGlobalPosition();
+
+        if (Raycast(world, origin, target, mask, _lineOfSightCache, out RaycastHit hit))
+        {
+            return false;
+        }
+
+        // No obstacles! This means it has line of sight.
+        return true;
+    }
+
+    public static bool Raycast(World world, Vector2 startPosition, Vector2 endPosition, float minHitDistance, int layerMask, IEnumerable<int> ignoreEntities, out RaycastHit hit)
+    {
+        Vector2 newStartPosition = startPosition + (endPosition - startPosition).Normalized() * minHitDistance;
+        return Raycast(world, newStartPosition, endPosition, layerMask, ignoreEntities, out hit);
+    }
+
+    static readonly HashSet<int> _ignoreEntitiesWithChildren = [];
+    static readonly List<NodeInfo<Entity>> _possibleEntities = [];
+
+    public static bool Raycast(World world, Vector2 startPosition, Vector2 endPosition, int layerMask, IEnumerable<int> ignoreEntities, out RaycastHit hit)
+    {
+        hit = default;
+        Map map = world.GetUniqueMap().Map;
+        Line2 line = new(startPosition, endPosition);
+        bool hitSomething = false;
+        float closest = float.MaxValue;
+
+        _ignoreEntitiesWithChildren.Clear();
+        _possibleEntities.Clear();
+
+        foreach (int id in ignoreEntities)
+        {
+            if (world.TryGetEntity(id) is Entity entity)
+            {
+                // TODO: Do we really want this?
+                if (entity.Parent is int parentId && parentId != -1)
+                {
+                    _ignoreEntitiesWithChildren.Add(parentId);
+                }
+
+                _ignoreEntitiesWithChildren.Add(id);
+                EntityServices.GetAllChildren(world, entity, _ignoreEntitiesWithChildren);
+            }
+        }
+
+        if (RaycastTiles(world, startPosition, endPosition, layerMask, out var hitTile))
+        {
+            line = new(startPosition, hitTile.Point);
+            hit = hitTile;
+            hitSomething = true;
+
+            closest = (startPosition - hitTile.Point).LengthSquared();
+        }
+
+        var qt = world.GetUniqueQuadtree().Quadtree;
+
+        float minX = Math.Clamp(MathF.Min(startPosition.X, endPosition.X), 0, map.Width * Grid.CellSize);
+        float maxX = Math.Clamp(MathF.Max(startPosition.X, endPosition.X), 0, map.Width * Grid.CellSize);
+        float minY = Math.Clamp(MathF.Min(startPosition.Y, endPosition.Y), 0, map.Height * Grid.CellSize);
+        float maxY = Math.Clamp(MathF.Max(startPosition.Y, endPosition.Y), 0, map.Height * Grid.CellSize);
+
+        _possibleEntities.Clear();
+        qt.GetCollisionEntitiesAt(new Rectangle(minX, minY, maxX - minX, maxY - minY), _possibleEntities);
+
+        foreach (var e in _possibleEntities)
+        {
+            if (_ignoreEntitiesWithChildren.Contains(e.EntityInfo.EntityId))
+                continue;
+
+            // I believe that, if this is the case, we should assume that the entity still exists
+            // as of this frame and should be acknowledged as such.
+            // if (e.EntityInfo.IsDestroyed)
+            //     continue;
+
+            Vector2 position = e.EntityInfo.GetGlobalPosition();
+            if (e.EntityInfo.TryGetCollider() is ColliderComponent collider)
+            {
+                if ((collider.Layer & CollisionLayersBase.RAYIGNORE) != 0)
+                    continue;
+
+                // Check if the entity is on the same layer as the raycast
+                if ((collider.Layer & layerMask) == 0)
+                    continue;
+
+                foreach (var shape in collider.Shapes)
+                {
+                    switch (shape)
+                    {
+                        // TODO: Get intersecting point with circle
+                        case CircleShape circle:
+                            {
+                                if (line.TryGetIntersectingPoint(circle.Circle.AddPosition(position.ToPoint()), out Vector2 hitPoint))
+                                {
+                                    CompareShapeHits(startPosition, ref hit, ref hitSomething, ref closest, e, hitPoint.Point());
+
+                                    continue;
+                                }
+                            }
+                            break;
+                        case BoxShape rect:
+                            {
+                                if (line.TryGetIntersectingPoint(rect.Rectangle + position.ToPoint(), out Vector2 hitPoint))
+                                {
+                                    CompareShapeHits(startPosition, ref hit, ref hitSomething, ref closest, e, hitPoint.Point());
+
+                                    continue;
+                                }
+                            }
+                            break;
+                        case LazyShape lazy:
+                            {
+                                var otherRect = lazy.Rectangle(position.ToPoint());
+                                if (line.TryGetIntersectingPoint(otherRect, out Vector2 hitPoint))
+                                {
+                                    CompareShapeHits(startPosition, ref hit, ref hitSomething, ref closest, e, hitPoint.Point());
+
+                                    continue;
+                                }
+                            }
+                            break;
+                        case PolygonShape polygon:
+                            {
+                                if (polygon.Polygon.Intersects(line.AddPosition(-position.ToPoint()), out Vector2 hitPoint))
+                                {
+                                    hitPoint += position;
+                                    CompareShapeHits(startPosition, ref hit, ref hitSomething, ref closest, e, hitPoint.Point());
+
+                                    continue;
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        return hitSomething;
+    }
+
+    private static void CompareShapeHits(Vector2 startPosition, ref RaycastHit hit, ref bool hitSomething, ref float closest, NodeInfo<Entity> e, Point hitPosition)
+    {
+        var hitDistanceSq = (startPosition - hitPosition).LengthSquared();
+        if (hitDistanceSq < closest)
+        {
+            closest = hitDistanceSq;
+            hit = new RaycastHit(e.EntityInfo, hitPosition);
+            hitSomething = true;
+        }
+    }
+
+    [Flags]
+    public enum NextAvailablePositionFlags
+    {
+        CheckLineOfSight = 0b01,
+        CheckNeighbours = 0b10,
+        /// <summary>
+        /// Only used if <see cref="CheckNeighbours"/> is set.
+        /// </summary>
+        CheckRecursiveNeighbours = 0b100,
+        CheckTarget = 0b1000
+    }
+
+    private readonly static HashSet<Vector2> _checkedPositionsCache = [];
+    private readonly static List<PhysicEntityCachedInfo> _cachedEntityInfo = [];
+
+    /// <summary>
+    /// Find an eligible position to place an entity <paramref name="e"/> in the world that does not collide
+    /// with other entities and targets <paramref name="target"/>.
+    /// This will return immediate neighbours if <paramref name="target"/> is already occupied.
+    /// </summary>
+    public static Vector2? FindNextAvailablePosition(
+        World world,
+        Entity e,
+        Vector2 center,
+        Vector2 target,
+        int layerMask,
+        NextAvailablePositionFlags flags = NextAvailablePositionFlags.CheckTarget | NextAvailablePositionFlags.CheckNeighbours | NextAvailablePositionFlags.CheckRecursiveNeighbours)
+    {
+        Map map = world.GetUniqueMap().Map;
+
+        _cachedEntityInfo.Clear();
+        FilterPositionAndColliderEntities(
+            world,
+            layerMask,
+            /* ref */ result: _cachedEntityInfo);
+
+        _checkedPositionsCache.Clear();
+        return FindNextAvailablePosition(world, e, center, target, map, _cachedEntityInfo, _checkedPositionsCache, flags, layerMask);
+    }
+
+    /// <summary>
+    /// Checks if a position collides with the map or any entity with a collider in the world, based on the provided <paramref name="layerMask"/>.
+    /// Outs the center of the collider that is colliding, or if colliding with the map, the position of the center of the tile that is colliding.
+    /// </summary>
+    public static bool CollidesAtPoint(
+        World world,
+        Vector2 position,
+        int layerMask)
+    {
+        Map map = world.GetUniqueMap().Map;
+
+        _cachedEntityInfo.Clear();
+        FilterPositionAndColliderEntities(
+            world,
+            layerMask,
+            /* ref */ result: _cachedEntityInfo);
+
+        int hitId = -1;
+
+        // First, check if there is a collision against a tile.
+        if (map.At((int)(position.X / Grid.CellSize), (int)(position.Y / Grid.CellSize)).HasFlag(layerMask))
+        {
+            return true;
+        }
+
+        // Now, check against other entities.
+        foreach (var other in _cachedEntityInfo)
+        {
+            var otherCollider = other.Collider;
+
+            foreach (var otherShape in otherCollider.Shapes)
+            {
+                if (otherShape.GetPolygon().Polygon.Contains(position - other.GlobalPosition))
+                {
+                    if (world.TryGetEntity(other.EntityId) is Entity otherEntity)
+                    {
+                        if (!otherEntity.IsActive || !otherEntity.IsDestroyed)
+                        {
+                            continue;
+                        }
+
+                        hitId = other.EntityId;
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static bool CollidesTile(
+        World world,
+        Vector2 position,
+        int layerMask)
+    {
+        Map map = world.GetUniqueMap().Map;
+
+        // First, check if there is a collision against a tile.
+        if (map.At((int)(position.X / Grid.CellSize), (int)(position.Y / Grid.CellSize)).HasFlag(layerMask))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+    public static bool CollidesAt(
+        World world,
+        Entity e,
+        Vector2 position,
+        int layerMask)
+    {
+        Map map = world.GetUniqueMap().Map;
+
+        _cachedEntityInfo.Clear();
+        FilterPositionAndColliderEntities(
+            world,
+            layerMask,
+            /* ref */ result: _cachedEntityInfo);
+
+        if (e.TryGetCollider() is ColliderComponent collider)
+        {
+            Vector2 scale = e.FetchScale();
+            return CollidesAt(world, map, e.EntityId, collider, position, scale, _cachedEntityInfo, layerMask, out int _);
+        }
+        else
+        {
+            GameLogger.Warning("Creating a collider on the fly, is this really what you want?");
+
+            // Check using a single point
+            return CollidesAt(world, map, e.EntityId, new ColliderComponent(new PointShape(), CollisionLayersBase.NONE, Color.Gray), position, Vector2.One, _cachedEntityInfo, layerMask, out int _);
+        }
+    }
+
+    /// <summary>
+    /// Position to check for collision used by <c>FindNextAvailablePosition</c>.
+    /// </summary>
+    private readonly static Queue<Vector2> _positionsToCheck = new Queue<Vector2>();
+
+    private static Vector2? FindNextAvailablePosition(
+        World world,
+        Entity e,
+        Vector2 center,
+        Vector2 target,
+        Map map,
+        IList<PhysicEntityCachedInfo> collisionEntities,
+        HashSet<Vector2> checkedPositions,
+        NextAvailablePositionFlags flags,
+        int layerMask)
+    {
+        _positionsToCheck.Clear();
+        _positionsToCheck.Enqueue(target);
+
+        checkedPositions.Add(target);
+
+        int depth = 0;
+
+        bool checkNeighbours = flags.HasFlag(NextAvailablePositionFlags.CheckNeighbours);
+
+        ColliderComponent collider = e.GetCollider();
+        Vector2 scale = e.FetchScale();
+
+        while (_positionsToCheck.Count > 0)
+        {
+            if (depth++ > 5)
+            {
+                // Let's not freeze our framerate by adding a limit here.
+                GameLogger.Warning("FindNextAvailablePosition: Depth limit reached, returning null.");
+                return null;
+            }
+
+            Vector2 currentPosition = _positionsToCheck.Dequeue();
+            Point startGridPoint = center.ToGrid();
+
+            bool CheckPosition(Vector2 position)
+            {
+                if (!CollidesAt(world, map, ignoreId: e.EntityId, collider, position, scale, collisionEntities, layerMask, out int _))
+                {
+                    if (!flags.HasFlag(NextAvailablePositionFlags.CheckLineOfSight) ||
+                        map.HasLineOfSight(startGridPoint, position.ToGrid(), excludeEdges: true, layerMask))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            if (CheckPosition(currentPosition))
+            {
+                return currentPosition;
+            }
+
+            if (checkNeighbours)
+            {
+                foreach (Vector2 neighbour in currentPosition.Neighbours(world, 0.5f))
+                {
+                    if (!checkedPositions.Contains(neighbour))
+                    {
+                        _positionsToCheck.Enqueue(neighbour);
+                        checkedPositions.Add(neighbour); // Mark this neighbour as checked to avoid re-checking
+                    }
+                }
+            }
+        }
+
+        // No available position was found
+        return null;
+    }
+
+    /// <summary>
+    /// Get all the neighbours of a position within the world.
+    /// This does not check for collision (yet)!
+    /// </summary>
+    public static IEnumerable<Vector2> Neighbours(this Vector2 position, World world, float unit)
+    {
+        int width = 256;
+        int height = 256;
+
+        if (world.TryGetUniqueMap() is MapComponent map)
+        {
+            width = map.Width;
+            height = map.Height;
+        }
+
+        return position.Neighbours(width * Grid.CellSize, height * Grid.CellSize, unit);
+    }
+
+    public static void FilterPositionAndColliderEntities(List<NodeInfo<Entity>> entities, HashSet<int> ignore, int layerMask, /* ref */ List<PhysicEntityCachedInfo> result)
+    {
+        for (int i = 0; i < entities.Count; i++)
+        {
+            NodeInfo<Entity> e = entities[i];
+
+            if (ignore.Contains(e.EntityInfo.EntityId) || !e.EntityInfo.IsActive)
+            {
+                continue;
+            }
+
+            if (!e.EntityInfo.HasCollider())
+            {
+                // it might have been deactivated this frame, we'll fix by the end of the frame.
+                // GameLogger.Warning($"Why is entity {e.EntityInfo.EntityId} still at the quadtree?");
+                continue;
+            }
+
+            ColliderComponent collider = e.EntityInfo.GetCollider();
+            if ((collider.Layer & layerMask) == 0)
+            {
+                continue;
+            }
+
+            result.Add(
+                new PhysicEntityCachedInfo(
+                    e.EntityInfo.EntityId,
+                    e.EntityInfo.FetchScale(),
+                    e.EntityInfo.GetGlobalPosition().ToPoint(),
+                    collider
+                ));
+        }
+    }
+
+
+    public static void FilterPositionAndColliderEntities(IEnumerable<Entity> entities, int layerMask, /* ref */ List<PhysicEntityCachedInfo> result)
+    {
+        foreach (Entity e in entities)
+        {
+            if (!e.IsActive || !e.HasCollider())
+            {
+                GameLogger.Warning($"Why is entity {e.EntityId} still being passed on for collision?");
+                continue;
+            }
+
+            ColliderComponent collider = e.GetCollider();
+            if ((collider.Layer & layerMask) == 0)
+            {
+                continue;
+            }
+
+            result.Add(
+                new PhysicEntityCachedInfo(
+                    e.EntityId,
+                    e.FetchScale(),
+                    e.GetGlobalPosition().ToPoint(),
+                    collider
+                ));
+        }
+    }
+
+    public static void FilterPositionAndColliderEntities(World world, Func<Entity, bool> filter, /* ref */ List<PhysicEntityCachedInfo> result)
+    {
+        result.Clear();
+
+        ImmutableArray<Entity> entities = GetColliderEntities(world);
+        foreach (Entity e in entities)
+        {
+            ColliderComponent collider = e.GetCollider();
+            if (!filter(e))
+            {
+                continue;
+            }
+
+            result.Add(new PhysicEntityCachedInfo(
+                e.EntityId,
+                e.FetchScale(),
+                e.GetGlobalPosition().ToPoint(),
+                collider
+                ));
+        }
+    }
+
+    public static void FilterPositionAndColliderEntities(World world, int layerMask, /* ref */ List<PhysicEntityCachedInfo> result)
+    {
+        result.Clear();
+
+        ImmutableArray<Entity> entities = GetColliderEntities(world);
+        foreach (Entity e in entities)
+        {
+            ColliderComponent collider = e.GetCollider();
+            if ((collider.Layer & layerMask) == 0)
+            {
+                continue;
+            }
+
+            result.Add(
+                new PhysicEntityCachedInfo
+                (
+                e.EntityId,
+                e.TryGetScale()?.Scale ?? Vector2.One,
+                e.GetGlobalPosition().ToPoint(),
+                collider
+                ));
+        }
+    }
+
+    private static int _colliderAndPositionContextId = -1;
+
+    private static int CreateColliderContext(World world)
+    {
+        return world.GetOrCreateContextIdFrom(
+                ContextAccessorFilter.AllOf, typeof(ColliderComponent), typeof(PositionComponent));
+    }
+
+    /// <summary>
+    /// Return all entities that have a collider and a position component.
+    /// </summary>
+    private static ImmutableArray<Entity> GetColliderEntities(World world)
+    {
+        if (_colliderAndPositionContextId == -1)
+        {
+            _colliderAndPositionContextId = CreateColliderContext(world);
+        }
+
+        if (!world.TryGetEntitiesFrom(_colliderAndPositionContextId, out ImmutableArray<Entity>? entities))
+        {
+            // this likely means that this context was never created in this world, although we persist from something else.
+            _colliderAndPositionContextId = CreateColliderContext(world);
+            entities = world.GetEntitiesFrom(_colliderAndPositionContextId);
+        }
+
+        return entities.Value;
+    }
+
+    public static void FilterPositionAndColliderEntities(World world, int layerMask, Type[]? requireComponents, /* ref */ List<(int id, ColliderComponent collider, Vector2 position)> result)
+    {
+        ImmutableArray<Entity> entities;
+        if (requireComponents is not null)
+        {
+            Type[] filter = new Type[2 + requireComponents.Length + 2];
+            filter[0] = typeof(ColliderComponent);
+            filter[1] = typeof(PositionComponent);
+
+            for (int i = 0; i < requireComponents.Length; i++)
+            {
+                filter[i + 2] = requireComponents[i];
+            }
+
+            entities = world.GetEntitiesWith(ContextAccessorFilter.AllOf, filter);
+        }
+        else
+        {
+            entities = GetColliderEntities(world);
+        }
+
+        foreach (Entity e in entities)
+        {
+            ColliderComponent collider = e.GetCollider();
+            if (collider.Layer != layerMask)
+            {
+                result.Add((
+                    e.EntityId,
+                    collider,
+                    e.GetGlobalPosition()
+                    ));
+            }
+        }
+    }
+
+    private static readonly List<NodeInfo<Entity>> _cachedCollisions = new();
+
+    public static IEnumerable<Entity> GetAllCollisionsAt(World world, Point position, Vector2 scale, ColliderComponent collider, int ignoreId, int mask)
+    {
+        _cachedCollisions.Clear();
+
+        // Now, check against other entities.
+        Quadtree qt = world.GetUniqueQuadtree().Quadtree;
+        qt.GetCollisionEntitiesAt(GetBoundingBox(collider, position, scale), _cachedCollisions);
+
+        foreach (var other in _cachedCollisions)
+        {
+            if (other.EntityInfo.IsDestroyed || other.EntityInfo.TryGetCollider() is not ColliderComponent otherCollider)
+                continue;
+
+            if (ignoreId == other.EntityInfo.EntityId)
+                continue; // That's me!
+
+            if (!otherCollider.Layer.HasFlag(mask))
+                continue;
+
+            var otherPosition = other.EntityInfo.GetGlobalPosition().ToPoint();
+            Vector2 otherScale = other.EntityInfo.FetchScale();
+
+            foreach (var shape in collider.Shapes)
+            {
+                foreach (var otherShape in otherCollider.Shapes)
+                {
+                    if (CollidesWith(shape, position, scale, otherShape, otherPosition, otherScale))
+                    {
+                        yield return other.EntityInfo;
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Checks for collision at a position, returns the minimum translation vector (MTV) to resolve the collision.
+    /// </summary>
+    public static bool GetFirstMtvAt(
+        in Map map,
+        ColliderComponent collider,
+        Vector2 fromPosition,
+        Vector2 toPosition,
+        IList<PhysicEntityCachedInfo> others,
+        int mask,
+        out int hitId,
+        out int layer,
+        out Vector2 mtv)
+    {
+        hitId = -1;
+        layer = CollisionLayersBase.NONE;
+        mtv = Vector2.Zero;
+
+        Vector2 totalMtv = Vector2.Zero;
+        bool hasCollision = false;
+        float mtvLength = float.MaxValue;
+
+        // Check for tile collision
+        if (PhysicsServices.GetAccumulatedMtvAtTile(map, collider, fromPosition, toPosition, mask, out int tileLayer) is Vector2 tileMtv && tileMtv != Vector2.Zero)
+        {
+            layer = tileLayer;
+            totalMtv += tileMtv;
+            hasCollision = true;
+            mtvLength = tileMtv.LengthSquared();
+        }
+
+        // Check against other entities
+        foreach (var shape in collider.Shapes)
+        {
+            var polyA = shape.GetPolygon();
+
+            foreach (var other in others)
+            {
+                foreach (var otherShape in other.Collider.Shapes)
+                {
+                    var polyB = otherShape.GetPolygon();
+                    if (polyA.Polygon.Intersects(polyB.Polygon, toPosition, other.GlobalPosition) is Vector2 colliderMtv && colliderMtv.HasValue())
+                    {
+                        // The hit ID is the ID of the closest entity
+                        float currentMtvLengthSquared = colliderMtv.LengthSquared();
+                        if (currentMtvLengthSquared < mtvLength)
+                        {
+                            hitId = other.EntityId;
+                            layer = other.Collider.Layer;
+                            mtvLength = currentMtvLengthSquared;
+                        }
+
+                        float similarity = Calculator.Vector2Similarity(totalMtv, colliderMtv);
+
+                        totalMtv += colliderMtv * (1 - similarity);
+                        hasCollision = true;
+                    }
+                }
+            }
+        }
+
+        if (hasCollision)
+        {
+            mtv = totalMtv;
+        }
+
+        return hasCollision;
+    }
+
+
+
+    /// <summary>
+    /// Checks for collision at a position, returns the minimum translation vector (MTV) to resolve the collision.
+    /// </summary>
+    public static List<Vector2> GetMtvAt(in Map map, int ignoreId, ColliderComponent collider, Vector2 position, IEnumerable<PhysicEntityCachedInfo> others, int mask, out int hitId)
+    {
+        hitId = -1;
+        List<Vector2> mtvs =
+        [
+            // First, check if there is a collision against a tile.
+            .. PhysicsServices.GetMtvAtTile(map, collider, position, mask),
+        ];
+
+        // Now, check against other entities.
+
+        foreach (var shape in collider.Shapes)
+        {
+            var polyA = shape.GetPolygon();
+
+            foreach (var other in others)
+            {
+                var otherCollider = other.Collider;
+                if (ignoreId == other.EntityId) continue; // That's me!
+
+                foreach (var otherShape in otherCollider.Shapes)
+                {
+                    var polyB = otherShape.GetPolygon();
+                    // TODO: This doesn't take into account the scale of the other entity.
+                    if (polyA.Polygon.Intersects(polyB.Polygon, position.Point(), other.GlobalPosition) is Vector2 mtv && mtv.HasValue())
+                    {
+                        hitId = other.EntityId;
+                        mtvs.Add(mtv);
+                    }
+                }
+            }
+        }
+
+        return mtvs;
+    }
+
+
+
+    /// <summary>
+    /// Checks for collision at a position, returns the minimum translation vector (MTV) to resolve the collision.
+    /// </summary>
+    public static Vector2 GetFirstMtv(int entityId, ColliderComponent collider, Vector2 position, IList<PhysicEntityCachedInfo> others, out int hitId)
+    {
+        hitId = -1;
+
+        // Now, check against other entities.
+        foreach (var shape in collider.Shapes)
+        {
+            var polyA = shape.GetPolygon();
+
+            foreach (var other in others)
+            {
+                var otherCollider = other.Collider;
+                if (entityId == other.EntityId) continue; // That's me!
+
+                foreach (var otherShape in otherCollider.Shapes)
+                {
+                    var polyB = otherShape.GetPolygon();
+                    if (polyA.Polygon.Intersects(polyB.Polygon, position.Point(), other.GlobalPosition) is Vector2 mtv && mtv.HasValue())
+                    {
+                        hitId = other.EntityId;
+                        return mtv;
+                    }
+                }
+            }
+        }
+
+        return Vector2.Zero;
+    }
+
+    private static Vector2 GetAccumulatedMtvAtTile(Map map, ColliderComponent collider, Vector2 fromPosition, Vector2 toPosition, int mask, out int layer)
+    {
+        Vector2 accumulatedMtv = Vector2.Zero;
+        layer = CollisionLayersBase.NONE;
+        float distance = (toPosition - fromPosition).Length();
+        int collisionCount = 0;
+
+        for (int i = 0; i < collider.Shapes.Length; i++)
+        {
+            var shape = collider.Shapes[i];
+            var polygon = shape.GetPolygon();
+            var boundingBox = new IntRectangle(Grid.FloorToGrid(polygon.Rect.X), Grid.FloorToGrid(polygon.Rect.Y),
+                                Grid.CeilToGrid(polygon.Rect.Width) + 2, Grid.CeilToGrid(polygon.Rect.Height) + 2)
+                                .AddPosition(toPosition.ToGridPoint());
+
+            foreach (var tileCollisionInfo in map.GetCollisionInfosWith(boundingBox.X, boundingBox.Y, boundingBox.Width, boundingBox.Height, mask))
+            {
+                IntRectangle adjustedRect = (tileCollisionInfo.Rectangle * Grid.CellSize);
+                adjustedRect.Height += 1;
+                var tilePolygon = Polygon.FromRectangle(adjustedRect);
+
+                if (polygon.Polygon.Intersects(tilePolygon, toPosition, Vector2.Zero) is Vector2 mtv && mtv.HasValue())
+                {
+                    collisionCount++;
+                    accumulatedMtv += mtv;
+                    layer |= tileCollisionInfo.Layer;
+                }
+            }
+        }
+
+        return (accumulatedMtv / Math.Max(1, collisionCount)).ClampLength(distance);
+    }
+
+    private static Vector2 GetFirstMtvAtTile(Map map, ColliderComponent collider, Vector2 position, int mask, out int layer)
+    {
+        Vector2 weightedMtv = Vector2.Zero;
+        float totalWeight = 0f;
+        layer = CollisionLayersBase.NONE;
+
+        foreach (var shape in collider.Shapes)
+        {
+            var polygon = shape.GetPolygon();
+            var boundingBox = new IntRectangle(Grid.FloorToGrid(polygon.Rect.X), Grid.FloorToGrid(polygon.Rect.Y),
+                                Grid.CeilToGrid(polygon.Rect.Width) + 2, Grid.CeilToGrid(polygon.Rect.Height) + 2)
+                                .AddPosition(position.ToGridPoint());
+
+            foreach (var tileCollisionInfo in map.GetCollisionInfosWith(boundingBox.X, boundingBox.Y, boundingBox.Width, boundingBox.Height, mask))
+            {
+                var tilePolygon = Polygon.FromRectangle(tileCollisionInfo.Rectangle * Grid.CellSize);
+                if (polygon.Polygon.Intersects(tilePolygon, position, Vector2.Zero) is Vector2 mtv && mtv.HasValue())
+                {
+                    float weight = mtv.Length();
+                    weightedMtv += mtv * weight;
+                    totalWeight += weight;
+                    layer = tileCollisionInfo.Layer;
+                }
+            }
+        }
+
+        if (totalWeight > 0)
+        {
+            // Return the weighted average of the MTVs
+            return weightedMtv / totalWeight;
+        }
+
+        return Vector2.Zero;
+    }
+
+    private static List<Vector2> GetMtvAtTile(Map map, ColliderComponent collider, Vector2 position, int mask)
+    {
+        List<Vector2> mtvs = new();
+        foreach (var shape in collider.Shapes)
+        {
+            var polygon = shape.GetPolygon();
+            var boundingBox = new IntRectangle(Grid.FloorToGrid(polygon.Rect.X), Grid.FloorToGrid(polygon.Rect.Y),
+                            Grid.CeilToGrid(polygon.Rect.Width) + 2, Grid.CeilToGrid(polygon.Rect.Height) + 2)
+                            .AddPosition(position.ToGridPoint());
+            foreach (var tile in map.GetCollisionsWith(boundingBox.X, boundingBox.Y, boundingBox.Width, boundingBox.Height, mask))
+            {
+                var tilePolygon = Polygon.FromRectangle(tile.X * Grid.CellSize, tile.Y * Grid.CellSize, Grid.CellSize, Grid.CellSize);
+                if (polygon.Polygon.Intersects(tilePolygon, position, Vector2.Zero) is Vector2 mtv && mtv.HasValue())
+                {
+                    mtvs.Add(mtv);
+                }
+            }
+        }
+
+        return mtvs;
+    }
+
+    public static bool CollidesAt(World world, in Map map, int ignoreId, ColliderComponent collider, Vector2 position, Vector2 scale, IList<PhysicEntityCachedInfo> others, int mask, out int hitId)
+    {
+        hitId = -1;
+
+        // First, check if there is a collision against a tile.
+        if (PhysicsServices.CollidesAtTile(map, collider, position, mask))
+        {
+            return true;
+        }
+
+        // Now, check against other entities.
+        foreach (var other in others)
+        {
+            var otherCollider = other.Collider;
+            if (ignoreId == other.EntityId) continue; // That's me!
+
+            foreach (var shape in collider.Shapes)
+            {
+                foreach (var otherShape in otherCollider.Shapes)
+                {
+                    if (CollidesWith(shape, position.Point(), scale, otherShape, other.GlobalPosition, other.Scale))
+                    {
+                        if (world.TryGetEntity(other.EntityId) is Entity otherEntity)
+                        {
+                            if (!otherEntity.IsActive || otherEntity.IsDestroyed)
+                            {
+                                continue;
+                            }
+
+                            hitId = other.EntityId;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static bool CollidesWith(Entity entityA, Entity entityB, Vector2 positionA)
+    {
+        if (entityA.TryGetCollider() is ColliderComponent colliderA
+            && entityB.TryGetCollider() is ColliderComponent colliderB
+            && entityB.TryGetPosition() is PositionComponent positionB)
+        {
+            Point posA = positionA.Point();
+            Vector2 scaleA = entityA.FetchScale();
+            Vector2 scaleB = entityB.FetchScale();
+            foreach (var shapeA in colliderA.Shapes)
+            {
+                foreach (var shapeB in colliderB.Shapes)
+                {
+                    if (CollidesWith(shapeA, posA, scaleA, shapeB, positionB.GetGlobal().ToPoint(), scaleB))
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    public static bool CollidesWith(Entity entityA, Entity entityB)
+    {
+        if (entityA.TryGetCollider() is ColliderComponent colliderA
+            && entityA.GetGlobalPositionIfValid() is Vector2 positionA
+            && entityB.TryGetCollider() is ColliderComponent colliderB
+            && entityB.GetGlobalPositionIfValid() is Vector2 positionB)
+        {
+            Vector2 scaleA = entityA.FetchScale();
+            Vector2 scaleB = entityB.FetchScale();
+
+            foreach (var shapeA in colliderA.Shapes)
+            {
+                foreach (var shapeB in colliderB.Shapes)
+                {
+                    if (CollidesWith(shapeA, positionA.Point(), scaleA, shapeB, positionB.Point(), scaleB))
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    public static bool CollidesWith(IShape shape1, Point position1, Vector2 scale1, IShape shape2, Point position2, Vector2 scale2)
+    {
+        // Use local variables for common calculations
+        Point relativePos12 = position1 - position2;
+        Point relativePos21 = position2 - position1;
+
+        // Polygon vs. Polygon - Most common case
+        if (shape1 is PolygonShape poly1 && shape2 is PolygonShape poly2)
+        {
+            return poly1.Polygon.CheckOverlapAt(poly2.Polygon, relativePos12, scale1, scale2);
+        }
+
+        // Polygon vs. Rectangle - Also very common
+        if (shape1 is PolygonShape polyI && shape2 is BoxShape boxI)
+        {
+            return polyI.Polygon.Intersect(boxI.Rectangle.AddPosition(relativePos21), scale1);
+        }
+        if (shape1 is BoxShape boxJ && shape2 is PolygonShape polyJ)
+        {
+            return polyJ.Polygon.Intersect(boxJ.Rectangle.AddPosition(relativePos12), scale2);
+        }
+
+        // Lazy vs. Lazy - Fast check
+        if (shape1 is LazyShape lazy1 && shape2 is LazyShape lazy2)
+        {
+            return lazy1.Touches(lazy2, position1, position2);
+        }
+
+        // Circle vs. Circle - Fast check
+        if (shape1 is CircleShape circle1 && shape2 is CircleShape circle2)
+        {
+            var center1 = position1 + circle1.Offset;
+            var center2 = position2 + circle2.Offset;
+            float radiusSum = circle1.Radius + circle2.Radius;
+            return (center1 - center2).LengthSquared() <= radiusSum * radiusSum;
+        }
+
+        // Point vs. Point - Trivial check
+        if (shape1 is PointShape point1 && shape2 is PointShape point2)
+        {
+            return point1.Point + position1 == point2.Point + position2;
+        }
+
+        // Box vs. Box - Fast AABB check
+        if (shape1 is BoxShape box1 && shape2 is BoxShape box2)
+        {
+            Rectangle rect1 = box1.Rectangle.AddPosition(position1);
+            Rectangle rect2 = box2.Rectangle.AddPosition(position2);
+            return rect1.Touches(rect2);
+        }
+
+        // Lazy vs. Box
+        if (shape1 is BoxShape boxA && shape2 is LazyShape lazyA)
+        {
+            return CheckLazyBoxCollision(lazyA, position2, boxA, position1);
+        }
+        if (shape1 is LazyShape lazyB && shape2 is BoxShape boxB)
+        {
+            return CheckLazyBoxCollision(lazyB, position1, boxB, position2);
+        }
+
+        // Lazy vs. Circle
+        if (shape1 is CircleShape circleA && shape2 is LazyShape lazyC)
+        {
+            return lazyC.Touches(circleA.Circle, position2, position1);
+        }
+        if (shape1 is LazyShape lazyD && shape2 is CircleShape circleB)
+        {
+            return lazyD.Touches(circleB.Circle, position1, position2);
+        }
+
+        // Lazy vs. Point
+        if (shape1 is PointShape pointA && shape2 is LazyShape lazyE)
+        {
+            return lazyE.Touches(pointA.Point + relativePos12);
+        }
+        if (shape1 is LazyShape lazyF && shape2 is PointShape pointB)
+        {
+            return lazyF.Touches(pointB.Point + relativePos21);
+        }
+
+        // Lazy vs. Line
+        if (shape1 is LineShape lineA && shape2 is LazyShape lazyG)
+        {
+            return lineA.LineAtPosition(position1).IntersectsRect(lazyG.Rectangle(position2));
+        }
+        if (shape1 is LazyShape lazyH && shape2 is LineShape lineB)
+        {
+            return lineB.LineAtPosition(position2).IntersectsRect(lazyH.Rectangle(position1));
+        }
+
+        // Lazy vs. Polygon
+        if (shape1 is PolygonShape polyA && shape2 is LazyShape lazyI)
+        {
+            return polyA.Polygon.Intersect(lazyI.Rectangle(relativePos21), scale1);
+        }
+        if (shape1 is LazyShape lazyJ && shape2 is PolygonShape polyB)
+        {
+            return polyB.Polygon.Intersect(lazyJ.Rectangle(relativePos12), scale2);
+        }
+
+        // Point vs. Box
+        if (shape1 is BoxShape boxC && shape2 is PointShape pointC)
+        {
+            return boxC.Rectangle.AddPosition(position1).Contains(pointC.Point + position2);
+        }
+        if (shape1 is PointShape pointD && shape2 is BoxShape boxD)
+        {
+            return boxD.Rectangle.AddPosition(position2).Contains(pointD.Point + position1);
+        }
+
+        // Point vs. Circle
+        if (shape1 is CircleShape circleC && shape2 is PointShape pointE)
+        {
+            return circleC.Circle.AddPosition(position1).Contains(pointE.Point + position2);
+        }
+        if (shape1 is PointShape pointF && shape2 is CircleShape circleD)
+        {
+            return circleD.Circle.AddPosition(position2).Contains(pointF.Point + position1);
+        }
+
+        // Box vs. Circle
+        if (shape1 is BoxShape boxG && shape2 is CircleShape circleG)
+        {
+            return CheckBoxCircleCollision(boxG.Rectangle.AddPosition(position1), circleG.Circle.AddPosition(position2));
+        }
+        if (shape1 is CircleShape circleH && shape2 is BoxShape boxH)
+        {
+            return CheckBoxCircleCollision(boxH.Rectangle.AddPosition(position2), circleH.Circle.AddPosition(position1));
+        }
+
+        // Polygon vs. Point
+        if (shape1 is PolygonShape polyC && shape2 is PointShape pointI)
+        {
+            return polyC.Polygon.Contains(pointI.Point + relativePos21, scale1);
+        }
+        if (shape1 is PointShape pointJ && shape2 is PolygonShape polyD)
+        {
+            return polyD.Polygon.Contains(pointJ.Point + relativePos12, scale2);
+        }
+
+        // Polygon vs. Circle
+        if (shape1 is PolygonShape polyE && shape2 is CircleShape circleI)
+        {
+            return polyE.Polygon.Intersect(circleI.Circle.AddPosition(relativePos21), scale1);
+        }
+        if (shape1 is CircleShape circleJ && shape2 is PolygonShape polyF)
+        {
+            return polyF.Polygon.Intersect(circleJ.Circle.AddPosition(relativePos12), scale2);
+        }
+
+        // Anything line related is not super common, so we put it at the end.
+        // Polygon vs. Line
+        if (shape1 is PolygonShape polyG && shape2 is LineShape lineK)
+        {
+            return polyG.Polygon.Intersects(lineK.LineAtPosition(relativePos21), scale1, out _);
+        }
+        if (shape1 is LineShape lineL && shape2 is PolygonShape polyH)
+        {
+            return polyH.Polygon.Intersects(lineL.LineAtPosition(relativePos12), scale2, out _);
+        }
+        // Point vs. Line
+        if (shape1 is LineShape lineC && shape2 is PointShape pointG)
+        {
+            return lineC.LineAtPosition(position1).HasPoint(pointG.Point + position2);
+        }
+        if (shape1 is PointShape pointH && shape2 is LineShape lineD)
+        {
+            return lineD.LineAtPosition(position2).HasPoint(pointH.Point + position1);
+        }
+
+        // Line vs Circle
+        if (shape1 is LineShape lineE && shape2 is CircleShape circleE)
+        {
+            return lineE.LineAtPosition(position1).IntersectsCircle(circleE.Circle.AddPosition(position2));
+        }
+        if (shape1 is CircleShape circleF && shape2 is LineShape lineF)
+        {
+            return lineF.LineAtPosition(position2).IntersectsCircle(circleF.Circle.AddPosition(position1));
+        }
+
+        // Line vs Line
+        if (shape1 is LineShape lineG && shape2 is LineShape lineH)
+        {
+            return lineG.LineAtPosition(position1).Intersects(lineH.LineAtPosition(position2));
+        }
+
+        // Line vs. Box
+        if (shape1 is BoxShape boxE && shape2 is LineShape lineI)
+        {
+            return CheckLineBoxCollision(lineI.LineAtPosition(position2), boxE.Rectangle.AddPosition(position1));
+        }
+        if (shape1 is LineShape lineJ && shape2 is BoxShape boxF)
+        {
+            return CheckLineBoxCollision(lineJ.LineAtPosition(position1), boxF.Rectangle.AddPosition(position2));
+        }
+
+        GameLogger.Fail($"Invalid collision check {shape1.GetType()} & {shape2.GetType()}");
+        return false;
+    }
+
+    private static bool CheckLazyBoxCollision(LazyShape lazy, Point lazyPos, BoxShape box, Point boxPos)
+    {
+        int boxLeft = box.Offset.X + boxPos.X - Calculator.RoundToInt(box.Origin.X * box.Width);
+        int boxRight = boxLeft + box.Width;
+        int boxTop = box.Offset.Y + boxPos.Y - Calculator.RoundToInt(box.Origin.Y * box.Height);
+        int boxBottom = boxTop + box.Height;
+
+        int size = Calculator.RoundToInt(LazyShape.SQUARE_ROOT_OF_TWO * lazy.Radius / 2f);
+        int lazyLeft = lazy.Offset.X + lazyPos.X - size + 1;
+        int lazyRight = lazyLeft + size * 2 - 1;
+        int lazyTop = lazy.Offset.Y + lazyPos.Y - size;
+        int lazyBottom = lazyTop + size * 2;
+
+        return boxLeft <= lazyRight && lazyLeft <= boxRight && boxTop <= lazyBottom && lazyTop <= boxBottom;
+    }
+    private static bool CheckLineBoxCollision(Line2 line, Rectangle box)
+    {
+        // Get line endpoints
+        Vector2 p1 = line.Start;
+        Vector2 p2 = line.End;
+
+        // Check all 4 edges of the box without allocating Line2 objects
+        // Top edge
+        if (Calculator.LineSegmentsIntersect(p1, p2, new Vector2(box.Left + 1, box.Top + 1), new Vector2(box.Right, box.Top)))
+            return true;
+
+        // Right edge
+        if (Calculator.LineSegmentsIntersect(p1, p2, new Vector2(box.Right, box.Top + 1), new Vector2(box.Right, box.Bottom)))
+            return true;
+
+        // Bottom edge
+        if (Calculator.LineSegmentsIntersect(p1, p2, new Vector2(box.Right, box.Bottom), new Vector2(box.Left + 1, box.Bottom)))
+            return true;
+
+        // Left edge
+        if (Calculator.LineSegmentsIntersect(p1, p2, new Vector2(box.Left + 1, box.Bottom), new Vector2(box.Left + 1, box.Top + 1)))
+            return true;
+
+        return false;
+    }
+    private static bool CheckBoxCircleCollision(Rectangle box, Circle circle)
+    {
+        // Check if circle center is in the rect
+        if (box.Contains(circle.X, circle.Y))
+            return true;
+
+        // Check if any corners are in the circle
+        if (GeometryServices.DistanceRectPoint(circle.X, circle.Y + 1, box.Left, box.Top + 1, box.Width, box.Height) < circle.Radius)
+            return true;
+
+        float cx = circle.X;
+        float cy = circle.Y;
+        float r = circle.Radius;
+
+        // Check all 4 edges without allocating Line2 objects
+        // Top edge
+        if (LineSegmentIntersectsCircle(box.Left, box.Top + 1, box.Right, box.Top, cx, cy, r))
+            return true;
+
+        // Right edge
+        if (LineSegmentIntersectsCircle(box.Right, box.Top + 1, box.Right, box.Bottom, cx, cy, r))
+            return true;
+
+        // Bottom edge
+        if (LineSegmentIntersectsCircle(box.Right, box.Bottom, box.Left, box.Bottom, cx, cy, r))
+            return true;
+
+        // Left edge
+        if (LineSegmentIntersectsCircle(box.Left, box.Bottom, box.Left, box.Top + 1, cx, cy, r))
+            return true;
+
+        return false;
+    }
+
+    private static bool LineSegmentIntersectsCircle(float x1, float y1, float x2, float y2, float cx, float cy, float radius)
+    {
+        // Vector from line start to circle center
+        float dx = cx - x1;
+        float dy = cy - y1;
+
+        // Line direction vector
+        float lx = x2 - x1;
+        float ly = y2 - y1;
+
+        // Length squared of line segment
+        float lenSq = lx * lx + ly * ly;
+
+        // Project circle center onto line
+        float t = (dx * lx + dy * ly) / lenSq;
+
+        // Clamp to segment
+        t = Math.Max(0f, Math.Min(1f, t));
+
+        // Closest point on segment
+        float closestX = x1 + t * lx;
+        float closestY = y1 + t * ly;
+
+        // Distance from closest point to circle center
+        float distX = cx - closestX;
+        float distY = cy - closestY;
+        float distSq = distX * distX + distY * distY;
+
+        return distSq <= radius * radius;
+    }
+
+    public static bool ContainsPoint(Entity entity, Point point)
+    {
+        if (entity.TryGetCollider() is not ColliderComponent collider)
+        {
+            return false;
+        }
+
+        if (collider.Shapes.IsDefaultOrEmpty)
+        {
+            return false;
+        }
+
+        Point position = entity.GetGlobalPosition().ToPoint();
+
+        bool contains;
+        foreach (IShape shape in collider.Shapes)
+        {
+            switch (shape)
+            {
+                case LazyShape lazyShape:
+                    Point delta = position + lazyShape.Offset - point;
+                    contains = delta.LengthSquared() <= MathF.Pow(lazyShape.Radius, 2);
+                    break;
+
+                case PointShape pointShape:
+                    contains = pointShape.Point == point;
+                    break;
+
+                case LineShape lineShape:
+                    contains = lineShape.Line.HasPoint(point);
+                    break;
+
+                case BoxShape box:
+                    var rect = new Rectangle(position + box.Offset, new Point(box.Width, box.Height));
+                    contains = rect.Contains(point);
+                    break;
+
+                case CircleShape circle:
+                    Point circleDelta = position + circle.Offset - point;
+                    contains = circleDelta.LengthSquared() <= MathF.Pow(circle.Radius, 2);
+                    break;
+
+                case PolygonShape polygon:
+                    contains = polygon.Polygon.Contains(point);
+                    break;
+
+                default:
+                    return false;
+            }
+
+            if (contains)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Apply collision with tile objects within the map.
+    /// </summary>
+    public static bool CollidesAtTile(in Map map, ColliderComponent collider, Vector2 position, int mask)
+    {
+        foreach (var shape in collider.Shapes)
+        {
+            if (CollidesAtTile(map, shape, position, mask))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Apply collision with tile objects within the map.
+    /// </summary>
+    private static bool CollidesAtTile(in Map map, IShape shape, Vector2 position, int mask)
+    {
+        switch (shape)
+        {
+            case LazyShape lazy:
+                {
+                    var rect = lazy.Rectangle(position);
+
+                    var topLeft = new Point(
+                        Calculator.FloorToInt((float)(rect.X) / Grid.CellSize),
+                        Calculator.FloorToInt((float)(rect.Y - 1) / Grid.CellSize));
+
+                    var botRight = new Point(
+                        Calculator.CeilToInt((float)(rect.X + rect.Width) / Grid.CellSize),
+                        Calculator.CeilToInt((float)(rect.Y + rect.Height + 1) / Grid.CellSize));
+
+                    if (map?.HasCollisionAt(topLeft.X, topLeft.Y, botRight.X - topLeft.X, botRight.Y - topLeft.Y, mask) is Point point)
+                        return true;
+
+                    return false;
+                }
+
+            case PointShape point:
+                {
+                    Point gridPos = (point.Point.ToVector2() + position).ToGridPoint();
+                    return map.HasCollisionAt(gridPos.X, gridPos.Y, 1, 1, mask) is Point;
+                }
+
+            case LineShape lineShape:
+                {
+                    Line2 line = lineShape.LineAtPosition(position.Point());
+                    //make a rectangle out of the line segment, check for any tiles in that rectangle
+
+                    //if there are tiles in there, loop through and check each one as a rectangle against the line
+                    if (map.HasCollisionAt(Grid.RoundToGrid(line.Left) - 1, Grid.RoundToGrid(line.Top) - 1, Grid.CeilToGrid(line.Width) + 1, Grid.CeilToGrid(line.Height) + 1, mask) is Point)
+                    {
+                        int rectX, rectY;
+                        int
+                            gridx = Grid.FloorToGrid(line.Left),
+                            gridy = Grid.FloorToGrid(line.Top),
+                            gridx2 = Grid.CeilToGrid(line.Right),
+                            gridy2 = Grid.CeilToGrid(line.Bottom);
+
+                        for (int i = gridx; i <= gridx2; i++)
+                        {
+                            for (int j = gridy; j <= gridy2; j++)
+                            {
+                                if (map.HasCollision(i, j, mask))
+                                {
+                                    rectX = i * Grid.CellSize;
+                                    rectY = j * Grid.CellSize;
+                                    var rect = new Rectangle(rectX, rectY, Grid.CellSize, Grid.CellSize);
+
+                                    if (rect.Contains(line.Start.X, line.Start.Y))
+                                    {
+                                        return true;
+                                    }
+
+                                    if (rect.Contains(line.End.X, line.End.Y))
+                                    {
+                                        return true;
+                                    }
+
+                                    if (line.IntersectsRect(rectX, rectY, Grid.CellSize, Grid.CellSize))
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    return false;
+                }
+
+            case BoxShape box:
+                {
+                    var rect = box.Rectangle;
+
+                    var topLeft = new Point(
+                        Calculator.FloorToInt((position.X + rect.X) / Grid.CellSize),
+                        Calculator.FloorToInt((position.Y + rect.Y) / Grid.CellSize));
+
+                    var botRight = new Point(
+                        Calculator.CeilToInt((position.X + rect.X + box.Width) / Grid.CellSize),
+                        Calculator.CeilToInt((position.Y + rect.Y + box.Height) / Grid.CellSize));
+
+                    if (map.HasCollisionAt(topLeft.X, topLeft.Y, botRight.X - topLeft.X, botRight.Y - topLeft.Y, mask) is Point point)
+                        return true;
+
+                    return false;
+                }
+
+            case CircleShape circle:
+                {
+                    // TODO: Make this actually take in consideration the circular shape?
+                    var topLeft = new Point(
+                        Calculator.FloorToInt((position.X + circle.Offset.X - circle.Radius) / Grid.CellSize),
+                        Calculator.FloorToInt((position.Y + circle.Offset.Y - circle.Radius) / Grid.CellSize));
+
+                    var botRight = new Point(
+                        Calculator.CeilToInt((position.X + circle.Offset.X + circle.Radius) / Grid.CellSize),
+                        Calculator.CeilToInt((position.Y + circle.Offset.Y + circle.Radius) / Grid.CellSize));
+
+                    if (map.HasCollisionAt(topLeft.X, topLeft.Y, botRight.X - topLeft.X, botRight.Y - topLeft.Y, mask) is Point point)
+                        return true;
+
+                    return false;
+                }
+
+            case PolygonShape polygon:
+                {
+                    var rect = new IntRectangle(Grid.RoundToGrid(polygon.Rect.X), Grid.RoundToGrid(polygon.Rect.Y),
+                        Grid.RoundToGrid(polygon.Rect.Width) + 2, Grid.RoundToGrid(polygon.Rect.Height) + 2)
+                        .AddPosition(position.ToGridPoint());
+                    foreach (var tile in map.GetStaticCollisions(rect))
+                    {
+                        var tileRect = new Rectangle(tile.X * Grid.CellSize, tile.Y * Grid.CellSize, Grid.CellSize, Grid.CellSize).AddPosition(-position);
+                        if (polygon.Polygon.Intersect(tileRect))
+                            return true;
+                    }
+
+                    return false;
+                }
+
+            default:
+                return false;
+        }
+    }
+
+
+    private readonly static List<NodeInfo<Entity>> _coneCheckCache = new();
+
+    /// <summary>
+    /// Checks for collisions in a cone.
+    /// </summary>
+    public static IEnumerable<Entity> ConeCheck(World world, Vector2 coneStart, float range, float angle, float angleRange, int collisionLayer)
+    {
+        var coneStart1 = coneStart + new Vector2(-4, -2).Rotate(angle);
+        var coneStart2 = coneStart + new Vector2(-4, 2).Rotate(angle);
+
+        var coneEnd = coneStart + new Vector2(range + 4, 0).Rotate(angle);
+        var coneEndMin = coneStart + new Vector2(range, 0).Rotate(angle - angleRange / 2f);
+        var coneEndMax = coneStart + new Vector2(range, 0).Rotate(angle + angleRange / 2f);
+
+        var polygon = new Polygon([
+            coneStart1.Point(),
+            coneEndMin.Point(),
+            coneEnd.Point(),
+            coneEndMax.Point(),
+            coneStart2.Point()
+        ]);
+
+        Rectangle boundingBox = polygon.GetBoundingBox();
+
+        _coneCheckCache.Clear();
+        world.GetUniqueQuadtree().Quadtree.Collision.Retrieve(boundingBox, _coneCheckCache);
+
+        foreach (var other in _coneCheckCache)
+        {
+            // Should we be cleaning the cache to make sure we get valid entities?
+            if (other.EntityInfo.TryGetCollider() is not ColliderComponent collider)
+            {
+                continue;
+            }
+
+            // TODO [PERF] This should be filtered before anything
+            if (collider.Layer != collisionLayer)
+            {
+                continue;
+            }
+
+            var otherPosition = other.EntityInfo.GetGlobalPosition().ToPoint();
+            foreach (var otherShape in collider.Shapes)
+            {
+                if (otherShape is LazyShape lazy)
+                {
+                    if (polygon.Intersect(lazy.Rectangle(otherPosition)))
+                        yield return other.EntityInfo;
+                }
+                else if (otherShape is BoxShape box)
+                {
+                    if (polygon.Intersect(box.Rectangle.AddPosition(otherPosition)))
+                        yield return other.EntityInfo;
+                }
+                else if (otherShape is PolygonShape poly)
+                {
+                    if (polygon.CheckOverlapAt(poly.Polygon, otherPosition - coneStart))
+                        yield return other.EntityInfo;
+                }
+                else if (otherShape is CircleShape circle)
+                {
+                    if (polygon.Intersect(circle.Circle.AddPosition(otherPosition)))
+                        yield return other.EntityInfo;
+                }
+                else
+                {
+                    GameLogger.Error($"Unknown shape collision attempted {otherShape.GetType().Name}");
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Find the closest entity on a <paramref name="range"/> according to a <paramref name="collisionLayer"/>.
+    /// </summary>
+    public static bool FindClosestEntityOnRange(
+        World world,
+        Vector2 fromPosition,
+        float range,
+        int collisionLayer,
+        HashSet<int> excludeEntities,
+        [NotNullWhen(true)] out Entity? target,
+        [NotNullWhen(true)] out Vector2? location)
+    {
+        Rectangle rangeArea = new(fromPosition.X - range / 2f, fromPosition.Y - range / 2f, range, range);
+
+        List<NodeInfo<Entity>> entities = new();
+        world.GetUniqueQuadtree().Quadtree.Collision.Retrieve(rangeArea, entities);
+
+        float shortestDistance = float.MaxValue;
+        float maximumDistance = range * range;
+
+        target = null;
+        location = null;
+
+        foreach (var e in entities)
+        {
+            if (e.EntityInfo.IsDestroyed)
+            {
+                continue;
+            }
+
+            var collider = e.EntityInfo.GetCollider();
+
+            if (excludeEntities.Contains(e.EntityInfo.EntityId))
+            {
+                continue;
+            }
+
+            // TODO [PERF] This should be filtered before anything
+            if (collider.Layer != collisionLayer)
+            {
+                continue;
+            }
+
+            Vector2 otherPosition = e.EntityInfo.GetGlobalPosition();
+            float distance = (otherPosition - fromPosition).LengthSquared();
+
+            if (distance > maximumDistance)
+            {
+                continue;
+            }
+
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+
+                target = e.EntityInfo;
+                location = otherPosition;
+            }
+        }
+
+        return target != null;
+    }
+
+    /// <summary>
+    /// Removes an ID from the IsColliding component. This is usually handled by TriggerPhysics system, since a message must be sent when exiting a collision.
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="entityId"></param>
+    /// <returns></returns>
+    public static bool RemoveFromCollisionCache(Entity entity, int entityId)
+    {
+        if (entity.TryGetCollisionCache() is CollisionCacheComponent collisionCache)
+        {
+            if (collisionCache.HasId(entityId))
+            {
+                entity.SetCollisionCache(collisionCache.Remove(entityId));
+                return true;
+            }
+        }
+
+        return false;
+    }
+    public static void AddToCollisionCache(Entity entity, int entityId)
+    {
+        if (entity.TryGetCollisionCache() is CollisionCacheComponent collisionCache)
+        {
+            entity.SetCollisionCache(collisionCache.Add(entityId));
+        }
+        else
+        {
+            entity.SetCollisionCache(new CollisionCacheComponent(entityId));
+        }
+    }
+    /// <summary>
+    /// Check if a trigger is colliding with an actor via the TriggerCollisionSystem.
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="entityId"></param>
+    public static bool HasCachedCollisionWith(Entity entity, int entityId)
+    {
+        if (entity.TryGetCollisionCache() is CollisionCacheComponent collisionCache)
+        {
+            return collisionCache.HasId(entityId);
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Get all entities that touch this tile.
+    /// [PERF] This is not very fast or cached, this can be optimized
+    /// </summary>
+    public static void GetAllCollisionsAtGrid(World world, Point grid, ref List<NodeInfo<Entity>> output)
+    {
+        var qt = world.GetUniqueQuadtree().Quadtree;
+        Rectangle rectangle = GridHelper.ToRectangle(grid);
+        qt.GetCollisionEntitiesAt(rectangle, output);
+
+        // Now, check against other entities.
+        for (int i = output.Count - 1; i >= 0; i--)
+        {
+            var other = output[i];
+            if (!other.BoundingBox.Touches(rectangle))
+            {
+                output.RemoveAt(i);
+            }
+        }
+    }
+
+    public static void AddVelocity(this Entity entity, Vector2 addVelocity)
+    {
+        Vector2 velocity = entity.TryGetVelocity()?.Velocity ?? Vector2.Zero;
+        entity.SetVelocity(velocity + addVelocity);
+    }
+
+    public static Vector2 ClosestPointTo(Entity shapeEntity, Vector2 position)
+    {
+        if (shapeEntity.TryGetCollider() is not ColliderComponent collider)
+        {
+            return position;
+        }
+
+        Vector2 shapePosition = shapeEntity.GetGlobalPosition();
+
+        float minimumLength = float.MaxValue;
+        Vector2 closestPoint = position;
+
+        foreach (IShape shape in collider.Shapes)
+        {
+            Rectangle box = shape.GetBoundingBox().AddPosition(shapePosition);
+            Vector2 closerPoint = box.ClosestPoint(position);
+
+            float delta = (position - closerPoint).Length();
+            if (delta < minimumLength)
+            {
+                minimumLength = delta;
+                closestPoint = closerPoint;
+            }
+
+            if (delta == 0)
+            {
+                // we're inside, that's it!
+                break;
+            }
+        }
+
+        return closestPoint;
+    }
+}

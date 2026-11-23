@@ -1,0 +1,1094 @@
+﻿using Bang;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Murder.Assets;
+using Murder.Core;
+using Murder.Core.Geometry;
+using Murder.Core.Graphics;
+using Murder.Core.Input;
+using Murder.Core.Sounds;
+using Murder.Data;
+using Murder.Diagnostics;
+using Murder.Save;
+using Murder.Utilities;
+using System.Diagnostics;
+using System.Numerics;
+
+namespace Murder
+{
+    public partial class Game : Microsoft.Xna.Framework.Game
+    {
+        /// <summary>
+        /// Use this to set whether diagnostics should be pulled.
+        /// </summary>
+        public static bool DIAGNOSTICS_MODE = true;
+
+        /* *** Static properties of the Game *** */
+
+        /// <summary>
+        /// Singleton instance of the game. wBe cautious when referencing this...
+        /// </summary>
+        public static Game Instance { get; private set; } = null!;
+
+        /// <summary>
+        /// Gets the current instance of the GraphicsDevice.
+        /// </summary>
+        public static new GraphicsDevice GraphicsDevice => Instance._graphics.GraphicsDevice;
+
+        /// <summary>
+        /// Gets the GameDataManager instance.
+        /// </summary>
+        public static GameDataManager Data => Instance._gameData;
+
+        /// <summary>
+        /// Gets the active SaveData asset instance.
+        /// </summary>
+        public static SaveData Save => Instance._gameData.ActiveSaveData;
+
+        /// <summary>
+        /// Gets the GamePreferences asset instance.
+        /// </summary>
+        public static GamePreferences Preferences => Instance._gameData.Preferences;
+
+        /// <summary>
+        /// Gets the GameProfile asset instance.
+        /// </summary>
+        public static GameProfile Profile => Instance._gameData.GameProfile;
+
+        /// <summary>
+        /// Gets the ISoundPlayer instance.
+        /// </summary>
+        public static ISoundPlayer Sound => Instance.SoundPlayer;
+
+        /// <summary>
+        /// Provides a static Random instance.
+        /// </summary>
+        public static Random Random = new();
+
+        /// <summary>
+        /// Gets the game width from the GameProfile. This is the intended size, not the actual size. For the current window size use <see cref="RenderContext.Camera"/>.
+        /// </summary>
+        public static int DefaultWidth => Instance._game?.GameWidth ?? 320;
+
+        /// <summary>
+        /// Gets the game height from the GameProfile. This is the intended size, not the actual size. For the current window size use <see cref="RenderContext.Camera"/>.
+        /// </summary>
+        public static int DefaultHeight => Instance._game?.GameHeight ?? 180;
+
+        public static float DefaultScale => Instance._game?.Scale ?? 2;
+
+        /// <summary>
+        /// Gets the PlayerInput instance.
+        /// </summary>
+        public static PlayerInput Input => Instance._playerInput;
+
+        /// <summary>
+        /// The time difference between current and last update, scaled by pause and other time scaling. Value is reliable only during the Update().
+        /// This value will be zero during render.
+        /// </summary>
+        public static float DeltaTime => (float)(Instance._scaledDeltaTime);
+        /// <summary>
+        /// De time difference between current and last update. Value is reliable only during the Update().
+        /// </summary>
+        public static float UnscaledDeltaTime => (float)Instance._unscaledDeltaTime;
+        /// <summary>
+        /// Frame clock, updated once per frame
+        /// </summary>
+        public static float Now => (float)Instance._scaledElapsedTime;
+
+        /// <summary>
+        /// The time of the last fixed update.
+        /// </summary>
+        public static float FixedNow => (float)Instance._lastFixedUpdateTime;
+
+        /// <summary>
+        /// Gets the scaled elapsed time from the previous fixed update.
+        /// </summary>
+        public static float PreviousNow => (float)Instance._scaledPreviousElapsedTime;
+
+        /// <summary>
+        /// Gets the current unscaled elapsed time.
+        /// </summary>
+        public static float NowUnscaled => (float)Instance._unscaledElapsedTime;
+
+        /// <summary>
+        /// Time from previous fixed update.
+        /// </summary>
+        public static float PreviousNowUnscaled => (float)Instance._unscaledPreviousElapsedTime;
+
+        /// <summary>
+        /// Gets the fixed delta time in seconds.
+        /// </summary>
+        public static float FixedDeltaTime => Instance._fixedUpdateDelta;
+
+        public static bool SlowdownDetected { get; private set; } = false;
+        public static bool LoosingFrames { get; private set; } = false;
+        public static int MaxFixedUpdatesInASingleFrame { get; set; } = 0;
+        public static float MaxDeltaTime { get; set; } = 0;
+        public static bool UseXnaGameTime { get; set; } = true;
+
+        /// <summary>
+        /// Whether the game support saving game progress.
+        /// </summary>
+        public static bool CanSave => Instance._game?.CanSave ?? false;
+
+        private readonly Stopwatch _gameTimer = new();
+
+        private readonly Stopwatch _updateDiagnosticStopwatch = new();
+        private readonly Stopwatch _renderDiagnosticStopWatch = new();
+        private readonly Stopwatch _imGuiDiagnosticStopWatch = new();
+        private readonly Stopwatch _soundDiagnosticStopWatch = new();
+
+        /// <summary>
+        /// Beautiful hardcoded grid so it's very easy to access in game!
+        /// </summary>
+        public static GridConfiguration Grid => Instance._grid;
+
+        /// <summary>
+        /// Only updated if <see cref="DIAGNOSTICS_MODE"/> is set.
+        /// </summary>
+        public static UpdateTimeTracker TimeTrackerDiagnostics = new();
+
+        /// <summary>
+        /// Only updated if <see cref="DIAGNOSTICS_MODE"/> is set.
+        /// </summary>
+        public static UpdateTimeTracker RenderTimeTrackerDiagnostics = new();
+
+        /* *** Protected helpers *** */
+
+        protected readonly Microsoft.Xna.Framework.GraphicsDeviceManager _graphics;
+        public Microsoft.Xna.Framework.GraphicsDeviceManager GraphicsDeviceManager => _graphics;
+
+        protected readonly PlayerInput _playerInput;
+
+        protected readonly GameDataManager _gameData;
+
+        public readonly ISoundPlayer SoundPlayer;
+
+        public readonly HapticsManager Haptics;
+
+        /// <summary>
+        /// Initialized in <see cref="LoadContent"/>.
+        /// </summary>
+        protected SceneLoader? _sceneLoader;
+
+        protected virtual Scene InitialScene => new GameScene(Profile.StartingScene);
+
+        protected virtual bool IsDiagnosticEnabled => false;
+
+        /* *** Public instance fields *** */
+
+        public Scene? ActiveScene => _sceneLoader?.ActiveScene;
+
+        public const float LONGEST_TIME_RESET = 5f;
+
+        /// <summary>
+        /// Time in seconds that the Update() methods took to finish.
+        /// This is not the time between updates (that's <see cref="DeltaTime"/>), instead it's the time
+        /// That the systems take to actually update the game logic, including all the systems and components and render systems.
+        /// </summary>
+        public float UpdateTime { get; private set; }
+        public float LongestUpdateTime { get; private set; }
+        private float _longestUpdateTimeAt;
+
+        /// <summary>
+        /// Time in seconds that the Draw() method took to finish.
+        /// This is not the time that the render systems take, instead it's the time
+        /// that the game takes to actually render the scene, including all the draw calls.
+        /// </summary>
+        public float RenderTime { get; private set; }
+
+        /// <summary>
+        /// Time in seconds that the ImGui rendering took to finish.
+        /// </summary>
+        public float ImGuiRenderTime { get; private set; }
+        public float SoundUpdateTime { get; private set; }
+
+        /// <summary>
+        /// Gets the longest render time ever recorded.
+        /// </summary>
+        public float LongestRenderTime { get; private set; }
+
+        private float _longestRenderTimeAt;
+
+        /// <summary>
+        /// Elapsed time in seconds from the previous update frame since the game started
+        /// </summary>
+        public float PreviousElapsedTime => (float)_scaledPreviousElapsedTime;
+
+        public float TimeScale = 1f;
+
+        public bool IsPaused { get; private set; }
+
+        private GridConfiguration _grid = new(cellSize: 24 /* default size, just in case, who knows */);
+
+        /// <summary>
+        /// If set, this is the amount of frames we will skip while rendering.
+        /// </summary>
+        private int _freezeFrameCount = 0;
+
+        /// <summary>
+        /// Time since we have been freezing the frames.
+        /// </summary>
+        private double _freezeFrameTime = 0;
+
+        /// <summary>
+        /// Whether there is a preload game active.
+        /// </summary>
+        private IPreloadGame? _preload = null;
+
+        /// <summary>
+        /// Whether the player is currently skipping frames (due to cutscene) and ignore
+        /// the time while calling update methods.
+        /// </summary>
+        private bool _isSkippingDeltaTimeOnUpdate = false;
+
+        /// <summary>
+        /// Whether the player is currently skipping frames (due to cutscene) and ignore
+        /// the time while calling update methods.
+        /// </summary>
+        public bool IsSkippingDeltaTimeOnUpdate => _isSkippingDeltaTimeOnUpdate;
+
+        /// <summary>
+        /// Whether we are waiting for a save complete operation: do not do any update logic.
+        /// </summary>
+        private bool _waitForSaveComplete = false;
+
+        /// <summary>
+        /// Whether the player started skipping.
+        /// </summary>
+        public bool StartedSkippingCutscene = false;
+
+        /// <summary>
+        /// Whether it initialized loading textures after the content was loaded.
+        /// </summary>
+        private bool _initialiazedAfterContentLoaded = false;
+
+        private Point _windowedSize = Point.Zero;
+
+        public static string FeedbackUrl => Instance._game?.FeedbackUrl ?? string.Empty;
+
+        /// <summary>
+        /// Gets or sets the fullscreen mode of the game.
+        /// When set, it updates the game's window to reflect the new mode.
+        /// </summary>
+        public bool Fullscreen
+        {
+            get => Preferences.Fullscreen;
+            set
+            {
+                if (Fullscreen == value)
+                {
+                    return;
+                }
+
+                OnWindowChange(new(value ? ScreenUpdatedKind.FullScreen : ScreenUpdatedKind.Reset));
+                Preferences.SetFullScreen(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets the scale of the game relative to the window size and game profile scale.
+        /// Returns Vector2.One if the window has invalid dimensions.
+        /// </summary>
+        public Vector2 GameScale
+        {
+            get
+            {
+                Point windowSize = Game.Instance.GetWindowSize();
+                if (windowSize.X <= 0 || windowSize.Y <= 0)
+                {
+                    return Vector2.One;
+                }
+
+                if (_screenSize == Point.Zero)
+                {
+                    return Vector2.One;
+                }
+
+                return new(
+                    ((float)_screenSize.X / windowSize.X) / DefaultScale,
+                    ((float)_screenSize.Y / windowSize.Y) / DefaultScale);
+            }
+        }
+
+        /// <summary>
+        /// Raw size of the screen.
+        /// </summary>
+        public Point ScreenSize => _screenSize;
+
+        public virtual bool HasCursor => false;
+
+        /// <summary>
+        /// Whether there is a pending screen update to modify the size.
+        /// </summary>
+        private WindowChangeNotification? _pendingWindowChange = null;
+        private WindowChangeNotification? _lastWindowChange = null;
+
+        private Point _screenSize;
+
+        // TODO: Make this private or within a setter or whatever.
+        // We need to refresh window when it does get set...
+        public float Downsample = 1;
+
+        /* *** Private instance fields *** */
+
+        // Update properties.
+        protected float _fixedUpdateDelta;
+
+        protected double _scaledElapsedTime = 0;
+        protected double _unscaledElapsedTime = 0;
+        protected double _scaledDeltaTime = 0;
+        protected double _unscaledDeltaTime = 0;
+
+        protected double _lastFixedUpdateTime = 0;
+        protected double _fixedAccumulatorSeconds = 0;
+
+        protected double _scaledPreviousElapsedTime = 0;
+        protected double _unscaledPreviousElapsedTime = 0;
+
+        /// <summary>
+        /// This is the underlying implementation of the game. This listens to the murder game events.
+        /// </summary>
+        protected readonly IMurderGame? _game;
+
+        public IMurderGame? MurderGame => _game;
+
+        /// <summary>
+        /// Single logger of the game.
+        /// </summary>
+        protected GameLogger _logger;
+
+        protected virtual IPreloadGame? TryCreatePreloadScreen() => _game?.TryCreatePreload();
+
+        /// <summary>
+        /// Gets the current graph logger debugger.
+        /// </summary>
+        public virtual GraphLogger GraphLogger { get; } = new GraphLogger();
+
+        /// <summary>
+        /// Creates a RenderContext using the specified graphics device, camera, and settings.
+        /// Returns a new RenderContext if the game instance is null.
+        /// Optionally implement this interface for using your custom RenderContext.
+        /// </summary>
+        /// <param name="graphicsDevice">The graphics device to use for rendering.</param>
+        /// <param name="camera">The camera to be used in the rendering context.</param>
+        /// <param name="settings">The rendering settings flags.</param>
+        /// <returns>A new or existing RenderContext instance.</returns>
+        public RenderContext CreateRenderContext(GraphicsDevice graphicsDevice, Camera2D camera, RenderContextFlags settings) =>
+            _game?.CreateRenderContext(graphicsDevice, camera, settings) ?? new RenderContext(graphicsDevice, camera, settings);
+
+        public Game(IMurderGame? game = null) : this(game, new GameDataManager(game)) { }
+
+        /// <summary>
+        /// Creates a new game, there should only be one game instance ever.
+        /// If <paramref name="dataManager"/> is not initialized, it will create the starting scene from <see cref="GameProfile"/>.
+        /// </summary>
+        public Game(IMurderGame? game, GameDataManager dataManager)
+        {
+            Instance = this;
+
+            Window.AllowUserResizing = true;
+            Window.ClientSizeChanged += (s, e) =>
+            {
+                if (s is not Microsoft.Xna.Framework.GameWindow window)
+                {
+                    GameLogger.Error($"How do we have an invalid window of {s?.GetType()}?");
+                    return;
+                }
+
+                if (Fullscreen)
+                {
+                    // this was done by ourselves, so we're already aware of the change.
+                    return;
+                }
+
+                if (_lastWindowChange is WindowChangeNotification lastChange &&
+                    lastChange.ApplySizeTo == Game.Instance.GetWindowSize())
+                {
+                    return;
+                }
+
+                OnWindowChange(new(ScreenUpdatedKind.NotifyOnly));
+            };
+
+            IsMouseVisible = HasCursor || (game?.HasCursor ?? false);
+
+            _logger = GameLogger.GetOrCreateInstance();
+            _logger.Initialize(IsDiagnosticEnabled);
+
+            _playerInput = new PlayerInput();
+            SoundPlayer = game?.CreateSoundPlayer() ?? new SoundPlayer();
+
+            Haptics = new HapticsManager();
+
+            _game = game;
+            _gameData = dataManager;
+
+            _graphics = new(this);
+            _preload = TryCreatePreloadScreen();
+
+            Content.RootDirectory = _gameData.BinResourcesDirectoryPath;
+            OnWindowChange(new(Fullscreen ? ScreenUpdatedKind.FullScreen : ScreenUpdatedKind.Reset));
+        }
+
+        /// <summary>
+        /// Initializes the game by setting up input bindings and configuring initial settings.
+        /// Typically overridden by the game implementation.
+        /// </summary>
+        /// <remarks>
+        /// Registers various input buttons for both editor and navigation controls using the MurderInputButtons enumeration.
+        /// Configures gamepad axes for UI navigation. Also initializes game assets and refreshes the window size.
+        /// Calls the base Initialize method for content loading and initializes the game instance if available.
+        /// </remarks>
+        protected override void Initialize()
+        {
+            World.InitializeLookupComponents(_game?.ComponentsLookup ?? new MurderComponentsLookup());
+
+            // Subscribe events
+            AppDomain.CurrentDomain.ProcessExit += OnClose;
+
+            // capture on the top level Run()
+            // AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
+            // Editor input
+            _playerInput.RegisterButton(MurderInputButtons.Debug, Keys.F1);
+            _playerInput.RegisterButton(MurderInputButtons.PlayGame, Keys.F5);
+
+            _playerInput.Register(MurderInputButtons.LeftClick, MouseButtons.Left);
+            _playerInput.Register(MurderInputButtons.RightClick, MouseButtons.Right);
+            _playerInput.Register(MurderInputButtons.MiddleClick, MouseButtons.Middle);
+
+            _playerInput.RegisterButton(MurderInputButtons.Shift, Keys.LeftShift);
+            _playerInput.RegisterButton(MurderInputButtons.Esc, Keys.Escape);
+            _playerInput.RegisterButton(MurderInputButtons.Delete, Keys.Delete);
+            _playerInput.RegisterButton(MurderInputButtons.Ctrl, Keys.LeftControl, Keys.RightControl);
+            _playerInput.RegisterButton(MurderInputButtons.Space, Keys.Space);
+            _playerInput.RegisterButton(MurderInputButtons.Backspace, Keys.Back, Keys.BrowserBack);
+
+            // Navigation input
+            _playerInput.RegisterAxes(MurderInputAxis.Ui,
+                GamepadAxis.LeftThumb, GamepadAxis.RightThumb, GamepadAxis.Dpad);
+
+            base.Initialize(); // Content is loaded here
+
+            _game?.Initialize();
+
+            // Propagate dianostics mode settings.
+            World.DIAGNOSTICS_MODE = DIAGNOSTICS_MODE;
+
+            // Start the game wall clock
+            _gameTimer.Start();
+            FlushWindow();
+        }
+
+        /// <summary>
+        /// Refreshes the game window settings based on the current profile.
+        /// </summary>
+        /// <remarks>
+        /// Refreshes the active scene with new graphics settings, if present.
+        /// </remarks>
+        protected virtual void FlushWindow()
+        {
+            if (_pendingWindowChange is null)
+            {
+                return;
+            }
+
+            WindowChangeNotification notification = _pendingWindowChange.Value;
+
+            Point? applySize = notification.ApplySizeTo;
+            if (notification.Kind == ScreenUpdatedKind.FullScreen)
+            {
+                applySize = GetDisplaySize();
+            }
+            else if (notification.Kind == ScreenUpdatedKind.Reset)
+            {
+                applySize = new Point(DefaultWidth, DefaultHeight) * DefaultScale;
+
+                if (applySize.Value.X >= GraphicsDevice.Adapter.CurrentDisplayMode.Width * .9f ||
+                    applySize.Value.Y >= Game.GraphicsDevice.Adapter.CurrentDisplayMode.Height * .9f)
+                {
+                    float overrideScale = Math.Max(1, DefaultScale - 1);
+                    applySize = new Point(DefaultWidth, DefaultHeight) * overrideScale;
+                }
+            }
+            else if (notification.Kind == ScreenUpdatedKind.NotifyAndApply && applySize is null)
+            {
+                applySize = GetWindowSize();
+            }
+
+            if (applySize is not null)
+            {
+                SetWindowSizeAndApply(applySize.Value);
+            }
+
+            // update internal size.
+            _screenSize = applySize ?? GetWindowSize();
+
+            if (!Fullscreen)
+            {
+                // This seems to be a bug in Monogame
+                // This line must be repeated otherwise the window won't be
+                // borderless.
+                Window.IsBorderlessEXT = false;
+            }
+
+            if (notification.ApplyToSettings is WindowChangeSettings settings)
+            {
+                ActiveScene?.OnClientWindowChanged(settings);
+            }
+            else
+            {
+                ActiveScene?.OnClientWindowChanged(_screenSize);
+            }
+
+            _lastWindowChange = notification;
+            _pendingWindowChange = null;
+        }
+
+        public Point GetWindowSize()
+        {
+            SDL3.SDL.SDL_GetWindowSizeInPixels(Window.Handle, out int width, out int height);
+            return (width > 0 && height > 0) ? new Point(width, height) : new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
+        }
+
+        public Point GetDisplaySize()
+        {
+            uint currentDisplayIndex = SDL3.SDL.SDL_GetDisplayForWindow(Window.Handle);
+            SDL3.SDL.SDL_GetDisplayBounds(currentDisplayIndex, out var rect);
+            
+            // Find the DPI scale by comparing the real window size and the pixel sizes
+            SDL3.SDL.SDL_GetWindowSizeInPixels(Window.Handle, out int pixelWidth, out int pixelHeight);
+            float dpiScaleX = (float)pixelWidth / Game.Instance.Window.ClientBounds.Width;
+            
+            int width = (int)(rect.w * dpiScaleX);
+            int height = (int)(rect.h * dpiScaleX);
+
+            return (width > 0 && height > 0) ? new Point(width, height) : new Point(Window.ClientBounds.Width, Window.ClientBounds.Height);
+        }
+
+        /// <summary>
+        /// Sets the window size for the game based on the specified screen size and full screen settings.
+        /// </summary>
+        /// <param name="screenSize">The desired screen size in pixels.</param>
+        /// <remarks>
+        /// In windowed mode, uses either the saved window size or the provided screen size.
+        /// Synchronizes with vertical retrace in debug mode.
+        /// </remarks>
+        protected virtual void SetWindowSizeAndApply(Point screenSize)
+        {
+            if (Fullscreen)
+            {
+                // TODO: Do we really want to save our last size?
+                _windowedSize = GetWindowSize();
+
+                Window.IsBorderlessEXT = true;
+                _graphics.IsFullScreen = true;
+            }
+            else
+            {
+                _graphics.IsFullScreen = false;
+                Window.IsBorderlessEXT = false;
+            }
+
+            _graphics.PreferredBackBufferWidth = screenSize.X;
+            _graphics.PreferredBackBufferHeight = screenSize.Y;
+
+            _graphics.ApplyChanges();
+        }
+
+        public void OnWindowChange(WindowChangeNotification notification)
+        {
+            _pendingWindowChange = notification;
+        }
+
+        /// <summary>
+        /// Loads game content and initializes it. This includes initializing the sound player, game data, settings, shaders, and initial scene. Also asynchronously loads the initial scene.
+        /// </summary>
+        protected override void LoadContent()
+        {
+            // Initialize our actual sound player!
+            SoundPlayer.Initialize(_gameData.BinResourcesDirectoryPath);
+
+            _gameData.Initialize();
+
+            ApplyGameSettings();
+            SetTargetFixedFramerate(Profile.TargetFps);
+
+            LoadContentImpl();
+
+            _gameData.LoadShaders(breakOnFail: false);
+
+            // Load assets, textures, content, etc
+            _gameData.LoadContent();
+
+            // Initialize the initial scene.
+            _sceneLoader = new SceneLoader(_graphics, Profile, InitialScene, IsDiagnosticEnabled);
+
+            _ = LoadSceneAsync(waitForAllContent: true);
+        }
+
+        /// <summary>
+        /// Virtual method for extended content loading implementation in derived classes.
+        /// </summary>
+        protected virtual void LoadContentImpl() { }
+
+        /// /// <summary>
+        /// Applies game settings based on the current <see cref="GameProfile"/>, loaded with <see cref="_gameData"/>. Configures grid and rendering settings, and calls an implementation-specific settings application method.
+        /// </summary>
+        protected void ApplyGameSettings()
+        {
+            _grid = new GridConfiguration(Profile.DefaultGridCellSize);
+
+            // This will keep the camera and other render positions in sync with the fixed update.
+            _graphics.SynchronizeWithVerticalRetrace = Profile.IsVSyncEnabled; // vsync handles frame pacing
+            IsFixedTimeStep = true; // call Update/Draw as fast as vsync allows.
+
+            ApplyGameSettingsImpl();
+            _graphics.ApplyChanges();
+        }
+
+        /// <summary>
+        /// Virtual method for extended game settings application in derived classes.
+        /// </summary>
+        protected virtual void ApplyGameSettingsImpl() { }
+
+        /// <summary>
+        /// Asynchronously loads the game's content.
+        /// </summary>
+        /// <param name="waitForAllContent">Indicates whether to wait for all game content to be loaded before proceeding.</param>
+        protected virtual async Task LoadSceneAsync(bool waitForAllContent)
+        {
+            try
+            {
+                GameLogger.Verify(_sceneLoader is not null);
+
+                if (waitForAllContent && _gameData.LoadContentProgress is not null)
+                {
+                    await _gameData.LoadContentProgress;
+                }
+
+                if (_game is not null)
+                {
+                    await _game.LoadContentAsync();
+                    _game.OnSceneTransition();
+                }
+
+                _sceneLoader.LoadContent();
+
+                // Load game input binding after all data is ready
+                // I don't think we need this, it's the game's responsibility to load the input bindings, not the engine's.
+                //Game.Input.LoadFromPreferences(Game.Data.Preferences);
+            }
+            catch (Exception ex)
+            {
+                GameLogger.SpewException(ex);
+                GameLogger.CaptureCrash();
+
+                ExitGame();
+            }
+        }
+
+        /// <summary>
+        /// This will pause the game.
+        /// </summary>
+        public void Pause()
+        {
+            IsPaused = true;
+        }
+
+        /// <summary>
+        /// This will pause the game for <paramref name="amount"/> of frames.
+        /// </summary>
+        public void FreezeFrames(int amount)
+        {
+            _freezeFrameCount = amount;
+        }
+
+        /// <summary>
+        /// This will skip update times and immediately run the update calls from the game 
+        /// until <see cref="ResumeDeltaTimeOnUpdate"/> is called.
+        /// </summary>
+        public void SkipDeltaTimeOnUpdate()
+        {
+            _isSkippingDeltaTimeOnUpdate = true;
+
+            // reset this state.
+            StartedSkippingCutscene = false;
+        }
+
+        /// <summary>
+        /// Resume game to normal game time.
+        /// </summary>
+        public bool ResumeDeltaTimeOnUpdate()
+        {
+            bool wasSkipping = _isSkippingDeltaTimeOnUpdate;
+            _isSkippingDeltaTimeOnUpdate = false;
+
+            return wasSkipping;
+        }
+
+        /// <summary>
+        /// Sets the flag to indicate that the game should wait for the save operation to complete.
+        /// </summary>
+        public void SetWaitForSaveComplete()
+        {
+            _waitForSaveComplete = true;
+        }
+
+        /// <summary>
+        /// Determines if the game can resume after a save operation is complete. Returns true if there's no active save data or the save operation has finished.
+        /// </summary>
+        /// <returns>True if the game can resume, false otherwise.</returns>
+        public bool CanResumeAfterSaveComplete()
+        {
+            _waitForSaveComplete = Data.WaitPendingSaveTrackerOperation;
+            return !_waitForSaveComplete;
+        }
+
+        /// <summary>
+        /// This will resume the game.
+        /// </summary>
+        public void Resume()
+        {
+            IsPaused = false;
+        }
+
+        /// <summary>
+        /// Performs game frame updates, handling logic for paused states, fixed updates, and unscaled time.
+        /// </summary>
+        protected override void Update(Microsoft.Xna.Framework.GameTime gameTime)
+        {
+            _preload?.Update();
+
+            if (DIAGNOSTICS_MODE)
+            {
+                _updateDiagnosticStopwatch.Start();
+            }
+
+            base.Update(gameTime);
+            double rawDeltaTime = gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (_waitForSaveComplete && !CanResumeAfterSaveComplete())
+            {
+                _unscaledElapsedTime += gameTime.ElapsedGameTime.TotalSeconds; // Using XNA GameTime, because this is called before the actual update logic
+
+                // Don't do any logic operation yet, we are waiting for the save to complete.
+                return;
+            }
+
+            if (ActiveScene is not null && ActiveScene.Loaded)
+            {
+                if (_preload is not null && _preload.WrapItUp())
+                {
+                    _preload = null;
+                }
+
+                if (_preload is null && !_initialiazedAfterContentLoaded)
+                {
+                    _gameData.AfterContentLoadedFromMainThread();
+                    _initialiazedAfterContentLoaded = true;
+                }
+            }
+            // We clamp the delta time to avoid huge spikes that can cause instability in the physics and other systems.
+            // 3 fixed updates sounds reasonable, if we are running that far behind we are probably better off just skipping frames and not trying to catch up.
+            UpdateImpl(Math.Min(rawDeltaTime, FixedDeltaTime * 3));
+
+            while (_isSkippingDeltaTimeOnUpdate)
+            {
+                UpdateImpl(FixedDeltaTime);
+                ActiveScene?.OnBeforeDraw();
+            }
+
+            if (DIAGNOSTICS_MODE)
+            {
+                UpdateTime = (float)(_updateDiagnosticStopwatch.Elapsed.TotalSeconds);
+                _updateDiagnosticStopwatch.Stop();
+                _updateDiagnosticStopwatch.Reset();
+                TimeTrackerDiagnostics.Update(UpdateTime);
+
+                if (Now > _longestUpdateTimeAt + LONGEST_TIME_RESET)
+                {
+                    _longestUpdateTimeAt = Now;
+                    LongestUpdateTime = 0.0f;
+                }
+
+                if (UpdateTime > LongestUpdateTime)
+                {
+                    _longestUpdateTimeAt = Now;
+                    LongestUpdateTime = UpdateTime;
+                }
+            }
+
+            if (DIAGNOSTICS_MODE)
+            {
+                _soundDiagnosticStopWatch.Start();
+            }
+
+            // Update sound logic!
+            SoundPlayer.Update();
+
+            // Update haptics
+            Haptics.Update();
+
+            if (DIAGNOSTICS_MODE)
+            {
+                SoundUpdateTime = (float)(_soundDiagnosticStopWatch.Elapsed.TotalSeconds);
+                _soundDiagnosticStopWatch.Stop();
+                _soundDiagnosticStopWatch.Reset();
+            }
+        }
+
+        /// <summary>
+        /// Implements core update logic, including frame freezing, world transitions, input handling, and time scaling.
+        /// </summary>
+        protected void UpdateImpl(double deltaTime)
+        {
+            DoPendingExitGame();
+            DoPendingWorldTransition();
+
+            GameLogger.Verify(ActiveScene is not null);
+
+            if (_freezeFrameCount > 0)
+            {
+                _freezeFrameTime += deltaTime;
+                if (_freezeFrameTime >= _fixedUpdateDelta)
+                {
+                    _freezeFrameCount--;
+                    _freezeFrameTime = 0;
+                }
+                return;
+            }
+
+            SlowdownDetected = deltaTime > _fixedUpdateDelta * 1.5f;
+            _unscaledPreviousElapsedTime = _unscaledElapsedTime;
+            _scaledPreviousElapsedTime = _scaledElapsedTime;
+
+            // Advance clocks
+            _unscaledElapsedTime += deltaTime;
+            _unscaledDeltaTime = deltaTime;
+
+            double scaledDeltaTime = IsPaused ? 0 : deltaTime * TimeScale;
+            _scaledElapsedTime += scaledDeltaTime;
+            _scaledDeltaTime = scaledDeltaTime;
+
+            _fixedAccumulatorSeconds += scaledDeltaTime;
+
+            // --- Fixed Input (as many or few as needed, sometimes none if we are lukcy) ---
+            const int maxFixedStepsPerFrame = 5;
+            int fixedStepsThisFrame = 0;
+
+            // --- Input (once per frame) ---
+            _playerInput.Update();
+
+            while (_fixedAccumulatorSeconds >= _fixedUpdateDelta && fixedStepsThisFrame < maxFixedStepsPerFrame)
+            {
+                _fixedAccumulatorSeconds -= _fixedUpdateDelta;
+                _lastFixedUpdateTime += _fixedUpdateDelta;
+                fixedStepsThisFrame++;
+
+                if (_preload is null)
+                {
+                    //SimulateRandomStalls();
+                    ActiveScene.FixedUpdate();
+                }
+            }
+
+            MaxFixedUpdatesInASingleFrame = Math.Max(MaxFixedUpdatesInASingleFrame, fixedStepsThisFrame);
+            MaxDeltaTime = Math.Max(MaxDeltaTime, (float)deltaTime);
+
+            // If we hit the cap, we’re falling behind.
+            // To avoid getting stuck "in debt forever", drop the remainder.
+            if (fixedStepsThisFrame == maxFixedStepsPerFrame && _fixedAccumulatorSeconds >= _fixedUpdateDelta)
+            {
+                _fixedAccumulatorSeconds = 0;
+                _lastFixedUpdateTime = _scaledElapsedTime; // optional; or advance to unscaled time equivalent
+                LoosingFrames = true;
+            }
+            else
+            {
+                LoosingFrames = false;
+            }
+
+            _game?.OnUpdate();
+
+            // --- Update (once per frame) ---
+            if (_preload is null)
+            {
+                //SimulateRandomStalls();
+                ActiveScene.Update();
+            }
+        }
+
+        /// <summary>
+        /// Call this to simulate random frame spikes for testing.
+        /// </summary>
+        [Conditional("DEBUG")]
+        private void SimulateRandomStalls()
+        {
+            // ~2% chance of a stall each frame
+            if (Random.NextDouble() < 0.02)
+            {
+                // Random stall between 1-4 fixed updates worth of time
+                int ms = (int)(_fixedUpdateDelta * 1000 * (1 + Random.NextDouble() * 3));
+                Thread.Sleep(ms);
+            }
+        }
+
+        /// <summary>
+        /// Renders the current frame, handling loading draw and ImGui rendering, and tracks rendering time.
+        /// </summary>
+        protected override void Draw(Microsoft.Xna.Framework.GameTime gameTime)
+        {
+            _renderDiagnosticStopWatch.Start();
+
+            GameLogger.Verify(ActiveScene is not null);
+
+            if (_pendingWindowChange is not null)
+            {
+                FlushWindow();
+            }
+            
+            bool loading = _preload is not null || !ActiveScene.Loaded;
+            if (loading && ActiveScene.RenderContext is RenderContext renderContext)
+            {
+                OnLoadingDraw(renderContext);
+            }
+            //SimulateRandomStalls();
+            DrawScene();
+
+            base.Draw(gameTime); // Monogame/XNA internal Draw
+
+            if (DIAGNOSTICS_MODE)
+            {
+                RenderTime = (float)(_renderDiagnosticStopWatch.Elapsed.TotalSeconds);
+                _renderDiagnosticStopWatch.Stop();
+                _renderDiagnosticStopWatch.Reset();
+                RenderTimeTrackerDiagnostics.Update(RenderTime);
+
+                _imGuiDiagnosticStopWatch.Start();
+            }
+
+            DrawImGui(gameTime); // <== Draw ImGui content
+
+            if (DIAGNOSTICS_MODE)
+            {
+                ImGuiRenderTime = (float)(_imGuiDiagnosticStopWatch.Elapsed.TotalSeconds);
+                _imGuiDiagnosticStopWatch.Stop();
+                _imGuiDiagnosticStopWatch.Reset();
+
+                if (Now > _longestRenderTimeAt + LONGEST_TIME_RESET)
+                {
+                    _longestRenderTimeAt = Now;
+                    LongestRenderTime = 0.0f;
+                }
+
+                if (RenderTime > LongestRenderTime)
+                {
+                    _longestRenderTimeAt = Now;
+                    LongestRenderTime = UpdateTime;
+                }
+            }
+
+            _game?.AfterDraw();
+        }
+        /// <summary>
+        /// Display drawing for the load animation.
+        /// </summary>
+        protected virtual void OnLoadingDraw(RenderContext render)
+        {
+            if (_preload is not null)
+            {
+                _preload.Draw(render);
+            }
+            else
+            {
+                GraphicsDevice.SetRenderTarget(null);
+            }
+        }
+
+        private void DrawScene()
+        {
+            if (_preload is not null)
+            {
+                return;
+            }
+
+            GameLogger.Verify(ActiveScene is not null);
+
+            bool drawStarted = ActiveScene.DrawStart(); // <==== Start RenderContext draw call
+
+            if (drawStarted)
+            {
+                ActiveScene.DrawEnd(); // <==== End RenderContext draw call
+            }
+        }
+
+        /// <summary>
+        /// Placeholder for extending the ImGui drawing functionality in game editor.
+        /// </summary>
+        protected virtual void DrawImGui(Microsoft.Xna.Framework.GameTime gameTime) { }
+
+        /// <summary>
+        /// Placeholder for setting up a custom ImGui theme, to be extended in game editor.
+        /// </summary>
+        public virtual void BeginImGuiTheme() { }
+
+        /// <summary>
+        /// Placeholder for finalizing a custom ImGui theme, to be extended in game editor.
+        /// </summary>
+        public virtual void EndImGuiTheme() { }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            GameLogger.Log("Wrapping up, bye!");
+
+            // TODO: Save config of GameSettings.
+            // Data.SaveConfig();
+        }
+
+        protected override void Dispose(bool isDisposing)
+        {
+            Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
+
+            ActiveScene?.Dispose();
+            Data?.Dispose();
+
+            base.Dispose(isDisposing);
+        }
+
+        private void SetTargetFixedFramerate(int fixedFps)
+        {
+            _fixedUpdateDelta = 1f / fixedFps;
+        }
+
+        /// <summary>
+        /// Exit the game. This is used to wrap any custom behavior depending on the game implementation.
+        /// </summary>
+        protected virtual void ExitGame()
+        {
+            base.Exit();
+        }
+
+        public virtual void OnUnhandledException(Exception ex)
+        {
+            OnCloseImpl();
+            GameLogger.CaptureCrash();
+
+            _game?.OnFatalException(ex);
+        }
+
+        protected virtual void OnClose(object? sender, EventArgs e)
+        {
+            OnCloseImpl();
+        }
+
+        protected virtual void OnCloseImpl()
+        {
+            // right before the game itself closes.
+            Haptics.ClearAll();
+            _game?.OnClose();
+        }
+    }
+}

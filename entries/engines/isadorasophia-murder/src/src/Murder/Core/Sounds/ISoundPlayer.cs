@@ -1,0 +1,170 @@
+﻿using Murder.Data;
+using System.Collections.Immutable;
+
+namespace Murder.Core.Sounds
+{
+    [Flags]
+    public enum SoundProperties
+    {
+        None = 0,
+        Persist = 0b1,
+        SkipIfAlreadyPlaying = 0b10,
+        StopOtherEventsInLayer = 0b100
+    }
+
+    public struct PlayEventInfo
+    {
+        public SoundProperties Properties { get; init; } = SoundProperties.None;
+
+        /// <summary>
+        /// Event layer, only persisted if <see cref="Properties"/> has <see cref="SoundProperties.Persist"/> set.
+        /// </summary>
+        public SoundLayer Layer { get; init; } = SoundLayer.Any;
+
+        public SoundSpatialAttributes? Attributes { get; init; } = null;
+
+        public ParameterValue? Parameter { get; init; } = null;
+
+        public FireAndPersistInfo? FireAndPersist { get; init; } = null;
+
+        /// <summary>
+        /// Entity id that is tied to this event.
+        /// </summary>
+        public int EntityId { get; init; } = -1;
+
+        public PlayEventInfo() { }
+    }
+
+    [Flags]
+    public enum PlayingSoundFlags
+    {
+        None = 0,
+
+        /// <summary>
+        /// Only valid if <see cref="PlayEventInfo.EntityId"/> is -1.
+        /// </summary>
+        FollowListenerPosition = 1
+    }
+
+    public readonly struct FireAndPersistInfo
+    {
+        public float Duration { get; init; } = 0;
+
+        public PlayingSoundFlags Flags { get; init; } = PlayingSoundFlags.None;
+
+        public FireAndPersistInfo() { }
+
+        public FireAndPersistInfo(float duration, PlayingSoundFlags flags) =>
+            (Duration, Flags) = (duration, flags);
+    }
+
+    public struct ParameterValue
+    {
+        public readonly ParameterId Id = new();
+        public readonly float Value = 0;
+
+        public ParameterValue(ParameterId id, float value)
+        {
+            Id = id;
+            Value = value;
+        }
+    }
+
+    public interface ISoundPlayer
+    {
+        public SoundSpatialAttributes LastListenerPosition { get; }
+
+        /// <summary>
+        /// This will initialize the fmod libraries, but not load any banks.
+        /// </summary>
+        /// <param name="resourcesPath">The relative path to the resource binaries.</param>
+        public void Initialize(string resourcesPath);
+
+        /// <summary>
+        /// This will load the actual bank content asynchonously.
+        /// </summary>
+        public Task LoadContentAsync(PackedSoundData? packedData);
+
+        /// <summary>
+        /// This will reload the content of all the fmod banks in the application.
+        /// </summary>
+        public Task ReloadAsync();
+
+        /// <summary>
+        /// Update listener information (e.g. position and facing).
+        /// </summary>
+        /// <param name="attributes">Attributes of the origin of this sound.</param>
+        public void UpdateListener(SoundSpatialAttributes attributes);
+
+        /// <summary>
+        /// Update spatial attributes for a specific event instance.
+        /// </summary>
+        /// <param name="id">Event event instance id.</param>
+        /// <param name="entityId">Entity id associated with this event.</param>
+        /// <param name="attributes">Attributes of the origin of this sound.</param>
+        /// <returns>
+        /// False if no event instance is found in the world, or something failed.
+        /// </returns>
+        public bool UpdateEvent(SoundEventId id, int entityId, SoundSpatialAttributes attributes);
+
+        public void Update();
+
+        /// <summary>
+        /// Play a sound/event with the id of <paramref name="id"/>.
+        /// </summary>
+        public ValueTask PlayEvent(SoundEventId id, PlayEventInfo info);
+
+        public void SetParameter(SoundEventId instance, ParameterId parameter, float value);
+
+        public void SetGlobalParameter(ParameterId parameter, float value);
+
+        public float GetGlobalParameter(ParameterId parameter);
+
+        public float GetLocalParameter(SoundEventId instance, int entityId, ParameterId parameter);
+
+        public void SetVolume(SoundLayer layer, float volume, float fireAfter);
+
+        public bool Resume(SoundLayer layer);
+
+        public bool Pause(SoundLayer layer);
+
+        /// <summary>
+        /// Whether an event is being played.
+        /// </summary>
+        /// <param name="id">Event event instance id.</param>
+        /// <param name="entityId">Entity id associated with this event.</param>
+        public bool IsEventPlaying(SoundEventId id, int entityId);
+
+        /// <summary>
+        /// Stop all sounds tied to <paramref name="layer"/>.
+        /// </summary>
+        /// <param name="layer">The target sound layer.</param>
+        /// <param name="fadeOut">Whether it should stop with a fade out.</param>
+        /// <returns>Whether it successfully stopped.</returns>
+        public bool Stop(SoundLayer layer, bool fadeOut);
+
+        /// <summary>
+        /// Stop a specific sound event id.
+        /// If <paramref name="fadeOut"/> is set, this will stop with a fadeout.
+        /// </summary>
+        /// <param name="id">Event event instance id.</param>
+        /// <param name="entityId">Entity id associated with this event.</param>
+        /// <param name="fadeOut">Apply fadeout on stop.</param>
+        public bool Stop(SoundEventId? id, int entityId, bool fadeOut);
+
+        /// <summary>
+        /// Change volume.
+        /// </summary>
+        public void SetVolume(SoundEventId? bus, float volume);
+
+        /// <summary>
+        /// Fetch a list of all the banks when serializing it, separated by the supported platform.
+        /// </summary>
+        public ImmutableDictionary<string, List<string>> FetchAllBanks();
+
+        /// <summary>
+        /// Fetch a list of all the plugins when serializing it.
+        /// </summary>
+        public ImmutableArray<string> FetchAllPlugins();
+    }
+}

@@ -1,0 +1,572 @@
+﻿using Bang;
+using ImGuiNET;
+using Microsoft.Xna.Framework.Input;
+using Murder.Assets;
+using Murder.Attributes;
+using Murder.Core;
+using Murder.Core.Geometry;
+using Murder.Core.Graphics;
+using Murder.Core.Input;
+using Murder.Diagnostics;
+using Murder.Editor.Assets;
+using Murder.Editor.Components;
+using Murder.Editor.Core;
+using Murder.Editor.Data;
+using Murder.Editor.Diagnostics;
+using Murder.Editor.ImGuiExtended;
+using Murder.Editor.Systems.Debug;
+using Murder.Editor.Utilities;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
+namespace Murder.Editor
+{
+    public class Architect : Game
+    {
+        /* *** Static properties of the Architect *** */
+
+        new public static Architect Instance { get; private set; } = null!;
+
+        public static EditorSettingsAsset EditorSettings => EditorData.EditorSettings;
+
+        public static EditorDataManager EditorData => (EditorDataManager)Instance._gameData;
+
+        internal static EditorGraphLogger EditorGraphLogger => (EditorGraphLogger)Instance.GraphLogger;
+
+        internal static IMurderArchitect? Game => Instance._game as IMurderArchitect;
+
+        public static UndoTracker Undo => Instance._undo;
+
+        /// <summary>
+        /// Debug and editor buffer renderer.
+        /// Called in <see cref="Initialize"/>.
+        /// </summary>
+        public ImGuiRenderer ImGuiRenderer = null!;
+
+        /// <summary>
+        /// This handles all the ImGui texture display in the screen.
+        /// </summary>
+        public static ImGuiTextureManager ImGuiTextureManager => EditorData.ImGuiTextureManager;
+
+        private EditorScene? _editorScene = null;
+
+        private readonly UndoTracker _undo = new(capacity: 256);
+
+        protected override Scene InitialScene => _editorScene ??= new();
+
+        protected override IPreloadGame? TryCreatePreloadScreen() => null;
+
+        /* *** Architect state *** */
+        private bool _isPlayingGame = false;
+
+        private bool _initializeEditorWindowFirstTime = false;
+
+        private StartPlayGameInfo? _queueStartPlayGame = null;
+
+        public bool IsPlayingGame => _isPlayingGame;
+
+        protected override bool IsDiagnosticEnabled => true;
+
+        public override GraphLogger GraphLogger { get; } = new EditorGraphLogger();
+
+        public CursorStyle Cursor { get; set; } = CursorStyle.Normal;
+
+        public override bool HasCursor => true;
+
+        public Architect(IMurderArchitect? game = null, EditorDataManager? editorDataManager = null) : base(game, editorDataManager ?? new EditorDataManager(game)) { }
+
+        protected override void Initialize()
+        {
+            if (Environment.GetEnvironmentVariable("FNA_GRAPHICS_ENABLE_HIGHDPI") != "1")
+            {
+                GameLogger.Warning("High DPI support is disabled. To enable it, set the environment variable 'FNA_GRAPHICS_ENABLE_HIGHDPI' to '1'.");
+                GameLogger.LogDebug("""You can do so by adding `Environment.SetEnvironmentVariable("FNA_GRAPHICS_ENABLE_HIGHDPI", "1");` to your Program.cs in both your editor and game project.""");
+            }
+            Instance = this;
+
+            _playerInput.Register(MurderInputAxis.EditorCamera,
+                new InputButtonAxis(Keys.W, Keys.A, Keys.S, Keys.D));
+
+            ImGuiRenderer = new ImGuiRenderer(this);
+            ImGuiRenderer.RebuildFontAtlas();
+
+            _logger = EditorGameLogger.OverrideInstanceWithEditor();
+            _ = EditorDebugSnapshot.OverrideInstanceWithEditor();
+
+            InitializeImGui();
+
+            base.Initialize();
+            ImGuiRenderer.InitTheme();
+        }
+
+        private void InitializeImGui()
+        {
+            // Magic so ctrl+c and ctrl+v work in mac and linux!
+            if ((OperatingSystem.IsMacOS() || OperatingSystem.IsLinux()))
+            {
+                if (!OperatingSystemHelpers.ClipboardDependencyExists())
+                {
+                    var missingDependency = OperatingSystem.IsMacOS()
+                        ? OperatingSystemHelpers.AppKit
+                        : OperatingSystemHelpers.SDL;
+                    GameLogger.Error($"Clipboard support is disabled. Could not load necessary dependency: '{missingDependency}'.");
+                    return;
+                }
+
+                ImGuiIOPtr io = ImGui.GetIO();
+
+                if (OperatingSystemHelpers.GetFnPtr is IntPtr getFnPtr)
+                {
+                    io.GetClipboardTextFn = getFnPtr;
+                }
+
+                if (OperatingSystemHelpers.SetFnPtr is IntPtr setFnPtr)
+                {
+                    io.SetClipboardTextFn = setFnPtr;
+                }
+            }
+        }
+
+        protected override void FlushWindow()
+        {
+            ImGuiIOPtr io = ImGui.GetIO();
+            io.ConfigFlags = ImGuiConfigFlags.DockingEnable;
+            io.FontGlobalScale = Math.Clamp(Architect.EditorSettings.FontScale, 1, 2);
+
+            if (!_initializeEditorWindowFirstTime)
+            {
+                _initializeEditorWindowFirstTime = true;
+
+                if (ApplyPreviousEditorWindowSetting())
+                {
+                    // skip until next frame
+                    return;
+                }
+            }
+
+            base.FlushWindow();
+        }
+
+        private bool ApplyPreviousEditorWindowSetting()
+        {
+            if (Fullscreen)
+            {
+                Fullscreen = false;
+                return true;
+            }
+
+            if (!IsMaximized() && EditorSettings.StartMaximized)
+            {
+                MaximizeWindow();
+                OnWindowChange(new(ScreenUpdatedKind.NotifyAndApply));
+
+                return true;
+            }
+
+            bool appliedSettings = false;
+            if (EditorSettings.WindowStartPosition.X > 0 && EditorSettings.WindowStartPosition.Y > 0)
+            {
+                SetWindowPosition(EditorSettings.WindowStartPosition);
+            }
+
+            if (EditorSettings.WindowSize.X > 0 && EditorSettings.WindowSize.Y > 0)
+            {
+                OnWindowChange(new(EditorSettings.WindowSize));
+                appliedSettings = true;
+            }
+
+            return appliedSettings;
+        }
+
+        protected override void SetWindowSizeAndApply(Point screenSize)
+        {
+            if (_isPlayingGame)
+            {
+                base.SetWindowSizeAndApply(screenSize);
+                return;
+            }
+
+            _graphics.IsFullScreen = false;
+            Window.IsBorderlessEXT = false;
+
+            _graphics.PreferredBackBufferWidth = screenSize.X;
+            _graphics.PreferredBackBufferHeight = screenSize.Y;
+
+            _graphics.ApplyChanges();
+        }
+
+        private void QuitToEditor()
+        {
+            Microsoft.Xna.Framework.Media.MediaPlayer.Stop();
+
+            Resume();
+            Input.LockInput(false);
+
+            SoundPlayer.Stop(Murder.Core.Sounds.SoundLayer.Any, fadeOut: false);
+
+            GameLogger.Verify(_sceneLoader is not null);
+
+            _isPlayingGame = false;
+
+            if (ActiveScene is GameScene)
+            {
+                Debug.Assert(_editorScene is not null);
+                _sceneLoader.SwitchScene(_editorScene);
+
+                // Manually set things up in the editor scene.
+                _editorScene.Reload();
+
+                if (Fullscreen)
+                {
+                    // Actually this is more annoying, just keep the full screen.
+                    // Fullscreen = false;
+                }
+
+                // This is important otherwise the editor will inherit the shader values from the game!
+                _editorScene.OnViewportChanged();
+            }
+
+            // Here, let's mock what a real "quit" would do.
+            // Manually unload and load all saves.
+            Data.UnloadActiveSave();
+            Data.LoadAllSaves();
+
+            (_gameData as EditorDataManager)?.RefreshAfterSave();
+
+            _playerInput.ClearBinds(MurderInputButtons.PlayGame);
+        }
+
+        /// <summary>
+        /// Queues an operation for start playing a game. This will be queued and executed in the next
+        /// update call.
+        /// </summary>
+        public void QueueStartPlayingGame(bool quickplay, Guid? startingScene = null)
+        {
+            StartPlayGameInfo info = new() { IsQuickplay = quickplay, StartingScene = startingScene };
+            _queueStartPlayGame = info;
+        }
+
+        /// <summary>
+        /// Queues an operation for start playing a game. This will be queued and executed in the next
+        /// update call.
+        /// </summary>
+        public void QueueStartPlayingGame(StartPlayGameInfo info)
+        {
+            _queueStartPlayGame = info;
+        }
+
+        private void PlayGame(StartPlayGameInfo info)
+        {
+            Guid actualStartingScene = info.StartingScene ?? Profile.StartingScene;
+
+            // Data.ResetActiveSave();
+
+            WorldAsset? world = actualStartingScene != Guid.Empty ? Data.TryGetAsset<WorldAsset>(actualStartingScene) : null;
+            if (!info.IsQuickplay && world is null)
+            {
+                GameLogger.Error("Unable to start the game, please specify a valid starting scene on \"Game Profile\".");
+                return;
+            }
+
+            if (world is { HasSystems: false })
+            {
+                GameLogger.Error($"Unable to start the game, '{world.Name}' has no systems. Add at least one system to the world.");
+                return;
+            }
+
+            Resume();
+
+            GameLogger.Verify(_sceneLoader is not null);
+
+            SaveWindowPosition();
+            _isPlayingGame = true;
+
+            bool shouldLoad = true;
+            if (info.IsQuickplay)
+            {
+                shouldLoad = SwitchToQuickPlayScene();
+            }
+            else
+            {
+                _sceneLoader.SwitchScene(actualStartingScene);
+            }
+
+            if (shouldLoad)
+            {
+                // Make sure we load the save before playing the game.
+                Data.LoadSaveAsCurrentSave(slot: info.SaveSlot ?? -1);
+
+                LoadSceneAsync(waitForAllContent: true).Wait();
+            }
+            else
+            {
+                _isPlayingGame = false;
+            }
+
+            Game?.OnBeforePlayGame(info);
+
+            _playerInput.Consume(MurderInputButtons.PlayGame);
+
+            _playerInput.Bind(MurderInputButtons.PlayGame, (input) =>
+            {
+                _playerInput.Consume(MurderInputButtons.PlayGame);
+                QuitToEditor();
+            });
+        }
+
+        private bool SwitchToQuickPlayScene()
+        {
+            GameLogger.Verify(_sceneLoader is not null);
+
+            // Handle awkward quick save loading.
+            if (Data.TryGetActiveSaveData() is null)
+            {
+                if (!Data.LoadSaveAsCurrentSave(slot: -1))
+                {
+                    GameLogger.Warning("Quick play currently only works on a loaded save.");
+                    return false;
+                }
+            }
+
+            if (EditorSettings.QuickStartScene == Guid.Empty)
+            {
+                GameLogger.Warning("Set a Quick Start Scene on Editor Settings first!");
+                return false;
+            }
+
+            _sceneLoader.SwitchScene(EditorSettings.QuickStartScene);
+            return true;
+        }
+
+        public void ReloadContent()
+        {
+            GameLogger.Log("===== Reloading content! =====", Data.GameProfile.Theme.Green);
+            GameLogger.Log("Saving current editor settings...", Data.GameProfile.Theme.Green);
+
+            EditorData.SaveAsset(EditorData.EditorSettings);
+
+            Data.ClearContent();
+            Data.Initialize();
+
+            if (ActiveScene is EditorScene editor)
+            {
+                editor.ReopenTabs();
+            }
+        }
+
+        protected override void LoadContentImpl() { }
+
+        protected override async Task LoadSceneAsync(bool waitForAllContent)
+        {
+            GameLogger.Verify(_sceneLoader is not null);
+            await base.LoadSceneAsync(waitForAllContent);
+
+            if (ActiveScene?.World is World world)
+            {
+                world.AddEntity(new EditorComponent());
+                EditorHook? hook = world.GetUnique<EditorComponent>().EditorHook;
+
+                hook.DrawEntityInspector += EntityInspector.DrawInspector;
+            }
+        }
+
+        private bool _isForeground = false;
+
+        protected override void DrawImGui(Microsoft.Xna.Framework.GameTime gameTime)
+        {
+            GameLogger.Verify(ActiveScene is not null);
+
+            ImGuiRenderer.BeforeLayout(gameTime);
+
+            ActiveScene.DrawGui();
+
+            if (!IsActive)
+            {
+                _isForeground = true;
+
+                ImGui.SetNextWindowBgAlpha(0.01f);
+                ImGui.Begin("Editor is not focused!", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+                ImGui.BeginDisabled();
+                ImGui.PushStyleColor(ImGuiCol.Button, Profile.Theme.Faded);
+                ImGuiHelpers.Button("Murder Engine is not focused.");
+                ImGui.PopStyleColor();
+                ImGui.EndDisabled();
+                ImGui.SetWindowPos(new System.Numerics.Vector2());
+                ImGui.SetWindowSize(ImGui.GetMainViewport().Size);
+                ImGui.SetWindowFocus();
+                ImGui.End();
+            }
+            else if (_isForeground)
+            {
+                // Window is now active and was previously on foreground on the last frame.
+                EditorData.ReloadOnWindowForeground();
+
+                _isForeground = false;
+            }
+
+            if (!_isPlayingGame)
+            {
+                // Outside of the game, also display the console.
+                _logger.DrawConsole();
+            }
+
+            ImGuiRenderer.AfterLayout();
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            GameLogger.Log("Wrapping up, bye!");
+
+            ImGuiRenderer.AfterLayout();
+
+            if (!_isPlayingGame)
+            {
+                SaveWindowPosition();
+                SaveEditorState();
+            }
+
+            EditorData.SaveSettings();
+        }
+
+        internal void SaveWindowPosition()
+        {
+            bool isMaximized = IsMaximized();
+            if (!isMaximized && GetWindowPosition() is Point position)
+            {
+                EditorSettings.WindowStartPosition = position;
+                EditorSettings.WindowSize = GetWindowSize();
+            }
+
+            EditorSettings.StartMaximized = isMaximized;
+        }
+
+        private void SaveEditorState()
+        {
+            if (ActiveScene is EditorScene editor)
+            {
+                editor.SaveEditorState();
+            }
+            else
+            {
+                GameLogger.Fail("How was this called out of an Editor scene?");
+            }
+        }
+
+        protected bool IsMaximized()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                SDL3.SDL.SDL_WindowFlags windowState = SDL3.SDL.SDL_GetWindowFlags(Window.Handle);
+                return (windowState & SDL3.SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED) != 0;
+            }
+
+            return false;
+        }
+
+        protected void MaximizeWindow()
+        {
+            // Not sure what is not supported here?
+            bool supportedOs = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
+            if (supportedOs)
+            {
+                SDL3.SDL.SDL_MaximizeWindow(Window.Handle);
+            }
+        }
+
+        protected Point? GetWindowPosition()
+        {
+            // Not sure what is not supported here?
+            bool supportedOs = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
+                RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
+                RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+
+            if (supportedOs)
+            {
+                SDL3.SDL.SDL_GetWindowPosition(Window.Handle, out int x, out int y);
+                return new(x, y);
+            }
+
+            return null;
+        }
+
+        protected bool SetWindowPosition(Point p)
+        {
+            // Not sure what is not supported here?
+            bool supportedOs = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                || RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+
+            if (supportedOs)
+            {
+                SDL3.SDL.SDL_SetWindowPosition(Window.Handle, p.X, p.Y);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Refresh buffer target after reloading shaders. This CANNOT be called while drawing! Or it will crash!
+        /// </summary>
+        public void RefreshWindowsBufferAfterReloadingShaders()
+        {
+            if (ActiveScene is null)
+            {
+                return;
+            }
+            // TODO: Is this really necessary??
+            // ActiveScene.RefreshWindow(_graphics.GraphicsDevice, Profile);
+        }
+
+        protected override void ExitGame()
+        {
+            if (_isPlayingGame)
+            {
+                QuitToEditor();
+            }
+            else
+            {
+                base.ExitGame();
+            }
+        }
+
+        protected override void Update(Microsoft.Xna.Framework.GameTime gameTime)
+        {
+            if (_queueStartPlayGame is StartPlayGameInfo info)
+            {
+                _queueStartPlayGame = null;
+                PlayGame(info);
+            }
+
+            Input.MouseConsumed = ImGui.GetIO().WantCaptureMouse && _isPlayingGame;
+            Input.KeyboardConsumed = ImGui.GetIO().WantCaptureKeyboard;
+
+
+            base.Update(gameTime);
+
+            if (EditorData.ShadersNeedReloading)
+            {
+                // We must make sure this is not called while drawing.
+                EditorData.ReloadShaders();
+            }
+
+            // TODO: Figure out how to listen to drop file events
+            SDL3.SDL.SDL_SetEventEnabled((uint)SDL3.SDL.SDL_EventType.SDL_EVENT_DROP_FILE, true);
+            UpdateCursor();
+        }
+
+        private void UpdateCursor()
+        {
+            EditorData.CursorTextureManager?.RenderCursor(Cursor);
+        }
+
+        protected override void OnLoadingDraw(RenderContext renderContext) { }
+
+        protected override void Dispose(bool isDisposing)
+        {
+            ImGuiRenderer?.Dispose();
+
+            base.Dispose(isDisposing);
+        }
+    }
+}

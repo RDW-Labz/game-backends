@@ -1,0 +1,40 @@
+﻿using Bang;
+using Bang.Entities;
+using Bang.Interactions;
+using Murder.Attributes;
+using Murder.Core.Sounds;
+using Murder.Services;
+using Murder.Utilities.Attributes;
+
+namespace Murder.Interactions
+{
+    [CustomName($"\uf2a2 {nameof(StopEventInteraction)}")]
+    public readonly struct StopEventInteraction : IInteraction
+    {
+        public readonly bool FadeOut { get; init; } = true;
+
+        [Default("Stop specific...")]
+        public readonly SoundEventId? Event { get; init; } = null;
+
+        [Tooltip("Only used if event is not specified and it should be applied to the layer instead")]
+        public readonly SoundLayer? TargetLayer { get; init; } = null;
+
+        public readonly PlayEventSettings Settings { get; init; } = PlayEventSettings.None;
+
+        public StopEventInteraction() { }
+
+        public void Interact(World world, Entity interactor, Entity? interacted)
+        {
+            int entityId = Settings.HasFlag(PlayEventSettings.IgnoreEntitySource) ? -1 : interactor.EntityId;
+
+            if (Event is not null)
+            {
+                SoundServices.Stop(Event, FadeOut, entityId);
+            }
+            else if (TargetLayer is not null)
+            {
+                SoundServices.Stop(TargetLayer.Value, FadeOut);
+            }
+        }
+    }
+}

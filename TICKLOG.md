@@ -1675,3 +1675,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/openwebgal-webgal
   - reference engines/egret-labs-egret-core
   - reference engines/ahmadhassan-bted-eqai
+
+- **2026-11-23 01:40 UTC** — tick 656: +2 screened, +4 reference, 3 skipped, catalogue=518
+  - added engines/tomlooman-epicsurvivalgame (MIT, vendored)
+  - added engines/isadorasophia-murder (MIT, vendored)
+  - reference engines/matrixcascade-painterengine
+  - reference engines/hailtododongo-pyrite64
+  - reference engines/panosk92-spartanengine
+  - reference engines/croteam-official-serious-engine

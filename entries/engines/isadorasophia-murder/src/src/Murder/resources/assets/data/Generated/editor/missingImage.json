@@ -1,0 +1,63 @@
+{
+  "$type": "Murder.Assets.Graphics.SpriteAsset",
+  "Animations": {
+    "": {
+      "Frames": [
+        0
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    }
+  },
+  "Atlas": "editor",
+  "Frames": [
+    {
+      "AtlasIndex": 0,
+      "Name": "missingImage",
+      "Size": {
+        "X": 8,
+        "Y": 8
+      },
+      "SourceRectangle": {
+        "X": 217,
+        "Y": 152,
+        "Width": 8,
+        "Height": 8
+      },
+      "UV": {
+        "X": 0.42382812,
+        "Y": 0.296875,
+        "Width": 0.015625,
+        "Height": 0.015625
+      },
+      "TrimArea": {
+        "X": 0,
+        "Y": 0,
+        "Width": 8,
+        "Height": 8
+      },
+      "AtlasId": "editor"
+    }
+  ],
+  "Origin": {
+    "X": 0,
+    "Y": 0
+  },
+  "Size": {
+    "X": 8,
+    "Y": 8
+  },
+  "NineSlice": {
+    "X": 0,
+    "Y": 0,
+    "Width": 0,
+    "Height": 0
+  },
+  "Name": "missingImage",
+  "Guid": "3c4ec0fa-0d0c-4f0f-9cb7-079bb9734a26",
+  "editorPath": "#\uF085Generated\\editor"
+}

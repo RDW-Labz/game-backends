@@ -1,0 +1,136 @@
+﻿using Bang;
+using Bang.Contexts;
+using Bang.Entities;
+using Bang.Systems;
+using Murder.Components;
+using Murder.Core;
+using Murder.Core.Ai;
+using Murder.Core.Geometry;
+using Murder.Core.Physics;
+using Murder.Diagnostics;
+using Murder.Messages;
+using Murder.Utilities;
+using System.Collections.Immutable;
+using System.Numerics;
+
+namespace Murder.Systems
+{
+    [Watch(typeof(PathfindComponent))]
+    public class CalculatePathfindSystem : IStartupSystem, IReactiveSystem
+    {
+        public void Start(Context context)
+        {
+            if (context.World.TryGetUniqueMap()?.Map is not Map map)
+            {
+                GameLogger.Error("Unable to find map dimensions in this world?");
+                return;
+            }
+
+            Entity e = context.World.AddEntity(new HAAStarPathfindComponent(map.Width, map.Height));
+            e.GetHAAStarPathfind().Data.Refresh(map);
+        }
+
+        public void OnAdded(World world, ImmutableArray<Entity> entities)
+        {
+            Map map = world.GetUniqueMap().Map;
+            foreach (var e in entities)
+            {
+                if (!e.HasPathfind())
+                    continue; // [HACK] This entity shouldn't be added to the context here.
+
+                CalculatePath(world, map, e);
+            }
+        }
+
+        public void OnModified(World world, ImmutableArray<Entity> entities)
+        {
+            Map map = world.GetUniqueMap().Map;
+            foreach (var e in entities)
+            {
+                if (!e.HasPathfind())
+                {
+                    continue;
+                }
+
+                if (e.TryGetComponent(out RouteComponent route))
+                {
+                    Point target = e.GetPathfind().Target.ToGridPoint();
+                    if (route.Target == target)
+                    {
+                        continue;
+                    }
+                }
+
+                CalculatePath(world, map, e);
+            }
+        }
+
+        public void OnRemoved(World world, ImmutableArray<Entity> entities)
+        {
+            foreach (Entity entity in entities)
+            {
+                if (entity.HasPathfind())
+                {
+                    // if a pathfind has been added at the same frame, let's skip
+                    continue;
+                }
+
+                entity.RemoveRoute();
+                //entity.SetFriction(0.25f); // Why was this here? It's not the PathfindSystem's responsibility to set friction
+            }
+        }
+
+        public virtual int GetLineOfSightCollisionMask() =>
+            CollisionLayersBase.BLOCK_VISION | CollisionLayersBase.SOLID | CollisionLayersBase.HOLE | CollisionLayersBase.CARVE;
+
+        private void CalculatePath(World world, Map map, Entity e)
+        {
+            PathfindComponent pathfind = e.GetPathfind();
+            Vector2 position = e.GetGlobalPosition();
+     
+            Point initialCell = position.ToGridPoint();
+            Point targetCell = pathfind.Target.ToGridPoint();
+
+            if (initialCell == targetCell)
+            {
+                e.RemovePathfind();
+                e.SetPathfindStatus( PathfindStatusFlags.PathComplete);
+                e.SetMoveTo(pathfind.Target);
+
+                return;
+            }
+
+            int collisionMask;
+            if (e.TryGetCustomLineOfSightMask() is CustomLineOfSightMaskComponent customLineOfSight)
+            {
+                collisionMask = customLineOfSight.Mask;
+            }
+            else
+            {
+                collisionMask = GetLineOfSightCollisionMask();
+            }
+
+            // Carve and block vision are always added, no matter what.
+            collisionMask |= CollisionLayersBase.CARVE | CollisionLayersBase.BLOCK_VISION;
+
+            var path = map.FindPath(
+                world,
+                initial: initialCell,
+                target: targetCell,
+                pathfind.Algorithm,
+                collisionMask, out PathfindStatusFlags statusFlags);
+
+            if (path.Count == 0)
+            {
+                e.SendPathNotPossibleMessage();
+                e.SetPathfindStatus(statusFlags | PathfindStatusFlags.PathNotFound);
+                e.RemovePathfind();
+
+                return;
+            }
+
+            e.SetPathfindStatus(statusFlags);
+            e.SetRoute(path, initialCell, targetCell);
+        }
+    }
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:40:22Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "HailToDodongo/pyrite64 \u2014 N64 Game-Engine and Editor using libdragon & tiny3d",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pyrite64",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hailtododongo-pyrite64",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3300,
+ "system": "N64 Game-Engine and Editor using libdragon & tiny3d",
+ "upstream": "https://github.com/HailToDodongo/pyrite64",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

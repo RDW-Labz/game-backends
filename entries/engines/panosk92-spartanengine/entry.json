@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:40:22Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "PanosK92/SpartanEngine \u2014 A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation running at 200Hz, built over 12+ years of R&D",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "SpartanEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "panosk92-spartanengine",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3262,
+ "system": "A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run",
+ "upstream": "https://github.com/PanosK92/SpartanEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T01:40:22Z",
+ "category": "engines",
+ "commit": "2020-10-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Croteam-official/Serious-Engine \u2014 An open source version of a game engine developed by Croteam for the classic Serious Sam games.",
+ "language": "c++",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Serious-Engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-2.0)",
+ "slug": "croteam-official-serious-engine",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3197,
+ "system": "An open source version of a game engine developed by Croteam for the classic Serious Sam games.",
+ "upstream": "https://github.com/Croteam-official/Serious-Engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

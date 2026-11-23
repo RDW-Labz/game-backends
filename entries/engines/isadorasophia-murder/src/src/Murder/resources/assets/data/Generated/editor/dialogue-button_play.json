@@ -1,0 +1,194 @@
+{
+  "$type": "Murder.Assets.Graphics.SpriteAsset",
+  "Animations": {
+    "disabled": {
+      "Frames": [
+        3
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    },
+    "down": {
+      "Frames": [
+        2
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    },
+    "": {
+      "Frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "FramesDuration": [
+        100,
+        100,
+        100,
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.4,
+      "NextAnimation": []
+    },
+    "hover": {
+      "Frames": [
+        1
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    },
+    "normal": {
+      "Frames": [
+        0
+      ],
+      "FramesDuration": [
+        100
+      ],
+      "Events": {},
+      "AnimationDuration": 0.1,
+      "NextAnimation": []
+    }
+  },
+  "Atlas": "editor",
+  "Frames": [
+    {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_play_0000",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 318,
+        "Y": 81,
+        "Width": 11,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.62109375,
+        "Y": 0.15820312,
+        "Width": 0.021484375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 2,
+        "Width": 11,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    },
+    {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_play_0001",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 303,
+        "Y": 98,
+        "Width": 11,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.5917969,
+        "Y": 0.19140625,
+        "Width": 0.021484375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 2,
+        "Width": 11,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    },
+    {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_play_0002",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 286,
+        "Y": 115,
+        "Width": 11,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.55859375,
+        "Y": 0.22460938,
+        "Width": 0.021484375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 2,
+        "Width": 11,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    },
+    {
+      "AtlasIndex": 0,
+      "Name": "dialogue-button_play_0003",
+      "Size": {
+        "X": 16,
+        "Y": 16
+      },
+      "SourceRectangle": {
+        "X": 269,
+        "Y": 132,
+        "Width": 11,
+        "Height": 12
+      },
+      "UV": {
+        "X": 0.5253906,
+        "Y": 0.2578125,
+        "Width": 0.021484375,
+        "Height": 0.0234375
+      },
+      "TrimArea": {
+        "X": 3,
+        "Y": 2,
+        "Width": 11,
+        "Height": 12
+      },
+      "AtlasId": "editor"
+    }
+  ],
+  "Origin": {
+    "X": 0,
+    "Y": 0
+  },
+  "Size": {
+    "X": 16,
+    "Y": 16
+  },
+  "NineSlice": {
+    "X": 0,
+    "Y": 0,
+    "Width": 0,
+    "Height": 0
+  },
+  "Name": "dialogue-button_play",
+  "Guid": "2264b5ce-f60e-fff6-27f4-1955dd00b5a4",
+  "editorPath": "#\uF085Generated\\editor"
+}

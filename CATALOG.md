@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 01:24 UTC · 512 entries · 154 vendored, 358 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 01:40 UTC · 518 entries · 156 vendored, 362 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 86 | 21 | 65 |
+| [engines](#engines) — Game engines and engine subsystems | 92 | 23 | 69 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 01:24 UTC · 512 entries · 154 vendored, 358 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 86 entries
+**Game engines and engine subsystems** — 92 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -43,6 +43,7 @@ _Generated 2026-11-23 01:24 UTC · 512 entries · 154 vendored, 358 reference-on
 | [Entitas](entries/engines/sschmid-entitas/README.md) | Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity | c# | MIT | vendored | [sschmid/Entitas](https://github.com/sschmid/Entitas) @ `37547d1bd280` |
 | [EntityComponentSystemSamples](entries/engines/unity-technologies-entitycomponentsystemsamples/README.md) | see upstream | c# | none | reference | [Unity-Technologies/EntityComponentSystemSamples](https://github.com/Unity-Technologies/EntityComponentSystemSamples) @ `6786a741ee1f` |
 | [EnTT](entries/engines/entt/README.md) | header-only ECS: registry, views, groups, signals | c++ | MIT | vendored | [skypjack/entt](https://github.com/skypjack/entt) @ `1dcd7aab6548` |
+| [EpicSurvivalGame](entries/engines/tomlooman-epicsurvivalgame/README.md) | Third-person Survival Game for Unreal Engine (Sample Project) | c++ | MIT | vendored | [tomlooman/EpicSurvivalGame](https://github.com/tomlooman/EpicSurvivalGame) @ `23159c1c8560` |
 | [EQAI](entries/engines/ahmadhassan-bted-eqai/README.md) | A highly specialized reverse-engineering pipeline designed to structurally transplant original Vanilla character models into the EverQuest Online Adventures: Fr | python | unknown | reference | [AhmadHassan-BTed/EQAI](https://github.com/AhmadHassan-BTed/EQAI) @ `2026-07-03 (branch tip at catalogue time)` |
 | [esper](entries/engines/benmoran56-esper/README.md) | An ECS (Entity Component System) for Python | python | MIT | reference | [benmoran56/esper](https://github.com/benmoran56/esper) @ `2026-09-20 (branch tip at catalogue time)` |
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -69,6 +70,7 @@ _Generated 2026-11-23 01:24 UTC · 512 entries · 154 vendored, 358 reference-on
 | [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
+| [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
@@ -78,21 +80,25 @@ _Generated 2026-11-23 01:24 UTC · 512 entries · 154 vendored, 358 reference-on
 | [openrct2 — core](entries/engines/openrct2-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
 | [OpenSurge — core](entries/engines/opensurge-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [optick — core](entries/engines/optick-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
+| [PainterEngine](entries/engines/matrixcascade-painterengine/README.md) | PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C | c | MIT | reference | [matrixcascade/PainterEngine](https://github.com/matrixcascade/PainterEngine) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
 | [Pekka-Kana-2 — engine](entries/engines/pekka-kana-2-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | vendored | [danilolc/pk2](https://github.com/danilolc/pk2) @ `b1c5597` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
 | [pixijs](entries/engines/pixijs-pixijs/README.md) | The HTML5 Creation Engine: Create beautiful digital content with the fastest, most flexible 2D WebGL renderer. | typescript | MIT | vendored | [pixijs/pixijs](https://github.com/pixijs/pixijs) @ `16011d73d816` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
+| [pyrite64](entries/engines/hailtododongo-pyrite64/README.md) | N64 Game-Engine and Editor using libdragon & tiny3d | c++ | MIT | reference | [HailToDodongo/pyrite64](https://github.com/HailToDodongo/pyrite64) @ `2026-11-22 (branch tip at catalogue time)` |
 | [pyxel](entries/engines/kitao-pyxel/README.md) | A retro game engine for Python | rust | unknown | reference | [kitao/pyxel](https://github.com/kitao/pyxel) @ `2026-11-23 (branch tip at catalogue time)` |
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
 | [sbox-public](entries/engines/facepunch-sbox-public/README.md) | s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games | c# | unknown | reference | [Facepunch/sbox-public](https://github.com/Facepunch/sbox-public) @ `2026-11-22 (branch tip at catalogue time)` |
+| [Serious-Engine](entries/engines/croteam-official-serious-engine/README.md) | An open source version of a game engine developed by Croteam for the classic Serious Sam games. | c++ | GPL-2.0 | reference | [Croteam-official/Serious-Engine](https://github.com/Croteam-official/Serious-Engine) @ `2020-10-31 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
+| [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |

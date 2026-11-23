@@ -1,0 +1,1645 @@
+﻿using Bang.Entities;
+using Microsoft.Xna.Framework.Graphics;
+using Murder.Assets.Graphics;
+using Murder.Components;
+using Murder.Components.Graphics;
+using Murder.Core;
+using Murder.Core.Geometry;
+using Murder.Core.Graphics;
+using Murder.Core.Input;
+using Murder.Diagnostics;
+using Murder.Messages;
+using Murder.Services.Info;
+using Murder.Utilities;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Numerics;
+using Matrix = Microsoft.Xna.Framework.Matrix;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
+
+namespace Murder.Services;
+
+/// Some of the code based on https://github.com/z2oh/C3.MonoGame.Primitives2D/blob/master/Primitives2D.cs
+public static partial class RenderServices
+{
+    const int Y_SORT_RANGE = 10000;
+    const int Y_SORT_RANGE_X2 = Y_SORT_RANGE * 2;
+
+    private static Matrix _cachedProjectionMatrix;
+    private static int _cachedViewportWidth;
+    private static int _cachedViewportHeight;
+    // [PERF] This can be recalculated by someone else, only when the window size changes
+    private static Matrix GetProjectionMatrix(GraphicsDevice graphicsDevice)
+    {
+        int width = graphicsDevice.Viewport.Width;
+        int height = graphicsDevice.Viewport.Height;
+
+        if (width != _cachedViewportWidth || height != _cachedViewportHeight)
+        {
+            _cachedViewportWidth = width;
+            _cachedViewportHeight = height;
+            var size = new Vector2(graphicsDevice.Viewport.Width, graphicsDevice.Viewport.Height);
+            _cachedProjectionMatrix = Matrix.Identity;
+            _cachedProjectionMatrix *= Matrix.CreateScale((1f / size.X) * 2, -(1f / size.Y) * 2, 1f); // scale to relative points
+            _cachedProjectionMatrix *= Matrix.CreateTranslation(-1f, 1f, 0); // translate to relative points
+        }
+
+        return _cachedProjectionMatrix;
+    }
+
+    public static DrawMenuInfo DrawVerticalMenu(
+        Batch2D batch,
+        in Point position,
+        in DrawMenuStyle style,
+        in MenuInfo menuInfo,
+        float sort = .1f) =>
+        DrawVerticalMenu(batch, position, position, style, menuInfo, sort);
+
+    internal static Vector2 CalculateSelectorPositionForVerticalMenu(int index, int lineHeight, Point finalPosition) => new Point(0, lineHeight * (index + 1)) + finalPosition;
+
+    /// <summary>
+    /// TODO: Pass around a "style" for background color, sounds, etc.
+    /// </summary>
+    public static DrawMenuInfo DrawVerticalMenu(
+        Batch2D batch,
+        in Point position,
+        in Point textPosition,
+        in DrawMenuStyle style,
+        in MenuInfo menuInfo,
+        float sort)
+    {
+        PixelFont font = Game.Data.GetFont(style.Font);
+        int lineHeight = font.LineHeight + style.ExtraVerticalSpace;
+
+        int maxSelectionWidth = 0;
+
+        Point finalPosition = new(Math.Max(position.X, 0), Math.Max(position.Y, 0));
+        Point textFinalPosition = new(Math.Max(textPosition.X, 0), Math.Max(textPosition.Y, 0));
+
+        Vector2 CalculateText(int index) => new Point(0, MathF.Floor(lineHeight * (index + 1.25f))) + textFinalPosition;
+
+        for (int i = 0; i < menuInfo.Length; i++)
+        {
+            var label = menuInfo.GetOptionText(i);
+            Vector2 labelPosition = CalculateText(i);
+
+            Color currentColor;
+            Color? currentShadow;
+
+            if (menuInfo.IsEnabled(i))
+            {
+                currentColor = i == menuInfo.Selection ? style.SelectedColor : style.Color;
+                currentShadow = style.Shadow;
+            }
+            else
+            {
+                currentColor = style.DisabledColor ?? style.Shadow;
+                currentShadow = style.DisabledShadowColor;
+            }
+
+            Point textSize = DrawText(batch, style.Font, label ?? string.Empty, labelPosition, new DrawInfo(sort)
+            {
+                Origin = style.Origin,
+                Color = currentColor,
+                Shadow = currentShadow,
+                Debug = false
+            });
+
+            if (textSize.X > maxSelectionWidth)
+            {
+                maxSelectionWidth = textSize.X;
+            }
+
+            // We did not implement vertical icon menu with other offsets.
+            if (i < menuInfo.Icons.Length && style.Origin.X == 0)
+            {
+                float bounceX = i != menuInfo.Selection ? 0 :
+                    Ease.BackOut(Calculator.ClampTime(Game.NowUnscaled - menuInfo.LastMoved, 0.5f)) * 3 - 3;
+
+                Portrait portrait = menuInfo.Icons[i];
+                if (MurderAssetHelpers.GetSpriteAssetForPortrait(portrait) is (SpriteAsset sprite, string animation))
+                {
+                    DrawSprite(
+                        batch,
+                        sprite,
+                        labelPosition - new Point(15 - bounceX, 0),
+                        new DrawInfo(sort: sort),
+                        new AnimationInfo(animation));
+                }
+            }
+        }
+
+        Vector2 selectorPosition = CalculateSelectorPositionForVerticalMenu(menuInfo.Selection, lineHeight, finalPosition) + new Vector2(0, MathF.Floor(lineHeight / 2f) - 3);
+        Vector2 previousSelectorPosition = CalculateSelectorPositionForVerticalMenu(menuInfo.PreviousSelection, lineHeight, finalPosition) + new Vector2(0, lineHeight / 2f - 2);
+
+        Vector2 easedPosition;
+        if (style.SelectorMoveTime == 0)
+            easedPosition = selectorPosition;
+        else
+            easedPosition = Vector2.Lerp(previousSelectorPosition, selectorPosition,
+                Ease.Evaluate(Calculator.ClampTime(Game.NowUnscaled - menuInfo.LastMoved, style.SelectorMoveTime), style.Ease));
+
+        return new DrawMenuInfo()
+        {
+            SelectorPosition = selectorPosition,
+            PreviousSelectorPosition = previousSelectorPosition,
+            SelectorEasedPosition = easedPosition.Point(),
+            MaximumSelectionWidth = maxSelectionWidth,
+            LineHeight = lineHeight,
+            FinalPosition = finalPosition
+        };
+    }
+
+    public static void DrawRepeating
+        (
+        Batch2D batch,
+        AtlasCoordinates texture,
+        Rectangle area,
+        Point offset,
+        float sort)
+    {
+        int texWidth = texture.Size.X;
+        int texHeight = texture.Size.Y;
+        if (texWidth <= 0 || texHeight <= 0)
+            return;
+
+        int areaLeft = Calculator.RoundToInt(area.X);
+        int areaTop = Calculator.RoundToInt(area.Y);
+        int areaRight = Calculator.RoundToInt(area.Right);
+        int areaBottom = Calculator.RoundToInt(area.Bottom);
+
+        // Wrap the offset into [0, texSize] so we start at most one tile before the area.
+        int shiftX = Calculator.Mod(offset.X, texWidth);
+        int shiftY = Calculator.Mod(offset.Y, texHeight);
+        int startX = areaLeft + shiftX - (shiftX > 0 ? texWidth : 0);
+        int startY = areaTop + shiftY - (shiftY > 0 ? texHeight : 0);
+
+        for (int x = startX; x < areaRight; x += texWidth)
+        {
+            int cutLeft = Math.Max(0, areaLeft - x);
+            int cutRight = Math.Max(0, x + texWidth - areaRight);
+            int width = texWidth - cutLeft - cutRight;
+            if (width <= 0)
+            {
+                continue;
+            }
+
+            for (int y = startY; y < areaBottom; y += texHeight)
+            {
+                int cutTop = Math.Max(0, areaTop - y);
+                int cutBottom = Math.Max(0, y + texHeight - areaBottom);
+                int height = texHeight - cutTop - cutBottom;
+                if (height <= 0)
+                    continue;
+
+                texture.Draw(
+                    batch,
+                    new Vector2(x + cutLeft, y + cutTop),
+                    new Rectangle(cutLeft, cutTop, width, height),
+                    Color.White, Vector2.One, 0, Vector2.Zero, ImageFlip.None,
+                    RenderServices.BLEND_NORMAL, MurderBlendState.AlphaBlend, sort);
+            }
+        }
+    }
+    public static void DrawRepeating
+        (
+        Batch2D batch,
+        AtlasCoordinates texture,
+        Rectangle area,
+        float sort)
+    {
+        int texWidth = texture.Size.X;
+        int texHeight = texture.Size.Y;
+        float areaRight = area.Right;
+        float areaBottom = area.Bottom;
+        int startX = Calculator.RoundToInt(area.X);
+        int startY = Calculator.RoundToInt(area.Y);
+
+        for (int x = startX; x < areaRight; x += texWidth)
+        {
+            for (int y = startY; y < areaBottom; y += texHeight)
+            {
+                Vector2 excess = new(MathF.Max(0, x + texture.Size.X - area.Right), MathF.Max(0, y + texture.Size.Y - area.Bottom));
+                texture.Draw(batch, new Vector2(x, y), new Rectangle(Vector2.Zero, texture.Size - excess), Color.White, Vector2.One, 0, Vector2.Zero, ImageFlip.None, RenderServices.BLEND_NORMAL, MurderBlendState.AlphaBlend, sort);
+            }
+        }
+    }
+
+    /// <summary>
+    /// The Renders a sprite on the screen. This is the most basic rendering method with all parameters exposed, avoid using this if possible.
+    /// </summary>
+    /// <param name="spriteBatch">Sprite batch.</param>
+    /// <param name="pos">Position in the render.</param>
+    /// <param name="clip">Clipping rectangle. Rectangle.Empty for the whole sprite</param>
+    /// <param name="animationId">Animation string id.</param>
+    /// <param name="asset">Sprite asset.</param>
+    /// <param name="animationStartedTime">When the animation started.</param>
+    /// <param name="animationDuration">The total duration of the animation. Use -1 to use the duration from the aseprite file.</param>
+    /// <param name="animationLoop">If the animation should loop or if it's clamped.</param>
+    /// <param name="origin">Offset from <paramref name="pos"/>. From 0 to 1.</param>
+    /// <param name="imageFlip">Whether the image is flipped.</param>
+    /// <param name="rotation">Rotation of the image, in radians.</param>
+    /// <param name="scale">Scale applied to the sprite.</param>
+    /// <param name="color">Color.</param>
+    /// <param name="blend">Blend.</param>
+    /// <param name="blendState">Blend state type.</param>
+    /// <param name="sort">Sort layer. 0 is in front, 1 is behind</param>
+    /// <param name="currentTime">Current time of the game used to render this sprite.</param>
+    /// <returns>If the animation is complete or not</returns>
+    public static FrameInfo DrawSprite(
+        Batch2D spriteBatch,
+        Vector2 pos,
+        Rectangle clip,
+        string animationId,
+        SpriteAsset asset,
+        float animationStartedTime,
+        float animationDuration,
+        bool animationLoop,
+        Vector2 origin,
+        ImageFlip imageFlip,
+        float rotation,
+        Vector2 scale,
+        Color color,
+        Vector3 blend,
+        MurderBlendState blendState,
+        float sort,
+        float currentTime)
+    {
+        if (animationId == null || !asset.Animations.TryGetValue(animationId, out var animation))
+        {
+            GameLogger.Log($"Couldn't find animation {animationId} for {asset.Guid}.");
+            return FrameInfo.Fail;
+        }
+
+        float time = currentTime - animationStartedTime;
+
+        var frameInfo = animation.Evaluate(time, animationLoop, animationDuration) with
+        {
+            Animation = animation
+        };
+
+        var image = asset.GetFrame(frameInfo.Frame);
+        Vector2 offset = (asset.Origin + origin * image.Size).Round();
+        Vector2 position = pos.Round();
+
+        image.Draw(
+            spriteBatch: spriteBatch,
+            position: position,
+            clip: clip,
+            color: color,
+            offset: offset,
+            scale: scale,
+            rotation: rotation,
+            imageFlip: imageFlip,
+            blend: blend,
+            blendState: blendState,
+            sort: sort);
+
+        return frameInfo;
+    }
+
+    public static FrameInfo DrawSprite(
+        Batch2D spriteBatch,
+        Vector2 pos,
+        Rectangle clip,
+        string animationId,
+        SpriteAsset asset,
+        int frame,
+        Vector2 origin,
+        ImageFlip imageFlip,
+        float rotation,
+        Vector2 scale,
+        Color color,
+        Vector3 blend,
+        float sort)
+    {
+        if (!asset.Animations.TryGetValue(animationId, out var animation))
+        {
+            GameLogger.Log($"Couldn't find animation {animationId} for {asset.Guid}.");
+            return FrameInfo.Fail;
+        }
+
+        return DrawSprite(spriteBatch, pos, clip, animation, asset, frame, origin, imageFlip, rotation, scale, color, blend, sort);
+    }
+
+    public static FrameInfo DrawSprite(
+        Batch2D spriteBatch,
+        Vector2 pos,
+        Rectangle clip,
+        Animation animation,
+        SpriteAsset asset,
+        int frame,
+        Vector2 origin,
+        ImageFlip imageFlip,
+        float rotation,
+        Vector2 scale,
+        Color color,
+        Vector3 blend,
+        float sort)
+    {
+        FrameInfo frameInfo = new()
+        {
+            Animation = animation,
+            Frame = frame
+        };
+
+        AtlasCoordinates image = asset.GetFrame(animation.GetFrame(frameInfo.Frame));
+        Vector2 offset = (asset.Origin + origin * image.Size).Round();
+        Vector2 position = pos.Round();
+
+        image.Draw(
+            spriteBatch: spriteBatch,
+            position: position,
+            clip: clip,
+            color: color,
+            offset: offset,
+            scale: scale,
+            rotation: rotation,
+            imageFlip: imageFlip,
+            blend: blend,
+            blendState: MurderBlendState.AlphaBlend,
+            sort: sort);
+
+        return frameInfo;
+    }
+
+    public static void CompleteAnimationOverload(
+        Entity e, AnimationOverloadComponent overload, FrameInfo? frameInfo, AnimationSpeedOverload? speedOverload)
+    {
+        if (overload.AnimationCount > 1)
+        {
+            if (overload.Current < overload.AnimationCount - 1)
+            {
+                e.SetAnimationOverload(overload.PlayNext());
+                e.SendAnimationCompleteMessage();
+            }
+            else
+            {
+                if (!overload.Loop)
+                {
+                    e.RemoveAnimationOverload();
+                    e.SendAnimationCompleteMessage(AnimationCompleteStyle.Sequence);
+                }
+                else
+                {
+                    e.SendAnimationCompleteMessage();
+                }
+
+                e.SetAnimationComplete();
+            }
+        }
+        else if (frameInfo is not null && frameInfo.Value.Animation.HasNextAnimation)
+        {
+            // This is a chained animation, e send the complete message and try to play the next one.
+            e.SendAnimationCompleteMessage(AnimationCompleteStyle.Sequence);
+            e.SetAnimationComplete();
+
+            if (frameInfo.Value.Animation.GetNextAnimation(Game.Random, out string next))
+            {
+                e.SetAnimationOverload(overload.Play(next));
+            }
+            else
+            {
+                e.SetAnimationOverload(overload with { Start = Game.Now });
+            }
+        }
+        else if (!overload.Loop)
+        {
+            e.RemoveAnimationOverload();
+            e.SendAnimationCompleteMessage(AnimationCompleteStyle.Sequence);
+            e.SetAnimationComplete();
+        }
+        else
+        {
+            e.SendAnimationCompleteMessage();
+            e.SetAnimationComplete();
+        }
+
+        if (speedOverload is not null && speedOverload.Value.Persist)
+        {
+            e.RemoveAnimationSpeedOverload();
+        }
+    }
+
+    public static void DealWithCompleteAnimations(Entity e, SpriteComponent s)
+    {
+        if (s.NextAnimations.Length > 1)
+        {
+            if (!string.IsNullOrWhiteSpace(s.CurrentAnimation))
+            {
+                e.PlaySpriteAnimation(s.NextAnimations.RemoveAt(0));
+            }
+
+            e.SendAnimationCompleteMessage(AnimationCompleteStyle.Single);
+            e.RemoveAnimationComplete();
+        }
+        else
+        {
+            if (!e.HasAnimationComplete())
+            {
+                e.SetAnimationComplete();
+                e.SendAnimationCompleteMessage(AnimationCompleteStyle.Sequence);
+            }
+        }
+    }
+
+    public static void MessageCompleteAnimations(Entity e)
+    {
+        if (e.TryGetAnimationOverload() is AnimationOverloadComponent overload)
+        {
+            if (!overload.Loop)
+            {
+                e.RemoveAnimationOverload();
+            }
+
+            e.SetAnimationComplete();
+        }
+
+        if (!e.HasAnimationComplete())
+        {
+            e.SetAnimationComplete();
+        }
+
+        e.SendAnimationCompleteMessage(AnimationCompleteStyle.Sequence);
+    }
+
+    public static (SpriteAsset asset, string animation)? FetchPortraitAsSprite(Portrait portrait)
+    {
+        if (Game.Data.TryGetAsset<SpriteAsset>(portrait.Sprite) is SpriteAsset aseprite)
+        {
+            return (aseprite, portrait.AnimationId);
+        }
+
+        return null;
+    }
+    public static void DrawTexture(this Batch2D batch, Texture2D texture, Vector2 position, DrawInfo drawInfo)
+    {
+        Microsoft.Xna.Framework.Rectangle bounds;
+        if (drawInfo.Clip != Rectangle.Empty)
+        {
+            bounds = new Rectangle(
+                drawInfo.Clip.X,
+                drawInfo.Clip.Y,
+                MathF.Max(1, MathF.Min(drawInfo.Clip.Width, texture.Bounds.Width - drawInfo.Clip.X)),
+                MathF.Max(1, MathF.Min(drawInfo.Clip.Height, texture.Bounds.Height - drawInfo.Clip.Y))
+                );
+        }
+        else
+        {
+            bounds = texture.Bounds;
+        }
+
+        void DrawAt(Vector2 position, Color color, Vector3 blendMode, float sort)
+        {
+            batch.Draw(
+                texture,
+                position.ToXnaVector2(),
+                bounds.Size(),
+                bounds,
+                sort,
+                drawInfo.Rotation,
+                drawInfo.Scale.ToXnaVector2(),
+                drawInfo.ImageFlip,
+                color,
+                drawInfo.Origin.ToXnaVector2() * texture.Bounds.Size(),
+                blendMode,
+                drawInfo.BlendState
+                );
+        }
+
+        if (drawInfo.Outline != null)
+        {
+            DrawAt(position + new Vector2(-1, 0), drawInfo.Outline.Value, BLEND_WASH, drawInfo.Sort + 0.0001f);
+            DrawAt(position + new Vector2(0, 1), drawInfo.Outline.Value, BLEND_WASH, drawInfo.Sort + 0.0001f);
+            DrawAt(position + new Vector2(0, -1), drawInfo.Outline.Value, BLEND_WASH, drawInfo.Sort + 0.0001f);
+            DrawAt(position + new Vector2(1, 0), drawInfo.Outline.Value, BLEND_WASH, drawInfo.Sort + 0.0001f);
+        }
+
+        DrawAt(position, drawInfo.Color, BLEND_NORMAL, drawInfo.Sort);
+    }
+
+    public static FrameInfo DrawPortrait(this Batch2D batch, Portrait portrait, Vector2 position, DrawInfo drawInfo)
+    {
+        if (FetchPortraitAsSprite(portrait) is not (SpriteAsset sprite, string animation))
+        {
+            return FrameInfo.Fail;
+        }
+
+        return DrawSprite(batch, sprite, position, drawInfo, new AnimationInfo(animation));
+    }
+
+    public static FrameInfo DrawSprite(this Batch2D batch, Guid assetGuid, Vector2 position, DrawInfo? drawInfo = default)
+        => DrawSprite(batch, assetGuid, position, drawInfo ?? DrawInfo.Default, AnimationInfo.Default);
+
+    public static FrameInfo DrawSprite(this Batch2D batch, SpriteAsset asset, Vector2 position, DrawInfo? drawInfo = default)
+        => DrawSprite(batch, asset, position, drawInfo ?? DrawInfo.Default, AnimationInfo.Default);
+
+    public static FrameInfo DrawSprite(this Batch2D batch, Guid assetGuid, Vector2 position, DrawInfo drawInfo, AnimationInfo animationInfo)
+    {
+        if (Game.Data.TryGetAsset<SpriteAsset>(assetGuid) is SpriteAsset asset)
+        {
+            return DrawSprite(batch, asset, position, drawInfo, animationInfo);
+        }
+        return FrameInfo.Fail;
+    }
+
+    public static FrameInfo DrawSprite(this Batch2D batch, Guid assetGuid, float x, float y, DrawInfo drawInfo, AnimationInfo animationInfo)
+    {
+        return DrawSprite(batch, assetGuid, new Vector2(x, y), drawInfo, animationInfo);
+    }
+
+
+
+    //    public static FrameInfo DrawSprite(this Batch2D batch, SpriteAsset asset, Vector2 position, DrawInfo drawInfo, AnimationInfo animationInfo)
+    //    {
+    //        FrameInfo drawAt(Vector2 position, Color color, bool wash, float sort)
+    //        {
+    //            // [PERF] There's an obvious way to optimize this by caching the animation frame and drawing it instead of recalculating it every time.
+    //            FrameInfo frameInfo = DrawSprite(
+    //            batch,
+    //            position,
+    //            drawInfo.Clip,
+    //            animationInfo.Name,
+    //            asset,
+    //            animationInfo.Start,
+    //            animationInfo.Duration,
+    //            animationInfo.Loop,
+    //            drawInfo.Origin,
+    //            drawInfo.ImageFlip,
+    //            drawInfo.Rotation,
+    //            drawInfo.Scale,
+    //            color,
+    //            wash ? RenderServices.BLEND_WASH : drawInfo.GetBlendMode(),
+    //            drawInfo.BlendState,
+    //            sort,
+    //            animationInfo.CurrentTime());
+
+    //#if DEBUG
+    //            if (frameInfo.Failed)
+    //            {
+    //                DrawRectangle(batch, new Rectangle(position, new Vector2(32, 32)), Color.White * Calculator.Wave(10), sort);
+    //                DrawText(batch, MurderFonts.PixelFont, $"<c=#ffffff>Sprite: </c>{asset.Name}\n\n<c=#ffffff>Animation:  </c>{animationInfo.Name}", position, new DrawInfo(0)
+    //                {
+    //                    Color = Color.Orange,
+    //                    Outline = Color.Black
+    //                }); ;
+    //            }
+    //#endif
+
+    //            return frameInfo;
+    //        }
+
+    //        if (animationInfo.Name == "_")
+    //        {
+    //            return new FrameInfo(0, 0, true, Animation.Empty);
+    //        }
+
+    //        if (drawInfo.Outline.HasValue && drawInfo.OutlineStyle != OutlineStyle.None)
+    //        {
+    //            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Bottom))
+    //            {
+    //                drawAt(position + new Vector2(0, 1), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+    //            }
+
+    //            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Top))
+    //            {
+    //                drawAt(position + new Vector2(0, -1), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+    //            }
+
+    //            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Left))
+    //            {
+    //                drawAt(position + new Vector2(-1, 0), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+    //            }
+
+    //            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Right))
+    //            {
+    //                drawAt(position + new Vector2(1, 0), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+    //            }
+    //        }
+
+    //        if (drawInfo.Shadow.HasValue)
+    //        {
+    //            int shadowOffset = 1;
+
+    //            // Make sure the shadow shows up even if there is an outline.
+    //            if (drawInfo.Outline.HasValue && drawInfo.OutlineStyle.HasFlag(OutlineStyle.Bottom))
+    //            {
+    //                shadowOffset = 2;
+    //            }
+
+    //            drawAt(position + new Vector2(0, shadowOffset), drawInfo.Shadow.Value, true, drawInfo.Sort + 0.0002f);
+    //        }
+
+    //        return drawAt(position, drawInfo.Color, false, drawInfo.Sort);
+    //    }
+
+    /// <summary>
+    /// Plays a sprite animation with a specific ratio, where 0 is the first frame and 1 is the last.
+    /// </summary>
+    /// <param name="batch"></param>
+    /// <param name="asset"></param>
+    /// <param name="position"></param>
+    /// <param name="drawInfo"></param>
+    /// <param name="animationName"></param>
+    /// <param name="animationRatio">From 0 to 1, first to last frame</param>
+    /// <returns></returns>
+    public static FrameInfo DrawSpriteAtRatio(this Batch2D batch, SpriteAsset asset, Vector2 position, DrawInfo drawInfo, string animationName, float animationRatio)
+    {
+        if (animationName == "_")
+        {
+            return new FrameInfo(0, 0, true, Animation.Empty);
+        }
+
+        if (!asset.Animations.TryGetValue(animationName, out var animation))
+        {
+            GameLogger.Log($"Couldn't find animation {animationName} for {asset.Guid}.");
+            return FrameInfo.Fail;
+        }
+
+        // Calculate frame info ONCE
+        var frameInfo = animation.EvaluateRatio(animationRatio) with
+        {
+            Animation = animation
+        };
+
+        AtlasCoordinates image = asset.GetFrame(frameInfo.Frame);
+        Vector2 offset = (asset.Origin + drawInfo.Origin * image.Size).Round();
+        Vector2 roundedPosition = position.Round();
+        void DrawImageAt(Vector2 pos, Color color, bool wash, float sort)
+        {
+            image.Draw(
+                spriteBatch: batch,
+                position: pos,
+                clip: drawInfo.Clip,
+                color: color,
+                offset: offset,
+                scale: drawInfo.Scale,
+                rotation: drawInfo.Rotation,
+                imageFlip: drawInfo.ImageFlip,
+                blend: wash ? BLEND_WASH : drawInfo.GetBlendMode(),
+                blendState: drawInfo.BlendState,
+                sort: sort
+            );
+        }
+
+        // Draw outline (if needed)
+        if (drawInfo.Outline.HasValue && drawInfo.OutlineStyle != OutlineStyle.None)
+        {
+            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Bottom))
+                DrawImageAt(roundedPosition + new Vector2(0, 1), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+
+            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Top))
+                DrawImageAt(roundedPosition + new Vector2(0, -1), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+
+            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Left))
+                DrawImageAt(roundedPosition + new Vector2(-1, 0), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+
+            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Right))
+                DrawImageAt(roundedPosition + new Vector2(1, 0), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+        }
+
+        // Draw shadow (if needed)
+        if (drawInfo.Shadow.HasValue)
+        {
+            int shadowOffset = drawInfo.Outline.HasValue && drawInfo.OutlineStyle.HasFlag(OutlineStyle.Bottom) ? 2 : 1;
+            DrawImageAt(roundedPosition + new Vector2(0, shadowOffset), drawInfo.Shadow.Value, true, drawInfo.Sort + 0.0002f);
+        }
+
+        // Draw main sprite
+        DrawImageAt(roundedPosition, drawInfo.Color, false, drawInfo.Sort);
+
+#if DEBUG
+        if (frameInfo.Failed)
+        {
+            DrawRectangle(batch, new Rectangle(position, new Vector2(32, 32)), Color.White * Calculator.Wave(10), drawInfo.Sort);
+            DrawText(batch, MurderFonts.PixelFont, $"<c=#ffffff>Sprite: </c>{asset.Name}\n\n<c=#ffffff>Animation:  </c>{animationName}",
+                position, new DrawInfo(0) { Color = Color.Orange, Outline = Color.Black });
+        }
+#endif
+
+        return frameInfo;
+    }
+
+    public static FrameInfo DrawSprite(this Batch2D batch, SpriteAsset asset, Vector2 position, DrawInfo drawInfo, AnimationInfo animationInfo)
+    {
+        if (animationInfo.Name == "_")
+        {
+            return new FrameInfo(0, 0, true, Animation.Empty);
+        }
+
+        if (!asset.Animations.TryGetValue(animationInfo.Name, out var animation))
+        {
+            GameLogger.Log($"Couldn't find animation {animationInfo.Name} for {asset.Guid}.");
+            return FrameInfo.Fail;
+        }
+
+        // Calculate frame info ONCE
+        float time = animationInfo.CurrentTime() - animationInfo.Start;
+        var frameInfo = animation.Evaluate(time, animationInfo.Loop, animationInfo.Duration) with
+        {
+            Animation = animation
+        };
+
+        AtlasCoordinates image = asset.GetFrame(frameInfo.Frame);
+        Vector2 offset = (asset.Origin + drawInfo.Origin * image.Size).Round();
+        Vector2 roundedPosition = position.Round();
+        void DrawImageAt(Vector2 pos, Color color, bool wash, float sort)
+        {
+            image.Draw(
+                spriteBatch: batch,
+                position: pos,
+                clip: drawInfo.Clip,
+                color: color,
+                offset: offset,
+                scale: drawInfo.Scale,
+                rotation: drawInfo.Rotation,
+                imageFlip: drawInfo.ImageFlip,
+                blend: wash ? BLEND_WASH : drawInfo.GetBlendMode(),
+                blendState: drawInfo.BlendState,
+                sort: sort
+            );
+        }
+
+        // Draw outline (if needed)
+        if (drawInfo.Outline.HasValue && drawInfo.OutlineStyle != OutlineStyle.None)
+        {
+            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Bottom))
+                DrawImageAt(roundedPosition + new Vector2(0, 1), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+
+            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Top))
+                DrawImageAt(roundedPosition + new Vector2(0, -1), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+
+            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Left))
+                DrawImageAt(roundedPosition + new Vector2(-1, 0), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+
+            if (drawInfo.OutlineStyle.HasFlag(OutlineStyle.Right))
+                DrawImageAt(roundedPosition + new Vector2(1, 0), drawInfo.Outline.Value, true, drawInfo.Sort + 0.0001f);
+        }
+
+        // Draw shadow (if needed)
+        if (drawInfo.Shadow.HasValue)
+        {
+            int shadowOffset = drawInfo.Outline.HasValue && drawInfo.OutlineStyle.HasFlag(OutlineStyle.Bottom) ? 2 : 1;
+            DrawImageAt(roundedPosition + new Vector2(0, shadowOffset), drawInfo.Shadow.Value, true, drawInfo.Sort + 0.0002f);
+        }
+
+        // Draw main sprite
+        DrawImageAt(roundedPosition, drawInfo.Color, false, drawInfo.Sort);
+
+#if DEBUG
+        if (frameInfo.Failed)
+        {
+            DrawRectangle(batch, new Rectangle(position, new Vector2(32, 32)), Color.White * Calculator.Wave(10), drawInfo.Sort);
+            DrawText(batch, MurderFonts.PixelFont, $"<c=#ffffff>Sprite: </c>{asset.Name}\n\n<c=#ffffff>Animation:  </c>{animationInfo.Name}",
+                position, new DrawInfo(0) { Color = Color.Orange, Outline = Color.Black });
+        }
+#endif
+
+        return frameInfo;
+    }
+
+    /// <summary>
+    /// Draws a list of connecting points
+    /// </summary>
+    /// <param name="spriteBatch">The destination drawing surface</param>
+    /// <param name="position">Where to position the points</param>
+    /// <param name="points">The points to connect with lines</param>
+    /// <param name="color">The color to use</param>
+    /// <param name="scale">The scale factor for the points</param>
+    /// <param name="thickness">The thickness of the lines</param>
+    /// <param name="sort">Sorting offset</param>
+    public static void DrawPoints(this Batch2D spriteBatch, Vector2 position, Vector2 scale, ImmutableArray<Vector2> points, Color color, float thickness, float sort)
+    {
+        if (points.Length < 2)
+            return;
+
+        for (int i = 1; i < points.Length; i++)
+        {
+            DrawLine(spriteBatch, (points[i - 1] * scale + position).Round(), (points[i] * scale + position).Round(), color, thickness, sort);
+        }
+
+        DrawLine(spriteBatch, (points[points.Length - 1] * scale + position).Round(), (points[0] * scale + position).Round(), color, thickness, sort);
+    }
+
+    /// <summary>
+    /// Draws a list of connecting points
+    /// </summary>
+    /// <param name="spriteBatch">The destination drawing surface</param>
+    /// /// <param name="position">Where to position the points</param>
+    /// <param name="points">The points to connect with lines</param>
+    /// <param name="scale">The scale factor for the points</param>
+    /// <param name="color">The color to use</param>
+    /// <param name="thickness">The thickness of the lines</param>
+    public static void DrawPoints(this Batch2D spriteBatch, Vector2 position, Vector2 scale, ImmutableArray<Vector2> points, Color color, float thickness)
+    {
+        if (points.Length < 2)
+            return;
+
+        for (int i = 1; i < points.Length; i++)
+        {
+            DrawLine(spriteBatch, points[i - 1] * scale + position, points[i] * scale + position, color, thickness);
+        }
+        DrawLine(spriteBatch, points[points.Length - 1] * scale + position, points[0] * scale + position, color, thickness);
+    }
+    public static void DrawPoints(this Batch2D spriteBatch, Vector2 position, Vector2 scale, ReadOnlySpan<Vector2> points, Color color, float thickness, float sort, bool closeShape)
+    {
+        if (points.Length < 2)
+            return;
+
+        for (int i = 1; i < points.Length; i++)
+        {
+            DrawLine(spriteBatch, points[i - 1] * scale + position, points[i] * scale + position, color, thickness, sort);
+        }
+        if (closeShape)
+        {
+            DrawLine(spriteBatch, points[points.Length - 1] * scale + position, points[0] * scale + position, color, thickness, sort);
+        }
+    }
+
+
+    public static void DrawRectangleOutline(this Batch2D spriteBatch, Rectangle rectangle, Color color) =>
+        DrawRectangleOutline(spriteBatch, rectangle, color, 1, 0);
+    public static void DrawRectangleOutline(this Batch2D spriteBatch, Rectangle rectangle, Color color, int lineWidth) =>
+        DrawRectangleOutline(spriteBatch, rectangle, color, lineWidth, 0);
+
+    public static void DrawRectangleOutline(this Batch2D spriteBatch, Rectangle rectangle, Color color, int lineWidth, float sorting)
+    {
+        DrawRectangle(spriteBatch, new Rectangle(rectangle.X, rectangle.Y, lineWidth, rectangle.Height + lineWidth - 1), color, sorting);
+        DrawRectangle(spriteBatch, new Rectangle(rectangle.X, rectangle.Y, rectangle.Width + lineWidth - 1, lineWidth), color, sorting);
+        DrawRectangle(spriteBatch, new Rectangle(rectangle.X + rectangle.Width - 1, rectangle.Y, lineWidth, rectangle.Height + lineWidth - 1), color, sorting);
+        DrawRectangle(spriteBatch, new Rectangle(rectangle.X, rectangle.Y + rectangle.Height - 1, rectangle.Width + lineWidth - 1, lineWidth), color, sorting);
+    }
+
+    public static float YSort(float y)
+    {
+        // TODO: Solve a better ySort that takes in consideration the camera position
+        return (float)(Y_SORT_RANGE - y) / Y_SORT_RANGE_X2;
+    }
+
+    public static void DrawHorizontalLine(this Batch2D spriteBatch, int x, int y, int length, Color color, float sorting = 0)
+    {
+        const int line = 1;
+
+        DrawRectangle(spriteBatch, new Rectangle(x, y, length, line), color, sorting);
+    }
+
+    public static void DrawVerticalLine(this Batch2D spriteBatch, int x, int y, int length, Color color, float sorting = 0)
+    {
+        const int line = 1;
+
+        DrawRectangle(spriteBatch, new Rectangle(x, y, line, length), color, sorting);
+    }
+
+    public static void DrawRectangle(this Batch2D batch, Rectangle rectangle, DrawInfo drawInfo)
+    {
+        batch.Draw(
+            texture: SharedResources.GetOrCreatePixel(),
+            position: rectangle.TopLeft.ToXnaVector2(),
+            targetSize: Point.One,
+            sourceRectangle: default,
+            sort: drawInfo.Sort,
+            rotation: drawInfo.Rotation,
+            scale: rectangle.Size.ToXnaVector2(),
+            flip: ImageFlip.None,
+            color: drawInfo.Color,
+            offset: Microsoft.Xna.Framework.Vector2.Zero,
+            drawInfo.GetBlendMode(),
+            drawInfo.BlendState
+            );
+    }
+
+    public static void DrawRectangle(this Batch2D batch, Rectangle rectangle, Color color, float sorting = 0)
+    {
+        batch.Draw(
+            texture: SharedResources.GetOrCreatePixel(),
+            position: rectangle.TopLeft.ToXnaVector2(),
+            targetSize: Point.One,
+            sourceRectangle: default,
+            sort: sorting,
+            rotation: 0,
+            scale: rectangle.Size.ToXnaVector2(),
+            flip: ImageFlip.None,
+            color: color,
+            offset: Microsoft.Xna.Framework.Vector2.Zero,
+            BLEND_COLOR_ONLY,
+            MurderBlendState.AlphaBlend // Default blend state
+            );
+    }
+
+
+    /// <summary>
+    /// Fetch the current time for this animation.
+    /// </summary>
+    public static float CurrentTime(this AnimationInfo @this) => @this.OverrideCurrentTime != -1 ? @this.OverrideCurrentTime :
+        @this.UseScaledTime ? Game.Now : Game.NowUnscaled;
+
+    public static Vector3 ToVector3(this BlendStyle blendStyle)
+    {
+        switch (blendStyle)
+        {
+            case BlendStyle.Normal: return new(1, 0, 0);
+            case BlendStyle.Wash: return new(0, 1, 0);
+            case BlendStyle.Color: return new(0, 0, 1);
+            default:
+                throw new Exception("Blend mode not supported!");
+        }
+    }
+
+    public static bool CanPlayAnimationId(Entity e, string animationId)
+    {
+        return e.TryGetSprite()?.AnimationGuid is Guid animationGuid &&
+            Game.Data.TryGetAsset<SpriteAsset>(animationGuid) is SpriteAsset sprite &&
+            sprite.Animations.ContainsKey(animationId);
+    }
+
+    #region Lines
+    public static void DrawLine(this Batch2D spriteBatch, Point point1, Point point2, Color color, float sort = 1f) =>
+        DrawLine(spriteBatch, point1.ToVector2(), point2.ToVector2(), color, 1.0f, sort);
+
+    public static void DrawLine(this Batch2D spriteBatch, Vector2 point1, Vector2 point2, Color color, float sort = 1f) =>
+        DrawLine(spriteBatch, point1, point2, color, 1.0f, sort);
+
+    public static void DrawLine(this Batch2D spriteBatch, Vector2 point1, Vector2 point2, Color color, float thickness, float sort = 1f)
+    {
+        // calculate the distance between the two vectors
+        float distance = Vector2.Distance(point1, point2);
+
+        // calculate the angle between the two vectors
+        float angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+
+        DrawLine(spriteBatch, point1, distance, angle, color, thickness, sort);
+    }
+    public static void DrawLineShort(this Batch2D spriteBatch, Vector2 point1, Vector2 point2, Color color, float thickness, float sort = 1f)
+    {
+        // calculate the distance between the two vectors
+        float distance = Vector2.Distance(point1, point2);
+
+        // calculate the angle between the two vectors
+        float angle = (float)Math.Atan2(point2.Y - point1.Y, point2.X - point1.X);
+
+        DrawLineShort(spriteBatch, point1, distance, angle, color, thickness, sort);
+    }
+
+    public static void DrawLine(this Batch2D spriteBatch, Vector2 point, float length, float angle, Color color, float sort = 1f) =>
+        DrawLine(spriteBatch, point, length, angle, color, 1f, sort);
+
+
+    public static void DrawLine(this Batch2D spriteBatch, Vector2 point, float length, float angle, Color color, float thickness, float sort = 1f)
+    {
+        var halfPixel = new Vector2(thickness / 2f, 0);
+        // stretch the pixel between the two vectors
+        spriteBatch.Draw(SharedResources.GetOrCreatePixel(),
+                         (point - halfPixel.Rotate(angle)).ToXnaVector2(),
+                         Microsoft.Xna.Framework.Vector2.One,
+                         default,
+                         sort,
+                         angle,
+                         new Microsoft.Xna.Framework.Vector2(length + 0.75f, thickness),
+                         ImageFlip.None,
+                         color,
+                         new Microsoft.Xna.Framework.Vector2(0, 0.5f),
+                         BLEND_NORMAL,
+                         MurderBlendState.AlphaBlend
+                         );
+    }
+
+    public static void DrawLineShort(this Batch2D spriteBatch, Vector2 point, float length, float angle, Color color, float thickness, float sort = 1f)
+    {
+        var halfPixel = new Vector2(thickness / 2f, 0);
+        // stretch the pixel between the two vectors
+        spriteBatch.Draw(SharedResources.GetOrCreatePixel(),
+                         (point - halfPixel.Rotate(angle)).ToXnaVector2(),
+                         Microsoft.Xna.Framework.Vector2.One,
+                         default,
+                         sort,
+                         angle,
+                         new Microsoft.Xna.Framework.Vector2(length, thickness),
+                         ImageFlip.None,
+                         color,
+                         new Microsoft.Xna.Framework.Vector2(0, 0.5f),
+                         BLEND_NORMAL,
+                         MurderBlendState.AlphaBlend
+                         );
+    }
+
+    public static void DrawArrow(this Batch2D spriteBatch, Vector2 point1, Vector2 point2, Color color, float thickness, float headSize, float sort = 1f)
+    {
+        DrawLineShort(spriteBatch, point1, point2, color, thickness, sort);
+
+        Vector2 direction = Vector2.Normalize(point2 - point1);
+        Vector2 perpendicular = new Vector2(-direction.Y, direction.X);
+
+        Vector2 arrowPoint1 = point2 - direction * headSize + perpendicular * headSize;
+        Vector2 arrowPoint2 = point2 - direction * headSize - perpendicular * headSize;
+
+        DrawLine(spriteBatch, point2, arrowPoint1, color, thickness, sort);
+        DrawLine(spriteBatch, point2, arrowPoint2, color, thickness, sort);
+    }
+    #endregion
+
+    #region Circle and Arcs
+
+    public static void DrawPartialCircleOutline(this Batch2D spriteBatch, Point center, float radius, int sides, int start, int end, float thickness, Color color, float sort = 1f, bool closeShape = true)
+    {
+        var points = GeometryServices.GetUnitCircle(sides);
+        if (end >= points.Length)
+        {
+            end = points.Length - 1;
+        }
+
+        if (start < 0)
+        {
+            start = 0;
+        }
+
+        if (start >= end)
+        {
+            return;
+        }
+        DrawPoints(spriteBatch, center.ToVector2(), Vector2.One * (radius), points.AsSpan(start, end - start + 1), color, thickness, sort, closeShape);
+    }
+
+    public static void DrawCircleOutline(this Batch2D spriteBatch, Point center, float radius, int sides, Color color, float sort = 1f) =>
+        DrawCircleOutline(spriteBatch, center.ToVector2(), radius, sides, color, sort);
+
+    /// <summary>
+    /// Draw a circle outline
+    /// </summary>
+    public static void DrawCircleOutline(this Batch2D spriteBatch, Vector2 center, float radius, int sides, Color color, float sort = 1f)
+    {
+        DrawPoints(spriteBatch, center, Vector2.One * (radius), GeometryServices.GetUnitCircle(sides), color, sort);
+    }
+
+    public static void DrawCircleOutline(this Batch2D spriteBatch, Rectangle rectangle, int sides, Color color)
+    {
+        DrawPoints(spriteBatch, rectangle.TopLeft, rectangle.Size, GeometryServices.GetUnitCircle(sides), color, 1.0f);
+    }
+
+    /// <summary>
+    /// Draw a filled circle - zero allocations
+    /// </summary>
+    public static void DrawFilledCircle(this Batch2D batch, Vector2 center, float radius, int steps, DrawInfo? drawInfo = default)
+    {
+        ImmutableArray<Vector2> circleVertices = GeometryServices.GetUnitCircle(steps);
+
+        // Let DrawInfo handle the scaling - no manual vertex transformation needed!
+        var info = drawInfo ?? DrawInfo.Default;
+        batch.DrawPolygon(
+            SharedResources.GetOrCreatePixel(),
+            center,
+            circleVertices,
+            info with { Scale = info.Scale * radius }
+        );
+    }
+
+    /// <summary>
+    /// Draw a filled circle from a rectangle - zero allocations
+    /// </summary>
+    public static void DrawFilledCircle(this Batch2D batch, Rectangle circleRect, int steps, DrawInfo drawInfo)
+    {
+        ImmutableArray<Vector2> circleVertices = GeometryServices.GetUnitCircle(steps);
+        batch.DrawPolygon(SharedResources.GetOrCreatePixel(), circleRect.Center, circleVertices, drawInfo with { Scale = circleRect.Size });
+    }
+
+    public static void DrawCircleSector(this Batch2D batch, Vector2 center, float radius, float startAngle, float endAngle, int steps, DrawInfo? drawInfo = default)
+    {
+        float angleRange = endAngle - startAngle;
+        if (angleRange <= 0)
+            return;
+
+        const float fullCircleThreshold = MathF.PI * 2 - 0.001f;
+        if (angleRange >= fullCircleThreshold)
+        {
+            DrawFilledCircle(batch, center, radius, steps, drawInfo);
+            return;
+        }
+
+        if (_cachedPieChartVertices.Length < steps + 3)
+        {
+            GameLogger.LogPerf($"Resizing pie chart vertex cache from {_cachedPieChartVertices.Length} to {steps + 3}, consider increasing the default.");
+            _cachedPieChartVertices = new Vector2[steps + 3];
+        }
+
+        ImmutableArray<Vector2> circleVertices = GeometryServices.GetUnitCircle(steps);
+
+        // Scale vertices into the array
+        for (int i = 0; i < steps; i++)
+        {
+            _cachedPieChartVertices[i + 1] = circleVertices[i] * radius;
+        }
+
+        float angleStep = (MathF.PI * 2) / steps;
+        int startIndex = (int)(startAngle / angleStep);
+        float startFraction = startAngle % angleStep;
+        int endIndex = (int)((endAngle / angleStep) + 2);
+        float endFraction = endAngle % angleStep;
+
+        // Insert the interpolated endpoint
+        _cachedPieChartVertices[endIndex] = Vector2.Lerp(
+            _cachedPieChartVertices[endIndex - 1],
+            _cachedPieChartVertices[endIndex],
+            endFraction
+        );
+
+        // Center point is at (0,0) relative to the position
+        _cachedPieChartVertices[startIndex] = Vector2.Zero;
+
+        batch.DrawPolygon(
+            SharedResources.GetOrCreatePixel(),
+            center,  // This adds the world offset
+            _cachedPieChartVertices.AsSpan(startIndex, endIndex - startIndex + 1),  // Also using span now!
+            drawInfo ?? DrawInfo.Default
+        );
+    }
+    #endregion
+
+    public static void DrawPoint(this Batch2D spriteBatch, Point pos, Color color, float sorting = 0)
+    {
+        DrawRectangle(spriteBatch, new Rectangle(pos, Point.One), color, sorting);
+    }
+
+    #region Drawing
+
+    public static Vector3 BLEND_NORMAL = new(1, 0, 0);
+    public static Vector3 BLEND_WASH = new(0, 1, 0);
+    public static Vector3 BLEND_COLOR_ONLY = new(0, 0, 1);
+
+    public static void DrawTextureQuad(Texture2D texture, Rectangle source, Rectangle destination, Color color, Effect? effect, BlendState blend, bool smoothing)
+    {
+        (VertexInfo[] verts, short[] indices) = GetSharedQuad(destination, source, new Vector2(texture.Width, texture.Height), color, BLEND_NORMAL);
+
+        DrawIndexedVertices(Game.GraphicsDevice, verts, verts.Length, indices, indices.Length / 3, effect, blend, texture, smoothing);
+    }
+
+    public static void DrawTextureQuad(Texture2D texture, Rectangle source, Rectangle destination, Color color, BlendState blend)
+    {
+        (VertexInfo[] verts, short[] indices) = GetSharedQuad(destination, source, new Vector2(texture.Width, texture.Height), color, BLEND_NORMAL);
+
+        if (blend == BlendState.Additive)
+            Game.Data.ShaderSprite?.SetTechnique("Add");
+        else
+            Game.Data.ShaderSprite?.SetTechnique("Alpha");
+
+        DrawIndexedVertices(
+            Game.GraphicsDevice, verts, verts.Length, indices, indices.Length / 3, Game.Data.ShaderSprite,
+            blend,
+            texture,
+            false);
+    }
+
+    public static void DrawTextureQuad(Texture2D texture, Rectangle source, Rectangle destination, Color color, BlendState blend, Effect? shaderEffect)
+        => DrawTextureQuad(texture, source, destination, color, blend, shaderEffect, BLEND_NORMAL);
+    public static void DrawTextureQuad(Texture2D texture, Rectangle source, Rectangle destination, Color color, BlendState blend, Effect? shaderEffect, Vector3 colorBlend)
+    {
+        (VertexInfo[] verts, short[] indices) = GetSharedQuad(destination, source, new Vector2(texture.Width, texture.Height), color, colorBlend);
+
+        DrawIndexedVertices(
+            Game.GraphicsDevice, verts, verts.Length, indices, indices.Length / 3, shaderEffect,
+            blend,
+            texture);
+    }
+
+    public static void DrawQuadOutline(Rectangle rect, Color color)
+    {
+        DrawQuad(new Rectangle(rect.TopLeft, new Vector2(rect.Width, 1)), color);
+        DrawQuad(new Rectangle(rect.TopLeft, new Vector2(1, rect.Height)), color);
+        DrawQuad(new Rectangle(rect.BottomLeft + new Vector2(0, -1), new Vector2(rect.Width, 1)), color);
+        DrawQuad(new Rectangle(rect.TopRight + new Vector2(-1, 0), new Vector2(1, rect.Height)), color);
+    }
+
+    public static void DrawQuad(Rectangle rect, Color color)
+    {
+        (VertexInfo[] verts, short[] indices) = MakeRegularQuad(rect, color, BLEND_COLOR_ONLY);
+
+        Game.Data.ShaderSprite?.SetTechnique("Alpha");
+
+        DrawIndexedVertices(
+            Game.GraphicsDevice, verts, verts.Length, indices, indices.Length / 3, Game.Data.ShaderSprite,
+            BlendState.AlphaBlend,
+            null);
+    }
+
+    private static Vector2[] _cachedPieChartVertices = new Vector2[128];
+    static readonly VertexInfo[] _cachedRectVertices = new VertexInfo[4];
+    static readonly short[] _cachedRectIndices = new short[6];
+
+    static RenderServices()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            _cachedRectVertices[i] = new VertexInfo();
+        }
+    }
+
+    private static (VertexInfo[] vertices, short[] indices) MakeQuad(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4, Color color, Vector3 BlendType)
+    {
+        // 0---1
+        // |\  |
+        // | \ |
+        // |  \|
+        // 3---2
+
+        _cachedRectVertices[0].Position = p1.ToVector3();
+        _cachedRectVertices[0].Color = color;
+        _cachedRectVertices[0].TextureCoordinate = new Microsoft.Xna.Framework.Vector2(0, 0);
+        _cachedRectVertices[0].BlendType = BlendType;
+
+        _cachedRectVertices[1].Position = p2.ToVector3();
+        _cachedRectVertices[1].Color = color;
+        _cachedRectVertices[1].TextureCoordinate = new Microsoft.Xna.Framework.Vector2(1, 0);
+        _cachedRectVertices[1].BlendType = BlendType;
+
+        _cachedRectVertices[2].Position = p3.ToVector3();
+        _cachedRectVertices[2].Color = color;
+        _cachedRectVertices[2].TextureCoordinate = new Microsoft.Xna.Framework.Vector2(1, 1);
+        _cachedRectVertices[2].BlendType = BlendType;
+
+        _cachedRectVertices[3].Position = p4.ToVector3();
+        _cachedRectVertices[3].Color = color;
+        _cachedRectVertices[3].TextureCoordinate = new Microsoft.Xna.Framework.Vector2(0, 1);
+        _cachedRectVertices[3].BlendType = BlendType;
+
+        _cachedRectIndices[0] = 0;
+        _cachedRectIndices[1] = 1;
+        _cachedRectIndices[2] = 2;
+        _cachedRectIndices[3] = 0;
+        _cachedRectIndices[4] = 2;
+        _cachedRectIndices[5] = 3;
+
+
+        return (_cachedRectVertices, _cachedRectIndices);
+    }
+
+    private static (VertexInfo[] vertices, short[] indices) MakeRegularQuad(Rectangle rect, Color color, Vector3 BlendType)
+    {
+        // 0---1
+        // |\  |
+        // | \ |
+        // |  \|
+        // 3---2
+
+        _cachedRectVertices[0].Position = rect.TopLeft.ToVector3();
+        _cachedRectVertices[0].Color = color;
+        _cachedRectVertices[0].TextureCoordinate = new Microsoft.Xna.Framework.Vector2(0, 0);
+        _cachedRectVertices[0].BlendType = BlendType;
+
+        _cachedRectVertices[1].Position = rect.TopRight.ToVector3();
+        _cachedRectVertices[1].Color = color;
+        _cachedRectVertices[1].TextureCoordinate = new Microsoft.Xna.Framework.Vector2(1, 0);
+        _cachedRectVertices[1].BlendType = BlendType;
+
+        _cachedRectVertices[2].Position = rect.BottomRight.ToVector3();
+        _cachedRectVertices[2].Color = color;
+        _cachedRectVertices[2].TextureCoordinate = new Microsoft.Xna.Framework.Vector2(1, 1);
+        _cachedRectVertices[2].BlendType = BlendType;
+
+        _cachedRectVertices[3].Position = rect.BottomLeft.ToVector3();
+        _cachedRectVertices[3].Color = color;
+        _cachedRectVertices[3].TextureCoordinate = new Microsoft.Xna.Framework.Vector2(0, 1);
+        _cachedRectVertices[3].BlendType = BlendType;
+
+        _cachedRectIndices[0] = 0;
+        _cachedRectIndices[1] = 1;
+        _cachedRectIndices[2] = 2;
+        _cachedRectIndices[3] = 0;
+        _cachedRectIndices[4] = 2;
+        _cachedRectIndices[5] = 3;
+
+
+        return (_cachedRectVertices, _cachedRectIndices);
+    }
+
+    public static (VertexInfo[] vertices, short[] indices) GetSharedQuad(Rectangle destination, Rectangle source, Vector2 sourceSize, Color color, Vector3 BlendType)
+    {
+        // 0---1
+        // |\  |
+        // | \ |
+        // |  \|
+        // 3---2
+
+        Microsoft.Xna.Framework.Vector2 uvTopLeft = new(source.X / sourceSize.X, source.Y / sourceSize.Y);
+        Microsoft.Xna.Framework.Vector2 uvTopRight = new((source.X + source.Width) / sourceSize.X, source.Y / sourceSize.Y);
+        Microsoft.Xna.Framework.Vector2 uvBottomRight = new((source.X + source.Width) / sourceSize.X, (source.Y + source.Height) / sourceSize.Y);
+        Microsoft.Xna.Framework.Vector2 uvBottomLeft = new(source.X / sourceSize.X, (source.Y + source.Height) / sourceSize.Y);
+
+        _cachedRectVertices[0].Position = destination.TopLeft.ToVector3();
+        _cachedRectVertices[0].Color = color;
+        _cachedRectVertices[0].TextureCoordinate = uvTopLeft;
+        _cachedRectVertices[0].BlendType = BlendType;
+
+        _cachedRectVertices[1].Position = destination.TopRight.ToVector3();
+        _cachedRectVertices[1].Color = color;
+        _cachedRectVertices[1].TextureCoordinate = uvTopRight;
+        _cachedRectVertices[1].BlendType = BlendType;
+
+        _cachedRectVertices[2].Position = destination.BottomRight.ToVector3();
+        _cachedRectVertices[2].Color = color;
+        _cachedRectVertices[2].TextureCoordinate = uvBottomRight;
+        _cachedRectVertices[2].BlendType = BlendType;
+
+        _cachedRectVertices[3].Position = destination.BottomLeft.ToVector3();
+        _cachedRectVertices[3].Color = color;
+        _cachedRectVertices[3].TextureCoordinate = uvBottomLeft;
+        _cachedRectVertices[3].BlendType = BlendType;
+
+        _cachedRectIndices[0] = 0;
+        _cachedRectIndices[1] = 1;
+        _cachedRectIndices[2] = 2;
+        _cachedRectIndices[3] = 0;
+        _cachedRectIndices[4] = 2;
+        _cachedRectIndices[5] = 3;
+
+
+        return (_cachedRectVertices, _cachedRectIndices);
+    }
+
+    public static void DrawIndexedVertices<T>(GraphicsDevice graphicsDevice, T[] vertices, int vertexCount, short[] indices, int primitiveCount, Effect? effect, BlendState? blendState = null, Texture2D? texture = null, bool smoothing = false) where T : struct, IVertexType
+    {
+        var b = blendState ?? BlendState.AlphaBlend;
+
+        Matrix matrix = GetProjectionMatrix(graphicsDevice);
+
+        graphicsDevice.RasterizerState = RasterizerState.CullNone;
+        graphicsDevice.BlendState = b;
+        graphicsDevice.SamplerStates[0] = smoothing ? SamplerState.LinearClamp : SamplerState.PointClamp;
+
+
+        if (effect is not null)
+        {
+            effect.Parameters["MatrixTransform"].SetValue(matrix);
+
+            if (texture is not null)
+            {
+                var passes = effect.CurrentTechnique.Passes;
+                for (int i = 0; i < passes.Count; i++)
+                {
+                    try
+                    {
+                        passes[i].Apply();
+                    }
+                    catch (Exception e)
+                    {
+                        GameLogger.Error($"Error applying effect pass: {e.Message}");
+                    }
+                    graphicsDevice.Textures[0] = texture;
+                    graphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, vertices, 0, vertexCount, indices, 0, primitiveCount);
+                }
+            }
+            else // Saving that 1 check for performance
+            {
+                var passes = effect.CurrentTechnique.Passes;
+                for (int i = 0; i < passes.Count; i++)
+                {
+                    passes[i].Apply();
+                    graphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, vertices, 0, vertexCount, indices, 0, primitiveCount);
+                }
+            }
+        }
+    }
+
+    public static void DrawTriangle(this Batch2D batch, Vector2 position, float radius, float rotation, DrawInfo drawInfo)
+    {
+        ImmutableArray<Vector2> triangleVertices = GeometryServices.GetTriangle(radius, rotation);
+        batch.DrawPolygon(SharedResources.GetOrCreatePixel(), position, triangleVertices, drawInfo);
+    }
+
+    public static void DrawPolygon(this Batch2D batch, Vector2 position, ImmutableArray<Vector2> vertices, DrawInfo? drawInfo = default)
+    {
+        batch.DrawPolygon(SharedResources.GetOrCreatePixel(), position, vertices, drawInfo ?? DrawInfo.Default);
+    }
+
+    public static Point DrawText(this Batch2D uiBatch, int font, string text, Vector2 position, DrawInfo? drawInfo = default)
+        => DrawText(uiBatch, font, text, position, -1, -1, drawInfo ?? DrawInfo.Default);
+    public static Point DrawText(this Batch2D uiBatch, int font, string text, Vector2 position, int maxWidth, DrawInfo? drawInfo = default)
+        => DrawText(uiBatch, font, text, position, maxWidth, -1, drawInfo ?? DrawInfo.Default);
+    public static Point DrawText(this Batch2D uiBatch, MurderFonts font, string text, Vector2 position, DrawInfo? drawInfo = default)
+        => DrawText(uiBatch, (int)font, text, position, -1, -1, drawInfo ?? DrawInfo.Default);
+    public static Point DrawText(this Batch2D uiBatch, MurderFonts font, string text, Vector2 position, int maxWidth, DrawInfo? drawInfo = default)
+        => DrawText(uiBatch, (int)font, text, position, maxWidth, -1, drawInfo ?? DrawInfo.Default);
+    public static Point DrawText(this Batch2D uiBatch, MurderFonts font, string text, Vector2 position, int maxWidth, int visibleCharacters, DrawInfo? drawInfo = default)
+        => DrawText(uiBatch, (int)font, text, position, maxWidth, visibleCharacters, drawInfo ?? DrawInfo.Default);
+
+    public static Point DrawText(this Batch2D uiBatch, int pixelFont, string text, Vector2 position, int maxWidth, int visibleCharacters, DrawInfo drawInfo)
+    {
+        var font = Game.Data.GetFont(pixelFont, cultureInvariant: drawInfo.CultureInvariant);
+        return font.Draw(uiBatch, text, position + drawInfo.Offset, drawInfo.Origin, drawInfo.Scale, drawInfo.Sort, drawInfo.Color, drawInfo.Outline, drawInfo.Shadow, maxWidth, visibleCharacters, drawInfo.Debug);
+    }
+
+    /// <summary>
+    /// Draw a simple text. Without line wrapping, color formatting, line splitting or anything fancy.
+    /// </summary>
+    public static Point DrawSimpleText(this Batch2D uiBatch, int pixelFont, string text, Vector2 position, DrawInfo drawInfo)
+    {
+        var font = Game.Data.GetFont(pixelFont);
+        return font.DrawSimple(uiBatch, text, position + drawInfo.Origin, drawInfo.Origin, drawInfo.Scale, drawInfo.Sort, drawInfo.Color, drawInfo.Outline, drawInfo.Shadow, drawInfo.Debug);
+    }
+
+    /// <summary>
+    /// This should only be called on the main thread, since it requires the graphics device.
+    /// Don't forget to dispose this!
+    /// </summary>
+    public static Texture2D? CreateGameplayScreenshot()
+    {
+        if (Game.Instance.ActiveScene?.RenderContext is not RenderContext render)
+        {
+            return null;
+        }
+
+        if (render.MainTarget is not RenderTarget2D mainTarget)
+        {
+            return null;
+        }
+
+        return CreateScreenshotFromTarget(mainTarget);
+    }
+
+    /// <summary>
+    /// Don't forget to dispose this!
+    /// </summary>
+    /// <returns></returns>
+    public static Texture2D? CreateScreenshot()
+    {
+        if (Game.Instance.ActiveScene?.RenderContext is not RenderContext render)
+        {
+            return null;
+        }
+
+        if (render.LastRenderTarget is not RenderTarget2D mainTarget)
+        {
+            return null;
+        }
+
+        return CreateScreenshotFromTarget(mainTarget);
+    }
+
+    /// <summary>
+    /// This should only be called on the main thread, since it requires the graphics device.
+    /// Don't forget to dispose this!
+    /// </summary>
+    public static Texture2D? CreateScreenshotFromTarget(RenderTarget2D mainTarget)
+    {
+        var gd = Game.GraphicsDevice;
+
+        RenderTarget2D rt = new(gd, mainTarget.Width, mainTarget.Height, false, mainTarget.Format, mainTarget.DepthStencilFormat, mainTarget.MultiSampleCount, RenderTargetUsage.DiscardContents);
+
+        gd.SetRenderTarget(rt);
+        gd.Clear(Color.Transparent);
+        DrawTextureQuad(mainTarget, mainTarget.Bounds, rt.Bounds, Color.White, BlendState.Opaque);
+
+        gd.SetRenderTarget(null);
+        return rt;
+    }
+
+    public static bool TriggerEventsIfNeeded(Entity e, Guid currentAnimationGuid, AnimationInfo animationInfo, FrameInfo frameInfo, AnimationEventsTriggerFlag flags)
+    {
+        RenderedSpriteCacheComponent? previousCache = e.TryGetRenderedSpriteCache();
+
+        int previousFrame;
+        if (previousCache is RenderedSpriteCacheComponent cache && !cache.IsDirty &&
+            cache.RenderedSprite == currentAnimationGuid &&
+            string.Equals(cache.AnimInfo.Name, animationInfo.Name, StringComparison.Ordinal))
+        {
+            previousFrame = cache.LastFrameForCurrentAnimation;
+        }
+        else
+        {
+            previousFrame = frameInfo.FrameForCurrentAnimation - 1;
+        }
+
+        // Quickly check if we even changed frames, if not, don't bother with events
+        if (frameInfo.FrameForCurrentAnimation != previousFrame)
+        {
+            Animation currentAnimation = frameInfo.Animation;
+
+            if (currentAnimation.Events == null || currentAnimation.Events.Count == 0)
+            {
+                return false;
+            }
+
+            int lastFrame = previousFrame;
+            while (lastFrame != frameInfo.FrameForCurrentAnimation)
+            {
+                // Trigger events on the next frame (most likelly the frame just rendered, uunless there was a major slowdown)
+
+                if (animationInfo.Loop)
+                {
+                    int next = Calculator.WrapAround(lastFrame + 1, 0, currentAnimation.FrameCount - 1);
+
+                    if (currentAnimation.Events.TryGetValue(next, out string? eventName))
+                    {
+                        e.SendAnimationEventMessage(eventName);
+                    }
+
+                    lastFrame = next;
+
+                    if (previousFrame == lastFrame)
+                    {
+                        // We've looped through all the frames and didn't find the previous frame, so we're stuck in a loop or a major slowdown happened
+                        return true;
+                    }
+                }
+                else
+                {
+                    int next;
+                    if (lastFrame >= frameInfo.FrameForCurrentAnimation && flags.HasFlag(AnimationEventsTriggerFlag.AllowReverse))
+                    {
+                        next = Math.Max(lastFrame - 1, 0);
+                    }
+                    else // lastFrame < frameInfo.InternalFrame
+                    {
+                        // we might as well be dealing with a last frame from a previous animation that did not loop. so just ignore it.
+                        next = Math.Min(lastFrame + 1, currentAnimation.FrameCount - 1);
+                    }
+
+                    if (currentAnimation.Events.TryGetValue(next, out string? eventName))
+                    {
+                        e.SendAnimationEventMessage(eventName);
+                    }
+                    lastFrame = next;
+
+                    // This animation doesn't loop and we've reached the end, so we're done
+                    if (next == currentAnimation.FrameCount - 1)
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static string? CheckForEvents(
+        RenderedSpriteCache? previous,
+        Guid currentAnimationGuid,
+        AnimationInfo animationInfo,
+        FrameInfo frameInfo)
+    {
+        // Check for animation events
+        // First, assume that we are starting a new animation
+        int previousFrame = previous?.LastFrameForCurrentAnimation ?? -1;
+
+        // Make sure we didn't change animations
+        if (previous is null ||
+            previous.Value.RenderedSprite != currentAnimationGuid ||
+            !string.Equals(previous.Value.AnimInfo.Name, animationInfo.Name, StringComparison.Ordinal))
+        {
+            // We changed animations, so we need to reset to -1 so we can trigger the first frame event
+            previousFrame = frameInfo.FrameForCurrentAnimation - 1;
+        }
+
+        // Quickly check if we even changed frames, if not, don't bother with events
+        if (frameInfo.FrameForCurrentAnimation != previousFrame)
+        {
+            Animation currentAnimation = frameInfo.Animation;
+
+            if (currentAnimation.Events is null || currentAnimation.Events.Count == 0)
+            {
+                return null;
+            }
+
+            int lastFrame = previousFrame;
+            while (lastFrame != frameInfo.FrameForCurrentAnimation)
+            {
+                // Trigger events on the next frame (most likelly the frame just rendered, uunless there was a major slowdown)
+
+                if (animationInfo.Loop)
+                {
+                    int next = Calculator.WrapAround(lastFrame + 1, 0, currentAnimation.FrameCount - 1);
+
+                    if (currentAnimation.Events.TryGetValue(next, out string? eventName))
+                    {
+                        return eventName;
+                    }
+
+                    lastFrame = next;
+                    if (previousFrame == lastFrame)
+                    {
+                        // We've looped through all the frames and didn't find the previous frame, so we're stuck in a loop or a major slowdown happened
+                        return null;
+                    }
+                }
+                else
+                {
+                    int next = Math.Min(lastFrame + 1, currentAnimation.FrameCount - 1);
+
+                    if (currentAnimation.Events.TryGetValue(next, out string? eventName))
+                    {
+                        return eventName;
+                    }
+
+                    lastFrame = next;
+                    // This animation doesn't loop and we've reached the end, so we're done
+                    if (next == currentAnimation.FrameCount - 1)
+                    {
+                        return null;
+                    }
+
+                }
+            }
+        }
+
+        return null;
+    }
+
+    #endregion
+}
