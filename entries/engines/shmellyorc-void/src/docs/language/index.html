@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>VOID Language - C#-Inspired Native Game Development Language</title>
+<meta content="VOID Language is a C#-inspired game-development language with its own compiler, runtime, GC, native C output, direct C interop, and compiler-backed tooling." name="description"/>
+<meta content="#07060b" name="theme-color"/>
+<link href="https://voidengine.net/language/" rel="canonical"/>
+<link href="../assets/images/void-favicon.png" rel="icon" type="image/png"/>
+<link href="../assets/css/home.css?v=19" rel="stylesheet"/>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VOID">
+<meta property="og:title" content="VOID Language - C#-Inspired Native Game Development Language">
+<meta property="og:description" content="VOID Language is a C#-inspired game-development language with its own compiler, runtime, GC, native C output, direct C interop, and compiler-backed tooling.">
+<meta property="og:url" content="https://voidengine.net/language/">
+<meta property="og:image" content="https://voidengine.net/assets/images/void-language.webp">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="VOID Language">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VOID Language - C#-Inspired Native Game Development Language">
+<meta name="twitter:description" content="VOID Language is a C#-inspired game-development language with its own compiler, runtime, GC, native C output, direct C interop, and compiler-backed tooling.">
+<meta name="twitter:image:alt" content="VOID Language">
+<meta name="twitter:image" content="https://voidengine.net/assets/images/void-language.webp">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://voidengine.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Language",
+      "item": "https://voidengine.net/language/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="has-subnav">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header" id="site-header">
+<div class="shell nav-wrap">
+<a aria-label="VOID home" class="brand" href="../"><img alt="VOID" src="../assets/images/void-logo.webp"/></a>
+<button aria-expanded="false" aria-label="Open navigation" class="menu-button" type="button">☰</button>
+<nav aria-label="Main navigation" class="nav-links"><a href="../">Home</a><a href="../engine/">Engine</a><a class="active" href="../language/">Language</a><a href="../why-void/">Why VOID</a><a href="../articles/">Articles</a><a href="https://github.com/Shmellyorc/Void">GitHub</a></nav>
+</div>
+</header>
+<div class="section-nav-wrap language-nav"><nav aria-label="VOID Language categories" class="section-nav section-nav-main shell"><span class="section-nav-label">Language</span><a class="active" href="">Overview</a><a href="features/">Core</a><a href="library/">Reference</a><a href="examples/">Examples</a><a href="roadmap/">Roadmap</a></nav></div>
+<main id="main">
+<section class="subpage-hero language-hero"><div class="shell subpage-copy reveal"><p class="kicker">VOID Language</p><h1>Familiar syntax.<br/>Built for games.</h1><p>An independently designed game-development language with its own compiler, runtime, GC, standard library, native C output, and a compiler-side language server powered by the same semantic model as normal builds.</p></div></section>
+<section class="content-page"><div class="shell">
+<div class="section-heading reveal"><p class="kicker">The language today</p><h2>Familiar on the surface. Independent underneath.</h2><p>VOID is designed to feel familiar in ordinary game code while remaining independent underneath. Its object model, value semantics, cleanup, threading, GC, native boundary, and tooling are built as parts of one language instead of separate add-ons.</p></div>
+<div class="content-grid">
+<article class="content-card reveal"><h3>Familiar game code</h3><p>VOID gives everyday game systems a familiar shape: classes, interfaces, generics, delegates, and events behave as normal language features instead of framework-specific patterns.</p></article>
+<article class="content-card reveal"><h3>Values that stay predictable</h3><p>Structs keep value semantics even when they are nested, readonly, stored in multidimensional arrays, captured by closures, or carried through iterator state.</p></article>
+<article class="content-card reveal"><h3>Structured lifetime &amp; failure</h3><p>Exceptions, <code>finally</code>, <code>using</code>, <code>await using</code>, and iterator disposal share one cleanup model, so synchronous and asynchronous scope exits do not create separate lifetime rules.</p></article>
+<article class="content-card reveal"><h3>Concurrency stays one model</h3><p>Managed threads and ThreadPool workers handle execution, while Task, ValueTask, structural awaiters, async methods, async lambdas, async iterators, Task composition, timer-backed delays, and cancellation timeouts reuse the same continuation, fault, GC, cleanup, and scheduling rules instead of introducing parallel runtime systems.</p></article>
+<article class="content-card reveal"><h3>Native compiler pipeline</h3><p>VOID lowers to portable C, then uses the system compiler and linker to produce native programs and libraries. Debug builds preserve original VOID filenames and source lines.</p></article>
+<article class="content-card reveal"><h3>Compiler-owned tooling</h3><p>The same compiler model powers builds and editor intelligence, so checking, diagnostics, completion, navigation, and symbol lookup do not drift into a second language implementation.</p></article>
+</div>
+<div class="language-now reveal"><div class="section-heading"><p class="kicker">The language today</p><h2>Cleaner call sites, clearer failures.</h2><p>Inline typed and inferred <code>out</code> variables now participate in ordinary overload resolution, generic inference, scope, flow, discards, diagnostics, and tooling. Runtime failures can present a VOID source excerpt before a truthful synchronous VOID call stack, while missing-source, publish, native, exit, and launch boundaries remain explicit instead of being flattened into one invented trace.</p></div>
+<div class="language-link-grid">
+<a class="language-link-card" href="features/"><span>01</span><strong>Language Features</strong><p>See the complete language/runtime surface, nullability, initialization, metadata, GC, unsafe code, and native integration.</p></a>
+<a class="language-link-card" href="object-model/"><span>02</span><strong>Object Model</strong><p>Constructor chaining, interface inheritance, struct interfaces, virtual properties, events, delegates, and conditional expressions.</p></a><a class="language-link-card" href="value-types/"><span>03</span><strong>Value Types &amp; Control Flow</strong><p>Nested/readonly structs, jagged and rectangular arrays, closure capture, iterator completion, compound targets, and GC-aware value layouts.</p></a><a class="language-link-card" href="exceptions/"><span>04</span><strong>Exceptions</strong><p>Throw, handlers, propagation, GC-safe unwinding, finally, rethrow, iterator/delegate integration, native boundaries, and worker exception delivery through <code>Join()</code>.</p></a>
+<a class="language-link-card" href="threading/"><span>05</span><strong>Threading, Tasks &amp; Synchronization</strong><p>Managed workers, ThreadPool scheduling, Task/ValueTask completion and composition, structural awaiters, async lambdas, and state machines share GC coordination, synchronization, cancellation, faults, and lifetime rules.</p></a>
+<a class="language-link-card" href="lifetime/"><span>06</span><strong>Lifetime &amp; Abstractions</strong><p>Deterministic cleanup, <code>IDisposable</code>/<code>IAsyncDisposable</code>, <code>using</code>/<code>await using</code>, iterator cleanup, ref-like suspension rules, generic inference, extension methods, and interface abstractions.</p></a>
+<a class="language-link-card" href="patterns/"><span>07</span><strong>Patterns &amp; Switch Expressions</strong><p>Declaration, relational, logical, property and recursive patterns, guarded switch cases, and expression-form switch.</p></a>
+<a class="language-link-card" href="operators/"><span>08</span><strong>Operators &amp; Generic Math</strong><p>User-defined unary/binary operators, static-interface operator contracts, constrained generic dispatch, and iterator-safe generic provenance.</p></a>
+<a class="language-link-card" href="conversions/"><span>09</span><strong>Conversions</strong><p>Unified standard and user-defined conversions, nullable lifting, target-typed sites, static-interface conversion contracts, and constrained generic dispatch.</p></a>
+<a class="language-link-card" href="getting-started/"><span>10</span><strong>Getting Started</strong><p>See the current project flow, source-only checking, native builds, and debug workflow.</p></a>
+<a class="language-link-card" href="library/"><span>11</span><strong>Libraries</strong><p>Collections, UTF-8 text, Span/Memory, async primitives, Console and standard IO, reusable VOID library projects, and native archive output.</p></a>
+<a class="language-link-card" href="compiler/"><span>12</span><strong>Compiler</strong><p>From parsing and semantics through C lowering, native binaries, checking, and debug mapping.</p></a>
+<a class="language-link-card" href="diagnostics/"><span>13</span><strong>Diagnostics</strong><p>Source excerpts, precise ranges, stable codes, notes, help, related locations, parser recovery, and optional JSON output from one compiler model.</p></a>
+<a class="language-link-card" href="tooling/"><span>14</span><strong>Tooling</strong><p><code>voidc check</code>, live diagnostics, hover/signatures, completion, navigation, references, symbols, source mapping, and multi-file editor state.</p></a>
+<a class="language-link-card" href="native/"><span>15</span><strong>Native Interop</strong><p>Pointers, <code>unmanaged</code> storage, scoped pinning, native-backed Span views, explicit string ABI contracts, callbacks, native dependencies, and library exports.</p></a>
+<a class="language-link-card" href="examples/"><span>16</span><strong>Examples</strong><p>Browse the working language, initialization, native, diagnostics, and tooling examples.</p></a>
+</div></div>
+<div class="page-actions reveal"><a class="primary-button" href="features/">Explore Features</a><a class="outline-button" href="value-types/">Value Types</a><a class="outline-button" href="exceptions/">Exceptions</a><a class="outline-button" href="threading/">Threading</a><a class="outline-button" href="lifetime/">Lifetime</a><a class="outline-button" href="patterns/">Patterns</a><a class="outline-button" href="operators/">Operators</a><a class="outline-button" href="conversions/">Conversions</a><a class="outline-button" href="tooling/">Compiler Tooling</a><a class="outline-button" href="examples/">View Examples</a><a class="outline-button" href="roadmap/">Roadmap</a></div>
+</div></section>
+<section class="section features-band"><div class="shell"><div class="section-heading centered reveal"><p class="kicker">Built with a purpose</p><h2>Keep language intelligence inside the compiler.</h2><p>The language server does not reimplement VOID. Builds, source-only checks, and editor features all read from the same semantic model, so a thin editor client can stay accurate as the language grows.</p></div><div class="feature-grid">
+<article class="feature-tile reveal"><img alt="" src="../assets/images/icon-nullability-new.png"/><div><h3>Nullability &amp; initialization</h3><p>Nullable values, named arguments, target-typed defaults, initializers, static state, and deterministic type initialization compose normally.</p></div></article>
+<article class="feature-tile reveal"><img alt="" src="../assets/images/icon-source-checking-new.png"/><div><h3>Source-only checking</h3><p><code>voidc check</code> runs the real front end without generating C, invoking a native compiler, or creating build outputs.</p></div></article>
+<article class="feature-tile reveal"><img alt="" src="../assets/images/icon-semantic-queries-new.png"/><div><h3>Semantic queries</h3><p>Tools can ask the compiler for symbols, types, definitions, members, and callable parameter metadata from one analyzed session.</p></div></article>
+<article class="feature-tile reveal"><img alt="" src="../assets/images/icon-precise-diagnostics-new.png"/><div><h3>Rich diagnostics</h3><p>Precise spans now render with source excerpts, stable codes, explanatory context, confident help, and machine-readable output from the same compiler data.</p></div></article>
+<article class="feature-tile reveal"><img alt="" src="../assets/images/icon-debug-source-mapping-new.png"/><div><h3>Debug source mapping</h3><p>Generated C emits standard line mappings so native debug information points back to original VOID files and lines.</p></div></article><article class="feature-tile reveal"><img alt="" src="../assets/images/icon-compiler-lsp-new.png"/><div><h3>Compiler-backed LSP</h3><p>Live diagnostics, hover, signatures, semantic completion, definitions, references, document/workspace symbols, and synchronized unsaved project state.</p></div></article>
+<article class="feature-tile reveal"><img alt="" src="../assets/images/icon-native-interop.png"/><div><h3>Native C integration</h3><p>VOID lowers to C and links project-local native dependencies through its explicit unsafe ABI boundary.</p></div></article>
+</div></div></section>
+</main>
+<footer class="site-footer"><div class="shell footer-grid"><div class="footer-brand"><img alt="VOID" src="../assets/images/void-logo.webp"/><p>A foundation, not a cage.</p></div><nav aria-label="Footer navigation" class="footer-links"><a href="../">Home</a><a href="../engine/">Engine</a><a href="../language/">Language</a><a href="../why-void/">Why VOID</a><a href="../articles/">Articles</a><a href="https://github.com/Shmellyorc/Void">GitHub</a></nav><p class="footer-note">VOID Language is independently designed for game development.</p></div></footer>
+<script src="../assets/js/home.js?v=3"></script><script src="../assets/js/site.js?v=11"></script>
+</body>
+</html>

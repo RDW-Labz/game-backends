@@ -1,0 +1,64 @@
+// ============================================================================
+//  Vect4.cs
+// ============================================================================
+//  Immutable four-component floating-point vector.
+//
+//  Copyright (c) 2026 Void Engine
+//  Licensed under the MIT License.
+// ============================================================================
+
+namespace Void.Engine.Systems;
+
+/// <summary>
+/// Represents a four-component floating-point vector.
+/// </summary>
+/// <remarks>
+/// <para>
+/// <see cref="Vect4"/> stores immutable X, Y, Z, and W components and can be used
+/// anywhere a simple four-value vector representation is needed.
+/// </para>
+/// <para>
+/// Example:
+/// <code>
+/// var value = new Vect4(10f, 20f, 5f, 1f);
+/// float w = value.W;
+/// </code>
+/// </para>
+/// </remarks>
+public readonly struct Vect4
+{
+    /// <summary>
+    /// Gets the X component.
+    /// </summary>
+    public float X { get; }
+
+    /// <summary>
+    /// Gets the Y component.
+    /// </summary>
+    public float Y { get; }
+
+    /// <summary>
+    /// Gets the Z component.
+    /// </summary>
+    public float Z { get; }
+
+    /// <summary>
+    /// Gets the W component.
+    /// </summary>
+    public float W { get; }
+
+    /// <summary>
+    /// Creates a vector from X, Y, Z, and W components.
+    /// </summary>
+    /// <param name="x">The X component.</param>
+    /// <param name="y">The Y component.</param>
+    /// <param name="z">The Z component.</param>
+    /// <param name="w">The W component.</param>
+    public Vect4(float x, float y, float z, float w)
+    {
+        X = x;
+        Y = y;
+        Z = z;
+        W = w;
+    }
+}

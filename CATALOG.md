@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 09:58 UTC · 704 entries · 190 vendored, 514 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 10:14 UTC · 710 entries · 192 vendored, 518 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 278 | 57 | 221 |
+| [engines](#engines) — Game engines and engine subsystems | 284 | 59 | 225 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 09:58 UTC · 704 entries · 190 vendored, 514 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 278 entries
+**Game engines and engine subsystems** — 284 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -86,6 +86,7 @@ _Generated 2026-11-23 09:58 UTC · 704 entries · 190 vendored, 514 reference-on
 | [egret-core](entries/engines/egret-labs-egret-core/README.md) | Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows. | javascript | unknown | reference | [egret-labs/egret-core](https://github.com/egret-labs/egret-core) @ `2022-07-20 (branch tip at catalogue time)` |
 | [EgretGameEngine](entries/engines/yicaoyimuys-egretgameengine/README.md) | A game client engine in Egret | typescript | none | reference | [yicaoyimuys/EgretGameEngine](https://github.com/yicaoyimuys/EgretGameEngine) @ `d60a02cfaee2` |
 | [element-behaviors](entries/engines/lume-element-behaviors/README.md) | An entity-component system for HTML elements. | typescript | LGPL-3.0 | reference | [lume/element-behaviors](https://github.com/lume/element-behaviors) @ `2024-10-02 (branch tip at catalogue time)` |
+| [Engine](entries/engines/boldtemplegaming-engine/README.md) | C++11 and SDL2 lightweight 2d game framework | c++ | unknown | reference | [boldtempleGaming/Engine](https://github.com/boldtempleGaming/Engine) @ `2020-03-01 (branch tip at catalogue time)` |
 | [engine](entries/engines/g3n-engine/README.md) | Go 3D Game Engine (http://g3n.rocks) | go | BSD-2-Clause | reference | [g3n/engine](https://github.com/g3n/engine) @ `2026-11-21 (branch tip at catalogue time)` |
 | [engine](entries/engines/overreactjs-engine/README.md) | Browser-based game engine, built on top of React. | typescript | MIT | reference | [overreactjs/engine](https://github.com/overreactjs/engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [engine](entries/engines/pkmn-engine/README.md) | A minimal, complete, Pokémon battle simulation engine optimized for performance | zig | MIT | vendored | [pkmn/engine](https://github.com/pkmn/engine) @ `df3c333f0947` |
@@ -124,6 +125,7 @@ _Generated 2026-11-23 09:58 UTC · 704 entries · 190 vendored, 514 reference-on
 | [gameplay](entries/engines/gameplay3d-gameplay/README.md) | Open-source, cross-platform, C++ game engine for creating 2D/3D games. | c++ | unknown | reference | [gameplay3d/gameplay](https://github.com/gameplay3d/gameplay) @ `2025-02-25 (branch tip at catalogue time)` |
 | [GameStringer](entries/engines/rouges78-gamestringer/README.md) | Desktop app that auto-detects a game's engine, extracts the text, translates it with local or cloud AI, and re-applies the patch. 20+ engines, 20+ AI providers, | typescript | unknown | reference | [rouges78/GameStringer](https://github.com/rouges78/GameStringer) @ `2026-11-23 (branch tip at catalogue time)` |
 | [gamezone — core](entries/engines/gamezone-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | Apache-2.0 | vendored | [kunjgit/GameZone](https://github.com/kunjgit/GameZone) @ `ac4ce20` |
+| [GBM2K-Framework](entries/engines/oplexitie-gbm2k-framework/README.md) | A 2D Grid Based Movement framework made for the Godot game engine. | gdscript | MIT | reference | [Oplexitie/GBM2K-Framework](https://github.com/Oplexitie/GBM2K-Framework) @ `2026-10-09 (branch tip at catalogue time)` |
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
 | [genex-desktop](entries/engines/genex-games-genex-desktop/README.md) | Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models. | typescript | MIT | reference | [genex-games/genex-desktop](https://github.com/genex-games/genex-desktop) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -167,6 +169,7 @@ _Generated 2026-11-23 09:58 UTC · 704 entries · 190 vendored, 514 reference-on
 | [Lisien](entries/engines/tacticalmetaphysics-lisien/README.md) | Rules-based engine for life sims, with time travel | python | AGPL-3.0 | reference | [TacticalMetaphysics/Lisien](https://github.com/TacticalMetaphysics/Lisien) @ `2026-03-01 (branch tip at catalogue time)` |
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
 | [love](entries/engines/love2d-love/README.md) | LÖVE is an awesome 2D game framework for Lua. | c++ | Zlib | reference | [love2d/love](https://github.com/love2d/love) @ `def245102c67` |
+| [love2d](entries/engines/luacats-love2d/README.md) | Definitions for the LÖVE 2D game framework | lua | unknown | reference | [LuaCATS/love2d](https://github.com/LuaCATS/love2d) @ `2026-07-20 (branch tip at catalogue time)` |
 | [luanti](entries/engines/luanti-org-luanti/README.md) | Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation | c++ | unknown | reference | [luanti-org/luanti](https://github.com/luanti-org/luanti) @ `2026-11-20 (branch tip at catalogue time)` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Lumos](entries/engines/jmorton06-lumos/README.md) | Cross-Platform C++ 2D/3D game engine | c++ | MIT | reference | [jmorton06/Lumos](https://github.com/jmorton06/Lumos) @ `2026-11-10 (branch tip at catalogue time)` |
@@ -222,6 +225,7 @@ _Generated 2026-11-23 09:58 UTC · 704 entries · 190 vendored, 514 reference-on
 | [ply-engine](entries/engines/thereddeveloper-ply-engine/README.md) | Beautiful UIs in Rust. Cross-platform. Dead simple. | rust | 0BSD | reference | [TheRedDeveloper/ply-engine](https://github.com/TheRedDeveloper/ply-engine) @ `2026-08-31 (branch tip at catalogue time)` |
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
+| [prototype](entries/engines/gonutz-prototype/README.md) | Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM. | c | MIT | vendored | [gonutz/prototype](https://github.com/gonutz/prototype) @ `d3732ae42e68` |
 | [Py3ODE](entries/engines/filipeabperes-py3ode/README.md) | Port of PyODE for Python 3 | python | LGPL-2.1 | reference | [filipeabperes/Py3ODE](https://github.com/filipeabperes/Py3ODE) @ `50675f543d35` |
 | [PyDark](entries/engines/sirfroweey-pydark/README.md) | PyDark is a 2D and Online Multiplayer video game framework written on-top of Python and PyGame. | python | unknown | reference | [SirFroweey/PyDark](https://github.com/SirFroweey/PyDark) @ `2021-08-27 (branch tip at catalogue time)` |
 | [pydk](entries/engines/pmp-p-pydk/README.md) | An universal Python/pip+Panda3d build framework for Pythons Everywhere ( and Everyone ) | python | MIT | vendored | [pmp-p/pydk](https://github.com/pmp-p/pydk) @ `9aeec40679e2` |
@@ -283,7 +287,9 @@ _Generated 2026-11-23 09:58 UTC · 704 entries · 190 vendored, 514 reference-on
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
 | [ursina](entries/engines/pokepetter-ursina/README.md) | A 3D and 2D game engine for Python | python | MIT | vendored | [pokepetter/ursina](https://github.com/pokepetter/ursina) @ `11ac1f7bab99` |
 | [VContainer](entries/engines/hadashia-vcontainer/README.md) | The extra fast, minimum code size, GC-free DI (Dependency Injection) library running on Unity Game Engine. | c# | MIT | reference | [hadashiA/VContainer](https://github.com/hadashiA/VContainer) @ `2026-10-06 (branch tip at catalogue time)` |
+| [Velaptor](entries/engines/kinsondigital-velaptor/README.md) | 2D game development framework | c# | MIT | reference | [KinsonDigital/Velaptor](https://github.com/KinsonDigital/Velaptor) @ `2026-11-22 (branch tip at catalogue time)` |
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
+| [Void](entries/engines/shmellyorc-void/README.md) | A modular, extensible 2D game framework for .NET. | c# | MIT | vendored | [Shmellyorc/Void](https://github.com/Shmellyorc/Void) @ `fee9b4ffecfe` |
 | [voxelcore](entries/engines/mihailris-voxelcore/README.md) | VoxelCore – voxel game engine in C++ | c++ | MPL-2.0 | reference | [MihailRis/voxelcore](https://github.com/MihailRis/voxelcore) @ `2026-11-22 (branch tip at catalogue time)` |
 | [vx_bevy](entries/engines/game4all-vx-bevy/README.md) | 🧊 Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy. | rust | MIT | reference | [Game4all/vx_bevy](https://github.com/Game4all/vx_bevy) @ `2024-12-11 (branch tip at catalogue time)` |
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |

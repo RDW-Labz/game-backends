@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T10:14:08Z",
+ "category": "engines",
+ "commit": "d3732ae42e68",
+ "delivery": "vendored",
+ "description": "gonutz/prototype \u2014 Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM.",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "prototype",
+ "size_bytes": 432953,
+ "slug": "gonutz-prototype",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 109,
+ "system": "Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM.",
+ "upstream": "https://github.com/gonutz/prototype",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

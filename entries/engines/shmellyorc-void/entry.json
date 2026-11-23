@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T10:14:05Z",
+ "category": "engines",
+ "commit": "fee9b4ffecfe",
+ "delivery": "vendored",
+ "description": "Shmellyorc/Void \u2014 A modular, extensible 2D game framework for .NET.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Void",
+ "size_bytes": 1979877,
+ "slug": "shmellyorc-void",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 112,
+ "system": "A modular, extensible 2D game framework for .NET.",
+ "upstream": "https://github.com/Shmellyorc/Void",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

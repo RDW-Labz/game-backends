@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>VOID Language Tooling &amp; LSP</title>
+<meta content="Explore VOID compiler tooling: rich CLI/JSON diagnostics, source-only checking, hover, completion, navigation, references, symbols, and synchronized LSP state." name="description"/>
+<meta content="#07060b" name="theme-color"/>
+<link href="https://voidengine.net/language/tooling/" rel="canonical"/>
+<link href="../../assets/images/void-favicon.png" rel="icon" type="image/png"/>
+<link href="../../assets/css/home.css?v=19" rel="stylesheet"/>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VOID">
+<meta property="og:title" content="VOID Language Tooling &amp; LSP">
+<meta property="og:description" content="Explore VOID compiler tooling: rich CLI/JSON diagnostics, source-only checking, hover, completion, navigation, references, symbols, and synchronized LSP state.">
+<meta property="og:url" content="https://voidengine.net/language/tooling/">
+<meta property="og:image" content="https://voidengine.net/assets/images/void-language.webp">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="VOID Language">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VOID Language Tooling &amp; LSP">
+<meta name="twitter:description" content="Explore VOID compiler tooling: rich CLI/JSON diagnostics, source-only checking, hover, completion, navigation, references, symbols, and synchronized LSP state.">
+<meta name="twitter:image:alt" content="VOID Language">
+<meta name="twitter:image" content="https://voidengine.net/assets/images/void-language.webp">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://voidengine.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Language",
+      "item": "https://voidengine.net/language/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Tooling",
+      "item": "https://voidengine.net/language/tooling/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="has-subnav has-tiered-subnav">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header" id="site-header">
+<div class="shell nav-wrap">
+<a aria-label="VOID home" class="brand" href="../../"><img alt="VOID" src="../../assets/images/void-logo.webp"/></a>
+<button aria-expanded="false" aria-label="Open navigation" class="menu-button" type="button">☰</button>
+<nav aria-label="Main navigation" class="nav-links"><a href="../../">Home</a><a href="../../engine/">Engine</a><a class="active" href="../../language/">Language</a><a href="../../why-void/">Why VOID</a><a href="../../articles/">Articles</a><a href="https://github.com/Shmellyorc/Void">GitHub</a></nav>
+</div>
+</header>
+<div class="section-nav-wrap language-nav"><nav aria-label="VOID Language categories" class="section-nav section-nav-main shell"><span class="section-nav-label">Language</span><a href="../">Overview</a><a href="../features/">Core</a><a class="active" href="../library/">Reference</a><a href="../examples/">Examples</a><a href="../roadmap/">Roadmap</a></nav><nav aria-label="VOID Language reference pages" class="section-nav section-nav-sub shell"><span class="section-nav-label">Reference</span><a href="../library/">Library</a><a href="../compiler/">Compiler</a><a href="../diagnostics/">Diagnostics</a><a class="active" href="../tooling/">Tooling</a><a href="../native/">Native</a><a href="../design/">Design</a></nav></div>
+<main id="main">
+<section class="subpage-hero language-hero"><div class="shell subpage-copy reveal"><p class="kicker">VOID Tooling</p><h1>Compiler-owned intelligence.</h1><p><code>voidc</code> is the source of truth for both builds and editor features. The language server asks the compiler for types, symbols, calls, and diagnostics, so unsaved editor state is analyzed with the same rules as real source.</p></div></section>
+<section class="content-page"><div class="shell">
+<div class="section-heading reveal"><p class="kicker">Tooling block complete</p><h2>The editor-facing stack lives inside <code>voidc</code>.</h2><p>The language server does not duplicate parsing, type checking, overload resolution, access rules, or project discovery. It asks the compiler the same questions normal compilation already knows how to answer.</p></div>
+<div class="status-list">
+<article class="feature-row-page reveal"><h2>Structured CLI diagnostics</h2><p><span class="status-chip complete">Implemented</span> Compiler diagnostics retain severity, stable code, source snapshot/span, notes, help, and related locations, then render readable source excerpts with precise markers.</p></article>
+<article class="feature-row-page reveal"><h2><code>voidc check</code></h2><p><span class="status-chip complete">Implemented</span> Full front-end validation without C generation, native compilation, or build outputs.</p></article>
+<article class="feature-row-page reveal"><h2>Semantic query sessions</h2><p><span class="status-chip complete">Implemented</span> Persistent analyzed projects answer symbol, type, definition, member, callable, completion, reference, and symbol queries.</p></article>
+<article class="feature-row-page reveal"><h2>Debug/source mapping</h2><p><span class="status-chip complete">Implemented</span> Generated C <code>#line</code> mappings let native debug information point back to original <code>.void</code> files and lines.</p></article>
+<article class="feature-row-page reveal"><h2><code>voidc lsp</code> lifecycle &amp; documents</h2><p><span class="status-chip complete">Implemented</span> Framed JSON-RPC, initialize/shutdown lifecycle, full-document synchronization, versioned in-memory text, project discovery, and UTF-16/LSP position conversion.</p></article>
+<article class="feature-row-page reveal"><h2>Live diagnostics</h2><p><span class="status-chip complete">Implemented</span> Lexer, parser, and semantic diagnostics publish directly from unsaved buffers and clear as source is fixed or closed. Full transport of every rich CLI note/help/related-location context through LSP remains a later step.</p></article>
+<article class="feature-row-page reveal"><h2>Machine-readable diagnostics</h2><p><span class="status-chip complete">Implemented</span> <code>--diagnostics=json</code> emits structured stderr records from the same compiler diagnostics used for terminal text, including codes, severity, spans, notes, help, related locations, and truncation state.</p></article>
+<article class="feature-row-page reveal"><h2>Hover &amp; signature help</h2><p><span class="status-chip complete">Implemented</span> Compiler bindings provide typed hover labels, overload sets, constructors, delegates, optional/<code>params</code> signatures, named-argument mapping, and active-parameter selection.</p></article>
+<article class="feature-row-page reveal"><h2>Semantic completion</h2><p><span class="status-chip complete">Implemented</span> Instance/static/inherited members, accessibility filtering, enums, locals, parameters, project types, namespaces, and LSP completion kinds come from real semantic state.</p></article>
+<article class="feature-row-page reveal"><h2>Navigation, references &amp; symbols</h2><p><span class="status-chip complete">Implemented</span> Cross-file definition lookup, declaration-identity references, document symbols, and workspace symbol filtering use compiler-owned declarations and bindings.</p></article>
+<article class="feature-row-page reveal"><h2>Multi-file editor stabilization</h2><p><span class="status-chip complete">Implemented</span> All open files in a project are analyzed as one in-memory snapshot. Dependent diagnostics refresh across unsaved edits, temporarily broken source does not poison later requests, and closing a file falls back to disk.</p></article>
+</div>
+<div class="code-block-preview reveal"><div class="code-head">Compiler-side language server</div><pre><code>./bin/voidc lsp
+
+// Compiler-backed features:
+publishDiagnostics
+hover
+signatureHelp
+completion
+definition
+references
+documentSymbol
+workspace/symbol</code></pre></div>
+<section class="editorial-block reveal"><div><p class="kicker">Why this matters</p><h2>Tools can consume compiler facts instead of scraping compiler text.</h2></div><p>Terminal rendering, JSON diagnostics, source-only checking, and editor features all begin with compiler-owned source and semantic information. An editor extension can remain a thin client around <code>voidc lsp</code>, while command-line tools can consume structured JSON without reverse-engineering human-readable messages.</p></section>
+<div class="page-actions reveal"><a class="outline-button" href="../diagnostics/">Diagnostics</a><a class="outline-button" href="../examples/">Tooling Examples</a><a class="outline-button" href="../roadmap/">Roadmap</a></div>
+</div></section></main>
+<footer class="site-footer"><div class="shell footer-grid"><div class="footer-brand"><img alt="VOID" src="../../assets/images/void-logo.webp"/><p>A foundation, not a cage.</p></div><nav aria-label="Footer navigation" class="footer-links"><a href="../../">Home</a><a href="../../engine/">Engine</a><a href="../../language/">Language</a><a href="../../why-void/">Why VOID</a><a href="../../articles/">Articles</a><a href="https://github.com/Shmellyorc/Void">GitHub</a></nav><p class="footer-note">VOID Language is independently designed for game development.</p></div></footer>
+<script src="../../assets/js/home.js?v=3"></script><script src="../../assets/js/site.js?v=11"></script>
+</body>
+</html>

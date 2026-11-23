@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T10:14:09Z",
+ "category": "engines",
+ "commit": "2026-07-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LuaCATS/love2d \u2014 Definitions for the L\u00d6VE 2D game framework",
+ "language": "lua",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "love2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "luacats-love2d",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 86,
+ "system": "Definitions for the L\u00d6VE 2D game framework",
+ "upstream": "https://github.com/LuaCATS/love2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

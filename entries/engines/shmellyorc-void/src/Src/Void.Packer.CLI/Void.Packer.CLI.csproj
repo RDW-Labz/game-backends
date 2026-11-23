@@ -1,0 +1,59 @@
+<!--
+  Build the asset pack:
+  Packs all files from Content/ except:
+    - All .aseprite source files
+    - Unused font PNGs (Dialog, Knowledge, Messagebox)
+
+  Output: GameAssets.pack + GameAssets.key in the Content folder.
+
+  Test Compile:
+  /home/<user>/Documents/Void/Src/Void.Packer.CLI/bin/Debug/net10.0/Void.Packer.CLI build \
+  -c "/home/<user>/Documents/Void/Examples/FlappyBirb/Content" \
+  -o "/home/<user>/Documents/Void/Examples/FlappyBirb/Content" \
+  -i "**/*" \
+  -e "**/*.ase*,**/Fonts/FontDialog.png,**/Fonts/FontKnowledge.png,**/Fonts/FontMessagebox.png" \
+  -v
+-->
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>void-packer</ToolCommandName>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageId>Void.Packer.CLI</PackageId>
+    <Authors>Shmellyorc</Authors>
+    <Company>Void Engine</Company>
+    <Copyright>Copyright (c) 2026 Void Engine</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+
+    <RepositoryUrl>https://github.com/Shmellyorc/Void</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Shmellyorc/Void</PackageProjectUrl>
+    <Description>Command-line tool for building, verifying, inspecting, extracting, and updating VOID asset packs with authenticated encryption and compression.</Description>
+    <PackageTags>void;void-engine;void-packer;packer;cli;command-line;dotnet-tool;asset-packing;game-assets;asset-pipeline;encryption;aes-gcm;compression;integrity;game-framework;game-development;dotnet;csharp</PackageTags>
+    <Version>1.0.1</Version>
+
+    <PackageReleaseNotes>1.0.1 refreshes the CLI documentation and NuGet metadata, including the installed command name (`void-packer`). Runtime pack behavior is unchanged by this documentation/metadata release.</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    <PackageReference Include="DotNet.Glob" Version="3.1.3" />
+    <PackageReference Include="Spectre.Console" Version="0.49.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Void.Packer\Void.Packer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\Images\Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

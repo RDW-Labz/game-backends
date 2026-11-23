@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T10:14:09Z",
+ "category": "engines",
+ "commit": "2026-10-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Oplexitie/GBM2K-Framework \u2014 A 2D Grid Based Movement framework made for the Godot game engine.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "GBM2K-Framework",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "oplexitie-gbm2k-framework",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 101,
+ "system": "A 2D Grid Based Movement framework made for the Godot game engine.",
+ "upstream": "https://github.com/Oplexitie/GBM2K-Framework",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

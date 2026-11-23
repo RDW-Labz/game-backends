@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>VOID Language Libraries &amp; Native Library Output</title>
+<meta content="Explore VOID libraries including UTF-8 text, collections, Span and Memory, Console and standard IO, tasks, native memory, and native library output." name="description"/>
+<meta content="#07060b" name="theme-color"/>
+<link href="https://voidengine.net/language/library/" rel="canonical"/>
+<link href="../../assets/images/void-favicon.png" rel="icon" type="image/png"/>
+<link href="../../assets/css/home.css?v=19" rel="stylesheet"/>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VOID">
+<meta property="og:title" content="VOID Language Libraries &amp; Native Library Output">
+<meta property="og:description" content="Explore VOID libraries including UTF-8 text, collections, Span and Memory, Console and standard IO, tasks, native memory, and native library output.">
+<meta property="og:url" content="https://voidengine.net/language/library/">
+<meta property="og:image" content="https://voidengine.net/assets/images/void-language.webp">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="VOID Language">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VOID Language Libraries &amp; Native Library Output">
+<meta name="twitter:description" content="Explore VOID libraries including UTF-8 text, collections, Span and Memory, Console and standard IO, tasks, native memory, and native library output.">
+<meta name="twitter:image:alt" content="VOID Language">
+<meta name="twitter:image" content="https://voidengine.net/assets/images/void-language.webp">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://voidengine.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Language",
+      "item": "https://voidengine.net/language/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Library",
+      "item": "https://voidengine.net/language/library/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="has-subnav has-tiered-subnav">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header" id="site-header">
+<div class="shell nav-wrap">
+<a aria-label="VOID home" class="brand" href="../../"><img alt="VOID" src="../../assets/images/void-logo.webp"/></a>
+<button aria-expanded="false" aria-label="Open navigation" class="menu-button" type="button">☰</button>
+<nav aria-label="Main navigation" class="nav-links">
+<a href="../../">Home</a>
+<a href="../../engine/">Engine</a>
+<a class="active" href="../../language/">Language</a>
+<a href="../../why-void/">Why VOID</a><a href="../../articles/">Articles</a>
+<a href="https://github.com/Shmellyorc/Void">GitHub</a>
+</nav>
+</div>
+</header>
+<div class="section-nav-wrap language-nav"><nav aria-label="VOID Language categories" class="section-nav section-nav-main shell"><span class="section-nav-label">Language</span><a href="../">Overview</a><a href="../features/">Core</a><a class="active" href="../library/">Reference</a><a href="../examples/">Examples</a><a href="../roadmap/">Roadmap</a></nav><nav aria-label="VOID Language reference pages" class="section-nav section-nav-sub shell"><span class="section-nav-label">Reference</span><a class="active" href="../library/">Library</a><a href="../compiler/">Compiler</a><a href="../diagnostics/">Diagnostics</a><a href="../tooling/">Tooling</a><a href="../native/">Native</a><a href="../design/">Design</a></nav></div>
+<main id="main">
+<section class="subpage-hero language-hero"><div class="shell subpage-copy reveal"><p class="kicker">VOID Libraries</p><h1>Use the library.<br/>Build your own.</h1><p>The standard library is written in VOID, and project library output can now package your own VOID code as a native static archive with stable exported C entry points.</p></div></section>
+<section class="content-page"><div class="shell">
+<div class="section-heading reveal"><p class="kicker">Standard library surface</p><h2>Library types expose the same ownership and runtime rules as user code.</h2><p>Text, collections, IO, async primitives, and memory APIs keep their representation and lifetime boundaries explicit. Console policy lives in StandardLibrary code over reusable readers, writers, and streams; managed Memory retains a GC owner; and NativeMemory stays deliberately manual.</p></div>
+<section class="editorial-block reveal"><div><p class="kicker">Built-in static APIs</p><h2>Built-in APIs stay ordinary library APIs.</h2></div><p>Type-qualified access now gives built-in and constructed-generic types the same static-member route as ordinary source types. Scalar <code>Parse</code>/<code>TryParse</code> APIs, <code>Index.Start</code>/<code>End</code>, <code>Range.All</code>, and <code>EqualityComparer&lt;T&gt;.Default</code> can therefore live in StandardLibrary source instead of requiring member-specific compiler lowering.</p></section>
+<div class="library-grid">
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>List&lt;T&gt;</code></h3><p>Resizable generic sequence with indexing, enumeration, managed-element tracing, and collection initializer support.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Queue&lt;T&gt;</code></h3><p>FIFO storage built as normal generic library code.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Stack&lt;T&gt;</code></h3><p>LIFO storage using the same generic/runtime model.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Dictionary&lt;TKey,TValue&gt;</code></h3><p>Generic hash lookup with resizing, removal, enumeration, and multi-argument collection initializer entries through <code>Add(key, value)</code>.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>HashSet&lt;T&gt;</code></h3><p>Generic set semantics using the dictionary-compatible hashing/equality model and collection initializer syntax.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>EqualityComparer&lt;T&gt;.Default</code></h3><p>A generic default comparer exposed through ordinary constructed-type static member access, using the same generalized type-receiver path as other static APIs.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>IEnumerable&lt;T&gt;</code> / <code>IEnumerator&lt;T&gt;</code></h3><p>The shared iteration contract used by collections, <code>foreach</code>, and compiler-generated iterator state machines.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Index</code> / <code>Range</code></h3><p>First-class position and slice values with from-end forms, <code>Index.Start</code>/<code>End</code>, <code>Range.All</code>, and reusable consumer semantics. Arrays use ranges to produce copies; Span consumers preserve view semantics.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Span&lt;T&gt;</code> / <code>ReadOnlySpan&lt;T&gt;</code></h3><p>Stack-only library ref structs built on VOID's safe by-reference and escape model, with slicing, normal/ref/ref-readonly enumeration, overlap-safe memory operations, and unsafe pointer+length construction for non-owning unmanaged views.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Memory&lt;T&gt;</code> / <code>ReadOnlyMemory&lt;T&gt;</code></h3><p>Heap-storable managed array-backed memory using array + start + length. It slices without losing its owner, bridges explicitly to Span through <code>.Span</code>, survives suspension and GC, and remains deliberately separate from arbitrary native-memory ownership.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>NativeMemory</code></h3><p>Explicit <code>unsafe</code> unmanaged allocation, free, reallocation, aligned allocation, and typed allocation for <code>where T : unmanaged</code>. Native allocations never become GC objects, and Span views over them remain non-owning.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>string</code></h3><p>One immutable GC-managed UTF-8 text type with validated scalar values, embedded NUL support, scalar-based length/index/range semantics, ordinal search/editing, and explicit <code>ByteLength</code>. Native string representation remains an ABI concern rather than a second VOID text type.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>StringBuilder</code></h3><p>Mutable construction storage for repeated text building. It reuses VOID's allocation and UTF-8 machinery, then produces an ordinary managed <code>string</code> instead of becoming another text representation.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Encoding.UTF8</code></h3><p>The standard UTF-8 encoding surface shares the same validated text model used by managed strings. Byte-oriented boundaries stay explicit instead of turning normal string operations into raw UTF-8 indexing.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3>Scalar <code>Parse</code> / <code>TryParse</code></h3><p>Appropriate built-in boolean, integral, character, floating-point, and decimal types expose source-owned parsing contracts with shared format/overflow behavior and defined floating special-value handling where applicable.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Console</code></h3><p>Standard input, output, and error support line and character input, writing, redirection, encoding, and standard-stream access through visible library policy rather than compiler-specific Console lowering.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>TextReader</code> / <code>TextWriter</code></h3><p>Reusable text abstractions back <code>Console.In</code>, <code>Out</code>, and <code>Error</code>, so redirected or test-controlled text endpoints use the same public contracts as the normal console.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Stream</code> / <code>MemoryStream</code></h3><p>The synchronous stream foundation backs standard byte endpoints and managed-memory streams. <code>MemoryStream</code> supports expandable owned buffers and array-backed regions while preserving normal stream ownership, bounds, and disposal rules.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3>Console keys &amp; terminal control</h3><p><code>ReadKey</code>, key availability, Ctrl+C policy, colors, cursor state, clearing, and compatible title support expose interactive terminal behavior without turning ANSI sequences or host APIs into VOID's public abstraction.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>TaskAwaiter</code> / <code>TaskAwaiter&lt;T&gt;</code></h3><p><code>Task.GetAwaiter()</code> moves ordinary Task awaiting onto the same structural protocol used by custom awaitables. The awaiter can register directly with Task completion rather than manufacturing another continuation Task.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>YieldAwaitable</code></h3><p><code>Task.Yield()</code> returns a small value-type awaitable whose continuation queues through the existing ThreadPool. It proves generalized await can suspend without allocating a Task merely to represent the yield point.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>ValueTask</code> / <code>ValueTask&lt;T&gt;</code></h3><p>True value-type awaitables with inline synchronous completion and typed-result paths, plus Task-backed asynchronous, faulted, and canceled paths. They share the generalized await mechanism without adding pooling or a separate value-task runtime.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3>Task completion &amp; async scheduling</h3><p><code>CompletedTask</code>, <code>FromResult&lt;T&gt;</code>, and faulted/canceled completion factories create already-terminal Tasks without worker work. Task-returning delegates passed to <code>Task.Run</code> are unwrapped through continuations so callers observe one Task rather than a nested Task or a blocked worker.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Task.WhenAll</code> / <code>Task.WhenAny</code></h3><p>Nonblocking Task aggregation and first-completion composition reuse the existing continuation machinery. <code>WhenAll</code> preserves typed result order, while <code>WhenAny</code> completes with the winning Task regardless of that Task's final state.</p></article><article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Task.Delay</code></h3><p>Finite delays use the shared monotonic timer queue rather than sleeping workers or spawning per-delay threads. Zero can complete immediately, <code>Timeout.Infinite</code> remains pending by time, and cancellable delays resolve timer-vs-cancel races exactly once while cleaning up registrations.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>CancellationTokenSource</code> composition</h3><p>Sources own and dispose their timer/external registrations deterministically. <code>CancelAfter</code> schedules delayed cancellation through the same timer queue, while linked sources propagate parent cancellation through ordinary registrations and unregister from every parent when disposed.</p></article>
+<article class="library-card reveal"><span class="status-chip current">Current</span><h3><code>Task.WaitAsync</code></h3><p>Cancellation and timeout forms create nonblocking proxy waits over an existing Task. Antecedent completion, wait cancellation, and timeout race for one terminal result; losing registrations are cleaned up, and canceling or timing out the wait never cancels or otherwise mutates the antecedent Task.</p></article>
+</div>
+<div class="native-code-pair reveal"><div class="code-block-preview"><div class="code-head">VOID library export</div><pre><code class="void-syntax" data-void-code="">public static class MathApi
+{
+    [Export("void_math_add")]
+    public static int Add(int left, int right)
+    {
+        return left + right;
+    }
+}</code></pre></div><div class="code-block-preview"><div class="code-head">VOID consumer binding</div><pre><code class="void-syntax" data-void-code="">public static class MathNative
+{
+    [Native("void_math_add")]
+    public static unsafe extern int Add(int left, int right);
+}</code></pre></div></div>
+<section class="editorial-block reveal" id="project-libraries"><div><p class="kicker">Project libraries</p><h2>VOID projects can ship as native archives.</h2></div><p>Setting <code>"output": "library"</code> turns the normal build pipeline into a native static archive. <code>[Export]</code> gives selected public static methods stable C entry points, while initialization and managed static roots continue to use normal VOID runtime rules across repeated calls.</p></section><section class="editorial-block reveal"><div><p class="kicker">Collection construction</p><h2>Collection expressions reuse existing collection contracts.</h2></div><p>Contextual array initializers and target-typed collection expressions flow through the same conversion, overload, Span, and collection-construction rules used elsewhere in the language. Empty expressions, spreads, List targets, and compatible custom collections do not introduce a parallel collection type system.</p></section>
+<div class="code-block-preview reveal"><div class="code-head">Collection expressions</div><pre><code class="void-syntax" data-void-code="">int[] baseValues = [1, 2, 3];
+int[] combined = [0, ..baseValues, 4];
+
+ReadOnlySpan&lt;int&gt; view = [10, 20, 30];
+List&lt;int&gt; scores = [10, 20, 30];</code></pre></div>
+<div class="page-actions reveal"><a class="outline-button" href="../examples/">Library Examples</a><a class="outline-button" href="../features/">Language Features</a><a class="outline-button" href="../native/">Native ABI</a></div>
+</div></section></main>
+<footer class="site-footer">
+<div class="shell footer-grid">
+<div class="footer-brand"><img alt="VOID" src="../../assets/images/void-logo.webp"/><p>A foundation, not a cage.</p></div>
+<nav aria-label="Footer navigation" class="footer-links"><a href="../../">Home</a><a href="../../engine/">Engine</a><a href="../../language/">Language</a><a href="../../why-void/">Why VOID</a><a href="../../articles/">Articles</a><a href="https://github.com/Shmellyorc/Void">GitHub</a></nav>
+<p class="footer-note">VOID Language is independently designed for game development.</p>
+</div>
+</footer>
+<script src="../../assets/js/home.js?v=3"></script>
+<script src="../../assets/js/syntax.js?v=2"></script>
+<script src="../../assets/js/site.js?v=11"></script>
+</body>
+</html>

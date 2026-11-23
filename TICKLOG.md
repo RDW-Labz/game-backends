@@ -1931,3 +1931,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/felixangell-strife
   - reference engines/sirfroweey-pydark
   - reference engines/bacon2d-bacon2d
+
+- **2026-11-23 10:14 UTC** — tick 688: +2 screened, +4 reference, 2 skipped, catalogue=710
+  - added engines/shmellyorc-void (MIT, vendored)
+  - added engines/gonutz-prototype (MIT, vendored)
+  - reference engines/kinsondigital-velaptor
+  - reference engines/oplexitie-gbm2k-framework
+  - reference engines/boldtemplegaming-engine
+  - reference engines/luacats-love2d

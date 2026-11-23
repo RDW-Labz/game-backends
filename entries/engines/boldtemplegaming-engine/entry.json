@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T10:14:09Z",
+ "category": "engines",
+ "commit": "2020-03-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "boldtempleGaming/Engine \u2014 C++11 and SDL2 lightweight 2d game framework",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "boldtemplegaming-engine",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 98,
+ "system": "C++11 and SDL2 lightweight 2d game framework",
+ "upstream": "https://github.com/boldtempleGaming/Engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

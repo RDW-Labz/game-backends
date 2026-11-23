@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>VOID Language Compiler - Native C Output &amp; Tooling</title>
+<meta content="See how voidc parses and analyzes VOID, lowers code to portable C, builds native programs and libraries, and powers checking, diagnostics, and editor tooling." name="description"/>
+<meta content="#07060b" name="theme-color"/>
+<link href="https://voidengine.net/language/compiler/" rel="canonical"/>
+<link href="../../assets/images/void-favicon.png" rel="icon" type="image/png"/>
+<link href="../../assets/css/home.css?v=19" rel="stylesheet"/>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="VOID">
+<meta property="og:title" content="VOID Language Compiler - Native C Output &amp; Tooling">
+<meta property="og:description" content="See how voidc parses and analyzes VOID, lowers code to portable C, builds native programs and libraries, and powers checking, diagnostics, and editor tooling.">
+<meta property="og:url" content="https://voidengine.net/language/compiler/">
+<meta property="og:image" content="https://voidengine.net/assets/images/void-language.webp">
+<meta property="og:image:type" content="image/webp">
+<meta property="og:image:width" content="1672">
+<meta property="og:image:height" content="941">
+<meta property="og:image:alt" content="VOID Language">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VOID Language Compiler - Native C Output &amp; Tooling">
+<meta name="twitter:description" content="See how voidc parses and analyzes VOID, lowers code to portable C, builds native programs and libraries, and powers checking, diagnostics, and editor tooling.">
+<meta name="twitter:image:alt" content="VOID Language">
+<meta name="twitter:image" content="https://voidengine.net/assets/images/void-language.webp">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://voidengine.net/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Language",
+      "item": "https://voidengine.net/language/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Compiler",
+      "item": "https://voidengine.net/language/compiler/"
+    }
+  ]
+}
+</script>
+</head>
+<body class="has-subnav has-tiered-subnav">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header" id="site-header">
+<div class="shell nav-wrap">
+<a aria-label="VOID home" class="brand" href="../../"><img alt="VOID" src="../../assets/images/void-logo.webp"/></a>
+<button aria-expanded="false" aria-label="Open navigation" class="menu-button" type="button">☰</button>
+<nav aria-label="Main navigation" class="nav-links">
+<a href="../../">Home</a>
+<a href="../../engine/">Engine</a>
+<a class="active" href="../../language/">Language</a>
+<a href="../../why-void/">Why VOID</a><a href="../../articles/">Articles</a>
+<a href="https://github.com/Shmellyorc/Void">GitHub</a>
+</nav>
+</div>
+</header>
+<div class="section-nav-wrap language-nav"><nav aria-label="VOID Language categories" class="section-nav section-nav-main shell"><span class="section-nav-label">Language</span><a href="../">Overview</a><a href="../features/">Core</a><a class="active" href="../library/">Reference</a><a href="../examples/">Examples</a><a href="../roadmap/">Roadmap</a></nav><nav aria-label="VOID Language reference pages" class="section-nav section-nav-sub shell"><span class="section-nav-label">Reference</span><a href="../library/">Library</a><a class="active" href="../compiler/">Compiler</a><a href="../diagnostics/">Diagnostics</a><a href="../tooling/">Tooling</a><a href="../native/">Native</a><a href="../design/">Design</a></nav></div>
+<main id="main">
+<section class="subpage-hero language-hero"><div class="shell subpage-copy reveal"><p class="kicker">voidc</p><h1>One compiler pipeline.<br/>Builds and tooling share it.</h1><p>VOID source is parsed, specialized/lowered, semantically analyzed, lowered to C, and compiled natively. The same front end now powers <code>voidc check</code> and persistent semantic tooling queries without duplicating language rules.</p></div></section>
+<section class="content-page"><div class="shell">
+<div class="section-heading reveal"><p class="kicker">Compiler architecture</p><h2>Language intelligence stays in <code>voidc</code>.</h2><p><code>voidc</code> makes each language decision once. Parsing and semantic analysis decide what the program means; lowering, native output, <code>voidc check</code>, and editor queries consume those same decisions. That keeps builds and tooling from drifting into separate implementations.</p></div>
+<div class="compiler-pipeline reveal"><div><strong>VOID source</strong><span>tokens + source spans</span></div><i></i><div><strong>Parse &amp; lower</strong><span>AST, generics, iterators</span></div><i></i><div><strong>Semantic model</strong><span>types, symbols, calls</span></div><i></i><div><strong>Generated C</strong><span>runtime + #line mappings</span></div><i></i><div><strong>Native binary</strong><span>system compiler/linker</span></div></div>
+<div class="compiler-feature-grid">
+<article class="content-card reveal"><h3>Object model lowering</h3><p>Construction, dispatch, interface contracts, events, delegates, and generic constraints all reach code generation through the same semantic bindings. Later stages consume those decisions instead of rebuilding the object model.</p></article><article class="content-card reveal"><h3>Receivers &amp; generic calls</h3><p>Value receivers and type receivers now share normal member-binding rules instead of treating a type name like a runtime value. Ordinary, qualified, built-in, and constructed-generic types can resolve static values, methods, method groups, and generic calls through the same overload, accessibility, specialization, and code-generation machinery.</p></article><article class="content-card reveal"><h3>Value types, arrays &amp; control flow</h3><p>Value layouts keep their semantics as they move through arrays, closures, iterators, nullable storage, and GC-traced state. The compiler does not switch to a separate representation just because a value crosses one of those boundaries.</p></article>
+<article class="content-card reveal"><h3>Pattern analysis &amp; switch lowering</h3><p>Declaration/property/recursive patterns reuse normal type relationships, property access, conversions, definite assignment, and GC-safe temporaries. Pattern switches, guards, and switch expressions share that matcher and preserve deterministic first-match ordering.</p></article><article class="content-card reveal"><h3>Inference &amp; extension binding</h3><p>Generic method inference and extension methods flow through the normal overload resolver and monomorphizer instead of a separate call path. Ordinary instance members keep precedence.</p></article><article class="content-card reveal"><h3>Advanced interface lowering</h3><p>Static interface contracts, constrained static calls, and default interface methods extend the existing interface model and specialize to concrete calls/dispatch where appropriate.</p></article><article class="content-card reveal"><h3>Threading, timed waits, cancellation &amp; GC</h3><p>Generated workers enter the same managed runtime model as the main thread. GC coordination, blocking states, cancellation wakeups, structured <code>lock</code> cleanup, and atomics are lowered through VOID-owned runtime calls instead of exposing OS threading details to user code.</p></article><article class="content-card reveal"><h3>Nullability &amp; initialization</h3><p>Nullable value storage, lifted operations, named/default arguments, instance/object/array/collection initializers, target-typed collection expressions, static members, and deterministic type initialization lower through the same semantic model.</p></article>
+<article class="content-card reveal"><h3><code>voidc check</code></h3><p>Runs the complete compiler front end and diagnostics, then deliberately stops before C generation, output creation, or native compilation.</p></article>
+<article class="content-card reveal"><h3>Semantic query sessions</h3><p>A persistent analyzed project can answer symbol, type, definition, member, and callable-parameter questions through the public compiler query API.</p></article>
+<article class="content-card reveal"><h3>Structured diagnostics</h3><p>Compiler diagnostics carry severity, stable code, message, source snapshot/span, and ordered note/help context. Text excerpts and optional JSON are rendered from that same record, while generic-specialization failures preserve their original source provenance.</p></article>
+<article class="content-card reveal"><h3>Debug/source mapping</h3><p>Debug C output emits standard <code>#line</code> directives. GCC/Clang then place original VOID filenames and lines in normal native debug information.</p></article><article class="content-card reveal"><h3><code>voidc lsp</code></h3><p>The compiler hosts the LSP lifecycle and document state, publishes live diagnostics, serves hover/signature help and semantic completion, resolves definitions/references/symbols, and analyzes every open project document from one synchronized in-memory snapshot.</p></article>
+<article class="content-card reveal"><h3>Operator binding &amp; generic provenance</h3><p>Unary/binary operators, static-interface operator contracts, and constrained generic dispatch are bound semantically before lowering. Iterator promotion preserves generic origin/constraint metadata so valid generic operations remain valid after suspension.</p></article><article class="content-card reveal"><h3>Conversion binding &amp; generic provenance</h3><p>Standard/user-defined conversions, nullable lifting, target-typed sites, static-interface conversion contracts, and constrained generic implicit/explicit dispatch now bind through one semantic engine. Iterator and closure lowering preserve the conversion proof instead of reclassifying specialized concrete types later.</p></article><article class="content-card reveal"><h3>Native ABI</h3><p>Unsafe declarations, pointers, ABI structs, callbacks including ref/out/in callback parameters, exported library entry points, memory primitives, and native dependencies lower directly through the C boundary.</p></article>
+<article class="content-card reveal"><h3>Executable &amp; library output</h3><p>The same project/compiler pipeline can emit native executables or static archives. <code>[Export]</code> methods seed reachability and gain stable C wrappers while internal VOID implementations stay private.</p></article></div>
+<section class="editorial-block reveal"><div><p class="kicker">One compiler model</p><h2>Builds, diagnostics, and editor features reuse normal compiler semantics.</h2></div><p>The compiler owns the source spans and semantic facts behind each error, then presents that information through terminal text, optional JSON, checking, and editor diagnostics instead of maintaining separate error engines. <code>voidc lsp</code> still keeps unsaved project state synchronized and asks the same resolver used by real builds for types, calls, definitions, and diagnostics; richer note/help transport through LSP remains a separate layer rather than a new semantic path.</p></section>
+<section class="editorial-block reveal"><div><p class="kicker">Type-qualified access</p><h2>A type name is now a real receiver.</h2></div><p>Ordinary, qualified, constructed-generic, and built-in types resolve static fields, constants, properties, methods, method groups, and generic calls through one semantic path. Built-in parsing and generic default surfaces use source-owned StandardLibrary members instead of primitive-specific compiler switches.</p></section>
+<section class="editorial-block reveal"><div><p class="kicker">Source to runtime</p><h2>The compiler now preserves more of the path back to VOID source.</h2></div><p>Inline typed and inferred <code>out</code> declarations reuse the ordinary overload, generic inference, scope, flow, diagnostics, and tooling systems. At runtime, generated synchronous call paths retain truthful VOID frame information so exceptions and internal runtime failures can show the immediate source context before the full stack without confusing native or unavailable-source boundaries.</p></section>
+<div class="page-actions reveal"><a class="outline-button" href="../exceptions/">Exceptions</a><a class="outline-button" href="../lifetime/">Lifetime</a><a class="outline-button" href="../patterns/">Patterns</a><a class="outline-button" href="../operators/">Operators</a><a class="outline-button" href="../conversions/">Conversions</a><a class="outline-button" href="../object-model/">Object Model</a><a class="outline-button" href="../value-types/">Value Types</a><a class="outline-button" href="../tooling/">Tooling</a><a class="outline-button" href="../diagnostics/">Diagnostics</a><a class="outline-button" href="../roadmap/">Roadmap</a></div>
+</div></section></main>
+<footer class="site-footer">
+<div class="shell footer-grid">
+<div class="footer-brand"><img alt="VOID" src="../../assets/images/void-logo.webp"/><p>A foundation, not a cage.</p></div>
+<nav aria-label="Footer navigation" class="footer-links"><a href="../../">Home</a><a href="../../engine/">Engine</a><a href="../../language/">Language</a><a href="../../why-void/">Why VOID</a><a href="../../articles/">Articles</a><a href="https://github.com/Shmellyorc/Void">GitHub</a></nav>
+<p class="footer-note">VOID Language is independently designed for game development.</p>
+</div>
+</footer>
+<script src="../../assets/js/home.js?v=3"></script>
+<script src="../../assets/js/site.js?v=11"></script>
+</body>
+</html>

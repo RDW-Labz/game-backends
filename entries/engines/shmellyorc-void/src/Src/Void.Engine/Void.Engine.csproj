@@ -1,0 +1,83 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageId>Void.Engine</PackageId>
+    <Authors>Shmellyorc</Authors>
+    <Company>Void Engine</Company>
+    <Copyright>Copyright (c) 2026 Void Engine</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <RepositoryUrl>https://github.com/Shmellyorc/Void</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Shmellyorc/Void</PackageProjectUrl>
+    <Description>Modular 2D game framework for .NET with pluggable rendering, SDL3 platform support, OpenAL audio, asset management, pathfinding, coroutines, LDtk support, encrypted saving, and post-processing.</Description>
+    <PackageTags>game-engine;2d;game-framework;game-development;dotnet;csharp;sdl3;silk-net;opengl;rendering;pluggable-renderer;renderer-api;pathfinding;coroutines;ldtk;asset-management;openal;audio;input;modding;encryption;shaders;post-processing;cross-platform;open-source</PackageTags>
+    <Version>2.2.1</Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageReleaseNotes>
+    VOID Engine 2.2.1
+
+    Hashing
+    - Added Cache32IgnoreCase() and Cache64IgnoreCase() for case-insensitive FNV-1a hashing.
+    - Added separate thread-safe caches with deterministic results regardless of capitalization.
+    - Preserved existing case-sensitive hashing methods.
+
+    Asset Management
+    - Fixed asset cache lookups to ignore filename capitalization.
+    - Prevented duplicate asset loads caused by differently capitalized paths.
+    - Preserved first-load-wins behavior and existing asset settings.
+
+    Input Actions
+    - Made action registration, lookup, removal, and state queries case-insensitive.
+    - Updated string and enum-based action handling.
+    - Preserved existing input snapshots and transition behavior.
+
+    Audio
+    - Fixed SoundInstancePool background worker tracking using Unwrap().
+    - Added safe audio shutdown that cancels and waits for the worker before releasing resources.
+    - Prevented sound instances from being disposed while the background worker is still running.
+
+    Rendering
+    - Added automatic cleanup of pooled render targets during game shutdown.
+    - Dispose VOID-owned render targets while their graphics device is active.
+    - Clear pool references without taking ownership of custom render targets.
+    - Preserved existing render-target pooling and reuse during gameplay.
+
+    Engine Lifecycle
+    - Integrated sound pool shutdown into Game.Dispose() before asset cleanup.
+    - Integrated render-target pool cleanup before window and renderer destruction.
+    - Preserved existing game-loop behavior and window-close safeguards.
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="NAudio.SoundFile" Version="3.0.1" />
+    <PackageReference Include="SDL3-CS" Version="3.4.16" />
+    <PackageReference Include="SDL3-CS.Linux" Version="3.4.16" />
+    <PackageReference Include="SDL3-CS.Windows" Version="3.4.16" />
+    <PackageReference Include="SDL3-CS.MacOS" Version="3.4.16" />
+    <PackageReference Include="Silk.NET.OpenAL" Version="2.23.0" />
+    <PackageReference Include="Silk.NET.OpenAL.Soft.Native" Version="1.23.1" />
+    <PackageReference Include="Silk.NET.OpenGL" Version="2.23.0" />
+    <PackageReference Include="StbImageSharp" Version="2.30.16" />
+    <ProjectReference Include="..\Void.Packer\Void.Packer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="/" />
+    <None Include="..\..\Images\Icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Data\**\*" />
+  </ItemGroup>
+</Project>
