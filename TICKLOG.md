@@ -1947,3 +1947,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/catfortman-monogameframework-net8
   - reference engines/hafaux-pixi-framework
   - reference engines/17cupsofcoffee-nova
+
+- **2026-11-23 10:46 UTC** — tick 690: +2 screened, +4 reference, 8 skipped, catalogue=722
+  - added engines/gonglei007-gamedevmind (MIT, vendored)
+  - added engines/skylicht-lab-skylicht-engine (MIT, reference)
+  - reference engines/r-lyeh-v1
+  - reference engines/orange-cpp-omath
+  - reference engines/harfang3d-dogfight-sandbox-hg2
+  - reference engines/hellofangaming-hellomarioframework

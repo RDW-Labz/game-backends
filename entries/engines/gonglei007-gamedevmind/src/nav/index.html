@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GameDevMind · 交互式导航</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --border: #30363d;
+  --text: #c9d1d9;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --red: #f85149;
+  --orange: #d2991d;
+  --yellow: #e3b341;
+  --green: #3fb950;
+  --blue: #58a6ff;
+  --purple: #bc8cff;
+  --radius: 8px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; line-height:1.6; min-height:100vh; }
+:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+a, button, input { scroll-margin-block:140px 24px; }
+.header { background:var(--surface); border-bottom:1px solid var(--border); padding:20px 24px; position:sticky; top:0; z-index:100; }
+.header h1 { font-size:1.4rem; display:flex; align-items:center; gap:8px; }
+.header h1 span { color:var(--accent); }
+.header .subtitle { color:var(--muted); font-size:.85rem; margin-top:4px; }
+.container { max-width:1200px; margin:0 auto; padding:20px 24px; }
+.controls { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px; align-items:center; }
+.search-box { flex:1; min-width:200px; position:relative; }
+.search-box input { width:100%; padding:10px 16px 10px 38px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); color:var(--text); font-size:.9rem; transition:border-color .2s; }
+.search-box input:focus { border-color:var(--accent); }
+.search-box::before { content:'🔍'; position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:.8rem; }
+.filters { display:flex; gap:8px; flex-wrap:wrap; }
+.filter-group { display:flex; gap:4px; align-items:center; }
+.filter-group .label { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.5px; white-space:nowrap; }
+.chip { padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:var(--surface); color:var(--muted); font:inherit; font-size:.8rem; cursor:pointer; transition:all .2s; white-space:nowrap; user-select:none; }
+.chip:hover { border-color:var(--accent); color:var(--text); }
+.chip.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+.category-tabs { display:flex; gap:4px; margin-bottom:20px; overflow-x:auto; padding-bottom:4px; }
+.cat-tab { padding:8px 18px; border-radius:20px; border:1px solid var(--border); background:var(--surface); color:var(--muted); font-size:.82rem; cursor:pointer; transition:all .2s; white-space:nowrap; }
+.cat-tab:hover { border-color:var(--accent); color:var(--text); }
+.cat-tab.active { border-color:var(--accent); color:var(--accent); font-weight:600; }
+.cat-tab .count { font-size:.7rem; margin-left:4px; opacity:.6; }
+.stats { color:var(--muted); font-size:.8rem; margin-bottom:16px; }
+.doc-list { display:grid; gap:8px; }
+.doc-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; transition:border-color .2s,transform .15s; cursor:pointer; display:flex; align-items:center; gap:14px; }
+.doc-card:hover { border-color:var(--accent); transform:translateX(3px); }
+.doc-card .num { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; flex-shrink:0; }
+.doc-card .info { flex:1; min-width:0; }
+.doc-card .title { font-weight:600; font-size:.9rem; color:var(--accent); }
+.doc-card .path { font-size:.75rem; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.doc-card .tags { display:flex; gap:4px; flex-shrink:0; flex-wrap:wrap; }
+.doc-card .tag { font-size:.65rem; padding:2px 8px; border-radius:10px; border:1px solid var(--border); white-space:nowrap; }
+.tag-l1 { color:var(--green); border-color:var(--green); }
+.tag-l2 { color:var(--yellow); border-color:var(--yellow); }
+.tag-l3 { color:var(--red); border-color:var(--red); }
+.tag-role { color:var(--purple); border-color:var(--purple); }
+.c1 { background:#1a3a2a; color:var(--green); } /* 基础 */
+.c2 { background:#2a1f0a; color:var(--orange); } /* 技术 */
+.c3 { background:#2a2a0a; color:var(--yellow); } /* 研发 */
+.c4 { background:#1a2a1a; color:#7ee787; } /* 生产 */
+.c5 { background:#0a1a2a; color:var(--blue); } /* 管理 */
+.c6 { background:#1a0a2a; color:var(--purple); } /* 运营 */
+.empty { text-align:center; padding:48px; color:var(--muted); }
+.paths-section { margin-top:32px; }
+.paths-section h2 { font-size:1.1rem; margin-bottom:16px; color:var(--text); }
+.path-card { display:block; width:100%; text-align:left; color:inherit; font:inherit; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-bottom:12px; cursor:pointer; transition:border-color .2s,box-shadow .2s; }
+.path-card:hover { border-color:var(--accent); }
+.path-card.active { border-color:var(--accent); box-shadow:0 0 0 1px var(--accent); }
+.path-card .path-title { display:block; font-size:.9rem; font-weight:600; color:var(--accent); margin-bottom:8px; }
+.path-card .path-desc, .path-card .path-flow { display:flex; flex-wrap:wrap; }
+.path-card .path-desc { font-size:.78rem; color:var(--muted); margin-bottom:10px; }
+.path-guide { font-size:.82rem; margin-bottom:16px; }
+.path-guide a { color:var(--accent); }
+.path-flow { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.path-step { padding:4px 12px; border-radius:12px; font-size:.78rem; font-weight:600; }
+.path-arrow { color:var(--muted); font-size:.8rem; }
+.code-link { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:12px; background:rgba(88,166,255,.1); color:var(--accent); font-size:.72rem; text-decoration:none; }
+.code-link:hover { background:rgba(88,166,255,.2); }
+@media (max-width:768px), (pointer:coarse) {
+  .doc-card { flex-wrap:wrap; }
+  .doc-card .tags { display:none; }
+  .doc-card .tags:has(.code-link) { display:flex; width:100%; padding-left:46px; }
+  .doc-card .tag { display:none; }
+  .doc-card .tags:empty { display:none; }
+  .code-link, .chip, .cat-tab { min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+  .controls { flex-direction:column; }
+  .search-box { width:100%; }
+  .filters { width:100%; }
+  .filter-group { flex-wrap:wrap; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🎮 GameDevMind <span>交互式导航</span></h1>
+  <div class="subtitle">搜索 · 筛选 · 查找你需要的游戏开发知识 &nbsp;|&nbsp; <a href="panorama.html" style="color:var(--accent)">🗺️ 全景图</a> &nbsp;|&nbsp; <a href="https://github.com/gonglei007/GameDevMind" style="color:var(--muted)">← 返回仓库</a></div>
+</div>
+<div class="container">
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="search" placeholder="搜索文档标题…" oninput="render()">
+    </div>
+    <div class="filters">
+      <div class="filter-group">
+        <span class="label">等级</span>
+        <button type="button" class="chip" aria-pressed="false" onclick="toggleFilter('level','初级',this)">初级</button>
+        <button type="button" class="chip" aria-pressed="false" onclick="toggleFilter('level','中级',this)">中级</button>
+        <button type="button" class="chip" aria-pressed="false" onclick="toggleFilter('level','高级',this)">高级</button>
+      </div>
+      <div class="filter-group">
+        <span class="label">角色</span>
+        <button type="button" class="chip" aria-pressed="false" onclick="toggleFilter('role','客户端',this)">客户端</button>
+        <button type="button" class="chip" aria-pressed="false" onclick="toggleFilter('role','服务端',this)">服务端</button>
+      </div>
+    </div>
+  </div>
+  <div class="category-tabs" id="tabs"></div>
+  <div class="stats" id="stats" role="status" aria-live="polite"></div>
+  <div class="doc-list" id="list"></div>
+  <div class="paths-section">
+    <h2>📖 推荐学习路径</h2>
+    <div id="paths"></div>
+  </div>
+</div>
+
+<script src="content-data.js"></script>
+<script>
+// ========== DATA ==========
+const COLORS=['#3fb950','#d2991d','#e3b341','#7ee787','#58a6ff','#bc8cff'];
+const CATS=['基础能力','技术能力','研发能力','生产能力','管理能力','运营能力'];
+const CAT_CLASS=['c1','c2','c3','c4','c5','c6'];
+
+
+const LEVELS=['','初级','中级','高级'];
+const ROLES=['客户端','服务端'];
+
+
+
+let activeCat=0, activeLevels=new Set(), activeRoles=new Set(), search='', activePath=null;
+
+function toggleFilter(type,val,el){
+  const s=type==='level'?activeLevels:activeRoles;
+  s.has(val)?s.delete(val):s.add(val);
+  el.classList.toggle('active',s.has(val));
+  el.setAttribute('aria-pressed', String(s.has(val)));
+  render();
+}
+
+function selectPath(id){
+  activePath=activePath===id?null:id;
+  if(activePath)activeCat=0;
+  render();
+}
+
+function render(){
+  const focusKey=document.activeElement?.dataset?.focusKey;
+  // Tabs
+  let tabsHtml=`<button type="button" data-focus-key="category-0" class="cat-tab ${activeCat===0?'active':''}" aria-pressed="${activeCat===0}" onclick="activeCat=0;render()">全部<span class="count">${DOCS.length}</span></button>`;
+  for(let i=0;i<CATS.length;i++){
+    const cnt=DOCS.filter(d=>d.c===i+1).length;
+    tabsHtml+=`<button type="button" data-focus-key="category-${i+1}" class="cat-tab ${i+1===activeCat?'active':''}" aria-pressed="${i+1===activeCat}" onclick="activeCat=${i+1};render()">${CATS[i]}<span class="count">${cnt}</span></button>`;
+  }
+  document.getElementById('tabs').innerHTML=tabsHtml;
+
+  // Filter
+  search=document.getElementById('search').value.trim().toLowerCase();
+  let filtered=DOCS.filter(d=>{
+    if(activePath){
+      const pathSet=LEARNING_PATHS.find(p=>p.id===activePath).paths;
+      if(!pathSet.has(d.p))return false;
+    }
+    if(activeCat>0&&d.c!==activeCat)return false;
+    if(search&&!d.t.toLowerCase().includes(search))return false;
+    if(activeLevels.size>0&&!activeLevels.has(LEVELS[d.l]))return false;
+    if(activeRoles.size>0){
+      const dr=d.r.split(',').map(s=>s.trim());
+      if(![...activeRoles].some(r=>dr.includes(r)))return false;
+    }
+    return true;
+  });
+
+  const pathLabel=activePath?` · ${LEARNING_PATHS.find(p=>p.id===activePath).title}`:'';
+  document.getElementById('stats').textContent=`显示 ${filtered.length} / ${CONTENT_STATS.core} 篇核心文档 · 全库 ${CONTENT_STATS.documents} 篇（另含 ${CONTENT_STATS.supplementary} 篇专题与说明）${pathLabel}${search?` (搜索: "${search}")`:''}`;
+
+  // List
+  if(filtered.length===0){
+    document.getElementById('list').innerHTML='<div class="empty">没有匹配的文档 😕</div>';
+  }else{
+    document.getElementById('list').innerHTML=filtered.map((d,i)=>{
+      const lvlTag=d.l?`<span class="tag tag-l${d.l}">${LEVELS[d.l]}</span>`:'';
+      const roleTags=d.r?d.r.split(',').map(r=>`<span class="tag tag-role">${r.trim()}</span>`).join(''):'';
+      const codeLink=d.code?`<a class="code-link" href="${contentHref(d.code)}">📦 代码</a>`:'';
+      return `<div class="doc-card">
+        <div class="num ${CAT_CLASS[d.c-1]}">${d.c}.${String(i+1).padStart(2,'0')}</div>
+        <div class="info">
+          <a class="title" href="${contentHref(d.p)}">${contentText(d.t)}</a>
+          <div class="path">${contentText(d.p)}</div>
+        </div>
+        <div class="tags">${lvlTag}${roleTags}${codeLink}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Paths — 点击筛选，再点取消
+  document.getElementById('paths').innerHTML=`
+    <p class="path-guide">完整清单见 <a href="${contentHref('mds/topics/推荐阅读路径.md')}">推荐阅读路径.md</a>（含必读/选读标记与配套资源）</p>
+    ${LEARNING_PATHS.map(p=>`
+    <button type="button" data-focus-key="path-${p.id}" class="path-card ${activePath===p.id?'active':''}" aria-pressed="${activePath===p.id}" onclick="selectPath('${p.id}')">
+      <span class="path-title">${p.title}</span>
+      <span class="path-desc">${p.desc} · ${p.paths.size} 篇核心文档</span>
+      <span class="path-flow">
+        ${p.id==='a'?`
+        <span class="path-step c1">编程基础</span><span class="path-arrow">→</span>
+        <span class="path-step c2">引擎/UI</span><span class="path-arrow">→</span>
+        <span class="path-step c3">第一个 Demo</span><span class="path-arrow">→</span>
+        <span class="path-step c6">上线认知</span>`:''}
+        ${p.id==='b'?`
+        <span class="path-step c3">客户端/服务端</span><span class="path-arrow">→</span>
+        <span class="path-step c3">网络同步</span><span class="path-arrow">→</span>
+        <span class="path-step c4">工具链</span>`:''}
+        ${p.id==='c'?`
+        <span class="path-step c6">上线必查</span><span class="path-arrow">→</span>
+        <span class="path-step c6">运维底座</span><span class="path-arrow">→</span>
+        <span class="path-step c6">运营支撑</span>`:''}
+      </span>
+    </button>`).join('')}
+  `;
+  if(focusKey) document.querySelector(`[data-focus-key="${focusKey}"]`)?.focus();
+}
+
+render();
+</script>
+</body>
+</html>

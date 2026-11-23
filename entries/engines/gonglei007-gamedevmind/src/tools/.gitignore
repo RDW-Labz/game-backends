@@ -1,0 +1,27 @@
+# Smart API 脚本相关
+smart/smart-agent-output/
+smart/output/
+smart/*.log
+smart/report-*.json
+smart/smart-agent-config.json
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# 配置文件（包含敏感信息）
+cursor-agent-config.json
+
+# 系统文件
+.DS_Store
+Thumbs.db
+

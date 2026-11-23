@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 10:30 UTC · 716 entries · 193 vendored, 523 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 10:46 UTC · 722 entries · 194 vendored, 528 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 290 | 60 | 230 |
+| [engines](#engines) — Game engines and engine subsystems | 296 | 61 | 235 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 10:30 UTC · 716 entries · 193 vendored, 523 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 290 entries
+**Game engines and engine subsystems** — 296 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -69,6 +69,7 @@ _Generated 2026-11-23 10:30 UTC · 716 entries · 193 vendored, 523 reference-on
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
 | [dip](entries/engines/diptools-dip/README.md) | Rust application framework focuses on composability, ECS and Web3.  Powered by Bevy game engine, Tauri, and Dioxus. From desktop apps to the Metaverse. | rust | unknown | reference | [diptools/dip](https://github.com/diptools/dip) @ `2026-04-13 (branch tip at catalogue time)` |
+| [dogfight-sandbox-hg2](entries/engines/harfang3d-dogfight-sandbox-hg2/README.md) | Air to air combat sandbox, created in Python 3 using the HARFANG 3D 2 framework. | python | GPL-3.0 | reference | [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2) @ `2026-04-01 (branch tip at catalogue time)` |
 | [dominion-ecs-java](entries/engines/dominion-dev-dominion-ecs-java/README.md) | Insanely fast ECS (Entity Component System) for Java | java | MIT | vendored | [dominion-dev/dominion-ecs-java](https://github.com/dominion-dev/dominion-ecs-java) @ `e3c99d10ffcc` |
 | [doriax](entries/engines/doriaxengine-doriax/README.md) | Game engine for 2D and 3D projects with entity component system (ECS) and data-oriented design | c++ | MIT | reference | [doriaxengine/doriax](https://github.com/doriaxengine/doriax) @ `2026-11-15 (branch tip at catalogue time)` |
 | [dragon-mud](entries/engines/bbuck-dragon-mud/README.md) | A text-based game engine written in Go and scripted with Lua. | go | none | reference | [bbuck/dragon-mud](https://github.com/bbuck/dragon-mud) @ `3e8c854b7aff` |
@@ -121,6 +122,7 @@ _Generated 2026-11-23 10:30 UTC · 716 entries · 193 vendored, 523 reference-on
 | [freeablo](entries/engines/wheybags-freeablo/README.md) | [ARCHIVED] Modern reimplementation of the Diablo 1 game engine | c++ | GPL-3.0 | reference | [wheybags/freeablo](https://github.com/wheybags/freeablo) @ `2023-04-13 (branch tip at catalogue time)` |
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
 | [Fyrox](entries/engines/fyroxengine-fyrox/README.md) | 3D and 2D game engine written in Rust | rust | MIT | vendored | [FyroxEngine/Fyrox](https://github.com/FyroxEngine/Fyrox) @ `e47bf0f35c9e` |
+| [GameDevMind](entries/engines/gonglei007-gamedevmind/README.md) | 最全面的游戏开发技术图谱(Game Development Map)。帮助游戏开发者们在已知问题上节省时间，省出更多的精力投入到更有创造性的工作中去。 | python | MIT | vendored | [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) @ `652be106e9df` |
 | [GameFramework](entries/engines/ellanjiang-gameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | vendored | [EllanJiang/GameFramework](https://github.com/EllanJiang/GameFramework) @ `d0c010b05167` |
 | [gameplay](entries/engines/gameplay3d-gameplay/README.md) | Open-source, cross-platform, C++ game engine for creating 2D/3D games. | c++ | unknown | reference | [gameplay3d/gameplay](https://github.com/gameplay3d/gameplay) @ `2025-02-25 (branch tip at catalogue time)` |
 | [GameStringer](entries/engines/rouges78-gamestringer/README.md) | Desktop app that auto-detects a game's engine, extracts the text, translates it with local or cloud AI, and re-applies the patch. 20+ engines, 20+ AI providers, | typescript | unknown | reference | [rouges78/GameStringer](https://github.com/rouges78/GameStringer) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -148,6 +150,7 @@ _Generated 2026-11-23 10:30 UTC · 716 entries · 193 vendored, 523 reference-on
 | [goworld](entries/engines/xiaonanln-goworld/README.md) | Scalable Distributed Game Server Engine with Hot Swapping in Golang | go | Apache-2.0 | reference | [xiaonanln/goworld](https://github.com/xiaonanln/goworld) @ `2025-11-14 (branch tip at catalogue time)` |
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [HeartbeatEngine](entries/engines/cronza-heartbeatengine/README.md) | A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5 | python | GPL-3.0 | reference | [Cronza/HeartbeatEngine](https://github.com/Cronza/HeartbeatEngine) @ `2025-08-26 (branch tip at catalogue time)` |
+| [HelloMarioFramework](entries/engines/hellofangaming-hellomarioframework/README.md) | Create your own 3D Mario game with Hello Mario Framework for Unity! | c# | MIT | reference | [HelloFangaming/HelloMarioFramework](https://github.com/HelloFangaming/HelloMarioFramework) @ `2025-11-11 (branch tip at catalogue time)` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
 | [Ikemen-GO](entries/engines/ikemen-engine-ikemen-go/README.md) | An open-source fighting game engine that supports MUGEN resources. | go | unknown | reference | [ikemen-engine/Ikemen-GO](https://github.com/ikemen-engine/Ikemen-GO) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -193,6 +196,7 @@ _Generated 2026-11-23 10:30 UTC · 716 entries · 193 vendored, 523 reference-on
 | [NVForever](entries/engines/lootjunkieazza-nvforever/README.md) | NVForever Rebuilt New Vegas Game Engine in Rust | rust | GPL-3.0 | reference | [LootJunkieAzza/NVForever](https://github.com/LootJunkieAzza/NVForever) @ `2026-11-23 (branch tip at catalogue time)` |
 | [o2](entries/engines/o2-engine-o2/README.md) | 2D Game Engine with visual WYSIWYG editor and JS scripting | c++ | MIT | reference | [o2-engine/o2](https://github.com/o2-engine/o2) @ `2026-11-23 (branch tip at catalogue time)` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
+| [omath](entries/engines/orange-cpp-omath/README.md) | Cross-platform modern general purpose game/mods/cheats development framework written in C++23. | c++ | Zlib | reference | [orange-cpp/omath](https://github.com/orange-cpp/omath) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
 | [open_spiel — core](entries/engines/open-spiel-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
 | [openage](entries/engines/sfttech-openage/README.md) | Clone of the Age of Empires II engine 🚀  | python | unknown | reference | [SFTtech/openage](https://github.com/SFTtech/openage) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -258,6 +262,7 @@ _Generated 2026-11-23 10:30 UTC · 716 entries · 193 vendored, 523 reference-on
 | [server](entries/engines/runejs-server/README.md) | RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing s | typescript | GPL-3.0 | reference | [runejs/server](https://github.com/runejs/server) @ `2026-09-03 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [sketch](entries/engines/vydd-sketch/README.md) | A Common Lisp framework for the creation of electronic art, visual design, game prototyping, game making, computer graphics, exploration of human-computer inter | common lisp | MIT | reference | [vydd/sketch](https://github.com/vydd/sketch) @ `2026-01-18 (branch tip at catalogue time)` |
+| [skylicht-engine](entries/engines/skylicht-lab-skylicht-engine/README.md) | Skylicht Engine is C++ Game Engine based on Irrlicht 3D. And my goal is to create a high-performance and lightweight Game Framework that can seamlessly function | c++ | MIT | reference | [skylicht-lab/skylicht-engine](https://github.com/skylicht-lab/skylicht-engine) @ `d27288111de5` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
 | [SolarWM](entries/engines/junchao-cs-solarwm/README.md) | Open data and scalable training for long-horizon video world models. | python | Apache-2.0 | reference | [Junchao-cs/SolarWM](https://github.com/Junchao-cs/SolarWM) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
@@ -291,6 +296,7 @@ _Generated 2026-11-23 10:30 UTC · 716 entries · 193 vendored, 523 reference-on
 | [UnityGameFramework](entries/engines/ellanjiang-unitygameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | reference | [EllanJiang/UnityGameFramework](https://github.com/EllanJiang/UnityGameFramework) @ `2023-05-21 (branch tip at catalogue time)` |
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
 | [ursina](entries/engines/pokepetter-ursina/README.md) | A 3D and 2D game engine for Python | python | MIT | vendored | [pokepetter/ursina](https://github.com/pokepetter/ursina) @ `11ac1f7bab99` |
+| [v1](entries/engines/r-lyeh-v1/README.md) | 💎 3D game framework in C, v1. | c | unknown | reference | [r-lyeh/v1](https://github.com/r-lyeh/v1) @ `2025-08-04 (branch tip at catalogue time)` |
 | [v3](entries/engines/r-lyeh-v3/README.md) | 💎 3D game framework in C, v3. | c | unknown | reference | [r-lyeh/v3](https://github.com/r-lyeh/v3) @ `2025-11-29 (branch tip at catalogue time)` |
 | [VContainer](entries/engines/hadashia-vcontainer/README.md) | The extra fast, minimum code size, GC-free DI (Dependency Injection) library running on Unity Game Engine. | c# | MIT | reference | [hadashiA/VContainer](https://github.com/hadashiA/VContainer) @ `2026-10-06 (branch tip at catalogue time)` |
 | [Velaptor](entries/engines/kinsondigital-velaptor/README.md) | 2D game development framework | c# | MIT | reference | [KinsonDigital/Velaptor](https://github.com/KinsonDigital/Velaptor) @ `2026-11-22 (branch tip at catalogue time)` |

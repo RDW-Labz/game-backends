@@ -1,0 +1,22 @@
+{
+  "name": "gamedevmind-tools",
+  "version": "1.0.0",
+  "description": "GameDevMind 工具脚本",
+  "main": "smart-agent-batch.js",
+  "scripts": {
+    "smart-agent": "node smart-agent-batch.js",
+    "smart-agent:help": "node smart-agent-batch.js --help"
+  },
+  "keywords": [
+    "gamedev",
+    "tools",
+    "smart",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
+

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T10:46:24Z",
+ "category": "engines",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "orange-cpp/omath \u2014 Cross-platform modern general purpose game/mods/cheats development framework written in C++23.",
+ "language": "c++",
+ "license": "Zlib",
+ "license_verdict": "clean",
+ "name": "omath",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Zlib)",
+ "slug": "orange-cpp-omath",
+ "source": "github-search:3d game framework stars:>60",
+ "stars": 255,
+ "system": "Cross-platform modern general purpose game/mods/cheats development framework written in C++23.",
+ "upstream": "https://github.com/orange-cpp/omath",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

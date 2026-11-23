@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T10:46:23Z",
+ "category": "engines",
+ "commit": "d27288111de5",
+ "delivery": "reference",
+ "description": "skylicht-lab/skylicht-engine \u2014 Skylicht Engine is C++ Game Engine based on Irrlicht 3D. And my goal is to create a high-performance and lightweight Game Framework that can seamlessly function on both web and mobile platforms. This framework will be available to everyone for free.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "skylicht-engine",
+ "reference_reason": "size gate: 42 MB",
+ "size_bytes": 44899230,
+ "slug": "skylicht-lab-skylicht-engine",
+ "source": "github-search:3d game framework stars:>60",
+ "stars": 772,
+ "system": "Skylicht Engine is C++ Game Engine based on Irrlicht 3D. And my goal is to create a high-performance and lightweight Game Framework that can seamlessly function",
+ "upstream": "https://github.com/skylicht-lab/skylicht-engine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

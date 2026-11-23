@@ -1,0 +1,32 @@
+# 历史
+
+>2023-03-27: v0.7.0
+
+* 对所有资料进行了第二次大幅的整理、重构。
+* 更新电子版文档。[下载-v0.7.0版 PDF](https://github.com/gonglei007/GameDevMind/releases/tag/v0.7.0)
+
+<br/>
+
+>2023-02-06: v0.6.0
+
+* 所有文档的排版大调整。
+* 更新电子版文档。[下载-v0.6.0版 PDF](https://github.com/gonglei007/GameDevMind/releases/tag/v0.6.0)
+
+<br/>
+
+>2023-01-16: v0.5.0
+
+* 制作发布pdf版本（测试版），更便于阅读。[下载-v0.5.0版 PDF](https://github.com/gonglei007/GameDevMind/releases/tag/v0.5.0)
+
+<br/>
+
+>2022-11-11
+
+* 对所有资料进行了第一次大幅的整理、重构。
+
+<br/>
+
+>2022-06-22
+
+* 第一个版本的资料库提交到了github。
+
