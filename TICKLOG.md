@@ -1731,3 +1731,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/phase-rs-phase
   - reference engines/game4all-vx-bevy
   - reference engines/shaoruu-mine-js
+
+- **2026-11-23 03:34 UTC** — tick 663: +2 screened, +4 reference, 1 skipped, catalogue=560
+  - added engines/sburris0-bevy-flycam (ISC, vendored)
+  - added engines/jeremychone-channel-rust-invaders (Apache-2.0, vendored)
+  - reference engines/dodorare-crossbow
+  - reference engines/ikbencasdoei-godot-voip
+  - reference engines/lootjunkieazza-nvforever
+  - reference engines/optiroc-superfamiconv

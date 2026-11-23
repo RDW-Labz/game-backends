@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T03:34:04Z",
+ "category": "engines",
+ "commit": "af246691ea08",
+ "delivery": "vendored",
+ "description": "jeremychone-channel/rust-invaders \u2014 Simple RUST game with the Bevy Engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "rust-invaders",
+ "size_bytes": 18860,
+ "slug": "jeremychone-channel-rust-invaders",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 219,
+ "system": "Simple RUST game with the Bevy Engine",
+ "upstream": "https://github.com/jeremychone-channel/rust-invaders",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T03:34:06Z",
+ "category": "engines",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Optiroc/SuperFamiconv \u2014 Flexible and composable tile graphics converter supporting Super Nintendo, Game Boy, Game Boy Color, Game Boy Advance, Mega Drive, Master System, Game Gear, PC Engine and WonderSwan formats.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SuperFamiconv",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "optiroc-superfamiconv",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 200,
+ "system": "Flexible and composable tile graphics converter supporting Super Nintendo, Game Boy, Game Boy Color, Game Boy Advance, Mega Drive, Master System, Game Gear, PC ",
+ "upstream": "https://github.com/Optiroc/SuperFamiconv",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

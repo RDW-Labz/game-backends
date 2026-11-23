@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T03:34:06Z",
+ "category": "engines",
+ "commit": "2024-09-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ikbencasdoei/godot-voip \u2014 godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-voip",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ikbencasdoei-godot-voip",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 211,
+ "system": "godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project.",
+ "upstream": "https://github.com/ikbencasdoei/godot-voip",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

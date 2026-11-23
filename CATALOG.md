@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 03:18 UTC · 554 entries · 162 vendored, 392 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 03:34 UTC · 560 entries · 164 vendored, 396 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 128 | 29 | 99 |
+| [engines](#engines) — Game engines and engine subsystems | 134 | 31 | 103 |
 | [physics](#physics) — Physics | 31 | 11 | 20 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
@@ -16,7 +16,7 @@ _Generated 2026-11-23 03:18 UTC · 554 entries · 162 vendored, 392 reference-on
 
 ## engines
 
-**Game engines and engine subsystems** — 128 entries
+**Game engines and engine subsystems** — 134 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -31,6 +31,7 @@ _Generated 2026-11-23 03:18 UTC · 554 entries · 162 vendored, 392 reference-on
 | [Babylon.js](entries/engines/babylonjs-babylon-js/README.md) | Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework. | typescript | Apache-2.0 | reference | [BabylonJS/Babylon.js](https://github.com/BabylonJS/Babylon.js) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Bevy](entries/engines/bevy/README.md) | ECS-first engine: schedules, asset pipeline, render graph | rust | Apache-2.0 | reference | [bevyengine/bevy](https://github.com/bevyengine/bevy) @ `7ea4827e16d5` |
 | [bevy-cheatbook](entries/engines/bevy-cheatbook-bevy-cheatbook/README.md) | Unofficial Reference Book for the Bevy Game Engine | rust | unknown | reference | [bevy-cheatbook/bevy-cheatbook](https://github.com/bevy-cheatbook/bevy-cheatbook) @ `2025-12-03 (branch tip at catalogue time)` |
+| [bevy_flycam](entries/engines/sburris0-bevy-flycam/README.md) | Basic first-person fly camera for the Bevy game engine | rust | ISC | vendored | [sburris0/bevy_flycam](https://github.com/sburris0/bevy_flycam) @ `c8a573879011` |
 | [bevy_quinnet](entries/engines/henauxg-bevy-quinnet/README.md) | A Client/Server game networking plugin using QUIC, for the Bevy game engine. | rust | Apache-2.0 | vendored | [Henauxg/bevy_quinnet](https://github.com/Henauxg/bevy_quinnet) @ `d8b985eb8f96` |
 | [bevy_tweening](entries/engines/djeedai-bevy-tweening/README.md) | Tweening animation plugin for the Bevy game engine. | rust | Apache-2.0 | reference | [djeedai/bevy_tweening](https://github.com/djeedai/bevy_tweening) @ `2026-11-01 (branch tip at catalogue time)` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
@@ -41,6 +42,7 @@ _Generated 2026-11-23 03:18 UTC · 554 entries · 162 vendored, 392 reference-on
 | [comfy](entries/engines/darthdeus-comfy/README.md) | Comfy is a fun 2D game engine built in Rust. It's designed to be opinionated, productive, and easy to use. | rust | Apache-2.0 | vendored | [darthdeus/comfy](https://github.com/darthdeus/comfy) @ `31aa6efce135` |
 | [corona](entries/engines/coronalabs-corona/README.md) | Solar2D Game Engine main repository (ex Corona SDK) | c++ | MIT | reference | [coronalabs/corona](https://github.com/coronalabs/corona) @ `22368dfc1209` |
 | [cpp-game-engine-book](entries/engines/thisisgame-cpp-game-engine-book/README.md) | 从零编写游戏引擎教程 Writing a game engine tutorial from scratch | c++ | GPL-3.0 | reference | [ThisisGame/cpp-game-engine-book](https://github.com/ThisisGame/cpp-game-engine-book) @ `c7f9f8095274` |
+| [crossbow](entries/engines/dodorare-crossbow/README.md) | Cross-Platform build tools and toolkit for games and game engines written in Rust! 🦀 | rust | Apache-2.0 | reference | [dodorare/crossbow](https://github.com/dodorare/crossbow) @ `2026-11-16 (branch tip at catalogue time)` |
 | [crown](entries/engines/crownengine-crown/README.md) | A complete and cross-platform game engine designed for flexibility, performance and fast iteration. | c++ | unknown | reference | [crownengine/crown](https://github.com/crownengine/crown) @ `2026-11-15 (branch tip at catalogue time)` |
 | [DefaultEcs](entries/engines/doraku-defaultecs/README.md) | Entity Component System framework aiming for syntax and usage simplicity with maximum performance for game development. | c# | MIT | vendored | [Doraku/DefaultEcs](https://github.com/Doraku/DefaultEcs) @ `508033cfa22d` |
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -77,6 +79,7 @@ _Generated 2026-11-23 03:18 UTC · 554 entries · 162 vendored, 392 reference-on
 | [godot-cpp (GDExtension bindings)](entries/engines/godot-cpp/README.md) | C++ bindings/extension ABI for Godot | c++ | MIT | reference | [godotengine/godot-cpp](https://github.com/godotengine/godot-cpp) @ `2a4c066e1e8c` |
 | [godot-mcp](entries/engines/coding-solo-godot-mcp/README.md) | MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output. | javascript | MIT | vendored | [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) @ `1209744fad78` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
+| [godot-voip](entries/engines/ikbencasdoei-godot-voip/README.md) | godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project. | rust | MIT | reference | [ikbencasdoei/godot-voip](https://github.com/ikbencasdoei/godot-voip) @ `2024-09-22 (branch tip at catalogue time)` |
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
@@ -96,6 +99,7 @@ _Generated 2026-11-23 03:18 UTC · 554 entries · 162 vendored, 392 reference-on
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
+| [NVForever](entries/engines/lootjunkieazza-nvforever/README.md) | NVForever Rebuilt New Vegas Game Engine in Rust | rust | GPL-3.0 | reference | [LootJunkieAzza/NVForever](https://github.com/LootJunkieAzza/NVForever) @ `2026-11-23 (branch tip at catalogue time)` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
 | [open_spiel — core](entries/engines/open-spiel-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
@@ -125,6 +129,7 @@ _Generated 2026-11-23 03:18 UTC · 554 entries · 162 vendored, 392 reference-on
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [RigelEngine](entries/engines/lethal-guitar-rigelengine/README.md) | A modern re-implementation of the classic DOS game Duke Nukem II | c++ | GPL-2.0 | reference | [lethal-guitar/RigelEngine](https://github.com/lethal-guitar/RigelEngine) @ `30afeff8f0b1` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
+| [rust-invaders](entries/engines/jeremychone-channel-rust-invaders/README.md) | Simple RUST game with the Bevy Engine | rust | Apache-2.0 | vendored | [jeremychone-channel/rust-invaders](https://github.com/jeremychone-channel/rust-invaders) @ `af246691ea08` |
 | [sbox-public](entries/engines/facepunch-sbox-public/README.md) | s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games | c# | unknown | reference | [Facepunch/sbox-public](https://github.com/Facepunch/sbox-public) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Serious-Engine](entries/engines/croteam-official-serious-engine/README.md) | An open source version of a game engine developed by Croteam for the classic Serious Sam games. | c++ | GPL-2.0 | reference | [Croteam-official/Serious-Engine](https://github.com/Croteam-official/Serious-Engine) @ `2020-10-31 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
@@ -132,6 +137,7 @@ _Generated 2026-11-23 03:18 UTC · 554 entries · 162 vendored, 392 reference-on
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
 | [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
+| [SuperFamiconv](entries/engines/optiroc-superfamiconv/README.md) | Flexible and composable tile graphics converter supporting Super Nintendo, Game Boy, Game Boy Color, Game Boy Advance, Mega Drive, Master System, Game Gear, PC  | rust | MIT | reference | [Optiroc/SuperFamiconv](https://github.com/Optiroc/SuperFamiconv) @ `2026-11-16 (branch tip at catalogue time)` |
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |

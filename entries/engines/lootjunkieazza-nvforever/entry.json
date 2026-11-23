@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T03:34:06Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LootJunkieAzza/NVForever \u2014 NVForever Rebuilt New Vegas Game Engine in Rust",
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "NVForever",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "lootjunkieazza-nvforever",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 206,
+ "system": "NVForever Rebuilt New Vegas Game Engine in Rust",
+ "upstream": "https://github.com/LootJunkieAzza/NVForever",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
