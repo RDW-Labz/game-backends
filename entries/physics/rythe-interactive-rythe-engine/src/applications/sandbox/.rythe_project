@@ -1,0 +1,8 @@
+local project = {
+    namespace = "sandbox",
+    dependencies = {
+        "rythe/core"
+    }
+}
+
+return project

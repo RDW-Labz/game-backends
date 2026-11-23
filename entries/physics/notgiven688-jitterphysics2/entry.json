@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:26:10Z",
+ "category": "physics",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "notgiven688/jitterphysics2 \u2014 Fast, simple to use, and dependency-free physics engine written in C# with a clear and user-friendly API.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "jitterphysics2",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "notgiven688-jitterphysics2",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 454,
+ "system": "Fast, simple to use, and dependency-free physics engine written in C# with a clear and user-friendly API.",
+ "upstream": "https://github.com/notgiven688/jitterphysics2",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

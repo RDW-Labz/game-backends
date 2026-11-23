@@ -2114,3 +2114,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/cloud9c-taro
   - reference physics/xissburg-edyn
   - reference physics/qgallouedec-panda-gym
+
+- **2026-11-23 16:26 UTC** — tick 711: +2 screened, +4 reference, 0 skipped, catalogue=847
+  - added physics/dyn4j-dyn4j (BSD-3-Clause, vendored)
+  - added physics/rythe-interactive-rythe-engine (MIT, vendored)
+  - reference physics/gonkee-gepe3d
+  - reference physics/keenon-nimblephysics
+  - reference physics/isaac-mason-crashcat
+  - reference physics/notgiven688-jitterphysics2

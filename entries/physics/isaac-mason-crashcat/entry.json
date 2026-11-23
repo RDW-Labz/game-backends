@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:26:10Z",
+ "category": "physics",
+ "commit": "2026-10-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "isaac-mason/crashcat \u2014 physics engine for javascript, built for games, simulations, and creative websites",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "crashcat",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "isaac-mason-crashcat",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 476,
+ "system": "physics engine for javascript, built for games, simulations, and creative websites",
+ "upstream": "https://github.com/isaac-mason/crashcat",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T16:26:07Z",
+ "category": "physics",
+ "commit": "0bcddef74693",
+ "delivery": "vendored",
+ "description": "Rythe-Interactive/Rythe-Engine \u2014 Rythe is a data-oriented C++20 game engine built to make optimal use of modern hardware.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Rythe-Engine",
+ "size_bytes": 8753,
+ "slug": "rythe-interactive-rythe-engine",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 535,
+ "system": "Rythe is a data-oriented C++20 game engine built to make optimal use of modern hardware.",
+ "upstream": "https://github.com/Rythe-Interactive/Rythe-Engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

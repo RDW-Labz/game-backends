@@ -1,0 +1,21 @@
+# Rythe engine asset folder
+!**/assets/**
+!**/engine/resources/**
+
+# Rythe engine tools folder
+!**/tools/**
+
+# Word temporary files
+~$*.*
+
+# linux Makefiles
+**/Makefile
+
+# Windows Preview files
+**/Thumbs.db
+*.xcf
+
+*.shil
+!**/applications/**/engine/**
+
+build/

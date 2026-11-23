@@ -1,0 +1,24 @@
+[submodule "modules/rythe/core"]
+	path = modules/rythe/core
+	url = https://github.com/Rythe-Interactive/Rythe-Core.git
+[submodule "modules/rythe/application"]
+	path = modules/rythe/application
+	url = https://github.com/Rythe-Interactive/Rythe-Application.git
+[submodule "modules/rythe/graphics"]
+	path = modules/rythe/graphics
+	url = https://github.com/Rythe-Interactive/Rythe-Graphics.git
+[submodule "modules/rythe/audio"]
+	path = modules/rythe/audio
+	url = https://github.com/Rythe-Interactive/Rythe-Audio.git
+[submodule "modules/rythe/physics"]
+	path = modules/rythe/physics
+	url = https://github.com/Rythe-Interactive/Rythe-Physics.git
+[submodule "libraries/rythe/rythe-standard-library"]
+	path = libraries/rythe/rythe-standard-library
+	url = https://github.com/Rythe-Interactive/Rythe-Standard-Library.git
+[submodule "rythe-build-system"]
+	path = rythe-build-system
+	url = https://github.com/Rythe-Interactive/rythe-build-system.git
+[submodule "tools/rythe/rythe-reflection-generator"]
+	path = tools/rythe/rythe-reflection-generator
+	url = https://github.com/Rythe-Interactive/rythe-reflection-generator.git

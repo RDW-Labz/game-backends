@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T16:26:04Z",
+ "category": "physics",
+ "commit": "bcf942adaa9b",
+ "delivery": "vendored",
+ "description": "dyn4j/dyn4j \u2014 Java Collision Detection and Physics Engine",
+ "language": "java",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "dyn4j",
+ "size_bytes": 4749297,
+ "slug": "dyn4j-dyn4j",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 541,
+ "system": "Java Collision Detection and Physics Engine",
+ "upstream": "https://github.com/dyn4j/dyn4j",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T16:26:10Z",
+ "category": "physics",
+ "commit": "2025-09-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "keenon/nimblephysics \u2014 Nimble: Physics Engine for Biomechanics and Deep Learning",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "nimblephysics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "keenon-nimblephysics",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 498,
+ "system": "Nimble: Physics Engine for Biomechanics and Deep Learning",
+ "upstream": "https://github.com/keenon/nimblephysics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
