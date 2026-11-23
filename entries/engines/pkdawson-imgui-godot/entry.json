@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T13:12:04Z",
+ "category": "engines",
+ "commit": "8a9f0c423533",
+ "delivery": "vendored",
+ "description": "pkdawson/imgui-godot \u2014 Dear ImGui plugin for Godot 4",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "imgui-godot",
+ "size_bytes": 293682,
+ "slug": "pkdawson-imgui-godot",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 888,
+ "system": "Dear ImGui plugin for Godot 4",
+ "upstream": "https://github.com/pkdawson/imgui-godot",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

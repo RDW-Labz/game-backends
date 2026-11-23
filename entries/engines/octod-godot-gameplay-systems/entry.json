@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T13:12:06Z",
+ "category": "engines",
+ "commit": "2025-06-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OctoD/godot-gameplay-systems \u2014 \u2694\ufe0f A plugin for Godot to create your gameplay systems in a Godot way.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-gameplay-systems",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "octod-godot-gameplay-systems",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 745,
+ "system": "\u2694\ufe0f A plugin for Godot to create your gameplay systems in a Godot way.",
+ "upstream": "https://github.com/OctoD/godot-gameplay-systems",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2018,3 +2018,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/ramokz-phantom-camera
   - reference engines/zylann-godot-heightmap-plugin
   - reference engines/godotengine-godot-vscode-plugin
+
+- **2026-11-23 13:12 UTC** — tick 699: +2 screened, +4 reference, 0 skipped, catalogue=775
+  - added engines/func-godot-func-godot-plugin (MIT, vendored)
+  - added engines/pkdawson-imgui-godot (MIT, vendored)
+  - reference engines/yurineko73-godot-mcp-native
+  - reference engines/fenix-hub-godot-engine-easy-charts
+  - reference engines/portponky-better-terrain
+  - reference engines/octod-godot-gameplay-systems

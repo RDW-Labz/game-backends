@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T13:12:06Z",
+ "category": "engines",
+ "commit": "2026-02-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Portponky/better-terrain \u2014 Terrain plugin for Godot 4",
+ "language": "gdscript",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "better-terrain",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "portponky-better-terrain",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 751,
+ "system": "Terrain plugin for Godot 4",
+ "upstream": "https://github.com/Portponky/better-terrain",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
