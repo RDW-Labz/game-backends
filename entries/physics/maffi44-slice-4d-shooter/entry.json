@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T17:46:07Z",
+ "category": "physics",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "maffi44/slice-4d-shooter \u2014 Slice: 4D Shooter - the first multiplayer action shooter set in four-dimensional space",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "slice-4d-shooter",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "maffi44-slice-4d-shooter",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 50,
+ "system": "Slice: 4D Shooter - the first multiplayer action shooter set in four-dimensional space",
+ "upstream": "https://github.com/maffi44/slice-4d-shooter",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

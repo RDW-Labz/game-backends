@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T17:46:03Z",
+ "category": "physics",
+ "commit": "a7a87b3c2c4e",
+ "delivery": "vendored",
+ "description": "superdump/bevy_prototype_character_controller \u2014 Character controllers for use with Bevy and any physics engine you like",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "bevy_prototype_character_controller",
+ "size_bytes": 54249,
+ "slug": "superdump-bevy-prototype-character-controller",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 53,
+ "system": "Character controllers for use with Bevy and any physics engine you like",
+ "upstream": "https://github.com/superdump/bevy_prototype_character_controller",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T17:46:07Z",
+ "category": "physics",
+ "commit": "2018-03-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "not-fl3/bulletrs \u2014 Bullet Physics wrapper for the Rust language.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bulletrs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "not-fl3-bulletrs",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 47,
+ "system": "Bullet Physics wrapper for the Rust language.",
+ "upstream": "https://github.com/not-fl3/bulletrs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2154,3 +2154,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/aclfe-inertia
   - reference physics/secondhalfgames-jolt-rust
   - reference physics/minimaxir-ballin
+
+- **2026-11-23 17:46 UTC** — tick 716: +2 screened, +4 reference, 0 skipped, catalogue=877
+  - added physics/superdump-bevy-prototype-character-controller (MIT, vendored)
+  - added physics/janhohenheim-avian-pickup (Apache-2.0, vendored)
+  - reference physics/ajokela-ballistics-engine
+  - reference physics/maffi44-slice-4d-shooter
+  - reference physics/manevillef-bevy-verlet
+  - reference physics/not-fl3-bulletrs

@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-23 17:30 UTC · 871 entries · 232 vendored, 639 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-23 17:46 UTC · 877 entries · 234 vendored, 643 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
-| [physics](#physics) — Physics | 79 | 21 | 58 |
+| [physics](#physics) — Physics | 85 | 23 | 62 |
 | [math](#math) — Math libraries | 16 | 11 | 5 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 15 | 4 | 11 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 99 | 30 | 69 |
@@ -420,7 +420,7 @@ _Generated 2026-11-23 17:30 UTC · 871 entries · 232 vendored, 639 reference-on
 
 ## physics
 
-**Physics** — 79 entries
+**Physics** — 85 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -428,7 +428,11 @@ _Generated 2026-11-23 17:30 UTC · 871 entries · 232 vendored, 639 reference-on
 | [anki-3d-engine](entries/physics/godlikepanos-anki-3d-engine/README.md) | AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more | c++ | unknown | reference | [godlikepanos/anki-3d-engine](https://github.com/godlikepanos/anki-3d-engine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [apollonia](entries/physics/wgtdkp-apollonia/README.md) | Tiny 2D physics engine | c++ | MIT | reference | [wgtdkp/apollonia](https://github.com/wgtdkp/apollonia) @ `2022-01-28 (branch tip at catalogue time)` |
 | [avian](entries/physics/avianphysics-avian/README.md) | ECS-driven 2D and 3D physics engine for the Bevy game engine. | rust | Apache-2.0 | reference | [avianphysics/avian](https://github.com/avianphysics/avian) @ `2026-11-04 (branch tip at catalogue time)` |
+| [avian_pickup](entries/physics/janhohenheim-avian-pickup/README.md) | A plugin for implementing picking up dynamic rigid bodies in Avian physics for the Bevy engine. Modeled after Half Life 2's gravity gun. | rust | Apache-2.0 | vendored | [janhohenheim/avian_pickup](https://github.com/janhohenheim/avian_pickup) @ `4fbfdaa751de` |
 | [ballin](entries/physics/minimaxir-ballin/README.md) | A colorful interactive physics simulator with thousands of balls, but in your terminal! | rust | MIT | reference | [minimaxir/ballin](https://github.com/minimaxir/ballin) @ `2026-01-19 (branch tip at catalogue time)` |
+| [ballistics-engine](entries/physics/ajokela-ballistics-engine/README.md) | High-performance ballistics trajectory engine | rust | MIT | reference | [ajokela/ballistics-engine](https://github.com/ajokela/ballistics-engine) @ `2026-11-23 (branch tip at catalogue time)` |
+| [bevy_prototype_character_controller](entries/physics/superdump-bevy-prototype-character-controller/README.md) | Character controllers for use with Bevy and any physics engine you like | rust | MIT | vendored | [superdump/bevy_prototype_character_controller](https://github.com/superdump/bevy_prototype_character_controller) @ `a7a87b3c2c4e` |
+| [bevy_verlet](entries/physics/manevillef-bevy-verlet/README.md) | Verlet physics plugin for bevy. | rust | MIT | reference | [ManevilleF/bevy_verlet](https://github.com/ManevilleF/bevy_verlet) @ `2026-05-04 (branch tip at catalogue time)` |
 | [Blinc](entries/physics/project-blinc-blinc/README.md) | A declarative, reactive UI system with first-class state machines, spring physics animations, and GPU-accelerated rendering | rust | Apache-2.0 | reference | [project-blinc/Blinc](https://github.com/project-blinc/Blinc) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Box2D](entries/physics/box2d/README.md) | 2D rigid-body collision + dynamics solver | c++ | MIT | vendored | [erincatto/box2d](https://github.com/erincatto/box2d) @ `dd8bd3fb525f` |
 | [box2d](entries/physics/bytearena-box2d/README.md) | Box2D.go - Go port of Box2D - a 2D Physics Engine for Games. | go | Zlib | vendored | [ByteArena/box2d](https://github.com/ByteArena/box2d) @ `acbde413692f` |
@@ -436,6 +440,7 @@ _Generated 2026-11-23 17:30 UTC · 871 entries · 232 vendored, 639 reference-on
 | [box2d-netstandard](entries/physics/codingben-box2d-netstandard/README.md) | C# port of Box2D - Erin Catto's 2D Physics Engine | c# | MIT | vendored | [codingben/box2d-netstandard](https://github.com/codingben/box2d-netstandard) @ `b34d6238011a` |
 | [box3d](entries/physics/erincatto-box3d/README.md) | Box3D is a 3D physics engine for games | c | MIT | vendored | [erincatto/box3d](https://github.com/erincatto/box3d) @ `e48b902fee41` |
 | [Bullet Physics](entries/physics/bullet3/README.md) | 3D collision/dynamics + soft body + ML | c++ | Zlib | reference | [bulletphysics/bullet3](https://github.com/bulletphysics/bullet3) @ `d3afe76132fc` |
+| [bulletrs](entries/physics/not-fl3-bulletrs/README.md) | Bullet Physics wrapper for the Rust language. | rust | MIT | reference | [not-fl3/bulletrs](https://github.com/not-fl3/bulletrs) @ `2018-03-08 (branch tip at catalogue time)` |
 | [CadetEngine-as](entries/physics/cadeteditor-cadetengine-as/README.md) | CadetEngine is a component-based AS3 Scene Engine supporting 2D and 3D GPU accelerated rendering, physics, custom behaviours and 3rd party library integration.  | actionscript | unknown | reference | [CadetEditor/CadetEngine-as](https://github.com/CadetEditor/CadetEngine-as) @ `2014-07-10 (branch tip at catalogue time)` |
 | [cannon.js](entries/physics/schteppe-cannon-js/README.md) | A lightweight 3D physics engine written in JavaScript. | javascript | MIT | reference | [schteppe/cannon.js](https://github.com/schteppe/cannon.js) @ `2023-08-04 (branch tip at catalogue time)` |
 | [Chipmunk2D](entries/physics/chipmunk2d/README.md) | 2D rigid bodies, constraints, spatial index | c | MIT | vendored | [slembcke/Chipmunk2D](https://github.com/slembcke/Chipmunk2D) @ `f2f3d66220b8` |
@@ -490,6 +495,7 @@ _Generated 2026-11-23 17:30 UTC · 871 entries · 232 vendored, 639 reference-on
 | [Rythe-Engine](entries/physics/rythe-interactive-rythe-engine/README.md) | Rythe is a data-oriented C++20 game engine built to make optimal use of modern hardware. | c++ | MIT | vendored | [Rythe-Interactive/Rythe-Engine](https://github.com/Rythe-Interactive/Rythe-Engine) @ `0bcddef74693` |
 | [salva](entries/physics/dimforge-salva/README.md) | 2 and 3-dimensional fluid simulation library in Rust. | rust | Apache-2.0 | reference | [dimforge/salva](https://github.com/dimforge/salva) @ `2026-11-01 (branch tip at catalogue time)` |
 | [sandbox](entries/physics/hakolao-sandbox/README.md) | 2D Pixel Physics Simulator | rust | Apache-2.0 | reference | [hakolao/sandbox](https://github.com/hakolao/sandbox) @ `2023-05-10 (branch tip at catalogue time)` |
+| [slice-4d-shooter](entries/physics/maffi44-slice-4d-shooter/README.md) | Slice: 4D Shooter - the first multiplayer action shooter set in four-dimensional space | rust | MIT | reference | [maffi44/slice-4d-shooter](https://github.com/maffi44/slice-4d-shooter) @ `2026-11-23 (branch tip at catalogue time)` |
 | [supertux — collision](entries/physics/supertux-collision/README.md) | rigid-body collision and dynamics | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [symbolica](entries/physics/symbolica-dev-symbolica/README.md) | Symbolica is a high-performance computer algebra library for Python and Rust. Manipulate large expressions, match patterns, and generate optimized numerical cod | rust | none | reference | [symbolica-dev/symbolica](https://github.com/symbolica-dev/symbolica) @ `bf6e4e2813db` |
 | [tabletop-club](entries/physics/drwhut-tabletop-club/README.md) | An open-source platform for playing tabletop games in a physics-based 3D environment for Windows, macOS, and Linux! Made with the Godot Engine. | gdscript | MIT | reference | [drwhut/tabletop-club](https://github.com/drwhut/tabletop-club) @ `2026-08-30 (branch tip at catalogue time)` |

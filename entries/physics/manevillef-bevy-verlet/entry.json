@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-23T17:46:07Z",
+ "category": "physics",
+ "commit": "2026-05-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ManevilleF/bevy_verlet \u2014 Verlet physics plugin for bevy.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy_verlet",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "manevillef-bevy-verlet",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 49,
+ "system": "Verlet physics plugin for bevy.",
+ "upstream": "https://github.com/ManevilleF/bevy_verlet",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

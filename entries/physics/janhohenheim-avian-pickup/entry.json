@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-23T17:46:06Z",
+ "category": "physics",
+ "commit": "4fbfdaa751de",
+ "delivery": "vendored",
+ "description": "janhohenheim/avian_pickup \u2014 A plugin for implementing picking up dynamic rigid bodies in Avian physics for the Bevy engine. Modeled after Half Life 2's gravity gun.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "license-apache.txt",
+ "license_verdict": "clean",
+ "name": "avian_pickup",
+ "size_bytes": 119391,
+ "slug": "janhohenheim-avian-pickup",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 52,
+ "system": "A plugin for implementing picking up dynamic rigid bodies in Avian physics for the Bevy engine. Modeled after Half Life 2's gravity gun.",
+ "upstream": "https://github.com/janhohenheim/avian_pickup",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
