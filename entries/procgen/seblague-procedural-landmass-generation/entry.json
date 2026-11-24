@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T07:56:34Z",
+ "category": "procgen",
+ "commit": "2024-01-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SebLague/Procedural-Landmass-Generation \u2014 Procedural Landmass Generation in Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Procedural-Landmass-Generation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "seblague-procedural-landmass-generation",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 1253,
+ "system": "Procedural Landmass Generation in Unity",
+ "upstream": "https://github.com/SebLague/Procedural-Landmass-Generation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T07:56:30Z",
+ "category": "procgen",
+ "commit": "76bd8b82ee19",
+ "delivery": "reference",
+ "description": "DLR-RM/BlenderProc \u2014 A procedural Blender pipeline for photorealistic training image generation",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "BlenderProc",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 1293945,
+ "slug": "dlr-rm-blenderproc",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 3811,
+ "system": "A procedural Blender pipeline for photorealistic training image generation",
+ "upstream": "https://github.com/DLR-RM/BlenderProc",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

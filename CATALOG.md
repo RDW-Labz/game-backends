@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 07:41 UTC · 1166 entries · 304 vendored, 862 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 07:56 UTC · 1172 entries · 305 vendored, 867 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-24 07:41 UTC · 1166 entries · 304 vendored, 862 reference-o
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
-| [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
+| [procgen](#procgen) — Procedural generation | 91 | 25 | 66 |
 
 
 ## engines
@@ -1146,7 +1146,7 @@ _Generated 2026-11-24 07:41 UTC · 1166 entries · 304 vendored, 862 reference-o
 
 ## procgen
 
-**Procedural generation** — 85 entries
+**Procedural generation** — 91 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1157,6 +1157,7 @@ _Generated 2026-11-24 07:41 UTC · 1166 entries · 304 vendored, 862 reference-o
 | [ArduTouch](entries/procgen/maltman23-ardutouch/README.md) | ==> ARDUTOUCH KITS ARE AVAILABLE at CornfieldElectronics.com <==  ArduTouch is an Arduino-compatible music synthesizer kit with a built-in touch keyboard, and w | c++ | CC-BY-SA-3.0 | reference | [maltman23/ArduTouch](https://github.com/maltman23/ArduTouch) @ `8b6c6f74e6ca` |
 | [astray](entries/procgen/sience-astray/README.md) | Astray is a lua based maze, room and dungeon generation library for dungeon crawlers and rougelike video games | lua | Zlib | vendored | [SiENcE/astray](https://github.com/SiENcE/astray) @ `1a557a8281a8` |
 | [bevy_generative](entries/procgen/manankarnik-bevy-generative/README.md) | Real-time procedural generation of maps, textures, terrain, planets and more! | rust | Apache-2.0 | reference | [manankarnik/bevy_generative](https://github.com/manankarnik/bevy_generative) @ `2025-10-08 (branch tip at catalogue time)` |
+| [BlenderProc](entries/procgen/dlr-rm-blenderproc/README.md) | A procedural Blender pipeline for photorealistic training image generation | python | GPL-3.0 | reference | [DLR-RM/BlenderProc](https://github.com/DLR-RM/BlenderProc) @ `76bd8b82ee19` |
 | [BMeshUnity](entries/procgen/eliemichel-bmeshunity/README.md) | A Unity package to make runtime procedural mesh generation more flexible. | c# | MIT | reference | [eliemichel/BMeshUnity](https://github.com/eliemichel/BMeshUnity) @ `2023-12-13 (branch tip at catalogue time)` |
 | [CasualGodComplex](entries/procgen/martindevans-casualgodcomplex/README.md) | Procedural generation of galaxies | c# | MIT | reference | [martindevans/CasualGodComplex](https://github.com/martindevans/CasualGodComplex) @ `2019-04-08 (branch tip at catalogue time)` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-mapgen/README.md) | procedural map/world/level generation | cpp | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300f` |
@@ -1181,8 +1182,10 @@ _Generated 2026-11-24 07:41 UTC · 1166 entries · 304 vendored, 862 reference-o
 | [FastNoiseLite](entries/procgen/fastnoiselite/README.md) | single-header noise (perlin/simplex/cellular/fractal) | c | MIT | vendored | [Auburn/FastNoiseLite](https://github.com/Auburn/FastNoiseLite) @ `785f37a9ad76` |
 | [freeminer — mapgen](entries/procgen/freeminer-mapgen/README.md) | procedural map/world/level generation | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
 | [freeminer — mapgen](entries/procgen/freeminer-src-mapgen/README.md) | voxel map generation (biomes, caves, ores) | c++ | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e9d074` |
+| [gaea](entries/procgen/gaea-godot-gaea/README.md) | Procedural generation add-on for Godot 4. | gdscript | MIT | reference | [gaea-godot/gaea](https://github.com/gaea-godot/gaea) @ `2026-10-18 (branch tip at catalogue time)` |
 | [gdTree3D](entries/procgen/jeksun97-gdtree3d/README.md) | 🌳 Plugin for procedural generation of 3D trees of varying complexity for Godot Engine. | c++ | MIT | vendored | [JekSun97/gdTree3D](https://github.com/JekSun97/gdTree3D) @ `e9ec657b0ee3` |
 | [generator](entries/procgen/ilmola-generator/README.md) | A procedural geometry generation library for C++11 | c++ | LGPL-2.1 | reference | [ilmola/generator](https://github.com/ilmola/generator) @ `2023-01-02 (branch tip at catalogue time)` |
+| [godot-4-procedural-generation](entries/procgen/gdquest-demos-godot-4-procedural-generation/README.md) | Procedural generation algorithms and demos for the Godot game engine | gdscript | MIT | vendored | [gdquest-demos/godot-4-procedural-generation](https://github.com/gdquest-demos/godot-4-procedural-generation) @ `19c98cee16ed` |
 | [godot-constraint-solving](entries/procgen/alexeybond-godot-constraint-solving/README.md) | WFC (Wave Function Collapse) and generic constraint satisfaction problem solver implementation for Godot 4 | gdscript | MIT | vendored | [AlexeyBond/godot-constraint-solving](https://github.com/AlexeyBond/godot-constraint-solving) @ `45e3edd8ea12` |
 | [godot-procedural-tree-generation](entries/procgen/adamallsebrook-godot-procedural-tree-generation/README.md) | Procedural generation of trees using L-Systems in Godot. | gdscript | MIT | reference | [AdamAllsebrook/godot-procedural-tree-generation](https://github.com/AdamAllsebrook/godot-procedural-tree-generation) @ `2022-01-20 (branch tip at catalogue time)` |
 | [godot3_procgen_demos](entries/procgen/kidscancode-godot3-procgen-demos/README.md) | Exploring Procedural Generation algorithms in Godot | gdscript | MIT | reference | [kidscancode/godot3_procgen_demos](https://github.com/kidscancode/godot3_procgen_demos) @ `2020-07-12 (branch tip at catalogue time)` |
@@ -1199,10 +1202,12 @@ _Generated 2026-11-24 07:41 UTC · 1166 entries · 304 vendored, 862 reference-o
 | [open_world_game](entries/procgen/kettle11-open-world-game/README.md) | Just a quick terrain generation experiment. | rust | unknown | reference | [kettle11/open_world_game](https://github.com/kettle11/open_world_game) @ `2023-04-22 (branch tip at catalogue time)` |
 | [perlin](entries/procgen/joeiddon-perlin/README.md) | A JavaScript library for Perlin Noise generation | javascript | none | reference | [joeiddon/perlin](https://github.com/joeiddon/perlin) @ `5941e2b52507` |
 | [procedural-cities](entries/procgen/phiresky-procedural-cities/README.md) | Information about procedural city generation | tex | AGPL-3.0 | reference | [phiresky/procedural-cities](https://github.com/phiresky/procedural-cities) @ `f0c2c86e4289` |
+| [Procedural-Landmass-Generation](entries/procgen/seblague-procedural-landmass-generation/README.md) | Procedural Landmass Generation in Unity | c# | MIT | reference | [SebLague/Procedural-Landmass-Generation](https://github.com/SebLague/Procedural-Landmass-Generation) @ `2024-01-12 (branch tip at catalogue time)` |
 | [ProceduralMeshDemos](entries/procgen/siggig-proceduralmeshdemos/README.md) | Examples of procedural mesh generation in Unreal Engine. | c++ | MIT | reference | [SiggiG/ProceduralMeshDemos](https://github.com/SiggiG/ProceduralMeshDemos) @ `2026-10-20 (branch tip at catalogue time)` |
 | [ProceduralTerrain](entries/procgen/thesoenke-proceduralterrain/README.md) | Procedural voxel terrain generation in Unity | c# | MIT | vendored | [theSoenke/ProceduralTerrain](https://github.com/theSoenke/ProceduralTerrain) @ `468372292bea` |
 | [ProceduralToolkit](entries/procgen/syomus-proceduraltoolkit/README.md) | Procedural generation library for Unity | c# | MIT | vendored | [Syomus/ProceduralToolkit](https://github.com/Syomus/ProceduralToolkit) @ `984a1e69b8ac` |
 | [procgen](entries/procgen/epholys-procgen/README.md) | Procedural Generation Experiments | c++ | GPL-3.0 | reference | [Epholys/procgen](https://github.com/Epholys/procgen) @ `a238f62f06c2` |
+| [protongraph](entries/procgen/protongraph-protongraph/README.md) | Experimental node-based software for procedural content generation | gdscript | MIT | reference | [protongraph/protongraph](https://github.com/protongraph/protongraph) @ `2023-11-23 (branch tip at catalogue time)` |
 | [ptdesigner](entries/procgen/drummyfish-ptdesigner/README.md) | Library and GUI tool for designing and generation of procedural textures, made as a part of my Bachelor thesis. | c++ | GPL-2.0 | reference | [drummyfish/ptdesigner](https://github.com/drummyfish/ptdesigner) @ `a2532e9ddc4b` |
 | [R2E-Gym](entries/procgen/r2e-gym-r2e-gym/README.md) | [COLM 2025] Official repository for R2E-Gym: Procedural Environment Generation and Hybrid Verifiers for Scaling Open-Weights SWE Agents | python | Apache-2.0 | reference | [R2E-Gym/R2E-Gym](https://github.com/R2E-Gym/R2E-Gym) @ `2025-07-13 (branch tip at catalogue time)` |
 | [roguelike-celebration-2020](entries/procgen/thebracket-roguelike-celebration-2020/README.md) | Code for my Procedural Map Generation talk at the Roguelike Celebration 2020 | rust | MIT | reference | [thebracket/roguelike-celebration-2020](https://github.com/thebracket/roguelike-celebration-2020) @ `2022-06-17 (branch tip at catalogue time)` |
@@ -1213,6 +1218,7 @@ _Generated 2026-11-24 07:41 UTC · 1166 entries · 304 vendored, 862 reference-o
 | [substance-designer-win](entries/procgen/caroledwards6652-substance-designer-win/README.md) | Adobe Substance Designer - node-based procedural texture authoring tool for material graph creation, PBR texture generation and parametric material libraries on | n/a | CC-BY-SA-4.0 | reference | [caroledwards6652/substance-designer-win](https://github.com/caroledwards6652/substance-designer-win) @ `278cb141589d` |
 | [substance-designer-win](entries/procgen/webro12-substance-designer-win/README.md) | Adobe Substance Designer - node-based procedural texture authoring tool for material graph creation, PBR texture generation and parametric material libraries on | n/a | CC-BY-SA-4.0 | reference | [webro12/substance-designer-win](https://github.com/webro12/substance-designer-win) @ `60ac840d38dd` |
 | [TerraForge3D](entries/procgen/jaysmito101-terraforge3d/README.md) | Cross Platform Professional Procedural Terrain Generation & Texturing Tool | c++ | MIT | reference | [Jaysmito101/TerraForge3D](https://github.com/Jaysmito101/TerraForge3D) @ `2026-10-12 (branch tip at catalogue time)` |
+| [terrain-diffusion](entries/procgen/xandergos-terrain-diffusion/README.md) | [SIGGRAPH 2026] InfiniteDiffusion & Terrain Diffusion: Procedural generation with diffusion models | python | MIT | reference | [xandergos/terrain-diffusion](https://github.com/xandergos/terrain-diffusion) @ `2026-08-12 (branch tip at catalogue time)` |
 | [THREE.Terrain](entries/procgen/icecreamyou-three-terrain/README.md) | A procedural terrain generation engine for use with the Three.js 3D graphics library for the web. | javascript | MIT | reference | [IceCreamYou/THREE.Terrain](https://github.com/IceCreamYou/THREE.Terrain) @ `2026-11-12 (branch tip at catalogue time)` |
 | [TiledSharp](entries/procgen/marshallward-tiledsharp/README.md) | C# library for parsing and importing TMX and TSX files generated by Tiled, a tile map generation tool | c# | Apache-2.0 | vendored | [marshallward/TiledSharp](https://github.com/marshallward/TiledSharp) @ `3710df6f4578` |
 | [Tracery](entries/procgen/tracery/README.md) | grammar-based generative text/structure | javascript | Apache-2.0 | vendored | [galaxykate/tracery](https://github.com/galaxykate/tracery) @ `11db07cb8e35` |

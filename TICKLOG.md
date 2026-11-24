@@ -2555,3 +2555,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/anshulahuja98-python3-crdt
   - reference save-state/group4layers-ex-image-info
   - reference save-state/astrojs-fitsjs
+
+- **2026-11-24 07:56 UTC** — tick 769: +2 screened, +4 reference, 11 skipped, catalogue=1172
+  - added procgen/dlr-rm-blenderproc (GPL-3.0, reference)
+  - added procgen/gdquest-demos-godot-4-procedural-generation (MIT, vendored)
+  - reference procgen/protongraph-protongraph
+  - reference procgen/gaea-godot-gaea
+  - reference procgen/xandergos-terrain-diffusion
+  - reference procgen/seblague-procedural-landmass-generation

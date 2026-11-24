@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T07:56:34Z",
+ "category": "procgen",
+ "commit": "2026-08-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "xandergos/terrain-diffusion \u2014 [SIGGRAPH 2026] InfiniteDiffusion & Terrain Diffusion: Procedural generation with diffusion models",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "terrain-diffusion",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "xandergos-terrain-diffusion",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 1510,
+ "system": "[SIGGRAPH 2026] InfiniteDiffusion & Terrain Diffusion: Procedural generation with diffusion models",
+ "upstream": "https://github.com/xandergos/terrain-diffusion",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

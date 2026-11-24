@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T07:56:34Z",
+ "category": "procgen",
+ "commit": "2023-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "protongraph/protongraph \u2014 Experimental node-based software for procedural content generation",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "protongraph",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "protongraph-protongraph",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 1755,
+ "system": "Experimental node-based software for procedural content generation",
+ "upstream": "https://github.com/protongraph/protongraph",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

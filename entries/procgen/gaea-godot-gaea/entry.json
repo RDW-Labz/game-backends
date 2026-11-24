@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T07:56:34Z",
+ "category": "procgen",
+ "commit": "2026-10-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gaea-godot/gaea \u2014 Procedural generation add-on for Godot 4.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "gaea",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gaea-godot-gaea",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 1668,
+ "system": "Procedural generation add-on for Godot 4.",
+ "upstream": "https://github.com/gaea-godot/gaea",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
