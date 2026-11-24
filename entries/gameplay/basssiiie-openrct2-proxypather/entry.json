@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:16:07Z",
+ "category": "gameplay",
+ "commit": "2023-03-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Basssiiie/OpenRCT2-ProxyPather \u2014 This plugin lets you quickly cover guide paths with full paths without changing the guests pathfinding.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "OpenRCT2-ProxyPather",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "basssiiie-openrct2-proxypather",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 16,
+ "system": "This plugin lets you quickly cover guide paths with full paths without changing the guests pathfinding.",
+ "upstream": "https://github.com/Basssiiie/OpenRCT2-ProxyPather",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

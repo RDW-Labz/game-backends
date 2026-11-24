@@ -2375,3 +2375,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/digitsensitive-astar-typescript
   - reference gameplay/darkmatter2222-agentic-among-us
   - reference gameplay/skeldjs-skeldjs
+
+- **2026-11-24 01:16 UTC** — tick 744: +2 screened, +4 reference, 0 skipped, catalogue=1042
+  - added gameplay/goldest-star-cocos-pathfinding (none, reference)
+  - added gameplay/sonngdev-algorithms-visualizer (none, reference)
+  - reference gameplay/basssiiie-openrct2-proxypather
+  - reference gameplay/amaranthusss-react-three-yuka-pathfinding
+  - reference gameplay/ngquhuanbl-pathfinding-visualization
+  - reference gameplay/ivannovazzi-moveet

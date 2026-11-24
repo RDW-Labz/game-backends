@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:16:07Z",
+ "category": "gameplay",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ivannovazzi/moveet",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "moveet",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ivannovazzi-moveet",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 14,
+ "system": "see upstream",
+ "upstream": "https://github.com/ivannovazzi/moveet",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

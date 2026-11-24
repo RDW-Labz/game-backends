@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:16:07Z",
+ "category": "gameplay",
+ "commit": "2021-10-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ngquhuanbl/Pathfinding_Visualization \u2014 A ReactJS project visualizes the path-finding algorithms with additional cool features like speed adjustment, maze generation, mobile support, etc.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Pathfinding_Visualization",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ngquhuanbl-pathfinding-visualization",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 15,
+ "system": "A ReactJS project visualizes the path-finding algorithms with additional cool features like speed adjustment, maze generation, mobile support, etc.",
+ "upstream": "https://github.com/ngquhuanbl/Pathfinding_Visualization",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

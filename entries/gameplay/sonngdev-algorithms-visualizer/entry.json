@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T01:16:06Z",
+ "category": "gameplay",
+ "commit": "23a20d434f93",
+ "delivery": "reference",
+ "description": "sonngdev/algorithms-visualizer \u2014 Visualization of common pathfinding algorithms \ud83e\udded \ud83d\uddfa\ufe0f",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "algorithms-visualizer",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 114690,
+ "slug": "sonngdev-algorithms-visualizer",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 17,
+ "system": "Visualization of common pathfinding algorithms \ud83e\udded \ud83d\uddfa\ufe0f",
+ "upstream": "https://github.com/sonngdev/algorithms-visualizer",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
