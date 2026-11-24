@@ -2785,3 +2785,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/fritzy-ape-ecs
   - reference engines/abeimler-ecs-benchmark
   - reference engines/lastolivegames-becsy
+
+- **2026-11-24 19:09 UTC** — tick 803: +2 screened, +4 reference, 9 skipped, catalogue=1342
+  - added engines/willtobyte-carimbo (MIT, vendored)
+  - added engines/andygeiss-ecs (MIT, vendored)
+  - reference engines/zllangct-ecs
+  - reference engines/rlipsc-polymorph
+  - reference engines/mayakwd-tick-knock
+  - reference engines/fireblade-engine-ecs

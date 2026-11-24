@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T19:09:50Z",
+ "category": "engines",
+ "commit": "cc1e3e26b5bb",
+ "delivery": "vendored",
+ "description": "andygeiss/ecs \u2014 Build your own Game-Engine based on the Entity Component System concept in Golang.",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ecs",
+ "size_bytes": 38698,
+ "slug": "andygeiss-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 177,
+ "system": "Build your own Game-Engine based on the Entity Component System concept in Golang.",
+ "upstream": "https://github.com/andygeiss/ecs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

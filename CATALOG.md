@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 18:53 UTC · 1336 entries · 344 vendored, 992 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 19:09 UTC · 1342 entries · 346 vendored, 996 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 529 | 122 | 407 |
+| [engines](#engines) — Game engines and engine subsystems | 535 | 124 | 411 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 18:53 UTC · 1336 entries · 344 vendored, 992 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 529 entries
+**Game engines and engine subsystems** — 535 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -107,6 +107,7 @@ _Generated 2026-11-24 18:53 UTC · 1336 entries · 344 vendored, 992 reference-o
 | [BRUTAL](entries/engines/ahwootech-brutal/README.md) | A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. T | c# | unknown | reference | [ahwootech/BRUTAL](https://github.com/ahwootech/BRUTAL) @ `2026-11-12 (branch tip at catalogue time)` |
 | [calcium](entries/engines/cptx032-calcium/README.md) | A ascii/text game library | python | MIT | reference | [cptx032/calcium](https://github.com/cptx032/calcium) @ `2022-11-11 (branch tip at catalogue time)` |
 | [canvas_ity](entries/engines/a-e-k-canvas-ity/README.md) | A tiny, single-header <canvas>-like 2D rasterizer for C++ | c++ | ISC | reference | [a-e-k/canvas_ity](https://github.com/a-e-k/canvas_ity) @ `2024-02-29 (branch tip at catalogue time)` |
+| [carimbo](entries/engines/willtobyte-carimbo/README.md) | A 2D game engine developed in modern C++ using SDL, an Entity-Component-System (ECS) architecture, miniaudio, and Box2D. It features Lua scripting and is design | c++ | MIT | vendored | [willtobyte/carimbo](https://github.com/willtobyte/carimbo) @ `5200981fa462` |
 | [carp — core](entries/engines/carp-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | Apache-2.0 | vendored | [carp-lang/Carp](https://github.com/carp-lang/Carp) @ `ad5a96e` |
 | [cat-game-engine](entries/engines/kayjames196-cat-game-engine/README.md) | Cat Game Engine: three-level abstraction game engine with unbound architecture | typescript | none | reference | [KayJames196/cat-game-engine](https://github.com/KayJames196/cat-game-engine) @ `dba965822d7d` |
 | [CBG----Clavierhaus-BackGammon — engine-core](entries/engines/cbg-clavierhaus-backgammon-engine-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [clavierhaus/gnubg-android](https://github.com/clavierhaus/gnubg-android) @ `6202857` |
@@ -147,10 +148,13 @@ _Generated 2026-11-24 18:53 UTC · 1336 entries · 344 vendored, 992 reference-o
 | [ebiten](entries/engines/hajimehoshi-ebiten/README.md) | A dead simple 2D game engine for Go | go | Apache-2.0 | vendored | [hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) @ `d438df689b19` |
 | [ebitenui](entries/engines/ebitenui-ebitenui/README.md) | User interface engine and widget library for Ebitengine | go | MIT | reference | [ebitenui/ebitenui](https://github.com/ebitenui/ebitenui) @ `2026-08-19 (branch tip at catalogue time)` |
 | [echo](entries/engines/timi-liuliang-echo/README.md) | A New Cross-Platform 2D 3D Game Engine | c++ | MIT | reference | [timi-liuliang/echo](https://github.com/timi-liuliang/echo) @ `2026-09-16 (branch tip at catalogue time)` |
+| [ecs](entries/engines/andygeiss-ecs/README.md) | Build your own Game-Engine based on the Entity Component System concept in Golang. | go | MIT | vendored | [andygeiss/ecs](https://github.com/andygeiss/ecs) @ `cc1e3e26b5bb` |
 | [ecs](entries/engines/engoengine-ecs/README.md) | A Go-implementation of the Entity-Component-System paradigm | go | MIT | vendored | [EngoEngine/ecs](https://github.com/EngoEngine/ecs) @ `2e364524a9bc` |
+| [ecs](entries/engines/fireblade-engine-ecs/README.md) | A lightweight, fast Entity-Component System (ECS) implementation in Swift | swift | MIT | reference | [fireblade-engine/ecs](https://github.com/fireblade-engine/ecs) @ `2026-11-24 (branch tip at catalogue time)` |
 | [ecs](entries/engines/sergeymakeev-ecs/README.md) | Thoughts about entity-component-system | c++ | MIT | reference | [SergeyMakeev/ecs](https://github.com/SergeyMakeev/ecs) @ `2018-11-25 (branch tip at catalogue time)` |
 | [ECS](entries/engines/shangdibaozi-ecs/README.md) | Entity-Component-System | typescript | MIT | reference | [shangdibaozi/ECS](https://github.com/shangdibaozi/ECS) @ `2024-08-12 (branch tip at catalogue time)` |
 | [ecs](entries/engines/yagl-ecs/README.md) | Entity / Component / System pattern for ES6 | javascript | MIT | vendored | [yagl/ecs](https://github.com/yagl/ecs) @ `90b3ba1868a3` |
+| [ecs](entries/engines/zllangct-ecs/README.md) | A Go-implementation of the ECS (Entity-Component-System), focus on the development of game server. | go | BSD-3-Clause | reference | [zllangct/ecs](https://github.com/zllangct/ecs) @ `2026-09-21 (branch tip at catalogue time)` |
 | [ecs-faq](entries/engines/sandermertens-ecs-faq/README.md) | Frequently asked questions about Entity Component Systems | n/a | unknown | reference | [SanderMertens/ecs-faq](https://github.com/SanderMertens/ecs-faq) @ `2026-07-01 (branch tip at catalogue time)` |
 | [ecs-lib](entries/engines/nidorx-ecs-lib/README.md) | Tiny and easy to use ECS (Entity Component System) library for game programming | typescript | MIT | vendored | [nidorx/ecs-lib](https://github.com/nidorx/ecs-lib) @ `e4738e088e46` |
 | [ECS_101](entries/engines/arturonereu-ecs-101/README.md) | This repository contains an introduction to Unity's Entity Component System. The purpose of this is to help developers understand this paradigm, and why it is i | c# | MIT | vendored | [ArturoNereu/ECS_101](https://github.com/ArturoNereu/ECS_101) @ `1063c46fb6f5` |
@@ -403,6 +407,7 @@ _Generated 2026-11-24 18:53 UTC · 1336 entries · 344 vendored, 992 reference-o
 | [pmtech](entries/engines/polymonster-pmtech/README.md) | Lightweight, multi-platform, data-oriented game engine. | c++ | MIT | reference | [polymonster/pmtech](https://github.com/polymonster/pmtech) @ `2026-10-25 (branch tip at catalogue time)` |
 | [PokemonBattleEngine](entries/engines/kermalis-pokemonbattleengine/README.md) | A C# library that can emulate Pokémon battles. | c# | MIT | vendored | [Kermalis/PokemonBattleEngine](https://github.com/Kermalis/PokemonBattleEngine) @ `e733883abb04` |
 | [pokewilds](entries/engines/sheerst-pokewilds/README.md) | PokeWilds - A Gen 2 Game/Engine using libGDX | assembly | unknown | reference | [SheerSt/pokewilds](https://github.com/SheerSt/pokewilds) @ `2026-08-16 (branch tip at catalogue time)` |
+| [polymorph](entries/engines/rlipsc-polymorph/README.md) | A fast and frugal entity-component-system library with a focus on code generation and compile time optimisation. | nim | Apache-2.0 | reference | [rlipsc/polymorph](https://github.com/rlipsc/polymorph) @ `2025-02-22 (branch tip at catalogue time)` |
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
 | [prototype](entries/engines/gonutz-prototype/README.md) | Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM. | c | MIT | vendored | [gonutz/prototype](https://github.com/gonutz/prototype) @ `d3732ae42e68` |
@@ -484,6 +489,7 @@ _Generated 2026-11-24 18:53 UTC · 1336 entries · 344 vendored, 992 reference-o
 | [the-superviral-word-game](entries/engines/the-illarionov-the-superviral-word-game/README.md) | A Vue word game based on the Yakut national sport "Mas-wrestling". Uses XState for state management, WebRTC for multiplayer and has custom WebGL engine | typescript | GPL-3.0 | reference | [the-illarionov/the-superviral-word-game](https://github.com/the-illarionov/the-superviral-word-game) @ `2025-01-08 (branch tip at catalogue time)` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
 | [thrive — engine](entries/engines/thrive-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
+| [tick-knock](entries/engines/mayakwd-tick-knock/README.md) | Small and powerful, type-safe and easy-to-use Entity-Component-System (ECS) library written in TypeScript | typescript | MIT | reference | [mayakwd/tick-knock](https://github.com/mayakwd/tick-knock) @ `2026-10-01 (branch tip at catalogue time)` |
 | [TiledCS](entries/engines/thebonejarmer-tiledcs/README.md) | TiledCS is a dotnet library for loading Tiled tilesets and maps | c# | MIT | reference | [TheBoneJarmer/TiledCS](https://github.com/TheBoneJarmer/TiledCS) @ `2024-08-31 (branch tip at catalogue time)` |
 | [tocenter](entries/engines/silentsokolov-tocenter/README.md) | ToCenter is a video game written in Rust using the ggez engine and the ECS library. | rust | unknown | reference | [silentsokolov/tocenter](https://github.com/silentsokolov/tocenter) @ `2022-11-14 (branch tip at catalogue time)` |
 | [Torque2D](entries/engines/garagegames-torque2d/README.md) | MIT Licensed Open Source version of Torque 2D game engine from GarageGames | c++ | MIT | reference | [GarageGames/Torque2D](https://github.com/GarageGames/Torque2D) @ `72c8891f192b` |

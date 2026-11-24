@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:09:52Z",
+ "category": "engines",
+ "commit": "2025-02-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rlipsc/polymorph \u2014 A fast and frugal entity-component-system library with a focus on code generation and compile time optimisation.",
+ "language": "nim",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "polymorph",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rlipsc-polymorph",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 152,
+ "system": "A fast and frugal entity-component-system library with a focus on code generation and compile time optimisation.",
+ "upstream": "https://github.com/rlipsc/polymorph",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

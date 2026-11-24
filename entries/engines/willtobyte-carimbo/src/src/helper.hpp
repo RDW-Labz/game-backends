@@ -1,0 +1,233 @@
+#pragma once
+
+#include <boost/throw_exception.hpp>
+
+namespace boost {
+inline void throw_exception(std::exception const& e) {
+  throw e;
+}
+
+inline void throw_exception(std::exception const& e, boost::source_location const&) {
+  throw e;
+}
+}
+
+template<std::size_t N>
+struct std::formatter<boost::static_string<N>> : std::formatter<std::string_view> {
+  template<typename FormatContext>
+  auto format(const boost::static_string<N>& str, FormatContext& ctx) const {
+    return std::formatter<std::string_view>::format(std::string_view{str}, ctx);
+  }
+};
+
+struct transparent_string_hash final {
+  using is_transparent = void;
+
+  size_t operator()(std::string_view sv) const noexcept {
+    return std::hash<std::string_view>{}(sv);
+  }
+};
+
+#ifdef _MSC_VER
+  #include <intrin.h>
+  #define PREFETCH(address) _mm_prefetch(reinterpret_cast<const char*>(address), _MM_HINT_T0)
+#else
+  #define PREFETCH(address) __builtin_prefetch(address)
+#endif
+
+struct SDL_Deleter final {
+  template <typename T>
+  void operator()(T* ptr) const {
+    if (!ptr) return;
+
+    if constexpr (requires { SDL_DestroyCond(ptr); }) SDL_DestroyCond(ptr);
+    else if constexpr (requires { SDL_FreeCursor(ptr); }) SDL_FreeCursor(ptr);
+    else if constexpr (requires { SDL_GL_DeleteContext(ptr); }) SDL_GL_DeleteContext(ptr);
+    else if constexpr (requires { SDL_CloseGamepad(ptr); }) SDL_CloseGamepad(ptr);
+    else if constexpr (requires { SDL_HapticClose(ptr); }) SDL_HapticClose(ptr);
+    else if constexpr (requires { SDL_JoystickClose(ptr); }) SDL_JoystickClose(ptr);
+    else if constexpr (requires { SDL_DestroyMutex(ptr); }) SDL_DestroyMutex(ptr);
+    else if constexpr (requires { SDL_FreePalette(ptr); }) SDL_FreePalette(ptr);
+    else if constexpr (requires { SDL_FreeFormat(ptr); }) SDL_FreeFormat(ptr);
+    else if constexpr (requires { SDL_DestroyRenderer(ptr); }) SDL_DestroyRenderer(ptr);
+    else if constexpr (requires { SDL_RWclose(ptr); }) SDL_RWclose(ptr);
+    else if constexpr (requires { SDL_DestroySemaphore(ptr); }) SDL_DestroySemaphore(ptr);
+    else if constexpr (requires { SDL_DestroySurface(ptr); }) SDL_DestroySurface(ptr);
+    else if constexpr (requires { SDL_DestroyTexture(ptr); }) SDL_DestroyTexture(ptr);
+    else if constexpr (requires { SDL_DestroyWindow(ptr); }) SDL_DestroyWindow(ptr);
+    else if constexpr (requires { SDL_free(ptr); }) SDL_free(ptr);
+  }
+};
+
+struct SPNG_Deleter final {
+  void operator()(spng_ctx* ctx) const noexcept {
+    if (!ctx) [[unlikely]] return;
+
+    spng_ctx_free(ctx);
+  }
+};
+
+struct PHYSFS_Deleter final {
+  template <typename T>
+  void operator()(T* ptr) const noexcept {
+    if (!ptr) return;
+
+    if constexpr (std::is_same_v<T, PHYSFS_File>) {
+      PHYSFS_close(ptr);
+    } else if constexpr (std::is_same_v<T, char*>) {
+      PHYSFS_freeList(ptr);
+    }
+  }
+};
+
+template<typename T, typename D>
+[[nodiscard]] constexpr auto unwrap(
+  std::unique_ptr<T, D>&& ptr,
+  std::string_view message,
+  std::source_location location = std::source_location::current())
+    -> std::unique_ptr<T, D> {
+    if (!ptr) [[unlikely]] {
+        throw std::runtime_error(
+            std::format("{}:{} - {}",
+              location.file_name(),
+              location.line(),
+              message)
+        );
+    }
+
+    return std::move(ptr);
+}
+
+template<typename T>
+[[nodiscard]] inline auto unwrap(
+  std::unique_ptr<T, SDL_Deleter>&& ptr,
+  std::string_view message,
+  std::source_location location = std::source_location::current())
+    -> std::unique_ptr<T, SDL_Deleter> {
+    if (!ptr) [[unlikely]] {
+        throw std::runtime_error(
+            std::format("{}:{} - {} | SDL Error: {}",
+              location.file_name(),
+              location.line(),
+              message,
+              SDL_GetError())
+        );
+    }
+
+    return std::move(ptr);
+}
+
+template<typename T>
+[[nodiscard]] inline auto unwrap(
+  std::unique_ptr<T, PHYSFS_Deleter>&& ptr,
+  std::string_view message,
+  std::source_location location = std::source_location::current())
+    -> std::unique_ptr<T, PHYSFS_Deleter> {
+    if (!ptr) [[unlikely]] {
+        throw std::runtime_error(
+            std::format("{}:{} - {} | PHYSFS Error: {}",
+              location.file_name(),
+              location.line(),
+              message,
+              PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode()))
+        );
+    }
+
+    return std::move(ptr);
+}
+
+[[nodiscard]] inline auto unwrap(
+  std::unique_ptr<spng_ctx, SPNG_Deleter>&& ptr,
+  std::string_view message,
+  std::source_location location = std::source_location::current())
+    -> std::unique_ptr<spng_ctx, SPNG_Deleter> {
+    if (!ptr) [[unlikely]] {
+        throw std::runtime_error(
+            std::format("{}:{} - {} | SPNG Error",
+              location.file_name(),
+              location.line(),
+              message)
+        );
+    }
+
+    return std::move(ptr);
+}
+
+struct functor final {
+  sol::protected_function fn;
+  bool active{false};
+
+  functor() noexcept = default;
+  functor(sol::protected_function f) noexcept : fn(std::move(f)), active(fn.valid() && fn.lua_state() != nullptr) {}
+  functor(std::nullptr_t) noexcept {}
+
+  functor& operator=(sol::protected_function f) noexcept {
+    fn = std::move(f);
+    active = fn.valid() && fn.lua_state() != nullptr;
+    return *this;
+  }
+
+  functor& operator=(std::nullptr_t) noexcept {
+    fn = sol::protected_function();
+    active = false;
+    return *this;
+  }
+
+  [[nodiscard]] explicit operator bool() const noexcept {
+    return active;
+  }
+
+  template<typename... Args>
+  void operator()(Args&&... args) const {
+    if (!active) [[unlikely]] return;
+    const auto result = fn(std::forward<Args>(args)...);
+    if (!result.valid()) [[unlikely]] {
+      const auto error_msg = sol::stack::get<std::string>(result.lua_state(), result.stack_index());
+      std::println(stderr, "{}", error_msg);
+      throw std::runtime_error(error_msg);
+    }
+  }
+
+  template<typename R, typename... Args>
+  [[nodiscard]] R call(Args&&... args) const {
+    if (!active) [[unlikely]] return R{};
+    const auto result = fn(std::forward<Args>(args)...);
+    if (!result.valid()) [[unlikely]] {
+      throw std::runtime_error(sol::stack::get<std::string>(result.lua_state(), result.stack_index()));
+    }
+
+    return result.template get<R>();
+  }
+};
+
+template<typename T>
+  requires requires(const T& t) { { t.valid() } -> std::convertible_to<bool>; }
+inline void verify(const T& result) {
+  if (!result.valid()) [[unlikely]] {
+    sol::error err = result;
+    throw std::runtime_error(err.what());
+  }
+}
+
+struct guard_t final {
+  std::source_location location;
+
+  constexpr explicit guard_t(std::source_location l = std::source_location::current()) noexcept : location(l) {}
+
+  template<typename F>
+    requires std::invocable<F>
+  friend bool operator|(F&& fn, const guard_t& g) noexcept {
+    try {
+      std::invoke(std::forward<F>(fn));
+      return true;
+    } catch (const std::exception& e) {
+      std::println(stderr, "[{}:{}] {}", g.location.file_name(), g.location.line(), e.what());
+      return false;
+    } catch (...) {
+      std::println(stderr, "[{}:{}] unknown error", g.location.file_name(), g.location.line());
+      return false;
+    }
+  }
+};
+
+#define guard guard_t{}

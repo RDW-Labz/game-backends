@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:09:52Z",
+ "category": "engines",
+ "commit": "2026-10-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mayakwd/tick-knock \u2014 Small and powerful, type-safe and easy-to-use Entity-Component-System (ECS) library written in TypeScript",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "tick-knock",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mayakwd-tick-knock",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 150,
+ "system": "Small and powerful, type-safe and easy-to-use Entity-Component-System (ECS) library written in TypeScript",
+ "upstream": "https://github.com/mayakwd/tick-knock",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T19:09:48Z",
+ "category": "engines",
+ "commit": "5200981fa462",
+ "delivery": "vendored",
+ "description": "willtobyte/carimbo \u2014 A 2D game engine developed in modern C++ using SDL, an Entity-Component-System (ECS) architecture, miniaudio, and Box2D. It features Lua scripting and is designed for web portability via WebAssembly",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "carimbo",
+ "size_bytes": 248367,
+ "slug": "willtobyte-carimbo",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 187,
+ "system": "A 2D game engine developed in modern C++ using SDL, an Entity-Component-System (ECS) architecture, miniaudio, and Box2D. It features Lua scripting and is design",
+ "upstream": "https://github.com/willtobyte/carimbo",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

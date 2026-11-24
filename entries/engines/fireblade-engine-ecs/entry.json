@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:09:52Z",
+ "category": "engines",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fireblade-engine/ecs \u2014 A lightweight, fast Entity-Component System (ECS) implementation in Swift",
+ "language": "swift",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ecs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "fireblade-engine-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 148,
+ "system": "A lightweight, fast Entity-Component System (ECS) implementation in Swift",
+ "upstream": "https://github.com/fireblade-engine/ecs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
