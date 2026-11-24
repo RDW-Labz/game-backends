@@ -2443,3 +2443,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/code-boxx-storage-boxx-php-inventory-management-system
   - reference gameplay/afifaniks-inventorysystem
   - reference gameplay/viditgarg1999-inventory-management-system
+
+- **2026-11-24 03:40 UTC** — tick 753: +2 screened, +4 reference, 7 skipped, catalogue=1092
+  - added gameplay/threethan-quest-game-tuner (none, reference)
+  - added gameplay/drincs-productions-nqtr-system (MIT, vendored)
+  - reference gameplay/illarion-ev-illarion-content
+  - reference gameplay/forien-foundryvtt-forien-quest-log
+  - reference gameplay/tommy-xr-shock2quest
+  - reference gameplay/andres6936-hale

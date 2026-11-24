@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:40:07Z",
+ "category": "gameplay",
+ "commit": "2025-05-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Forien/foundryvtt-forien-quest-log \u2014 This module provides comprehensive Quest Log system for players and Game Masters to use with Foundry Virtual Tabletop",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "foundryvtt-forien-quest-log",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "forien-foundryvtt-forien-quest-log",
+ "source": "github-search:quest system game stars:>15",
+ "stars": 25,
+ "system": "This module provides comprehensive Quest Log system for players and Game Masters to use with Foundry Virtual Tabletop",
+ "upstream": "https://github.com/Forien/foundryvtt-forien-quest-log",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

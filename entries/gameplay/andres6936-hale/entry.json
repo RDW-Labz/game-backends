@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:40:07Z",
+ "category": "gameplay",
+ "commit": "2020-08-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Andres6936/HALE \u2014 Hale is a turn based RPG with deep tactical combat and character customization. Included is a lengthy and varied campaign with many quests, items and monsters, visiting a variety of locales. The entire system is built to be moddable from the ground up.",
+ "language": "java",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "HALE",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-2.0)",
+ "slug": "andres6936-hale",
+ "source": "github-search:quest system game stars:>15",
+ "stars": 17,
+ "system": "Hale is a turn based RPG with deep tactical combat and character customization. Included is a lengthy and varied campaign with many quests, items and monsters, ",
+ "upstream": "https://github.com/Andres6936/HALE",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

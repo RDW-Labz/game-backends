@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:40:07Z",
+ "category": "gameplay",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Illarion-eV/Illarion-Content \u2014 Illarion game content, including NPCs, quests, fighting system, etc.",
+ "language": "lua",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Illarion-Content",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "illarion-ev-illarion-content",
+ "source": "github-search:quest system game stars:>15",
+ "stars": 39,
+ "system": "Illarion game content, including NPCs, quests, fighting system, etc.",
+ "upstream": "https://github.com/Illarion-eV/Illarion-Content",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

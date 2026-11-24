@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 03:24 UTC · 1086 entries · 284 vendored, 802 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 03:40 UTC · 1092 entries · 285 vendored, 807 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-24 03:24 UTC · 1086 entries · 284 vendored, 802 reference-o
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 179 | 47 | 132 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 185 | 48 | 137 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
@@ -686,7 +686,7 @@ _Generated 2026-11-24 03:24 UTC · 1086 entries · 284 vendored, 802 reference-o
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 179 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 185 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -725,6 +725,7 @@ _Generated 2026-11-24 03:24 UTC · 1086 entries · 284 vendored, 802 reference-o
 | [ecs](entries/gameplay/chromealex-ecs/README.md) | ECS for Unity with full game state automatic rollbacks | n/a | MIT | reference | [chromealex/ecs](https://github.com/chromealex/ecs) @ `2023-06-01 (branch tip at catalogue time)` |
 | [Ego](entries/gameplay/oguzeroglu-ego/README.md) | A lightweight decision making library for game AI. | javascript | MIT | reference | [oguzeroglu/Ego](https://github.com/oguzeroglu/Ego) @ `2020-09-25 (branch tip at catalogue time)` |
 | [EvolutionAquerium](entries/gameplay/anuraghazra-evolutionaquerium/README.md) | :fish: :bug: Small Inteli Creatures Based On Steering Behaviours | javascript | MIT | reference | [anuraghazra/EvolutionAquerium](https://github.com/anuraghazra/EvolutionAquerium) @ `2022-02-12 (branch tip at catalogue time)` |
+| [foundryvtt-forien-quest-log](entries/gameplay/forien-foundryvtt-forien-quest-log/README.md) | This module provides comprehensive Quest Log system for players and Game Masters to use with Foundry Virtual Tabletop | javascript | MIT | reference | [Forien/foundryvtt-forien-quest-log](https://github.com/Forien/foundryvtt-forien-quest-log) @ `2025-05-02 (branch tip at catalogue time)` |
 | [FyWorld](entries/gameplay/fy-fyworld/README.md) | FyWorld - Base-Building / Simulation Game & Tutorial in Unity | c# | GPL-3.0 | reference | [Fy-/FyWorld](https://github.com/Fy-/FyWorld) @ `2022-12-28 (branch tip at catalogue time)` |
 | [geotic](entries/gameplay/ddmills-geotic/README.md) | Entity Component System library for javascript | javascript | MIT | reference | [ddmills/geotic](https://github.com/ddmills/geotic) @ `2025-03-05 (branch tip at catalogue time)` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
@@ -734,10 +735,12 @@ _Generated 2026-11-24 03:24 UTC · 1086 entries · 284 vendored, 802 reference-o
 | [GoRogue](entries/gameplay/chris3606-gorogue/README.md) | .NET Standard roguelike library in C#.  Features many algorithms and data structures pertinent to roguelike/2D game developers, specifically designed to be mini | c# | MIT | reference | [Chris3606/GoRogue](https://github.com/Chris3606/GoRogue) @ `2026-09-13 (branch tip at catalogue time)` |
 | [graphhopper](entries/gameplay/graphhopper-graphhopper/README.md) | Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server. | java | Apache-2.0 | vendored | [graphhopper/graphhopper](https://github.com/graphhopper/graphhopper) @ `9df847473a5e` |
 | [GreaterWMS](entries/gameplay/greaterwms-greaterwms/README.md) | This Inventory management system is the currently Ford Asia Pacific after-sales logistics warehousing supply chain process . After I leave Ford , I start this p | python | Apache-2.0 | vendored | [GreaterWMS/GreaterWMS](https://github.com/GreaterWMS/GreaterWMS) @ `8344f3872155` |
+| [HALE](entries/gameplay/andres6936-hale/README.md) | Hale is a turn based RPG with deep tactical combat and character customization. Included is a lengthy and varied campaign with many quests, items and monsters,  | java | GPL-2.0 | reference | [Andres6936/HALE](https://github.com/Andres6936/HALE) @ `2020-08-04 (branch tip at catalogue time)` |
 | [hierarchical-pathfinding](entries/gameplay/hugoscurti-hierarchical-pathfinding/README.md) | Implementation of Near-Optimal Hierarchical Pathfinding (HPA*) algorithm in Unity, tested with maps from Dragon Age: Origins | c# | MIT | reference | [hugoscurti/hierarchical-pathfinding](https://github.com/hugoscurti/hierarchical-pathfinding) @ `2022-12-26 (branch tip at catalogue time)` |
 | [homebox](entries/gameplay/sysadminsmedia-homebox/README.md) | A continuation of HomeBox the inventory and organization system built for the Home User | go | AGPL-3.0 | reference | [sysadminsmedia/homebox](https://github.com/sysadminsmedia/homebox) @ `2026-11-21 (branch tip at catalogue time)` |
 | [horror-game-enemy-demo](entries/gameplay/bypell-horror-game-enemy-demo/README.md) | Demo project for a horror game enemy that tries to find and catch the player using 3D navigation and a node-based finite state machine. | gdscript | MIT | reference | [bypell/horror-game-enemy-demo](https://github.com/bypell/horror-game-enemy-demo) @ `2024-12-23 (branch tip at catalogue time)` |
 | [hypersomnia — inventory](entries/gameplay/hypersomnia-inventory/README.md) | combat, AI, pathing, quest or inventory logic | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
+| [Illarion-Content](entries/gameplay/illarion-ev-illarion-content/README.md) | Illarion game content, including NPCs, quests, fighting system, etc. | lua | AGPL-3.0 | reference | [Illarion-eV/Illarion-Content](https://github.com/Illarion-eV/Illarion-Content) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Inventory](entries/gameplay/farrokhgames-inventory/README.md) | A Diablo 2-style inventory system for Unity3D | c# | MIT | vendored | [FarrokhGames/Inventory](https://github.com/FarrokhGames/Inventory) @ `174f55d1d03c` |
 | [inventory](entries/gameplay/imran300-inventory/README.md) | Inventory Management System | php | MIT | reference | [imran300/inventory](https://github.com/imran300/inventory) @ `2026-11-21 (branch tip at catalogue time)` |
 | [inventory-management](entries/gameplay/akashroshan135-inventory-management/README.md) | A simple inventory management system built with Django | html | unknown | reference | [akashroshan135/inventory-management](https://github.com/akashroshan135/inventory-management) @ `2023-07-28 (branch tip at catalogue time)` |
@@ -781,6 +784,7 @@ _Generated 2026-11-24 03:24 UTC · 1086 entries · 284 vendored, 802 reference-o
 | [navmesh](entries/gameplay/sunxvming-navmesh/README.md) | 导航网格寻路C++实现版(入门版) | c | GPL-3.0 | reference | [sunxvming/navmesh](https://github.com/sunxvming/navmesh) @ `38741fcee3be` |
 | [NavMeshPlus](entries/gameplay/h8man-navmeshplus/README.md) | Unity NavMesh 2D Pathfinding | c# | MIT | vendored | [h8man/NavMeshPlus](https://github.com/h8man/NavMeshPlus) @ `d615919ce2d1` |
 | [NexoPOS](entries/gameplay/blair2004-nexopos/README.md) | Laravel-based web POS system with Vue.js, Tailwind CSS, inventory management, sales processing, customer records, reports, and modular extension support. | php | GPL-3.0 | reference | [Blair2004/NexoPOS](https://github.com/Blair2004/NexoPOS) @ `2026-11-22 (branch tip at catalogue time)` |
+| [NQTR-System](entries/gameplay/drincs-productions-nqtr-system/README.md) | A complete system introducing the concepts of location, time and event, producing the framework of a not-quite-point-and-click adventure game. | ren'py | MIT | vendored | [DRincs-Productions/NQTR-System](https://github.com/DRincs-Productions/NQTR-System) @ `06582259881f` |
 | [omt-router](entries/gameplay/abelvm-omt-router/README.md) | Client-side routing library for OpenMapTiles vector tiles. Computes optimal routes for pedestrian, car, and bicycle travel entirely client-side — no routing bac | javascript | AGPL-3.0 | reference | [AbelVM/omt-router](https://github.com/AbelVM/omt-router) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Open-Aimbot](entries/gameplay/zackanimates08-open-aimbot/README.md) | Open Aimbot is a universal open source framework. It offers a wide selection of extensive functionality. We develop various utilities for Roblox, security syste | n/a | MIT | reference | [Zackanimates08/Open-Aimbot](https://github.com/Zackanimates08/Open-Aimbot) @ `2026-03-01 (branch tip at catalogue time)` |
 | [openboxes](entries/gameplay/openboxes-openboxes/README.md) | OpenBoxes is a warehouse management system designed to manage inventory and track stock movements for healthcare facilities. | groovy | EPL-1.0 | reference | [openboxes/openboxes](https://github.com/openboxes/openboxes) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -809,6 +813,7 @@ _Generated 2026-11-24 03:24 UTC · 1086 entries · 284 vendored, 802 reference-o
 | [py_trees](entries/gameplay/splintered-reality-py-trees/README.md) | Python implementation of behaviour trees. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees](https://github.com/splintered-reality/py_trees) @ `49bcffd069af` |
 | [py_trees_ros_viewer](entries/gameplay/splintered-reality-py-trees-ros-viewer/README.md) | A Qt-Js hybrid application for visualisation of executing or log-replayed behaviour trees in a ROS2 ecosystem. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees_ros_viewer](https://github.com/splintered-reality/py_trees_ros_viewer) @ `2e3e8bfd72c2` |
 | [python-pathfinding](entries/gameplay/brean-python-pathfinding/README.md) | Implementation of common pathfinding algorithms | python | MIT | vendored | [brean/python-pathfinding](https://github.com/brean/python-pathfinding) @ `e271d46f53b3` |
+| [Quest-Game-Tuner](entries/gameplay/threethan-quest-game-tuner/README.md) | Unlock the full power of Meta Quest headsets by modifying system parameters | n/a | none | reference | [threethan/Quest-Game-Tuner](https://github.com/threethan/Quest-Game-Tuner) @ `6ee00366cf64` |
 | [quest-manager](entries/gameplay/rubonnek-quest-manager/README.md) | A powerful and flexible quest management system for the Godot Game Engine | gdscript | MIT | reference | [Rubonnek/quest-manager](https://github.com/Rubonnek/quest-manager) @ `2026-06-07 (branch tip at catalogue time)` |
 | [Rakugo-Dialogue-System](entries/gameplay/rakugoteam-rakugo-dialogue-system/README.md) | Inspired by Ren'Py, Rakugo is a project aiming to provide a way to make narrative-based games on Godot easily. Simplify your project, if it is a visual novel, p | gdscript | MIT | vendored | [rakugoteam/Rakugo-Dialogue-System](https://github.com/rakugoteam/Rakugo-Dialogue-System) @ `8cb205634c3c` |
 | [react-flow-smart-edge](entries/gameplay/tisoap-react-flow-smart-edge/README.md) | Custom Edge for React Flow that never intersects with other nodes | typescript | MIT | reference | [tisoap/react-flow-smart-edge](https://github.com/tisoap/react-flow-smart-edge) @ `2026-11-11 (branch tip at catalogue time)` |
@@ -829,6 +834,7 @@ _Generated 2026-11-24 03:24 UTC · 1086 entries · 284 vendored, 802 reference-o
 | [Scriptable-Object-Inventory](entries/gameplay/sniffle6-scriptable-object-inventory/README.md) | A scriptable object based inventory system for Unity3D | shaderlab | unknown | reference | [sniffle6/Scriptable-Object-Inventory](https://github.com/sniffle6/Scriptable-Object-Inventory) @ `2020-02-19 (branch tip at catalogue time)` |
 | [seldom_map_nav](entries/gameplay/seldom-se-seldom-map-nav/README.md) | Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency. | rust | Apache-2.0 | vendored | [Seldom-SE/seldom_map_nav](https://github.com/Seldom-SE/seldom_map_nav) @ `5586a0e6ad1f` |
 | [SharpNav](entries/gameplay/robmaister-sharpnav/README.md) | Advanced Pathfinding for C# | c# | unknown | reference | [Robmaister/SharpNav](https://github.com/Robmaister/SharpNav) @ `2022-06-22 (branch tip at catalogue time)` |
+| [shock2quest](entries/gameplay/tommy-xr-shock2quest/README.md) | An unofficial game-engine recreation of the Dark engine, focusing on System Shock 2 on Quest | rust | unknown | reference | [tommy-xr/shock2quest](https://github.com/tommy-xr/shock2quest) @ `2026-11-03 (branch tip at catalogue time)` |
 | [simpleai](entries/gameplay/mgerhardy-simpleai/README.md) | SimpleAI is a small C++ AI behaviour tree based library with a QT5 based remote debugger (and with optional LUA bindings) released under MIT. | c++ | unknown | reference | [mgerhardy/simpleai](https://github.com/mgerhardy/simpleai) @ `2019-11-16 (branch tip at catalogue time)` |
 | [SkeldJS](entries/gameplay/skeldjs-skeldjs/README.md) | A JavaScript implementation of the Among Us protocol, featuring several different projects, written in TypeScript. | typescript | GPL-3.0 | reference | [SkeldJS/SkeldJS](https://github.com/SkeldJS/SkeldJS) @ `2025-11-08 (branch tip at catalogue time)` |
 | [snake_01](entries/gameplay/const-i-snake-01/README.md) | Snake AI, Genetic Algorithm, Rust | rust | MIT | reference | [const-i/snake_01](https://github.com/const-i/snake_01) @ `2023-11-05 (branch tip at catalogue time)` |

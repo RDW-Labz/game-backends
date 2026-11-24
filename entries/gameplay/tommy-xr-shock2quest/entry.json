@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:40:07Z",
+ "category": "gameplay",
+ "commit": "2026-11-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tommy-xr/shock2quest \u2014 An unofficial game-engine recreation of the Dark engine, focusing on System Shock 2 on Quest",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "shock2quest",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "tommy-xr-shock2quest",
+ "source": "github-search:quest system game stars:>15",
+ "stars": 23,
+ "system": "An unofficial game-engine recreation of the Dark engine, focusing on System Shock 2 on Quest",
+ "upstream": "https://github.com/tommy-xr/shock2quest",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

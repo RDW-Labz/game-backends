@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T03:40:06Z",
+ "category": "gameplay",
+ "commit": "06582259881f",
+ "delivery": "vendored",
+ "description": "DRincs-Productions/NQTR-System \u2014 A complete system introducing the concepts of location, time and event, producing the framework of a not-quite-point-and-click adventure game.",
+ "language": "ren'py",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "NQTR-System",
+ "size_bytes": 79059,
+ "slug": "drincs-productions-nqtr-system",
+ "source": "github-search:quest system game stars:>15",
+ "stars": 52,
+ "system": "A complete system introducing the concepts of location, time and event, producing the framework of a not-quite-point-and-click adventure game.",
+ "upstream": "https://github.com/DRincs-Productions/NQTR-System",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
