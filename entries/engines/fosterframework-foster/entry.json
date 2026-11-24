@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T19:43:57Z",
+ "category": "engines",
+ "commit": "647e582148e5",
+ "delivery": "vendored",
+ "description": "FosterFramework/Foster \u2014 A small C# game framework",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Foster",
+ "size_bytes": 1217404,
+ "slug": "fosterframework-foster",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 898,
+ "system": "A small C# game framework",
+ "upstream": "https://github.com/FosterFramework/Foster",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

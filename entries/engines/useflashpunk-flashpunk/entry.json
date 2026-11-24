@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:43:58Z",
+ "category": "engines",
+ "commit": "2016-03-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "useflashpunk/FlashPunk \u2014 A free ActionScript 3 library designed for developing 2D Flash games. It provides you with a fast, clean framework to prototype and develop your games in. This means that most of the dirty work (timestep, animation, input, and collision to name a few) is already coded for you and ready to go, giving you more time and energy to concentrate on the design and testing of your game.",
+ "language": "actionscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "FlashPunk",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "useflashpunk-flashpunk",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 395,
+ "system": "A free ActionScript 3 library designed for developing 2D Flash games. It provides you with a fast, clean framework to prototype and develop your games in. This ",
+ "upstream": "https://github.com/useflashpunk/FlashPunk",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

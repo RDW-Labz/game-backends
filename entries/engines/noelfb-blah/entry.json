@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:43:58Z",
+ "category": "engines",
+ "commit": "2023-04-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "NoelFB/blah \u2014 A small 2d c++ game framework",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "blah",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "noelfb-blah",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 604,
+ "system": "A small 2d c++ game framework",
+ "upstream": "https://github.com/NoelFB/blah",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

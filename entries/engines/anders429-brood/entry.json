@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T19:43:51Z",
+ "category": "engines",
+ "commit": "ec031b20531c",
+ "delivery": "vendored",
+ "description": "Anders429/brood \u2014 A fast and flexible entity component system library.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "brood",
+ "size_bytes": 953824,
+ "slug": "anders429-brood",
+ "source": "github-search:ecs library language:rust stars:>40",
+ "stars": 41,
+ "system": "A fast and flexible entity component system library.",
+ "upstream": "https://github.com/Anders429/brood",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

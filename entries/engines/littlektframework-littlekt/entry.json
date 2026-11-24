@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:43:58Z",
+ "category": "engines",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "littlektframework/littlekt \u2014 A multiplatform WebGPU 2D game framework written in Kotlin. Build your own game engine on top.",
+ "language": "kotlin",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "littlekt",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "littlektframework-littlekt",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 400,
+ "system": "A multiplatform WebGPU 2D game framework written in Kotlin. Build your own game engine on top.",
+ "upstream": "https://github.com/littlektframework/littlekt",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

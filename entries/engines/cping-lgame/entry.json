@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:43:58Z",
+ "category": "engines",
+ "commit": "2026-06-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "cping/LGame \u2014 A cross-platform Java game Engine (Framework) , support JavaFX / Android / IOS / HTML5 / Linux / MAC / Windows",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "LGame",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "cping-lgame",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 666,
+ "system": "A cross-platform Java game Engine (Framework) , support JavaFX / Android / IOS / HTML5 / Linux / MAC / Windows",
+ "upstream": "https://github.com/cping/LGame",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

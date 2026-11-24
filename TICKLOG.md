@@ -2801,3 +2801,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/kutuluk-js13k-ecs
   - reference engines/jesstelford-pecs
   - reference engines/natweiss-entityfu
+
+- **2026-11-24 19:44 UTC** — tick 805: +2 screened, +4 reference, 18 skipped, catalogue=1354
+  - added engines/anders429-brood (Apache-2.0, vendored)
+  - added engines/fosterframework-foster (MIT, vendored)
+  - reference engines/cping-lgame
+  - reference engines/noelfb-blah
+  - reference engines/littlektframework-littlekt
+  - reference engines/useflashpunk-flashpunk

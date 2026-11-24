@@ -1,0 +1,5 @@
+error: no rules expected the token `,`
+ --> tests/trybuild/resources/comma_alone.rs:4:32
+  |
+4 |     let resources = resources!(,);
+  |                                ^ no rules expected this token in macro call

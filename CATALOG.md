@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 19:26 UTC · 1348 entries · 348 vendored, 1000 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 19:44 UTC · 1354 entries · 350 vendored, 1004 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 541 | 126 | 415 |
+| [engines](#engines) — Game engines and engine subsystems | 547 | 128 | 419 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 19:26 UTC · 1348 entries · 348 vendored, 1000 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 541 entries
+**Game engines and engine subsystems** — 547 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -98,12 +98,14 @@ _Generated 2026-11-24 19:26 UTC · 1348 entries · 348 vendored, 1000 reference-
 | [bevy_vello](entries/engines/linebender-bevy-vello/README.md) | An integration to render vector graphics with Vello in the Bevy game engine. | rust | Apache-2.0 | reference | [linebender/bevy_vello](https://github.com/linebender/bevy_vello) @ `2026-11-23 (branch tip at catalogue time)` |
 | [bevy_webgl2](entries/engines/mrk-its-bevy-webgl2/README.md) | WebGL2 renderer plugin for Bevy game engine | rust | MIT | reference | [mrk-its/bevy_webgl2](https://github.com/mrk-its/bevy_webgl2) @ `2021-10-10 (branch tip at catalogue time)` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
+| [blah](entries/engines/noelfb-blah/README.md) | A small 2d c++ game framework | c++ | MIT | reference | [NoelFB/blah](https://github.com/NoelFB/blah) @ `2023-04-27 (branch tip at catalogue time)` |
 | [blender_bevy_toolkit](entries/engines/sdfgeoff-blender-bevy-toolkit/README.md) | A blender addon and bevy plugin to use Blender as an editor for Bevy | python | unknown | reference | [sdfgeoff/blender_bevy_toolkit](https://github.com/sdfgeoff/blender_bevy_toolkit) @ `2022-05-18 (branch tip at catalogue time)` |
 | [boardgame.io](entries/engines/boardgameio-boardgame-io/README.md) | State Management and Multiplayer Networking for Turn-Based Games | typescript | MIT | vendored | [boardgameio/boardgame.io](https://github.com/boardgameio/boardgame.io) @ `47adef2b46e3` |
 | [bones](entries/engines/fishfolk-bones/README.md) | An easy-to-use game engine for making real games. | rust | Apache-2.0 | vendored | [fishfolk/bones](https://github.com/fishfolk/bones) @ `cd62a2f1ccdb` |
 | [bonsai](entries/engines/scallyw4g-bonsai/README.md) | The procedural generation voxel engine | c | WTFPL | reference | [scallyw4g/bonsai](https://github.com/scallyw4g/bonsai) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Box2D.NET](entries/engines/ikpil-box2d-net/README.md) | Box2D.NET - a C# port of Box2D, is a 2D physics engine for games, .NET, Unity3D, servers | c# | MIT | reference | [ikpil/Box2D.NET](https://github.com/ikpil/Box2D.NET) @ `2026-10-01 (branch tip at catalogue time)` |
 | [BRING](entries/engines/eva-e1-bring/README.md) | Next generation role-playing with LLM - with AI world and intelligent NPCs and multi-faceted Graph memory for all entities and a rich pipline and multi agent | python | Apache-2.0 | vendored | [Eva-E1/BRING](https://github.com/Eva-E1/BRING) @ `e907dee1b2a5` |
+| [brood](entries/engines/anders429-brood/README.md) | A fast and flexible entity component system library. | rust | Apache-2.0 | vendored | [Anders429/brood](https://github.com/Anders429/brood) @ `ec031b20531c` |
 | [BRUTAL](entries/engines/ahwootech-brutal/README.md) | A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. T | c# | unknown | reference | [ahwootech/BRUTAL](https://github.com/ahwootech/BRUTAL) @ `2026-11-12 (branch tip at catalogue time)` |
 | [calcium](entries/engines/cptx032-calcium/README.md) | A ascii/text game library | python | MIT | reference | [cptx032/calcium](https://github.com/cptx032/calcium) @ `2022-11-11 (branch tip at catalogue time)` |
 | [canvas_ity](entries/engines/a-e-k-canvas-ity/README.md) | A tiny, single-header <canvas>-like 2D rasterizer for C++ | c++ | ISC | reference | [a-e-k/canvas_ity](https://github.com/a-e-k/canvas_ity) @ `2024-02-29 (branch tip at catalogue time)` |
@@ -200,6 +202,7 @@ _Generated 2026-11-24 19:26 UTC · 1348 entries · 348 vendored, 1000 reference-
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
 | [flame](entries/engines/flame-engine-flame/README.md) | A Flutter based game engine. | dart | MIT | vendored | [flame-engine/flame](https://github.com/flame-engine/flame) @ `c4c6b3f163d5` |
 | [flappyphpant](entries/engines/phpgl-flappyphpant/README.md) | A very simple Flappy Bird-like game written in PHP, built on PHP-GLFW and the VISU framework. | php | MIT | vendored | [phpgl/flappyphpant](https://github.com/phpgl/flappyphpant) @ `764e716a1080` |
+| [FlashPunk](entries/engines/useflashpunk-flashpunk/README.md) | A free ActionScript 3 library designed for developing 2D Flash games. It provides you with a fast, clean framework to prototype and develop your games in. This  | actionscript | MIT | reference | [useflashpunk/FlashPunk](https://github.com/useflashpunk/FlashPunk) @ `2016-03-31 (branch tip at catalogue time)` |
 | [FlatRedBall](entries/engines/vchelaru-flatredball/README.md) | Cross-platform 2D game engine focused on ultimate productivity built in .NET | c# | MIT | reference | [vchelaru/FlatRedBall](https://github.com/vchelaru/FlatRedBall) @ `2026-11-24 (branch tip at catalogue time)` |
 | [flax](entries/engines/ten3roberts-flax/README.md) | Batteries included ECS library for rust with entity relations and much more | rust | unknown | reference | [ten3roberts/flax](https://github.com/ten3roberts/flax) @ `2026-11-02 (branch tip at catalogue time)` |
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
@@ -210,6 +213,7 @@ _Generated 2026-11-24 19:26 UTC · 1348 entries · 348 vendored, 1000 reference-
 | [fmod-gdextension](entries/engines/utopia-rise-fmod-gdextension/README.md) | FMOD Studio GDExtension bindings for the Godot game engine | c++ | unknown | reference | [utopia-rise/fmod-gdextension](https://github.com/utopia-rise/fmod-gdextension) @ `2026-11-07 (branch tip at catalogue time)` |
 | [forge](entries/engines/card-forge-forge/README.md) | An unofficial rules engine for the world's greatest card game. | java | GPL-3.0 | reference | [Card-Forge/forge](https://github.com/Card-Forge/forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Forme](entries/engines/aristurtledev-forme/README.md) | GPU acelerated text rendering library for MonoGame build on the Slug algorithm | c# | MIT | reference | [AristurtleDev/Forme](https://github.com/AristurtleDev/Forme) @ `2026-07-24 (branch tip at catalogue time)` |
+| [Foster](entries/engines/fosterframework-foster/README.md) | A small C# game framework | c# | MIT | vendored | [FosterFramework/Foster](https://github.com/FosterFramework/Foster) @ `647e582148e5` |
 | [FRAME](entries/engines/fireclawthefox-frame/README.md) | The modular Game Editor for Panda3D | python | BSD-2-Clause | reference | [fireclawthefox/FRAME](https://github.com/fireclawthefox/FRAME) @ `2024-04-22 (branch tip at catalogue time)` |
 | [freeablo](entries/engines/wheybags-freeablo/README.md) | [ARCHIVED] Modern reimplementation of the Diablo 1 game engine | c++ | GPL-3.0 | reference | [wheybags/freeablo](https://github.com/wheybags/freeablo) @ `2023-04-13 (branch tip at catalogue time)` |
 | [Frostfire-Forge](entries/engines/frostfire-interactive-frostfire-forge/README.md) | 2D MMO engine that runs in the browser. Build maps, quests, items and spells in editors inside the game. Built on Bun and WebTransport. | typescript | unknown | reference | [Frostfire-Interactive/Frostfire-Forge](https://github.com/Frostfire-Interactive/Frostfire-Forge) @ `2026-11-24 (branch tip at catalogue time)` |
@@ -300,6 +304,7 @@ _Generated 2026-11-24 19:26 UTC · 1348 entries · 348 vendored, 1000 reference-
 | [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [legion](entries/engines/amethyst-legion/README.md) | High performance Rust ECS library | rust | MIT | vendored | [amethyst/legion](https://github.com/amethyst/legion) @ `32df916517fa` |
+| [LGame](entries/engines/cping-lgame/README.md) | A cross-platform Java game Engine (Framework) , support JavaFX / Android / IOS / HTML5 / Linux / MAC / Windows | java | Apache-2.0 | reference | [cping/LGame](https://github.com/cping/LGame) @ `2026-06-05 (branch tip at catalogue time)` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [libgdx-demos](entries/engines/alistairrutherford-libgdx-demos/README.md) | LibGDX Demos using my LibGDX Scene2D netthreads-libgdx extension library. | java | unknown | reference | [alistairrutherford/libgdx-demos](https://github.com/alistairrutherford/libgdx-demos) @ `2016-11-27 (branch tip at catalogue time)` |
 | [libgdx-inGameConsole](entries/engines/strongjoshua-libgdx-ingameconsole/README.md) | A LibGdx library that allows a developer to add a console (similar to how it is featured in Source games) to their game. | java | Apache-2.0 | vendored | [StrongJoshua/libgdx-inGameConsole](https://github.com/StrongJoshua/libgdx-inGameConsole) @ `6ef713ee3fe2` |
@@ -308,6 +313,7 @@ _Generated 2026-11-24 19:26 UTC · 1348 entries · 348 vendored, 1000 reference-
 | [lionengine](entries/engines/b3dgs-lionengine/README.md) | Java 2D Game Engine | python | GPL-3.0 | reference | [b3dgs/lionengine](https://github.com/b3dgs/lionengine) @ `4f7778642e26` |
 | [Lisien](entries/engines/tacticalmetaphysics-lisien/README.md) | Rules-based engine for life sims, with time travel | python | AGPL-3.0 | reference | [TacticalMetaphysics/Lisien](https://github.com/TacticalMetaphysics/Lisien) @ `2026-03-01 (branch tip at catalogue time)` |
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
+| [littlekt](entries/engines/littlektframework-littlekt/README.md) | A multiplatform WebGPU 2D game framework written in Kotlin. Build your own game engine on top. | kotlin | Apache-2.0 | reference | [littlektframework/littlekt](https://github.com/littlektframework/littlekt) @ `2026-11-24 (branch tip at catalogue time)` |
 | [love](entries/engines/love2d-love/README.md) | LÖVE is an awesome 2D game framework for Lua. | c++ | Zlib | reference | [love2d/love](https://github.com/love2d/love) @ `def245102c67` |
 | [love2d](entries/engines/luacats-love2d/README.md) | Definitions for the LÖVE 2D game framework | lua | unknown | reference | [LuaCATS/love2d](https://github.com/LuaCATS/love2d) @ `2026-07-20 (branch tip at catalogue time)` |
 | [Love2dCS](entries/engines/endlesstravel-love2dcs/README.md) | C# Wrapper for LÖVE, a 2d game engine | c# | MIT | reference | [endlesstravel/Love2dCS](https://github.com/endlesstravel/Love2dCS) @ `2024-03-23 (branch tip at catalogue time)` |
