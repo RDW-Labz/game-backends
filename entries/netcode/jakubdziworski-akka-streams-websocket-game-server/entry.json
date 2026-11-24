@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T06:04:13Z",
+ "category": "netcode",
+ "commit": "b4350b7f78fd",
+ "delivery": "reference",
+ "description": "JakubDziworski/Akka-Streams-Websocket-Game-Server \u2014 Game server and client based on scala, akka streams and websocket",
+ "language": "scala",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Akka-Streams-Websocket-Game-Server",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "jakubdziworski-akka-streams-websocket-game-server",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 57,
+ "system": "Game server and client based on scala, akka streams and websocket",
+ "upstream": "https://github.com/JakubDziworski/Akka-Streams-Websocket-Game-Server",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

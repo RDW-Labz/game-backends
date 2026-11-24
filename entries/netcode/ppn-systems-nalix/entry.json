@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:04:18Z",
+ "category": "netcode",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ppn-systems/nalix \u2014 Nalix \u2014 A low-latency binary networking framework for .NET game servers and realtime systems (Native AOT compatible, source generators, binary packet protocol, cross-platform).",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "nalix",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "ppn-systems-nalix",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 54,
+ "system": "Nalix \u2014 A low-latency binary networking framework for .NET game servers and realtime systems (Native AOT compatible, source generators, binary packet protocol, ",
+ "upstream": "https://github.com/ppn-systems/nalix",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

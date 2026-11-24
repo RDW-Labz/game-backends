@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:04:18Z",
+ "category": "netcode",
+ "commit": "2020-10-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Descrout/game-server \u2014 An example websocket game server written in rust.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "game-server",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "descrout-game-server",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 53,
+ "system": "An example websocket game server written in rust.",
+ "upstream": "https://github.com/Descrout/game-server",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

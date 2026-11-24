@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:04:18Z",
+ "category": "netcode",
+ "commit": "2026-04-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jerryshell/agarust \u2014 Multiplayer online game powered by Godot 4 and Rust \ud83e\udd16\ud83e\udd80",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "agarust",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jerryshell-agarust",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 49,
+ "system": "Multiplayer online game powered by Godot 4 and Rust \ud83e\udd16\ud83e\udd80",
+ "upstream": "https://github.com/jerryshell/agarust",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

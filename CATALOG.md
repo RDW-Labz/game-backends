@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 05:48 UTC · 1132 entries · 293 vendored, 839 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 06:04 UTC · 1138 entries · 294 vendored, 844 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-24 05:48 UTC · 1132 entries · 293 vendored, 839 reference-o
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
-| [netcode](#netcode) — Networking / netcode | 148 | 42 | 106 |
+| [netcode](#netcode) — Networking / netcode | 154 | 43 | 111 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
@@ -884,13 +884,16 @@ _Generated 2026-11-24 05:48 UTC · 1132 entries · 293 vendored, 839 reference-o
 
 ## netcode
 
-**Networking / netcode** — 148 entries
+**Networking / netcode** — 154 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [-SKYNET-Steam-Emulator](entries/netcode/hackerprod-skynet-steam-emulator/README.md) | LAN-first Steam emulator: Steamworks API client emulation + server-side Game Coordinator (Dota 2 lobbies/parties/match stats), for full offline multiplayer with | c# | MIT | vendored | [Hackerprod/-SKYNET-Steam-Emulator](https://github.com/Hackerprod/-SKYNET-Steam-Emulator) @ `158f2c91e8d3` |
+| [ab-server](entries/netcode/wight-airmash-ab-server/README.md) | 2d multiplayer action game server for Node.js based on WebSocket communication.  | typescript | MIT | vendored | [wight-airmash/ab-server](https://github.com/wight-airmash/ab-server) @ `c6c3464c3f0b` |
 | [acr](entries/netcode/acreloaded-acr/README.md) | AssaultCube Reloaded (first-person-shooter game) | c | unknown | reference | [acreloaded/acr](https://github.com/acreloaded/acr) @ `2026-10-21 (branch tip at catalogue time)` |
+| [agarust](entries/netcode/jerryshell-agarust/README.md) | Multiplayer online game powered by Godot 4 and Rust 🤖🦀 | gdscript | MIT | reference | [jerryshell/agarust](https://github.com/jerryshell/agarust) @ `2026-04-14 (branch tip at catalogue time)` |
 | [agones](entries/netcode/agones-dev-agones/README.md) | Dedicated Game Server Hosting and Scaling for Multiplayer Games on Kubernetes | go | Apache-2.0 | reference | [agones-dev/agones](https://github.com/agones-dev/agones) @ `a71420b2b34a` |
+| [Akka-Streams-Websocket-Game-Server](entries/netcode/jakubdziworski-akka-streams-websocket-game-server/README.md) | Game server and client based on scala, akka streams and websocket | scala | none | reference | [JakubDziworski/Akka-Streams-Websocket-Game-Server](https://github.com/JakubDziworski/Akka-Streams-Websocket-Game-Server) @ `b4350b7f78fd` |
 | [ancientbeast — multiplayer](entries/netcode/ancientbeast-multiplayer/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [arcomage-hd](entries/netcode/arcomage-arcomage-hd/README.md) | Web-based, free and open source, remastered 3D clone of 3DO/NWC's 2000 card game Arcomage. 16 languages. Desktop or mobile Android iOS. Online or offline PWA. A | typescript | MIT | reference | [arcomage/arcomage-hd](https://github.com/arcomage/arcomage-hd) @ `2025-11-15 (branch tip at catalogue time)` |
 | [asyncio](entries/netcode/yongxin-ms-asyncio/README.md) | A C++ implementation of an industrial-grade high-performance asynchronous network library, based on asio, similar to Python's asyncio, designed for stateful ser | c++ | MIT | reference | [yongxin-ms/asyncio](https://github.com/yongxin-ms/asyncio) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -930,6 +933,7 @@ _Generated 2026-11-24 05:48 UTC · 1132 entries · 293 vendored, 839 reference-o
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
 | [Game-NET](entries/netcode/sp4cerat-game-net/README.md) | RPC Network Library for Multiplayer Games | c++ | MIT | reference | [sp4cerat/Game-NET](https://github.com/sp4cerat/Game-NET) @ `2015-11-06 (branch tip at catalogue time)` |
+| [game-server](entries/netcode/descrout-game-server/README.md) | An example websocket game server written in rust. | rust | unknown | reference | [Descrout/game-server](https://github.com/Descrout/game-server) @ `2020-10-22 (branch tip at catalogue time)` |
 | [GameFrameX](entries/netcode/gameframex-gameframex/README.md) | An open-source toolbox that takes a game all the way "from idea → built → live" — Unity/Godot/Cocos/Laya clients + one .NET server. / 开源游戏全流程工具箱：Unity/Godot/Coc | c# | AGPL-3.0 | reference | [GameFrameX/GameFrameX](https://github.com/GameFrameX/GameFrameX) @ `9cb0a9d6b711` |
 | [GameFrameX.Server](entries/netcode/gameframex-gameframex-server/README.md) | High-performance game server framework built on C# .NET 10.0 with Actor Model architecture, hot-update support, multi-protocol networking (TCP/WebSocket/HTTP/KC | c# | Apache-2.0 | reference | [GameFrameX/GameFrameX.Server](https://github.com/GameFrameX/GameFrameX.Server) @ `2026-11-20 (branch tip at catalogue time)` |
 | [gamehub.io](entries/netcode/fmbenhassine-gamehub-io/README.md) | Real-time multiplayer game server based on Node + Express + SocketIO + MongoDB + ElasticSearch | javascript | MIT | reference | [fmbenhassine/gamehub.io](https://github.com/fmbenhassine/gamehub.io) @ `2018-12-16 (branch tip at catalogue time)` |
@@ -946,6 +950,7 @@ _Generated 2026-11-24 05:48 UTC · 1132 entries · 293 vendored, 839 reference-o
 | [godot-rocket-league](entries/netcode/albertok-godot-rocket-league/README.md) | Network physics with rollback test using Godot and netfox | gdscript | MIT | vendored | [albertok/godot-rocket-league](https://github.com/albertok/godot-rocket-league) @ `78b28ce495fa` |
 | [Godot-Rollback-Fighter-Demo](entries/netcode/blast-harbour-godot-rollback-fighter-demo/README.md) | An example project built on Bimdav's "Delta Rollback" Fork of David Snopek's "Godot Rollback Netcode" Addon  | gdscript | MIT | reference | [blast-harbour/Godot-Rollback-Fighter-Demo](https://github.com/blast-harbour/Godot-Rollback-Fighter-Demo) @ `2024-07-10 (branch tip at catalogue time)` |
 | [godot-tiny-mmo](entries/netcode/slayhorizon-godot-tiny-mmo/README.md) | Open-source cross-platform MMORPG built with Godot 4 | gdscript | MIT | vendored | [SlayHorizon/godot-tiny-mmo](https://github.com/SlayHorizon/godot-tiny-mmo) @ `f4ed04f20963` |
+| [Godot4-Multiplayer-Survivor-IO-Game](entries/netcode/ape1121-godot4-multiplayer-survivor-io-game/README.md) | A server authoritative multiplayer game that is inspired by browser-based Survivor.io games, optimized to run with HTML5 Web exports, utilizing Websocket connec | gdscript | MIT | reference | [ape1121/Godot4-Multiplayer-Survivor-IO-Game](https://github.com/ape1121/Godot4-Multiplayer-Survivor-IO-Game) @ `2024-08-29 (branch tip at catalogue time)` |
 | [GodotRollbackNetcodeMono](entries/netcode/fractural-godotrollbacknetcodemono/README.md) | Port of Snopek Game's Rollback netcode addon to Godot C# 🔃 | gdscript | MIT | vendored | [Fractural/GodotRollbackNetcodeMono](https://github.com/Fractural/GodotRollbackNetcodeMono) @ `42773c14459a` |
 | [gogs](entries/netcode/metagogs-gogs/README.md) | gogs is a simple, fast and lightweight game server framework written in golang | go | Apache-2.0 | reference | [metagogs/gogs](https://github.com/metagogs/gogs) @ `2026-09-08 (branch tip at catalogue time)` |
 | [GopherGameServer](entries/netcode/hewiefreeman-gophergameserver/README.md) | :trophy: Feature packed, easy-to-use game server API for Go back-ends and Javascript clients. Tutorials and examples included! | go | Apache-2.0 | reference | [hewiefreeman/GopherGameServer](https://github.com/hewiefreeman/GopherGameServer) @ `2024-03-29 (branch tip at catalogue time)` |
@@ -975,6 +980,7 @@ _Generated 2026-11-24 05:48 UTC · 1132 entries · 293 vendored, 839 reference-o
 | [naia](entries/netcode/naia-lib-naia/README.md) | a cross-platform (including Wasm!) networking library built in Rust. Intended to make multiplayer game development dead-simple & lightning-fast  | rust | Apache-2.0 | reference | [naia-lib/naia](https://github.com/naia-lib/naia) @ `2026-11-18 (branch tip at catalogue time)` |
 | [Nakama](entries/netcode/nakama/README.md) | game backend server: matchmaking, realtime, leaderboards, storage | go | Apache-2.0 | reference | [heroiclabs/nakama](https://github.com/heroiclabs/nakama) @ `37618ad4b927` |
 | [nakama — server](entries/netcode/nakama-server/README.md) | network transport, protocol, replication or server loop | go | Apache-2.0 | vendored | [heroiclabs/nakama](https://github.com/heroiclabs/nakama) @ `4833594` |
+| [nalix](entries/netcode/ppn-systems-nalix/README.md) | Nalix — A low-latency binary networking framework for .NET game servers and realtime systems (Native AOT compatible, source generators, binary packet protocol,  | c# | Apache-2.0 | reference | [ppn-systems/nalix](https://github.com/ppn-systems/nalix) @ `2026-11-23 (branch tip at catalogue time)` |
 | [netcode.io](entries/netcode/netcode-io/README.md) | secure UDP connection protocol with token auth | c | BSD-3-Clause | vendored | [mas-bandwidth/netcode](https://github.com/mas-bandwidth/netcode) @ `2d9df60853a6` |
 | [netplayjs](entries/netcode/rameshvarun-netplayjs/README.md) | Make P2P multiplayer browser games, no server hosting or synchronization code required. Powered by rollback netcode + WebRTC. | typescript | ISC | vendored | [rameshvarun/netplayjs](https://github.com/rameshvarun/netplayjs) @ `c6f888a65d49` |
 | [NettyGameServer](entries/netcode/jwpttcg66-nettygameserver/README.md) | 使用netty4.X实现的手机游戏分布式服务器,支持tcp,udp,http,websocket链接，采用protobuf自定义协议栈进行网络通信,支持rpc远程调用,使用mybatis3支持db存储分库分表，支持异步mysql存储，db保存时同步更新reids缓存。 使用ExcelToCode工程，将excel数据生 | java | GPL-3.0 | reference | [jwpttcg66/NettyGameServer](https://github.com/jwpttcg66/NettyGameServer) @ `2026-04-14 (branch tip at catalogue time)` |

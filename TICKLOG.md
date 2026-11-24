@@ -2507,3 +2507,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/kingston-csj-mmorpg
   - reference netcode/onedayitwillmake-realtimemultiplayernodejs
   - reference netcode/morozovsk-websocket
+
+- **2026-11-24 06:04 UTC** — tick 762: +2 screened, +4 reference, 9 skipped, catalogue=1138
+  - added netcode/jakubdziworski-akka-streams-websocket-game-server (none, reference)
+  - added netcode/wight-airmash-ab-server (MIT, vendored)
+  - reference netcode/ppn-systems-nalix
+  - reference netcode/descrout-game-server
+  - reference netcode/ape1121-godot4-multiplayer-survivor-io-game
+  - reference netcode/jerryshell-agarust

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T06:04:17Z",
+ "category": "netcode",
+ "commit": "c6c3464c3f0b",
+ "delivery": "vendored",
+ "description": "wight-airmash/ab-server \u2014 2d multiplayer action game server for Node.js based on WebSocket communication.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ab-server",
+ "size_bytes": 826294,
+ "slug": "wight-airmash-ab-server",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 57,
+ "system": "2d multiplayer action game server for Node.js based on WebSocket communication. ",
+ "upstream": "https://github.com/wight-airmash/ab-server",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

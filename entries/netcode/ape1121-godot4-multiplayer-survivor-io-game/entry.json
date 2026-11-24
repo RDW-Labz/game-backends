@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:04:18Z",
+ "category": "netcode",
+ "commit": "2024-08-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ape1121/Godot4-Multiplayer-Survivor-IO-Game \u2014 A server authoritative multiplayer game that is inspired by browser-based Survivor.io games, optimized to run with HTML5 Web exports, utilizing Websocket connection with SSL to run on itch.io.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Godot4-Multiplayer-Survivor-IO-Game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ape1121-godot4-multiplayer-survivor-io-game",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 50,
+ "system": "A server authoritative multiplayer game that is inspired by browser-based Survivor.io games, optimized to run with HTML5 Web exports, utilizing Websocket connec",
+ "upstream": "https://github.com/ape1121/Godot4-Multiplayer-Survivor-IO-Game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
