@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 17:18 UTC · 1306 entries · 336 vendored, 970 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 17:36 UTC · 1312 entries · 336 vendored, 976 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 499 | 114 | 385 |
+| [engines](#engines) — Game engines and engine subsystems | 505 | 114 | 391 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 17:18 UTC · 1306 entries · 336 vendored, 970 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 499 entries
+**Game engines and engine subsystems** — 505 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -49,12 +49,14 @@ _Generated 2026-11-24 17:18 UTC · 1306 entries · 336 vendored, 970 reference-o
 | [awesome-game-security](entries/engines/gmh5225-awesome-game-security/README.md) | awesome game security [Welcome to PR] | python | MIT | reference | [gmh5225/awesome-game-security](https://github.com/gmh5225/awesome-game-security) @ `2026-11-24 (branch tip at catalogue time)` |
 | [awesome-gamedev-agent-skills](entries/engines/gamedev-skills-awesome-gamedev-agent-skills/README.md) | Make games with your AI coding agent: 79 game-dev skills and a router for Godot, Unity, Unreal, Roblox, three.js, Phaser and 6 more engines. Checked on the real | python | Apache-2.0 | vendored | [gamedev-skills/awesome-gamedev-agent-skills](https://github.com/gamedev-skills/awesome-gamedev-agent-skills) @ `c6ca6c41c839` |
 | [awesome-godot](entries/engines/calinou-awesome-godot/README.md) | A curated list of free/libre plugins, scripts and add-ons for Godot | n/a | CC-BY-4.0 | vendored | [Calinou/awesome-godot](https://github.com/Calinou/awesome-godot) @ `3e8526d9e676` |
+| [awesome-graphics-libraries](entries/engines/jslee02-awesome-graphics-libraries/README.md) | :sunglasses: A curated list of 3D graphics libraries and resources | python | CC0-1.0 | reference | [jslee02/awesome-graphics-libraries](https://github.com/jslee02/awesome-graphics-libraries) @ `2026-11-19 (branch tip at catalogue time)` |
 | [awesome-monogame](entries/engines/aloisdeniel-awesome-monogame/README.md) | A collection of interesting libraries/tools for Monogame based game projects | n/a | none | reference | [aloisdeniel/awesome-monogame](https://github.com/aloisdeniel/awesome-monogame) @ `c6210d600bdd` |
 | [awesome-PICO-8](entries/engines/pico-8-awesome-pico-8/README.md) | A curated list of awesome PICO-8 resources, carts, tools and more | n/a | CC0-1.0 | reference | [pico-8/awesome-PICO-8](https://github.com/pico-8/awesome-PICO-8) @ `2026-07-28 (branch tip at catalogue time)` |
 | [axmol](entries/engines/axmolengine-axmol/README.md) | Open-source C++ game engine with Lua for 2D and 3D games across mobile, desktop, WebAssembly, and Xbox (UWP). | c++ | unknown | reference | [axmolengine/axmol](https://github.com/axmolengine/axmol) @ `2026-11-23 (branch tip at catalogue time)` |
 | [azeroth-survivors-re](entries/engines/outthislife-azeroth-survivors-re/README.md) | A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy). | rust | Apache-2.0 | reference | [OutThisLife/azeroth-survivors-re](https://github.com/OutThisLife/azeroth-survivors-re) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Babylon.js](entries/engines/babylonjs-babylon-js/README.md) | Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework. | typescript | Apache-2.0 | reference | [BabylonJS/Babylon.js](https://github.com/BabylonJS/Babylon.js) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Bacon2D](entries/engines/bacon2d-bacon2d/README.md) | Bacon2D is a framework to ease 2D game development, providing ready-to-use QML elements representing basic game entities needed by most of games. | c++ | MIT | reference | [Bacon2D/Bacon2D](https://github.com/Bacon2D/Bacon2D) @ `2019-12-16 (branch tip at catalogue time)` |
+| [ballistica](entries/engines/efroemling-ballistica/README.md) | The BombSquad Game Engine | python | unknown | reference | [efroemling/ballistica](https://github.com/efroemling/ballistica) @ `2026-11-22 (branch tip at catalogue time)` |
 | [BananaBread](entries/engines/kripken-bananabread/README.md) | BananaBread is a C++ 3D game engine that runs on the web using JavaScript+WebGL+HTML | c++ | Zlib | vendored | [kripken/BananaBread](https://github.com/kripken/BananaBread) @ `455191d2e289` |
 | [bardic](entries/engines/katelouie-bardic/README.md) | A Python-first interactive fiction engine and authoring system. Frontend-agnostic and portable. | python | MIT | reference | [katelouie/bardic](https://github.com/katelouie/bardic) @ `2026-05-22 (branch tip at catalogue time)` |
 | [better-terrain](entries/engines/portponky-better-terrain/README.md) | Terrain plugin for Godot 4 | gdscript | Unlicense | reference | [Portponky/better-terrain](https://github.com/Portponky/better-terrain) @ `2026-02-09 (branch tip at catalogue time)` |
@@ -120,6 +122,7 @@ _Generated 2026-11-24 17:18 UTC · 1306 entries · 336 vendored, 970 reference-o
 | [cubiquity](entries/engines/davidwilliams81-cubiquity/README.md) | Cubiquity is an experimental micro-voxel engine written in C++ and released into the public domain. | c++ | CC0-1.0 | reference | [DavidWilliams81/cubiquity](https://github.com/DavidWilliams81/cubiquity) @ `2026-07-17 (branch tip at catalogue time)` |
 | [DefaultEcs](entries/engines/doraku-defaultecs/README.md) | Entity Component System framework aiming for syntax and usage simplicity with maximum performance for game development. | c# | MIT | vendored | [Doraku/DefaultEcs](https://github.com/Doraku/DefaultEcs) @ `508033cfa22d` |
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
+| [Descent3](entries/engines/descentdevelopers-descent3/README.md) | Descent 3 by Outrage Entertainment | c++ | GPL-3.0 | reference | [DescentDevelopers/Descent3](https://github.com/DescentDevelopers/Descent3) @ `de4bebf5f2d2` |
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
 | [dialogic](entries/engines/dialogic-godot-dialogic/README.md) | 💬 Create Dialogs, Visual Novels, RPGs, and manage Characters with Godot to create your Game! | gdscript | MIT | reference | [dialogic-godot/dialogic](https://github.com/dialogic-godot/dialogic) @ `2026-11-19 (branch tip at catalogue time)` |
 | [DigitalRune](entries/engines/digitalrune-digitalrune/README.md) | DigitalRune Engine - .NET libraries for developing 3D games with XNA and MonoGame | c# | unknown | reference | [DigitalRune/DigitalRune](https://github.com/DigitalRune/DigitalRune) @ `2016-06-05 (branch tip at catalogue time)` |
@@ -288,6 +291,7 @@ _Generated 2026-11-24 17:18 UTC · 1306 entries · 336 vendored, 970 reference-o
 | [love](entries/engines/love2d-love/README.md) | LÖVE is an awesome 2D game framework for Lua. | c++ | Zlib | reference | [love2d/love](https://github.com/love2d/love) @ `def245102c67` |
 | [love2d](entries/engines/luacats-love2d/README.md) | Definitions for the LÖVE 2D game framework | lua | unknown | reference | [LuaCATS/love2d](https://github.com/LuaCATS/love2d) @ `2026-07-20 (branch tip at catalogue time)` |
 | [Love2dCS](entries/engines/endlesstravel-love2dcs/README.md) | C# Wrapper for LÖVE, a 2d game engine | c# | MIT | reference | [endlesstravel/Love2dCS](https://github.com/endlesstravel/Love2dCS) @ `2024-03-23 (branch tip at catalogue time)` |
+| [lovr](entries/engines/bjornbytes-lovr/README.md) | Lua Virtual Reality Framework | c | MIT | reference | [bjornbytes/lovr](https://github.com/bjornbytes/lovr) @ `2026-11-19 (branch tip at catalogue time)` |
 | [luanti](entries/engines/luanti-org-luanti/README.md) | Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation | c++ | unknown | reference | [luanti-org/luanti](https://github.com/luanti-org/luanti) @ `2026-11-20 (branch tip at catalogue time)` |
 | [lumina](entries/engines/nixonyh-lumina/README.md) | A top down, fast paced, objective based, PvP game, written in Rust, using the Bevy game engine. | rust | unknown | reference | [nixonyh/lumina](https://github.com/nixonyh/lumina) @ `2025-05-08 (branch tip at catalogue time)` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -358,6 +362,7 @@ _Generated 2026-11-24 17:18 UTC · 1306 entries · 336 vendored, 970 reference-o
 | [PainterEngine](entries/engines/matrixcascade-painterengine/README.md) | PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C | c | MIT | reference | [matrixcascade/PainterEngine](https://github.com/matrixcascade/PainterEngine) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
 | [Pekka-Kana-2 — engine](entries/engines/pekka-kana-2-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | vendored | [danilolc/pk2](https://github.com/danilolc/pk2) @ `b1c5597` |
+| [permafrost-engine](entries/engines/eduard-permyakov-permafrost-engine/README.md) | An OpenGL RTS game engine written in C | c | GPL-3.0 | reference | [eduard-permyakov/permafrost-engine](https://github.com/eduard-permyakov/permafrost-engine) @ `2026-11-21 (branch tip at catalogue time)` |
 | [phantom-camera](entries/engines/ramokz-phantom-camera/README.md) | A Camera addon for Godot 4. Inspired by Cinemachine.  | gdscript | MIT | reference | [ramokz/phantom-camera](https://github.com/ramokz/phantom-camera) @ `2026-11-22 (branch tip at catalogue time)` |
 | [phase](entries/engines/phase-rs-phase/README.md) | A rules engine and game client — Rust + WASM + React | rust | Apache-2.0 | reference | [phase-rs/phase](https://github.com/phase-rs/phase) @ `2026-11-23 (branch tip at catalogue time)` |
 | [phaser](entries/engines/phaserjs-phaser/README.md) | Phaser is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser](https://github.com/phaserjs/phaser) @ `02d8931b626d` |
@@ -512,6 +517,7 @@ _Generated 2026-11-24 17:18 UTC · 1306 entries · 336 vendored, 970 reference-o
 | [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |
 | [world-walker](entries/engines/badhope-world-walker/README.md) | A single-player AI tabletop RPG engine: deterministic rules own the numbers, saves and replay; any OpenAI-compatible model writes the scene. | python | MIT | reference | [badhope/world-walker](https://github.com/badhope/world-walker) @ `2026-11-22 (branch tip at catalogue time)` |
 | [WorldLines](entries/engines/ludicdynamics-worldlines/README.md) | Agents for Role Play. Agents for Game. Agents as a Game. An orchestrator-agents engine for living worlds — file-backed, event-sourced. | python | unknown | reference | [LudicDynamics/WorldLines](https://github.com/LudicDynamics/WorldLines) @ `2026-10-26 (branch tip at catalogue time)` |
+| [xash3d-fwgs](entries/engines/fwgs-xash3d-fwgs/README.md) | Xash3D FWGS engine | c | GPL-3.0 | reference | [FWGS/xash3d-fwgs](https://github.com/FWGS/xash3d-fwgs) @ `bc1b4515e1f6` |
 | [XNAGameStudio](entries/engines/simondarksidej-xnagamestudio/README.md) | The Education library from the Xbox Live Indie games repository, valuable for MonoGame Developers for advanced samples | n/a | MIT | reference | [SimonDarksideJ/XNAGameStudio](https://github.com/SimonDarksideJ/XNAGameStudio) @ `2025-11-14 (branch tip at catalogue time)` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |

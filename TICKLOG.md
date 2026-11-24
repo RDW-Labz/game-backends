@@ -2745,3 +2745,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/faiface-pixel
   - reference engines/killop-anything-about-game
   - reference engines/movingblocks-terasology
+
+- **2026-11-24 17:36 UTC** — tick 798: +2 screened, +4 reference, 24 skipped, catalogue=1312
+  - added engines/descentdevelopers-descent3 (GPL-3.0, reference)
+  - added engines/fwgs-xash3d-fwgs (GPL-3.0, reference)
+  - reference engines/eduard-permyakov-permafrost-engine
+  - reference engines/bjornbytes-lovr
+  - reference engines/efroemling-ballistica
+  - reference engines/jslee02-awesome-graphics-libraries

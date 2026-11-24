@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:36:42Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "efroemling/ballistica \u2014 The BombSquad Game Engine",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ballistica",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "efroemling-ballistica",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 721,
+ "system": "The BombSquad Game Engine",
+ "upstream": "https://github.com/efroemling/ballistica",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

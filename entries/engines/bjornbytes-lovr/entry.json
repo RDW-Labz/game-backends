@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:36:42Z",
+ "category": "engines",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bjornbytes/lovr \u2014 Lua Virtual Reality Framework",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "lovr",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "bjornbytes-lovr",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 2629,
+ "system": "Lua Virtual Reality Framework",
+ "upstream": "https://github.com/bjornbytes/lovr",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

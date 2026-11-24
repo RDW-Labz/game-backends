@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:36:42Z",
+ "category": "engines",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jslee02/awesome-graphics-libraries \u2014 :sunglasses: A curated list of 3D graphics libraries and resources",
+ "language": "python",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "awesome-graphics-libraries",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "jslee02-awesome-graphics-libraries",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 550,
+ "system": ":sunglasses: A curated list of 3D graphics libraries and resources",
+ "upstream": "https://github.com/jslee02/awesome-graphics-libraries",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

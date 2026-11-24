@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T17:36:40Z",
+ "category": "engines",
+ "commit": "bc1b4515e1f6",
+ "delivery": "reference",
+ "description": "FWGS/xash3d-fwgs \u2014 Xash3D FWGS engine",
+ "language": "c",
+ "license": "GPL-3.0",
+ "license_file": "gpl_copyright_header.h",
+ "license_verdict": "copyleft-reference",
+ "name": "xash3d-fwgs",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 6889526,
+ "slug": "fwgs-xash3d-fwgs",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 2965,
+ "system": "Xash3D FWGS engine",
+ "upstream": "https://github.com/FWGS/xash3d-fwgs",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

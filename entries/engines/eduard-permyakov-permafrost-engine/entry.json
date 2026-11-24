@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:36:42Z",
+ "category": "engines",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "eduard-permyakov/permafrost-engine \u2014 An OpenGL RTS game engine written in C",
+ "language": "c",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "permafrost-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "eduard-permyakov-permafrost-engine",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 2773,
+ "system": "An OpenGL RTS game engine written in C",
+ "upstream": "https://github.com/eduard-permyakov/permafrost-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

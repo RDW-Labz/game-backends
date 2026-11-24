@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T17:36:29Z",
+ "category": "engines",
+ "commit": "de4bebf5f2d2",
+ "delivery": "reference",
+ "description": "DescentDevelopers/Descent3 \u2014 Descent 3 by Outrage Entertainment",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Descent3",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 29984226,
+ "slug": "descentdevelopers-descent3",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 3024,
+ "system": "Descent 3 by Outrage Entertainment",
+ "upstream": "https://github.com/DescentDevelopers/Descent3",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
