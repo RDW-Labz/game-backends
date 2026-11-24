@@ -2485,3 +2485,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/playfab-gsdk
   - reference netcode/tekrantgaming-battlefield-1943-reborn
   - reference netcode/acreloaded-acr
+
+- **2026-11-24 05:16 UTC** — tick 759: +2 screened, +4 reference, 6 skipped, catalogue=1122
+  - added netcode/nhn-toast-haste-framework (Apache-2.0, vendored)
+  - added netcode/plamzi-havoc (GPL-2.0, reference)
+  - reference netcode/jiongjionger-neverlag
+  - reference netcode/eubrunomiguel-garuna
+  - reference netcode/awdng-triebwerk
+  - reference netcode/tomkrcha-realtimegamelib

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:16:09Z",
+ "category": "netcode",
+ "commit": "2019-01-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "eubrunomiguel/garuna \u2014 C++ multiplayer game server",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "garuna",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "eubrunomiguel-garuna",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 91,
+ "system": "C++ multiplayer game server",
+ "upstream": "https://github.com/eubrunomiguel/garuna",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

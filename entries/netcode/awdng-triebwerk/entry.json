@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:16:09Z",
+ "category": "netcode",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "awdng/triebwerk \u2014 triebwerk is a simple multiplayer game server written in Golang.",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "triebwerk",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "awdng-triebwerk",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 89,
+ "system": "triebwerk is a simple multiplayer game server written in Golang.",
+ "upstream": "https://github.com/awdng/triebwerk",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

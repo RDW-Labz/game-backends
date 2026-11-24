@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:16:09Z",
+ "category": "netcode",
+ "commit": "2012-10-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tomkrcha/RealtimeGameLib \u2014 Simple library for building multiplayer realtime games using P2P (and Flash Media Server).",
+ "language": "actionscript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "RealtimeGameLib",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "tomkrcha-realtimegamelib",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 82,
+ "system": "Simple library for building multiplayer realtime games using P2P (and Flash Media Server).",
+ "upstream": "https://github.com/tomkrcha/RealtimeGameLib",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

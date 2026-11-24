@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T05:16:06Z",
+ "category": "netcode",
+ "commit": "934509f88922",
+ "delivery": "vendored",
+ "description": "nhn/toast-haste.framework \u2014 TOAST Haste framework is a pure java implementation of asynchronous game server framework",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "toast-haste.framework",
+ "size_bytes": 441801,
+ "slug": "nhn-toast-haste-framework",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 99,
+ "system": "TOAST Haste framework is a pure java implementation of asynchronous game server framework",
+ "upstream": "https://github.com/nhn/toast-haste.framework",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

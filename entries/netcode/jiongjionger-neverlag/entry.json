@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:16:09Z",
+ "category": "netcode",
+ "commit": "2023-12-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jiongjionger/NeverLag \u2014 \u4e00\u4e2a\u4e13\u6ce8\u4e8e\u4f18\u5316\u6211\u7684\u4e16\u754c\u670d\u52a1\u7aef\u6027\u80fd\u3001\u51cf\u5c11\u5ef6\u8fdf\u3001\u4fee\u590d\u670d\u52a1\u7aef/\u5176\u4ed6\u5e38\u7528\u63d2\u4ef6BUG\u3001\u9650\u5236\u6216\u7981\u7528\u7834\u574f\u591a\u4eba\u6e38\u620f\u5e73\u8861\u7684\u6e38\u620f\u673a\u5236\u7684\u63d2\u4ef6\uff08A plugin that focuses on optimizing minecraft server performance, reducing server lag, fix server and popular plugin bug, limiting or disabling the game mechanism that hurt multiplayer balances.\uff09",
+ "language": "java",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "NeverLag",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "jiongjionger-neverlag",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 95,
+ "system": "\u4e00\u4e2a\u4e13\u6ce8\u4e8e\u4f18\u5316\u6211\u7684\u4e16\u754c\u670d\u52a1\u7aef\u6027\u80fd\u3001\u51cf\u5c11\u5ef6\u8fdf\u3001\u4fee\u590d\u670d\u52a1\u7aef/\u5176\u4ed6\u5e38\u7528\u63d2\u4ef6BUG\u3001\u9650\u5236\u6216\u7981\u7528\u7834\u574f\u591a\u4eba\u6e38\u620f\u5e73\u8861\u7684\u6e38\u620f\u673a\u5236\u7684\u63d2\u4ef6\uff08A plugin that focuses on optimizing minecraft server performance, reducing server lag, fix server an",
+ "upstream": "https://github.com/jiongjionger/NeverLag",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

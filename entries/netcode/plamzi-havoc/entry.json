@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T05:16:08Z",
+ "category": "netcode",
+ "commit": "25e0840a4ca3",
+ "delivery": "reference",
+ "description": "plamzi/Havoc \u2014 Multiplayer RPG Game Server in node.js",
+ "language": "javascript",
+ "license": "GPL-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Havoc",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 746730,
+ "slug": "plamzi-havoc",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 97,
+ "system": "Multiplayer RPG Game Server in node.js",
+ "upstream": "https://github.com/plamzi/Havoc",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
