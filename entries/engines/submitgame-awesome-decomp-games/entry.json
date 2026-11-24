@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T10:42:20Z",
+ "category": "engines",
+ "commit": "c3d938df47b2",
+ "delivery": "vendored",
+ "description": "SubmitGame/awesome-decomp-games \u2014 Rated, auto-refreshed list of decompiled, recompiled & reverse-engineered games: decomps, static recomps, source ports, engine remakes, browser ports.",
+ "language": "python",
+ "license": "CC0-1.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "awesome-decomp-games",
+ "size_bytes": 5028822,
+ "slug": "submitgame-awesome-decomp-games",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3198,
+ "system": "Rated, auto-refreshed list of decompiled, recompiled & reverse-engineered games: decomps, static recomps, source ports, engine remakes, browser ports.",
+ "upstream": "https://github.com/SubmitGame/awesome-decomp-games",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

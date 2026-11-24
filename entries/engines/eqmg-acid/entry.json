@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T10:42:29Z",
+ "category": "engines",
+ "commit": "2023-09-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "EQMG/Acid \u2014 A high speed C++17 Vulkan game engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Acid",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "eqmg-acid",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 2030,
+ "system": "A high speed C++17 Vulkan game engine",
+ "upstream": "https://github.com/EQMG/Acid",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

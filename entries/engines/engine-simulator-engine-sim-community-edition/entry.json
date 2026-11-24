@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T10:42:29Z",
+ "category": "engines",
+ "commit": "2025-09-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Engine-Simulator/engine-sim-community-edition \u2014 Combustion engine simulation game that generates realistic audio.",
+ "language": "n/a",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "engine-sim-community-edition",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "engine-simulator-engine-sim-community-edition",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3069,
+ "system": "Combustion engine simulation game that generates realistic audio.",
+ "upstream": "https://github.com/Engine-Simulator/engine-sim-community-edition",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

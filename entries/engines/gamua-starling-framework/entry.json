@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T10:42:28Z",
+ "category": "engines",
+ "commit": "ffde39a2d459",
+ "delivery": "vendored",
+ "description": "Gamua/Starling-Framework \u2014 The Cross Platform Game Engine",
+ "language": "actionscript",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "Starling-Framework",
+ "size_bytes": 10953,
+ "slug": "gamua-starling-framework",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3131,
+ "system": "The Cross Platform Game Engine",
+ "upstream": "https://github.com/Gamua/Starling-Framework",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

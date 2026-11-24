@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 10:26 UTC · 1210 entries · 313 vendored, 897 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 10:42 UTC · 1216 entries · 315 vendored, 901 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 403 | 91 | 312 |
+| [engines](#engines) — Game engines and engine subsystems | 409 | 93 | 316 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,13 +16,14 @@ _Generated 2026-11-24 10:26 UTC · 1210 entries · 313 vendored, 897 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 403 entries
+**Game engines and engine subsystems** — 409 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [24a2](entries/engines/jamesroutley-24a2/README.md) | 🏵 An ultra-minimalist game engine | typescript | MIT | reference | [jamesroutley/24a2](https://github.com/jamesroutley/24a2) @ `2026-03-01 (branch tip at catalogue time)` |
 | [AAAAXY — engine](entries/engines/aaaaxy-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | go | Apache-2.0 | vendored | [divVerent/aaaaxy](https://github.com/divVerent/aaaaxy) @ `07d7252` |
 | [AbyssEngine](entries/engines/opendiablo2-abyssengine/README.md) | A 2D ARPG game engine. | go | GPL-3.0 | reference | [OpenDiablo2/AbyssEngine](https://github.com/OpenDiablo2/AbyssEngine) @ `2025-12-05 (branch tip at catalogue time)` |
+| [Acid](entries/engines/eqmg-acid/README.md) | A high speed C++17 Vulkan game engine | c++ | MIT | reference | [EQMG/Acid](https://github.com/EQMG/Acid) @ `2023-09-21 (branch tip at catalogue time)` |
 | [ActionRoguelike](entries/engines/tomlooman-actionroguelike/README.md) | Project Orion - Co-op Action Roguelike in Unreal Engine C++ | c++ | none | reference | [tomlooman/ActionRoguelike](https://github.com/tomlooman/ActionRoguelike) @ `b7aef7d0f8ef` |
 | [AdMobBuddy](entries/engines/dmanning23-admobbuddy/README.md) | Library for viewing AdMob ads into a Xamarin.Android, Xamarin.iOS, and MonoGame apps | c# | MIT | reference | [dmanning23/AdMobBuddy](https://github.com/dmanning23/AdMobBuddy) @ `2022-02-15 (branch tip at catalogue time)` |
 | [advjs](entries/engines/yunyoujun-advjs/README.md) | 🎮 ADV.JS Web AVG Engine 面向未来与前端的文字冒险游戏引擎（WIP） | typescript | MPL-2.0 | reference | [YunYouJun/advjs](https://github.com/YunYouJun/advjs) @ `2026-11-20 (branch tip at catalogue time)` |
@@ -37,6 +38,7 @@ _Generated 2026-11-24 10:26 UTC · 1210 entries · 313 vendored, 897 reference-o
 | [arche](entries/engines/mlange-42-arche/README.md) | Arche -- Archetype-based Entity Component System (ECS) for Go. | go | MIT | reference | [mlange-42/arche](https://github.com/mlange-42/arche) @ `2025-04-01 (branch tip at catalogue time)` |
 | [Arduino-JoyCon-Library-for-Nintendo-Switch](entries/engines/squirelo-arduino-joycon-library-for-nintendo-switch/README.md) | Transform your ATmega32u4 based Arduino boards into Nintendo Switch-compatible gamepads! This library enables the Arduino Leonardo, Micro, or compatible clones  | c++ | LGPL-3.0 | reference | [squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch](https://github.com/squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch) @ `459b332cf47e` |
 | [armory](entries/engines/armory3d-armory/README.md) | 3D Engine with Blender Integration | c++ | Zlib | reference | [armory3d/armory](https://github.com/armory3d/armory) @ `7f7f588b5a50` |
+| [awesome-decomp-games](entries/engines/submitgame-awesome-decomp-games/README.md) | Rated, auto-refreshed list of decompiled, recompiled & reverse-engineered games: decomps, static recomps, source ports, engine remakes, browser ports. | python | CC0-1.0 | vendored | [SubmitGame/awesome-decomp-games](https://github.com/SubmitGame/awesome-decomp-games) @ `c3d938df47b2` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
 | [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
 | [awesome-game-mashups](entries/engines/bailo167-awesome-game-mashups/README.md) | Curated list of games rebuilt inside other games — cross-game mechanics, engine/runtime mashups, playable ports, and verified viral projects. | python | CC0-1.0 | reference | [bailo167/awesome-game-mashups](https://github.com/bailo167/awesome-game-mashups) @ `2026-11-09 (branch tip at catalogue time)` |
@@ -130,6 +132,7 @@ _Generated 2026-11-24 10:26 UTC · 1210 entries · 313 vendored, 897 reference-o
 | [engine](entries/engines/overreactjs-engine/README.md) | Browser-based game engine, built on top of React. | typescript | MIT | reference | [overreactjs/engine](https://github.com/overreactjs/engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [engine](entries/engines/pkmn-engine/README.md) | A minimal, complete, Pokémon battle simulation engine optimized for performance | zig | MIT | vendored | [pkmn/engine](https://github.com/pkmn/engine) @ `df3c333f0947` |
 | [engine](entries/engines/playcanvas-engine/README.md) | Open-source web graphics engine built on WebGPU and WebGL2 | javascript | MIT | reference | [playcanvas/engine](https://github.com/playcanvas/engine) @ `2026-11-23 (branch tip at catalogue time)` |
+| [engine-sim-community-edition](entries/engines/engine-simulator-engine-sim-community-edition/README.md) | Combustion engine simulation game that generates realistic audio. | n/a | unknown | reference | [Engine-Simulator/engine-sim-community-edition](https://github.com/Engine-Simulator/engine-sim-community-edition) @ `2025-09-11 (branch tip at catalogue time)` |
 | [engo](entries/engines/engoengine-engo/README.md) | Engo is an open-source 2D game engine written in Go. | go | MIT | reference | [EngoEngine/engo](https://github.com/EngoEngine/engo) @ `2026-03-30 (branch tip at catalogue time)` |
 | [Entitas](entries/engines/sschmid-entitas/README.md) | Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity | c# | MIT | vendored | [sschmid/Entitas](https://github.com/sschmid/Entitas) @ `37547d1bd280` |
 | [Entitas-Cpp](entries/engines/judelco-entitas-cpp/README.md) | Entitas++ is a fast Entity Component System (ECS) C++11 port of Entitas C# | c++ | MIT | reference | [JuDelCo/Entitas-Cpp](https://github.com/JuDelCo/Entitas-Cpp) @ `2023-07-01 (branch tip at catalogue time)` |
@@ -159,6 +162,7 @@ _Generated 2026-11-24 10:26 UTC · 1210 entries · 313 vendored, 897 reference-o
 | [FlexEngine](entries/engines/ajweeks-flexengine/README.md) | Cross-platform game engine with Vulkan backend | c++ | MIT | reference | [ajweeks/FlexEngine](https://github.com/ajweeks/FlexEngine) @ `03aab462249b` |
 | [flint](entries/engines/zoeesilcock-flint/README.md) | Building blocks for the game engine your game actually needs. | zig | MIT | reference | [zoeesilcock/flint](https://github.com/zoeesilcock/flint) @ `2026-11-15 (branch tip at catalogue time)` |
 | [fmod-gdextension](entries/engines/utopia-rise-fmod-gdextension/README.md) | FMOD Studio GDExtension bindings for the Godot game engine | c++ | unknown | reference | [utopia-rise/fmod-gdextension](https://github.com/utopia-rise/fmod-gdextension) @ `2026-11-07 (branch tip at catalogue time)` |
+| [forge](entries/engines/card-forge-forge/README.md) | An unofficial rules engine for the world's greatest card game. | java | GPL-3.0 | reference | [Card-Forge/forge](https://github.com/Card-Forge/forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Forme](entries/engines/aristurtledev-forme/README.md) | GPU acelerated text rendering library for MonoGame build on the Slug algorithm | c# | MIT | reference | [AristurtleDev/Forme](https://github.com/AristurtleDev/Forme) @ `2026-07-24 (branch tip at catalogue time)` |
 | [freeablo](entries/engines/wheybags-freeablo/README.md) | [ARCHIVED] Modern reimplementation of the Diablo 1 game engine | c++ | GPL-3.0 | reference | [wheybags/freeablo](https://github.com/wheybags/freeablo) @ `2023-04-13 (branch tip at catalogue time)` |
 | [func_godot_plugin](entries/engines/func-godot-func-godot-plugin/README.md) | Quake .map support for Godot 4 | gdscript | MIT | vendored | [func-godot/func_godot_plugin](https://github.com/func-godot/func_godot_plugin) @ `352f3d3083f1` |
@@ -310,6 +314,7 @@ _Generated 2026-11-24 10:26 UTC · 1210 entries · 313 vendored, 897 reference-o
 | [planck_ecs](entries/engines/annekitsune-planck-ecs/README.md) | A minimalist and safe ECS library for rust! | rust | Apache-2.0 | vendored | [AnneKitsune/planck_ecs](https://github.com/AnneKitsune/planck_ecs) @ `b0b496643541` |
 | [Plumber](entries/engines/lasa01-plumber/README.md) | A Blender addon for importing Source 1 engine maps, models, materials and textures.  This addon makes it possible to import full CS:GO, TF2, CS:S or other Sourc | rust | GPL-3.0 | reference | [lasa01/Plumber](https://github.com/lasa01/Plumber) @ `2026-06-13 (branch tip at catalogue time)` |
 | [ply-engine](entries/engines/thereddeveloper-ply-engine/README.md) | Beautiful UIs in Rust. Cross-platform. Dead simple. | rust | 0BSD | reference | [TheRedDeveloper/ply-engine](https://github.com/TheRedDeveloper/ply-engine) @ `2026-08-31 (branch tip at catalogue time)` |
+| [pokewilds](entries/engines/sheerst-pokewilds/README.md) | PokeWilds - A Gen 2 Game/Engine using libGDX | assembly | unknown | reference | [SheerSt/pokewilds](https://github.com/SheerSt/pokewilds) @ `2026-08-16 (branch tip at catalogue time)` |
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
 | [prototype](entries/engines/gonutz-prototype/README.md) | Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM. | c | MIT | vendored | [gonutz/prototype](https://github.com/gonutz/prototype) @ `d3732ae42e68` |
@@ -358,6 +363,7 @@ _Generated 2026-11-24 10:26 UTC · 1210 entries · 313 vendored, 897 reference-o
 | [specs-physics](entries/engines/amethyst-specs-physics/README.md) | nphysics integration for the Specs entity component system | rust | MIT | reference | [amethyst/specs-physics](https://github.com/amethyst/specs-physics) @ `2020-05-04 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
 | [stage.js](entries/engines/piqnt-stage-js/README.md) | 2D HTML5 rendering and layout engine for game development | typescript | MIT | vendored | [piqnt/stage.js](https://github.com/piqnt/stage.js) @ `2535352e89cd` |
+| [Starling-Framework](entries/engines/gamua-starling-framework/README.md) | The Cross Platform Game Engine | actionscript | BSD-2-Clause | vendored | [Gamua/Starling-Framework](https://github.com/Gamua/Starling-Framework) @ `ffde39a2d459` |
 | [stride](entries/engines/stride3d-stride/README.md) | Stride (formerly Xenko), a free and open-source cross-platform C# game engine. | c# | MIT | reference | [stride3d/stride](https://github.com/stride3d/stride) @ `852da2345e76` |
 | [strife](entries/engines/felixangell-strife/README.md) | a simple 2d game framework | go | MIT | reference | [felixangell/strife](https://github.com/felixangell/strife) @ `2022-07-07 (branch tip at catalogue time)` |
 | [sucle](entries/engines/gregcman-sucle/README.md) | Common Lisp Voxel Game Engine | common lisp | MIT | reference | [gregcman/sucle](https://github.com/gregcman/sucle) @ `2022-07-31 (branch tip at catalogue time)` |

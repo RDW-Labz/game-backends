@@ -2617,3 +2617,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/amzeratul-halley
   - reference engines/gmh5225-awesome-game-security
   - reference engines/craftyjs-crafty
+
+- **2026-11-24 10:42 UTC** — tick 779: +2 screened, +4 reference, 46 skipped, catalogue=1216
+  - added engines/submitgame-awesome-decomp-games (CC0-1.0, vendored)
+  - added engines/gamua-starling-framework (BSD-2-Clause, vendored)
+  - reference engines/engine-simulator-engine-sim-community-edition
+  - reference engines/sheerst-pokewilds
+  - reference engines/card-forge-forge
+  - reference engines/eqmg-acid

@@ -1,0 +1,145 @@
+package
+{
+    import starling.core.Starling;
+    import starling.display.Sprite;
+    import starling.display.Stage;
+    import starling.unit.GoldenImageStore;
+    import starling.unit.SimpleTestGui;
+    import starling.unit.TestGui;
+    import starling.unit.TestRunner;
+
+    import tests.animation.BezierEasingTest;
+    import tests.animation.DelayedCallTest;
+    import tests.animation.JugglerTest;
+    import tests.animation.TweenTest;
+    import tests.assets.AssetManagerTest;
+    import tests.display.BlendModeTest;
+    import tests.display.ButtonTest;
+    import tests.display.DisplayObjectContainerTest;
+    import tests.display.DisplayObjectTest;
+    import tests.display.ImageTest;
+    import tests.display.MeshTest;
+    import tests.display.MovieClipTest;
+    import tests.display.QuadTest;
+    import tests.display.Sprite3DTest;
+    import tests.events.EventTest;
+    import tests.filters.BlurFilterTest;
+    import tests.filters.ColorMatrixFilterTest;
+    import tests.filters.FilterChainTest;
+    import tests.filters.FragmentFilterTest;
+    import tests.geom.PolygonTest;
+    import tests.rendering.IndexDataTest;
+    import tests.rendering.MeshStyleTest;
+    import tests.rendering.VertexDataFormatTest;
+    import tests.rendering.VertexDataTest;
+    import tests.styles.MultiTextureStyleTest;
+    import tests.text.TextFieldTest;
+    import tests.textures.TextureAtlasTest;
+    import tests.textures.TextureTest;
+    import tests.unit.GoldenImageStoreTest;
+    import tests.unit.ImageDiffTest;
+    import tests.utils.ByteArrayUtilTest;
+    import tests.utils.ColorTest;
+    import tests.utils.MathUtilTest;
+    import tests.utils.MatrixUtilTest;
+    import tests.utils.RectangleUtilTest;
+    import tests.utils.StringUtilTest;
+    import tests.utils.UtilsTest;
+
+    public class TestSuite extends Sprite
+    {
+        public function start(goldenImageStore:GoldenImageStore, recordGoldenImages:Boolean):void
+        {
+            if (numChildren != 0)
+            {
+                trace("[TestSuite] Tests are already running.");
+                return;
+            }
+
+            var testRunner:TestRunner = createTestRunner(goldenImageStore, recordGoldenImages);
+            var testGui:TestGui = createTestGui(testRunner);
+            addChild(testGui);
+            testGui.start();
+        }
+
+        private function createTestRunner(goldenImageStore:GoldenImageStore,
+                                          recordGoldenImages:Boolean):TestRunner
+        {
+            var runner:TestRunner = new TestRunner(goldenImageStore, recordGoldenImages);
+
+            // animation
+            runner.add(BezierEasingTest);
+            runner.add(DelayedCallTest);
+            runner.add(JugglerTest);
+            runner.add(TweenTest);
+
+            // assets
+            runner.add(AssetManagerTest);
+
+            // display
+            runner.add(BlendModeTest);
+            runner.add(ButtonTest);
+            runner.add(DisplayObjectContainerTest);
+            runner.add(DisplayObjectTest);
+            runner.add(ImageTest);
+            runner.add(MeshTest);
+            runner.add(MovieClipTest);
+            runner.add(QuadTest);
+            runner.add(Sprite3DTest);
+
+            // events
+            runner.add(EventTest);
+
+            // filters
+            runner.add(BlurFilterTest);
+            runner.add(ColorMatrixFilterTest);
+            runner.add(FilterChainTest);
+            runner.add(FragmentFilterTest);
+
+            // geom
+            runner.add(PolygonTest);
+
+            // rendering
+            runner.add(IndexDataTest);
+            runner.add(MeshStyleTest);
+            runner.add(VertexDataFormatTest);
+            runner.add(VertexDataTest);
+
+            // styles
+            runner.add(MultiTextureStyleTest);
+
+            // text
+            runner.add(TextFieldTest);
+
+            // textures
+            runner.add(TextureAtlasTest);
+            runner.add(TextureTest);
+
+            // unit
+            runner.add(GoldenImageStoreTest);
+            runner.add(ImageDiffTest);
+
+            // utils
+            runner.add(ByteArrayUtilTest);
+            runner.add(ColorTest);
+            runner.add(MathUtilTest);
+            runner.add(MatrixUtilTest);
+            runner.add(RectangleUtilTest);
+            runner.add(StringUtilTest);
+            runner.add(UtilsTest);
+
+            return runner;
+        }
+
+        private function createTestGui(testRunner:TestRunner): TestGui
+        {
+            var padding:int = 10;
+            var stage:Stage = Starling.current.stage;
+            var width:int = stage.stageWidth - 2 * padding;
+            var height:int = stage.stageHeight - 2 * padding;
+            var gui:TestGui = new SimpleTestGui(testRunner, width, height);
+            gui.x = gui.y = padding;
+            return gui;
+        }
+    }
+}

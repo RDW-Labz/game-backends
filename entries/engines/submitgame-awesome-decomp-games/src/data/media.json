@@ -1,0 +1,1191 @@
+{
+ "https://github.com/HarbourMasters/Shipwright": {
+  "top_pick": 1,
+  "note": "The definitive way to play Ocarina of Time on PC, Switch, Wii U and Android: 60fps, widescreen, randomizer, mods. Bring your own ROM.",
+  "screenshot": "screenshots/harbourmasters-shipwright.jpg",
+  "screenshot_score": 4,
+  "screenshot_source": "https://i.ytimg.com/vi/u-EhRErOpHE/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=u-EhRErOpHE",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/Zelda64Recomp/Zelda64Recomp": {
+  "top_pick": 2,
+  "note": "N64: Recompiled port of Majora's Mask with ultrawide, high framerate, gyro and a mod loader. Needs your US ROM.",
+  "screenshot": "screenshots/zelda64recomp-zelda64recomp.jpg",
+  "screenshot_score": 3,
+  "screenshot_source": "https://i.ytimg.com/vi/GIp7C2ro2T8/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=GIp7C2ro2T8",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/hedge-dev/UnleashedRecomp": {
+  "top_pick": 3,
+  "note": "XenonRecomp port of the Xbox 360 Sonic Unleashed: high framerate, ultrawide, mod support. Needs your own dump.",
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=yDlVr1Jv-WU",
+  "screenshot": "screenshots/hedge-dev-unleashedrecomp.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/yDlVr1Jv-WU/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/coop-deluxe/sm64coopdx": {
+  "top_pick": 4,
+  "note": "Super Mario 64 PC port with online co-op for up to 16 players, Lua mods and DynOS. Built from the SM64 decomp.",
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=hmqbLyszoYY",
+  "screenshot": "screenshots/coop-deluxe-sm64coopdx.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/hmqbLyszoYY/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/HarbourMasters/Starship": {
+  "top_pick": 5,
+  "note": "Native Star Fox 64 port (from the SF64 decomp) with widescreen, 60fps and enhancements.",
+  "screenshot": "screenshots/harbourmasters-starship.jpg",
+  "screenshot_score": 4,
+  "screenshot_source": "https://i.ytimg.com/vi/FZ3o09an9_k/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=FZ3o09an9_k",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/TwilitRealm/dusklight": {
+  "top_pick": 6,
+  "note": "PC/mobile port of Twilight Princess built on the zeldaret/tp decompilation, with fixes and enhancements.",
+  "screenshot": "screenshots/twilitrealm-dusklight.jpg",
+  "screenshot_score": 5,
+  "screenshot_source": "https://twilitrealm.dev/_astro/shot-platform.Cp2I0l-W_1nEglP.webp",
+  "screenshot_size": [
+   960,
+   540
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=9ivusJVCtFk",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/BanjoRecomp/BanjoRecomp": {
+  "top_pick": 7,
+  "note": "N64: Recompiled Banjo-Kazooie for Windows/Linux/Mac with widescreen, high framerate and Thunderstore mods.",
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=0906Cz-59eU",
+  "screenshot": "screenshots/banjorecomp-banjorecomp.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/5YIn43NP2t4/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 3,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/HarbourMasters/SpaghettiKart": {
+  "top_pick": 8,
+  "note": "Mario Kart 64 PC port from the MK64 decomp: HD, custom tracks, extra players and modding.",
+  "screenshot": "screenshots/harbourmasters-spaghettikart.jpg",
+  "screenshot_score": 5,
+  "screenshot_source": "https://i.ytimg.com/vi/EOWOtd8sZTQ/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=EOWOtd8sZTQ",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/diasurgical/DevilutionX": {
+  "top_pick": 9,
+  "note": "Diablo and Hellfire for modern systems (PC, consoles, handhelds), based on the reverse-engineered Devilution source.",
+  "screenshot": "screenshots/diasurgical-devilutionx.jpg",
+  "screenshot_score": 4,
+  "screenshot_source": "https://github.com/user-attachments/assets/ee902926-6382-4ee5-b1c2-7947e8b434e9",
+  "screenshot_size": [
+   853,
+   480
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=4fxOMpYWBGg",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/OpenRCT2/OpenRCT2": {
+  "top_pick": 10,
+  "note": "Full reimplementation of RollerCoaster Tycoon 2 with multiplayer, higher resolutions and quality-of-life fixes.",
+  "screenshot": "screenshots/openrct2-openrct2.jpg",
+  "screenshot_score": 5,
+  "screenshot_source": "https://github.com/user-attachments/assets/fa893cc8-1484-4751-94be-4ead00a6c8f9",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=8dXoNlAR0X4",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/snesrev/zelda3": {
+  "top_pick": 11,
+  "note": "Reverse-engineered C reimplementation of A Link to the Past: widescreen, pixel shaders, MSU-1. Needs the ROM for assets.",
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=xctizwBntag",
+  "screenshot": "screenshots/snesrev-zelda3.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/xctizwBntag/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/OpenMW/openmw": {
+  "top_pick": 12,
+  "note": "Open-source Morrowind engine: better performance, Lua modding, runs on Linux/macOS/Android.",
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=bR-WZ8NOG_k",
+  "screenshot": "screenshots/openmw-openmw.jpg",
+  "screenshot_source": "https://openmw.org/wp-content/uploads/2025/11/image.png",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/RSDKModding/Sonic-Mania-Decompilation": {
+  "top_pick": 13,
+  "note": "Complete decompilation of Sonic Mania that builds native ports for PC, Switch, Android and more.",
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=CSPhyjHt79Y",
+  "screenshot": "screenshots/rsdkmodding-sonic-mania-decompilation.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/CSPhyjHt79Y/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/OpenTTD/OpenTTD": {
+  "top_pick": 14,
+  "note": "The long-running, still active reimplementation of Transport Tycoon Deluxe; free graphics sets mean no original files are needed.",
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=ZBzRh6lD9J8",
+  "screenshot": "screenshots/openttd-openttd.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/ZBzRh6lD9J8/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/sonicnext-dev/MarathonRecomp": {
+  "top_pick": 15,
+  "note": "XenonRecomp port of Sonic the Hedgehog (2006), fixing much of its performance and loading.",
+  "video": "https://www.youtube.com/watch?v=kQVbKhjSBmk",
+  "checked": true,
+  "screenshot": "screenshots/sonicnext-dev-marathonrecomp.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/kQVbKhjSBmk/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/isledecomp/isle-portable": {
+  "top_pick": 16,
+  "note": "Cross-platform LEGO Island built on the full isledecomp decompilation (Windows, Linux, macOS, web, consoles).",
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=JUNdWnI5BTk",
+  "screenshot": "screenshots/isledecomp-isle-portable.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/JUNdWnI5BTk/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/vcmi/vcmi": {
+  "top_pick": 17,
+  "note": "Heroes of Might and Magic III engine rewrite with HD, mods, multiplayer and Android support.",
+  "screenshot": "screenshots/vcmi-vcmi.jpg",
+  "screenshot_score": 5,
+  "screenshot_source": "https://raw.githubusercontent.com/vcmi/VCMI.eu/master/static/img/screenshots/1.4.0/Antagarich%20Burning%20Battle.jpg?raw=true",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=zxC7wLITNpg",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/dethrace-labs/dethrace": {
+  "top_pick": 19,
+  "note": "Reverse-engineered Carmageddon that runs natively on modern Windows, Linux and macOS.",
+  "screenshot": "screenshots/dethrace-labs-dethrace.jpg",
+  "screenshot_score": 3,
+  "screenshot_source": "https://i.ytimg.com/vi/MMI45O0RKq0/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=MMI45O0RKq0",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/k4zmu2a/SpaceCadetPinball": {
+  "top_pick": 20,
+  "note": "Decompilation of Windows' 3D Pinball Space Cadet, ported to modern platforms.",
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=smiCSU2sje8",
+  "screenshot": "screenshots/k4zmu2a-spacecadetpinball.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/smiCSU2sje8/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/CorsixTH/CorsixTH": {
+  "top_pick": 21,
+  "note": "Open reimplementation of Theme Hospital with high resolutions and campaign editor.",
+  "screenshot": "screenshots/corsixth-corsixth.jpg",
+  "screenshot_score": 4,
+  "screenshot_source": "https://github.com/CorsixTH/CorsixTH/assets/20030128/71a42d5f-d486-4309-ba85-77e114880bcb",
+  "screenshot_size": [
+   697,
+   434
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=fKq04q6a53s",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/bvschaik/julius": {
+  "top_pick": 22,
+  "note": "Faithful reimplementation of Caesar III that fixes bugs and runs on modern systems; Augustus adds gameplay changes.",
+  "screenshot": "screenshots/bvschaik-julius.jpg",
+  "screenshot_score": 5,
+  "screenshot_source": "https://raw.githubusercontent.com/bvschaik/julius/master/res/vita/bg.png",
+  "screenshot_size": [
+   800,
+   500
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=OXONBt5U-U0",
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://q3js.com": {
+  "top_pick": 23,
+  "note": "Quake III Arena in the browser (WebAssembly ioquake3): click and play instantly, demo data included.",
+  "screenshot": "screenshots/quake-iii-arena.jpg",
+  "screenshot_score": 5,
+  "screenshot_source": "https://recompiledgames.com/img/games/quake-iii-arena-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "checked": true,
+  "video": "https://www.youtube.com/watch?v=de7PNFRHNts",
+  "locked": true,
+  "screenshot_reviewed": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://github.com/Warzone2100/warzone2100": {
+  "screenshot": "screenshots/warzone2100-warzone2100.jpg",
+  "screenshot_score": 3,
+  "screenshot_source": "https://repository-images.githubusercontent.com/1084181/ad379400-913f-11eb-8e30-85f3134ab00e",
+  "screenshot_size": [
+   1280,
+   640
+  ],
+  "checked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/TerryCavanagh/VVVVVV": {
+  "checked": true
+ },
+ "https://github.com/SFTtech/openage": {
+  "video": "https://www.youtube.com/watch?v=fQGbXmkSArs",
+  "checked": true,
+  "screenshot": "screenshots/sfttech-openage.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/fQGbXmkSArs/maxresdefault.jpg",
+  "screenshot_size": [
+   480,
+   360
+  ],
+  "screenshot_score": 1,
+  "screenshot_reviewed": true,
+  "locked": true
+ },
+ "https://github.com/nicholas-ochoa/OpenSC2K": {
+  "checked": true
+ },
+ "https://github.com/Supermedo/bloodborne_pc": {
+  "checked": true
+ },
+ "https://github.com/patchzyy/Wiicompiled": {
+  "checked": true
+ },
+ "https://github.com/OpenCommunityEdition/OpenCE": {
+  "screenshot": "screenshots/opencommunityedition-opence.jpg",
+  "screenshot_score": 4,
+  "screenshot_source": "https://github.com/user-attachments/assets/0d3ad50f-f8b8-46cf-aef8-e3661da2a7d7",
+  "screenshot_size": [
+   1280,
+   988
+  ],
+  "checked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/mchughalex/skate3recomp": {
+  "video": "https://youtu.be/ETXCOsip1Uo",
+  "checked": true,
+  "screenshot": "screenshots/mchughalex-skate3recomp.jpg",
+  "screenshot_source": "https://i.ytimg.com/vi/ETXCOsip1Uo/maxresdefault.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 1,
+  "screenshot_reviewed": true,
+  "locked": true
+ },
+ "https://github.com/chocolate-doom/chocolate-doom": {
+  "checked": true
+ },
+ "https://github.com/TheSuperHackers/GeneralsGameCode": {
+  "checked": true
+ },
+ "https://github.com/open-goal/jak-project": {
+  "video": "https://youtu.be/K84UUMnkJc4",
+  "screenshot": "screenshots/open-goal-jak-project.jpg",
+  "screenshot_score": 5,
+  "screenshot_source": "https://raw.githubusercontent.com/open-goal/jak-project/master/docs/img/promosmall1.png",
+  "screenshot_size": [
+   960,
+   540
+  ],
+  "checked": true,
+  "screenshot_reviewed": true
+ },
+ "https://github.com/JACoders/OpenJK": {
+  "checked": true
+ },
+ "https://github.com/ec-/Quake3e": {
+  "checked": true
+ },
+ "https://github.com/2ship2harkinian/2ship2harkinian": {
+  "checked": true
+ },
+ "https://github.com/UZDoom/UZDoom": {
+  "checked": true
+ },
+ "https://github.com/Novum/vkQuake": {
+  "checked": true
+ },
+ "https://github.com/cxong/cdogs-sdl": {
+  "screenshot": "screenshots/cxong-cdogs-sdl.jpg",
+  "screenshot_score": 3,
+  "screenshot_source": "https://repository-images.githubusercontent.com/7571859/6ee4f273-6ea6-450d-a2c0-a8136782ec12",
+  "screenshot_size": [
+   1280,
+   640
+  ],
+  "checked": true,
+  "screenshot_reviewed": true
+ },
+ "https://vel.gg/bo1z": {
+  "screenshot": "screenshots/browser-call-of-duty-black-ops-zombies.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/black-ops-zombies-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "http://ovz-game-production.up.railway.app": {
+  "screenshot": "screenshots/browser-call-of-duty-modern-warfare-2.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/modern-warfare-2-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "https://generals.wasm.ltd": {
+  "screenshot": "screenshots/browser-command-conquer-generals-zero-hour.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/generalsx-og.jpg",
+  "screenshot_size": [
+   1200,
+   630
+  ],
+  "screenshot_score": 3,
+  "locked": true,
+  "screenshot_kind": "mixed"
+ },
+ "https://chronodivide.com": {
+  "screenshot": "screenshots/browser-command-conquer-red-alert-2.jpg",
+  "screenshot_source": "gameplay frame from local backup /workspace/sites/command-conquer-red-alert-2/img/scr/screen1c.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://csjs.live": {
+  "screenshot": "screenshots/browser-counter-strike-1-6.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/counter-strike-1-6-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://bunnyhop.lol": {
+  "screenshot": "screenshots/browser-counter-strike-source-bunnyhop-bunnyhop-lol.jpg",
+  "screenshot_source": "gameplay frame from local backup /workspace/sites/counter-strike-source-bunnyhop-bunnyhop-/thumbs/bh_aztec.hero.webp",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://surfd.net": {
+  "screenshot": "screenshots/browser-counter-strike-source-surf-surfd.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/surfd-cs-surf-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://ctr.cmzi.uk": {
+  "screenshot": "screenshots/browser-crash-team-racing-turbocharged.jpg",
+  "screenshot_source": "https://ctr.cmzi.uk/assets/social-card.jpg",
+  "screenshot_size": [
+   1200,
+   630
+  ],
+  "screenshot_score": 5
+ },
+ "https://johnimril.github.io/diablo_web": {
+  "screenshot": "screenshots/browser-diablo.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/diablo-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://silentspacemarine.com": {
+  "screenshot": "screenshots/browser-doom-multiplayer-silent-space-marine.jpg",
+  "screenshot_source": "https://silentspacemarine.com/share.png",
+  "screenshot_size": [
+   800,
+   458
+  ],
+  "screenshot_score": 1,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://shmargus.github.io/GSRecomp": {
+  "screenshot": "screenshots/browser-golden-sun-recompilation.jpg",
+  "screenshot_source": "https://shmargus.github.io/GSRecomp/logo.webp",
+  "screenshot_size": [
+   1280,
+   640
+  ],
+  "screenshot_score": 5
+ },
+ "https://joncodeofficial.github.io/gta-vice-city-wasm": {
+  "screenshot": "screenshots/browser-grand-theft-auto-vice-city.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/gta-vice-city-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://pixelsuft.github.io/hl": {
+  "screenshot": "screenshots/browser-half-life-pixelsuft.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/half-life-pixelsuft-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://x8bitrain.github.io/webXash": {
+  "screenshot": "screenshots/browser-half-life-and-counter-strike-1-6-webxash.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/half-life-counter-strike-webxash-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://mitchellhynes.com/halo/halo.html": {
+  "screenshot": "screenshots/browser-halo-combat-evolved.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/halo-combat-evolved-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://hcemobile.com": {
+  "screenshot": "screenshots/browser-halo-combat-evolved-mobile-hcemobile.jpg",
+  "screenshot_source": "live capture of https://hcemobile.com/",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 1,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://www.netquake.io": {
+  "screenshot": "screenshots/browser-netquake-io.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/netquake-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://pes6.optijuegos.net": {
+  "screenshot": "screenshots/browser-pro-evolution-soccer-6.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/pro-evolution-soccer-6-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://q2.pieter.com": {
+  "screenshot": "screenshots/browser-quake-ii.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/quake-ii-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://q3.pieter.com": {
+  "screenshot": "screenshots/browser-quake-iii-arena-q3-pieter-com.jpg",
+  "screenshot_source": "https://q3.pieter.com/assets/og.jpg",
+  "screenshot_size": [
+   1280,
+   833
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://q1.pieter.com": {
+  "screenshot": "screenshots/browser-quakeworld.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/quakeworld-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://re-rac.github.io": {
+  "screenshot": "screenshots/browser-ratchet-clank-pc-port.jpg",
+  "screenshot_source": "https://re-rac.github.io/og.png",
+  "screenshot_size": [
+   1200,
+   630
+  ],
+  "screenshot_score": 5
+ },
+ "https://rtcw.pieter.com": {
+  "screenshot": "screenshots/browser-return-to-castle-wolfenstein.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/return-to-castle-wolfenstein-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://skate.aaddpp.lol": {
+  "screenshot": "screenshots/browser-skate-3.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/skate-3-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://jk.q3js.com": {
+  "screenshot": "screenshots/browser-star-wars-jedi-knight-jedi-academy.jpg",
+  "screenshot_source": "live capture of https://jk.q3js.com",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 1,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://olivers.tools/play": {
+  "screenshot": "screenshots/browser-super-mario-64-multiplayer.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/super-mario-64-multiplayer-recompiled.jpg",
+  "screenshot_size": [
+   1200,
+   857
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://shar-wasm.cjoseph.workers.dev/?skipmovie": {
+  "screenshot": "screenshots/browser-the-simpsons-hit-run.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/the-simpsons-hit-and-run-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://ut.pieter.com": {
+  "screenshot": "screenshots/browser-urban-terror-listed-as-unreal-tournament.jpg",
+  "screenshot_source": "https://ut.pieter.com/assets/og.jpg?v=1",
+  "screenshot_size": [
+   1200,
+   630
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://vf1-recomp.pages.dev": {
+  "screenshot": "screenshots/browser-virtua-fighter-arcade-recompilation.jpg",
+  "screenshot_source": "https://vf1-recomp.pages.dev/media/og.jpg",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 5
+ },
+ "https://wadcmd.com": {
+  "screenshot": "screenshots/browser-wadcmd-doom-in-the-browser.jpg",
+  "screenshot_source": "gameplay frame from local backup /workspace/sites/wadcmd-doom-in-the-browser/assets/img/screens/play.webp",
+  "screenshot_size": [
+   1280,
+   800
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "http://vel.gg/bo1z": {
+  "screenshot": "screenshots/browser-call-of-duty-black-ops-zombies.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/black-ops-zombies-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "https://ovz-game-production.up.railway.app": {
+  "screenshot": "screenshots/browser-call-of-duty-modern-warfare-2.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/modern-warfare-2-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 2,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "http://surfd.net": {
+  "screenshot": "screenshots/browser-counter-strike-source-surf-surfd.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/surfd-cs-surf-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://johnimril.github.io/diablo_web": {
+  "screenshot": "screenshots/browser-diablo.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/diablo-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://pixelsuft.github.io/hl": {
+  "screenshot": "screenshots/browser-half-life-pixelsuft.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/half-life-pixelsuft-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://x8bitrain.github.io/webXash": {
+  "screenshot": "screenshots/browser-half-life-and-counter-strike-1-6-webxash.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/half-life-counter-strike-webxash-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://pes6.optijuegos.net": {
+  "screenshot": "screenshots/browser-pro-evolution-soccer-6.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/pro-evolution-soccer-6-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://q2.pieter.com": {
+  "screenshot": "screenshots/browser-quake-ii.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/quake-ii-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://q1.pieter.com": {
+  "screenshot": "screenshots/browser-quakeworld.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/quakeworld-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://rtcw.pieter.com": {
+  "screenshot": "screenshots/browser-return-to-castle-wolfenstein.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/return-to-castle-wolfenstein-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://skate.aaddpp.lol": {
+  "screenshot": "screenshots/browser-skate-3.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/skate-3-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://shar-wasm.cjoseph.workers.dev/?skipmovie": {
+  "screenshot": "screenshots/browser-the-simpsons-hit-run.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/the-simpsons-hit-and-run-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "http://ut.pieter.com": {
+  "screenshot": "screenshots/browser-urban-terror-listed-as-unreal-tournament.jpg",
+  "screenshot_source": "https://ut.pieter.com/assets/og.jpg?v=1",
+  "screenshot_size": [
+   1200,
+   630
+  ],
+  "screenshot_score": 5
+ },
+ "https://crashbash.app": {
+  "screenshot": "screenshots/browser-crash-bash-online.jpg",
+  "screenshot_source": "gameplay frame from local backup /workspace/sites/crash-bash-online/shots/jungle-bash.webp",
+  "screenshot_size": [
+   1024,
+   768
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://fortniteog.lol": {
+  "screenshot": "screenshots/browser-fortnite-og-fortniteog-lol.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/fortnite-og-banner.jpg",
+  "screenshot_size": [
+   1200,
+   400
+  ],
+  "screenshot_score": 2
+ },
+ "https://wasmarcade.com/gta3": {
+  "screenshot": "screenshots/browser-grand-theft-auto-iii.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/gta-3-recompiled.jpg",
+  "screenshot_size": [
+   568,
+   406
+  ],
+  "screenshot_score": 3,
+  "locked": true,
+  "screenshot_kind": "mixed"
+ },
+ "https://web.archive.org/web/20261006055917/https://playgta5.com": {
+  "screenshot": "screenshots/browser-grand-theft-auto-v.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/gta-5-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3,
+  "locked": true,
+  "screenshot_kind": "mixed"
+ },
+ "https://isle.pizza": {
+  "screenshot": "screenshots/browser-lego-island.jpg",
+  "screenshot_source": "live capture of https://isle.pizza/",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 2,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://wasmarcade.com/minecraft": {
+  "screenshot": "screenshots/browser-minecraft-1-8-8-eaglercraftx.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/minecraft-1-8-8-recompiled.jpg",
+  "screenshot_size": [
+   935,
+   668
+  ],
+  "screenshot_score": 2,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://zombies.bitcoinsapi.com": {
+  "screenshot": "screenshots/browser-nacht-der-untoten.jpg",
+  "screenshot_source": "gameplay frame from local backup /workspace/sites/nacht-der-untoten/nacht/hero.jpg",
+  "screenshot_size": [
+   1280,
+   926
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://runescapeclassic.gold": {
+  "screenshot": "screenshots/browser-runescape-classic.jpg",
+  "screenshot_source": "gameplay frame from local backup /workspace/sites/runescape-classic/img/game-bg.webp",
+  "screenshot_size": [
+   1280,
+   452
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://smz.fun": {
+  "screenshot": "screenshots/browser-super-mario-zombies.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/super-mario-zombies-card.jpg",
+  "screenshot_size": [
+   1200,
+   630
+  ],
+  "screenshot_score": 2,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://froydinger.github.io/claude-of-duty/": {
+  "screenshot": "screenshots/browser-claude-of-duty-vibe-slops-ii-froydinger-mirror.jpg",
+  "screenshot_source": "live gameplay capture (headless Chrome) 2026-10-11",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://goofyahhbro69420.github.io/Black-Ops-2/": {
+  "screenshot": "screenshots/browser-claude-of-duty-vibe-slops-ii-goofyahhbro69420-mirr.jpg",
+  "screenshot_source": "live capture of title screen (headless Chrome) 2026-10-11",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 3,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://theeagler1234-alt.github.io/kino-der-toten/": {
+  "screenshot": "screenshots/browser-kino-der-toten-theeagler1234-mirror.jpg",
+  "screenshot_source": "live gameplay capture (headless Chrome) 2026-10-11",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://goofyahhbro69420.github.io/COD-ZOMBIES/": {
+  "screenshot": "screenshots/browser-kino-der-toten-goofyahhbro69420-mirror.jpg",
+  "screenshot_source": "live gameplay capture (headless Chrome) 2026-10-11",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 4,
+  "locked": true,
+  "screenshot_reviewed": true
+ },
+ "https://froydinger.github.io/claude-of-duty": {
+  "screenshot": "screenshots/browser-claude-of-duty-vibe-slops-ii-froydinger-mirror.jpg",
+  "screenshot_source": "https://froydinger.github.io/claude-of-duty/social/og-cover.png",
+  "screenshot_size": [
+   1200,
+   630
+  ],
+  "screenshot_score": 2,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://goofyahhbro69420.github.io/Black-Ops-2": {
+  "screenshot": "screenshots/browser-claude-of-duty-vibe-slops-ii-goofyahhbro69420-mirr.jpg",
+  "screenshot_source": "live capture of https://goofyahhbro69420.github.io/Black-Ops-2/",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 1,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://goofyahhbro69420.github.io/COD-ZOMBIES": {
+  "screenshot": "screenshots/browser-kino-der-toten-goofyahhbro69420-mirror.jpg",
+  "screenshot_source": "live capture of https://goofyahhbro69420.github.io/COD-ZOMBIES/",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 2,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://theeagler1234-alt.github.io/kino-der-toten": {
+  "screenshot": "screenshots/browser-kino-der-toten-theeagler1234-mirror.jpg",
+  "screenshot_source": "live capture of https://theeagler1234-alt.github.io/kino-der-toten/",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 2,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://github.com/troyedwardsjr/z2rs": {
+  "screenshot": "screenshots/browser-troyedwardsjr-z2rs.jpg",
+  "screenshot_source": "live capture of https://z2rs.com/",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 1,
+  "locked": true,
+  "screenshot_kind": "menu/logo/title"
+ },
+ "https://vel.gg/bo1z/moon": {
+  "screenshot": "screenshots/browser-moon-black-ops-zombies-vel-gg.jpg",
+  "screenshot_source": "gameplay frame from live capture of https://vel.gg/bo1z/moon",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 5,
+  "locked": true,
+  "screenshot_kind": "gameplay"
+ },
+ "https://github.com/d07RiV/diabloweb": {
+  "screenshot": "screenshots/browser-d07riv-diabloweb.jpg",
+  "screenshot_source": "live capture of https://d07riv.github.io/diabloweb/",
+  "screenshot_size": [
+   1280,
+   720
+  ],
+  "screenshot_score": 3
+ },
+ "https://vel.gg/bsz": {
+  "screenshot": "screenshots/browser-call-of-duty-black-ops-zombies.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/black-ops-zombies-recompiled.jpg",
+  "screenshot_size": [
+   594,
+   425
+  ],
+  "screenshot_score": 3
+ },
+ "https://wasm.rip/files/cuphead/index.html": {
+  "screenshot": "screenshots/browser-cuphead.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/cuphead-recompiled.jpg",
+  "screenshot_size": [
+   441,
+   315
+  ],
+  "screenshot_score": 2
+ },
+ "https://cyberpunk2077.lol/game?ioShared=1&amp;ioSharedMB=128&amp;ioInflight=4&amp;ioPersist=1&amp;ioPersistMB=6144&amp;binkRecycle=1&amp;psoWarm=0&amp;skipIntro=1&amp;ioLookahead=16&amp;behindLoad=0.5": {
+  "screenshot": "screenshots/browser-cyberpunk-2077.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/cyberpunk-2077-recompiled.jpg",
+  "screenshot_size": [
+   1200,
+   857
+  ],
+  "screenshot_score": 5
+ },
+ "https://f12006.online": {
+  "screenshot": "screenshots/browser-formula-one-06.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/f1-06-recompiled.jpg",
+  "screenshot_size": [
+   1008,
+   720
+  ],
+  "screenshot_score": 4
+ },
+ "https://zombies.concentric.live": {
+  "screenshot": "screenshots/browser-nacht-der-untoten.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/nacht-der-untoten-card.jpg",
+  "screenshot_size": [
+   1200,
+   600
+  ],
+  "screenshot_score": 5
+ },
+ "https://nba2k12.online": {
+  "screenshot": "screenshots/browser-nba-2k12.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/nba-2k12-recompiled.jpg",
+  "screenshot_size": [
+   588,
+   420
+  ],
+  "screenshot_score": 3
+ },
+ "https://nfsmwonline.com": {
+  "screenshot": "screenshots/browser-need-for-speed-most-wanted.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/need-for-speed-most-wanted-recompiled.jpg",
+  "screenshot_size": [
+   1008,
+   720
+  ],
+  "screenshot_score": 4
+ },
+ "https://ssx3.online": {
+  "screenshot": "screenshots/browser-ssx-3.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/ssx-3-recompiled.jpg",
+  "screenshot_size": [
+   500,
+   357
+  ],
+  "screenshot_score": 3
+ },
+ "https://tekken5.online": {
+  "screenshot": "screenshots/browser-tekken-5.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/tekken-5-recompiled.jpg",
+  "screenshot_size": [
+   399,
+   285
+  ],
+  "screenshot_score": 2
+ },
+ "https://playterraria.lol": {
+  "screenshot": "screenshots/browser-terraria.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/terraria-recompiled.jpg",
+  "screenshot_size": [
+   987,
+   705
+  ],
+  "screenshot_score": 4
+ },
+ "https://smackdownvsraw.online": {
+  "screenshot": "screenshots/browser-wwe-smackdown-vs-raw.jpg",
+  "screenshot_source": "https://recompiledgames.com/img/games/wwe-smackdown-vs-raw-recompiled.jpg",
+  "screenshot_size": [
+   386,
+   276
+  ],
+  "screenshot_score": 2
+ }
+}
