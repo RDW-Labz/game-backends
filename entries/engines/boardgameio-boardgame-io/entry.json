@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T17:18:18Z",
+ "category": "engines",
+ "commit": "47adef2b46e3",
+ "delivery": "vendored",
+ "description": "boardgameio/boardgame.io \u2014 State Management and Multiplayer Networking for Turn-Based Games",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "boardgame.io",
+ "size_bytes": 3584393,
+ "slug": "boardgameio-boardgame-io",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 12500,
+ "system": "State Management and Multiplayer Networking for Turn-Based Games",
+ "upstream": "https://github.com/boardgameio/boardgame.io",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

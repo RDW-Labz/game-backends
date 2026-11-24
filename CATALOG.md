@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 17:00 UTC · 1300 entries · 335 vendored, 965 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 17:18 UTC · 1306 entries · 336 vendored, 970 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 493 | 113 | 380 |
+| [engines](#engines) — Game engines and engine subsystems | 499 | 114 | 385 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 17:00 UTC · 1300 entries · 335 vendored, 965 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 493 entries
+**Game engines and engine subsystems** — 499 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -36,6 +36,7 @@ _Generated 2026-11-24 17:00 UTC · 1300 entries · 335 vendored, 965 reference-o
 | [AndEngine](entries/engines/nicolasgramlich-andengine/README.md) | Free Android 2D OpenGL Game Engine | java | Apache-2.0 | reference | [nicolasgramlich/AndEngine](https://github.com/nicolasgramlich/AndEngine) @ `2018-11-16 (branch tip at catalogue time)` |
 | [ant](entries/engines/ejoy-ant/README.md) | Ant game engine | lua | MIT | reference | [ejoy/ant](https://github.com/ejoy/ant) @ `2025-11-17 (branch tip at catalogue time)` |
 | [AnyRPGCore](entries/engines/anyrpg-anyrpgcore/README.md) | Open source Role Playing Game engine for Unity 3D written in C#. | c# | MIT | reference | [AnyRPG/AnyRPGCore](https://github.com/AnyRPG/AnyRPGCore) @ `2026-10-26 (branch tip at catalogue time)` |
+| [anything_about_game](entries/engines/killop-anything-about-game/README.md) | A wonderful list of Game Development resources. | n/a | Apache-2.0 | reference | [killop/anything_about_game](https://github.com/killop/anything_about_game) @ `2026-11-17 (branch tip at catalogue time)` |
 | [Apos.Gui](entries/engines/apostolique-apos-gui/README.md) | UI library for MonoGame. | c# | MIT | reference | [Apostolique/Apos.Gui](https://github.com/Apostolique/Apos.Gui) @ `2026-11-03 (branch tip at catalogue time)` |
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
 | [arche](entries/engines/mlange-42-arche/README.md) | Arche -- Archetype-based Entity Component System (ECS) for Go. | go | MIT | reference | [mlange-42/arche](https://github.com/mlange-42/arche) @ `2025-04-01 (branch tip at catalogue time)` |
@@ -90,6 +91,7 @@ _Generated 2026-11-24 17:00 UTC · 1300 entries · 335 vendored, 965 reference-o
 | [bevy_webgl2](entries/engines/mrk-its-bevy-webgl2/README.md) | WebGL2 renderer plugin for Bevy game engine | rust | MIT | reference | [mrk-its/bevy_webgl2](https://github.com/mrk-its/bevy_webgl2) @ `2021-10-10 (branch tip at catalogue time)` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blender_bevy_toolkit](entries/engines/sdfgeoff-blender-bevy-toolkit/README.md) | A blender addon and bevy plugin to use Blender as an editor for Bevy | python | unknown | reference | [sdfgeoff/blender_bevy_toolkit](https://github.com/sdfgeoff/blender_bevy_toolkit) @ `2022-05-18 (branch tip at catalogue time)` |
+| [boardgame.io](entries/engines/boardgameio-boardgame-io/README.md) | State Management and Multiplayer Networking for Turn-Based Games | typescript | MIT | vendored | [boardgameio/boardgame.io](https://github.com/boardgameio/boardgame.io) @ `47adef2b46e3` |
 | [bones](entries/engines/fishfolk-bones/README.md) | An easy-to-use game engine for making real games. | rust | Apache-2.0 | vendored | [fishfolk/bones](https://github.com/fishfolk/bones) @ `cd62a2f1ccdb` |
 | [bonsai](entries/engines/scallyw4g-bonsai/README.md) | The procedural generation voxel engine | c | WTFPL | reference | [scallyw4g/bonsai](https://github.com/scallyw4g/bonsai) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Box2D.NET](entries/engines/ikpil-box2d-net/README.md) | Box2D.NET - a C# port of Box2D, is a 2D physics engine for games, .NET, Unity3D, servers | c# | MIT | reference | [ikpil/Box2D.NET](https://github.com/ikpil/Box2D.NET) @ `2026-10-01 (branch tip at catalogue time)` |
@@ -295,6 +297,7 @@ _Generated 2026-11-24 17:00 UTC · 1300 entries · 335 vendored, 965 reference-o
 | [Macronyx](entries/engines/definitelyn0tme-macronyx/README.md) | Macronyx is a cross-platform macro automation engine with timeline editing, trigger-based execution, and intelligent playback — built for gamers, power users, a | typescript | GPL-3.0 | reference | [DefinitelyN0tMe/Macronyx](https://github.com/DefinitelyN0tMe/Macronyx) @ `2026-02-27 (branch tip at catalogue time)` |
 | [macroquad](entries/engines/not-fl3-macroquad/README.md) | Cross-platform game engine in Rust.  | rust | Apache-2.0 | vendored | [not-fl3/macroquad](https://github.com/not-fl3/macroquad) @ `8d602d3f8ebb` |
 | [magictools](entries/engines/ellisonleao-magictools/README.md) | :video_game: :pencil: A list of Game Development resources to make magic happen. | markdown | MIT | vendored | [ellisonleao/magictools](https://github.com/ellisonleao/magictools) @ `7ea0640f128c` |
+| [magnum](entries/engines/mosra-magnum/README.md) | Lightweight and modular C++11 graphics middleware for games and data visualization | c++ | MIT | reference | [mosra/magnum](https://github.com/mosra/magnum) @ `f0907f1c1d12` |
 | [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Meridian](entries/engines/naxela-meridian/README.md) | Bridging Godot and Blender | python | unknown | reference | [Naxela/Meridian](https://github.com/Naxela/Meridian) @ `2026-06-08 (branch tip at catalogue time)` |
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
@@ -367,6 +370,7 @@ _Generated 2026-11-24 17:00 UTC · 1300 entries · 335 vendored, 965 reference-o
 | [PieMenu](entries/engines/payne911-piemenu/README.md) | A library for easy integration of a flexible circular WidgetGroup within libGDX | java | MIT | reference | [payne911/PieMenu](https://github.com/payne911/PieMenu) @ `2022-12-01 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
 | [piston_window](entries/engines/pistondevelopers-piston-window/README.md) | The official Piston Window for the Piston game engine | rust | MIT | reference | [PistonDevelopers/piston_window](https://github.com/PistonDevelopers/piston_window) @ `2026-10-11 (branch tip at catalogue time)` |
+| [pixel](entries/engines/faiface-pixel/README.md) | A hand-crafted 2D game library in Go | go | MIT | reference | [faiface/pixel](https://github.com/faiface/pixel) @ `2024-05-23 (branch tip at catalogue time)` |
 | [Pixelwave](entries/engines/spiralstorm-pixelwave/README.md) | A native 2D OpenGL game framework for iOS. Inspired by the ActionScript 3.0 API | c | Zlib | vendored | [spiralstorm/Pixelwave](https://github.com/spiralstorm/Pixelwave) @ `ccfbc9d240b6` |
 | [pixi-framework](entries/engines/hafaux-pixi-framework/README.md) | Simple 2D Game Framework for PixiJS using Vite. | typescript | MIT | reference | [Hafaux/pixi-framework](https://github.com/Hafaux/pixi-framework) @ `2024-03-14 (branch tip at catalogue time)` |
 | [pixi-vn](entries/engines/drincs-productions-pixi-vn/README.md) | Create visual novels/story-driven game with a modern 2D rendering engine and your favorite JavaScript framework. | typescript | LGPL-2.1 | reference | [DRincs-Productions/pixi-vn](https://github.com/DRincs-Productions/pixi-vn) @ `e5fd8e15c912` |
@@ -392,6 +396,7 @@ _Generated 2026-11-24 17:00 UTC · 1300 entries · 335 vendored, 965 reference-o
 | [Qake](entries/engines/lallassu-qake/README.md) | Qake voxel-engine demo | javascript | MIT | vendored | [Lallassu/Qake](https://github.com/Lallassu/Qake) @ `6c8da7a83b72` |
 | [Quasi-Engine](entries/engines/indt-quasi-engine/README.md) | Quasi Engine is a framework that intends to be a complete toolset to ease 2d game development, providing ready-to-use QML elements representing basic game entit | c++ | LGPL-3.0 | reference | [INdT/Quasi-Engine](https://github.com/INdT/Quasi-Engine) @ `7d496613c31b` |
 | [ra2](entries/engines/openra-ra2/README.md) | A Red Alert 2 mod for the OpenRA game engine | c# | GPL-3.0 | reference | [OpenRA/ra2](https://github.com/OpenRA/ra2) @ `61e24e3c1d7b` |
+| [raea](entries/engines/shinyobjectz-raea/README.md) | Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS,  | typescript | unknown | reference | [shinyobjectz/raea](https://github.com/shinyobjectz/raea) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Rain-Meadow](entries/engines/henpemaz-rain-meadow/README.md) | Rain World multiplayer engine and custom game mode | c# | unknown | reference | [henpemaz/Rain-Meadow](https://github.com/henpemaz/Rain-Meadow) @ `2026-11-18 (branch tip at catalogue time)` |
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [react-native-game-engine](entries/engines/bberak-react-native-game-engine/README.md) | A lightweight Game Engine for React Native 🕹⚡🎮 | javascript | MIT | reference | [bberak/react-native-game-engine](https://github.com/bberak/react-native-game-engine) @ `2024-12-31 (branch tip at catalogue time)` |
@@ -444,6 +449,7 @@ _Generated 2026-11-24 17:00 UTC · 1300 entries · 335 vendored, 965 reference-o
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
 | [t_games](entries/engines/ichabod801-t-games/README.md) | A collection of command-line interface games written in Python. | python | GPL-3.0 | reference | [ichabod801/t_games](https://github.com/ichabod801/t_games) @ `2020-04-29 (branch tip at catalogue time)` |
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
+| [Terasology](entries/engines/movingblocks-terasology/README.md) | Terasology - open source voxel world | java | Apache-2.0 | reference | [MovingBlocks/Terasology](https://github.com/MovingBlocks/Terasology) @ `2026-11-18 (branch tip at catalogue time)` |
 | [termloop](entries/engines/joelotter-termloop/README.md) | Terminal-based game engine for Go, built on top of Termbox | go | MIT | vendored | [JoelOtter/termloop](https://github.com/JoelOtter/termloop) @ `5f7c38744afb` |
 | [tetra](entries/engines/17cupsofcoffee-tetra/README.md) | 🎮 A simple 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/tetra](https://github.com/17cupsofcoffee/tetra) @ `2026-07-22 (branch tip at catalogue time)` |
 | [the-superviral-word-game](entries/engines/the-illarionov-the-superviral-word-game/README.md) | A Vue word game based on the Yakut national sport "Mas-wrestling". Uses XState for state management, WebRTC for multiplayer and has custom WebGL engine | typescript | GPL-3.0 | reference | [the-illarionov/the-superviral-word-game](https://github.com/the-illarionov/the-superviral-word-game) @ `2025-01-08 (branch tip at catalogue time)` |

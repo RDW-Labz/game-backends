@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:18:25Z",
+ "category": "engines",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "shinyobjectz/raea \u2014 Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS, Linux and Windows.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "raea",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "shinyobjectz-raea",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 4937,
+ "system": "Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS, ",
+ "upstream": "https://github.com/shinyobjectz/raea",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

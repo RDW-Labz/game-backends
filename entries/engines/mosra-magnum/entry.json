@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T17:18:23Z",
+ "category": "engines",
+ "commit": "f0907f1c1d12",
+ "delivery": "reference",
+ "description": "mosra/magnum \u2014 Lightweight and modular C++11 graphics middleware for games and data visualization",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "COPYING",
+ "license_verdict": "clean",
+ "name": "magnum",
+ "reference_reason": "size gate: 25 MB",
+ "size_bytes": 26236811,
+ "slug": "mosra-magnum",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 5236,
+ "system": "Lightweight and modular C++11 graphics middleware for games and data visualization",
+ "upstream": "https://github.com/mosra/magnum",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

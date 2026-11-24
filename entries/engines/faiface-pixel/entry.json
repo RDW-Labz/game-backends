@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:18:25Z",
+ "category": "engines",
+ "commit": "2024-05-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "faiface/pixel \u2014 A hand-crafted 2D game library in Go",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pixel",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "faiface-pixel",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 4530,
+ "system": "A hand-crafted 2D game library in Go",
+ "upstream": "https://github.com/faiface/pixel",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

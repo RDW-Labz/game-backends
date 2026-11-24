@@ -2737,3 +2737,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/definitelyn0tme-macronyx
   - reference engines/aminere-spider-engine
   - reference engines/nicklessone-inks2d
+
+- **2026-11-24 17:18 UTC** — tick 797: +2 screened, +4 reference, 53 skipped, catalogue=1306
+  - added engines/boardgameio-boardgame-io (MIT, vendored)
+  - added engines/mosra-magnum (MIT, reference)
+  - reference engines/shinyobjectz-raea
+  - reference engines/faiface-pixel
+  - reference engines/killop-anything-about-game
+  - reference engines/movingblocks-terasology

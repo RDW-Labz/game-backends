@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:18:25Z",
+ "category": "engines",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "MovingBlocks/Terasology \u2014 Terasology - open source voxel world",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "Terasology",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "movingblocks-terasology",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 3912,
+ "system": "Terasology - open source voxel world",
+ "upstream": "https://github.com/MovingBlocks/Terasology",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

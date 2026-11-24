@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:18:25Z",
+ "category": "engines",
+ "commit": "2026-11-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "killop/anything_about_game \u2014 A wonderful list of Game Development resources.",
+ "language": "n/a",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "anything_about_game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "killop-anything-about-game",
+ "source": "github-search:topic:game-engine stars:>30",
+ "stars": 4215,
+ "system": "A wonderful list of Game Development resources.",
+ "upstream": "https://github.com/killop/anything_about_game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
