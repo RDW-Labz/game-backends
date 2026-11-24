@@ -2673,3 +2673,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/ebitenui-ebitenui
   - reference engines/korokengine-korok
   - reference engines/g3n-g3nd
+
+- **2026-11-24 13:25 UTC** — tick 789: +2 screened, +4 reference, 28 skipped, catalogue=1258
+  - added engines/bloeys-nmage (MIT, vendored)
+  - added engines/elgopher-pi (MIT, vendored)
+  - reference engines/channeldorg-channeld
+  - reference engines/thegtproject-gravity
+  - reference engines/adel-ayoub-zigvulkanengine
+  - reference engines/ahwootech-brutal

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T13:25:49Z",
+ "category": "engines",
+ "commit": "fd59705ddac9",
+ "delivery": "vendored",
+ "description": "bloeys/nmage \u2014 3D Game Engine in Go",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "nmage",
+ "size_bytes": 199046,
+ "slug": "bloeys-nmage",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 75,
+ "system": "3D Game Engine in Go",
+ "upstream": "https://github.com/bloeys/nmage",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

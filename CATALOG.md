@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 13:09 UTC · 1252 entries · 324 vendored, 928 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 13:25 UTC · 1258 entries · 326 vendored, 932 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 445 | 102 | 343 |
+| [engines](#engines) — Game engines and engine subsystems | 451 | 104 | 347 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 13:09 UTC · 1252 entries · 324 vendored, 928 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 445 entries
+**Game engines and engine subsystems** — 451 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -93,11 +93,13 @@ _Generated 2026-11-24 13:09 UTC · 1252 entries · 324 vendored, 928 reference-o
 | [bonsai](entries/engines/scallyw4g-bonsai/README.md) | The procedural generation voxel engine | c | WTFPL | reference | [scallyw4g/bonsai](https://github.com/scallyw4g/bonsai) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Box2D.NET](entries/engines/ikpil-box2d-net/README.md) | Box2D.NET - a C# port of Box2D, is a 2D physics engine for games, .NET, Unity3D, servers | c# | MIT | reference | [ikpil/Box2D.NET](https://github.com/ikpil/Box2D.NET) @ `2026-10-01 (branch tip at catalogue time)` |
 | [BRING](entries/engines/eva-e1-bring/README.md) | Next generation role-playing with LLM - with AI world and intelligent NPCs and multi-faceted Graph memory for all entities and a rich pipline and multi agent | python | Apache-2.0 | vendored | [Eva-E1/BRING](https://github.com/Eva-E1/BRING) @ `e907dee1b2a5` |
+| [BRUTAL](entries/engines/ahwootech-brutal/README.md) | A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. T | c# | unknown | reference | [ahwootech/BRUTAL](https://github.com/ahwootech/BRUTAL) @ `2026-11-12 (branch tip at catalogue time)` |
 | [canvas_ity](entries/engines/a-e-k-canvas-ity/README.md) | A tiny, single-header <canvas>-like 2D rasterizer for C++ | c++ | ISC | reference | [a-e-k/canvas_ity](https://github.com/a-e-k/canvas_ity) @ `2024-02-29 (branch tip at catalogue time)` |
 | [carp — core](entries/engines/carp-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | Apache-2.0 | vendored | [carp-lang/Carp](https://github.com/carp-lang/Carp) @ `ad5a96e` |
 | [cat-game-engine](entries/engines/kayjames196-cat-game-engine/README.md) | Cat Game Engine: three-level abstraction game engine with unbound architecture | typescript | none | reference | [KayJames196/cat-game-engine](https://github.com/KayJames196/cat-game-engine) @ `dba965822d7d` |
 | [CBG----Clavierhaus-BackGammon — engine-core](entries/engines/cbg-clavierhaus-backgammon-engine-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [clavierhaus/gnubg-android](https://github.com/clavierhaus/gnubg-android) @ `6202857` |
 | [cgl](entries/engines/jaysmito101-cgl/README.md) | CGL (C Game Library) is a multipurpose library mainly for recreational coding / demo scenes / prototyping / small games / experimentation.  | javascript | MIT | vendored | [Jaysmito101/cgl](https://github.com/Jaysmito101/cgl) @ `bca6e65157a7` |
+| [channeld](entries/engines/channeldorg-channeld/README.md) | Next-Gen Gateway Service for distributed game servers built with Unreal or Unity Engine | go | Apache-2.0 | reference | [channeldorg/channeld](https://github.com/channeldorg/channeld) @ `2026-01-22 (branch tip at catalogue time)` |
 | [chingu](entries/engines/ippa-chingu/README.md) | OpenGL accelerated 2D game framework for Ruby | ruby | LGPL-2.1 | reference | [ippa/chingu](https://github.com/ippa/chingu) @ `d3ed0ff0e0fa` |
 | [cocos-engine](entries/engines/cocos-cocos-engine/README.md) | Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create | c++ | MIT | reference | [cocos/cocos-engine](https://github.com/cocos/cocos-engine) @ `90ad7072a332` |
 | [Cocos2d-x](entries/engines/cocos2d-x/README.md) | mobile-first 2D/3D engine core | c++ | MIT | reference | [cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x) @ `7a5282a301a1` |
@@ -231,6 +233,7 @@ _Generated 2026-11-24 13:09 UTC · 1252 entries · 324 vendored, 928 reference-o
 | [golf-engine](entries/engines/bjatkin-golf-engine/README.md) | A small fantasy game engine in WASM using GoLang | go | MIT | reference | [bjatkin/golf-engine](https://github.com/bjatkin/golf-engine) @ `2021-11-27 (branch tip at catalogue time)` |
 | [goworld](entries/engines/xiaonanln-goworld/README.md) | Scalable Distributed Game Server Engine with Hot Swapping in Golang | go | Apache-2.0 | reference | [xiaonanln/goworld](https://github.com/xiaonanln/goworld) @ `2025-11-14 (branch tip at catalogue time)` |
 | [GPUTrail](entries/engines/celyk-gputrail/README.md) | A GPU based trail plugin for Godot 4 | gdscript | MIT | reference | [celyk/GPUTrail](https://github.com/celyk/GPUTrail) @ `2026-09-27 (branch tip at catalogue time)` |
+| [gravity](entries/engines/thegtproject-gravity/README.md) | 3D OpenGL engine for Go | go | MIT | reference | [thegtproject/gravity](https://github.com/thegtproject/gravity) @ `2022-03-16 (branch tip at catalogue time)` |
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [halley](entries/engines/amzeratul-halley/README.md) | A lightweight game engine written in modern C++ | c | Apache-2.0 | reference | [amzeratul/halley](https://github.com/amzeratul/halley) @ `2026-11-23 (branch tip at catalogue time)` |
 | [HeartbeatEngine](entries/engines/cronza-heartbeatengine/README.md) | A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5 | python | GPL-3.0 | reference | [Cronza/HeartbeatEngine](https://github.com/Cronza/HeartbeatEngine) @ `2025-08-26 (branch tip at catalogue time)` |
@@ -293,6 +296,7 @@ _Generated 2026-11-24 13:09 UTC · 1252 entries · 324 vendored, 928 reference-o
 | [nCine](entries/engines/ncine-ncine/README.md) | A cross-platform 2D game engine | c++ | MIT | reference | [nCine/nCine](https://github.com/nCine/nCine) @ `2026-11-13 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
+| [nmage](entries/engines/bloeys-nmage/README.md) | 3D Game Engine in Go | go | MIT | vendored | [bloeys/nmage](https://github.com/bloeys/nmage) @ `fd59705ddac9` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
 | [NoesisGUI.MonoGameWrapper](entries/engines/atomictorchstudio-noesisgui-monogamewrapper/README.md) | NoesisGUI MonoGame Integration Library | c# | MIT | reference | [AtomicTorchStudio/NoesisGUI.MonoGameWrapper](https://github.com/AtomicTorchStudio/NoesisGUI.MonoGameWrapper) @ `2025-10-14 (branch tip at catalogue time)` |
 | [NomadECS](entries/engines/taurheim-nomadecs/README.md) | NomadECS - An entity component system implementation | c++ | MIT | reference | [taurheim/NomadECS](https://github.com/taurheim/NomadECS) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -331,6 +335,7 @@ _Generated 2026-11-24 13:09 UTC · 1252 entries · 324 vendored, 928 reference-o
 | [phaser-candy-crush](entries/engines/anjmao-phaser-candy-crush/README.md) | Candy crush like game made with Phaser HTML5 game engine | typescript | MIT | reference | [anjmao/phaser-candy-crush](https://github.com/anjmao/phaser-candy-crush) @ `2022-09-27 (branch tip at catalogue time)` |
 | [phaser-ce](entries/engines/phaserjs-phaser-ce/README.md) | Phaser CE is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser-ce](https://github.com/phaserjs/phaser-ce) @ `2026-11-19 (branch tip at catalogue time)` |
 | [phoria.js](entries/engines/kevinroast-phoria-js/README.md) | JavaScript library for simple 3D graphics and visualisation on a HTML5 canvas 2D renderer. It does not use WebGL. Works on all HTML5 browsers, including desktop | javascript | BSD-3-Clause | reference | [kevinroast/phoria.js](https://github.com/kevinroast/phoria.js) @ `2026-11-05 (branch tip at catalogue time)` |
+| [pi](entries/engines/elgopher-pi/README.md) | Game engine for creating retro games for modern computers. Inspired by Pico-8 and powered by Ebitengine. | go | MIT | vendored | [elgopher/pi](https://github.com/elgopher/pi) @ `3a3b7de5a3ed` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
 | [PieMenu](entries/engines/payne911-piemenu/README.md) | A library for easy integration of a flexible circular WidgetGroup within libGDX | java | MIT | reference | [payne911/PieMenu](https://github.com/payne911/PieMenu) @ `2022-12-01 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
@@ -465,6 +470,7 @@ _Generated 2026-11-24 13:09 UTC · 1252 entries · 324 vendored, 928 reference-o
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |
 | [z_impact](entries/engines/scemino-z-impact/README.md) | A 2d game engine written in ZIG | zig | MIT | reference | [scemino/z_impact](https://github.com/scemino/z_impact) @ `2025-07-17 (branch tip at catalogue time)` |
 | [ZeroAllocJobScheduler](entries/engines/genaray-zeroallocjobscheduler/README.md) | A high-performance alloc free c# Jobscheduler.  | c# | Apache-2.0 | reference | [genaray/ZeroAllocJobScheduler](https://github.com/genaray/ZeroAllocJobScheduler) @ `2025-03-18 (branch tip at catalogue time)` |
+| [ZigVulkanEngine](entries/engines/adel-ayoub-zigvulkanengine/README.md) | 3D game engine built with Zig and Vulkan | zig | unknown | reference | [Adel-Ayoub/ZigVulkanEngine](https://github.com/Adel-Ayoub/ZigVulkanEngine) @ `2025-07-07 (branch tip at catalogue time)` |
 
 ## physics
 

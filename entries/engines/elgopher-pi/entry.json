@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T13:25:51Z",
+ "category": "engines",
+ "commit": "3a3b7de5a3ed",
+ "delivery": "vendored",
+ "description": "elgopher/pi \u2014 Game engine for creating retro games for modern computers. Inspired by Pico-8 and powered by Ebitengine.",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "pi",
+ "size_bytes": 225802,
+ "slug": "elgopher-pi",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 72,
+ "system": "Game engine for creating retro games for modern computers. Inspired by Pico-8 and powered by Ebitengine.",
+ "upstream": "https://github.com/elgopher/pi",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

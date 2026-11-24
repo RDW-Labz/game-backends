@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T13:25:53Z",
+ "category": "engines",
+ "commit": "2025-07-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Adel-Ayoub/ZigVulkanEngine \u2014 3D game engine built with Zig and Vulkan",
+ "language": "zig",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ZigVulkanEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "adel-ayoub-zigvulkanengine",
+ "source": "github-search:game engine language:zig stars:>15",
+ "stars": 18,
+ "system": "3D game engine built with Zig and Vulkan",
+ "upstream": "https://github.com/Adel-Ayoub/ZigVulkanEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

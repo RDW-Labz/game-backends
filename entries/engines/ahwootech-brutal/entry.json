@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T13:25:53Z",
+ "category": "engines",
+ "commit": "2026-11-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ahwootech/BRUTAL \u2014 A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. The foundation under Kitten Space Agency and RimWorld's Waylith engine.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "BRUTAL",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ahwootech-brutal",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 2550,
+ "system": "A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. T",
+ "upstream": "https://github.com/ahwootech/BRUTAL",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
