@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T09:37:58Z",
+ "category": "procgen",
+ "commit": "973203fb1e06",
+ "delivery": "vendored",
+ "description": "EudyContreras/Calendar-HeatMap \u2014 Calendar Heat-Map Generation Library for Android",
+ "language": "kotlin",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Calendar-HeatMap",
+ "size_bytes": 174034,
+ "slug": "eudycontreras-calendar-heatmap",
+ "source": "github-search:map generation library stars:>20",
+ "stars": 24,
+ "system": "Calendar Heat-Map Generation Library for Android",
+ "upstream": "https://github.com/EudyContreras/Calendar-HeatMap",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

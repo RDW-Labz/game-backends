@@ -1,0 +1,13 @@
+package com.eudycontreras.calendarheatmaplibrary.properties
+
+/**
+ * Copyright (C) 2019 Project X
+ *
+ * @Project ProjectX
+ * @author Eudy Contreras.
+ * @since January 2019
+ */
+data class Coordinate(
+    var x: Float,
+    var y: Float
+)

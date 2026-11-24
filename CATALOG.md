@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 09:21 UTC · 1196 entries · 310 vendored, 886 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 09:38 UTC · 1198 entries · 311 vendored, 887 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-24 09:21 UTC · 1196 entries · 310 vendored, 886 reference-o
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
-| [procgen](#procgen) — Procedural generation | 115 | 30 | 85 |
+| [procgen](#procgen) — Procedural generation | 117 | 31 | 86 |
 
 
 ## engines
@@ -1146,7 +1146,7 @@ _Generated 2026-11-24 09:21 UTC · 1196 entries · 310 vendored, 886 reference-o
 
 ## procgen
 
-**Procedural generation** — 115 entries
+**Procedural generation** — 117 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1160,6 +1160,7 @@ _Generated 2026-11-24 09:21 UTC · 1196 entries · 310 vendored, 886 reference-o
 | [Blender-Python-Procedural-Level-Generation](entries/procgen/aaronjolson-blender-python-procedural-level-generation/README.md) | Collection of scripts for generating 3D levels (environments/dungeons) procedurally using Blender's Python API. | python | MIT | vendored | [aaronjolson/Blender-Python-Procedural-Level-Generation](https://github.com/aaronjolson/Blender-Python-Procedural-Level-Generation) @ `d15583202642` |
 | [BlenderProc](entries/procgen/dlr-rm-blenderproc/README.md) | A procedural Blender pipeline for photorealistic training image generation | python | GPL-3.0 | reference | [DLR-RM/BlenderProc](https://github.com/DLR-RM/BlenderProc) @ `76bd8b82ee19` |
 | [BMeshUnity](entries/procgen/eliemichel-bmeshunity/README.md) | A Unity package to make runtime procedural mesh generation more flexible. | c# | MIT | reference | [eliemichel/BMeshUnity](https://github.com/eliemichel/BMeshUnity) @ `2023-12-13 (branch tip at catalogue time)` |
+| [Calendar-HeatMap](entries/procgen/eudycontreras-calendar-heatmap/README.md) | Calendar Heat-Map Generation Library for Android | kotlin | MIT | vendored | [EudyContreras/Calendar-HeatMap](https://github.com/EudyContreras/Calendar-HeatMap) @ `973203fb1e06` |
 | [CasualGodComplex](entries/procgen/martindevans-casualgodcomplex/README.md) | Procedural generation of galaxies | c# | MIT | reference | [martindevans/CasualGodComplex](https://github.com/martindevans/CasualGodComplex) @ `2019-04-08 (branch tip at catalogue time)` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-mapgen/README.md) | procedural map/world/level generation | cpp | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300f` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-src-mapgen/README.md) | map and city generation | c++ | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300fd2353` |
@@ -1223,6 +1224,7 @@ _Generated 2026-11-24 09:21 UTC · 1196 entries · 310 vendored, 886 reference-o
 | [ProceduralMeshDemos](entries/procgen/siggig-proceduralmeshdemos/README.md) | Examples of procedural mesh generation in Unreal Engine. | c++ | MIT | reference | [SiggiG/ProceduralMeshDemos](https://github.com/SiggiG/ProceduralMeshDemos) @ `2026-10-20 (branch tip at catalogue time)` |
 | [ProceduralTerrain](entries/procgen/thesoenke-proceduralterrain/README.md) | Procedural voxel terrain generation in Unity | c# | MIT | vendored | [theSoenke/ProceduralTerrain](https://github.com/theSoenke/ProceduralTerrain) @ `468372292bea` |
 | [ProceduralToolkit](entries/procgen/syomus-proceduraltoolkit/README.md) | Procedural generation library for Unity | c# | MIT | vendored | [Syomus/ProceduralToolkit](https://github.com/Syomus/ProceduralToolkit) @ `984a1e69b8ac` |
+| [procengine](entries/procgen/amidos2006-procengine/README.md) | ProcEngine is a step toward having a unified opensource library for different map generation techniques. | javascript | none | reference | [amidos2006/procengine](https://github.com/amidos2006/procengine) @ `04ebbbcfc6dd` |
 | [procgen](entries/procgen/epholys-procgen/README.md) | Procedural Generation Experiments | c++ | GPL-3.0 | reference | [Epholys/procgen](https://github.com/Epholys/procgen) @ `a238f62f06c2` |
 | [protongraph](entries/procgen/protongraph-protongraph/README.md) | Experimental node-based software for procedural content generation | gdscript | MIT | reference | [protongraph/protongraph](https://github.com/protongraph/protongraph) @ `2023-11-23 (branch tip at catalogue time)` |
 | [ptdesigner](entries/procgen/drummyfish-ptdesigner/README.md) | Library and GUI tool for designing and generation of procedural textures, made as a part of my Bachelor thesis. | c++ | GPL-2.0 | reference | [drummyfish/ptdesigner](https://github.com/drummyfish/ptdesigner) @ `a2532e9ddc4b` |

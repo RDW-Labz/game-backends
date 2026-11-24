@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2D2D2D</color>
+    <color name="colorPrimaryDark">#262626</color>
+    <color name="colorPrimaryVeryDark">#1E1E1E</color>
+    <color name="colorPrimaryLight">#323232</color>
+    <color name="colorPrimaryVeryLight">#3C3C3C</color>
+    <color name="colorAccent">#2D2D2D</color>
+
+    <color name="cellInfoBubble">#3C3C3C</color>
+
+    <color name="background">#ffffff</color>
+
+    <color name="colorMinAlt0">#c6e48a</color>
+    <color name="colorMaxAlt0">#1a6127</color>
+
+    <color name="colorMinAlt1">#8AD2E4</color>
+    <color name="colorMaxAlt1">#1A4061</color>
+
+    <color name="colorEmpty">#ecedf1</color>
+
+    <color name="white">#ffffff</color>
+</resources>

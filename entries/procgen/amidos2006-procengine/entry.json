@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T09:38:00Z",
+ "category": "procgen",
+ "commit": "04ebbbcfc6dd",
+ "delivery": "reference",
+ "description": "amidos2006/procengine \u2014 ProcEngine is a step toward having a unified opensource library for different map generation techniques.",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "procengine",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 43129,
+ "slug": "amidos2006-procengine",
+ "source": "github-search:map generation library stars:>20",
+ "stars": 21,
+ "system": "ProcEngine is a step toward having a unified opensource library for different map generation techniques.",
+ "upstream": "https://github.com/amidos2006/procengine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -2595,3 +2595,7 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/blackthornprod-random-dungeon-generation
   - reference procgen/fdefelici-dungen-unity
   - reference procgen/anthony-mills-procedural-dungeon
+
+- **2026-11-24 09:38 UTC** — tick 775: +2 screened, +0 reference, 19 skipped, catalogue=1198
+  - added procgen/eudycontreras-calendar-heatmap (MIT, vendored)
+  - added procgen/amidos2006-procengine (none, reference)
