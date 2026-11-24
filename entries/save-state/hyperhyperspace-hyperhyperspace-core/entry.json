@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T07:41:03Z",
+ "category": "save-state",
+ "commit": "4b43009c377a",
+ "delivery": "vendored",
+ "description": "hyperhyperspace/hyperhyperspace-core \u2014 A library to create p2p applications, using the browser as a full peer.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "hyperhyperspace-core",
+ "size_bytes": 1469006,
+ "slug": "hyperhyperspace-hyperhyperspace-core",
+ "source": "github-search:crdt library stars:>80",
+ "stars": 227,
+ "system": "A library to create p2p applications, using the browser as a full peer.",
+ "upstream": "https://github.com/hyperhyperspace/hyperhyperspace-core",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

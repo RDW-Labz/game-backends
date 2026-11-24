@@ -1,0 +1,358 @@
+import { Backend, BackendSearchParams, BackendSearchResults, Storable } from './Backend';
+import { Literal, Hash, HashReference, HashedSet, StateCheckpoint } from 'data/model';
+import { MultiMap } from 'util/multimap';
+import { Store, StoredOpHeader } from 'storage/store/Store';
+import { LiteralUtils } from 'data/model/literals/LiteralUtils';
+import { Logger, LogLevel } from 'util/logging';
+
+type MemStorageFormat = {
+    literal: Literal,
+    timestamp: string,
+    sequence: number
+}
+
+type MemOpCausalHistoryFormat = StoredOpHeader;
+
+type MemoryRepr = {
+    objects: Map<Hash, MemStorageFormat>,
+    classIndex: MultiMap<string, Hash>,
+    sortedClassIndex: Map<string, Hash[]>,
+    referenceIndex: MultiMap<string, Hash>,
+    sortedReferenceIndex: Map<string, Hash[]>,
+    referencingClassIndex: MultiMap<string, Hash>,
+    sortedReferencingClassIndex: Map<string, Hash[]>,
+    terminalOps: MultiMap<Hash, Hash>,
+    lastOps: Map<Hash, Hash>,
+    opCausalHistories: Map<Hash, MemOpCausalHistoryFormat>,
+    opCausalHistoriesByHash: Map<Hash, MemOpCausalHistoryFormat>,
+    checkpoints: Map<Hash, StateCheckpoint>
+}
+
+class MemoryBackend implements Backend {
+
+    static log = new Logger(MemoryBackend.name, LogLevel.INFO);
+
+    static instances: Map<string, MemoryBackend> = new Map();
+
+    static backendName = 'memory';
+
+    static registered: MultiMap<string, MemoryBackend> = new MultiMap();
+
+    static register(backend: MemoryBackend) {
+        MemoryBackend.registered.add(backend.name, backend);
+    }
+
+    static deregister(backend: MemoryBackend) {
+        MemoryBackend.registered.delete(backend.name, backend);
+    }
+
+    static getRegisteredInstances(name: string): Set<MemoryBackend> {
+        return MemoryBackend.registered.get(name);
+    }
+
+
+    name: string;
+
+    repr: MemoryRepr;
+
+    objectStoreCallback?: (literal: Literal) => Promise<void>;
+
+    constructor(name: string) {
+        this.name = name;
+
+        const instances = MemoryBackend.getRegisteredInstances(name);
+
+        if (instances.size > 0) {
+            this.repr = instances.values().next().value.repr;
+        } else {
+            this.repr = {
+                objects: new Map(),
+                classIndex: new MultiMap(),
+                sortedClassIndex: new Map(),
+                referenceIndex: new MultiMap(),
+                sortedReferenceIndex: new Map(),
+                referencingClassIndex: new MultiMap(),
+                sortedReferencingClassIndex: new Map(),
+                terminalOps: new MultiMap(),
+                lastOps: new Map(),
+                opCausalHistories: new Map(),
+                opCausalHistoriesByHash: new Map(),
+                checkpoints: new Map()
+            }
+        }
+
+        MemoryBackend.register(this);
+
+    }
+
+    close(): void {
+        MemoryBackend.deregister(this);
+    }
+
+    setStoredObjectCallback(objectStoreCallback: (literal: Literal) => Promise<void>): void {
+        this.objectStoreCallback = objectStoreCallback;
+    }
+
+    getBackendName() {
+        return MemoryBackend.backendName;
+    }
+
+    getName(): string {
+        return this.name;
+    }
+
+    getURL() {
+        return MemoryBackend.backendName + '://' + this.name;
+    }
+
+    async store(literal: Literal, history?: StoredOpHeader): Promise<void> {
+        
+        // store object
+        let storable = {} as MemStorageFormat;
+
+        storable.literal   = literal;
+        storable.timestamp = new Date().getTime().toString();
+        storable.sequence  = this.repr.objects.size;
+        
+        this.repr.objects.set(literal.hash, storable);
+
+        // update indexes 
+        if (!this.repr.classIndex.has(storable.literal.value._class, literal.hash)) {
+            this.repr.classIndex.add(storable.literal.value._class, literal.hash);
+            let sorted = this.repr.sortedClassIndex.get(storable.literal.value._class);
+            if (sorted === undefined) { sorted = []; this.repr.sortedClassIndex.set(storable.literal.value._class, sorted); }
+            sorted.push(literal.hash);
+        }
+        
+        
+        for (const dep of literal.dependencies) {
+            let reference = dep.path + '#' + dep.hash;
+            if (!this.repr.referenceIndex.has(reference, literal.hash)) {
+                this.repr.referenceIndex.add(reference, literal.hash);
+                let sorted = this.repr.sortedReferenceIndex.get(reference);
+                if (sorted === undefined) { sorted = []; this.repr.sortedReferenceIndex.set(reference, sorted); }
+                sorted.push(literal.hash);
+            }
+            
+            let referencingClass = dep.className + '.' + dep.path + '#' + dep.hash;
+            if (!this.repr.referencingClassIndex.has(referencingClass, literal.hash)) {
+                this.repr.referencingClassIndex.add(referencingClass, literal.hash);
+                let sorted = this.repr.sortedReferencingClassIndex.get(referencingClass);
+                if (sorted === undefined) { sorted = []; this.repr.sortedReferencingClassIndex.set(referencingClass, sorted); }
+                sorted.push(literal.hash);
+            }
+            
+        }
+
+        // if necessary, update last ops
+        const isOp = literal.value['_flags'].indexOf('op') >= 0;
+
+        if (isOp) {
+
+            if (history === undefined) {
+                throw new Error('Missing causal history received by backend while trying to store op ' + literal.hash);
+            }
+
+            const historyCopy = Object.assign({}, history);
+            this.repr.opCausalHistories.set(literal.hash, historyCopy);
+            this.repr.opCausalHistoriesByHash.set(history.literal.headerHash, historyCopy);
+
+            const mutableHash = LiteralUtils.getFields(storable.literal)['targetObject']['_hash'];
+
+            const prevOpHashes = HashedSet.elementsFromLiteral(LiteralUtils.getFields(storable.literal)['prevOps']).map(HashReference.hashFromLiteral);
+
+            for (const prevOpHash of prevOpHashes) {
+                this.repr.terminalOps.delete(mutableHash, prevOpHash);
+            }
+
+            if (!this.repr.terminalOps.has(mutableHash, literal.hash)) {
+                this.repr.terminalOps.add(mutableHash, literal.hash);
+                this.repr.lastOps.set(mutableHash, literal.hash);
+            }
+        }
+
+        for (const backend of MemoryBackend.getRegisteredInstances(this.name)) {
+            if (backend.objectStoreCallback !== undefined) {
+                await backend.objectStoreCallback(literal);
+            }
+        }
+    }
+
+    async load(hash: string): Promise<Storable | undefined> {
+        const loaded = this.repr.objects.get(hash);
+
+        if (loaded === undefined) {
+            return undefined;
+        } else {
+            return {literal: loaded.literal, sequence: loaded.sequence};
+        }
+        
+    }
+
+    async loadTerminalOpsForMutable(hash: string): Promise<{ lastOp: string; terminalOps: string[]; } | undefined> {
+        
+        const lastOp = this.repr.lastOps.get(hash);
+        const terminalOps = this.repr.terminalOps.get(hash);
+
+        if (lastOp !== undefined && terminalOps !== undefined && terminalOps.size > 0) {
+            return { lastOp: lastOp, terminalOps: Array.from(terminalOps.values()) };
+        } else {
+            return undefined;
+        }
+
+    }
+
+    searchByClass(className: string, params?: BackendSearchParams | undefined): Promise<BackendSearchResults> {
+
+        if (params?.startOn !== undefined) {
+            params.start = this.findIndexEntryForObject(className, this.repr.sortedClassIndex, params.startOn);
+        }
+
+        return this.searchByIndex(className, this.repr.sortedClassIndex, params);
+    }
+
+    searchByReference(referringPath: string, referencedHash: string, params?: BackendSearchParams | undefined): Promise<BackendSearchResults> {
+        let key =  referringPath + '#' + referencedHash;
+
+        if (params?.startOn !== undefined) {
+            params.start = this.findIndexEntryForObject(key, this.repr.sortedReferenceIndex, params.startOn);
+        }
+
+        return this.searchByIndex(key, this.repr.sortedReferenceIndex, params);
+    }
+
+    searchByReferencingClass(referringClassName: string, referringPath: string, referencedHash: string, params?: BackendSearchParams | undefined): Promise<BackendSearchResults> {
+        let key = referringClassName + '.' + referringPath + '#' + referencedHash;
+
+        if (params?.startOn !== undefined) {
+            params.start = this.findIndexEntryForObject(key, this.repr.sortedReferencingClassIndex, params.startOn);
+        }
+
+        return this.searchByIndex(key, this.repr.sortedReferencingClassIndex, params);
+    }
+
+    async loadOpHeader(opHash: string): Promise<StoredOpHeader | undefined> {
+        return this.repr.opCausalHistories.get(opHash);
+    }
+
+    async loadOpHeaderByHeaderHash(causalHistoryHash: string): Promise<StoredOpHeader | undefined> {
+        return this.repr.opCausalHistoriesByHash.get(causalHistoryHash);
+    }
+
+    private findIndexEntryForObject(key: string, sortedIndex: Map<string, Hash[]>, objectHash: Hash): string|undefined {
+
+        let classHashes = sortedIndex.get(key);
+
+        if (classHashes !== undefined) {
+            let idx = classHashes.indexOf(objectHash);
+
+            if (idx >= 0) {
+                return MemoryBackend.toStringIndex(idx);
+            }
+        }
+
+        return undefined;
+
+    }
+
+    private async searchByIndex(key: string, sortedIndex: Map<string, Hash[]>, params?: BackendSearchParams | undefined): Promise<BackendSearchResults> {
+        
+        let classHashes = sortedIndex.get(key);
+
+        if (params?.startOn !== undefined && classHashes !== undefined) {
+
+        }
+
+        if (classHashes === undefined) {
+            return { items: [], start: '', end: ''}
+        } else {
+            let order = (params === undefined || params.order === undefined) ? 'asc' : params.order.toLowerCase();
+
+            let segment;
+
+            if (order === 'desc') {
+                classHashes.reverse();
+            }
+    
+            let start = 0;
+
+            if (params !== undefined && params.start !== undefined) {
+                start = MemoryBackend.fromStringIndex(params.start);
+            }
+
+            if (start >= classHashes.length) {
+                return { items: [], start: MemoryBackend.toStringIndex(classHashes.length), end: MemoryBackend.toStringIndex(classHashes.length)}
+            }
+
+            let end = classHashes.length
+            if (params !== undefined && params.limit !== undefined) {
+                end = Math.min(start + params.limit, classHashes.length);
+            }
+            segment = classHashes.slice(start, end);
+
+            let result:Literal[] =  segment.map((hash: Hash) => this.repr.objects.get(hash)?.literal as Literal);
+            
+            return { start: MemoryBackend.toStringIndex(start), end: MemoryBackend.toStringIndex(end), items: result };
+
+        }
+
+    }
+
+    private static toStringIndex(idx: number): string {
+        return idx.toString(16).padStart(16, '0');
+    }
+
+    private static fromStringIndex(idxString: string): number {
+        return Number.parseInt(idxString, 16);
+    }
+
+    async storeCheckpoint(checkpoint: StateCheckpoint): Promise<void> {
+        this.repr.checkpoints.set(checkpoint.mutableObject, checkpoint);
+    }
+    
+    async loadLastCheckpoint(mutableObject: Hash): Promise<StateCheckpoint|undefined> {
+        return this.repr.checkpoints.get(mutableObject);
+    }
+
+    async loadLastCheckpointMeta(mutableObject: Hash): Promise<StateCheckpoint|undefined> {
+
+        const check = this.repr.checkpoints.get(mutableObject);
+
+        const copy: any = {};
+
+
+        Object.assign(copy, check);
+
+        const meta = copy as StateCheckpoint;
+
+        meta.exportedState = undefined;
+
+        return meta;
+    }
+
+    async ready(): Promise<void> {
+        
+    }
+} 
+
+Store.registerBackend(MemoryBackend.backendName, (url: string) => {
+
+    const parts = url.split('://');
+
+    if (parts[0] !== MemoryBackend.backendName) {
+        throw new Error('Trying to open this backend url "' + url + '" using MemoryBackend, but only URLs starting with ' + MemoryBackend.backendName + ':// are supported.');
+    }
+
+    const dbName = parts.slice(1).join('://');
+
+    let mb = MemoryBackend.instances.get(dbName);
+
+    if (mb === undefined) {
+        mb = new MemoryBackend(dbName);
+        MemoryBackend.instances.set(dbName, mb);
+    }
+
+    return mb;
+});
+
+export { MemoryBackend };

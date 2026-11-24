@@ -2547,3 +2547,11 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-24 07:24 UTC** — tick 767: +1 screened, +0 reference, 9 skipped, catalogue=1160
   - added save-state/estevanhernandez-stack-ed-rororoblox (MIT, vendored)
+
+- **2026-11-24 07:41 UTC** — tick 768: +2 screened, +4 reference, 17 skipped, catalogue=1166
+  - added save-state/hyperhyperspace-hyperhyperspace-core (MIT, vendored)
+  - added save-state/iwanbk-bcache (MIT, vendored)
+  - reference save-state/charlietap-synk
+  - reference save-state/anshulahuja98-python3-crdt
+  - reference save-state/group4layers-ex-image-info
+  - reference save-state/astrojs-fitsjs

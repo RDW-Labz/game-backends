@@ -1,0 +1,72 @@
+{
+  "name": "@hyper-hyper-space/core",
+  "version": "0.12.0",
+  "author": "Santiago Bazerque",
+  "license": "MIT",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperhyperspace/hyperhyperspace-core.git"
+  },
+  "scripts": {
+    "build": "npx ttsc --project tsconfig.build.json",
+    "watch": "npx ttsc --project tsconfig.build.json --watch",
+    "build-dev": "npx ttsc",
+    "build-browser": "npx ttsc --project tsconfig.browser.json && npx rollup -c",
+    "clean": "rm -rf ./dist/* && rm -rf ./dist-dev/* ",
+    "winclean": "if exist dist (rmdir dist /s /q) && mkdir dist && if exist dist-dev (rmdir dist-dev /s /q) && mkdir dist-dev",
+    "test": "npx --node-arg --unhandled-rejections=strict jest",
+    "test-debug": "npx --node-arg inspect jest",
+    "compat-gen": "NODE_PATH=\"dist\" node ./dist-dev/compat/model/run/generate.js",
+    "compat-check": "NODE_PATH=\"dist\" node ./dist-dev/compat/model/run/check.js"
+  },
+  "devDependencies": {
+    "@hyper-hyper-space/node-env": "^0.12.0",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@rollup/plugin-node-resolve": "^13.1.1",
+    "@types/jest": "^26.0.19",
+    "@types/node": "^14.0.13",
+    "@types/node-rsa": "^1.1.0",
+    "@types/ws": "^7.2.6",
+    "@zerollup/ts-transform-paths": "^1.7.18",
+    "jest": "^26.6.3",
+    "rollup": "^2.61.1",
+    "ts-jest": "^26.4.4",
+    "ttypescript": "^1.5.12",
+    "typescript": "4.4.4"
+  },
+  "dependencies": {
+    "broadcast-channel": "^3.5.3",
+    "buffer": "^6.0.3",
+    "chacha-js": "^2.1.1",
+    "chacha20-universal": "^1.0.4",
+    "fast-text-encoding": "^1.0.3",
+    "get-random-values": "^1.2.0",
+    "idb": "^7.0.1",
+    "jsencrypt": "3.0.0-rc.1",
+    "jshashes": "^1.0.8",
+    "node-rsa": "^1.1.1",
+    "tslib": "^2.3.1"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "verbose": true,
+    "modulePaths": [
+      "<rootDir>/test",
+      "<rootDir>/src",
+      "<rootDir>/node_modules/**"
+    ],
+    "roots": [
+      "./test"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "tsconfig.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T07:41:04Z",
+ "category": "save-state",
+ "commit": "92331d3ef6d8",
+ "delivery": "vendored",
+ "description": "iwanbk/bcache \u2014 Eventually consistent distributed in-memory  cache Go library",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "bcache",
+ "size_bytes": 31762,
+ "slug": "iwanbk-bcache",
+ "source": "github-search:crdt library stars:>80",
+ "stars": 163,
+ "system": "Eventually consistent distributed in-memory  cache Go library",
+ "upstream": "https://github.com/iwanbk/bcache",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

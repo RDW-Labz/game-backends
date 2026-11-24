@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T07:41:06Z",
+ "category": "save-state",
+ "commit": "2025-03-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Group4Layers/ex_image_info \u2014 ExImageInfo is an Elixir library to parse images (binaries) and get the dimensions (size), detected mime-type and overall validity for a set of image formats. It is the fastest and supports multiple formats.",
+ "language": "elixir",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ex_image_info",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "group4layers-ex-image-info",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 101,
+ "system": "ExImageInfo is an Elixir library to parse images (binaries) and get the dimensions (size), detected mime-type and overall validity for a set of image formats. I",
+ "upstream": "https://github.com/Group4Layers/ex_image_info",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

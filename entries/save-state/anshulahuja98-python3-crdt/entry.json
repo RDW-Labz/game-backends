@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T07:41:06Z",
+ "category": "save-state",
+ "commit": "2021-01-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "anshulahuja98/python3-crdt \u2014 A python library for CRDTs (Conflict-free Replicated Data types)",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "python3-crdt",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "anshulahuja98-python3-crdt",
+ "source": "github-search:crdt library stars:>80",
+ "stars": 87,
+ "system": "A python library for CRDTs (Conflict-free Replicated Data types)",
+ "upstream": "https://github.com/anshulahuja98/python3-crdt",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

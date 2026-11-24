@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 07:24 UTC · 1160 entries · 302 vendored, 858 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 07:41 UTC · 1166 entries · 304 vendored, 862 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-24 07:24 UTC · 1160 entries · 302 vendored, 858 reference-o
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
-| [save-state](#save-state) — Save / state systems | 85 | 25 | 60 |
+| [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
 
@@ -1048,13 +1048,14 @@ _Generated 2026-11-24 07:24 UTC · 1160 entries · 302 vendored, 858 reference-o
 
 ## save-state
 
-**Save / state systems** — 85 entries
+**Save / state systems** — 91 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [abomonation](entries/save-state/timelydataflow-abomonation/README.md) | A mortifying serialization library for Rust | rust | MIT | vendored | [TimelyDataflow/abomonation](https://github.com/TimelyDataflow/abomonation) @ `c2b23534549a` |
 | [alkahest](entries/save-state/zakarumych-alkahest/README.md) | Fantastic serialization library | rust | unknown | reference | [zakarumych/alkahest](https://github.com/zakarumych/alkahest) @ `2026-10-28 (branch tip at catalogue time)` |
 | [alpaca](entries/save-state/p-ranav-alpaca/README.md) | Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code | c++ | MIT | vendored | [p-ranav/alpaca](https://github.com/p-ranav/alpaca) @ `8f022bdb5106` |
+| [bcache](entries/save-state/iwanbk-bcache/README.md) | Eventually consistent distributed in-memory  cache Go library | go | MIT | vendored | [iwanbk/bcache](https://github.com/iwanbk/bcache) @ `92331d3ef6d8` |
 | [bevy-prefabs](entries/save-state/zylkowski-bevy-prefabs/README.md) | Entity prefabs serialization plugin for Bevy game engine | rust | MIT | reference | [zylkowski/bevy-prefabs](https://github.com/zylkowski/bevy-prefabs) @ `2021-05-25 (branch tip at catalogue time)` |
 | [biomes-game — storage](entries/save-state/biomes-game-storage/README.md) | persistence: save/load, snapshot or state serialisation | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blobify](entries/save-state/neobrain-blobify/README.md) | C++17 library for all your binary de-/serialization needs | c++ | BSL-1.0 | reference | [neobrain/blobify](https://github.com/neobrain/blobify) @ `2023-12-11 (branch tip at catalogue time)` |
@@ -1074,9 +1075,11 @@ _Generated 2026-11-24 07:24 UTC · 1160 entries · 302 vendored, 858 reference-o
 | [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
 | [DreamBotQuester](entries/save-state/notsinan-dreambotquester/README.md) | DreamBotQuester is a powerful Java library that allows players of the popular online game, RuneScape, to automate their quests using the DreamBot API. With a ra | java | MIT | reference | [NotSinan/DreamBotQuester](https://github.com/NotSinan/DreamBotQuester) @ `2023-04-30 (branch tip at catalogue time)` |
 | [evolu](entries/save-state/evoluhq-evolu/README.md) | Local-first platform and TypeScript library | typescript | MIT | reference | [evoluhq/evolu](https://github.com/evoluhq/evolu) @ `4eedb2272841` |
+| [ex_image_info](entries/save-state/group4layers-ex-image-info/README.md) | ExImageInfo is an Elixir library to parse images (binaries) and get the dimensions (size), detected mime-type and overall validity for a set of image formats. I | elixir | unknown | reference | [Group4Layers/ex_image_info](https://github.com/Group4Layers/ex_image_info) @ `2025-03-28 (branch tip at catalogue time)` |
 | [FastDeepCloner](entries/save-state/alentoma-fastdeepcloner/README.md) | FastDeepCloner, This is a C# based .NET cross platform library that is used to deep clone objects, whether they are serializable or not. It intends to be much f | c# | MIT | reference | [AlenToma/FastDeepCloner](https://github.com/AlenToma/FastDeepCloner) @ `2023-10-15 (branch tip at catalogue time)` |
 | [fastgltf](entries/save-state/spnda-fastgltf/README.md) | A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability | c++ | MIT | reference | [spnda/fastgltf](https://github.com/spnda/fastgltf) @ `2026-11-11 (branch tip at catalogue time)` |
 | [FdogSerialize](entries/save-state/huagoufdog-fdogserialize/README.md) | C++ 序列化库（FdogSerialize is a library for serializing between C++ objects (structs, STL containers, etc.) and json strings. FStruct是一个用于C++对象(结构体，STL容器等)和json字符串之 | c++ | Apache-2.0 | vendored | [HuaGouFdog/FdogSerialize](https://github.com/HuaGouFdog/FdogSerialize) @ `0d7188906817` |
+| [fitsjs](entries/save-state/astrojs-fitsjs/README.md) | JavaScript library for reading the FITS astronomical format.  Functionality includes reading of images, data cubes, compressed images, binary and ascii tables. | javascript | MIT | reference | [astrojs/fitsjs](https://github.com/astrojs/fitsjs) @ `2015-04-09 (branch tip at catalogue time)` |
 | [FlatBuffers](entries/save-state/flatbuffers/README.md) | zero-copy serialization, schema-driven | c++ | Apache-2.0 | vendored | [google/flatbuffers](https://github.com/google/flatbuffers) @ `5eb190f00005` |
 | [flatcc](entries/save-state/dvidelabs-flatcc/README.md) | FlatBuffers Compiler and Library in C for C | c | Apache-2.0 | vendored | [dvidelabs/flatcc](https://github.com/dvidelabs/flatcc) @ `0df9c097a19b` |
 | [FluidFramework](entries/save-state/microsoft-fluidframework/README.md) | Library for building distributed, real-time collaborative web  applications | typescript | MIT | reference | [microsoft/FluidFramework](https://github.com/microsoft/FluidFramework) @ `bd9ed94824fe` |
@@ -1088,6 +1091,7 @@ _Generated 2026-11-24 07:24 UTC · 1160 entries · 302 vendored, 858 reference-o
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
 | [Hexi](entries/save-state/emberemu-hexi/README.md) | Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy! | c++ | Apache-2.0 | reference | [EmberEmu/Hexi](https://github.com/EmberEmu/Hexi) @ `2026-04-19 (branch tip at catalogue time)` |
 | [houio](entries/save-state/dkoerner-houio/README.md) | C++ library for reading and writing of houdini geometry file format (json/binary json) | objective-c | unknown | reference | [dkoerner/houio](https://github.com/dkoerner/houio) @ `2020-08-10 (branch tip at catalogue time)` |
+| [hyperhyperspace-core](entries/save-state/hyperhyperspace-hyperhyperspace-core/README.md) | A library to create p2p applications, using the browser as a full peer. | typescript | MIT | vendored | [hyperhyperspace/hyperhyperspace-core](https://github.com/hyperhyperspace/hyperhyperspace-core) @ `4b43009c377a` |
 | [jim](entries/save-state/tsoding-jim/README.md) | Immediate Mode JSON Serialization Library in C | c | MIT | vendored | [tsoding/jim](https://github.com/tsoding/jim) @ `2890b452593c` |
 | [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
 | [json-joy](entries/save-state/streamich-json-joy/README.md) | json-joy is a library that implements cutting-edge real-time and collaborative editing algorithms and utilities for JSON data models, with a focus on developing | typescript | unknown | reference | [streamich/json-joy](https://github.com/streamich/json-joy) @ `2026-09-08 (branch tip at catalogue time)` |
@@ -1109,6 +1113,7 @@ _Generated 2026-11-24 07:24 UTC · 1160 entries · 302 vendored, 858 reference-o
 | [prost-reflect](entries/save-state/andrewhickman-prost-reflect/README.md) | A protobuf library extending prost with reflection support and dynamic messages. | rust | Apache-2.0 | reference | [andrewhickman/prost-reflect](https://github.com/andrewhickman/prost-reflect) @ `2026-07-09 (branch tip at catalogue time)` |
 | [protopuf](entries/save-state/pragmatwice-protopuf/README.md) | Protocol Puffers: A little, highly templated, and protobuf-compatible serialization/deserialization header-only library written in C++20 | c++ | Apache-2.0 | reference | [PragmaTwice/protopuf](https://github.com/PragmaTwice/protopuf) @ `2026-10-02 (branch tip at catalogue time)` |
 | [pypsu](entries/save-state/mccaulay-pypsu/README.md) | Library for analyzing and creating PS2 PSU game save files | python | MIT | vendored | [McCaulay/pypsu](https://github.com/McCaulay/pypsu) @ `97c473cc25ea` |
+| [python3-crdt](entries/save-state/anshulahuja98-python3-crdt/README.md) | A python library for CRDTs (Conflict-free Replicated Data types) | python | MIT | reference | [anshulahuja98/python3-crdt](https://github.com/anshulahuja98/python3-crdt) @ `2021-01-23 (branch tip at catalogue time)` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
@@ -1127,6 +1132,7 @@ _Generated 2026-11-24 07:24 UTC · 1160 entries · 302 vendored, 858 reference-o
 | [struct2json](entries/save-state/armink-struct2json/README.md) | A fast convert library between the JSON and C structure. Implement structure serialization and deserialization for C. / C 结构体与 JSON 快速互转库，快速实现 C 结构体的序列化及反序列化 | c | MIT | reference | [armink/struct2json](https://github.com/armink/struct2json) @ `2022-01-07 (branch tip at catalogue time)` |
 | [SuperBMD](entries/save-state/sage-of-mirrors-superbmd/README.md) | A library to import and export various 3D model formats into the Binary Model (BMD) format. | c# | unknown | reference | [Sage-of-Mirrors/SuperBMD](https://github.com/Sage-of-Mirrors/SuperBMD) @ `2022-12-08 (branch tip at catalogue time)` |
 | [SyncedStore](entries/save-state/yousefed-syncedstore/README.md) | SyncedStore CRDT is an easy-to-use library for building live, collaborative applications that sync automatically. | typescript | MIT | reference | [YousefED/SyncedStore](https://github.com/YousefED/SyncedStore) @ `2024-03-01 (branch tip at catalogue time)` |
+| [synk](entries/save-state/charlietap-synk/README.md) | A Kotlin multiplatform CRDT library for offline first applications | kotlin | Apache-2.0 | reference | [CharlieTap/synk](https://github.com/CharlieTap/synk) @ `2023-11-22 (branch tip at catalogue time)` |
 | [thrive — saving](entries/save-state/thrive-saving/README.md) | persistence: save/load, snapshot or state serialisation | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [UeSaveGame](entries/save-state/crystalferrai-uesavegame/README.md) | A .NET library for reading and writing standard Unreal Engine save game files. | c# | unknown | reference | [CrystalFerrai/UeSaveGame](https://github.com/CrystalFerrai/UeSaveGame) @ `2026-05-15 (branch tip at catalogue time)` |
 | [VCMI — serializer](entries/save-state/vcmi-serializer/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
