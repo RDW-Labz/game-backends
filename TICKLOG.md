@@ -2579,3 +2579,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/amidos2006-gym-pcgrl
   - reference procgen/decisionforce-pgdrive
   - reference procgen/shamim-akhtar-jigsaw-puzzle
+
+- **2026-11-24 08:48 UTC** — tick 772: +2 screened, +4 reference, 9 skipped, catalogue=1190
+  - added procgen/subho406-infinite-runner-ultimate (GPL-3.0, reference)
+  - added procgen/valkryst-vnamegenerator (Apache-2.0, vendored)
+  - reference procgen/demiaster-treegen
+  - reference procgen/mgaillard-noise
+  - reference procgen/bones-ai-rust-procedural-world
+  - reference procgen/theorioli-procedural

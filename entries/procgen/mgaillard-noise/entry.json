@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:48:20Z",
+ "category": "procgen",
+ "commit": "2023-02-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mgaillard/Noise \u2014 A procedural function that generates dendritic patterns and is locally computable.",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Noise",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "mgaillard-noise",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 89,
+ "system": "A procedural function that generates dendritic patterns and is locally computable.",
+ "upstream": "https://github.com/mgaillard/Noise",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

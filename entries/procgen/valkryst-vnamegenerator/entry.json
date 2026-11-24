@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T08:48:19Z",
+ "category": "procgen",
+ "commit": "9474a09951a6",
+ "delivery": "vendored",
+ "description": "Valkryst/VNameGenerator \u2014 A Java implementation of various procedural name generation algorithms, including combinatorial, consonant vowel, context-free grammar, and Markov chain.",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "VNameGenerator",
+ "size_bytes": 19459,
+ "slug": "valkryst-vnamegenerator",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 95,
+ "system": "A Java implementation of various procedural name generation algorithms, including combinatorial, consonant vowel, context-free grammar, and Markov chain.",
+ "upstream": "https://github.com/Valkryst/VNameGenerator",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

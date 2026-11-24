@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 08:48 UTC · 1190 entries · 308 vendored, 882 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-o
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
-| [procgen](#procgen) — Procedural generation | 103 | 27 | 76 |
+| [procgen](#procgen) — Procedural generation | 109 | 28 | 81 |
 
 
 ## engines
@@ -1146,7 +1146,7 @@ _Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-o
 
 ## procgen
 
-**Procedural generation** — 103 entries
+**Procedural generation** — 109 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1195,6 +1195,7 @@ _Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-o
 | [gym-pcgrl](entries/procgen/amidos2006-gym-pcgrl/README.md) | A package for "Procedural Content Generation via Reinforcement Learning" OpenAI Gym interface. | python | MIT | reference | [amidos2006/gym-pcgrl](https://github.com/amidos2006/gym-pcgrl) @ `2024-12-13 (branch tip at catalogue time)` |
 | [Hesiod](entries/procgen/ottolink-dev-hesiod/README.md) | A desktop application for node-based procedural terrain generation. | c++ | GPL-3.0 | reference | [ottolink-dev/Hesiod](https://github.com/ottolink-dev/Hesiod) @ `ea7484825735` |
 | [infinigen](entries/procgen/princeton-vl-infinigen/README.md) | Infinite Photorealistic Worlds using Procedural Generation | python | BSD-3-Clause | reference | [princeton-vl/infinigen](https://github.com/princeton-vl/infinigen) @ `2026-11-11 (branch tip at catalogue time)` |
+| [Infinite-Runner-Ultimate](entries/procgen/subho406-infinite-runner-ultimate/README.md) | A cross-platform procedural environment generation and Endless Runner engine. Features real-time object pooling and includes an interactive level editor. | c# | GPL-3.0 | reference | [subho406/Infinite-Runner-Ultimate](https://github.com/subho406/Infinite-Runner-Ultimate) @ `ad12afbf1c38` |
 | [jigsaw-puzzle](entries/procgen/shamim-akhtar-jigsaw-puzzle/README.md) | A complete Jigsaw Puzzle game built in Unity and C#. This repository contains the source code for the tutorial series covering Bézier curve mathematics, procedu | c# | unknown | reference | [shamim-akhtar/jigsaw-puzzle](https://github.com/shamim-akhtar/jigsaw-puzzle) @ `2025-12-28 (branch tip at catalogue time)` |
 | [LevelGenerator](entries/procgen/moolt-levelgenerator/README.md) | Unity plug-in for procedurally generating indoor levels using abstract chunks. | c# | MIT | reference | [Moolt/LevelGenerator](https://github.com/Moolt/LevelGenerator) @ `2018-09-07 (branch tip at catalogue time)` |
 | [libnoise-rs](entries/procgen/cookiephone-libnoise-rs/README.md) | Simple and customizable procedural noise generation library written in Rust. | rust | MIT | vendored | [cookiephone/libnoise-rs](https://github.com/cookiephone/libnoise-rs) @ `41ac16c660af` |
@@ -1202,6 +1203,7 @@ _Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-o
 | [martini](entries/procgen/mapbox-martini/README.md) | A JavaScript library for real-time RTIN terrain mesh generation | javascript | ISC | vendored | [mapbox/martini](https://github.com/mapbox/martini) @ `f9a7a96b583a` |
 | [mazegen](entries/procgen/aleksandrbazhin-mazegen/README.md) | Maze generation header-only C++ library | c++ | MIT | vendored | [aleksandrbazhin/mazegen](https://github.com/aleksandrbazhin/mazegen) @ `85bc9cea4764` |
 | [ndwfc](entries/procgen/lingdong-ndwfc/README.md) | 🌊💥 N-dimensional Wave Function Collapse with infinite canvas | javascript | MIT | vendored | [LingDong-/ndwfc](https://github.com/LingDong-/ndwfc) @ `3479af8ee855` |
+| [Noise](entries/procgen/mgaillard-noise/README.md) | A procedural function that generates dendritic patterns and is locally computable. | c++ | GPL-3.0 | reference | [mgaillard/Noise](https://github.com/mgaillard/Noise) @ `2023-02-03 (branch tip at catalogue time)` |
 | [noise](entries/procgen/spongepowered-noise/README.md) | Noise generation library for Java, based on the libnoise C++ library. It is used to generate coherent noise, a type of smoothly-changing noise. It can also gene | java | MIT | reference | [SpongePowered/noise](https://github.com/SpongePowered/noise) @ `2026-11-11 (branch tip at catalogue time)` |
 | [noise-rs](entries/procgen/razaekel-noise-rs/README.md) | Procedural noise generation library for Rust. | rust | Apache-2.0 | reference | [Razaekel/noise-rs](https://github.com/Razaekel/noise-rs) @ `2025-02-14 (branch tip at catalogue time)` |
 | [oisin](entries/procgen/mewo2-oisin/README.md) | Oisín: Wave Function Collapse for poetry | python | unknown | reference | [mewo2/oisin](https://github.com/mewo2/oisin) @ `2017-05-23 (branch tip at catalogue time)` |
@@ -1209,6 +1211,7 @@ _Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-o
 | [open_world_game](entries/procgen/kettle11-open-world-game/README.md) | Just a quick terrain generation experiment. | rust | unknown | reference | [kettle11/open_world_game](https://github.com/kettle11/open_world_game) @ `2023-04-22 (branch tip at catalogue time)` |
 | [perlin](entries/procgen/joeiddon-perlin/README.md) | A JavaScript library for Perlin Noise generation | javascript | none | reference | [joeiddon/perlin](https://github.com/joeiddon/perlin) @ `5941e2b52507` |
 | [pgdrive](entries/procgen/decisionforce-pgdrive/README.md) | PGDrive: an open-ended driving simulator with infinite scenes from procedural generation | python | Apache-2.0 | reference | [decisionforce/pgdrive](https://github.com/decisionforce/pgdrive) @ `2022-06-20 (branch tip at catalogue time)` |
+| [procedural](entries/procgen/theorioli-procedural/README.md) | Procedural generation as a service | go | MIT | reference | [TheOrioli/procedural](https://github.com/TheOrioli/procedural) @ `2020-03-07 (branch tip at catalogue time)` |
 | [procedural-cities](entries/procgen/phiresky-procedural-cities/README.md) | Information about procedural city generation | tex | AGPL-3.0 | reference | [phiresky/procedural-cities](https://github.com/phiresky/procedural-cities) @ `f0c2c86e4289` |
 | [procedural-generation](entries/procgen/kchapelier-procedural-generation/README.md) | A mostly javascript-centric resource / links list on procedural content generation (PCG). | n/a | MIT | vendored | [kchapelier/procedural-generation](https://github.com/kchapelier/procedural-generation) @ `6a3ab9eac7e8` |
 | [Procedural-Landmass-Generation](entries/procgen/seblague-procedural-landmass-generation/README.md) | Procedural Landmass Generation in Unity | c# | MIT | reference | [SebLague/Procedural-Landmass-Generation](https://github.com/SebLague/Procedural-Landmass-Generation) @ `2024-01-12 (branch tip at catalogue time)` |
@@ -1222,6 +1225,7 @@ _Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-o
 | [R2E-Gym](entries/procgen/r2e-gym-r2e-gym/README.md) | [COLM 2025] Official repository for R2E-Gym: Procedural Environment Generation and Hybrid Verifiers for Scaling Open-Weights SWE Agents | python | Apache-2.0 | reference | [R2E-Gym/R2E-Gym](https://github.com/R2E-Gym/R2E-Gym) @ `2025-07-13 (branch tip at catalogue time)` |
 | [rant](entries/procgen/rant-lang-rant/README.md) | Rant - The templating language for procedural generation. | rust | Apache-2.0 | reference | [rant-lang/rant](https://github.com/rant-lang/rant) @ `2022-05-20 (branch tip at catalogue time)` |
 | [roguelike-celebration-2020](entries/procgen/thebracket-roguelike-celebration-2020/README.md) | Code for my Procedural Map Generation talk at the Roguelike Celebration 2020 | rust | MIT | reference | [thebracket/roguelike-celebration-2020](https://github.com/thebracket/roguelike-celebration-2020) @ `2022-06-17 (branch tip at catalogue time)` |
+| [rust-procedural-world](entries/procgen/bones-ai-rust-procedural-world/README.md) | Procedural 2d world generation in Rust and Bevy | rust | MIT | reference | [bones-ai/rust-procedural-world](https://github.com/bones-ai/rust-procedural-world) @ `2025-04-28 (branch tip at catalogue time)` |
 | [SoilMachine](entries/procgen/weigert-soilmachine/README.md) | Advanced, modular, coupled geomorpohology simulator for real-time procedural terrain generation. | c++ | unknown | reference | [weigert/SoilMachine](https://github.com/weigert/SoilMachine) @ `2023-06-11 (branch tip at catalogue time)` |
 | [source-map](entries/procgen/parcel-bundler-source-map/README.md) | A fast source map manipulation, generation and consumption library written in Rust and Node.js | javascript | unknown | reference | [parcel-bundler/source-map](https://github.com/parcel-bundler/source-map) @ `2026-11-09 (branch tip at catalogue time)` |
 | [space-2d](entries/procgen/wwwtyro-space-2d/README.md) | Fast procedural 2D space scene generation on the GPU. | javascript | Unlicense | reference | [wwwtyro/space-2d](https://github.com/wwwtyro/space-2d) @ `2016-10-24 (branch tip at catalogue time)` |
@@ -1233,6 +1237,7 @@ _Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-o
 | [THREE.Terrain](entries/procgen/icecreamyou-three-terrain/README.md) | A procedural terrain generation engine for use with the Three.js 3D graphics library for the web. | javascript | MIT | reference | [IceCreamYou/THREE.Terrain](https://github.com/IceCreamYou/THREE.Terrain) @ `2026-11-12 (branch tip at catalogue time)` |
 | [TiledSharp](entries/procgen/marshallward-tiledsharp/README.md) | C# library for parsing and importing TMX and TSX files generated by Tiled, a tile map generation tool | c# | Apache-2.0 | vendored | [marshallward/TiledSharp](https://github.com/marshallward/TiledSharp) @ `3710df6f4578` |
 | [Tracery](entries/procgen/tracery/README.md) | grammar-based generative text/structure | javascript | Apache-2.0 | vendored | [galaxykate/tracery](https://github.com/galaxykate/tracery) @ `11db07cb8e35` |
+| [treegen](entries/procgen/demiaster-treegen/README.md) | Vegetation Generation Tool for Houdini | python | BSD-2-Clause | reference | [demiaster/treegen](https://github.com/demiaster/treegen) @ `2017-08-20 (branch tip at catalogue time)` |
 | [UE4ProceduralMesh](entries/procgen/srombauts-ue4proceduralmesh/README.md) | UE4.7 Procedural Mesh Generation plugin | c++ | none | reference | [SRombauts/UE4ProceduralMesh](https://github.com/SRombauts/UE4ProceduralMesh) @ `559456457530` |
 | [Unity--voxel-terrain-generator](entries/procgen/michalczemierowski-unity-voxel-terrain-generator/README.md) | 3D game with procedural world made of cubes. (world generation/mesh creation/physx baking is multi threaded) | c# | GPL-3.0 | reference | [michalczemierowski/Unity--voxel-terrain-generator](https://github.com/michalczemierowski/Unity--voxel-terrain-generator) @ `2021-10-22 (branch tip at catalogue time)` |
 | [Unity-Dungeon-Generator](entries/procgen/damarindra-unity-dungeon-generator/README.md) | Unity Dungeon Generator is a Procedural Generation for dungeon creation. It will result a bunch of data for your needs. | c# | MIT | reference | [damarindra/Unity-Dungeon-Generator](https://github.com/damarindra/Unity-Dungeon-Generator) @ `2020-10-31 (branch tip at catalogue time)` |
@@ -1244,6 +1249,7 @@ _Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-o
 | [urizen](entries/procgen/vurmux-urizen/README.md) | Roguelike dungeon generation library written on Python3 | python | Apache-2.0 | vendored | [vurmux/urizen](https://github.com/vurmux/urizen) @ `28b1e60cf8fa` |
 | [utymap](entries/procgen/reinterpretcat-utymap/README.md) | Highly customizable library for procedural world generation based on real map data | c++ | Apache-2.0 | reference | [reinterpretcat/utymap](https://github.com/reinterpretcat/utymap) @ `2019-05-16 (branch tip at catalogue time)` |
 | [veloren — world](entries/procgen/veloren-world/README.md) | world generation (terrain, biomes, caves, structures) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
+| [VNameGenerator](entries/procgen/valkryst-vnamegenerator/README.md) | A Java implementation of various procedural name generation algorithms, including combinatorial, consonant vowel, context-free grammar, and Markov chain. | java | Apache-2.0 | vendored | [Valkryst/VNameGenerator](https://github.com/Valkryst/VNameGenerator) @ `9474a09951a6` |
 | [VoxModSynth](entries/procgen/sylefeb-voxmodsynth/README.md) | A simple, efficient, easily hackable C++ implementation of 3d model synthesis / wave function collapse | c++ | MIT | vendored | [sylefeb/VoxModSynth](https://github.com/sylefeb/VoxModSynth) @ `007203eca947` |
 | [Wave-Function-Collapse](entries/procgen/codingtrain-wave-function-collapse/README.md) | see upstream | javascript | unknown | reference | [CodingTrain/Wave-Function-Collapse](https://github.com/CodingTrain/Wave-Function-Collapse) @ `2025-06-10 (branch tip at catalogue time)` |
 | [WaveFunctionCollapse](entries/procgen/avihuxp-wavefunctioncollapse/README.md) | Implementation of the overlapping model of the Wave Function Collapse algorithm | python | MIT | vendored | [avihuxp/WaveFunctionCollapse](https://github.com/avihuxp/WaveFunctionCollapse) @ `00f3720cbe4d` |

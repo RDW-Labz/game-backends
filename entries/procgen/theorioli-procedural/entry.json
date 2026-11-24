@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:48:20Z",
+ "category": "procgen",
+ "commit": "2020-03-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "TheOrioli/procedural \u2014 Procedural generation as a service",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "procedural",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "theorioli-procedural",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 82,
+ "system": "Procedural generation as a service",
+ "upstream": "https://github.com/TheOrioli/procedural",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

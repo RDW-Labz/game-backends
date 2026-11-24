@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T08:48:17Z",
+ "category": "procgen",
+ "commit": "ad12afbf1c38",
+ "delivery": "reference",
+ "description": "subho406/Infinite-Runner-Ultimate \u2014 A cross-platform procedural environment generation and Endless Runner engine. Features real-time object pooling and includes an interactive level editor.",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Infinite-Runner-Ultimate",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 180539,
+ "slug": "subho406-infinite-runner-ultimate",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 95,
+ "system": "A cross-platform procedural environment generation and Endless Runner engine. Features real-time object pooling and includes an interactive level editor.",
+ "upstream": "https://github.com/subho406/Infinite-Runner-Ultimate",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
