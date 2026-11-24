@@ -2625,3 +2625,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/sheerst-pokewilds
   - reference engines/card-forge-forge
   - reference engines/eqmg-acid
+
+- **2026-11-24 11:49 UTC** — tick 783: +2 screened, +4 reference, 6 skipped, catalogue=1222
+  - added engines/fegennari-3dworld (GPL-3.0, reference)
+  - added engines/kripken-bananabread (Zlib, vendored)
+  - reference engines/ncine-ncine
+  - reference engines/gemrb-gemrb
+  - reference engines/inexorgame-vulkan-renderer
+  - reference engines/asc-community-mxengine

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T11:49:40Z",
+ "category": "engines",
+ "commit": "455191d2e289",
+ "delivery": "vendored",
+ "description": "kripken/BananaBread \u2014 BananaBread is a C++ 3D game engine that runs on the web using JavaScript+WebGL+HTML",
+ "language": "c++",
+ "license": "Zlib",
+ "license_file": "README.md",
+ "license_verdict": "clean",
+ "name": "BananaBread",
+ "size_bytes": 5175788,
+ "slug": "kripken-bananabread",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1448,
+ "system": "BananaBread is a C++ 3D game engine that runs on the web using JavaScript+WebGL+HTML",
+ "upstream": "https://github.com/kripken/BananaBread",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T11:49:42Z",
+ "category": "engines",
+ "commit": "2026-11-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "inexorgame/vulkan-renderer \u2014 A new, render-graph based 3D game engine for Linux and Windows using C++20 and Vulkan API 1.3 (in early development)",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "vulkan-renderer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "inexorgame-vulkan-renderer",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1242,
+ "system": "A new, render-graph based 3D game engine for Linux and Windows using C++20 and Vulkan API 1.3 (in early development)",
+ "upstream": "https://github.com/inexorgame/vulkan-renderer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

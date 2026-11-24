@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 10:42 UTC · 1216 entries · 315 vendored, 901 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 11:49 UTC · 1222 entries · 316 vendored, 906 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 409 | 93 | 316 |
+| [engines](#engines) — Game engines and engine subsystems | 415 | 94 | 321 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,11 +16,12 @@ _Generated 2026-11-24 10:42 UTC · 1216 entries · 315 vendored, 901 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 409 entries
+**Game engines and engine subsystems** — 415 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [24a2](entries/engines/jamesroutley-24a2/README.md) | 🏵 An ultra-minimalist game engine | typescript | MIT | reference | [jamesroutley/24a2](https://github.com/jamesroutley/24a2) @ `2026-03-01 (branch tip at catalogue time)` |
+| [3DWorld](entries/engines/fegennari-3dworld/README.md) | 3D Procedural Game Engine Using OpenGL  | c++ | GPL-3.0 | reference | [fegennari/3DWorld](https://github.com/fegennari/3DWorld) @ `a5ab0afaed5f` |
 | [AAAAXY — engine](entries/engines/aaaaxy-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | go | Apache-2.0 | vendored | [divVerent/aaaaxy](https://github.com/divVerent/aaaaxy) @ `07d7252` |
 | [AbyssEngine](entries/engines/opendiablo2-abyssengine/README.md) | A 2D ARPG game engine. | go | GPL-3.0 | reference | [OpenDiablo2/AbyssEngine](https://github.com/OpenDiablo2/AbyssEngine) @ `2025-12-05 (branch tip at catalogue time)` |
 | [Acid](entries/engines/eqmg-acid/README.md) | A high speed C++17 Vulkan game engine | c++ | MIT | reference | [EQMG/Acid](https://github.com/EQMG/Acid) @ `2023-09-21 (branch tip at catalogue time)` |
@@ -51,6 +52,7 @@ _Generated 2026-11-24 10:42 UTC · 1216 entries · 315 vendored, 901 reference-o
 | [azeroth-survivors-re](entries/engines/outthislife-azeroth-survivors-re/README.md) | A survivors roguelite running on a from-scratch World of Warcraft 1.12.1 client engine (Rust + Bevy). | rust | Apache-2.0 | reference | [OutThisLife/azeroth-survivors-re](https://github.com/OutThisLife/azeroth-survivors-re) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Babylon.js](entries/engines/babylonjs-babylon-js/README.md) | Babylon.js is a powerful, beautiful, simple, and open game and rendering engine packed into a friendly JavaScript framework. | typescript | Apache-2.0 | reference | [BabylonJS/Babylon.js](https://github.com/BabylonJS/Babylon.js) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Bacon2D](entries/engines/bacon2d-bacon2d/README.md) | Bacon2D is a framework to ease 2D game development, providing ready-to-use QML elements representing basic game entities needed by most of games. | c++ | MIT | reference | [Bacon2D/Bacon2D](https://github.com/Bacon2D/Bacon2D) @ `2019-12-16 (branch tip at catalogue time)` |
+| [BananaBread](entries/engines/kripken-bananabread/README.md) | BananaBread is a C++ 3D game engine that runs on the web using JavaScript+WebGL+HTML | c++ | Zlib | vendored | [kripken/BananaBread](https://github.com/kripken/BananaBread) @ `455191d2e289` |
 | [bardic](entries/engines/katelouie-bardic/README.md) | A Python-first interactive fiction engine and authoring system. Frontend-agnostic and portable. | python | MIT | reference | [katelouie/bardic](https://github.com/katelouie/bardic) @ `2026-05-22 (branch tip at catalogue time)` |
 | [better-terrain](entries/engines/portponky-better-terrain/README.md) | Terrain plugin for Godot 4 | gdscript | Unlicense | reference | [Portponky/better-terrain](https://github.com/Portponky/better-terrain) @ `2026-02-09 (branch tip at catalogue time)` |
 | [Bevy](entries/engines/bevy/README.md) | ECS-first engine: schedules, asset pipeline, render graph | rust | Apache-2.0 | reference | [bevyengine/bevy](https://github.com/bevyengine/bevy) @ `7ea4827e16d5` |
@@ -181,6 +183,7 @@ _Generated 2026-11-24 10:42 UTC · 1216 entries · 315 vendored, 901 reference-o
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
 | [gdx-jnigen](entries/engines/libgdx-gdx-jnigen/README.md) | jnigen is a small library that can be used with or without libGDX which allows C/C++ code to be written inline with Java source code.  | java | Apache-2.0 | reference | [libgdx/gdx-jnigen](https://github.com/libgdx/gdx-jnigen) @ `2026-11-16 (branch tip at catalogue time)` |
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
+| [gemrb](entries/engines/gemrb-gemrb/README.md) | GemRB is a portable open-source implementation of Bioware’s Infinity Engine. | c++ | GPL-2.0 | reference | [gemrb/gemrb](https://github.com/gemrb/gemrb) @ `2026-11-15 (branch tip at catalogue time)` |
 | [genex-desktop](entries/engines/genex-games-genex-desktop/README.md) | Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models. | typescript | MIT | reference | [genex-games/genex-desktop](https://github.com/genex-games/genex-desktop) @ `2026-11-22 (branch tip at catalogue time)` |
 | [ggez](entries/engines/ggez-ggez/README.md) | Rust library to create a Good Game Easily | rust | MIT | reference | [ggez/ggez](https://github.com/ggez/ggez) @ `2026-10-26 (branch tip at catalogue time)` |
 | [ggpoker](entries/engines/anthdm-ggpoker/README.md) | A decentralized poker game engine written in Golang and Solidity | go | unknown | reference | [anthdm/ggpoker](https://github.com/anthdm/ggpoker) @ `2024-01-27 (branch tip at catalogue time)` |
@@ -265,8 +268,10 @@ _Generated 2026-11-24 10:42 UTC · 1216 entries · 315 vendored, 901 reference-o
 | [multiplayer-voxel-browser-game-engine](entries/engines/kevzettler-multiplayer-voxel-browser-game-engine/README.md) | A multiplayer voxel browser game engine | typescript | unknown | reference | [kevzettler/multiplayer-voxel-browser-game-engine](https://github.com/kevzettler/multiplayer-voxel-browser-game-engine) @ `2023-04-24 (branch tip at catalogue time)` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
 | [MusicEngine](entries/engines/geekdrums-musicengine/README.md) | make music synced game with Unity / ADX2 / Wwise | c# | unknown | reference | [geekdrums/MusicEngine](https://github.com/geekdrums/MusicEngine) @ `2023-01-09 (branch tip at catalogue time)` |
+| [MxEngine](entries/engines/asc-community-mxengine/README.md) | C++ open source 3D game engine | c++ | BSD-3-Clause | reference | [ASC-Community/MxEngine](https://github.com/ASC-Community/MxEngine) @ `2024-04-06 (branch tip at catalogue time)` |
 | [Myra](entries/engines/myraui-myra/README.md) | UI Library for MonoGame, FNA and Stride | c# | MIT | vendored | [MyraUI/Myra](https://github.com/MyraUI/Myra) @ `f605da2bba59` |
 | [Nav3D](entries/engines/darbycostello-nav3d/README.md) | 3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning | c++ | MIT | reference | [darbycostello/Nav3D](https://github.com/darbycostello/Nav3D) @ `2026-01-12 (branch tip at catalogue time)` |
+| [nCine](entries/engines/ncine-ncine/README.md) | A cross-platform 2D game engine | c++ | MIT | reference | [nCine/nCine](https://github.com/nCine/nCine) @ `2026-11-13 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
@@ -414,6 +419,7 @@ _Generated 2026-11-24 10:42 UTC · 1216 entries · 315 vendored, 901 reference-o
 | [voxelman](entries/engines/mrsmith33-voxelman/README.md) | Plugin-based client-server voxel game engine written in D language | d | BSL-1.0 | reference | [MrSmith33/voxelman](https://github.com/MrSmith33/voxelman) @ `2022-05-10 (branch tip at catalogue time)` |
 | [VoxelPluginFreeLegacy](entries/engines/voxelplugin-voxelpluginfreelegacy/README.md) | Voxel Plugin Legacy for Unreal Engine | c++ | none | reference | [VoxelPlugin/VoxelPluginFreeLegacy](https://github.com/VoxelPlugin/VoxelPluginFreeLegacy) @ `7e64a89ce827` |
 | [voxplat](entries/engines/kosshi-net-voxplat/README.md) | A hybrid voxel rendering engine | c | unknown | reference | [kosshi-net/voxplat](https://github.com/kosshi-net/voxplat) @ `2022-02-21 (branch tip at catalogue time)` |
+| [vulkan-renderer](entries/engines/inexorgame-vulkan-renderer/README.md) | A new, render-graph based 3D game engine for Linux and Windows using C++20 and Vulkan API 1.3 (in early development) | c++ | MIT | reference | [inexorgame/vulkan-renderer](https://github.com/inexorgame/vulkan-renderer) @ `2026-11-07 (branch tip at catalogue time)` |
 | [vx_bevy](entries/engines/game4all-vx-bevy/README.md) | 🧊 Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy. | rust | MIT | reference | [Game4all/vx_bevy](https://github.com/Game4all/vx_bevy) @ `2024-12-11 (branch tip at catalogue time)` |
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |
 | [wat](entries/engines/alexdarigan-wat/README.md) | A Testing Plugin for Godot Game Engine | gdscript | MIT | reference | [AlexDarigan/wat](https://github.com/AlexDarigan/wat) @ `2023-07-10 (branch tip at catalogue time)` |

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T11:49:34Z",
+ "category": "engines",
+ "commit": "a5ab0afaed5f",
+ "delivery": "reference",
+ "description": "fegennari/3DWorld \u2014 3D Procedural Game Engine Using OpenGL",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "3DWorld",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 33961984,
+ "slug": "fegennari-3dworld",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1453,
+ "system": "3D Procedural Game Engine Using OpenGL ",
+ "upstream": "https://github.com/fegennari/3DWorld",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
