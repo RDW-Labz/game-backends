@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T04:28:04Z",
+ "category": "netcode",
+ "commit": "b49cf551f41a",
+ "delivery": "vendored",
+ "description": "ErnWong/crystalorb \u2014 Network-agnostic, high-level game networking library for client-side prediction and server reconciliation (unconditional rollback).",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "crystalorb",
+ "size_bytes": 263246,
+ "slug": "ernwong-crystalorb",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 233,
+ "system": "Network-agnostic, high-level game networking library for client-side prediction and server reconciliation (unconditional rollback).",
+ "upstream": "https://github.com/ErnWong/crystalorb",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

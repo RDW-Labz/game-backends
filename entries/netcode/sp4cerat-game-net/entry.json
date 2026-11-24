@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T04:28:08Z",
+ "category": "netcode",
+ "commit": "2015-11-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sp4cerat/Game-NET \u2014 RPC Network Library for Multiplayer Games",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Game-NET",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sp4cerat-game-net",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 76,
+ "system": "RPC Network Library for Multiplayer Games",
+ "upstream": "https://github.com/sp4cerat/Game-NET",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

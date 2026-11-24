@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T04:28:07Z",
+ "category": "netcode",
+ "commit": "1d7682d60e9d",
+ "delivery": "vendored",
+ "description": "Parihsz/Chrono \u2014 Drop-in custom physics replication library",
+ "language": "luau",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Chrono",
+ "size_bytes": 117610,
+ "slug": "parihsz-chrono",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 161,
+ "system": "Drop-in custom physics replication library",
+ "upstream": "https://github.com/Parihsz/Chrono",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

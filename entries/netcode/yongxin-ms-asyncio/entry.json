@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T04:28:08Z",
+ "category": "netcode",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "yongxin-ms/asyncio \u2014 A C++ implementation of an industrial-grade high-performance asynchronous network library, based on asio, similar to Python's asyncio, designed for stateful services, and can be used to quickly build a variety of online game servers, microservices and pressure testing tools",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "asyncio",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "yongxin-ms-asyncio",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 63,
+ "system": "A C++ implementation of an industrial-grade high-performance asynchronous network library, based on asio, similar to Python's asyncio, designed for stateful ser",
+ "upstream": "https://github.com/yongxin-ms/asyncio",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

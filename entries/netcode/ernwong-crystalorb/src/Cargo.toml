@@ -1,0 +1,37 @@
+[package]
+name = "crystalorb"
+version = "0.3.0"
+authors = ["Ernest Wong <sudo@ernestwong.nz>"]
+categories = ["games", "simulation"]
+description = "Network-agnostic, high-level game networking library"
+edition = "2018"
+keywords = ["netcode"]
+license = "Apache-2.0"
+readme = "README.markdown"
+repository = "https://github.com/ErnWong/crystalorb"
+
+[dependencies]
+tracing = "0.1.22"
+serde = {version = "1.0.118", features = ["derive"]}
+take_mut = "0.2.2"
+
+[dev-dependencies]
+quickcheck = "1.0"
+quickcheck_macros = "1.0"
+tracing-subscriber = "0.2.17"
+pretty_assertions = "0.7.1"
+itertools = "0.10.0"
+float-cmp = "0.8.0"
+test-log = {version = "0.2.8", default-features = false, features = ["trace"]}
+crystalorb-mock-network = {path = "./crates/crystalorb-mock-network"}
+crystalorb-demo = {path = "./examples/demo"}
+
+[workspace]
+members = [
+  "examples/demo",
+  "crates/crystalorb-mock-network",
+  "crates/crystalorb-bevy-networking-turbulence"
+]
+
+[profile.release.package.crystalorb-demo]
+debug = true

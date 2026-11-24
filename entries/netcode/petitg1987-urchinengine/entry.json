@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T04:28:08Z",
+ "category": "netcode",
+ "commit": "2026-11-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "petitg1987/urchinEngine \u2014 Game engine library: 3D, Physics, Sound, Network, IA, Map Editor",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "urchinEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "petitg1987-urchinengine",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 101,
+ "system": "Game engine library: 3D, Physics, Sound, Network, IA, Map Editor",
+ "upstream": "https://github.com/petitg1987/urchinEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

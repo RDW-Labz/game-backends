@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T04:28:08Z",
+ "category": "netcode",
+ "commit": "2018-01-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ketoo/NFrame \u2014 A fast, scalable, distributed game server framework for C++, include actor library, network library,can be used as a  real time multiplayer game engine ( MMO RPG ) .",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "NFrame",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "ketoo-nframe",
+ "source": "github-search:game networking library stars:>60",
+ "stars": 80,
+ "system": "A fast, scalable, distributed game server framework for C++, include actor library, network library,can be used as a  real time multiplayer game engine ( MMO RP",
+ "upstream": "https://github.com/ketoo/NFrame",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

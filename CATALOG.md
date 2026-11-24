@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 04:12 UTC · 1098 entries · 286 vendored, 812 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 04:28 UTC · 1104 entries · 288 vendored, 816 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-24 04:12 UTC · 1098 entries · 286 vendored, 812 reference-o
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
-| [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
+| [netcode](#netcode) — Networking / netcode | 120 | 37 | 83 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
@@ -884,7 +884,7 @@ _Generated 2026-11-24 04:12 UTC · 1098 entries · 286 vendored, 812 reference-o
 
 ## netcode
 
-**Networking / netcode** — 114 entries
+**Networking / netcode** — 120 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -892,6 +892,7 @@ _Generated 2026-11-24 04:12 UTC · 1098 entries · 286 vendored, 812 reference-o
 | [agones](entries/netcode/agones-dev-agones/README.md) | Dedicated Game Server Hosting and Scaling for Multiplayer Games on Kubernetes | go | Apache-2.0 | reference | [agones-dev/agones](https://github.com/agones-dev/agones) @ `a71420b2b34a` |
 | [ancientbeast — multiplayer](entries/netcode/ancientbeast-multiplayer/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [arcomage-hd](entries/netcode/arcomage-arcomage-hd/README.md) | Web-based, free and open source, remastered 3D clone of 3DO/NWC's 2000 card game Arcomage. 16 languages. Desktop or mobile Android iOS. Online or offline PWA. A | typescript | MIT | reference | [arcomage/arcomage-hd](https://github.com/arcomage/arcomage-hd) @ `2025-11-15 (branch tip at catalogue time)` |
+| [asyncio](entries/netcode/yongxin-ms-asyncio/README.md) | A C++ implementation of an industrial-grade high-performance asynchronous network library, based on asio, similar to Python's asyncio, designed for stateful ser | c++ | MIT | reference | [yongxin-ms/asyncio](https://github.com/yongxin-ms/asyncio) @ `2026-11-22 (branch tip at catalogue time)` |
 | [AuthoritativeMovementExample](entries/netcode/relic-authoritativemovementexample/README.md) | An example of authoritative server movement using Forge Networking Remastered for Unity. | c# | MIT | vendored | [Relic/AuthoritativeMovementExample](https://github.com/Relic/AuthoritativeMovementExample) @ `e4922771b2a7` |
 | [Backdash](entries/netcode/delta3-studio-backdash/README.md) | C# Rollback network SDK | c# | MIT | reference | [Delta3-Studio/Backdash](https://github.com/Delta3-Studio/Backdash) @ `2026-11-10 (branch tip at catalogue time)` |
 | [backroll-rs](entries/netcode/houraiteahouse-backroll-rs/README.md) | A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode. | rust | ISC | reference | [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) @ `2023-03-13 (branch tip at catalogue time)` |
@@ -900,8 +901,10 @@ _Generated 2026-11-24 04:12 UTC · 1098 entries · 286 vendored, 812 reference-o
 | [bevy_gaff](entries/netcode/johanhelsing-bevy-gaff/README.md) | a networked (p2p), cross-platform physics simulation example using rollback netcode | rust | Apache-2.0 | reference | [johanhelsing/bevy_gaff](https://github.com/johanhelsing/bevy_gaff) @ `2023-10-22 (branch tip at catalogue time)` |
 | [BoomNetwork](entries/netcode/boomlulu-boomnetwork/README.md) | 帧驱动状态同步框架 — C# client + Go server + Unity UPM. No rollback, zero-latency self-authority, 5-min onboarding. | c# | MIT | reference | [boomlulu/BoomNetwork](https://github.com/boomlulu/BoomNetwork) @ `2026-04-15 (branch tip at catalogue time)` |
 | [cellnet](entries/netcode/davyxu-cellnet/README.md) | High performance, simple, extensible golang open source network library | go | MIT | vendored | [davyxu/cellnet](https://github.com/davyxu/cellnet) @ `916a7eaabb30` |
+| [Chrono](entries/netcode/parihsz-chrono/README.md) | Drop-in custom physics replication library | luau | MIT | vendored | [Parihsz/Chrono](https://github.com/Parihsz/Chrono) @ `1d7682d60e9d` |
 | [cocos2dxMultiPlayer](entries/netcode/obastemur-cocos2dxmultiplayer/README.md) | Sample Cocos2d-x Multiplayer game with server side source codes | c++ | unknown | reference | [obastemur/cocos2dxMultiPlayer](https://github.com/obastemur/cocos2dxMultiPlayer) @ `2013-05-09 (branch tip at catalogue time)` |
 | [Colyseus](entries/netcode/colyseus/README.md) | authoritative room-based multiplayer framework with state sync | typescript | MIT | vendored | [colyseus/colyseus](https://github.com/colyseus/colyseus) @ `ce781b98bfc5` |
+| [crystalorb](entries/netcode/ernwong-crystalorb/README.md) | Network-agnostic, high-level game networking library for client-side prediction and server reconciliation (unconditional rollback). | rust | Apache-2.0 | vendored | [ErnWong/crystalorb](https://github.com/ErnWong/crystalorb) @ `b49cf551f41a` |
 | [Cubit — server](entries/netcode/cubit-server/README.md) | network transport, protocol, replication or server loop | go | MIT | vendored | [taynotfound/cubit](https://github.com/taynotfound/cubit) @ `0bd4518` |
 | [cubyz — server](entries/netcode/cubyz-server/README.md) | network transport, protocol, replication or server loop | zig | GPL-3.0 | reference | [PixelGuys/Cubyz](https://github.com/PixelGuys/Cubyz) @ `74b6814` |
 | [d2-dedicated-server](entries/netcode/jaenster-d2-dedicated-server/README.md) | Self-hosted, cloud-native Diablo II dedicated game server + Battle.net realm in Zig — a modern PvPGN replacement. Seven engines (1.06b … 1.13c) on the game's ow | zig | MIT | reference | [jaenster/d2-dedicated-server](https://github.com/jaenster/d2-dedicated-server) @ `2026-10-29 (branch tip at catalogue time)` |
@@ -920,6 +923,7 @@ _Generated 2026-11-24 04:12 UTC · 1098 entries · 286 vendored, 812 reference-o
 | [Freeciv — networking](entries/netcode/freeciv-common-networking/README.md) | turn-based client/server protocol and packet layer | c | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756d5b07` |
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
+| [Game-NET](entries/netcode/sp4cerat-game-net/README.md) | RPC Network Library for Multiplayer Games | c++ | MIT | reference | [sp4cerat/Game-NET](https://github.com/sp4cerat/Game-NET) @ `2015-11-06 (branch tip at catalogue time)` |
 | [GameFrameX.Server](entries/netcode/gameframex-gameframex-server/README.md) | High-performance game server framework built on C# .NET 10.0 with Actor Model architecture, hot-update support, multi-protocol networking (TCP/WebSocket/HTTP/KC | c# | Apache-2.0 | reference | [GameFrameX/GameFrameX.Server](https://github.com/GameFrameX/GameFrameX.Server) @ `2026-11-20 (branch tip at catalogue time)` |
 | [gamend](entries/netcode/appsinacup-gamend/README.md) | Open source Elixir game server with authentication, users, lobbies, groups, parties, friends, chat, notifications, achievements, leaderboards, tournaments, paym | elixir | MIT | reference | [appsinacup/gamend](https://github.com/appsinacup/gamend) @ `2026-11-22 (branch tip at catalogue time)` |
 | [GameNetworkingSockets](entries/netcode/gamenetworkingsockets/README.md) | reliable/unreliable encrypted message transport (Valve) | c++ | BSD-3-Clause | vendored | [ValveSoftware/GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) @ `d534c19aa760` |
@@ -957,6 +961,7 @@ _Generated 2026-11-24 04:12 UTC · 1098 entries · 286 vendored, 812 reference-o
 | [netcode.io](entries/netcode/netcode-io/README.md) | secure UDP connection protocol with token auth | c | BSD-3-Clause | vendored | [mas-bandwidth/netcode](https://github.com/mas-bandwidth/netcode) @ `2d9df60853a6` |
 | [netplayjs](entries/netcode/rameshvarun-netplayjs/README.md) | Make P2P multiplayer browser games, no server hosting or synchronization code required. Powered by rollback netcode + WebRTC. | typescript | ISC | vendored | [rameshvarun/netplayjs](https://github.com/rameshvarun/netplayjs) @ `c6f888a65d49` |
 | [NettyGameServer](entries/netcode/jwpttcg66-nettygameserver/README.md) | 使用netty4.X实现的手机游戏分布式服务器,支持tcp,udp,http,websocket链接，采用protobuf自定义协议栈进行网络通信,支持rpc远程调用,使用mybatis3支持db存储分库分表，支持异步mysql存储，db保存时同步更新reids缓存。 使用ExcelToCode工程，将excel数据生 | java | GPL-3.0 | reference | [jwpttcg66/NettyGameServer](https://github.com/jwpttcg66/NettyGameServer) @ `2026-04-14 (branch tip at catalogue time)` |
+| [NFrame](entries/netcode/ketoo-nframe/README.md) | A fast, scalable, distributed game server framework for C++, include actor library, network library,can be used as a  real time multiplayer game engine ( MMO RP | c# | Apache-2.0 | reference | [ketoo/NFrame](https://github.com/ketoo/NFrame) @ `2018-01-23 (branch tip at catalogue time)` |
 | [node-js-game-server](entries/netcode/huytd-node-js-game-server/README.md) | Easy to use Multiplayer Game Server based on Node.JS. Suitable with HTML5 Websocket, Unity3D (Web/PC, Android, iOS,...), Flash, C++/OpenGL/DirectX, XNA clients, | javascript | unknown | reference | [huytd/node-js-game-server](https://github.com/huytd/node-js-game-server) @ `2013-10-15 (branch tip at catalogue time)` |
 | [online-chess](entries/netcode/hulang1024-online-chess/README.md) | Chess game website client and server. | typescript | MIT | vendored | [hulang1024/online-chess](https://github.com/hulang1024/online-chess) @ `6e4db9c01034` |
 | [open_spiel — session](entries/netcode/open-spiel-session/README.md) | network transport, protocol, replication or server loop | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
@@ -991,6 +996,7 @@ _Generated 2026-11-24 04:12 UTC · 1098 entries · 286 vendored, 812 reference-o
 | [TF.EX](entries/netcode/fcornaire-tf-ex/README.md) | Rollback netcode for TowerFall | c# | GPL-3.0 | reference | [Fcornaire/TF.EX](https://github.com/Fcornaire/TF.EX) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Tolmachev-Netcode-SDK](entries/netcode/billionerleha-111-tolmachev-netcode-sdk/README.md) | Official TolmachЁv Netcode SDK v36.0.0. Deterministic synchronization, Zero Client-Side Prediction, and topological mathematics for MFT, GameDev, and IoT. | n/a | none | reference | [billionerleha-111/Tolmachev-Netcode-SDK](https://github.com/billionerleha-111/Tolmachev-Netcode-SDK) @ `e7bc77856fb7` |
 | [UnityUnetMovement](entries/netcode/genasg-unityunetmovement/README.md) | This repository contains Unity3d unet based server-authoritative movement script with client-side prediction and reconciliation   | c# | MIT | vendored | [GenaSG/UnityUnetMovement](https://github.com/GenaSG/UnityUnetMovement) @ `927f772cfb1a` |
+| [urchinEngine](entries/netcode/petitg1987-urchinengine/README.md) | Game engine library: 3D, Physics, Sound, Network, IA, Map Editor | c++ | unknown | reference | [petitg1987/urchinEngine](https://github.com/petitg1987/urchinEngine) @ `2026-11-11 (branch tip at catalogue time)` |
 | [VCMI — server](entries/netcode/vcmi-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [voidstrike](entries/netcode/braedonsaunders-voidstrike/README.md) | Multiplayer real-time strategy game running entirely in the browser. WebGPU graphics, serverless P2P networking via WebRTC/Nostr, deterministic lockstep simulat | typescript | MIT | reference | [braedonsaunders/voidstrike](https://github.com/braedonsaunders/voidstrike) @ `4df0235116b7` |
 | [voldorium](entries/netcode/enrique363-voldorium/README.md) | Native Windows and Linux port of SoulCalibur (Dreamcast) by static recompilation: 16:9, online versus with rollback netcode (Windows and Linux play together). R | c | unknown | reference | [enrique363/voldorium](https://github.com/enrique363/voldorium) @ `2026-11-14 (branch tip at catalogue time)` |
