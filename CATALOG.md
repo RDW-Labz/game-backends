@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 11:49 UTC · 1222 entries · 316 vendored, 906 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 12:05 UTC · 1228 entries · 317 vendored, 911 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 415 | 94 | 321 |
+| [engines](#engines) — Game engines and engine subsystems | 421 | 95 | 326 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 11:49 UTC · 1222 entries · 316 vendored, 906 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 415 entries
+**Game engines and engine subsystems** — 421 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -26,6 +26,7 @@ _Generated 2026-11-24 11:49 UTC · 1222 entries · 316 vendored, 906 reference-o
 | [AbyssEngine](entries/engines/opendiablo2-abyssengine/README.md) | A 2D ARPG game engine. | go | GPL-3.0 | reference | [OpenDiablo2/AbyssEngine](https://github.com/OpenDiablo2/AbyssEngine) @ `2025-12-05 (branch tip at catalogue time)` |
 | [Acid](entries/engines/eqmg-acid/README.md) | A high speed C++17 Vulkan game engine | c++ | MIT | reference | [EQMG/Acid](https://github.com/EQMG/Acid) @ `2023-09-21 (branch tip at catalogue time)` |
 | [ActionRoguelike](entries/engines/tomlooman-actionroguelike/README.md) | Project Orion - Co-op Action Roguelike in Unreal Engine C++ | c++ | none | reference | [tomlooman/ActionRoguelike](https://github.com/tomlooman/ActionRoguelike) @ `b7aef7d0f8ef` |
+| [ActionRPGGame](entries/engines/iniside-actionrpggame/README.md) | Unreal Engine 4 Action RPG type game starter kit. | c++ | Apache-2.0 | vendored | [iniside/ActionRPGGame](https://github.com/iniside/ActionRPGGame) @ `71eafc21f86b` |
 | [AdMobBuddy](entries/engines/dmanning23-admobbuddy/README.md) | Library for viewing AdMob ads into a Xamarin.Android, Xamarin.iOS, and MonoGame apps | c# | MIT | reference | [dmanning23/AdMobBuddy](https://github.com/dmanning23/AdMobBuddy) @ `2022-02-15 (branch tip at catalogue time)` |
 | [advjs](entries/engines/yunyoujun-advjs/README.md) | 🎮 ADV.JS Web AVG Engine 面向未来与前端的文字冒险游戏引擎（WIP） | typescript | MPL-2.0 | reference | [YunYouJun/advjs](https://github.com/YunYouJun/advjs) @ `2026-11-20 (branch tip at catalogue time)` |
 | [aframe](entries/engines/aframevr-aframe/README.md) | :a: Web framework for building virtual reality experiences. | javascript | MIT | reference | [aframevr/aframe](https://github.com/aframevr/aframe) @ `2026-07-13 (branch tip at catalogue time)` |
@@ -152,6 +153,7 @@ _Generated 2026-11-24 11:49 UTC · 1222 entries · 316 vendored, 906 reference-o
 | [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
 | [ezEngine](entries/engines/ezengine-ezengine/README.md) | An open source C++ game engine. | c++ | MIT | reference | [ezEngine/ezEngine](https://github.com/ezEngine/ezEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [F8Framework](entries/engines/tippinggame-f8framework/README.md) | F8 Framework是一个优雅，轻量，符合直觉的基于Unity引擎的游戏框架，组件围绕F8一键启动，框架整体遵循以极少的使用成本开发游戏。F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity  | c# | MIT | reference | [TippingGame/F8Framework](https://github.com/TippingGame/F8Framework) @ `2026-09-15 (branch tip at catalogue time)` |
+| [falltergeist](entries/engines/falltergeist-falltergeist/README.md) | Opensource crossplatform Fallout 2™ game engine writen in C++ and SDL. | c++ | GPL-3.0 | reference | [falltergeist/falltergeist](https://github.com/falltergeist/falltergeist) @ `2023-01-05 (branch tip at catalogue time)` |
 | [FarseerPhysics.Portable](entries/engines/craftworkgames-farseerphysics-portable/README.md) | Farseer Physics compiled as a portable class library (PCL) against the PCL version of MonoGame | c# | Zlib | vendored | [craftworkgames/FarseerPhysics.Portable](https://github.com/craftworkgames/FarseerPhysics.Portable) @ `966732fa972e` |
 | [feldspar](entries/engines/bonsairobo-feldspar/README.md) | Procedural voxel worlds for Bevy Engine. | rust | MIT | reference | [bonsairobo/feldspar](https://github.com/bonsairobo/feldspar) @ `2022-08-13 (branch tip at catalogue time)` |
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -243,6 +245,7 @@ _Generated 2026-11-24 11:49 UTC · 1222 entries · 316 vendored, 906 reference-o
 | [libgdx-demos](entries/engines/alistairrutherford-libgdx-demos/README.md) | LibGDX Demos using my LibGDX Scene2D netthreads-libgdx extension library. | java | unknown | reference | [alistairrutherford/libgdx-demos](https://github.com/alistairrutherford/libgdx-demos) @ `2016-11-27 (branch tip at catalogue time)` |
 | [libgdx-inGameConsole](entries/engines/strongjoshua-libgdx-ingameconsole/README.md) | A LibGdx library that allows a developer to add a console (similar to how it is featured in Source games) to their game. | java | Apache-2.0 | vendored | [StrongJoshua/libgdx-inGameConsole](https://github.com/StrongJoshua/libgdx-inGameConsole) @ `6ef713ee3fe2` |
 | [Librian](entries/engines/rimochan-librian/README.md) | 【Librian】簡明強大的 Galgame / Visual Novel 引擎 | python | MPL-2.0 | reference | [RimoChan/Librian](https://github.com/RimoChan/Librian) @ `2026-09-05 (branch tip at catalogue time)` |
+| [LinaEngine](entries/engines/inanevin-linaengine/README.md) | Lina Engine is an open-source , modular, tiny and fast C++ game engine, aimed to develop 3D desktop games. | c++ | unknown | reference | [inanevin/LinaEngine](https://github.com/inanevin/LinaEngine) @ `2025-10-08 (branch tip at catalogue time)` |
 | [lionengine](entries/engines/b3dgs-lionengine/README.md) | Java 2D Game Engine | python | GPL-3.0 | reference | [b3dgs/lionengine](https://github.com/b3dgs/lionengine) @ `4f7778642e26` |
 | [Lisien](entries/engines/tacticalmetaphysics-lisien/README.md) | Rules-based engine for life sims, with time travel | python | AGPL-3.0 | reference | [TacticalMetaphysics/Lisien](https://github.com/TacticalMetaphysics/Lisien) @ `2026-03-01 (branch tip at catalogue time)` |
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
@@ -287,6 +290,7 @@ _Generated 2026-11-24 11:49 UTC · 1222 entries · 316 vendored, 906 reference-o
 | [openage](entries/engines/sfttech-openage/README.md) | Clone of the Age of Empires II engine 🚀  | python | unknown | reference | [SFTtech/openage](https://github.com/SFTtech/openage) @ `2026-11-22 (branch tip at catalogue time)` |
 | [OpenAI-Unity](entries/engines/srcnalt-openai-unity/README.md) | An unofficial OpenAI Unity Package that aims to help you use OpenAI API directly in Unity Game engine. | c# | MIT | reference | [srcnalt/OpenAI-Unity](https://github.com/srcnalt/OpenAI-Unity) @ `2024-11-27 (branch tip at catalogue time)` |
 | [openblack](entries/engines/openblack-openblack/README.md) | openblack is an open-source game engine that supports playing Black & White (2001). | c++ | GPL-3.0 | reference | [openblack/openblack](https://github.com/openblack/openblack) @ `744c0febf53b` |
+| [OpenEnroth](entries/engines/openenroth-openenroth/README.md) | Open reimplementation of Might and Magic 6 7 8 game engine | c++ | LGPL-3.0 | reference | [OpenEnroth/OpenEnroth](https://github.com/OpenEnroth/OpenEnroth) @ `2026-11-24 (branch tip at catalogue time)` |
 | [OpenGameAgent](entries/engines/ericsun0218-opengameagent/README.md) | MIT-licensed TypeScript runtime for AI-native game characters and worlds, with durable state, reliable actions, memory, tools, and Unity, Godot, and Unreal Engi | typescript | MIT | vendored | [EricSun0218/OpenGameAgent](https://github.com/EricSun0218/OpenGameAgent) @ `06294f101b5d` |
 | [openmw](entries/engines/openmw-openmw/README.md) | OpenMW is an open-source open-world RPG game engine that supports playing Morrowind. Main repo and issue tracker can be found here: https://gitlab.com/OpenMW/op | c++ | GPL-3.0 | reference | [OpenMW/openmw](https://github.com/OpenMW/openmw) @ `77eec0471802` |
 | [OpenRA](entries/engines/openra-openra/README.md) | Open Source real-time strategy game engine for early Westwood games such as Command & Conquer: Red Alert written in C# using SDL and OpenGL. Runs on Windows, Li | c# | GPL-3.0 | reference | [OpenRA/OpenRA](https://github.com/OpenRA/OpenRA) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -319,6 +323,7 @@ _Generated 2026-11-24 11:49 UTC · 1222 entries · 316 vendored, 906 reference-o
 | [planck_ecs](entries/engines/annekitsune-planck-ecs/README.md) | A minimalist and safe ECS library for rust! | rust | Apache-2.0 | vendored | [AnneKitsune/planck_ecs](https://github.com/AnneKitsune/planck_ecs) @ `b0b496643541` |
 | [Plumber](entries/engines/lasa01-plumber/README.md) | A Blender addon for importing Source 1 engine maps, models, materials and textures.  This addon makes it possible to import full CS:GO, TF2, CS:S or other Sourc | rust | GPL-3.0 | reference | [lasa01/Plumber](https://github.com/lasa01/Plumber) @ `2026-06-13 (branch tip at catalogue time)` |
 | [ply-engine](entries/engines/thereddeveloper-ply-engine/README.md) | Beautiful UIs in Rust. Cross-platform. Dead simple. | rust | 0BSD | reference | [TheRedDeveloper/ply-engine](https://github.com/TheRedDeveloper/ply-engine) @ `2026-08-31 (branch tip at catalogue time)` |
+| [pmtech](entries/engines/polymonster-pmtech/README.md) | Lightweight, multi-platform, data-oriented game engine. | c++ | MIT | reference | [polymonster/pmtech](https://github.com/polymonster/pmtech) @ `2026-10-25 (branch tip at catalogue time)` |
 | [pokewilds](entries/engines/sheerst-pokewilds/README.md) | PokeWilds - A Gen 2 Game/Engine using libGDX | assembly | unknown | reference | [SheerSt/pokewilds](https://github.com/SheerSt/pokewilds) @ `2026-08-16 (branch tip at catalogue time)` |
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
@@ -347,6 +352,7 @@ _Generated 2026-11-24 11:49 UTC · 1222 entries · 316 vendored, 906 reference-o
 | [RuntimeUnityEditor](entries/engines/manlymarco-runtimeunityeditor/README.md) | In-game inspector and debugging tools for applications made with Unity3D game engine | c# | GPL-3.0 | reference | [ManlyMarco/RuntimeUnityEditor](https://github.com/ManlyMarco/RuntimeUnityEditor) @ `1ce168c7acfd` |
 | [rust-invaders](entries/engines/jeremychone-channel-rust-invaders/README.md) | Simple RUST game with the Bevy Engine | rust | Apache-2.0 | vendored | [jeremychone-channel/rust-invaders](https://github.com/jeremychone-channel/rust-invaders) @ `af246691ea08` |
 | [Sakuga-Engine](entries/engines/noisychain-sakuga-engine/README.md) | A fighting game engine made for Godot 4 written in C# | c# | MIT | vendored | [NoisyChain/Sakuga-Engine](https://github.com/NoisyChain/Sakuga-Engine) @ `866ce24da7c2` |
+| [SakuraEngine](entries/engines/sakuraengine-sakuraengine/README.md) | 为高性能而生的游戏运行时与工具箱 | c++ | MIT | reference | [SakuraEngine/SakuraEngine](https://github.com/SakuraEngine/SakuraEngine) @ `c0fdb2bb3007` |
 | [SanAndreasUnity](entries/engines/in0finite-sanandreasunity/README.md) | Open source reimplementation of GTA San Andreas game engine in Unity | c# | MIT | reference | [in0finite/SanAndreasUnity](https://github.com/in0finite/SanAndreasUnity) @ `2023-06-16 (branch tip at catalogue time)` |
 | [sbox-public](entries/engines/facepunch-sbox-public/README.md) | s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games | c# | unknown | reference | [Facepunch/sbox-public](https://github.com/Facepunch/sbox-public) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Serious-Engine](entries/engines/croteam-official-serious-engine/README.md) | An open source version of a game engine developed by Croteam for the classic Serious Sam games. | c++ | GPL-2.0 | reference | [Croteam-official/Serious-Engine](https://github.com/Croteam-official/Serious-Engine) @ `2020-10-31 (branch tip at catalogue time)` |

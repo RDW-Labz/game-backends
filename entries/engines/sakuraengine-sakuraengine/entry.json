@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T12:05:17Z",
+ "category": "engines",
+ "commit": "c0fdb2bb3007",
+ "delivery": "reference",
+ "description": "SakuraEngine/SakuraEngine \u2014 \u4e3a\u9ad8\u6027\u80fd\u800c\u751f\u7684\u6e38\u620f\u8fd0\u884c\u65f6\u4e0e\u5de5\u5177\u7bb1",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "SakuraEngine",
+ "reference_reason": "size gate: 145 MB",
+ "size_bytes": 153064303,
+ "slug": "sakuraengine-sakuraengine",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 928,
+ "system": "\u4e3a\u9ad8\u6027\u80fd\u800c\u751f\u7684\u6e38\u620f\u8fd0\u884c\u65f6\u4e0e\u5de5\u5177\u7bb1",
+ "upstream": "https://github.com/SakuraEngine/SakuraEngine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

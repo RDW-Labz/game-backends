@@ -2633,3 +2633,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/gemrb-gemrb
   - reference engines/inexorgame-vulkan-renderer
   - reference engines/asc-community-mxengine
+
+- **2026-11-24 12:05 UTC** — tick 784: +2 screened, +4 reference, 7 skipped, catalogue=1228
+  - added engines/iniside-actionrpggame (Apache-2.0, vendored)
+  - added engines/sakuraengine-sakuraengine (MIT, reference)
+  - reference engines/polymonster-pmtech
+  - reference engines/inanevin-linaengine
+  - reference engines/openenroth-openenroth
+  - reference engines/falltergeist-falltergeist

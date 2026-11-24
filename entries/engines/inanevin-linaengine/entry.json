@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:05:18Z",
+ "category": "engines",
+ "commit": "2025-10-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "inanevin/LinaEngine \u2014 Lina Engine is an open-source , modular, tiny and fast C++ game engine, aimed to develop 3D desktop games.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "LinaEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "inanevin-linaengine",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 899,
+ "system": "Lina Engine is an open-source , modular, tiny and fast C++ game engine, aimed to develop 3D desktop games.",
+ "upstream": "https://github.com/inanevin/LinaEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

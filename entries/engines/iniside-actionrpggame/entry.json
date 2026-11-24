@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T12:05:12Z",
+ "category": "engines",
+ "commit": "71eafc21f86b",
+ "delivery": "vendored",
+ "description": "iniside/ActionRPGGame \u2014 Unreal Engine 4 Action RPG type game starter kit.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "sdk.cc",
+ "license_verdict": "clean",
+ "name": "ActionRPGGame",
+ "size_bytes": 1217212,
+ "slug": "iniside-actionrpggame",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1038,
+ "system": "Unreal Engine 4 Action RPG type game starter kit.",
+ "upstream": "https://github.com/iniside/ActionRPGGame",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

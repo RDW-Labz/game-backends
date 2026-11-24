@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:05:18Z",
+ "category": "engines",
+ "commit": "2023-01-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "falltergeist/falltergeist \u2014 Opensource crossplatform Fallout 2\u2122 game engine writen in C++ and SDL.",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "falltergeist",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "falltergeist-falltergeist",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 883,
+ "system": "Opensource crossplatform Fallout 2\u2122 game engine writen in C++ and SDL.",
+ "upstream": "https://github.com/falltergeist/falltergeist",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
