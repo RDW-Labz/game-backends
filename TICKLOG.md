@@ -2419,3 +2419,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/openboxes-openboxes
   - reference gameplay/fahimanzamdip-triangle-pos
   - reference gameplay/expressobits-inventory-system
+
+- **2026-11-24 02:52 UTC** — tick 750: +2 screened, +4 reference, 9 skipped, catalogue=1074
+  - added gameplay/stemword-php-inventory-management-system (MIT, vendored)
+  - added gameplay/farrokhgames-inventory (MIT, vendored)
+  - reference gameplay/adammyhre-unity-inventory-system
+  - reference gameplay/heymity-universalinventorysystem
+  - reference gameplay/mamun724682-inventory-management-system-laravel-spa
+  - reference gameplay/uxkero-anydesign

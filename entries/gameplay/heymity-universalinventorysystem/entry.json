@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:52:08Z",
+ "category": "gameplay",
+ "commit": "2024-03-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Heymity/UniversalInventorySystem \u2014 A Unity Package for creating easy to use and highly customizable inventories and inventory`s UI",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "UniversalInventorySystem",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "heymity-universalinventorysystem",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 280,
+ "system": "A Unity Package for creating easy to use and highly customizable inventories and inventory`s UI",
+ "upstream": "https://github.com/Heymity/UniversalInventorySystem",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T02:52:04Z",
+ "category": "gameplay",
+ "commit": "862705a9724a",
+ "delivery": "vendored",
+ "description": "stemword/php-inventory-management-system \u2014 Open source inventory management system with php and mysql Invoice generation and easy to download invoice in PDF format Lightweight and easy to use Order management and product management can be done with ease Report management User wise sell report.",
+ "language": "php",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "php-inventory-management-system",
+ "size_bytes": 3279373,
+ "slug": "stemword-php-inventory-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 294,
+ "system": "Open source inventory management system with php and mysql Invoice generation and easy to download invoice in PDF format Lightweight and easy to use Order manag",
+ "upstream": "https://github.com/stemword/php-inventory-management-system",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

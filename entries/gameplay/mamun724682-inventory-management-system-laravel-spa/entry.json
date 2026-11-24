@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:52:08Z",
+ "category": "gameplay",
+ "commit": "2024-11-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mamun724682/Inventory-Management-System-Laravel-SPA \u2014 An Inventory and Sales Management System using Laravel 10, Inertia, Vue js (SPA)",
+ "language": "php",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Inventory-Management-System-Laravel-SPA",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mamun724682-inventory-management-system-laravel-spa",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 272,
+ "system": "An Inventory and Sales Management System using Laravel 10, Inertia, Vue js (SPA)",
+ "upstream": "https://github.com/mamun724682/Inventory-Management-System-Laravel-SPA",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

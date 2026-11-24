@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:52:08Z",
+ "category": "gameplay",
+ "commit": "2026-09-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "uxKero/anydesign \u2014 Claude skill that analyzes images, websites, and Figma files and generates a structured design.md with token system, component inventory, and reconstruction notes.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "anydesign",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "uxkero-anydesign",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 251,
+ "system": "Claude skill that analyzes images, websites, and Figma files and generates a structured design.md with token system, component inventory, and reconstruction not",
+ "upstream": "https://github.com/uxKero/anydesign",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

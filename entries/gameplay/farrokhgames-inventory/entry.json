@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T02:52:06Z",
+ "category": "gameplay",
+ "commit": "174f55d1d03c",
+ "delivery": "vendored",
+ "description": "FarrokhGames/Inventory \u2014 A Diablo 2-style inventory system for Unity3D",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Inventory",
+ "size_bytes": 98752,
+ "slug": "farrokhgames-inventory",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 284,
+ "system": "A Diablo 2-style inventory system for Unity3D",
+ "upstream": "https://github.com/FarrokhGames/Inventory",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
