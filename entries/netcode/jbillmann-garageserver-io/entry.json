@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T05:00:04Z",
+ "category": "netcode",
+ "commit": "6b40ed8a8dbb",
+ "delivery": "vendored",
+ "description": "jbillmann/GarageServer.IO \u2014 A simple, lightweight, HTML multiplayer game server (and client) for Node.js",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "GarageServer.IO",
+ "size_bytes": 131602,
+ "slug": "jbillmann-garageserver-io",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 181,
+ "system": "A simple, lightweight, HTML multiplayer game server (and client) for Node.js",
+ "upstream": "https://github.com/jbillmann/GarageServer.IO",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

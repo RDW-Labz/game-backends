@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:00:13Z",
+ "category": "netcode",
+ "commit": "2026-10-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "PlayFab/gsdk \u2014 Game Server SDK for PlayFab Multiplayer Servers",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "gsdk",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "playfab-gsdk",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 170,
+ "system": "Game Server SDK for PlayFab Multiplayer Servers",
+ "upstream": "https://github.com/PlayFab/gsdk",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

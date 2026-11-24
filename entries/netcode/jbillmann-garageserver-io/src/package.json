@@ -1,0 +1,29 @@
+{
+  "name": "garageserver.io",
+  "description": "A simple, lightweight, HTML multiplayer game server (and client) for Node.js",
+  "author": {
+    "name": "Jeremiah Billmann",
+    "email": "jcbillmann@yahoo.com"
+  },
+  "version": "0.6.0",
+  "homepage": "https://github.com/jbillmann/GarageServer.IO",
+  "license" : "MIT",
+  "keywords": [
+    "game",
+    "server",
+    "client",
+    "multiplayer",
+    "socket",
+    "html",
+    "api"
+  ],
+  "dependencies": {},
+  "main": "./lib/garageserver.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jbillmann/GarageServer.IO.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jbillmann/GarageServer.IO/issues"
+  }
+}

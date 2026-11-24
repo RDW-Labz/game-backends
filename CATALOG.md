@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 04:44 UTC · 1110 entries · 288 vendored, 822 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 05:00 UTC · 1116 entries · 289 vendored, 827 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-24 04:44 UTC · 1110 entries · 288 vendored, 822 reference-o
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
-| [netcode](#netcode) — Networking / netcode | 126 | 37 | 89 |
+| [netcode](#netcode) — Networking / netcode | 132 | 38 | 94 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
@@ -884,11 +884,12 @@ _Generated 2026-11-24 04:44 UTC · 1110 entries · 288 vendored, 822 reference-o
 
 ## netcode
 
-**Networking / netcode** — 126 entries
+**Networking / netcode** — 132 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [-SKYNET-Steam-Emulator](entries/netcode/hackerprod-skynet-steam-emulator/README.md) | LAN-first Steam emulator: Steamworks API client emulation + server-side Game Coordinator (Dota 2 lobbies/parties/match stats), for full offline multiplayer with | c# | MIT | vendored | [Hackerprod/-SKYNET-Steam-Emulator](https://github.com/Hackerprod/-SKYNET-Steam-Emulator) @ `158f2c91e8d3` |
+| [acr](entries/netcode/acreloaded-acr/README.md) | AssaultCube Reloaded (first-person-shooter game) | c | unknown | reference | [acreloaded/acr](https://github.com/acreloaded/acr) @ `2026-10-21 (branch tip at catalogue time)` |
 | [agones](entries/netcode/agones-dev-agones/README.md) | Dedicated Game Server Hosting and Scaling for Multiplayer Games on Kubernetes | go | Apache-2.0 | reference | [agones-dev/agones](https://github.com/agones-dev/agones) @ `a71420b2b34a` |
 | [ancientbeast — multiplayer](entries/netcode/ancientbeast-multiplayer/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [arcomage-hd](entries/netcode/arcomage-arcomage-hd/README.md) | Web-based, free and open source, remastered 3D clone of 3DO/NWC's 2000 card game Arcomage. 16 languages. Desktop or mobile Android iOS. Online or offline PWA. A | typescript | MIT | reference | [arcomage/arcomage-hd](https://github.com/arcomage/arcomage-hd) @ `2025-11-15 (branch tip at catalogue time)` |
@@ -896,6 +897,7 @@ _Generated 2026-11-24 04:44 UTC · 1110 entries · 288 vendored, 822 reference-o
 | [AuthoritativeMovementExample](entries/netcode/relic-authoritativemovementexample/README.md) | An example of authoritative server movement using Forge Networking Remastered for Unity. | c# | MIT | vendored | [Relic/AuthoritativeMovementExample](https://github.com/Relic/AuthoritativeMovementExample) @ `e4922771b2a7` |
 | [Backdash](entries/netcode/delta3-studio-backdash/README.md) | C# Rollback network SDK | c# | MIT | reference | [Delta3-Studio/Backdash](https://github.com/Delta3-Studio/Backdash) @ `2026-11-10 (branch tip at catalogue time)` |
 | [backroll-rs](entries/netcode/houraiteahouse-backroll-rs/README.md) | A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode. | rust | ISC | reference | [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) @ `2023-03-13 (branch tip at catalogue time)` |
+| [Battlefield-1943-Reborn](entries/netcode/tekrantgaming-battlefield-1943-reborn/README.md) | Battlefield 1943 Reborn: the Xbox 360 game running natively on PC, with its online multiplayer restored. Releases and server packages. | c++ | MIT | reference | [TekRantGaming/Battlefield-1943-Reborn](https://github.com/TekRantGaming/Battlefield-1943-Reborn) @ `2026-11-24 (branch tip at catalogue time)` |
 | [BeamMP-Server](entries/netcode/beammp-beammp-server/README.md) | Server for the multiplayer mod BeamMP for BeamNG.drive | c++ | AGPL-3.0 | reference | [BeamMP/BeamMP-Server](https://github.com/BeamMP/BeamMP-Server) @ `2026-09-23 (branch tip at catalogue time)` |
 | [BestoNet](entries/netcode/bestogames-bestonet/README.md) | BestoNet is a custom rollback networking solution developed for the fighting game Idol Showdown. Built in C# for Unity, it integrates with Facepunch Steamworks  | c# | MIT | reference | [BestoGames/BestoNet](https://github.com/BestoGames/BestoNet) @ `2026-06-02 (branch tip at catalogue time)` |
 | [bevy_gaff](entries/netcode/johanhelsing-bevy-gaff/README.md) | a networked (p2p), cross-platform physics simulation example using rollback netcode | rust | Apache-2.0 | reference | [johanhelsing/bevy_gaff](https://github.com/johanhelsing/bevy_gaff) @ `2023-10-22 (branch tip at catalogue time)` |
@@ -930,6 +932,7 @@ _Generated 2026-11-24 04:44 UTC · 1110 entries · 288 vendored, 822 reference-o
 | [gamend](entries/netcode/appsinacup-gamend/README.md) | Open source Elixir game server with authentication, users, lobbies, groups, parties, friends, chat, notifications, achievements, leaderboards, tournaments, paym | elixir | MIT | reference | [appsinacup/gamend](https://github.com/appsinacup/gamend) @ `2026-11-22 (branch tip at catalogue time)` |
 | [GameNetworkingSockets](entries/netcode/gamenetworkingsockets/README.md) | reliable/unreliable encrypted message transport (Valve) | c++ | BSD-3-Clause | vendored | [ValveSoftware/GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) @ `d534c19aa760` |
 | [GameProject3](entries/netcode/ylmbtm-gameproject3/README.md) | 游戏服务器框架，网络层分别用SocketAPI、Boost Asio、Libuv三种方式实现， 框架内使用共享内存，无锁队列，对象池，内存池来提高服务器性能。还包含一个不断完善的Unity 3D客户端，客户端含大量完整资源，坐骑，宠物，伙伴，装备, 这些均己实现上阵和穿戴, 并可进入副本战斗，多人玩法也己实现, 持续开 | c++ | unknown | reference | [ylmbtm/GameProject3](https://github.com/ylmbtm/GameProject3) @ `2025-04-28 (branch tip at catalogue time)` |
+| [GarageServer.IO](entries/netcode/jbillmann-garageserver-io/README.md) | A simple, lightweight, HTML multiplayer game server (and client) for Node.js | javascript | MIT | vendored | [jbillmann/GarageServer.IO](https://github.com/jbillmann/GarageServer.IO) @ `6b40ed8a8dbb` |
 | [GekkoNet](entries/netcode/heatxd-gekkonet/README.md) | P2P Rollback Game Networking SDK | c++ | BSD-2-Clause | vendored | [HeatXD/GekkoNet](https://github.com/HeatXD/GekkoNet) @ `45dac7e50fd3` |
 | [GGRS](entries/netcode/ggrs/README.md) | rollback netcode (GGPO-style) in Rust with WASM support | rust | Apache-2.0 | vendored | [gschup/ggrs](https://github.com/gschup/ggrs) @ `25bd9983dee3` |
 | [godot-mcp-enhanced](entries/netcode/wgt19861219-godot-mcp-enhanced/README.md) | Enhanced MCP server for Godot 4.5-4.7: 33 tools / 199 actions, 3-layer architecture (headless + editor + game bridge), secure sandbox, recording & frame-verify, | typescript | MIT | reference | [wgt19861219/godot-mcp-enhanced](https://github.com/wgt19861219/godot-mcp-enhanced) @ `9cc3b70ec11b` |
@@ -939,6 +942,7 @@ _Generated 2026-11-24 04:44 UTC · 1110 entries · 288 vendored, 822 reference-o
 | [godot-tiny-mmo](entries/netcode/slayhorizon-godot-tiny-mmo/README.md) | Open-source cross-platform MMORPG built with Godot 4 | gdscript | MIT | vendored | [SlayHorizon/godot-tiny-mmo](https://github.com/SlayHorizon/godot-tiny-mmo) @ `f4ed04f20963` |
 | [gogs](entries/netcode/metagogs-gogs/README.md) | gogs is a simple, fast and lightweight game server framework written in golang | go | Apache-2.0 | reference | [metagogs/gogs](https://github.com/metagogs/gogs) @ `2026-09-08 (branch tip at catalogue time)` |
 | [GopherGameServer](entries/netcode/hewiefreeman-gophergameserver/README.md) | :trophy: Feature packed, easy-to-use game server API for Go back-ends and Javascript clients. Tutorials and examples included! | go | Apache-2.0 | reference | [hewiefreeman/GopherGameServer](https://github.com/hewiefreeman/GopherGameServer) @ `2024-03-29 (branch tip at catalogue time)` |
+| [gsdk](entries/netcode/playfab-gsdk/README.md) | Game Server SDK for PlayFab Multiplayer Servers | c++ | Apache-2.0 | reference | [PlayFab/gsdk](https://github.com/PlayFab/gsdk) @ `2026-10-08 (branch tip at catalogue time)` |
 | [haxbotron](entries/netcode/dapucita-haxbotron/README.md) | Haxbotron is a headless host server for Haxball game. | typescript | MIT | reference | [dapucita/haxbotron](https://github.com/dapucita/haxbotron) @ `2023-01-06 (branch tip at catalogue time)` |
 | [Hercules](entries/netcode/herculesws-hercules/README.md) | Hercules is a collaborative software development project revolving around the creation of a robust massively multiplayer online role playing game (MMORPG) serve | c++ | GPL-3.0 | reference | [HerculesWS/Hercules](https://github.com/HerculesWS/Hercules) @ `6af607094184` |
 | [hypersomnia — network](entries/netcode/hypersomnia-network/README.md) | network transport, protocol, replication or server loop | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
@@ -954,6 +958,7 @@ _Generated 2026-11-24 04:44 UTC · 1110 entries · 288 vendored, 822 reference-o
 | [lightyear](entries/netcode/cbournhonesque-lightyear/README.md) | A networking library to make multiplayer games for the Bevy game engine | rust | Apache-2.0 | reference | [cBournhonesque/lightyear](https://github.com/cBournhonesque/lightyear) @ `2026-11-05 (branch tip at catalogue time)` |
 | [lobby](entries/netcode/flackr-lobby/README.md) | A multiplayer game lobby and JS library for discovering game servers and making connections. | typescript | Apache-2.0 | reference | [flackr/lobby](https://github.com/flackr/lobby) @ `2026-02-28 (branch tip at catalogue time)` |
 | [LockStepECS](entries/netcode/elk-milu-lockstepecs/README.md) | A ESC FrameWork，using lockstep in networking | c# | unknown | reference | [ELK-milu/LockStepECS](https://github.com/ELK-milu/LockStepECS) @ `2025-01-03 (branch tip at catalogue time)` |
+| [master-server-toolkit](entries/netcode/aevien-master-server-toolkit/README.md) | This is a framework that allows you to create game servers and services for your game inside Unity. It allows you to avoid using third-party services such as Pl | c# | MIT | reference | [aevien/master-server-toolkit](https://github.com/aevien/master-server-toolkit) @ `2026-08-25 (branch tip at catalogue time)` |
 | [megaglest — network](entries/netcode/megaglest-network/README.md) | network transport, protocol, replication or server loop | h | none | reference | [megaglest/megaglest-source.git](https://github.com/megaglest/megaglest-source.git) @ `4ab09c6` |
 | [Mindustry — net](entries/netcode/mindustry-net/README.md) | network transport, protocol, replication or server loop | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [Mirage](entries/netcode/miragenet-mirage/README.md) | Easy to use high performance Network library for Unity 3d | c# | MIT | vendored | [MirageNet/Mirage](https://github.com/MirageNet/Mirage) @ `527d0b0f5d18` |
@@ -977,6 +982,7 @@ _Generated 2026-11-24 04:44 UTC · 1110 entries · 288 vendored, 822 reference-o
 | [OpenJK — server](entries/netcode/openjk-server/README.md) | network transport, protocol, replication or server loop | cpp | GPL-2.0 | reference | [JACoders/OpenJK.git](https://github.com/JACoders/OpenJK.git) @ `260c59c` |
 | [openmu — Network](entries/netcode/openmu-src-network/README.md) | MMO network protocol, packet handlers, encryption | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
 | [openrct2 — network](entries/netcode/openrct2-network/README.md) | network transport, protocol, replication or server loop | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
+| [paddle-soccer](entries/netcode/markmandel-paddle-soccer/README.md) | A simple, two player multiplayer game built to show how you can host dedicated game servers on Kubernetes. | c# | Apache-2.0 | reference | [markmandel/paddle-soccer](https://github.com/markmandel/paddle-soccer) @ `6dd300b30031` |
 | [phasocketonline](entries/netcode/vezwork-phasocketonline/README.md) | A server and client for a multiplayer browser game. Server in node.js, game in javascript with phaser and using socket.io for websockets. | html | MIT | reference | [vezwork/phasocketonline](https://github.com/vezwork/phasocketonline) @ `2017-12-17 (branch tip at catalogue time)` |
 | [piu-piu-SH](entries/netcode/vaniacer-piu-piu-sh/README.md) | This is an Old School horizontal scroller 'Shoot Them All' game in bash. With multiplayer modes team and duel. You have to defeat 100 aliens to fight with Boss. | shell | MIT | reference | [vaniacer/piu-piu-SH](https://github.com/vaniacer/piu-piu-SH) @ `2025-05-28 (branch tip at catalogue time)` |
 | [PlanetaMatchMaker](entries/netcode/cdecpgl-planetamatchmaker/README.md) | A very simple and light match making system for P2P online game. Server binary for linux and windows, and client library for C# including Unity are provided. | c# | MIT | vendored | [CdecPGL/PlanetaMatchMaker](https://github.com/CdecPGL/PlanetaMatchMaker) @ `4f6556aad484` |

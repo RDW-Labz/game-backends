@@ -2477,3 +2477,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/hopson97-open-builder
   - reference netcode/fmbenhassine-gamehub-io
   - reference netcode/anklebreaker-studio-unity-mcp-server
+
+- **2026-11-24 05:00 UTC** — tick 758: +2 screened, +4 reference, 10 skipped, catalogue=1116
+  - added netcode/jbillmann-garageserver-io (MIT, vendored)
+  - added netcode/markmandel-paddle-soccer (Apache-2.0, reference)
+  - reference netcode/aevien-master-server-toolkit
+  - reference netcode/playfab-gsdk
+  - reference netcode/tekrantgaming-battlefield-1943-reborn
+  - reference netcode/acreloaded-acr

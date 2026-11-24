@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:00:13Z",
+ "category": "netcode",
+ "commit": "2026-10-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "acreloaded/acr \u2014 AssaultCube Reloaded (first-person-shooter game)",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "acr",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "acreloaded-acr",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 150,
+ "system": "AssaultCube Reloaded (first-person-shooter game)",
+ "upstream": "https://github.com/acreloaded/acr",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

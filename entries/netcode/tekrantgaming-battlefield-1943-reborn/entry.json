@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:00:13Z",
+ "category": "netcode",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "TekRantGaming/Battlefield-1943-Reborn \u2014 Battlefield 1943 Reborn: the Xbox 360 game running natively on PC, with its online multiplayer restored. Releases and server packages.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Battlefield-1943-Reborn",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "tekrantgaming-battlefield-1943-reborn",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 160,
+ "system": "Battlefield 1943 Reborn: the Xbox 360 game running natively on PC, with its online multiplayer restored. Releases and server packages.",
+ "upstream": "https://github.com/TekRantGaming/Battlefield-1943-Reborn",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

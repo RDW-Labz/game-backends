@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T05:00:11Z",
+ "category": "netcode",
+ "commit": "6dd300b30031",
+ "delivery": "reference",
+ "description": "markmandel/paddle-soccer \u2014 A simple, two player multiplayer game built to show how you can host dedicated game servers on Kubernetes.",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "paddle-soccer",
+ "reference_reason": "size gate: 121 MB",
+ "size_bytes": 126998468,
+ "slug": "markmandel-paddle-soccer",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 174,
+ "system": "A simple, two player multiplayer game built to show how you can host dedicated game servers on Kubernetes.",
+ "upstream": "https://github.com/markmandel/paddle-soccer",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
