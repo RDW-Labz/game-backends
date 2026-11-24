@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 05:16 UTC · 1122 entries · 290 vendored, 832 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 05:32 UTC · 1126 entries · 291 vendored, 835 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-24 05:16 UTC · 1122 entries · 290 vendored, 832 reference-o
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
-| [netcode](#netcode) — Networking / netcode | 138 | 39 | 99 |
+| [netcode](#netcode) — Networking / netcode | 142 | 40 | 102 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
@@ -884,7 +884,7 @@ _Generated 2026-11-24 05:16 UTC · 1122 entries · 290 vendored, 832 reference-o
 
 ## netcode
 
-**Networking / netcode** — 138 entries
+**Networking / netcode** — 142 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -915,7 +915,9 @@ _Generated 2026-11-24 05:16 UTC · 1122 entries · 290 vendored, 832 reference-o
 | [DelayNoMoreUnity](entries/netcode/genxium-delaynomoreunity/README.md) | A Multiplayer Platformer game demo on websocket+UDP peer-to-peer with delayed-input Rollback Netcode inspired by GGPO | c# | none | reference | [genxium/DelayNoMoreUnity](https://github.com/genxium/DelayNoMoreUnity) @ `4e18b0f15947` |
 | [DemoFighterWithNetcode](entries/netcode/rcmagic-demofighterwithnetcode/README.md) | An example fighting game demonstrating how to implement rollback based netcode. | lua | MIT | reference | [rcmagic/DemoFighterWithNetcode](https://github.com/rcmagic/DemoFighterWithNetcode) @ `2021-05-21 (branch tip at catalogue time)` |
 | [deterministic-lockstep-demo](entries/netcode/pietrobassi-deterministic-lockstep-demo/README.md) | Deterministic lockstep networking demo running locally in the browser | typescript | MIT | vendored | [pietrobassi/deterministic-lockstep-demo](https://github.com/pietrobassi/deterministic-lockstep-demo) @ `16feeaf3b200` |
+| [DeterministicLockstepNetworking](entries/netcode/wuyuntao-deterministiclockstepnetworking/README.md) | A networking library to synchronize states of game objects across multiple devices based on deterministic lockstep protocol | c# | MIT | reference | [wuyuntao/DeterministicLockstepNetworking](https://github.com/wuyuntao/DeterministicLockstepNetworking) @ `2015-09-10 (branch tip at catalogue time)` |
 | [discord-badge-maximizer](entries/netcode/sonuworks-discord-badge-maximizer/README.md) | Discord Badge Maximizer: Max out your Discord badges effortlessly! Instantly unlock 5,000+ playtime hours & 1,000+ game titles via telemetry spoofing, and farm  | python | MIT | vendored | [sonuworks/discord-badge-maximizer](https://github.com/sonuworks/discord-badge-maximizer) @ `bd1328204a9e` |
+| [driftengine](entries/netcode/drftrun-driftengine/README.md) | A 3D game engine in strict TypeScript: WebGPU with a WebGL2 fallback, deterministic physics, animation, audio, rollback netcode, DriftScript and an editor. One  | typescript | Apache-2.0 | reference | [drftrun/driftengine](https://github.com/drftrun/driftengine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [due](entries/netcode/dobyte-due/README.md) | A High-Performance Distributed Game Server Framework in Go | go | MIT | reference | [dobyte/due](https://github.com/dobyte/due) @ `2026-11-16 (branch tip at catalogue time)` |
 | [ENet](entries/netcode/enet/README.md) | reliable UDP networking for games | c | MIT | vendored | [lsalzman/enet](https://github.com/lsalzman/enet) @ `5a9c537fd464` |
 | [factorio-control-panel](entries/netcode/jjclark1982-factorio-control-panel/README.md) | Web admin interface for Factorio headless game server | javascript | unknown | reference | [jjclark1982/factorio-control-panel](https://github.com/jjclark1982/factorio-control-panel) @ `2016-11-22 (branch tip at catalogue time)` |
@@ -936,11 +938,13 @@ _Generated 2026-11-24 05:16 UTC · 1122 entries · 290 vendored, 832 reference-o
 | [garuna](entries/netcode/eubrunomiguel-garuna/README.md) | C++ multiplayer game server | c++ | MIT | reference | [eubrunomiguel/garuna](https://github.com/eubrunomiguel/garuna) @ `2019-01-14 (branch tip at catalogue time)` |
 | [GekkoNet](entries/netcode/heatxd-gekkonet/README.md) | P2P Rollback Game Networking SDK | c++ | BSD-2-Clause | vendored | [HeatXD/GekkoNet](https://github.com/HeatXD/GekkoNet) @ `45dac7e50fd3` |
 | [GGRS](entries/netcode/ggrs/README.md) | rollback netcode (GGPO-style) in Rust with WASM support | rust | Apache-2.0 | vendored | [gschup/ggrs](https://github.com/gschup/ggrs) @ `25bd9983dee3` |
+| [Girls-with-swords-GGRS](entries/netcode/trian-gles-girls-with-swords-ggrs/README.md) | A 2D fighting game with rollback netcode | c# | none | reference | [trian-gles/Girls-with-swords-GGRS](https://github.com/trian-gles/Girls-with-swords-GGRS) @ `a6cbc7e5c9cf` |
 | [godot-mcp-enhanced](entries/netcode/wgt19861219-godot-mcp-enhanced/README.md) | Enhanced MCP server for Godot 4.5-4.7: 33 tools / 199 actions, 3-layer architecture (headless + editor + game bridge), secure sandbox, recording & frame-verify, | typescript | MIT | reference | [wgt19861219/godot-mcp-enhanced](https://github.com/wgt19861219/godot-mcp-enhanced) @ `9cc3b70ec11b` |
 | [godot-multiplayer-starter](entries/netcode/codingquests-godot-multiplayer-starter/README.md) | A server-authoritative co-op multiplayer starter for Godot 4 with a ready-up lobby, client-side prediction, reconciliation and validated RPCs. | gdscript | MIT | vendored | [CodingQuests/godot-multiplayer-starter](https://github.com/CodingQuests/godot-multiplayer-starter) @ `ccde74b9490c` |
 | [godot-rocket-league](entries/netcode/albertok-godot-rocket-league/README.md) | Network physics with rollback test using Godot and netfox | gdscript | MIT | vendored | [albertok/godot-rocket-league](https://github.com/albertok/godot-rocket-league) @ `78b28ce495fa` |
 | [Godot-Rollback-Fighter-Demo](entries/netcode/blast-harbour-godot-rollback-fighter-demo/README.md) | An example project built on Bimdav's "Delta Rollback" Fork of David Snopek's "Godot Rollback Netcode" Addon  | gdscript | MIT | reference | [blast-harbour/Godot-Rollback-Fighter-Demo](https://github.com/blast-harbour/Godot-Rollback-Fighter-Demo) @ `2024-07-10 (branch tip at catalogue time)` |
 | [godot-tiny-mmo](entries/netcode/slayhorizon-godot-tiny-mmo/README.md) | Open-source cross-platform MMORPG built with Godot 4 | gdscript | MIT | vendored | [SlayHorizon/godot-tiny-mmo](https://github.com/SlayHorizon/godot-tiny-mmo) @ `f4ed04f20963` |
+| [GodotRollbackNetcodeMono](entries/netcode/fractural-godotrollbacknetcodemono/README.md) | Port of Snopek Game's Rollback netcode addon to Godot C# 🔃 | gdscript | MIT | vendored | [Fractural/GodotRollbackNetcodeMono](https://github.com/Fractural/GodotRollbackNetcodeMono) @ `42773c14459a` |
 | [gogs](entries/netcode/metagogs-gogs/README.md) | gogs is a simple, fast and lightweight game server framework written in golang | go | Apache-2.0 | reference | [metagogs/gogs](https://github.com/metagogs/gogs) @ `2026-09-08 (branch tip at catalogue time)` |
 | [GopherGameServer](entries/netcode/hewiefreeman-gophergameserver/README.md) | :trophy: Feature packed, easy-to-use game server API for Go back-ends and Javascript clients. Tutorials and examples included! | go | Apache-2.0 | reference | [hewiefreeman/GopherGameServer](https://github.com/hewiefreeman/GopherGameServer) @ `2024-03-29 (branch tip at catalogue time)` |
 | [gsdk](entries/netcode/playfab-gsdk/README.md) | Game Server SDK for PlayFab Multiplayer Servers | c++ | Apache-2.0 | reference | [PlayFab/gsdk](https://github.com/PlayFab/gsdk) @ `2026-10-08 (branch tip at catalogue time)` |

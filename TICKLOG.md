@@ -2493,3 +2493,9 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/eubrunomiguel-garuna
   - reference netcode/awdng-triebwerk
   - reference netcode/tomkrcha-realtimegamelib
+
+- **2026-11-24 05:32 UTC** — tick 760: +2 screened, +2 reference, 33 skipped, catalogue=1126
+  - added netcode/fractural-godotrollbacknetcodemono (MIT, vendored)
+  - added netcode/trian-gles-girls-with-swords-ggrs (none, reference)
+  - reference netcode/drftrun-driftengine
+  - reference netcode/wuyuntao-deterministiclockstepnetworking

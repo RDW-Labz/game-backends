@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T05:32:09Z",
+ "category": "netcode",
+ "commit": "42773c14459a",
+ "delivery": "vendored",
+ "description": "Fractural/GodotRollbackNetcodeMono \u2014 Port of Snopek Game's Rollback netcode addon to Godot C# \ud83d\udd03",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "GodotRollbackNetcodeMono",
+ "size_bytes": 269621,
+ "slug": "fractural-godotrollbacknetcodemono",
+ "source": "github-search:rollback netcode stars:>15",
+ "stars": 25,
+ "system": "Port of Snopek Game's Rollback netcode addon to Godot C# \ud83d\udd03",
+ "upstream": "https://github.com/Fractural/GodotRollbackNetcodeMono",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:32:14Z",
+ "category": "netcode",
+ "commit": "2015-09-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "wuyuntao/DeterministicLockstepNetworking \u2014 A networking library to synchronize states of game objects across multiple devices based on deterministic lockstep protocol",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "DeterministicLockstepNetworking",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "wuyuntao-deterministiclockstepnetworking",
+ "source": "github-search:lockstep networking stars:>5",
+ "stars": 6,
+ "system": "A networking library to synchronize states of game objects across multiple devices based on deterministic lockstep protocol",
+ "upstream": "https://github.com/wuyuntao/DeterministicLockstepNetworking",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T05:32:13Z",
+ "category": "netcode",
+ "commit": "a6cbc7e5c9cf",
+ "delivery": "reference",
+ "description": "trian-gles/Girls-with-swords-GGRS \u2014 A 2D fighting game with rollback netcode",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Girls-with-swords-GGRS",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 605380,
+ "slug": "trian-gles-girls-with-swords-ggrs",
+ "source": "github-search:rollback netcode stars:>15",
+ "stars": 20,
+ "system": "A 2D fighting game with rollback netcode",
+ "upstream": "https://github.com/trian-gles/Girls-with-swords-GGRS",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:32:14Z",
+ "category": "netcode",
+ "commit": "2026-11-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "drftrun/driftengine \u2014 A 3D game engine in strict TypeScript: WebGPU with a WebGL2 fallback, deterministic physics, animation, audio, rollback netcode, DriftScript and an editor. One codebase for the web, Windows, macOS, Linux and Android. Built for AI coding agents too.",
+ "language": "typescript",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "driftengine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "drftrun-driftengine",
+ "source": "github-search:rollback netcode stars:>15",
+ "stars": 17,
+ "system": "A 3D game engine in strict TypeScript: WebGPU with a WebGL2 fallback, deterministic physics, animation, audio, rollback netcode, DriftScript and an editor. One ",
+ "upstream": "https://github.com/drftrun/driftengine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
