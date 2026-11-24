@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:32:08Z",
+ "category": "gameplay",
+ "commit": "2024-07-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Jondolf/Algorust \u2014 Various algorithms visualized interactively on the web, entirely with Rust \ud83e\udd80",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Algorust",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "jondolf-algorust",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 129,
+ "system": "Various algorithms visualized interactively on the web, entirely with Rust \ud83e\udd80",
+ "upstream": "https://github.com/Jondolf/Algorust",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

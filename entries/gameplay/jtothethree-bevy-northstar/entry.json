@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:32:08Z",
+ "category": "gameplay",
+ "commit": "2026-10-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JtotheThree/bevy_northstar \u2014 Hierachical Pathfinding for Bevy",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy_northstar",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jtothethree-bevy-northstar",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 127,
+ "system": "Hierachical Pathfinding for Bevy",
+ "upstream": "https://github.com/JtotheThree/bevy_northstar",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

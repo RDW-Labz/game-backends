@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 01:16 UTC · 1042 entries · 273 vendored, 769 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 01:32 UTC · 1048 entries · 275 vendored, 773 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-24 01:16 UTC · 1042 entries · 273 vendored, 769 reference-o
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 135 | 36 | 99 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 141 | 38 | 103 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
@@ -686,7 +686,7 @@ _Generated 2026-11-24 01:16 UTC · 1042 entries · 273 vendored, 769 reference-o
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 135 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 141 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -694,12 +694,15 @@ _Generated 2026-11-24 01:16 UTC · 1042 entries · 273 vendored, 769 reference-o
 | [abstreet — pathfind](entries/gameplay/abstreet-pathfind/README.md) | combat, AI, pathing, quest or inventory logic | rs | Apache-2.0 | vendored | [a-b-street/abstreet](https://github.com/a-b-street/abstreet) @ `0964f29` |
 | [Agentic-Among-Us-](entries/gameplay/darkmatter2222-agentic-among-us/README.md) | Autonomous LLM-driven Among Us simulation with memory, social reasoning, pathfinding, sabotage, emergent behavior, and real-time React/PixiJS visualization. | typescript | unknown | reference | [darkmatter2222/Agentic-Among-Us-](https://github.com/darkmatter2222/Agentic-Among-Us-) @ `2026-09-13 (branch tip at catalogue time)` |
 | [algorithms-visualizer](entries/gameplay/sonngdev-algorithms-visualizer/README.md) | Visualization of common pathfinding algorithms 🧭 🗺️ | typescript | none | reference | [sonngdev/algorithms-visualizer](https://github.com/sonngdev/algorithms-visualizer) @ `23a20d434f93` |
+| [Algorust](entries/gameplay/jondolf-algorust/README.md) | Various algorithms visualized interactively on the web, entirely with Rust 🦀 | rust | unknown | reference | [Jondolf/Algorust](https://github.com/Jondolf/Algorust) @ `2024-07-17 (branch tip at catalogue time)` |
 | [ancientbeast — abilities](entries/gameplay/ancientbeast-abilities/README.md) | combat, AI, pathing, quest or inventory logic | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AStar](entries/gameplay/roy-t-astar/README.md) | A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher.  | c# | MIT | vendored | [roy-t/AStar](https://github.com/roy-t/AStar) @ `3d57efaa83c8` |
 | [astar-typescript](entries/gameplay/digitsensitive-astar-typescript/README.md) | A* search algorithm in TypeScript | typescript | MIT | reference | [digitsensitive/astar-typescript](https://github.com/digitsensitive/astar-typescript) @ `2023-04-26 (branch tip at catalogue time)` |
 | [baritone](entries/gameplay/cabaletta-baritone/README.md) | google maps for block game | java | LGPL-3.0 | reference | [cabaletta/baritone](https://github.com/cabaletta/baritone) @ `2264210f943d` |
 | [behaviac](entries/gameplay/tencent-behaviac/README.md) | behaviac is a framework of the game AI development, and it also can be used as a rapid game prototype design tool. behaviac supports the behavior tree, finite s | c# | MIT | reference | [Tencent/behaviac](https://github.com/Tencent/behaviac) @ `351442b36726` |
 | [BehaviorTree.CPP](entries/gameplay/behaviortree-cpp/README.md) | behaviour trees for AI agents with blackboards | c++ | MIT | vendored | [BehaviorTree/BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP) @ `365b2e499d34` |
+| [bevy_flowfield_tiles_plugin](entries/gameplay/blondeburrito-bevy-flowfield-tiles-plugin/README.md) | Bevy plugin for Flowfield based pathfinding | rust | unknown | reference | [BlondeBurrito/bevy_flowfield_tiles_plugin](https://github.com/BlondeBurrito/bevy_flowfield_tiles_plugin) @ `2026-10-22 (branch tip at catalogue time)` |
+| [bevy_northstar](entries/gameplay/jtothethree-bevy-northstar/README.md) | Hierachical Pathfinding for Bevy | rust | MIT | reference | [JtotheThree/bevy_northstar](https://github.com/JtotheThree/bevy_northstar) @ `2026-10-29 (branch tip at catalogue time)` |
 | [biomes-game — items](entries/gameplay/biomes-game-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [BlockMaps](entries/gameplay/p-svacha-blockmaps/README.md) | Unity framework to create detailed, 3D, grid-based worlds with real-time navmesh generation and integrated pathfinding, vision and movement systems. | c# | unknown | reference | [p-svacha/BlockMaps](https://github.com/p-svacha/BlockMaps) @ `2025-11-04 (branch tip at catalogue time)` |
 | [BonsaiBehaviourTree](entries/gameplay/luis-l-bonsaibehaviourtree/README.md) | An advanced behaviour tree solution for the Unity game engine | c# | MIT | vendored | [luis-l/BonsaiBehaviourTree](https://github.com/luis-l/BonsaiBehaviourTree) @ `6aa41f3006e9` |
@@ -776,6 +779,7 @@ _Generated 2026-11-24 01:16 UTC · 1042 entries · 273 vendored, 769 reference-o
 | [PokemonTacticalRolePlay](entries/gameplay/sinlessdevil-pokemontacticalroleplay/README.md) | Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI. | c# | none | reference | [SinlessDevil/PokemonTacticalRolePlay](https://github.com/SinlessDevil/PokemonTacticalRolePlay) @ `764123cd5354` |
 | [polyanya](entries/gameplay/vleue-polyanya/README.md) | Pathfinding using Polyanya | rust | Apache-2.0 | reference | [vleue/polyanya](https://github.com/vleue/polyanya) @ `2026-11-09 (branch tip at catalogue time)` |
 | [PonyBehaviourTrees](entries/gameplay/ands-ponybehaviourtrees/README.md) | A set of C# libraries for runtime behaviour tree editing, scripting and inspection | c# | unknown | reference | [ands/PonyBehaviourTrees](https://github.com/ands/PonyBehaviourTrees) @ `2015-12-02 (branch tip at catalogue time)` |
+| [procedural-generation-2](entries/gameplay/kimgoetzke-procedural-generation-2/README.md) | A small Bevy project that procedurally generates a 2D pixel art landscape. | rust | MIT | reference | [kimgoetzke/procedural-generation-2](https://github.com/kimgoetzke/procedural-generation-2) @ `2026-10-11 (branch tip at catalogue time)` |
 | [Procedural_Planet_Generation](entries/gameplay/dennisboon-procedural-planet-generation/README.md) | Procedural planet generation application made in Unity for the Oculus Quest. | c# | none | reference | [DennisBoon/Procedural_Planet_Generation](https://github.com/DennisBoon/Procedural_Planet_Generation) @ `863b32640d48` |
 | [py_trees](entries/gameplay/splintered-reality-py-trees/README.md) | Python implementation of behaviour trees. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees](https://github.com/splintered-reality/py_trees) @ `49bcffd069af` |
 | [python-pathfinding](entries/gameplay/brean-python-pathfinding/README.md) | Implementation of common pathfinding algorithms | python | MIT | vendored | [brean/python-pathfinding](https://github.com/brean/python-pathfinding) @ `e271d46f53b3` |
@@ -821,7 +825,9 @@ _Generated 2026-11-24 01:16 UTC · 1042 entries · 273 vendored, 769 reference-o
 | [veloren — comp](entries/gameplay/veloren-common-src-comp/README.md) | ECS gameplay components (combat, inventory, stats, buffs) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
 | [veloren — inventory](entries/gameplay/veloren-inventory/README.md) | combat, AI, pathing, quest or inventory logic | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
 | [Visualizer](entries/gameplay/jasonfenggit-visualizer/README.md) | A single-page website aiming to provide innovative and intuitive visualizations of common and AI algorithms. | javascript | MIT | vendored | [JasonFengGit/Visualizer](https://github.com/JasonFengGit/Visualizer) @ `80ed0fa487c9` |
+| [vleue_navigator](entries/gameplay/vleue-vleue-navigator/README.md) | Pathfinding on NavMeshes for Bevy | rust | MIT | vendored | [vleue/vleue_navigator](https://github.com/vleue/vleue_navigator) @ `1fc3f54a7169` |
 | [wargus — ai](entries/gameplay/wargus-ai/README.md) | combat, AI, pathing, quest or inventory logic | c | GPL-2.0 | reference | [Wargus/wargus.git](https://github.com/Wargus/wargus.git) @ `57f9d4d` |
+| [wasm-astar](entries/gameplay/jacobdeichert-wasm-astar/README.md) | 👾 Rust WebAssembly A* Pathfinding Demo | rust | MIT | vendored | [jacobdeichert/wasm-astar](https://github.com/jacobdeichert/wasm-astar) @ `035d8ef2848b` |
 | [widelands — ai](entries/gameplay/widelands-ai/README.md) | combat, AI, pathing, quest or inventory logic | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
 | [yendor.ts](entries/gameplay/jice-nospam-yendor-ts/README.md) | A roguelike library inspired by libtcod written in TypeScript | typescript | unknown | reference | [jice-nospam/yendor.ts](https://github.com/jice-nospam/yendor.ts) @ `2024-03-25 (branch tip at catalogue time)` |
 | [yuka](entries/gameplay/mugen87-yuka/README.md) | JavaScript library for developing Game AI. | javascript | MIT | reference | [Mugen87/yuka](https://github.com/Mugen87/yuka) @ `2026-10-20 (branch tip at catalogue time)` |

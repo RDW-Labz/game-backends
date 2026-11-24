@@ -2383,3 +2383,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/amaranthusss-react-three-yuka-pathfinding
   - reference gameplay/ngquhuanbl-pathfinding-visualization
   - reference gameplay/ivannovazzi-moveet
+
+- **2026-11-24 01:32 UTC** — tick 745: +2 screened, +4 reference, 3 skipped, catalogue=1048
+  - added gameplay/vleue-vleue-navigator (MIT, vendored)
+  - added gameplay/jacobdeichert-wasm-astar (MIT, vendored)
+  - reference gameplay/jondolf-algorust
+  - reference gameplay/jtothethree-bevy-northstar
+  - reference gameplay/kimgoetzke-procedural-generation-2
+  - reference gameplay/blondeburrito-bevy-flowfield-tiles-plugin

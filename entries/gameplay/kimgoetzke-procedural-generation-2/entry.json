@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:32:08Z",
+ "category": "gameplay",
+ "commit": "2026-10-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kimgoetzke/procedural-generation-2 \u2014 A small Bevy project that procedurally generates a 2D pixel art landscape.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "procedural-generation-2",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kimgoetzke-procedural-generation-2",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 95,
+ "system": "A small Bevy project that procedurally generates a 2D pixel art landscape.",
+ "upstream": "https://github.com/kimgoetzke/procedural-generation-2",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

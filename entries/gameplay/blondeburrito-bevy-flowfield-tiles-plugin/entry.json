@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:32:08Z",
+ "category": "gameplay",
+ "commit": "2026-10-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BlondeBurrito/bevy_flowfield_tiles_plugin \u2014 Bevy plugin for Flowfield based pathfinding",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "bevy_flowfield_tiles_plugin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "blondeburrito-bevy-flowfield-tiles-plugin",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 72,
+ "system": "Bevy plugin for Flowfield based pathfinding",
+ "upstream": "https://github.com/BlondeBurrito/bevy_flowfield_tiles_plugin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

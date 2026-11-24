@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T01:32:04Z",
+ "category": "gameplay",
+ "commit": "1fc3f54a7169",
+ "delivery": "vendored",
+ "description": "vleue/vleue_navigator \u2014 Pathfinding on NavMeshes for Bevy",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE-MIT",
+ "license_verdict": "clean",
+ "name": "vleue_navigator",
+ "size_bytes": 379882,
+ "slug": "vleue-vleue-navigator",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 505,
+ "system": "Pathfinding on NavMeshes for Bevy",
+ "upstream": "https://github.com/vleue/vleue_navigator",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

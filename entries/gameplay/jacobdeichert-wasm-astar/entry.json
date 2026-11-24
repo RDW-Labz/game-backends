@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T01:32:06Z",
+ "category": "gameplay",
+ "commit": "035d8ef2848b",
+ "delivery": "vendored",
+ "description": "jacobdeichert/wasm-astar \u2014 \ud83d\udc7e Rust WebAssembly A* Pathfinding Demo",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "wasm-astar",
+ "size_bytes": 34197,
+ "slug": "jacobdeichert-wasm-astar",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 444,
+ "system": "\ud83d\udc7e Rust WebAssembly A* Pathfinding Demo",
+ "upstream": "https://github.com/jacobdeichert/wasm-astar",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
