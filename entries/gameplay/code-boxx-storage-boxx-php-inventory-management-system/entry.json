@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:24:07Z",
+ "category": "gameplay",
+ "commit": "2024-03-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "code-boxx/Storage-Boxx-PHP-Inventory-Management-System \u2014 Open source PHP inventory management system, with built-in QR and NFC scanner.",
+ "language": "php",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Storage-Boxx-PHP-Inventory-Management-System",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "code-boxx-storage-boxx-php-inventory-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 94,
+ "system": "Open source PHP inventory management system, with built-in QR and NFC scanner.",
+ "upstream": "https://github.com/code-boxx/Storage-Boxx-PHP-Inventory-Management-System",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

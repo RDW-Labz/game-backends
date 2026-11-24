@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 03:08 UTC · 1080 entries · 282 vendored, 798 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 03:24 UTC · 1086 entries · 284 vendored, 802 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-24 03:08 UTC · 1080 entries · 282 vendored, 798 reference-o
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 173 | 45 | 128 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 179 | 47 | 132 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
@@ -686,7 +686,7 @@ _Generated 2026-11-24 03:08 UTC · 1080 entries · 282 vendored, 798 reference-o
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 173 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 179 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -698,6 +698,7 @@ _Generated 2026-11-24 03:08 UTC · 1080 entries · 282 vendored, 798 reference-o
 | [Algorust](entries/gameplay/jondolf-algorust/README.md) | Various algorithms visualized interactively on the web, entirely with Rust 🦀 | rust | unknown | reference | [Jondolf/Algorust](https://github.com/Jondolf/Algorust) @ `2024-07-17 (branch tip at catalogue time)` |
 | [ancientbeast — abilities](entries/gameplay/ancientbeast-abilities/README.md) | combat, AI, pathing, quest or inventory logic | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [anydesign](entries/gameplay/uxkero-anydesign/README.md) | Claude skill that analyzes images, websites, and Figma files and generates a structured design.md with token system, component inventory, and reconstruction not | python | MIT | reference | [uxKero/anydesign](https://github.com/uxKero/anydesign) @ `2026-09-15 (branch tip at catalogue time)` |
+| [anystore](entries/gameplay/vijaythapa333-anystore/README.md) | Billing and Inventory Management System Build in C# and MS SQL Server 2014 | c# | MIT | vendored | [vijaythapa333/anystore](https://github.com/vijaythapa333/anystore) @ `09ea150f474f` |
 | [AStar](entries/gameplay/roy-t-astar/README.md) | A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher.  | c# | MIT | vendored | [roy-t/AStar](https://github.com/roy-t/AStar) @ `3d57efaa83c8` |
 | [astar-typescript](entries/gameplay/digitsensitive-astar-typescript/README.md) | A* search algorithm in TypeScript | typescript | MIT | reference | [digitsensitive/astar-typescript](https://github.com/digitsensitive/astar-typescript) @ `2023-04-26 (branch tip at catalogue time)` |
 | [asw](entries/gameplay/auto-sea-way-asw/README.md) | Open source sea routing between any two coordinates. Global routing graph built from OpenStreetMap coastlines with H3 hexagons. Rust, HTTP API, self-hosted. | rust | Apache-2.0 | vendored | [auto-sea-way/asw](https://github.com/auto-sea-way/asw) @ `72a3e891d1b1` |
@@ -742,6 +743,7 @@ _Generated 2026-11-24 03:08 UTC · 1080 entries · 282 vendored, 798 reference-o
 | [inventory-management](entries/gameplay/akashroshan135-inventory-management/README.md) | A simple inventory management system built with Django | html | unknown | reference | [akashroshan135/inventory-management](https://github.com/akashroshan135/inventory-management) @ `2023-07-28 (branch tip at catalogue time)` |
 | [inventory-management](entries/gameplay/sajib1066-inventory-management/README.md) | This is a inventory management system | html | none | reference | [sajib1066/inventory-management](https://github.com/sajib1066/inventory-management) @ `5602e3d4c7a0` |
 | [inventory-management-system](entries/gameplay/kryptonb-inventory-management-system/README.md) | Simple PHP, MySQL inventory control system | php | MIT | reference | [KryptonB/inventory-management-system](https://github.com/KryptonB/inventory-management-system) @ `2023-07-28 (branch tip at catalogue time)` |
+| [Inventory-Management-System](entries/gameplay/viditgarg1999-inventory-management-system/README.md) | Database Management System Project on the Inventory Management System using SQL | n/a | MIT | reference | [viditgarg1999/Inventory-Management-System](https://github.com/viditgarg1999/Inventory-Management-System) @ `2019-09-19 (branch tip at catalogue time)` |
 | [Inventory-Management-System-Django](entries/gameplay/kinjaldas-inventory-management-system-django/README.md) | A Inventory management system written in DJango | python | unknown | reference | [KinjalDas/Inventory-Management-System-Django](https://github.com/KinjalDas/Inventory-Management-System-Django) @ `2022-10-31 (branch tip at catalogue time)` |
 | [Inventory-Management-System-Laravel-SPA](entries/gameplay/mamun724682-inventory-management-system-laravel-spa/README.md) | An Inventory and Sales Management System using Laravel 10, Inertia, Vue js (SPA) | php | MIT | reference | [mamun724682/Inventory-Management-System-Laravel-SPA](https://github.com/mamun724682/Inventory-Management-System-Laravel-SPA) @ `2024-11-09 (branch tip at catalogue time)` |
 | [Inventory-Management-System-MERN-CRUD-App](entries/gameplay/mhy20401-inventory-management-system-mern-crud-app/README.md) | Inventory Management System MERN CRUD App (MERN Stack Project). A simple MERN project that lets the user insert, update, delete & get products from the MongoDB. | javascript | unknown | reference | [mhy20401/Inventory-Management-System-MERN-CRUD-App](https://github.com/mhy20401/Inventory-Management-System-MERN-CRUD-App) @ `2023-07-16 (branch tip at catalogue time)` |
@@ -750,7 +752,9 @@ _Generated 2026-11-24 03:08 UTC · 1080 entries · 282 vendored, 798 reference-o
 | [inventory-system-3814](entries/gameplay/coyer1986-inventory-system-3814/README.md) | Project repository created at 2025-10-14 | n/a | none | reference | [coyer1986/inventory-system-3814](https://github.com/coyer1986/inventory-system-3814) @ `0e2a20f67e60` |
 | [inventory-system-4724](entries/gameplay/coyer1986-inventory-system-4724/README.md) | Project repository created at 2025-10-14 | n/a | unknown | reference | [coyer1986/inventory-system-4724](https://github.com/coyer1986/inventory-system-4724) @ `2025-10-14 (branch tip at catalogue time)` |
 | [inventory-system-7857](entries/gameplay/coyer1986-inventory-system-7857/README.md) | Project repository created at 2025-10-14 | n/a | unknown | reference | [coyer1986/inventory-system-7857](https://github.com/coyer1986/inventory-system-7857) @ `2025-10-14 (branch tip at catalogue time)` |
+| [Inventory_Management_System](entries/gameplay/ekramasif-inventory-management-system/README.md) | Opensource Inventory Management System using Laravel 8. | blade | MIT | vendored | [ekramasif/Inventory_Management_System](https://github.com/ekramasif/Inventory_Management_System) @ `20a7031f362a` |
 | [InventoryManagementSystem](entries/gameplay/sajxraj-inventorymanagementsystem/README.md) | A software developed using Java SE which provides as easy way to track the products, suppliers, customers as well as purchase and sales information. It also rec | java | unknown | reference | [sajxraj/InventoryManagementSystem](https://github.com/sajxraj/InventoryManagementSystem) @ `2024-05-30 (branch tip at catalogue time)` |
+| [InventorySystem](entries/gameplay/afifaniks-inventorysystem/README.md) | Inventory Management System with Java and MySQL | java | unknown | reference | [afifaniks/InventorySystem](https://github.com/afifaniks/InventorySystem) @ `2023-03-17 (branch tip at catalogue time)` |
 | [InventorySystem](entries/gameplay/benolimits-inventorysystem/README.md) | Easy to use Hotbar and Inventory system for Unreal Engine 5 | n/a | MIT | vendored | [benolimits/InventorySystem](https://github.com/benolimits/InventorySystem) @ `ff320f8f87fb` |
 | [InvenTree](entries/gameplay/inventree-inventree/README.md) | Open Source Inventory Management System | python | MIT | reference | [inventree/InvenTree](https://github.com/inventree/InvenTree) @ `2026-11-22 (branch tip at catalogue time)` |
 | [javascript-astar](entries/gameplay/bgrins-javascript-astar/README.md) | A* Search / Pathfinding Algorithm in Javascript | javascript | MIT | reference | [bgrins/javascript-astar](https://github.com/bgrins/javascript-astar) @ `2023-09-04 (branch tip at catalogue time)` |
@@ -831,6 +835,7 @@ _Generated 2026-11-24 03:08 UTC · 1080 entries · 282 vendored, 798 reference-o
 | [spark-arc-studio](entries/gameplay/1deaaa-spark-arc-studio/README.md) | An autonomous multi-agent IDE for screenplays🎮 & novels📖. One-click to share web performances or drive Unity dialogue systems. Empowering vibe game dev with AI! | python | AGPL-3.0 | reference | [1deaaa/spark-arc-studio](https://github.com/1deaaa/spark-arc-studio) @ `2026-10-14 (branch tip at catalogue time)` |
 | [Spotlight_Storage](entries/gameplay/firemarshmellow-spotlight-storage/README.md) | MIMOSA - short for "Mellow_Labs Inventory Management and Organization System Apparatus". Just like a refreshing mimosa, this system will make your life brighter | javascript | MIT | vendored | [FireMarshmellow/Spotlight_Storage](https://github.com/FireMarshmellow/Spotlight_Storage) @ `4fe8fdafdd45` |
 | [SproutyDialogs](entries/gameplay/sproutylabs-sproutydialogs/README.md) | A graph-based visual dialogue system plugin for Godot, to create dialogues in your games incredibly easy! 🌱 | gdscript | MIT | reference | [SproutyLabs/SproutyDialogs](https://github.com/SproutyLabs/SproutyDialogs) @ `2026-11-19 (branch tip at catalogue time)` |
+| [Storage-Boxx-PHP-Inventory-Management-System](entries/gameplay/code-boxx-storage-boxx-php-inventory-management-system/README.md) | Open source PHP inventory management system, with built-in QR and NFC scanner. | php | unknown | reference | [code-boxx/Storage-Boxx-PHP-Inventory-Management-System](https://github.com/code-boxx/Storage-Boxx-PHP-Inventory-Management-System) @ `2024-03-07 (branch tip at catalogue time)` |
 | [storaji](entries/gameplay/indomaximtechid-storaji/README.md) | :ledger: The light/responsive inventory management system available on Windows, macOS and Linux. | php | MIT | reference | [IndomaximTechID/storaji](https://github.com/IndomaximTechID/storaji) @ `2023-08-09 (branch tip at catalogue time)` |
 | [StoreDown](entries/gameplay/jliscom-storedown/README.md) | An inventory system that is hopefully simple enough for everyone! | javascript | MIT | vendored | [JLiscom/StoreDown](https://github.com/JLiscom/StoreDown) @ `cb2746330760` |
 | [stronghold-protocol — ai](entries/gameplay/stronghold-protocol-ai/README.md) | combat, AI, pathing, quest or inventory logic | js | GPL-3.0 | reference | [sganggs/Stronghold-Protocol](https://github.com/sganggs/Stronghold-Protocol) @ `f07b896` |
@@ -858,6 +863,7 @@ _Generated 2026-11-24 03:08 UTC · 1080 entries · 282 vendored, 798 reference-o
 | [Visualizer](entries/gameplay/jasonfenggit-visualizer/README.md) | A single-page website aiming to provide innovative and intuitive visualizations of common and AI algorithms. | javascript | MIT | vendored | [JasonFengGit/Visualizer](https://github.com/JasonFengGit/Visualizer) @ `80ed0fa487c9` |
 | [vite-plugin-entry-shaking](entries/gameplay/dschungelabenteuer-vite-plugin-entry-shaking/README.md) | Mimic tree-shaking behaviour when importing code from an entry file in development mode. | typescript | MIT | reference | [Dschungelabenteuer/vite-plugin-entry-shaking](https://github.com/Dschungelabenteuer/vite-plugin-entry-shaking) @ `2026-09-08 (branch tip at catalogue time)` |
 | [vleue_navigator](entries/gameplay/vleue-vleue-navigator/README.md) | Pathfinding on NavMeshes for Bevy | rust | MIT | vendored | [vleue/vleue_navigator](https://github.com/vleue/vleue_navigator) @ `1fc3f54a7169` |
+| [Warehouse-Stock-Inventory-Management-System--NextJS-FullStack](entries/gameplay/arnobt78-warehouse-stock-inventory-management-system-nextjs-fullstack/README.md) | A full-stack warehouse and stock inventory management system built with Next.js, React, Prisma, and MongoDB. It helps store owners, suppliers, and clients manag | typescript | unknown | reference | [arnobt78/Warehouse-Stock-Inventory-Management-System--NextJS-FullStack](https://github.com/arnobt78/Warehouse-Stock-Inventory-Management-System--NextJS-FullStack) @ `2026-09-09 (branch tip at catalogue time)` |
 | [wargus — ai](entries/gameplay/wargus-ai/README.md) | combat, AI, pathing, quest or inventory logic | c | GPL-2.0 | reference | [Wargus/wargus.git](https://github.com/Wargus/wargus.git) @ `57f9d4d` |
 | [wasm-astar](entries/gameplay/jacobdeichert-wasm-astar/README.md) | 👾 Rust WebAssembly A* Pathfinding Demo | rust | MIT | vendored | [jacobdeichert/wasm-astar](https://github.com/jacobdeichert/wasm-astar) @ `035d8ef2848b` |
 | [widelands — ai](entries/gameplay/widelands-ai/README.md) | combat, AI, pathing, quest or inventory logic | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |

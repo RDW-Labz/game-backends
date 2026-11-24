@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T03:24:04Z",
+ "category": "gameplay",
+ "commit": "09ea150f474f",
+ "delivery": "vendored",
+ "description": "vijaythapa333/anystore \u2014 Billing and Inventory Management System Build in C# and MS SQL Server 2014",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "anystore",
+ "size_bytes": 425516,
+ "slug": "vijaythapa333-anystore",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 103,
+ "system": "Billing and Inventory Management System Build in C# and MS SQL Server 2014",
+ "upstream": "https://github.com/vijaythapa333/anystore",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

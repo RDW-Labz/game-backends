@@ -2435,3 +2435,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/imran300-inventory
   - reference gameplay/sniffle6-scriptable-object-inventory
   - reference gameplay/hassanrazadev-laravelinventorywithpos
+
+- **2026-11-24 03:24 UTC** — tick 752: +2 screened, +4 reference, 8 skipped, catalogue=1086
+  - added gameplay/vijaythapa333-anystore (MIT, vendored)
+  - added gameplay/ekramasif-inventory-management-system (MIT, vendored)
+  - reference gameplay/arnobt78-warehouse-stock-inventory-management-system-nextjs-fullstack
+  - reference gameplay/code-boxx-storage-boxx-php-inventory-management-system
+  - reference gameplay/afifaniks-inventorysystem
+  - reference gameplay/viditgarg1999-inventory-management-system

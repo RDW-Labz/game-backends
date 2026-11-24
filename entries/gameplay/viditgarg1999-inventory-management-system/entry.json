@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:24:07Z",
+ "category": "gameplay",
+ "commit": "2019-09-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "viditgarg1999/Inventory-Management-System \u2014 Database Management System Project on the Inventory Management System using SQL",
+ "language": "n/a",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Inventory-Management-System",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "viditgarg1999-inventory-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 90,
+ "system": "Database Management System Project on the Inventory Management System using SQL",
+ "upstream": "https://github.com/viditgarg1999/Inventory-Management-System",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

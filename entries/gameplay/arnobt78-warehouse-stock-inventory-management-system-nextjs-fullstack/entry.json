@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:24:07Z",
+ "category": "gameplay",
+ "commit": "2026-09-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "arnobt78/Warehouse-Stock-Inventory-Management-System--NextJS-FullStack \u2014 A full-stack warehouse and stock inventory management system built with Next.js, React, Prisma, and MongoDB. It helps store owners, suppliers, and clients manage products, orders, invoices, warehouses, and support tickets with role-based access, analytics dashboards, QR codes, payments (Stripe), shipping (Shippo), and email (Brevo).",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Warehouse-Stock-Inventory-Management-System--NextJS-FullStack",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "arnobt78-warehouse-stock-inventory-management-system-nextjs-fullstack",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 95,
+ "system": "A full-stack warehouse and stock inventory management system built with Next.js, React, Prisma, and MongoDB. It helps store owners, suppliers, and clients manag",
+ "upstream": "https://github.com/arnobt78/Warehouse-Stock-Inventory-Management-System--NextJS-FullStack",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

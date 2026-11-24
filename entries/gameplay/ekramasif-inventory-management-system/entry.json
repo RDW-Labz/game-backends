@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T03:24:06Z",
+ "category": "gameplay",
+ "commit": "20a7031f362a",
+ "delivery": "vendored",
+ "description": "ekramasif/Inventory_Management_System \u2014 Opensource Inventory Management System using Laravel 8.",
+ "language": "blade",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Inventory_Management_System",
+ "size_bytes": 1037002,
+ "slug": "ekramasif-inventory-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 99,
+ "system": "Opensource Inventory Management System using Laravel 8.",
+ "upstream": "https://github.com/ekramasif/Inventory_Management_System",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

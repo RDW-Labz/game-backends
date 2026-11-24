@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:24:07Z",
+ "category": "gameplay",
+ "commit": "2023-03-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "afifaniks/InventorySystem \u2014 Inventory Management System with Java and MySQL",
+ "language": "java",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "InventorySystem",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "afifaniks-inventorysystem",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 92,
+ "system": "Inventory Management System with Java and MySQL",
+ "upstream": "https://github.com/afifaniks/InventorySystem",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
