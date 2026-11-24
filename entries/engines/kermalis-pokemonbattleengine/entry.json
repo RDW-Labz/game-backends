@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T15:11:34Z",
+ "category": "engines",
+ "commit": "e733883abb04",
+ "delivery": "vendored",
+ "description": "Kermalis/PokemonBattleEngine \u2014 A C# library that can emulate Pok\u00e9mon battles.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "PokemonBattleEngine",
+ "size_bytes": 1693979,
+ "slug": "kermalis-pokemonbattleengine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 189,
+ "system": "A C# library that can emulate Pok\u00e9mon battles.",
+ "upstream": "https://github.com/Kermalis/PokemonBattleEngine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

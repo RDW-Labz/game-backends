@@ -1,0 +1,12 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:gif="clr-namespace:AvaloniaGif;assembly=AvaloniaGif"
+             xmlns:infrastructure="clr-namespace:Kermalis.PokemonBattleEngineClient.Infrastructure;assembly=PokemonBattleEngineClient"
+             x:Class="Kermalis.PokemonBattleEngineClient.Views.PokemonView"
+             Width="192" Height="192" RenderOptions.BitmapInterpolationMode="Default" IsVisible="False">
+	<gif:GifImage Name="Sprite" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+		<ToolTip.Tip>
+			<Image Source="{Binding Description, Converter={x:Static infrastructure:ObjectToTextBitmapConverter.Instance}, ConverterParameter=MenuBlack, Mode=OneWay}"/>
+		</ToolTip.Tip>
+	</gif:GifImage>
+</UserControl>

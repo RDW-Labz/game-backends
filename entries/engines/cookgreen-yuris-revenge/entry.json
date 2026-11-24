@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T15:11:38Z",
+ "category": "engines",
+ "commit": "2024-11-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "cookgreen/Yuris-Revenge \u2014 A Red Alert 2 Yuri's Revenge mod for OpenRA Engine",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Yuris-Revenge",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "cookgreen-yuris-revenge",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 182,
+ "system": "A Red Alert 2 Yuri's Revenge mod for OpenRA Engine",
+ "upstream": "https://github.com/cookgreen/Yuris-Revenge",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

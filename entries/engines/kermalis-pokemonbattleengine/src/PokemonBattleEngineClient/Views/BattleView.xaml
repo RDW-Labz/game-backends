@@ -1,0 +1,13 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="clr-namespace:Kermalis.PokemonBattleEngineClient.Views;assembly=PokemonBattleEngineClient"
+             x:Class="Kermalis.PokemonBattleEngineClient.Views.BattleView"
+             Width="896" Height="576">
+	<StackPanel Orientation="Horizontal">
+		<StackPanel Orientation="Vertical">
+			<views:FieldView Name="Field"/>
+			<views:ActionsView Name="Actions"/>
+		</StackPanel>
+		<views:MessageView Name="Messages"/>
+	</StackPanel>
+</UserControl>

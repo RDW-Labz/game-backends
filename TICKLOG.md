@@ -2697,3 +2697,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/bijington-orbit
   - reference engines/cat-lips-godotsharp-sourcegenerators
   - reference engines/mellinoe-ge
+
+- **2026-11-24 15:11 UTC** — tick 792: +2 screened, +4 reference, 9 skipped, catalogue=1276
+  - added engines/kermalis-pokemonbattleengine (MIT, vendored)
+  - added engines/zachbarth-minimalist-game-framework (MIT, vendored)
+  - reference engines/hexaengine-hexaengine
+  - reference engines/endlesstravel-love2dcs
+  - reference engines/cookgreen-yuris-revenge
+  - reference engines/bonesoul-voxeliq

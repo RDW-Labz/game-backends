@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T15:11:38Z",
+ "category": "engines",
+ "commit": "2026-08-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "HexaEngine/HexaEngine \u2014 The official repo of the HexaEngine game engine",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "HexaEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hexaengine-hexaengine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 184,
+ "system": "The official repo of the HexaEngine game engine",
+ "upstream": "https://github.com/HexaEngine/HexaEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 14:16 UTC · 1270 entries · 329 vendored, 941 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 15:11 UTC · 1276 entries · 331 vendored, 945 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 463 | 107 | 356 |
+| [engines](#engines) — Game engines and engine subsystems | 469 | 109 | 360 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 14:16 UTC · 1270 entries · 329 vendored, 941 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 463 entries
+**Game engines and engine subsystems** — 469 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -244,6 +244,7 @@ _Generated 2026-11-24 14:16 UTC · 1270 entries · 329 vendored, 941 reference-o
 | [HeartbeatEngine](entries/engines/cronza-heartbeatengine/README.md) | A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5 | python | GPL-3.0 | reference | [Cronza/HeartbeatEngine](https://github.com/Cronza/HeartbeatEngine) @ `2025-08-26 (branch tip at catalogue time)` |
 | [HelloMarioFramework](entries/engines/hellofangaming-hellomarioframework/README.md) | Create your own 3D Mario game with Hello Mario Framework for Unity! | c# | MIT | reference | [HelloFangaming/HelloMarioFramework](https://github.com/HelloFangaming/HelloMarioFramework) @ `2025-11-11 (branch tip at catalogue time)` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
+| [HexaEngine](entries/engines/hexaengine-hexaengine/README.md) | The official repo of the HexaEngine game engine | c# | MIT | reference | [HexaEngine/HexaEngine](https://github.com/HexaEngine/HexaEngine) @ `2026-08-22 (branch tip at catalogue time)` |
 | [hoodie-legacy](entries/engines/greencrowdev-hoodie-legacy/README.md) | Hoodie is a plugin for Godot Engine 4 that offers a visual scripting interface for generating procedural geometry. | c++ | MIT | vendored | [GreenCrowDev/hoodie-legacy](https://github.com/GreenCrowDev/hoodie-legacy) @ `f860d4ce2afe` |
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
 | [hyperion](entries/engines/hyperion-mc-hyperion/README.md) | Minecraft game engine for massive custom events | rust | Apache-2.0 | reference | [hyperion-mc/hyperion](https://github.com/hyperion-mc/hyperion) @ `2026-10-29 (branch tip at catalogue time)` |
@@ -274,6 +275,7 @@ _Generated 2026-11-24 14:16 UTC · 1270 entries · 329 vendored, 941 reference-o
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
 | [love](entries/engines/love2d-love/README.md) | LÖVE is an awesome 2D game framework for Lua. | c++ | Zlib | reference | [love2d/love](https://github.com/love2d/love) @ `def245102c67` |
 | [love2d](entries/engines/luacats-love2d/README.md) | Definitions for the LÖVE 2D game framework | lua | unknown | reference | [LuaCATS/love2d](https://github.com/LuaCATS/love2d) @ `2026-07-20 (branch tip at catalogue time)` |
+| [Love2dCS](entries/engines/endlesstravel-love2dcs/README.md) | C# Wrapper for LÖVE, a 2d game engine | c# | MIT | reference | [endlesstravel/Love2dCS](https://github.com/endlesstravel/Love2dCS) @ `2024-03-23 (branch tip at catalogue time)` |
 | [luanti](entries/engines/luanti-org-luanti/README.md) | Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation | c++ | unknown | reference | [luanti-org/luanti](https://github.com/luanti-org/luanti) @ `2026-11-20 (branch tip at catalogue time)` |
 | [lumina](entries/engines/nixonyh-lumina/README.md) | A top down, fast paced, objective based, PvP game, written in Rust, using the Bevy game engine. | rust | unknown | reference | [nixonyh/lumina](https://github.com/nixonyh/lumina) @ `2025-05-08 (branch tip at catalogue time)` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -287,6 +289,7 @@ _Generated 2026-11-24 14:16 UTC · 1270 entries · 329 vendored, 941 reference-o
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
 | [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
+| [minimalist-game-framework](entries/engines/zachbarth-minimalist-game-framework/README.md) | A minimalist game framework in the style of the "game engine" we use at Zachtronics. | c# | MIT | vendored | [zachbarth/minimalist-game-framework](https://github.com/zachbarth/minimalist-game-framework) @ `c9a7c1ee2392` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
 | [monogame-aseprite](entries/engines/aristurtledev-monogame-aseprite/README.md) | A Cross Platform C# Library That Adds Support For Aseprite Files in MonoGame Projects.  | c# | MIT | reference | [AristurtleDev/monogame-aseprite](https://github.com/AristurtleDev/monogame-aseprite) @ `2026-10-08 (branch tip at catalogue time)` |
 | [MonoGameFramework.Net8](entries/engines/catfortman-monogameframework-net8/README.md) | Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development. | c# | MIT | reference | [CatFortman/MonoGameFramework.Net8](https://github.com/CatFortman/MonoGameFramework.Net8) @ `2026-07-17 (branch tip at catalogue time)` |
@@ -357,6 +360,7 @@ _Generated 2026-11-24 14:16 UTC · 1270 entries · 329 vendored, 941 reference-o
 | [Plumber](entries/engines/lasa01-plumber/README.md) | A Blender addon for importing Source 1 engine maps, models, materials and textures.  This addon makes it possible to import full CS:GO, TF2, CS:S or other Sourc | rust | GPL-3.0 | reference | [lasa01/Plumber](https://github.com/lasa01/Plumber) @ `2026-06-13 (branch tip at catalogue time)` |
 | [ply-engine](entries/engines/thereddeveloper-ply-engine/README.md) | Beautiful UIs in Rust. Cross-platform. Dead simple. | rust | 0BSD | reference | [TheRedDeveloper/ply-engine](https://github.com/TheRedDeveloper/ply-engine) @ `2026-08-31 (branch tip at catalogue time)` |
 | [pmtech](entries/engines/polymonster-pmtech/README.md) | Lightweight, multi-platform, data-oriented game engine. | c++ | MIT | reference | [polymonster/pmtech](https://github.com/polymonster/pmtech) @ `2026-10-25 (branch tip at catalogue time)` |
+| [PokemonBattleEngine](entries/engines/kermalis-pokemonbattleengine/README.md) | A C# library that can emulate Pokémon battles. | c# | MIT | vendored | [Kermalis/PokemonBattleEngine](https://github.com/Kermalis/PokemonBattleEngine) @ `e733883abb04` |
 | [pokewilds](entries/engines/sheerst-pokewilds/README.md) | PokeWilds - A Gen 2 Game/Engine using libGDX | assembly | unknown | reference | [SheerSt/pokewilds](https://github.com/SheerSt/pokewilds) @ `2026-08-16 (branch tip at catalogue time)` |
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
@@ -462,6 +466,7 @@ _Generated 2026-11-24 14:16 UTC · 1270 entries · 329 vendored, 941 reference-o
 | [VoxelFactory](entries/engines/antopilo-voxelfactory/README.md) | A simple to use Voxel library for Godot engine.  | gdscript | MIT | vendored | [antopilo/VoxelFactory](https://github.com/antopilo/VoxelFactory) @ `6c5254d083f3` |
 | [VoxelFramework](entries/engines/bayatgames-voxelframework/README.md) | An awesome Voxel framework for Unity (Game Engine) | c# | MIT | reference | [BayatGames/VoxelFramework](https://github.com/BayatGames/VoxelFramework) @ `2018-04-29 (branch tip at catalogue time)` |
 | [voxelgame](entries/engines/zylann-voxelgame/README.md) | Voxel world prototype made with Godot Engine | gdscript | unknown | reference | [Zylann/voxelgame](https://github.com/Zylann/voxelgame) @ `2025-12-04 (branch tip at catalogue time)` |
+| [voxeliq](entries/engines/bonesoul-voxeliq/README.md) | voxeliq is an open source block-based game engine implementation developed with C# | c# | MS-PL | reference | [bonesoul/voxeliq](https://github.com/bonesoul/voxeliq) @ `2020-02-13 (branch tip at catalogue time)` |
 | [voxelize](entries/engines/voxelize-voxelize/README.md) | :mushroom: Full stack voxel engine | typescript | MIT | reference | [voxelize/voxelize](https://github.com/voxelize/voxelize) @ `2026-11-23 (branch tip at catalogue time)` |
 | [voxelman](entries/engines/mrsmith33-voxelman/README.md) | Plugin-based client-server voxel game engine written in D language | d | BSL-1.0 | reference | [MrSmith33/voxelman](https://github.com/MrSmith33/voxelman) @ `2022-05-10 (branch tip at catalogue time)` |
 | [VoxelPluginFreeLegacy](entries/engines/voxelplugin-voxelpluginfreelegacy/README.md) | Voxel Plugin Legacy for Unreal Engine | c++ | none | reference | [VoxelPlugin/VoxelPluginFreeLegacy](https://github.com/VoxelPlugin/VoxelPluginFreeLegacy) @ `7e64a89ce827` |
@@ -480,6 +485,7 @@ _Generated 2026-11-24 14:16 UTC · 1270 entries · 329 vendored, 941 reference-o
 | [XNAGameStudio](entries/engines/simondarksidej-xnagamestudio/README.md) | The Education library from the Xbox Live Indie games repository, valuable for MonoGame Developers for advanced samples | n/a | MIT | reference | [SimonDarksideJ/XNAGameStudio](https://github.com/SimonDarksideJ/XNAGameStudio) @ `2025-11-14 (branch tip at catalogue time)` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |
+| [Yuris-Revenge](entries/engines/cookgreen-yuris-revenge/README.md) | A Red Alert 2 Yuri's Revenge mod for OpenRA Engine | c# | GPL-3.0 | reference | [cookgreen/Yuris-Revenge](https://github.com/cookgreen/Yuris-Revenge) @ `2024-11-30 (branch tip at catalogue time)` |
 | [z_impact](entries/engines/scemino-z-impact/README.md) | A 2d game engine written in ZIG | zig | MIT | reference | [scemino/z_impact](https://github.com/scemino/z_impact) @ `2025-07-17 (branch tip at catalogue time)` |
 | [ZeroAllocJobScheduler](entries/engines/genaray-zeroallocjobscheduler/README.md) | A high-performance alloc free c# Jobscheduler.  | c# | Apache-2.0 | reference | [genaray/ZeroAllocJobScheduler](https://github.com/genaray/ZeroAllocJobScheduler) @ `2025-03-18 (branch tip at catalogue time)` |
 | [ZigVulkanEngine](entries/engines/adel-ayoub-zigvulkanengine/README.md) | 3D game engine built with Zig and Vulkan | zig | unknown | reference | [Adel-Ayoub/ZigVulkanEngine](https://github.com/Adel-Ayoub/ZigVulkanEngine) @ `2025-07-07 (branch tip at catalogue time)` |

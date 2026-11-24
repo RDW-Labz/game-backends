@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<OutputType>Library</OutputType>
+		<RootNamespace>Kermalis.PokemonBattleEngine.DefaultData</RootNamespace>
+		<Authors>Kermalis</Authors>
+		<Copyright>Kermalis</Copyright>
+		<RepositoryUrl>https://github.com/Kermalis/PokemonBattleEngine</RepositoryUrl>
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+		<NoWarn>1591</NoWarn>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.2" />
+		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="2.1.4" />
+		<ProjectReference Include="..\PokemonBattleEngine\PokemonBattleEngine.csproj" />
+		<None Update="PokemonBattleEngine.db">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

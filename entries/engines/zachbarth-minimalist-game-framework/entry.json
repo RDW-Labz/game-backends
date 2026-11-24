@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T15:11:36Z",
+ "category": "engines",
+ "commit": "c9a7c1ee2392",
+ "delivery": "vendored",
+ "description": "zachbarth/minimalist-game-framework \u2014 A minimalist game framework in the style of the \"game engine\" we use at Zachtronics.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "minimalist-game-framework",
+ "size_bytes": 376348,
+ "slug": "zachbarth-minimalist-game-framework",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 187,
+ "system": "A minimalist game framework in the style of the \"game engine\" we use at Zachtronics.",
+ "upstream": "https://github.com/zachbarth/minimalist-game-framework",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

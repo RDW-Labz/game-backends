@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T15:11:38Z",
+ "category": "engines",
+ "commit": "2024-03-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "endlesstravel/Love2dCS \u2014 C# Wrapper for L\u00d6VE, a 2d game engine",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Love2dCS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "endlesstravel-love2dcs",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 182,
+ "system": "C# Wrapper for L\u00d6VE, a 2d game engine",
+ "upstream": "https://github.com/endlesstravel/Love2dCS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

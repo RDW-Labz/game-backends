@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T15:11:38Z",
+ "category": "engines",
+ "commit": "2020-02-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bonesoul/voxeliq \u2014 voxeliq is an open source block-based game engine implementation developed with C#",
+ "language": "c#",
+ "license": "MS-PL",
+ "license_verdict": "gated-reference",
+ "name": "voxeliq",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MS-PL)",
+ "slug": "bonesoul-voxeliq",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 169,
+ "system": "voxeliq is an open source block-based game engine implementation developed with C#",
+ "upstream": "https://github.com/bonesoul/voxeliq",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
