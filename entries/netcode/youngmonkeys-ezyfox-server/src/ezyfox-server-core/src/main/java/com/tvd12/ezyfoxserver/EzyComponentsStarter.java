@@ -1,0 +1,35 @@
+package com.tvd12.ezyfoxserver;
+
+import com.tvd12.ezyfox.builder.EzyBuilder;
+import com.tvd12.ezyfox.util.EzyLoggable;
+import com.tvd12.ezyfox.util.EzyStartable;
+import com.tvd12.ezyfoxserver.context.EzyServerContext;
+import com.tvd12.ezyfoxserver.context.EzyServerContexts;
+import com.tvd12.ezyfoxserver.setting.EzySettings;
+
+public abstract class EzyComponentsStarter extends EzyLoggable implements EzyStartable {
+
+    protected final EzySettings settings;
+    protected final EzyServerContext serverContext;
+
+    protected EzyComponentsStarter(Builder<?, ?> builder) {
+        this.serverContext = builder.serverContext;
+        this.settings = EzyServerContexts.getSettings(serverContext);
+    }
+
+    @Override
+    public abstract void start();
+
+    public abstract static class Builder
+        <T extends EzyComponentsStarter, B extends Builder<T, B>>
+        implements EzyBuilder<T> {
+
+        protected EzyServerContext serverContext;
+
+        @SuppressWarnings("unchecked")
+        public B serverContext(EzyServerContext serverContext) {
+            this.serverContext = serverContext;
+            return (B) this;
+        }
+    }
+}

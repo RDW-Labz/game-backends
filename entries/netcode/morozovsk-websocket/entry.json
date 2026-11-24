@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:48:09Z",
+ "category": "netcode",
+ "commit": "2019-05-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "morozovsk/websocket \u2014 simple php websocket server + demos + yii/yii2 integration + php 7 support",
+ "language": "php",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "websocket",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "morozovsk-websocket",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 363,
+ "system": "simple php websocket server + demos + yii/yii2 integration + php 7 support",
+ "upstream": "https://github.com/morozovsk/websocket",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

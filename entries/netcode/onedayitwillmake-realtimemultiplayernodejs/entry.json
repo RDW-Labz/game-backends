@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:48:09Z",
+ "category": "netcode",
+ "commit": "2020-11-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "onedayitwillmake/RealtimeMultiplayerNodeJs \u2014 Realtime Mutliplayer Game Engine using Node.js / websockets for HTML5 that uses a client-server approach in which the clients send only sampled input to the server",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "RealtimeMultiplayerNodeJs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "onedayitwillmake-realtimemultiplayernodejs",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 548,
+ "system": "Realtime Mutliplayer Game Engine using Node.js / websockets for HTML5 that uses a client-server approach in which the clients send only sampled input to the ser",
+ "upstream": "https://github.com/onedayitwillmake/RealtimeMultiplayerNodeJs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

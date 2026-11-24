@@ -1,0 +1,14 @@
+*.class
+*.DS_Store
+*.classpath
+*.settings/
+target/
+.project
+test-output/
+/ezyfox-server.iml
+.idea/
+*.idea/
+*.iml
+.iml
+logs/
+*/logs/

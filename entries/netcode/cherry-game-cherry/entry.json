@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T05:48:05Z",
+ "category": "netcode",
+ "commit": "343463fce07d",
+ "delivery": "vendored",
+ "description": "cherry-game/cherry \u2014 \ud83c\udf52 Cherry \u2014 Go game server framework powered by Actor Model. Serial goroutine per actor, NATS/etcd discovery, pluggable connectors (TCP/WS/HTTP), protobuf & object-pooled messaging,  time wheel, snowflake. Born for MMO/SLG/RPG, scales to millions.",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cherry",
+ "size_bytes": 731508,
+ "slug": "cherry-game-cherry",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 833,
+ "system": "\ud83c\udf52 Cherry \u2014 Go game server framework powered by Actor Model. Serial goroutine per actor, NATS/etcd discovery, pluggable connectors (TCP/WS/HTTP), protobuf & obje",
+ "upstream": "https://github.com/cherry-game/cherry",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

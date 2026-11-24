@@ -1,0 +1,31 @@
+package com.tvd12.ezyfoxserver.testing.socket;
+
+import com.tvd12.test.assertion.Asserts;
+import com.tvd12.test.base.BaseTest;
+import org.testng.annotations.Test;
+
+import java.util.concurrent.LinkedBlockingQueue;
+
+public class LinkedBlockingQueueTest extends BaseTest {
+
+    @Test
+    public void test() throws Exception {
+        LinkedBlockingQueue<Object> queue = new LinkedBlockingQueue<>();
+        Object object1 = new Object();
+        Object object2 = new Object();
+        queue.add(object1);
+        queue.add(object2);
+        System.out.print("\n" + queue.remainingCapacity() + "\n");
+
+        assert queue.take().equals(object1);
+    }
+
+    @Test
+    public void test1() {
+        LinkedBlockingQueue<Object> queue = new LinkedBlockingQueue<>(3);
+        Asserts.assertTrue(queue.offer(new Object()));
+        Asserts.assertTrue(queue.offer(new Object()));
+        Asserts.assertTrue(queue.offer(new Object()));
+        Asserts.assertFalse(queue.offer(new Object()));
+    }
+}

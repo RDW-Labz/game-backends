@@ -2499,3 +2499,11 @@ One line per 15-minute extension tick, newest last.
   - added netcode/trian-gles-girls-with-swords-ggrs (none, reference)
   - reference netcode/drftrun-driftengine
   - reference netcode/wuyuntao-deterministiclockstepnetworking
+
+- **2026-11-24 05:48 UTC** — tick 761: +2 screened, +4 reference, 6 skipped, catalogue=1132
+  - added netcode/cherry-game-cherry (MIT, vendored)
+  - added netcode/youngmonkeys-ezyfox-server (Apache-2.0, vendored)
+  - reference netcode/swingfrog-summer
+  - reference netcode/kingston-csj-mmorpg
+  - reference netcode/onedayitwillmake-realtimemultiplayernodejs
+  - reference netcode/morozovsk-websocket

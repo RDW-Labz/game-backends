@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T05:48:07Z",
+ "category": "netcode",
+ "commit": "45cb44d24ddf",
+ "delivery": "vendored",
+ "description": "youngmonkeys/ezyfox-server \u2014 A socket server (include SSL) supports realtime application, realtime game, MMORPG, messaging, chat and streaming data with TCP, UDP and Websocket",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ezyfox-server",
+ "size_bytes": 1841245,
+ "slug": "youngmonkeys-ezyfox-server",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 688,
+ "system": "A socket server (include SSL) supports realtime application, realtime game, MMORPG, messaging, chat and streaming data with TCP, UDP and Websocket",
+ "upstream": "https://github.com/youngmonkeys/ezyfox-server",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T05:48:09Z",
+ "category": "netcode",
+ "commit": "2026-07-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kingston-csj/mmorpg \u2014 springboot\u7f16\u5199\u7684\u9ad8\u6027\u80fd\u5206\u5e03\u5f0fmmorpg\u624b\u6e38\u670d\u52a1\u7aef\u6846\u67b6\uff0c\u5305\u542b\u4e2d\u5fc3\u670d\uff0c\u7f51\u5173\u670d\uff0c\u6e38\u620f\u670d\uff0c\u6218\u6597\u670d\u7b49\u3002",
+ "language": "kotlin",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "mmorpg",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "kingston-csj-mmorpg",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 561,
+ "system": "springboot\u7f16\u5199\u7684\u9ad8\u6027\u80fd\u5206\u5e03\u5f0fmmorpg\u624b\u6e38\u670d\u52a1\u7aef\u6846\u67b6\uff0c\u5305\u542b\u4e2d\u5fc3\u670d\uff0c\u7f51\u5173\u670d\uff0c\u6e38\u620f\u670d\uff0c\u6218\u6597\u670d\u7b49\u3002",
+ "upstream": "https://github.com/kingston-csj/mmorpg",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

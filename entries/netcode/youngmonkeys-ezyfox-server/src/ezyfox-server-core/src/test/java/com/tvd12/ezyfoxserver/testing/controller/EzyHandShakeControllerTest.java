@@ -1,0 +1,411 @@
+package com.tvd12.ezyfoxserver.testing.controller;
+
+import com.tvd12.ezyfox.constant.EzyConstant;
+import com.tvd12.ezyfox.entity.EzyArray;
+import com.tvd12.ezyfox.security.EzyBase64;
+import com.tvd12.ezyfox.security.EzyKeysGenerator;
+import com.tvd12.ezyfoxserver.EzyServer;
+import com.tvd12.ezyfoxserver.constant.EzyCommand;
+import com.tvd12.ezyfoxserver.constant.EzyConnectionType;
+import com.tvd12.ezyfoxserver.constant.EzyEventType;
+import com.tvd12.ezyfoxserver.context.EzyServerContext;
+import com.tvd12.ezyfoxserver.controller.EzyHandshakeController;
+import com.tvd12.ezyfoxserver.entity.EzyAbstractSession;
+import com.tvd12.ezyfoxserver.entity.EzySession;
+import com.tvd12.ezyfoxserver.event.EzyHandshakeEvent;
+import com.tvd12.ezyfoxserver.request.EzyHandShakeRequest;
+import com.tvd12.ezyfoxserver.request.EzyHandshakeParams;
+import com.tvd12.ezyfoxserver.request.EzySimpleHandshakeRequest;
+import com.tvd12.ezyfoxserver.setting.EzySettings;
+import com.tvd12.ezyfoxserver.setting.EzySocketSetting;
+import com.tvd12.test.assertion.Asserts;
+import com.tvd12.test.performance.Performance;
+import com.tvd12.test.util.RandomUtil;
+import org.testng.annotations.Test;
+
+import java.security.KeyPair;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+
+public class EzyHandShakeControllerTest extends EzyBaseControllerTest {
+
+    @Test
+    public void test() {
+        EzyServerContext ctx = newServerContext();
+        EzySession session = newSession();
+        EzyArray data = newHandShakeData();
+        EzyHandshakeController controller = new EzyHandshakeController();
+        EzySimpleHandshakeRequest request = new EzySimpleHandshakeRequest();
+        request.deserializeParams(data);
+        request.setSession(session);
+        controller.handle(ctx, request);
+    }
+
+    @Test
+    public void testDeserializeParamsPerformance() {
+        EzyArray data = newHandShakeData();
+        long time = Performance.create()
+            .test(() -> {
+                EzySimpleHandshakeRequest request = new EzySimpleHandshakeRequest();
+                request.deserializeParams(data);
+            })
+            .getTime();
+        System.out.println("testDeserializeParamsPerformance, time = " + time);
+    }
+
+    @Test
+    public void handleSocketSSLTest() {
+        // given
+        EzyHandshakeController sut = new EzyHandshakeController();
+        EzyServerContext serverContext = mock(EzyServerContext.class);
+        EzyHandShakeRequest request = mock(EzyHandShakeRequest.class);
+
+        EzyHandshakeParams params = mock(EzyHandshakeParams.class);
+        when(request.getParams()).thenReturn(params);
+
+        EzySession session = spy(EzyAbstractSession.class);
+        when(session.getConnectionType()).thenReturn(EzyConnectionType.SOCKET.getName());
+        when(request.getSession()).thenReturn(session);
+
+        EzyServer server = mock(EzyServer.class);
+        EzySettings settings = mock(EzySettings.class);
+        EzySocketSetting socketSetting = mock(EzySocketSetting.class);
+        when(settings.getSocket()).thenReturn(socketSetting);
+        when(socketSetting.isCustomizationSslActive()).thenReturn(true);
+        when(serverContext.getServer()).thenReturn(server);
+        when(server.getSettings()).thenReturn(settings);
+
+        String clientId = RandomUtil.randomShortHexString();
+        String clientType = RandomUtil.randomShortAlphabetString();
+        String clientVersion = RandomUtil.randomShortAlphabetString();
+        String reconnectToken = RandomUtil.randomShortHexString();
+        KeyPair keyPair = EzyKeysGenerator.builder()
+            .build()
+            .generate();
+        byte[] clientKey = keyPair.getPublic().getEncoded();
+        when(params.getClientId()).thenReturn(clientId);
+        when(params.getClientKey()).thenReturn(clientKey);
+        when(params.getClientType()).thenReturn(clientType);
+        when(params.getClientVersion()).thenReturn(clientVersion);
+        when(params.getReconnectToken()).thenReturn(reconnectToken);
+        when(params.isEnableEncryption()).thenReturn(true);
+
+        // when
+        sut.handle(serverContext, request);
+
+        // then
+        verify(socketSetting, times(1)).isCustomizationSslActive();
+        verify(session, times(1)).setClientId(clientId);
+        verify(session, times(1)).setClientKey(clientKey);
+        verify(session, times(1)).setClientType(clientType);
+        verify(session, times(1)).setClientVersion(clientVersion);
+        verify(session, times(1)).setSessionKey(any(byte[].class));
+        Asserts.assertNotNull(session.getSessionKey());
+    }
+
+    @Test
+    public void handleSocketSSLButWebsocketTest() {
+        // given
+        EzyHandshakeController sut = new EzyHandshakeController();
+        EzyServerContext serverContext = mock(EzyServerContext.class);
+        EzyHandShakeRequest request = mock(EzyHandShakeRequest.class);
+
+        EzyHandshakeParams params = mock(EzyHandshakeParams.class);
+        when(request.getParams()).thenReturn(params);
+
+        EzySession session = spy(EzyAbstractSession.class);
+        when(session.getConnectionType()).thenReturn(EzyConnectionType.WEBSOCKET.getName());
+        when(request.getSession()).thenReturn(session);
+
+        // when
+        sut.handle(serverContext, request);
+
+        // then
+        Asserts.assertNull(session.getSessionKey());
+    }
+
+    @Test
+    public void handleSocketSSLButExtendedConnectionTypeTest() {
+        // given
+        EzyHandshakeController sut = new EzyHandshakeController();
+        EzyServerContext serverContext = mock(EzyServerContext.class);
+        EzyHandShakeRequest request = mock(EzyHandShakeRequest.class);
+
+        EzyHandshakeParams params = mock(EzyHandshakeParams.class);
+        when(params.isEnableEncryption()).thenReturn(true);
+        when(request.getParams()).thenReturn(params);
+
+        EzySession session = spy(EzyAbstractSession.class);
+        when(session.getConnectionType()).thenReturn("MQTT");
+        when(request.getSession()).thenReturn(session);
+
+        // when
+        sut.handle(serverContext, request);
+
+        // then
+        verify(serverContext, never()).getServer();
+        Asserts.assertNull(session.getSessionKey());
+    }
+
+    @Test
+    public void handleSocketSSLButEventNoEncryptionTest() {
+        // given
+        EzyHandshakeController sut = new EzyHandshakeController();
+        EzyServerContext serverContext = mock(EzyServerContext.class);
+        EzyHandShakeRequest request = mock(EzyHandShakeRequest.class);
+
+        EzyHandshakeParams params = mock(EzyHandshakeParams.class);
+        when(request.getParams()).thenReturn(params);
+
+        EzySession session = spy(EzyAbstractSession.class);
+        when(session.getConnectionType()).thenReturn(EzyConnectionType.SOCKET.getName());
+        when(request.getSession()).thenReturn(session);
+
+        EzyServer server = mock(EzyServer.class);
+        EzySettings settings = mock(EzySettings.class);
+        EzySocketSetting socketSetting = mock(EzySocketSetting.class);
+        when(settings.getSocket()).thenReturn(socketSetting);
+        when(socketSetting.isCustomizationSslActive()).thenReturn(true);
+        when(serverContext.getServer()).thenReturn(server);
+        when(server.getSettings()).thenReturn(settings);
+
+        when(params.isEnableEncryption()).thenReturn(false);
+
+        // when
+        sut.handle(serverContext, request);
+
+        // then
+        Asserts.assertNull(session.getSessionKey());
+    }
+
+    @Test
+    public void handleSocketSSLButClientKeyNullTest() {
+        // given
+        EzyHandshakeController sut = new EzyHandshakeController();
+        EzyServerContext serverContext = mock(EzyServerContext.class);
+        EzyHandShakeRequest request = mock(EzyHandShakeRequest.class);
+
+        EzyHandshakeParams params = mock(EzyHandshakeParams.class);
+        when(request.getParams()).thenReturn(params);
+
+        EzySession session = spy(EzyAbstractSession.class);
+        when(session.getConnectionType()).thenReturn(EzyConnectionType.SOCKET.getName());
+        when(request.getSession()).thenReturn(session);
+
+        EzyServer server = mock(EzyServer.class);
+        EzySettings settings = mock(EzySettings.class);
+        EzySocketSetting socketSetting = mock(EzySocketSetting.class);
+        when(settings.getSocket()).thenReturn(socketSetting);
+        when(socketSetting.isCustomizationSslActive()).thenReturn(true);
+        when(serverContext.getServer()).thenReturn(server);
+        when(server.getSettings()).thenReturn(settings);
+
+        String clientId = RandomUtil.randomShortHexString();
+        String clientType = RandomUtil.randomShortAlphabetString();
+        String clientVersion = RandomUtil.randomShortAlphabetString();
+        String reconnectToken = RandomUtil.randomShortHexString();
+        when(params.getClientId()).thenReturn(clientId);
+        when(params.getClientKey()).thenReturn(null);
+        when(params.getClientType()).thenReturn(clientType);
+        when(params.getClientVersion()).thenReturn(clientVersion);
+        when(params.getReconnectToken()).thenReturn(reconnectToken);
+        when(params.isEnableEncryption()).thenReturn(true);
+
+        // when
+        sut.handle(serverContext, request);
+
+        // then
+        verify(session, times(1)).setClientId(clientId);
+        verify(session, times(1)).setClientKey(null);
+        verify(session, times(1)).setClientType(clientType);
+        verify(session, times(1)).setClientVersion(clientVersion);
+        verify(session, times(1)).setSessionKey(any(byte[].class));
+    }
+
+    @Test
+    public void handleSocketSSLButClientKeyEmptyTest() {
+        // given
+        EzyHandshakeController sut = new EzyHandshakeController();
+        EzyServerContext serverContext = mock(EzyServerContext.class);
+        EzyHandShakeRequest request = mock(EzyHandShakeRequest.class);
+
+        EzyHandshakeParams params = mock(EzyHandshakeParams.class);
+        when(request.getParams()).thenReturn(params);
+
+        EzySession session = spy(EzyAbstractSession.class);
+        when(session.getConnectionType()).thenReturn(EzyConnectionType.SOCKET.getName());
+        when(request.getSession()).thenReturn(session);
+
+        EzyServer server = mock(EzyServer.class);
+        EzySettings settings = mock(EzySettings.class);
+        EzySocketSetting socketSetting = mock(EzySocketSetting.class);
+        when(settings.getSocket()).thenReturn(socketSetting);
+        when(socketSetting.isCustomizationSslActive()).thenReturn(true);
+        when(serverContext.getServer()).thenReturn(server);
+        when(server.getSettings()).thenReturn(settings);
+
+        String clientId = RandomUtil.randomShortHexString();
+        String clientType = RandomUtil.randomShortAlphabetString();
+        String clientVersion = RandomUtil.randomShortAlphabetString();
+        String reconnectToken = RandomUtil.randomShortHexString();
+        byte[] clientKey = new byte[0];
+        when(params.getClientId()).thenReturn(clientId);
+        when(params.getClientKey()).thenReturn(clientKey);
+        when(params.getClientType()).thenReturn(clientType);
+        when(params.getClientVersion()).thenReturn(clientVersion);
+        when(params.getReconnectToken()).thenReturn(reconnectToken);
+        when(params.isEnableEncryption()).thenReturn(true);
+
+        // when
+        sut.handle(serverContext, request);
+
+        // then
+        verify(session, times(1)).setClientId(clientId);
+        verify(session, times(1)).setClientKey(clientKey);
+        verify(session, times(1)).setClientType(clientType);
+        verify(session, times(1)).setClientVersion(clientVersion);
+        verify(session, times(1)).setSessionKey(any(byte[].class));
+    }
+
+    @Test
+    public void handleSocketSSLButInvalidClientKeyEmptyTest() {
+        // given
+        EzyHandshakeController sut = new EzyHandshakeController();
+        EzyServerContext serverContext = mock(EzyServerContext.class);
+        EzyHandShakeRequest request = mock(EzyHandShakeRequest.class);
+
+        EzyHandshakeParams params = mock(EzyHandshakeParams.class);
+        when(request.getParams()).thenReturn(params);
+
+        EzySession session = spy(EzyAbstractSession.class);
+        when(session.getConnectionType()).thenReturn(EzyConnectionType.SOCKET.getName());
+        when(request.getSession()).thenReturn(session);
+
+        EzyServer server = mock(EzyServer.class);
+        EzySettings settings = mock(EzySettings.class);
+        EzySocketSetting socketSetting = mock(EzySocketSetting.class);
+        when(settings.getSocket()).thenReturn(socketSetting);
+        when(socketSetting.isCustomizationSslActive()).thenReturn(true);
+        when(serverContext.getServer()).thenReturn(server);
+        when(server.getSettings()).thenReturn(settings);
+
+        String clientId = RandomUtil.randomShortHexString();
+        String clientType = RandomUtil.randomShortAlphabetString();
+        String clientVersion = RandomUtil.randomShortAlphabetString();
+        String reconnectToken = RandomUtil.randomShortHexString();
+        byte[] clientKey = new byte[]{1, 2, 3};
+        when(params.getClientId()).thenReturn(clientId);
+        when(params.getClientKey()).thenReturn(clientKey);
+        when(params.getClientType()).thenReturn(clientType);
+        when(params.getClientVersion()).thenReturn(clientVersion);
+        when(params.getReconnectToken()).thenReturn(reconnectToken);
+        when(params.isEnableEncryption()).thenReturn(true);
+
+        // when
+        sut.handle(serverContext, request);
+
+        // then
+        verify(session, times(1)).setClientId(clientId);
+        verify(session, times(1)).setClientKey(clientKey);
+        verify(session, times(1)).setClientType(clientType);
+        verify(session, times(1)).setClientVersion(clientVersion);
+        verify(session, times(1)).setSessionKey(any(byte[].class));
+    }
+
+    @Test
+    public void handleSocketSSLButSessionKeyNotNullTest() {
+        // given
+        EzyHandshakeController sut = new EzyHandshakeController();
+        byte[] sessionKey = RandomUtil.randomShortAlphabetString()
+            .getBytes();
+        byte[] encryptedSessionKey = RandomUtil.randomShortAlphabetString()
+            .getBytes();
+        EzyServerContext serverContext = mock(EzyServerContext.class);
+        doAnswer(it -> {
+            EzyHandshakeEvent event = it.getArgumentAt(1, EzyHandshakeEvent.class);
+            event.setSessionKey(sessionKey);
+            event.setEncryptedSessionKey(encryptedSessionKey);
+            return null;
+        }).when(serverContext).handleEvent(
+            any(EzyEventType.class),
+            any(EzyHandshakeEvent.class)
+        );
+        EzyHandShakeRequest request = mock(EzyHandShakeRequest.class);
+
+        EzyHandshakeParams params = mock(EzyHandshakeParams.class);
+        when(request.getParams()).thenReturn(params);
+
+        EzySession session = spy(EzyAbstractSession.class);
+        when(session.getConnectionType()).thenReturn(EzyConnectionType.SOCKET.getName());
+        when(request.getSession()).thenReturn(session);
+
+        EzyServer server = mock(EzyServer.class);
+        EzySettings settings = mock(EzySettings.class);
+        EzySocketSetting socketSetting = mock(EzySocketSetting.class);
+        when(settings.getSocket()).thenReturn(socketSetting);
+        when(socketSetting.isCustomizationSslActive()).thenReturn(true);
+        when(serverContext.getServer()).thenReturn(server);
+        when(server.getSettings()).thenReturn(settings);
+
+        String clientId = RandomUtil.randomShortHexString();
+        String clientType = RandomUtil.randomShortAlphabetString();
+        String clientVersion = RandomUtil.randomShortAlphabetString();
+        String reconnectToken = RandomUtil.randomShortHexString();
+        KeyPair keyPair = EzyKeysGenerator.builder()
+            .build()
+            .generate();
+        byte[] clientKey = keyPair.getPublic().getEncoded();
+        when(params.getClientId()).thenReturn(clientId);
+        when(params.getClientKey()).thenReturn(clientKey);
+        when(params.getClientType()).thenReturn(clientType);
+        when(params.getClientVersion()).thenReturn(clientVersion);
+        when(params.getReconnectToken()).thenReturn(reconnectToken);
+        when(params.isEnableEncryption()).thenReturn(true);
+
+        // when
+        sut.handle(serverContext, request);
+
+        // then
+        verify(serverContext, times(1)).handleEvent(
+            any(EzyEventType.class),
+            any(EzyHandshakeEvent.class)
+        );
+        verify(serverContext, times(1)).send(
+            any(com.tvd12.ezyfoxserver.response.EzyResponse.class),
+            any(EzySession.class),
+            any(boolean.class)
+        );
+        verify(session, times(1)).setClientId(clientId);
+        verify(session, times(1)).setClientKey(clientKey);
+        verify(session, times(1)).setClientType(clientType);
+        verify(session, times(1)).setClientVersion(clientVersion);
+        verify(session, times(1)).setSessionKey(sessionKey);
+    }
+
+    private EzyArray newHandShakeData() {
+        KeyPair keyPair = newRSAKeys();
+        return newArrayBuilder()
+            .append("android#1")
+            .append(EzyBase64.encode2utf(keyPair.getPublic().getEncoded()))
+            .append("android")
+            .append("1.0.0")
+            .append(true)
+            .append("reconnectToken#1")
+            .build();
+    }
+
+    @Override
+    protected EzySession newSession() {
+        KeyPair keyPair = newRSAKeys();
+        EzySession session = super.newSession();
+        session.setToken("reconnectToken#1");
+        session.setPublicKey(keyPair.getPublic().getEncoded());
+        return session;
+    }
+
+    @Override
+    protected EzyConstant getCommand() {
+        return EzyCommand.HANDSHAKE;
+    }
+}
