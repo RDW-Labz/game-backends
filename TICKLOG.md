@@ -2407,3 +2407,7 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/krukah-robopoker
   - reference gameplay/oguzeroglu-ego
   - reference gameplay/caesuric-mountain-goap
+
+- **2026-11-24 02:20 UTC** — tick 748: +2 screened, +0 reference, 12 skipped, catalogue=1062
+  - added gameplay/friedforfun-contextsteering (GPL-3.0, reference)
+  - added gameplay/skooter500-unitysteeringbehaviours (MIT, vendored)

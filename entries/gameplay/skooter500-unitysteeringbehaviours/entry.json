@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T02:20:09Z",
+ "category": "gameplay",
+ "commit": "d1c09ce837fd",
+ "delivery": "vendored",
+ "description": "skooter500/UnitySteeringBehaviours \u2014 Steering behaviours for autonomous agents implemented in Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "UnitySteeringBehaviours",
+ "size_bytes": 133391,
+ "slug": "skooter500-unitysteeringbehaviours",
+ "source": "github-search:steering behaviours stars:>15",
+ "stars": 25,
+ "system": "Steering behaviours for autonomous agents implemented in Unity",
+ "upstream": "https://github.com/skooter500/UnitySteeringBehaviours",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

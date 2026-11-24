@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 02:04 UTC · 1060 entries · 278 vendored, 782 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 02:20 UTC · 1062 entries · 279 vendored, 783 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-24 02:04 UTC · 1060 entries · 278 vendored, 782 reference-o
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 153 | 41 | 112 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 155 | 42 | 113 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
@@ -686,7 +686,7 @@ _Generated 2026-11-24 02:04 UTC · 1060 entries · 278 vendored, 782 reference-o
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 153 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 155 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -714,6 +714,7 @@ _Generated 2026-11-24 02:04 UTC · 1060 entries · 278 vendored, 782 reference-o
 | [chess-engine](entries/gameplay/adam-mcdaniel-chess-engine/README.md) | A dependency-free chess engine♟️ library built to run anywhere. | rust | MIT | reference | [adam-mcdaniel/chess-engine](https://github.com/adam-mcdaniel/chess-engine) @ `2024-04-18 (branch tip at catalogue time)` |
 | [cocos-pathfinding](entries/gameplay/goldest-star-cocos-pathfinding/README.md) | Pathfinding 2D in Cocos Creator in cocos creator 3.6 | typescript | none | reference | [goldest-star/cocos-pathfinding](https://github.com/goldest-star/cocos-pathfinding) @ `825183bdc477` |
 | [conan-procedural-quest-generation](entries/gameplay/science-of-imagination-conan-procedural-quest-generation/README.md) | Let CONAN tell you a story: Procedural quest generation | sas | MIT | vendored | [science-of-imagination/conan-procedural-quest-generation](https://github.com/science-of-imagination/conan-procedural-quest-generation) @ `8751d05c8ac8` |
+| [ContextSteering](entries/gameplay/friedforfun-contextsteering/README.md) | Unity package to add context steering behaviours to your GameObjects | c# | GPL-3.0 | reference | [friedforfun/ContextSteering](https://github.com/friedforfun/ContextSteering) @ `1478f88a1cf2` |
 | [DODBT](entries/gameplay/vadimburym-dodbt/README.md) | High-performance Behaviour Tree system inspired by Data-Oriented Design. Zero MonoBehaviour, zero runtime allocations, graph-to-runtime compilation, clean debug | c# | unknown | reference | [vadimburym/DODBT](https://github.com/vadimburym/DODBT) @ `2026-10-21 (branch tip at catalogue time)` |
 | [doryen-rs](entries/gameplay/jice-nospam-doryen-rs/README.md) | ascii roguelike library in rust with native and wasm support | rust | MIT | reference | [jice-nospam/doryen-rs](https://github.com/jice-nospam/doryen-rs) @ `2023-10-12 (branch tip at catalogue time)` |
 | [DSA-Study-Hub](entries/gameplay/toxicbishop-dsa-study-hub/README.md) | DSA Study Hub is an interactive educational web application designed to streamline the learning process for Data Structures and Algorithms (DSA). Built with a m | typescript | GPL-3.0 | reference | [toxicbishop/DSA-Study-Hub](https://github.com/toxicbishop/DSA-Study-Hub) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -832,6 +833,7 @@ _Generated 2026-11-24 02:04 UTC · 1060 entries · 278 vendored, 782 reference-o
 | [Unity-Script-Collection](entries/gameplay/michidk-unity-script-collection/README.md) | A maintained collection of useful & free unity scripts / library's / plugins and extensions | css | GPL-3.0 | reference | [michidk/Unity-Script-Collection](https://github.com/michidk/Unity-Script-Collection) @ `479da93a9da3` |
 | [UnityBehaviourTree](entries/gameplay/grymmyd-unitybehaviourtree/README.md) | A simple behaviour tree implementation for Unity | c# | Apache-2.0 | vendored | [GrymmyD/UnityBehaviourTree](https://github.com/GrymmyD/UnityBehaviourTree) @ `eae4a24ea5bd` |
 | [UnityBehaviourTreeEditor](entries/gameplay/thekiwicoder0-unitybehaviourtreeeditor/README.md) | Behaviour Tree Editor for Unity built with UIToolkit | c# | MIT | reference | [thekiwicoder0/UnityBehaviourTreeEditor](https://github.com/thekiwicoder0/UnityBehaviourTreeEditor) @ `2026-05-14 (branch tip at catalogue time)` |
+| [UnitySteeringBehaviours](entries/gameplay/skooter500-unitysteeringbehaviours/README.md) | Steering behaviours for autonomous agents implemented in Unity | c# | MIT | vendored | [skooter500/UnitySteeringBehaviours](https://github.com/skooter500/UnitySteeringBehaviours) @ `d1c09ce837fd` |
 | [VCMI — spells](entries/gameplay/vcmi-spells/README.md) | combat, AI, pathing, quest or inventory logic | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [veloren — comp](entries/gameplay/veloren-common-src-comp/README.md) | ECS gameplay components (combat, inventory, stats, buffs) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
 | [veloren — inventory](entries/gameplay/veloren-inventory/README.md) | combat, AI, pathing, quest or inventory logic | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |

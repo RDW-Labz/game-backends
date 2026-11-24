@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T02:20:05Z",
+ "category": "gameplay",
+ "commit": "1478f88a1cf2",
+ "delivery": "reference",
+ "description": "friedforfun/ContextSteering \u2014 Unity package to add context steering behaviours to your GameObjects",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "copyleft-reference",
+ "name": "ContextSteering",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 134123,
+ "slug": "friedforfun-contextsteering",
+ "source": "github-search:steering behaviours stars:>15",
+ "stars": 44,
+ "system": "Unity package to add context steering behaviours to your GameObjects",
+ "upstream": "https://github.com/friedforfun/ContextSteering",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
