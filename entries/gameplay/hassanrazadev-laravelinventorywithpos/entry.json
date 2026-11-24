@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:08:07Z",
+ "category": "gameplay",
+ "commit": "2023-12-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hassanrazadev/LaravelInventoryWithPOS \u2014 Inventory Management System With POS in Laravel",
+ "language": "php",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "LaravelInventoryWithPOS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "hassanrazadev-laravelinventorywithpos",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 115,
+ "system": "Inventory Management System With POS in Laravel",
+ "upstream": "https://github.com/hassanrazadev/LaravelInventoryWithPOS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

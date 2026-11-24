@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:08:07Z",
+ "category": "gameplay",
+ "commit": "2024-12-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mhamzashaikh/React-Inventory-Management-System \u2014 Inventory Management Built with React JS, Node JS, Express JS, MongoDB and Tailwind CSS.",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "React-Inventory-Management-System",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mhamzashaikh-react-inventory-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 143,
+ "system": "Inventory Management Built with React JS, Node JS, Express JS, MongoDB and Tailwind CSS.",
+ "upstream": "https://github.com/mhamzashaikh/React-Inventory-Management-System",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

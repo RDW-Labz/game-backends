@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T03:08:06Z",
+ "category": "gameplay",
+ "commit": "f43bfb6439fa",
+ "delivery": "reference",
+ "description": "KenBroTech/Django-Inventory-Management-System \u2014 This is a Django Inventory Management System Web Application. This course contains the basics of Django to intermediary and advanced concepts in Django, Web Development and Software Engineering as a whole.This project covers building an interface using bootstrap, integration with Chartjs for data visualization for the interface and the CRUD functionalities of a database-driven application.",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Django-Inventory-Management-System",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 1169416,
+ "slug": "kenbrotech-django-inventory-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 150,
+ "system": "This is a Django Inventory Management System Web Application. This course contains the basics of Django to intermediary and advanced concepts in Django, Web Dev",
+ "upstream": "https://github.com/KenBroTech/Django-Inventory-Management-System",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

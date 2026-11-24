@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T03:08:03Z",
+ "category": "gameplay",
+ "commit": "0e2a20f67e60",
+ "delivery": "reference",
+ "description": "coyer1986/inventory-system-3814 \u2014 Project repository created at 2025-10-14",
+ "language": "n/a",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "inventory-system-3814",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "coyer1986-inventory-system-3814",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 151,
+ "system": "Project repository created at 2025-10-14",
+ "upstream": "https://github.com/coyer1986/inventory-system-3814",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

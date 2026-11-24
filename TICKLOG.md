@@ -2427,3 +2427,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/heymity-universalinventorysystem
   - reference gameplay/mamun724682-inventory-management-system-laravel-spa
   - reference gameplay/uxkero-anydesign
+
+- **2026-11-24 03:08 UTC** — tick 751: +2 screened, +4 reference, 12 skipped, catalogue=1080
+  - added gameplay/coyer1986-inventory-system-3814 (none, reference)
+  - added gameplay/kenbrotech-django-inventory-management-system (none, reference)
+  - reference gameplay/mhamzashaikh-react-inventory-management-system
+  - reference gameplay/imran300-inventory
+  - reference gameplay/sniffle6-scriptable-object-inventory
+  - reference gameplay/hassanrazadev-laravelinventorywithpos
