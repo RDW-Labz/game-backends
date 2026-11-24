@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:17:49Z",
+ "category": "engines",
+ "commit": "2021-05-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OBKF/Godot-Trail-System \u2014 Advanced trail/ribbon plugin for the Godot Engine",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Godot-Trail-System",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "obkf-godot-trail-system",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 369,
+ "system": "Advanced trail/ribbon plugin for the Godot Engine",
+ "upstream": "https://github.com/OBKF/Godot-Trail-System",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

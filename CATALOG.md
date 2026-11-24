@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 23:01 UTC · 1415 entries · 366 vendored, 1049 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 23:17 UTC · 1421 entries · 368 vendored, 1053 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 608 | 144 | 464 |
+| [engines](#engines) — Game engines and engine subsystems | 614 | 146 | 468 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 23:01 UTC · 1415 entries · 366 vendored, 1049 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 608 entries
+**Game engines and engine subsystems** — 614 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -109,10 +109,12 @@ _Generated 2026-11-24 23:01 UTC · 1415 entries · 366 vendored, 1049 reference-
 | [BRING](entries/engines/eva-e1-bring/README.md) | Next generation role-playing with LLM - with AI world and intelligent NPCs and multi-faceted Graph memory for all entities and a rich pipline and multi agent | python | Apache-2.0 | vendored | [Eva-E1/BRING](https://github.com/Eva-E1/BRING) @ `e907dee1b2a5` |
 | [brood](entries/engines/anders429-brood/README.md) | A fast and flexible entity component system library. | rust | Apache-2.0 | vendored | [Anders429/brood](https://github.com/Anders429/brood) @ `ec031b20531c` |
 | [BRUTAL](entries/engines/ahwootech-brutal/README.md) | A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. T | c# | unknown | reference | [ahwootech/BRUTAL](https://github.com/ahwootech/BRUTAL) @ `2026-11-12 (branch tip at catalogue time)` |
+| [BulletUpHell](entries/engines/dark-peace-bulletuphell/README.md) | Most feature-packed Bullethell Engine. All in 1 plugin for Godot 3 & 4. | gdscript | MIT | reference | [Dark-Peace/BulletUpHell](https://github.com/Dark-Peace/BulletUpHell) @ `2026-05-13 (branch tip at catalogue time)` |
 | [calcium](entries/engines/cptx032-calcium/README.md) | A ascii/text game library | python | MIT | reference | [cptx032/calcium](https://github.com/cptx032/calcium) @ `2022-11-11 (branch tip at catalogue time)` |
 | [canvas_ity](entries/engines/a-e-k-canvas-ity/README.md) | A tiny, single-header <canvas>-like 2D rasterizer for C++ | c++ | ISC | reference | [a-e-k/canvas_ity](https://github.com/a-e-k/canvas_ity) @ `2024-02-29 (branch tip at catalogue time)` |
 | [carimbo](entries/engines/willtobyte-carimbo/README.md) | A 2D game engine developed in modern C++ using SDL, an Entity-Component-System (ECS) architecture, miniaudio, and Box2D. It features Lua scripting and is design | c++ | MIT | vendored | [willtobyte/carimbo](https://github.com/willtobyte/carimbo) @ `5200981fa462` |
 | [carp — core](entries/engines/carp-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | Apache-2.0 | vendored | [carp-lang/Carp](https://github.com/carp-lang/Carp) @ `ad5a96e` |
+| [cartographer](entries/engines/awkwardpolygons-cartographer/README.md) | A GPU powered Terrain editor and renderer for Godot Engine | gdscript | Apache-2.0 | vendored | [awkwardpolygons/cartographer](https://github.com/awkwardpolygons/cartographer) @ `8703a0e9eabc` |
 | [cat-game-engine](entries/engines/kayjames196-cat-game-engine/README.md) | Cat Game Engine: three-level abstraction game engine with unbound architecture | typescript | none | reference | [KayJames196/cat-game-engine](https://github.com/KayJames196/cat-game-engine) @ `dba965822d7d` |
 | [CBG----Clavierhaus-BackGammon — engine-core](entries/engines/cbg-clavierhaus-backgammon-engine-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [clavierhaus/gnubg-android](https://github.com/clavierhaus/gnubg-android) @ `6202857` |
 | [cgl](entries/engines/jaysmito101-cgl/README.md) | CGL (C Game Library) is a multipurpose library mainly for recreational coding / demo scenes / prototyping / small games / experimentation.  | javascript | MIT | vendored | [Jaysmito101/cgl](https://github.com/Jaysmito101/cgl) @ `bca6e65157a7` |
@@ -280,9 +282,12 @@ _Generated 2026-11-24 23:01 UTC · 1415 entries · 366 vendored, 1049 reference-
 | [Godot-MCP-Native](entries/engines/yurineko73-godot-mcp-native/README.md) | 一款支持godot开源引擎的的mcp插件，支持常见godot引擎操作，使用Godot原生实现MCPServer，无需安装依赖，开箱即用，支持多种AI工具调用。An MCP plugin that supports the open-source Godot engine, enabling common Godot e | gdscript | MIT | reference | [yurineko73/Godot-MCP-Native](https://github.com/yurineko73/Godot-MCP-Native) @ `2026-08-03 (branch tip at catalogue time)` |
 | [godot-mcp-runtime](entries/engines/erodenn-godot-mcp-runtime/README.md) | A lightweight, zero-footprint TypeScript MCP server that lets AI assistants drive the Godot 4.x game engine. | typescript | MIT | vendored | [Erodenn/godot-mcp-runtime](https://github.com/Erodenn/godot-mcp-runtime) @ `3b8a4f311d29` |
 | [godot-minimal-theme](entries/engines/passivestar-godot-minimal-theme/README.md) | Godot Minimal Theme | n/a | MIT | vendored | [passivestar/godot-minimal-theme](https://github.com/passivestar/godot-minimal-theme) @ `3250c3c79860` |
+| [Godot-PerfBullets](entries/engines/moonzel-godot-perfbullets/README.md) | This plugin uses the MultiMeshInstance2D to render thousands of bullets easily while running the logic in C++ to run at maximum performance.  | c++ | MIT | vendored | [Moonzel/Godot-PerfBullets](https://github.com/Moonzel/Godot-PerfBullets) @ `80829fb0cf41` |
 | [godot-ply](entries/engines/jarneson-godot-ply/README.md) | Godot plugin for in-editor box modeling | gdscript | MIT | reference | [jarneson/godot-ply](https://github.com/jarneson/godot-ply) @ `2024-12-20 (branch tip at catalogue time)` |
 | [godot-road-generator](entries/engines/theduckcow-godot-road-generator/README.md) | A Godot plugin for creating 3D highways/streets and lane-following traffic | gdscript | MIT | reference | [TheDuckCow/godot-road-generator](https://github.com/TheDuckCow/godot-road-generator) @ `2026-11-22 (branch tip at catalogue time)` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
+| [godot-softbody2d](entries/engines/appsinacup-godot-softbody2d/README.md) | Godot SoftBody2D - Plugin that adds deformable 2D soft body. | gdscript | MIT | reference | [appsinacup/godot-softbody2d](https://github.com/appsinacup/godot-softbody2d) @ `2026-08-15 (branch tip at catalogue time)` |
+| [Godot-Trail-System](entries/engines/obkf-godot-trail-system/README.md) | Advanced trail/ribbon plugin for the Godot Engine | gdscript | MIT | reference | [OBKF/Godot-Trail-System](https://github.com/OBKF/Godot-Trail-System) @ `2021-05-29 (branch tip at catalogue time)` |
 | [godot-voip](entries/engines/ikbencasdoei-godot-voip/README.md) | godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project. | rust | MIT | reference | [ikbencasdoei/godot-voip](https://github.com/ikbencasdoei/godot-voip) @ `2024-09-22 (branch tip at catalogue time)` |
 | [Godot-Voxel-Game-MineCraftClone](entries/engines/toger5-godot-voxel-game-minecraftclone/README.md) | This is a Godot project where I try to get familiar with the Engine. | gdscript | MIT | reference | [toger5/Godot-Voxel-Game-MineCraftClone](https://github.com/toger5/Godot-Voxel-Game-MineCraftClone) @ `2016-04-06 (branch tip at catalogue time)` |
 | [godot-vscode-plugin](entries/engines/godotengine-godot-vscode-plugin/README.md) | Godot development tools for VSCode | typescript | MIT | reference | [godotengine/godot-vscode-plugin](https://github.com/godotengine/godot-vscode-plugin) @ `2026-09-10 (branch tip at catalogue time)` |
@@ -621,6 +626,7 @@ _Generated 2026-11-24 23:01 UTC · 1415 entries · 366 vendored, 1049 reference-
 | [Xelmish](entries/engines/chrispritchard-xelmish/README.md) | XNA + Elmish - 2D game development framework with F# | f# | MIT | vendored | [ChrisPritchard/Xelmish](https://github.com/ChrisPritchard/Xelmish) @ `ada01cf32ad4` |
 | [XNAGameStudio](entries/engines/simondarksidej-xnagamestudio/README.md) | The Education library from the Xbox Live Indie games repository, valuable for MonoGame Developers for advanced samples | n/a | MIT | reference | [SimonDarksideJ/XNAGameStudio](https://github.com/SimonDarksideJ/XNAGameStudio) @ `2025-11-14 (branch tip at catalogue time)` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
+| [yard-godot](entries/engines/elliotfontaine-yard-godot/README.md) | YARD is an editor plugin for Godot to manage resources and query them at runtime, with a table view in the editor as the cherry on top. | gdscript | unknown | reference | [elliotfontaine/yard-godot](https://github.com/elliotfontaine/yard-godot) @ `2026-11-14 (branch tip at catalogue time)` |
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Yugens-Terrain-Authoring-Toolkit](entries/engines/toumakamijou-yugens-terrain-authoring-toolkit/README.md) | The public version of the Marching Squares Terrain plugin for godot. | gdscript | MIT | reference | [ToumaKamijou/Yugens-Terrain-Authoring-Toolkit](https://github.com/ToumaKamijou/Yugens-Terrain-Authoring-Toolkit) @ `2026-10-04 (branch tip at catalogue time)` |
 | [Yuris-Revenge](entries/engines/cookgreen-yuris-revenge/README.md) | A Red Alert 2 Yuri's Revenge mod for OpenRA Engine | c# | GPL-3.0 | reference | [cookgreen/Yuris-Revenge](https://github.com/cookgreen/Yuris-Revenge) @ `2024-11-30 (branch tip at catalogue time)` |

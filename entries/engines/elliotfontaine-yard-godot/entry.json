@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:17:49Z",
+ "category": "engines",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "elliotfontaine/yard-godot \u2014 YARD is an editor plugin for Godot to manage resources and query them at runtime, with a table view in the editor as the cherry on top.",
+ "language": "gdscript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "yard-godot",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "elliotfontaine-yard-godot",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 376,
+ "system": "YARD is an editor plugin for Godot to manage resources and query them at runtime, with a table view in the editor as the cherry on top.",
+ "upstream": "https://github.com/elliotfontaine/yard-godot",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

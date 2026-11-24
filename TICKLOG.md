@@ -2892,3 +2892,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/toumakamijou-yugens-terrain-authoring-toolkit
   - reference engines/icterusgames-simplegrasstextured
   - reference engines/daxianlee-godot-mcp
+
+- **2026-11-24 23:17 UTC** — tick 817: +2 screened, +4 reference, 10 skipped, catalogue=1421
+  - added engines/moonzel-godot-perfbullets (MIT, vendored)
+  - added engines/awkwardpolygons-cartographer (Apache-2.0, vendored)
+  - reference engines/appsinacup-godot-softbody2d
+  - reference engines/elliotfontaine-yard-godot
+  - reference engines/dark-peace-bulletuphell
+  - reference engines/obkf-godot-trail-system

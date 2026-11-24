@@ -1,0 +1,69 @@
+[gd_resource type="Resource" load_steps=11 format=2]
+
+[ext_resource path="res://addons/cartographer/texture_painter/paint_brushes_res.gd" type="Script" id=1]
+[ext_resource path="res://addons/cartographer/brush_masks/round_2.exr" type="Texture" id=2]
+[ext_resource path="res://addons/cartographer/texture_painter/paint_brush_res.gd" type="Script" id=3]
+[ext_resource path="res://addons/cartographer/brush_masks/round_3.exr" type="Texture" id=5]
+[ext_resource path="res://addons/cartographer/brush_masks/round_1.exr" type="Texture" id=6]
+[ext_resource path="res://addons/cartographer/brush_masks/round_4.exr" type="Texture" id=7]
+
+[sub_resource type="Resource" id=1]
+script = ExtResource( 3 )
+brush_mask = ExtResource( 6 )
+mask_channel = 0
+brush_strength = 0.67
+brush_scale = 2.61
+brush_rotation = 0.0
+brush_spacing = 0.0
+brush_strength_jitter = 0.0
+brush_scale_jitter = 0.0
+brush_rotation_jitter = 0.0
+brush_spacing_jitter = 0.0
+
+[sub_resource type="Resource" id=2]
+script = ExtResource( 3 )
+brush_mask = ExtResource( 2 )
+mask_channel = 0
+brush_strength = 0.45
+brush_scale = 0.62
+brush_rotation = 0.0
+brush_spacing = 0.0
+brush_strength_jitter = 0.0
+brush_scale_jitter = 0.0
+brush_rotation_jitter = 0.0
+brush_spacing_jitter = 0.0
+
+[sub_resource type="Resource" id=3]
+script = ExtResource( 3 )
+brush_mask = ExtResource( 5 )
+mask_channel = 0
+brush_strength = 0.13
+brush_scale = 0.18
+brush_rotation = 0.0
+brush_spacing = 0.0
+brush_strength_jitter = 0.0
+brush_scale_jitter = 0.0
+brush_rotation_jitter = 0.0
+brush_spacing_jitter = 0.0
+
+[sub_resource type="Resource" id=4]
+script = ExtResource( 3 )
+brush_mask = ExtResource( 7 )
+mask_channel = 0
+brush_strength = 0.33
+brush_scale = 3.55
+brush_rotation = 0.0
+brush_spacing = 0.0
+brush_strength_jitter = 0.0
+brush_scale_jitter = 0.0
+brush_rotation_jitter = 0.0
+brush_spacing_jitter = 0.0
+
+[resource]
+script = ExtResource( 1 )
+data = {
+"res://addons/cartographer/brush_masks/round_1.exr": SubResource( 1 ),
+"res://addons/cartographer/brush_masks/round_2.exr": SubResource( 2 ),
+"res://addons/cartographer/brush_masks/round_3.exr": SubResource( 3 ),
+"res://addons/cartographer/brush_masks/round_4.exr": SubResource( 4 )
+}

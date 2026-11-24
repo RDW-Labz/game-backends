@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T23:17:30Z",
+ "category": "engines",
+ "commit": "80829fb0cf41",
+ "delivery": "vendored",
+ "description": "Moonzel/Godot-PerfBullets \u2014 This plugin uses the MultiMeshInstance2D to render thousands of bullets easily while running the logic in C++ to run at maximum performance.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Godot-PerfBullets",
+ "size_bytes": 62997,
+ "slug": "moonzel-godot-perfbullets",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 426,
+ "system": "This plugin uses the MultiMeshInstance2D to render thousands of bullets easily while running the logic in C++ to run at maximum performance. ",
+ "upstream": "https://github.com/Moonzel/Godot-PerfBullets",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

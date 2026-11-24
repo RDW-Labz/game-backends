@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T23:17:48Z",
+ "category": "engines",
+ "commit": "8703a0e9eabc",
+ "delivery": "vendored",
+ "description": "awkwardpolygons/cartographer \u2014 A GPU powered Terrain editor and renderer for Godot Engine",
+ "language": "gdscript",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cartographer",
+ "size_bytes": 97827,
+ "slug": "awkwardpolygons-cartographer",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 390,
+ "system": "A GPU powered Terrain editor and renderer for Godot Engine",
+ "upstream": "https://github.com/awkwardpolygons/cartographer",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
