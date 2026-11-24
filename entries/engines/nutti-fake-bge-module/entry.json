@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:13:21Z",
+ "category": "engines",
+ "commit": "2026-07-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "nutti/fake-bge-module \u2014 Fake BGE API module collection for the code completion.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "fake-bge-module",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "nutti-fake-bge-module",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 26,
+ "system": "Fake BGE API module collection for the code completion. ",
+ "upstream": "https://github.com/nutti/fake-bge-module",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

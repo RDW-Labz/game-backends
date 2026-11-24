@@ -1,0 +1,67 @@
+/***************************************************************************
+                        rigidcomplex.h  -  description
+                             -------------------
+    begin                : Tue Jul 15 2003
+    copyright            : (C) 2003 by Harry Kalogirou
+    email                : harkal@sylphis3d.com
+   ***************************************************************************
+    This file is part of "Sylphis3D Game Engine".
+
+	Copyright (c) 2013 Charilaos Kalogirou.
+	All rights reserved.
+
+	Redistribution and use in source and binary forms are permitted
+	provided that the above copyright notice and this paragraph are
+	duplicated in all such forms and that any documentation,
+	advertising materials, and other materials related to such
+	distribution and use acknowledge that the software was developed
+	by Charilaos Kalogirou. The name of the
+	Charilaos Kalogirou may not be used to endorse or promote products derived
+	from this software without specific prior written permission.
+	THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
+	IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ ***************************************************************************/
+
+#ifndef RIGIDCOMPLEX_H
+#define RIGIDCOMPLEX_H
+
+#include <rigidbody.h>
+#include <vector>
+
+class CRigidComplex : public CRigidBody {
+public:
+	CRigidComplex(S32 parent, CSceneObject *so = 0, const CVector3 &d = CVector3::ZERO);
+	virtual ~CRigidComplex();
+
+
+    void addBox(F32 mass, F32 x, F32 y, F32 z);
+    void addSphere(F32 mass, F32 radius);
+    void addCapsule(F32 mass, F32 radius, F32 height);
+
+    void translateLast(const CVector3 &v);
+    void addLastMass();
+
+    void fixate();
+
+	void setDimentions(const CVector3 &d);
+	CVector3 getDimentions();
+
+	virtual void setDensity(F32 density);
+    virtual void setMass(F32 mass);
+	virtual void fitToVertices(CVector3 *v, S32 num);
+    virtual void draw() const;
+protected:
+    typedef std::vector<dGeomID> GeomVector;
+	CVector3 mDimentions;
+    GeomVector mGeomIDs;
+    dMass mMass;
+    dMass mLastMass;
+    dGeomID mLastGeom;
+    dGeomID mLastTran;
+    dSpaceID mParent;
+};
+
+#endif
+
+

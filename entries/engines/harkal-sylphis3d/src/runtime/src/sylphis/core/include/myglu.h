@@ -1,0 +1,60 @@
+/***************************************************************************
+                          myglu.h  -  description
+                             -------------------
+    begin                : Wed Mar 20 2002
+    copyright            : (C) 2002 by Harry Kalogirou
+    email                : harkal@sylphis3d.com
+  ***************************************************************************
+    This file is part of "Sylphis3D Game Engine".
+
+	Copyright (c) 2013 Charilaos Kalogirou.
+	All rights reserved.
+
+	Redistribution and use in source and binary forms are permitted
+	provided that the above copyright notice and this paragraph are
+	duplicated in all such forms and that any documentation,
+	advertising materials, and other materials related to such
+	distribution and use acknowledge that the software was developed
+	by Charilaos Kalogirou. The name of the
+	Charilaos Kalogirou may not be used to endorse or promote products derived
+	from this software without specific prior written permission.
+	THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
+	IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
+	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ ***************************************************************************/
+
+#ifndef _MYGLU_H_
+#define _MYGLU_H_
+
+#include <openglext.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+GLint myScaleImage( GLenum format,
+                              GLsizei widthin, GLsizei heightin,
+                              GLenum typein, const void *datain,
+                              GLsizei widthout, GLsizei heightout,
+                              GLenum typeout, void *dataout );
+
+
+GLint myBuild2DMipmaps( GLenum target, GLint components,
+                         GLsizei width, GLsizei height, GLenum format,
+                         GLenum type, const void *data );
+
+
+//void gluPerspective( GLdouble fovy, GLdouble aspect,
+//                     GLdouble zNear, GLdouble zFar );
+
+void gluPerspectiveInf( GLdouble fov, GLdouble aspectr, GLdouble zNear);
+
+//void gluLookAt( GLdouble eyex, GLdouble eyey, GLdouble eyez,
+//                GLdouble centerx, GLdouble centery, GLdouble centerz,
+//                GLdouble upx, GLdouble upy, GLdouble upz );
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

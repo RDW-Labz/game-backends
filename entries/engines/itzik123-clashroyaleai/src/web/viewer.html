@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clash Royale Env — Game Replay Viewer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    /* Chrome is greyscale. The only colour outside the arena is team identity
+       (blue/red) and the two status accents below, which carry meaning. */
+    --bg-primary: #0B0B0C;
+    --bg-secondary: #101012;
+    --bg-panel: #141416;
+    --bg-card: #1C1C1F;
+    --bg-hover: #26262A;
+    --border: #26262A;
+    --text-primary: #F5F5F5;
+    --text-secondary: #A1A1A6;
+    --text-muted: #6E6E73;
+    --blue-team: #4a9eff;
+    --blue-team-dim: #2a5a99;
+    --red-team: #ff5252;
+    --red-team-dim: #992a2a;
+    --accent-green: #4ade80;
+    --accent-yellow: #facc15;
+    /* Arena palette, matched to the real game: one lawn with a two-tone mown
+       checker, a cyan river, wood bridges and tan lane paths. The only
+       saturated colour on the page, so the board is what the eye goes to. */
+    --grass-light: #93C756;
+    --grass-dark: #84BC46;
+    --river: #37BEDC;
+    --river-edge: #2AA5C2;
+    --bridge-deck: #B4813F;
+    --bridge-seam: #8A5F2B;
+    --lane-path: #CFC08F;
+    --arena-surround: #2E4A1C;
+    --badge-ground: #C9C9CE;
+    --badge-air: #8E8E93;
+    --badge-building: #6E6E73;
+    --badge-spell: #B9B9C0;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    height: 52px;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header h1 {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--text-primary);
+  }
+  .header .badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+  }
+  .header .result-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    display: none;
+  }
+  .header .result-badge.show { display: inline-block; }
+  .header .result-badge.win-blue { color: var(--blue-team); border-color: var(--blue-team-dim); background: rgba(74,158,255,0.1); }
+  .header .result-badge.win-red { color: var(--red-team); border-color: var(--red-team-dim); background: rgba(255,82,82,0.1); }
+  .header .result-badge.draw { color: var(--accent-yellow); background: rgba(250,204,21,0.08); }
+
+  /* Main layout */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* Canvas area */
+  .arena-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    min-width: 0;
+    min-height: 0;
+  }
+  .arena-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .gauge-panel {
+    width: 200px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .gauge-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+  }
+  .gauge-value {
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    margin-top: -10px;
+  }
+  .gauge-action {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .gauge-action strong { color: var(--text-primary); }
+  .canvas-wrapper {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 0 1px var(--border);
+    max-height: 100%;
+    max-width: 100%;
+    display: flex;
+  }
+  canvas {
+    display: block;
+    cursor: crosshair;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  /* Controls bar */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .controls button {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .controls button:hover { background: var(--bg-hover); }
+  .controls button.active {
+    background: var(--blue-team);
+    border-color: var(--blue-team);
+    color: #fff;
+  }
+  .scrubber-container { flex: 1; display: flex; align-items: center; gap: 8px; }
+  .scrubber {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--bg-card);
+    outline: none;
+  }
+  .scrubber::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--blue-team);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(74, 158, 255, 0.4);
+  }
+  .tick-display {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 100px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Elixir phase badge. Colour carries the phase as well as the text: a reader
+     scrubbing the timeline watches for the change, not the glyph. */
+  .elixir-phase {
+    font-size: 13px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 10px;
+    letter-spacing: 0.3px;
+    font-variant-numeric: tabular-nums;
+    border: 1px solid transparent;
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+  .elixir-phase.phase-1 {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.10);
+  }
+  .elixir-phase.phase-2 {
+    color: #e9b8ff;
+    background: rgba(186, 85, 255, 0.16);
+    border-color: rgba(186, 85, 255, 0.45);
+  }
+  .elixir-phase.phase-3 {
+    color: #ffd6f2;
+    background: rgba(255, 64, 190, 0.20);
+    border-color: rgba(255, 64, 190, 0.60);
+  }
+  .speed-label {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .speed-select {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 300px;
+    background: var(--bg-secondary);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .panel {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  /* Panel primitives, on an 8px scale */
+  .stat-row {
+    display: grid;
+    grid-template-columns: 38px 1fr 40px;
+    align-items: center;
+    gap: 8px;
+    height: 24px;
+  }
+  .stat-key {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+  }
+  .stat-num {
+    font-size: 13px;
+    font-weight: 600;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-primary);
+  }
+  .meter {
+    height: 6px;
+    background: var(--bg-card);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .meter-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--text-primary);
+    transition: width 0.12s linear;
+  }
+
+  /* Hands */
+  .hand-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .card-tile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 11px;
+    min-width: 0;
+  }
+  .card-tile .nm {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-primary);
+  }
+  .card-tile .cost {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+  /* Dimmed when the card costs more than that side's current elixir. */
+  .card-tile.unaffordable { opacity: 0.34; }
+  .hand-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
+  }
+  .empty-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* Tower HP */
+  .tower-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .tower-card {
+    background: var(--bg-primary);
+    border-radius: 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+  }
+  .tower-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .tower-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+  .tower-hp-num {
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .tower-card.destroyed { opacity: 0.45; }
+
+  /* Entity inspector */
+  .inspector-empty {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  .inspector-detail {
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  .inspector-detail span {
+    color: var(--text-secondary);
+  }
+  .inspector-detail strong {
+    color: var(--text-primary);
+  }
+  .inspector-note {
+    margin-top: 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* Event log */
+  .event-log {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 100px;
+  }
+  .event-log-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .event {
+    font-size: 11px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: var(--bg-primary);
+    line-height: 1.4;
+  }
+  .event-spawn { border-left: 2px solid var(--accent-green); }
+  .event-death { border-left: 2px solid var(--red-team); }
+  .event-tick {
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    margin-right: 4px;
+  }
+
+  /* Drop zone overlay */
+  .drop-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 17, 23, 0.92);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .drop-overlay.hidden { display: none; }
+  .drop-box {
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 60px 80px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .drop-box.drag-over { border-color: var(--blue-team); }
+  .drop-icon { font-size: 48px; margin-bottom: 16px; }
+  .drop-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .drop-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+  .file-input-btn {
+    background: var(--text-secondary);
+    border: none;
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .file-input-btn:hover { opacity: 0.9; }
+  #fileInput { display: none; }
+
+
+  /* Simulation View. A slide-over, not a modal: the arena shrinks beside it
+     rather than being covered, so the prediction can be compared with what
+     happened next. */
+  .sim-panel {
+    /* Sized by flex-basis, not width: flex-basis is the property that feeds the
+       flex algorithm, and `width` was ignored here. */
+    flex: 0 0 0px;
+    overflow: hidden;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    /* No transition on the sizing property: a transition runs on the animation
+       clock and does not advance while the page is not painted, which left the
+       panel stuck closed. Snapping open always works. */
+  }
+  .sim-panel.open { flex-basis: 400px; }
+  .sim-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .sim-close {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: 13px; padding: 2px 6px;
+  }
+  .sim-close:hover { color: var(--text-primary); }
+  .sim-body {
+    overflow-y: auto;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .sim-chip { font-size: 12px; }
+  .sim-chip[disabled] { opacity: 0.35; cursor: default; }
+  .sim-chip.active { background: var(--text-primary); color: var(--bg-primary); border-color: var(--text-primary); }
+
+  .sim-baseline {
+    font-size: 11px;
+    color: var(--text-secondary);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    line-height: 1.5;
+  }
+  .sim-baseline strong { color: var(--text-primary); }
+  .sim-meta {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  .sim-row {
+    border: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    padding: 9px 10px;
+    background: var(--bg-card);
+  }
+  .sim-row.chosen {
+    border-left-color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+  .sim-row.rejected { opacity: 0.62; }
+  .sim-row-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 11px;
+    margin-bottom: 7px;
+  }
+  .sim-row-head .lbl { color: var(--text-primary); min-width: 0; }
+  .sim-score {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  .sim-boards {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .sim-boards canvas {
+    border-radius: 4px;
+    flex: 1;
+    min-width: 0;
+    height: auto;
+  }
+  .sim-arrow { color: var(--text-muted); font-size: 15px; flex-shrink: 0; }
+  .sim-strip {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .sim-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    padding: 24px 10px;
+    line-height: 1.6;
+  }
+  .sim-divider {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    text-align: center;
+    padding: 2px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 2px;
+  }
+
+  /* Winner overlay */
+  .winner-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 11, 16, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    z-index: 40;
+  }
+  .winner-overlay.show { opacity: 1; }
+  .winner-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 48px;
+    text-align: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .winner-icon { font-size: 40px; margin-bottom: 8px; }
+  .winner-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .winner-title.win-blue { color: var(--blue-team); }
+  .winner-title.win-red { color: var(--red-team); }
+  .winner-title.draw { color: var(--accent-yellow); }
+  .winner-subtitle { font-size: 13px; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<!-- Drop zone (shown when no file loaded) -->
+<div class="drop-overlay" id="dropOverlay">
+  <div class="drop-box" id="dropBox">
+    <div class="drop-icon">🏰</div>
+    <div class="drop-title">Clash Royale Replay Viewer</div>
+    <div class="drop-subtitle">Drop a game log JSON file here, or click to browse</div>
+    <button class="file-input-btn" onclick="document.getElementById('fileInput').click()">Choose File</button>
+    <input type="file" id="fileInput" accept=".json">
+  </div>
+</div>
+
+<!-- Main UI (shown after file loaded) -->
+<div class="header">
+  <div class="header-left">
+    <h1>🏰 Clash Royale Env — Replay Viewer</h1>
+    <span class="badge" id="fileNameBadge">No file</span>
+    <span class="result-badge" id="resultBadge"></span>
+  </div>
+  <button class="file-input-btn" style="font-size:12px; padding:5px 14px;" onclick="document.getElementById('fileInput').click()">Load New</button>
+</div>
+
+<div class="main-layout">
+  <aside class="sim-panel" id="simPanel" aria-hidden="true">
+    <div class="sim-head">
+      <span class="panel-title" style="margin:0">Simulation View</span>
+      <button class="sim-close" id="simClose" title="Close (T)">&#10005;</button>
+    </div>
+    <div class="sim-body" id="simBody"></div>
+  </aside>
+  <div class="arena-panel">
+    <div class="arena-row">
+      <div class="gauge-panel">
+        <div class="gauge-title">Agent Brain (Blue)</div>
+        <canvas id="gaugeCanvas" width="200" height="140"></canvas>
+        <div class="gauge-value" id="gaugeValueText">--</div>
+        <div class="gauge-action" id="gaugeActionText">--</div>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="gameCanvas"></canvas>
+        <div class="winner-overlay" id="winnerOverlay">
+          <div class="winner-card">
+            <div class="winner-icon" id="winnerIcon">🏆</div>
+            <div class="winner-title" id="winnerTitle">--</div>
+            <div class="winner-subtitle" id="winnerSubtitle">--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <!-- Match state -->
+    <div class="panel">
+      <div class="panel-title">Elixir</div>
+      <div class="stat-row">
+        <span class="stat-key" style="color:var(--blue-team)">BLUE</span>
+        <div class="meter"><div class="meter-fill" id="elixirBarAI"></div></div>
+        <span class="stat-num" id="elixirValAI">5.0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-key" style="color:var(--red-team)">RED</span>
+        <div class="meter"><div class="meter-fill" id="elixirBarOpp"></div></div>
+        <span class="stat-num" id="elixirValOpp">5.0</span>
+      </div>
+    </div>
+
+    <!-- Player Hands -->
+    <div class="panel">
+      <div class="panel-title">Hands</div>
+      <div class="hand-label" style="color:var(--blue-team)">BLUE</div>
+      <div class="hand-grid" id="handCardsAI"></div>
+      <div class="hand-label" style="color:var(--red-team)">RED</div>
+      <div class="hand-grid" id="handCardsOpp"></div>
+    </div>
+
+    <!-- Tower HP -->
+    <div class="panel">
+      <div class="panel-title">Tower Health</div>
+      <div class="tower-grid" id="towerGrid"></div>
+    </div>
+
+    <!-- Entity Inspector -->
+    <div class="panel">
+      <div class="panel-title">Entity Inspector</div>
+      <div id="inspectorContent"><div class="inspector-empty">Click an entity on the arena</div></div>
+    </div>
+
+    <!-- Event Log -->
+    <div class="panel event-log">
+      <div class="panel-title">Event Log</div>
+      <div class="event-log-inner" id="eventLog"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Playback controls -->
+<div class="controls">
+  <button id="btnStepBack" title="Step Back">⏮</button>
+  <button id="btnPlayPause" title="Play/Pause">▶</button>
+  <button id="btnStepFwd" title="Step Forward">⏭</button>
+  <div class="scrubber-container">
+    <input type="range" class="scrubber" id="scrubber" min="0" max="0" value="0">
+  </div>
+  <button id="btnSimView" class="sim-chip" style="display:none" title="Simulation View (T)">
+<span id="simChipCount">Simulation View</span>
+  </button>
+  <div class="tick-display" id="tickDisplay">Tick 0 / 0</div>
+  <!-- Elixir phase. Hidden for a replay with no "elixirPhases" block rather
+       than defaulting to x1: an old replay has no phase to show. -->
+  <div class="elixir-phase" id="elixirPhase" style="display:none" title="Elixir generation rate">x1</div>
+  <span class="speed-label">Speed:</span>
+  <select class="speed-select" id="speedSelect">
+    <option value="4">0.25x</option>
+    <option value="2">0.5x</option>
+    <option value="1" selected>1x</option>
+    <option value="0.5">2x</option>
+    <option value="0.25">4x</option>
+    <option value="0.125">8x</option>
+  </select>
+</div>
+
+<script>
+// Legacy card data, kept in sync with include/core/CardRegistry.h (symbol,
+// name, max HP).
+const SYMBOL_NAMES = {
+  'R': 'King Tower', 'P': 'Princess Tower',
+  'K': 'Knight', 'g': 'Goblins', 'M': 'Mini PEKKA', 'B': 'Barbarians', 'V': 'Valkyrie',
+  's': 'Skeleton Army', 'E': 'P.E.K.K.A.', 'p': 'Prince', 'e': 'Elite Barbarians',
+  'l': 'Lumberjack', 'k': 'Skeletons', 'J': 'Giant Skeleton', 'z': 'Electro Wizard',
+  'm': 'Minions', 'h': 'Minion Horde', 'F': 'Mega Minion',
+  'A': 'Archers', 'U': 'Musketeer', 'b': 'Bomber', 'W': 'Wizard', 'd': 'Dart Goblin',
+  'w': 'Bowler', 'S': 'Spear Goblins', 'i': 'Ice Wizard', 'x': 'Executioner', 'y': 'Baby Dragon',
+  'G': 'Giant', 'H': 'Hog Rider', 'L': 'Golem', 'c': 'Ice Golem', 'a': 'Balloon',
+  'Y': 'Royal Giant', 'q': 'Golemite',
+  'C': 'Cannon', 'T': 'Tesla', 'D': 'Bomb Tower', 'I': 'Inferno Tower',
+  '-': 'Projectile', '*': 'Arrows', 'O': 'Fireball', 'Z': 'Zap', 'r': 'Rocket',
+  'j': 'Lightning', 'n': 'Poison', 'o': 'The Log'
+};
+
+const SPELL_SYMBOLS = new Set(['-', '*', 'O', 'Z', 'r', 'j', 'n', 'o']);
+
+const SYMBOL_RADIUS = {
+  'P': 14, 'R': 16, 'G': 12, 'A': 8, 'K': 10, 'g': 7, 'M': 11, 'U': 9,
+  'B': 9, 'b': 8, 'V': 10, 'W': 9, 's': 5, 'E': 13, 'p': 11, 'H': 11,
+  'm': 9, 'F': 10, 'e': 10, 'Y': 12, 'L': 14, 'd': 7, 'l': 10, 'w': 11, 'S': 6,
+  'k': 5, 'C': 12, 'T': 12, 'D': 13, 'I': 13, 'i': 9, 'z': 9, 'x': 10,
+  'y': 10, 'h': 9, 'a': 11, 'J': 13, 'c': 10, 'q': 7,
+  '-': 3, '*': 6, 'O': 7, 'Z': 5, 'r': 6, 'j': 7, 'n': 7, 'o': 6
+};
+
+// Legacy fallback only. Replays embed their own "cardMeta" block (id-keyed,
+// generated from CardRegistry by GameLogger::save()) and each entity's cardId;
+// getEntityMeta() prefers those and falls through to these tables only for
+// replays saved before cardMeta/cardId existed. Do not maintain them by hand.
+const MAX_HP = {
+  'P': 2534, 'R': 4008,
+  'K': 1766, 'g': 202, 'M': 1390, 'B': 670, 'V': 1907, 's': 81, 'E': 3760, 'p': 1920,
+  'e': 1341, 'l': 1282, 'k': 81, 'J': 3361, 'z': 714,
+  'm': 230, 'h': 230, 'F': 837,
+  'A': 304, 'U': 721, 'b': 304, 'W': 755, 'd': 261, 'w': 2081, 'S': 133, 'i': 688, 'x': 1280, 'y': 1152,
+  'G': 4090, 'H': 1697, 'L': 5120, 'c': 1315, 'a': 1679, 'Y': 3164, 'q': 1039,
+  'C': 824, 'T': 1152, 'D': 1356, 'I': 1748
+};
+
+const BUILDING_SYMBOLS = new Set(['P', 'R', 'C', 'T', 'D', 'I']);
+
+// Fallback for replays saved before the isFlying field; ent.isFlying is
+// preferred when present.
+const FLYING_SYMBOLS_FALLBACK = new Set(['m', 'h', 'F', 'y', 'a']);
+
+// Populated per replay from gameData.cardMeta (id-keyed) in initViewer(). Go
+// through getEntityMeta() rather than the legacy tables.
+let CARD_META = {};
+
+// Symbol -> meta, from the replay's own cardMeta block: the fallback for
+// entities with cardId -1 (death-spawns, spawner buildings, tower troops),
+// which the id lookup cannot resolve.
+//
+// Symbols collide ('M' is both Mini PEKKA at 1390 hp and Monk at 2214), so the
+// ambiguous set is recorded and such a resolution is flagged `inferred`.
+let SYMBOL_INDEX = { bySymbol: {}, ambiguous: new Set() };
+
+// Entity id -> the position it first appeared at, for rolling spells. The
+// replay records a roller's leading edge each tick but not where the roll
+// began; the first tick an id appears on is its spawn. Built for every entity,
+// since the scan costs the same.
+let ROLL_ORIGINS = {};
+
+function buildRollOrigins() {
+  const origins = {};
+  for (const tick of (gameData.ticks || [])) {
+    for (const ent of (tick.entities || [])) {
+      if (origins[ent.id] === undefined) origins[ent.id] = { x: ent.x, y: ent.y };
+    }
+  }
+  return origins;
+}
+
+function buildSymbolIndex(cardMeta) {
+  const bySymbol = {}, ambiguous = new Set();
+  for (const id of Object.keys(cardMeta || {})) {
+    const meta = cardMeta[id];
+    if (!meta || !meta.symbol) continue;
+    const seen = bySymbol[meta.symbol];
+    if (seen && seen.name !== meta.name) ambiguous.add(meta.symbol);
+    else if (!seen) bySymbol[meta.symbol] = meta;
+  }
+  return { bySymbol, ambiguous };
+}
+
+// maxHp 0 means a spell (no persistent HP) or a card the legacy table never
+// knew: render an em dash, never '?'.
+function formatMaxHp(meta) {
+  return (meta && meta.maxHp > 0) ? String(meta.maxHp) : '—';
+}
+
+// Single source of truth for "what is this entity". In order: (1) TOWER_DEFS by
+// entity id (towers are not cards, so cardMeta never covers them); (2)
+// CARD_META by ent.cardId (collision-free, unlike symbol); (3) the legacy
+// symbol-keyed tables, for replays saved before cardId/cardMeta existed.
+function getEntityMeta(ent) {
+  const towerDef = TOWER_DEFS.find(td => td.id === ent.id);
+  if (towerDef) return { name: towerDef.name, maxHp: towerDef.maxHp, isBuilding: true,
+                         isSpell: false, isFlying: false, inferred: false };
+  if (ent.cardId !== undefined && CARD_META[ent.cardId]) {
+    return Object.assign({ inferred: false }, CARD_META[ent.cardId]);
+  }
+  // No cardMeta entry. Before guessing from the symbol, use the name the replay
+  // carries: GameLogger writes it off the board, so it is exact even for a
+  // death-spawn child, whose cardId is negative and never in cardMeta (Golemite
+  // -1, towers -2/-3).
+  //
+  // The name alone is settled: maxHp and the ground/air/building flags still
+  // come from the symbol, hence hpInferred is reported separately from
+  // `inferred`. Older replays carry no `name` and take the symbol path below.
+  if (ent.name) {
+    const symMeta = SYMBOL_INDEX.bySymbol[ent.symbol] || {
+      maxHp: MAX_HP[ent.symbol] || 0,
+      isBuilding: BUILDING_SYMBOLS.has(ent.symbol),
+      isSpell: SPELL_SYMBOLS.has(ent.symbol),
+      isFlying: FLYING_SYMBOLS_FALLBACK.has(ent.symbol),
+    };
+    return Object.assign({}, symMeta, {
+      name: ent.name,
+      inferred: false,
+      hpInferred: true,
+    });
+  }
+  // cardId missing or -1: resolve by symbol against the replay's own registry
+  // data before the legacy tables, which cover only a fraction of the registry.
+  const fromSym = SYMBOL_INDEX.bySymbol[ent.symbol];
+  if (fromSym) {
+    return Object.assign({}, fromSym, {
+      inferred: true,
+      ambiguous: SYMBOL_INDEX.ambiguous.has(ent.symbol),
+    });
+  }
+  return {
+    // Never the bare symbol: the default symbol is '?' and some cards ship it
+    // explicitly (Cannon Cart, Guards).
+    name: SYMBOL_NAMES[ent.symbol] || `Unknown (symbol '${ent.symbol}')`,
+    // 0, not `|| ent.hp`, which makes hpRatio 1.0 forever.
+    maxHp: MAX_HP[ent.symbol] || 0,
+    isBuilding: BUILDING_SYMBOLS.has(ent.symbol),
+    isSpell: SPELL_SYMBOLS.has(ent.symbol),
+    isFlying: FLYING_SYMBOLS_FALLBACK.has(ent.symbol),
+    inferred: true,
+  };
+}
+
+// ent.isFlying (logged per entity by the engine) is preferred over the
+// card-level default when present.
+function isEntityFlying(ent) {
+  if (ent.isFlying !== undefined) return ent.isFlying;
+  return getEntityMeta(ent).isFlying;
+}
+
+// Icon shapes rather than letters, so a badge cannot collide with the entity's
+// own symbol letter (Giant's 'G' vs a "ground" G).
+const TYPE_BADGE = {
+  ground: { color: '#C9C9CE' },
+  air: { color: '#8E8E93' },
+  building: { color: '#6E6E73' },
+  spell: { color: '#B9B9C0' }
+};
+
+// Tower ids as assigned by Board::allocateId() (starting at 1000), in the order
+// GameManager::reset() creates the towers.
+const TOWER_DEFS = [
+  { id: 1000, name: 'Blue King', team: 0, maxHp: 4008 },
+  { id: 1001, name: 'Red King', team: 1, maxHp: 4008 },
+  { id: 1002, name: 'Blue Left P', team: 0, maxHp: 2534 },
+  { id: 1003, name: 'Blue Right P', team: 0, maxHp: 2534 },
+  { id: 1004, name: 'Red Left P', team: 1, maxHp: 2534 },
+  { id: 1005, name: 'Red Right P', team: 1, maxHp: 2534 },
+];
+
+const CELL_SIZE = 22;
+const PADDING = 12;
+
+// Backing-store pixels per CSS pixel. Every canvas is sized at this multiple and
+// drawn through a matching transform, so all drawing code stays in logical
+// (CSS) pixels while a high-DPI screen, or a headless export at a raised
+// deviceScaleFactor (tools/promo/export_viewer.py), gets a sharp board rather
+// than an upscaled one. At 1 nothing changes.
+const RENDER_SCALE = Math.max(1, window.devicePixelRatio || 1);
+
+// Size `cv` for w x h logical pixels at RENDER_SCALE and return its context,
+// already transformed. `pinCss` fixes the CSS size, which a canvas otherwise
+// takes from its (now larger) backing store. Only the width is pinned: the
+// height follows from aspect-ratio, because a pinned height makes the arena's
+// `max-height: 100%` inert and a window shorter than the board clips it
+// (tools/viewer_fixtures/check_fit.py).
+function sizeCanvas(cv, w, h, pinCss) {
+  cv.width = Math.round(w * RENDER_SCALE);
+  cv.height = Math.round(h * RENDER_SCALE);
+  if (pinCss) {
+    cv.style.width = w + 'px';
+    cv.style.aspectRatio = w + ' / ' + h;
+  }
+  const c = cv.getContext('2d');
+  c.setTransform(RENDER_SCALE, 0, 0, RENDER_SCALE, 0, 0);
+  return c;
+}
+
+// Arena geometry. Not derivable from the replay JSON, so hardcoded with the
+// header that owns each value named:
+//
+//   include/core/ArenaLayout.h : LEFT_BRIDGE_X = 2.5, RIGHT_BRIDGE_X = 14.5
+//   include/core/Board.h       : BRIDGE_HALF_WIDTH = 1.0
+//
+// A bridge centre sits on the seam between two tiles, so 2.5 +/- 1.0 spans
+// exactly cells 2 and 3: the river row WWBBWWWWWWWWWWBBWW.
+const BRIDGE_CELLS = [[2, 3], [14, 15]];
+
+// include/core/Board.h : riverY_start = 15.5, riverY_end = 17.5. Cell i covers
+// [i-0.5, i+0.5], so the band is exactly rows 16 and 17.
+const RIVER_ROWS = [16, 17];
+
+// CSS custom properties, read once and cached: drawBoard paints 612 lawn tiles
+// per frame, and getComputedStyle in that loop would dominate.
+const _cssCache = {};
+function cssVar(name) {
+  let v = _cssCache[name];
+  if (v === undefined) {
+    v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    _cssCache[name] = v;
+  }
+  return v;
+}
+
+// A render context bundles what a board drawing needs, so the main arena and
+// the Simulation View's mini-boards share one drawing path.
+function makeRenderCtx(ctx2d, boardWidth, boardHeight, cellSize, padding) {
+  return {
+    ctx: ctx2d,
+    boardWidth, boardHeight, cellSize, padding,
+    width: boardWidth * cellSize + padding * 2,
+    height: boardHeight * cellSize + padding * 2,
+  };
+}
+
+function mainRc() {
+  return makeRenderCtx(ctx, gameData.boardWidth, gameData.boardHeight,
+                       CELL_SIZE, PADDING);
+}
+
+let gameData = null;
+let currentTick = 0;
+let playing = false;
+let playInterval = null;
+let selectedEntityId = null;
+let matchResult = null;
+
+// DOM elements
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scrubber = document.getElementById('scrubber');
+const tickDisplay = document.getElementById('tickDisplay');
+const elixirPhase = document.getElementById('elixirPhase');
+const btnPlayPause = document.getElementById('btnPlayPause');
+const btnStepBack = document.getElementById('btnStepBack');
+const btnStepFwd = document.getElementById('btnStepFwd');
+const speedSelect = document.getElementById('speedSelect');
+const dropOverlay = document.getElementById('dropOverlay');
+const dropBox = document.getElementById('dropBox');
+const fileInput = document.getElementById('fileInput');
+const winnerOverlay = document.getElementById('winnerOverlay');
+
+// File loading
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files[0]) loadFile(e.target.files[0]);
+});
+
+dropBox.addEventListener('dragover', (e) => { e.preventDefault(); dropBox.classList.add('drag-over'); });
+dropBox.addEventListener('dragleave', () => dropBox.classList.remove('drag-over'));
+dropBox.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropBox.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+
+function loadFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      gameData = JSON.parse(e.target.result);
+      initViewer();
+      dropOverlay.classList.add('hidden');
+      document.getElementById('fileNameBadge').textContent = file.name;
+    } catch (err) {
+      alert('Failed to parse JSON: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function initViewer() {
+  // Empty (not an error) for a replay saved before cardMeta existed; every
+  // entity then falls through to the legacy tables.
+  CARD_META = gameData.cardMeta || {};
+  SYMBOL_INDEX = buildSymbolIndex(CARD_META);
+  ROLL_ORIGINS = buildRollOrigins();
+
+  const w = gameData.boardWidth * CELL_SIZE + PADDING * 2;
+  const h = gameData.boardHeight * CELL_SIZE + PADDING * 2;
+  sizeCanvas(canvas, w, h, true);
+  currentTick = 0;
+  selectedEntityId = null;
+  scrubber.max = gameData.ticks.length - 1;
+  scrubber.value = 0;
+
+  // A newly loaded replay may have no teacher data, so the panel must not stay
+  // open across a load.
+  simViewOpen = false;
+  document.getElementById('simPanel').classList.remove('open');
+  document.getElementById('btnSimView').classList.remove('active');
+
+  detectAllEvents();
+  matchResult = computeMatchResult();
+  updateResultBadge();
+  renderTick();
+  updateUI();
+}
+
+// Winner detection reads the verdict the engine wrote into the replay; it does
+// not re-derive one. MatchRules only answers "has a King died yet?"; the winner
+// at the time limit is TimeoutRules': fewer surviving towers loses; on equal
+// counts the side whose weakest surviving tower has lower absolute HP loses;
+// only an exact tie on both is a draw. test_match_outcome_is_the_only_scorer.py
+// checks this file.
+function computeMatchResult() {
+  if (!gameData || !gameData.ticks.length) return null;
+
+  // The engine's own verdict, written by GameLogger::resultJson().
+  if (gameData.result) {
+    const r = gameData.result;
+    if (r.loserTeam === -1) return { winner: 'draw', reason: r.reason };
+    return { winner: r.loserTeam === 0 ? 'red' : 'blue', reason: r.reason };
+  }
+
+  // Replays written before the engine emitted `result`: a port of TimeoutRules,
+  // so an old replay is scored by the right rule.
+  const finalTick = gameData.ticks[gameData.ticks.length - 1];
+  const towers = finalTick.entities.filter(e => e.symbol === 'R' || e.symbol === 'P');
+  const kingAlive = [0, 1].map(t => towers.some(e => e.symbol === 'R' && e.team === t));
+
+  if (!kingAlive[0] || !kingAlive[1]) {
+    if (!kingAlive[0] && !kingAlive[1])
+      return { winner: 'draw', reason: 'Both King Towers fell the same tick' };
+    return {
+      winner: kingAlive[0] ? 'blue' : 'red',
+      reason: kingAlive[0] ? "Red's King Tower destroyed" : "Blue's King Tower destroyed"
+    };
+  }
+
+  const count = [0, 1].map(t => towers.filter(e => e.team === t).length);
+  if (count[0] !== count[1]) {
+    return {
+      winner: count[0] > count[1] ? 'blue' : 'red',
+      reason: 'Timeout — decided on surviving tower count'
+    };
+  }
+  const weakest = [0, 1].map(t =>
+    Math.min(...towers.filter(e => e.team === t).map(e => e.hp)));
+  if (weakest[0] !== weakest[1]) {
+    return {
+      winner: weakest[0] > weakest[1] ? 'blue' : 'red',
+      reason: "Timeout — decided on the weakest tower's HP"
+    };
+  }
+  return { winner: 'draw', reason: 'Timeout — exact tie on towers and weakest-tower HP' };
+}
+
+function updateResultBadge() {
+  const el = document.getElementById('resultBadge');
+  if (!matchResult) { el.classList.remove('show'); return; }
+  el.classList.add('show');
+  if (matchResult.winner === 'draw') {
+    el.textContent = '🤝 Draw';
+    el.className = 'result-badge show draw';
+  } else if (matchResult.winner === 'blue') {
+    el.textContent = '🔵 Blue Wins';
+    el.className = 'result-badge show win-blue';
+  } else {
+    el.textContent = '🔴 Red Wins';
+    el.className = 'result-badge show win-red';
+  }
+}
+
+function updateWinnerOverlay() {
+  const isFinalTick = currentTick === gameData.ticks.length - 1;
+  if (!isFinalTick || !matchResult) {
+    winnerOverlay.classList.remove('show');
+    return;
+  }
+  const icon = document.getElementById('winnerIcon');
+  const title = document.getElementById('winnerTitle');
+  const subtitle = document.getElementById('winnerSubtitle');
+  if (matchResult.winner === 'draw') {
+    icon.textContent = '🤝';
+    title.textContent = 'Draw';
+    title.className = 'winner-title draw';
+  } else if (matchResult.winner === 'blue') {
+    icon.textContent = '🏆';
+    title.textContent = 'Blue Wins';
+    title.className = 'winner-title win-blue';
+  } else {
+    icon.textContent = '🏆';
+    title.textContent = 'Red Wins';
+    title.className = 'winner-title win-red';
+  }
+  subtitle.textContent = matchResult.reason;
+  winnerOverlay.classList.add('show');
+}
+
+// Coordinate conversion
+function gameToCanvas(rc, gx, gy) {
+  return {
+    x: rc.padding + gx * rc.cellSize + rc.cellSize / 2,
+    y: rc.padding + (rc.boardHeight - 1 - gy) * rc.cellSize + rc.cellSize / 2
+  };
+}
+
+// Screen point -> logical canvas point (the coordinates gameToCanvas returns;
+// the backing store is RENDER_SCALE times larger).
+//
+// The canvas has `max-width/max-height: 100%` and `object-fit: contain`, so its
+// element box need not keep the board's aspect ratio: the content is scaled
+// uniformly and letterboxed. A per-axis `(clientX - rect.left) *
+// (width / rect.width)` ignores the bars and displaces clicks by up to half the
+// board. object-fit: contain scales by min(...) and centres the remainder, so
+// both are undone in that order.
+function eventToCanvas(evt) {
+  const rect = canvas.getBoundingClientRect();
+  const cw = canvas.width / RENDER_SCALE, ch = canvas.height / RENDER_SCALE;
+  const scale = Math.min(rect.width / cw, rect.height / ch);
+  const offX = rect.left + (rect.width - cw * scale) / 2;
+  const offY = rect.top + (rect.height - ch * scale) / 2;
+  return { x: (evt.clientX - offX) / scale, y: (evt.clientY - offY) / scale, scale };
+}
+
+// Backing-store radius within which a click counts as hitting `ent`.
+//
+// SYMBOL_RADIUS is the drawn radius, tiny for small cards (Skeletons are 5, a
+// few pixels on screen once scaled). The floor, 0.75 of a cell, covers a tile's
+// half-diagonal and a small mouse slip; it does not swallow neighbours because
+// the caller takes the closest match.
+function hitRadiusFor(ent, rc) {
+  if (ent.symbol === 'R') return (4 * rc.cellSize) / 2;   // King, 4x4 tiles
+  if (ent.symbol === 'P') return (3 * rc.cellSize) / 2;   // Princess, 3x3
+  const drawn = (SYMBOL_RADIUS[ent.symbol] || 8) + 4;
+  return Math.max(drawn, rc.cellSize * 0.75);
+}
+
+function canvasToGame(rc, cx, cy) {
+  return {
+    gx: (cx - rc.padding) / rc.cellSize,
+    gy: rc.boardHeight - 1 - (cy - rc.padding) / rc.cellSize
+  };
+}
+
+
+function getEntityType(ent) {
+  const meta = getEntityMeta(ent);
+  if (meta.isSpell) return 'spell';
+  if (meta.isBuilding) return 'building';
+  return isEntityFlying(ent) ? 'air' : 'ground';
+}
+
+// Event detection
+let allEvents = [];
+function detectAllEvents() {
+  allEvents = [];
+  let prev = new Map();
+
+  for (let i = 0; i < gameData.ticks.length; i++) {
+    const tick = gameData.ticks[i];
+    const curr = new Map();
+
+    for (const ent of tick.entities) {
+      if (getEntityMeta(ent).isSpell) continue;
+      curr.set(ent.id, ent);
+      if (!prev.has(ent.id)) {
+        allEvents.push({
+          tick: tick.tick,
+          tickIndex: i,
+          type: 'spawn',
+          name: getEntityMeta(ent).name,
+          team: ent.team,
+          id: ent.id,
+          hp: ent.hp
+        });
+      }
+    }
+
+    for (const [id, ent] of prev) {
+      if (!curr.has(id)) {
+        allEvents.push({
+          tick: tick.tick,
+          tickIndex: i,
+          type: 'death',
+          name: getEntityMeta(ent).name,
+          team: ent.team,
+          id: id
+        });
+      }
+    }
+    prev = curr;
+  }
+}
+
+// Rendering
+// Fraction of the way from currentTick to the next tick that the arena shows.
+// Always 0 except inside __viewerTests.gotoTickFrac, which resets it.
+let tickFraction = 0;
+
+// The board between two recorded ticks, each entity's position interpolated by
+// id toward the next tick. The replay holds whole ticks, 10 a second, so a
+// 30 fps video would otherwise hold every position for three frames. HP and
+// everything else stay at tick i; bodies absent from i + 1 stay put.
+function tickBetween(i, frac) {
+  const a = gameData.ticks[i];
+  const b = gameData.ticks[i + 1];
+  if (!b || !(frac > 0)) return a;
+  const next = new Map(b.entities.map(e => [e.id, e]));
+  return Object.assign({}, a, {
+    entities: a.entities.map(e => {
+      const n = next.get(e.id);
+      return n ? Object.assign({}, e, { x: e.x + (n.x - e.x) * frac,
+                                        y: e.y + (n.y - e.y) * frac })
+               : e;
+    }),
+  });
+}
+
+function renderTick() {
+  if (!gameData) return;
+  const tickData = tickBetween(currentTick, tickFraction);
+  if (!tickData) return;
+  drawBoard(mainRc(), tickData, {
+    selectedEntityId: selectedEntityId,
+    showLabels: true,
+    ghost: false,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Teacher debug (the Simulation View's data)
+//
+// Every accessor returns null/false rather than throwing when the data is
+// absent: it exists only in replays generated with rollout capture enabled.
+//
+// Decisions are stored once at top level and indexed by decision window, not
+// stamped onto every tick (a record carries up to five predicted boards).
+// ---------------------------------------------------------------------------
+function hasTeacherDebug(data) {
+  const td = data && data.teacherDebug;
+  return !!(td && Array.isArray(td.decisions) && td.decisions.length);
+}
+
+function teacherDebugForTick(tickIndex) {
+  if (!hasTeacherDebug(gameData)) return null;
+  const td = gameData.teacherDebug;
+  const skip = td.skipFrames > 0 ? td.skipFrames : 10;
+  const rec = td.decisions[Math.floor(tickIndex / skip)];
+  if (!rec || typeof rec !== 'object') return null;
+  // Damaged or partial records are normal input: normalise the shape here so no
+  // consumer re-checks it.
+  if (!Array.isArray(rec.candidates)) rec.candidates = [];
+  return rec;
+}
+
+// A recorded placement -> absolute board coordinates.
+//
+// The teacher plays team 1 and returns cells in its own mirrored frame
+// (ClashEnv::stepSelfPlay does `realY1 = (BOARD_HEIGHT - 1) - targetY1`;
+// UtilityTeacher.to_absolute_y is `MIRROR_Y - y_own`), while every entity
+// position from GameLogger is absolute. Only y is mirrored; x is already
+// absolute. One helper, so the arena rings and the mini-board markers cannot
+// disagree.
+function stepToBoard(record, step) {
+  const mirrored = record && record.team === 1;
+  return {
+    x: step.x,
+    y: mirrored ? (gameData.boardHeight - 1) - step.y : step.y,
+  };
+}
+
+// How many candidates carry a predicted board; also the ring count, so the
+// arena and the panel agree on "the top N".
+const SIM_TOP_K = 4;
+
+// Cached static board layer, keyed on the geometry it depends on, so a
+// different board size or mini-board scale gets its own.
+const _bgCache = {};
+function boardBackground(rc) {
+  const key = rc.boardWidth + 'x' + rc.boardHeight + '@' + rc.cellSize + '+' + rc.padding;
+  if (_bgCache[key]) return _bgCache[key];
+
+  const cv = document.createElement('canvas');
+  const ctx2 = sizeCanvas(cv, rc.width, rc.height, false);
+  const cs = rc.cellSize, pad = rc.padding, w = rc.width, h = rc.height;
+  const C = cssVar;
+
+
+  // Surround: the treeline the arena island sits on.
+  ctx2.fillStyle = C('--arena-surround');
+  ctx2.fillRect(0, 0, w, h);
+
+  // The lawn, as a mown checker. No team territory tint: the real arena is one
+  // green field, and team identity comes from tower and unit colour.
+  for (let x = 0; x < rc.boardWidth; x++) {
+    for (let y = 0; y < rc.boardHeight; y++) {
+      ctx2.fillStyle = ((x + y) % 2 === 0) ? C('--grass-light') : C('--grass-dark');
+      ctx2.fillRect(pad + x * cs, pad + y * cs, cs, cs);
+    }
+  }
+
+  // Lane paths, bridge column to board edge: drawn before the river so the
+  // water covers them, and before the bridges so the decks sit on top.
+  ctx2.fillStyle = C('--lane-path');
+  for (const [c0, c1] of BRIDGE_CELLS) {
+    ctx2.fillRect(pad + c0 * cs, pad, (c1 - c0 + 1) * cs, h - pad * 2);
+  }
+
+  // River. RIVER_ROWS are game rows and canvas row = boardHeight - 1 - gameRow,
+  // so the band's top edge comes from the higher game row.
+  const riverTop = pad + (rc.boardHeight - 1 - RIVER_ROWS[1]) * cs;
+  const riverBottom = pad + (rc.boardHeight - RIVER_ROWS[0]) * cs;
+  ctx2.fillStyle = C('--river');
+  ctx2.fillRect(pad, riverTop, w - pad * 2, riverBottom - riverTop);
+  ctx2.fillStyle = C('--river-edge');
+  ctx2.fillRect(pad, riverTop, w - pad * 2, Math.max(1, cs * 0.12));
+
+  // Bridges, over the river band.
+  for (const [c0, c1] of BRIDGE_CELLS) {
+    const bleft = pad + c0 * cs;
+    const bright = pad + (c1 + 1) * cs;
+    ctx2.fillStyle = C('--bridge-deck');
+    ctx2.fillRect(bleft, riverTop, bright - bleft, riverBottom - riverTop);
+    ctx2.strokeStyle = C('--bridge-seam');
+    ctx2.lineWidth = Math.max(1, cs * 0.06);
+    for (let pl = 1; pl < 4; pl++) {
+      const py = riverTop + (riverBottom - riverTop) * (pl / 4);
+      ctx2.beginPath();
+      ctx2.moveTo(bleft, py); ctx2.lineTo(bright, py);
+      ctx2.stroke();
+    }
+  }
+
+  // Faint tile grid, for judging placement: over the lawn, under the units.
+  ctx2.strokeStyle = 'rgba(0,0,0,0.055)';
+  ctx2.lineWidth = 1;
+  for (let x = 0; x <= rc.boardWidth; x++) {
+    const px = pad + x * cs;
+    ctx2.beginPath(); ctx2.moveTo(px, pad); ctx2.lineTo(px, h - pad); ctx2.stroke();
+  }
+  for (let y = 0; y <= rc.boardHeight; y++) {
+    const py = pad + y * cs;
+    ctx2.beginPath(); ctx2.moveTo(pad, py); ctx2.lineTo(w - pad, py); ctx2.stroke();
+  }
+
+
+  _bgCache[key] = cv;
+  return cv;
+}
+
+// The one board renderer: the main arena and the Simulation View's mini-boards
+// both come through here, so a palette or geometry change cannot apply to one
+// only.
+//
+//   rc    -- from makeRenderCtx: canvas context plus board dims and scale
+//   opts  -- { selectedEntityId, showLabels, ghost }
+function drawBoard(rc, tickData, opts) {
+  const w = rc.width;
+  const h = rc.height;
+
+  const cs = rc.cellSize, pad = rc.padding;
+
+  // Lawn, paths, river, bridges and grid are static for a given board size, so
+  // they are rendered once into an offscreen canvas and blitted (painting them
+  // per frame cost ~127 ms/frame).
+  rc.ctx.clearRect(0, 0, w, h);
+  // Destination size given: the layer is RENDER_SCALE times larger in pixels.
+  rc.ctx.drawImage(boardBackground(rc), 0, 0, w, h);
+
+  if (opts.showLabels) {
+    rc.ctx.font = '10px Inter, sans-serif';
+    rc.ctx.textAlign = 'center';
+    rc.ctx.fillStyle = 'rgba(74, 158, 255, 0.55)';
+    rc.ctx.fillText('BLUE', w / 2, h - pad + 9);
+    rc.ctx.fillStyle = 'rgba(255, 82, 82, 0.55)';
+    rc.ctx.fillText('RED', w / 2, pad - 4);
+  }
+
+  // Entities
+  const entities = tickData.entities;
+
+  for (const ent of entities) {
+    if (getEntityMeta(ent).isSpell) {
+      drawEntity(rc, ent, false);
+    }
+  }
+
+  for (const ent of entities) {
+    if (!getEntityMeta(ent).isSpell) {
+      drawEntity(rc, ent, ent.id === opts.selectedEntityId);
+    }
+  }
+
+  // Mini-boards never draw rings: they are the candidates.
+  if (!opts.ghost) {
+    drawCandidateRings(rc, teacherDebugForTick(currentTick));
+  }
+
+  // The "NOW" mini-board shows where the candidate is about to be dropped, as a
+  // ghost since the unit is not on the board yet; otherwise the placement
+  // exists only as text.
+  if (opts.placements && opts.placements.length) {
+    drawGhostPlacements(rc, opts.placements);
+  }
+}
+
+
+// A hollow numbered ring per candidate cell, the chosen one filled, at most
+// SIM_TOP_K. Anything more elaborate on the arena is the clutter the Simulation
+// View exists to avoid.
+//
+// A candidate's placement on a board where it has not happened yet: dashed
+// outline, the card's own symbol, and an order number when a combo places more
+// than one card.
+function drawGhostPlacements(rc, placements) {
+  const cs = rc.cellSize;
+  const r = Math.max(3.5, cs * 0.62);
+  rc.ctx.save();
+  rc.ctx.textAlign = 'center';
+  rc.ctx.textBaseline = 'middle';
+  placements.forEach((p, i) => {
+    const at = gameToCanvas(rc, p.x, p.y);
+    // White core with a team-coloured ring: the board is full of red and blue
+    // discs, so a team-tinted ghost vanishes; white is the one colour nothing
+    // else uses, and the dark halo keeps it readable on lawn, path and water.
+    rc.ctx.beginPath();
+    rc.ctx.arc(at.x, at.y, r + Math.max(1, cs * 0.1), 0, Math.PI * 2);
+    rc.ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    rc.ctx.fill();
+
+    rc.ctx.beginPath();
+    rc.ctx.arc(at.x, at.y, r, 0, Math.PI * 2);
+    rc.ctx.fillStyle = '#FFFFFF';
+    rc.ctx.fill();
+
+    rc.ctx.setLineDash([Math.max(2, cs * 0.3), Math.max(1.5, cs * 0.22)]);
+    rc.ctx.lineWidth = Math.max(1.5, cs * 0.22);
+    rc.ctx.strokeStyle = p.team === 0 ? '#4a9eff' : '#ff5252';
+    rc.ctx.stroke();
+    rc.ctx.setLineDash([]);
+    if (cs >= 14) {                       // unreadable on a mini-board
+      rc.ctx.fillStyle = '#FFFFFF';
+      rc.ctx.font = `700 ${Math.round(cs * 0.5)}px Inter, sans-serif`;
+      rc.ctx.fillText(p.symbol || '?', at.x, at.y);
+    } else if (placements.length > 1) {
+      rc.ctx.fillStyle = '#111111';
+      rc.ctx.font = `700 ${Math.max(7, Math.round(cs * 0.95))}px Inter, sans-serif`;
+      rc.ctx.fillText(String(i + 1), at.x, at.y);
+    }
+  });
+  rc.ctx.restore();
+}
+
+function drawCandidateRings(rc, record) {
+  if (!record || !record.candidates.length) return;
+  const shown = record.candidates.slice(0, SIM_TOP_K);
+
+  // Group by cell: several candidates often propose the same cell, and one ring
+  // each hides all but the last painted, including the chosen one. One ring per
+  // cell, labelled with the best rank there and xN when shared.
+  const byCell = new Map();
+  shown.forEach(function (cand, i) {
+    const step = cand.steps && cand.steps[0];
+    if (!step) return;                       // a candidate with no placement
+    const b = stepToBoard(record, step);
+    const key = b.x + ',' + b.y;
+    const g = byCell.get(key);
+    if (g) {
+      g.count++;
+      g.chosen = g.chosen || (i === record.chosenIndex);
+    } else {
+      byCell.set(key, { x: b.x, y: b.y, rank: i + 1, count: 1,
+                        chosen: i === record.chosenIndex });
+    }
+  });
+
+  // Chosen last, so it is never painted over.
+  const groups = [...byCell.values()].sort(function (a, b) {
+    return (a.chosen ? 1 : 0) - (b.chosen ? 1 : 0);
+  });
+
+  const cs = rc.cellSize;
+  rc.ctx.save();
+  rc.ctx.textAlign = 'center';
+  rc.ctx.textBaseline = 'middle';
+  for (const g of groups) {
+    const p = gameToCanvas(rc, g.x, g.y);
+    const r = cs * 0.62;
+    rc.ctx.beginPath();
+    rc.ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+    rc.ctx.fillStyle = g.chosen ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.38)';
+    rc.ctx.fill();
+    rc.ctx.lineWidth = g.chosen ? 2.5 : 1.5;
+    rc.ctx.strokeStyle = g.chosen ? '#FFFFFF' : 'rgba(255,255,255,0.75)';
+    rc.ctx.stroke();
+
+    const label = String(g.rank) + (g.count > 1 ? '\u00D7' + g.count : '');
+    rc.ctx.font = '600 ' + Math.round(cs * (g.count > 1 ? 0.38 : 0.5)) + 'px Inter, sans-serif';
+    rc.ctx.fillStyle = g.chosen ? '#111111' : '#FFFFFF';
+    rc.ctx.fillText(label, p.x, p.y);
+  }
+  rc.ctx.restore();
+}
+
+function drawTypeBadge(rc, ent, pos, radius) {
+  if (ent.symbol === '-') return; // raw projectile is too small for a badge to read
+  const type = getEntityType(ent);
+  const badge = TYPE_BADGE[type];
+  const bx = pos.x + radius * 0.62;
+  const by = pos.y - radius * 0.62;
+
+  rc.ctx.beginPath();
+  rc.ctx.arc(bx, by, 6, 0, Math.PI * 2);
+  rc.ctx.fillStyle = badge.color;
+  rc.ctx.fill();
+  rc.ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+  rc.ctx.lineWidth = 1;
+  rc.ctx.stroke();
+
+  // Shape glyph, not a letter: ground dot, air chevron, building square, spell
+  // diamond.
+  rc.ctx.fillStyle = '#0b0d13';
+  rc.ctx.strokeStyle = '#0b0d13';
+  rc.ctx.lineWidth = 1.4;
+  if (type === 'ground') {
+    rc.ctx.beginPath();
+    rc.ctx.arc(bx, by, 2, 0, Math.PI * 2);
+    rc.ctx.fill();
+  } else if (type === 'air') {
+    rc.ctx.beginPath();
+    rc.ctx.moveTo(bx - 3, by + 1.5);
+    rc.ctx.lineTo(bx, by - 2.5);
+    rc.ctx.lineTo(bx + 3, by + 1.5);
+    rc.ctx.stroke();
+  } else if (type === 'building') {
+    rc.ctx.strokeRect(bx - 2.5, by - 2.5, 5, 5);
+  } else {
+    rc.ctx.beginPath();
+    rc.ctx.moveTo(bx, by - 3);
+    rc.ctx.lineTo(bx + 3, by);
+    rc.ctx.lineTo(bx, by + 3);
+    rc.ctx.lineTo(bx - 3, by);
+    rc.ctx.closePath();
+    rc.ctx.fill();
+  }
+}
+
+// Rolling spells (The Log, Barbarian Barrel) sweep a rectangular corridor
+// forward from where they landed, drawn in three layers so the progression is
+// legible:
+//
+//   1. the full corridor it will cover, faint and dashed;
+//   2. the part already swept, filled;
+//   3. the body at the leading edge, solid.
+//
+// Shape comes from the replay's own cardMeta (rollWidth/rollRange), never a
+// table here: this file:// page's only input is the JSON, so anything it is not
+// told it must hardcode.
+function drawRollingSpell(rc, ent, meta, isBlue) {
+  const width = meta.rollWidth || 0;
+  const range = meta.rollRange || 0;
+  if (width <= 0 || range <= 0) return false;
+
+  // Team 0 rolls toward +y, derived from the team as AreaSpell::configureRoll
+  // does.
+  const dir = ent.team === 0 ? 1 : -1;
+  const origin = ROLL_ORIGINS[ent.id] || { x: ent.x, y: ent.y };
+  const half = width / 2;
+
+  const stroke = isBlue ? 'rgba(74, 158, 255, 0.55)' : 'rgba(255, 82, 82, 0.55)';
+  const sweptFill = isBlue ? 'rgba(74, 158, 255, 0.16)' : 'rgba(255, 82, 82, 0.16)';
+  const bodyFill = isBlue ? 'rgba(74, 158, 255, 0.85)' : 'rgba(255, 82, 82, 0.85)';
+
+  const rectBetween = (yA, yB) => {
+    const a = gameToCanvas(rc, origin.x - half, yA);
+    const b = gameToCanvas(rc, origin.x + half, yB);
+    return { x: Math.min(a.x, b.x), y: Math.min(a.y, b.y),
+             w: Math.abs(b.x - a.x), h: Math.abs(b.y - a.y) };
+  };
+
+  // 1. The whole corridor, showing where it will reach.
+  const full = rectBetween(origin.y, origin.y + dir * range);
+  rc.ctx.save();
+  rc.ctx.setLineDash([4, 4]);
+  rc.ctx.strokeStyle = stroke;
+  rc.ctx.lineWidth = 1;
+  rc.ctx.strokeRect(full.x, full.y, full.w, full.h);
+  rc.ctx.restore();
+
+  // 2. The part already swept.
+  const swept = rectBetween(origin.y, ent.y);
+  rc.ctx.fillStyle = sweptFill;
+  rc.ctx.fillRect(swept.x, swept.y, swept.w, swept.h);
+
+  // 3. The body at the leading edge, at a fixed visual thickness: the engine's
+  //    corridor has no longitudinal extent (it tests "has the leading edge
+  //    reached you"), so this is presentation, not a hitbox.
+  const bodyThickness = 0.8;
+  const body = rectBetween(ent.y - dir * bodyThickness, ent.y);
+  rc.ctx.fillStyle = bodyFill;
+  if (rc.ctx.roundRect) {
+    rc.ctx.beginPath();
+    rc.ctx.roundRect(body.x, body.y, body.w, body.h, Math.max(2, rc.cellSize * 0.25));
+    rc.ctx.fill();
+  } else {
+    rc.ctx.fillRect(body.x, body.y, body.w, body.h);
+  }
+  rc.ctx.strokeStyle = stroke;
+  rc.ctx.lineWidth = 1.5;
+  rc.ctx.strokeRect(body.x, body.y, body.w, body.h);
+
+  // Two grain lines across the body, phased by distance travelled, so
+  // successive frames read as rolling rather than sliding.
+  const travelled = (ent.y - origin.y) * dir;
+  rc.ctx.strokeStyle = isBlue ? 'rgba(10, 30, 60, 0.5)' : 'rgba(60, 10, 10, 0.5)';
+  rc.ctx.lineWidth = 1;
+  for (let k = 0; k < 2; k++) {
+    const phase = ((travelled * 1.5 + k * 0.5) % 1.0);
+    const gx = body.x + phase * body.w;
+    rc.ctx.beginPath();
+    rc.ctx.moveTo(gx, body.y);
+    rc.ctx.lineTo(gx, body.y + body.h);
+    rc.ctx.stroke();
+  }
+  return true;
+}
+
+function drawEntity(rc, ent, isSelected) {
+  const pos = gameToCanvas(rc, ent.x, ent.y);
+  const radius = SYMBOL_RADIUS[ent.symbol] || 8;
+  const isBlue = ent.team === 0;
+  const mainColor = isBlue ? '#4a9eff' : '#ff5252';
+  const dimColor = isBlue ? '#1a3a66' : '#661a1a';
+  const meta = getEntityMeta(ent);
+
+  if (meta.isSpell && ent.symbol !== '-') {
+    // A roller draws only its corridor; everything else keeps the circle.
+    if (!drawRollingSpell(rc, ent, meta, isBlue)) {
+      const spellRadius = ent.symbol === '*' ? 4.0 : 2.5;
+      const pixelRadius = spellRadius * rc.cellSize;
+      rc.ctx.beginPath();
+      rc.ctx.arc(pos.x, pos.y, pixelRadius, 0, Math.PI * 2);
+      rc.ctx.fillStyle = isBlue ? 'rgba(74, 158, 255, 0.08)' : 'rgba(255, 82, 82, 0.08)';
+      rc.ctx.fill();
+      rc.ctx.strokeStyle = isBlue ? 'rgba(74, 158, 255, 0.25)' : 'rgba(255, 82, 82, 0.25)';
+      rc.ctx.lineWidth = 1;
+      rc.ctx.stroke();
+    }
+  }
+
+  // Projectiles: small dot with trail
+  if (ent.symbol === '-') {
+    rc.ctx.beginPath();
+    rc.ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
+    rc.ctx.fillStyle = mainColor;
+    rc.ctx.fill();
+    return;
+  }
+
+  // Selection ring (a building's body would cover it: it gets an outline below)
+  if (isSelected && !meta.isBuilding) {
+    rc.ctx.beginPath();
+    rc.ctx.arc(pos.x, pos.y, radius + 4, 0, Math.PI * 2);
+    rc.ctx.strokeStyle = '#facc15';
+    rc.ctx.lineWidth = 2;
+    rc.ctx.stroke();
+  }
+
+  // Shadow
+  rc.ctx.beginPath();
+  rc.ctx.arc(pos.x + 1, pos.y + 2, radius, 0, Math.PI * 2);
+  rc.ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  rc.ctx.fill();
+
+  if (meta.isBuilding) {
+    const sizeInTiles = ent.symbol === 'R' ? 4 : (ent.symbol === 'P' ? 3 : 2);
+    const sz = sizeInTiles * rc.cellSize;
+    const x0 = pos.x - sz / 2, y0 = pos.y - sz / 2;
+    const r = Math.max(2, rc.cellSize * 0.18);
+
+    // Stone body with a team-tinted face, rounded.
+    rc.ctx.beginPath();
+    if (rc.ctx.roundRect) rc.ctx.roundRect(x0, y0, sz, sz, r);
+    else rc.ctx.rect(x0, y0, sz, sz);
+    const g = rc.ctx.createLinearGradient(x0, y0, x0, y0 + sz);
+    g.addColorStop(0, isBlue ? '#3E6E9E' : '#9E4444');
+    g.addColorStop(1, dimColor);
+    rc.ctx.fillStyle = g;
+    rc.ctx.fill();
+    rc.ctx.strokeStyle = mainColor;
+    rc.ctx.lineWidth = 2;
+    rc.ctx.stroke();
+    if (isSelected) {
+      rc.ctx.beginPath();
+      if (rc.ctx.roundRect) rc.ctx.roundRect(x0 - 4, y0 - 4, sz + 8, sz + 8, r + 4);
+      else rc.ctx.rect(x0 - 4, y0 - 4, sz + 8, sz + 8);
+      rc.ctx.strokeStyle = '#facc15';
+      rc.ctx.lineWidth = 2;
+      rc.ctx.stroke();
+    }
+
+    // Inner icon
+    rc.ctx.fillStyle = '#fff';
+    rc.ctx.font = `bold ${radius}px Inter, sans-serif`;
+    rc.ctx.textAlign = 'center';
+    rc.ctx.textBaseline = 'middle';
+    rc.ctx.fillText(ent.symbol, pos.x, pos.y + 1);
+  }
+  // Troops: flat circle, no outer glow ring (overlapping halos were the main
+  // source of clutter).
+  else if (!meta.isSpell) {
+    const bodyGrad = rc.ctx.createRadialGradient(pos.x - 2, pos.y - 2, 1, pos.x, pos.y, radius);
+    bodyGrad.addColorStop(0, mainColor);
+    bodyGrad.addColorStop(1, dimColor);
+    rc.ctx.beginPath();
+    rc.ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+    rc.ctx.fillStyle = bodyGrad;
+    rc.ctx.fill();
+    rc.ctx.strokeStyle = mainColor;
+    rc.ctx.lineWidth = 1.5;
+    rc.ctx.stroke();
+
+    // Symbol text
+    rc.ctx.fillStyle = '#fff';
+    rc.ctx.font = `bold ${Math.max(9, radius - 1)}px Inter, sans-serif`;
+    rc.ctx.textAlign = 'center';
+    rc.ctx.textBaseline = 'middle';
+    rc.ctx.fillText(ent.symbol, pos.x, pos.y + 1);
+  }
+  // Spells: pulsing circle
+  else {
+    const pulse = 1 + Math.sin(currentTick * 0.3) * 0.15;
+    rc.ctx.beginPath();
+    rc.ctx.arc(pos.x, pos.y, radius * pulse, 0, Math.PI * 2);
+    rc.ctx.fillStyle = isBlue ? 'rgba(74, 158, 255, 0.6)' : 'rgba(255, 82, 82, 0.6)';
+    rc.ctx.fill();
+  }
+
+  drawTypeBadge(rc, ent, pos, radius);
+
+  if (!meta.isSpell) {
+    // maxHp can be 0 for an unrecognised card; a full bar is the honest
+    // rendering when the maximum is unknown.
+    const hpRatio = meta.maxHp > 0
+      ? Math.max(0, Math.min(1, ent.hp / meta.maxHp))
+      : 1;
+    const barWidth = radius * 2.2;
+    const barHeight = 3;
+    const barX = pos.x - barWidth / 2;
+    const barY = pos.y - radius - 8;
+
+    // HP bar background
+    rc.ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    rc.ctx.fillRect(barX - 1, barY - 1, barWidth + 2, barHeight + 2);
+
+    // HP bar fill
+    let hpColor;
+    if (hpRatio > 0.5) hpColor = '#4ade80';
+    else if (hpRatio > 0.25) hpColor = '#facc15';
+    else hpColor = '#ff5252';
+
+    rc.ctx.fillStyle = hpColor;
+    rc.ctx.fillRect(barX, barY, barWidth * hpRatio, barHeight);
+  }
+}
+
+// UI updates
+function updateUI() {
+  if (!gameData) return;
+  const tickData = gameData.ticks[currentTick];
+  if (!tickData) return;
+
+  // Tick display
+  tickDisplay.textContent = `Tick ${tickData.tick} / ${gameData.ticks[gameData.ticks.length - 1].tick}`;
+  scrubber.value = currentTick;
+
+  // Elixir phase (x1 / x2 / x3). The boundaries come from the replay's own
+  // "elixirPhases" block, written by GameLogger from GameManager's constants,
+  // not from a table here: this page's only input is the JSON.
+  const phases = gameData.elixirPhases;
+  if (phases) {
+    const mult = tickData.tick >= phases.tripleTick ? 3
+               : tickData.tick >= phases.doubleTick ? 2
+               : 1;
+    elixirPhase.textContent = `x${mult}`;
+    elixirPhase.className = `elixir-phase phase-${mult}`;
+    elixirPhase.style.display = '';
+  } else {
+    elixirPhase.style.display = 'none';
+  }
+
+  // Elixir
+  document.getElementById('elixirBarAI').style.width = (tickData.elixirAI / 10 * 100) + '%';
+  document.getElementById('elixirValAI').textContent = tickData.elixirAI.toFixed(1);
+  document.getElementById('elixirBarOpp').style.width = (tickData.elixirOpp / 10 * 100) + '%';
+  document.getElementById('elixirValOpp').textContent = tickData.elixirOpp.toFixed(1);
+
+  updateHandPanel(tickData);
+  updateTowerPanel(tickData);
+  updateAgentBrain(tickData);
+  updateInspector(tickData);
+  updateEventLog();
+  updateWinnerOverlay();
+  updateSimUI();
+}
+
+function updateTowerPanel(tickData) {
+  const grid = document.getElementById('towerGrid');
+  grid.innerHTML = '';
+
+  for (const td of TOWER_DEFS) {
+    const ent = tickData.entities.find(e => e.id === td.id);
+    const hp = ent ? ent.hp : 0;
+    const ratio = hp / td.maxHp;
+    const teamColor = td.team === 0 ? 'var(--blue-team)' : 'var(--red-team)';
+
+    const card = document.createElement('div');
+    card.className = 'tower-card' + (hp <= 0 ? ' destroyed' : '');
+    card.innerHTML = `
+      <div class="tower-card-header">
+        <span class="tower-name">${td.name}</span>
+        <span class="tower-hp-num" style="color:${teamColor}">${hp}</span>
+      </div>
+      <div class="meter">
+        <div class="meter-fill" style="width:${Math.max(0, ratio)*100}%; background:${teamColor}"></div>
+      </div>`;
+    grid.appendChild(card);
+  }
+}
+
+// Shows what the network is "thinking": the critic's state-value estimate as a
+// speedometer dial, plus the action it sampled at the decision governing this
+// tick. Gauge range is +/-2: observed values stay within it (a decisive winning
+// position reads ~+1.2, a losing one ~-1.3).
+const GAUGE_RANGE = 2.0;
+const gaugeCanvas = document.getElementById('gaugeCanvas');
+// Logical size from the element's attributes, read before sizeCanvas scales them.
+const GAUGE_W = gaugeCanvas.width, GAUGE_H = gaugeCanvas.height;
+const gaugeCtx = sizeCanvas(gaugeCanvas, GAUGE_W, GAUGE_H, true);
+
+function drawGauge(stateValue) {
+  const w = GAUGE_W, h = GAUGE_H;
+  gaugeCtx.clearRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h - 18, r = 68;
+  const hasData = stateValue !== undefined;
+  const clamped = Math.max(-GAUGE_RANGE, Math.min(GAUGE_RANGE, hasData ? stateValue : 0));
+  const t = (clamped + GAUGE_RANGE) / (2 * GAUGE_RANGE); // 0..1 across the dial
+
+  // Background arc: red (negative) left half, green (positive) right half.
+  // Canvas angle Math.PI points left, 1.5*Math.PI up, 2*Math.PI right.
+  gaugeCtx.lineWidth = 10;
+  gaugeCtx.lineCap = 'round';
+  gaugeCtx.strokeStyle = 'rgba(255, 82, 82, 0.35)';
+  gaugeCtx.beginPath();
+  gaugeCtx.arc(cx, cy, r, Math.PI, 1.5 * Math.PI);
+  gaugeCtx.stroke();
+  gaugeCtx.strokeStyle = 'rgba(74, 222, 128, 0.35)';
+  gaugeCtx.beginPath();
+  gaugeCtx.arc(cx, cy, r, 1.5 * Math.PI, 2 * Math.PI);
+  gaugeCtx.stroke();
+
+  // Ticks + labels at -2, -1, 0, +1, +2
+  gaugeCtx.font = '10px Inter, sans-serif';
+  gaugeCtx.textAlign = 'center';
+  gaugeCtx.textBaseline = 'middle';
+  for (let tv = -GAUGE_RANGE; tv <= GAUGE_RANGE; tv += 1) {
+    const tt = (tv + GAUGE_RANGE) / (2 * GAUGE_RANGE);
+    const angle = Math.PI + tt * Math.PI;
+    const x1 = cx + (r - 8) * Math.cos(angle), y1 = cy + (r - 8) * Math.sin(angle);
+    const x2 = cx + (r + 4) * Math.cos(angle), y2 = cy + (r + 4) * Math.sin(angle);
+    gaugeCtx.strokeStyle = 'rgba(255,255,255,0.3)';
+    gaugeCtx.lineWidth = 2;
+    gaugeCtx.beginPath();
+    gaugeCtx.moveTo(x1, y1);
+    gaugeCtx.lineTo(x2, y2);
+    gaugeCtx.stroke();
+
+    const lx = cx + (r + 16) * Math.cos(angle), ly = cy + (r + 16) * Math.sin(angle);
+    gaugeCtx.fillStyle = '#9aa0b2';
+    gaugeCtx.fillText(tv > 0 ? '+' + tv : String(tv), lx, ly);
+  }
+
+  // Needle
+  const needleAngle = Math.PI + t * Math.PI;
+  const nx = cx + (r - 14) * Math.cos(needleAngle), ny = cy + (r - 14) * Math.sin(needleAngle);
+  gaugeCtx.strokeStyle = !hasData ? '#5f6577' : (clamped >= 0 ? '#4ade80' : '#ff5252');
+  gaugeCtx.lineWidth = 3;
+  gaugeCtx.lineCap = 'round';
+  gaugeCtx.beginPath();
+  gaugeCtx.moveTo(cx, cy);
+  gaugeCtx.lineTo(nx, ny);
+  gaugeCtx.stroke();
+
+  gaugeCtx.beginPath();
+  gaugeCtx.arc(cx, cy, 5, 0, Math.PI * 2);
+  gaugeCtx.fillStyle = '#e8eaed';
+  gaugeCtx.fill();
+}
+
+function updateAgentBrain(tickData) {
+  drawGauge(tickData.stateValue);
+
+  const valueEl = document.getElementById('gaugeValueText');
+  const actionEl = document.getElementById('gaugeActionText');
+
+  if (tickData.stateValue === undefined) {
+    valueEl.textContent = 'N/A';
+    valueEl.style.color = '#5f6577';
+    actionEl.textContent = 'No data (older replay file)';
+    return;
+  }
+
+  const v = tickData.stateValue;
+  valueEl.textContent = (v >= 0 ? '+' : '') + v.toFixed(3);
+  valueEl.style.color = v >= 0 ? '#4ade80' : '#ff5252';
+
+  if (tickData.actionCardId === undefined) {
+    actionEl.textContent = 'N/A';
+  } else if (tickData.actionCardId === -1 || tickData.actionCardId === null) {
+    actionEl.textContent = 'No-op (holding elixir)';
+  } else {
+    const name = tickData.actionCardName || `Card #${tickData.actionCardId}`;
+    actionEl.innerHTML = `<strong>${name}</strong> → (${tickData.actionX.toFixed(1)}, ${tickData.actionY.toFixed(1)})`;
+  }
+}
+
+function updateInspector(tickData) {
+  const el = document.getElementById('inspectorContent');
+  if (selectedEntityId === null) {
+    el.innerHTML = '<div class="inspector-empty">Click an entity on the arena</div>';
+    return;
+  }
+  const ent = tickData.entities.find(e => e.id === selectedEntityId);
+  if (!ent) {
+    el.innerHTML = '<div class="inspector-empty">Entity no longer alive</div>';
+    return;
+  }
+  const meta = getEntityMeta(ent);
+  const teamStr = ent.team === 0 ? '<span style="color:var(--blue-team)">Blue</span>' : '<span style="color:var(--red-team)">Red</span>';
+  const type = getEntityType(ent);
+  const typeLabel = { ground: 'Ground', air: 'Air', building: 'Building', spell: 'Spell' }[type];
+  // A spell has no persistent HP, so "1 / -" is meaningless for it.
+  const hpLine = meta.isSpell
+    ? '<div class="inspector-detail"><span>HP:</span> <strong>n/a</strong> <span>(spell)</span></div>'
+    : `<div class="inspector-detail"><span>HP:</span> <strong>${ent.hp}</strong> / ${formatMaxHp(meta)}</div>`;
+
+  el.innerHTML = `
+    <div class="inspector-detail"><span>Name:</span> <strong>${meta.name}</strong></div>
+    <div class="inspector-detail"><span>ID:</span> <strong>${ent.id}</strong></div>
+    <div class="inspector-detail"><span>Team:</span> ${teamStr}</div>
+    <div class="inspector-detail"><span>Type:</span> <strong>${typeLabel}</strong></div>
+    ${hpLine}
+    <div class="inspector-detail"><span>Position:</span> <strong>(${ent.x.toFixed(1)}, ${ent.y.toFixed(1)})</strong></div>
+    <div class="inspector-detail"><span>Symbol:</span> <strong>${ent.symbol}</strong></div>`
+    + (meta.inferred
+        ? `<div class="inspector-note">identified by symbol${
+             meta.ambiguous ? ' — this symbol is shared by more than one card' : ''
+           }</div>`
+        : meta.hpInferred
+          ? '<div class="inspector-note">name read from the replay; HP maximum inferred from symbol</div>'
+          : '');
+}
+
+function updateEventLog() {
+  const el = document.getElementById('eventLog');
+  const tickNum = gameData.ticks[currentTick].tick;
+  const relevantEvents = allEvents.filter(e => e.tick <= tickNum).slice(-40);
+
+  el.innerHTML = '';
+  for (const ev of relevantEvents.reverse()) {
+    const div = document.createElement('div');
+    div.className = 'event ' + (ev.type === 'spawn' ? 'event-spawn' : 'event-death');
+    const teamColor = ev.team === 0 ? 'var(--blue-team)' : 'var(--red-team)';
+    const icon = ev.type === 'spawn' ? '➕' : '💀';
+    div.innerHTML = `<span class="event-tick">[${ev.tick}]</span> ${icon} <span style="color:${teamColor}">${ev.name}</span> <span style="color:var(--text-muted)">#${ev.id}</span>`;
+    el.appendChild(div);
+  }
+}
+
+// cardNames values are formatted "Hog Rider (4)" by GameLogger::save(), so the
+// cost is recoverable from the name.
+function splitCardLabel(raw) {
+  const m = /^(.*)\s\((\d+)\)$/.exec(raw || '');
+  return m ? { name: m[1], cost: parseInt(m[2], 10) } : { name: raw, cost: null };
+}
+
+function updateHandPanel(tickData) {
+  const cardNames = gameData.cardNames || {};
+
+  function renderHandTile(container, handIds, elixir) {
+    container.innerHTML = '';
+    if (!handIds || handIds.length === 0) {
+      container.innerHTML = '<span class="empty-note">No data</span>';
+      return;
+    }
+    for (const id of handIds) {
+      const raw = cardNames[id] || `Card #${id}`;
+      const { name, cost } = splitCardLabel(raw);
+      const tile = document.createElement('div');
+      const broke = (cost !== null && elixir !== null && cost > elixir);
+      tile.className = 'card-tile' + (broke ? ' unaffordable' : '');
+      tile.title = raw;
+      tile.innerHTML = `<span class="nm">${name}</span>`
+        + (cost !== null ? `<span class="cost">${cost}</span>` : '');
+      container.appendChild(tile);
+    }
+  }
+
+  renderHandTile(document.getElementById('handCardsAI'),
+                 tickData.aiHand,
+                 tickData.elixirAI === undefined ? null : tickData.elixirAI);
+  renderHandTile(document.getElementById('handCardsOpp'),
+                 tickData.oppHand,
+                 tickData.elixirOpp === undefined ? null : tickData.elixirOpp);
+}
+
+// ---------------------------------------------------------------------------
+// Simulation View
+// ---------------------------------------------------------------------------
+// px per tile in a mini-board: 7 keeps the ghost placement legible, and two
+// boards plus the arrow (~290px) still fit the 400px panel.
+const SIM_MINI_CELL = 7;
+let simViewOpen = false;
+
+// A candidate's label: "Ice Golem -> (3,15)", or both halves of a combo.
+function candidateLabel(cand) {
+  const steps = (cand && cand.steps) || [];
+  if (!steps.length) return 'Hold';
+  const names = gameData.cardNames || {};
+  return steps.map(function (st) {
+    const raw = names[st.cardId];
+    const nm = raw ? splitCardLabel(raw).name : ('Card #' + st.cardId);
+    return nm + ' \u2192 (' + st.x + ', ' + st.y + ')';
+  }).join('  \u25B8  ');
+}
+
+// A mini-board reuses drawBoard at a smaller cellSize, so the arena palette and
+// bridge geometry apply automatically.
+function miniBoard(entities, placements) {
+  const cv = document.createElement('canvas');
+  const rc = makeRenderCtx(cv.getContext('2d'), gameData.boardWidth,
+                           gameData.boardHeight, SIM_MINI_CELL, 2);
+  sizeCanvas(cv, rc.width, rc.height, false);
+  drawBoard(rc, { entities: entities || [] },
+            { selectedEntityId: null, showLabels: false, ghost: true,
+              placements: placements || [] });
+  return cv;
+}
+
+// A candidate's steps as ghost-placement descriptors in ABSOLUTE coordinates.
+function ghostsFor(record, cand) {
+  return (cand.steps || []).map(st => {
+    const b = stepToBoard(record, st);
+    const meta = CARD_META[st.cardId];
+    return { x: b.x, y: b.y, team: record.team,
+             symbol: meta ? meta.symbol : '?' };
+  });
+}
+
+function renderSimView(record) {
+  const body = document.getElementById('simBody');
+  if (!body) return;
+  body.innerHTML = '';
+
+  // Each of these is a normal state, not an error, and gets a sentence rather
+  // than an empty framed region.
+  if (!record) {
+    body.innerHTML = '<div class="sim-note">No teacher decision on this tick.</div>';
+    return;
+  }
+  if (record.kind === 'no_candidates') {
+    body.innerHTML = '<div class="sim-note">Nothing affordable this decision.<br>'
+      + 'The teacher had no legal play to simulate.</div>';
+    return;
+  }
+  if (record.kind === 'rules_only' || record.kind === 'epsilon') {
+    body.innerHTML = '<div class="sim-note">Decided by the '
+      + (record.kind === 'epsilon'
+          ? 'exploration (epsilon) branch'
+          : 'rules-only branch \u2014 this stage does no lookahead')
+      + '.<br>No rollout scores exist for this decision.</div>';
+    return;
+  }
+
+  const secs = ((record.horizonTicks || 0) / 10).toFixed(1);
+
+  const base = document.createElement('div');
+  base.className = 'sim-baseline';
+  base.innerHTML =
+    '<div class="sim-meta">Baseline &middot; horizon ' + secs + 's</div>'
+    + 'Hold (no-op) scores <strong>0.00</strong> by definition. '
+    + 'Every score below is marginal against it.'
+    + (record.held
+        ? '<br><strong>The teacher held</strong> \u2014 nothing below beat its margin.'
+        : '');
+  if (record.baseline && record.baseline.entities) {
+    base.appendChild(miniBoard(record.baseline.entities));   // no-op: no placement
+  }
+  body.appendChild(base);
+
+  const nowEntities = gameData.ticks[currentTick].entities;
+  let dividerDone = false;
+
+  record.candidates.forEach(function (cand, i) {
+    const hasBoard = !!(cand.final && cand.final.entities);
+    if (!hasBoard && !dividerDone) {
+      const d = document.createElement('div');
+      d.className = 'sim-divider';
+      d.textContent = 'scored, not simulated';
+      body.appendChild(d);
+      dividerDone = true;
+    }
+
+    const row = document.createElement('div');
+    row.className = 'sim-row'
+      + (i === record.chosenIndex ? ' chosen' : '')
+      + (cand.rejected ? ' rejected' : '');
+
+    const score = (typeof cand.score === 'number') ? cand.score : 0;
+    const head = document.createElement('div');
+    head.className = 'sim-row-head';
+    head.innerHTML =
+      '<span class="lbl">#' + (i + 1) + ' ' + candidateLabel(cand) + '</span>'
+      + '<span class="sim-score">' + (score >= 0 ? '+' : '') + score.toFixed(2) + '</span>';
+    row.appendChild(head);
+
+    if (hasBoard) {
+      const wrap = document.createElement('div');
+      wrap.className = 'sim-boards';
+      // Left board: the live position plus this candidate's placement, so the
+      // "before" is the setup being scored.
+      wrap.appendChild(miniBoard(nowEntities, ghostsFor(record, cand)));
+      const arrow = document.createElement('span');
+      arrow.className = 'sim-arrow';
+      arrow.textContent = '\u2192';
+      arrow.title = '+' + secs + 's';
+      wrap.appendChild(arrow);
+      wrap.appendChild(miniBoard(cand.final.entities));
+      row.appendChild(wrap);
+    }
+
+    const foot = document.createElement('div');
+    foot.className = 'sim-strip';
+    foot.style.marginTop = hasBoard ? '7px' : '0';
+    const left = (i === record.chosenIndex)
+      ? '\u2713 chosen'
+      : (cand.rejected ? '\u2717 below margin ' + (cand.margin || 0).toFixed(2) : '');
+    foot.innerHTML = '<span>' + left + '</span><span>'
+      + (hasBoard ? 'now \u2192 +' + secs + 's' : '') + '</span>';
+    row.appendChild(foot);
+
+    body.appendChild(row);
+  });
+}
+
+function toggleSimView(force) {
+  if (!hasTeacherDebug(gameData)) return;
+  simViewOpen = (force === undefined) ? !simViewOpen : !!force;
+  const panel = document.getElementById('simPanel');
+  panel.classList.toggle('open', simViewOpen);
+  panel.setAttribute('aria-hidden', String(!simViewOpen));
+  document.getElementById('btnSimView').classList.toggle('active', simViewOpen);
+  if (simViewOpen) renderSimView(teacherDebugForTick(currentTick));
+  // No canvas resize needed: .canvas-wrapper and canvas carry max-width:100% /
+  // object-fit:contain, so the arena CSS-scales down when the panel takes
+  // width, and hit-testing converts through getBoundingClientRect.
+}
+
+// Reflects the CURRENT tick's data onto the chip and the open panel.
+function updateSimUI() {
+  const chip = document.getElementById('btnSimView');
+  if (!hasTeacherDebug(gameData)) {
+    // An inert control is worse than an absent one.
+    chip.style.display = 'none';
+    return;
+  }
+  chip.style.display = 'flex';
+  const rec = teacherDebugForTick(currentTick);
+  const n = rec ? rec.candidates.length : 0;
+  document.getElementById('simChipCount').textContent =
+    rec ? `Simulation View (${n})` : 'Simulation View';
+  chip.disabled = !rec;
+  if (simViewOpen) renderSimView(rec);
+}
+
+// Playback controls
+function setPlaying(val) {
+  playing = val;
+  btnPlayPause.textContent = playing ? '⏸' : '▶';
+  btnPlayPause.classList.toggle('active', playing);
+  if (playing) startPlayback();
+  else stopPlayback();
+}
+
+function startPlayback() {
+  stopPlayback();
+  const delay = parseFloat(speedSelect.value);
+  const ms = Math.max(16, delay * 50);
+  playInterval = setInterval(() => {
+    if (currentTick < gameData.ticks.length - 1) {
+      currentTick++;
+      renderTick();
+      updateUI();
+    } else {
+      setPlaying(false);
+    }
+  }, ms);
+}
+
+function stopPlayback() {
+  if (playInterval) { clearInterval(playInterval); playInterval = null; }
+}
+
+btnPlayPause.addEventListener('click', () => setPlaying(!playing));
+btnStepBack.addEventListener('click', () => {
+  if (!gameData) return;
+  setPlaying(false);
+  if (currentTick > 0) { currentTick--; renderTick(); updateUI(); }
+});
+btnStepFwd.addEventListener('click', () => {
+  if (!gameData) return;
+  setPlaying(false);
+  if (currentTick < gameData.ticks.length - 1) { currentTick++; renderTick(); updateUI(); }
+});
+scrubber.addEventListener('input', () => {
+  if (!gameData) return;
+  setPlaying(false);
+  currentTick = parseInt(scrubber.value);
+  renderTick();
+  updateUI();
+});
+speedSelect.addEventListener('change', () => {
+  if (playing) { stopPlayback(); startPlayback(); }
+});
+
+// Canvas interaction
+canvas.addEventListener('click', (e) => {
+  if (!gameData) return;
+  const p = eventToCanvas(e);
+  const rc = mainRc();
+  const tickData = gameData.ticks[currentTick];
+
+  let closest = null;
+  let closestDist = Infinity;
+  for (const ent of tickData.entities) {
+    if (ent.symbol === '-') continue;          // projectiles are not selectable
+    const pos = gameToCanvas(rc, ent.x, ent.y);
+    const dist = Math.hypot(p.x - pos.x, p.y - pos.y);
+    // Closest wins, so a big tower's generous radius cannot steal a click from
+    // a troop standing on it.
+    if (dist < hitRadiusFor(ent, rc) && dist < closestDist) {
+      closest = ent;
+      closestDist = dist;
+    }
+  }
+
+  selectedEntityId = closest ? closest.id : null;
+  renderTick();
+  updateUI();
+});
+
+// No hover tooltip on the arena: the Entity Inspector shows the same
+// information on click and persists while scrubbing. A tooltip positioned in
+// CSS pixels from backing-store coordinates drifts whenever the canvas is
+// CSS-scaled, which it always is.
+
+document.getElementById('btnSimView').addEventListener('click', () => toggleSimView());
+document.getElementById('simClose').addEventListener('click', () => toggleSimView(false));
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (!gameData) return;
+  if (e.code === 'Space') { e.preventDefault(); setPlaying(!playing); }
+  if (e.code === 'ArrowRight') { e.preventDefault(); btnStepFwd.click(); }
+  if (e.code === 'ArrowLeft') { e.preventDefault(); btnStepBack.click(); }
+  if (e.key === 't' || e.key === 'T') { e.preventDefault(); toggleSimView(); }
+});
+
+// ---------------------------------------------------------------------------
+// Test surface.
+//
+// Top-level `let`/`const`/`function` in a classic script create lexical
+// bindings that are not properties of `window`, so nothing above is reachable
+// from the console or a driving harness. This block is the single place that
+// exposes what the checks in docs/design/plans/ need.
+//
+// Read-only by intent: `state()` returns a snapshot. Nothing here runs on load.
+// ---------------------------------------------------------------------------
+window.__viewerTests = {
+  getEntityMeta,
+  stepToBoard,
+  ghostsFor,
+  eventToCanvas,
+  hitRadiusFor: (ent) => hitRadiusFor(ent, mainRc()),
+  selectedId: () => selectedEntityId,
+  teacherDebugForTick,
+  hasTeacherDebug,
+  toggleSimView: (f) => toggleSimView(f),
+  simOpen: () => simViewOpen,
+  buildSymbolIndex,
+  formatMaxHp,
+  symbolIndex: () => SYMBOL_INDEX,
+  bridgeCells: () => BRIDGE_CELLS,
+  riverRows: () => RIVER_ROWS,
+  loadJson: (text, name) => loadFile(new File([text], name || 'test.json',
+                                              { type: 'application/json' })),
+  // Synchronous variant: loadFile goes through FileReader, which does not fire
+  // in a throttled or non-painting renderer. Only the file decode is skipped;
+  // initViewer onward is the same path.
+  loadData: (obj, name) => {
+    gameData = obj;
+    initViewer();
+    dropOverlay.classList.add('hidden');
+    document.getElementById('fileNameBadge').textContent = name || 'test.json';
+  },
+  state: () => ({
+    loaded: !!gameData,
+    tick: currentTick,
+    totalTicks: gameData ? gameData.ticks.length : 0,
+    entities: gameData ? gameData.ticks[currentTick].entities.length : 0,
+  }),
+  entitiesAt: (i) => gameData ? gameData.ticks[i].entities : [],
+  gotoTick: (i) => { currentTick = i; renderTick(); updateUI(); },
+  // For video export: the arena between ticks (tickBetween), the panels at the
+  // tick below. Leaves tickFraction at 0, so the viewer never sees it.
+  gotoTickFrac: (t) => {
+    currentTick = Math.max(0, Math.min(Math.floor(t), gameData.ticks.length - 1));
+    tickFraction = t - currentTick;
+    renderTick();
+    updateUI();
+    tickFraction = 0;
+  },
+  select: (id) => { selectedEntityId = id; renderTick(); updateUI(); },
+  renderScale: () => RENDER_SCALE,
+  cellSize: () => CELL_SIZE,
+  padding: () => PADDING,
+  cardMeta: () => CARD_META,
+};
+</script>
+</body>
+</html>

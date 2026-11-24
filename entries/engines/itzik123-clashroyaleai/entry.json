@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T18:13:08Z",
+ "category": "engines",
+ "commit": "ec28641b59e0",
+ "delivery": "vendored",
+ "description": "itzik123/ClashRoyaleAi \u2014 A fast, deterministic Clash Royale battle simulator in C++ with Python bindings, a recurrent PPO agent, lookahead search, and a computer-vision bridge to the real game.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ClashRoyaleAi",
+ "size_bytes": 5988497,
+ "slug": "itzik123-clashroyaleai",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 35,
+ "system": "A fast, deterministic Clash Royale battle simulator in C++ with Python bindings, a recurrent PPO agent, lookahead search, and a computer-vision bridge to the re",
+ "upstream": "https://github.com/itzik123/ClashRoyaleAi",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

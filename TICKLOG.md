@@ -2761,3 +2761,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/pyved-solution-pyved-engine
   - reference engines/retrofloppy77-terracraft
   - reference engines/agentodyssey-agentodyssey
+
+- **2026-11-24 18:13 UTC** — tick 800: +2 screened, +4 reference, 9 skipped, catalogue=1324
+  - added engines/itzik123-clashroyaleai (MIT, vendored)
+  - added engines/harkal-sylphis3d (BSD-2-Clause, vendored)
+  - reference engines/kitao-pyxel-mcp
+  - reference engines/jschm42-taleweaver
+  - reference engines/elm-messenger-messenger
+  - reference engines/nutti-fake-bge-module

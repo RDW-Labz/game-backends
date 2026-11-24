@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:13:21Z",
+ "category": "engines",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kitao/pyxel-mcp \u2014 MCP server for AI-assisted retro game development with Pyxel",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pyxel-mcp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kitao-pyxel-mcp",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 32,
+ "system": "MCP server for AI-assisted retro game development with Pyxel",
+ "upstream": "https://github.com/kitao/pyxel-mcp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,61 @@
+# Perception module dependencies. SEPARATE from python_ai/requirements.txt on
+# purpose -- that environment has a training run using it and must not be
+# touched. Install into perception/.venv:
+#
+#   py -3.11 -m venv perception/.venv
+#   perception/.venv/Scripts/python.exe -m pip install -r perception/requirements.txt
+#
+# Python 3.11 specifically, not 3.13/3.14: bridge/sim_driver.py, forecast.py
+# and live/mvp_loop.py's --policy neural all reach python_ai/
+# clash_royale_env.pyd, which is built against 3.11 and fails with
+# "DLL load failed" on any other version.
+
+numpy>=2.0
+# Headless: this module never opens a window. The GUI build pulls in Qt and a
+# large dependency tree for functionality nothing here uses.
+opencv-python-headless>=4.10
+pytest>=8.0
+
+# Required by the vendored CRBAB sensor at IMPORT time, and previously
+# UNDECLARED here -- a venv built strictly from this file could not
+# `import clashroyalebuildabot` at all. Verified 2026-08-24 by blocking them on
+# sys.meta_path: the import fails on PIL before it reaches anything else.
+#   pillow  detectors/card_detector.py, hand-icon hashing
+#   scipy   detectors/card_detector.py, linear_sum_assignment over hand slots
+pillow>=10.0
+scipy>=1.11
+
+# LIVE DETECTOR ONLY -- the two ONNX models (units_M_480x352, side). Every test
+# runs against fixtures or fakes rather than the real models, which is why the
+# suite is green without this installed; a live run needs it.
+# Use the `-gpu` build instead on a machine that has one.
+onnxruntime>=1.17
+
+# Used by detectors/detector.py and two measurement tools for log output.
+loguru>=0.7
+
+# LIVE CAPTURE ONLY -- Windows, and only for capture/window.py. Every recorded
+# source (video.py, frames.py) and the whole test suite run without it.
+#
+# Windows.Graphics.Capture, chosen against two measured alternatives:
+#   adb exec-out screencap   1414-4886 ms per frame -- an order of magnitude
+#                            over the ~200 ms budget a 1 Hz loop leaves after
+#                            the detector's ~640 ms
+#   CopyFromScreen           reads the composited desktop, so it returns
+#                            whatever covers the emulator; verified returning
+#                            an unrelated window
+# WGC reads the window's own surface: ~100 ms, and works while the window is
+# completely covered, so the machine stays usable during a run.
+windows-capture>=2.0 ; sys_platform == "win32"
+
+# NEURAL POLICY ONLY -- live/mvp_loop.py --policy neural. Not needed for the
+# default heuristic policy, for calibration, or for the test suite, which is
+# why it is not an unconditional dependency.
+#
+# That path imports python_ai/models/net.py (MicroRoyaleNet) and
+# python_ai/models/perception_encoder.py, and the latter does a MODULE-LEVEL
+# `import clash_royale_env` -- so --policy neural additionally requires the
+# built .pyd and the 3.11 interpreter noted at the top, not just this package.
+# Pinned loosely: the checkpoint format is torch.save/load, not a
+# version-specific export.
+torch>=2.0

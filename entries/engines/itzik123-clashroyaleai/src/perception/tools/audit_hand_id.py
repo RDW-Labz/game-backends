@@ -1,0 +1,234 @@
+"""Measure a hand classifier against constraints the game itself enforces.
+
+No hand labels are needed. A correct reading cannot violate three invariants:
+
+  1. No off-deck card. We chose the deck.
+  2. No duplicate. Eight distinct cards in a strict FIFO cannot fill two slots
+     with one card.
+  3. No early return. The cycle is 4 in hand + 4 in queue, so a card that
+     leaves the hand cannot return until four others are played. The
+     strongest, and the only one that catches a classifier wrong consistently
+     rather than noisily.
+
+Plus a rate check: a hand holds for a deck-specific time between plays, so a
+reading changing much faster is churning.
+
+`--compare` scores candidate representations on the same frames, so a proposed
+fix is measured against the incumbent.
+"""
+
+from __future__ import annotations
+
+import argparse
+import statistics
+import sys
+from collections import Counter
+from pathlib import Path
+
+from PIL import Image
+
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from clashroyalebuildabot.constants import (  # noqa: E402
+    CARD_CONFIG,
+    SCREENSHOT_HEIGHT,
+    SCREENSHOT_WIDTH,
+)
+from clashroyalebuildabot.detectors.card_detector import CardDetector  # noqa: E402
+from clashroyalebuildabot.detectors.screen_detector import ScreenDetector  # noqa: E402
+from clashroyalebuildabot.namespaces.cards import Cards  # noqa: E402
+
+# The deck in the live recording.
+DECK = [Cards.VALKYRIE, Cards.ARCHERS, Cards.MINIONS, Cards.CANNON,
+        Cards.FIREBALL, Cards.GIANT, Cards.MUSKETEER, Cards.MINIPEKKA]
+
+# How long a real hand holds between plays, measured over a 326 s recording of
+# the Giant deck; used only to express churn as a multiple. Deck-specific: the
+# 2.6 Hog Cycle cycles about twice as fast (2.625 elixir a card against 4.1),
+# so pass `real_hold_seconds=None` for a deck without a measured figure and the
+# multiple is omitted.
+REAL_HOLD_SECONDS = 9.3
+
+
+def load_frames(directory: Path, limit: int | None, stride: int):
+    paths = sorted(directory.glob("f*.png"))
+    if stride > 1:
+        paths = paths[::stride]
+    if limit:
+        paths = paths[:limit]
+    for path in paths:
+        image = Image.open(path).convert("RGB")
+        yield path.name, image.resize((SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT),
+                                      Image.LANCZOS)
+
+
+def collapse_blanks(readings):
+    """Carry the last non-blank card forward, per slot. A play empties its slot
+    for a few frames, so one play reads `X -> blank -> Y`; left alone that is
+    two transitions, and an `X -> blank -> X` flicker becomes a card returning
+    after one play. Neither is a classifier error.
+    """
+    out = []
+    last: list[str | None] = [None, None, None, None]
+    for name, hand in readings:
+        filled = []
+        for i, card in enumerate(hand):
+            if card == "blank":
+                filled.append(last[i] if last[i] is not None else "blank")
+            else:
+                last[i] = card
+                filled.append(card)
+        out.append((name, tuple(filled)))
+    return out
+
+
+def audit(readings: list[tuple[str, tuple[str, ...]]], fps: float,
+          deck=None, real_hold_seconds: float | None = REAL_HOLD_SECONDS) -> dict:
+    """Score a stream of 4-card hand readings against the three invariants. `deck`
+    defaults to this module's DECK, the Giant recording's; the wrong deck makes
+    every card "off-deck".
+    """
+    readings = collapse_blanks(readings)
+    deck_names = {c.name for c in (deck if deck is not None else DECK)}
+
+    off_deck = 0
+    duplicates = 0
+    total = 0
+    changes = 0
+    early_returns = 0
+    checked_returns = 0
+    run_lengths: list[int] = []
+
+    previous: tuple[str, ...] | None = None
+    run = 0
+    # Cards played since a given card left the hand, for the early-return test.
+    since_left: dict[str, int] = {}
+    plays_seen = 0
+
+    for _name, hand in readings:
+        total += 1
+        if any(c not in deck_names for c in hand):
+            off_deck += 1
+        if len(set(hand)) != len(hand):
+            duplicates += 1
+
+        if previous is None:
+            previous, run = hand, 1
+            continue
+
+        if hand == previous:
+            run += 1
+        else:
+            changes += 1
+            run_lengths.append(run)
+            run = 1
+            left = [c for c in previous if c not in hand]
+            entered = [c for c in hand if c not in previous]
+            # Only single-slot transitions carry cycle information; a
+            # multi-slot jump means dropped frames or a garbage read. Blank is
+            # not a card and never enters the cycle test (see collapse_blanks).
+            if len(left) == 1 and len(entered) == 1 and \
+                    "blank" not in (left[0], entered[0]):
+                plays_seen += 1
+                for card in entered:
+                    if card in since_left:
+                        checked_returns += 1
+                        if plays_seen - since_left[card] < 4:
+                            early_returns += 1
+                for card in left:
+                    since_left[card] = plays_seen
+            previous = hand
+
+    if run:
+        run_lengths.append(run)
+
+    median_run_frames = statistics.median(run_lengths) if run_lengths else 0
+    median_run_s = median_run_frames / fps if fps else 0.0
+
+    return {
+        "frames": total,
+        "off_deck": off_deck,
+        "duplicates": duplicates,
+        "changes": changes,
+        "distinct_hands": len({h for _n, h in readings}),
+        "median_run_s": median_run_s,
+        "real_hold_s": real_hold_seconds,
+        "churn_multiple": ((real_hold_seconds / median_run_s)
+                           if (real_hold_seconds and median_run_s) else None),
+        "early_returns": early_returns,
+        "checked_returns": checked_returns,
+    }
+
+
+def report(title: str, stats: dict) -> None:
+    n = max(stats["frames"], 1)
+    print(f"\n=== {title} ===")
+    print(f"  frames                 {stats['frames']}")
+    print(f"  off-deck cards         {stats['off_deck']:>5}  ({100*stats['off_deck']/n:.1f}%)")
+    print(f"  duplicate cards        {stats['duplicates']:>5}  ({100*stats['duplicates']/n:.1f}%)")
+    print(f"  distinct hands read    {stats['distinct_hands']:>5}")
+    print(f"  hand changes           {stats['changes']:>5}")
+    if stats.get("churn_multiple"):
+        print(f"  median unchanged run   {stats['median_run_s']:.2f} s"
+              f"   (a real hand holds ~{stats['real_hold_s']} s"
+              f" -> churning {stats['churn_multiple']:.1f}x too fast)")
+    else:
+        print(f"  median unchanged run   {stats['median_run_s']:.2f} s"
+              f"   (no measured hold time for this deck -- compare the arms)")
+    if stats["checked_returns"]:
+        pct = 100 * stats["early_returns"] / stats["checked_returns"]
+        print(f"  IMPOSSIBLE early returns {stats['early_returns']:>3}"
+              f" / {stats['checked_returns']}  ({pct:.1f}%)")
+    else:
+        print("  IMPOSSIBLE early returns   n/a (no single-slot transitions)")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--frames", type=Path,
+                        default=_ROOT / "assets" / "live" / "match_practice_01")
+    parser.add_argument("--limit", type=int, default=None)
+    parser.add_argument("--stride", type=int, default=1)
+    parser.add_argument("--fps", type=float, default=5.0,
+                        help="capture rate of the frame dump, for run lengths")
+    args = parser.parse_args()
+
+    fps = args.fps / max(args.stride, 1)
+
+    detector = CardDetector(list(DECK))
+    screens = ScreenDetector()
+
+    ungated: list[tuple[str, tuple[str, ...]]] = []
+    gated: list[tuple[str, tuple[str, ...]]] = []
+    slot_counts: Counter = Counter()
+
+    for name, image in load_frames(args.frames, args.limit, args.stride):
+        cards, _ready = detector.run(image)
+        # cards[0] is the "next card" slot; 1..4 are the hand.
+        hand = tuple(c.name for c in cards[1:5])
+        ungated.append((name, hand))
+        if screens.run(image).name == "in_game":
+            gated.append((name, hand))
+            slot_counts.update(hand)
+
+    report("UNGATED -- every frame, which is what the live loop does today",
+           audit(ungated, fps))
+    report("GATED on screen == in_game", audit(gated, fps))
+    print(f"\n  gate kept {len(gated)} / {len(ungated)} frames "
+          f"({100*len(gated)/max(len(ungated),1):.1f}%)")
+
+    print("\n  predicted card frequency, IN-MATCH only "
+          "(uniform prior would be 12.5% each):")
+    total_slots = sum(slot_counts.values()) or 1
+    for card, count in slot_counts.most_common():
+        share = 100 * count / total_slots
+        flag = "  <-- SINK" if share > 25.0 else ""
+        print(f"    {card:<14} {share:5.1f}%{flag}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

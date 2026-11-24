@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T18:13:18Z",
+ "category": "engines",
+ "commit": "9462a9569de1",
+ "delivery": "vendored",
+ "description": "harkal/sylphis3d \u2014 The source code to the Sylphis3D game engine",
+ "language": "python",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "sylphis3d",
+ "size_bytes": 8659623,
+ "slug": "harkal-sylphis3d",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 33,
+ "system": "The source code to the Sylphis3D game engine",
+ "upstream": "https://github.com/harkal/sylphis3d",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

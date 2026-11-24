@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 17:55 UTC · 1318 entries · 338 vendored, 980 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 18:13 UTC · 1324 entries · 340 vendored, 984 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 511 | 116 | 395 |
+| [engines](#engines) — Game engines and engine subsystems | 517 | 118 | 399 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 17:55 UTC · 1318 entries · 338 vendored, 980 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 511 entries
+**Game engines and engine subsystems** — 517 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -107,6 +107,7 @@ _Generated 2026-11-24 17:55 UTC · 1318 entries · 338 vendored, 980 reference-o
 | [cgl](entries/engines/jaysmito101-cgl/README.md) | CGL (C Game Library) is a multipurpose library mainly for recreational coding / demo scenes / prototyping / small games / experimentation.  | javascript | MIT | vendored | [Jaysmito101/cgl](https://github.com/Jaysmito101/cgl) @ `bca6e65157a7` |
 | [channeld](entries/engines/channeldorg-channeld/README.md) | Next-Gen Gateway Service for distributed game servers built with Unreal or Unity Engine | go | Apache-2.0 | reference | [channeldorg/channeld](https://github.com/channeldorg/channeld) @ `2026-01-22 (branch tip at catalogue time)` |
 | [chingu](entries/engines/ippa-chingu/README.md) | OpenGL accelerated 2D game framework for Ruby | ruby | LGPL-2.1 | reference | [ippa/chingu](https://github.com/ippa/chingu) @ `d3ed0ff0e0fa` |
+| [ClashRoyaleAi](entries/engines/itzik123-clashroyaleai/README.md) | A fast, deterministic Clash Royale battle simulator in C++ with Python bindings, a recurrent PPO agent, lookahead search, and a computer-vision bridge to the re | python | MIT | vendored | [itzik123/ClashRoyaleAi](https://github.com/itzik123/ClashRoyaleAi) @ `ec28641b59e0` |
 | [cocos-engine](entries/engines/cocos-cocos-engine/README.md) | Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create | c++ | MIT | reference | [cocos/cocos-engine](https://github.com/cocos/cocos-engine) @ `90ad7072a332` |
 | [Cocos2d-x](entries/engines/cocos2d-x/README.md) | mobile-first 2D/3D engine core | c++ | MIT | reference | [cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x) @ `7a5282a301a1` |
 | [coffee](entries/engines/hecrj-coffee/README.md) | An opinionated 2D game engine for Rust | rust | MIT | reference | [hecrj/coffee](https://github.com/hecrj/coffee) @ `2024-03-03 (branch tip at catalogue time)` |
@@ -177,6 +178,7 @@ _Generated 2026-11-24 17:55 UTC · 1318 entries · 338 vendored, 980 reference-o
 | [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
 | [ezEngine](entries/engines/ezengine-ezengine/README.md) | An open source C++ game engine. | c++ | MIT | reference | [ezEngine/ezEngine](https://github.com/ezEngine/ezEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [F8Framework](entries/engines/tippinggame-f8framework/README.md) | F8 Framework是一个优雅，轻量，符合直觉的基于Unity引擎的游戏框架，组件围绕F8一键启动，框架整体遵循以极少的使用成本开发游戏。F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity  | c# | MIT | reference | [TippingGame/F8Framework](https://github.com/TippingGame/F8Framework) @ `2026-09-15 (branch tip at catalogue time)` |
+| [fake-bge-module](entries/engines/nutti-fake-bge-module/README.md) | Fake BGE API module collection for the code completion.  | python | MIT | reference | [nutti/fake-bge-module](https://github.com/nutti/fake-bge-module) @ `2026-07-31 (branch tip at catalogue time)` |
 | [falltergeist](entries/engines/falltergeist-falltergeist/README.md) | Opensource crossplatform Fallout 2™ game engine writen in C++ and SDL. | c++ | GPL-3.0 | reference | [falltergeist/falltergeist](https://github.com/falltergeist/falltergeist) @ `2023-01-05 (branch tip at catalogue time)` |
 | [FarseerPhysics.Portable](entries/engines/craftworkgames-farseerphysics-portable/README.md) | Farseer Physics compiled as a portable class library (PCL) against the PCL version of MonoGame | c# | Zlib | vendored | [craftworkgames/FarseerPhysics.Portable](https://github.com/craftworkgames/FarseerPhysics.Portable) @ `966732fa972e` |
 | [feldspar](entries/engines/bonsairobo-feldspar/README.md) | Procedural voxel worlds for Bevy Engine. | rust | MIT | reference | [bonsairobo/feldspar](https://github.com/bonsairobo/feldspar) @ `2022-08-13 (branch tip at catalogue time)` |
@@ -305,6 +307,7 @@ _Generated 2026-11-24 17:55 UTC · 1318 entries · 338 vendored, 980 reference-o
 | [magnum](entries/engines/mosra-magnum/README.md) | Lightweight and modular C++11 graphics middleware for games and data visualization | c++ | MIT | reference | [mosra/magnum](https://github.com/mosra/magnum) @ `f0907f1c1d12` |
 | [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Meridian](entries/engines/naxela-meridian/README.md) | Bridging Godot and Blender | python | unknown | reference | [Naxela/Meridian](https://github.com/Naxela/Meridian) @ `2026-06-08 (branch tip at catalogue time)` |
+| [Messenger](entries/engines/elm-messenger-messenger/README.md) | A 2D game engine for Elm | python | unknown | reference | [elm-messenger/Messenger](https://github.com/elm-messenger/Messenger) @ `2026-06-21 (branch tip at catalogue time)` |
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
 | [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
@@ -403,6 +406,7 @@ _Generated 2026-11-24 17:55 UTC · 1318 entries · 338 vendored, 980 reference-o
 | [PyRPG_Mini](entries/engines/crawsome-pyrpg-mini/README.md) | A small Python RPG, focused on RPG elements like battle and grinding | python | MIT | reference | [crawsome/PyRPG_Mini](https://github.com/crawsome/PyRPG_Mini) @ `2026-11-09 (branch tip at catalogue time)` |
 | [pyved-engine](entries/engines/pyved-solution-pyved-engine/README.md) | a pythonic❤️ modern game engine. Compatible with Python 3.x and built around pygame | python | LGPL-3.0 | reference | [pyved-solution/pyved-engine](https://github.com/pyved-solution/pyved-engine) @ `2026-06-08 (branch tip at catalogue time)` |
 | [pyxel](entries/engines/kitao-pyxel/README.md) | A retro game engine for Python | rust | unknown | reference | [kitao/pyxel](https://github.com/kitao/pyxel) @ `2026-11-23 (branch tip at catalogue time)` |
+| [pyxel-mcp](entries/engines/kitao-pyxel-mcp/README.md) | MCP server for AI-assisted retro game development with Pyxel | python | MIT | reference | [kitao/pyxel-mcp](https://github.com/kitao/pyxel-mcp) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Qake](entries/engines/lallassu-qake/README.md) | Qake voxel-engine demo | javascript | MIT | vendored | [Lallassu/Qake](https://github.com/Lallassu/Qake) @ `6c8da7a83b72` |
 | [Quasi-Engine](entries/engines/indt-quasi-engine/README.md) | Quasi Engine is a framework that intends to be a complete toolset to ease 2d game development, providing ready-to-use QML elements representing basic game entit | c++ | LGPL-3.0 | reference | [INdT/Quasi-Engine](https://github.com/INdT/Quasi-Engine) @ `7d496613c31b` |
 | [ra2](entries/engines/openra-ra2/README.md) | A Red Alert 2 mod for the OpenRA game engine | c# | GPL-3.0 | reference | [OpenRA/ra2](https://github.com/OpenRA/ra2) @ `61e24e3c1d7b` |
@@ -457,7 +461,9 @@ _Generated 2026-11-24 17:55 UTC · 1318 entries · 338 vendored, 980 reference-o
 | [SuperFamiconv](entries/engines/optiroc-superfamiconv/README.md) | Flexible and composable tile graphics converter supporting Super Nintendo, Game Boy, Game Boy Color, Game Boy Advance, Mega Drive, Master System, Game Gear, PC  | rust | MIT | reference | [Optiroc/SuperFamiconv](https://github.com/Optiroc/SuperFamiconv) @ `2026-11-16 (branch tip at catalogue time)` |
 | [Sustenet](entries/engines/quaint-studios-sustenet/README.md) | Sustenet is a networking solution built with Rust and Zig, formerly C#, for game engines like Unity3D, Godot, and Unreal Engine. The primary focus is on scaling | zig | MIT | reference | [Quaint-Studios/Sustenet](https://github.com/Quaint-Studios/Sustenet) @ `2025-08-09 (branch tip at catalogue time)` |
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
+| [sylphis3d](entries/engines/harkal-sylphis3d/README.md) | The source code to the Sylphis3D game engine | python | BSD-2-Clause | vendored | [harkal/sylphis3d](https://github.com/harkal/sylphis3d) @ `9462a9569de1` |
 | [t_games](entries/engines/ichabod801-t-games/README.md) | A collection of command-line interface games written in Python. | python | GPL-3.0 | reference | [ichabod801/t_games](https://github.com/ichabod801/t_games) @ `2020-04-29 (branch tip at catalogue time)` |
+| [taleweaver](entries/engines/jschm42-taleweaver/README.md) | A next-generation AI-powered text adventure engine featuring dynamic storytelling, procedural world-building, and immersive visual/auditory generation. | python | MIT | reference | [jschm42/taleweaver](https://github.com/jschm42/taleweaver) @ `2026-11-24 (branch tip at catalogue time)` |
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
 | [Terasology](entries/engines/movingblocks-terasology/README.md) | Terasology - open source voxel world | java | Apache-2.0 | reference | [MovingBlocks/Terasology](https://github.com/MovingBlocks/Terasology) @ `2026-11-18 (branch tip at catalogue time)` |
 | [termloop](entries/engines/joelotter-termloop/README.md) | Terminal-based game engine for Go, built on top of Termbox | go | MIT | vendored | [JoelOtter/termloop](https://github.com/JoelOtter/termloop) @ `5f7c38744afb` |

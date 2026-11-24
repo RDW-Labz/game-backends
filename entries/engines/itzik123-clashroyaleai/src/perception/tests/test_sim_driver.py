@@ -1,0 +1,243 @@
+"""Bridge correctness, isolated from vision and from fixture noise.
+
+The control, test_zero_error_events_reproduce_truth_exactly, builds its own
+ground truth rather than using a training replay. A replay labels only the
+learner's plays; the heuristic opponent's must be reconstructed from entities
+appearing, which adds ±1 tick (an entity is visible the tick after its play)
+and ±0.5 tile (a squad's aim point is its centroid). Combat is chaotically
+sensitive to placement, so that input cannot distinguish "the bridge is wrong"
+from "the input was approximate".
+
+So the control generates a truth trajectory with exact events, feeds the same
+events through SimDriver, and requires divergence to be identically zero.
+"""
+
+from __future__ import annotations
+
+import random
+
+import pytest
+
+from bridge.sim_driver import SimDriver
+from contracts import UNKNOWN_CARD_SIM_ID, EventSource, PlacementEvent
+
+DECK = [15, 25, 6, 1, 0, 41, 7, 10]
+
+# Own-half tile rows only: isValidPlacement rejects a non-spell above
+# getOwnHalfMaxY() == 15.0.
+OWN_ROWS = (5, 8, 11, 14)
+# Opponent placements are injected raw, but events carry mirrored y
+# (contracts.PlacementEvent), so these are in the mirrored frame.
+OPP_ROWS = (5, 8, 11, 14)
+
+
+def _build_truth(engine, seed: int, n_events: int = 14):
+    """Run a match with scripted plays, recording exact events. Own plays go
+    through step_self_play by hand index, so they are legal by construction
+    with known ids; opponent plays go through inject_enemy, the bridge's own
+    primitive, so the control tests the bridge's bookkeeping, not the engine.
+    """
+    rng = random.Random(seed)
+    env = engine.ClashRoyaleEnv(DECK, DECK, 3600)
+    env.reset()
+    opening_hand = tuple(env.get_hand())
+
+    events: list[tuple[PlacementEvent, int | None]] = []
+    tick = 0
+    for i in range(n_events):
+        gap = rng.randint(40, 90)
+        env.step_self_play(-1, 0.0, 0.0, -1, 0.0, 0.0, gap)
+        tick += gap
+
+        if i % 2 == 0:
+            hand = list(env.get_hand())
+            index = rng.randrange(len(hand))
+            card = hand[index]
+            x = rng.randrange(2, 16)
+            y = rng.choice(OWN_ROWS)
+            env.step_self_play(index, float(x), float(y), -1, 0.0, 0.0, 1)
+            after = list(env.get_hand())
+            tick += 1
+            if after == hand:
+                continue  # engine refused (elixir); not an event at all
+            events.append((
+                PlacementEvent(
+                    tick=tick - 1, wall_time_ms=0.0, card_sim_id=card,
+                    card_real_name=f"card{card}", team=0,
+                    tile_x=x, tile_y=y, confidence=1.0,
+                    source=EventSource.REPLAY_GROUND_TRUTH,
+                ),
+                after[index],
+            ))
+        else:
+            card = rng.choice(DECK)
+            x = rng.randrange(2, 16)
+            mirrored_y = rng.choice(OPP_ROWS)
+            raw_y = float(33 - mirrored_y)
+            env.inject_enemy(card, float(x), raw_y)
+            events.append((
+                PlacementEvent(
+                    tick=tick, wall_time_ms=0.0, card_sim_id=card,
+                    card_real_name=f"card{card}", team=1,
+                    tile_x=x, tile_y=mirrored_y, confidence=1.0,
+                    source=EventSource.REPLAY_GROUND_TRUTH,
+                ),
+                None,
+            ))
+
+    # Settle, then read the truth state.
+    env.step_self_play(-1, 0.0, 0.0, -1, 0.0, 0.0, 60)
+    tick += 60
+    return env, opening_hand, events, tick
+
+
+def _tower_hp_from_env(env, engine):
+    """Same readout SimDriver.tower_hp uses, applied to any env."""
+    obs = env.get_observation_for_team(0)
+    W = engine.ClashRoyaleEnv.BOARD_WIDTH
+    H = engine.ClashRoyaleEnv.BOARD_HEIGHT
+    mx = engine.ClashRoyaleEnv.MAX_BUILDING_HP
+    plane = W * H
+
+    def read(ch, x, y):
+        return int(round(obs[ch * plane + int(y) * W + int(x)] * mx))
+
+    # Tower cells from geometry.py, which reads ArenaLayout.h through the
+    # bindings.
+    from perception.geometry import (
+        OWN_KING, OWN_PRINCESS_LEFT, OWN_PRINCESS_RIGHT,
+        OPP_KING, OPP_PRINCESS_LEFT, OPP_PRINCESS_RIGHT,
+    )
+    return {
+        "own_king": read(3, *OWN_KING),
+        "own_princess_left": read(3, *OWN_PRINCESS_LEFT),
+        "own_princess_right": read(3, *OWN_PRINCESS_RIGHT),
+        "opp_king": read(7, *OPP_KING),
+        "opp_princess_left": read(7, *OPP_PRINCESS_LEFT),
+        "opp_princess_right": read(7, *OPP_PRINCESS_RIGHT),
+    }
+
+
+@pytest.mark.parametrize("seed", [1, 7, 23])
+def test_zero_error_events_reproduce_truth_exactly(engine, seed):
+    """The control. Exact events in => exact state out, divergence 0."""
+    truth_env, opening_hand, events, final_tick = _build_truth(engine, seed)
+    expected = _tower_hp_from_env(truth_env, engine)
+
+    driver = SimDriver(my_deck=DECK, opp_deck=DECK)
+    driver.start(my_opening_hand=opening_hand)
+
+    for event, incoming in events:
+        result = driver.apply(event, incoming_card=incoming)
+        assert result.applied, f"bridge failed to apply {event}: {result.reason}"
+
+    driver.advance_to(final_tick)
+
+    assert driver.report.own_plays_cycle_desync == 0
+    assert driver.report.own_plays_rejected_by_engine == 0
+    assert driver.tower_hp() == expected, (
+        "bridge did not reproduce ground truth from exact events -- this is a "
+        "bridge defect, not input noise"
+    )
+    assert driver.divergence(expected) == 0.0
+
+
+@pytest.mark.parametrize("seed", [1, 7, 23])
+def test_candidate_pool_identifies_the_real_cycle(engine, seed):
+    """The pool collapses to our actual cycle within a few plays: what makes
+    own-side injection possible without an engine change (sim_driver.py's
+    docstring).
+    """
+    truth_env, opening_hand, events, _ = _build_truth(engine, seed)
+
+    driver = SimDriver(my_deck=DECK, opp_deck=DECK)
+    initial = driver.start(my_opening_hand=opening_hand)
+    assert initial > 1, "the pool should start ambiguous, or it proves nothing"
+
+    for event, incoming in events:
+        driver.apply(event, incoming_card=incoming)
+
+    # Applied plays, not attempted: a refused play deals no card and reveals
+    # nothing about the queue (SimDriver.cycle_identified).
+    applied = driver.report.own_plays_applied
+    if applied >= 4:
+        assert driver.cycle_identified, (
+            f"the cycle was not pinned down after {applied} applied plays; "
+            f"{driver.report.candidates_final} candidates left"
+        )
+        assert driver.report.cycle_identified_after is not None
+        assert driver.report.cycle_identified_after <= driver.report.own_plays_attempted
+
+    # Hand membership must match the truth env, not slot order
+    # (SimDriver._cycle_agreed).
+    assert set(driver.primary.get_hand()) == set(truth_env.get_hand())
+
+
+def test_start_rejects_a_hand_that_is_not_in_the_deck(engine):
+    driver = SimDriver(my_deck=DECK, opp_deck=DECK)
+    with pytest.raises(RuntimeError, match="no reset produced"):
+        driver.start(my_opening_hand=(99, 100, 101, 102))
+
+
+def test_unmapped_card_is_reported_not_injected(engine):
+    driver = SimDriver(my_deck=DECK, opp_deck=DECK)
+    driver.start()
+    before = driver.tower_hp()
+
+    result = driver.apply(PlacementEvent(
+        tick=10, wall_time_ms=0.0, card_sim_id=UNKNOWN_CARD_SIM_ID,
+        card_real_name="Some Unimplemented Card", team=1,
+        tile_x=8, tile_y=10, confidence=0.9,
+    ))
+
+    assert result.applied is False
+    assert "no simulator id" in result.reason
+    assert driver.report.unmapped_skipped == 1
+    assert driver.tower_hp() == before
+
+
+def test_opponent_y_is_unmirrored_before_injection(engine):
+    """A team-1 event's tile_y is in mirrored convention. Backwards, every
+    opponent card lands in their own back rows. The check: a card placed just
+    past the river on their side damages our tower, which requires it to spawn
+    near the river.
+    """
+    driver = SimDriver(my_deck=DECK, opp_deck=DECK)
+    driver.start()
+
+    # Mirrored y=14 is raw y=19: their side, just past the river, right lane. A
+    # Hog Rider from there reaches our tower quickly.
+    driver.apply(PlacementEvent(
+        tick=1, wall_time_ms=0.0, card_sim_id=15, card_real_name="Hog Rider",
+        team=1, tile_x=14, tile_y=14, confidence=1.0,
+    ))
+    driver.advance_to(400)
+
+    hp = driver.tower_hp()
+    assert hp["own_princess_right"] < 2534, (
+        "opponent Hog Rider never reached our tower -- the mirror is inverted"
+    )
+
+
+def test_events_must_arrive_in_tick_order(engine):
+    driver = SimDriver(my_deck=DECK, opp_deck=DECK)
+    driver.start()
+    driver.apply(PlacementEvent(50, 0.0, 15, "Hog Rider", 1, 8, 10, 1.0))
+    with pytest.raises(ValueError, match="tick order"):
+        driver.apply(PlacementEvent(20, 0.0, 15, "Hog Rider", 1, 8, 10, 1.0))
+
+
+def test_divergence_excludes_king_towers(engine):
+    """King HP is excluded from divergence (see SimDriver.divergence)."""
+    driver = SimDriver(my_deck=DECK, opp_deck=DECK)
+    driver.start()
+    predicted = driver.tower_hp()
+
+    observed = dict(predicted)
+    observed["own_king"] = 0
+    observed["opp_king"] = 0
+    assert driver.divergence(observed) == 0.0
+
+    observed = dict(predicted)
+    observed["own_princess_left"] -= 100
+    assert driver.divergence(observed) == pytest.approx(25.0)  # 100 over 4 towers
