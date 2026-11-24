@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T06:36:26Z",
+ "category": "save-state",
+ "commit": "2890b452593c",
+ "delivery": "vendored",
+ "description": "tsoding/jim \u2014 Immediate Mode JSON Serialization Library in C",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "jim",
+ "size_bytes": 133034,
+ "slug": "tsoding-jim",
+ "source": "github-search:serialization library c++ stars:>150",
+ "stars": 262,
+ "system": "Immediate Mode JSON Serialization Library in C",
+ "upstream": "https://github.com/tsoding/jim",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 06:20 UTC · 1141 entries · 295 vendored, 846 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 06:36 UTC · 1147 entries · 297 vendored, 850 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-24 06:20 UTC · 1141 entries · 295 vendored, 846 reference-o
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
-| [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
+| [save-state](#save-state) — Save / state systems | 72 | 20 | 52 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
 
@@ -1048,7 +1048,7 @@ _Generated 2026-11-24 06:20 UTC · 1141 entries · 295 vendored, 846 reference-o
 
 ## save-state
 
-**Save / state systems** — 66 entries
+**Save / state systems** — 72 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1068,7 +1068,9 @@ _Generated 2026-11-24 06:20 UTC · 1141 entries · 295 vendored, 846 reference-o
 | [DataKit](entries/save-state/quickbirdeng-datakit/README.md) | A Swift library to easily read and write binary formatted data using a modern, declarative interface. | swift | MIT | vendored | [QuickBirdEng/DataKit](https://github.com/QuickBirdEng/DataKit) @ `37d845d584c3` |
 | [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
 | [evolu](entries/save-state/evoluhq-evolu/README.md) | Local-first platform and TypeScript library | typescript | MIT | reference | [evoluhq/evolu](https://github.com/evoluhq/evolu) @ `4eedb2272841` |
+| [FastDeepCloner](entries/save-state/alentoma-fastdeepcloner/README.md) | FastDeepCloner, This is a C# based .NET cross platform library that is used to deep clone objects, whether they are serializable or not. It intends to be much f | c# | MIT | reference | [AlenToma/FastDeepCloner](https://github.com/AlenToma/FastDeepCloner) @ `2023-10-15 (branch tip at catalogue time)` |
 | [fastgltf](entries/save-state/spnda-fastgltf/README.md) | A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability | c++ | MIT | reference | [spnda/fastgltf](https://github.com/spnda/fastgltf) @ `2026-11-11 (branch tip at catalogue time)` |
+| [FdogSerialize](entries/save-state/huagoufdog-fdogserialize/README.md) | C++ 序列化库（FdogSerialize is a library for serializing between C++ objects (structs, STL containers, etc.) and json strings. FStruct是一个用于C++对象(结构体，STL容器等)和json字符串之 | c++ | Apache-2.0 | vendored | [HuaGouFdog/FdogSerialize](https://github.com/HuaGouFdog/FdogSerialize) @ `0d7188906817` |
 | [FlatBuffers](entries/save-state/flatbuffers/README.md) | zero-copy serialization, schema-driven | c++ | Apache-2.0 | vendored | [google/flatbuffers](https://github.com/google/flatbuffers) @ `5eb190f00005` |
 | [flatcc](entries/save-state/dvidelabs-flatcc/README.md) | FlatBuffers Compiler and Library in C for C | c | Apache-2.0 | vendored | [dvidelabs/flatcc](https://github.com/dvidelabs/flatcc) @ `0df9c097a19b` |
 | [FluidFramework](entries/save-state/microsoft-fluidframework/README.md) | Library for building distributed, real-time collaborative web  applications | typescript | MIT | reference | [microsoft/FluidFramework](https://github.com/microsoft/FluidFramework) @ `bd9ed94824fe` |
@@ -1080,6 +1082,7 @@ _Generated 2026-11-24 06:20 UTC · 1141 entries · 295 vendored, 846 reference-o
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
 | [Hexi](entries/save-state/emberemu-hexi/README.md) | Header-only, lightweight C++ library for binary streaming & serialization. Network data handling made easy peasy! | c++ | Apache-2.0 | reference | [EmberEmu/Hexi](https://github.com/EmberEmu/Hexi) @ `2026-04-19 (branch tip at catalogue time)` |
 | [houio](entries/save-state/dkoerner-houio/README.md) | C++ library for reading and writing of houdini geometry file format (json/binary json) | objective-c | unknown | reference | [dkoerner/houio](https://github.com/dkoerner/houio) @ `2020-08-10 (branch tip at catalogue time)` |
+| [jim](entries/save-state/tsoding-jim/README.md) | Immediate Mode JSON Serialization Library in C | c | MIT | vendored | [tsoding/jim](https://github.com/tsoding/jim) @ `2890b452593c` |
 | [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
 | [json-joy](entries/save-state/streamich-json-joy/README.md) | json-joy is a library that implements cutting-edge real-time and collaborative editing algorithms and utilities for JSON data models, with a focus on developing | typescript | unknown | reference | [streamich/json-joy](https://github.com/streamich/json-joy) @ `2026-09-08 (branch tip at catalogue time)` |
 | [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
@@ -1090,11 +1093,13 @@ _Generated 2026-11-24 06:20 UTC · 1141 entries · 295 vendored, 846 reference-o
 | [loom](entries/save-state/asonge-loom/README.md) | A CRDT library with δ-CRDT support. | elixir | unknown | reference | [asonge/loom](https://github.com/asonge/loom) @ `2017-05-30 (branch tip at catalogue time)` |
 | [miniserde](entries/save-state/dtolnay-miniserde/README.md) | Data structure serialization library with several opposite design goals from Serde | rust | Apache-2.0 | vendored | [dtolnay/miniserde](https://github.com/dtolnay/miniserde) @ `6dfa4fa395f3` |
 | [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
+| [Nerdbank.MessagePack](entries/save-state/aarnott-nerdbank-messagepack/README.md) | A feature-packed .NET MessagePack serialization library with great performance and simplicity. msgpack.io[C#] | c# | MIT | reference | [AArnott/Nerdbank.MessagePack](https://github.com/AArnott/Nerdbank.MessagePack) @ `2026-11-24 (branch tip at catalogue time)` |
 | [nes-emulator](entries/save-state/nicolfo-nes-emulator/README.md) | Cycle-accurate NES emulator in Rust - CPU/PPU/APU, 43 mappers with expansion audio (incl. VRC7 FM), NTSC/PAL auto-detect, gamepad + savestates. | rust | GPL-3.0 | reference | [Nicolfo/nes-emulator](https://github.com/Nicolfo/nes-emulator) @ `2026-11-13 (branch tip at catalogue time)` |
 | [NxLibrary](entries/save-state/bium23-nxlibrary/README.md) | A console-style macOS game library and launcher in SwiftUI. Features guided setup, assisted local builds for nxnative, save backup/import, and controller naviga | swift | MIT | reference | [Bium23/NxLibrary](https://github.com/Bium23/NxLibrary) @ `2026-11-20 (branch tip at catalogue time)` |
 | [ormsgpack](entries/save-state/ormsgpack-ormsgpack/README.md) | MessagePack serialization library for Python derived from orjson, written in Rust using PyO3 | rust | Apache-2.0 | reference | [ormsgpack/ormsgpack](https://github.com/ormsgpack/ormsgpack) @ `2026-11-21 (branch tip at catalogue time)` |
 | [pbf](entries/save-state/mapbox-pbf/README.md) | A low-level, lightweight protocol buffers implementation in JavaScript. | javascript | BSD-3-Clause | vendored | [mapbox/pbf](https://github.com/mapbox/pbf) @ `c5f57ace5bba` |
 | [PenguinBurner](entries/save-state/jpietek-penguinburner/README.md) | Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play | python | GPL-3.0 | reference | [jpietek/PenguinBurner](https://github.com/jpietek/PenguinBurner) @ `2026-11-17 (branch tip at catalogue time)` |
+| [protopuf](entries/save-state/pragmatwice-protopuf/README.md) | Protocol Puffers: A little, highly templated, and protobuf-compatible serialization/deserialization header-only library written in C++20 | c++ | Apache-2.0 | reference | [PragmaTwice/protopuf](https://github.com/PragmaTwice/protopuf) @ `2026-10-02 (branch tip at catalogue time)` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
@@ -1103,6 +1108,7 @@ _Generated 2026-11-24 06:20 UTC · 1141 entries · 295 vendored, 846 reference-o
 | [rss](entries/save-state/rust-syndication-rss/README.md) | Library for serializing the RSS web content syndication format | rust | Apache-2.0 | reference | [rust-syndication/rss](https://github.com/rust-syndication/rss) @ `2026-11-10 (branch tip at catalogue time)` |
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
 | [SaveState](entries/save-state/matteo842-savestate/README.md) | Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ e | python | GPL-3.0 | reference | [Matteo842/SaveState](https://github.com/Matteo842/SaveState) @ `7557b3c5a788` |
+| [serde](entries/save-state/serdedotnet-serde/README.md) | Serde.NET is a C# port of the popular Serde serialization library for Rust | c# | BSD-3-Clause | reference | [serdedotnet/serde](https://github.com/serdedotnet/serde) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Serialize.Linq](entries/save-state/esskar-serialize-linq/README.md) | C# library to serialize LINQ expressions | c# | MIT | vendored | [esskar/Serialize.Linq](https://github.com/esskar/Serialize.Linq) @ `44b715ffbea5` |
 | [Server-crashes-on-player-connect](entries/save-state/teehee123123-server-crashes-on-player-connect/README.md) | ---- Minecraft Crash Report ---- // Ooh. Shiny.  Time: 7/4/13 11:37 PM Description: Ticking entity  java.lang.OutOfMemoryError: Java heap space 	at net.minecraf | n/a | unknown | reference | [Teehee123123/Server-crashes-on-player-connect](https://github.com/Teehee123123/Server-crashes-on-player-connect) @ `2022-08-31 (branch tip at catalogue time)` |
 | [space_packet_parser](entries/save-state/lasp-space-packet-parser/README.md) | A CCSDS telemetry packet decoding library based on the XTCE packet format description standard. | python | unknown | reference | [lasp/space_packet_parser](https://github.com/lasp/space_packet_parser) @ `2026-11-04 (branch tip at catalogue time)` |

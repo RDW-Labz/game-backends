@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:36:27Z",
+ "category": "save-state",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AArnott/Nerdbank.MessagePack \u2014 A feature-packed .NET MessagePack serialization library with great performance and simplicity. msgpack.io[C#]",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Nerdbank.MessagePack",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "aarnott-nerdbank-messagepack",
+ "source": "github-search:serialization library c++ stars:>150",
+ "stars": 181,
+ "system": "A feature-packed .NET MessagePack serialization library with great performance and simplicity. msgpack.io[C#]",
+ "upstream": "https://github.com/AArnott/Nerdbank.MessagePack",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2520,3 +2520,11 @@ One line per 15-minute extension tick, newest last.
   - added netcode/jawschamp-unofficial-epic-games-products (none, reference)
   - added netcode/vtivanov20-ksd (MIT, vendored)
   - reference netcode/zerokilo-fragmentserverwv
+
+- **2026-11-24 06:36 UTC** — tick 764: +2 screened, +4 reference, 28 skipped, catalogue=1147
+  - added save-state/huagoufdog-fdogserialize (Apache-2.0, vendored)
+  - added save-state/tsoding-jim (MIT, vendored)
+  - reference save-state/serdedotnet-serde
+  - reference save-state/pragmatwice-protopuf
+  - reference save-state/alentoma-fastdeepcloner
+  - reference save-state/aarnott-nerdbank-messagepack

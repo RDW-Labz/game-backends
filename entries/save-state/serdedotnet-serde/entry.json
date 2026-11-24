@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:36:27Z",
+ "category": "save-state",
+ "commit": "2026-11-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "serdedotnet/serde \u2014 Serde.NET is a C# port of the popular Serde serialization library for Rust",
+ "language": "c#",
+ "license": "BSD-3-Clause",
+ "license_verdict": "clean",
+ "name": "serde",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-3-Clause)",
+ "slug": "serdedotnet-serde",
+ "source": "github-search:serialization library c++ stars:>150",
+ "stars": 217,
+ "system": "Serde.NET is a C# port of the popular Serde serialization library for Rust",
+ "upstream": "https://github.com/serdedotnet/serde",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T06:36:23Z",
+ "category": "save-state",
+ "commit": "0d7188906817",
+ "delivery": "vendored",
+ "description": "HuaGouFdog/FdogSerialize \u2014 C++ \u5e8f\u5217\u5316\u5e93\uff08FdogSerialize is a library for serializing between C++ objects (structs, STL containers, etc.) and json strings. FStruct\u662f\u4e00\u4e2a\u7528\u4e8eC++\u5bf9\u8c61(\u7ed3\u6784\u4f53\uff0cSTL\u5bb9\u5668\u7b49)\u548cjson\u5b57\u7b26\u4e32\u4e4b\u95f4\u8fdb\u884c\u5e8f\u5217\u5316\u7684\u5e93\u3002\uff09",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "FdogSerialize",
+ "size_bytes": 191641,
+ "slug": "huagoufdog-fdogserialize",
+ "source": "github-search:serialization library c++ stars:>150",
+ "stars": 279,
+ "system": "C++ \u5e8f\u5217\u5316\u5e93\uff08FdogSerialize is a library for serializing between C++ objects (structs, STL containers, etc.) and json strings. FStruct\u662f\u4e00\u4e2a\u7528\u4e8eC++\u5bf9\u8c61(\u7ed3\u6784\u4f53\uff0cSTL\u5bb9\u5668\u7b49)\u548cjson\u5b57\u7b26\u4e32\u4e4b",
+ "upstream": "https://github.com/HuaGouFdog/FdogSerialize",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

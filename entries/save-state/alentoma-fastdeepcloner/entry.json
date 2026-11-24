@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:36:27Z",
+ "category": "save-state",
+ "commit": "2023-10-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AlenToma/FastDeepCloner \u2014 FastDeepCloner, This is a C# based .NET cross platform library that is used to deep clone objects, whether they are serializable or not. It intends to be much faster than the normal binary serialization method of deep cloning objects.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "FastDeepCloner",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "alentoma-fastdeepcloner",
+ "source": "github-search:serialization library c++ stars:>150",
+ "stars": 189,
+ "system": "FastDeepCloner, This is a C# based .NET cross platform library that is used to deep clone objects, whether they are serializable or not. It intends to be much f",
+ "upstream": "https://github.com/AlenToma/FastDeepCloner",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
