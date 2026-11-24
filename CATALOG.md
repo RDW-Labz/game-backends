@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 04:28 UTC · 1104 entries · 288 vendored, 816 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 04:44 UTC · 1110 entries · 288 vendored, 822 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-24 04:28 UTC · 1104 entries · 288 vendored, 816 reference-o
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
-| [netcode](#netcode) — Networking / netcode | 120 | 37 | 83 |
+| [netcode](#netcode) — Networking / netcode | 126 | 37 | 89 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
@@ -884,7 +884,7 @@ _Generated 2026-11-24 04:28 UTC · 1104 entries · 288 vendored, 816 reference-o
 
 ## netcode
 
-**Networking / netcode** — 120 entries
+**Networking / netcode** — 126 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -924,7 +924,9 @@ _Generated 2026-11-24 04:28 UTC · 1104 entries · 288 vendored, 816 reference-o
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
 | [Game-NET](entries/netcode/sp4cerat-game-net/README.md) | RPC Network Library for Multiplayer Games | c++ | MIT | reference | [sp4cerat/Game-NET](https://github.com/sp4cerat/Game-NET) @ `2015-11-06 (branch tip at catalogue time)` |
+| [GameFrameX](entries/netcode/gameframex-gameframex/README.md) | An open-source toolbox that takes a game all the way "from idea → built → live" — Unity/Godot/Cocos/Laya clients + one .NET server. / 开源游戏全流程工具箱：Unity/Godot/Coc | c# | AGPL-3.0 | reference | [GameFrameX/GameFrameX](https://github.com/GameFrameX/GameFrameX) @ `9cb0a9d6b711` |
 | [GameFrameX.Server](entries/netcode/gameframex-gameframex-server/README.md) | High-performance game server framework built on C# .NET 10.0 with Actor Model architecture, hot-update support, multi-protocol networking (TCP/WebSocket/HTTP/KC | c# | Apache-2.0 | reference | [GameFrameX/GameFrameX.Server](https://github.com/GameFrameX/GameFrameX.Server) @ `2026-11-20 (branch tip at catalogue time)` |
+| [gamehub.io](entries/netcode/fmbenhassine-gamehub-io/README.md) | Real-time multiplayer game server based on Node + Express + SocketIO + MongoDB + ElasticSearch | javascript | MIT | reference | [fmbenhassine/gamehub.io](https://github.com/fmbenhassine/gamehub.io) @ `2018-12-16 (branch tip at catalogue time)` |
 | [gamend](entries/netcode/appsinacup-gamend/README.md) | Open source Elixir game server with authentication, users, lobbies, groups, parties, friends, chat, notifications, achievements, leaderboards, tournaments, paym | elixir | MIT | reference | [appsinacup/gamend](https://github.com/appsinacup/gamend) @ `2026-11-22 (branch tip at catalogue time)` |
 | [GameNetworkingSockets](entries/netcode/gamenetworkingsockets/README.md) | reliable/unreliable encrypted message transport (Valve) | c++ | BSD-3-Clause | vendored | [ValveSoftware/GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) @ `d534c19aa760` |
 | [GameProject3](entries/netcode/ylmbtm-gameproject3/README.md) | 游戏服务器框架，网络层分别用SocketAPI、Boost Asio、Libuv三种方式实现， 框架内使用共享内存，无锁队列，对象池，内存池来提高服务器性能。还包含一个不断完善的Unity 3D客户端，客户端含大量完整资源，坐骑，宠物，伙伴，装备, 这些均己实现上阵和穿戴, 并可进入副本战斗，多人玩法也己实现, 持续开 | c++ | unknown | reference | [ylmbtm/GameProject3](https://github.com/ylmbtm/GameProject3) @ `2025-04-28 (branch tip at catalogue time)` |
@@ -938,6 +940,7 @@ _Generated 2026-11-24 04:28 UTC · 1104 entries · 288 vendored, 816 reference-o
 | [gogs](entries/netcode/metagogs-gogs/README.md) | gogs is a simple, fast and lightweight game server framework written in golang | go | Apache-2.0 | reference | [metagogs/gogs](https://github.com/metagogs/gogs) @ `2026-09-08 (branch tip at catalogue time)` |
 | [GopherGameServer](entries/netcode/hewiefreeman-gophergameserver/README.md) | :trophy: Feature packed, easy-to-use game server API for Go back-ends and Javascript clients. Tutorials and examples included! | go | Apache-2.0 | reference | [hewiefreeman/GopherGameServer](https://github.com/hewiefreeman/GopherGameServer) @ `2024-03-29 (branch tip at catalogue time)` |
 | [haxbotron](entries/netcode/dapucita-haxbotron/README.md) | Haxbotron is a headless host server for Haxball game. | typescript | MIT | reference | [dapucita/haxbotron](https://github.com/dapucita/haxbotron) @ `2023-01-06 (branch tip at catalogue time)` |
+| [Hercules](entries/netcode/herculesws-hercules/README.md) | Hercules is a collaborative software development project revolving around the creation of a robust massively multiplayer online role playing game (MMORPG) serve | c++ | GPL-3.0 | reference | [HerculesWS/Hercules](https://github.com/HerculesWS/Hercules) @ `6af607094184` |
 | [hypersomnia — network](entries/netcode/hypersomnia-network/README.md) | network transport, protocol, replication or server loop | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [ioGame](entries/netcode/iohao-iogame/README.md) | A lock-free, asynchronous, event-driven Java Netty framework for building high-performance network applications. Lightweight and dependency-free, it supports di | java | AGPL-3.0 | reference | [iohao/ioGame](https://github.com/iohao/ioGame) @ `2026-08-02 (branch tip at catalogue time)` |
 | [j360-boot-app-all](entries/netcode/xuminwlt-j360-boot-app-all/README.md) | 基于Spring boot 2.0+ 脚手架重构微服务系统，CI、DevOps、Redisson、Shiro、RocketMQ tx、Dubbo、Sentinel、Sharding-Sphere、Fescar、Skywalking、Apollo、SocketIO， 小程序服务端快速上手Sample, Netty Soc | java | Apache-2.0 | vendored | [xuminwlt/j360-boot-app-all](https://github.com/xuminwlt/j360-boot-app-all) @ `27c5849aaf2e` |
@@ -964,6 +967,7 @@ _Generated 2026-11-24 04:28 UTC · 1104 entries · 288 vendored, 816 reference-o
 | [NFrame](entries/netcode/ketoo-nframe/README.md) | A fast, scalable, distributed game server framework for C++, include actor library, network library,can be used as a  real time multiplayer game engine ( MMO RP | c# | Apache-2.0 | reference | [ketoo/NFrame](https://github.com/ketoo/NFrame) @ `2018-01-23 (branch tip at catalogue time)` |
 | [node-js-game-server](entries/netcode/huytd-node-js-game-server/README.md) | Easy to use Multiplayer Game Server based on Node.JS. Suitable with HTML5 Websocket, Unity3D (Web/PC, Android, iOS,...), Flash, C++/OpenGL/DirectX, XNA clients, | javascript | unknown | reference | [huytd/node-js-game-server](https://github.com/huytd/node-js-game-server) @ `2013-10-15 (branch tip at catalogue time)` |
 | [online-chess](entries/netcode/hulang1024-online-chess/README.md) | Chess game website client and server. | typescript | MIT | vendored | [hulang1024/online-chess](https://github.com/hulang1024/online-chess) @ `6e4db9c01034` |
+| [open-builder](entries/netcode/hopson97-open-builder/README.md) | Open  "Minecraft-like" game with multiplayer support and Lua scripting support for the both client and server | c++ | GPL-3.0 | reference | [Hopson97/open-builder](https://github.com/Hopson97/open-builder) @ `2025-12-10 (branch tip at catalogue time)` |
 | [open_spiel — session](entries/netcode/open-spiel-session/README.md) | network transport, protocol, replication or server loop | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
 | [OpenArena — server](entries/netcode/openarena-server/README.md) | network transport, protocol, replication or server loop | c | GPL-2.0 | reference | [OpenArena/engine.git](https://github.com/OpenArena/engine.git) @ `fd74931` |
 | [OpenATBP](entries/netcode/openatbp-openatbp/README.md) | Open source lobby and game server for Adventure Time Battle Party | java | MIT | reference | [OpenATBP/OpenATBP](https://github.com/OpenATBP/OpenATBP) @ `2026-07-12 (branch tip at catalogue time)` |
@@ -974,6 +978,7 @@ _Generated 2026-11-24 04:28 UTC · 1104 entries · 288 vendored, 816 reference-o
 | [openmu — Network](entries/netcode/openmu-src-network/README.md) | MMO network protocol, packet handlers, encryption | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
 | [openrct2 — network](entries/netcode/openrct2-network/README.md) | network transport, protocol, replication or server loop | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
 | [phasocketonline](entries/netcode/vezwork-phasocketonline/README.md) | A server and client for a multiplayer browser game. Server in node.js, game in javascript with phaser and using socket.io for websockets. | html | MIT | reference | [vezwork/phasocketonline](https://github.com/vezwork/phasocketonline) @ `2017-12-17 (branch tip at catalogue time)` |
+| [piu-piu-SH](entries/netcode/vaniacer-piu-piu-sh/README.md) | This is an Old School horizontal scroller 'Shoot Them All' game in bash. With multiplayer modes team and duel. You have to defeat 100 aliens to fight with Boss. | shell | MIT | reference | [vaniacer/piu-piu-SH](https://github.com/vaniacer/piu-piu-SH) @ `2025-05-28 (branch tip at catalogue time)` |
 | [PlanetaMatchMaker](entries/netcode/cdecpgl-planetamatchmaker/README.md) | A very simple and light match making system for P2P online game. Server binary for linux and windows, and client library for C# including Unity are provided. | c# | MIT | vendored | [CdecPGL/PlanetaMatchMaker](https://github.com/CdecPGL/PlanetaMatchMaker) @ `4f6556aad484` |
 | [PlayHex — server](entries/netcode/playhex-server/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [playhex/playhex](https://github.com/playhex/playhex) @ `5750af4` |
 | [psn-api](entries/netcode/achievements-app-psn-api/README.md) | A JavaScript library that lets you get trophy, user, and game data from the PlayStation Network. | typescript | MIT | reference | [achievements-app/psn-api](https://github.com/achievements-app/psn-api) @ `2026-08-15 (branch tip at catalogue time)` |
@@ -995,6 +1000,7 @@ _Generated 2026-11-24 04:28 UTC · 1104 entries · 288 vendored, 816 reference-o
 | [tenio](entries/netcode/congcoi123-tenio/README.md) | TenIO is an open-source project for making online games that includes a java NIO (Non-blocking I/O) based server specifically designed for multiplayer games and | java | MIT | vendored | [congcoi123/tenio](https://github.com/congcoi123/tenio) @ `5df792294b31` |
 | [TF.EX](entries/netcode/fcornaire-tf-ex/README.md) | Rollback netcode for TowerFall | c# | GPL-3.0 | reference | [Fcornaire/TF.EX](https://github.com/Fcornaire/TF.EX) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Tolmachev-Netcode-SDK](entries/netcode/billionerleha-111-tolmachev-netcode-sdk/README.md) | Official TolmachЁv Netcode SDK v36.0.0. Deterministic synchronization, Zero Client-Side Prediction, and topological mathematics for MFT, GameDev, and IoT. | n/a | none | reference | [billionerleha-111/Tolmachev-Netcode-SDK](https://github.com/billionerleha-111/Tolmachev-Netcode-SDK) @ `e7bc77856fb7` |
+| [unity-mcp-server](entries/netcode/anklebreaker-studio-unity-mcp-server/README.md) | Unity MCP Server — 268 tools for AI-assisted game development. Connect Claude, Cursor, or any MCP client to Unity Editor & Unity Hub. Scene management, GameObje | javascript | unknown | reference | [AnkleBreaker-Studio/unity-mcp-server](https://github.com/AnkleBreaker-Studio/unity-mcp-server) @ `2026-10-23 (branch tip at catalogue time)` |
 | [UnityUnetMovement](entries/netcode/genasg-unityunetmovement/README.md) | This repository contains Unity3d unet based server-authoritative movement script with client-side prediction and reconciliation   | c# | MIT | vendored | [GenaSG/UnityUnetMovement](https://github.com/GenaSG/UnityUnetMovement) @ `927f772cfb1a` |
 | [urchinEngine](entries/netcode/petitg1987-urchinengine/README.md) | Game engine library: 3D, Physics, Sound, Network, IA, Map Editor | c++ | unknown | reference | [petitg1987/urchinEngine](https://github.com/petitg1987/urchinEngine) @ `2026-11-11 (branch tip at catalogue time)` |
 | [VCMI — server](entries/netcode/vcmi-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T04:44:10Z",
+ "category": "netcode",
+ "commit": "2026-10-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AnkleBreaker-Studio/unity-mcp-server \u2014 Unity MCP Server \u2014 268 tools for AI-assisted game development. Connect Claude, Cursor, or any MCP client to Unity Editor & Unity Hub. Scene management, GameObjects, components, builds, profiling, Shader Graph, Amplify, terrain, physics, NavMesh, animation, MPPM multiplayer & more. Free & open source by AnkleBreaker Studio.",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "unity-mcp-server",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "anklebreaker-studio-unity-mcp-server",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 550,
+ "system": "Unity MCP Server \u2014 268 tools for AI-assisted game development. Connect Claude, Cursor, or any MCP client to Unity Editor & Unity Hub. Scene management, GameObje",
+ "upstream": "https://github.com/AnkleBreaker-Studio/unity-mcp-server",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

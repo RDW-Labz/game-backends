@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T04:44:10Z",
+ "category": "netcode",
+ "commit": "2025-12-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Hopson97/open-builder \u2014 Open  \"Minecraft-like\" game with multiplayer support and Lua scripting support for the both client and server",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "open-builder",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "hopson97-open-builder",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 713,
+ "system": "Open  \"Minecraft-like\" game with multiplayer support and Lua scripting support for the both client and server",
+ "upstream": "https://github.com/Hopson97/open-builder",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

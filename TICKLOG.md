@@ -2469,3 +2469,11 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/ketoo-nframe
   - reference netcode/sp4cerat-game-net
   - reference netcode/yongxin-ms-asyncio
+
+- **2026-11-24 04:44 UTC** — tick 757: +2 screened, +4 reference, 9 skipped, catalogue=1110
+  - added netcode/herculesws-hercules (GPL-3.0, reference)
+  - added netcode/gameframex-gameframex (AGPL-3.0, reference)
+  - reference netcode/vaniacer-piu-piu-sh
+  - reference netcode/hopson97-open-builder
+  - reference netcode/fmbenhassine-gamehub-io
+  - reference netcode/anklebreaker-studio-unity-mcp-server

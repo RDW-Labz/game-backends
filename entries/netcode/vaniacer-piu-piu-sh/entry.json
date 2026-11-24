@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T04:44:10Z",
+ "category": "netcode",
+ "commit": "2025-05-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vaniacer/piu-piu-SH \u2014 This is an Old School horizontal scroller 'Shoot Them All' game in bash. With multiplayer modes team and duel. You have to defeat 100 aliens to fight with Boss. I'm using netcat for client-server exchange in multiplayer mode. So netcat have to be installed on system if you wish to play with friend. Terminals on both hosts have to be with equal dimensions.",
+ "language": "shell",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "piu-piu-SH",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "vaniacer-piu-piu-sh",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 745,
+ "system": "This is an Old School horizontal scroller 'Shoot Them All' game in bash. With multiplayer modes team and duel. You have to defeat 100 aliens to fight with Boss.",
+ "upstream": "https://github.com/vaniacer/piu-piu-SH",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

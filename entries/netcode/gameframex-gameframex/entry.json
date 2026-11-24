@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T04:44:08Z",
+ "category": "netcode",
+ "commit": "9cb0a9d6b711",
+ "delivery": "reference",
+ "description": "GameFrameX/GameFrameX \u2014 An open-source toolbox that takes a game all the way \"from idea \u2192 built \u2192 live\" \u2014 Unity/Godot/Cocos/Laya clients + one .NET server. | \u5f00\u6e90\u6e38\u620f\u5168\u6d41\u7a0b\u5de5\u5177\u7bb1\uff1aUnity/Godot/Cocos/Laya \u5ba2\u6237\u7aef + .NET \u670d\u52a1\u5668\uff0c\u4ece\u60f3\u6cd5\u5230\u4e0a\u7ebf\u4e00\u7ad9\u641e\u5b9a\u3002",
+ "language": "c#",
+ "license": "AGPL-3.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "copyleft-reference",
+ "name": "GameFrameX",
+ "reference_reason": "licence: AGPL-3.0 (copyleft-reference)",
+ "size_bytes": 6232999,
+ "slug": "gameframex-gameframex",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 776,
+ "system": "An open-source toolbox that takes a game all the way \"from idea \u2192 built \u2192 live\" \u2014 Unity/Godot/Cocos/Laya clients + one .NET server. | \u5f00\u6e90\u6e38\u620f\u5168\u6d41\u7a0b\u5de5\u5177\u7bb1\uff1aUnity/Godot/Coc",
+ "upstream": "https://github.com/GameFrameX/GameFrameX",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

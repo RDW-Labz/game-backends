@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T04:44:05Z",
+ "category": "netcode",
+ "commit": "6af607094184",
+ "delivery": "reference",
+ "description": "HerculesWS/Hercules \u2014 Hercules is a collaborative software development project revolving around the creation of a robust massively multiplayer online role playing game (MMORPG) server package. Written in C, the program is very versatile and provides NPCs, warps and modifications. The project is jointly managed by a group of volunteers located around the world as well as a tremendous community providing QA and support. Hercules is a continuation of the original Athena project.",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Hercules",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 20495201,
+ "slug": "herculesws-hercules",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 1028,
+ "system": "Hercules is a collaborative software development project revolving around the creation of a robust massively multiplayer online role playing game (MMORPG) serve",
+ "upstream": "https://github.com/HerculesWS/Hercules",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

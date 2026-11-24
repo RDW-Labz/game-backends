@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T04:44:10Z",
+ "category": "netcode",
+ "commit": "2018-12-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fmbenhassine/gamehub.io \u2014 Real-time multiplayer game server based on Node + Express + SocketIO + MongoDB + ElasticSearch",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "gamehub.io",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "fmbenhassine-gamehub-io",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 623,
+ "system": "Real-time multiplayer game server based on Node + Express + SocketIO + MongoDB + ElasticSearch",
+ "upstream": "https://github.com/fmbenhassine/gamehub.io",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
