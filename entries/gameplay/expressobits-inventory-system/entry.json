@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:36:10Z",
+ "category": "gameplay",
+ "commit": "2026-02-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "expressobits/inventory-system \u2014 Modular inventory system for godot 4 with nodes, compatible with multiplayer, separate logic from the UI, Using items as separate resources.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "inventory-system",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "expressobits-inventory-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 743,
+ "system": "Modular inventory system for godot 4 with nodes, compatible with multiplayer, separate logic from the UI, Using items as separate resources.",
+ "upstream": "https://github.com/expressobits/inventory-system",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

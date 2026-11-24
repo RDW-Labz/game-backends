@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:36:10Z",
+ "category": "gameplay",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Blair2004/NexoPOS \u2014 Laravel-based web POS system with Vue.js, Tailwind CSS, inventory management, sales processing, customer records, reports, and modular extension support.",
+ "language": "php",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "NexoPOS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "blair2004-nexopos",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 1310,
+ "system": "Laravel-based web POS system with Vue.js, Tailwind CSS, inventory management, sales processing, customer records, reports, and modular extension support.",
+ "upstream": "https://github.com/Blair2004/NexoPOS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

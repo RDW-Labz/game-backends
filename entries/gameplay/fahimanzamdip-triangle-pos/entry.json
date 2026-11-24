@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:36:10Z",
+ "category": "gameplay",
+ "commit": "2024-10-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "FahimAnzamDip/triangle-pos \u2014 Triangle POS is an open source Inventory Management with POS System. Developed with Laravel 10, Bootstrap 4 & Livewire 3. It's completely free to use.",
+ "language": "blade",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "triangle-pos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "fahimanzamdip-triangle-pos",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 877,
+ "system": "Triangle POS is an open source Inventory Management with POS System. Developed with Laravel 10, Bootstrap 4 & Livewire 3. It's completely free to use.",
+ "upstream": "https://github.com/FahimAnzamDip/triangle-pos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

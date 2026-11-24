@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T02:36:04Z",
+ "category": "gameplay",
+ "commit": "8344f3872155",
+ "delivery": "vendored",
+ "description": "GreaterWMS/GreaterWMS \u2014 This Inventory management system is the currently Ford Asia Pacific after-sales logistics warehousing supply chain process . After I leave Ford , I start this project . You can share your vacant warehouse space, use it for those in need, and generate income",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "GreaterWMS",
+ "size_bytes": 11756249,
+ "slug": "greaterwms-greaterwms",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 4465,
+ "system": "This Inventory management system is the currently Ford Asia Pacific after-sales logistics warehousing supply chain process . After I leave Ford , I start this p",
+ "upstream": "https://github.com/GreaterWMS/GreaterWMS",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

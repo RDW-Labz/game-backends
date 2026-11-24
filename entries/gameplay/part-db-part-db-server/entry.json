@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T02:36:08Z",
+ "category": "gameplay",
+ "commit": "04aeda78ac8c",
+ "delivery": "reference",
+ "description": "Part-DB/Part-DB-server \u2014 Part-DB is an Open source inventory management system for your electronic components",
+ "language": "php",
+ "license": "AGPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Part-DB-server",
+ "reference_reason": "licence: AGPL-3.0 (copyleft-reference)",
+ "size_bytes": 1132435,
+ "slug": "part-db-part-db-server",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 1864,
+ "system": "Part-DB is an Open source inventory management system for your electronic components",
+ "upstream": "https://github.com/Part-DB/Part-DB-server",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

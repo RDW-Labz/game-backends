@@ -2411,3 +2411,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-24 02:20 UTC** — tick 748: +2 screened, +0 reference, 12 skipped, catalogue=1062
   - added gameplay/friedforfun-contextsteering (GPL-3.0, reference)
   - added gameplay/skooter500-unitysteeringbehaviours (MIT, vendored)
+
+- **2026-11-24 02:36 UTC** — tick 749: +2 screened, +4 reference, 7 skipped, catalogue=1068
+  - added gameplay/greaterwms-greaterwms (Apache-2.0, vendored)
+  - added gameplay/part-db-part-db-server (AGPL-3.0, reference)
+  - reference gameplay/blair2004-nexopos
+  - reference gameplay/openboxes-openboxes
+  - reference gameplay/fahimanzamdip-triangle-pos
+  - reference gameplay/expressobits-inventory-system

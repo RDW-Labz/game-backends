@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:36:10Z",
+ "category": "gameplay",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "openboxes/openboxes \u2014 OpenBoxes is a warehouse management system designed to manage inventory and track stock movements for healthcare facilities.",
+ "language": "groovy",
+ "license": "EPL-1.0",
+ "license_verdict": "gated-reference",
+ "name": "openboxes",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (EPL-1.0)",
+ "slug": "openboxes-openboxes",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 937,
+ "system": "OpenBoxes is a warehouse management system designed to manage inventory and track stock movements for healthcare facilities.",
+ "upstream": "https://github.com/openboxes/openboxes",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
