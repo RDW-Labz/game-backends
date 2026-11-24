@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T22:13:35Z",
+ "category": "engines",
+ "commit": "2019-12-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "allison-casey/wavefunctioncollapse-clj \u2014 Bitmap and tilemap generation from a single example with the help of ideas from quantum mechanics. Java port of mxgmn's wavefunctioncollapse library.",
+ "language": "clojure",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "wavefunctioncollapse-clj",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "allison-casey-wavefunctioncollapse-clj",
+ "source": "github-search:tilemap library stars:>15",
+ "stars": 16,
+ "system": "Bitmap and tilemap generation from a single example with the help of ideas from quantum mechanics. Java port of mxgmn's wavefunctioncollapse library.",
+ "upstream": "https://github.com/allison-casey/wavefunctioncollapse-clj",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

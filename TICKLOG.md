@@ -2865,3 +2865,8 @@ One line per 15-minute extension tick, newest last.
   - reference engines/sjoerdev-voxel-engine
   - reference engines/real2nix-mineblox
   - reference engines/lanlou123-dxe
+
+- **2026-11-24 22:13 UTC** — tick 813: +2 screened, +1 reference, 14 skipped, catalogue=1399
+  - added engines/raylib-extras-raytilemap (Zlib, vendored)
+  - added engines/zulu-inuoe-cl-tiled (Zlib, vendored)
+  - reference engines/allison-casey-wavefunctioncollapse-clj

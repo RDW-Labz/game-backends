@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T22:13:31Z",
+ "category": "engines",
+ "commit": "2ffb6480c955",
+ "delivery": "vendored",
+ "description": "raylib-extras/raytilemap \u2014 A simple library to read and draw tilemaps from common tile editors, such as Tiled",
+ "language": "c++",
+ "license": "Zlib",
+ "license_file": "README.md",
+ "license_verdict": "clean",
+ "name": "raytilemap",
+ "size_bytes": 457407,
+ "slug": "raylib-extras-raytilemap",
+ "source": "github-search:tilemap library stars:>15",
+ "stars": 36,
+ "system": "A simple library to read and draw tilemaps from common tile editors, such as Tiled",
+ "upstream": "https://github.com/raylib-extras/raytilemap",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

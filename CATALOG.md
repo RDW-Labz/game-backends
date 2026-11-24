@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 21:57 UTC · 1396 entries · 359 vendored, 1037 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 22:13 UTC · 1399 entries · 361 vendored, 1038 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 589 | 137 | 452 |
+| [engines](#engines) — Game engines and engine subsystems | 592 | 139 | 453 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 21:57 UTC · 1396 entries · 359 vendored, 1037 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 589 entries
+**Game engines and engine subsystems** — 592 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -120,6 +120,7 @@ _Generated 2026-11-24 21:57 UTC · 1396 entries · 359 vendored, 1037 reference-
 | [chingu](entries/engines/ippa-chingu/README.md) | OpenGL accelerated 2D game framework for Ruby | ruby | LGPL-2.1 | reference | [ippa/chingu](https://github.com/ippa/chingu) @ `d3ed0ff0e0fa` |
 | [chronos](entries/engines/chronos-kit-chronos/README.md) | A versatile framework designed to integrate high-performance 2D / 3D content and fluid animations into your app, or to create a game using a comprehensive set o | c++ | Apache-2.0 | reference | [chronos-kit/chronos](https://github.com/chronos-kit/chronos) @ `2026-07-09 (branch tip at catalogue time)` |
 | [chunkstories](entries/engines/hugobros3-chunkstories/README.md) | Somewhat fancy blocky game engine written in Kotlin | kotlin | unknown | reference | [Hugobros3/chunkstories](https://github.com/Hugobros3/chunkstories) @ `2025-04-21 (branch tip at catalogue time)` |
+| [cl-tiled](entries/engines/zulu-inuoe-cl-tiled/README.md) | Tiled map library for CL | common lisp | Zlib | vendored | [Zulu-Inuoe/cl-tiled](https://github.com/Zulu-Inuoe/cl-tiled) @ `80332bfbf187` |
 | [ClashRoyaleAi](entries/engines/itzik123-clashroyaleai/README.md) | A fast, deterministic Clash Royale battle simulator in C++ with Python bindings, a recurrent PPO agent, lookahead search, and a computer-vision bridge to the re | python | MIT | vendored | [itzik123/ClashRoyaleAi](https://github.com/itzik123/ClashRoyaleAi) @ `ec28641b59e0` |
 | [cocos-engine](entries/engines/cocos-cocos-engine/README.md) | Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create | c++ | MIT | reference | [cocos/cocos-engine](https://github.com/cocos/cocos-engine) @ `90ad7072a332` |
 | [Cocos2d-x](entries/engines/cocos2d-x/README.md) | mobile-first 2D/3D engine core | c++ | MIT | reference | [cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x) @ `7a5282a301a1` |
@@ -465,6 +466,7 @@ _Generated 2026-11-24 21:57 UTC · 1396 entries · 359 vendored, 1037 reference-
 | [raea](entries/engines/shinyobjectz-raea/README.md) | Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS,  | typescript | unknown | reference | [shinyobjectz/raea](https://github.com/shinyobjectz/raea) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Rain-Meadow](entries/engines/henpemaz-rain-meadow/README.md) | Rain World multiplayer engine and custom game mode | c# | unknown | reference | [henpemaz/Rain-Meadow](https://github.com/henpemaz/Rain-Meadow) @ `2026-11-18 (branch tip at catalogue time)` |
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
+| [raytilemap](entries/engines/raylib-extras-raytilemap/README.md) | A simple library to read and draw tilemaps from common tile editors, such as Tiled | c++ | Zlib | vendored | [raylib-extras/raytilemap](https://github.com/raylib-extras/raytilemap) @ `2ffb6480c955` |
 | [react-native-game-engine](entries/engines/bberak-react-native-game-engine/README.md) | A lightweight Game Engine for React Native 🕹⚡🎮 | javascript | MIT | reference | [bberak/react-native-game-engine](https://github.com/bberak/react-native-game-engine) @ `2024-12-31 (branch tip at catalogue time)` |
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redalert2-recomp](entries/engines/sp00nznet-redalert2-recomp/README.md) | Static recompilation of Command & Conquer: Red Alert 2 / Yuri's Revenge (Westwood, 2000-01) to native C, with the remaster the engine never got: a D3D11 present | c | MIT | reference | [sp00nznet/redalert2-recomp](https://github.com/sp00nznet/redalert2-recomp) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -592,6 +594,7 @@ _Generated 2026-11-24 21:57 UTC · 1396 entries · 359 vendored, 1037 reference-
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |
 | [wasabi2d](entries/engines/lordmauve-wasabi2d/README.md) | Cutting-edge 2D game framework for Python | python | LGPL-3.0 | reference | [lordmauve/wasabi2d](https://github.com/lordmauve/wasabi2d) @ `2026-10-22 (branch tip at catalogue time)` |
 | [wat](entries/engines/alexdarigan-wat/README.md) | A Testing Plugin for Godot Game Engine | gdscript | MIT | reference | [AlexDarigan/wat](https://github.com/AlexDarigan/wat) @ `2023-07-10 (branch tip at catalogue time)` |
+| [wavefunctioncollapse-clj](entries/engines/allison-casey-wavefunctioncollapse-clj/README.md) | Bitmap and tilemap generation from a single example with the help of ideas from quantum mechanics. Java port of mxgmn's wavefunctioncollapse library. | clojure | MIT | reference | [allison-casey/wavefunctioncollapse-clj](https://github.com/allison-casey/wavefunctioncollapse-clj) @ `2019-12-19 (branch tip at catalogue time)` |
 | [web-sdk](entries/engines/engineio-web-sdk/README.md) | About The Web Game Engine: Create your own web game with in a declarative way. | typescript | unknown | reference | [engineio/web-sdk](https://github.com/engineio/web-sdk) @ `2025-11-27 (branch tip at catalogue time)` |
 | [WebGAL](entries/engines/openwebgal-webgal/README.md) | A brand new web Visual Novel engine / 全新的网页端视觉小说引擎 | typescript | MPL-2.0 | reference | [OpenWebGAL/WebGAL](https://github.com/OpenWebGAL/WebGAL) @ `2026-11-21 (branch tip at catalogue time)` |
 | [webTaleKit](entries/engines/endohizumi-webtalekit/README.md) | A visual novel game engine written in JavaScript (TypeScript) that allows full customization of the UI. | typescript | MIT | reference | [EndoHizumi/webTaleKit](https://github.com/EndoHizumi/webTaleKit) @ `2026-11-17 (branch tip at catalogue time)` |

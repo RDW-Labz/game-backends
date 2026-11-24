@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T22:13:33Z",
+ "category": "engines",
+ "commit": "80332bfbf187",
+ "delivery": "vendored",
+ "description": "Zulu-Inuoe/cl-tiled \u2014 Tiled map library for CL",
+ "language": "common lisp",
+ "license": "Zlib",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "cl-tiled",
+ "size_bytes": 0,
+ "slug": "zulu-inuoe-cl-tiled",
+ "source": "github-search:tilemap library stars:>15",
+ "stars": 26,
+ "system": "Tiled map library for CL",
+ "upstream": "https://github.com/Zulu-Inuoe/cl-tiled",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
