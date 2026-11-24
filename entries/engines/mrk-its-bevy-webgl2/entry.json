@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:53:24Z",
+ "category": "engines",
+ "commit": "2021-10-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mrk-its/bevy_webgl2 \u2014 WebGL2 renderer plugin for Bevy game engine",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy_webgl2",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mrk-its-bevy-webgl2",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 173,
+ "system": "WebGL2 renderer plugin for Bevy game engine",
+ "upstream": "https://github.com/mrk-its/bevy_webgl2",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

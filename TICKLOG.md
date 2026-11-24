@@ -2657,3 +2657,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/yoanlcq-vek
   - reference engines/pickitup247-pyckitup
   - reference engines/linebender-bevy-vello
+
+- **2026-11-24 12:53 UTC** — tick 787: +2 screened, +4 reference, 11 skipped, catalogue=1246
+  - added engines/amethyst-space-menace (MIT, vendored)
+  - added engines/janhohenheim-rerecast (Apache-2.0, reference)
+  - reference engines/nixonyh-lumina
+  - reference engines/mrk-its-bevy-webgl2
+  - reference engines/jarkonik-bevy-scriptum
+  - reference engines/pistondevelopers-piston-window

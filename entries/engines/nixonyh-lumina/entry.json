@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:53:24Z",
+ "category": "engines",
+ "commit": "2025-05-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "nixonyh/lumina \u2014 A top down, fast paced, objective based, PvP game, written in Rust, using the Bevy game engine.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "lumina",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "nixonyh-lumina",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 176,
+ "system": "A top down, fast paced, objective based, PvP game, written in Rust, using the Bevy game engine.",
+ "upstream": "https://github.com/nixonyh/lumina",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

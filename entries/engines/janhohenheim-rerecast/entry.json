@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T12:53:22Z",
+ "category": "engines",
+ "commit": "beda61552ef6",
+ "delivery": "reference",
+ "description": "janhohenheim/rerecast \u2014 Rust port of Recast, the industry-standard navigation mesh generator used by Unreal, Unity, Godot, and other game engines.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "license-apache.txt",
+ "license_verdict": "clean",
+ "name": "rerecast",
+ "reference_reason": "size gate: 146 MB",
+ "size_bytes": 154054649,
+ "slug": "janhohenheim-rerecast",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 184,
+ "system": "Rust port of Recast, the industry-standard navigation mesh generator used by Unreal, Unity, Godot, and other game engines.",
+ "upstream": "https://github.com/janhohenheim/rerecast",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

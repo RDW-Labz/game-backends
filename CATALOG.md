@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 12:37 UTC · 1240 entries · 321 vendored, 919 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 12:53 UTC · 1246 entries · 322 vendored, 924 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 433 | 99 | 334 |
+| [engines](#engines) — Game engines and engine subsystems | 439 | 100 | 339 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 12:37 UTC · 1240 entries · 321 vendored, 919 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 433 entries
+**Game engines and engine subsystems** — 439 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -80,11 +80,13 @@ _Generated 2026-11-24 12:37 UTC · 1240 entries · 321 vendored, 919 reference-o
 | [bevy_pkv](entries/engines/johanhelsing-bevy-pkv/README.md) | Cross-platform (including wasm) persistent key value store plugin for rust games/apps | rust | unknown | reference | [johanhelsing/bevy_pkv](https://github.com/johanhelsing/bevy_pkv) @ `2026-10-23 (branch tip at catalogue time)` |
 | [bevy_quinnet](entries/engines/henauxg-bevy-quinnet/README.md) | A Client/Server game networking plugin using QUIC, for the Bevy game engine. | rust | Apache-2.0 | vendored | [Henauxg/bevy_quinnet](https://github.com/Henauxg/bevy_quinnet) @ `d8b985eb8f96` |
 | [bevy_rand](entries/engines/bluefinger-bevy-rand/README.md) | A plugin to integrate rand for ECS optimised RNG for the Bevy game engine. | rust | Apache-2.0 | reference | [Bluefinger/bevy_rand](https://github.com/Bluefinger/bevy_rand) @ `2026-10-11 (branch tip at catalogue time)` |
+| [bevy_scriptum](entries/engines/jarkonik-bevy-scriptum/README.md) | 📜 A plugin for Bevy that allows you to write some of your game or application logic in a scripting language. | rust | Apache-2.0 | reference | [jarkonik/bevy_scriptum](https://github.com/jarkonik/bevy_scriptum) @ `2026-04-15 (branch tip at catalogue time)` |
 | [bevy_terrain](entries/engines/kurtkuehnert-bevy-terrain/README.md) | A terrain rendering plugin for the bevy game engine. | rust | Apache-2.0 | vendored | [kurtkuehnert/bevy_terrain](https://github.com/kurtkuehnert/bevy_terrain) @ `5a88daf4a419` |
 | [bevy_tween](entries/engines/multirious-bevy-tween/README.md) | Flexible tweening plugin library for Bevy. | rust | Apache-2.0 | reference | [Multirious/bevy_tween](https://github.com/Multirious/bevy_tween) @ `2026-11-16 (branch tip at catalogue time)` |
 | [bevy_tweening](entries/engines/djeedai-bevy-tweening/README.md) | Tweening animation plugin for the Bevy game engine. | rust | Apache-2.0 | reference | [djeedai/bevy_tweening](https://github.com/djeedai/bevy_tweening) @ `2026-11-01 (branch tip at catalogue time)` |
 | [bevy_vector_shapes](entries/engines/james-j-obrien-bevy-vector-shapes/README.md) | A library for rendering vector shapes using the Bevy game engine | rust | unknown | reference | [james-j-obrien/bevy_vector_shapes](https://github.com/james-j-obrien/bevy_vector_shapes) @ `2026-10-12 (branch tip at catalogue time)` |
 | [bevy_vello](entries/engines/linebender-bevy-vello/README.md) | An integration to render vector graphics with Vello in the Bevy game engine. | rust | Apache-2.0 | reference | [linebender/bevy_vello](https://github.com/linebender/bevy_vello) @ `2026-11-23 (branch tip at catalogue time)` |
+| [bevy_webgl2](entries/engines/mrk-its-bevy-webgl2/README.md) | WebGL2 renderer plugin for Bevy game engine | rust | MIT | reference | [mrk-its/bevy_webgl2](https://github.com/mrk-its/bevy_webgl2) @ `2021-10-10 (branch tip at catalogue time)` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blender_bevy_toolkit](entries/engines/sdfgeoff-blender-bevy-toolkit/README.md) | A blender addon and bevy plugin to use Blender as an editor for Bevy | python | unknown | reference | [sdfgeoff/blender_bevy_toolkit](https://github.com/sdfgeoff/blender_bevy_toolkit) @ `2022-05-18 (branch tip at catalogue time)` |
 | [bones](entries/engines/fishfolk-bones/README.md) | An easy-to-use game engine for making real games. | rust | Apache-2.0 | vendored | [fishfolk/bones](https://github.com/fishfolk/bones) @ `cd62a2f1ccdb` |
@@ -261,6 +263,7 @@ _Generated 2026-11-24 12:37 UTC · 1240 entries · 321 vendored, 919 reference-o
 | [love](entries/engines/love2d-love/README.md) | LÖVE is an awesome 2D game framework for Lua. | c++ | Zlib | reference | [love2d/love](https://github.com/love2d/love) @ `def245102c67` |
 | [love2d](entries/engines/luacats-love2d/README.md) | Definitions for the LÖVE 2D game framework | lua | unknown | reference | [LuaCATS/love2d](https://github.com/LuaCATS/love2d) @ `2026-07-20 (branch tip at catalogue time)` |
 | [luanti](entries/engines/luanti-org-luanti/README.md) | Luanti (formerly Minetest) is an open source voxel game-creation platform with easy modding and game creation | c++ | unknown | reference | [luanti-org/luanti](https://github.com/luanti-org/luanti) @ `2026-11-20 (branch tip at catalogue time)` |
+| [lumina](entries/engines/nixonyh-lumina/README.md) | A top down, fast paced, objective based, PvP game, written in Rust, using the Bevy game engine. | rust | unknown | reference | [nixonyh/lumina](https://github.com/nixonyh/lumina) @ `2025-05-08 (branch tip at catalogue time)` |
 | [LumixEngine](entries/engines/nem0-lumixengine/README.md) | 3D C++ Game Engine - yet another open source game engine | c++ | MIT | reference | [nem0/LumixEngine](https://github.com/nem0/LumixEngine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Lumos](entries/engines/jmorton06-lumos/README.md) | Cross-Platform C++ 2D/3D game engine | c++ | MIT | reference | [jmorton06/Lumos](https://github.com/jmorton06/Lumos) @ `2026-11-10 (branch tip at catalogue time)` |
 | [LunarGdx](entries/engines/vrekt-lunargdx/README.md) | A networking library for LibGDX utilizing Netty allowing easy creation of multiplayer games. | java | MIT | reference | [Vrekt/LunarGdx](https://github.com/Vrekt/LunarGdx) @ `2024-05-30 (branch tip at catalogue time)` |
@@ -326,6 +329,7 @@ _Generated 2026-11-24 12:37 UTC · 1240 entries · 321 vendored, 919 reference-o
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
 | [PieMenu](entries/engines/payne911-piemenu/README.md) | A library for easy integration of a flexible circular WidgetGroup within libGDX | java | MIT | reference | [payne911/PieMenu](https://github.com/payne911/PieMenu) @ `2022-12-01 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
+| [piston_window](entries/engines/pistondevelopers-piston-window/README.md) | The official Piston Window for the Piston game engine | rust | MIT | reference | [PistonDevelopers/piston_window](https://github.com/PistonDevelopers/piston_window) @ `2026-10-11 (branch tip at catalogue time)` |
 | [Pixelwave](entries/engines/spiralstorm-pixelwave/README.md) | A native 2D OpenGL game framework for iOS. Inspired by the ActionScript 3.0 API | c | Zlib | vendored | [spiralstorm/Pixelwave](https://github.com/spiralstorm/Pixelwave) @ `ccfbc9d240b6` |
 | [pixi-framework](entries/engines/hafaux-pixi-framework/README.md) | Simple 2D Game Framework for PixiJS using Vite. | typescript | MIT | reference | [Hafaux/pixi-framework](https://github.com/Hafaux/pixi-framework) @ `2024-03-14 (branch tip at catalogue time)` |
 | [pixi-vn](entries/engines/drincs-productions-pixi-vn/README.md) | Create visual novels/story-driven game with a modern 2D rendering engine and your favorite JavaScript framework. | typescript | LGPL-2.1 | reference | [DRincs-Productions/pixi-vn](https://github.com/DRincs-Productions/pixi-vn) @ `e5fd8e15c912` |
@@ -356,6 +360,7 @@ _Generated 2026-11-24 12:37 UTC · 1240 entries · 321 vendored, 919 reference-o
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [renpy](entries/engines/renpy-renpy/README.md) | The Ren'Py Visual Novel Engine | ren'py | unknown | reference | [renpy/renpy](https://github.com/renpy/renpy) @ `2026-11-23 (branch tip at catalogue time)` |
+| [rerecast](entries/engines/janhohenheim-rerecast/README.md) | Rust port of Recast, the industry-standard navigation mesh generator used by Unreal, Unity, Godot, and other game engines. | rust | Apache-2.0 | reference | [janhohenheim/rerecast](https://github.com/janhohenheim/rerecast) @ `beda61552ef6` |
 | [rhusics](entries/engines/rustgd-rhusics/README.md) | A cgmath physics library that can be used with Specs | rust | Apache-2.0 | reference | [rustgd/rhusics](https://github.com/rustgd/rhusics) @ `2020-08-04 (branch tip at catalogue time)` |
 | [RigelEngine](entries/engines/lethal-guitar-rigelengine/README.md) | A modern re-implementation of the classic DOS game Duke Nukem II | c++ | GPL-2.0 | reference | [lethal-guitar/RigelEngine](https://github.com/lethal-guitar/RigelEngine) @ `30afeff8f0b1` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
@@ -381,6 +386,7 @@ _Generated 2026-11-24 12:37 UTC · 1240 entries · 321 vendored, 919 reference-o
 | [SolarWM](entries/engines/junchao-cs-solarwm/README.md) | Open data and scalable training for long-horizon video world models. | python | Apache-2.0 | reference | [Junchao-cs/SolarWM](https://github.com/Junchao-cs/SolarWM) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
 | [space-engineers-coop-merralia](entries/engines/talhanadeem4321-space-engineers-coop-merralia/README.md) | Build and share cooperative space engineering projects together in Merralia. | typescript | MIT | reference | [TalhaNadeem4321/space-engineers-coop-merralia](https://github.com/TalhaNadeem4321/space-engineers-coop-merralia) @ `2026-11-23 (branch tip at catalogue time)` |
+| [space-menace](entries/engines/amethyst-space-menace/README.md) | An action 2D platformer made with Amethyst game engine | rust | MIT | vendored | [amethyst/space-menace](https://github.com/amethyst/space-menace) @ `8be706d2e993` |
 | [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [specs-physics](entries/engines/amethyst-specs-physics/README.md) | nphysics integration for the Specs entity component system | rust | MIT | reference | [amethyst/specs-physics](https://github.com/amethyst/specs-physics) @ `2020-05-04 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
