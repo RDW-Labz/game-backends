@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T15:36:08Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dylanebert/shallot \u2014 WebGPU game engine",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "shallot",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dylanebert-shallot",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 513,
+ "system": "WebGPU game engine",
+ "upstream": "https://github.com/dylanebert/shallot",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

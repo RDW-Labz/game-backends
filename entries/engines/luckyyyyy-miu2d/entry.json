@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T15:36:08Z",
+ "category": "engines",
+ "commit": "2026-09-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "luckyyyyy/miu2d \u2014 Miu2D is a 2D RPG game engine built with Rust + TypeScript + React + Canvas, designed for the Web platform. \u5251\u4fa0\u60c5\u7f182/\u6708\u5f71\u4f20\u8bf4/\u65b0\u5251\u4fa0\u60c5\u7f18\u7f51\u9875\u590d\u523b\u7248",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "miu2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "luckyyyyy-miu2d",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 497,
+ "system": "Miu2D is a 2D RPG game engine built with Rust + TypeScript + React + Canvas, designed for the Web platform. \u5251\u4fa0\u60c5\u7f182/\u6708\u5f71\u4f20\u8bf4/\u65b0\u5251\u4fa0\u60c5\u7f18\u7f51\u9875\u590d\u523b\u7248",
+ "upstream": "https://github.com/luckyyyyy/miu2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

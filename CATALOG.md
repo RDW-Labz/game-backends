@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 15:11 UTC · 1276 entries · 331 vendored, 945 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 15:36 UTC · 1282 entries · 331 vendored, 951 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 469 | 109 | 360 |
+| [engines](#engines) — Game engines and engine subsystems | 475 | 109 | 366 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 15:11 UTC · 1276 entries · 331 vendored, 945 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 469 entries
+**Game engines and engine subsystems** — 475 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -226,6 +226,7 @@ _Generated 2026-11-24 15:11 UTC · 1276 entries · 331 vendored, 945 reference-o
 | [godot-mcp](entries/engines/coding-solo-godot-mcp/README.md) | MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output. | javascript | MIT | vendored | [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) @ `1209744fad78` |
 | [Godot-MCP](entries/engines/ivanmurzak-godot-mcp/README.md) | Godot-MCP — Model Context Protocol (MCP) integration for the Godot Engine. AI tools for the Godot Editor in C#, with cloud connection to ai-game.dev. Apache-2.0 | c# | Apache-2.0 | reference | [IvanMurzak/Godot-MCP](https://github.com/IvanMurzak/Godot-MCP) @ `2026-11-21 (branch tip at catalogue time)` |
 | [godot-mcp](entries/engines/tomyud1-godot-mcp/README.md) | MCP Server and Godot Plugin for AI-assisted game development | gdscript | MIT | reference | [tomyud1/godot-mcp](https://github.com/tomyud1/godot-mcp) @ `2026-10-17 (branch tip at catalogue time)` |
+| [godot-mcp](entries/engines/tugcantopaloglu-godot-mcp/README.md) | MCP server for full Godot 4.x engine control: 157 tools for AI-driven game development (GDScript and C#/.NET). Tested with Godot 4.7. | typescript | MIT | reference | [tugcantopaloglu/godot-mcp](https://github.com/tugcantopaloglu/godot-mcp) @ `2026-10-09 (branch tip at catalogue time)` |
 | [Godot-MCP-Native](entries/engines/yurineko73-godot-mcp-native/README.md) | 一款支持godot开源引擎的的mcp插件，支持常见godot引擎操作，使用Godot原生实现MCPServer，无需安装依赖，开箱即用，支持多种AI工具调用。An MCP plugin that supports the open-source Godot engine, enabling common Godot e | gdscript | MIT | reference | [yurineko73/Godot-MCP-Native](https://github.com/yurineko73/Godot-MCP-Native) @ `2026-08-03 (branch tip at catalogue time)` |
 | [godot-minimal-theme](entries/engines/passivestar-godot-minimal-theme/README.md) | Godot Minimal Theme | n/a | MIT | vendored | [passivestar/godot-minimal-theme](https://github.com/passivestar/godot-minimal-theme) @ `3250c3c79860` |
 | [godot-ply](entries/engines/jarneson-godot-ply/README.md) | Godot plugin for in-editor box modeling | gdscript | MIT | reference | [jarneson/godot-ply](https://github.com/jarneson/godot-ply) @ `2024-12-20 (branch tip at catalogue time)` |
@@ -244,6 +245,7 @@ _Generated 2026-11-24 15:11 UTC · 1276 entries · 331 vendored, 945 reference-o
 | [HeartbeatEngine](entries/engines/cronza-heartbeatengine/README.md) | A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5 | python | GPL-3.0 | reference | [Cronza/HeartbeatEngine](https://github.com/Cronza/HeartbeatEngine) @ `2025-08-26 (branch tip at catalogue time)` |
 | [HelloMarioFramework](entries/engines/hellofangaming-hellomarioframework/README.md) | Create your own 3D Mario game with Hello Mario Framework for Unity! | c# | MIT | reference | [HelloFangaming/HelloMarioFramework](https://github.com/HelloFangaming/HelloMarioFramework) @ `2025-11-11 (branch tip at catalogue time)` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
+| [hex-engine](entries/engines/suchipi-hex-engine/README.md) | A modern 2D game engine for the browser. | typescript | none | reference | [suchipi/hex-engine](https://github.com/suchipi/hex-engine) @ `17f41d6902c0` |
 | [HexaEngine](entries/engines/hexaengine-hexaengine/README.md) | The official repo of the HexaEngine game engine | c# | MIT | reference | [HexaEngine/HexaEngine](https://github.com/HexaEngine/HexaEngine) @ `2026-08-22 (branch tip at catalogue time)` |
 | [hoodie-legacy](entries/engines/greencrowdev-hoodie-legacy/README.md) | Hoodie is a plugin for Godot Engine 4 that offers a visual scripting interface for generating procedural geometry. | c++ | MIT | vendored | [GreenCrowDev/hoodie-legacy](https://github.com/GreenCrowDev/hoodie-legacy) @ `f860d4ce2afe` |
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
@@ -290,6 +292,7 @@ _Generated 2026-11-24 15:11 UTC · 1276 entries · 331 vendored, 945 reference-o
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
 | [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
 | [minimalist-game-framework](entries/engines/zachbarth-minimalist-game-framework/README.md) | A minimalist game framework in the style of the "game engine" we use at Zachtronics. | c# | MIT | vendored | [zachbarth/minimalist-game-framework](https://github.com/zachbarth/minimalist-game-framework) @ `c9a7c1ee2392` |
+| [miu2d](entries/engines/luckyyyyy-miu2d/README.md) | Miu2D is a 2D RPG game engine built with Rust + TypeScript + React + Canvas, designed for the Web platform. 剑侠情缘2/月影传说/新剑侠情缘网页复刻版 | typescript | MIT | reference | [luckyyyyy/miu2d](https://github.com/luckyyyyy/miu2d) @ `2026-09-06 (branch tip at catalogue time)` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
 | [monogame-aseprite](entries/engines/aristurtledev-monogame-aseprite/README.md) | A Cross Platform C# Library That Adds Support For Aseprite Files in MonoGame Projects.  | c# | MIT | reference | [AristurtleDev/monogame-aseprite](https://github.com/AristurtleDev/monogame-aseprite) @ `2026-10-08 (branch tip at catalogue time)` |
 | [MonoGameFramework.Net8](entries/engines/catfortman-monogameframework-net8/README.md) | Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development. | c# | MIT | reference | [CatFortman/MonoGameFramework.Net8](https://github.com/CatFortman/MonoGameFramework.Net8) @ `2026-07-17 (branch tip at catalogue time)` |
@@ -395,9 +398,11 @@ _Generated 2026-11-24 15:11 UTC · 1276 entries · 331 vendored, 945 reference-o
 | [SakuraEngine](entries/engines/sakuraengine-sakuraengine/README.md) | 为高性能而生的游戏运行时与工具箱 | c++ | MIT | reference | [SakuraEngine/SakuraEngine](https://github.com/SakuraEngine/SakuraEngine) @ `c0fdb2bb3007` |
 | [SanAndreasUnity](entries/engines/in0finite-sanandreasunity/README.md) | Open source reimplementation of GTA San Andreas game engine in Unity | c# | MIT | reference | [in0finite/SanAndreasUnity](https://github.com/in0finite/SanAndreasUnity) @ `2023-06-16 (branch tip at catalogue time)` |
 | [sbox-public](entries/engines/facepunch-sbox-public/README.md) | s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games | c# | unknown | reference | [Facepunch/sbox-public](https://github.com/Facepunch/sbox-public) @ `2026-11-22 (branch tip at catalogue time)` |
+| [Sein.js](entries/engines/hiloteam-sein-js/README.md) | Progressive web 3D game engine. | typescript | MIT | reference | [hiloteam/Sein.js](https://github.com/hiloteam/Sein.js) @ `2024-10-17 (branch tip at catalogue time)` |
 | [Serious-Engine](entries/engines/croteam-official-serious-engine/README.md) | An open source version of a game engine developed by Croteam for the classic Serious Sam games. | c++ | GPL-2.0 | reference | [Croteam-official/Serious-Engine](https://github.com/Croteam-official/Serious-Engine) @ `2020-10-31 (branch tip at catalogue time)` |
 | [server](entries/engines/runejs-server/README.md) | RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing s | typescript | GPL-3.0 | reference | [runejs/server](https://github.com/runejs/server) @ `2026-09-03 (branch tip at catalogue time)` |
 | [Shaker](entries/engines/eneskp3441-shaker/README.md) | shake plugin for godot | gdscript | MIT | vendored | [Eneskp3441/Shaker](https://github.com/Eneskp3441/Shaker) @ `c127bcc49416` |
+| [shallot](entries/engines/dylanebert-shallot/README.md) | WebGPU game engine | typescript | MIT | reference | [dylanebert/shallot](https://github.com/dylanebert/shallot) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Shamisen](entries/engines/minecake147e-shamisen/README.md) | Cross-Platform Audio Library for modern .NET. | c# | MIT | vendored | [MineCake147E/Shamisen](https://github.com/MineCake147E/Shamisen) @ `2f1adeec434d` |
 | [shapedrawer](entries/engines/earlygrey-shapedrawer/README.md) | A library for libGDX that draws simple shapes using a batch. | java | MIT | vendored | [earlygrey/shapedrawer](https://github.com/earlygrey/shapedrawer) @ `9e4b689f63b7` |
 | [SharpLibHid](entries/engines/slion-sharplibhid/README.md) | C# HID Library using Windows Raw Input. | c# | unknown | reference | [Slion/SharpLibHid](https://github.com/Slion/SharpLibHid) @ `2022-06-22 (branch tip at catalogue time)` |
@@ -455,6 +460,7 @@ _Generated 2026-11-24 15:11 UTC · 1276 entries · 331 vendored, 945 reference-o
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
 | [VisualPinball.Engine](entries/engines/freezy-visualpinball-engine/README.md) | :video_game: Visual Pinball Engine for Unity | c# | GPL-3.0 | reference | [freezy/VisualPinball.Engine](https://github.com/freezy/VisualPinball.Engine) @ `2026-11-24 (branch tip at catalogue time)` |
 | [VloxyEngine](entries/engines/blazekill-vloxyengine/README.md) | Performance oriented voxel engine for unity. | c# | MIT | reference | [BLaZeKiLL/VloxyEngine](https://github.com/BLaZeKiLL/VloxyEngine) @ `2024-11-27 (branch tip at catalogue time)` |
+| [vmprint](entries/engines/cosmiciron-vmprint/README.md) | This layout engine can solve the hardest layout problems imaginable. Its output is DTP grade and deterministic. It's faster than engines written in C++ because  | typescript | Apache-2.0 | reference | [cosmiciron/vmprint](https://github.com/cosmiciron/vmprint) @ `1e327f9a0e7a` |
 | [Void](entries/engines/shmellyorc-void/README.md) | A modular, extensible 2D game framework for .NET. | c# | MIT | vendored | [Shmellyorc/Void](https://github.com/Shmellyorc/Void) @ `fee9b4ffecfe` |
 | [vox2](entries/engines/lallassu-vox2/README.md) | Simple POC of PCG voxel-engine | javascript | MIT | vendored | [Lallassu/vox2](https://github.com/Lallassu/vox2) @ `4280b7463082` |
 | [voxel-engine](entries/engines/max-mapper-voxel-engine/README.md) | 3D HTML5 voxel game engine | javascript | BSD-3-Clause | reference | [max-mapper/voxel-engine](https://github.com/max-mapper/voxel-engine) @ `2017-12-08 (branch tip at catalogue time)` |

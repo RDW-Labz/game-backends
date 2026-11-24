@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T15:36:06Z",
+ "category": "engines",
+ "commit": "17f41d6902c0",
+ "delivery": "reference",
+ "description": "suchipi/hex-engine \u2014 A modern 2D game engine for the browser.",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "hex-engine",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 2198463,
+ "slug": "suchipi-hex-engine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 673,
+ "system": "A modern 2D game engine for the browser.",
+ "upstream": "https://github.com/suchipi/hex-engine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

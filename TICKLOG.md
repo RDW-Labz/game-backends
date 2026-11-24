@@ -2705,3 +2705,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/endlesstravel-love2dcs
   - reference engines/cookgreen-yuris-revenge
   - reference engines/bonesoul-voxeliq
+
+- **2026-11-24 15:36 UTC** — tick 793: +2 screened, +4 reference, 12 skipped, catalogue=1282
+  - added engines/cosmiciron-vmprint (Apache-2.0, reference)
+  - added engines/suchipi-hex-engine (none, reference)
+  - reference engines/hiloteam-sein-js
+  - reference engines/tugcantopaloglu-godot-mcp
+  - reference engines/dylanebert-shallot
+  - reference engines/luckyyyyy-miu2d
