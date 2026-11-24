@@ -2544,3 +2544,6 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/zencq-libnom-io
   - reference save-state/notsinan-dreambotquester
   - reference save-state/coffesiberian-decrypttruck
+
+- **2026-11-24 07:24 UTC** — tick 767: +1 screened, +0 reference, 9 skipped, catalogue=1160
+  - added save-state/estevanhernandez-stack-ed-rororoblox (MIT, vendored)

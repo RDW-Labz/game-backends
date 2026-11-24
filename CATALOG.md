@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 07:08 UTC · 1159 entries · 301 vendored, 858 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 07:24 UTC · 1160 entries · 302 vendored, 858 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-24 07:08 UTC · 1159 entries · 301 vendored, 858 reference-o
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
-| [save-state](#save-state) — Save / state systems | 84 | 24 | 60 |
+| [save-state](#save-state) — Save / state systems | 85 | 25 | 60 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
 
@@ -1048,7 +1048,7 @@ _Generated 2026-11-24 07:08 UTC · 1159 entries · 301 vendored, 858 reference-o
 
 ## save-state
 
-**Save / state systems** — 84 entries
+**Save / state systems** — 85 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1114,6 +1114,7 @@ _Generated 2026-11-24 07:08 UTC · 1159 entries · 301 vendored, 858 reference-o
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
 | [retro-go-tab5](entries/save-state/andjiang0083-retro-go-tab5/README.md) | A full-speed GBA emulator for the M5Stack Tab5 (ESP32-P4): a solid 60 FPS on the 720x1280 display, 11 classic consoles in one device, touch virtual gamepad, GBA | c | GPL-2.0 | reference | [andjiang0083/retro-go-tab5](https://github.com/andjiang0083/retro-go-tab5) @ `2026-10-22 (branch tip at catalogue time)` |
 | [revision](entries/save-state/surrealdb-revision/README.md) | A Rust library for revision-tolerant serialisation and deserialisation, with support for schema evolution over time | rust | Apache-2.0 | vendored | [surrealdb/revision](https://github.com/surrealdb/revision) @ `4671d9343099` |
+| [ROROROblox](entries/save-state/estevanhernandez-stack-ed-rororoblox/README.md) | RoRoRo: run several Roblox clients side by side on Windows, each signed in as a different saved account. Account manager, game Library, Squad Launch, FPS caps,  | c# | MIT | vendored | [estevanhernandez-stack-ed/ROROROblox](https://github.com/estevanhernandez-stack-ed/ROROROblox) @ `93298eb64690` |
 | [rss](entries/save-state/rust-syndication-rss/README.md) | Library for serializing the RSS web content syndication format | rust | Apache-2.0 | reference | [rust-syndication/rss](https://github.com/rust-syndication/rss) @ `2026-11-10 (branch tip at catalogue time)` |
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
 | [SaveState](entries/save-state/matteo842-savestate/README.md) | Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ e | python | GPL-3.0 | reference | [Matteo842/SaveState](https://github.com/Matteo842/SaveState) @ `7557b3c5a788` |
