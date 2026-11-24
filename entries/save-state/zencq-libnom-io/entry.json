@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T07:08:35Z",
+ "category": "save-state",
+ "commit": "2026-02-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "zencq/libNOM.io \u2014 A .NET class library to read and write save files from the game No Man's Sky for all possible platforms as well as related actions.",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "libNOM.io",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "zencq-libnom-io",
+ "source": "github-search:save game library stars:>10",
+ "stars": 27,
+ "system": "A .NET class library to read and write save files from the game No Man's Sky for all possible platforms as well as related actions.",
+ "upstream": "https://github.com/zencq/libNOM.io",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

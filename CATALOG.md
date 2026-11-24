@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 06:52 UTC · 1153 entries · 299 vendored, 854 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 07:08 UTC · 1159 entries · 301 vendored, 858 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-24 06:52 UTC · 1153 entries · 299 vendored, 854 reference-o
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
-| [save-state](#save-state) — Save / state systems | 78 | 22 | 56 |
+| [save-state](#save-state) — Save / state systems | 84 | 24 | 60 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
 
@@ -1048,7 +1048,7 @@ _Generated 2026-11-24 06:52 UTC · 1153 entries · 299 vendored, 854 reference-o
 
 ## save-state
 
-**Save / state systems** — 78 entries
+**Save / state systems** — 84 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1070,7 +1070,9 @@ _Generated 2026-11-24 06:52 UTC · 1153 entries · 299 vendored, 854 reference-o
 | [cpp-serializers](entries/save-state/thekvs-cpp-serializers/README.md) | Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++ | c++ | unknown | reference | [thekvs/cpp-serializers](https://github.com/thekvs/cpp-serializers) @ `2020-01-28 (branch tip at catalogue time)` |
 | [Daedalus](entries/save-state/auties00-daedalus/README.md) | Daedalus is a general-purpose library for working with text and binary data formats. Its ambition is to bring exceptional performance and a natural Java API to  | java | none | reference | [Auties00/Daedalus](https://github.com/Auties00/Daedalus) @ `6bded314bae9` |
 | [DataKit](entries/save-state/quickbirdeng-datakit/README.md) | A Swift library to easily read and write binary formatted data using a modern, declarative interface. | swift | MIT | vendored | [QuickBirdEng/DataKit](https://github.com/QuickBirdEng/DataKit) @ `37d845d584c3` |
+| [DecryptTruck](entries/save-state/coffesiberian-decrypttruck/README.md) | Fast library to decrypt game saves on ETS2 and ATS | rust | MIT | reference | [CoffeSiberian/DecryptTruck](https://github.com/CoffeSiberian/DecryptTruck) @ `2026-02-01 (branch tip at catalogue time)` |
 | [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
+| [DreamBotQuester](entries/save-state/notsinan-dreambotquester/README.md) | DreamBotQuester is a powerful Java library that allows players of the popular online game, RuneScape, to automate their quests using the DreamBot API. With a ra | java | MIT | reference | [NotSinan/DreamBotQuester](https://github.com/NotSinan/DreamBotQuester) @ `2023-04-30 (branch tip at catalogue time)` |
 | [evolu](entries/save-state/evoluhq-evolu/README.md) | Local-first platform and TypeScript library | typescript | MIT | reference | [evoluhq/evolu](https://github.com/evoluhq/evolu) @ `4eedb2272841` |
 | [FastDeepCloner](entries/save-state/alentoma-fastdeepcloner/README.md) | FastDeepCloner, This is a C# based .NET cross platform library that is used to deep clone objects, whether they are serializable or not. It intends to be much f | c# | MIT | reference | [AlenToma/FastDeepCloner](https://github.com/AlenToma/FastDeepCloner) @ `2023-10-15 (branch tip at catalogue time)` |
 | [fastgltf](entries/save-state/spnda-fastgltf/README.md) | A modern C++17/C++20 glTF 2.0 library focused on speed, correctness, and usability | c++ | MIT | reference | [spnda/fastgltf](https://github.com/spnda/fastgltf) @ `2026-11-11 (branch tip at catalogue time)` |
@@ -1092,6 +1094,7 @@ _Generated 2026-11-24 06:52 UTC · 1153 entries · 299 vendored, 854 reference-o
 | [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
 | [kaitai_struct_formats](entries/save-state/kaitai-io-kaitai-struct-formats/README.md) | Kaitai Struct: library of binary file formats (.ksy) | kaitai struct | none | reference | [kaitai-io/kaitai_struct_formats](https://github.com/kaitai-io/kaitai_struct_formats) @ `8d8353c5059e` |
 | [kura](entries/save-state/nookieai-kura/README.md) | Scan, identify, organize, and transfer your PS1-PS5 & Vita game library (Windows, macOS, Linux), with a bundled PS5 payload for installs, cheats, saves, and fan | n/a | unknown | reference | [NookieAI/kura](https://github.com/NookieAI/kura) @ `2026-11-22 (branch tip at catalogue time)` |
+| [libNOM.io](entries/save-state/zencq-libnom-io/README.md) | A .NET class library to read and write save files from the game No Man's Sky for all possible platforms as well as related actions. | c# | GPL-3.0 | reference | [zencq/libNOM.io](https://github.com/zencq/libNOM.io) @ `2026-02-02 (branch tip at catalogue time)` |
 | [libplist](entries/save-state/libimobiledevice-libplist/README.md) | A library to handle Apple Property List format in binary or XML | c | LGPL-2.1 | reference | [libimobiledevice/libplist](https://github.com/libimobiledevice/libplist) @ `2026-11-16 (branch tip at catalogue time)` |
 | [lisp-binary](entries/save-state/j3pic-lisp-binary/README.md) | A library to easily read and write complex binary formats. | common lisp | GPL-3.0 | reference | [j3pic/lisp-binary](https://github.com/j3pic/lisp-binary) @ `2026-07-09 (branch tip at catalogue time)` |
 | [loom](entries/save-state/asonge-loom/README.md) | A CRDT library with δ-CRDT support. | elixir | unknown | reference | [asonge/loom](https://github.com/asonge/loom) @ `2017-05-30 (branch tip at catalogue time)` |
@@ -1105,6 +1108,7 @@ _Generated 2026-11-24 06:52 UTC · 1153 entries · 299 vendored, 854 reference-o
 | [PenguinBurner](entries/save-state/jpietek-penguinburner/README.md) | Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play | python | GPL-3.0 | reference | [jpietek/PenguinBurner](https://github.com/jpietek/PenguinBurner) @ `2026-11-17 (branch tip at catalogue time)` |
 | [prost-reflect](entries/save-state/andrewhickman-prost-reflect/README.md) | A protobuf library extending prost with reflection support and dynamic messages. | rust | Apache-2.0 | reference | [andrewhickman/prost-reflect](https://github.com/andrewhickman/prost-reflect) @ `2026-07-09 (branch tip at catalogue time)` |
 | [protopuf](entries/save-state/pragmatwice-protopuf/README.md) | Protocol Puffers: A little, highly templated, and protobuf-compatible serialization/deserialization header-only library written in C++20 | c++ | Apache-2.0 | reference | [PragmaTwice/protopuf](https://github.com/PragmaTwice/protopuf) @ `2026-10-02 (branch tip at catalogue time)` |
+| [pypsu](entries/save-state/mccaulay-pypsu/README.md) | Library for analyzing and creating PS2 PSU game save files | python | MIT | vendored | [McCaulay/pypsu](https://github.com/McCaulay/pypsu) @ `97c473cc25ea` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
@@ -1123,9 +1127,11 @@ _Generated 2026-11-24 06:52 UTC · 1153 entries · 299 vendored, 854 reference-o
 | [SuperBMD](entries/save-state/sage-of-mirrors-superbmd/README.md) | A library to import and export various 3D model formats into the Binary Model (BMD) format. | c# | unknown | reference | [Sage-of-Mirrors/SuperBMD](https://github.com/Sage-of-Mirrors/SuperBMD) @ `2022-12-08 (branch tip at catalogue time)` |
 | [SyncedStore](entries/save-state/yousefed-syncedstore/README.md) | SyncedStore CRDT is an easy-to-use library for building live, collaborative applications that sync automatically. | typescript | MIT | reference | [YousefED/SyncedStore](https://github.com/YousefED/SyncedStore) @ `2024-03-01 (branch tip at catalogue time)` |
 | [thrive — saving](entries/save-state/thrive-saving/README.md) | persistence: save/load, snapshot or state serialisation | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
+| [UeSaveGame](entries/save-state/crystalferrai-uesavegame/README.md) | A .NET library for reading and writing standard Unreal Engine save game files. | c# | unknown | reference | [CrystalFerrai/UeSaveGame](https://github.com/CrystalFerrai/UeSaveGame) @ `2026-05-15 (branch tip at catalogue time)` |
 | [VCMI — serializer](entries/save-state/vcmi-serializer/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [VYaml](entries/save-state/hadashia-vyaml/README.md) | The extra fast, low memory footprint YAML library for C#,  focued on .NET and Unity. | c# | MIT | reference | [hadashiA/VYaml](https://github.com/hadashiA/VYaml) @ `2026-11-05 (branch tip at catalogue time)` |
 | [weavejs](entries/save-state/inditextech-weavejs/README.md) | Weave.js is an open source library to build real-time collaboration applications like whiteboards, diagram editors, etc. on HTML5 Canvas with your own UI | typescript | Apache-2.0 | reference | [InditexTech/weavejs](https://github.com/InditexTech/weavejs) @ `2026-11-22 (branch tip at catalogue time)` |
+| [XblContainerReader](entries/save-state/lukefz-xblcontainerreader/README.md) | Library and CLI tool to extract and modify UWP / Xbox Game Pass (containers.index) game saves. | c# | MIT | vendored | [LukeFZ/XblContainerReader](https://github.com/LukeFZ/XblContainerReader) @ `49e8f317d470` |
 | [yaff](entries/save-state/yandex-yaff/README.md) | YaFF is a high-performance C++ serialization library that provides a zero-copy wire format for the Protobuf ecosystem. | c++ | unknown | reference | [yandex/yaff](https://github.com/yandex/yaff) @ `2026-11-02 (branch tip at catalogue time)` |
 | [yasna.rs](entries/save-state/qnighy-yasna-rs/README.md) | ASN.1 library for Rust | rust | Apache-2.0 | vendored | [qnighy/yasna.rs](https://github.com/qnighy/yasna.rs) @ `3c7f2ba61cfb` |
 | [yyjson](entries/save-state/yyjson/README.md) | high-performance JSON library (read/write/mutate) | c | MIT | vendored | [ibireme/yyjson](https://github.com/ibireme/yyjson) @ `ebb8d7e5aaa5` |

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T07:08:31Z",
+ "category": "save-state",
+ "commit": "49e8f317d470",
+ "delivery": "vendored",
+ "description": "LukeFZ/XblContainerReader \u2014 Library and CLI tool to extract and modify UWP / Xbox Game Pass (containers.index) game saves.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "XblContainerReader",
+ "size_bytes": 31091,
+ "slug": "lukefz-xblcontainerreader",
+ "source": "github-search:save game library stars:>10",
+ "stars": 48,
+ "system": "Library and CLI tool to extract and modify UWP / Xbox Game Pass (containers.index) game saves.",
+ "upstream": "https://github.com/LukeFZ/XblContainerReader",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

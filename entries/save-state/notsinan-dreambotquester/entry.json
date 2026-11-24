@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T07:08:35Z",
+ "category": "save-state",
+ "commit": "2023-04-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "NotSinan/DreamBotQuester \u2014 DreamBotQuester is a powerful Java library that allows players of the popular online game, RuneScape, to automate their quests using the DreamBot API. With a range of tools for interacting with the API and executing tasks in the game, DreamBotQuester is an ideal choice for players looking to save time on tedious quests or optimize their progress.",
+ "language": "java",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "DreamBotQuester",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "notsinan-dreambotquester",
+ "source": "github-search:save game library stars:>10",
+ "stars": 27,
+ "system": "DreamBotQuester is a powerful Java library that allows players of the popular online game, RuneScape, to automate their quests using the DreamBot API. With a ra",
+ "upstream": "https://github.com/NotSinan/DreamBotQuester",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

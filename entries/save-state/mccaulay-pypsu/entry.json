@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T07:08:33Z",
+ "category": "save-state",
+ "commit": "97c473cc25ea",
+ "delivery": "vendored",
+ "description": "McCaulay/pypsu \u2014 Library for analyzing and creating PS2 PSU game save files",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "pypsu",
+ "size_bytes": 23522,
+ "slug": "mccaulay-pypsu",
+ "source": "github-search:save game library stars:>10",
+ "stars": 44,
+ "system": "Library for analyzing and creating PS2 PSU game save files",
+ "upstream": "https://github.com/McCaulay/pypsu",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

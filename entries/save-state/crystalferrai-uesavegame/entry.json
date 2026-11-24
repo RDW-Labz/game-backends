@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T07:08:35Z",
+ "category": "save-state",
+ "commit": "2026-05-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "CrystalFerrai/UeSaveGame \u2014 A .NET library for reading and writing standard Unreal Engine save game files.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "UeSaveGame",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "crystalferrai-uesavegame",
+ "source": "github-search:save game library stars:>10",
+ "stars": 33,
+ "system": "A .NET library for reading and writing standard Unreal Engine save game files.",
+ "upstream": "https://github.com/CrystalFerrai/UeSaveGame",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

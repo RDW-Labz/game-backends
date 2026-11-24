@@ -2536,3 +2536,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/beling-bsuccinct-rs
   - reference save-state/zakarumych-alkahest
   - reference save-state/andrewhickman-prost-reflect
+
+- **2026-11-24 07:08 UTC** — tick 766: +2 screened, +4 reference, 8 skipped, catalogue=1159
+  - added save-state/lukefz-xblcontainerreader (MIT, vendored)
+  - added save-state/mccaulay-pypsu (MIT, vendored)
+  - reference save-state/crystalferrai-uesavegame
+  - reference save-state/zencq-libnom-io
+  - reference save-state/notsinan-dreambotquester
+  - reference save-state/coffesiberian-decrypttruck
