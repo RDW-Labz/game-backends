@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 20:18 UTC · 1366 entries · 353 vendored, 1013 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 20:41 UTC · 1372 entries · 354 vendored, 1018 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 559 | 131 | 428 |
+| [engines](#engines) — Game engines and engine subsystems | 565 | 132 | 433 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 20:18 UTC · 1366 entries · 353 vendored, 1013 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 559 entries
+**Game engines and engine subsystems** — 565 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -116,6 +116,7 @@ _Generated 2026-11-24 20:18 UTC · 1366 entries · 353 vendored, 1013 reference-
 | [cgl](entries/engines/jaysmito101-cgl/README.md) | CGL (C Game Library) is a multipurpose library mainly for recreational coding / demo scenes / prototyping / small games / experimentation.  | javascript | MIT | vendored | [Jaysmito101/cgl](https://github.com/Jaysmito101/cgl) @ `bca6e65157a7` |
 | [channeld](entries/engines/channeldorg-channeld/README.md) | Next-Gen Gateway Service for distributed game servers built with Unreal or Unity Engine | go | Apache-2.0 | reference | [channeldorg/channeld](https://github.com/channeldorg/channeld) @ `2026-01-22 (branch tip at catalogue time)` |
 | [chingu](entries/engines/ippa-chingu/README.md) | OpenGL accelerated 2D game framework for Ruby | ruby | LGPL-2.1 | reference | [ippa/chingu](https://github.com/ippa/chingu) @ `d3ed0ff0e0fa` |
+| [chronos](entries/engines/chronos-kit-chronos/README.md) | A versatile framework designed to integrate high-performance 2D / 3D content and fluid animations into your app, or to create a game using a comprehensive set o | c++ | Apache-2.0 | reference | [chronos-kit/chronos](https://github.com/chronos-kit/chronos) @ `2026-07-09 (branch tip at catalogue time)` |
 | [ClashRoyaleAi](entries/engines/itzik123-clashroyaleai/README.md) | A fast, deterministic Clash Royale battle simulator in C++ with Python bindings, a recurrent PPO agent, lookahead search, and a computer-vision bridge to the re | python | MIT | vendored | [itzik123/ClashRoyaleAi](https://github.com/itzik123/ClashRoyaleAi) @ `ec28641b59e0` |
 | [cocos-engine](entries/engines/cocos-cocos-engine/README.md) | Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create | c++ | MIT | reference | [cocos/cocos-engine](https://github.com/cocos/cocos-engine) @ `90ad7072a332` |
 | [Cocos2d-x](entries/engines/cocos2d-x/README.md) | mobile-first 2D/3D engine core | c++ | MIT | reference | [cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x) @ `7a5282a301a1` |
@@ -225,6 +226,7 @@ _Generated 2026-11-24 20:18 UTC · 1366 entries · 353 vendored, 1013 reference-
 | [g3nd](entries/engines/g3n-g3nd/README.md) | G3N Game Engine Demo | go | BSD-2-Clause | reference | [g3n/g3nd](https://github.com/g3n/g3nd) @ `2026-03-30 (branch tip at catalogue time)` |
 | [game-mixer](entries/engines/auburnsounds-game-mixer/README.md) | Audio mixer and playback library like SDL_mixer but without dependencies. | d | MIT | vendored | [AuburnSounds/game-mixer](https://github.com/AuburnSounds/game-mixer) @ `f64c464ab025` |
 | [GameDevMind](entries/engines/gonglei007-gamedevmind/README.md) | 最全面的游戏开发技术图谱(Game Development Map)。帮助游戏开发者们在已知问题上节省时间，省出更多的精力投入到更有创造性的工作中去。 | python | MIT | vendored | [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) @ `652be106e9df` |
+| [GameDevMind-EN](entries/engines/gonglei007-gamedevmind-en/README.md) | The most comprehensive technical map of game development. Help game developers save time on known problems and save more energy for more creative work. | shell | MIT | reference | [gonglei007/GameDevMind-EN](https://github.com/gonglei007/GameDevMind-EN) @ `2023-10-18 (branch tip at catalogue time)` |
 | [GameFramework](entries/engines/ellanjiang-gameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | vendored | [EllanJiang/GameFramework](https://github.com/EllanJiang/GameFramework) @ `d0c010b05167` |
 | [Gamepad](entries/engines/piborg-gamepad/README.md) | A simple library for getting game controller and joystick inputs into Python in Linux. | python | MIT | vendored | [piborg/Gamepad](https://github.com/piborg/Gamepad) @ `016628623078` |
 | [GamepadMotionHelpers](entries/engines/jibbsmart-gamepadmotionhelpers/README.md) | Lightweight header-only library for sensor fusion, gyro calibration, etc. BYO input library (eg SDL2). | c++ | MIT | reference | [JibbSmart/GamepadMotionHelpers](https://github.com/JibbSmart/GamepadMotionHelpers) @ `2026-07-13 (branch tip at catalogue time)` |
@@ -295,6 +297,7 @@ _Generated 2026-11-24 20:18 UTC · 1366 entries · 353 vendored, 1013 reference-
 | [inks2d](entries/engines/nicklessone-inks2d/README.md) | A free no-dependency Typescript game engine designed for developing 2D games | typescript | MIT | reference | [NicklessOne/inks2d](https://github.com/NicklessOne/inks2d) @ `2023-08-23 (branch tip at catalogue time)` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
+| [Jin](entries/engines/chaifix-jin/README.md) | A 2D game framework for simplifying game making process in Lua.  | c++ | MIT | reference | [chaifix/Jin](https://github.com/chaifix/Jin) @ `2017-08-09 (branch tip at catalogue time)` |
 | [js13k-ecs](entries/engines/kutuluk-js13k-ecs/README.md) | A <700b entity component system, designed for Js13kGames | javascript | MIT | reference | [kutuluk/js13k-ecs](https://github.com/kutuluk/js13k-ecs) @ `2026-04-25 (branch tip at catalogue time)` |
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
 | [kaiju](entries/engines/kaijuengine-kaiju/README.md) | General purpose 3D and 2D game engine using Go (golang) and Vulkan with built in editor | go | MIT | vendored | [KaijuEngine/kaiju](https://github.com/KaijuEngine/kaiju) @ `c5b49f65571f` |
@@ -409,6 +412,7 @@ _Generated 2026-11-24 20:18 UTC · 1366 entries · 353 vendored, 1013 reference-
 | [phaser-ce](entries/engines/phaserjs-phaser-ce/README.md) | Phaser CE is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser-ce](https://github.com/phaserjs/phaser-ce) @ `2026-11-19 (branch tip at catalogue time)` |
 | [phd-game](entries/engines/morriswmz-phd-game/README.md) | A random event driven text-based game engine. | typescript | MIT | reference | [morriswmz/phd-game](https://github.com/morriswmz/phd-game) @ `2024-08-19 (branch tip at catalogue time)` |
 | [phoria.js](entries/engines/kevinroast-phoria-js/README.md) | JavaScript library for simple 3D graphics and visualisation on a HTML5 canvas 2D renderer. It does not use WebGL. Works on all HTML5 browsers, including desktop | javascript | BSD-3-Clause | reference | [kevinroast/phoria.js](https://github.com/kevinroast/phoria.js) @ `2026-11-05 (branch tip at catalogue time)` |
+| [php-game-framework](entries/engines/mario-deluna-php-game-framework/README.md) | A 3D / 2D PHP Game Engine, a collection of helpers and wrappers around Glfw. | php | none | reference | [mario-deluna/php-game-framework](https://github.com/mario-deluna/php-game-framework) @ `4017e7578d21` |
 | [pi](entries/engines/elgopher-pi/README.md) | Game engine for creating retro games for modern computers. Inspired by Pico-8 and powered by Ebitengine. | go | MIT | vendored | [elgopher/pi](https://github.com/elgopher/pi) @ `3a3b7de5a3ed` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
 | [PieMenu](entries/engines/payne911-piemenu/README.md) | A library for easy integration of a flexible circular WidgetGroup within libGDX | java | MIT | reference | [payne911/PieMenu](https://github.com/payne911/PieMenu) @ `2022-12-01 (branch tip at catalogue time)` |
@@ -460,6 +464,7 @@ _Generated 2026-11-24 20:18 UTC · 1366 entries · 353 vendored, 1013 reference-
 | [RobustToolbox](entries/engines/space-wizards-robusttoolbox/README.md) | Robust multiplayer game engine, used by Space Station 14 | c# | GPL-3.0 | reference | [space-wizards/RobustToolbox](https://github.com/space-wizards/RobustToolbox) @ `ec12ca54db27` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
 | [RPG-Core](entries/engines/delmarle-rpg-core/README.md) | UNITY engine RPG framework | c# | unknown | reference | [delmarle/RPG-Core](https://github.com/delmarle/RPG-Core) @ `2026-04-14 (branch tip at catalogue time)` |
+| [ruby2d-games](entries/engines/mariovisic-ruby2d-games/README.md) | A collection of games and demos written in ruby using the Ruby 2D framework, complete with free video tutorials | ruby | unknown | reference | [mariovisic/ruby2d-games](https://github.com/mariovisic/ruby2d-games) @ `2023-02-22 (branch tip at catalogue time)` |
 | [RuntimeUnityEditor](entries/engines/manlymarco-runtimeunityeditor/README.md) | In-game inspector and debugging tools for applications made with Unity3D game engine | c# | GPL-3.0 | reference | [ManlyMarco/RuntimeUnityEditor](https://github.com/ManlyMarco/RuntimeUnityEditor) @ `1ce168c7acfd` |
 | [rust-invaders](entries/engines/jeremychone-channel-rust-invaders/README.md) | Simple RUST game with the Bevy Engine | rust | Apache-2.0 | vendored | [jeremychone-channel/rust-invaders](https://github.com/jeremychone-channel/rust-invaders) @ `af246691ea08` |
 | [Sakuga-Engine](entries/engines/noisychain-sakuga-engine/README.md) | A fighting game engine made for Godot 4 written in C# | c# | MIT | vendored | [NoisyChain/Sakuga-Engine](https://github.com/NoisyChain/Sakuga-Engine) @ `866ce24da7c2` |
@@ -579,6 +584,7 @@ _Generated 2026-11-24 20:18 UTC · 1366 entries · 353 vendored, 1013 reference-
 | [z_impact](entries/engines/scemino-z-impact/README.md) | A 2d game engine written in ZIG | zig | MIT | reference | [scemino/z_impact](https://github.com/scemino/z_impact) @ `2025-07-17 (branch tip at catalogue time)` |
 | [ZeroAllocJobScheduler](entries/engines/genaray-zeroallocjobscheduler/README.md) | A high-performance alloc free c# Jobscheduler.  | c# | Apache-2.0 | reference | [genaray/ZeroAllocJobScheduler](https://github.com/genaray/ZeroAllocJobScheduler) @ `2025-03-18 (branch tip at catalogue time)` |
 | [ZigVulkanEngine](entries/engines/adel-ayoub-zigvulkanengine/README.md) | 3D game engine built with Zig and Vulkan | zig | unknown | reference | [Adel-Ayoub/ZigVulkanEngine](https://github.com/Adel-Ayoub/ZigVulkanEngine) @ `2025-07-07 (branch tip at catalogue time)` |
+| [zion](entries/engines/cyan33-zion/README.md) | [Deprecated] A tentative, light-weight 2D game framework based on HTML5 canvas. | javascript | MIT | vendored | [cyan33/zion](https://github.com/cyan33/zion) @ `7be54d203fb8` |
 
 ## physics
 

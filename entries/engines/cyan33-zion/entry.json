@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T20:41:50Z",
+ "category": "engines",
+ "commit": "7be54d203fb8",
+ "delivery": "vendored",
+ "description": "cyan33/zion \u2014 [Deprecated] A tentative, light-weight 2D game framework based on HTML5 canvas.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "zion",
+ "size_bytes": 1457614,
+ "slug": "cyan33-zion",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 44,
+ "system": "[Deprecated] A tentative, light-weight 2D game framework based on HTML5 canvas.",
+ "upstream": "https://github.com/cyan33/zion",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:41:52Z",
+ "category": "engines",
+ "commit": "2026-07-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "chronos-kit/chronos \u2014 A versatile framework designed to integrate high-performance 2D / 3D content and fluid animations into your app, or to create a game using a comprehensive set of 2D / 3D game-based tools.It's already deployed in the danmaku scenarios of Bilibili's mobile app, delivering rich danmaku effects that enrich community interaction.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "chronos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "chronos-kit-chronos",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 41,
+ "system": "A versatile framework designed to integrate high-performance 2D / 3D content and fluid animations into your app, or to create a game using a comprehensive set o",
+ "upstream": "https://github.com/chronos-kit/chronos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

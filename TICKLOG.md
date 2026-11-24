@@ -2825,3 +2825,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/libretro-libretro-chailove
   - reference engines/andribaal-shura
   - reference engines/gamepopper-vigilante-game-framework
+
+- **2026-11-24 20:41 UTC** — tick 808: +2 screened, +4 reference, 22 skipped, catalogue=1372
+  - added engines/mario-deluna-php-game-framework (none, reference)
+  - added engines/cyan33-zion (MIT, vendored)
+  - reference engines/chaifix-jin
+  - reference engines/mariovisic-ruby2d-games
+  - reference engines/chronos-kit-chronos
+  - reference engines/gonglei007-gamedevmind-en

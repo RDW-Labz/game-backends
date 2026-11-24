@@ -1,0 +1,39 @@
+{
+  "name": "zion-engine",
+  "version": "0.1.2",
+  "description": "A light-weight, un-opinionated game engine/library based on HTML5 Canvas game development.",
+  "main": "./src/index.js",
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint ./src/index.js",
+    "build": "./node_modules/.bin/webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomasyimgit/zion.git"
+  },
+  "keywords": [
+    "game",
+    "engine",
+    "library",
+    "html5",
+    "canvas"
+  ],
+  "author": "Chang Yan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thomasyimgit/zion/issues"
+  },
+  "homepage": "https://github.com/thomasyimgit/zion#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^4.12.0",
+    "webpack": "^3.5.5"
+  },
+  "dependencies": {
+    "canvas-image-cache": "0.0.1",
+    "keybus": "0.0.3"
+  }
+}

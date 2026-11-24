@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:41:52Z",
+ "category": "engines",
+ "commit": "2023-02-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mariovisic/ruby2d-games \u2014 A collection of games and demos written in ruby using the Ruby 2D framework, complete with free video tutorials",
+ "language": "ruby",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ruby2d-games",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mariovisic-ruby2d-games",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 41,
+ "system": "A collection of games and demos written in ruby using the Ruby 2D framework, complete with free video tutorials",
+ "upstream": "https://github.com/mariovisic/ruby2d-games",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

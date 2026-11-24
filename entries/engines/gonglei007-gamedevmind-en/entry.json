@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:41:52Z",
+ "category": "engines",
+ "commit": "2023-10-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gonglei007/GameDevMind-EN \u2014 The most comprehensive technical map of game development. Help game developers save time on known problems and save more energy for more creative work.",
+ "language": "shell",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "GameDevMind-EN",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gonglei007-gamedevmind-en",
+ "source": "github-search:3d game framework stars:>60",
+ "stars": 71,
+ "system": "The most comprehensive technical map of game development. Help game developers save time on known problems and save more energy for more creative work.",
+ "upstream": "https://github.com/gonglei007/GameDevMind-EN",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

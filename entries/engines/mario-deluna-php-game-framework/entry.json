@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T20:41:48Z",
+ "category": "engines",
+ "commit": "4017e7578d21",
+ "delivery": "reference",
+ "description": "mario-deluna/php-game-framework \u2014 A 3D / 2D PHP Game Engine, a collection of helpers and wrappers around Glfw.",
+ "language": "php",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "php-game-framework",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 471,
+ "slug": "mario-deluna-php-game-framework",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 44,
+ "system": "A 3D / 2D PHP Game Engine, a collection of helpers and wrappers around Glfw.",
+ "upstream": "https://github.com/mario-deluna/php-game-framework",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

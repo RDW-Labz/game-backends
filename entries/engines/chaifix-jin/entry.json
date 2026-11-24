@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:41:52Z",
+ "category": "engines",
+ "commit": "2017-08-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "chaifix/Jin \u2014 A 2D game framework for simplifying game making process in Lua.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Jin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "chaifix-jin",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 42,
+ "system": "A 2D game framework for simplifying game making process in Lua. ",
+ "upstream": "https://github.com/chaifix/Jin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
