@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T19:26:51Z",
+ "category": "engines",
+ "commit": "f4fbe1877056",
+ "delivery": "vendored",
+ "description": "sedyh/mizu \u2014 Entity Component System framework for Ebitengine",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "mizu",
+ "size_bytes": 117732,
+ "slug": "sedyh-mizu",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 95,
+ "system": "Entity Component System framework for Ebitengine",
+ "upstream": "https://github.com/sedyh/mizu",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

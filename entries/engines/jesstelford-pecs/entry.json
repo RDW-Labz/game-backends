@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:26:56Z",
+ "category": "engines",
+ "commit": "2024-07-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jesstelford/pecs \u2014 Entity Component System (ECS) for PICO-8 & Picotron",
+ "language": "lua",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pecs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jesstelford-pecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 88,
+ "system": "Entity Component System (ECS) for PICO-8 & Picotron",
+ "upstream": "https://github.com/jesstelford/pecs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title class="titleText"> ECS example - event handling </title>
+        <meta name="description" content="ECS example - event handling" />
+        <meta name="author" content="Michael Reinstein" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+
+        <style>
+            * {
+                font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light',
+                    'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',
+                    sans-serif;
+                font-weight: 300;
+            }
+
+            body {
+                background-color: #666;
+                padding: 0;
+                margin: 0;
+                transition: opacity 0.27s;
+            }
+
+            body, canvas, img {
+                image-rendering: pixelated;
+            }
+
+            canvas {
+                background-color: #333;
+                border: none;
+                -ms-interpolation-mode: nearest-neighbor;
+                image-rendering: -moz-crisp-edges;
+                image-rendering: pixelated;
+            }
+
+            canvas::-webkit-scrollbar {
+                display: none;
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <canvas> </canvas>
+        
+<script type="importmap">
+  {
+    "imports": {
+      "ecs": "../ecs.js",
+      "ecs-devtools": "../devtools/index.js",
+      "remove-array-items": "https://esm.sh/remove-array-items@3",
+      "snabby": "https://esm.sh/snabby@7",
+      "snabbdom-timeline": "https://esm.sh/snabbdom-timeline@0.11.0"
+    }
+  }
+</script>
+
+<script type="module">
+import ECS                from 'ecs'
+import { createDevtools } from 'ecs-devtools'
+
+
+const WIDGET_QUERY = [ 'widget' ]
+
+const constants = {
+	FIXED_STEP_MS: 16,  // fixed steps run @ 62.5fps (16ms per frame)
+}
+
+const Global = {
+	world: undefined,  // ECS instance
+
+	// timekeeping (in milliseconds)
+    lastFrameTime: 0, // time the last frame ran
+    accumulator: 0,   // accumulate time to run ticks at a fixed rate
+
+    tick: 0, // total number of frames elapsed
+}
+
+
+async function main () {
+	// init
+	Global.world = ECS.addWorld()
+
+	// add all of the game's systems
+	ECS.addSystem(Global.world, widgetSpawnerSystem)
+	ECS.addSystem(Global.world, scoreSystem)
+
+	// in-page stats panel. toggle with the ` key
+	createDevtools(Global.world)
+
+	// start the simulation loop
+	simLoop()
+}
+
+
+function simLoop () {
+	const world = Global.world
+	const { FIXED_STEP_MS } = constants 
+
+	const newTime = performance.now()
+    const frameTime = newTime - Global.lastFrameTime
+    Global.lastFrameTime = newTime
+
+    Global.accumulator += frameTime
+
+    // reset accumulator when > 2 seconds of time has elapsed since last step
+    // e.g., when the game window is restored after being hidden for a while
+    if (Global.accumulator > 2000)
+        Global.accumulator = 0
+
+    // run the game's physics and logic in fixed timesteps (great for physics stability and network determinism)
+    while (Global.accumulator >= FIXED_STEP_MS) {
+        Global.accumulator -= FIXED_STEP_MS
+
+        ECS.fixedUpdate(world, FIXED_STEP_MS)
+        
+        ECS.cleanup(world)
+
+        Global.tick++
+    }
+
+	//requestAnimationFrame(simLoop)
+	setTimeout(simLoop, 1000 / 60)
+}
+
+
+main()
+
+
+function createWidgetEntity (world) {
+	const w = ECS.addEntity(world)
+	ECS.addComponent(world, w, 'widget', {
+		frameTTL: 60, // after 60 frames this widget should be removed 
+	})
+
+    if (Math.random() < 0.5) {
+        ECS.addComponent(world, w, 'widget2', { })
+    }
+}
+
+// spawns new widgets entities
+
+function widgetSpawnerSystem (world) {
+
+    const onFixedUpdate = function (dt) {
+    	// spawn 1 widget every 3 ticks
+    	if (Global.tick % 3  === 0)
+    		createWidgetEntity(world, Global.tick)
+
+    	// remove any widgets that have expired
+    	for (const e of ECS.getEntities(world, WIDGET_QUERY)) {
+    		if (e.widget.frameTTL === 0)
+    			ECS.removeEntity(world, e)
+    		else
+    			e.widget.frameTTL--
+    	}
+    }
+
+    return { onFixedUpdate }
+}
+
+
+// imagine a system that calculates score based on how many widgets were added/removed on a given frame
+function scoreSystem (world) {
+
+	const result = {
+		count: 0,
+		entries: new Array(100),
+	}
+
+	const onFixedUpdate = function (dt) {
+		ECS.getEntities(world, WIDGET_QUERY, 'added', result)
+
+		ECS.getEntities(world, WIDGET_QUERY, 'removed', result)
+
+        ECS.getEntity(world, [ 'widget', 'widget2' ])
+	}
+
+	return { onFixedUpdate }
+}
+
+</script>
+    </body>
+</html>

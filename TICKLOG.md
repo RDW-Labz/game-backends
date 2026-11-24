@@ -2793,3 +2793,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/rlipsc-polymorph
   - reference engines/mayakwd-tick-knock
   - reference engines/fireblade-engine-ecs
+
+- **2026-11-24 19:26 UTC** — tick 804: +2 screened, +4 reference, 6 skipped, catalogue=1348
+  - added engines/sedyh-mizu (MIT, vendored)
+  - added engines/mreinstein-ecs (MIT, vendored)
+  - reference engines/needle-mirror-com-unity-entities
+  - reference engines/kutuluk-js13k-ecs
+  - reference engines/jesstelford-pecs
+  - reference engines/natweiss-entityfu

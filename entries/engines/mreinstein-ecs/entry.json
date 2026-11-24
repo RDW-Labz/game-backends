@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T19:26:54Z",
+ "category": "engines",
+ "commit": "dd2621cdfb02",
+ "delivery": "vendored",
+ "description": "mreinstein/ecs \u2014 data oriented, functional entity component system",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ecs",
+ "size_bytes": 96895,
+ "slug": "mreinstein-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 92,
+ "system": "data oriented, functional entity component system",
+ "upstream": "https://github.com/mreinstein/ecs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

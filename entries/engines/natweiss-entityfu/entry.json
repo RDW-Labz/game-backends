@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:26:56Z",
+ "category": "engines",
+ "commit": "2016-07-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "NatWeiss/EntityFu \u2014 A lightweight entity component system (ECS) written in C++.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "EntityFu",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "natweiss-entityfu",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 86,
+ "system": "A lightweight entity component system (ECS) written in C++. ",
+ "upstream": "https://github.com/NatWeiss/EntityFu",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

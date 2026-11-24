@@ -1,0 +1,47 @@
+{
+  "name": "ecs",
+  "version": "0.24.0",
+  "description": "data oriented, functional entity component system",
+  "main": "ecs.js",
+  "types": "types/ecs.d.ts",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"test/*.js\"",
+    "build": "tsc",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "keywords": [
+    "game",
+    "gamedev",
+    "ecs",
+    "entity component system"
+  ],
+  "dependencies": {
+    "remove-array-items": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mreinstein/ecs.git"
+  },
+  "author": "Michael Reinstein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mreinstein/ecs/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "homepage": "https://github.com/mreinstein/ecs#readme",
+  "files": [
+    "ecs.js",
+    "component-set.js",
+    "types",
+    "CHANGELOG.md"
+  ],
+  "workspaces": [
+    "devtools"
+  ]
+}

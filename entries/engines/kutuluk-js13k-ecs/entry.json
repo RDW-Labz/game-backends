@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T19:26:56Z",
+ "category": "engines",
+ "commit": "2026-04-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kutuluk/js13k-ecs \u2014 A <700b entity component system, designed for Js13kGames",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "js13k-ecs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kutuluk-js13k-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 91,
+ "system": "A <700b entity component system, designed for Js13kGames",
+ "upstream": "https://github.com/kutuluk/js13k-ecs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

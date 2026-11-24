@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 19:09 UTC · 1342 entries · 346 vendored, 996 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 19:26 UTC · 1348 entries · 348 vendored, 1000 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 535 | 124 | 411 |
+| [engines](#engines) — Game engines and engine subsystems | 541 | 126 | 415 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 19:09 UTC · 1342 entries · 346 vendored, 996 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 535 entries
+**Game engines and engine subsystems** — 541 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -118,6 +118,7 @@ _Generated 2026-11-24 19:09 UTC · 1342 entries · 346 vendored, 996 reference-o
 | [cocos-engine](entries/engines/cocos-cocos-engine/README.md) | Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create | c++ | MIT | reference | [cocos/cocos-engine](https://github.com/cocos/cocos-engine) @ `90ad7072a332` |
 | [Cocos2d-x](entries/engines/cocos2d-x/README.md) | mobile-first 2D/3D engine core | c++ | MIT | reference | [cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x) @ `7a5282a301a1` |
 | [coffee](entries/engines/hecrj-coffee/README.md) | An opinionated 2D game engine for Rust | rust | MIT | reference | [hecrj/coffee](https://github.com/hecrj/coffee) @ `2024-03-03 (branch tip at catalogue time)` |
+| [com.unity.entities](entries/engines/needle-mirror-com-unity-entities/README.md) | The Entities package provides a modern Entity Component System (ECS) implementation with a basic set of systems and components made for Unity. 📦 [Mirrored from  | c# | unknown | reference | [needle-mirror/com.unity.entities](https://github.com/needle-mirror/com.unity.entities) @ `2026-09-30 (branch tip at catalogue time)` |
 | [comfy](entries/engines/darthdeus-comfy/README.md) | Comfy is a fun 2D game engine built in Rust. It's designed to be opinionated, productive, and easy to use. | rust | Apache-2.0 | vendored | [darthdeus/comfy](https://github.com/darthdeus/comfy) @ `31aa6efce135` |
 | [ConsoleGameEngine](entries/engines/ollelogdahl-consolegameengine/README.md) | .NET Console Graphics Engine | c# | Unlicense | reference | [ollelogdahl/ConsoleGameEngine](https://github.com/ollelogdahl/ConsoleGameEngine) @ `2021-06-14 (branch tip at catalogue time)` |
 | [core](entries/engines/soonfx-engine-core/README.md) | 🎮 TypeScript game numeric engine for RPG & strategy games. Zero dependencies, type-safe formula parsing, battle system simulation, and expression evaluation.  基 | typescript | Apache-2.0 | reference | [soonfx-engine/core](https://github.com/soonfx-engine/core) @ `2025-12-30 (branch tip at catalogue time)` |
@@ -151,6 +152,7 @@ _Generated 2026-11-24 19:09 UTC · 1342 entries · 346 vendored, 996 reference-o
 | [ecs](entries/engines/andygeiss-ecs/README.md) | Build your own Game-Engine based on the Entity Component System concept in Golang. | go | MIT | vendored | [andygeiss/ecs](https://github.com/andygeiss/ecs) @ `cc1e3e26b5bb` |
 | [ecs](entries/engines/engoengine-ecs/README.md) | A Go-implementation of the Entity-Component-System paradigm | go | MIT | vendored | [EngoEngine/ecs](https://github.com/EngoEngine/ecs) @ `2e364524a9bc` |
 | [ecs](entries/engines/fireblade-engine-ecs/README.md) | A lightweight, fast Entity-Component System (ECS) implementation in Swift | swift | MIT | reference | [fireblade-engine/ecs](https://github.com/fireblade-engine/ecs) @ `2026-11-24 (branch tip at catalogue time)` |
+| [ecs](entries/engines/mreinstein-ecs/README.md) | data oriented, functional entity component system | javascript | MIT | vendored | [mreinstein/ecs](https://github.com/mreinstein/ecs) @ `dd2621cdfb02` |
 | [ecs](entries/engines/sergeymakeev-ecs/README.md) | Thoughts about entity-component-system | c++ | MIT | reference | [SergeyMakeev/ecs](https://github.com/SergeyMakeev/ecs) @ `2018-11-25 (branch tip at catalogue time)` |
 | [ECS](entries/engines/shangdibaozi-ecs/README.md) | Entity-Component-System | typescript | MIT | reference | [shangdibaozi/ECS](https://github.com/shangdibaozi/ECS) @ `2024-08-12 (branch tip at catalogue time)` |
 | [ecs](entries/engines/yagl-ecs/README.md) | Entity / Component / System pattern for ES6 | javascript | MIT | vendored | [yagl/ecs](https://github.com/yagl/ecs) @ `90b3ba1868a3` |
@@ -177,6 +179,7 @@ _Generated 2026-11-24 19:09 UTC · 1342 entries · 346 vendored, 996 reference-o
 | [Entitas](entries/engines/sschmid-entitas/README.md) | Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity | c# | MIT | vendored | [sschmid/Entitas](https://github.com/sschmid/Entitas) @ `37547d1bd280` |
 | [Entitas-Cpp](entries/engines/judelco-entitas-cpp/README.md) | Entitas++ is a fast Entity Component System (ECS) C++11 port of Entitas C# | c++ | MIT | reference | [JuDelCo/Entitas-Cpp](https://github.com/JuDelCo/Entitas-Cpp) @ `2023-07-01 (branch tip at catalogue time)` |
 | [EntityComponentSystemSamples](entries/engines/unity-technologies-entitycomponentsystemsamples/README.md) | see upstream | c# | none | reference | [Unity-Technologies/EntityComponentSystemSamples](https://github.com/Unity-Technologies/EntityComponentSystemSamples) @ `6786a741ee1f` |
+| [EntityFu](entries/engines/natweiss-entityfu/README.md) | A lightweight entity component system (ECS) written in C++.  | c++ | MIT | reference | [NatWeiss/EntityFu](https://github.com/NatWeiss/EntityFu) @ `2016-07-04 (branch tip at catalogue time)` |
 | [EnTT](entries/engines/entt/README.md) | header-only ECS: registry, views, groups, signals | c++ | MIT | vendored | [skypjack/entt](https://github.com/skypjack/entt) @ `1dcd7aab6548` |
 | [eos_plugin_for_unity](entries/engines/eos-contrib-eos-plugin-for-unity/README.md) | Repository for EOS Plugin for Unity, bringing the functionality of Epic Online Services to the Unity Game Engine. | c# | MIT | reference | [EOS-Contrib/eos_plugin_for_unity](https://github.com/EOS-Contrib/eos_plugin_for_unity) @ `c5167a5fa86d` |
 | [EpicSurvivalGame](entries/engines/tomlooman-epicsurvivalgame/README.md) | Third-person Survival Game for Unreal Engine (Sample Project) | c++ | MIT | vendored | [tomlooman/EpicSurvivalGame](https://github.com/tomlooman/EpicSurvivalGame) @ `23159c1c8560` |
@@ -286,6 +289,7 @@ _Generated 2026-11-24 19:09 UTC · 1342 entries · 346 vendored, 996 reference-o
 | [inks2d](entries/engines/nicklessone-inks2d/README.md) | A free no-dependency Typescript game engine designed for developing 2D games | typescript | MIT | reference | [NicklessOne/inks2d](https://github.com/NicklessOne/inks2d) @ `2023-08-23 (branch tip at catalogue time)` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
+| [js13k-ecs](entries/engines/kutuluk-js13k-ecs/README.md) | A <700b entity component system, designed for Js13kGames | javascript | MIT | reference | [kutuluk/js13k-ecs](https://github.com/kutuluk/js13k-ecs) @ `2026-04-25 (branch tip at catalogue time)` |
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
 | [kaiju](entries/engines/kaijuengine-kaiju/README.md) | General purpose 3D and 2D game engine using Go (golang) and Vulkan with built in editor | go | MIT | vendored | [KaijuEngine/kaiju](https://github.com/KaijuEngine/kaiju) @ `c5b49f65571f` |
 | [kengine](entries/engines/phisko-kengine/README.md) | Game engine with an Entity-Component-System (ECS) architecture. Focus on ease-of-use, runtime extensibility and compile-time type safety. | c++ | MIT | vendored | [phisko/kengine](https://github.com/phisko/kengine) @ `5a0ad085cdef` |
@@ -326,6 +330,7 @@ _Generated 2026-11-24 19:09 UTC · 1342 entries · 346 vendored, 996 reference-o
 | [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
 | [minimalist-game-framework](entries/engines/zachbarth-minimalist-game-framework/README.md) | A minimalist game framework in the style of the "game engine" we use at Zachtronics. | c# | MIT | vendored | [zachbarth/minimalist-game-framework](https://github.com/zachbarth/minimalist-game-framework) @ `c9a7c1ee2392` |
 | [miu2d](entries/engines/luckyyyyy-miu2d/README.md) | Miu2D is a 2D RPG game engine built with Rust + TypeScript + React + Canvas, designed for the Web platform. 剑侠情缘2/月影传说/新剑侠情缘网页复刻版 | typescript | MIT | reference | [luckyyyyy/miu2d](https://github.com/luckyyyyy/miu2d) @ `2026-09-06 (branch tip at catalogue time)` |
+| [mizu](entries/engines/sedyh-mizu/README.md) | Entity Component System framework for Ebitengine | go | MIT | vendored | [sedyh/mizu](https://github.com/sedyh/mizu) @ `f4fbe1877056` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
 | [monogame-aseprite](entries/engines/aristurtledev-monogame-aseprite/README.md) | A Cross Platform C# Library That Adds Support For Aseprite Files in MonoGame Projects.  | c# | MIT | reference | [AristurtleDev/monogame-aseprite](https://github.com/AristurtleDev/monogame-aseprite) @ `2026-10-08 (branch tip at catalogue time)` |
 | [MonoGameFramework.Net8](entries/engines/catfortman-monogameframework-net8/README.md) | Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development. | c# | MIT | reference | [CatFortman/MonoGameFramework.Net8](https://github.com/CatFortman/MonoGameFramework.Net8) @ `2026-07-17 (branch tip at catalogue time)` |
@@ -382,6 +387,7 @@ _Generated 2026-11-24 19:09 UTC · 1342 entries · 346 vendored, 996 reference-o
 | [PainterEngine](entries/engines/matrixcascade-painterengine/README.md) | PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C | c | MIT | reference | [matrixcascade/PainterEngine](https://github.com/matrixcascade/PainterEngine) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
 | [panic-panda](entries/engines/gabdube-panic-panda/README.md) | A 3D rendering demo powered by Python and Vulkan | python | MIT | vendored | [gabdube/panic-panda](https://github.com/gabdube/panic-panda) @ `ecbda506eeaf` |
+| [pecs](entries/engines/jesstelford-pecs/README.md) | Entity Component System (ECS) for PICO-8 & Picotron | lua | MIT | reference | [jesstelford/pecs](https://github.com/jesstelford/pecs) @ `2024-07-21 (branch tip at catalogue time)` |
 | [Pekka-Kana-2 — engine](entries/engines/pekka-kana-2-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | vendored | [danilolc/pk2](https://github.com/danilolc/pk2) @ `b1c5597` |
 | [permafrost-engine](entries/engines/eduard-permyakov-permafrost-engine/README.md) | An OpenGL RTS game engine written in C | c | GPL-3.0 | reference | [eduard-permyakov/permafrost-engine](https://github.com/eduard-permyakov/permafrost-engine) @ `2026-11-21 (branch tip at catalogue time)` |
 | [phantom-camera](entries/engines/ramokz-phantom-camera/README.md) | A Camera addon for Godot 4. Inspired by Cinemachine.  | gdscript | MIT | reference | [ramokz/phantom-camera](https://github.com/ramokz/phantom-camera) @ `2026-11-22 (branch tip at catalogue time)` |
