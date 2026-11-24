@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:21:18Z",
+ "category": "engines",
+ "commit": "2024-03-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hecrj/coffee \u2014 An opinionated 2D game engine for Rust",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "coffee",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hecrj-coffee",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 1148,
+ "system": "An opinionated 2D game engine for Rust",
+ "upstream": "https://github.com/hecrj/coffee",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

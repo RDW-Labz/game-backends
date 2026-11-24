@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:21:18Z",
+ "category": "engines",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "openfootmanager/openfootmanager \u2014 An open source soccer/football manager game",
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "openfootmanager",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "openfootmanager-openfootmanager",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 1203,
+ "system": "An open source soccer/football manager game",
+ "upstream": "https://github.com/openfootmanager/openfootmanager",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

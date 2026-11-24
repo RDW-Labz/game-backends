@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T12:21:14Z",
+ "category": "engines",
+ "commit": "dd1f8d8a31db",
+ "delivery": "vendored",
+ "description": "vladbat00/bevy_egui \u2014 This crate provides an Egui integration for the Bevy game engine. \ud83c\uddfa\ud83c\udde6 Please support the Ukrainian army: https://savelife.in.ua/en/",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "bevy_egui",
+ "size_bytes": 348191,
+ "slug": "vladbat00-bevy-egui",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 1444,
+ "system": "This crate provides an Egui integration for the Bevy game engine. \ud83c\uddfa\ud83c\udde6 Please support the Ukrainian army: https://savelife.in.ua/en/",
+ "upstream": "https://github.com/vladbat00/bevy_egui",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

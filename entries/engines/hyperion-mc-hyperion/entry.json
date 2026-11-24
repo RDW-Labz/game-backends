@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:21:18Z",
+ "category": "engines",
+ "commit": "2026-10-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hyperion-mc/hyperion \u2014 Minecraft game engine for massive custom events",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "hyperion",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "hyperion-mc-hyperion",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 1095,
+ "system": "Minecraft game engine for massive custom events",
+ "upstream": "https://github.com/hyperion-mc/hyperion",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

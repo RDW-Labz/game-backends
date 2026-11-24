@@ -2641,3 +2641,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/inanevin-linaengine
   - reference engines/openenroth-openenroth
   - reference engines/falltergeist-falltergeist
+
+- **2026-11-24 12:21 UTC** — tick 785: +2 screened, +4 reference, 26 skipped, catalogue=1234
+  - added engines/vladbat00-bevy-egui (MIT, vendored)
+  - added engines/faisalkindi-dlss5oneclick (MIT, vendored)
+  - reference engines/openfootmanager-openfootmanager
+  - reference engines/hecrj-coffee
+  - reference engines/hyperion-mc-hyperion
+  - reference engines/james-j-obrien-bevy-vector-shapes

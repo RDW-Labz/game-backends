@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T12:21:17Z",
+ "category": "engines",
+ "commit": "19122547cc51",
+ "delivery": "vendored",
+ "description": "faisalkindi/DLSS5oneclick \u2014 One-click setup of the leaked DLSS 5 neural-rendering build for any DX11/DX12 game on RTX 20\u201350, with or without DLSS. ReShade + RenoDX add-on (or OptiScaler engine); DLSS5-Feeder + LumeniteFX for games without DLSS; dlss5-bridge for DX11. Rust, single exe.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "DLSS5oneclick",
+ "size_bytes": 978174,
+ "slug": "faisalkindi-dlss5oneclick",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 1407,
+ "system": "One-click setup of the leaked DLSS 5 neural-rendering build for any DX11/DX12 game on RTX 20\u201350, with or without DLSS. ReShade + RenoDX add-on (or OptiScaler en",
+ "upstream": "https://github.com/faisalkindi/DLSS5oneclick",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
