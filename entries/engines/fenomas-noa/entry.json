@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T20:59:32Z",
+ "category": "engines",
+ "commit": "bd74cd8add3a",
+ "delivery": "vendored",
+ "description": "fenomas/noa \u2014 Experimental voxel game engine.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "noa",
+ "size_bytes": 547186,
+ "slug": "fenomas-noa",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 694,
+ "system": "Experimental voxel game engine.",
+ "upstream": "https://github.com/fenomas/noa",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

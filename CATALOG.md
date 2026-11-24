@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 20:41 UTC · 1372 entries · 354 vendored, 1018 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 20:59 UTC · 1378 entries · 355 vendored, 1023 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 565 | 132 | 433 |
+| [engines](#engines) — Game engines and engine subsystems | 571 | 133 | 438 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 20:41 UTC · 1372 entries · 354 vendored, 1018 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 565 entries
+**Game engines and engine subsystems** — 571 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -97,6 +97,7 @@ _Generated 2026-11-24 20:41 UTC · 1372 entries · 354 vendored, 1018 reference-
 | [bevy_vector_shapes](entries/engines/james-j-obrien-bevy-vector-shapes/README.md) | A library for rendering vector shapes using the Bevy game engine | rust | unknown | reference | [james-j-obrien/bevy_vector_shapes](https://github.com/james-j-obrien/bevy_vector_shapes) @ `2026-10-12 (branch tip at catalogue time)` |
 | [bevy_vello](entries/engines/linebender-bevy-vello/README.md) | An integration to render vector graphics with Vello in the Bevy game engine. | rust | Apache-2.0 | reference | [linebender/bevy_vello](https://github.com/linebender/bevy_vello) @ `2026-11-23 (branch tip at catalogue time)` |
 | [bevy_webgl2](entries/engines/mrk-its-bevy-webgl2/README.md) | WebGL2 renderer plugin for Bevy game engine | rust | MIT | reference | [mrk-its/bevy_webgl2](https://github.com/mrk-its/bevy_webgl2) @ `2021-10-10 (branch tip at catalogue time)` |
+| [BinaryMeshFitting](entries/engines/lin20-binarymeshfitting/README.md) | Yet another attempt at making a fast massive level-of-detail voxel engine, but this time with usable results! | c++ | MIT | reference | [Lin20/BinaryMeshFitting](https://github.com/Lin20/BinaryMeshFitting) @ `2021-08-06 (branch tip at catalogue time)` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blah](entries/engines/noelfb-blah/README.md) | A small 2d c++ game framework | c++ | MIT | reference | [NoelFB/blah](https://github.com/NoelFB/blah) @ `2023-04-27 (branch tip at catalogue time)` |
 | [blender_bevy_toolkit](entries/engines/sdfgeoff-blender-bevy-toolkit/README.md) | A blender addon and bevy plugin to use Blender as an editor for Bevy | python | unknown | reference | [sdfgeoff/blender_bevy_toolkit](https://github.com/sdfgeoff/blender_bevy_toolkit) @ `2022-05-18 (branch tip at catalogue time)` |
@@ -281,6 +282,7 @@ _Generated 2026-11-24 20:41 UTC · 1372 entries · 354 vendored, 1018 reference-
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
 | [halley](entries/engines/amzeratul-halley/README.md) | A lightweight game engine written in modern C++ | c | Apache-2.0 | reference | [amzeratul/halley](https://github.com/amzeratul/halley) @ `2026-11-23 (branch tip at catalogue time)` |
 | [HeartbeatEngine](entries/engines/cronza-heartbeatengine/README.md) | A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5 | python | GPL-3.0 | reference | [Cronza/HeartbeatEngine](https://github.com/Cronza/HeartbeatEngine) @ `2025-08-26 (branch tip at catalogue time)` |
+| [heerich](entries/engines/meodai-heerich/README.md) | Tiny engine for 3D voxel scenes rendered to SVG — boolean ops, oblique/perspective cameras, zero dependencies. Inspired by the geometric cardboard sculptures of | javascript | MIT | reference | [meodai/heerich](https://github.com/meodai/heerich) @ `2026-11-07 (branch tip at catalogue time)` |
 | [HelloMarioFramework](entries/engines/hellofangaming-hellomarioframework/README.md) | Create your own 3D Mario game with Hello Mario Framework for Unity! | c# | MIT | reference | [HelloFangaming/HelloMarioFramework](https://github.com/HelloFangaming/HelloMarioFramework) @ `2025-11-11 (branch tip at catalogue time)` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
 | [hex-engine](entries/engines/suchipi-hex-engine/README.md) | A modern 2D game engine for the browser. | typescript | none | reference | [suchipi/hex-engine](https://github.com/suchipi/hex-engine) @ `17f41d6902c0` |
@@ -288,6 +290,7 @@ _Generated 2026-11-24 20:41 UTC · 1372 entries · 354 vendored, 1018 reference-
 | [hoodie-legacy](entries/engines/greencrowdev-hoodie-legacy/README.md) | Hoodie is a plugin for Godot Engine 4 that offers a visual scripting interface for generating procedural geometry. | c++ | MIT | vendored | [GreenCrowDev/hoodie-legacy](https://github.com/GreenCrowDev/hoodie-legacy) @ `f860d4ce2afe` |
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
 | [hyperion](entries/engines/hyperion-mc-hyperion/README.md) | Minecraft game engine for massive custom events | rust | Apache-2.0 | reference | [hyperion-mc/hyperion](https://github.com/hyperion-mc/hyperion) @ `2026-10-29 (branch tip at catalogue time)` |
+| [IDKEngine](entries/engines/boybaykiller-idkengine/README.md) | OpenGL Toy-"Engine" with Wavefront Path Tracer and Rasterizer with Voxel Cone Tracing/Global Illumination | c# | unknown | reference | [BoyBaykiller/IDKEngine](https://github.com/BoyBaykiller/IDKEngine) @ `2026-10-07 (branch tip at catalogue time)` |
 | [Ikemen-GO](entries/engines/ikemen-engine-ikemen-go/README.md) | An open-source fighting game engine that supports MUGEN resources. | go | unknown | reference | [ikemen-engine/Ikemen-GO](https://github.com/ikemen-engine/Ikemen-GO) @ `2026-11-22 (branch tip at catalogue time)` |
 | [image-editor-effects](entries/engines/alaingalvan-image-editor-effects/README.md) | 💎 A WebGL example of image adjustment / effects shaders found in Photoshop, other image editors and game engines. | typescript | Unlicense | reference | [alaingalvan/image-editor-effects](https://github.com/alaingalvan/image-editor-effects) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Image32](entries/engines/angusjohnson-image32/README.md) | A comprehensive 2D graphics library written in Delphi Pascal | pascal | BSL-1.0 | reference | [AngusJohnson/Image32](https://github.com/AngusJohnson/Image32) @ `2026-11-16 (branch tip at catalogue time)` |
@@ -364,6 +367,7 @@ _Generated 2026-11-24 20:41 UTC · 1372 entries · 354 vendored, 1018 reference-
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
 | [Nice-Lua](entries/engines/justin-sky-nice-lua/README.md) | 基于xlua的MVVM框架，支持Addressables, 统一渲染管线等Unity新特性 | c# | unknown | reference | [Justin-sky/Nice-Lua](https://github.com/Justin-sky/Nice-Lua) @ `2023-07-11 (branch tip at catalogue time)` |
 | [nmage](entries/engines/bloeys-nmage/README.md) | 3D Game Engine in Go | go | MIT | vendored | [bloeys/nmage](https://github.com/bloeys/nmage) @ `fd59705ddac9` |
+| [noa](entries/engines/fenomas-noa/README.md) | Experimental voxel game engine. | javascript | MIT | vendored | [fenomas/noa](https://github.com/fenomas/noa) @ `bd74cd8add3a` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
 | [NoesisGUI.MonoGameWrapper](entries/engines/atomictorchstudio-noesisgui-monogamewrapper/README.md) | NoesisGUI MonoGame Integration Library | c# | MIT | reference | [AtomicTorchStudio/NoesisGUI.MonoGameWrapper](https://github.com/AtomicTorchStudio/NoesisGUI.MonoGameWrapper) @ `2025-10-14 (branch tip at catalogue time)` |
 | [NomadECS](entries/engines/taurheim-nomadecs/README.md) | NomadECS - An entity component system implementation | c++ | MIT | reference | [taurheim/NomadECS](https://github.com/taurheim/NomadECS) @ `2026-11-15 (branch tip at catalogue time)` |
@@ -513,6 +517,7 @@ _Generated 2026-11-24 20:41 UTC · 1372 entries · 354 vendored, 1018 reference-
 | [the-superviral-word-game](entries/engines/the-illarionov-the-superviral-word-game/README.md) | A Vue word game based on the Yakut national sport "Mas-wrestling". Uses XState for state management, WebRTC for multiplayer and has custom WebGL engine | typescript | GPL-3.0 | reference | [the-illarionov/the-superviral-word-game](https://github.com/the-illarionov/the-superviral-word-game) @ `2025-01-08 (branch tip at catalogue time)` |
 | [theodoric](entries/engines/tlmader-theodoric/README.md) | A 2D top-down "action RPG" built with the Phaser HTML5 game framework | javascript | none | reference | [tlmader/theodoric](https://github.com/tlmader/theodoric) @ `ae447ad8b867` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
+| [ThreeRT](entries/engines/meshy-dev-threert/README.md) | Hardware ray-traced three.js: a real-time path tracer behind a three.js-style API. Rust + wgpu engine, TypeScript scene and gameplay packages. | rust | MIT | reference | [meshy-dev/ThreeRT](https://github.com/meshy-dev/ThreeRT) @ `167a374744d6` |
 | [thrive — engine](entries/engines/thrive-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [tick-knock](entries/engines/mayakwd-tick-knock/README.md) | Small and powerful, type-safe and easy-to-use Entity-Component-System (ECS) library written in TypeScript | typescript | MIT | reference | [mayakwd/tick-knock](https://github.com/mayakwd/tick-knock) @ `2026-10-01 (branch tip at catalogue time)` |
 | [TiledCS](entries/engines/thebonejarmer-tiledcs/README.md) | TiledCS is a dotnet library for loading Tiled tilesets and maps | c# | MIT | reference | [TheBoneJarmer/TiledCS](https://github.com/TheBoneJarmer/TiledCS) @ `2024-08-31 (branch tip at catalogue time)` |
@@ -523,6 +528,7 @@ _Generated 2026-11-24 20:41 UTC · 1372 entries · 354 vendored, 1018 reference-
 | [traviso.js](entries/engines/axaq-traviso-js/README.md) | Traviso is an open source JS engine that makes it easy to build isometric applications that run in a web browser. | typescript | MIT | reference | [axaq/traviso.js](https://github.com/axaq/traviso.js) @ `2026-06-17 (branch tip at catalogue time)` |
 | [trivial-gamekit](entries/engines/borodust-trivial-gamekit/README.md) | Simple framework for making 2D games | common lisp | MIT | vendored | [borodust/trivial-gamekit](https://github.com/borodust/trivial-gamekit) @ `541ad83af7e8` |
 | [turbulenz_engine](entries/engines/turbulenz-turbulenz-engine/README.md) | Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices. | typescript | MIT | reference | [turbulenz/turbulenz_engine](https://github.com/turbulenz/turbulenz_engine) @ `2023-05-28 (branch tip at catalogue time)` |
+| [UE4VoxelTerrain](entries/engines/bw2012-ue4voxelterrain/README.md) | Unreal Engine 4: Smooth voxel terrian example | c++ | GPL-3.0 | reference | [bw2012/UE4VoxelTerrain](https://github.com/bw2012/UE4VoxelTerrain) @ `2025-02-17 (branch tip at catalogue time)` |
 | [UEAESKeyFinder](entries/engines/ezfndev-ueaeskeyfinder/README.md) | This tool can find the AES Key of probably any Unreal Engine game | c# | none | reference | [EZFNDEV/UEAESKeyFinder](https://github.com/EZFNDEV/UEAESKeyFinder) @ `eeacbb1f0e7d` |
 | [UECS](entries/engines/ubpa-uecs/README.md) | Ubpa Entity-Component-System (U ECS) in Unity3D-style | c++ | MIT | vendored | [Ubpa/UECS](https://github.com/Ubpa/UECS) @ `98feb3939e66` |
 | [umodel_tools](entries/engines/skarndev-umodel-tools/README.md) | A Blender add-on featuring import of Unreal Engine games static meshes and maps. It provides basic support for many UE games, while some have dedicated improved | python | GPL-3.0 | reference | [skarndev/umodel_tools](https://github.com/skarndev/umodel_tools) @ `c76ebf73bf17` |

@@ -2833,3 +2833,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/mariovisic-ruby2d-games
   - reference engines/chronos-kit-chronos
   - reference engines/gonglei007-gamedevmind-en
+
+- **2026-11-24 20:59 UTC** — tick 809: +2 screened, +4 reference, 7 skipped, catalogue=1378
+  - added engines/meshy-dev-threert (MIT, reference)
+  - added engines/fenomas-noa (MIT, vendored)
+  - reference engines/meodai-heerich
+  - reference engines/bw2012-ue4voxelterrain
+  - reference engines/lin20-binarymeshfitting
+  - reference engines/boybaykiller-idkengine

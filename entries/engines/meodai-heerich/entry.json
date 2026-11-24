@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:59:34Z",
+ "category": "engines",
+ "commit": "2026-11-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "meodai/heerich \u2014 Tiny engine for 3D voxel scenes rendered to SVG \u2014 boolean ops, oblique/perspective cameras, zero dependencies. Inspired by the geometric cardboard sculptures of Erwin Heerich.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "heerich",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "meodai-heerich",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 638,
+ "system": "Tiny engine for 3D voxel scenes rendered to SVG \u2014 boolean ops, oblique/perspective cameras, zero dependencies. Inspired by the geometric cardboard sculptures of",
+ "upstream": "https://github.com/meodai/heerich",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

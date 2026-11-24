@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:59:34Z",
+ "category": "engines",
+ "commit": "2021-08-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Lin20/BinaryMeshFitting \u2014 Yet another attempt at making a fast massive level-of-detail voxel engine, but this time with usable results!",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "BinaryMeshFitting",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "lin20-binarymeshfitting",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 402,
+ "system": "Yet another attempt at making a fast massive level-of-detail voxel engine, but this time with usable results!",
+ "upstream": "https://github.com/Lin20/BinaryMeshFitting",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

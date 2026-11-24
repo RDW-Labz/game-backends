@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T20:59:29Z",
+ "category": "engines",
+ "commit": "167a374744d6",
+ "delivery": "reference",
+ "description": "meshy-dev/ThreeRT \u2014 Hardware ray-traced three.js: a real-time path tracer behind a three.js-style API. Rust + wgpu engine, TypeScript scene and gameplay packages.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ThreeRT",
+ "reference_reason": "size gate: 12 MB",
+ "size_bytes": 12959487,
+ "slug": "meshy-dev-threert",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 701,
+ "system": "Hardware ray-traced three.js: a real-time path tracer behind a three.js-style API. Rust + wgpu engine, TypeScript scene and gameplay packages.",
+ "upstream": "https://github.com/meshy-dev/ThreeRT",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
