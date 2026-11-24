@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T13:09:44Z",
+ "category": "engines",
+ "commit": "2025-10-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ChrisRx/dungeonfs \u2014 A FUSE filesystem and dungeon crawling adventure game engine",
+ "language": "go",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "dungeonfs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "chrisrx-dungeonfs",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 1092,
+ "system": "A FUSE filesystem and dungeon crawling adventure game engine",
+ "upstream": "https://github.com/ChrisRx/dungeonfs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

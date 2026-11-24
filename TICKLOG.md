@@ -2665,3 +2665,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/mrk-its-bevy-webgl2
   - reference engines/jarkonik-bevy-scriptum
   - reference engines/pistondevelopers-piston-window
+
+- **2026-11-24 13:09 UTC** — tick 788: +2 screened, +4 reference, 7 skipped, catalogue=1252
+  - added engines/oakmound-oak (Apache-2.0, vendored)
+  - added engines/joelotter-termloop (MIT, vendored)
+  - reference engines/chrisrx-dungeonfs
+  - reference engines/ebitenui-ebitenui
+  - reference engines/korokengine-korok
+  - reference engines/g3n-g3nd

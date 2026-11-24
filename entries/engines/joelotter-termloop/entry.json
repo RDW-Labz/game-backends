@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T13:09:43Z",
+ "category": "engines",
+ "commit": "5f7c38744afb",
+ "delivery": "vendored",
+ "description": "JoelOtter/termloop \u2014 Terminal-based game engine for Go, built on top of Termbox",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "termloop",
+ "size_bytes": 46924,
+ "slug": "joelotter-termloop",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 1477,
+ "system": "Terminal-based game engine for Go, built on top of Termbox",
+ "upstream": "https://github.com/JoelOtter/termloop",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

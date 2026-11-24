@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T13:09:44Z",
+ "category": "engines",
+ "commit": "2026-03-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "g3n/g3nd \u2014 G3N Game Engine Demo",
+ "language": "go",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "g3nd",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "g3n-g3nd",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 299,
+ "system": "G3N Game Engine Demo",
+ "upstream": "https://github.com/g3n/g3nd",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

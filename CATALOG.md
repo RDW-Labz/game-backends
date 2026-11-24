@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 12:53 UTC · 1246 entries · 322 vendored, 924 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 13:09 UTC · 1252 entries · 324 vendored, 928 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 439 | 100 | 339 |
+| [engines](#engines) — Game engines and engine subsystems | 445 | 102 | 343 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 12:53 UTC · 1246 entries · 322 vendored, 924 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 439 entries
+**Game engines and engine subsystems** — 445 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -126,7 +126,9 @@ _Generated 2026-11-24 12:53 UTC · 1246 entries · 322 vendored, 924 reference-o
 | [dragon-mud](entries/engines/bbuck-dragon-mud/README.md) | A text-based game engine written in Go and scripted with Lua. | go | none | reference | [bbuck/dragon-mud](https://github.com/bbuck/dragon-mud) @ `3e8c854b7aff` |
 | [DragonECS](entries/engines/dcfapixels-dragonecs/README.md) | Pure C# Entity Component System framework | c# | MIT | reference | [DCFApixels/DragonECS](https://github.com/DCFApixels/DragonECS) @ `2026-09-20 (branch tip at catalogue time)` |
 | [DuckEngine](entries/engines/art-emini-duckengine/README.md) | A 2D Game Engine for the web. | typescript | MIT | reference | [art-emini/DuckEngine](https://github.com/art-emini/DuckEngine) @ `2023-08-25 (branch tip at catalogue time)` |
+| [dungeonfs](entries/engines/chrisrx-dungeonfs/README.md) | A FUSE filesystem and dungeon crawling adventure game engine | go | BSD-2-Clause | reference | [ChrisRx/dungeonfs](https://github.com/ChrisRx/dungeonfs) @ `2025-10-29 (branch tip at catalogue time)` |
 | [ebiten](entries/engines/hajimehoshi-ebiten/README.md) | A dead simple 2D game engine for Go | go | Apache-2.0 | vendored | [hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) @ `d438df689b19` |
+| [ebitenui](entries/engines/ebitenui-ebitenui/README.md) | User interface engine and widget library for Ebitengine | go | MIT | reference | [ebitenui/ebitenui](https://github.com/ebitenui/ebitenui) @ `2026-08-19 (branch tip at catalogue time)` |
 | [echo](entries/engines/timi-liuliang-echo/README.md) | A New Cross-Platform 2D 3D Game Engine | c++ | MIT | reference | [timi-liuliang/echo](https://github.com/timi-liuliang/echo) @ `2026-09-16 (branch tip at catalogue time)` |
 | [ecs](entries/engines/sergeymakeev-ecs/README.md) | Thoughts about entity-component-system | c++ | MIT | reference | [SergeyMakeev/ecs](https://github.com/SergeyMakeev/ecs) @ `2018-11-25 (branch tip at catalogue time)` |
 | [ECS](entries/engines/shangdibaozi-ecs/README.md) | Entity-Component-System | typescript | MIT | reference | [shangdibaozi/ECS](https://github.com/shangdibaozi/ECS) @ `2024-08-12 (branch tip at catalogue time)` |
@@ -182,6 +184,7 @@ _Generated 2026-11-24 12:53 UTC · 1246 entries · 322 vendored, 924 reference-o
 | [func_godot_plugin](entries/engines/func-godot-func-godot-plugin/README.md) | Quake .map support for Godot 4 | gdscript | MIT | vendored | [func-godot/func_godot_plugin](https://github.com/func-godot/func_godot_plugin) @ `352f3d3083f1` |
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
 | [Fyrox](entries/engines/fyroxengine-fyrox/README.md) | 3D and 2D game engine written in Rust | rust | MIT | vendored | [FyroxEngine/Fyrox](https://github.com/FyroxEngine/Fyrox) @ `e47bf0f35c9e` |
+| [g3nd](entries/engines/g3n-g3nd/README.md) | G3N Game Engine Demo | go | BSD-2-Clause | reference | [g3n/g3nd](https://github.com/g3n/g3nd) @ `2026-03-30 (branch tip at catalogue time)` |
 | [game-mixer](entries/engines/auburnsounds-game-mixer/README.md) | Audio mixer and playback library like SDL_mixer but without dependencies. | d | MIT | vendored | [AuburnSounds/game-mixer](https://github.com/AuburnSounds/game-mixer) @ `f64c464ab025` |
 | [GameDevMind](entries/engines/gonglei007-gamedevmind/README.md) | 最全面的游戏开发技术图谱(Game Development Map)。帮助游戏开发者们在已知问题上节省时间，省出更多的精力投入到更有创造性的工作中去。 | python | MIT | vendored | [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) @ `652be106e9df` |
 | [GameFramework](entries/engines/ellanjiang-gameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | vendored | [EllanJiang/GameFramework](https://github.com/EllanJiang/GameFramework) @ `d0c010b05167` |
@@ -248,6 +251,7 @@ _Generated 2026-11-24 12:53 UTC · 1246 entries · 322 vendored, 924 reference-o
 | [kengine](entries/engines/phisko-kengine/README.md) | Game engine with an Entity-Component-System (ECS) architecture. Focus on ease-of-use, runtime extensibility and compile-time type safety. | c++ | MIT | vendored | [phisko/kengine](https://github.com/phisko/kengine) @ `5a0ad085cdef` |
 | [KlayGE](entries/engines/gongminmin-klayge/README.md) | KlayGE is a cross-platform open source game engine with plugin-based architecture. | c++ | GPL-2.0 | reference | [gongminmin/KlayGE](https://github.com/gongminmin/KlayGE) @ `2026-07-17 (branch tip at catalogue time)` |
 | [korge](entries/engines/korlibs-korge/README.md) | Korge is a Multiplatform Game Engine written in Kotlin for JVM, Web, Android and iOS. | kotlin | unknown | reference | [korlibs/korge](https://github.com/korlibs/korge) @ `2026-11-20 (branch tip at catalogue time)` |
+| [Korok](entries/engines/korokengine-korok/README.md) | korok.io - golang game engine | go | Zlib | reference | [KorokEngine/Korok](https://github.com/KorokEngine/Korok) @ `2021-10-23 (branch tip at catalogue time)` |
 | [kotlin-voxel](entries/engines/jrenner-kotlin-voxel/README.md) | A voxel engine (like Minecraft) written in Kotlin | kotlin | Apache-2.0 | reference | [jrenner/kotlin-voxel](https://github.com/jrenner/kotlin-voxel) @ `2025-11-21 (branch tip at catalogue time)` |
 | [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
@@ -295,6 +299,7 @@ _Generated 2026-11-24 12:53 UTC · 1246 entries · 322 vendored, 924 reference-o
 | [nova](entries/engines/17cupsofcoffee-nova/README.md) | 🎮 An even simpler 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/nova](https://github.com/17cupsofcoffee/nova) @ `2025-03-08 (branch tip at catalogue time)` |
 | [NVForever](entries/engines/lootjunkieazza-nvforever/README.md) | NVForever Rebuilt New Vegas Game Engine in Rust | rust | GPL-3.0 | reference | [LootJunkieAzza/NVForever](https://github.com/LootJunkieAzza/NVForever) @ `2026-11-23 (branch tip at catalogue time)` |
 | [o2](entries/engines/o2-engine-o2/README.md) | 2D Game Engine with visual WYSIWYG editor and JS scripting | c++ | MIT | reference | [o2-engine/o2](https://github.com/o2-engine/o2) @ `2026-11-23 (branch tip at catalogue time)` |
+| [oak](entries/engines/oakmound-oak/README.md) | A pure Go game engine | go | Apache-2.0 | vendored | [oakmound/oak](https://github.com/oakmound/oak) @ `ae327857d9b9` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [omath](entries/engines/orange-cpp-omath/README.md) | Cross-platform modern general purpose game/mods/cheats development framework written in C++23. | c++ | Zlib | reference | [orange-cpp/omath](https://github.com/orange-cpp/omath) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
@@ -400,6 +405,7 @@ _Generated 2026-11-24 12:53 UTC · 1246 entries · 322 vendored, 924 reference-o
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
 | [t_games](entries/engines/ichabod801-t-games/README.md) | A collection of command-line interface games written in Python. | python | GPL-3.0 | reference | [ichabod801/t_games](https://github.com/ichabod801/t_games) @ `2020-04-29 (branch tip at catalogue time)` |
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
+| [termloop](entries/engines/joelotter-termloop/README.md) | Terminal-based game engine for Go, built on top of Termbox | go | MIT | vendored | [JoelOtter/termloop](https://github.com/JoelOtter/termloop) @ `5f7c38744afb` |
 | [tetra](entries/engines/17cupsofcoffee-tetra/README.md) | 🎮 A simple 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/tetra](https://github.com/17cupsofcoffee/tetra) @ `2026-07-22 (branch tip at catalogue time)` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
 | [thrive — engine](entries/engines/thrive-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |

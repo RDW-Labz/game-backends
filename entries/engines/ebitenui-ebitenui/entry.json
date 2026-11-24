@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T13:09:44Z",
+ "category": "engines",
+ "commit": "2026-08-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ebitenui/ebitenui \u2014 User interface engine and widget library for Ebitengine",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ebitenui",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ebitenui-ebitenui",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 945,
+ "system": "User interface engine and widget library for Ebitengine",
+ "upstream": "https://github.com/ebitenui/ebitenui",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
