@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T20:18:31Z",
+ "category": "engines",
+ "commit": "ae447ad8b867",
+ "delivery": "reference",
+ "description": "tlmader/theodoric \u2014 A 2D top-down \"action RPG\" built with the Phaser HTML5 game framework",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "theodoric",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 2969844,
+ "slug": "tlmader-theodoric",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 86,
+ "system": "A 2D top-down \"action RPG\" built with the Phaser HTML5 game framework",
+ "upstream": "https://github.com/tlmader/theodoric",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

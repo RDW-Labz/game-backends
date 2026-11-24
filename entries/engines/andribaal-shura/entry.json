@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:18:37Z",
+ "category": "engines",
+ "commit": "2024-09-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AndriBaal/shura \u2014 A safe, fast and cross-platform 2D component-based game framework written in rust",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "shura",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "andribaal-shura",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 74,
+ "system": "A safe, fast and cross-platform 2D component-based game framework written in rust",
+ "upstream": "https://github.com/AndriBaal/shura",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T20:18:35Z",
+ "category": "engines",
+ "commit": "5de5583dc523",
+ "delivery": "vendored",
+ "description": "enduro2d/enduro2d \u2014 Yet another 2d game engine of dreams (work in progress)",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "enduro2d",
+ "size_bytes": 8824020,
+ "slug": "enduro2d-enduro2d",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 82,
+ "system": "Yet another 2d game engine of dreams (work in progress)",
+ "upstream": "https://github.com/enduro2d/enduro2d",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

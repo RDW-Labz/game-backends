@@ -1,0 +1,4 @@
+{
+    "texture" : "image.png",
+    "texrect" : { "x" : 5, "y" : 6, "w" : 7, "h" : 8 }
+}

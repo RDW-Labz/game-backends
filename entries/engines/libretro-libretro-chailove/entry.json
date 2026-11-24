@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:18:37Z",
+ "category": "engines",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "libretro/libretro-chailove \u2014 :heart: 2D Game Framework with ChaiScript",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "libretro-chailove",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "libretro-libretro-chailove",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 81,
+ "system": ":heart: 2D Game Framework with ChaiScript",
+ "upstream": "https://github.com/libretro/libretro-chailove",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

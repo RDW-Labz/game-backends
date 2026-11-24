@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:18:37Z",
+ "category": "engines",
+ "commit": "2026-06-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gamepopper/Vigilante-Game-Framework \u2014 2D/3D C++ game framework written for use with SFML.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Vigilante-Game-Framework",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gamepopper-vigilante-game-framework",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 72,
+ "system": "2D/3D C++ game framework written for use with SFML.",
+ "upstream": "https://github.com/gamepopper/Vigilante-Game-Framework",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

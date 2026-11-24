@@ -1,0 +1,6 @@
+{
+    "prefab" : "../prefabs/scene_prefab.json",
+    "children" : [{
+        "prefab" : "../prefabs/camera_prefab.json"
+    }]
+}

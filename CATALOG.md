@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 20:00 UTC · 1360 entries · 352 vendored, 1008 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 20:18 UTC · 1366 entries · 353 vendored, 1013 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 553 | 130 | 423 |
+| [engines](#engines) — Game engines and engine subsystems | 559 | 131 | 428 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 20:00 UTC · 1360 entries · 352 vendored, 1008 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 553 entries
+**Game engines and engine subsystems** — 559 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -170,6 +170,7 @@ _Generated 2026-11-24 20:00 UTC · 1360 entries · 352 vendored, 1008 reference-
 | [EIRTeam.FFmpeg](entries/engines/eirteam-eirteam-ffmpeg/README.md) | Plugin for godot that adds an FFmpeg-based decoder. | c++ | MIT | reference | [EIRTeam/EIRTeam.FFmpeg](https://github.com/EIRTeam/EIRTeam.FFmpeg) @ `2026-11-20 (branch tip at catalogue time)` |
 | [element-behaviors](entries/engines/lume-element-behaviors/README.md) | An entity-component system for HTML elements. | typescript | LGPL-3.0 | reference | [lume/element-behaviors](https://github.com/lume/element-behaviors) @ `2024-10-02 (branch tip at catalogue time)` |
 | [enari-engine](entries/engines/iercann-enari-engine/README.md) | ThreeJS First Person Shooter Playground | typescript | MIT | vendored | [iErcann/enari-engine](https://github.com/iErcann/enari-engine) @ `b2e17ff75e66` |
+| [enduro2d](entries/engines/enduro2d-enduro2d/README.md) | Yet another 2d game engine of dreams (work in progress) | c++ | MIT | vendored | [enduro2d/enduro2d](https://github.com/enduro2d/enduro2d) @ `5de5583dc523` |
 | [Engine](entries/engines/boldtemplegaming-engine/README.md) | C++11 and SDL2 lightweight 2d game framework | c++ | unknown | reference | [boldtempleGaming/Engine](https://github.com/boldtempleGaming/Engine) @ `2020-03-01 (branch tip at catalogue time)` |
 | [engine](entries/engines/g3n-engine/README.md) | Go 3D Game Engine (http://g3n.rocks) | go | BSD-2-Clause | reference | [g3n/engine](https://github.com/g3n/engine) @ `2026-11-21 (branch tip at catalogue time)` |
 | [engine](entries/engines/overreactjs-engine/README.md) | Browser-based game engine, built on top of React. | typescript | MIT | reference | [overreactjs/engine](https://github.com/overreactjs/engine) @ `2026-11-14 (branch tip at catalogue time)` |
@@ -298,6 +299,7 @@ _Generated 2026-11-24 20:00 UTC · 1360 entries · 352 vendored, 1008 reference-
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
 | [kaiju](entries/engines/kaijuengine-kaiju/README.md) | General purpose 3D and 2D game engine using Go (golang) and Vulkan with built in editor | go | MIT | vendored | [KaijuEngine/kaiju](https://github.com/KaijuEngine/kaiju) @ `c5b49f65571f` |
 | [kengine](entries/engines/phisko-kengine/README.md) | Game engine with an Entity-Component-System (ECS) architecture. Focus on ease-of-use, runtime extensibility and compile-time type safety. | c++ | MIT | vendored | [phisko/kengine](https://github.com/phisko/kengine) @ `5a0ad085cdef` |
+| [kirpi](entries/engines/erayzesen-kirpi/README.md) | A lightweight 2D creative coding and game framework for Nim. | nim | MIT | reference | [erayzesen/kirpi](https://github.com/erayzesen/kirpi) @ `2026-03-09 (branch tip at catalogue time)` |
 | [KlayGE](entries/engines/gongminmin-klayge/README.md) | KlayGE is a cross-platform open source game engine with plugin-based architecture. | c++ | GPL-2.0 | reference | [gongminmin/KlayGE](https://github.com/gongminmin/KlayGE) @ `2026-07-17 (branch tip at catalogue time)` |
 | [korge](entries/engines/korlibs-korge/README.md) | Korge is a Multiplatform Game Engine written in Kotlin for JVM, Web, Android and iOS. | kotlin | unknown | reference | [korlibs/korge](https://github.com/korlibs/korge) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Korok](entries/engines/korokengine-korok/README.md) | korok.io - golang game engine | go | Zlib | reference | [KorokEngine/Korok](https://github.com/KorokEngine/Korok) @ `2021-10-23 (branch tip at catalogue time)` |
@@ -310,6 +312,7 @@ _Generated 2026-11-24 20:00 UTC · 1360 entries · 352 vendored, 1008 reference-
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [libgdx-demos](entries/engines/alistairrutherford-libgdx-demos/README.md) | LibGDX Demos using my LibGDX Scene2D netthreads-libgdx extension library. | java | unknown | reference | [alistairrutherford/libgdx-demos](https://github.com/alistairrutherford/libgdx-demos) @ `2016-11-27 (branch tip at catalogue time)` |
 | [libgdx-inGameConsole](entries/engines/strongjoshua-libgdx-ingameconsole/README.md) | A LibGdx library that allows a developer to add a console (similar to how it is featured in Source games) to their game. | java | Apache-2.0 | vendored | [StrongJoshua/libgdx-inGameConsole](https://github.com/StrongJoshua/libgdx-inGameConsole) @ `6ef713ee3fe2` |
+| [libretro-chailove](entries/engines/libretro-libretro-chailove/README.md) | :heart: 2D Game Framework with ChaiScript | c++ | MIT | reference | [libretro/libretro-chailove](https://github.com/libretro/libretro-chailove) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Librian](entries/engines/rimochan-librian/README.md) | 【Librian】簡明強大的 Galgame / Visual Novel 引擎 | python | MPL-2.0 | reference | [RimoChan/Librian](https://github.com/RimoChan/Librian) @ `2026-09-05 (branch tip at catalogue time)` |
 | [LinaEngine](entries/engines/inanevin-linaengine/README.md) | Lina Engine is an open-source , modular, tiny and fast C++ game engine, aimed to develop 3D desktop games. | c++ | unknown | reference | [inanevin/LinaEngine](https://github.com/inanevin/LinaEngine) @ `2025-10-08 (branch tip at catalogue time)` |
 | [lionengine](entries/engines/b3dgs-lionengine/README.md) | Java 2D Game Engine | python | GPL-3.0 | reference | [b3dgs/lionengine](https://github.com/b3dgs/lionengine) @ `4f7778642e26` |
@@ -472,6 +475,7 @@ _Generated 2026-11-24 20:00 UTC · 1360 entries · 352 vendored, 1008 reference-
 | [shapedrawer](entries/engines/earlygrey-shapedrawer/README.md) | A library for libGDX that draws simple shapes using a batch. | java | MIT | vendored | [earlygrey/shapedrawer](https://github.com/earlygrey/shapedrawer) @ `9e4b689f63b7` |
 | [SharpLibHid](entries/engines/slion-sharplibhid/README.md) | C# HID Library using Windows Raw Input. | c# | unknown | reference | [Slion/SharpLibHid](https://github.com/Slion/SharpLibHid) @ `2022-06-22 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
+| [shura](entries/engines/andribaal-shura/README.md) | A safe, fast and cross-platform 2D component-based game framework written in rust | rust | Apache-2.0 | reference | [AndriBaal/shura](https://github.com/AndriBaal/shura) @ `2024-09-05 (branch tip at catalogue time)` |
 | [sketch](entries/engines/vydd-sketch/README.md) | A Common Lisp framework for the creation of electronic art, visual design, game prototyping, game making, computer graphics, exploration of human-computer inter | common lisp | MIT | reference | [vydd/sketch](https://github.com/vydd/sketch) @ `2026-01-18 (branch tip at catalogue time)` |
 | [skia4delphi](entries/engines/skia4delphi-skia4delphi/README.md) | Skia4Delphi is a cross-platform 2D graphics API for Delphi platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be use | pascal | MIT | vendored | [skia4delphi/skia4delphi](https://github.com/skia4delphi/skia4delphi) @ `7bf46ee53de2` |
 | [SkiaSharp](entries/engines/mono-skiasharp/README.md) | SkiaSharp is a cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be used ac | c# | MIT | reference | [mono/SkiaSharp](https://github.com/mono/SkiaSharp) @ `0cd43f16dd4b` |
@@ -502,6 +506,7 @@ _Generated 2026-11-24 20:00 UTC · 1360 entries · 352 vendored, 1008 reference-
 | [TerraCraft](entries/engines/retrofloppy77-terracraft/README.md) | Voxel Engine written in Python 3 + Pyglet. | python | GPL-3.0 | reference | [RetroFloppy77/TerraCraft](https://github.com/RetroFloppy77/TerraCraft) @ `2026-11-08 (branch tip at catalogue time)` |
 | [tetra](entries/engines/17cupsofcoffee-tetra/README.md) | 🎮 A simple 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/tetra](https://github.com/17cupsofcoffee/tetra) @ `2026-07-22 (branch tip at catalogue time)` |
 | [the-superviral-word-game](entries/engines/the-illarionov-the-superviral-word-game/README.md) | A Vue word game based on the Yakut national sport "Mas-wrestling". Uses XState for state management, WebRTC for multiplayer and has custom WebGL engine | typescript | GPL-3.0 | reference | [the-illarionov/the-superviral-word-game](https://github.com/the-illarionov/the-superviral-word-game) @ `2025-01-08 (branch tip at catalogue time)` |
+| [theodoric](entries/engines/tlmader-theodoric/README.md) | A 2D top-down "action RPG" built with the Phaser HTML5 game framework | javascript | none | reference | [tlmader/theodoric](https://github.com/tlmader/theodoric) @ `ae447ad8b867` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
 | [thrive — engine](entries/engines/thrive-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [tick-knock](entries/engines/mayakwd-tick-knock/README.md) | Small and powerful, type-safe and easy-to-use Entity-Component-System (ECS) library written in TypeScript | typescript | MIT | reference | [mayakwd/tick-knock](https://github.com/mayakwd/tick-knock) @ `2026-10-01 (branch tip at catalogue time)` |
@@ -533,6 +538,7 @@ _Generated 2026-11-24 20:00 UTC · 1360 entries · 352 vendored, 1008 reference-
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
 | [vibe-coder-3d](entries/engines/jonit-dev-vibe-coder-3d/README.md) | @react-three/fiber 3D game engine | typescript | MIT | vendored | [jonit-dev/vibe-coder-3d](https://github.com/jonit-dev/vibe-coder-3d) @ `0315e66378e0` |
 | [VibeGame](entries/engines/dylanebert-vibegame/README.md) | A 3D game engine designed for vibe coding | typescript | MIT | reference | [dylanebert/VibeGame](https://github.com/dylanebert/VibeGame) @ `2025-12-21 (branch tip at catalogue time)` |
+| [Vigilante-Game-Framework](entries/engines/gamepopper-vigilante-game-framework/README.md) | 2D/3D C++ game framework written for use with SFML. | c++ | MIT | reference | [gamepopper/Vigilante-Game-Framework](https://github.com/gamepopper/Vigilante-Game-Framework) @ `2026-06-07 (branch tip at catalogue time)` |
 | [VisualPinball.Engine](entries/engines/freezy-visualpinball-engine/README.md) | :video_game: Visual Pinball Engine for Unity | c# | GPL-3.0 | reference | [freezy/VisualPinball.Engine](https://github.com/freezy/VisualPinball.Engine) @ `2026-11-24 (branch tip at catalogue time)` |
 | [VloxyEngine](entries/engines/blazekill-vloxyengine/README.md) | Performance oriented voxel engine for unity. | c# | MIT | reference | [BLaZeKiLL/VloxyEngine](https://github.com/BLaZeKiLL/VloxyEngine) @ `2024-11-27 (branch tip at catalogue time)` |
 | [vmprint](entries/engines/cosmiciron-vmprint/README.md) | This layout engine can solve the hardest layout problems imaginable. Its output is DTP grade and deterministic. It's faster than engines written in C++ because  | typescript | Apache-2.0 | reference | [cosmiciron/vmprint](https://github.com/cosmiciron/vmprint) @ `1e327f9a0e7a` |

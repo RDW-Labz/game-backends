@@ -2817,3 +2817,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/madour-nasnas
   - reference engines/flixel-gdx-flixel-gdx
   - reference engines/lichendust-lena
+
+- **2026-11-24 20:18 UTC** — tick 807: +2 screened, +4 reference, 8 skipped, catalogue=1366
+  - added engines/tlmader-theodoric (none, reference)
+  - added engines/enduro2d-enduro2d (MIT, vendored)
+  - reference engines/erayzesen-kirpi
+  - reference engines/libretro-libretro-chailove
+  - reference engines/andribaal-shura
+  - reference engines/gamepopper-vigilante-game-framework

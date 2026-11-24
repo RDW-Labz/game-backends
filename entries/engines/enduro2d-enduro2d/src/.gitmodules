@@ -1,0 +1,45 @@
+[submodule "modules/catch2"]
+	path = modules/catch2
+	url = https://github.com/catchorg/Catch2
+[submodule "modules/stb"]
+	path = modules/stb
+	url = https://github.com/nothings/stb
+[submodule "modules/utfcpp"]
+	path = modules/utfcpp
+	url = https://github.com/nemtrif/utfcpp
+[submodule "modules/pugixml"]
+	path = modules/pugixml
+	url = https://github.com/zeux/pugixml
+[submodule "modules/rapidjson"]
+	path = modules/rapidjson
+	url = https://github.com/Tencent/rapidjson
+[submodule "modules/glfw"]
+	path = modules/glfw
+	url = https://github.com/glfw/glfw
+[submodule "modules/promise.hpp"]
+	path = modules/promise.hpp
+	url = https://github.com/BlackMATov/promise.hpp
+[submodule "modules/ecs.hpp"]
+	path = modules/ecs.hpp
+	url = https://github.com/BlackMATov/ecs.hpp
+[submodule "modules/imgui"]
+	path = modules/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "modules/miniz"]
+	path = modules/miniz
+	url = https://github.com/richgel999/miniz
+[submodule "modules/flat.hpp"]
+	path = modules/flat.hpp
+	url = https://github.com/BlackMATov/flat.hpp
+[submodule "modules/enum.hpp"]
+	path = modules/enum.hpp
+	url = https://github.com/BlackMATov/enum.hpp
+[submodule "modules/pnpoly.h"]
+	path = modules/pnpoly.h
+	url = https://github.com/BlackMATov/pnpoly.h
+[submodule "modules/yoga"]
+	path = modules/yoga
+	url = https://github.com/facebook/yoga
+[submodule "modules/defer.hpp"]
+	path = modules/defer.hpp
+	url = https://github.com/blackmatov/defer.hpp

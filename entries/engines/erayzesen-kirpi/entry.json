@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:18:37Z",
+ "category": "engines",
+ "commit": "2026-03-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "erayzesen/kirpi \u2014 A lightweight 2D creative coding and game framework for Nim.",
+ "language": "nim",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "kirpi",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "erayzesen-kirpi",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 82,
+ "system": "A lightweight 2D creative coding and game framework for Nim.",
+ "upstream": "https://github.com/erayzesen/kirpi",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
