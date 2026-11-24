@@ -1,0 +1,40 @@
+[
+    {
+        "DestroyOnReload": true,
+        "TagName": "nice_logo",
+        "components": {
+            "Logo": {
+                "LogoPath": "res/img/logo.png"
+            }
+        }
+    },
+    {
+        "DestroyOnReload": true,
+        "TagName": "background_component",
+        "components": {
+            "BackgroundComponent": {}
+        }
+    },
+    {
+        "DestroyOnReload": false,
+        "TagName": "global_state",
+        "components": {
+            "GlobalState": {}
+        }
+    },
+    {
+        "DestroyOnReload": false,
+        "TagName": "network_controller",
+        "components": {
+            "NetworkController": {
+                "WebSocketURI": "ws://banka-ksd-multiplayer.herokuapp.com/"
+            }
+        }
+    },
+    {
+        "DestroyOnReload": true,
+        "components": {
+            "MainMenu": {}
+        }
+    }
+]

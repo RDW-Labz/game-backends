@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T06:20:13Z",
+ "category": "netcode",
+ "commit": "ce4f2dd46b34",
+ "delivery": "vendored",
+ "description": "VTIvanov20/ksd \u2014 C++ GUI implementation of a nand gate game. Supports local and multiplayer lobbies through a TypeScript matchmaking server.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ksd",
+ "size_bytes": 4053549,
+ "slug": "vtivanov20-ksd",
+ "source": "github-search:game lobby server stars:>15",
+ "stars": 20,
+ "system": "C++ GUI implementation of a nand gate game. Supports local and multiplayer lobbies through a TypeScript matchmaking server.",
+ "upstream": "https://github.com/VTIvanov20/ksd",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

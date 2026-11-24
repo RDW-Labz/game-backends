@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T06:20:06Z",
+ "category": "netcode",
+ "commit": "09de34891841",
+ "delivery": "reference",
+ "description": "Jawschamp/Unofficial-Epic-Games-products \u2014 This repository is dedicated to hosting tutorials on how to use different community made applications/apis etc related to Epic Games or Fortnite and to provide 1 good place to organize some great tools made by the community.",
+ "language": "n/a",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Unofficial-Epic-Games-products",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "jawschamp-unofficial-epic-games-products",
+ "source": "github-search:game lobby server stars:>15",
+ "stars": 21,
+ "system": "This repository is dedicated to hosting tutorials on how to use different community made applications/apis etc related to Epic Games or Fortnite and to provide ",
+ "upstream": "https://github.com/Jawschamp/Unofficial-Epic-Games-products",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

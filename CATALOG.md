@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 06:04 UTC · 1138 entries · 294 vendored, 844 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 06:20 UTC · 1141 entries · 295 vendored, 846 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-24 06:04 UTC · 1138 entries · 294 vendored, 844 reference-o
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
-| [netcode](#netcode) — Networking / netcode | 154 | 43 | 111 |
+| [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
@@ -884,7 +884,7 @@ _Generated 2026-11-24 06:04 UTC · 1138 entries · 294 vendored, 844 reference-o
 
 ## netcode
 
-**Networking / netcode** — 154 entries
+**Networking / netcode** — 157 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -929,6 +929,7 @@ _Generated 2026-11-24 06:04 UTC · 1138 entries · 294 vendored, 844 reference-o
 | [fifa-api](entries/netcode/sauravhiremath-fifa-api/README.md) | React + Node.js + socket.io -- Multiplayer Game server | javascript | MIT | reference | [sauravhiremath/fifa-api](https://github.com/sauravhiremath/fifa-api) @ `2023-03-05 (branch tip at catalogue time)` |
 | [fMath](entries/netcode/8izips-fmath/README.md) | fixed point math library for deterministic lockstep network game in Unity | c# | MIT | reference | [8izips/fMath](https://github.com/8izips/fMath) @ `2026-11-21 (branch tip at catalogue time)` |
 | [FO4_Wrld](entries/netcode/thepie88-fo4-wrld/README.md) | Fallout 4 1.11.191 multiplayer mod (solo-dev). Sync over authoritative UDP server (SACK-reliable, JSON persistence): movement, full-body skeleton animation, con | c++ | unknown | reference | [ThePie88/FO4_Wrld](https://github.com/ThePie88/FO4_Wrld) @ `2026-10-20 (branch tip at catalogue time)` |
+| [FragmentServerWV](entries/netcode/zerokilo-fragmentserverwv/README.md) | private lobby server for the game .hack//frägment | c# | unknown | reference | [zeroKilo/FragmentServerWV](https://github.com/zeroKilo/FragmentServerWV) @ `2017-06-19 (branch tip at catalogue time)` |
 | [Freeciv — networking](entries/netcode/freeciv-common-networking/README.md) | turn-based client/server protocol and packet layer | c | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756d5b07` |
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
@@ -965,6 +966,7 @@ _Generated 2026-11-24 06:04 UTC · 1138 entries · 294 vendored, 844 reference-o
 | [KCP](entries/netcode/kcp/README.md) | fast reliable ARQ protocol (TCP-like over UDP) | c | MIT | vendored | [skywind3000/kcp](https://github.com/skywind3000/kcp) @ `b1a7a2101dcb` |
 | [kof-xiii-global-match-rollback-enhanced](entries/netcode/slipcar-kof-xiii-global-match-rollback-enhanced/README.md) | Projeto de melhoria do rollback netcode do KOF XIII | n/a | none | reference | [Slipcar/kof-xiii-global-match-rollback-enhanced](https://github.com/Slipcar/kof-xiii-global-match-rollback-enhanced) @ `06ef1443218b` |
 | [kruise-game](entries/netcode/openkruise-kruise-game/README.md) | Game Servers Management on Kubernetes | go | Apache-2.0 | reference | [openkruise/kruise-game](https://github.com/openkruise/kruise-game) @ `2026-07-24 (branch tip at catalogue time)` |
+| [ksd](entries/netcode/vtivanov20-ksd/README.md) | C++ GUI implementation of a nand gate game. Supports local and multiplayer lobbies through a TypeScript matchmaking server. | c++ | MIT | vendored | [VTIvanov20/ksd](https://github.com/VTIvanov20/ksd) @ `ce4f2dd46b34` |
 | [lance](entries/netcode/lance-gg-lance/README.md) | Multiplayer game server based on Node.JS | typescript | Apache-2.0 | vendored | [lance-gg/lance](https://github.com/lance-gg/lance) @ `fd9bc5dce93f` |
 | [lgsl](entries/netcode/tltneon-lgsl/README.md) | LGSL v6.2.1/v7.0.0 for PHP 5.4-8.5+ (Live Game Server List): online status for CS2 (Source Query), Discord, FiveM, Rust, SA:MP, GMOD, Minecraft, Teamspeak and 2 | php | GPL-3.0 | reference | [tltneon/lgsl](https://github.com/tltneon/lgsl) @ `2026-09-11 (branch tip at catalogue time)` |
 | [librg](entries/netcode/zpl-c-librg/README.md) | 🚀  Making multi-player gamedev simpler since 2017 | c | BSD-3-Clause | vendored | [zpl-c/librg](https://github.com/zpl-c/librg) @ `106c658620d8` |
@@ -1029,6 +1031,7 @@ _Generated 2026-11-24 06:04 UTC · 1138 entries · 294 vendored, 844 reference-o
 | [triebwerk](entries/netcode/awdng-triebwerk/README.md) | triebwerk is a simple multiplayer game server written in Golang. | go | MIT | reference | [awdng/triebwerk](https://github.com/awdng/triebwerk) @ `2026-11-23 (branch tip at catalogue time)` |
 | [unity-mcp-server](entries/netcode/anklebreaker-studio-unity-mcp-server/README.md) | Unity MCP Server — 268 tools for AI-assisted game development. Connect Claude, Cursor, or any MCP client to Unity Editor & Unity Hub. Scene management, GameObje | javascript | unknown | reference | [AnkleBreaker-Studio/unity-mcp-server](https://github.com/AnkleBreaker-Studio/unity-mcp-server) @ `2026-10-23 (branch tip at catalogue time)` |
 | [UnityUnetMovement](entries/netcode/genasg-unityunetmovement/README.md) | This repository contains Unity3d unet based server-authoritative movement script with client-side prediction and reconciliation   | c# | MIT | vendored | [GenaSG/UnityUnetMovement](https://github.com/GenaSG/UnityUnetMovement) @ `927f772cfb1a` |
+| [Unofficial-Epic-Games-products](entries/netcode/jawschamp-unofficial-epic-games-products/README.md) | This repository is dedicated to hosting tutorials on how to use different community made applications/apis etc related to Epic Games or Fortnite and to provide  | n/a | none | reference | [Jawschamp/Unofficial-Epic-Games-products](https://github.com/Jawschamp/Unofficial-Epic-Games-products) @ `09de34891841` |
 | [urchinEngine](entries/netcode/petitg1987-urchinengine/README.md) | Game engine library: 3D, Physics, Sound, Network, IA, Map Editor | c++ | unknown | reference | [petitg1987/urchinEngine](https://github.com/petitg1987/urchinEngine) @ `2026-11-11 (branch tip at catalogue time)` |
 | [VCMI — server](entries/netcode/vcmi-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [voidstrike](entries/netcode/braedonsaunders-voidstrike/README.md) | Multiplayer real-time strategy game running entirely in the browser. WebGPU graphics, serverless P2P networking via WebRTC/Nostr, deterministic lockstep simulat | typescript | MIT | reference | [braedonsaunders/voidstrike](https://github.com/braedonsaunders/voidstrike) @ `4df0235116b7` |

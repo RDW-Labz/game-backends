@@ -1,0 +1,26 @@
+[
+    {
+        "DestroyOnReload": true,
+        "TagName": "nice_logo",
+        "components": {
+            "Logo": {
+                "LogoPath": "res/img/logo.png"
+            }
+        }
+    },
+    {
+        "DestroyOnReload": true,
+        "TagName": "background_component",
+        "components": {
+            "BackgroundComponent": {}
+        }
+    },
+    {
+        "DestroyOnReload": true,
+        "components": {
+            "GameController": {},
+            "GameWindow": {},
+            "GameHUD": {}
+        }
+    }
+]

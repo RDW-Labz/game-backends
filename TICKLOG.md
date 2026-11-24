@@ -2515,3 +2515,8 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/descrout-game-server
   - reference netcode/ape1121-godot4-multiplayer-survivor-io-game
   - reference netcode/jerryshell-agarust
+
+- **2026-11-24 06:20 UTC** — tick 763: +2 screened, +1 reference, 13 skipped, catalogue=1141
+  - added netcode/jawschamp-unofficial-epic-games-products (none, reference)
+  - added netcode/vtivanov20-ksd (MIT, vendored)
+  - reference netcode/zerokilo-fragmentserverwv
