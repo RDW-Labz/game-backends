@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:37:16Z",
+ "category": "engines",
+ "commit": "2025-09-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "yoanlcq/vek \u2014 Generic 2D-3D math swiss army knife for game engines, with SIMD support and focus on convenience.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "vek",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "yoanlcq-vek",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 315,
+ "system": "Generic 2D-3D math swiss army knife for game engines, with SIMD support and focus on convenience.",
+ "upstream": "https://github.com/yoanlcq/vek",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:37:16Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "linebender/bevy_vello \u2014 An integration to render vector graphics with Vello in the Bevy game engine.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_vello",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "linebender-bevy-vello",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 302,
+ "system": "An integration to render vector graphics with Vello in the Bevy game engine.",
+ "upstream": "https://github.com/linebender/bevy_vello",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

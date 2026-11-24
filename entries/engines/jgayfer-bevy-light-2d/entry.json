@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:37:16Z",
+ "category": "engines",
+ "commit": "2026-10-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jgayfer/bevy_light_2d \u2014 General purpose 2D lighting for the Bevy game engine.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy_light_2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jgayfer-bevy-light-2d",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 318,
+ "system": "General purpose 2D lighting for the Bevy game engine.",
+ "upstream": "https://github.com/jgayfer/bevy_light_2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

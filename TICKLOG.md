@@ -2649,3 +2649,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/hecrj-coffee
   - reference engines/hyperion-mc-hyperion
   - reference engines/james-j-obrien-bevy-vector-shapes
+
+- **2026-11-24 12:37 UTC** — tick 786: +2 screened, +4 reference, 8 skipped, catalogue=1240
+  - added engines/fishfolk-bones (Apache-2.0, vendored)
+  - added engines/kurtkuehnert-bevy-terrain (Apache-2.0, vendored)
+  - reference engines/jgayfer-bevy-light-2d
+  - reference engines/yoanlcq-vek
+  - reference engines/pickitup247-pyckitup
+  - reference engines/linebender-bevy-vello

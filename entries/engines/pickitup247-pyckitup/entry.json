@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T12:37:16Z",
+ "category": "engines",
+ "commit": "2019-03-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "pickitup247/pyckitup \u2014 python game engine that runs in browser",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pyckitup",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "pickitup247-pyckitup",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 302,
+ "system": "python game engine that runs in browser",
+ "upstream": "https://github.com/pickitup247/pyckitup",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

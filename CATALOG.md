@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 12:21 UTC · 1234 entries · 319 vendored, 915 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 12:37 UTC · 1240 entries · 321 vendored, 919 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 427 | 97 | 330 |
+| [engines](#engines) — Game engines and engine subsystems | 433 | 99 | 334 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 12:21 UTC · 1234 entries · 319 vendored, 915 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 427 entries
+**Game engines and engine subsystems** — 433 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -74,16 +74,20 @@ _Generated 2026-11-24 12:21 UTC · 1234 entries · 319 vendored, 915 reference-o
 | [bevy_ggrs](entries/engines/gschup-bevy-ggrs/README.md) | Bevy plugin for the GGRS P2P rollback networking library. | rust | unknown | reference | [gschup/bevy_ggrs](https://github.com/gschup/bevy_ggrs) @ `2026-11-22 (branch tip at catalogue time)` |
 | [bevy_hanabi](entries/engines/djeedai-bevy-hanabi/README.md) | 🎆 Hanabi — a GPU particle system plugin for the Bevy game engine. | rust | Apache-2.0 | vendored | [djeedai/bevy_hanabi](https://github.com/djeedai/bevy_hanabi) @ `738b353d9e11` |
 | [bevy_kira_audio](entries/engines/niklasei-bevy-kira-audio/README.md) | A Bevy plugin to use Kira for game audio | rust | Apache-2.0 | reference | [NiklasEi/bevy_kira_audio](https://github.com/NiklasEi/bevy_kira_audio) @ `2026-10-13 (branch tip at catalogue time)` |
+| [bevy_light_2d](entries/engines/jgayfer-bevy-light-2d/README.md) | General purpose 2D lighting for the Bevy game engine. | rust | MIT | reference | [jgayfer/bevy_light_2d](https://github.com/jgayfer/bevy_light_2d) @ `2026-10-09 (branch tip at catalogue time)` |
 | [bevy_mod_scripting](entries/engines/makspll-bevy-mod-scripting/README.md) | Bevy Scripting Plugin | rust | Apache-2.0 | reference | [makspll/bevy_mod_scripting](https://github.com/makspll/bevy_mod_scripting) @ `2026-11-23 (branch tip at catalogue time)` |
 | [bevy_pancam](entries/engines/johanhelsing-bevy-pancam/README.md) | A  bevy plugin for panning orthographic cameras  | rust | Apache-2.0 | vendored | [johanhelsing/bevy_pancam](https://github.com/johanhelsing/bevy_pancam) @ `c9e527a85e72` |
 | [bevy_pkv](entries/engines/johanhelsing-bevy-pkv/README.md) | Cross-platform (including wasm) persistent key value store plugin for rust games/apps | rust | unknown | reference | [johanhelsing/bevy_pkv](https://github.com/johanhelsing/bevy_pkv) @ `2026-10-23 (branch tip at catalogue time)` |
 | [bevy_quinnet](entries/engines/henauxg-bevy-quinnet/README.md) | A Client/Server game networking plugin using QUIC, for the Bevy game engine. | rust | Apache-2.0 | vendored | [Henauxg/bevy_quinnet](https://github.com/Henauxg/bevy_quinnet) @ `d8b985eb8f96` |
 | [bevy_rand](entries/engines/bluefinger-bevy-rand/README.md) | A plugin to integrate rand for ECS optimised RNG for the Bevy game engine. | rust | Apache-2.0 | reference | [Bluefinger/bevy_rand](https://github.com/Bluefinger/bevy_rand) @ `2026-10-11 (branch tip at catalogue time)` |
+| [bevy_terrain](entries/engines/kurtkuehnert-bevy-terrain/README.md) | A terrain rendering plugin for the bevy game engine. | rust | Apache-2.0 | vendored | [kurtkuehnert/bevy_terrain](https://github.com/kurtkuehnert/bevy_terrain) @ `5a88daf4a419` |
 | [bevy_tween](entries/engines/multirious-bevy-tween/README.md) | Flexible tweening plugin library for Bevy. | rust | Apache-2.0 | reference | [Multirious/bevy_tween](https://github.com/Multirious/bevy_tween) @ `2026-11-16 (branch tip at catalogue time)` |
 | [bevy_tweening](entries/engines/djeedai-bevy-tweening/README.md) | Tweening animation plugin for the Bevy game engine. | rust | Apache-2.0 | reference | [djeedai/bevy_tweening](https://github.com/djeedai/bevy_tweening) @ `2026-11-01 (branch tip at catalogue time)` |
 | [bevy_vector_shapes](entries/engines/james-j-obrien-bevy-vector-shapes/README.md) | A library for rendering vector shapes using the Bevy game engine | rust | unknown | reference | [james-j-obrien/bevy_vector_shapes](https://github.com/james-j-obrien/bevy_vector_shapes) @ `2026-10-12 (branch tip at catalogue time)` |
+| [bevy_vello](entries/engines/linebender-bevy-vello/README.md) | An integration to render vector graphics with Vello in the Bevy game engine. | rust | Apache-2.0 | reference | [linebender/bevy_vello](https://github.com/linebender/bevy_vello) @ `2026-11-23 (branch tip at catalogue time)` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blender_bevy_toolkit](entries/engines/sdfgeoff-blender-bevy-toolkit/README.md) | A blender addon and bevy plugin to use Blender as an editor for Bevy | python | unknown | reference | [sdfgeoff/blender_bevy_toolkit](https://github.com/sdfgeoff/blender_bevy_toolkit) @ `2022-05-18 (branch tip at catalogue time)` |
+| [bones](entries/engines/fishfolk-bones/README.md) | An easy-to-use game engine for making real games. | rust | Apache-2.0 | vendored | [fishfolk/bones](https://github.com/fishfolk/bones) @ `cd62a2f1ccdb` |
 | [bonsai](entries/engines/scallyw4g-bonsai/README.md) | The procedural generation voxel engine | c | WTFPL | reference | [scallyw4g/bonsai](https://github.com/scallyw4g/bonsai) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Box2D.NET](entries/engines/ikpil-box2d-net/README.md) | Box2D.NET - a C# port of Box2D, is a 2D physics engine for games, .NET, Unity3D, servers | c# | MIT | reference | [ikpil/Box2D.NET](https://github.com/ikpil/Box2D.NET) @ `2026-10-01 (branch tip at catalogue time)` |
 | [BRING](entries/engines/eva-e1-bring/README.md) | Next generation role-playing with LLM - with AI world and intelligent NPCs and multi-faceted Graph memory for all entities and a rich pipline and multi agent | python | Apache-2.0 | vendored | [Eva-E1/BRING](https://github.com/Eva-E1/BRING) @ `e907dee1b2a5` |
@@ -336,6 +340,7 @@ _Generated 2026-11-24 12:21 UTC · 1234 entries · 319 vendored, 915 reference-o
 | [prototype](entries/engines/gonutz-prototype/README.md) | Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM. | c | MIT | vendored | [gonutz/prototype](https://github.com/gonutz/prototype) @ `d3732ae42e68` |
 | [Py3ODE](entries/engines/filipeabperes-py3ode/README.md) | Port of PyODE for Python 3 | python | LGPL-2.1 | reference | [filipeabperes/Py3ODE](https://github.com/filipeabperes/Py3ODE) @ `50675f543d35` |
 | [py4godot](entries/engines/niklas2902-py4godot/README.md) | Python scripting for Godot. This GDExtension plugin allows you to use Python like GDScript, accessing the Godot engine's features and benefiting from Python's v | python | MIT | reference | [niklas2902/py4godot](https://github.com/niklas2902/py4godot) @ `2026-11-21 (branch tip at catalogue time)` |
+| [pyckitup](entries/engines/pickitup247-pyckitup/README.md) | python game engine that runs in browser | rust | MIT | reference | [pickitup247/pyckitup](https://github.com/pickitup247/pyckitup) @ `2019-03-15 (branch tip at catalogue time)` |
 | [PyDark](entries/engines/sirfroweey-pydark/README.md) | PyDark is a 2D and Online Multiplayer video game framework written on-top of Python and PyGame. | python | unknown | reference | [SirFroweey/PyDark](https://github.com/SirFroweey/PyDark) @ `2021-08-27 (branch tip at catalogue time)` |
 | [pydk](entries/engines/pmp-p-pydk/README.md) | An universal Python/pip+Panda3d build framework for Pythons Everywhere ( and Everyone ) | python | MIT | vendored | [pmp-p/pydk](https://github.com/pmp-p/pydk) @ `9aeec40679e2` |
 | [pyera](entries/engines/qsjl11-pyera/README.md) | Era-like game engine by python | python | unknown | reference | [qsjl11/pyera](https://github.com/qsjl11/pyera) @ `2017-08-31 (branch tip at catalogue time)` |
@@ -413,6 +418,7 @@ _Generated 2026-11-24 12:21 UTC · 1234 entries · 319 vendored, 915 reference-o
 | [v1](entries/engines/r-lyeh-v1/README.md) | 💎 3D game framework in C, v1. | c | unknown | reference | [r-lyeh/v1](https://github.com/r-lyeh/v1) @ `2025-08-04 (branch tip at catalogue time)` |
 | [v3](entries/engines/r-lyeh-v3/README.md) | 💎 3D game framework in C, v3. | c | unknown | reference | [r-lyeh/v3](https://github.com/r-lyeh/v3) @ `2025-11-29 (branch tip at catalogue time)` |
 | [VContainer](entries/engines/hadashia-vcontainer/README.md) | The extra fast, minimum code size, GC-free DI (Dependency Injection) library running on Unity Game Engine. | c# | MIT | reference | [hadashiA/VContainer](https://github.com/hadashiA/VContainer) @ `2026-10-06 (branch tip at catalogue time)` |
+| [vek](entries/engines/yoanlcq-vek/README.md) | Generic 2D-3D math swiss army knife for game engines, with SIMD support and focus on convenience. | rust | Apache-2.0 | reference | [yoanlcq/vek](https://github.com/yoanlcq/vek) @ `2025-09-23 (branch tip at catalogue time)` |
 | [Velaptor](entries/engines/kinsondigital-velaptor/README.md) | 2D game development framework | c# | MIT | reference | [KinsonDigital/Velaptor](https://github.com/KinsonDigital/Velaptor) @ `2026-11-22 (branch tip at catalogue time)` |
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
 | [VloxyEngine](entries/engines/blazekill-vloxyengine/README.md) | Performance oriented voxel engine for unity. | c# | MIT | reference | [BLaZeKiLL/VloxyEngine](https://github.com/BLaZeKiLL/VloxyEngine) @ `2024-11-27 (branch tip at catalogue time)` |

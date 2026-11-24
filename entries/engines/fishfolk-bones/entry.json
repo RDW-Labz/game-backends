@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T12:37:12Z",
+ "category": "engines",
+ "commit": "cd62a2f1ccdb",
+ "delivery": "vendored",
+ "description": "fishfolk/bones \u2014 An easy-to-use game engine for making real games.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "bones",
+ "size_bytes": 1205731,
+ "slug": "fishfolk-bones",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 323,
+ "system": "An easy-to-use game engine for making real games.",
+ "upstream": "https://github.com/fishfolk/bones",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

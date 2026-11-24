@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T12:37:14Z",
+ "category": "engines",
+ "commit": "5a88daf4a419",
+ "delivery": "vendored",
+ "description": "kurtkuehnert/bevy_terrain \u2014 A terrain rendering plugin for the bevy game engine.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "bevy_terrain",
+ "size_bytes": 229708,
+ "slug": "kurtkuehnert-bevy-terrain",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 319,
+ "system": "A terrain rendering plugin for the bevy game engine.",
+ "upstream": "https://github.com/kurtkuehnert/bevy_terrain",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
