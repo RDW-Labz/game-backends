@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:31:21Z",
+ "category": "engines",
+ "commit": "2021-04-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "snayff/notquiteparadise \u2014 Possibly, one day, a roguelike.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "notquiteparadise",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "snayff-notquiteparadise",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 20,
+ "system": "Possibly, one day, a roguelike.",
+ "upstream": "https://github.com/snayff/notquiteparadise",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

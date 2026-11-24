@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:31:21Z",
+ "category": "engines",
+ "commit": "2022-11-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "cptx032/calcium \u2014 A ascii/text game library",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "calcium",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "cptx032-calcium",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 18,
+ "system": "A ascii/text game library",
+ "upstream": "https://github.com/cptx032/calcium",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

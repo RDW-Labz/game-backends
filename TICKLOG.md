@@ -2769,3 +2769,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/jschm42-taleweaver
   - reference engines/elm-messenger-messenger
   - reference engines/nutti-fake-bge-module
+
+- **2026-11-24 18:31 UTC** — tick 801: +2 screened, +4 reference, 5 skipped, catalogue=1330
+  - added engines/nickschuetz-o3de-mcp (Apache-2.0, vendored)
+  - added engines/l497996153-ai-rpg-engine (MIT, vendored)
+  - reference engines/snayff-notquiteparadise
+  - reference engines/fireclawthefox-frame
+  - reference engines/cptx032-calcium
+  - reference engines/miskibin-py-draughts

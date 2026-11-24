@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T18:31:20Z",
+ "category": "engines",
+ "commit": "90f0b0098440",
+ "delivery": "vendored",
+ "description": "l497996153/AI-RPG-Engine \u2014 A modular AI-driven RPG engine powered by LLMs, featuring RAG-based consistent memory.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "AI-RPG-Engine",
+ "size_bytes": 55342,
+ "slug": "l497996153-ai-rpg-engine",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 20,
+ "system": "A modular AI-driven RPG engine powered by LLMs, featuring RAG-based consistent memory.",
+ "upstream": "https://github.com/l497996153/AI-RPG-Engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

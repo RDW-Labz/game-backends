@@ -1,0 +1,47 @@
+# Copyright (c) Contributors to the Open 3D Engine Project.
+# For complete copyright and license terms please see the LICENSE at the root of this distribution.
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+"""O3DE MCP Server — entry point."""
+
+from __future__ import annotations
+
+from importlib.metadata import PackageNotFoundError, version
+
+from mcp.server import MCPServer
+
+from o3de_mcp.tools.animation import register_animation_tools
+from o3de_mcp.tools.assets import register_assets_tools
+from o3de_mcp.tools.capabilities import register_capabilities_tools
+from o3de_mcp.tools.editor import register_editor_tools
+from o3de_mcp.tools.introspection import register_introspection_tools
+from o3de_mcp.tools.project import register_project_tools
+from o3de_mcp.tools.trackview import register_trackview_tools
+
+try:
+    __version__ = version("o3de-mcp")
+except PackageNotFoundError:
+    __version__ = "0.0.0-dev"
+
+mcp = MCPServer(
+    "o3de-mcp",
+    instructions="MCP server for Open 3D Engine — editor automation and project management",
+    version=__version__,
+)
+
+register_capabilities_tools(mcp)
+register_editor_tools(mcp)
+register_introspection_tools(mcp)
+register_project_tools(mcp)
+register_trackview_tools(mcp)
+register_animation_tools(mcp)
+register_assets_tools(mcp)
+
+
+def main() -> None:
+    mcp.run()
+
+
+if __name__ == "__main__":
+    main()

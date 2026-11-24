@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 18:13 UTC · 1324 entries · 340 vendored, 984 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 18:31 UTC · 1330 entries · 342 vendored, 988 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 517 | 118 | 399 |
+| [engines](#engines) — Game engines and engine subsystems | 523 | 120 | 403 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 18:13 UTC · 1324 entries · 340 vendored, 984 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 517 entries
+**Game engines and engine subsystems** — 523 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -32,6 +32,7 @@ _Generated 2026-11-24 18:13 UTC · 1324 entries · 340 vendored, 984 reference-o
 | [aframe](entries/engines/aframevr-aframe/README.md) | :a: Web framework for building virtual reality experiences. | javascript | MIT | reference | [aframevr/aframe](https://github.com/aframevr/aframe) @ `2026-07-13 (branch tip at catalogue time)` |
 | [agent-game-forge](entries/engines/0x0funky-agent-game-forge/README.md) | The local-first, bring-your-own-agent 2D game IDE. Codex or Claude Code drives, multi-engine on the roadmap. | typescript | Apache-2.0 | reference | [0x0funky/agent-game-forge](https://github.com/0x0funky/agent-game-forge) @ `2026-05-20 (branch tip at catalogue time)` |
 | [agentodyssey](entries/engines/agentodyssey-agentodyssey/README.md) | Open-Ended Long-Horizon Text Game Generation for Test-Time Continual Learning Agents | python | Apache-2.0 | reference | [agentodyssey/agentodyssey](https://github.com/agentodyssey/agentodyssey) @ `2026-10-19 (branch tip at catalogue time)` |
+| [AI-RPG-Engine](entries/engines/l497996153-ai-rpg-engine/README.md) | A modular AI-driven RPG engine powered by LLMs, featuring RAG-based consistent memory. | python | MIT | vendored | [l497996153/AI-RPG-Engine](https://github.com/l497996153/AI-RPG-Engine) @ `90f0b0098440` |
 | [Ambient](entries/engines/ambientrun-ambient/README.md) | The multiplayer game engine | rust | Apache-2.0 | reference | [AmbientRun/Ambient](https://github.com/AmbientRun/Ambient) @ `2025-01-07 (branch tip at catalogue time)` |
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AndEngine](entries/engines/nicolasgramlich-andengine/README.md) | Free Android 2D OpenGL Game Engine | java | Apache-2.0 | reference | [nicolasgramlich/AndEngine](https://github.com/nicolasgramlich/AndEngine) @ `2018-11-16 (branch tip at catalogue time)` |
@@ -100,6 +101,7 @@ _Generated 2026-11-24 18:13 UTC · 1324 entries · 340 vendored, 984 reference-o
 | [Box2D.NET](entries/engines/ikpil-box2d-net/README.md) | Box2D.NET - a C# port of Box2D, is a 2D physics engine for games, .NET, Unity3D, servers | c# | MIT | reference | [ikpil/Box2D.NET](https://github.com/ikpil/Box2D.NET) @ `2026-10-01 (branch tip at catalogue time)` |
 | [BRING](entries/engines/eva-e1-bring/README.md) | Next generation role-playing with LLM - with AI world and intelligent NPCs and multi-faceted Graph memory for all entities and a rich pipline and multi agent | python | Apache-2.0 | vendored | [Eva-E1/BRING](https://github.com/Eva-E1/BRING) @ `e907dee1b2a5` |
 | [BRUTAL](entries/engines/ahwootech-brutal/README.md) | A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. T | c# | unknown | reference | [ahwootech/BRUTAL](https://github.com/ahwootech/BRUTAL) @ `2026-11-12 (branch tip at catalogue time)` |
+| [calcium](entries/engines/cptx032-calcium/README.md) | A ascii/text game library | python | MIT | reference | [cptx032/calcium](https://github.com/cptx032/calcium) @ `2022-11-11 (branch tip at catalogue time)` |
 | [canvas_ity](entries/engines/a-e-k-canvas-ity/README.md) | A tiny, single-header <canvas>-like 2D rasterizer for C++ | c++ | ISC | reference | [a-e-k/canvas_ity](https://github.com/a-e-k/canvas_ity) @ `2024-02-29 (branch tip at catalogue time)` |
 | [carp — core](entries/engines/carp-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | Apache-2.0 | vendored | [carp-lang/Carp](https://github.com/carp-lang/Carp) @ `ad5a96e` |
 | [cat-game-engine](entries/engines/kayjames196-cat-game-engine/README.md) | Cat Game Engine: three-level abstraction game engine with unbound architecture | typescript | none | reference | [KayJames196/cat-game-engine](https://github.com/KayJames196/cat-game-engine) @ `dba965822d7d` |
@@ -195,6 +197,7 @@ _Generated 2026-11-24 18:13 UTC · 1324 entries · 340 vendored, 984 reference-o
 | [fmod-gdextension](entries/engines/utopia-rise-fmod-gdextension/README.md) | FMOD Studio GDExtension bindings for the Godot game engine | c++ | unknown | reference | [utopia-rise/fmod-gdextension](https://github.com/utopia-rise/fmod-gdextension) @ `2026-11-07 (branch tip at catalogue time)` |
 | [forge](entries/engines/card-forge-forge/README.md) | An unofficial rules engine for the world's greatest card game. | java | GPL-3.0 | reference | [Card-Forge/forge](https://github.com/Card-Forge/forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Forme](entries/engines/aristurtledev-forme/README.md) | GPU acelerated text rendering library for MonoGame build on the Slug algorithm | c# | MIT | reference | [AristurtleDev/Forme](https://github.com/AristurtleDev/Forme) @ `2026-07-24 (branch tip at catalogue time)` |
+| [FRAME](entries/engines/fireclawthefox-frame/README.md) | The modular Game Editor for Panda3D | python | BSD-2-Clause | reference | [fireclawthefox/FRAME](https://github.com/fireclawthefox/FRAME) @ `2024-04-22 (branch tip at catalogue time)` |
 | [freeablo](entries/engines/wheybags-freeablo/README.md) | [ARCHIVED] Modern reimplementation of the Diablo 1 game engine | c++ | GPL-3.0 | reference | [wheybags/freeablo](https://github.com/wheybags/freeablo) @ `2023-04-13 (branch tip at catalogue time)` |
 | [Frostfire-Forge](entries/engines/frostfire-interactive-frostfire-forge/README.md) | 2D MMO engine that runs in the browser. Build maps, quests, items and spells in editors inside the game. Built on Bun and WebTransport. | typescript | unknown | reference | [Frostfire-Interactive/Frostfire-Forge](https://github.com/Frostfire-Interactive/Frostfire-Forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [func_godot_plugin](entries/engines/func-godot-func-godot-plugin/README.md) | Quake .map support for Godot 4 | gdscript | MIT | vendored | [func-godot/func_godot_plugin](https://github.com/func-godot/func_godot_plugin) @ `352f3d3083f1` |
@@ -334,9 +337,11 @@ _Generated 2026-11-24 18:13 UTC · 1324 entries · 340 vendored, 984 reference-o
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
 | [NoesisGUI.MonoGameWrapper](entries/engines/atomictorchstudio-noesisgui-monogamewrapper/README.md) | NoesisGUI MonoGame Integration Library | c# | MIT | reference | [AtomicTorchStudio/NoesisGUI.MonoGameWrapper](https://github.com/AtomicTorchStudio/NoesisGUI.MonoGameWrapper) @ `2025-10-14 (branch tip at catalogue time)` |
 | [NomadECS](entries/engines/taurheim-nomadecs/README.md) | NomadECS - An entity component system implementation | c++ | MIT | reference | [taurheim/NomadECS](https://github.com/taurheim/NomadECS) @ `2026-11-15 (branch tip at catalogue time)` |
+| [notquiteparadise](entries/engines/snayff-notquiteparadise/README.md) | Possibly, one day, a roguelike. | python | MIT | reference | [snayff/notquiteparadise](https://github.com/snayff/notquiteparadise) @ `2021-04-17 (branch tip at catalogue time)` |
 | [nova](entries/engines/17cupsofcoffee-nova/README.md) | 🎮 An even simpler 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/nova](https://github.com/17cupsofcoffee/nova) @ `2025-03-08 (branch tip at catalogue time)` |
 | [NVForever](entries/engines/lootjunkieazza-nvforever/README.md) | NVForever Rebuilt New Vegas Game Engine in Rust | rust | GPL-3.0 | reference | [LootJunkieAzza/NVForever](https://github.com/LootJunkieAzza/NVForever) @ `2026-11-23 (branch tip at catalogue time)` |
 | [o2](entries/engines/o2-engine-o2/README.md) | 2D Game Engine with visual WYSIWYG editor and JS scripting | c++ | MIT | reference | [o2-engine/o2](https://github.com/o2-engine/o2) @ `2026-11-23 (branch tip at catalogue time)` |
+| [o3de-mcp](entries/engines/nickschuetz-o3de-mcp/README.md) | Automate Open 3D Engine with AI — an MCP server for editor control, project & build management | python | Apache-2.0 | vendored | [nickschuetz/o3de-mcp](https://github.com/nickschuetz/o3de-mcp) @ `f572fe4e0fbc` |
 | [oak](entries/engines/oakmound-oak/README.md) | A pure Go game engine | go | Apache-2.0 | vendored | [oakmound/oak](https://github.com/oakmound/oak) @ `ae327857d9b9` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [omath](entries/engines/orange-cpp-omath/README.md) | Cross-platform modern general purpose game/mods/cheats development framework written in C++23. | c++ | Zlib | reference | [orange-cpp/omath](https://github.com/orange-cpp/omath) @ `2026-11-19 (branch tip at catalogue time)` |
@@ -395,6 +400,7 @@ _Generated 2026-11-24 18:13 UTC · 1324 entries · 340 vendored, 984 reference-o
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
 | [prototype](entries/engines/gonutz-prototype/README.md) | Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM. | c | MIT | vendored | [gonutz/prototype](https://github.com/gonutz/prototype) @ `d3732ae42e68` |
+| [py-draughts](entries/engines/miskibin-py-draughts/README.md) | Fastest Python draughts/checkers library — bitboards, 8 variants, alpha-beta engine, web UI. ~200x faster than pydraughts. | python | GPL-3.0 | reference | [miskibin/py-draughts](https://github.com/miskibin/py-draughts) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Py3ODE](entries/engines/filipeabperes-py3ode/README.md) | Port of PyODE for Python 3 | python | LGPL-2.1 | reference | [filipeabperes/Py3ODE](https://github.com/filipeabperes/Py3ODE) @ `50675f543d35` |
 | [py4godot](entries/engines/niklas2902-py4godot/README.md) | Python scripting for Godot. This GDExtension plugin allows you to use Python like GDScript, accessing the Godot engine's features and benefiting from Python's v | python | MIT | reference | [niklas2902/py4godot](https://github.com/niklas2902/py4godot) @ `2026-11-21 (branch tip at catalogue time)` |
 | [pyckitup](entries/engines/pickitup247-pyckitup/README.md) | python game engine that runs in browser | rust | MIT | reference | [pickitup247/pyckitup](https://github.com/pickitup247/pyckitup) @ `2019-03-15 (branch tip at catalogue time)` |

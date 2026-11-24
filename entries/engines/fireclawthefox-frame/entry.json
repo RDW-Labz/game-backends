@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:31:21Z",
+ "category": "engines",
+ "commit": "2024-04-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fireclawthefox/FRAME \u2014 The modular Game Editor for Panda3D",
+ "language": "python",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "FRAME",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "fireclawthefox-frame",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 19,
+ "system": "The modular Game Editor for Panda3D",
+ "upstream": "https://github.com/fireclawthefox/FRAME",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

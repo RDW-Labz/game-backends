@@ -1,0 +1,124 @@
+# Example 1: Create a New O3DE Project
+
+End-to-end walkthrough: from zero to a built project ready for the editor.
+
+## Prerequisites
+
+- O3DE engine installed and registered
+- `o3de-mcp` server running
+
+> **Platform note:** This example uses placeholder paths. Replace them with
+> absolute paths appropriate for your OS:
+> - **Linux:** `/home/user/projects/SpaceExplorer`
+> - **macOS:** `/Users/user/projects/SpaceExplorer`
+> - **Windows:** `C:\Users\YourName\projects\SpaceExplorer`
+
+## Steps
+
+### 0. Check capabilities
+
+**Tool call:**
+```json
+{"tool": "get_capabilities"}
+```
+
+Verify that `cli.available` is `true`. This confirms the O3DE CLI is found
+and project tools are ready to use.
+
+### 1. Discover available templates
+
+**Tool call:**
+```json
+{"tool": "list_templates"}
+```
+
+This shows available project templates (e.g. `DefaultProject`, `MinimalProject`).
+Use the desired template name in step 2.
+
+### 2. Verify the engine is available
+
+**Tool call:**
+```json
+{"tool": "get_engine_info"}
+```
+
+**Expected response** (the engine's `engine.json` with `engine_path` added,
+abridged here; values vary by engine version, OS and install location):
+```json
+{
+  "engine_name": "o3de",
+  "version": "24.09",
+  "engine_path": "/opt/O3DE/24.09"
+}
+```
+
+### 3. Create the project
+
+**Tool call:**
+```json
+{
+  "tool": "create_project",
+  "arguments": {
+    "name": "SpaceExplorer",
+    "path": "<your_projects_dir>/SpaceExplorer"
+  }
+}
+```
+
+**Expected response:**
+```
+Project 'SpaceExplorer' created at <your_projects_dir>/SpaceExplorer
+```
+
+### 4. Enable required gems
+
+The editor tools talk to the editor through the AiCompanion AgentServer,
+which runs inside the editor process. The AgentServer requires the
+`AiCompanion` and `EditorPythonBindings` gems. Enable both, along with any
+gameplay gems you need:
+
+**Tool calls (sequential):**
+```json
+{"tool": "enable_gem", "arguments": {"gem_name": "AiCompanion", "project_path": "<your_projects_dir>/SpaceExplorer"}}
+{"tool": "enable_gem", "arguments": {"gem_name": "EditorPythonBindings", "project_path": "<your_projects_dir>/SpaceExplorer"}}
+{"tool": "enable_gem", "arguments": {"gem_name": "PhysX", "project_path": "<your_projects_dir>/SpaceExplorer"}}
+{"tool": "enable_gem", "arguments": {"gem_name": "Stars", "project_path": "<your_projects_dir>/SpaceExplorer"}}
+```
+
+> `AiCompanion` must be registered first if it isn't already. From the
+> repository root: `o3de register --gem-path /path/to/o3de-ai-companion-gem`.
+
+### 5. Build the project
+
+**Tool call:**
+```json
+{
+  "tool": "build_project",
+  "arguments": {
+    "project_path": "<your_projects_dir>/SpaceExplorer",
+    "config": "profile"
+  }
+}
+```
+
+**Expected response:**
+```
+Project built successfully (config=profile)
+```
+
+### 6. Verify registration
+
+**Tool call:**
+```json
+{"tool": "list_projects"}
+```
+
+The response should include your new project in the list.
+
+## What's Next
+
+Open the O3DE Editor for this project, then use the editor tools:
+- [Example 2: Build a Scene](02_build_scene.md)
+- [Example 3: Add Physics](03_physics_playground.md)
+- [Example 6: CLI-Only Workflow](06_cli_only_workflow.md) — if the editor isn't available
+- [Example 7: Gem Development](07_gem_development.md) — creating custom gems

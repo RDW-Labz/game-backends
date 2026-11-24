@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:31:21Z",
+ "category": "engines",
+ "commit": "2026-10-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "miskibin/py-draughts \u2014 Fastest Python draughts/checkers library \u2014 bitboards, 8 variants, alpha-beta engine, web UI. ~200x faster than pydraughts.",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "py-draughts",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "miskibin-py-draughts",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 18,
+ "system": "Fastest Python draughts/checkers library \u2014 bitboards, 8 variants, alpha-beta engine, web UI. ~200x faster than pydraughts.",
+ "upstream": "https://github.com/miskibin/py-draughts",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

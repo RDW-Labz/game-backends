@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T18:31:17Z",
+ "category": "engines",
+ "commit": "f572fe4e0fbc",
+ "delivery": "vendored",
+ "description": "nickschuetz/o3de-mcp \u2014 Automate Open 3D Engine with AI \u2014 an MCP server for editor control, project & build management",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "o3de-mcp",
+ "size_bytes": 858772,
+ "slug": "nickschuetz-o3de-mcp",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 20,
+ "system": "Automate Open 3D Engine with AI \u2014 an MCP server for editor control, project & build management",
+ "upstream": "https://github.com/nickschuetz/o3de-mcp",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

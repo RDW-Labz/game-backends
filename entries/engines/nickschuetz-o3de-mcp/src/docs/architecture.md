@@ -1,0 +1,156 @@
+# Architecture
+
+This document describes the high-level architecture of **o3de-mcp** — an MCP server that bridges AI assistants and the Open 3D Engine.
+
+## Overview
+
+o3de-mcp exposes O3DE capabilities through the [Model Context Protocol (MCP)](https://modelcontextprotocol.io), enabling AI assistants (Claude Code, Claude Desktop, or any MCP-compatible client) to automate the O3DE Editor and manage projects, gems, and builds.
+
+Editor communication relies on the [**o3de-ai-companion-gem**](https://github.com/nickschuetz/o3de-ai-companion-gem) — an O3DE Gem that runs an AgentServer inside the editor, accepting Python script execution requests over a length-prefixed JSON protocol. The gem depends on the [**EditorPythonBindings**](https://docs.o3de.org/docs/api/gems/editorpythonbindings/index.html) gem being enabled alongside it, which gives scripts access to the full `azlmbr` API.
+
+## Diagram
+
+```mermaid
+---
+config:
+  themeVariables:
+    fontSize: 14px
+  flowchart:
+    nodeSpacing: 30
+    rankSpacing: 40
+---
+graph LR
+    subgraph AI["AI Assistant"]
+        CC["Claude Code<br/>Claude Desktop<br/>MCP Client"]
+    end
+
+    subgraph MCP["o3de-mcp Server"]
+        S["server.py<br/>(MCPServer)"]
+        CAP["capabilities.py<br/>get_capabilities"]
+        ED["editor.py<br/>Entity, Component, Transform,<br/>Prefab, Level, Viewport, Session"]
+        INTRO["introspection.py<br/>EBus schema,<br/>RenderDoc"]
+        PR["project.py<br/>Project, Gem,<br/>Build, Export"]
+        ASSET["assets.py<br/>Asset Processor,<br/>Logs, readiness"]
+        TV["trackview.py<br/>Track View<br/>sequences"]
+        ANIM["animation.py<br/>EMotion FX<br/>anim graphs"]
+        UC["utils/capabilities.py<br/>Probe editor & CLI"]
+        UO["utils/o3de.py<br/>Engine discovery,<br/>CLI runner"]
+        UI["utils/introspection.py<br/>Stub parsing"]
+        UE["utils/errors.py<br/>Failure envelope"]
+    end
+
+    subgraph O3DE["O3DE Editor"]
+        AS["AgentServer<br/>(AiCompanion Gem)<br/>native C++ requests +<br/>Python forwarding"]
+        EPB["EditorPythonBindings<br/>(azlmbr API)"]
+    end
+
+    subgraph CLI["O3DE CLI"]
+        SCRIPT["scripts/o3de.sh<br/>scripts/o3de.bat"]
+        APB["AssetProcessorBatch"]
+    end
+
+    subgraph FS["Filesystem"]
+        MANIFEST["~/.o3de/<br/>o3de_manifest.json"]
+        STUBS["&lt;project&gt;/user/<br/>python_symbols/azlmbr"]
+        LOGS["&lt;project&gt;/user/log/"]
+    end
+
+    CC -- "MCP protocol<br/>(stdio)" --> S
+    S --> CAP
+    S --> ED
+    S --> INTRO
+    S --> PR
+    S --> ASSET
+    S --> TV
+    S --> ANIM
+    CAP --> UC
+    ED -- "TCP :4600 (length-prefixed JSON)<br/>connect ≤5s · command ≤600s" --> AS
+    AS -- "Python tools:<br/>forwards script" --> EPB
+    TV -- "editor Python<br/>(azlmbr.legacy.trackview)" --> AS
+    ANIM -- "native requests<br/>anim graph reads + authoring" --> AS
+    ASSET -- "native requests<br/>asset status, jobs" --> AS
+    AS -. "native tools (no Python, work in secure mode):<br/>get_scene_snapshot, get_entity_tree, get_entity,<br/>validate_scene, get_bus_schema,<br/>create_entity, set_transform, delete_entity,<br/>anim graph reads and authoring" .-> AS
+    INTRO -- "native get_bus_schema,<br/>editor Python" --> AS
+    INTRO --> UI
+    UI -- "reads .pyi stubs" --> STUBS
+    PR --> UO
+    ED --> UO
+    ASSET --> UO
+    ED & PR & ASSET & INTRO & ANIM -. "failure envelope" .-> UE
+    ASSET -- "reads logs" --> LOGS
+    ASSET -- subprocess --> APB
+    UO -- subprocess --> SCRIPT
+    UO -- reads --> MANIFEST
+    UC --> UO
+    UC -- "TCP probe" --> AS
+
+    style AI fill:#e8f0fe,stroke:#4285f4
+    style MCP fill:#fef7e0,stroke:#f9ab00
+    style O3DE fill:#e6f4ea,stroke:#34a853
+    style CLI fill:#fce8e6,stroke:#ea4335
+    style FS fill:#f3e8fd,stroke:#a142f4
+```
+
+## Communication Paths
+
+### Editor tools (real-time automation)
+
+```
+MCP Client → o3de-mcp → TCP :4600 → AiCompanion AgentServer → azlmbr API
+```
+
+The [**o3de-ai-companion-gem**](https://github.com/nickschuetz/o3de-ai-companion-gem) provides the AgentServer that listens on port 4600. o3de-mcp auto-detects the protocol on connection:
+
+1. **AgentServer protocol** (preferred) — length-prefixed JSON framing with request/response semantics.
+2. **Legacy RemoteConsole** (fallback) — raw text `pyRunScript` commands for older setups without the companion gem.
+
+Scripts are base64-encoded for safe transport and executed in the editor's embedded Python interpreter.
+
+Besides `execute_python`, the AgentServer answers `ping`, `get_api_version`, `get_scene_snapshot`, `get_entity_tree`, `get_entity`, `validate_scene` and `get_bus_schema` natively in C++ (`get_entity` and `get_bus_schema` from gem 0.4.0), plus `create_entity`, `set_transform` and `delete_entity` from gem 0.5.0. Gem 0.6.0 adds the anim graph request types (`list_anim_graphs`, `get_anim_graph`, and the authoring types from `create_anim_graph` to `set_anim_graph_node`), which the animation tools call directly with no Python fallback, and the asset readiness types (`get_asset_status`, `get_asset_jobs`, `get_asset_processor_status`), which the asset tools call the same way. `get_capabilities` uses `get_api_version` to tell a real AgentServer (gem present) from a bare socket, and the snapshot tools call their request types directly, so they work even when the gem's secure mode disables `execute_python`. The three mutation tools try their native type first and send their editor-Python script only when the gem answers `Unknown request type` (or the transport is the legacy RemoteConsole, where native requests return `agent_server_required`); any other refusal is returned as an error, never retried through Python. On gem API 0.5.0+ `set_transform` sends its quaternion (`rotation_quaternion`) and a non-uniform `[x, y, z]` scale natively; the gem applies non-uniform scale with the engine's Non-uniform Scale component. On older gems it converts the quaternion to Euler degrees, goes to editor Python for a rotation within 0.02 degrees of a gimbal pole (where the Euler form cannot carry it), and refuses a non-uniform scale. `get_bus_schema_live` falls back to editor Python, then to the stub files, on any native failure, including an unknown bus. From gem 0.6.0 (API 0.4.0 and up; 0.6.0 reports API 0.5.0) every native refusal carries a `code` (`validation_failed`, `not_found`, `unavailable`, `engine_error`, `secure_mode`, `execution_failed`, `unknown_request_type`, `timeout`, `shutting_down`), which o3de-mcp relays in its failure envelope. The snapshot tools report a native failure rather than falling back.
+
+#### Connection lifecycle & timeouts
+
+A single persistent TCP connection is pooled across tool calls (`_EditorConnectionPool`). Each `send_script` runs in two bounded phases:
+
+1. **Connect**: bounded by `O3DE_EDITOR_CONNECT_TIMEOUT` (default **5s**). On first use the pool opens the socket and detects the protocol by sending a framed `ping`. A non-framed reply means a legacy RemoteConsole, and the pool reconnects for the text protocol; a ping timeout or connection error is reported rather than falling back.
+2. **Command**: bounded by `O3DE_EDITOR_TIMEOUT` (default **600s**). The editor executes the submitted script *synchronously* and does not reply until it finishes, so this timeout is effectively "how long an editor operation may take." Level loads, game-mode entry, and on-demand asset compilation routinely exceed tens of seconds, so the default is deliberately generous; `run_editor_python` also accepts a per-call `timeout` override.
+
+Separating the two means an **unreachable** editor still fails in milliseconds (connect timeout + a 5s fast-fail window that short-circuits repeated attempts) even when a long command timeout is configured. A command that times out returns a `timeout` error noting the editor may still be running the script — retrying blindly can duplicate work, so prefer raising the timeout.
+
+### Project tools (CLI-based)
+
+```
+MCP Client → o3de-mcp → subprocess → scripts/o3de.sh (or .bat) → O3DE CLI
+```
+
+No running editor required. Engine discovery reads `~/.o3de/o3de_manifest.json` and supports multiple registered engines via `O3DE_ENGINE_NAME`.
+
+### Capability detection
+
+```
+MCP Client → get_capabilities() → TCP probe + CLI probe → aggregated report
+```
+
+Always call `get_capabilities()` first to determine which tool categories are available before invoking other tools.
+
+## Module Responsibilities
+
+| Module | Role |
+|--------|------|
+| `server.py` | MCPServer entry point — registers all tool modules |
+| `tools/capabilities.py` | Exposes `get_capabilities` tool |
+| `tools/editor.py` | 41 editor automation tools — entity CRUD, components, transforms, prefabs, levels, viewport/camera, console/CVARs, game mode, persistent sessions; pooled TCP transport with protocol auto-detection |
+| `tools/introspection.py` | 3 tools — gem-agnostic EBus discovery from the editor's generated `azlmbr` stubs, live EBus query, and RenderDoc frame capture |
+| `tools/project.py` | 17 project management tools — engines, projects, gems, templates, blocking and background builds, export |
+| `tools/trackview.py` | 8 Track View tools: cinematic sequences (create/list/describe/delete, time range, nodes, play/stop) over editor Python `azlmbr.legacy.trackview` |
+| `tools/animation.py` | 17 EMotion FX tools: anim graph reads (`list_anim_graphs`, `get_anim_graph`) and authoring (graphs, nodes, entry state, parameters, transitions with conditions, blend-tree ports) over the gem's native request types (gem 0.6.0+, EMotionFX gem); no Python fallback |
+| `tools/assets.py` | 9 asset pipeline tools: Asset Processor status, refresh/wait, log tailing and error filtering without the editor, plus per-asset readiness (`get_asset_status`, `get_asset_jobs`, `get_asset_processor_connection`, `wait_for_asset`) over the gem's native request types |
+| `utils/capabilities.py` | Runtime probing: an editor round trip through the pool, the gem's `get_api_version`, and CLI availability |
+| `utils/errors.py` | The one failure envelope, `{"status": "error", "code", "message"}`, shared by every tool module |
+| `utils/introspection.py` | Parses `<project>/user/python_symbols/azlmbr/*.pyi` stubs into a structured EBus schema |
+| `utils/o3de.py` | Engine/manifest discovery, CLI runner, project/gem listing |
+
+## Related Projects
+
+- [**o3de-ai-companion-gem**](https://github.com/nickschuetz/o3de-ai-companion-gem) — The O3DE Gem that enables editor-side communication. Provides the AgentServer that o3de-mcp connects to for real-time editor automation. Must be enabled in your O3DE project alongside [EditorPythonBindings](https://docs.o3de.org/docs/api/gems/editorpythonbindings/index.html) for editor tools to work.
+- [**O3DE (Open 3D Engine)**](https://github.com/o3de/o3de) — The game engine itself.

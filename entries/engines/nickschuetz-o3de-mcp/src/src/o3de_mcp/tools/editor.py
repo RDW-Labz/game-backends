@@ -1,0 +1,2877 @@
+# Copyright (c) Contributors to the Open 3D Engine Project.
+# For complete copyright and license terms please see the LICENSE at the root of this distribution.
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+"""MCP tools for O3DE Editor automation.
+
+These tools interact with a running O3DE Editor instance via its
+EditorPythonBindings (EPB) interface. Communication uses the AiCompanion
+Gem's AgentServer (length-prefixed JSON protocol), with automatic fallback
+to the legacy RemoteConsole text protocol for older setups.
+
+Communication flow:
+  MCP client → this server → TCP socket (port 4600) → O3DE Editor AgentServer
+  The AgentServer executes Python scripts in the editor's embedded Python
+  interpreter, which has access to the ``azlmbr`` namespace.
+
+Configuration:
+  O3DE_EDITOR_HOST            — editor host (default: 127.0.0.1)
+  O3DE_EDITOR_PORT            — editor port (default: 4600)
+  O3DE_EDITOR_TIMEOUT         — per-command execution timeout, seconds (default: 600)
+  O3DE_EDITOR_CONNECT_TIMEOUT — TCP connect timeout, seconds (default: 5)
+  O3DE_CAPTURE_WAIT           — capture_viewport file wait, seconds (default: 15)
+  O3DE_EDITOR_TLS             — enable TLS (default: 0)
+  O3DE_EDITOR_TLS_VERIFY      — verify TLS cert (default: 0)
+  O3DE_EDITOR_TLS_CA          — path to CA cert for verification
+"""
+
+from __future__ import annotations
+
+import asyncio
+import base64
+import json
+import logging
+import math
+import os
+import re
+import socket
+import ssl as ssl_module
+import struct
+import textwrap
+import time
+import uuid
+from pathlib import Path
+from typing import Annotated
+
+from mcp.server import MCPServer
+from pydantic import BeforeValidator, Field
+
+from o3de_mcp.utils.errors import format_error
+
+logger = logging.getLogger(__name__)
+
+# Hosts considered safe for plaintext communication
+_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "::1", "localhost"})
+
+# Validates entity IDs — O3DE uses numeric IDs like "[1234]" or plain integers
+_ENTITY_ID_RE = re.compile(r"^\[?\d+\]?$")
+# Mirrors the AiCompanion gem's InputValidator::IsValidEntityName and
+# safety/validators.py: a letter first, then letters, digits, "_" or "-".
+_ENTITY_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
+_MAX_ENTITY_NAME_LENGTH = 128
+# A pitch this close to +-90 degrees is a gimbal pole for the XYZ Euler form
+# the native set_transform takes, where roll and yaw collapse into one angle.
+_GIMBAL_POLE_MARGIN_DEGREES = 0.02
+
+# Validates component type names — alphanumeric, spaces, hyphens, parentheses
+_COMPONENT_TYPE_RE = re.compile(r"^[A-Za-z0-9 ()\-_]+$")
+
+# Safety limit to prevent unbounded reads
+_MAX_RESPONSE_BYTES = 1024 * 1024  # 1 MiB
+
+# Short timeout used after receiving initial data to detect end-of-response
+_TAIL_TIMEOUT = 0.5
+
+# How long capture_viewport waits, on the CLIENT, for an asynchronously issued
+# frame capture to reach disk. Read through a helper rather than used as a
+# literal so a test can shorten it: patching time.monotonic instead would
+# replace the attribute on the shared stdlib module, which asyncio's own event
+# loop reads, and wedges the loop rather than timing the test out.
+_DEFAULT_CAPTURE_WAIT = 15.0
+
+# How long the file size must stay unchanged before the capture counts as
+# finished. A 1.6 MB PNG does not appear atomically, so a file that merely
+# exists may still be being written.
+_CAPTURE_STABLE_SECONDS = 0.2
+
+
+# Default per-command execution timeout (seconds). Deliberately generous:
+# editor operations run the submitted Python *synchronously* and the editor
+# does not reply until the script finishes, so this is really "how long an
+# editor operation may take" — level loads, game-mode entry, and on-demand
+# asset compilation routinely exceed tens of seconds. A dead editor is caught
+# in milliseconds by the connect timeout / fast-fail window, not this value,
+# so a large default costs nothing on the healthy path.
+_DEFAULT_EDITOR_TIMEOUT = 600.0
+
+# Default TCP connect timeout (seconds). On loopback a dead editor refuses
+# instantly; this only bounds the pathological "host silently blackholes" case.
+_DEFAULT_CONNECT_TIMEOUT = 5.0
+
+# Level template create_level builds from when the caller names none. This is the
+# template the editor's own New Level dialog selects by default (Default_Level.prefab
+# under <engine>/Assets/Editor/Prefabs: camera, sun, grid, atmosphere) and the path
+# form the engine's AutomatedTesting Python helpers pass to create_level_no_prompt.
+_DEFAULT_LEVEL_TEMPLATE = "Prefabs/Default_Level.prefab"
+
+
+def _get_editor_timeout() -> float:
+    """Return the per-command editor execution timeout in seconds.
+
+    Read per call (like host/port) from O3DE_EDITOR_TIMEOUT. A missing/invalid
+    value falls back to the default, and a non-positive value is treated as
+    invalid (a 0 or negative timeout would make every editor call fail
+    instantly).
+    """
+    try:
+        value = float(os.environ.get("O3DE_EDITOR_TIMEOUT", str(_DEFAULT_EDITOR_TIMEOUT)))
+    except (TypeError, ValueError):
+        return _DEFAULT_EDITOR_TIMEOUT
+    return value if value > 0.0 else _DEFAULT_EDITOR_TIMEOUT
+
+
+def _get_capture_wait() -> float:
+    """Return how long to wait, client-side, for a capture to reach disk.
+
+    Read per call from O3DE_CAPTURE_WAIT, same convention as the editor
+    timeouts above. A missing/invalid or non-positive value falls back to the
+    default. 15s is generous rather than tight: the common cause of a capture
+    that never lands is having no level open, which the timeout message names.
+    """
+    try:
+        value = float(os.environ.get("O3DE_CAPTURE_WAIT", str(_DEFAULT_CAPTURE_WAIT)))
+    except (TypeError, ValueError):
+        return _DEFAULT_CAPTURE_WAIT
+    return value if value > 0.0 else _DEFAULT_CAPTURE_WAIT
+
+
+def _get_editor_connect_timeout() -> float:
+    """Return the TCP connect timeout in seconds.
+
+    Separate from the command timeout so that "editor is unreachable" is
+    detected quickly even when a long command timeout is configured. Read per
+    call from O3DE_EDITOR_CONNECT_TIMEOUT; invalid/non-positive falls back to
+    the default.
+    """
+    try:
+        value = float(os.environ.get("O3DE_EDITOR_CONNECT_TIMEOUT", str(_DEFAULT_CONNECT_TIMEOUT)))
+    except (TypeError, ValueError):
+        return _DEFAULT_CONNECT_TIMEOUT
+    return value if value > 0.0 else _DEFAULT_CONNECT_TIMEOUT
+
+
+def _get_editor_host() -> str:
+    """Return the configured editor remote console host.
+
+    Logs a warning when the host is not a loopback address, since commands
+    are sent in plaintext over TCP.
+    """
+    host = os.environ.get("O3DE_EDITOR_HOST", "127.0.0.1")
+    if host not in _LOOPBACK_HOSTS:
+        logger.warning(
+            "O3DE_EDITOR_HOST is set to %r which is not a loopback address. "
+            "Commands will be sent over the network in plaintext.",
+            host,
+        )
+    return host
+
+
+def _get_editor_port() -> int:
+    """Return the configured editor remote console port."""
+    raw = os.environ.get("O3DE_EDITOR_PORT", "4600")
+    try:
+        return int(raw)
+    except ValueError:
+        return 4600
+
+
+# The one failure shape, defined once in utils.errors. Kept under the module's
+# existing private name so the call sites below stay unchanged.
+_format_error = format_error
+
+
+def _connection_error_response(exc: Exception, host: str, port: int, timeout: float) -> str:
+    """Map a socket exception to a structured JSON error string."""
+    if isinstance(exc, ConnectionRefusedError):
+        return _format_error(
+            "connection_refused",
+            f"Could not connect to O3DE Editor on {host}:{port}. "
+            "Ensure the editor is running with the AiCompanion gem enabled.",
+        )
+    if isinstance(exc, (TimeoutError, asyncio.TimeoutError)):
+        return _format_error(
+            "timeout",
+            f"Connection to O3DE Editor timed out after {timeout}s.",
+        )
+    return _format_error(
+        "socket_error",
+        f"Socket error communicating with O3DE Editor: {exc}",
+    )
+
+
+class EditorConnectionError(Exception):
+    """Raised when the MCP server cannot reach the O3DE Editor."""
+
+
+# ---------------------------------------------------------------------------
+# Input validators
+# ---------------------------------------------------------------------------
+
+
+# Tool parameter types for entity ids. The MCP layer JSON-decodes a string
+# argument unless its parameter is annotated exactly ``str``, which would turn
+# the bracketed form "[1234]" (what the editor prints) into a list. Keeping the
+# annotation ``str`` preserves brackets, and ``coerce_numbers_to_str`` still
+# accepts a JSON number, which gems up to API 0.3.0 emit.
+EntityIdArg = Annotated[str, Field(coerce_numbers_to_str=True)]
+
+
+def _optional_entity_id_input(value: object) -> object:
+    """Map null to "" (not given) and a JSON number to its digit string."""
+    if value is None:
+        return ""
+    if isinstance(value, int) and not isinstance(value, bool):
+        return str(value)
+    return value
+
+
+# Optional variant: "" means "not given", and an explicit null maps to it.
+OptionalEntityIdArg = Annotated[str, BeforeValidator(_optional_entity_id_input)]
+
+
+def _validate_entity_id(entity_id: int | str) -> str:
+    """Validate and normalize an entity ID to its digit string.
+
+    Accepts a number or a string, since the AiCompanion gem emits ids as JSON
+    numbers up to API 0.3.0 and as decimal strings from 0.4.0, and an agent
+    should be able to pass back whichever it received. Raises ValueError if the
+    entity ID doesn't match the expected format.
+    """
+    if isinstance(entity_id, bool):
+        raise ValueError(f"Invalid entity ID {entity_id!r}: expected a numeric ID.")
+    entity_id = str(entity_id).strip()
+    if not _ENTITY_ID_RE.match(entity_id):
+        raise ValueError(
+            f"Invalid entity ID format: {entity_id!r}. "
+            "Expected a numeric ID like '1234' or '[1234]'."
+        )
+    return entity_id
+
+
+def _validate_entity_name(name: str) -> str:
+    """Validate an entity name with the AiCompanion gem's own rule.
+
+    The check runs before either the native or the editor-Python path so a
+    name the gem would refuse never reaches the Python fallback, which does
+    not validate it. Raises ValueError for an empty, too long or malformed
+    name.
+    """
+    if not isinstance(name, str) or not name:
+        raise ValueError("Entity name must be a non-empty string.")
+    if len(name) > _MAX_ENTITY_NAME_LENGTH:
+        raise ValueError(f"Entity name exceeds {_MAX_ENTITY_NAME_LENGTH} characters.")
+    if not _ENTITY_NAME_RE.match(name):
+        raise ValueError(
+            f"Invalid entity name {name!r}: it must start with a letter and contain "
+            "only letters, digits, underscores or hyphens."
+        )
+    return name
+
+
+def _validate_component_type(component_type: str) -> str:
+    """Validate a component type name.
+
+    Raises ValueError if the component type contains unexpected characters.
+    """
+    component_type = component_type.strip()
+    if not _COMPONENT_TYPE_RE.match(component_type):
+        raise ValueError(
+            f"Invalid component type: {component_type!r}. "
+            "Expected alphanumeric characters, spaces, hyphens, or parentheses."
+        )
+    return component_type
+
+
+_CONSOLE_COMMAND_RE = re.compile(r"^[A-Za-z0-9 ._\-=/\"']+$")
+
+
+def _validate_console_command(command: str) -> str:
+    """Validate a console command string, rejecting shell metacharacters."""
+    command = command.strip()
+    if not command:
+        raise ValueError("Console command cannot be empty.")
+    if not _CONSOLE_COMMAND_RE.match(command):
+        raise ValueError(
+            f"Invalid console command: {command!r}. "
+            "Expected alphanumeric characters, spaces, dots, underscores, "
+            "hyphens, equals, quotes, or forward slashes."
+        )
+    return command
+
+
+def _validate_vec3(
+    value: list[float] | tuple[float, float, float] | None, name: str
+) -> list[float]:
+    """Validate a 3-element numeric vector (position, rotation, or scale)."""
+    if value is None:
+        raise ValueError(f"{name} cannot be None.")
+    if not isinstance(value, (list, tuple)):
+        raise ValueError(
+            f"{name} must be a list or tuple of 3 numbers, got {type(value).__name__}."
+        )
+    if len(value) != 3:
+        raise ValueError(f"{name} must have exactly 3 elements, got {len(value)}.")
+    try:
+        result = [float(v) for v in value]
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{name} must contain only numbers, got {value!r}.") from exc
+    return result
+
+
+def _validate_prefab_path(path: str) -> str:
+    """Validate a prefab file path (must end in .prefab, no path traversal)."""
+    path = path.strip()
+    if not path:
+        raise ValueError("Prefab path cannot be empty.")
+    if not path.endswith(".prefab"):
+        raise ValueError(f"Prefab path must end in '.prefab': {path!r}.")
+    if ".." in path:
+        raise ValueError(f"Prefab path must not contain '..': {path!r}.")
+    return path
+
+
+def _quaternion_to_euler_degrees_xyz(quaternion: list[float]) -> list[float]:
+    """Convert an ``[x, y, z, w]`` quaternion to O3DE's XYZ Euler angles in degrees.
+
+    A port of ``AZ::Quaternion::GetEulerRadiansXYZ``, the inverse of the
+    ``CreateFromEulerDegreesXYZ`` the AiCompanion gem applies on its native
+    ``set_transform`` path, so a rotation sent natively lands exactly where the
+    editor-Python path's ``SetWorldTM`` would have put it. The quaternion is
+    normalized first; a zero quaternion is rejected.
+    """
+    x, y, z, w = quaternion
+    norm = math.sqrt(x * x + y * y + z * z + w * w)
+    if norm < 1e-12:
+        raise ValueError("rotation quaternion must not be all zeros.")
+    x, y, z, w = x / norm, y / norm, z / norm, w / norm
+
+    x2, y2, z2 = x * 2.0, y * 2.0, z * 2.0
+    wx2, wy2, wz2 = w * x2, w * y2, w * z2
+    xx2, xy2, xz2 = x * x2, x * y2, x * z2
+    yy2, yz2, zz2 = y * y2, y * z2, z * z2
+
+    m11 = 1.0 - yy2 - zz2
+    m12n = wz2 - xy2
+    m13 = wy2 + xz2
+    m23n = wx2 - yz2
+    m33 = 1.0 - xx2 - yy2
+
+    cos_pitch_sq = m23n * m23n + m33 * m33
+    sign_pitch = 1.0 if m13 >= 0.0 else -1.0
+    if cos_pitch_sq <= 1.1920929e-07:  # AZ::Constants::FloatEpsilon: gimbal lock
+        return [0.0, math.degrees((math.pi / 2.0 - 1.1920929e-07) * sign_pitch), 0.0]
+
+    roll = math.atan2(m23n, m33)
+    if m13 * m13 < 0.5:
+        pitch = math.asin(max(-1.0, min(1.0, m13)))
+    else:
+        pitch = sign_pitch * math.acos(min(1.0, math.sqrt(cos_pitch_sq)))
+    yaw = math.atan2(m12n, m11)
+    return [math.degrees(roll), math.degrees(pitch), math.degrees(yaw)]
+
+
+def _near_gimbal_pole(euler_degrees: list[float]) -> bool:
+    """True when the pitch is within ``_GIMBAL_POLE_MARGIN_DEGREES`` of +-90.
+
+    At the pole the XYZ Euler form has one degree of freedom fewer than the
+    quaternion, so a rotation sent natively as Euler degrees could land with
+    its roll and yaw merged; callers keep such rotations on the quaternion
+    path instead.
+    """
+    return abs(abs(euler_degrees[1]) - 90.0) <= _GIMBAL_POLE_MARGIN_DEGREES
+
+
+# ---------------------------------------------------------------------------
+# Script encoding — legacy (RemoteConsole text protocol)
+# ---------------------------------------------------------------------------
+
+
+def _encode_script(script: str) -> str:
+    """Encode a Python script as a ``pyRunScript`` command (legacy protocol).
+
+    Uses base64 encoding so that arbitrary script content (including triple
+    quotes, backslashes, and any other special characters) is transported
+    safely without escaping issues.
+    """
+    encoded = base64.b64encode(script.encode("utf-8")).decode("ascii")
+    return (
+        f"pyRunScript '''import base64 as _b64; "
+        f'exec(_b64.b64decode("{encoded}").decode("utf-8"))\'\'\''
+    )
+
+
+_ENTITY_RESOLVER_SNIPPET = """
+import azlmbr.entity as entity
+import azlmbr.bus as bus
+
+class _O3deEntityNotFound(LookupError):
+    pass
+
+def _resolve_entity_id(eid_str):
+    # Find the entity's own id object by its text. Rebuilding one with
+    # entity.EntityId(n) is not reliable on 26.10.0 (it answers an invalid id for
+    # every n), and a wrong id would act on the wrong entity or none.
+    wanted = str(eid_str).strip().strip('[]')
+    search_filter = entity.SearchFilter()
+    for eid in (entity.SearchBus(bus.Broadcast, 'SearchEntities', search_filter) or []):
+        if str(eid).strip('[]') == wanted:
+            return eid
+    raise _O3deEntityNotFound(f'No entity with id {wanted}')
+"""
+
+
+def _wrap_for_entity_lookup(script: str) -> str:
+    """Run a script that resolves entity ids so an unknown id is an envelope.
+
+    The resolver raises ``_O3deEntityNotFound``; running the script under a
+    handler turns that into ``entity_not_found`` instead of a traceback, for
+    every tool that takes an entity id.
+    """
+    return (
+        _ENTITY_RESOLVER_SNIPPET
+        + "try:\n"
+        + f"    exec(compile({script!r}, '<o3de-mcp>', 'exec'), globals())\n"
+        + "except _O3deEntityNotFound as _o3de_e:\n"
+        + "    _o3de_fail('entity_not_found', str(_o3de_e))\n"
+    )
+
+
+# Editor scripts report a failure with ``_o3de_fail(code, message)``, which prints
+# the same envelope ``_format_error`` returns, so a caller can detect any failure
+# with ``status == "error"`` whether it came from the server or the editor.
+_FAIL_SNIPPET = """
+import json as _o3de_json
+
+def _o3de_fail(code, message):
+    print(_o3de_json.dumps({'status': 'error', 'code': code, 'message': str(message)}))
+"""
+
+
+# ---------------------------------------------------------------------------
+# Framed protocol — AgentServer (length-prefixed JSON)
+# ---------------------------------------------------------------------------
+
+
+def _build_framed_request(
+    request_type: str,
+    script: str | None = None,
+    request_id: str | None = None,
+    params: dict[str, object] | None = None,
+) -> bytes:
+    """Build a length-prefixed JSON request for the AgentServer protocol.
+
+    ``params`` are extra top-level fields for request types that take
+    arguments (``get_entity`` takes ``entity_id``, ``get_bus_schema`` takes
+    ``bus_name``). ``id``, ``type`` and ``script`` cannot be overridden.
+    """
+    msg: dict = {
+        "id": request_id or str(uuid.uuid4()),
+        "type": request_type,
+    }
+    for key, value in (params or {}).items():
+        if key not in msg and key != "script":
+            msg[key] = value
+    if script is not None:
+        msg["script"] = base64.b64encode(script.encode("utf-8")).decode("ascii")
+    body = json.dumps(msg).encode("utf-8")
+    return struct.pack(">I", len(body)) + body
+
+
+def _recv_framed(sock: socket.socket, timeout: float) -> dict[str, object]:
+    """Read a length-prefixed JSON response from a socket (sync)."""
+    sock.settimeout(timeout)
+    header = b""
+    while len(header) < 4:
+        chunk = sock.recv(4 - len(header))
+        if not chunk:
+            raise ConnectionError("Connection closed while reading header")
+        header += chunk
+
+    length = struct.unpack(">I", header)[0]
+    if length > _MAX_RESPONSE_BYTES:
+        raise ValueError(f"Response too large: {length} bytes")
+
+    body = b""
+    while len(body) < length:
+        chunk = sock.recv(min(8192, length - len(body)))
+        if not chunk:
+            raise ConnectionError("Connection closed while reading body")
+        body += chunk
+
+    result: dict[str, object] = json.loads(body.decode("utf-8"))
+    return result
+
+
+async def _async_recv_framed(reader: asyncio.StreamReader, timeout: float) -> dict[str, object]:
+    """Read a length-prefixed JSON response from an async reader."""
+    header = await asyncio.wait_for(reader.readexactly(4), timeout=timeout)
+    length = struct.unpack(">I", header)[0]
+    if length > _MAX_RESPONSE_BYTES:
+        raise ValueError(f"Response too large: {length} bytes")
+    body = await asyncio.wait_for(reader.readexactly(length), timeout=timeout)
+    result: dict[str, object] = json.loads(body.decode("utf-8"))
+    return result
+
+
+# ---------------------------------------------------------------------------
+# Legacy protocol helpers — timeout-based I/O for RemoteConsole fallback
+# ---------------------------------------------------------------------------
+
+
+def _recv_all(sock: socket.socket, timeout: float) -> bytes:
+    """Read from a socket until EOF or no more data arrives (legacy protocol).
+
+    Uses the full *timeout* for the first chunk (waiting for the editor to
+    respond), then switches to a short tail timeout to collect any remaining
+    data without blocking unnecessarily.
+    """
+    chunks: list[bytes] = []
+    total = 0
+    original_timeout = sock.gettimeout()
+    try:
+        while total < _MAX_RESPONSE_BYTES:
+            try:
+                chunk = sock.recv(min(8192, _MAX_RESPONSE_BYTES - total))
+                if not chunk:
+                    break  # EOF — server closed connection
+                chunks.append(chunk)
+                total += len(chunk)
+                # After first data, use short timeout to detect end-of-response
+                sock.settimeout(_TAIL_TIMEOUT)
+            except TimeoutError:
+                if chunks:
+                    break  # Got data, just no more coming
+                raise  # No data at all — real timeout
+    finally:
+        sock.settimeout(original_timeout)
+    return b"".join(chunks)
+
+
+async def _async_recv_all(reader: asyncio.StreamReader, timeout: float) -> bytes:
+    """Async equivalent of :func:`_recv_all` (legacy protocol)."""
+    chunks: list[bytes] = []
+    total = 0
+    while total < _MAX_RESPONSE_BYTES:
+        try:
+            read_timeout = timeout if not chunks else _TAIL_TIMEOUT
+            chunk = await asyncio.wait_for(
+                reader.read(min(8192, _MAX_RESPONSE_BYTES - total)),
+                timeout=read_timeout,
+            )
+            if not chunk:
+                break  # EOF
+            chunks.append(chunk)
+            total += len(chunk)
+        except (TimeoutError, asyncio.TimeoutError):
+            if chunks:
+                break
+            raise
+    return b"".join(chunks)
+
+
+# ---------------------------------------------------------------------------
+# TLS helpers
+# ---------------------------------------------------------------------------
+
+
+def _get_tls_context() -> ssl_module.SSLContext | None:
+    """Build an SSL context if TLS is enabled via environment variables."""
+    if os.environ.get("O3DE_EDITOR_TLS", "0") not in ("1", "true"):
+        return None
+
+    ctx = ssl_module.SSLContext(ssl_module.PROTOCOL_TLS_CLIENT)
+
+    verify = os.environ.get("O3DE_EDITOR_TLS_VERIFY", "0")
+    if verify in ("0", "false"):
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl_module.CERT_NONE
+    else:
+        ca_path = os.environ.get("O3DE_EDITOR_TLS_CA")
+        if ca_path:
+            ctx.load_verify_locations(ca_path)
+        else:
+            # Without a CA file, verify against the system's trusted CAs; a bare
+            # PROTOCOL_TLS_CLIENT context trusts nothing, so every handshake failed.
+            ctx.load_default_certs()
+
+    return ctx
+
+
+# ---------------------------------------------------------------------------
+# Sync transport (used by tests)
+# ---------------------------------------------------------------------------
+
+
+def _send_editor_command(
+    command: str,
+    host: str | None = None,
+    port: int | None = None,
+    timeout: float | None = None,
+) -> str:
+    """Send a command to the O3DE Editor and return the response.
+
+    Creates a new TCP connection for each call.  This synchronous variant is
+    kept primarily for test convenience; the async path via
+    :class:`_EditorConnectionPool` is used by all MCP tools.
+    """
+    host = host or _get_editor_host()
+    port = port or _get_editor_port()
+    timeout = _get_editor_timeout() if timeout is None else timeout
+    try:
+        with socket.create_connection((host, port), timeout=timeout) as sock:
+            sock.settimeout(timeout)
+            sock.sendall(command.encode("utf-8") + b"\n")
+            response = _recv_all(sock, timeout)
+            return response.decode("utf-8", errors="replace").strip()
+    except (ConnectionRefusedError, TimeoutError, OSError) as exc:
+        return _connection_error_response(exc, host, port, timeout)
+
+
+# ---------------------------------------------------------------------------
+# Async transport — persistent connection pool with protocol auto-detection
+# ---------------------------------------------------------------------------
+
+
+# Protocol enum
+_PROTO_UNKNOWN = 0
+_PROTO_AGENT_SERVER = 1  # length-prefixed JSON (AiCompanion AgentServer)
+_PROTO_LEGACY = 2  # raw text (RemoteConsole)
+
+
+class _EditorConnectionPool:
+    """Maintains a persistent async TCP connection to the O3DE Editor.
+
+    Reuses a single connection across multiple tool calls to avoid TCP
+    handshake overhead.  Automatically reconnects when the connection is
+    lost or when host/port configuration changes.
+
+    Supports two protocols:
+      - **AgentServer** (preferred): length-prefixed JSON framing, used by
+        the AiCompanion gem's built-in server.
+      - **Legacy**: raw text ``pyRunScript`` commands over RemoteConsole.
+
+    Protocol is auto-detected on first connection by sending a framed
+    ``ping`` request. If a valid framed JSON response is received, the
+    AgentServer protocol is used for the connection lifetime. Otherwise,
+    the pool falls back to legacy mode.
+
+    Includes a fast-fail window: after a connection failure, subsequent
+    calls within ``_FAST_FAIL_WINDOW`` seconds return an error immediately
+    instead of re-attempting the TCP connection.
+    """
+
+    _FAST_FAIL_WINDOW = 5.0
+
+    def __init__(self) -> None:
+        self._reader: asyncio.StreamReader | None = None
+        self._writer: asyncio.StreamWriter | None = None
+        self._host: str | None = None
+        self._port: int | None = None
+        self._loop: asyncio.AbstractEventLoop | None = None
+        self._lock: asyncio.Lock | None = None
+        self._lock_loop: asyncio.AbstractEventLoop | None = None
+        self._last_failure_time: float | None = None
+        self._protocol: int = _PROTO_UNKNOWN
+        # The gem's API version on this connection, cached until it closes.
+        self._api_version: tuple[int, ...] | None = None
+        self._api_version_known: bool = False
+
+    async def send_script(
+        self,
+        script: str,
+        host: str | None = None,
+        port: int | None = None,
+        timeout: float | None = None,
+    ) -> str:
+        """Encode and send a Python script, returning the output text."""
+        host = host or _get_editor_host()
+        port = port or _get_editor_port()
+        timeout = _get_editor_timeout() if timeout is None else timeout
+        connect_timeout = _get_editor_connect_timeout()
+
+        current_loop = asyncio.get_running_loop()
+        if self._lock is None or self._lock_loop is not current_loop:
+            self._lock = asyncio.Lock()
+            self._lock_loop = current_loop
+
+        async with self._lock:
+            if self._last_failure_time is not None:
+                elapsed = time.monotonic() - self._last_failure_time
+                if elapsed < self._FAST_FAIL_WINDOW:
+                    return _format_error(
+                        "editor_unavailable",
+                        f"O3DE Editor is not reachable on {host}:{port}. "
+                        "Start the editor with the AiCompanion gem enabled, "
+                        "or call get_capabilities() to check status. "
+                        "This operation requires a running editor and "
+                        "cannot be performed via CLI.",
+                    )
+
+            try:
+                reader, writer = await self._ensure_connected(host, port, connect_timeout)
+            except (
+                ConnectionRefusedError,
+                ConnectionError,
+                TimeoutError,
+                asyncio.TimeoutError,
+                OSError,
+            ) as exc:
+                self._last_failure_time = time.monotonic()
+                await self._close()
+                return _connection_error_response(exc, host, port, connect_timeout)
+
+            try:
+                if self._protocol == _PROTO_AGENT_SERVER:
+                    return await self._send_framed_script(reader, writer, script, timeout)
+                else:
+                    return await self._send_legacy_script(reader, writer, script, timeout)
+            except (TimeoutError, asyncio.TimeoutError):
+                self._last_failure_time = time.monotonic()
+                await self._close()
+                return _format_error(
+                    "timeout",
+                    f"O3DE Editor command did not complete within {timeout}s. The editor "
+                    "may still be running the script — increase O3DE_EDITOR_TIMEOUT for "
+                    "long operations (level loads, game-mode entry, asset compilation).",
+                )
+            except (ConnectionRefusedError, OSError) as exc:
+                self._last_failure_time = time.monotonic()
+                await self._close()
+                return _connection_error_response(exc, host, port, timeout)
+
+    async def send_request(
+        self,
+        request_type: str,
+        host: str | None = None,
+        port: int | None = None,
+        timeout: float | None = None,
+        params: dict[str, object] | None = None,
+    ) -> dict[str, object]:
+        """Send a script-less framed request and return the decoded response.
+
+        ``params`` are passed through as extra request fields (see
+        ``_build_framed_request``).
+
+        The AiCompanion AgentServer answers ``ping``, ``get_api_version``,
+        ``get_scene_snapshot``, ``get_entity_tree``, ``get_entity``,
+        ``validate_scene``, ``get_bus_schema`` and (from gem 0.5.0)
+        ``create_entity``, ``set_transform`` and ``delete_entity`` natively in
+        C++, without the editor's Python interpreter. The legacy
+        RemoteConsole protocol has no equivalent, so on that transport this
+        returns a structured ``{"status": "error", "code": "agent_server_required"}``
+        dict instead of a response.
+        """
+        host = host or _get_editor_host()
+        port = port or _get_editor_port()
+        timeout = _get_editor_timeout() if timeout is None else timeout
+        connect_timeout = _get_editor_connect_timeout()
+
+        current_loop = asyncio.get_running_loop()
+        if self._lock is None or self._lock_loop is not current_loop:
+            self._lock = asyncio.Lock()
+            self._lock_loop = current_loop
+
+        async with self._lock:
+            if self._last_failure_time is not None:
+                elapsed = time.monotonic() - self._last_failure_time
+                if elapsed < self._FAST_FAIL_WINDOW:
+                    return {
+                        "status": "error",
+                        "code": "editor_unavailable",
+                        "error": f"O3DE Editor is not reachable on {host}:{port}.",
+                    }
+            try:
+                reader, writer = await self._ensure_connected(host, port, connect_timeout)
+            except (
+                ConnectionRefusedError,
+                ConnectionError,
+                TimeoutError,
+                asyncio.TimeoutError,
+                OSError,
+            ) as exc:
+                self._last_failure_time = time.monotonic()
+                await self._close()
+                parsed: dict[str, object] = json.loads(
+                    _connection_error_response(exc, host, port, connect_timeout)
+                )
+                parsed["error"] = parsed.get("message", str(exc))
+                return parsed
+
+            if self._protocol != _PROTO_AGENT_SERVER:
+                return {
+                    "status": "error",
+                    "code": "agent_server_required",
+                    "error": (
+                        f"{request_type} needs the AiCompanion AgentServer; the editor on "
+                        f"{host}:{port} only speaks the legacy RemoteConsole protocol."
+                    ),
+                }
+
+            try:
+                writer.write(_build_framed_request(request_type, params=params))
+                await writer.drain()
+                response = await _async_recv_framed(reader, timeout)
+            except (TimeoutError, asyncio.TimeoutError):
+                self._last_failure_time = time.monotonic()
+                await self._close()
+                return {
+                    "status": "error",
+                    "code": "timeout",
+                    "error": f"{request_type} did not complete within {timeout}s.",
+                }
+            except (ConnectionRefusedError, OSError, asyncio.IncompleteReadError) as exc:
+                self._last_failure_time = time.monotonic()
+                await self._close()
+                return {"status": "error", "code": "connection_error", "error": str(exc)}
+            self._last_failure_time = None
+            return response
+
+    async def _send_framed_script(
+        self,
+        reader: asyncio.StreamReader,
+        writer: asyncio.StreamWriter,
+        script: str,
+        timeout: float,
+    ) -> str:
+        """Send a script via the AgentServer framed JSON protocol."""
+        request_bytes = _build_framed_request("execute_python", script=script)
+        writer.write(request_bytes)
+        await writer.drain()
+        response = await _async_recv_framed(reader, timeout)
+        self._last_failure_time = None
+
+        if response.get("status") == "error":
+            # Keep the gem's code (secure_mode, execution_failed, ...) when it sends one.
+            code = str(response.get("code") or "editor_error")
+            error_msg = str(response.get("error", "Unknown error"))
+            return _format_error(code, error_msg)
+
+        return str(response.get("output", ""))
+
+    async def _send_legacy_script(
+        self,
+        reader: asyncio.StreamReader,
+        writer: asyncio.StreamWriter,
+        script: str,
+        timeout: float,
+    ) -> str:
+        """Send a script via the legacy RemoteConsole text protocol."""
+        command = _encode_script(script)
+        writer.write(command.encode("utf-8") + b"\n")
+        await writer.drain()
+        response = await _async_recv_all(reader, timeout)
+        self._last_failure_time = None
+        return response.decode("utf-8", errors="replace").strip()
+
+    async def _ensure_connected(
+        self, host: str, port: int, connect_timeout: float
+    ) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
+        current_loop = asyncio.get_running_loop()
+        if (
+            self._writer is not None
+            and not self._writer.is_closing()
+            and self._loop is current_loop
+            and self._host == host
+            and self._port == port
+        ):
+            return self._reader, self._writer  # type: ignore[return-value]
+
+        had_previous = self._writer is not None
+        await self._close()
+
+        if had_previous:
+            await asyncio.sleep(0.5)
+
+        ssl_ctx = _get_tls_context()
+        max_attempts = 3 if had_previous else 1
+        last_err: Exception | None = None
+        reader, writer = None, None
+        for attempt in range(max_attempts):
+            try:
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection(host, port, ssl=ssl_ctx), timeout=connect_timeout
+                )
+                last_err = None
+                break
+            except (OSError, ConnectionError) as e:
+                last_err = e
+                if attempt < max_attempts - 1:
+                    await asyncio.sleep(0.5 * (attempt + 1))
+        if last_err is not None or reader is None or writer is None:
+            raise last_err if last_err else ConnectionError("Failed to connect")
+        self._reader = reader
+        self._writer = writer
+        self._host = host
+        self._port = port
+        self._loop = current_loop
+
+        # Auto-detect protocol. Detection may reconnect (legacy fallback), so
+        # always hand back the pool's *current* sockets rather than the locals
+        # captured above, which detection may have already closed.
+        self._protocol = await self._detect_protocol(host, port, connect_timeout)
+        logger.info(
+            "Connected to %s:%d (protocol=%s, tls=%s)",
+            host,
+            port,
+            "agent_server" if self._protocol == _PROTO_AGENT_SERVER else "legacy",
+            "yes" if ssl_ctx else "no",
+        )
+
+        return self._reader, self._writer  # type: ignore[return-value]
+
+    async def _detect_protocol(self, host: str, port: int, connect_timeout: float) -> int:
+        """Detect whether the server speaks AgentServer or legacy protocol.
+
+        Sends a framed ``ping`` on the current connection. If a valid framed
+        JSON response with ``"status": "ok"`` comes back, the server is an
+        AgentServer and the connection is left ready for use.
+
+        If the server sends a non-framed response (e.g. raw text), it's a
+        legacy RemoteConsole — reconnect fresh for the text protocol.
+
+        If the ping times out or the connection errors, we do NOT fall back
+        to legacy (which would send ``pyRunScript`` to an AgentServer and
+        produce a "Message too large" error on the server). Instead, we
+        raise the error so the caller can handle it.
+        """
+        ping_bytes = _build_framed_request("ping")
+        self._writer.write(ping_bytes)  # type: ignore[union-attr]
+        await self._writer.drain()  # type: ignore[union-attr]
+
+        try:
+            response = await _async_recv_framed(self._reader, timeout=5.0)  # type: ignore[arg-type]
+        except (asyncio.TimeoutError, TimeoutError):
+            await self._close()
+            raise ConnectionError("Ping timed out during protocol detection")
+        except (ConnectionError, OSError, asyncio.IncompleteReadError) as exc:
+            await self._close()
+            raise ConnectionError(f"Connection error during protocol detection: {exc}")
+        except (ValueError, json.JSONDecodeError):
+            response = None
+
+        if isinstance(response, dict) and response.get("status") == "ok":
+            return _PROTO_AGENT_SERVER
+
+        await self._close()
+        ssl_ctx = _get_tls_context()
+        reader, writer = await asyncio.wait_for(
+            asyncio.open_connection(host, port, ssl=ssl_ctx), timeout=connect_timeout
+        )
+        self._reader = reader
+        self._writer = writer
+        self._host = host
+        self._port = port
+        self._loop = asyncio.get_running_loop()
+        return _PROTO_LEGACY
+
+    async def _close(self) -> None:
+        # A reconnect may reach a different gem, so forget its API version.
+        self._api_version = None
+        self._api_version_known = False
+        if self._writer is not None:
+            current_loop = None
+            try:
+                current_loop = asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+            if self._loop is None or self._loop is current_loop:
+                try:
+                    self._writer.close()
+                    await self._writer.wait_closed()
+                except (OSError, RuntimeError):
+                    pass
+            else:
+                try:
+                    sock = self._writer.get_extra_info("socket")
+                    if sock is not None:
+                        sock.close()
+                except Exception:
+                    pass
+            self._reader = None
+            self._writer = None
+            self._host = None
+            self._port = None
+            self._loop = None
+            self._protocol = _PROTO_UNKNOWN
+
+
+# Module-level pool instance shared by all tools
+_pool = _EditorConnectionPool()
+
+
+async def _gem_api_version() -> tuple[int, ...] | None:
+    """The AiCompanion gem's API version on the current connection, or None.
+
+    None means no gem answered (the legacy RemoteConsole transport, an editor
+    that is down, or a reply without a version). Cached until the connection
+    closes, so a reconnect to a different gem is noticed.
+    """
+    if getattr(_pool, "_api_version_known", False) is True:
+        cached = _pool._api_version
+        return cached if isinstance(cached, tuple) else None
+    version: tuple[int, ...] | None = None
+    try:
+        response = await _pool.send_request("get_api_version")
+        if isinstance(response, dict) and response.get("status") == "ok":
+            parsed = json.loads(str(response.get("output", "")))
+            text = str(parsed.get("api_version", "")) if isinstance(parsed, dict) else ""
+            parts = text.split(".")
+            if parts and all(part.isdigit() for part in parts):
+                version = tuple(int(part) for part in parts)
+    except (json.JSONDecodeError, TypeError, OSError, ConnectionError, TimeoutError):
+        version = None
+    if isinstance(_pool, _EditorConnectionPool):
+        _pool._api_version = version
+        _pool._api_version_known = version is not None
+    return version
+
+
+# Gem API that takes set_transform "scale" as [x, y, z] and "rotation_quaternion".
+_API_NATIVE_SCALE_AND_QUATERNION = (0, 5, 0)
+
+
+# ---------------------------------------------------------------------------
+# Script execution helpers
+# ---------------------------------------------------------------------------
+
+
+async def _async_run_editor_script(script: str, timeout: float | None = None) -> str:
+    """Encode a Python script and send it to the editor via the pool.
+
+    ``timeout`` overrides the per-command execution timeout for this call;
+    ``None`` uses the O3DE_EDITOR_TIMEOUT default.
+    """
+    if "_resolve_entity_id" in script:
+        script = _wrap_for_entity_lookup(script)
+    if "_o3de_fail(" in script:
+        script = _FAIL_SNIPPET + script
+    return await _pool.send_script(script, timeout=timeout)
+
+
+def _run_editor_script(script: str) -> str:
+    """Encode a Python script and send it to the editor (sync)."""
+    return _send_editor_command(_encode_script(script))
+
+
+# ---------------------------------------------------------------------------
+# Tool registration
+# ---------------------------------------------------------------------------
+
+
+async def _native_request(request_type: str, params: dict[str, object] | None = None) -> str:
+    """Run one of the AgentServer's C++ request types and return its output.
+
+    The AiCompanion gem serves these natively (scene snapshot, validator and
+    EMotion FX buses), so they work even when ``execute_python`` is disabled by
+    the gem's secure mode. Any reply whose status is not ``ok`` is returned as
+    the failure envelope, keeping the gem's ``code`` when it sends one.
+    """
+    response = await _pool.send_request(request_type, params=params)
+    if response.get("status") != "ok":
+        code = str(response.get("code") or "editor_error")
+        message = str(response.get("error") or response.get("message") or "Unknown error")
+        return _format_error(code, message)
+    return str(response.get("output", ""))
+
+
+def register_editor_tools(mcp: MCPServer) -> None:
+    """Register all editor automation tools with the MCP server."""
+
+    # --- Script execution ---
+
+    @mcp.tool()
+    async def run_editor_python(script: str, timeout: float | None = None) -> str:
+        """Execute a Python script inside the running O3DE Editor.
+
+        The script runs in the editor's embedded Python interpreter and has
+        access to the full azlmbr (EditorPythonBindings) API. Use this for
+        custom editor automation that isn't covered by other tools.
+
+        Args:
+            script: Python code to execute. Has access to azlmbr modules.
+            timeout: Optional per-call execution timeout in seconds. The editor
+                runs the script synchronously and does not reply until it
+                finishes, so raise this for known-heavy operations. Omit to use
+                the O3DE_EDITOR_TIMEOUT default (600s).
+        """
+        return await _async_run_editor_script(script, timeout=timeout)
+
+    # --- Native AgentServer requests (no editor Python involved) ---
+
+    async def _native_mutation(request_type: str, params: dict[str, object]) -> str | None:
+        """Try one of the gem's native mutation request types (gem 0.5.0 or later).
+
+        Returns the gem's ``output`` JSON on success, a formatted error for
+        anything the gem itself refused (validation failures, a missing
+        entity, the editor being down), and ``None`` only when the request
+        type is unavailable: an older gem answers a message starting with
+        ``Unknown request type`` (newer gems also set the code
+        ``unknown_request_type``) and the legacy RemoteConsole transport
+        reports ``agent_server_required``.
+        Callers fall back to their editor-Python script on ``None`` and must
+        not retry a refused mutation through Python, which would skip the
+        gem's validation.
+        """
+        response = await _pool.send_request(request_type, params=params)
+        if response.get("status") == "ok":
+            return str(response.get("output", ""))
+        code = str(response.get("code") or "editor_error")
+        message = str(response.get("error") or response.get("message") or "Unknown error")
+        # The gem echoes user input in some refusals ("invalid entity name
+        # '...'"), so only a message that *is* the unknown-type reply counts.
+        if code in ("agent_server_required", "unknown_request_type") or message.startswith(
+            "Unknown request type"
+        ):
+            return None
+        return _format_error(code, message)
+
+    @mcp.tool()
+    async def get_scene_snapshot() -> str:
+        """Return the full scene state as JSON, served natively by the AiCompanion gem.
+
+        Entities, components, transforms and hierarchy in one call, produced
+        by the gem's C++ SceneSnapshotProvider rather than an editor Python
+        script. Cheaper than ``list_entities`` plus per-entity queries, and it
+        still works when the AgentServer runs in secure mode.
+        """
+        return await _native_request("get_scene_snapshot")
+
+    @mcp.tool()
+    async def get_entity_tree() -> str:
+        """Return the entity hierarchy as a nested JSON tree.
+
+        Served natively by the AiCompanion gem, without editor Python.
+        """
+        return await _native_request("get_entity_tree")
+
+    @mcp.tool()
+    async def get_entity(entity_id: EntityIdArg) -> str:
+        """Return one entity's name, transform, parent and component list as JSON.
+
+        Served natively by the AiCompanion gem's C++ (``get_entity`` request
+        type, gem 0.4.0 or later) with no editor Python, so it is the cheapest
+        way to look at a single entity and works in the gem's secure mode. On
+        gem 0.6.0 the reply also carries ``non_uniform_scale`` and
+        ``effective_scale``, and ids are decimal strings. An unknown id is the
+        error ``not_found`` (gem 0.5.0 and earlier answered with the gem's own
+        ``{"entity_id": ..., "error": ...}`` object instead).
+        """
+        entity_id = _validate_entity_id(entity_id)
+        return await _native_request("get_entity", {"entity_id": entity_id.strip("[]")})
+
+    @mcp.tool()
+    async def validate_scene() -> str:
+        """Run the AiCompanion gem's scene validation and return the report as JSON.
+
+        Flags common problems (missing cameras, entities without transforms,
+        physics bodies without colliders, and similar) without executing any
+        editor Python.
+        """
+        return await _native_request("validate_scene")
+
+    # --- Entity management ---
+
+    @mcp.tool()
+    async def list_entities() -> str:
+        """List all entities in the currently open O3DE level.
+
+        Returns a JSON array of objects with 'id' and 'name' fields.
+        """
+        script = textwrap.dedent("""\
+            import azlmbr.entity as entity
+            import azlmbr.bus as bus
+            import azlmbr.editor as editor
+            import json
+
+            search_filter = entity.SearchFilter()
+            entity_ids = entity.SearchBus(bus.Broadcast, 'SearchEntities', search_filter)
+
+            results = []
+            for eid in (entity_ids or []):
+                name = editor.EditorEntityInfoRequestBus(bus.Event, 'GetName', eid)
+                results.append({'id': str(eid), 'name': name})
+
+            print(json.dumps(results))
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def create_entity(name: str, parent_id: OptionalEntityIdArg = "") -> str:
+        """Create a new entity in the current O3DE level.
+
+        Tries the AiCompanion gem's native ``create_entity`` request first
+        (gem 0.5.0 or later, works in the gem's secure mode) and returns its
+        JSON verbatim: ``{"entity_id": ..., "name": ..., "position": [...]}``.
+        The name is checked here with the gem's own rule (a letter first, then
+        letters, digits, ``_`` or ``-``, at most 128 characters) before either
+        path, and the gem validates the parent; a refusal is returned as an
+        error. Older gems and the legacy transport fall back to editor Python,
+        which prints ``Created entity [<id>]``.
+
+        Args:
+            name: Name for the new entity.
+            parent_id: Optional entity ID of the parent. Omit (or pass null) for root-level.
+        """
+        name = _validate_entity_name(name)
+        if parent_id:
+            parent_id = _validate_entity_id(parent_id)
+
+        native_params: dict[str, object] = {"name": name}
+        if parent_id:
+            native_params["parent_id"] = parent_id.strip("[]")
+        native = await _native_mutation("create_entity", native_params)
+        if native is not None:
+            return native
+
+        params = json.dumps({"name": name, "parent_id": parent_id})
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            _name = _params['name']
+            _parent_id_str = _params['parent_id']
+
+            # With no level open, CreateNewEntity raises a modal "Entity Creation Error"
+            # dialog on the editor's main thread. Nothing dispatches until a human clicks
+            # OK, so every later request times out. Refuse instead.
+            _level = editor.ToolsApplicationRequestBus(bus.Broadcast, 'GetCurrentLevelEntityId')
+            if _level is None or not _level.IsValid():
+                print(json.dumps({{
+                    'status': 'error',
+                    'code': 'no_level_open',
+                    'message': 'No level is open, so an entity cannot be created. '
+                               'Call load_level or create_level first.',
+                }}))
+            else:
+                if _parent_id_str:
+                    parent = _resolve_entity_id(_parent_id_str)
+                else:
+                    parent = entity.EntityId()
+
+                new_id = editor.ToolsApplicationRequestBus(bus.Broadcast, 'CreateNewEntity', parent)
+                editor.EditorEntityAPIBus(bus.Event, 'SetName', new_id, _name)
+                print(f'Created entity {{new_id}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def delete_entity(entity_id: EntityIdArg) -> str:
+        """Delete an entity from the current O3DE level.
+
+        Tries the gem's native ``delete_entity`` request first (gem 0.5.0 or
+        later, works in secure mode) and returns its JSON verbatim:
+        ``{"deleted": <id>}``. A missing entity or the level's root entity is
+        refused by the gem and returned as an error. Older gems and the legacy
+        transport fall back to editor Python, which prints
+        ``Deleted entity [<id>]``.
+
+        Args:
+            entity_id: The entity ID to delete.
+        """
+        entity_id = _validate_entity_id(entity_id)
+        native = await _native_mutation("delete_entity", {"entity_id": entity_id.strip("[]")})
+        if native is not None:
+            return native
+
+        params = json.dumps({"entity_id": entity_id})
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+            editor.ToolsApplicationRequestBus(bus.Broadcast, 'DeleteEntityById', eid)
+            print(f'Deleted entity {{eid}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def duplicate_entity(entity_id: EntityIdArg) -> str:
+        """Duplicate an entity (and its children) in the current O3DE level.
+
+        Args:
+            entity_id: The entity ID to duplicate.
+        """
+        entity_id = _validate_entity_id(entity_id)
+        params = json.dumps({"entity_id": entity_id})
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            # DuplicateEntitiesInInstance needs the editor's own EntityId object: an id
+            # rebuilt with EntityId(int(...)) is not usable (on 26.10.0 it is invalid for
+            # every n), so duplication would fail with "empty list of input entities".
+            # Take the id object straight from the entity search.
+            _wanted = str(_params['entity_id']).strip('[]')
+            eid = None
+            _all = entity.SearchBus(bus.Broadcast, 'SearchEntities', entity.SearchFilter())
+            for _cand in (_all or []):
+                if str(_cand).strip('[]') == _wanted:
+                    eid = _cand
+                    break
+            if eid is None:
+                print(json.dumps({{'status': 'error', 'code': 'entity_not_found',
+                                   'message': f'Entity {{_wanted}} not found'}}))
+            else:
+                # 'CloneEntity' on ToolsApplicationRequestBus is not reflected to Python in
+                # any O3DE version; the call returned None and this tool reported a
+                # duplicate that never happened. Duplication goes through the prefab system.
+                import azlmbr.prefab as prefab
+                outcome = prefab.PrefabPublicRequestBus(
+                    bus.Broadcast, 'DuplicateEntitiesInInstance', [eid]
+                )
+                if not hasattr(outcome, 'IsSuccess') or not outcome.IsSuccess():
+                    err = outcome.GetError() if hasattr(outcome, 'GetError') else 'no outcome'
+                    print(json.dumps({{'status': 'error', 'code': 'duplicate_failed',
+                                       'message': f'Failed to duplicate {{eid}}: {{err}}'}}))
+                else:
+                    new_ids = list(outcome.GetValue() or [])
+                    if not new_ids:
+                        print(json.dumps({{'status': 'error', 'code': 'duplicate_failed',
+                                           'message': f'Duplicate of {{eid}} returned nothing'}}))
+                    else:
+                        new_id = new_ids[0]
+                        name = editor.EditorEntityInfoRequestBus(bus.Event, 'GetName', new_id)
+                        print(json.dumps({{'id': str(new_id), 'name': name}}))
+        """)
+        return await _async_run_editor_script(script)
+
+    # --- Component management ---
+
+    @mcp.tool()
+    async def get_entity_components(entity_id: EntityIdArg) -> str:
+        """List all components attached to an entity.
+
+        Args:
+            entity_id: The entity ID to inspect.
+
+        Returns:
+            JSON array of objects with 'component_id' and 'type' fields.
+        """
+        entity_id = _validate_entity_id(entity_id)
+        params = json.dumps({"entity_id": entity_id})
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+            gt = entity.EntityType().Game
+
+            results = []
+            # Enumerate every component type the editor can put on a game entity, then ask
+            # which of them this entity carries. There is no reflected "list components of
+            # entity" call; the previous 'GetComponentsOfEntity' / 'GetComponentName' pair
+            # never existed, so only a hard-coded list of names was ever checked.
+            names = editor.EditorComponentAPIBus(
+                bus.Broadcast, 'BuildComponentTypeNameListByEntityType', gt
+            ) or []
+            for cn in names:
+                tids = editor.EditorComponentAPIBus(
+                    bus.Broadcast, 'FindComponentTypeIdsByEntityType', [cn], gt
+                )
+                if not tids:
+                    continue
+                tid = tids[0]
+                if '00000000-0000-0000-0000-000000000000' in str(tid):
+                    continue
+                if not editor.EditorComponentAPIBus(bus.Broadcast, 'HasComponentOfType', eid, tid):
+                    continue
+                out = editor.EditorComponentAPIBus(bus.Broadcast, 'GetComponentsOfType', eid, tid)
+                if hasattr(out, 'IsSuccess') and out.IsSuccess():
+                    for pair in (out.GetValue() or []):
+                        results.append({{'component_id': str(pair), 'type': cn}})
+                else:
+                    results.append({{'component_id': '', 'type': cn}})
+            print(json.dumps(results))
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def add_component(entity_id: EntityIdArg, component_type: str) -> str:
+        """Add a component to an entity.
+
+        Args:
+            entity_id: The entity ID to add the component to.
+            component_type: Component type name (e.g. 'Mesh', 'PhysX Dynamic Rigid Body').
+        """
+        entity_id = _validate_entity_id(entity_id)
+        component_type = _validate_component_type(component_type)
+        params = json.dumps({"entity_id": entity_id, "component_type": component_type})
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+            comp_type = _params['component_type']
+
+            type_ids = editor.EditorComponentAPIBus(
+                bus.Broadcast, 'FindComponentTypeIdsByEntityType',
+                [comp_type], entity.EntityType().Game
+            )
+            # An unknown name comes back as a list holding the null uuid, not an
+            # empty list, so treat that as not found too.
+            _null = '00000000-0000-0000-0000-000000000000'
+            if not type_ids or _null in str(type_ids[0]):
+                _o3de_fail('component_type_not_found', f'Component type "{{comp_type}}" not found')
+            else:
+                tid = type_ids[0]
+                outcome = editor.EditorComponentAPIBus(
+                    bus.Broadcast, 'AddComponentOfType', eid, tid
+                )
+                if hasattr(outcome, 'IsSuccess') and outcome.IsSuccess():
+                    print(f'Added {{comp_type}} to {{eid}}')
+                else:
+                    err = outcome.GetError() if hasattr(outcome, 'GetError') else outcome
+                    _o3de_fail('add_component_failed', f'Failed to add {{comp_type}}: {{err}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def get_component_property(
+        entity_id: EntityIdArg, component_type: str, property_path: str
+    ) -> str:
+        """Get a property value from a component on an entity.
+
+        Args:
+            entity_id: The entity ID.
+            component_type: Component type name (e.g. 'Transform').
+            property_path: Property path using '|' separator
+                           (e.g. 'Controller|Configuration|Model Asset').
+        """
+        entity_id = _validate_entity_id(entity_id)
+        component_type = _validate_component_type(component_type)
+        params = json.dumps(
+            {
+                "entity_id": entity_id,
+                "component_type": component_type,
+                "property_path": property_path,
+            }
+        )
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+
+            type_ids = editor.EditorComponentAPIBus(
+                bus.Broadcast, 'FindComponentTypeIdsByEntityType',
+                [_params['component_type']], entity.EntityType().Game
+            )
+            _null = '00000000-0000-0000-0000-000000000000'
+            pair = None
+            if not type_ids or _null in str(type_ids[0]):
+                _o3de_fail(
+                    'component_type_not_found',
+                    f'Component type "{{_params["component_type"]}}" not found',
+                )
+            else:
+                found = editor.EditorComponentAPIBus(
+                    bus.Broadcast, 'GetComponentOfType', eid, type_ids[0]
+                )
+                if hasattr(found, 'IsSuccess') and found.IsSuccess():
+                    pair = found.GetValue()
+                else:
+                    _o3de_fail(
+                        'component_not_on_entity',
+                        f'Component "{{_params["component_type"]}}" is not on entity {{eid}}',
+                    )
+            if pair is not None:
+                prop = editor.EditorComponentAPIBus(
+                    bus.Broadcast, 'GetComponentProperty', pair, _params['property_path']
+                )
+                if hasattr(prop, 'IsSuccess') and prop.IsSuccess():
+                    print(json.dumps({{
+                        'property': _params['property_path'], 'value': str(prop.GetValue()),
+                    }}))
+                else:
+                    _why = prop.GetError() if hasattr(prop, 'GetError') else prop
+                    _o3de_fail(
+                        'get_property_failed',
+                        f'Could not read {{_params["property_path"]}}: {{_why}}',
+                    )
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def set_component_property(
+        entity_id: EntityIdArg, component_type: str, property_path: str, value: str
+    ) -> str:
+        """Set a property value on a component.
+
+        Args:
+            entity_id: The entity ID.
+            component_type: Component type name (e.g. 'Transform').
+            property_path: Property path using '|' separator
+                           (e.g. 'Controller|Configuration|Model Asset').
+            value: The value to set (as a string — booleans as 'true'/'false',
+                   numbers as their string representation).
+        """
+        entity_id = _validate_entity_id(entity_id)
+        component_type = _validate_component_type(component_type)
+        params = json.dumps(
+            {
+                "entity_id": entity_id,
+                "component_type": component_type,
+                "property_path": property_path,
+                "value": value,
+            }
+        )
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+            raw = _params['value']
+
+            # Attempt type coercion for common types
+            if raw.lower() in ('true', 'false'):
+                val = raw.lower() == 'true'
+            else:
+                try:
+                    val = float(raw)
+                    if val == int(val):
+                        val = int(val)
+                except ValueError:
+                    val = raw
+
+            type_ids = editor.EditorComponentAPIBus(
+                bus.Broadcast, 'FindComponentTypeIdsByEntityType',
+                [_params['component_type']], entity.EntityType().Game
+            )
+            _null = '00000000-0000-0000-0000-000000000000'
+            pair = None
+            if not type_ids or _null in str(type_ids[0]):
+                _o3de_fail(
+                    'component_type_not_found',
+                    f'Component type "{{_params["component_type"]}}" not found',
+                )
+            else:
+                found = editor.EditorComponentAPIBus(
+                    bus.Broadcast, 'GetComponentOfType', eid, type_ids[0]
+                )
+                if hasattr(found, 'IsSuccess') and found.IsSuccess():
+                    pair = found.GetValue()
+                else:
+                    _o3de_fail(
+                        'component_not_on_entity',
+                        f'Component "{{_params["component_type"]}}" is not on entity {{eid}}',
+                    )
+            if pair is not None:
+                result = editor.EditorComponentAPIBus(
+                    bus.Broadcast, 'SetComponentProperty', pair, _params['property_path'], val
+                )
+                if hasattr(result, 'IsSuccess') and result.IsSuccess():
+                    print(f'Set {{_params["property_path"]}} = {{val}}')
+                else:
+                    _why = result.GetError() if hasattr(result, 'GetError') else result
+                    _o3de_fail(
+                        'set_property_failed',
+                        f'Could not set {{_params["property_path"]}} to {{val!r}}: {{_why}}',
+                    )
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def assign_asset(
+        entity_id: EntityIdArg, component_type: str, property_path: str, asset_path: str
+    ) -> str:
+        """Assign an asset to a component property by resolving the asset path.
+
+        ``asset_path`` is the product path in the asset catalog (for example
+        ``objects/thing.fbx.azmodel``). The property is read back after setting,
+        and only an assignment that holds is reported as done; an unknown asset,
+        component or property, or a value that does not stick, is returned as an
+        error.
+        """
+        entity_id = _validate_entity_id(entity_id)
+        component_type = _validate_component_type(component_type)
+        asset_path = asset_path.strip()
+        if not asset_path:
+            raise ValueError("asset_path cannot be empty.")
+        if ".." in asset_path:
+            raise ValueError(f"asset_path must not contain '..': {asset_path!r}")
+        params = json.dumps(
+            {
+                "entity_id": entity_id,
+                "component_type": component_type,
+                "property_path": property_path,
+                "asset_path": asset_path,
+            }
+        )
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import azlmbr.asset as asset
+            import azlmbr.math as math
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+            comp_type = _params['component_type']
+            prop_path = _params['property_path']
+            asset_path = _params['asset_path']
+
+            # The catalog answers an invalid AssetId, not None, for an unknown path.
+            asset_id = asset.AssetCatalogRequestBus(
+                bus.Broadcast, 'GetAssetIdByPath', asset_path, math.Uuid(), False
+            )
+            type_ids = editor.EditorComponentAPIBus(
+                bus.Broadcast, 'FindComponentTypeIdsByEntityType',
+                [comp_type], entity.EntityType().Game
+            )
+            _null = '00000000-0000-0000-0000-000000000000'
+            if asset_id is None or not asset_id.is_valid():
+                _o3de_fail(
+                    'asset_not_found',
+                    f'No asset at {{asset_path}} in the asset catalog; pass the product '
+                    f'path (for example objects/thing.fbx.azmodel)',
+                )
+            elif not type_ids or _null in str(type_ids[0]):
+                _o3de_fail('component_type_not_found', f'Component type "{{comp_type}}" not found')
+            else:
+                found = editor.EditorComponentAPIBus(
+                    bus.Broadcast, 'GetComponentOfType', eid, type_ids[0]
+                )
+                if not hasattr(found, 'IsSuccess') or not found.IsSuccess():
+                    _o3de_fail(
+                        'component_not_on_entity',
+                        f'Component "{{comp_type}}" is not on entity {{eid}}',
+                    )
+                else:
+                    pair = found.GetValue()
+                    result = editor.EditorComponentAPIBus(
+                        bus.Broadcast, 'SetComponentProperty', pair, prop_path, asset_id
+                    )
+                    if not hasattr(result, 'IsSuccess') or not result.IsSuccess():
+                        _why = result.GetError() if hasattr(result, 'GetError') else result
+                        _o3de_fail(
+                            'set_property_failed',
+                            f'Could not set {{prop_path}} on {{comp_type}}: {{_why}}',
+                        )
+                    else:
+                        # Read it back: report only an assignment that actually holds.
+                        back = editor.EditorComponentAPIBus(
+                            bus.Broadcast, 'GetComponentProperty', pair, prop_path
+                        )
+                        got = None
+                        if hasattr(back, 'IsSuccess') and back.IsSuccess():
+                            got = back.GetValue()
+                        if got is None or str(got) != str(asset_id):
+                            _o3de_fail(
+                                'assign_asset_failed',
+                                f'{{prop_path}} reads back {{got}}, not {{asset_id}}',
+                            )
+                        else:
+                            print(f'Assigned asset {{asset_path}} to {{prop_path}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def remove_component(entity_id: EntityIdArg, component_type: str) -> str:
+        """Remove a component from an entity."""
+        entity_id = _validate_entity_id(entity_id)
+        component_type = _validate_component_type(component_type)
+        params = json.dumps({"entity_id": entity_id, "component_type": component_type})
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+            comp_type = _params['component_type']
+
+            type_ids = editor.EditorComponentAPIBus(
+                bus.Broadcast, 'FindComponentTypeIdsByEntityType',
+                [comp_type], entity.EntityType().Game
+            )
+            # An unknown name comes back as a list holding the null uuid, not an
+            # empty list, so treat that as not found too.
+            _null = '00000000-0000-0000-0000-000000000000'
+            if not type_ids or _null in str(type_ids[0]):
+                _o3de_fail('component_type_not_found', f'Component type "{{comp_type}}" not found')
+            else:
+                tid = type_ids[0]
+                # 'RemoveComponentOfType'' is not reflected by any O3DE version. The call
+                # returned None and this tool printed "Removed" without removing anything.
+                found = editor.EditorComponentAPIBus(bus.Broadcast, 'GetComponentOfType', eid, tid)
+                if not hasattr(found, 'IsSuccess') or not found.IsSuccess():
+                    _o3de_fail(
+                        'component_not_on_entity',
+                        f'Component "{{comp_type}}" is not on entity {{eid}}')
+                else:
+                    ok = editor.EditorComponentAPIBus(
+                        bus.Broadcast, 'RemoveComponents', [found.GetValue()]
+                    )
+                    if ok:
+                        print(f'Removed {{comp_type}} from {{eid}}')
+                    else:
+                        _o3de_fail(
+                            'remove_component_failed',
+                            f'Failed to remove {{comp_type}} from {{eid}}: editor refused')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def set_transform(
+        entity_id: EntityIdArg,
+        position: list[float] | None = None,
+        rotation: list[float] | None = None,
+        scale: list[float] | None = None,
+    ) -> str:
+        """Set the world transform of an entity (only provided components are changed).
+
+        ``rotation`` is an ``[x, y, z, w]`` quaternion and ``scale`` an
+        ``[x, y, z]`` vector, the effective scale to end up with (each element in
+        (0, 1000]). The call goes to the AiCompanion gem's native
+        ``set_transform`` request (works in secure mode) and returns the updated
+        entity's JSON, the same shape as ``get_entity``. The gem refuses an
+        unknown entity or out-of-bounds values, and that is returned as an error.
+
+        On gem API 0.5.0 and later (gem 0.6.0) the quaternion and the scale are
+        sent as is. A non-uniform scale is applied through the engine's
+        Non-uniform Scale component (each element at least 0.01); an O3DE
+        Transform itself holds only a uniform scale. A later uniform scale sets
+        that component back to 1. The reply carries ``scale`` (uniform),
+        ``non_uniform_scale`` and ``effective_scale``.
+
+        On older gems the quaternion is converted to XYZ Euler degrees, a
+        rotation at a gimbal pole (pitch within 0.02 degrees of plus or minus 90)
+        goes through editor Python instead, which prints
+        ``Transform set for entity [<id>]``, and a non-uniform scale is refused
+        with ``non_uniform_scale_unsupported``. The legacy transport also uses
+        the editor-Python path. An all-zero quaternion is rejected before any path.
+        """
+        entity_id = _validate_entity_id(entity_id)
+        pos = _validate_vec3(position, "position") if position is not None else None
+        scl = _validate_vec3(scale, "scale") if scale is not None else None
+        rot = None
+        if rotation is not None:
+            if not isinstance(rotation, (list, tuple)):
+                raise ValueError("rotation must be a list or tuple of 4 numbers.")
+            if len(rotation) != 4:
+                raise ValueError(
+                    f"rotation must have exactly 4 elements (quaternion), got {len(rotation)}."
+                )
+            try:
+                rot = [float(v) for v in rotation]
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"rotation must contain only numbers, got {rotation!r}.") from exc
+            if math.sqrt(sum(v * v for v in rot)) < 1e-12:
+                raise ValueError("rotation quaternion must not be all zeros.")
+
+        uniform = scl is None or scl[0] == scl[1] == scl[2]
+        # Gem API 0.5.0+ takes the quaternion as is and a non-uniform scale (through
+        # the engine's Non-uniform Scale component), so send both natively. Older
+        # gems only matter when a rotation or a non-uniform scale is given; ask
+        # for the version only then.
+        if rot is not None or not uniform:
+            api = await _gem_api_version()
+            if api is not None and api >= _API_NATIVE_SCALE_AND_QUATERNION:
+                params_v5: dict[str, object] = {"entity_id": entity_id.strip("[]")}
+                if pos is not None:
+                    params_v5["position"] = pos
+                if rot is not None:
+                    params_v5["rotation_quaternion"] = rot
+                if scl is not None:
+                    params_v5["scale"] = scl[0] if uniform else scl
+                native_v5 = await _native_mutation("set_transform", params_v5)
+                if native_v5 is not None:
+                    return native_v5
+
+        # Older gems: a Transform holds one uniform scale, and a non-uniform one
+        # would silently collapse to its largest value, so refuse it.
+        if not uniform:
+            return _format_error(
+                "non_uniform_scale_unsupported",
+                f"Scale {scl} is not uniform. An O3DE Transform holds only a uniform "
+                "scale, and the Non-uniform Scale component cannot be added from editor "
+                "Python; pass the same value for x, y and z.",
+            )
+
+        # The native request takes a uniform scale and XYZ Euler degrees. A
+        # rotation whose pitch sits on a gimbal pole (where the Euler form cannot
+        # carry roll and yaw separately) goes through the editor-Python path
+        # below, which takes the quaternion as is.
+        euler = _quaternion_to_euler_degrees_xyz(rot) if rot is not None else None
+        near_pole = euler is not None and _near_gimbal_pole(euler)
+        if not near_pole:
+            native_params: dict[str, object] = {"entity_id": entity_id.strip("[]")}
+            if pos is not None:
+                native_params["position"] = pos
+            if euler is not None:
+                native_params["rotation"] = euler
+            if scl is not None:
+                native_params["scale"] = scl[0]
+            native = await _native_mutation("set_transform", native_params)
+            if native is not None:
+                return native
+
+        params = json.dumps(
+            {"entity_id": entity_id, "position": pos, "rotation": rot, "scale": scl}
+        )
+        script = textwrap.dedent(f"""\
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import azlmbr.components as components
+            import azlmbr.math as math
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+
+            pos = _params['position']
+            rot = _params['rotation']
+            scl = _params['scale']
+
+            current = components.TransformBus(bus.Event, 'GetWorldTM', eid)
+            if current is None:
+                current = math.Transform_CreateIdentity()
+
+            if pos is not None:
+                t_pos = math.Vector3(float(pos[0]), float(pos[1]), float(pos[2]))
+            else:
+                t_pos = current.translation
+
+            if rot is not None:
+                t_rot = math.Quaternion(float(rot[0]), float(rot[1]), float(rot[2]), float(rot[3]))
+            else:
+                t_rot = current.rotation
+
+            # A Transform holds one uniform scale (the tool refuses a non-uniform
+            # one). Keep the current scale when none is given: rebuilding from
+            # rotation and translation alone would reset it to 1.
+            if scl is not None:
+                _uniform = float(scl[0])
+            else:
+                _uniform = float(current.GetUniformScale())
+            new_tm = math.Transform_CreateFromQuaternionAndTranslation(t_rot, t_pos)
+            new_tm.SetUniformScale(_uniform)
+            components.TransformBus(bus.Event, 'SetWorldTM', eid, new_tm)
+
+            # Read the scale back: report one that did not land instead of success.
+            _got = components.TransformBus(bus.Event, 'GetWorldTM', eid)
+            _got_uniform = _got.GetUniformScale() if _got is not None else None
+            _tol = 1e-3 * max(1.0, abs(_uniform))
+            if not isinstance(_got_uniform, (int, float)) or abs(_got_uniform - _uniform) > _tol:
+                _o3de_fail(
+                    'set_transform_failed',
+                    f'Scale did not land on entity {{eid}}: asked {{_uniform}}, '
+                    f'read back {{_got_uniform}}',
+                )
+            else:
+                print(f'Transform set for entity {{eid}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def get_transform(entity_id: EntityIdArg) -> str:
+        """Get the world transform of an entity.
+
+        Returns ``position``, ``rotation`` (an ``[x, y, z, w]`` quaternion) and
+        ``scale``, the effective ``[x, y, z]`` scale: the Transform's uniform
+        scale times the entity's Non-uniform Scale component, if it has one.
+        ``uniform_scale`` and ``non_uniform_scale`` (``null`` without the
+        component) give the two parts.
+        """
+        entity_id = _validate_entity_id(entity_id)
+        params = json.dumps({"entity_id": entity_id})
+        script = textwrap.dedent(f"""\
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import azlmbr.components as components
+            import azlmbr.math as math
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+
+            tm = components.TransformBus(bus.Event, 'GetWorldTM', eid)
+            if tm is None:
+                print(json.dumps({{'status': 'error', 'code': 'transform_unavailable',
+                                   'message': 'Could not get transform'}}))
+            else:
+                pos = tm.translation
+                rot = tm.rotation
+                _uniform = float(tm.GetUniformScale())
+                # GetScale answers (0, 0, 0), not None, when the entity has no
+                # Non-uniform Scale component, so a zero vector means "none".
+                _nus = entity.NonUniformScaleRequestBus(bus.Event, 'GetScale', eid)
+                _component = None
+                if _nus is not None:
+                    _vec = [float(_nus.x), float(_nus.y), float(_nus.z)]
+                    if any(abs(v) > 1e-9 for v in _vec):
+                        _component = _vec
+                result = {{
+                    'position': [pos.x, pos.y, pos.z],
+                    'rotation': [rot.x, rot.y, rot.z, rot.w],
+                    'scale': [_uniform * c for c in (_component or [1.0, 1.0, 1.0])],
+                    'uniform_scale': _uniform,
+                    'non_uniform_scale': _component,
+                }}
+                print(json.dumps(result))
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def set_parent(entity_id: EntityIdArg, parent_id: EntityIdArg) -> str:
+        """Set the parent of an entity (reparent in the hierarchy)."""
+        entity_id = _validate_entity_id(entity_id)
+        parent_id = _validate_entity_id(parent_id)
+        params = json.dumps({"entity_id": entity_id, "parent_id": parent_id})
+        script = textwrap.dedent(f"""\
+            import azlmbr.editor as editor
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+            pid = _resolve_entity_id(_params['parent_id'])
+
+            # 'SetEntityParent' on ToolsApplicationRequestBus is not reflected by any O3DE
+            # version; it returned None and this tool reported success without reparenting.
+            # EditorEntityAPIBus.SetParent is the editor-side (undoable) reparent. Verify
+            # rather than trust the void return.
+            editor.EditorEntityAPIBus(bus.Event, 'SetParent', eid, pid)
+            now = editor.EditorEntityInfoRequestBus(bus.Event, 'GetParent', eid)
+            if str(now).strip('[]') == str(pid).strip('[]'):
+                print(f'Set parent of {{eid}} to {{pid}}')
+            else:
+                _o3de_fail(
+                    'set_parent_failed',
+                    f'Failed to set parent of {{eid}} to {{pid}}: parent is now {{now}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def run_console_command(command: str) -> str:
+        """Execute an O3DE console command in the running editor."""
+        command = _validate_console_command(command)
+        params = json.dumps({"command": command})
+        script = textwrap.dedent(f"""\
+            import json
+
+            _params = json.loads({params!r})
+            cmd = _params['command']
+            try:
+                import azlmbr.legacy.general as general
+                general.run_console(cmd)
+                print(f'Executed: {{cmd}}')
+            except Exception as e:
+                _o3de_fail('console_command_failed', f'Failed to execute command: {{e}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def get_cvar(name: str) -> str:
+        """Get the value of an O3DE console variable (CVAR)."""
+        name = _validate_console_command(name)
+        params = json.dumps({"name": name})
+        script = textwrap.dedent(f"""\
+            import json
+
+            _params = json.loads({params!r})
+            cvar_name = _params['name']
+
+            value = None
+            _cvar_error = None
+            try:
+                import azlmbr.legacy.general as general
+                value = general.get_cvar(cvar_name)
+            except Exception:
+                try:
+                    import io, contextlib
+                    buf = io.StringIO()
+                    with contextlib.redirect_stdout(buf):
+                        general.run_console(cvar_name)
+                    output = buf.getvalue().strip()
+                    for line in output.splitlines():
+                        if '=' in line:
+                            value = line.split('=', 1)[1].strip()
+                            break
+                    if value is None:
+                        value = output
+                except Exception as e:
+                    _cvar_error = e
+
+            if value is None and _cvar_error is not None:
+                _o3de_fail('get_cvar_failed', f'Could not read {{cvar_name}}: {{_cvar_error}}')
+            elif value == '(missing)':
+                # The engine answers this literal text for a CVAR it does not have.
+                _o3de_fail('cvar_not_found', f'No CVAR named {{cvar_name}}')
+            else:
+                print(json.dumps({{'name': cvar_name, 'value': value}}))
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def set_cvar(name: str, value: str) -> str:
+        """Set the value of an O3DE console variable (CVAR)."""
+        name = _validate_console_command(name)
+        value = value.strip()
+        if not value:
+            raise ValueError("CVAR value cannot be empty.")
+        combined = f"{name} {value}"
+        _validate_console_command(combined)
+        params = json.dumps({"name": name, "value": value})
+        script = textwrap.dedent(f"""\
+            import azlmbr.legacy.general as general
+            import json
+
+            _params = json.loads({params!r})
+            cvar_name = _params['name']
+            cvar_value = _params['value']
+            cmd = f'{{cvar_name}}={{cvar_value}}'
+            try:
+                general.run_console(cmd)
+                print(f'Set {{cvar_name}} = {{cvar_value}}')
+            except Exception as e:
+                _o3de_fail('set_cvar_failed', f'Failed to set {{cvar_name}}: {{e}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def load_level(level_path: str) -> str:
+        """Open a level in the O3DE Editor.
+
+        Args:
+            level_path: Path to the level relative to the project
+                        (e.g. 'Levels/MyLevel').
+        """
+        params = json.dumps({"level_path": level_path})
+        script = textwrap.dedent(f"""\
+            import azlmbr.legacy.general as general
+            import json
+
+            _params = json.loads({params!r})
+            _name = _params['level_path']
+            for _prefix in ('Levels/', 'levels/'):
+                if _name.startswith(_prefix):
+                    _name = _name[len(_prefix):]
+                    break
+            _ok = general.open_level_no_prompt(_name)
+            _actual = general.get_current_level_name()
+            if _ok:
+                print(f"Opened level: {{_actual}}")
+            else:
+                _o3de_fail(
+                    'load_level_failed',
+                    f"Could not open level {{_name!r}}; still on {{_actual!r}}")
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def get_level_info() -> str:
+        """Get information about the currently loaded level.
+
+        Returns:
+            JSON object with 'level_name' and 'level_path' fields.
+        """
+        script = textwrap.dedent("""\
+            import azlmbr.legacy.general as general
+            import json
+
+            info = {
+                'level_name': general.get_current_level_name(),
+                'level_path': general.get_current_level_path(),
+            }
+            print(json.dumps(info))
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def save_level() -> str:
+        """Save the currently open level."""
+        script = textwrap.dedent("""\
+            import azlmbr.legacy.general as general
+            general.save_level()
+            print('Level saved')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def create_level(name: str, template: str = _DEFAULT_LEVEL_TEMPLATE) -> str:
+        """Create a new level in the current O3DE project and open it in the editor.
+
+        Args:
+            name: Level name (alphanumeric, hyphens or underscores, starting with
+                a letter). The level is written to ``<project>/Levels/<name>/``.
+            template: Level template prefab, as a path relative to an asset scan
+                folder. Defaults to the editor's own New Level default,
+                ``Prefabs/Default_Level.prefab`` (camera, sun, grid). Pass an empty
+                string for a bare level with no entities.
+        """
+        name = name.strip()
+        if not name:
+            raise ValueError("Level name cannot be empty.")
+        if not re.match(r"^[A-Za-z][A-Za-z0-9_-]*$", name):
+            raise ValueError(
+                f"Invalid level name: {name!r}. "
+                "Expected alphanumeric characters, hyphens, or underscores, "
+                "starting with a letter."
+            )
+        template = template.strip()
+        if template:
+            template = _validate_prefab_path(template)
+        params = json.dumps({"name": name, "template": template})
+        # create_level_no_prompt(templateName, levelName, heightmapResolution,
+        # heightmapUnitSize, terrainExportTextureSize, useTerrain) -> int, reflected
+        # in Code/Editor/CryEditPy.cpp. All six arguments are required; the three
+        # ints and the bool are legacy terrain settings the engine ignores, and the
+        # values below are what the engine's own Python tests pass. The result is
+        # an ECreateLevelResult (Code/Editor/CryEdit.h): 0 is success.
+        script = textwrap.dedent(f"""\
+            import azlmbr.legacy.general as general
+            import json
+
+            _params = json.loads({params!r})
+            _name = _params['name']
+            _template = _params['template']
+            _reasons = {{
+                1: 'a level with that name already exists',
+                2: 'the level directory could not be created',
+                3: 'the level path is too long',
+            }}
+            try:
+                _result = general.create_level_no_prompt(
+                    _template, _name, 1024, 1, 4096, False)
+                if _result == 0:
+                    print(f'Created and opened level: {{_name}}')
+                elif _result is None:
+                    _o3de_fail(
+                        'create_level_failed',
+                        f'Could not create level {{_name!r}}: the editor '
+                               f'rejected the create_level_no_prompt call; see the editor log')
+                else:
+                    _reason = _reasons.get(_result, f'engine returned code {{_result}}')
+                    _o3de_fail(
+                        'create_level_failed',
+                        f'Could not create level {{_name!r}}: {{_reason}}')
+            except Exception as e:
+                _o3de_fail('create_level_failed', f'Failed to create level {{_name!r}}: {{e}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def list_levels(project_path: str | None = None) -> str:
+        """List all levels available in an O3DE project."""
+        if project_path:
+            proj = Path(project_path)
+        else:
+            env_path = os.environ.get("O3DE_PROJECT_PATH", "").strip()
+            if env_path:
+                proj = Path(env_path)
+            else:
+                from o3de_mcp.utils.o3de import list_registered_projects
+
+                projects = list_registered_projects()
+                if len(projects) == 1:
+                    proj = Path(projects[0]["path"])
+                elif not projects:
+                    return _format_error(
+                        "project_not_found",
+                        "No project path provided and no registered project found.",
+                    )
+                else:
+                    return _format_error(
+                        "ambiguous_project",
+                        "Multiple projects registered. "
+                        "Pass project_path explicitly or set O3DE_PROJECT_PATH.",
+                    )
+
+        levels_dir = proj / "Levels"
+        if not levels_dir.is_dir():
+            return _format_error(
+                "levels_dir_not_found", f"No Levels/ directory found at {levels_dir}"
+            )
+
+        levels = []
+        for entry in sorted(levels_dir.iterdir()):
+            if entry.is_dir():
+                has_ly = any(entry.glob("*.ly"))
+                has_prefab = any(entry.glob("level.prefab")) or any(entry.glob("*.prefab"))
+                if has_ly or has_prefab:
+                    levels.append(entry.name)
+
+        return json.dumps({"levels": levels, "project": str(proj)})
+
+    @mcp.tool()
+    async def enter_game_mode() -> str:
+        """Enter game mode (play-in-editor) in the O3DE Editor."""
+        script = textwrap.dedent("""\
+            import azlmbr.legacy.general as general
+            general.enter_game_mode()
+            print('Entered game mode')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def exit_game_mode() -> str:
+        """Exit game mode and return to edit mode."""
+        script = textwrap.dedent("""\
+            import azlmbr.legacy.general as general
+            general.exit_game_mode()
+            print('Exited game mode')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def undo() -> str:
+        """Undo the last editor action."""
+        script = textwrap.dedent("""\
+            import azlmbr.legacy.general as general
+            general.undo()
+            print('Undo performed')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def redo() -> str:
+        """Redo the last undone editor action."""
+        script = textwrap.dedent("""\
+            import azlmbr.legacy.general as general
+            general.redo()
+            print('Redo performed')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def get_viewport_camera() -> str:
+        """Get the position and rotation of the active editor viewport camera.
+
+        Returns JSON with ``position`` (3 floats) and ``rotation`` (3 Euler
+        angles in degrees). FOV is not available via the Python bindings.
+        """
+        script = textwrap.dedent("""\
+            import azlmbr.legacy.general as general
+            import json
+
+            result = {}
+            _errors = []
+            try:
+                pos = general.get_current_view_position()
+                if pos is not None:
+                    result['position'] = [pos.x, pos.y, pos.z]
+            except Exception as e:
+                _errors.append(f'position: {e}')
+
+            try:
+                rot = general.get_current_view_rotation()
+                if rot is not None:
+                    result['rotation'] = [rot.x, rot.y, rot.z]
+            except Exception as e:
+                _errors.append(f'rotation: {e}')
+
+            if _errors or not result:
+                _o3de_fail(
+                    'viewport_camera_unavailable',
+                    '; '.join(_errors) or 'the editor reported no viewport camera',
+                )
+            else:
+                print(json.dumps(result))
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def set_viewport_camera(
+        position: list[float] | None = None,
+        rotation: list[float] | None = None,
+    ) -> str:
+        """Set the active editor viewport camera transform."""
+        pos = _validate_vec3(position, "position") if position is not None else None
+        rot = None
+        if rotation is not None:
+            if not isinstance(rotation, (list, tuple)):
+                raise ValueError("rotation must be a list or tuple of 3 numbers (Euler angles).")
+            if len(rotation) != 3:
+                raise ValueError(
+                    f"rotation must have exactly 3 elements (Euler angles), got {len(rotation)}."
+                )
+            try:
+                rot = [float(v) for v in rotation]
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"rotation must contain only numbers, got {rotation!r}.") from exc
+
+        params = json.dumps({"position": pos, "rotation": rot})
+        script = textwrap.dedent(f"""\
+            import azlmbr.legacy.general as general
+            import json
+
+            _params = json.loads({params!r})
+            pos = _params['position']
+            rot = _params['rotation']
+
+            try:
+                if pos is not None:
+                    general.set_current_view_position(float(pos[0]), float(pos[1]), float(pos[2]))
+                if rot is not None:
+                    general.set_current_view_rotation(float(rot[0]), float(rot[1]), float(rot[2]))
+                print('Viewport camera set')
+            except Exception as e:
+                _o3de_fail('set_viewport_camera_failed', f'Failed to set viewport camera: {{e}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def focus_entity(entity_id: EntityIdArg) -> str:
+        """Focus the viewport camera on an entity."""
+        entity_id = _validate_entity_id(entity_id)
+        params = json.dumps({"entity_id": entity_id})
+        script = textwrap.dedent(f"""\
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+            try:
+                import azlmbr.editor as editor_mod
+                editor_mod.EditorCameraRequestBus(
+                    bus.Broadcast, 'SetViewFromEntityPerspective', eid
+                )
+                print(f'Focused on entity {{eid}}')
+            except Exception as e:
+                _o3de_fail('focus_failed', f'Failed to focus on entity: {{e}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def capture_viewport(
+        output_path: str,
+        width: int | None = None,
+        height: int | None = None,
+    ) -> str:
+        """Capture a screenshot of the editor viewport.
+
+        Captures the rendered frame with Atom's
+        ``FrameCaptureRequestBus.CaptureScreenshot``, then waits on the client
+        for a new, fully written file (``O3DE_CAPTURE_WAIT``, default 15 s). A
+        level must be open: without one the engine accepts the capture and never
+        writes a file, which is reported as ``capture_not_written``. A PySide6
+        widget grab is tried first, but it cannot run in the editor's embedded
+        interpreter on O3DE 26.10.0 (``QApplication.instance()`` is ``None``).
+
+        Args:
+            output_path: File path for the screenshot (.png, .jpg, .jpeg, .bmp, or .tga).
+            width: Scale width for the PySide6 grab only; ignored by the Atom
+                capture, so it has no effect on 26.10.0.
+            height: Scale height for the PySide6 grab only; ignored like ``width``.
+        """
+        output_path = output_path.strip()
+        if not output_path:
+            raise ValueError("output_path cannot be empty.")
+        valid_extensions = (".png", ".jpg", ".jpeg", ".bmp", ".tga")
+        if not output_path.lower().endswith(valid_extensions):
+            raise ValueError(f"output_path must end in one of {valid_extensions}: {output_path!r}")
+
+        # RESOLVE HERE so both sides mean the same file.
+        #
+        # A relative path does NOT resolve against the editor's Python cwd.
+        # AZ::LocalFileIO::ResolvePath treats a path with no alias as
+        # @products@-relative, so a capture issued as 'shot.png' lands in
+        # <project>/Cache/<platform>/ while this client polls './shot.png' --
+        # and reports a timeout on a capture that actually succeeded. Absolute
+        # paths pass through both sides untouched, so make it absolute once,
+        # here, and send that.
+        target = Path(output_path).expanduser().resolve()
+        output_path = str(target)
+
+        params = json.dumps({"output_path": output_path, "width": width, "height": height})
+        script = textwrap.dedent(f"""\
+            import json
+            import os
+
+            _params = json.loads({params!r})
+            _path = _params['output_path']
+            _w = _params['width']
+            _h = _params['height']
+
+            def _try_pyside6():
+                from PySide6 import QtWidgets, QtCore
+                app = QtWidgets.QApplication.instance()
+                if not app:
+                    return False, 'No QApplication instance'
+                main_win = None
+                for w in app.topLevelWidgets():
+                    if isinstance(w, QtWidgets.QMainWindow) and w.isVisible():
+                        main_win = w
+                        break
+                if not main_win:
+                    return False, 'No main window'
+                viewport = main_win.findChild(QtWidgets.QWidget, 'ViewportUiOverlay')
+                if viewport is None:
+                    viewport = main_win
+                pixmap = viewport.grab()
+                if pixmap.isNull():
+                    return False, 'Pixmap is null'
+                if _w is not None and _h is not None:
+                    pixmap = pixmap.scaled(
+                        _w, _h,
+                        QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+                        QtCore.Qt.TransformationMode.SmoothTransformation,
+                    )
+                pixmap.save(_path, 'PNG')
+                if os.path.exists(_path):
+                    size = os.path.getsize(_path)
+                    print(f'Screenshot saved to {{_path}} '
+                          f'({{size}} bytes, '
+                          f'{{pixmap.width()}}x{{pixmap.height()}})')
+                    return True, ''
+                return False, f'File was not created at {{_path}}'
+
+            def _try_atom_frame_capture():
+                import azlmbr.atom
+                import azlmbr.bus
+
+                # DO NOT GATE ON CanCapture. IT IS NOT REFLECTED AT ALL.
+                #
+                # The bus binds exactly three events -- CaptureScreenshot,
+                # CaptureScreenshotWithPreview, CapturePassAttachment. There is
+                # no CanCapture to call, and a nonexistent event returns None,
+                # exactly as a bogus name like NoSuchEventXyzzy does. So `if
+                # not CanCapture()` refused unconditionally and could never
+                # have worked, on any machine or RHI -- it is not a bool
+                # arriving as None through the reflection, which is the wrong
+                # explanation to leave for the next reader.
+                #
+                # Removing the gate loses nothing: ScreenshotPreparation checks
+                # CanCapture() in C++ and fails the outcome on a null RHI, so a
+                # genuinely absent renderer still surfaces -- in the outcome
+                # checked immediately below, which is a question with a real
+                # answer.
+                outcome = azlmbr.atom.FrameCaptureRequestBus(
+                    azlmbr.bus.Broadcast, 'CaptureScreenshot', _path
+                )
+                if outcome is None:
+                    return False, 'CaptureScreenshot returned None (no FrameCapture handler?)'
+                if not outcome.IsSuccess():
+                    err = outcome.GetError()
+                    msg = err.error_message if hasattr(err, 'error_message') else str(err)
+                    return False, f'CaptureScreenshot failed: {{msg}}'
+
+                # ISSUED, NOT AWAITED.
+                #
+                # The capture finishes on a later frame, and every way of
+                # waiting for it from inside an editor script blocks the very
+                # tick that would finish it. general.idle_wait_frames -- which
+                # this used to call -- permanently wedges the editor's main
+                # thread when called from a script dispatch: the first call
+                # never returns, every later request queues behind it forever,
+                # and the process still reports as responding. time.sleep stops
+                # the tick just as dead.
+                #
+                # So the wait belongs on the CLIENT, and the caller does it by
+                # polling for the file.
+                print(f'CAPTURE_ISSUED {{outcome.GetValue()}}')
+                return True, ''
+
+            # The PySide6 reason is KEPT, not swallowed. Both paths failing
+            # used to report only the second one's message, which sent a reader
+            # hunting a null renderer when the real story was that
+            # QApplication.instance() is None in the editor's embedded
+            # interpreter -- so this path can never work there and the Atom
+            # fallback is the only one that matters.
+            pyside_ok = False
+            pyside_msg = 'not attempted'
+            try:
+                pyside_ok, pyside_msg = _try_pyside6()
+            except ImportError as e:
+                pyside_msg = f'PySide6 unavailable: {{e}}'
+            except Exception as e:
+                pyside_msg = f'PySide6 path raised: {{type(e).__name__}}: {{e}}'
+
+            if not pyside_ok:
+                try:
+                    ok, msg = _try_atom_frame_capture()
+                    if not ok:
+                        _o3de_fail(
+                            'capture_failed',
+                            f'Failed to capture viewport: {{msg}} [PySide6: {{pyside_msg}}]')
+                except Exception as e:
+                    _o3de_fail(
+                        'capture_failed',
+                        f'Failed to capture viewport: {{e}} [PySide6: {{pyside_msg}}]')
+        """)
+        # STAT BEFORE ISSUING. A file already at this path -- the previous
+        # capture, when an agent shoots to the same name in a loop -- otherwise
+        # satisfies the poll immediately and gets returned as this call's
+        # result, with the stale byte count, before the new frame lands.
+        try:
+            _before = target.stat()
+            before_sig: tuple[float, int] | None = (_before.st_mtime, _before.st_size)
+        except OSError:
+            before_sig = None
+
+        result = await _async_run_editor_script(script)
+
+        if "CAPTURE_ISSUED" not in result:
+            # Either PySide6 wrote the file synchronously, or something failed
+            # and the script already said what.
+            return result
+
+        # WAIT HERE, ON THE CLIENT. The editor cannot wait for its own frame --
+        # anything that blocks inside a script blocks the tick that would
+        # complete the capture. The file appearing is the only observable that
+        # says it actually landed.
+        # A NEW file, and a FINISHED one. "Exists and is non-empty" is not
+        # enough on either count: it accepts the previous capture, and it
+        # accepts a 1.6 MB PNG that is still being written. So require the
+        # (mtime, size) to differ from what was there before the capture was
+        # issued, then require the size to hold steady before reporting it.
+        capture_wait = _get_capture_wait()
+        deadline = time.monotonic() + capture_wait
+        stable_since: float | None = None
+        stable_size: int | None = None
+        while time.monotonic() < deadline:
+            try:
+                st = target.stat()
+            except OSError:
+                st = None
+            if st is not None and st.st_size > 0 and (st.st_mtime, st.st_size) != before_sig:
+                now = time.monotonic()
+                if stable_size == st.st_size:
+                    if now - (stable_since or now) >= _CAPTURE_STABLE_SECONDS:
+                        return f"Screenshot saved to {output_path} ({st.st_size} bytes)"
+                else:
+                    stable_size = st.st_size
+                    stable_since = now
+            await asyncio.sleep(0.05)
+
+        return _format_error(
+            "capture_not_written",
+            f"Capture was issued but no new file appeared at {output_path} "
+            f"within {capture_wait:g}s (O3DE_CAPTURE_WAIT). The usual cause is "
+            f"that no level is open: CaptureScreenshot then returns success "
+            f"with a capture id and never writes anything, while the same call "
+            f"lands in under a second once a level is loaded. "
+            f"Editor said: {result.strip()}",
+        )
+
+    @mcp.tool()
+    async def instantiate_prefab(
+        prefab_path: str,
+        position: list[float] | None = None,
+        parent_id: OptionalEntityIdArg = "",
+    ) -> str:
+        """Instantiate a prefab in the current level."""
+        prefab_path = _validate_prefab_path(prefab_path)
+        pos = _validate_vec3(position, "position") if position is not None else [0.0, 0.0, 0.0]
+        if parent_id:
+            parent_id = _validate_entity_id(parent_id)
+        params = json.dumps({"prefab_path": prefab_path, "position": pos, "parent_id": parent_id})
+        script = textwrap.dedent(f"""\
+            import os
+
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import azlmbr.math as math
+            import azlmbr.paths as paths
+            import azlmbr.prefab as prefab
+            import json
+
+            _params = json.loads({params!r})
+            _path = _params['prefab_path']
+            _pos = _params['position']
+            _parent_id = _params['parent_id']
+
+            # ``InstantiatePrefab`` segfaults the editor when the template cannot be
+            # loaded: PrefabPublicHandler hands an empty DOM to
+            # PrefabDomUtils::GetTemplateSourcePaths, which dereferences it without a
+            # null check (confirmed on 26.10.0). Fixed upstream in o3de/o3de 80f4714
+            # (development), so newer engine builds return a failure instead, but the
+            # guard is kept for older builds. A C++ crash cannot be caught by the
+            # try/except below, so the path is checked before the bus call.
+            #
+            # PrefabLoader::GetFullPath resolves a relative path through the Asset
+            # Processor, so a prefab in any registered scan folder is valid, not
+            # only one under the project root. Gem prefabs (for example the
+            # AiCompanion gem's Prefabs/Player_TwinStick.prefab) live in the gem's
+            # own Assets folder, which is not reachable from projectroot. Two
+            # checks cover that: the project and engine roots on disk, then the
+            # prefab's .spawnable product in the asset catalog, which exists only
+            # if the Asset Processor has seen the source file in some scan folder.
+            _roots = [_r for _r in (getattr(paths, 'projectroot', ''),
+                                    getattr(paths, 'engroot', '')) if _r]
+            _found = any(os.path.isfile(os.path.join(_r, _path)) for _r in _roots)
+            if not _found:
+                try:
+                    import azlmbr.asset as _asset
+                    _spawnable = os.path.splitext(_path)[0] + '.spawnable'
+                    _aid = _asset.AssetCatalogRequestBus(
+                        bus.Broadcast, 'GetAssetIdByPath', _spawnable, math.Uuid(), False
+                    )
+                    _found = bool(_aid is not None and _aid.is_valid())
+                except Exception:
+                    pass
+
+            if not _found:
+                _o3de_fail('prefab_not_found',
+                           'Failed to instantiate prefab: not found: ' + _path +
+                           ' (searched ' + ', '.join(_roots) + ' and the asset catalog).'
+                           ' The call was not made, because instantiating a missing'
+                           ' prefab crashes the editor.')
+            else:
+                # Look the parent up by its text: entity.EntityId(n) does not rebuild
+                # an id on 26.10.0, so the parent was silently ignored. An unknown
+                # parent is entity_not_found.
+                if _parent_id:
+                    parent = _resolve_entity_id(_parent_id)
+                else:
+                    parent = entity.EntityId()
+
+                pos_vec = math.Vector3(float(_pos[0]), float(_pos[1]), float(_pos[2]))
+
+                try:
+                    result = prefab.PrefabPublicRequestBus(
+                        bus.Broadcast, 'InstantiatePrefab',
+                        _path, parent, pos_vec
+                    )
+                    if hasattr(result, 'IsSuccess'):
+                        if result.IsSuccess():
+                            eid = result.GetValue()
+                            print(f'Instantiated prefab: {{_path}} (entity={{eid}})')
+                        else:
+                            err = result.GetError() if hasattr(result, 'GetError') else 'unknown'
+                            _o3de_fail(
+                                'instantiate_prefab_failed',
+                                f'Failed to instantiate prefab: {{err}}')
+                    else:
+                        print(f'Instantiated prefab: {{_path}}')
+                except Exception as e:
+                    _o3de_fail('instantiate_prefab_failed', f'Failed to instantiate prefab: {{e}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def create_prefab_from_entity(entity_id: EntityIdArg, prefab_path: str) -> str:
+        """Write a prefab file to disk from an existing entity.
+
+        The path is relative to the project root. The level is not modified;
+        use ``instantiate_prefab`` afterwards to place the saved prefab.
+        """
+        entity_id = _validate_entity_id(entity_id)
+        prefab_path = _validate_prefab_path(prefab_path)
+        params = json.dumps({"entity_id": entity_id, "prefab_path": prefab_path})
+        script = textwrap.dedent(f"""\
+            import os
+
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import azlmbr.paths as paths
+            import azlmbr.prefab as prefab
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+            _path = _params['prefab_path']
+
+            # Two buses are needed to get a prefab onto disk.
+            # ``PrefabPublicRequestBus.CreatePrefabInMemory`` (used here before)
+            # only builds an in-level container and writes nothing, so this used
+            # to report success while leaving no file behind.
+            # ``PrefabSystemScriptingBus.CreatePrefab`` returns a template id
+            # without touching the level, and ``SaveTemplateToString`` serialises
+            # that template to the .prefab JSON, which is written out below.
+            try:
+                _tid = prefab.PrefabSystemScriptingBus(
+                    bus.Broadcast, 'CreatePrefab', [eid], _path
+                )
+                if not isinstance(_tid, int) or _tid == 0:
+                    _o3de_fail(
+                        'create_prefab_failed',
+                        f'Failed to create prefab: could not build a template '
+                               f'for entity {{eid}} (got {{_tid!r}})')
+                else:
+                    _out = prefab.PrefabLoaderScriptingBus(
+                        bus.Broadcast, 'SaveTemplateToString', _tid
+                    )
+                    if not hasattr(_out, 'IsSuccess') or not _out.IsSuccess():
+                        _o3de_fail(
+                            'create_prefab_failed',
+                            f'Failed to create prefab: could not serialise '
+                                   f'template {{_tid}} for {{_path}}')
+                    else:
+                        _dest = os.path.join(paths.projectroot, _path)
+                        os.makedirs(os.path.dirname(_dest), exist_ok=True)
+                        with open(_dest, 'w') as _f:
+                            _f.write(_out.GetValue())
+                        # Report only what is actually on disk.
+                        if os.path.isfile(_dest):
+                            print(f'Created prefab: {{_path}} from entity {{eid}}')
+                        else:
+                            _o3de_fail(
+                                'create_prefab_failed',
+                                f'Failed to create prefab: nothing written to '
+                                       f'{{_dest}}')
+            except Exception as e:
+                _o3de_fail('create_prefab_failed', f'Failed to create prefab: {{e}}')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def save_prefab(entity_id: EntityIdArg) -> str:
+        """Report where a prefab instance came from.
+
+        Propagating live entity edits back to a .prefab file is not reachable
+        from the editor's Python API: ``PrefabPublicRequestBus`` reflects no
+        save event, and the only serialiser, ``SaveTemplateToString``, is keyed
+        by template id with nothing exposed to map an entity to one. This
+        returns the owning prefab path and says so, rather than reporting a
+        success that never happened. To get a prefab onto disk, use
+        ``create_prefab_from_entity``.
+        """
+        entity_id = _validate_entity_id(entity_id)
+        params = json.dumps({"entity_id": entity_id})
+        script = textwrap.dedent(f"""\
+            import azlmbr.bus as bus
+            import azlmbr.entity as entity
+            import azlmbr.prefab as prefab
+            import json
+
+            _params = json.loads({params!r})
+            eid = _resolve_entity_id(_params['entity_id'])
+
+            # This used to call 'SavePrefabToFile', which does not exist on this
+            # bus in any O3DE version: the call returned None and the tool
+            # printed success regardless, so it was a silent no-op.
+            try:
+                _owner = prefab.PrefabPublicRequestBus(
+                    bus.Broadcast, 'GetOwningInstancePrefabPath', eid
+                )
+            except Exception as e:
+                _owner = f'<unavailable: {{e}}>'
+
+            print(json.dumps({{
+                'status': 'error',
+                'code': 'prefab_save_unavailable',
+                'entity_id': str(eid),
+                'owning_prefab': str(_owner),
+                'message': (
+                    'Saving entity edits back to a prefab file is not exposed to '
+                    'the editor Python API. Use create_prefab_from_entity to '
+                    'write a new prefab file, or edit the .prefab JSON directly.'
+                ),
+            }}))
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def begin_session() -> str:
+        """Begin a persistent Python session in the O3DE editor."""
+        session_id = str(uuid.uuid4())[:8]
+        params = json.dumps({"session_id": session_id})
+        script = textwrap.dedent(f"""\
+            import json
+
+            _params = json.loads({params!r})
+            _sid = _params['session_id']
+            if not hasattr(__import__('__main__'), '_o3de_sessions'):
+                import __main__
+                __main__._o3de_sessions = {{}}
+            __main__._o3de_sessions[_sid] = {{}}
+            print(json.dumps({{'session_id': _sid}}))
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def exec_in_session(session_id: str, script: str) -> str:
+        """Execute Python code in a persistent session."""
+        session_id = session_id.strip()
+        if not session_id:
+            raise ValueError("session_id cannot be empty.")
+        if not script.strip():
+            raise ValueError("script cannot be empty.")
+        params = json.dumps({"session_id": session_id, "script": script})
+        wrapper = textwrap.dedent(f"""\
+            import json
+            import __main__
+
+            _params = json.loads({params!r})
+            _sid = _params['session_id']
+            _script = _params['script']
+
+            if not hasattr(__main__, '_o3de_sessions'):
+                print(json.dumps({{'status': 'error', 'code': 'no_sessions',
+                                   'message': 'No sessions exist. Call begin_session first.'}}))
+            elif _sid not in __main__._o3de_sessions:
+                print(json.dumps({{
+                    'status': 'error', 'code': 'session_not_found',
+                    'message': f'Session {{_sid}} not found. Call begin_session first.'
+                }}))
+            else:
+                _ns = __main__._o3de_sessions[_sid]
+                try:
+                    exec(_script, _ns, _ns)
+                except Exception as e:
+                    print(json.dumps({{'status': 'error', 'code': 'session_exec_error',
+                                       'message': str(e)}}))
+        """)
+        return await _async_run_editor_script(wrapper)
+
+    @mcp.tool()
+    async def end_session(session_id: str) -> str:
+        """End a persistent Python session and clean up its namespace."""
+        session_id = session_id.strip()
+        if not session_id:
+            raise ValueError("session_id cannot be empty.")
+        params = json.dumps({"session_id": session_id})
+        script = textwrap.dedent(f"""\
+            import json
+            import __main__
+
+            _params = json.loads({params!r})
+            _sid = _params['session_id']
+            if hasattr(__main__, '_o3de_sessions') and _sid in __main__._o3de_sessions:
+                del __main__._o3de_sessions[_sid]
+                print(f'Session {{_sid}} ended')
+            else:
+                print(f'Session {{_sid}} not found (already ended)')
+        """)
+        return await _async_run_editor_script(script)
+
+    @mcp.tool()
+    async def get_session_vars(session_id: str) -> str:
+        """List the variable names in a persistent Python session."""
+        session_id = session_id.strip()
+        if not session_id:
+            raise ValueError("session_id cannot be empty.")
+        params = json.dumps({"session_id": session_id})
+        script = textwrap.dedent(f"""\
+            import json
+            import __main__
+
+            _params = json.loads({params!r})
+            _sid = _params['session_id']
+            if not hasattr(__main__, '_o3de_sessions') or _sid not in __main__._o3de_sessions:
+                print(json.dumps({{'status': 'error', 'code': 'session_not_found',
+                                   'message': f'Session {{_sid}} not found.'}}))
+            else:
+                _ns = __main__._o3de_sessions[_sid]
+                _vars = [k for k in _ns.keys() if not k.startswith('__') and k != '__builtins__']
+                print(json.dumps({{'vars': _vars, 'count': len(_vars)}}))
+        """)
+        return await _async_run_editor_script(script)

@@ -1,0 +1,280 @@
+# o3de-mcp
+
+[![License](https://img.shields.io/badge/License-Apache_2.0_OR_MIT-blue.svg)](https://github.com/nickschuetz/o3de-mcp/blob/main/LICENSE.txt)
+
+Automate [Open 3D Engine (O3DE)](https://o3de.org) with AI, an [MCP](https://modelcontextprotocol.io) server for editor control, project & build management.
+
+See the [architecture documentation](https://github.com/nickschuetz/o3de-mcp/blob/main/docs/architecture.md) for a detailed system diagram and communication flow.
+
+## Features
+
+96 tools across seven categories. See [`docs/tool-reference.md`](https://github.com/nickschuetz/o3de-mcp/blob/main/docs/tool-reference.md) for every parameter.
+
+**Capability Detection** (1 tool):
+- `get_capabilities`: check editor connectivity, whether the AiCompanion gem's AgentServer is answering (with its gem, API and protocol versions), and CLI availability before using other tools
+- Dynamic tool discovery: new tools are automatically reported
+
+**Editor Automation** (41 tools, requires a running O3DE Editor with the AiCompanion + EditorPythonBindings gems):
+- Execute arbitrary Python scripts inside the editor (`azlmbr` API)
+- Scene snapshot, entity tree, single entity and scene validation served natively by the AiCompanion gem's C++ (`get_scene_snapshot` / `get_entity_tree` / `get_entity` / `validate_scene`), no editor Python involved, available even in the gem's secure mode
+- List, create, delete, and duplicate entities; reparent with `set_parent`
+- Add and remove components, get/set component properties, assign assets by path
+- Get and set transforms
+- `create_entity`, `set_transform` and `delete_entity` try the gem's native request types first (gem 0.5.0 or later, validated in C++, available in secure mode) and fall back to editor Python on older gems or the legacy transport
+- Create and instantiate prefabs (saving edits back into an existing prefab is not exposed to editor Python; `save_prefab` reports that and names the owning prefab)
+- Create, load, save, and query levels
+- Viewport camera control, entity focus, and screenshot capture
+- Run console commands, get/set CVARs
+- Enter/exit game mode, undo/redo
+- Persistent scripting sessions (`begin_session` / `exec_in_session` / `get_session_vars` / `end_session`) that keep Python state alive across calls
+- Fast-fail when editor is unreachable (avoids repeated timeouts)
+
+**Engine Introspection** (3 tools):
+- EBus schema discovery, both from generated `azlmbr` stubs and live from the editor
+- RenderDoc frame capture (on O3DE 26.10.0 the editor does not expose it to Python, so the tool reports the manual steps)
+
+**Project & Build Management** (17 tools, CLI-based, no editor required):
+- Discover local O3DE engine installations (multi-engine support), register engines, select the active one
+- List registered projects, gems, and available templates
+- Create projects and gems from templates
+- Register, enable, and disable gems
+- Edit project properties
+- Build projects via CMake, either blocking (`build_project`) or in the background (`start_build` / `get_build_status`)
+- Export projects for distribution
+
+**Asset Pipeline** (9 tools; 5 need no editor):
+- Asset Processor status, asset refresh (AssetProcessorBatch), and waiting for an Asset Processor run to exit
+- Tail editor and Asset Processor logs, filter for errors
+- With the editor running (AiCompanion gem 0.6.0+): one asset's build status, its jobs with failure logs, and `wait_for_asset`, which waits until a specific asset is built or reports why it failed
+
+**Track View** (8 tools, requires a running editor):
+- Cinematic sequence authoring: create, list, describe, and delete sequences; set a sequence's time range
+- Add nodes (Director, Event, entity, component) and control playback (play, stop)
+- Editor Python over `azlmbr.legacy.trackview`, no gem needed. Track and keyframe authoring are not exposed (the reflected API makes them unreliable to drive)
+
+**Animation** (17 tools, requires a running editor):
+- List the EMotion FX anim graphs the engine holds and describe one in full: nodes, ports and connections, transitions with conditions, parameters
+- Author anim graphs: create, load, save and remove graphs; add, edit and remove nodes (state machines, motion nodes, blend trees); set a state machine's entry state; add and remove parameters
+- Wire them: transitions between states with conditions (parameter, time, play time, motion, state, tag, vector), and blend-tree port connections
+- Native requests through the AiCompanion gem (gem 0.6.0+, plus the EMotionFX gem); they work in the gem's secure mode
+
+## Prerequisites
+
+- Python 3.10+
+- O3DE installed and registered (engine path in the O3DE manifest or `O3DE_ENGINE_PATH` env var)
+  - **Linux/macOS:** `~/.o3de/o3de_manifest.json`
+  - **Windows:** `%USERPROFILE%\.o3de\o3de_manifest.json`
+- For editor tools (optional): O3DE Editor running with the [**o3de-ai-companion-gem**](https://github.com/nickschuetz/o3de-ai-companion-gem) and **EditorPythonBindings** gems enabled. The companion gem provides the AgentServer that o3de-mcp connects to for real-time editor automation. Project tools work without the editor; call `get_capabilities()` to check what's available.
+
+## Installation
+
+```bash
+pip install o3de-mcp
+```
+
+Or run it without installing, straight from an MCP client config, with [uv](https://docs.astral.sh/uv/):
+
+```bash
+uvx o3de-mcp
+```
+
+To work on o3de-mcp itself, install from a checkout instead:
+
+```bash
+pip install -e .        # or: uv pip install -e .
+```
+
+## Usage
+
+### As a standalone MCP server
+
+```bash
+o3de-mcp
+```
+
+### With Claude Code
+
+Add to your MCP config (or use a project-level `.mcp.json`):
+- **Linux/macOS:** `~/.claude/mcp.json`
+- **Windows:** `%USERPROFILE%\.claude\mcp.json`
+
+```json
+{
+  "mcpServers": {
+    "o3de": {
+      "command": "o3de-mcp"
+    }
+  }
+}
+```
+
+#### Agent skill: headless verification and editor automation
+
+[`skills/o3de-headless-and-editor-automation/`](https://github.com/nickschuetz/o3de-mcp/blob/main/skills/o3de-headless-and-editor-automation/)
+is an [Agent Skill](https://agentskills.io) (a `SKILL.md` plus reference notes
+and scripts) that teaches an agent the repeatable workflow around this server on
+Windows and Linux: AssetProcessor-first launch order and how to tell when it is
+idle, rendering a level on the real GPU and capturing it with ffmpeg (Xvfb when
+there is no monitor), in-renderer screenshots from editor Python, driving the
+editor through o3de-mcp and the AiCompanion gem, wiring asset GUIDs into prefab
+JSON offline, and proving engine changes with a ScriptContext test. It records
+the traps that cost hours (the prefab segfault on a missing template, killing
+your own shell by command-line pattern, the AP idle line living in `AP_GUI.log`).
+The Linux path has been run end to end; the Windows path is written from the
+engine layout and still needs a run on a Windows machine.
+
+Install it by copying or symlinking the directory into your skills folder, then
+invoke it with `/o3de-headless-and-editor-automation`:
+
+```bash
+ln -s "$(pwd)/skills/o3de-headless-and-editor-automation" ~/.claude/skills/
+```
+
+Other clients that read the Agent Skills layout can point at the same directory.
+
+### With Claude Desktop
+
+Add to your Claude Desktop config:
+
+```json
+{
+  "mcpServers": {
+    "o3de": {
+      "command": "o3de-mcp"
+    }
+  }
+}
+```
+
+### Testing with MCP Inspector
+
+[MCP Inspector](https://github.com/modelcontextprotocol/inspector) provides a web UI for interactively testing tools without an AI assistant. Useful for verifying tool behavior, inspecting responses, and debugging.
+
+```bash
+npx @modelcontextprotocol/inspector o3de-mcp
+```
+
+This opens the Inspector UI at `http://localhost:6274`. From there you can browse all registered tools, invoke them with custom parameters, and see raw responses.
+
+To pass environment variables (e.g., a custom engine path or editor port):
+
+```bash
+npx @modelcontextprotocol/inspector -e O3DE_ENGINE_PATH=/path/to/engine -e O3DE_EDITOR_PORT=4600 o3de-mcp
+```
+
+## Development
+
+```bash
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Run a single test
+pytest tests/test_project.py::TestValidateName::test_valid_simple
+
+# Lint and format
+ruff check src/ tests/
+ruff format src/ tests/
+
+# Type checking
+mypy src/
+```
+
+### SBOM (Software Bill of Materials)
+
+A CycloneDX SBOM is generated on every CI run and uploaded as a build artifact. To generate one locally:
+
+```bash
+python scripts/generate-sbom.py              # JSON + XML
+python scripts/generate-sbom.py --format json # JSON only
+```
+
+The script creates an isolated virtual environment with only runtime dependencies, so the SBOM accurately reflects what ships, without the dev and build tooling.
+
+### CI
+
+GitHub Actions runs lint, type checking, tests, and SBOM generation on every push and PR to `main`. See [.github/workflows/ci.yml](https://github.com/nickschuetz/o3de-mcp/blob/main/.github/workflows/ci.yml).
+
+### Security
+
+- Editor tool inputs (entity IDs, component types) are validated against strict regex patterns before use.
+- User-supplied strings are serialized via `json.dumps` / `json.loads` when passed into editor scripts, never raw string interpolation.
+- Project and gem names are validated against O3DE naming conventions.
+- Filesystem paths are resolved and validated before being passed to subprocesses.
+
+## Documentation
+
+| Document | Audience | Description |
+|----------|----------|-------------|
+| [AGENTS.md](https://github.com/nickschuetz/o3de-mcp/blob/main/AGENTS.md) | AI agents | Token-efficient usage guide, decision trees, error handling |
+| [docs/architecture.md](https://github.com/nickschuetz/o3de-mcp/blob/main/docs/architecture.md) | Developers & agents | System architecture diagram and communication flows |
+| [docs/tool-reference.md](https://github.com/nickschuetz/o3de-mcp/blob/main/docs/tool-reference.md) | Agents & developers | Compact parameter reference for all 96 tools |
+| [docs/recipes.md](https://github.com/nickschuetz/o3de-mcp/blob/main/docs/recipes.md) | Agents & developers | Composable patterns for scenes, physics, lighting, scripting |
+| [docs/components.md](https://github.com/nickschuetz/o3de-mcp/blob/main/docs/components.md) | Agents & developers | O3DE component name catalog with dependency chains |
+| [skills/o3de-headless-and-editor-automation/](https://github.com/nickschuetz/o3de-mcp/blob/main/skills/o3de-headless-and-editor-automation/SKILL.md) | AI agents | Installable skill (Windows and Linux): render capture, editor automation, offline asset GUIDs, ScriptContext proofs, and the traps around each |
+
+### Examples
+
+Progressive walkthroughs from project creation to a complete game:
+
+1. [New Project](https://github.com/nickschuetz/o3de-mcp/blob/main/examples/01_new_project.md): create, configure, and build a project
+2. [Build a Scene](https://github.com/nickschuetz/o3de-mcp/blob/main/examples/02_build_scene.md): sky, lights, ground, camera, static objects
+3. [Physics Playground](https://github.com/nickschuetz/o3de-mcp/blob/main/examples/03_physics_playground.md): dynamic bodies, triggers, stacking
+4. [Scripted Game](https://github.com/nickschuetz/o3de-mcp/blob/main/examples/04_scripted_game.md): complete mini-game with player, obstacles, goals
+5. [Batch Operations](https://github.com/nickschuetz/o3de-mcp/blob/main/examples/05_batch_operations.md): efficient bulk entity creation patterns
+6. [CLI-Only Workflow](https://github.com/nickschuetz/o3de-mcp/blob/main/examples/06_cli_only_workflow.md): project management without the editor
+7. [Gem Development](https://github.com/nickschuetz/o3de-mcp/blob/main/examples/07_gem_development.md): create and integrate custom gems
+8. [MCP Inspector](https://github.com/nickschuetz/o3de-mcp/blob/main/examples/08_mcp_inspector.md): interactively test tools via a web UI
+
+## Configuration
+
+| Environment Variable | Description | Default |
+|---|---|---|
+| `O3DE_ENGINE_PATH` | Override automatic engine discovery | Auto-detected from manifest |
+| `O3DE_ENGINE_NAME` | Select engine by name when multiple are registered | First valid engine |
+| `O3DE_PROJECT_PATH` | Select the project for asset, introspection and `list_levels` tools | Single registered project |
+| `O3DE_EDITOR_HOST` | Editor AgentServer host | `127.0.0.1` |
+| `O3DE_EDITOR_PORT` | Editor AgentServer port | `4600` |
+| `O3DE_EDITOR_TIMEOUT` | Per-command editor execution timeout (seconds) | `600` |
+| `O3DE_EDITOR_CONNECT_TIMEOUT` | Editor TCP connect timeout (seconds) | `5` |
+| `O3DE_CAPTURE_WAIT` | How long to wait for a viewport capture to reach disk (seconds) | `15` |
+| `O3DE_EDITOR_TLS` | Wrap the editor connection in TLS (`1` or `true` to enable) | `0` (disabled) |
+| `O3DE_EDITOR_TLS_VERIFY` | Verify the editor's certificate and hostname | `0` (disabled) |
+| `O3DE_EDITOR_TLS_CA` | CA bundle used when verification is enabled | System defaults |
+| `O3DE_CMAKE_GENERATOR` | CMake generator for builds | Auto-detected per platform |
+| `O3DE_CONFIGURE_TIMEOUT` | CMake configure timeout (seconds) | `600` |
+| `O3DE_BUILD_TIMEOUT` | CMake build timeout (seconds) | `1800` |
+| `O3DE_EXPORT_TIMEOUT` | Project export timeout (seconds) | `3600` |
+
+> **Editor timeouts:** the editor runs each submitted script *synchronously* and does
+> not reply until it finishes, so `O3DE_EDITOR_TIMEOUT` is effectively "how long an
+> editor operation may take." It defaults to 600s because real operations (level loads,
+> game-mode entry, on-demand asset compilation) routinely exceed tens of seconds, and a
+> too-short value cuts them off while the editor is still working. An unreachable editor
+> is caught in milliseconds by the separate `O3DE_EDITOR_CONNECT_TIMEOUT` and the
+> fast-fail window, so a large command timeout costs nothing on the healthy path.
+> `run_editor_python` also accepts a per-call `timeout` argument.
+
+> **Editor TLS:** the connection is plaintext by default, which is the right
+> default for the normal case of an editor on `127.0.0.1`. If you point
+> `O3DE_EDITOR_HOST` at a remote machine, set `O3DE_EDITOR_TLS=1` **and**
+> `O3DE_EDITOR_TLS_VERIFY=1`. Enabling TLS on its own leaves certificate and
+> hostname checking off, which encrypts the channel but does not authenticate
+> the peer.
+
+The server also reads the O3DE manifest for registered engines, projects, and gems:
+- **Linux/macOS:** `~/.o3de/o3de_manifest.json`
+- **Windows:** `%USERPROFILE%\.o3de\o3de_manifest.json`
+
+## Related Projects
+
+- [**o3de-ai-companion-gem**](https://github.com/nickschuetz/o3de-ai-companion-gem): O3DE Gem that provides the AgentServer for editor-side communication. Required for editor automation tools. Enable it alongside [EditorPythonBindings](https://docs.o3de.org/docs/api/gems/editorpythonbindings/index.html) in your O3DE project.
+- [**O3DE (Open 3D Engine)**](https://github.com/o3de/o3de): the open-source game engine.
+
+## License
+
+This project is dual-licensed under [Apache 2.0](https://github.com/nickschuetz/o3de-mcp/blob/main/LICENSE-APACHE2.txt) or [MIT](https://github.com/nickschuetz/o3de-mcp/blob/main/LICENSE-MIT.txt) (your choice), matching the [O3DE engine license](https://github.com/o3de/o3de/blob/development/LICENSE.txt). Free for commercial and non-commercial use.
+
+`SPDX-License-Identifier: Apache-2.0 OR MIT`

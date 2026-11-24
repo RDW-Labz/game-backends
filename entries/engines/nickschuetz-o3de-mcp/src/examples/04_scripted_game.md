@@ -1,0 +1,156 @@
+# Example 4: Scripted Mini-Game
+
+Build a complete "falling crates" mini-game using MCP tools: a player-controlled
+ball must reach a goal zone while crates fall from above.
+
+## Prerequisites
+
+- Scene with ground, camera, and lighting (from Examples 2-3)
+- PhysX and Lua Script gems enabled
+- O3DE Editor running with AiCompanion + EditorPythonBindings gems
+
+> **Editor required:** Call `get_capabilities()` first to verify editor
+> connectivity.
+
+## Steps
+
+### 1. Create the player ball
+
+```json
+{"tool": "create_entity", "arguments": {"name": "Player"}}
+{"tool": "add_component", "arguments": {"entity_id": "<player_id>", "component_type": "Mesh"}}
+{"tool": "add_component", "arguments": {"entity_id": "<player_id>", "component_type": "PhysX Primitive Collider"}}
+{"tool": "add_component", "arguments": {"entity_id": "<player_id>", "component_type": "PhysX Dynamic Rigid Body"}}
+{"tool": "add_component", "arguments": {"entity_id": "<player_id>", "component_type": "Lua Script"}}
+```
+
+Position and scale the player:
+
+```json
+{"tool": "set_transform", "arguments": {"entity_id": "<player_id>", "position": [0.0, 0.0, 1.0], "scale": [0.5, 0.5, 0.5]}}
+```
+
+### 2. Create the goal zone
+
+```json
+{"tool": "create_entity", "arguments": {"name": "GoalZone"}}
+{"tool": "add_component", "arguments": {"entity_id": "<goal_id>", "component_type": "PhysX Primitive Collider"}}
+{"tool": "add_component", "arguments": {"entity_id": "<goal_id>", "component_type": "Lua Script"}}
+```
+
+Position it, scale it to a 3 m cube, and make it a trigger:
+
+```json
+{"tool": "set_transform", "arguments": {"entity_id": "<goal_id>", "position": [20.0, 0.0, 1.5], "scale": [3.0, 3.0, 3.0]}}
+{"tool": "set_component_property", "arguments": {"entity_id": "<goal_id>", "component_type": "PhysX Primitive Collider", "property_path": "Collider Configuration|Trigger", "value": "true"}}
+```
+
+### 3. Create falling crate spawners
+
+Use entity hierarchy for organization:
+
+```json
+{"tool": "create_entity", "arguments": {"name": "CrateSpawners"}}
+```
+
+Create spawn points as children. The script finds the parent's own id with a
+search by name; building one with `entity.EntityId('<spawners_id>')` gives an
+invalid id on O3DE 26.10.0, and the spawners would land at the root:
+
+```json
+{
+  "tool": "run_editor_python",
+  "arguments": {
+    "script": "import azlmbr.editor as editor\nimport azlmbr.components as comp\nimport azlmbr.bus as bus\nimport azlmbr.entity as entity\nimport azlmbr.math as math\nimport json\n\nsearch = entity.SearchFilter()\nsearch.names = ['CrateSpawners']\nparent = entity.SearchBus(bus.Broadcast, 'SearchEntities', search)[0]\npositions = [\n    (5.0, 0.0, 20.0),\n    (10.0, 2.0, 22.0),\n    (15.0, -2.0, 18.0),\n    (8.0, 3.0, 25.0),\n]\nresults = []\nfor i, (x, y, z) in enumerate(positions):\n    eid = editor.ToolsApplicationRequestBus(bus.Broadcast, 'CreateNewEntity', parent)\n    editor.EditorEntityAPIBus(bus.Event, 'SetName', eid, f'Spawner_{i:02d}')\n    comp.TransformBus(bus.Event, 'SetWorldTranslation', eid, math.Vector3(x, y, z))\n    results.append({'name': f'Spawner_{i:02d}', 'id': str(eid)})\nprint(json.dumps(results))"
+  }
+}
+```
+
+### 4. Create obstacle crates
+
+Batch-create crates at spawner positions:
+
+```json
+{
+  "tool": "run_editor_python",
+  "arguments": {
+    "script": "import azlmbr.editor as editor\nimport azlmbr.bus as bus\nimport azlmbr.entity as entity\nimport azlmbr.components as comp\nimport azlmbr.math as math\nimport json\n\nparent = entity.EntityId()\npositions = [\n    (5.0, 0.0, 20.0),\n    (10.0, 2.0, 22.0),\n    (15.0, -2.0, 18.0),\n    (8.0, 3.0, 25.0),\n]\nmesh_t = editor.EditorComponentAPIBus(bus.Broadcast, 'FindComponentTypeIdsByEntityType', ['Mesh'], entity.EntityType().Game)[0]\ncol_t = editor.EditorComponentAPIBus(bus.Broadcast, 'FindComponentTypeIdsByEntityType', ['PhysX Primitive Collider'], entity.EntityType().Game)[0]\nrb_t = editor.EditorComponentAPIBus(bus.Broadcast, 'FindComponentTypeIdsByEntityType', ['PhysX Dynamic Rigid Body'], entity.EntityType().Game)[0]\nresults = []\nfor i, (x, y, z) in enumerate(positions):\n    eid = editor.ToolsApplicationRequestBus(bus.Broadcast, 'CreateNewEntity', parent)\n    name = f'FallingCrate_{i:02d}'\n    editor.EditorEntityAPIBus(bus.Event, 'SetName', eid, name)\n    comp.TransformBus(bus.Event, 'SetWorldTranslation', eid, math.Vector3(x, y, z))\n    # Add physics components\n    for tid in [mesh_t, col_t, rb_t]:\n        editor.EditorComponentAPIBus(bus.Broadcast, 'AddComponentOfType', eid, tid)\n    results.append({'name': name, 'id': str(eid)})\nprint(json.dumps(results))"
+  }
+}
+```
+
+### 5. Create the game manager
+
+```json
+{"tool": "create_entity", "arguments": {"name": "GameManager"}}
+{"tool": "add_component", "arguments": {"entity_id": "<gm_id>", "component_type": "Lua Script"}}
+```
+
+### 6. Create the follow camera
+
+```json
+{"tool": "create_entity", "arguments": {"name": "FollowCamera"}}
+{"tool": "add_component", "arguments": {"entity_id": "<cam_id>", "component_type": "Camera"}}
+```
+
+Position behind and above the player:
+
+```json
+{"tool": "set_transform", "arguments": {"entity_id": "<cam_id>", "position": [0.0, -8.0, 6.0]}}
+```
+
+### 7. Verify the complete scene
+
+```json
+{"tool": "list_entities"}
+```
+
+Expected entity list:
+- `Ground`, `Sun`, `Environment` (from scene setup)
+- `Player` — ball with Mesh, PhysX Primitive Collider, PhysX Dynamic Rigid Body, Lua Script
+- `GoalZone` — trigger primitive collider with Lua Script
+- `CrateSpawners` — parent entity
+  - `Spawner_00` through `Spawner_03`
+- `FallingCrate_00` through `FallingCrate_03` — dynamic physics objects
+- `GameManager` — Lua Script
+- `FollowCamera` — Camera
+
+Verify a crate has the right components:
+
+```json
+{"tool": "get_entity_components", "arguments": {"entity_id": "<crate_0_id>"}}
+```
+
+Expected: `Mesh`, `PhysX Primitive Collider`, `PhysX Dynamic Rigid Body`, `Transform`.
+
+## Game Architecture Summary
+
+```
+GameManager (Lua Script)
+├── Controls game state (start, playing, won, lost)
+├── Listens for GoalZone trigger events
+└── Respawns crates on timer
+
+Player (Mesh + PhysX + Lua Script)
+├── Reads input → applies force to rigid body
+└── Has sphere collider
+
+GoalZone (Trigger + Lua Script)
+├── Detects player entering
+└── Notifies GameManager
+
+FallingCrate_* (Mesh + PhysX)
+└── Dynamic rigid bodies that fall under gravity
+```
+
+## Token Efficiency Notes
+
+This example used **21 tool calls** (2 of them for verification) to create a
+game with 13 entities. Key savings:
+
+1. **Batch entity creation** via `run_editor_python` loops — one call creates 4
+   entities instead of 4 separate `create_entity` calls.
+2. **Batch component addition** — one script adds 3 component types to multiple
+   entities.
+3. **Combined position + config** — set transform and properties in the same
+   script call that creates entities.

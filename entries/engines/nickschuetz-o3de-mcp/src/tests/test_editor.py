@@ -1,0 +1,2232 @@
+# Copyright (c) Contributors to the Open 3D Engine Project.
+# For complete copyright and license terms please see the LICENSE at the root of this distribution.
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+"""Tests for editor tools and utilities."""
+
+import asyncio
+import base64
+import io
+import json
+import math
+import sys
+import time
+import types
+from contextlib import redirect_stdout
+from pathlib import Path
+from unittest.mock import AsyncMock, patch
+
+import pytest
+
+from o3de_mcp.tools.editor import (
+    _async_run_editor_script,
+    _build_framed_request,
+    _EditorConnectionPool,
+    _encode_script,
+    _format_error,
+    _get_editor_connect_timeout,
+    _get_editor_host,
+    _get_editor_port,
+    _get_editor_timeout,
+    _get_tls_context,
+    _near_gimbal_pole,
+    _quaternion_to_euler_degrees_xyz,
+    _send_editor_command,
+    _validate_component_type,
+    _validate_console_command,
+    _validate_entity_id,
+    _validate_entity_name,
+    _validate_prefab_path,
+    _validate_vec3,
+)
+
+# --- Validation tests ---
+
+
+class TestValidateEntityId:
+    def test_plain_numeric(self) -> None:
+        assert _validate_entity_id("1234") == "1234"
+
+    def test_bracketed_numeric(self) -> None:
+        assert _validate_entity_id("[5678]") == "[5678]"
+
+    def test_strips_whitespace(self) -> None:
+        assert _validate_entity_id("  42  ") == "42"
+
+    def test_rejects_alpha(self) -> None:
+        with pytest.raises(ValueError, match="Invalid entity ID"):
+            _validate_entity_id("abc")
+
+    def test_rejects_shell_injection(self) -> None:
+        with pytest.raises(ValueError, match="Invalid entity ID"):
+            _validate_entity_id("1; rm -rf /")
+
+    def test_rejects_empty(self) -> None:
+        with pytest.raises(ValueError, match="Invalid entity ID"):
+            _validate_entity_id("")
+
+
+class TestValidateComponentType:
+    def test_simple_name(self) -> None:
+        assert _validate_component_type("Mesh") == "Mesh"
+
+    def test_name_with_spaces(self) -> None:
+        assert _validate_component_type("PhysX Rigid Body") == "PhysX Rigid Body"
+
+    def test_name_with_parentheses(self) -> None:
+        assert _validate_component_type("Script (Lua)") == "Script (Lua)"
+
+    def test_rejects_code_injection(self) -> None:
+        with pytest.raises(ValueError, match="Invalid component type"):
+            _validate_component_type("Mesh'; print('pwned')#")
+
+    def test_rejects_empty(self) -> None:
+        with pytest.raises(ValueError, match="Invalid component type"):
+            _validate_component_type("")
+
+
+# --- Configuration tests ---
+
+
+class TestEditorConfig:
+    def test_default_host(self) -> None:
+        with patch.dict("os.environ", {}, clear=True):
+            assert _get_editor_host() == "127.0.0.1"
+
+    def test_custom_host(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_HOST": "10.0.0.5"}):
+            assert _get_editor_host() == "10.0.0.5"
+
+    def test_non_loopback_host_logs_warning(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_HOST": "192.168.1.100"}):
+            with patch("o3de_mcp.tools.editor.logger") as mock_logger:
+                _get_editor_host()
+                mock_logger.warning.assert_called_once()
+
+    def test_loopback_host_no_warning(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_HOST": "127.0.0.1"}):
+            with patch("o3de_mcp.tools.editor.logger") as mock_logger:
+                _get_editor_host()
+                mock_logger.warning.assert_not_called()
+
+    def test_default_port(self) -> None:
+        with patch.dict("os.environ", {}, clear=True):
+            assert _get_editor_port() == 4600
+
+    def test_custom_port(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_PORT": "9000"}):
+            assert _get_editor_port() == 9000
+
+    def test_invalid_port_falls_back(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_PORT": "not_a_number"}):
+            assert _get_editor_port() == 4600
+
+    def test_default_command_timeout(self) -> None:
+        with patch.dict("os.environ", {}, clear=True):
+            assert _get_editor_timeout() == 600.0
+
+    def test_custom_command_timeout(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_TIMEOUT": "45"}):
+            assert _get_editor_timeout() == 45.0
+
+    def test_invalid_command_timeout_falls_back(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_TIMEOUT": "nope"}):
+            assert _get_editor_timeout() == 600.0
+
+    def test_non_positive_command_timeout_falls_back(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_TIMEOUT": "0"}):
+            assert _get_editor_timeout() == 600.0
+
+    def test_default_connect_timeout(self) -> None:
+        with patch.dict("os.environ", {}, clear=True):
+            assert _get_editor_connect_timeout() == 5.0
+
+    def test_custom_connect_timeout(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_CONNECT_TIMEOUT": "12"}):
+            assert _get_editor_connect_timeout() == 12.0
+
+    def test_invalid_connect_timeout_falls_back(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_CONNECT_TIMEOUT": "-3"}):
+            assert _get_editor_connect_timeout() == 5.0
+
+
+# --- Script encoding tests ---
+
+
+class TestEncodeScript:
+    def test_round_trip(self) -> None:
+        script = "print('hello world')"
+        encoded_cmd = _encode_script(script)
+        # Extract the base64 payload from the command
+        assert "pyRunScript" in encoded_cmd
+        assert "base64" in encoded_cmd
+        # Verify the base64-encoded script is present and decodable
+        b64_str = base64.b64encode(script.encode("utf-8")).decode("ascii")
+        assert b64_str in encoded_cmd
+
+    def test_triple_quotes_safe(self) -> None:
+        script = "x = '''triple quoted string'''"
+        cmd = _encode_script(script)
+        # The base64 encoding means no triple quotes from the script leak into the payload
+        b64_payload = base64.b64encode(script.encode("utf-8")).decode("ascii")
+        assert "'''" not in b64_payload
+        assert b64_payload in cmd
+
+    def test_backslashes_safe(self) -> None:
+        script = r"path = 'C:\\Users\\test'"
+        encoded_cmd = _encode_script(script)
+        b64_payload = base64.b64encode(script.encode("utf-8")).decode("ascii")
+        assert b64_payload in encoded_cmd
+
+    def test_unicode_safe(self) -> None:
+        script = "name = '日本語テスト'"
+        encoded_cmd = _encode_script(script)
+        b64_payload = base64.b64encode(script.encode("utf-8")).decode("ascii")
+        assert b64_payload in encoded_cmd
+
+
+# --- Structured error tests ---
+
+
+class TestFormatError:
+    def test_produces_valid_json(self) -> None:
+        result = _format_error("test_code", "something went wrong")
+        parsed = json.loads(result)
+        assert parsed["status"] == "error"
+        assert parsed["code"] == "test_code"
+        assert parsed["message"] == "something went wrong"
+
+
+# --- Connection tests ---
+
+
+class TestSendEditorCommand:
+    def test_connection_refused(self) -> None:
+        result = _send_editor_command("test", host="127.0.0.1", port=19999)
+        parsed = json.loads(result)
+        assert parsed["status"] == "error"
+        assert parsed["code"] == "connection_refused"
+
+    def test_timeout_with_unreachable_host(self) -> None:
+        result = _send_editor_command("test", host="192.0.2.1", port=4600, timeout=0.5)
+        parsed = json.loads(result)
+        assert parsed["status"] == "error"
+        assert parsed["code"] in ("timeout", "socket_error")
+
+    def test_uses_env_config(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_PORT": "19998"}):
+            result = _send_editor_command("test")
+            parsed = json.loads(result)
+            assert parsed["status"] == "error"
+
+
+# --- Connection pool tests ---
+
+
+class TestEditorConnectionPool:
+    def test_send_script_connection_refused(self) -> None:
+        pool = _EditorConnectionPool()
+        result = asyncio.run(pool.send_script("print(1)", host="127.0.0.1", port=19997))
+        parsed = json.loads(result)
+        assert parsed["status"] == "error"
+        assert parsed["code"] == "connection_refused"
+
+    def test_pool_reconnects_on_host_change(self) -> None:
+        pool = _EditorConnectionPool()
+        # First call with one port
+        result1 = asyncio.run(pool.send_script("print(1)", host="127.0.0.1", port=19996))
+        # Second call with different port should reconnect, not reuse
+        result2 = asyncio.run(pool.send_script("print(2)", host="127.0.0.1", port=19995))
+        # Both should fail (no server), but shouldn't crash
+        assert json.loads(result1)["status"] == "error"
+        assert json.loads(result2)["status"] == "error"
+
+
+# --- Async script execution tests ---
+
+
+class TestAsyncRunEditorScript:
+    def test_sends_script_via_pool(self) -> None:
+        script = "print('hello')"
+
+        async def run() -> str:
+            with patch("o3de_mcp.tools.editor._pool") as mock_pool:
+                mock_pool.send_script = AsyncMock(return_value="hello")
+                result = await _async_run_editor_script(script)
+                # Verify the script was passed to send_script
+                mock_pool.send_script.assert_called_once_with(script, timeout=None)
+                return result
+
+        result = asyncio.run(run())
+        assert result == "hello"
+
+
+# --- Fast-fail tests ---
+
+
+class TestEditorConnectionPoolFastFail:
+    def test_fast_fail_after_connection_failure(self) -> None:
+        """After a connection failure, subsequent calls within the window fail immediately."""
+        pool = _EditorConnectionPool()
+
+        # First call — real connection failure
+        result1 = asyncio.run(pool.send_script("print(1)", host="127.0.0.1", port=19993))
+        parsed1 = json.loads(result1)
+        assert parsed1["status"] == "error"
+
+        # Second call — should fast-fail (different error code)
+        result2 = asyncio.run(pool.send_script("print(2)", host="127.0.0.1", port=19993))
+        parsed2 = json.loads(result2)
+        assert parsed2["status"] == "error"
+        assert parsed2["code"] == "editor_unavailable"
+        assert "get_capabilities()" in parsed2["message"]
+
+    def test_fast_fail_expires(self) -> None:
+        """After the fast-fail window expires, the pool re-attempts connection."""
+        pool = _EditorConnectionPool()
+
+        # Trigger a failure
+        asyncio.run(pool.send_script("print(1)", host="127.0.0.1", port=19992))
+
+        # Manually expire the window
+        pool._last_failure_time = time.monotonic() - pool._FAST_FAIL_WINDOW - 1.0
+
+        # Next call should attempt a real connection (not fast-fail)
+        result = asyncio.run(pool.send_script("print(1)", host="127.0.0.1", port=19992))
+        parsed = json.loads(result)
+        assert parsed["status"] == "error"
+        # Should be a real connection error, not the fast-fail code
+        assert parsed["code"] == "connection_refused"
+
+
+# --- Framed protocol tests ---
+
+
+class TestFramedProtocol:
+    def test_build_framed_request_ping(self) -> None:
+        data = _build_framed_request("ping", request_id="test-id")
+        # First 4 bytes are big-endian length
+        import struct
+
+        length = struct.unpack(">I", data[:4])[0]
+        body = json.loads(data[4:])
+        assert body["id"] == "test-id"
+        assert body["type"] == "ping"
+        assert length == len(data) - 4
+
+    def test_build_framed_request_execute_python(self) -> None:
+        data = _build_framed_request("execute_python", script="print('hi')", request_id="exec-1")
+        import struct
+
+        length = struct.unpack(">I", data[:4])[0]
+        body = json.loads(data[4:])
+        assert body["type"] == "execute_python"
+        assert body["id"] == "exec-1"
+        # Script should be base64 encoded
+        decoded = base64.b64decode(body["script"]).decode("utf-8")
+        assert decoded == "print('hi')"
+        assert length == len(data) - 4
+
+    def test_build_framed_request_auto_generates_id(self) -> None:
+        data = _build_framed_request("ping")
+        body = json.loads(data[4:])
+        assert len(body["id"]) > 0  # UUID was generated
+
+
+class TestTlsContext:
+    def test_tls_disabled_by_default(self) -> None:
+        with patch.dict("os.environ", {}, clear=True):
+            assert _get_tls_context() is None
+
+    def test_tls_enabled(self) -> None:
+        with patch.dict("os.environ", {"O3DE_EDITOR_TLS": "1"}):
+            ctx = _get_tls_context()
+            assert ctx is not None
+
+    def test_verification_without_a_ca_file_uses_the_system_cas(self) -> None:
+        # A bare PROTOCOL_TLS_CLIENT context trusts no CA, so verifying without
+        # O3DE_EDITOR_TLS_CA used to fail every handshake.
+        env = {"O3DE_EDITOR_TLS": "1", "O3DE_EDITOR_TLS_VERIFY": "1"}
+        with patch.dict("os.environ", env, clear=True):
+            with patch("ssl.SSLContext.load_default_certs") as load_default:
+                ctx = _get_tls_context()
+        assert ctx is not None
+        load_default.assert_called_once()
+
+    def test_a_ca_file_is_used_instead_of_the_system_cas(self, tmp_path: Path) -> None:
+        env = {
+            "O3DE_EDITOR_TLS": "1",
+            "O3DE_EDITOR_TLS_VERIFY": "1",
+            "O3DE_EDITOR_TLS_CA": str(tmp_path / "ca.pem"),
+        }
+        with patch.dict("os.environ", env, clear=True):
+            with (
+                patch("ssl.SSLContext.load_verify_locations") as load_ca,
+                patch("ssl.SSLContext.load_default_certs") as load_default,
+            ):
+                _get_tls_context()
+        load_ca.assert_called_once_with(str(tmp_path / "ca.pem"))
+        load_default.assert_not_called()
+
+
+# --- End-to-end protocol tests against a fake in-process server ---
+
+
+class TestProtocolRoundTrip:
+    """Drive send_script against a real local server speaking each protocol.
+
+    These exercise the connect → detect → command flow end-to-end, which the
+    connection-refused tests never reach.
+    """
+
+    def test_agent_server_framed_round_trip(self) -> None:
+        """A framed AgentServer replies to ping then execute_python."""
+        import struct
+
+        async def run() -> str:
+            async def handle(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+                try:
+                    while True:
+                        header = await reader.readexactly(4)
+                        length = struct.unpack(">I", header)[0]
+                        body = await reader.readexactly(length)
+                        msg = json.loads(body)
+                        if msg["type"] == "ping":
+                            resp = {"id": msg["id"], "status": "ok"}
+                        else:
+                            resp = {"id": msg["id"], "status": "ok", "output": "framed-output"}
+                        data = json.dumps(resp).encode("utf-8")
+                        writer.write(struct.pack(">I", len(data)) + data)
+                        await writer.drain()
+                except (asyncio.IncompleteReadError, ConnectionError):
+                    pass
+
+            server = await asyncio.start_server(handle, "127.0.0.1", 0)
+            port = server.sockets[0].getsockname()[1]
+            pool = _EditorConnectionPool()
+            try:
+                return await pool.send_script(
+                    "print('x')", host="127.0.0.1", port=port, timeout=2.0
+                )
+            finally:
+                # Close the pooled connection so the server's handler stops
+                # awaiting, then tear the server down without letting
+                # wait_closed() block forever on a lingering handler task
+                # (a Python 3.12+ asyncio deadlock that can hang the suite).
+                await pool._close()
+                server.close()
+                try:
+                    await asyncio.wait_for(server.wait_closed(), timeout=2.0)
+                except (asyncio.TimeoutError, TimeoutError):
+                    pass
+
+        assert asyncio.run(run()) == "framed-output"
+
+    def test_legacy_fallback_round_trip(self) -> None:
+        """A non-framed server triggers legacy fallback and still returns output.
+
+        Regression test: legacy detection reconnects, and send_script must use
+        the reconnected socket — not the closed one the ping was sent on.
+        """
+
+        async def run() -> str:
+            async def handle(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
+                try:
+                    # Respond to any input with plain text. On the detection
+                    # connection this is read as a (nonsensical) frame length,
+                    # failing detection fast; on the command connection it is
+                    # the script's output.
+                    await reader.read(4096)
+                    writer.write(b"legacy-output\n")
+                    await writer.drain()
+                    await asyncio.sleep(0.05)
+                except ConnectionError:
+                    pass
+                finally:
+                    writer.close()
+
+            server = await asyncio.start_server(handle, "127.0.0.1", 0)
+            port = server.sockets[0].getsockname()[1]
+            pool = _EditorConnectionPool()
+            try:
+                return await pool.send_script(
+                    "print('x')", host="127.0.0.1", port=port, timeout=2.0
+                )
+            finally:
+                # See test_agent_server_framed_round_trip: avoid the 3.12+
+                # wait_closed() deadlock during teardown.
+                await pool._close()
+                server.close()
+                try:
+                    await asyncio.wait_for(server.wait_closed(), timeout=2.0)
+                except (asyncio.TimeoutError, TimeoutError):
+                    pass
+
+        assert "legacy-output" in asyncio.run(run())
+
+
+# --- Helpers for tool-level tests ---
+
+
+async def _call_tool(tool_name: str, arguments: dict, mock_output: str = "ok") -> str:
+    """Register editor tools on a throwaway MCPServer and call a tool with a mocked pool.
+
+    Returns the text content of the tool's response.
+    """
+    from mcp.server import MCPServer
+
+    from o3de_mcp.tools.editor import register_editor_tools
+
+    mcp = MCPServer("test")
+    register_editor_tools(mcp)
+    with patch("o3de_mcp.tools.editor._pool") as mock_pool:
+        mock_pool.send_script = AsyncMock(return_value=mock_output)
+        # An older gem: the native-first mutation tools fall back to their scripts.
+        mock_pool.send_request = AsyncMock(return_value=_UNKNOWN_REQUEST_TYPE)
+        content = (await mcp.call_tool(tool_name, arguments)).content
+    return content[0].text
+
+
+_UNKNOWN_REQUEST_TYPE = {
+    "status": "error",
+    "code": "editor_error",
+    "error": "Unknown request type: create_entity",
+}
+
+
+async def _call_capture_raw(output_path: str, send) -> str:
+    """capture_viewport with a CUSTOM send_script coroutine.
+
+    `_call_tool`'s canned string cannot write a file, and the capture tests
+    need the file to appear *while the client is polling* -- creating it up
+    front would let them pass without any waiting having happened.
+    """
+    from mcp.server import MCPServer
+
+    from o3de_mcp.tools.editor import register_editor_tools
+
+    mcp = MCPServer("test")
+    register_editor_tools(mcp)
+    with patch("o3de_mcp.tools.editor._pool") as mock_pool:
+        mock_pool.send_script = send
+        content = (await mcp.call_tool("capture_viewport", {"output_path": output_path})).content
+    return content[0].text
+
+
+async def _call_capture(target: Path, send) -> str:
+    return await _call_capture_raw(str(target), send)
+
+
+# --- Phase 1: Vec3 validator tests ---
+
+
+class TestValidateVec3:
+    def test_valid_list(self) -> None:
+        assert _validate_vec3([1.0, 2.0, 3.0], "position") == [1.0, 2.0, 3.0]
+
+    def test_valid_tuple(self) -> None:
+        assert _validate_vec3((1, 2, 3), "position") == [1.0, 2.0, 3.0]
+
+    def test_valid_ints_converted_to_floats(self) -> None:
+        result = _validate_vec3([1, 2, 3], "scale")
+        assert all(isinstance(v, float) for v in result)
+
+    def test_rejects_none(self) -> None:
+        with pytest.raises(ValueError, match="cannot be None"):
+            _validate_vec3(None, "position")
+
+    def test_rejects_wrong_length(self) -> None:
+        with pytest.raises(ValueError, match="exactly 3 elements"):
+            _validate_vec3([1, 2], "position")
+
+    def test_rejects_non_numeric(self) -> None:
+        with pytest.raises(ValueError, match="only numbers"):
+            _validate_vec3(["a", "b", "c"], "position")
+
+    def test_rejects_non_sequence(self) -> None:
+        with pytest.raises(ValueError, match="list or tuple"):
+            _validate_vec3(42, "position")  # type: ignore[arg-type]
+
+
+# --- Phase 1: Console command validator tests ---
+
+
+class TestValidateConsoleCommand:
+    def test_valid_simple(self) -> None:
+        assert _validate_console_command("r_displayInfo 1") == "r_displayInfo 1"
+
+    def test_valid_with_path(self) -> None:
+        assert _validate_console_command("loadlevel Levels/test") == "loadlevel Levels/test"
+
+    def test_strips_whitespace(self) -> None:
+        assert _validate_console_command("  r_fog 0  ") == "r_fog 0"
+
+    def test_rejects_empty(self) -> None:
+        with pytest.raises(ValueError, match="cannot be empty"):
+            _validate_console_command("")
+
+    def test_rejects_shell_injection(self) -> None:
+        with pytest.raises(ValueError, match="Invalid console command"):
+            _validate_console_command("r_fog 0; rm -rf /")
+
+    def test_rejects_pipe(self) -> None:
+        with pytest.raises(ValueError, match="Invalid console command"):
+            _validate_console_command("r_fog | cat")
+
+
+# --- Phase 1: Prefab path validator tests ---
+
+
+class TestValidatePrefabPath:
+    def test_valid_path(self) -> None:
+        assert _validate_prefab_path("Prefabs/MyPrefab.prefab") == "Prefabs/MyPrefab.prefab"
+
+    def test_strips_whitespace(self) -> None:
+        assert _validate_prefab_path("  Prefabs/My.prefab  ") == "Prefabs/My.prefab"
+
+    def test_rejects_empty(self) -> None:
+        with pytest.raises(ValueError, match="cannot be empty"):
+            _validate_prefab_path("")
+
+    def test_rejects_wrong_extension(self) -> None:
+        with pytest.raises(ValueError, match="must end in '.prefab'"):
+            _validate_prefab_path("Prefabs/MyPrefab.json")
+
+    def test_rejects_path_traversal(self) -> None:
+        with pytest.raises(ValueError, match="must not contain"):
+            _validate_prefab_path("../escape.prefab")
+
+
+# --- Phase 1: Transform tool tests (mocked editor) ---
+
+
+class TestSetTransform:
+    def test_set_position_only(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "set_transform",
+                {"entity_id": "123", "position": [1, 2, 3]},
+                mock_output="Transform set for entity 123",
+            )
+        )
+        assert "Transform set" in result
+
+    def test_set_all_components(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "set_transform",
+                {
+                    "entity_id": "456",
+                    "position": [1, 2, 3],
+                    "rotation": [0, 0, 0, 1],
+                    "scale": [2, 2, 2],
+                },
+                mock_output="Transform set for entity 456",
+            )
+        )
+        assert "Transform set" in result
+
+    def test_invalid_entity_id_raises(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("set_transform", {"entity_id": "abc", "position": [1, 2, 3]}))
+
+
+class TestGetTransform:
+    def test_returns_json_transform(self) -> None:
+        transform_json = json.dumps(
+            {"position": [1.0, 2.0, 3.0], "rotation": [0, 0, 0, 1], "scale": [1, 1, 1]}
+        )
+        result = asyncio.run(
+            _call_tool("get_transform", {"entity_id": "123"}, mock_output=transform_json)
+        )
+        parsed = json.loads(result)
+        assert parsed["position"] == [1.0, 2.0, 3.0]
+
+
+class TestSetParent:
+    def test_set_parent_calls_editor(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "set_parent",
+                {"entity_id": "123", "parent_id": "456"},
+                mock_output="Set parent of 123 to 456",
+            )
+        )
+        assert "Set parent" in result
+
+
+class TestRemoveComponent:
+    def test_remove_component_calls_editor(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "remove_component",
+                {"entity_id": "123", "component_type": "Mesh"},
+                mock_output="Removed Mesh from 123",
+            )
+        )
+        assert "Removed" in result
+
+    def test_invalid_component_type_raises(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool(
+                    "remove_component",
+                    {"entity_id": "123", "component_type": "Mesh'; DROP"},
+                )
+            )
+
+
+# --- Phase 2: Console/CVAR tool tests ---
+
+
+class TestRunConsoleCommand:
+    def test_executes_command(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "run_console_command",
+                {"command": "r_fog 0"},
+                mock_output="Executed: r_fog 0",
+            )
+        )
+        assert "Executed" in result
+
+    def test_rejects_shell_injection(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool(
+                    "run_console_command",
+                    {"command": "r_fog 0; rm -rf /"},
+                )
+            )
+
+    def test_rejects_empty(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("run_console_command", {"command": ""}))
+
+
+class TestGetCvar:
+    def test_returns_cvar_value(self) -> None:
+        cvar_json = json.dumps({"name": "r_fog", "value": "1"})
+        result = asyncio.run(_call_tool("get_cvar", {"name": "r_fog"}, mock_output=cvar_json))
+        parsed = json.loads(result)
+        assert parsed["name"] == "r_fog"
+        assert parsed["value"] == "1"
+
+    def test_rejects_invalid_name(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("get_cvar", {"name": "r_fog; cat /etc/passwd"}))
+
+
+class TestSetCvar:
+    def test_sets_cvar(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "set_cvar",
+                {"name": "r_fog", "value": "0"},
+                mock_output="Set r_fog = 0",
+            )
+        )
+        assert "Set r_fog" in result
+
+    def test_rejects_empty_value(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("set_cvar", {"name": "r_fog", "value": ""}))
+
+    def test_rejects_invalid_name(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("set_cvar", {"name": "r_fog | nc", "value": "0"}))
+
+
+# --- Phase 3: Level creation/listing tool tests ---
+
+
+class TestCreateLevel:
+    def test_creates_level(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "create_level",
+                {"name": "MyLevel"},
+                mock_output="Created and opened level: MyLevel",
+            )
+        )
+        assert "Created" in result
+
+    def test_rejects_empty_name(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("create_level", {"name": ""}))
+
+    def test_rejects_invalid_name(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("create_level", {"name": "123Level"}))
+
+    def test_rejects_path_separators(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("create_level", {"name": "Levels/MyLevel"}))
+
+    def test_rejects_template_that_is_not_a_prefab(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool("create_level", {"name": "MyLevel", "template": "Levels/x.json"})
+            )
+
+    def test_rejects_template_path_traversal(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool("create_level", {"name": "MyLevel", "template": "../Evil.prefab"})
+            )
+
+
+class TestCreateLevelScript:
+    """The script must call create_level_no_prompt the way the engine reflects it.
+
+    Code/Editor/CryEditPy.cpp reflects it as (templateName, levelName, heightmapResolution,
+    heightmapUnitSize, terrainExportTextureSize, useTerrain) -> int, with every argument
+    required and 0 (ECLR_OK) meaning success. The old script passed two arguments, which
+    the bindings refuse with a warning and a None result, and then treated a truthy result
+    as success, which is backwards for a result code.
+    """
+
+    @staticmethod
+    def _script(arguments: dict) -> str:
+        from mcp.server import MCPServer
+
+        from o3de_mcp.tools.editor import register_editor_tools
+
+        captured: list[str] = []
+
+        async def _record(script: str, **kwargs: object) -> str:
+            captured.append(script)
+            return ""
+
+        mcp = MCPServer("test")
+        register_editor_tools(mcp)
+        with patch("o3de_mcp.tools.editor._pool") as mock_pool:
+            mock_pool.send_script = AsyncMock(side_effect=_record)
+            asyncio.run(mcp.call_tool("create_level", arguments))
+        assert len(captured) == 1
+        return captured[0]
+
+    @staticmethod
+    def _run(script: str, result: object) -> tuple[list[tuple], str]:
+        """Execute the script against a fake azlmbr.legacy.general and return (calls, output)."""
+        calls: list[tuple] = []
+
+        def create_level_no_prompt(*args: object) -> object:
+            calls.append(args)
+            return result
+
+        general = types.ModuleType("azlmbr.legacy.general")
+        general.create_level_no_prompt = create_level_no_prompt  # type: ignore[attr-defined]
+        legacy = types.ModuleType("azlmbr.legacy")
+        legacy.general = general  # type: ignore[attr-defined]
+        azlmbr = types.ModuleType("azlmbr")
+        azlmbr.legacy = legacy  # type: ignore[attr-defined]
+        modules = {"azlmbr": azlmbr, "azlmbr.legacy": legacy, "azlmbr.legacy.general": general}
+        out = io.StringIO()
+        with patch.dict(sys.modules, modules), redirect_stdout(out):
+            exec(script, {"__name__": "__main__"})  # noqa: S102
+        return calls, out.getvalue()
+
+    def test_passes_all_six_binding_arguments_with_the_default_template(self) -> None:
+        calls, _ = self._run(self._script({"name": "MyLevel"}), 0)
+        assert calls == [("Prefabs/Default_Level.prefab", "MyLevel", 1024, 1, 4096, False)]
+
+    def test_passes_a_caller_supplied_template(self) -> None:
+        calls, _ = self._run(
+            self._script({"name": "MyLevel", "template": "Prefabs/Empty.prefab"}), 0
+        )
+        assert calls[0][:2] == ("Prefabs/Empty.prefab", "MyLevel")
+
+    def test_empty_template_means_a_bare_level(self) -> None:
+        calls, _ = self._run(self._script({"name": "MyLevel", "template": ""}), 0)
+        assert calls[0][:2] == ("", "MyLevel")
+
+    def test_zero_is_success(self) -> None:
+        _, out = self._run(self._script({"name": "MyLevel"}), 0)
+        assert out.strip() == "Created and opened level: MyLevel"
+
+    @pytest.mark.parametrize(
+        ("code", "reason"),
+        [
+            (1, "already exists"),
+            (2, "could not be created"),
+            (3, "too long"),
+            (7, "engine returned code 7"),
+        ],
+    )
+    def test_nonzero_result_codes_are_errors(self, code: int, reason: str) -> None:
+        _, out = self._run(self._script({"name": "MyLevel"}), code)
+        parsed = json.loads(out)
+        assert parsed["status"] == "error" and parsed["code"] == "create_level_failed"
+        assert parsed["message"].startswith("Could not create level 'MyLevel'")
+        assert reason in parsed["message"]
+
+    def test_none_result_is_an_error(self) -> None:
+        # The bindings return None, with only a warning in the editor log, when the
+        # call does not match the reflected signature.
+        _, out = self._run(self._script({"name": "MyLevel"}), None)
+        parsed = json.loads(out)
+        assert parsed["status"] == "error" and parsed["code"] == "create_level_failed"
+        assert parsed["message"].startswith("Could not create level 'MyLevel'")
+
+
+class TestListLevels:
+    def test_lists_levels_from_project_path(self, tmp_path: Path) -> None:
+        # Create a fake project structure
+        levels_dir = tmp_path / "Levels"
+        levels_dir.mkdir()
+        (levels_dir / "Level1").mkdir()
+        (levels_dir / "Level1" / "level.prefab").write_text("fake")
+        (levels_dir / "Level2").mkdir()
+        (levels_dir / "Level2" / "level.prefab").write_text("fake")
+        (levels_dir / "NotALevel").mkdir()  # No level file
+
+        result = asyncio.run(
+            _call_tool("list_levels", {"project_path": str(tmp_path)}, mock_output="")
+        )
+        # list_levels doesn't go through the editor pool — it reads the filesystem
+        # directly, so the mock_output is ignored
+        parsed = json.loads(result)
+        assert "Level1" in parsed["levels"]
+        assert "Level2" in parsed["levels"]
+        assert "NotALevel" not in parsed["levels"]
+
+    def test_no_levels_directory(self, tmp_path: Path) -> None:
+        result = asyncio.run(
+            _call_tool("list_levels", {"project_path": str(tmp_path)}, mock_output="")
+        )
+        parsed = json.loads(result)
+        assert parsed["status"] == "error"
+        assert parsed["code"] == "levels_dir_not_found"
+
+    def test_no_project_path_and_no_registered(self) -> None:
+        with patch.dict("os.environ", {}, clear=True):
+            with patch("o3de_mcp.utils.o3de.list_registered_projects", return_value=[]):
+                result = asyncio.run(_call_tool("list_levels", {}, mock_output=""))
+                parsed = json.loads(result)
+                assert parsed["status"] == "error"
+                assert parsed["code"] == "project_not_found"
+
+
+# --- Phase 4: Viewport camera + screenshot tool tests ---
+
+
+class TestGetViewportCamera:
+    def test_returns_camera_transform(self) -> None:
+        cam_json = json.dumps({"position": [10.0, 20.0, 30.0], "rotation": [0.0, 0.0, 0.0]})
+        result = asyncio.run(_call_tool("get_viewport_camera", {}, mock_output=cam_json))
+        parsed = json.loads(result)
+        assert parsed["position"] == [10.0, 20.0, 30.0]
+        assert parsed["rotation"] == [0.0, 0.0, 0.0]
+
+
+class TestSetViewportCamera:
+    def test_set_position(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "set_viewport_camera",
+                {"position": [10, 20, 30]},
+                mock_output="Viewport camera set",
+            )
+        )
+        assert "Viewport camera set" in result
+
+    def test_set_position_and_rotation(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "set_viewport_camera",
+                {"position": [10, 20, 30], "rotation": [0, 0, 0]},
+                mock_output="Viewport camera set",
+            )
+        )
+        assert "Viewport camera set" in result
+
+    def test_invalid_position_raises(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("set_viewport_camera", {"position": [1, 2]}))
+
+    def test_invalid_rotation_length_raises(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("set_viewport_camera", {"rotation": [0, 0, 0, 0]}))
+
+
+class TestFocusEntity:
+    def test_focuses_on_entity(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "focus_entity",
+                {"entity_id": "123"},
+                mock_output="Focused on entity 123",
+            )
+        )
+        assert "Focused" in result
+
+    def test_invalid_entity_id_raises(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("focus_entity", {"entity_id": "abc"}))
+
+
+class TestCaptureViewport:
+    def test_captures_screenshot(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "capture_viewport",
+                {"output_path": "screenshot.png"},
+                mock_output="Screenshot saved to screenshot.png",
+            )
+        )
+        assert "Screenshot" in result
+
+    def test_rejects_empty_path(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("capture_viewport", {"output_path": ""}))
+
+    def test_rejects_invalid_extension(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("capture_viewport", {"output_path": "screenshot.txt"}))
+
+    def test_waits_for_the_file_when_the_capture_is_issued_asynchronously(
+        self, tmp_path: Path
+    ) -> None:
+        """The Atom path issues a capture and returns; the file lands later.
+
+        It cannot be awaited inside the editor script, because everything that
+        could wait there blocks the very tick that completes the capture.
+
+        The file is written by the mocked editor call rather than up front:
+        pre-creating it would let this pass without any waiting happening.
+        """
+        target = tmp_path / "shot.png"
+
+        async def _send(script: str, timeout: float | None = None) -> str:
+            target.write_bytes(b"x" * 1234)
+            return "CAPTURE_ISSUED 7"
+
+        result = asyncio.run(_call_capture(target, _send))
+        assert "Screenshot saved" in result
+        assert "1234 bytes" in result
+
+    def test_does_not_return_a_stale_file_from_an_earlier_capture(self, tmp_path: Path) -> None:
+        """A file already at the path must not be reported as this capture.
+
+        Shooting to the same path in a loop is the common agent case. If the
+        poll accepts "exists and non-empty", the PREVIOUS frame is handed back
+        with its stale byte count and the caller is told it succeeded -- while
+        the new capture may never have landed at all.
+        """
+        target = tmp_path / "shot.png"
+        target.write_bytes(b"old" * 100)  # a previous capture, 300 bytes
+
+        with patch("o3de_mcp.tools.editor._DEFAULT_CAPTURE_WAIT", 0.3):
+            result = asyncio.run(
+                _call_tool(
+                    "capture_viewport",
+                    {"output_path": str(target)},
+                    mock_output="CAPTURE_ISSUED 7",  # nothing new is written
+                )
+            )
+        parsed = json.loads(result)
+        assert parsed["status"] == "error" and parsed["code"] == "capture_not_written"
+        assert "no new file appeared" in parsed["message"]
+        assert "300 bytes" not in result
+
+    def test_waits_for_a_partially_written_file_to_settle(self, tmp_path: Path) -> None:
+        """A PNG does not appear atomically; report the size only once it holds.
+
+        The mock writes a short prefix, then the rest arrives while the client
+        is polling. Reporting the first stat would give a truncated size for a
+        file that is still being written.
+        """
+        target = tmp_path / "shot.png"
+
+        async def _send(script: str, timeout: float | None = None) -> str:
+            target.write_bytes(b"x" * 10)
+
+            async def _finish() -> None:
+                await asyncio.sleep(0.1)
+                target.write_bytes(b"x" * 4096)
+
+            asyncio.create_task(_finish())
+            return "CAPTURE_ISSUED 7"
+
+        result = asyncio.run(_call_capture(target, _send))
+        assert "4096 bytes" in result
+
+    def test_reports_when_an_issued_capture_never_lands(self, tmp_path: Path) -> None:
+        """A capture that is accepted but produces no file must not read as success."""
+        missing = tmp_path / "never.png"
+
+        # Shorten the WAIT, do not fake the clock. Patching
+        # editor.time.monotonic replaces the attribute on the shared stdlib
+        # module that asyncio's event loop also reads, which hangs the test
+        # run instead of failing it.
+        with patch("o3de_mcp.tools.editor._DEFAULT_CAPTURE_WAIT", 0.2):
+            result = asyncio.run(
+                _call_tool(
+                    "capture_viewport",
+                    {"output_path": str(missing)},
+                    mock_output="CAPTURE_ISSUED 7",
+                )
+            )
+        parsed = json.loads(result)
+        assert parsed["status"] == "error" and parsed["code"] == "capture_not_written"
+        assert "no new file appeared" in parsed["message"]
+        # The common cause is named, so the reader is not sent hunting a
+        # broken renderer.
+        assert "no level is open" in result
+
+    def test_makes_a_relative_output_path_absolute(self) -> None:
+        """Both sides must mean the same file.
+
+        A relative path is @products@-relative to the editor -- it lands in
+        <project>/Cache/<platform>/ -- while the client would poll it against
+        its own cwd, and time out on a capture that succeeded.
+        """
+        captured: dict[str, str] = {}
+
+        async def _send(script: str, timeout: float | None = None) -> str:
+            captured["script"] = script
+            return "Screenshot saved to x (1 bytes, 1x1)"
+
+        asyncio.run(_call_capture_raw("shot.png", _send))
+        sent = captured["script"]
+
+        # Compare with backslashes stripped: the path goes through json.dumps
+        # and then an f-string repr, so it is escaped twice in the script and
+        # matching the literal text would be asserting on the escaping rather
+        # than on the path.
+        def _flat(s: str) -> str:
+            return s.replace("\\", "")
+
+        expected = str(Path("shot.png").expanduser().resolve())
+        assert _flat(expected) in _flat(sent)
+        # and it really is absolute, not the relative name passed in
+        assert Path(expected).is_absolute()
+
+    def test_passes_through_a_synchronous_result_untouched(self, tmp_path: Path) -> None:
+        """The PySide6 path writes the file itself and reports success directly.
+
+        Without the marker there is nothing to wait for, so the editor's own
+        message is the answer.
+        """
+        result = asyncio.run(
+            _call_tool(
+                "capture_viewport",
+                {"output_path": str(tmp_path / "shot.png")},
+                mock_output="Screenshot saved to shot.png (10 bytes, 800x600)",
+            )
+        )
+        assert result == "Screenshot saved to shot.png (10 bytes, 800x600)"
+
+    def test_script_does_not_gate_on_can_capture(self) -> None:
+        """The generated script must not refuse based on CanCapture.
+
+        CanCapture is NOT REFLECTED. FrameCaptureRequestBus binds exactly
+        three events -- CaptureScreenshot, CaptureScreenshotWithPreview,
+        CapturePassAttachment -- so calling it returns None for the same
+        reason a bogus event name does: there is no such event. ``if not
+        CanCapture()`` therefore refused unconditionally and could never have
+        worked on any machine or RHI.
+
+        Nothing is lost by removing it: ScreenshotPreparation checks
+        CanCapture() in C++ and fails the outcome on a null RHI, so a genuinely
+        absent renderer still surfaces -- in the outcome, which is a question
+        with a real answer.
+        """
+        captured: dict[str, str] = {}
+
+        async def _record(script: str, timeout: float | None = None) -> str:
+            captured["script"] = script
+            return "CAPTURE_ISSUED 1"
+
+        from mcp.server import MCPServer
+
+        from o3de_mcp.tools.editor import register_editor_tools
+
+        mcp = MCPServer("test")
+        register_editor_tools(mcp)
+        with patch("o3de_mcp.tools.editor._pool") as mock_pool:
+            mock_pool.send_script = AsyncMock(side_effect=_record)
+            asyncio.run(mcp.call_tool("capture_viewport", {"output_path": "shot.png"}))
+
+        # CODE ONLY. Both names below appear in the script's own comments,
+        # explaining why they are not used, so asserting against the raw text
+        # fails a correct script -- twice, while I was writing this.
+        code = "\n".join(
+            line for line in captured["script"].splitlines() if not line.lstrip().startswith("#")
+        )
+
+        assert "CanCapture" not in code
+
+        # And it must not wait inside the editor: idle_wait_frames called from
+        # a script dispatch wedges the editor's main thread permanently, with
+        # the process still reporting as responding.
+        assert "idle_wait_frames" not in code
+
+
+# --- Phase 5: Prefab tool tests ---
+
+
+# The events each prefab bus actually reflects to Python on O3DE 26.10.0, taken
+# from the editor's own generated stubs (<project>/user/python_symbols/azlmbr/
+# prefab.pyi). The stub bus raises on anything else, so a tool that calls an
+# event the engine does not expose fails the test instead of silently getting
+# None back. `save_prefab` shipped calling 'SavePrefabToFile' -- an event that
+# exists in no O3DE version -- and every mocked test passed for months, because
+# each one fed its own expected string in as the canned output.
+_REFLECTED_PREFAB_EVENTS = {
+    "PrefabPublicRequestBus": {
+        "CreateInMemorySpawnableAsset",
+        "CreatePrefabInMemory",
+        "DeleteEntitiesAndAllDescendantsInInstance",
+        "DetachPrefab",
+        "DetachPrefabAndRemoveContainerEntity",
+        "DuplicateEntitiesInInstance",
+        "GetInMemorySpawnableAssetId",
+        "GetOwningInstancePrefabPath",
+        "HasInMemorySpawnableAsset",
+        "InstantiatePrefab",
+        "RemoveAllInMemorySpawnableAssets",
+        "RemoveInMemorySpawnableAsset",
+    },
+    "PrefabSystemScriptingBus": {"CreatePrefab"},
+    "PrefabLoaderScriptingBus": {"SaveTemplateToString"},
+    "AssetCatalogRequestBus": {"GetAssetIdByPath"},
+}
+
+
+class _StubAssetId:
+    def __init__(self, valid: bool) -> None:
+        self._valid = valid
+
+    def is_valid(self) -> bool:
+        return self._valid
+
+
+class _StubOutcome:
+    """Stands in for an AZ::Outcome returned across the behavior context."""
+
+    def __init__(self, value: object, success: bool = True) -> None:
+        self._value = value
+        self._success = success
+
+    def IsSuccess(self) -> bool:  # noqa: N802 - mirrors the C++ API
+        return self._success
+
+    def GetValue(self) -> object:  # noqa: N802
+        return self._value
+
+    def GetError(self) -> str:  # noqa: N802
+        return "stub error"
+
+
+def _run_prefab_script(
+    tool_name: str,
+    arguments: dict,
+    project_root: str,
+    template_json: str = '{"ContainerEntity": {}}',
+    catalog_has_spawnable: bool = False,
+) -> tuple[list[tuple[str, str]], str]:
+    """Run a prefab tool's generated script against stub azlmbr modules.
+
+    Returns (calls, printed_output) where calls is [(bus_name, event_name)] in
+    order. Any event outside `_REFLECTED_PREFAB_EVENTS` raises, so calling an
+    event the engine does not reflect is a test failure rather than a no-op.
+    ``catalog_has_spawnable`` makes the stub asset catalog report a valid
+    ``.spawnable`` product, the way it does for a prefab in a gem scan folder.
+    """
+    captured: dict[str, str] = {}
+
+    async def _record(script: str, timeout: float | None = None) -> str:
+        captured["script"] = script
+        return ""
+
+    from mcp.server import MCPServer
+
+    from o3de_mcp.tools.editor import register_editor_tools
+
+    mcp = MCPServer("test")
+    register_editor_tools(mcp)
+    with patch("o3de_mcp.tools.editor._pool") as mock_pool:
+        mock_pool.send_script = AsyncMock(side_effect=_record)
+        asyncio.run(mcp.call_tool(tool_name, arguments))
+
+    calls: list[tuple[str, str]] = []
+
+    def _make_bus(bus_name: str):
+        allowed = _REFLECTED_PREFAB_EVENTS[bus_name]
+
+        def _bus(call_type: object, event: str, *args: object) -> object:
+            if event not in allowed:
+                raise AssertionError(
+                    f"{bus_name} does not reflect {event!r} on O3DE 26.10.0; "
+                    f"available: {sorted(allowed)}"
+                )
+            calls.append((bus_name, event))
+            if event == "CreatePrefab":
+                return 7
+            if event == "SaveTemplateToString":
+                return _StubOutcome(template_json)
+            if event == "GetOwningInstancePrefabPath":
+                return "Levels/DefaultLevel/DefaultLevel.prefab"
+            if event == "InstantiatePrefab":
+                return _StubOutcome("[123]")
+            if event == "GetAssetIdByPath":
+                return _StubAssetId(catalog_has_spawnable)
+            return None
+
+        return _bus
+
+    stub_bus = types.ModuleType("azlmbr.bus")
+    stub_bus.Broadcast = object()
+    stub_entity = types.ModuleType("azlmbr.entity")
+    stub_entity.EntityId = lambda *a: object()
+
+    class _StubEntityId:
+        def __str__(self) -> str:
+            return "[123]"
+
+    # The generated scripts carry a shared `_resolve_entity_id` prelude that
+    # looks an id up through the search bus by its text: the level holds 123.
+    stub_entity.SearchFilter = lambda *a, **k: object()
+    stub_entity.SearchBus = lambda *a, **k: [_StubEntityId()]
+    stub_math = types.ModuleType("azlmbr.math")
+    stub_math.Vector3 = lambda *a: object()
+    stub_math.Uuid = lambda *a: object()
+    stub_asset = types.ModuleType("azlmbr.asset")
+    stub_asset.AssetCatalogRequestBus = _make_bus("AssetCatalogRequestBus")
+    stub_paths = types.ModuleType("azlmbr.paths")
+    stub_paths.projectroot = project_root
+    stub_paths.engroot = project_root
+    stub_prefab = types.ModuleType("azlmbr.prefab")
+    stub_prefab.PrefabPublicRequestBus = _make_bus("PrefabPublicRequestBus")
+    stub_prefab.PrefabSystemScriptingBus = _make_bus("PrefabSystemScriptingBus")
+    stub_prefab.PrefabLoaderScriptingBus = _make_bus("PrefabLoaderScriptingBus")
+
+    stub_root = types.ModuleType("azlmbr")
+    stub_root.bus = stub_bus
+    stub_root.entity = stub_entity
+    stub_root.math = stub_math
+    stub_root.paths = stub_paths
+    stub_root.prefab = stub_prefab
+    stub_root.asset = stub_asset
+
+    modules = {
+        "azlmbr": stub_root,
+        "azlmbr.asset": stub_asset,
+        "azlmbr.bus": stub_bus,
+        "azlmbr.entity": stub_entity,
+        "azlmbr.math": stub_math,
+        "azlmbr.paths": stub_paths,
+        "azlmbr.prefab": stub_prefab,
+    }
+    out = io.StringIO()
+    globs = {"__name__": "__main__", "_resolve_entity_id": lambda v: f"[{v}]"}
+    with patch.dict(sys.modules, modules), redirect_stdout(out):
+        exec(captured["script"], globs)
+    return calls, out.getvalue()
+
+
+class TestInstantiatePrefab:
+    def test_instantiates_prefab(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "instantiate_prefab",
+                {"prefab_path": "Prefabs/MyPrefab.prefab", "position": [0, 0, 0]},
+                mock_output="Instantiated prefab: Prefabs/MyPrefab.prefab",
+            )
+        )
+        assert "Instantiated" in result
+
+    def test_rejects_wrong_extension(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool(
+                    "instantiate_prefab",
+                    {"prefab_path": "Prefabs/MyPrefab.json"},
+                )
+            )
+
+    def test_rejects_path_traversal(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool(
+                    "instantiate_prefab",
+                    {"prefab_path": "../escape.prefab"},
+                )
+            )
+
+    def test_invalid_position_raises(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool(
+                    "instantiate_prefab",
+                    {"prefab_path": "Prefabs/My.prefab", "position": [1, 2]},
+                )
+            )
+
+    def test_missing_prefab_never_reaches_the_bus(self, tmp_path: Path) -> None:
+        # Regression: InstantiatePrefab segfaults the editor when the template
+        # cannot be loaded (PrefabDomUtils::GetTemplateSourcePaths dereferences
+        # an empty DOM). A C++ crash is not catchable from the script, so the
+        # bus must not be reached at all for a path that does not exist.
+        calls, output = _run_prefab_script(
+            "instantiate_prefab",
+            {"prefab_path": "Prefabs/NotThere.prefab", "position": [0, 0, 0]},
+            str(tmp_path),
+        )
+
+        assert ("PrefabPublicRequestBus", "InstantiatePrefab") not in calls
+        assert "not found" in output
+
+    def test_existing_prefab_reaches_the_bus(self, tmp_path: Path) -> None:
+        # The guard must not reject a prefab that is actually present.
+        target = tmp_path / "Prefabs" / "Real.prefab"
+        target.parent.mkdir(parents=True)
+        target.write_text("{}")
+
+        calls, _ = _run_prefab_script(
+            "instantiate_prefab",
+            {"prefab_path": "Prefabs/Real.prefab", "position": [0, 0, 0]},
+            str(tmp_path),
+        )
+
+        assert ("PrefabPublicRequestBus", "InstantiatePrefab") in calls
+
+    def test_gem_prefab_known_to_the_catalog_reaches_the_bus(self, tmp_path: Path) -> None:
+        # A prefab shipped by a gem lives in the gem's Assets folder, outside the
+        # project and engine roots, yet PrefabLoader resolves it through the Asset
+        # Processor. The guard must accept it via the catalog rather than refuse it.
+        calls, output = _run_prefab_script(
+            "instantiate_prefab",
+            {"prefab_path": "Prefabs/Player_TwinStick.prefab", "position": [0, 0, 0]},
+            str(tmp_path),
+            catalog_has_spawnable=True,
+        )
+
+        assert ("AssetCatalogRequestBus", "GetAssetIdByPath") in calls
+        assert ("PrefabPublicRequestBus", "InstantiatePrefab") in calls
+        assert "not found" not in output
+
+    def test_unknown_to_disk_and_catalog_never_reaches_the_bus(self, tmp_path: Path) -> None:
+        calls, output = _run_prefab_script(
+            "instantiate_prefab",
+            {"prefab_path": "Prefabs/NotThere.prefab", "position": [0, 0, 0]},
+            str(tmp_path),
+            catalog_has_spawnable=False,
+        )
+
+        assert ("AssetCatalogRequestBus", "GetAssetIdByPath") in calls
+        assert ("PrefabPublicRequestBus", "InstantiatePrefab") not in calls
+        assert "not found" in output
+
+
+class TestNativeSnapshotTools:
+    """get_scene_snapshot / get_entity_tree / validate_scene use the AgentServer's
+    C++ request types, so no Python script is sent to the editor."""
+
+    @staticmethod
+    async def _call_native(tool_name: str, response: dict) -> tuple[str, list[str]]:
+        from mcp.server import MCPServer
+
+        from o3de_mcp.tools.editor import register_editor_tools
+
+        mcp = MCPServer("test")
+        register_editor_tools(mcp)
+        with patch("o3de_mcp.tools.editor._pool") as mock_pool:
+            mock_pool.send_request = AsyncMock(return_value=response)
+            mock_pool.send_script = AsyncMock(return_value="")
+            content = (await mcp.call_tool(tool_name, {})).content
+            requested = [c.args[0] for c in mock_pool.send_request.call_args_list]
+            assert mock_pool.send_script.await_count == 0, "native tool sent a Python script"
+        return content[0].text, requested
+
+    @pytest.mark.parametrize("tool", ["get_scene_snapshot", "get_entity_tree", "validate_scene"])
+    def test_returns_the_native_output_verbatim(self, tool: str) -> None:
+        payload = '{"entities": [], "entity_count": 0}'
+        text, requested = asyncio.run(
+            self._call_native(tool, {"status": "ok", "output": payload, "duration_ms": 1})
+        )
+        assert text == payload
+        assert requested == [tool]
+
+    def test_get_entity_passes_the_id_natively(self) -> None:
+        from mcp.server import MCPServer
+
+        from o3de_mcp.tools.editor import register_editor_tools
+
+        payload = '{"id": 123, "name": "Thing", "components": []}'
+
+        async def run() -> tuple[str, list]:
+            mcp = MCPServer("test")
+            register_editor_tools(mcp)
+            with patch("o3de_mcp.tools.editor._pool") as mock_pool:
+                mock_pool.send_request = AsyncMock(return_value={"status": "ok", "output": payload})
+                mock_pool.send_script = AsyncMock(return_value="")
+                content = (await mcp.call_tool("get_entity", {"entity_id": "[123]"})).content
+                assert mock_pool.send_script.await_count == 0
+                return content[0].text, mock_pool.send_request.call_args_list
+
+        text, calls = asyncio.run(run())
+        assert text == payload
+        assert calls[0].args[0] == "get_entity"
+        assert calls[0].kwargs["params"] == {"entity_id": "123"}
+
+    def test_get_entity_rejects_a_bad_id_before_sending(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("get_entity", {"entity_id": "not-an-id"}))
+
+    def test_legacy_protocol_is_reported_not_faked(self) -> None:
+        text, _ = asyncio.run(
+            self._call_native(
+                "get_scene_snapshot",
+                {"status": "error", "code": "agent_server_required", "error": "no gem"},
+            )
+        )
+        parsed = json.loads(text)
+        assert parsed["status"] == "error"
+        assert parsed["code"] == "agent_server_required"
+
+
+class TestNativeMutationTools:
+    """create_entity / set_transform / delete_entity try the AgentServer's native
+    request types (gem 0.5.0) first and fall back to editor Python only when the
+    type is unavailable."""
+
+    @staticmethod
+    async def _call(
+        tool_name: str, arguments: dict, response: dict, api_version: str = "0.4.0"
+    ) -> tuple[str, list, int]:
+        """Call a tool against a fake gem reporting ``api_version``.
+
+        The gem's get_api_version answer is left out of the returned calls.
+        """
+        from mcp.server import MCPServer
+
+        from o3de_mcp.tools.editor import register_editor_tools
+
+        version_reply = {"status": "ok", "output": json.dumps({"api_version": api_version})}
+
+        async def _request(request_type: str, *args: object, **kwargs: object) -> dict:
+            return version_reply if request_type == "get_api_version" else response
+
+        mcp = MCPServer("test")
+        register_editor_tools(mcp)
+        with patch("o3de_mcp.tools.editor._pool") as mock_pool:
+            mock_pool.send_request = AsyncMock(side_effect=_request)
+            mock_pool.send_script = AsyncMock(return_value="script ran")
+            content = (await mcp.call_tool(tool_name, arguments)).content
+            calls = [
+                c for c in mock_pool.send_request.call_args_list if c.args[0] != "get_api_version"
+            ]
+            scripts = mock_pool.send_script.await_count
+        return content[0].text, calls, scripts
+
+    def test_create_entity_returns_the_native_json(self) -> None:
+        payload = '{"entity_id": 123, "name": "Thing", "position": [0.0, 0.0, 0.0]}'
+        text, calls, scripts = asyncio.run(
+            self._call("create_entity", {"name": "Thing"}, {"status": "ok", "output": payload})
+        )
+        assert text == payload
+        assert scripts == 0
+        assert calls[0].args[0] == "create_entity"
+        assert calls[0].kwargs["params"] == {"name": "Thing"}
+
+    def test_create_entity_sends_the_parent_id(self) -> None:
+        _, calls, _ = asyncio.run(
+            self._call(
+                "create_entity",
+                {"name": "Child", "parent_id": "456"},
+                {"status": "ok", "output": "{}"},
+            )
+        )
+        assert calls[0].kwargs["params"] == {"name": "Child", "parent_id": "456"}
+
+    def test_delete_entity_returns_the_native_json(self) -> None:
+        text, calls, scripts = asyncio.run(
+            self._call(
+                "delete_entity",
+                {"entity_id": "[789]"},
+                {"status": "ok", "output": '{"deleted": 789}'},
+            )
+        )
+        assert text == '{"deleted": 789}'
+        assert scripts == 0
+        assert calls[0].args[0] == "delete_entity"
+        assert calls[0].kwargs["params"] == {"entity_id": "789"}
+
+    def test_set_transform_converts_to_the_native_shape(self) -> None:
+        payload = '{"id": 123, "name": "Thing", "position": [1.0, 2.0, 3.0]}'
+        half = math.sqrt(0.5)
+        text, calls, scripts = asyncio.run(
+            self._call(
+                "set_transform",
+                {
+                    "entity_id": "123",
+                    "position": [1, 2, 3],
+                    "rotation": [0, 0, half, half],  # 90 degrees about Z
+                    "scale": [2, 2, 2],
+                },
+                {"status": "ok", "output": payload},
+            )
+        )
+        assert text == payload
+        assert scripts == 0
+        assert calls[0].args[0] == "set_transform"
+        params = calls[0].kwargs["params"]
+        assert params["entity_id"] == "123"
+        assert params["position"] == [1.0, 2.0, 3.0]
+        assert params["scale"] == 2.0
+        assert params["rotation"] == pytest.approx([0.0, 0.0, 90.0])
+
+    def test_set_transform_sends_only_the_given_fields(self) -> None:
+        _, calls, _ = asyncio.run(
+            self._call(
+                "set_transform",
+                {"entity_id": "123", "position": [1, 2, 3]},
+                {"status": "ok", "output": "{}"},
+            )
+        )
+        assert calls[0].kwargs["params"] == {"entity_id": "123", "position": [1.0, 2.0, 3.0]}
+
+    def test_api_0_5_sends_the_quaternion_and_array_scale_natively(self) -> None:
+        # Pitch +90 is a gimbal pole: older gems need editor Python for it, but API
+        # 0.5.0 takes the quaternion as is, and a non-uniform scale natively.
+        half = math.sqrt(0.5)
+        text, calls, scripts = asyncio.run(
+            self._call(
+                "set_transform",
+                {"entity_id": "123", "rotation": [0, half, 0, half], "scale": [50, 50, 1]},
+                {"status": "ok", "output": "{}"},
+                api_version="0.5.0",
+            )
+        )
+        assert scripts == 0
+        params = calls[0].kwargs["params"]
+        assert calls[0].args[0] == "set_transform"
+        assert params["rotation_quaternion"] == pytest.approx([0, half, 0, half])
+        assert "rotation" not in params
+        assert params["scale"] == [50.0, 50.0, 1.0]
+
+    def test_api_0_5_sends_a_uniform_scale_as_a_number(self) -> None:
+        _, calls, _ = asyncio.run(
+            self._call(
+                "set_transform",
+                {"entity_id": "123", "rotation": [0, 0, 0, 1], "scale": [2, 2, 2]},
+                {"status": "ok", "output": "{}"},
+                api_version="0.5.0",
+            )
+        )
+        assert calls[0].kwargs["params"]["scale"] == 2.0
+
+    def test_api_0_5_reports_a_native_refusal(self) -> None:
+        refused = {"status": "error", "code": "validation_failed", "error": "scale out of range"}
+        text, _, scripts = asyncio.run(
+            self._call(
+                "set_transform",
+                {"entity_id": "123", "scale": [5000, 1, 1]},
+                refused,
+                api_version="0.5.0",
+            )
+        )
+        assert scripts == 0
+        assert json.loads(text)["code"] == "validation_failed"
+
+    def test_set_transform_refuses_a_non_uniform_scale(self) -> None:
+        # A Transform holds one uniform scale; [1, 2, 3] used to be applied as a
+        # uniform 3 and reported as success.
+        text, calls, scripts = asyncio.run(
+            self._call(
+                "set_transform",
+                {"entity_id": "123", "scale": [1, 2, 3]},
+                {"status": "ok", "output": "{}"},
+            )
+        )
+        assert calls == [] and scripts == 0
+        parsed = json.loads(text)
+        assert parsed["status"] == "error" and parsed["code"] == "non_uniform_scale_unsupported"
+
+    @pytest.mark.parametrize(
+        "tool, arguments",
+        [
+            ("create_entity", {"name": "Thing"}),
+            ("set_transform", {"entity_id": "123", "position": [1, 2, 3]}),
+            ("delete_entity", {"entity_id": "123"}),
+        ],
+    )
+    @pytest.mark.parametrize(
+        "response",
+        [
+            {"status": "error", "code": "editor_error", "error": "Unknown request type: x"},
+            {"status": "error", "code": "agent_server_required", "error": "legacy transport"},
+        ],
+        ids=["older_gem", "legacy_transport"],
+    )
+    def test_falls_back_to_the_script_when_the_type_is_unavailable(
+        self, tool: str, arguments: dict, response: dict
+    ) -> None:
+        text, calls, scripts = asyncio.run(self._call(tool, arguments, response))
+        assert calls[0].args[0] == tool
+        assert scripts == 1
+        assert text == "script ran"
+
+    @pytest.mark.parametrize(
+        "tool, arguments, message",
+        [
+            ("create_entity", {"name": "Bad"}, "invalid entity name 'Bad'"),
+            (
+                "set_transform",
+                {"entity_id": "123", "position": [1, 2, 3]},
+                "position out of bounds",
+            ),
+            ("delete_entity", {"entity_id": "1"}, "refusing to delete the level's root entity"),
+        ],
+    )
+    def test_a_native_refusal_is_returned_without_a_script(
+        self, tool: str, arguments: dict, message: str
+    ) -> None:
+        text, _, scripts = asyncio.run(
+            self._call(tool, arguments, {"status": "error", "error": message})
+        )
+        assert scripts == 0, "a refused mutation must not be retried through Python"
+        parsed = json.loads(text)
+        assert parsed["status"] == "error"
+        assert parsed["code"] == "editor_error"
+        assert parsed["message"] == message
+
+    def test_an_unreachable_editor_is_not_retried_through_python(self) -> None:
+        text, _, scripts = asyncio.run(
+            self._call(
+                "delete_entity",
+                {"entity_id": "123"},
+                {"status": "error", "code": "editor_unavailable", "error": "not reachable"},
+            )
+        )
+        assert scripts == 0
+        assert json.loads(text)["code"] == "editor_unavailable"
+
+    def test_the_unknown_request_type_code_falls_back(self) -> None:
+        text, _, scripts = asyncio.run(
+            self._call(
+                "delete_entity",
+                {"entity_id": "123"},
+                {"status": "error", "code": "unknown_request_type", "error": "no such type"},
+            )
+        )
+        assert scripts == 1
+        assert text == "script ran"
+
+    def test_only_a_message_that_starts_with_unknown_request_type_falls_back(self) -> None:
+        # The gem echoes caller input in some refusals, so the fallback marker
+        # must be matched as the whole reply, not as a substring.
+        echoed = "cannot delete entity named 'Unknown request type: x'"
+        text, _, scripts = asyncio.run(
+            self._call("delete_entity", {"entity_id": "123"}, {"status": "error", "error": echoed})
+        )
+        assert scripts == 0
+        assert json.loads(text)["message"] == echoed
+
+    @pytest.mark.parametrize(
+        "name", ["", "1abc", "has space", "Unknown request type: x", "a" * 129]
+    )
+    def test_create_entity_rejects_a_bad_name_before_any_request(self, name: str) -> None:
+        with pytest.raises(Exception) as excinfo:
+            asyncio.run(
+                self._call("create_entity", {"name": name}, {"status": "ok", "output": "{}"})
+            )
+        # The SDK wraps the tool's ValueError; the rule is in the cause.
+        assert "ntity name" in str(excinfo.value.__cause__ or excinfo.value)
+
+    def test_set_transform_at_a_gimbal_pole_uses_python(self) -> None:
+        # [0.5, 0.5, 0.5, 0.5] is roll 90, pitch 90: the XYZ Euler form cannot
+        # carry it, so the quaternion goes through the editor-Python path.
+        text, calls, scripts = asyncio.run(
+            self._call(
+                "set_transform",
+                {"entity_id": "123", "rotation": [0.5, 0.5, 0.5, 0.5]},
+                {"status": "ok", "output": "{}"},
+            )
+        )
+        assert calls == []
+        assert scripts == 1
+        assert text == "script ran"
+
+    def test_set_transform_rejects_a_zero_quaternion(self) -> None:
+        with pytest.raises(Exception) as excinfo:
+            asyncio.run(
+                self._call(
+                    "set_transform",
+                    {"entity_id": "123", "rotation": [0, 0, 0, 0]},
+                    {"status": "ok", "output": "{}"},
+                )
+            )
+        assert "all zeros" in str(excinfo.value.__cause__ or excinfo.value)
+
+
+class TestScriptRefusalKeepsTheGemCode:
+    def test_secure_mode_is_reported_as_such(self) -> None:
+        from o3de_mcp.tools.editor import _EditorConnectionPool
+
+        pool = _EditorConnectionPool()
+        reply = {"status": "error", "code": "secure_mode", "error": "execute_python is disabled"}
+
+        async def run() -> str:
+            with patch("o3de_mcp.tools.editor._async_recv_framed", AsyncMock(return_value=reply)):
+                writer = AsyncMock()
+                writer.write = lambda *_: None
+                return await pool._send_framed_script(AsyncMock(), writer, "print(1)", 5.0)
+
+        parsed = json.loads(asyncio.run(run()))
+        assert parsed == {
+            "status": "error",
+            "code": "secure_mode",
+            "message": "execute_python is disabled",
+        }
+
+
+class TestStringEntityIdTolerance:
+    """AiCompanion gem 0.6.0 (API 0.4.0 and up) emits every native
+    64-bit entity id as a decimal string instead of a JSON number, so that
+    clients with a 53-bit-float JSON parser cannot corrupt a u64 id. The gem's
+    inputs are unchanged (number or string). These tests pin that o3de-mcp
+    carries a string id through unchanged and feeds it back natively at full
+    precision, with no fallback to editor Python.
+    """
+
+    # A real u64 entity id, past 2**53 where a double would start rounding.
+    BIG_ID = "1152921504606846978"
+
+    @pytest.mark.parametrize("value", ["[789]", "789", 789])
+    def test_required_id_accepts_brackets_and_numbers_through_mcp(self, value: object) -> None:
+        # The MCP layer JSON-decodes a string argument unless the parameter is
+        # annotated exactly str, which once turned "[789]" into a list.
+        _, calls, _ = asyncio.run(
+            TestNativeMutationTools._call(
+                "delete_entity", {"entity_id": value}, {"status": "ok", "output": "{}"}
+            )
+        )
+        assert calls[0].kwargs["params"] == {"entity_id": "789"}
+
+    @pytest.mark.parametrize("value", ["[456]", "456", 456])
+    def test_optional_parent_accepts_brackets_and_numbers_through_mcp(self, value: object) -> None:
+        _, calls, _ = asyncio.run(
+            TestNativeMutationTools._call(
+                "create_entity",
+                {"name": "Child", "parent_id": value},
+                {"status": "ok", "output": "{}"},
+            )
+        )
+        assert calls[0].kwargs["params"] == {"name": "Child", "parent_id": "456"}
+
+    def test_optional_parent_accepts_null_as_root(self) -> None:
+        _, calls, _ = asyncio.run(
+            TestNativeMutationTools._call(
+                "create_entity",
+                {"name": "Root", "parent_id": None},
+                {"status": "ok", "output": "{}"},
+            )
+        )
+        assert calls[0].kwargs["params"] == {"name": "Root"}
+
+    def test_validator_accepts_a_number(self) -> None:
+        # Gem 0.5.0 emits ids as JSON numbers; passing one straight back must work.
+        assert _validate_entity_id(1152921504606846978) == self.BIG_ID
+        assert _validate_entity_id(42) == "42"
+
+    def test_validator_rejects_a_bool(self) -> None:
+        with pytest.raises(ValueError):
+            _validate_entity_id(True)
+
+    def test_a_numeric_id_reaches_the_gem_as_the_exact_string(self) -> None:
+        _, calls, scripts = asyncio.run(
+            TestNativeMutationTools._call(
+                "delete_entity",
+                {"entity_id": int(self.BIG_ID)},
+                {"status": "ok", "output": "{}"},
+            )
+        )
+        assert scripts == 0
+        assert calls[0].kwargs["params"] == {"entity_id": self.BIG_ID}
+
+    def test_validator_preserves_a_large_u64_id_string(self) -> None:
+        assert _validate_entity_id(self.BIG_ID) == self.BIG_ID
+        assert _validate_entity_id(f"[{self.BIG_ID}]") == f"[{self.BIG_ID}]"
+        assert _validate_entity_id(f"  {self.BIG_ID}  ") == self.BIG_ID
+
+    def test_create_entity_passes_a_string_id_through_verbatim(self) -> None:
+        payload = json.dumps(
+            {"entity_id": self.BIG_ID, "name": "Thing", "position": [0.0, 0.0, 0.0]}
+        )
+        text, _, scripts = asyncio.run(
+            TestNativeMutationTools._call(
+                "create_entity", {"name": "Thing"}, {"status": "ok", "output": payload}
+            )
+        )
+        # Exact string, not reparsed into a (lossy) number.
+        assert json.loads(text)["entity_id"] == self.BIG_ID
+        assert scripts == 0
+
+    def test_delete_entity_round_trips_a_bracketed_string_id(self) -> None:
+        text, calls, scripts = asyncio.run(
+            TestNativeMutationTools._call(
+                "delete_entity",
+                {"entity_id": f"[{self.BIG_ID}]"},
+                {"status": "ok", "output": json.dumps({"deleted": self.BIG_ID})},
+            )
+        )
+        assert scripts == 0
+        assert calls[0].kwargs["params"] == {"entity_id": self.BIG_ID}
+        assert json.loads(text)["deleted"] == self.BIG_ID
+
+    def test_get_entity_sends_a_string_id_natively(self) -> None:
+        _, calls, scripts = asyncio.run(
+            TestNativeMutationTools._call(
+                "get_entity", {"entity_id": self.BIG_ID}, {"status": "ok", "output": "{}"}
+            )
+        )
+        assert scripts == 0
+        assert calls[0].args[0] == "get_entity"
+        assert calls[0].kwargs["params"] == {"entity_id": self.BIG_ID}
+
+    def test_set_transform_sends_a_string_id_natively(self) -> None:
+        _, calls, scripts = asyncio.run(
+            TestNativeMutationTools._call(
+                "set_transform",
+                {"entity_id": self.BIG_ID, "position": [1, 2, 3]},
+                {"status": "ok", "output": "{}"},
+            )
+        )
+        assert scripts == 0
+        assert calls[0].kwargs["params"]["entity_id"] == self.BIG_ID
+
+
+def _quaternion_from_euler_degrees_xyz(degrees: list[float]) -> list[float]:
+    """Port of AZ::Quaternion::CreateFromEulerDegreesXYZ, the gem's native inverse."""
+    hx, hy, hz = (math.radians(d) * 0.5 for d in degrees)
+    sx, cx, sy, cy, sz, cz = (
+        math.sin(hx),
+        math.cos(hx),
+        math.sin(hy),
+        math.cos(hy),
+        math.sin(hz),
+        math.cos(hz),
+    )
+    return [
+        cx * sy * sz + sx * cy * cz,
+        cx * sy * cz - sx * cy * sz,
+        cx * cy * sz + sx * sy * cz,
+        cx * cy * cz - sx * sy * sz,
+    ]
+
+
+class TestQuaternionToEulerDegreesXYZ:
+    @pytest.mark.parametrize(
+        "degrees",
+        [
+            [0.0, 0.0, 0.0],
+            [90.0, 0.0, 0.0],
+            [0.0, 45.0, 0.0],
+            [0.0, 0.0, 90.0],
+            [10.0, 20.0, 30.0],
+            [-30.0, 60.0, -120.0],
+            [170.0, -80.0, 15.0],
+        ],
+    )
+    def test_round_trips_the_engine_conversion(self, degrees: list[float]) -> None:
+        quaternion = _quaternion_from_euler_degrees_xyz(degrees)
+        assert _quaternion_to_euler_degrees_xyz(quaternion) == pytest.approx(degrees, abs=1e-6)
+
+    def test_normalizes_an_unnormalized_quaternion(self) -> None:
+        half = math.sqrt(0.5)
+        scaled = [0.0, 0.0, half * 3.0, half * 3.0]
+        assert _quaternion_to_euler_degrees_xyz(scaled) == pytest.approx([0.0, 0.0, 90.0])
+
+    def test_rejects_a_zero_quaternion(self) -> None:
+        with pytest.raises(ValueError, match="all zeros"):
+            _quaternion_to_euler_degrees_xyz([0.0, 0.0, 0.0, 0.0])
+
+    def test_handles_the_gimbal_lock_pole(self) -> None:
+        quaternion = _quaternion_from_euler_degrees_xyz([0.0, 90.0, 0.0])
+        roll, pitch, yaw = _quaternion_to_euler_degrees_xyz(quaternion)
+        assert pitch == pytest.approx(90.0, abs=1e-3)
+        assert roll == 0.0 and yaw == 0.0
+
+    @pytest.mark.parametrize(
+        "quaternion, degrees",
+        [
+            # Literal anchors independent of the test's own Euler-to-quaternion port.
+            ([math.sin(math.pi / 4), 0.0, 0.0, math.cos(math.pi / 4)], [90.0, 0.0, 0.0]),
+            ([0.0, math.sin(math.pi / 4), 0.0, math.cos(math.pi / 4)], [0.0, 90.0, 0.0]),
+            ([0.0, 0.0, math.sin(math.pi / 4), math.cos(math.pi / 4)], [0.0, 0.0, 90.0]),
+            # Hand-computed compound: roll 90 then yaw 90 in O3DE's XYZ order.
+            # q = (cx sy sz + sx cy cz, cx sy cz - sx cy sz, cx cy sz + sx sy cz,
+            # cx cy cz - sx sy sz) with half angles 45, 0, 45 gives
+            # (0.5, -0.5, 0.5, 0.5).
+            ([0.5, -0.5, 0.5, 0.5], [90.0, 0.0, 90.0]),
+        ],
+    )
+    def test_literal_anchors(self, quaternion: list[float], degrees: list[float]) -> None:
+        assert _quaternion_to_euler_degrees_xyz(quaternion) == pytest.approx(degrees, abs=1e-3)
+
+    @pytest.mark.parametrize(
+        "euler, expected",
+        [
+            ([0.0, 90.0, 0.0], True),
+            ([0.0, -90.0, 0.0], True),
+            ([10.0, 89.99, 20.0], True),
+            ([10.0, 89.9, 20.0], False),
+            ([90.0, 0.0, 90.0], False),
+        ],
+    )
+    def test_near_gimbal_pole(self, euler: list[float], expected: bool) -> None:
+        assert _near_gimbal_pole(euler) is expected
+
+
+class TestValidateEntityName:
+    @pytest.mark.parametrize(
+        "name", ["Player", "Enemy1", "my_entity", "player-two", "A", "a" * 128]
+    )
+    def test_accepts_the_gem_rule(self, name: str) -> None:
+        assert _validate_entity_name(name) == name
+
+    @pytest.mark.parametrize("name", ["", "1abc", "_x", "has space", "semi;colon", "a" * 129])
+    def test_rejects_what_the_gem_rejects(self, name: str) -> None:
+        with pytest.raises(ValueError):
+            _validate_entity_name(name)
+
+
+class TestCreatePrefabFromEntity:
+    def test_writes_the_prefab_to_disk(self, tmp_path: Path) -> None:
+        # Regression: this used to call CreatePrefabInMemory, which builds an
+        # in-level container and writes nothing, then report a created file.
+        calls, output = _run_prefab_script(
+            "create_prefab_from_entity",
+            {"entity_id": "123", "prefab_path": "Prefabs/Made.prefab"},
+            str(tmp_path),
+            template_json='{"ContainerEntity": {"Name": "Made"}}',
+        )
+
+        assert calls == [
+            ("PrefabSystemScriptingBus", "CreatePrefab"),
+            ("PrefabLoaderScriptingBus", "SaveTemplateToString"),
+        ]
+        assert "Created prefab" in output
+
+        written = tmp_path / "Prefabs" / "Made.prefab"
+        assert written.is_file()
+        assert json.loads(written.read_text())["ContainerEntity"]["Name"] == "Made"
+
+    def test_reports_failure_when_the_template_cannot_be_built(self, tmp_path: Path) -> None:
+        with patch.object(_StubOutcome, "IsSuccess", lambda self: False):  # serialisation fails
+            _, output = _run_prefab_script(
+                "create_prefab_from_entity",
+                {"entity_id": "123", "prefab_path": "Prefabs/Made.prefab"},
+                str(tmp_path),
+            )
+
+        parsed = json.loads(output)
+        assert parsed["status"] == "error" and parsed["code"] == "create_prefab_failed"
+        assert not (tmp_path / "Prefabs" / "Made.prefab").exists()
+
+    def test_creates_prefab(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "create_prefab_from_entity",
+                {"entity_id": "123", "prefab_path": "Prefabs/New.prefab"},
+                mock_output="Created prefab: Prefabs/New.prefab from entity 123",
+            )
+        )
+        assert "Created" in result
+
+    def test_invalid_entity_id_raises(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool(
+                    "create_prefab_from_entity",
+                    {"entity_id": "abc", "prefab_path": "Prefabs/New.prefab"},
+                )
+            )
+
+
+class TestSavePrefab:
+    def test_reports_that_saving_is_unavailable(self, tmp_path: Path) -> None:
+        # Regression: this tool used to call 'SavePrefabToFile', which no O3DE
+        # version reflects. The bus returned None and the tool printed
+        # "Saved prefab instance: <id>" regardless, so it was a silent no-op.
+        # The stub bus rejects unreflected events, so the old code fails here.
+        calls, output = _run_prefab_script("save_prefab", {"entity_id": "123"}, str(tmp_path))
+
+        assert calls == [("PrefabPublicRequestBus", "GetOwningInstancePrefabPath")]
+
+        parsed = json.loads(output)
+        # Nothing is saved, so it is a failure an agent detects with status == "error".
+        assert parsed["status"] == "error"
+        assert parsed["code"] == "prefab_save_unavailable"
+        assert "create_prefab_from_entity" in parsed["message"]
+        assert parsed["owning_prefab"] == "Levels/DefaultLevel/DefaultLevel.prefab"
+
+    def test_invalid_entity_id_raises(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("save_prefab", {"entity_id": "xyz"}))
+
+
+# --- Phase 7: Asset assignment tool tests ---
+
+
+class TestAssignAsset:
+    def test_assigns_asset(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "assign_asset",
+                {
+                    "entity_id": "123",
+                    "component_type": "Mesh",
+                    "property_path": "Controller|Configuration|Model Asset",
+                    "asset_path": "Objects/Props/box.fbx",
+                },
+                mock_output="Assigned asset Objects/Props/box.fbx to "
+                "Controller|Configuration|Model Asset",
+            )
+        )
+        assert "Assigned" in result
+
+    def test_rejects_empty_asset_path(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool(
+                    "assign_asset",
+                    {
+                        "entity_id": "123",
+                        "component_type": "Mesh",
+                        "property_path": "Controller|Configuration|Model Asset",
+                        "asset_path": "",
+                    },
+                )
+            )
+
+    def test_rejects_path_traversal(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool(
+                    "assign_asset",
+                    {
+                        "entity_id": "123",
+                        "component_type": "Mesh",
+                        "property_path": "Controller|Configuration|Model Asset",
+                        "asset_path": "../escape.fbx",
+                    },
+                )
+            )
+
+    def test_rejects_invalid_entity_id(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(
+                _call_tool(
+                    "assign_asset",
+                    {
+                        "entity_id": "abc",
+                        "component_type": "Mesh",
+                        "property_path": "Controller|Configuration|Model Asset",
+                        "asset_path": "Objects/box.fbx",
+                    },
+                )
+            )
+
+
+# --- Phase 9: Persistent Python session tool tests ---
+
+
+class TestBeginSession:
+    def test_begins_session(self) -> None:
+        session_json = json.dumps({"session_id": "abc12345"})
+        result = asyncio.run(_call_tool("begin_session", {}, mock_output=session_json))
+        parsed = json.loads(result)
+        assert "session_id" in parsed
+
+
+class TestExecInSession:
+    def test_executes_in_session(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "exec_in_session",
+                {"session_id": "abc12345", "script": "x = 42"},
+                mock_output="",
+            )
+        )
+        # The tool should send the script to the editor
+        # With mocked output, we just verify it doesn't raise
+        assert isinstance(result, str)
+
+    def test_rejects_empty_session_id(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("exec_in_session", {"session_id": "", "script": "x = 1"}))
+
+    def test_rejects_empty_script(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("exec_in_session", {"session_id": "abc", "script": ""}))
+
+
+class TestEndSession:
+    def test_ends_session(self) -> None:
+        result = asyncio.run(
+            _call_tool(
+                "end_session",
+                {"session_id": "abc12345"},
+                mock_output="Session abc12345 ended",
+            )
+        )
+        assert "ended" in result
+
+    def test_rejects_empty_session_id(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("end_session", {"session_id": ""}))
+
+
+class TestGetSessionVars:
+    def test_returns_vars(self) -> None:
+        vars_json = json.dumps({"vars": ["x", "y", "my_entity"], "count": 3})
+        result = asyncio.run(
+            _call_tool(
+                "get_session_vars",
+                {"session_id": "abc12345"},
+                mock_output=vars_json,
+            )
+        )
+        parsed = json.loads(result)
+        assert parsed["count"] == 3
+        assert "x" in parsed["vars"]
+
+    def test_rejects_empty_session_id(self) -> None:
+        with pytest.raises(Exception):
+            asyncio.run(_call_tool("get_session_vars", {"session_id": ""}))
+
+
+class TestGemApiVersionCache:
+    def test_asked_once_then_cached_until_the_connection_closes(self) -> None:
+        from o3de_mcp.tools import editor
+
+        pool = editor._EditorConnectionPool()
+        reply = {"status": "ok", "output": json.dumps({"api_version": "0.5.0"})}
+        pool.send_request = AsyncMock(return_value=reply)  # type: ignore[method-assign]
+
+        async def run() -> list:
+            with patch("o3de_mcp.tools.editor._pool", pool):
+                first = await editor._gem_api_version()
+                second = await editor._gem_api_version()
+                await pool._close()
+                third = await editor._gem_api_version()
+            return [first, second, third]
+
+        assert asyncio.run(run()) == [(0, 5, 0)] * 3
+        assert pool.send_request.await_count == 2  # once, then again after the close
+
+    def test_no_gem_means_no_version(self) -> None:
+        from o3de_mcp.tools import editor
+
+        pool = editor._EditorConnectionPool()
+        pool.send_request = AsyncMock(  # type: ignore[method-assign]
+            return_value={"status": "error", "code": "agent_server_required", "error": "legacy"}
+        )
+        with patch("o3de_mcp.tools.editor._pool", pool):
+            assert asyncio.run(editor._gem_api_version()) is None

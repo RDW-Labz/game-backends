@@ -1,0 +1,204 @@
+# Copyright (c) Contributors to the Open 3D Engine Project.
+# For complete copyright and license terms please see the LICENSE at the root of this distribution.
+#
+# SPDX-License-Identifier: Apache-2.0 OR MIT
+
+"""MCP tools for discovering O3DE reflected EBus APIs."""
+
+from __future__ import annotations
+
+import json
+import textwrap
+
+from mcp.server import MCPServer
+
+from o3de_mcp.utils.errors import error_dict, format_error
+from o3de_mcp.utils.introspection import get_bus_schema as _get_bus_schema
+
+
+async def _native_bus_schema(bus: str) -> dict | None:
+    """Ask the AiCompanion AgentServer for ``bus`` via its C++ ``get_bus_schema``.
+
+    Returns the parsed schema with ``source: "native"``, or ``None`` when the
+    request is unavailable (older gem, legacy transport, editor down) or the
+    gem reports the bus as unknown, so the caller can fall back.
+    """
+    from o3de_mcp.tools.editor import _pool
+
+    try:
+        response = await _pool.send_request("get_bus_schema", params={"bus_name": bus})
+    except Exception:
+        return None
+    if not isinstance(response, dict) or response.get("status") != "ok":
+        return None
+    try:
+        parsed = json.loads(str(response.get("output", "")))
+    except (json.JSONDecodeError, TypeError):
+        return None
+    if not isinstance(parsed, dict) or "error" in parsed or "events" not in parsed:
+        return None
+    parsed["source"] = "native"
+    parsed["bus"] = parsed.get("name", bus)
+    parsed["event_count"] = len(parsed.get("events") or [])
+    return parsed
+
+
+def register_introspection_tools(mcp: MCPServer) -> None:
+    """Register reflection-introspection tools with the MCP server."""
+
+    @mcp.tool()
+    async def get_bus_schema(
+        module: str | None = None,
+        bus: str | None = None,
+        project_path: str | None = None,
+    ) -> str:
+        """Discover the scripting API of any O3DE gem's reflected EBuses."""
+        try:
+            result = _get_bus_schema(module=module, bus=bus, project_path=project_path)
+        except (LookupError, ValueError) as error:
+            return format_error("schema_not_found", str(error))
+        return json.dumps(result, indent=2)
+
+    @mcp.tool()
+    async def get_bus_schema_live(
+        module: str,
+        bus: str,
+        project_path: str | None = None,
+    ) -> str:
+        """Query the running editor's BehaviorContext for a bus schema.
+
+        Tries the AiCompanion gem's native ``get_bus_schema`` request first
+        (gem 0.4.0 or later): it reads the live C++ reflection and includes
+        each event's argument names and tooltips, which the Python bindings do
+        not expose, and it works in the gem's secure mode. Older gems, the
+        legacy RemoteConsole transport, or an unknown bus fall through to the
+        editor-Python query, and that in turn falls back to the stub files.
+        """
+        from o3de_mcp.tools.editor import _async_run_editor_script
+
+        native = await _native_bus_schema(bus)
+        if native is not None:
+            native["module"] = module
+            return json.dumps(native, indent=2)
+
+        params = json.dumps({"module": module, "bus": bus})
+        script = textwrap.dedent(f"""\
+            import json
+
+            _params = json.loads({params!r})
+            _module_name = _params['module']
+            _bus_name = _params['bus']
+
+            result = {{'source': 'live', 'module': _module_name, 'bus': _bus_name}}
+
+            try:
+                import importlib
+                mod = importlib.import_module(f'azlmbr.{{_module_name}}')
+                bus_obj = getattr(mod, _bus_name, None)
+                if bus_obj is None:
+                    # Not a live answer: fall through to the stub files, whose miss
+                    # is reported as the failure envelope.
+                    result['source'] = 'error'
+                    result['error'] = f'Bus {{_bus_name}} not found in azlmbr.{{_module_name}}'
+                else:
+                    events = []
+                    if hasattr(bus_obj, 'Events'):
+                        for evt in bus_obj.Events:
+                            events.append({{
+                                'name': str(evt),
+                            }})
+                    result['events'] = events
+                    result['event_count'] = len(events)
+            except Exception as e:
+                result['source'] = 'error'
+                result['error'] = str(e)
+
+            print(json.dumps(result))
+        """)
+
+        live_result = await _async_run_editor_script(script)
+
+        try:
+            parsed = json.loads(live_result)
+            if parsed.get("source") == "live":
+                return json.dumps(parsed, indent=2)
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+        try:
+            stub_result = _get_bus_schema(module=module, bus=bus, project_path=project_path)
+            stub_result["source"] = "stub_fallback"
+            stub_result["live_error"] = live_result[:500] if live_result else "No response"
+            return json.dumps(stub_result, indent=2)
+        except (LookupError, ValueError) as error:
+            return json.dumps(
+                {
+                    **error_dict("bus_not_found", str(error)),
+                    "source": "stub_fallback_failed",
+                    "live_error": live_result[:500] if live_result else "No response",
+                },
+                indent=2,
+            )
+
+    @mcp.tool()
+    async def capture_renderdoc_frame() -> str:
+        """Trigger a RenderDoc frame capture in the O3DE editor.
+
+        Attempts to trigger a RenderDoc capture via ``GraphicsProfilerBus``. That
+        bus is not exposed to editor Python on O3DE 26.10.0, so there the tool
+        returns ``manual_required`` with the manual alternatives (F12 in
+        RenderDoc, or the editor's GPU capture menu).
+
+        Returns:
+            JSON with status ``ok`` if the capture was triggered, ``error``
+            on failure, or ``manual_required`` if the Python API cannot
+            trigger the capture and manual action is needed.
+        """
+        from o3de_mcp.tools.editor import _async_run_editor_script
+
+        script = textwrap.dedent("""\
+            import azlmbr.bus as bus
+            import json
+
+            try:
+                if hasattr(bus, 'GraphicsProfilerBus'):
+                    bus.GraphicsProfilerBus(bus.Broadcast, 'TriggerCapture')
+                    result = {
+                        'status': 'ok',
+                        'message': 'RenderDoc frame capture triggered via '
+                                   'GraphicsProfilerBus.TriggerCapture.'
+                    }
+                else:
+                    result = {
+                        'status': 'manual_required',
+                        'message': 'GraphicsProfilerBus is not exposed to Python '
+                                   'in this O3DE version. Trigger the capture '
+                                   'manually: press F12 in RenderDoc, or use the '
+                                   'editor ImGui menu View > Profiling > '
+                                   'Trigger GPU Capture.'
+                    }
+            except Exception as e:
+                result = {
+                    'status': 'error',
+                    'code': 'capture_failed',
+                    'message': f'Failed to trigger capture: {e}.'
+                }
+            print(json.dumps(result))
+        """)
+        result = await _async_run_editor_script(script)
+
+        try:
+            parsed = json.loads(result)
+            if parsed.get("status") == "ok":
+                parsed["next_steps"] = (
+                    "Use the renderdoc-mcp MCP server to analyze the captured frame: "
+                    "1) list_drawcalls to see the draw call list, "
+                    "2) get_texture for specific texture data, "
+                    "3) get_pipeline_state for shader/blend state, "
+                    "4) get_performance_counters for GPU timing data."
+                )
+                return json.dumps(parsed, indent=2)
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+        return result
