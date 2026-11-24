@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:50:46Z",
+ "category": "engines",
+ "commit": "2023-10-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "katharostech/bevy_retrograde \u2014 Plugin pack for making 2D games with Bevy",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "bevy_retrograde",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "katharostech-bevy-retrograde",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 311,
+ "system": "Plugin pack for making 2D games with Bevy",
+ "upstream": "https://github.com/katharostech/bevy_retrograde",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

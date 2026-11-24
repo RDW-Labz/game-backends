@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:50:46Z",
+ "category": "engines",
+ "commit": "2026-01-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JonahPlusPlus/bevy_atmosphere \u2014 A procedural sky plugin for bevy",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_atmosphere",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "jonahplusplus-bevy-atmosphere",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 310,
+ "system": "A procedural sky plugin for bevy",
+ "upstream": "https://github.com/JonahPlusPlus/bevy_atmosphere",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T23:50:45Z",
+ "category": "engines",
+ "commit": "9c2c81345612",
+ "delivery": "vendored",
+ "description": "Seldom-SE/seldom_state \u2014 Component-based state machine plugin for Bevy. Useful for AI, player state, and other entities that occupy different states.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "seldom_state",
+ "size_bytes": 71634,
+ "slug": "seldom-se-seldom-state",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 321,
+ "system": "Component-based state machine plugin for Bevy. Useful for AI, player state, and other entities that occupy different states.",
+ "upstream": "https://github.com/Seldom-SE/seldom_state",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

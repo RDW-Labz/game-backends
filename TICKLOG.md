@@ -2908,3 +2908,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/godot-sdk-integrations-godot-play-game-services
   - reference engines/holonproduction-godot-kanban-tasks
   - reference engines/godot-sdk-integrations-godot-google-play-billing
+
+- **2026-11-24 23:50 UTC** — tick 819: +2 screened, +4 reference, 13 skipped, catalogue=1433
+  - added engines/cxreiff-bevy-ratatui-camera (Apache-2.0, vendored)
+  - added engines/seldom-se-seldom-state (Apache-2.0, vendored)
+  - reference engines/katharostech-bevy-retrograde
+  - reference engines/jonahplusplus-bevy-atmosphere
+  - reference engines/houraiteahouse-bevy-steamworks
+  - reference engines/mosure-bevy-gaussian-splatting

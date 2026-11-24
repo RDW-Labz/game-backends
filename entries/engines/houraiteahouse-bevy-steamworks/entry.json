@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:50:46Z",
+ "category": "engines",
+ "commit": "2026-10-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "HouraiTeahouse/bevy_steamworks \u2014 A Bevy plugin for integrating with the Steamworks SDK",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_steamworks",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "houraiteahouse-bevy-steamworks",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 302,
+ "system": "A Bevy plugin for integrating with the Steamworks SDK ",
+ "upstream": "https://github.com/HouraiTeahouse/bevy_steamworks",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

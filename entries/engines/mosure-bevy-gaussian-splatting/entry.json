@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:50:46Z",
+ "category": "engines",
+ "commit": "2026-10-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mosure/bevy_gaussian_splatting \u2014 bevy gaussian splatting render pipeline plugin \ud83d\udd4a\ufe0f\ud83c\udf0c",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_gaussian_splatting",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "mosure-bevy-gaussian-splatting",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 299,
+ "system": "bevy gaussian splatting render pipeline plugin \ud83d\udd4a\ufe0f\ud83c\udf0c",
+ "upstream": "https://github.com/mosure/bevy_gaussian_splatting",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
