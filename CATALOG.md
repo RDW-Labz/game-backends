@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 00:12 UTC · 1018 entries · 269 vendored, 749 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 00:28 UTC · 1024 entries · 271 vendored, 753 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-24 00:12 UTC · 1018 entries · 269 vendored, 749 reference-o
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 111 | 32 | 79 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 117 | 34 | 83 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
@@ -686,7 +686,7 @@ _Generated 2026-11-24 00:12 UTC · 1018 entries · 269 vendored, 749 reference-o
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 111 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 117 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -707,6 +707,7 @@ _Generated 2026-11-24 00:12 UTC · 1018 entries · 269 vendored, 749 reference-o
 | [easystarjs](entries/gameplay/prettymuchbryce-easystarjs/README.md) | An asynchronous A* pathfinding API written in Javascript. | javascript | MIT | reference | [prettymuchbryce/easystarjs](https://github.com/prettymuchbryce/easystarjs) @ `2024-01-23 (branch tip at catalogue time)` |
 | [ecs](entries/gameplay/chromealex-ecs/README.md) | ECS for Unity with full game state automatic rollbacks | n/a | MIT | reference | [chromealex/ecs](https://github.com/chromealex/ecs) @ `2023-06-01 (branch tip at catalogue time)` |
 | [EvolutionAquerium](entries/gameplay/anuraghazra-evolutionaquerium/README.md) | :fish: :bug: Small Inteli Creatures Based On Steering Behaviours | javascript | MIT | reference | [anuraghazra/EvolutionAquerium](https://github.com/anuraghazra/EvolutionAquerium) @ `2022-02-12 (branch tip at catalogue time)` |
+| [FyWorld](entries/gameplay/fy-fyworld/README.md) | FyWorld - Base-Building / Simulation Game & Tutorial in Unity | c# | GPL-3.0 | reference | [Fy-/FyWorld](https://github.com/Fy-/FyWorld) @ `2022-12-28 (branch tip at catalogue time)` |
 | [geotic](entries/gameplay/ddmills-geotic/README.md) | Entity Component System library for javascript | javascript | MIT | reference | [ddmills/geotic](https://github.com/ddmills/geotic) @ `2025-03-05 (branch tip at catalogue time)` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
@@ -740,10 +741,12 @@ _Generated 2026-11-24 00:12 UTC · 1018 entries · 269 vendored, 749 reference-o
 | [Mindustry — abilities](entries/gameplay/mindustry-abilities/README.md) | combat, AI, pathing, quest or inventory logic | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [Mindustry — ai](entries/gameplay/mindustry-core-src-mindustry-ai/README.md) | unit AI and pathfinding | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01ed559` |
 | [Mindustry — entities](entries/gameplay/mindustry-core-src-mindustry-entities/README.md) | entity/unit/bullet systems for a shipped RTS | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01ed559` |
+| [mineflayer-pathfinder](entries/gameplay/prismarinejs-mineflayer-pathfinder/README.md) | Pathfinding plugin that gives bot the ability to go from A to B | javascript | MIT | reference | [PrismarineJS/mineflayer-pathfinder](https://github.com/PrismarineJS/mineflayer-pathfinder) @ `2026-11-14 (branch tip at catalogue time)` |
 | [mistreevous](entries/gameplay/nikkorn-mistreevous/README.md) | A tool to build and execute behaviour trees in JavaScript and TypeScript | typescript | MIT | vendored | [nikkorn/mistreevous](https://github.com/nikkorn/mistreevous) @ `026f1ffe0623` |
 | [MonoBehaviourTree](entries/gameplay/qriva-monobehaviourtree/README.md) | Simple event driven Behaviour tree for Unity projects | c# | MIT | reference | [Qriva/MonoBehaviourTree](https://github.com/Qriva/MonoBehaviourTree) @ `2024-09-25 (branch tip at catalogue time)` |
 | [MultiTree-Behavior](entries/gameplay/thomheymann-multitree-behavior/README.md) | MultiTree is a drop-in behaviour to CakePHP's Core Tree Behavior allowing for more advanced operations and better performance on large data sets | php | unknown | reference | [thomheymann/MultiTree-Behavior](https://github.com/thomheymann/MultiTree-Behavior) @ `2013-09-21 (branch tip at catalogue time)` |
 | [naev — ai](entries/gameplay/naev-ai/README.md) | combat, AI, pathing, quest or inventory logic | lua | BSD-2-Clause | vendored | [naev/naev.git](https://github.com/naev/naev.git) @ `7f58510` |
+| [navmesh](entries/gameplay/mikewesthad-navmesh/README.md) | A plugin for path-finding in JS using navmeshes, with wrappers for Phaser 3 and Phaser 2 | javascript | MIT | vendored | [mikewesthad/navmesh](https://github.com/mikewesthad/navmesh) @ `b264bc3c145b` |
 | [NavMeshPlus](entries/gameplay/h8man-navmeshplus/README.md) | Unity NavMesh 2D Pathfinding | c# | MIT | vendored | [h8man/NavMeshPlus](https://github.com/h8man/NavMeshPlus) @ `d615919ce2d1` |
 | [Open-Aimbot](entries/gameplay/zackanimates08-open-aimbot/README.md) | Open Aimbot is a universal open source framework. It offers a wide selection of extensive functionality. We develop various utilities for Roblox, security syste | n/a | MIT | reference | [Zackanimates08/Open-Aimbot](https://github.com/Zackanimates08/Open-Aimbot) @ `2026-03-01 (branch tip at catalogue time)` |
 | [OpenDungeons — spells](entries/gameplay/opendungeons-spells/README.md) | combat, AI, pathing, quest or inventory logic | cpp | GPL-3.0 | reference | [OpenDungeons/OpenDungeons.git](https://github.com/OpenDungeons/OpenDungeons.git) @ `a9efe49` |
@@ -755,14 +758,17 @@ _Generated 2026-11-24 00:12 UTC · 1018 entries · 269 vendored, 749 reference-o
 | [Pathfinding-Visualizer](entries/gameplay/clementmihailescu-pathfinding-visualizer/README.md) | A visualization tool for various pathfinding algorithms. | css | unknown | reference | [clementmihailescu/Pathfinding-Visualizer](https://github.com/clementmihailescu/Pathfinding-Visualizer) @ `2023-09-23 (branch tip at catalogue time)` |
 | [Pathfinding-Visualizer-Tutorial](entries/gameplay/clementmihailescu-pathfinding-visualizer-tutorial/README.md) | Tutorial for my original Pathfinding Visualizer project. | javascript | unknown | reference | [clementmihailescu/Pathfinding-Visualizer-Tutorial](https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial) @ `2023-03-03 (branch tip at catalogue time)` |
 | [PathFinding.js](entries/gameplay/pathfinding-js/README.md) | A*, IDA*, JPS, Dijkstra, BiA* on grids | javascript | MIT | vendored | [qiao/PathFinding.js](https://github.com/qiao/PathFinding.js) @ `2904a9afba48` |
+| [pogema](entries/gameplay/cognitive-ai-systems-pogema/README.md) | [ICLR-2025] POGEMA stands for Partially-Observable Grid Environment for Multiple Agents. This is a grid-based environment that was specifically designed to be f | python | MIT | reference | [Cognitive-AI-Systems/pogema](https://github.com/Cognitive-AI-Systems/pogema) @ `2026-09-14 (branch tip at catalogue time)` |
 | [Point-of-Sales](entries/gameplay/sadatrafsanjani-point-of-sales/README.md) | Point of Sales with inventory management system  | java | MIT | reference | [sadatrafsanjani/Point-of-Sales](https://github.com/sadatrafsanjani/Point-of-Sales) @ `2026-09-08 (branch tip at catalogue time)` |
 | [PokemonTacticalRolePlay](entries/gameplay/sinlessdevil-pokemontacticalroleplay/README.md) | Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI. | c# | none | reference | [SinlessDevil/PokemonTacticalRolePlay](https://github.com/SinlessDevil/PokemonTacticalRolePlay) @ `764123cd5354` |
 | [polyanya](entries/gameplay/vleue-polyanya/README.md) | Pathfinding using Polyanya | rust | Apache-2.0 | reference | [vleue/polyanya](https://github.com/vleue/polyanya) @ `2026-11-09 (branch tip at catalogue time)` |
 | [PonyBehaviourTrees](entries/gameplay/ands-ponybehaviourtrees/README.md) | A set of C# libraries for runtime behaviour tree editing, scripting and inspection | c# | unknown | reference | [ands/PonyBehaviourTrees](https://github.com/ands/PonyBehaviourTrees) @ `2015-12-02 (branch tip at catalogue time)` |
 | [Procedural_Planet_Generation](entries/gameplay/dennisboon-procedural-planet-generation/README.md) | Procedural planet generation application made in Unity for the Oculus Quest. | c# | none | reference | [DennisBoon/Procedural_Planet_Generation](https://github.com/DennisBoon/Procedural_Planet_Generation) @ `863b32640d48` |
 | [py_trees](entries/gameplay/splintered-reality-py-trees/README.md) | Python implementation of behaviour trees. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees](https://github.com/splintered-reality/py_trees) @ `49bcffd069af` |
+| [python-pathfinding](entries/gameplay/brean-python-pathfinding/README.md) | Implementation of common pathfinding algorithms | python | MIT | vendored | [brean/python-pathfinding](https://github.com/brean/python-pathfinding) @ `e271d46f53b3` |
 | [quest-manager](entries/gameplay/rubonnek-quest-manager/README.md) | A powerful and flexible quest management system for the Godot Game Engine | gdscript | MIT | reference | [Rubonnek/quest-manager](https://github.com/Rubonnek/quest-manager) @ `2026-06-07 (branch tip at catalogue time)` |
 | [Rakugo-Dialogue-System](entries/gameplay/rakugoteam-rakugo-dialogue-system/README.md) | Inspired by Ren'Py, Rakugo is a project aiming to provide a way to make narrative-based games on Godot easily. Simplify your project, if it is a visual novel, p | gdscript | MIT | vendored | [rakugoteam/Rakugo-Dialogue-System](https://github.com/rakugoteam/Rakugo-Dialogue-System) @ `8cb205634c3c` |
+| [react-flow-smart-edge](entries/gameplay/tisoap-react-flow-smart-edge/README.md) | Custom Edge for React Flow that never intersects with other nodes | typescript | MIT | reference | [tisoap/react-flow-smart-edge](https://github.com/tisoap/react-flow-smart-edge) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Recast & Detour](entries/gameplay/recastnavigation/README.md) | navmesh generation + pathfinding + crowd steering | c++ | Zlib | vendored | [recastnavigation/recastnavigation](https://github.com/recastnavigation/recastnavigation) @ `9f4ce64458df` |
 | [References](entries/gameplay/aryia-behroziuan-references/README.md) |  Poole, Mackworth & Goebel 1998, p. 1.  Russell & Norvig 2003, p. 55.  Definition of AI as the study of intelligent agents: Poole, Mackworth & Goebel (1998), wh | n/a | none | reference | [Aryia-Behroziuan/References](https://github.com/Aryia-Behroziuan/References) @ `1f0e5ca1f05a` |
 | [rep-talkNPC](entries/gameplay/bahnmifps-rep-talknpc/README.md) | A versatile and customizable NPC Dialogue system for FiveM servers, offering fresh UI designs and highly configurable elements for a richer gaming experience. B | lua | GPL-3.0 | reference | [BahnMiFPS/rep-talkNPC](https://github.com/BahnMiFPS/rep-talkNPC) @ `2024-09-09 (branch tip at catalogue time)` |

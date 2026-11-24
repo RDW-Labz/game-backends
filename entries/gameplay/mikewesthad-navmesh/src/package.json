@@ -1,0 +1,44 @@
+{
+  "private": true,
+  "packageManager": "pnpm@12.21.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build:libs": "pnpm --filter \"*navmesh\" run build",
+    "test": "jest --config ./config/jest.config.json",
+    "typecheck": "pnpm -r run typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "watch": "pnpm -r --parallel run watch",
+    "watch:libs": "pnpm --filter \"*navmesh\" --parallel run watch",
+    "serve:examples": "pnpm --filter \"examples-*\" --parallel run serve",
+    "dev": "concurrently \"pnpm watch:libs\" \"pnpm serve:examples\"",
+    "dev:phaser4": "concurrently \"pnpm --filter navmesh --filter phaser-navmesh --parallel run watch\" \"pnpm --filter examples-phaser4 run serve\"",
+    "dev:phaser3": "concurrently \"pnpm --filter navmesh --filter phaser-navmesh --parallel run watch\" \"pnpm --filter examples-phaser3 run serve\"",
+    "dev:node": "concurrently \"pnpm --filter navmesh run watch\" \"pnpm --filter examples-node run serve\"",
+    "doc": "typedoc --tsconfig ./typedoc.tsconfig.json",
+    "postdoc": "cp -r doc-source/ docs/",
+    "deploy:examples": "gh-pages --branch gh-pages --dist packages/examples/public --add",
+    "predeploy:examples": "cd packages/examples && npm run build",
+    "deploy:doc": "gh-pages --branch gh-pages --dist docs --dest docs",
+    "predeploy:doc": "pnpm doc",
+    "release": "tsx scripts/release.ts"
+  },
+  "devDependencies": {
+    "babel-jest": "^27.0.2",
+    "concurrently": "^6.2.0",
+    "cypress": "^7.5.0",
+    "eslint": "^7.29.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "gh-pages": "^3.2.3",
+    "jest": "^27.0.4",
+    "prettier": "^2.3.1",
+    "tsx": "^4.23.15",
+    "typedoc": "^0.21.0"
+  },
+  "prettier": {
+    "printWidth": 100
+  }
+}

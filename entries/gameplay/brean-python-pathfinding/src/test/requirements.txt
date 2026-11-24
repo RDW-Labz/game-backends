@@ -1,0 +1,6 @@
+pytest
+snakeviz
+pytest-profiling
+numpy
+pandas
+matplotlib

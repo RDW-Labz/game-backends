@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T00:28:06Z",
+ "category": "gameplay",
+ "commit": "b264bc3c145b",
+ "delivery": "vendored",
+ "description": "mikewesthad/navmesh \u2014 A plugin for path-finding in JS using navmeshes, with wrappers for Phaser 3 and Phaser 2",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "navmesh",
+ "size_bytes": 438360,
+ "slug": "mikewesthad-navmesh",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 378,
+ "system": "A plugin for path-finding in JS using navmeshes, with wrappers for Phaser 3 and Phaser 2",
+ "upstream": "https://github.com/mikewesthad/navmesh",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

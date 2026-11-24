@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:28:07Z",
+ "category": "gameplay",
+ "commit": "2022-12-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Fy-/FyWorld \u2014 FyWorld - Base-Building / Simulation Game & Tutorial in Unity",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "FyWorld",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "fy-fyworld",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 334,
+ "system": "FyWorld - Base-Building / Simulation Game & Tutorial in Unity",
+ "upstream": "https://github.com/Fy-/FyWorld",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

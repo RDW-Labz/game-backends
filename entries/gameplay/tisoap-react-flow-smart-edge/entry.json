@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:28:07Z",
+ "category": "gameplay",
+ "commit": "2026-11-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tisoap/react-flow-smart-edge \u2014 Custom Edge for React Flow that never intersects with other nodes",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "react-flow-smart-edge",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "tisoap-react-flow-smart-edge",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 365,
+ "system": "Custom Edge for React Flow that never intersects with other nodes",
+ "upstream": "https://github.com/tisoap/react-flow-smart-edge",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

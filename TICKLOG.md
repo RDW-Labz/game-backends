@@ -2351,3 +2351,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/chromealex-ecs
   - reference gameplay/robmaister-sharpnav
   - reference gameplay/vleue-polyanya
+
+- **2026-11-24 00:28 UTC** — tick 741: +2 screened, +4 reference, 1 skipped, catalogue=1024
+  - added gameplay/brean-python-pathfinding (MIT, vendored)
+  - added gameplay/mikewesthad-navmesh (MIT, vendored)
+  - reference gameplay/tisoap-react-flow-smart-edge
+  - reference gameplay/fy-fyworld
+  - reference gameplay/prismarinejs-mineflayer-pathfinder
+  - reference gameplay/cognitive-ai-systems-pogema

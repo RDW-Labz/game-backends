@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T00:28:04Z",
+ "category": "gameplay",
+ "commit": "e271d46f53b3",
+ "delivery": "vendored",
+ "description": "brean/python-pathfinding \u2014 Implementation of common pathfinding algorithms",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "python-pathfinding",
+ "size_bytes": 90266,
+ "slug": "brean-python-pathfinding",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 381,
+ "system": "Implementation of common pathfinding algorithms",
+ "upstream": "https://github.com/brean/python-pathfinding",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

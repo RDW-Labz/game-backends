@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:28:07Z",
+ "category": "gameplay",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "PrismarineJS/mineflayer-pathfinder \u2014 Pathfinding plugin that gives bot the ability to go from A to B",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "mineflayer-pathfinder",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "prismarinejs-mineflayer-pathfinder",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 317,
+ "system": "Pathfinding plugin that gives bot the ability to go from A to B",
+ "upstream": "https://github.com/PrismarineJS/mineflayer-pathfinder",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
