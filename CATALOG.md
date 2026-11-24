@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 16:36 UTC · 1294 entries · 334 vendored, 960 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 17:00 UTC · 1300 entries · 335 vendored, 965 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 487 | 112 | 375 |
+| [engines](#engines) — Game engines and engine subsystems | 493 | 113 | 380 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 16:36 UTC · 1294 entries · 334 vendored, 960 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 487 entries
+**Game engines and engine subsystems** — 493 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -262,6 +262,7 @@ _Generated 2026-11-24 16:36 UTC · 1294 entries · 334 vendored, 960 reference-o
 | [imgui](entries/engines/ocornut-imgui/README.md) | Dear ImGui: Bloat-free Graphical User interface for C++ with minimal dependencies | c++ | MIT | vendored | [ocornut/imgui](https://github.com/ocornut/imgui) @ `77fe4588e6af` |
 | [imgui-godot](entries/engines/pkdawson-imgui-godot/README.md) | Dear ImGui plugin for Godot 4 | c++ | MIT | vendored | [pkdawson/imgui-godot](https://github.com/pkdawson/imgui-godot) @ `8a9f0c423533` |
 | [Infernux](entries/engines/chenlizheme-infernux/README.md) | Building a Neural Network-Native Engine (3N). Python authoring, C++ runtime, Vulkan/WebGPU. Windows, Linux, Android and Web. | python | MIT | reference | [ChenlizheMe/Infernux](https://github.com/ChenlizheMe/Infernux) @ `b5eba5c42ea0` |
+| [inks2d](entries/engines/nicklessone-inks2d/README.md) | A free no-dependency Typescript game engine designed for developing 2D games | typescript | MIT | reference | [NicklessOne/inks2d](https://github.com/NicklessOne/inks2d) @ `2023-08-23 (branch tip at catalogue time)` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
@@ -291,6 +292,7 @@ _Generated 2026-11-24 16:36 UTC · 1294 entries · 334 vendored, 960 reference-o
 | [Lumos](entries/engines/jmorton06-lumos/README.md) | Cross-Platform C++ 2D/3D game engine | c++ | MIT | reference | [jmorton06/Lumos](https://github.com/jmorton06/Lumos) @ `2026-11-10 (branch tip at catalogue time)` |
 | [LunarGdx](entries/engines/vrekt-lunargdx/README.md) | A networking library for LibGDX utilizing Netty allowing easy creation of multiplayer games. | java | MIT | reference | [Vrekt/LunarGdx](https://github.com/Vrekt/LunarGdx) @ `2024-05-30 (branch tip at catalogue time)` |
 | [LunyScript-RFC](entries/engines/codesmile-0000011110110111-lunyscript-rfc/README.md) | Beginner-friendly gameplay programming for Godot & Unity: Declarative, block-based, StateMachine & BehaviorTree powered portable C# code! | python | MIT | reference | [CodeSmile-0000011110110111/LunyScript-RFC](https://github.com/CodeSmile-0000011110110111/LunyScript-RFC) @ `2026-04-08 (branch tip at catalogue time)` |
+| [Macronyx](entries/engines/definitelyn0tme-macronyx/README.md) | Macronyx is a cross-platform macro automation engine with timeline editing, trigger-based execution, and intelligent playback — built for gamers, power users, a | typescript | GPL-3.0 | reference | [DefinitelyN0tMe/Macronyx](https://github.com/DefinitelyN0tMe/Macronyx) @ `2026-02-27 (branch tip at catalogue time)` |
 | [macroquad](entries/engines/not-fl3-macroquad/README.md) | Cross-platform game engine in Rust.  | rust | Apache-2.0 | vendored | [not-fl3/macroquad](https://github.com/not-fl3/macroquad) @ `8d602d3f8ebb` |
 | [magictools](entries/engines/ellisonleao-magictools/README.md) | :video_game: :pencil: A list of Game Development resources to make magic happen. | markdown | MIT | vendored | [ellisonleao/magictools](https://github.com/ellisonleao/magictools) @ `7ea0640f128c` |
 | [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
@@ -395,6 +397,7 @@ _Generated 2026-11-24 16:36 UTC · 1294 entries · 334 vendored, 960 reference-o
 | [react-native-game-engine](entries/engines/bberak-react-native-game-engine/README.md) | A lightweight Game Engine for React Native 🕹⚡🎮 | javascript | MIT | reference | [bberak/react-native-game-engine](https://github.com/bberak/react-native-game-engine) @ `2024-12-31 (branch tip at catalogue time)` |
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
+| [ReksioEngine](entries/engines/reksioengine-reksioengine/README.md) | Reimplementation of BlooMoo and Piklib game engines for "Przygody Reksia" PC games series | typescript | none | reference | [ReksioEngine/ReksioEngine](https://github.com/ReksioEngine/ReksioEngine) @ `57871e8368b7` |
 | [renpy](entries/engines/renpy-renpy/README.md) | The Ren'Py Visual Novel Engine | ren'py | unknown | reference | [renpy/renpy](https://github.com/renpy/renpy) @ `2026-11-23 (branch tip at catalogue time)` |
 | [replay](entries/engines/edbentley-replay/README.md) | A cross-platform JS game engine inspired by React | typescript | MIT | vendored | [edbentley/replay](https://github.com/edbentley/replay) @ `d10084041f8a` |
 | [rerecast](entries/engines/janhohenheim-rerecast/README.md) | Rust port of Recast, the industry-standard navigation mesh generator used by Unreal, Unity, Godot, and other game engines. | rust | Apache-2.0 | reference | [janhohenheim/rerecast](https://github.com/janhohenheim/rerecast) @ `beda61552ef6` |
@@ -429,6 +432,7 @@ _Generated 2026-11-24 16:36 UTC · 1294 entries · 334 vendored, 960 reference-o
 | [space-menace](entries/engines/amethyst-space-menace/README.md) | An action 2D platformer made with Amethyst game engine | rust | MIT | vendored | [amethyst/space-menace](https://github.com/amethyst/space-menace) @ `8be706d2e993` |
 | [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [specs-physics](entries/engines/amethyst-specs-physics/README.md) | nphysics integration for the Specs entity component system | rust | MIT | reference | [amethyst/specs-physics](https://github.com/amethyst/specs-physics) @ `2020-05-04 (branch tip at catalogue time)` |
+| [spider-engine](entries/engines/aminere-spider-engine/README.md) | WebGL game engine | typescript | GPL-3.0 | reference | [aminere/spider-engine](https://github.com/aminere/spider-engine) @ `2024-09-02 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
 | [stage.js](entries/engines/piqnt-stage-js/README.md) | 2D HTML5 rendering and layout engine for game development | typescript | MIT | vendored | [piqnt/stage.js](https://github.com/piqnt/stage.js) @ `2535352e89cd` |
 | [Starling-Framework](entries/engines/gamua-starling-framework/README.md) | The Cross Platform Game Engine | actionscript | BSD-2-Clause | vendored | [Gamua/Starling-Framework](https://github.com/Gamua/Starling-Framework) @ `ffde39a2d459` |
@@ -442,6 +446,7 @@ _Generated 2026-11-24 16:36 UTC · 1294 entries · 334 vendored, 960 reference-o
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
 | [termloop](entries/engines/joelotter-termloop/README.md) | Terminal-based game engine for Go, built on top of Termbox | go | MIT | vendored | [JoelOtter/termloop](https://github.com/JoelOtter/termloop) @ `5f7c38744afb` |
 | [tetra](entries/engines/17cupsofcoffee-tetra/README.md) | 🎮 A simple 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/tetra](https://github.com/17cupsofcoffee/tetra) @ `2026-07-22 (branch tip at catalogue time)` |
+| [the-superviral-word-game](entries/engines/the-illarionov-the-superviral-word-game/README.md) | A Vue word game based on the Yakut national sport "Mas-wrestling". Uses XState for state management, WebRTC for multiplayer and has custom WebGL engine | typescript | GPL-3.0 | reference | [the-illarionov/the-superviral-word-game](https://github.com/the-illarionov/the-superviral-word-game) @ `2025-01-08 (branch tip at catalogue time)` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
 | [thrive — engine](entries/engines/thrive-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [TiledCS](entries/engines/thebonejarmer-tiledcs/README.md) | TiledCS is a dotnet library for loading Tiled tilesets and maps | c# | MIT | reference | [TheBoneJarmer/TiledCS](https://github.com/TheBoneJarmer/TiledCS) @ `2024-08-31 (branch tip at catalogue time)` |
@@ -469,6 +474,7 @@ _Generated 2026-11-24 16:36 UTC · 1294 entries · 334 vendored, 960 reference-o
 | [vek](entries/engines/yoanlcq-vek/README.md) | Generic 2D-3D math swiss army knife for game engines, with SIMD support and focus on convenience. | rust | Apache-2.0 | reference | [yoanlcq/vek](https://github.com/yoanlcq/vek) @ `2025-09-23 (branch tip at catalogue time)` |
 | [Velaptor](entries/engines/kinsondigital-velaptor/README.md) | 2D game development framework | c# | MIT | reference | [KinsonDigital/Velaptor](https://github.com/KinsonDigital/Velaptor) @ `2026-11-22 (branch tip at catalogue time)` |
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
+| [vibe-coder-3d](entries/engines/jonit-dev-vibe-coder-3d/README.md) | @react-three/fiber 3D game engine | typescript | MIT | vendored | [jonit-dev/vibe-coder-3d](https://github.com/jonit-dev/vibe-coder-3d) @ `0315e66378e0` |
 | [VibeGame](entries/engines/dylanebert-vibegame/README.md) | A 3D game engine designed for vibe coding | typescript | MIT | reference | [dylanebert/VibeGame](https://github.com/dylanebert/VibeGame) @ `2025-12-21 (branch tip at catalogue time)` |
 | [VisualPinball.Engine](entries/engines/freezy-visualpinball-engine/README.md) | :video_game: Visual Pinball Engine for Unity | c# | GPL-3.0 | reference | [freezy/VisualPinball.Engine](https://github.com/freezy/VisualPinball.Engine) @ `2026-11-24 (branch tip at catalogue time)` |
 | [VloxyEngine](entries/engines/blazekill-vloxyengine/README.md) | Performance oriented voxel engine for unity. | c# | MIT | reference | [BLaZeKiLL/VloxyEngine](https://github.com/BLaZeKiLL/VloxyEngine) @ `2024-11-27 (branch tip at catalogue time)` |

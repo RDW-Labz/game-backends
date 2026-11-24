@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:00:41Z",
+ "category": "engines",
+ "commit": "2025-01-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "the-illarionov/the-superviral-word-game \u2014 A Vue word game based on the Yakut national sport \"Mas-wrestling\". Uses XState for state management, WebRTC for multiplayer and has custom WebGL engine",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "the-superviral-word-game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "the-illarionov-the-superviral-word-game",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 53,
+ "system": "A Vue word game based on the Yakut national sport \"Mas-wrestling\". Uses XState for state management, WebRTC for multiplayer and has custom WebGL engine",
+ "upstream": "https://github.com/the-illarionov/the-superviral-word-game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

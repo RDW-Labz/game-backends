@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:00:41Z",
+ "category": "engines",
+ "commit": "2026-02-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "DefinitelyN0tMe/Macronyx \u2014 Macronyx is a cross-platform macro automation engine with timeline editing, trigger-based execution, and intelligent playback \u2014 built for gamers, power users, and automation enthusiasts.",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Macronyx",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "definitelyn0tme-macronyx",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 53,
+ "system": "Macronyx is a cross-platform macro automation engine with timeline editing, trigger-based execution, and intelligent playback \u2014 built for gamers, power users, a",
+ "upstream": "https://github.com/DefinitelyN0tMe/Macronyx",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

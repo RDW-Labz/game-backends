@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T17:00:39Z",
+ "category": "engines",
+ "commit": "57871e8368b7",
+ "delivery": "reference",
+ "description": "ReksioEngine/ReksioEngine \u2014 Reimplementation of BlooMoo and Piklib game engines for \"Przygody Reksia\" PC games series",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "ReksioEngine",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 440502,
+ "slug": "reksioengine-reksioengine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 54,
+ "system": "Reimplementation of BlooMoo and Piklib game engines for \"Przygody Reksia\" PC games series",
+ "upstream": "https://github.com/ReksioEngine/ReksioEngine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

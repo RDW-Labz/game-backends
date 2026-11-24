@@ -2729,3 +2729,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/frostfire-interactive-frostfire-forge
   - reference engines/dylanebert-vibegame
   - reference engines/bradypp-godot-mcp
+
+- **2026-11-24 17:00 UTC** — tick 796: +2 screened, +4 reference, 6 skipped, catalogue=1300
+  - added engines/jonit-dev-vibe-coder-3d (MIT, vendored)
+  - added engines/reksioengine-reksioengine (none, reference)
+  - reference engines/the-illarionov-the-superviral-word-game
+  - reference engines/definitelyn0tme-macronyx
+  - reference engines/aminere-spider-engine
+  - reference engines/nicklessone-inks2d

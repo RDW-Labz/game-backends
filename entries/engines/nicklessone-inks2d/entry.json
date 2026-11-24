@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:00:41Z",
+ "category": "engines",
+ "commit": "2023-08-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "NicklessOne/inks2d \u2014 A free no-dependency Typescript game engine designed for developing 2D games",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "inks2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "nicklessone-inks2d",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 49,
+ "system": "A free no-dependency Typescript game engine designed for developing 2D games",
+ "upstream": "https://github.com/NicklessOne/inks2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

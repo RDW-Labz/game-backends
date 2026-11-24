@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:00:41Z",
+ "category": "engines",
+ "commit": "2024-09-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "aminere/spider-engine \u2014 WebGL game engine",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "spider-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "aminere-spider-engine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 51,
+ "system": "WebGL game engine",
+ "upstream": "https://github.com/aminere/spider-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
