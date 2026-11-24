@@ -2571,3 +2571,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/citiesskylines-csur-csur
   - reference procgen/rant-lang-rant
   - reference procgen/kevinroast-webglshaders
+
+- **2026-11-24 08:32 UTC** — tick 771: +2 screened, +4 reference, 7 skipped, catalogue=1184
+  - added procgen/undomick-godot-nexus-vertex-painter (MIT, vendored)
+  - added procgen/mortennobel-proceduralmesh (none, reference)
+  - reference procgen/moolt-levelgenerator
+  - reference procgen/amidos2006-gym-pcgrl
+  - reference procgen/decisionforce-pgdrive
+  - reference procgen/shamim-akhtar-jigsaw-puzzle

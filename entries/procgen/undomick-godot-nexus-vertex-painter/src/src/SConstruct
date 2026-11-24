@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+import os
+import sys
+
+# Add current directory for methods import (SCons sets os.getcwd() to SConstruct dir)
+sys.path.insert(0, os.getcwd())
+from methods import print_error
+
+libname = "nexus_vertex_painter"
+# Output compiled libraries to addon bin/ folder only - no source in Godot project
+addon_bin = os.path.join(os.getcwd(), "..", "game", "addons", "nexus_vertex_painter", "bin")
+
+localEnv = Environment(tools=["default"], PLATFORM="")
+
+customs = ["custom.py"]
+customs = [os.path.abspath(path) for path in customs]
+
+opts = Variables(customs, ARGUMENTS)
+opts.Update(localEnv)
+
+addon_version = os.environ.get("ADDON_VERSION", "2.4.0")
+addon_author = os.environ.get("ADDON_AUTHOR", "Michael Kulzer")
+
+Help(opts.GenerateHelpText(localEnv))
+
+env = localEnv.Clone()
+
+if not (os.path.isdir("godot-cpp") and os.listdir("godot-cpp")):
+    print_error("""godot-cpp is not available. Clone it with:
+
+ cd src
+ git clone -b 4.5 https://github.com/godotengine/godot-cpp godot-cpp
+ cd godot-cpp && git submodule update --init --recursive && cd ..""")
+    sys.exit(1)
+
+env = SConscript("godot-cpp/SConstruct", {"env": env, "customs": customs})
+
+# Clone so version/author defines apply only to this extension, not godot-cpp objects.
+env = env.Clone()
+# Match .gdextension paths (no lib prefix on Linux/macOS; MinGW also defaults to lib).
+env.Replace(SHLIBPREFIX="")
+env.Append(
+    CPPDEFINES=[
+        ("NEXUS_VERTEX_PAINTER_VERSION", '\\"%s\\"' % addon_version),
+        ("NEXUS_VERTEX_PAINTER_AUTHOR", '\\"%s\\"' % addon_author),
+    ]
+)
+
+# Sources are in current directory (src/)
+env.Append(CPPPATH=["."])
+sources = Glob("*.cpp")
+
+# Editor plugin - include doc data if targeting editor (Godot 4.3+)
+if env.get("target") in ["editor", "template_debug"]:
+    try:
+        doc_data = env.GodotCPPDocData("gen/doc_data.gen.cpp", source=Glob("doc_classes/*.xml"))
+        sources.append(doc_data)
+    except AttributeError:
+        pass
+
+# Keep ".universal" on macOS so output names match .gdextension paths.
+suffix = env["suffix"].replace(".dev", "")
+lib_filename = "{}{}{}{}".format(
+    env.subst("$SHLIBPREFIX"), libname, suffix, env.subst("$SHLIBSUFFIX")
+)
+
+# Put .obj/.o next to the library under bin/, never beside sources in src/.
+obj_dir = "bin/{}/obj".format(env["platform"])
+
+
+def shared_objects(env, sources, obj_dir):
+    objects = []
+    for src in sources:
+        name = os.path.splitext(os.path.basename(str(src)))[0]
+        target = os.path.join(obj_dir, name + env.subst("$OBJSUFFIX"))
+        objects.append(env.SharedObject(target, src))
+    return objects
+
+
+# Build to local bin/ first, then install to addon
+library = env.SharedLibrary(
+    "bin/{}/{}".format(env["platform"], lib_filename),
+    source=shared_objects(env, sources, obj_dir),
+)
+
+# Godot only needs the shared library at runtime. MSVC may register .lib/.exp side
+# targets that are not always emitted; copy the DLL explicitly.
+built_dll = "bin/{}/{}".format(env["platform"], lib_filename)
+installed_dll = os.path.join(addon_bin, env["platform"], lib_filename)
+copy = env.InstallAs(installed_dll, built_dll)
+
+Default(library, copy)

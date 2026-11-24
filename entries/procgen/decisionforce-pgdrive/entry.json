@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:32:00Z",
+ "category": "procgen",
+ "commit": "2022-06-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "decisionforce/pgdrive \u2014 PGDrive: an open-ended driving simulator with infinite scenes from procedural generation",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "pgdrive",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "decisionforce-pgdrive",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 135,
+ "system": "PGDrive: an open-ended driving simulator with infinite scenes from procedural generation",
+ "upstream": "https://github.com/decisionforce/pgdrive",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

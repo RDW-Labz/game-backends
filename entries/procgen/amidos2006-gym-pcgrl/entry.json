@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:32:00Z",
+ "category": "procgen",
+ "commit": "2024-12-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "amidos2006/gym-pcgrl \u2014 A package for \"Procedural Content Generation via Reinforcement Learning\" OpenAI Gym interface.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "gym-pcgrl",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "amidos2006-gym-pcgrl",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 135,
+ "system": "A package for \"Procedural Content Generation via Reinforcement Learning\" OpenAI Gym interface.",
+ "upstream": "https://github.com/amidos2006/gym-pcgrl",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T08:31:57Z",
+ "category": "procgen",
+ "commit": "705db59d426e",
+ "delivery": "vendored",
+ "description": "undomick/godot-nexus-vertex-painter \u2014 A tool for manual painting and procedural generation of vertex color channels on 3D meshes.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-nexus-vertex-painter",
+ "size_bytes": 265697,
+ "slug": "undomick-godot-nexus-vertex-painter",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 145,
+ "system": "A tool for manual painting and procedural generation of vertex color channels on 3D meshes.",
+ "upstream": "https://github.com/undomick/godot-nexus-vertex-painter",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

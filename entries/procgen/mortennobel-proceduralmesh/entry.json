@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T08:31:59Z",
+ "category": "procgen",
+ "commit": "972cb228bbfc",
+ "delivery": "reference",
+ "description": "mortennobel/ProceduralMesh \u2014 Simple procedural mesh generation for the Unity game engine",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "ProceduralMesh",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 19733,
+ "slug": "mortennobel-proceduralmesh",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 142,
+ "system": "Simple procedural mesh generation for the Unity game engine",
+ "upstream": "https://github.com/mortennobel/ProceduralMesh",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

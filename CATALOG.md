@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 08:13 UTC · 1178 entries · 306 vendored, 872 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 08:32 UTC · 1184 entries · 307 vendored, 877 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-24 08:13 UTC · 1178 entries · 306 vendored, 872 reference-o
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
-| [procgen](#procgen) — Procedural generation | 97 | 26 | 71 |
+| [procgen](#procgen) — Procedural generation | 103 | 27 | 76 |
 
 
 ## engines
@@ -1146,7 +1146,7 @@ _Generated 2026-11-24 08:13 UTC · 1178 entries · 306 vendored, 872 reference-o
 
 ## procgen
 
-**Procedural generation** — 97 entries
+**Procedural generation** — 103 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1189,10 +1189,14 @@ _Generated 2026-11-24 08:13 UTC · 1178 entries · 306 vendored, 872 reference-o
 | [generator](entries/procgen/ilmola-generator/README.md) | A procedural geometry generation library for C++11 | c++ | LGPL-2.1 | reference | [ilmola/generator](https://github.com/ilmola/generator) @ `2023-01-02 (branch tip at catalogue time)` |
 | [godot-4-procedural-generation](entries/procgen/gdquest-demos-godot-4-procedural-generation/README.md) | Procedural generation algorithms and demos for the Godot game engine | gdscript | MIT | vendored | [gdquest-demos/godot-4-procedural-generation](https://github.com/gdquest-demos/godot-4-procedural-generation) @ `19c98cee16ed` |
 | [godot-constraint-solving](entries/procgen/alexeybond-godot-constraint-solving/README.md) | WFC (Wave Function Collapse) and generic constraint satisfaction problem solver implementation for Godot 4 | gdscript | MIT | vendored | [AlexeyBond/godot-constraint-solving](https://github.com/AlexeyBond/godot-constraint-solving) @ `45e3edd8ea12` |
+| [godot-nexus-vertex-painter](entries/procgen/undomick-godot-nexus-vertex-painter/README.md) | A tool for manual painting and procedural generation of vertex color channels on 3D meshes. | gdscript | MIT | vendored | [undomick/godot-nexus-vertex-painter](https://github.com/undomick/godot-nexus-vertex-painter) @ `705db59d426e` |
 | [godot-procedural-tree-generation](entries/procgen/adamallsebrook-godot-procedural-tree-generation/README.md) | Procedural generation of trees using L-Systems in Godot. | gdscript | MIT | reference | [AdamAllsebrook/godot-procedural-tree-generation](https://github.com/AdamAllsebrook/godot-procedural-tree-generation) @ `2022-01-20 (branch tip at catalogue time)` |
 | [godot3_procgen_demos](entries/procgen/kidscancode-godot3-procgen-demos/README.md) | Exploring Procedural Generation algorithms in Godot | gdscript | MIT | reference | [kidscancode/godot3_procgen_demos](https://github.com/kidscancode/godot3_procgen_demos) @ `2020-07-12 (branch tip at catalogue time)` |
+| [gym-pcgrl](entries/procgen/amidos2006-gym-pcgrl/README.md) | A package for "Procedural Content Generation via Reinforcement Learning" OpenAI Gym interface. | python | MIT | reference | [amidos2006/gym-pcgrl](https://github.com/amidos2006/gym-pcgrl) @ `2024-12-13 (branch tip at catalogue time)` |
 | [Hesiod](entries/procgen/ottolink-dev-hesiod/README.md) | A desktop application for node-based procedural terrain generation. | c++ | GPL-3.0 | reference | [ottolink-dev/Hesiod](https://github.com/ottolink-dev/Hesiod) @ `ea7484825735` |
 | [infinigen](entries/procgen/princeton-vl-infinigen/README.md) | Infinite Photorealistic Worlds using Procedural Generation | python | BSD-3-Clause | reference | [princeton-vl/infinigen](https://github.com/princeton-vl/infinigen) @ `2026-11-11 (branch tip at catalogue time)` |
+| [jigsaw-puzzle](entries/procgen/shamim-akhtar-jigsaw-puzzle/README.md) | A complete Jigsaw Puzzle game built in Unity and C#. This repository contains the source code for the tutorial series covering Bézier curve mathematics, procedu | c# | unknown | reference | [shamim-akhtar/jigsaw-puzzle](https://github.com/shamim-akhtar/jigsaw-puzzle) @ `2025-12-28 (branch tip at catalogue time)` |
+| [LevelGenerator](entries/procgen/moolt-levelgenerator/README.md) | Unity plug-in for procedurally generating indoor levels using abstract chunks. | c# | MIT | reference | [Moolt/LevelGenerator](https://github.com/Moolt/LevelGenerator) @ `2018-09-07 (branch tip at catalogue time)` |
 | [libnoise-rs](entries/procgen/cookiephone-libnoise-rs/README.md) | Simple and customizable procedural noise generation library written in Rust. | rust | MIT | vendored | [cookiephone/libnoise-rs](https://github.com/cookiephone/libnoise-rs) @ `41ac16c660af` |
 | [LocomotionSystem](entries/procgen/runevision-locomotionsystem/README.md) | Automated semi-procedural walking and running on uneven terrain | c# | MPL-2.0 | reference | [runevision/LocomotionSystem](https://github.com/runevision/LocomotionSystem) @ `2025-02-08 (branch tip at catalogue time)` |
 | [martini](entries/procgen/mapbox-martini/README.md) | A JavaScript library for real-time RTIN terrain mesh generation | javascript | ISC | vendored | [mapbox/martini](https://github.com/mapbox/martini) @ `f9a7a96b583a` |
@@ -1204,9 +1208,11 @@ _Generated 2026-11-24 08:13 UTC · 1178 entries · 306 vendored, 872 reference-o
 | [Okb.js](entries/procgen/lingdong-okb-js/README.md) | Procedural generation toolkit for Javascript - noises, randomness, curves, and more | html | MIT | reference | [LingDong-/Okb.js](https://github.com/LingDong-/Okb.js) @ `2022-12-10 (branch tip at catalogue time)` |
 | [open_world_game](entries/procgen/kettle11-open-world-game/README.md) | Just a quick terrain generation experiment. | rust | unknown | reference | [kettle11/open_world_game](https://github.com/kettle11/open_world_game) @ `2023-04-22 (branch tip at catalogue time)` |
 | [perlin](entries/procgen/joeiddon-perlin/README.md) | A JavaScript library for Perlin Noise generation | javascript | none | reference | [joeiddon/perlin](https://github.com/joeiddon/perlin) @ `5941e2b52507` |
+| [pgdrive](entries/procgen/decisionforce-pgdrive/README.md) | PGDrive: an open-ended driving simulator with infinite scenes from procedural generation | python | Apache-2.0 | reference | [decisionforce/pgdrive](https://github.com/decisionforce/pgdrive) @ `2022-06-20 (branch tip at catalogue time)` |
 | [procedural-cities](entries/procgen/phiresky-procedural-cities/README.md) | Information about procedural city generation | tex | AGPL-3.0 | reference | [phiresky/procedural-cities](https://github.com/phiresky/procedural-cities) @ `f0c2c86e4289` |
 | [procedural-generation](entries/procgen/kchapelier-procedural-generation/README.md) | A mostly javascript-centric resource / links list on procedural content generation (PCG). | n/a | MIT | vendored | [kchapelier/procedural-generation](https://github.com/kchapelier/procedural-generation) @ `6a3ab9eac7e8` |
 | [Procedural-Landmass-Generation](entries/procgen/seblague-procedural-landmass-generation/README.md) | Procedural Landmass Generation in Unity | c# | MIT | reference | [SebLague/Procedural-Landmass-Generation](https://github.com/SebLague/Procedural-Landmass-Generation) @ `2024-01-12 (branch tip at catalogue time)` |
+| [ProceduralMesh](entries/procgen/mortennobel-proceduralmesh/README.md) | Simple procedural mesh generation for the Unity game engine | c# | none | reference | [mortennobel/ProceduralMesh](https://github.com/mortennobel/ProceduralMesh) @ `972cb228bbfc` |
 | [ProceduralMeshDemos](entries/procgen/siggig-proceduralmeshdemos/README.md) | Examples of procedural mesh generation in Unreal Engine. | c++ | MIT | reference | [SiggiG/ProceduralMeshDemos](https://github.com/SiggiG/ProceduralMeshDemos) @ `2026-10-20 (branch tip at catalogue time)` |
 | [ProceduralTerrain](entries/procgen/thesoenke-proceduralterrain/README.md) | Procedural voxel terrain generation in Unity | c# | MIT | vendored | [theSoenke/ProceduralTerrain](https://github.com/theSoenke/ProceduralTerrain) @ `468372292bea` |
 | [ProceduralToolkit](entries/procgen/syomus-proceduraltoolkit/README.md) | Procedural generation library for Unity | c# | MIT | vendored | [Syomus/ProceduralToolkit](https://github.com/Syomus/ProceduralToolkit) @ `984a1e69b8ac` |

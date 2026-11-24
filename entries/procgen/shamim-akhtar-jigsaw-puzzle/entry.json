@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:32:00Z",
+ "category": "procgen",
+ "commit": "2025-12-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "shamim-akhtar/jigsaw-puzzle \u2014 A complete Jigsaw Puzzle game built in Unity and C#. This repository contains the source code for the tutorial series covering B\u00e9zier curve mathematics, procedural tile generation, and full game logic implementation.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "jigsaw-puzzle",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "shamim-akhtar-jigsaw-puzzle",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 133,
+ "system": "A complete Jigsaw Puzzle game built in Unity and C#. This repository contains the source code for the tutorial series covering B\u00e9zier curve mathematics, procedu",
+ "upstream": "https://github.com/shamim-akhtar/jigsaw-puzzle",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

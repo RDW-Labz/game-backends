@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:32:00Z",
+ "category": "procgen",
+ "commit": "2018-09-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Moolt/LevelGenerator \u2014 Unity plug-in for procedurally generating indoor levels using abstract chunks.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "LevelGenerator",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "moolt-levelgenerator",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 137,
+ "system": "Unity plug-in for procedurally generating indoor levels using abstract chunks.",
+ "upstream": "https://github.com/Moolt/LevelGenerator",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
