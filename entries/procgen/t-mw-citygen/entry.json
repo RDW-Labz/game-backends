@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:13:35Z",
+ "category": "procgen",
+ "commit": "2026-04-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "t-mw/citygen \u2014 Procedural city generation demo",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "citygen",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "t-mw-citygen",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 252,
+ "system": "Procedural city generation demo ",
+ "upstream": "https://github.com/t-mw/citygen",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

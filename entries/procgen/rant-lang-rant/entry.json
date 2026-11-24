@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:13:35Z",
+ "category": "procgen",
+ "commit": "2022-05-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rant-lang/rant \u2014 Rant - The templating language for procedural generation.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "rant",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rant-lang-rant",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 219,
+ "system": "Rant - The templating language for procedural generation.",
+ "upstream": "https://github.com/rant-lang/rant",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

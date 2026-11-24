@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:13:35Z",
+ "category": "procgen",
+ "commit": "2023-10-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "citiesskylines-csur/CSUR \u2014 Offline procedural generation of realistic road environments in Cities: Skylines",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "CSUR",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "citiesskylines-csur-csur",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 230,
+ "system": "Offline procedural generation of realistic road environments in Cities: Skylines",
+ "upstream": "https://github.com/citiesskylines-csur/CSUR",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

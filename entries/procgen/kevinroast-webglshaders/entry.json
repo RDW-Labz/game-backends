@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T08:13:35Z",
+ "category": "procgen",
+ "commit": "2020-02-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kevinroast/webglshaders \u2014 WebGL Shader demos - GPU rendering shader experiments with procedural 3D scene generation using ray marching and distance field (also known as 'sphere tracing') rendering techniques.",
+ "language": "html",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "webglshaders",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kevinroast-webglshaders",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 213,
+ "system": "WebGL Shader demos - GPU rendering shader experiments with procedural 3D scene generation using ray marching and distance field (also known as 'sphere tracing')",
+ "upstream": "https://github.com/kevinroast/webglshaders",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

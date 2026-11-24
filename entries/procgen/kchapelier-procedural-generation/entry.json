@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T08:13:26Z",
+ "category": "procgen",
+ "commit": "6a3ab9eac7e8",
+ "delivery": "vendored",
+ "description": "kchapelier/procedural-generation \u2014 A mostly javascript-centric resource / links list on procedural content generation (PCG).",
+ "language": "n/a",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "procedural-generation",
+ "size_bytes": 0,
+ "slug": "kchapelier-procedural-generation",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 296,
+ "system": "A mostly javascript-centric resource / links list on procedural content generation (PCG).",
+ "upstream": "https://github.com/kchapelier/procedural-generation",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

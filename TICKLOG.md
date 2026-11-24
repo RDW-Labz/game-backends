@@ -2563,3 +2563,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/gaea-godot-gaea
   - reference procgen/xandergos-terrain-diffusion
   - reference procgen/seblague-procedural-landmass-generation
+
+- **2026-11-24 08:13 UTC** — tick 770: +2 screened, +4 reference, 8 skipped, catalogue=1178
+  - added procgen/kchapelier-procedural-generation (MIT, vendored)
+  - added procgen/ottolink-dev-hesiod (GPL-3.0, reference)
+  - reference procgen/t-mw-citygen
+  - reference procgen/citiesskylines-csur-csur
+  - reference procgen/rant-lang-rant
+  - reference procgen/kevinroast-webglshaders

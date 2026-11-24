@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 07:56 UTC · 1172 entries · 305 vendored, 867 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 08:13 UTC · 1178 entries · 306 vendored, 872 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-24 07:56 UTC · 1172 entries · 305 vendored, 867 reference-o
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
-| [procgen](#procgen) — Procedural generation | 91 | 25 | 66 |
+| [procgen](#procgen) — Procedural generation | 97 | 26 | 71 |
 
 
 ## engines
@@ -1146,7 +1146,7 @@ _Generated 2026-11-24 07:56 UTC · 1172 entries · 305 vendored, 867 reference-o
 
 ## procgen
 
-**Procedural generation** — 91 entries
+**Procedural generation** — 97 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1162,9 +1162,11 @@ _Generated 2026-11-24 07:56 UTC · 1172 entries · 305 vendored, 867 reference-o
 | [CasualGodComplex](entries/procgen/martindevans-casualgodcomplex/README.md) | Procedural generation of galaxies | c# | MIT | reference | [martindevans/CasualGodComplex](https://github.com/martindevans/CasualGodComplex) @ `2019-04-08 (branch tip at catalogue time)` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-mapgen/README.md) | procedural map/world/level generation | cpp | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300f` |
 | [cataclysm-bn — mapgen](entries/procgen/cataclysm-bn-src-mapgen/README.md) | map and city generation | c++ | CC-BY-SA-4.0 | reference | [cataclysmbn/Cataclysm-BN](https://github.com/cataclysmbn/Cataclysm-BN) @ `73b300fd2353` |
+| [citygen](entries/procgen/t-mw-citygen/README.md) | Procedural city generation demo  | typescript | unknown | reference | [t-mw/citygen](https://github.com/t-mw/citygen) @ `2026-04-08 (branch tip at catalogue time)` |
 | [Code2Games](entries/procgen/aigeeksgroup-code2games/README.md) | Code2Games: Enabling Coding Agents for Gaming World Generation | python | none | reference | [AIGeeksGroup/Code2Games](https://github.com/AIGeeksGroup/Code2Games) @ `c2f25b9751b0` |
 | [Comp_Sci_Sem_2](entries/procgen/danderfer-comp-sci-sem-2/README.md) | According to all known laws of aviation, there is no way that a bee should be able to fly. Its wings are too small to get its fat little body off the ground. Th | python | unknown | reference | [danderfer/Comp_Sci_Sem_2](https://github.com/danderfer/Comp_Sci_Sem_2) @ `2023-04-03 (branch tip at catalogue time)` |
 | [crawl — des](entries/procgen/crawl-crawl-ref-source-dat-des/README.md) | vault/branch layout definitions (DES) | text | GPL-2.0 | reference | [crawl/crawl.git](https://github.com/crawl/crawl.git) @ `cf8c9bca9065` |
+| [CSUR](entries/procgen/citiesskylines-csur-csur/README.md) | Offline procedural generation of realistic road environments in Cities: Skylines | python | GPL-3.0 | reference | [citiesskylines-csur/CSUR](https://github.com/citiesskylines-csur/CSUR) @ `2023-10-18 (branch tip at catalogue time)` |
 | [cubyz — noise](entries/procgen/cubyz-noise/README.md) | procedural map/world/level generation | zig | GPL-3.0 | reference | [PixelGuys/Cubyz](https://github.com/PixelGuys/Cubyz) @ `74b6814` |
 | [DeBroglie](entries/procgen/boristhebrave-debroglie/README.md) | DeBroglie is a C# library implementing the Wave Function Collapse algorithm with support for additional non-local constraints, and other useful features. | c# | MIT | vendored | [BorisTheBrave/DeBroglie](https://github.com/BorisTheBrave/DeBroglie) @ `27b37fa7a54f` |
 | [DnD-Monster-Generator](entries/procgen/fallenwyvern-dnd-monster-generator/README.md) | Monster Generation Tool for Dungeons and Dragons 5e | c# | unknown | reference | [FallenWyvern/DnD-Monster-Generator](https://github.com/FallenWyvern/DnD-Monster-Generator) @ `2017-07-13 (branch tip at catalogue time)` |
@@ -1189,6 +1191,7 @@ _Generated 2026-11-24 07:56 UTC · 1172 entries · 305 vendored, 867 reference-o
 | [godot-constraint-solving](entries/procgen/alexeybond-godot-constraint-solving/README.md) | WFC (Wave Function Collapse) and generic constraint satisfaction problem solver implementation for Godot 4 | gdscript | MIT | vendored | [AlexeyBond/godot-constraint-solving](https://github.com/AlexeyBond/godot-constraint-solving) @ `45e3edd8ea12` |
 | [godot-procedural-tree-generation](entries/procgen/adamallsebrook-godot-procedural-tree-generation/README.md) | Procedural generation of trees using L-Systems in Godot. | gdscript | MIT | reference | [AdamAllsebrook/godot-procedural-tree-generation](https://github.com/AdamAllsebrook/godot-procedural-tree-generation) @ `2022-01-20 (branch tip at catalogue time)` |
 | [godot3_procgen_demos](entries/procgen/kidscancode-godot3-procgen-demos/README.md) | Exploring Procedural Generation algorithms in Godot | gdscript | MIT | reference | [kidscancode/godot3_procgen_demos](https://github.com/kidscancode/godot3_procgen_demos) @ `2020-07-12 (branch tip at catalogue time)` |
+| [Hesiod](entries/procgen/ottolink-dev-hesiod/README.md) | A desktop application for node-based procedural terrain generation. | c++ | GPL-3.0 | reference | [ottolink-dev/Hesiod](https://github.com/ottolink-dev/Hesiod) @ `ea7484825735` |
 | [infinigen](entries/procgen/princeton-vl-infinigen/README.md) | Infinite Photorealistic Worlds using Procedural Generation | python | BSD-3-Clause | reference | [princeton-vl/infinigen](https://github.com/princeton-vl/infinigen) @ `2026-11-11 (branch tip at catalogue time)` |
 | [libnoise-rs](entries/procgen/cookiephone-libnoise-rs/README.md) | Simple and customizable procedural noise generation library written in Rust. | rust | MIT | vendored | [cookiephone/libnoise-rs](https://github.com/cookiephone/libnoise-rs) @ `41ac16c660af` |
 | [LocomotionSystem](entries/procgen/runevision-locomotionsystem/README.md) | Automated semi-procedural walking and running on uneven terrain | c# | MPL-2.0 | reference | [runevision/LocomotionSystem](https://github.com/runevision/LocomotionSystem) @ `2025-02-08 (branch tip at catalogue time)` |
@@ -1202,6 +1205,7 @@ _Generated 2026-11-24 07:56 UTC · 1172 entries · 305 vendored, 867 reference-o
 | [open_world_game](entries/procgen/kettle11-open-world-game/README.md) | Just a quick terrain generation experiment. | rust | unknown | reference | [kettle11/open_world_game](https://github.com/kettle11/open_world_game) @ `2023-04-22 (branch tip at catalogue time)` |
 | [perlin](entries/procgen/joeiddon-perlin/README.md) | A JavaScript library for Perlin Noise generation | javascript | none | reference | [joeiddon/perlin](https://github.com/joeiddon/perlin) @ `5941e2b52507` |
 | [procedural-cities](entries/procgen/phiresky-procedural-cities/README.md) | Information about procedural city generation | tex | AGPL-3.0 | reference | [phiresky/procedural-cities](https://github.com/phiresky/procedural-cities) @ `f0c2c86e4289` |
+| [procedural-generation](entries/procgen/kchapelier-procedural-generation/README.md) | A mostly javascript-centric resource / links list on procedural content generation (PCG). | n/a | MIT | vendored | [kchapelier/procedural-generation](https://github.com/kchapelier/procedural-generation) @ `6a3ab9eac7e8` |
 | [Procedural-Landmass-Generation](entries/procgen/seblague-procedural-landmass-generation/README.md) | Procedural Landmass Generation in Unity | c# | MIT | reference | [SebLague/Procedural-Landmass-Generation](https://github.com/SebLague/Procedural-Landmass-Generation) @ `2024-01-12 (branch tip at catalogue time)` |
 | [ProceduralMeshDemos](entries/procgen/siggig-proceduralmeshdemos/README.md) | Examples of procedural mesh generation in Unreal Engine. | c++ | MIT | reference | [SiggiG/ProceduralMeshDemos](https://github.com/SiggiG/ProceduralMeshDemos) @ `2026-10-20 (branch tip at catalogue time)` |
 | [ProceduralTerrain](entries/procgen/thesoenke-proceduralterrain/README.md) | Procedural voxel terrain generation in Unity | c# | MIT | vendored | [theSoenke/ProceduralTerrain](https://github.com/theSoenke/ProceduralTerrain) @ `468372292bea` |
@@ -1210,6 +1214,7 @@ _Generated 2026-11-24 07:56 UTC · 1172 entries · 305 vendored, 867 reference-o
 | [protongraph](entries/procgen/protongraph-protongraph/README.md) | Experimental node-based software for procedural content generation | gdscript | MIT | reference | [protongraph/protongraph](https://github.com/protongraph/protongraph) @ `2023-11-23 (branch tip at catalogue time)` |
 | [ptdesigner](entries/procgen/drummyfish-ptdesigner/README.md) | Library and GUI tool for designing and generation of procedural textures, made as a part of my Bachelor thesis. | c++ | GPL-2.0 | reference | [drummyfish/ptdesigner](https://github.com/drummyfish/ptdesigner) @ `a2532e9ddc4b` |
 | [R2E-Gym](entries/procgen/r2e-gym-r2e-gym/README.md) | [COLM 2025] Official repository for R2E-Gym: Procedural Environment Generation and Hybrid Verifiers for Scaling Open-Weights SWE Agents | python | Apache-2.0 | reference | [R2E-Gym/R2E-Gym](https://github.com/R2E-Gym/R2E-Gym) @ `2025-07-13 (branch tip at catalogue time)` |
+| [rant](entries/procgen/rant-lang-rant/README.md) | Rant - The templating language for procedural generation. | rust | Apache-2.0 | reference | [rant-lang/rant](https://github.com/rant-lang/rant) @ `2022-05-20 (branch tip at catalogue time)` |
 | [roguelike-celebration-2020](entries/procgen/thebracket-roguelike-celebration-2020/README.md) | Code for my Procedural Map Generation talk at the Roguelike Celebration 2020 | rust | MIT | reference | [thebracket/roguelike-celebration-2020](https://github.com/thebracket/roguelike-celebration-2020) @ `2022-06-17 (branch tip at catalogue time)` |
 | [SoilMachine](entries/procgen/weigert-soilmachine/README.md) | Advanced, modular, coupled geomorpohology simulator for real-time procedural terrain generation. | c++ | unknown | reference | [weigert/SoilMachine](https://github.com/weigert/SoilMachine) @ `2023-06-11 (branch tip at catalogue time)` |
 | [source-map](entries/procgen/parcel-bundler-source-map/README.md) | A fast source map manipulation, generation and consumption library written in Rust and Node.js | javascript | unknown | reference | [parcel-bundler/source-map](https://github.com/parcel-bundler/source-map) @ `2026-11-09 (branch tip at catalogue time)` |
@@ -1237,6 +1242,7 @@ _Generated 2026-11-24 07:56 UTC · 1172 entries · 305 vendored, 867 reference-o
 | [Wave-Function-Collapse](entries/procgen/codingtrain-wave-function-collapse/README.md) | see upstream | javascript | unknown | reference | [CodingTrain/Wave-Function-Collapse](https://github.com/CodingTrain/Wave-Function-Collapse) @ `2025-06-10 (branch tip at catalogue time)` |
 | [WaveFunctionCollapse](entries/procgen/avihuxp-wavefunctioncollapse/README.md) | Implementation of the overlapping model of the Wave Function Collapse algorithm | python | MIT | vendored | [avihuxp/WaveFunctionCollapse](https://github.com/avihuxp/WaveFunctionCollapse) @ `00f3720cbe4d` |
 | [WaveFunctionCollapse](entries/procgen/wavefunctioncollapse/README.md) | constraint-based tile/bitmap generation | c# | MIT | vendored | [mxgmn/WaveFunctionCollapse](https://github.com/mxgmn/WaveFunctionCollapse) @ `de7d22e705e8` |
+| [webglshaders](entries/procgen/kevinroast-webglshaders/README.md) | WebGL Shader demos - GPU rendering shader experiments with procedural 3D scene generation using ray marching and distance field (also known as 'sphere tracing') | html | MIT | reference | [kevinroast/webglshaders](https://github.com/kevinroast/webglshaders) @ `2020-02-22 (branch tip at catalogue time)` |
 | [wfc](entries/procgen/emilk-wfc/README.md) | A C++ port of Wave Function Collapse Tiling | c | unknown | reference | [emilk/wfc](https://github.com/emilk/wfc) @ `2022-12-07 (branch tip at catalogue time)` |
 | [wfc](entries/procgen/gridbugs-wfc/README.md) | Crates implementing the Wave Function Collapse algorithm | rust | MIT | vendored | [gridbugs/wfc](https://github.com/gridbugs/wfc) @ `4b03bf9f43b2` |
 | [wfc](entries/procgen/krychu-wfc/README.md) | Wave Function Collapse library in C, plus a command-line tool | c | unknown | reference | [krychu/wfc](https://github.com/krychu/wfc) @ `2026-02-23 (branch tip at catalogue time)` |
