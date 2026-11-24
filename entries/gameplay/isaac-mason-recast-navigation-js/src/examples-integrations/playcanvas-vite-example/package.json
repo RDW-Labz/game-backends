@@ -1,0 +1,19 @@
+{
+  "name": "playcanvas-vite-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@recast-navigation/playcanvas": "workspace:*",
+    "playcanvas": "^2.23.3",
+    "recast-navigation": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5"
+  }
+}

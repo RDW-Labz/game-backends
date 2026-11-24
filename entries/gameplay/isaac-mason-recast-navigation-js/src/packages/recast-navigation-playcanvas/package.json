@@ -1,0 +1,49 @@
+{
+  "name": "@recast-navigation/playcanvas",
+  "description": "Utilities for using recast-navigation with PlayCanvas",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isaac-mason/recast-navigation-js.git",
+    "directory": "packages/recast-navigation-playcanvas"
+  },
+  "version": "0.44.0",
+  "license": "MIT",
+  "homepage": "https://github.com/isaac-mason/recast-navigation-js",
+  "bugs": {
+    "url": "https://github.com/isaac-mason/recast-navigation-js/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "rollup --config rollup.config.js --bundleConfigAsCjs",
+    "test": "tsc"
+  },
+  "dependencies": {
+    "@recast-navigation/core": "workspace:*",
+    "@recast-navigation/generators": "workspace:*"
+  },
+  "devDependencies": {
+    "@babel/core": "^8.0.10",
+    "@babel/preset-env": "^8.0.7",
+    "@babel/preset-typescript": "^8.0.7",
+    "@rollup/plugin-babel": "^7.1.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-typescript": "^12.3.1",
+    "playcanvas": "^2.23.3",
+    "rollup": "^4.66.0",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-filesize": "^10.0.0",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "playcanvas": "^2.0.0"
+  }
+}

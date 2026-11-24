@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:00:09Z",
+ "category": "gameplay",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "toxicbishop/DSA-Study-Hub \u2014 DSA Study Hub is an interactive educational web application designed to streamline the learning process for Data Structures and Algorithms (DSA). Built with a modern tech stack featuring Next.js, TypeScript, and Tailwind CSS.",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "DSA-Study-Hub",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "toxicbishop-dsa-study-hub",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 114,
+ "system": "DSA Study Hub is an interactive educational web application designed to streamline the learning process for Data Structures and Algorithms (DSA). Built with a m",
+ "upstream": "https://github.com/toxicbishop/DSA-Study-Hub",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

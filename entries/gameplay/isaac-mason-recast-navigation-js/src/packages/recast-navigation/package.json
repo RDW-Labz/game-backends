@@ -1,0 +1,84 @@
+{
+  "name": "recast-navigation",
+  "description": "Recast Navigation for JavaScript!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/isaac-mason/recast-navigation-js.git",
+    "directory": "packages/recast-navigation"
+  },
+  "keywords": [
+    "recastnavigation",
+    "recast-navigation",
+    "recast",
+    "detour",
+    "navmesh",
+    "pathfinding",
+    "navigation",
+    "crowd-simulation",
+    "wasm",
+    "webassembly"
+  ],
+  "author": {
+    "name": "Isaac Mason",
+    "email": "isaac@isaacmason.com",
+    "url": "https://isaacmason.com/"
+  },
+  "version": "0.44.0",
+  "license": "MIT",
+  "homepage": "https://github.com/isaac-mason/recast-navigation-js",
+  "bugs": {
+    "url": "https://github.com/isaac-mason/recast-navigation-js/issues"
+  },
+  "type": "module",
+  "main": "./index.mjs",
+  "module": "./index.mjs",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "default": "./index.mjs"
+    },
+    "./generators": {
+      "types": "./generators.d.ts",
+      "import": "./generators.mjs",
+      "default": "./generators.mjs"
+    }
+  },
+  "files": [
+    "index.mjs",
+    "index.mjs.map",
+    "index.d.ts",
+    "generators.mjs",
+    "generators.mjs.map",
+    "generators.d.ts",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "(rm index.mjs index.d.ts generators.mjs generators.d.ts || true)",
+    "build": "pnpm clean && rollup --config rollup.config.js --bundleConfigAsCjs",
+    "test": "tsc && vitest run"
+  },
+  "dependencies": {
+    "@recast-navigation/core": "workspace:*",
+    "@recast-navigation/generators": "workspace:*"
+  },
+  "devDependencies": {
+    "@babel/core": "^8.0.10",
+    "@babel/preset-env": "^8.0.7",
+    "@babel/preset-typescript": "^8.0.7",
+    "@rollup/plugin-babel": "^7.1.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-typescript": "^12.3.1",
+    "@types/three": "^0.186.0",
+    "rollup": "^4.66.0",
+    "rollup-plugin-copy": "^3.5.0",
+    "rollup-plugin-filesize": "^10.0.0",
+    "three": "^0.186.1",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}

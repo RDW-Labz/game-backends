@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:00:09Z",
+ "category": "gameplay",
+ "commit": "2026-09-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "darkmatter2222/Agentic-Among-Us- \u2014 Autonomous LLM-driven Among Us simulation with memory, social reasoning, pathfinding, sabotage, emergent behavior, and real-time React/PixiJS visualization.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Agentic-Among-Us-",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "darkmatter2222-agentic-among-us",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 72,
+ "system": "Autonomous LLM-driven Among Us simulation with memory, social reasoning, pathfinding, sabotage, emergent behavior, and real-time React/PixiJS visualization.",
+ "upstream": "https://github.com/darkmatter2222/Agentic-Among-Us-",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

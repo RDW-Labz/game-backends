@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:00:09Z",
+ "category": "gameplay",
+ "commit": "2025-11-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SkeldJS/SkeldJS \u2014 A JavaScript implementation of the Among Us protocol, featuring several different projects, written in TypeScript.",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "SkeldJS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "skeldjs-skeldjs",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 65,
+ "system": "A JavaScript implementation of the Among Us protocol, featuring several different projects, written in TypeScript.",
+ "upstream": "https://github.com/SkeldJS/SkeldJS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

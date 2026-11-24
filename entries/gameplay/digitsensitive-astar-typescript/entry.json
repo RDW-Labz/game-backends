@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:00:09Z",
+ "category": "gameplay",
+ "commit": "2023-04-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "digitsensitive/astar-typescript \u2014 A* search algorithm in TypeScript",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "astar-typescript",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "digitsensitive-astar-typescript",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 100,
+ "system": "A* search algorithm in TypeScript",
+ "upstream": "https://github.com/digitsensitive/astar-typescript",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

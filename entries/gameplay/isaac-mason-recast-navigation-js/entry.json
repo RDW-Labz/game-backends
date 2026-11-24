@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T01:00:05Z",
+ "category": "gameplay",
+ "commit": "8a2ece9f8b49",
+ "delivery": "vendored",
+ "description": "isaac-mason/recast-navigation-js \u2014 WebAssembly port of Recast Navigation, a navigation mesh construction, path-finding, and spatial reasoning toolkit.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "recast-navigation-js",
+ "size_bytes": 524686,
+ "slug": "isaac-mason-recast-navigation-js",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 443,
+ "system": "WebAssembly port of Recast Navigation, a navigation mesh construction, path-finding, and spatial reasoning toolkit. ",
+ "upstream": "https://github.com/isaac-mason/recast-navigation-js",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

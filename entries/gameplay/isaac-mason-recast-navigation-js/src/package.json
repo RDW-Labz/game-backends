@@ -1,0 +1,25 @@
+{
+  "name": "recast-navigation-root",
+  "private": true,
+  "scripts": {
+    "build": "pnpm build:packages && pnpm build:apps",
+    "build:packages": "pnpm --filter @recast-navigation/wasm --filter @recast-navigation/core --filter @recast-navigation/generators --filter recast-navigation --filter @recast-navigation/three --filter @recast-navigation/playcanvas run build",
+    "build:apps": "pnpm --filter navmesh-website --filter docs run build",
+    "build:examples": "pnpm --filter recast-navigation-examples run build",
+    "build:integration-examples": "pnpm --filter three-vite-example --filter three-vite-worker-example --filter playcanvas-vite-example run build",
+    "build:website": "bash website/build.sh",
+    "docs": "(cd docs && node ./build.js)",
+    "test": "pnpm test:packages && pnpm test:node-smoke-test",
+    "test:packages": "pnpm --filter recast-navigation test",
+    "test:node-smoke-test": "(cd ./examples-node/three-node-cjs-example && pnpm start) && (cd ./examples-node/three-node-esm-example && pnpm start)",
+    "release": "pnpm build && pnpm test",
+    "set-version": "node scripts/set-version.mjs",
+    "format": "biome format --write apps/**/src packages/**/src examples/src examples-integrations/**/src website/src",
+    "lint": "biome lint --write apps/**/src packages/**/src examples/src examples-integrations/**/src website/src"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.4",
+    "vercel": "^65.8.0"
+  },
+  "packageManager": "pnpm@10.32.1"
+}

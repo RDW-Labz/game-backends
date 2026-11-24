@@ -2367,3 +2367,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/tutsplus-a-star-pathfinding-for-platformers
   - reference gameplay/andreasdr-tdme2
   - reference gameplay/npretto-pathfinding
+
+- **2026-11-24 01:00 UTC** — tick 743: +2 screened, +4 reference, 1 skipped, catalogue=1036
+  - added gameplay/isaac-mason-recast-navigation-js (MIT, vendored)
+  - added gameplay/intellicia-public-parastore (MIT, reference)
+  - reference gameplay/toxicbishop-dsa-study-hub
+  - reference gameplay/digitsensitive-astar-typescript
+  - reference gameplay/darkmatter2222-agentic-among-us
+  - reference gameplay/skeldjs-skeldjs

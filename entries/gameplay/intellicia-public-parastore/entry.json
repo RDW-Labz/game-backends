@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T01:00:07Z",
+ "category": "gameplay",
+ "commit": "4c97958d6eef",
+ "delivery": "reference",
+ "description": "intellicia-public/parastore \u2014 Draw a store, generate LLM personas, and watch them shop \u2014 an isometric 3D sandbox for synthetic-consumer experiments.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "parastore",
+ "reference_reason": "size gate: 38 MB",
+ "size_bytes": 40398160,
+ "slug": "intellicia-public-parastore",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 396,
+ "system": "Draw a store, generate LLM personas, and watch them shop \u2014 an isometric 3D sandbox for synthetic-consumer experiments.",
+ "upstream": "https://github.com/intellicia-public/parastore",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
