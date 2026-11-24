@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:57:33Z",
+ "category": "engines",
+ "commit": "2025-07-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "real2nix/mineblox \u2014 A highly extensible voxel engine written in Luau for Roblox.",
+ "language": "luau",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "mineblox",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "real2nix-mineblox",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 74,
+ "system": "A highly extensible voxel engine written in Luau for Roblox.",
+ "upstream": "https://github.com/real2nix/mineblox",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

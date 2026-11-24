@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 21:41 UTC · 1390 entries · 358 vendored, 1032 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 21:57 UTC · 1396 entries · 359 vendored, 1037 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 583 | 136 | 447 |
+| [engines](#engines) — Game engines and engine subsystems | 589 | 137 | 452 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 21:41 UTC · 1390 entries · 358 vendored, 1032 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 583 entries
+**Game engines and engine subsystems** — 589 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -72,6 +72,7 @@ _Generated 2026-11-24 21:41 UTC · 1390 entries · 358 vendored, 1032 reference-
 | [bevy-kajiya](entries/engines/sebasjham-bevy-kajiya/README.md) | A plugin to use the kajiya renderer with bevy  | rust | Apache-2.0 | vendored | [sebasjham/bevy-kajiya](https://github.com/sebasjham/bevy-kajiya) @ `fff0f4426a3a` |
 | [bevy-parallax](entries/engines/corrosive-games-bevy-parallax/README.md) | Parallax background plugin for Bevy | rust | MIT | vendored | [Corrosive-Games/bevy-parallax](https://github.com/Corrosive-Games/bevy-parallax) @ `5e09918565e7` |
 | [bevy-sequential-actions](entries/engines/hikikones-bevy-sequential-actions/README.md) | A Bevy library for executing various actions in a sequence. | rust | Apache-2.0 | reference | [hikikones/bevy-sequential-actions](https://github.com/hikikones/bevy-sequential-actions) @ `2026-10-09 (branch tip at catalogue time)` |
+| [bevy-voxel-engine](entries/engines/gituseridk-bevy-voxel-engine/README.md) | see upstream | rust | Apache-2.0 | vendored | [gituseridk/bevy-voxel-engine](https://github.com/gituseridk/bevy-voxel-engine) @ `d5e9312ca2c7` |
 | [bevy_aabb_instancing](entries/engines/fslabs-bevy-aabb-instancing/README.md) | Fast AABB rendering plugin for Bevy Engine. | rust | Apache-2.0 | reference | [fslabs/bevy_aabb_instancing](https://github.com/fslabs/bevy_aabb_instancing) @ `2024-04-10 (branch tip at catalogue time)` |
 | [bevy_app_compute](entries/engines/kjolnyr-bevy-app-compute/README.md) | App compute plugin for Bevy | rust | unknown | reference | [Kjolnyr/bevy_app_compute](https://github.com/Kjolnyr/bevy_app_compute) @ `2026-02-02 (branch tip at catalogue time)` |
 | [bevy_aseprite_ultra](entries/engines/lommix-bevy-aseprite-ultra/README.md) | The ultimate bevy aseprite binary plugin. Featuring animations and static atlas loading with pivots. Full support for hot reloading! | rust | MIT | vendored | [Lommix/bevy_aseprite_ultra](https://github.com/Lommix/bevy_aseprite_ultra) @ `1ac745b70382` |
@@ -152,6 +153,7 @@ _Generated 2026-11-24 21:41 UTC · 1390 entries · 358 vendored, 1032 reference-
 | [DragonECS](entries/engines/dcfapixels-dragonecs/README.md) | Pure C# Entity Component System framework | c# | MIT | reference | [DCFApixels/DragonECS](https://github.com/DCFApixels/DragonECS) @ `2026-09-20 (branch tip at catalogue time)` |
 | [DuckEngine](entries/engines/art-emini-duckengine/README.md) | A 2D Game Engine for the web. | typescript | MIT | reference | [art-emini/DuckEngine](https://github.com/art-emini/DuckEngine) @ `2023-08-25 (branch tip at catalogue time)` |
 | [dungeonfs](entries/engines/chrisrx-dungeonfs/README.md) | A FUSE filesystem and dungeon crawling adventure game engine | go | BSD-2-Clause | reference | [ChrisRx/dungeonfs](https://github.com/ChrisRx/dungeonfs) @ `2025-10-29 (branch tip at catalogue time)` |
+| [DXE](entries/engines/lanlou123-dxe/README.md) | A voxel cone traced realtime Global Illumination rendering engine in dx12, wip | c++ | unknown | reference | [LanLou123/DXE](https://github.com/LanLou123/DXE) @ `2021-09-19 (branch tip at catalogue time)` |
 | [ebiten](entries/engines/hajimehoshi-ebiten/README.md) | A dead simple 2D game engine for Go | go | Apache-2.0 | vendored | [hajimehoshi/ebiten](https://github.com/hajimehoshi/ebiten) @ `d438df689b19` |
 | [ebitenui](entries/engines/ebitenui-ebitenui/README.md) | User interface engine and widget library for Ebitengine | go | MIT | reference | [ebitenui/ebitenui](https://github.com/ebitenui/ebitenui) @ `2026-08-19 (branch tip at catalogue time)` |
 | [echo](entries/engines/timi-liuliang-echo/README.md) | A New Cross-Platform 2D 3D Game Engine | c++ | MIT | reference | [timi-liuliang/echo](https://github.com/timi-liuliang/echo) @ `2026-09-16 (branch tip at catalogue time)` |
@@ -275,6 +277,7 @@ _Generated 2026-11-24 21:41 UTC · 1390 entries · 358 vendored, 1032 reference-
 | [godot-ply](entries/engines/jarneson-godot-ply/README.md) | Godot plugin for in-editor box modeling | gdscript | MIT | reference | [jarneson/godot-ply](https://github.com/jarneson/godot-ply) @ `2024-12-20 (branch tip at catalogue time)` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
 | [godot-voip](entries/engines/ikbencasdoei-godot-voip/README.md) | godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project. | rust | MIT | reference | [ikbencasdoei/godot-voip](https://github.com/ikbencasdoei/godot-voip) @ `2024-09-22 (branch tip at catalogue time)` |
+| [Godot-Voxel-Game-MineCraftClone](entries/engines/toger5-godot-voxel-game-minecraftclone/README.md) | This is a Godot project where I try to get familiar with the Engine. | gdscript | MIT | reference | [toger5/Godot-Voxel-Game-MineCraftClone](https://github.com/toger5/Godot-Voxel-Game-MineCraftClone) @ `2016-04-06 (branch tip at catalogue time)` |
 | [godot-vscode-plugin](entries/engines/godotengine-godot-vscode-plugin/README.md) | Godot development tools for VSCode | typescript | MIT | reference | [godotengine/godot-vscode-plugin](https://github.com/godotengine/godot-vscode-plugin) @ `2026-09-10 (branch tip at catalogue time)` |
 | [godot_heightmap_plugin](entries/engines/zylann-godot-heightmap-plugin/README.md) | HeightMap terrain for Godot implemented in GDScript | gdscript | unknown | reference | [Zylann/godot_heightmap_plugin](https://github.com/Zylann/godot_heightmap_plugin) @ `2026-11-13 (branch tip at catalogue time)` |
 | [godot_voxel](entries/engines/zylann-godot-voxel/README.md) | Voxel module for Godot Engine | c++ | MIT | reference | [Zylann/godot_voxel](https://github.com/Zylann/godot_voxel) @ `4b29b0781723` |
@@ -349,6 +352,7 @@ _Generated 2026-11-24 21:41 UTC · 1390 entries · 358 vendored, 1032 reference-
 | [Messenger](entries/engines/elm-messenger-messenger/README.md) | A 2D game engine for Elm | python | unknown | reference | [elm-messenger/Messenger](https://github.com/elm-messenger/Messenger) @ `2026-06-21 (branch tip at catalogue time)` |
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
+| [mineblox](entries/engines/real2nix-mineblox/README.md) | A highly extensible voxel engine written in Luau for Roblox. | luau | MIT | reference | [real2nix/mineblox](https://github.com/real2nix/mineblox) @ `2025-07-06 (branch tip at catalogue time)` |
 | [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
 | [minimalist-game-framework](entries/engines/zachbarth-minimalist-game-framework/README.md) | A minimalist game framework in the style of the "game engine" we use at Zachtronics. | c# | MIT | vendored | [zachbarth/minimalist-game-framework](https://github.com/zachbarth/minimalist-game-framework) @ `c9a7c1ee2392` |
 | [miu2d](entries/engines/luckyyyyy-miu2d/README.md) | Miu2D is a 2D RPG game engine built with Rust + TypeScript + React + Canvas, designed for the Web platform. 剑侠情缘2/月影传说/新剑侠情缘网页复刻版 | typescript | MIT | reference | [luckyyyyy/miu2d](https://github.com/luckyyyyy/miu2d) @ `2026-09-06 (branch tip at catalogue time)` |
@@ -564,8 +568,10 @@ _Generated 2026-11-24 21:41 UTC · 1390 entries · 358 vendored, 1032 reference-
 | [vox2](entries/engines/lallassu-vox2/README.md) | Simple POC of PCG voxel-engine | javascript | MIT | vendored | [Lallassu/vox2](https://github.com/Lallassu/vox2) @ `4280b7463082` |
 | [VOX4U](entries/engines/mik14a-vox4u/README.md) | MagicaVoxel VOX Format import plugin for Unreal Engine 5 | c++ | MIT | reference | [mik14a/VOX4U](https://github.com/mik14a/VOX4U) @ `2023-11-11 (branch tip at catalogue time)` |
 | [voxel-engine](entries/engines/max-mapper-voxel-engine/README.md) | 3D HTML5 voxel game engine | javascript | BSD-3-Clause | reference | [max-mapper/voxel-engine](https://github.com/max-mapper/voxel-engine) @ `2017-12-08 (branch tip at catalogue time)` |
+| [voxel-engine](entries/engines/sjoerdev-voxel-engine/README.md) | This is a 3d graphics engine that focusses on rendering voxels as fast as possible without sacrificing dynamic geometry. | c# | MIT | reference | [sjoerdev/voxel-engine](https://github.com/sjoerdev/voxel-engine) @ `2026-08-16 (branch tip at catalogue time)` |
 | [voxel-mesh-generation](entries/engines/vercidium-voxel-mesh-generation/README.md) | Optimised voxel mesh generation, written in C# and open sourced from the Vercidium Engine. | c# | Apache-2.0 | reference | [Vercidium/voxel-mesh-generation](https://github.com/Vercidium/voxel-mesh-generation) @ `2024-03-27 (branch tip at catalogue time)` |
 | [voxel-physics-engine](entries/engines/fenomas-voxel-physics-engine/README.md) | Simple but physical engine for voxels. Demo:  | javascript | MIT | reference | [fenomas/voxel-physics-engine](https://github.com/fenomas/voxel-physics-engine) @ `2024-03-15 (branch tip at catalogue time)` |
+| [voxel-server](entries/engines/max-mapper-voxel-server/README.md) | multiplayer server for voxel-engine | javascript | none | reference | [max-mapper/voxel-server](https://github.com/max-mapper/voxel-server) @ `4bb3ee21f312` |
 | [voxelcore](entries/engines/mihailris-voxelcore/README.md) | VoxelCore – voxel game engine in C++ | c++ | MPL-2.0 | reference | [MihailRis/voxelcore](https://github.com/MihailRis/voxelcore) @ `2026-11-22 (branch tip at catalogue time)` |
 | [VoxelEngine](entries/engines/seannikkel-voxelengine/README.md) | Custom voxel engine written in C++ and OpenGL | c++ | MIT | vendored | [SeanNikkel/VoxelEngine](https://github.com/SeanNikkel/VoxelEngine) @ `31949ccd1836` |
 | [voxelengine3](entries/engines/lallassu-voxelengine3/README.md) | Voxel-engine in Javascript | javascript | MIT | vendored | [Lallassu/voxelengine3](https://github.com/Lallassu/voxelengine3) @ `bb80288743a1` |

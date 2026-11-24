@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:57:33Z",
+ "category": "engines",
+ "commit": "2021-09-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LanLou123/DXE \u2014 A voxel cone traced realtime Global Illumination rendering engine in dx12, wip",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "DXE",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "lanlou123-dxe",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 71,
+ "system": "A voxel cone traced realtime Global Illumination rendering engine in dx12, wip",
+ "upstream": "https://github.com/LanLou123/DXE",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

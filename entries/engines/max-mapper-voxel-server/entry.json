@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T21:57:32Z",
+ "category": "engines",
+ "commit": "4bb3ee21f312",
+ "delivery": "reference",
+ "description": "max-mapper/voxel-server \u2014 multiplayer server for voxel-engine",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "voxel-server",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 6868,
+ "slug": "max-mapper-voxel-server",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 76,
+ "system": "multiplayer server for voxel-engine",
+ "upstream": "https://github.com/max-mapper/voxel-server",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

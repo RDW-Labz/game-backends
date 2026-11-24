@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T21:57:30Z",
+ "category": "engines",
+ "commit": "d5e9312ca2c7",
+ "delivery": "vendored",
+ "description": "gituseridk/bevy-voxel-engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "bevy-voxel-engine",
+ "size_bytes": 82602,
+ "slug": "gituseridk-bevy-voxel-engine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 77,
+ "system": "see upstream",
+ "upstream": "https://github.com/gituseridk/bevy-voxel-engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

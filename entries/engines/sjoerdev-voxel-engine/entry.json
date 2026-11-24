@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:57:33Z",
+ "category": "engines",
+ "commit": "2026-08-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sjoerdev/voxel-engine \u2014 This is a 3d graphics engine that focusses on rendering voxels as fast as possible without sacrificing dynamic geometry.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "voxel-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sjoerdev-voxel-engine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 75,
+ "system": "This is a 3d graphics engine that focusses on rendering voxels as fast as possible without sacrificing dynamic geometry.",
+ "upstream": "https://github.com/sjoerdev/voxel-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2857,3 +2857,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/chenthread-fromage
   - reference engines/relintai-voxelman
   - reference engines/lallassu-voxelengine-urho3d
+
+- **2026-11-24 21:57 UTC** — tick 812: +2 screened, +4 reference, 7 skipped, catalogue=1396
+  - added engines/gituseridk-bevy-voxel-engine (Apache-2.0, vendored)
+  - added engines/max-mapper-voxel-server (none, reference)
+  - reference engines/toger5-godot-voxel-game-minecraftclone
+  - reference engines/sjoerdev-voxel-engine
+  - reference engines/real2nix-mineblox
+  - reference engines/lanlou123-dxe
