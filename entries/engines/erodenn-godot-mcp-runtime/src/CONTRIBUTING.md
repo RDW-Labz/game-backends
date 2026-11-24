@@ -1,0 +1,170 @@
+# Contributing to Godot MCP Runtime
+
+Thanks for contributing. This guide covers what you need to make a clean PR.
+
+## Setup
+
+```bash
+npm install
+npm run build
+```
+
+Set `GODOT_PATH` to your Godot 4.5 or later executable for runtime tests and manual exercises. Optionally set `GODOT_MONO_PATH` to a Godot .NET build to also run the opt-in C# attach-script test (see `tests/README.md`).
+
+### Local MCP client wiring
+
+To exercise your changes against a real MCP client (Claude Code, Cursor, Claude Desktop), drop a project-scoped `.mcp.json` at the repo root pointing at the local build. `.mcp.json` is already gitignored.
+
+```json
+{
+  "mcpServers": {
+    "godot-dev": {
+      "command": "node",
+      "args": ["./dist/index.js"],
+      "env": {
+        "GODOT_PATH": "<path-to-godot-executable>",
+        "DEBUG": "true"
+      }
+    }
+  }
+}
+```
+
+Dev loop: edit → `npm run build` → restart the MCP client (or reconnect the server) to pick up the new `dist/`. The server is stdio-only, so the client owns the process lifecycle.
+
+## Commands
+
+| Command                 | What it does                                                                                                                                        |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run build`         | Compile TypeScript and copy GDScript files into `dist/`                                                                                             |
+| `npm run dev`           | Build and launch the MCP server on stdio (needs a connected MCP client; use `npm run build` alone for a compilation check)                          |
+| `npm run typecheck`     | `tsc --noEmit` - fast type pass, no output                                                                                                          |
+| `npm run lint`          | ESLint over the repo                                                                                                                                |
+| `npm run lint:fix`      | ESLint with autofix                                                                                                                                 |
+| `npm run format`        | Prettier write                                                                                                                                      |
+| `npm run format:check`  | Prettier check, no writes                                                                                                                           |
+| `npm test`              | Vitest run (only for isolated test runs - `verify` already runs the suite)                                                                          |
+| `npm run test:watch`    | Vitest watch mode                                                                                                                                   |
+| `npm run test:coverage` | Vitest with v8 coverage                                                                                                                             |
+| `npm run verify`        | **Single entrypoint.** Runs typecheck → lint → format → test → build, stops on first failure. Set `GODOT_PATH` to also run Godot integration tests. |
+
+CI runs typecheck → lint → test → build on Node 20, 22, 24 for every push and PR to `main`. Formatting never fails CI: every push and PR gets a warning annotation per unformatted file.
+
+Run `npm run install-hooks` once per clone. The pre-commit hook formats staged files with Prettier (via lint-staged, so partially staged files keep their unstaged hunks) and fails a commit whose `package-lock.json` is missing the Linux-only entries `npm install` prunes on Windows (use `npm run safe-install` there).
+
+## Branch and commit conventions
+
+- `main` is the published branch; all work goes through PRs
+- Conventional-commits prefixes are encouraged but not enforced: `chore:`, `fix:`, `feat:`, `docs:`, `style:`, `ci:`, `refactor:`, `test:`
+- Keep commits scoped: formatting sweeps and behavior changes are separate commits
+
+## Testing
+
+See `tests/README.md` for the test layout, the rubric on when/what/how to test, and the coverage map. `npm run verify` is the single entrypoint - it runs the suite plus typecheck, lint, format, and build in the same order CI does, applying formatting rather than checking it. Set `GODOT_PATH` (e.g. `GODOT_PATH=/path/to/godot npm run verify`) to also run the Godot integration tests; without it those tests skip cleanly.
+
+The integration suite hides game windows by default. Set `GODOT_MCP_TEST_SHOW_WINDOWS=1` to watch them.
+
+On Windows the suite compiles a small helper from `tests/helpers/private-desktop-launcher.cs` on first run (cached under `node_modules/.cache`) and starts every Godot process on a private desktop, so test runs do not take keyboard focus. `GODOT_MCP_TEST_SHOW_WINDOWS=1` turns this off. When the compiler is unavailable the suite falls back to hidden windows, which can still take focus. Anything a game pops up (a dialog, a crash box) appears on the private desktop where it cannot be seen, so a test that hangs under the launcher should be re-run with the opt-out. Details are in `tests/README.md`.
+
+## Comments
+
+The default is no comment. Names, types and structure carry the meaning, and a comment earns its place only by stating what the code cannot: a hazard (ordering, lifetime, timing, a platform difference, units), an external contract (a Godot, Node or MCP SDK quirk, a wire format), or a reason whose absence invites a wrong fix. This applies to TypeScript and GDScript under `src/` and `tests/` alike.
+
+- **One line.** A second line needs a real footgun. Anything longer belongs in `docs/architecture.md`, with at most a one-line pointer in the code. No comment run is longer than two lines.
+- **Never write:** narration of what the code or a name already says, walkthroughs of branches, file-header essays, section banners, history or provenance ("was", "previously", "now that", an issue or PR number as the whole reason), lists of callers, readers or writers, or planning labels of any kind.
+- **JSDoc** on an exported symbol is one line unless the contract carries a hazard. A declaration is not a reason to comment it.
+- **Keep:** `KEEP IN SYNC` markers (one line on each side, naming the other side), the one-line reason on an `eslint-disable`, and in a test the one-line derivation of a hand-computed expected value.
+- **Not comments:** tool `description` strings and per-property descriptions are product text, and this section does not apply to them.
+- **Stale comments:** when you edit near one, delete it rather than rewriting it.
+
+The pre-commit hook runs `scripts/comment-share.js` over the staged diff and prints a warning when a file adds a comment run longer than two lines, or when comments are more than 30% of the lines it adds (with at least four comment lines). It only warns and never blocks the commit.
+
+## Architectural invariants
+
+These rules are not all encodable in the linter, but they hold across the codebase. Changes that violate them should be flagged in review.
+
+### MCP stdio transport - `console.log` is forbidden
+
+stdout is reserved for the MCP protocol. Any `console.log` in this server corrupts the JSON-RPC stream that the client reads. Use:
+
+- `console.error` for operational messages
+- `console.warn` sparingly
+- `logError(message)` and `logDebug(message)` from `src/utils/logger.ts` when you want the `[SERVER]` / `[DEBUG]` prefix and `DEBUG=true` gating
+
+ESLint enforces this via `no-console` with `["error", "warn"]` allowed.
+
+### Mutation operations auto-save
+
+Every operation that mutates a scene (`add_node`, `load_sprite`, `set_node_properties`, `delete_nodes`, `attach_script`, etc.) saves the scene before returning. The `save_scene` operation exists only for save-as (`newPath`) or re-canonicalization. This applies to batch operations too - after the loop, `batch_scene_operations` saves each scene an operation succeeded on and no `save` item has written since. A scene nothing changed is not rewritten.
+
+Never document or implement batch as "accumulate and require explicit save."
+
+### Path traversal protection
+
+All handlers validate paths through `parseProjectArgs` / `parseSceneArgs` / `parseNodePath` from `src/utils/arg-parsing.ts`, each returning `Result<T, ToolResponse>`. `parseProjectArgs` rejects a `..` segment in the project directory and verifies `project.godot` exists. `parseSceneArgs` additionally resolves `scenePath` through `resolveProjectPath` and returns the resolved path alongside the project-relative one, and always requires `scenePath` to be present (pass `{ requireExists: false }` to opt out of the on-disk existence check, e.g. for `create_scene`). For scene-tree node paths (e.g. `root/Player`), use `parseNodePath` / `parseRequiredNodePath` / `parseOptionalNodePath` - they allow the relative-path style that `resolveProjectPath` rejects. Any other project sub-path a tool accepts goes through `resolveProjectPath` (`src/utils/path-validation.ts`), which takes a required `'read'` or `'write'` intent (a call site that cannot say which is a write) and returns `relPath` for GDScript, `absPath` for fs calls and `resPath` for `project.godot` and the Godot command line. Inside a project, containment is decided by resolving the path, not by its shape: a `..` that stays inside is accepted, and a path that resolves outside, has a name ending in a dot or a space or a Windows device name (`NUL`, `con.txt`), or carries a colon past the drive prefix is refused. A `'write'` path whose real location leaves the project through a symlink or junction is refused too, while a `'read'` path follows the link, so a project can link in shared assets. Every path field of a `batch_scene_operations` item goes through it. Refusals use the shared wording `projectSubPathError` and `PROJECT_SUB_PATH_SOLUTIONS`. Don't construct paths ad hoc with `path.join` - route through these parsers so the rules stay centralized.
+
+### Error responses use `Result<HandlerResult, ToolResponse>`
+
+Tool handlers return `Result<HandlerResult, ToolResponse>`, not a raw `ToolResponse` and not a thrown error. The failure path is `return err(createErrorResponse(message, possibleSolutions[]))`; `createErrorResponse` builds the structured `{ content, isError: true }` shape the MCP client expects, with the `possibleSolutions` block appended. `src/dispatch.ts` unwraps the `Result` at the edge (`isOk(result) ? result.value : result.error`), so only the handler/parser layer needs to know about the `Result` wrapper.
+
+### TypeScript camelCase, GDScript snake_case
+
+Tool input schemas declare camelCase params. `normalizeParameters` converts incoming snake_case to camelCase (for tolerance with clients that send the wire-protocol style); `convertCamelToSnakeCase` converts back when calling GDScript, which expects snake_case. Add new mappings to the `parameterMappings` table in `src/utils/parameter-conversion.ts`. Keys under `properties` and `value` are opaque and are never converted, in either direction.
+
+### Confirmation prompts
+
+`run_script` runs agent-written GDScript in a running game, and `run_project` starts a project whose autoloads and main scene run as the user. Neither is inspected. Instead, `confirmFirstUse` in `src/utils/confirmation.ts` asks the user once per project per server session before the launch and `run_script` paths. It is a heads-up, not a barrier: the headless tools run every registered autoload's `_init` and the scenes they load, and `launch_editor` opens the editor, all with no prompt, so an agent that can write files can run code without one. `SECURITY.md` is the public statement of what this covers.
+
+- **Launchers.** `run_project` in spawn mode and `render_movie` call `confirmFirstUse` with `kind: 'launch'`. `run_project` with `attach: true` calls nothing, because the user starts that process.
+- **Code-running tools.** `run_script` calls it with `kind: 'script'`, which keeps its own per-project set apart from the launch one. A launch accept does not admit `run_script`, and an attached session still asks.
+- **Order.** Call it after every check that can refuse the call and before anything is written or spawned, so an impossible call never asks. Keep it outside the session queue, because a prompt stays open up to 45 s, and pass its `promptedAt` to `runSessionExclusive` so that time is charged against the call's budget.
+- **Failures.** A declined or cancelled prompt, and one that goes unanswered, refuse the call. A client without elicitation proceeds with a warning that reaches the response `warnings`, or the error through `withConfirmationWarnings` when the first call fails.
+- **Opt-out.** `GODOT_MCP_DISABLE_ELICITATION=true` skips both prompts with one warning. The failure handling lives in `confirmFirstUse` alone, so a new tool calls it and does not copy it.
+
+If you add a tool that launches a project or forwards GDScript to the bridge, call `confirmFirstUse` and extend the handler's own test file with accept, decline, cancel and second-call cases, following the pattern in `tests/unit/handlers/runtime-handlers.test.ts`. A launcher that takes a `scene` argument also calls `rejectNonSceneLaunchArg` first, because the engine ignores a non-scene argument and runs the main scene.
+
+### MCP SDK: `Server` vs `McpServer`
+
+`src/server.ts` imports the lower-level `Server` class from `@modelcontextprotocol/server`, which the SDK marks `@deprecated` in favor of `McpServer`. This is deliberate, and the deprecation note itself reserves `Server` for "advanced use cases". Our 43 tools are hand-written JSON Schema `ToolDefinition` objects served through one dispatch table (`src/dispatch.ts`). `Server` lets `tools/list` and `tools/call` hand that table's definitions and results to the client unchanged. `McpServer` can accept JSON Schema too, but only by registering each tool individually, which would split the single table into per-tool registrations for no gain.
+
+The strikethrough on the `Server` references in `src/server.ts` is a suggestion-level diagnostic that `@ts-ignore` and `@ts-expect-error` don't suppress (those only target error-level diagnostics). It does not fail typecheck or build - leave it visible so any future genuine deprecation is not masked. Migration to `McpServer` is not scheduled.
+
+## Adding a new tool
+
+1. Add a tool definition object to the `*ToolDefinitions` array in the appropriate `src/tools/*.ts` file. Each tool has its own `name`, `description`, and `inputSchema` containing only its relevant params.
+2. Create the handler function:
+   - Normalize params with `normalizeParameters`
+   - Validate with the `parse*` helpers from `src/utils/arg-parsing.ts` (`parseProjectArgs`, `parseSceneArgs`, `parseNodePath` and friends), which return branded `ProjectPath`/`ScenePath`/`NodePath` types (`src/utils/branded.ts`)
+   - Call the runner
+   - Return `ok(...)` on success or `err(createErrorResponse(...))` on failure (`src/utils/result.ts`)
+3. Export the handler and add an entry mapping the tool name to the handler in the `toolDispatch` table in `src/dispatch.ts`.
+4. If the tool needs GDScript: add the corresponding function in `src/scripts/godot_operations.gd` (snake_case params) and register the operation name in the `match` statement in `_run_from_cmdline()`.
+5. Add a unit test for any pure helper logic; add an integration test if the tool touches scene files.
+
+## Modifying an existing tool
+
+Tool descriptions ship on every handshake - they are the entire UI an agent sees. If you change a tool's behavior, params, or return shape, update the `description`, per-property `description`s, `outputSchema`, and `docs/tools.md` in the same PR. Re-read `docs/tool-authoring.md` for the rules; `npm run verify` runs the description/schema tests.
+
+## Release process
+
+1. Bump version in `package.json`, `src/server.ts` and `server.json` (both its top-level `version` and `packages[].version`)
+2. Re-record `docs/assets/demo.gif` if any tool behavior changed since the last release
+3. Write `.github/release-notes/vX.Y.Z.md` when the release has something a human should read (new tools, changed behavior, a migration). Keep it to the important changes, grouped, and link a major release's full before-and-after list in `docs/migration-X.0.md` instead of inlining it. The publish job prepends the notes above the generated notes, ends the body with links to every earlier release in the same major version that has a notes file, and fails before `npm publish` if the combined body exceeds GitHub's 125,000-character limit; a unit test caps each notes file at 25,000.
+4. Commit and push to `main`
+5. Push a `vX.Y.Z` tag: `.github/workflows/publish.yml` runs `npm publish --provenance --access public` and auto-creates the GitHub release with generated notes.
+
+Docker CI runs automatically on push and PR to `main`.
+
+## Known limitations
+
+### Headless mode loads all autoloads
+
+When Godot runs headlessly, it loads every registered autoload. The operation is dispatched before any autoload's `_ready`, so an autoload that only errors or quits in `_ready` does not affect it. One that stops the engine before dispatch (a `quit()` in `_init`, for example) fails every headless operation. The runner detects this and surfaces a descriptive error pointing at `list_autoloads` / `remove_autoload`. Use the dedicated autoload tools - they edit `project.godot` directly and need no Godot process.
+
+### `breakpoint` is a no-op
+
+`run_project` spawns Godot without `-d` so runtime errors don't pause the engine and stall the McpBridge. The trade-off is that the `breakpoint` keyword in user code does nothing - there's no debugger attached. With `profiling: true` the engine's remote debugger is attached, and the server answers every break with `continue`, so the keyword still does not pause the game. Use `print()` and `get_debug_output` instead.
+
+## Questions
+
+Open an issue or start a discussion on GitHub.

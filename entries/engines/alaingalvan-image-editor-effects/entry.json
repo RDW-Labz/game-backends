@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T16:36:16Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "alaingalvan/image-editor-effects \u2014 \ud83d\udc8e A WebGL example of image adjustment / effects shaders found in Photoshop, other image editors and game engines.",
+ "language": "typescript",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "image-editor-effects",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "alaingalvan-image-editor-effects",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 103,
+ "system": "\ud83d\udc8e A WebGL example of image adjustment / effects shaders found in Photoshop, other image editors and game engines.",
+ "upstream": "https://github.com/alaingalvan/image-editor-effects",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

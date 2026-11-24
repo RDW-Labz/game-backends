@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T16:36:14Z",
+ "category": "engines",
+ "commit": "3b8a4f311d29",
+ "delivery": "vendored",
+ "description": "Erodenn/godot-mcp-runtime \u2014 A lightweight, zero-footprint TypeScript MCP server that lets AI assistants drive the Godot 4.x game engine.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-mcp-runtime",
+ "size_bytes": 3787979,
+ "slug": "erodenn-godot-mcp-runtime",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 103,
+ "system": "A lightweight, zero-footprint TypeScript MCP server that lets AI assistants drive the Godot 4.x game engine.",
+ "upstream": "https://github.com/Erodenn/godot-mcp-runtime",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

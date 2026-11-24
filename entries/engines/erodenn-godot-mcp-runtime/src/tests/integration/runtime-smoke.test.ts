@@ -1,0 +1,206 @@
+/** take_screenshot needs a live display; in a truly headless environment the display server fails to start and the bridge never comes up. */
+
+import { describe, beforeAll, afterEach, expect } from 'vitest';
+import { existsSync } from 'fs';
+import { join } from 'path';
+import { cpSync } from 'fs';
+import { removeTmpDir } from '../helpers/tmp.js';
+import { tmpdir } from 'os';
+import { randomBytes } from 'crypto';
+import * as net from 'net';
+import { itGodot } from '../helpers/godot-skip.js';
+import { runProjectOrSkip } from '../helpers/run-project-or-skip.js';
+import { fixtureProjectPath } from '../helpers/fixture-paths.js';
+import { GodotRunner } from '../../src/utils/godot-runner.js';
+import { screenshotsDir } from '../../src/utils/artifact-paths.js';
+import { encodeFrame, parseFrames } from '../../src/utils/bridge-protocol.js';
+
+describe('runtime bridge smoke', () => {
+  let runner: GodotRunner;
+  let tmpProject: string | null = null;
+
+  beforeAll(async () => {
+    runner = new GodotRunner({ godotPath: process.env.GODOT_PATH });
+    await runner.detectGodotPath();
+  });
+
+  afterEach(async () => {
+    try {
+      await runner.stopProject();
+    } catch {}
+    if (tmpProject) {
+      try {
+        removeTmpDir(tmpProject);
+      } catch {}
+      tmpProject = null;
+    }
+  });
+
+  itGodot(
+    'take_screenshot saves a PNG file after run_project',
+    async (ctx) => {
+      // A tmp copy keeps the injected McpBridge autoload out of the committed project.godot.
+      const id = randomBytes(6).toString('hex');
+      tmpProject = join(tmpdir(), `godot-mcp-runtime-smoke-${id}`);
+      cpSync(fixtureProjectPath, tmpProject, { recursive: true });
+
+      await runProjectOrSkip(runner, ctx, tmpProject);
+
+      const response = await runner.sendCommand('screenshot', {}, 15000);
+      const parsed = JSON.parse(response) as { path?: string; error?: string };
+
+      if (parsed.error) {
+        throw new Error(`Screenshot bridge error: ${parsed.error}`);
+      }
+
+      expect(parsed).toHaveProperty('path');
+      expect(typeof parsed.path).toBe('string');
+
+      const screenshotPath =
+        process.platform === 'win32'
+          ? (parsed.path as string).replace(/\//g, '\\')
+          : (parsed.path as string);
+
+      expect(existsSync(screenshotPath)).toBe(true);
+
+      const screenshotDir = screenshotsDir(tmpProject);
+      expect(
+        screenshotPath.startsWith(screenshotDir.replace(/\\/g, '/')) ||
+          screenshotPath.startsWith(screenshotDir),
+      ).toBe(true);
+    },
+    60000,
+  );
+
+  itGodot(
+    'simulate_input key actions populate event.unicode for ASCII letters (Bug #6)',
+    async (ctx) => {
+      const id = randomBytes(6).toString('hex');
+      tmpProject = join(tmpdir(), `godot-mcp-runtime-input-${id}`);
+      cpSync(fixtureProjectPath, tmpProject, { recursive: true });
+
+      await runProjectOrSkip(runner, ctx, tmpProject);
+
+      const setupScript = `
+extends RefCounted
+func execute(scene_tree: SceneTree) -> Variant:
+	var le = LineEdit.new()
+	le.name = "TestEntry"
+	scene_tree.root.add_child(le)
+	le.text = ""
+	le.grab_focus()
+	return {"focused": le.has_focus()}
+`;
+      const setupResp = JSON.parse(
+        await runner.sendCommand('run_script', { source: setupScript }, 10000),
+      ) as { result?: { focused?: boolean }; error?: string };
+      expect(setupResp.error).toBeUndefined();
+      expect(setupResp.result?.focused).toBe(true);
+
+      await runner.sendCommand(
+        'input',
+        {
+          actions: [
+            { type: 'key', key: 'H', shift: true, pressed: true },
+            { type: 'key', key: 'H', shift: true, pressed: false },
+            { type: 'wait', ms: 30 },
+            { type: 'key', key: 'I', pressed: true },
+            { type: 'key', key: 'I', pressed: false },
+            { type: 'wait', ms: 30 },
+          ],
+        },
+        10000,
+      );
+
+      const readScript = `
+extends RefCounted
+func execute(scene_tree: SceneTree) -> Variant:
+	var le = scene_tree.root.find_child("TestEntry", true, false)
+	return {"text": le.text if le else ""}
+`;
+      const readResp = JSON.parse(
+        await runner.sendCommand('run_script', { source: readScript }, 10000),
+      ) as { result?: { text?: string }; error?: string };
+      expect(readResp.error).toBeUndefined();
+      // shift+H gives 'H'; a lone 'i' stays lowercase without shift (KEY_A..KEY_Z map to uppercase only with shift).
+      expect(readResp.result?.text).toBe('Hi');
+    },
+    60000,
+  );
+
+  itGodot(
+    'rejects a bridge frame with a wrong or missing session token',
+    async (ctx) => {
+      // sendCommand always attaches the correct token, so the rejection path needs a raw socket that bypasses GodotRunner.
+      const id = randomBytes(6).toString('hex');
+      tmpProject = join(tmpdir(), `godot-mcp-runtime-auth-${id}`);
+      cpSync(fixtureProjectPath, tmpProject, { recursive: true });
+
+      await runProjectOrSkip(runner, ctx, tmpProject);
+
+      const port = runner.activeBridgePort;
+      expect(port).not.toBeNull();
+
+      const sendRawFrame = (payload: Record<string, unknown>): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const socket = net.createConnection({ port: port!, host: '127.0.0.1' }, () => {
+            socket.write(encodeFrame(JSON.stringify(payload)));
+          });
+          let rxBuffer = Buffer.alloc(0);
+          socket.on('data', (chunk: Buffer) => {
+            rxBuffer = Buffer.concat([rxBuffer, chunk]);
+            const { frames } = parseFrames(rxBuffer);
+            if (frames.length > 0) {
+              socket.destroy();
+              resolve(frames[0]!.toString('utf8'));
+            }
+          });
+          socket.on('error', reject);
+        });
+      };
+
+      const wrongTokenResp = JSON.parse(
+        await sendRawFrame({ command: 'ping', token: 'not-the-real-token' }),
+      ) as { error?: string };
+      expect(wrongTokenResp.error).toMatch(/Unauthorized/);
+
+      const missingTokenResp = JSON.parse(await sendRawFrame({ command: 'ping' })) as {
+        error?: string;
+      };
+      expect(missingTokenResp.error).toMatch(/Unauthorized/);
+
+      const okResp = JSON.parse(await runner.sendCommand('ping', {}, 5000)) as {
+        status?: string;
+      };
+      expect(okResp.status).toBe('pong');
+    },
+    60000,
+  );
+
+  itGodot(
+    'launches the scene named by the scene argument instead of the project main scene',
+    async (ctx) => {
+      const id = randomBytes(6).toString('hex');
+      tmpProject = join(tmpdir(), `godot-mcp-runtime-scene-arg-${id}`);
+      cpSync(fixtureProjectPath, tmpProject, { recursive: true });
+
+      await runProjectOrSkip(runner, ctx, tmpProject, { scene: 'input_probe.tscn' });
+
+      const source = [
+        'extends RefCounted',
+        'func execute(scene_tree: SceneTree) -> Variant:',
+        '\treturn {"path": scene_tree.current_scene.scene_file_path, "root": scene_tree.current_scene.name}',
+      ].join('\n');
+      const response = await runner.sendCommand('run_script', { source }, 10000);
+      const parsed = JSON.parse(response) as {
+        result?: { path?: string; root?: string };
+        error?: string;
+      };
+      expect(parsed.error).toBeUndefined();
+      expect(parsed.result?.path).toMatch(/input_probe\.tscn$/);
+      expect(parsed.result?.path).not.toContain('main.tscn');
+      expect(parsed.result?.root).toBe('InputProbe');
+    },
+    60000,
+  );
+});

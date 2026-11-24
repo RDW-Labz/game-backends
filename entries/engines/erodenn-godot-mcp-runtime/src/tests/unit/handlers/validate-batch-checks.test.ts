@@ -1,0 +1,505 @@
+import { describe, it, expect, afterEach, vi } from 'vitest';
+import { handleValidate } from '../../../src/tools/validate-tools.js';
+import { createFakeRunner, type FakeRunner } from '../../helpers/fake-runner.js';
+import { CLIENT_REQUEST_TIMEOUT_MS, type GodotRunner } from '../../../src/utils/godot-runner.js';
+import { hasError, expectErrorMatching, unwrap } from '../../helpers/assertions.js';
+import { fixtureProjectPath } from '../../helpers/fixture-paths.js';
+
+const STRUCTURE_CHECK = { type: 'structure', schema: { type: 'Node2D' } };
+const SIGNALS_CHECK = { type: 'signals', nodePath: 'root/Label' };
+/** A project that is not the one under validation. Never touched on disk. */
+const OTHER_PROJECT_PATH = '/some/other/project';
+
+/** Give the fake live sessions on these projects, none of them the current one. */
+function liveSessionsOn(fake: FakeRunner, projectPaths: string[]): void {
+  (fake.asRunner as GodotRunner & { extraLiveSessionPaths: string[] }).extraLiveSessionPaths =
+    projectPaths;
+}
+
+function parseResults(result: unknown): {
+  results: Array<{ target: string; valid: boolean; errors: unknown[] }>;
+} {
+  return JSON.parse(unwrap(result).content[0]!.text) as ReturnType<typeof parseResults>;
+}
+
+describe('handleValidate batch mode - per-target checks', () => {
+  it("forwards each target's checks inside the single validate_batch call", async () => {
+    const fake = createFakeRunner({
+      stdout: JSON.stringify({
+        results: [
+          { target: 'placeholder.gd', valid: true, errors: [] },
+          { target: 'main.tscn', valid: true, errors: [], checkErrors: [] },
+        ],
+      }),
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [
+        { scriptPath: 'placeholder.gd' },
+        { scenePath: 'main.tscn', checks: [STRUCTURE_CHECK, SIGNALS_CHECK] },
+      ],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(fake.calls).toHaveLength(1);
+    expect(fake.calls[0]!.operation).toBe('validate_batch');
+    expect(fake.calls[0]!.params).toEqual({
+      targets: [
+        { script_path: 'placeholder.gd' },
+        { scene_path: 'main.tscn', checks: [STRUCTURE_CHECK, SIGNALS_CHECK] },
+      ],
+    });
+  });
+
+  it("reports one target's check errors without discarding the other targets", async () => {
+    const middleCheckError = {
+      check: 'structure',
+      path: 'root',
+      message: 'Expected node of type Control at root, found Node2D',
+    };
+    const fake = createFakeRunner({
+      stdout: JSON.stringify({
+        results: [
+          { target: 'a.tscn', valid: true, errors: [], checkErrors: [] },
+          { target: 'b.tscn', valid: true, errors: [], checkErrors: [middleCheckError] },
+          { target: 'c.tscn', valid: true, errors: [], checkErrors: [] },
+        ],
+      }),
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [
+        { scenePath: 'a.tscn', checks: [STRUCTURE_CHECK] },
+        { scenePath: 'b.tscn', checks: [STRUCTURE_CHECK] },
+        { scenePath: 'c.tscn', checks: [STRUCTURE_CHECK] },
+      ],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(parseResults(result)).toEqual({
+      results: [
+        { target: 'a.tscn', valid: true, errors: [] },
+        { target: 'b.tscn', valid: false, errors: [middleCheckError] },
+        { target: 'c.tscn', valid: true, errors: [] },
+      ],
+    });
+  });
+
+  it('keeps parse errors and check errors in the same target errors array', async () => {
+    const parseError = { message: 'File not found: res://gone.tscn' };
+    const checkError = { message: 'Scene checks skipped: could not load scene gone.tscn' };
+    const fake = createFakeRunner({
+      stdout: JSON.stringify({
+        results: [
+          { target: 'gone.tscn', valid: false, errors: [parseError], checkErrors: [checkError] },
+        ],
+      }),
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'gone.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(parseResults(result)).toEqual({
+      results: [{ target: 'gone.tscn', valid: false, errors: [parseError, checkError] }],
+    });
+  });
+
+  it("records checks without scenePath as that target's own failure", async () => {
+    const fake = createFakeRunner({
+      stdout: JSON.stringify({
+        results: [{ target: 'main.tscn', valid: true, errors: [], checkErrors: [] }],
+      }),
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [
+        { scriptPath: 'placeholder.gd', checks: [STRUCTURE_CHECK] },
+        { scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] },
+      ],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(fake.calls).toHaveLength(1);
+    expect(fake.calls[0]!.params).toEqual({
+      targets: [{ scene_path: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+    expect(parseResults(result)).toEqual({
+      results: [
+        {
+          target: 'placeholder.gd',
+          valid: false,
+          errors: [{ message: 'Target checks require scenePath - checks run against a scene' }],
+        },
+        { target: 'main.tscn', valid: true, errors: [] },
+      ],
+    });
+  });
+
+  it('rejects a structure check with no schema as that target alone', async () => {
+    const fake = createFakeRunner({
+      stdout: JSON.stringify({
+        results: [{ target: 'main.tscn', valid: true, errors: [], checkErrors: [] }],
+      }),
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [
+        { scenePath: 'broken.tscn', checks: [{ type: 'structure' }] },
+        { scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] },
+      ],
+    });
+
+    expect(hasError(result)).toBe(false);
+    // The malformed target never reaches Godot; the other one still runs.
+    expect(fake.calls).toHaveLength(1);
+    expect(fake.calls[0]!.params).toEqual({
+      targets: [{ scene_path: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+    const parsed = parseResults(result);
+    expect(parsed.results[0]).toEqual({
+      target: 'broken.tscn',
+      valid: false,
+      errors: [
+        {
+          message:
+            'Invalid schema at schema: must be an object like { type?, children?, hasProperty? }',
+        },
+      ],
+    });
+    expect(parsed.results[1]).toEqual({ target: 'main.tscn', valid: true, errors: [] });
+  });
+
+  it('rejects an unknown check type in a batch target the way single mode does', async () => {
+    const fake = createFakeRunner({ stdout: JSON.stringify({ results: [] }) });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [{ type: 'strcture', schema: {} }] }],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(fake.calls).toHaveLength(0);
+    expect(parseResults(result)).toEqual({
+      results: [
+        {
+          target: 'main.tscn',
+          valid: false,
+          errors: [{ message: 'Invalid check type: strcture (expected "structure" or "signals")' }],
+        },
+      ],
+    });
+  });
+
+  it('errors on a target naming two modes instead of silently dropping its checks', async () => {
+    const fake = createFakeRunner({
+      stdout: JSON.stringify({
+        results: [{ target: 'main.tscn', valid: true, errors: [], checkErrors: [] }],
+      }),
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [
+        { scriptPath: 'placeholder.gd', scenePath: 'both.tscn', checks: [STRUCTURE_CHECK] },
+        { scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] },
+      ],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(fake.calls[0]!.params).toEqual({
+      targets: [{ scene_path: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+    expect(parseResults(result).results[0]).toEqual({
+      target: 'both.tscn',
+      valid: false,
+      errors: [{ message: 'Target must have exactly one of scriptPath, source, or scenePath' }],
+    });
+  });
+
+  it('does not forward checks for a target that failed path pre-validation', async () => {
+    const fake = createFakeRunner({
+      stdout: JSON.stringify({
+        results: [{ target: 'main.tscn', valid: true, errors: [], checkErrors: [] }],
+      }),
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [
+        { scenePath: '../escape.tscn', checks: [STRUCTURE_CHECK] },
+        { scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] },
+      ],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(fake.calls).toHaveLength(1);
+    expect(fake.calls[0]!.params).toEqual({
+      targets: [{ scene_path: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+    expect(parseResults(result)).toEqual({
+      results: [
+        {
+          target: '../escape.tscn',
+          valid: false,
+          errors: [
+            {
+              message:
+                'Invalid scenePath: "../escape.tscn" resolves outside the project or is not a valid file name',
+            },
+          ],
+        },
+        { target: 'main.tscn', valid: true, errors: [] },
+      ],
+    });
+  });
+
+  it('runs the asset import step once and retries validate_batch when stderr reports IMPORT_NEEDED', async () => {
+    const goodPayload = JSON.stringify({
+      results: [{ target: 'main.tscn', valid: true, errors: [], checkErrors: [] }],
+    });
+    const fake = createFakeRunner({
+      responses: [
+        { stdout: '', stderr: '[IMPORT_NEEDED] main.tscn: res://placeholder.png' },
+        { stdout: goodPayload },
+      ],
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(fake.importCalls).toEqual([fixtureProjectPath]);
+    expect(fake.calls).toHaveLength(2);
+    expect(parseResults(result)).toEqual({
+      results: [{ target: 'main.tscn', valid: true, errors: [] }],
+    });
+  });
+
+  it('skips the import retry while a session is live on the validated project', async () => {
+    // The live session is not the current one: the guard is per project, so
+    // the import must still stay out of that project's .godot/.
+    const fake = createFakeRunner({
+      stdout: '',
+      stderr: '[IMPORT_NEEDED] main.tscn: res://placeholder.png',
+    });
+    liveSessionsOn(fake, [fixtureProjectPath]);
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+
+    expect(fake.importCalls).toEqual([]);
+    expect(fake.calls).toHaveLength(1);
+    // The caller gets the first run's own failure, not a retried result.
+    expectErrorMatching(result, /Batch validate failed/);
+  });
+
+  // The import writes .godot/: a game another MCP server runs there is a second writer, and an
+  // unreadable registry does not say there is none.
+  it("skips the import retry while another MCP server's session is live on the project", async () => {
+    const fake = createFakeRunner({
+      stdout: '',
+      stderr: '[IMPORT_NEEDED] main.tscn: res://placeholder.png',
+    });
+    (fake.asRunner as unknown as { otherLiveSessions: unknown[] }).otherLiveSessions = [
+      {
+        pid: 4242,
+        instanceId: 'abc123',
+        hostname: 'some-host',
+        mode: 'spawned',
+        startedAt: new Date().toISOString(),
+        port: 9900,
+      },
+    ];
+
+    await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+
+    expect(fake.importCalls).toEqual([]);
+    expect(fake.calls).toHaveLength(1);
+  });
+
+  it('skips the import retry when the owner registry cannot be read', async () => {
+    const { BridgeRegistryUnreadableError } = await import('../../../src/utils/bridge-manager.js');
+    const fake = createFakeRunner({
+      stdout: '',
+      stderr: '[IMPORT_NEEDED] main.tscn: res://placeholder.png',
+    });
+    (
+      fake.asRunner as unknown as { otherLiveSessionsOnProject: () => never }
+    ).otherLiveSessionsOnProject = () => {
+      throw new BridgeRegistryUnreadableError('cannot list owners: EACCES');
+    };
+
+    await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+
+    expect(fake.importCalls).toEqual([]);
+    expect(fake.calls).toHaveLength(1);
+  });
+
+  it('does not import for marker text that only appears quoted inside a stderr line', async () => {
+    const goodPayload = JSON.stringify({
+      results: [{ target: 'main.tscn', valid: true, errors: [], checkErrors: [] }],
+    });
+    const fake = createFakeRunner({
+      stdout: goodPayload,
+      stderr: '[DEBUG] Params JSON: {"targets":[{"scene_path":"[IMPORT_NEEDED] x.tscn"}]}',
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(fake.importCalls).toEqual([]);
+    expect(fake.calls).toHaveLength(1);
+  });
+
+  it('runs the import retry when the only live session is on another project', async () => {
+    const goodPayload = JSON.stringify({
+      results: [{ target: 'main.tscn', valid: true, errors: [], checkErrors: [] }],
+    });
+    const fake = createFakeRunner({
+      responses: [
+        { stdout: '', stderr: '[IMPORT_NEEDED] main.tscn: res://placeholder.png' },
+        { stdout: goodPayload },
+      ],
+    });
+    liveSessionsOn(fake, [OTHER_PROJECT_PATH]);
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+
+    expect(hasError(result)).toBe(false);
+    expect(fake.importCalls).toEqual([fixtureProjectPath]);
+    expect(fake.calls).toHaveLength(2);
+  });
+
+  it('surfaces the import failure without retrying when importAssets rejects', async () => {
+    const fake = createFakeRunner({
+      stdout: '',
+      stderr: '[IMPORT_NEEDED] main.tscn: res://placeholder.png',
+      importThrows: new Error('broken asset blocks the import'),
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+
+    expectErrorMatching(result, /broken asset blocks the import/);
+    expect(fake.calls).toHaveLength(1);
+  });
+});
+
+describe('handleValidate cold-import wait and no-result wording', () => {
+  const MARKER_STDERR = '[IMPORT_NEEDED] main.tscn: res://placeholder.png';
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('answers "still importing, retry" before the request times out and leaves the import running', async () => {
+    vi.useFakeTimers();
+    const fake = createFakeRunner({
+      importPending: new Promise<void>(() => {}),
+      responses: [{ stdout: '', stderr: MARKER_STDERR }],
+    });
+
+    let answer: Awaited<ReturnType<typeof handleValidate>> | undefined;
+    void handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    }).then((result) => {
+      answer = result;
+    });
+    await vi.advanceTimersByTimeAsync(CLIENT_REQUEST_TIMEOUT_MS - 1);
+
+    // Red when executeValidateOp awaits importAssets without the bound: no
+    // answer exists by the time the client stopped listening.
+    expect(answer).toBeDefined();
+    expectErrorMatching(
+      answer,
+      /Batch validation failed: the project's assets are still being imported, nothing was changed; retry this call/,
+    );
+    // Red when the solutions of a thrown runner error are kept for this case.
+    expect(unwrap(answer).content[1]?.text ?? '').toContain('joins the import');
+    expect(fake.calls).toHaveLength(1);
+  });
+
+  it('gives the retry after a finished import only the time the request has left', async () => {
+    vi.useFakeTimers();
+    let finishImport!: () => void;
+    const importPending = new Promise<void>((done) => {
+      finishImport = done;
+    });
+    const fake = createFakeRunner({
+      importPending,
+      responses: [
+        { stdout: '', stderr: MARKER_STDERR },
+        {
+          stdout: JSON.stringify({
+            results: [{ target: 'main.tscn', valid: true, errors: [], checkErrors: [] }],
+          }),
+        },
+      ],
+    });
+    const IMPORT_TOOK_MS = 40000;
+
+    const pending = handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn', checks: [STRUCTURE_CHECK] }],
+    });
+    await vi.advanceTimersByTimeAsync(IMPORT_TOOK_MS);
+    finishImport();
+    const result = await pending;
+
+    expect(hasError(result)).toBe(false);
+    // Red when the retry runs with the default timeout: 40 s of import plus a
+    // 30 s retry passes the client's 60 s.
+    const retryTimeoutMs = fake.calls[1]?.timeoutMs;
+    expect(retryTimeoutMs).toBeDefined();
+    expect(IMPORT_TOOK_MS + retryTimeoutMs!).toBeLessThan(CLIENT_REQUEST_TIMEOUT_MS);
+  });
+
+  it('shows parsed engine diagnostics once, without the raw stderr tail beside them', async () => {
+    const fake = createFakeRunner({
+      stdout: '[Audio] ready\n',
+      stderr:
+        "SCRIPT ERROR: Invalid call. Nonexistent function 'nope' in base 'Node'.\n   at: _run (res://godot_operations.gd:12)",
+    });
+
+    const result = await handleValidate(fake.asRunner, {
+      projectPath: fixtureProjectPath,
+      targets: [{ scenePath: 'main.tscn' }],
+    });
+
+    const text = unwrap(result).content[0]?.text ?? '';
+    expect(hasError(result)).toBe(true);
+    expect(text).toContain(
+      'Batch validate failed: no result was emitted - the operation gave no reason',
+    );
+    // Red when the head is built from extractGdError while diagnostics parsed:
+    // the same stderr then appears as a raw tail and again as diagnostics.
+    expect(text).not.toContain('stderr (last lines)');
+    expect(text.split("Nonexistent function 'nope'")).toHaveLength(2);
+  });
+});

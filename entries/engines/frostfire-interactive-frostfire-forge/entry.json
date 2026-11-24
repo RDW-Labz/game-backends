@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T16:36:16Z",
+ "category": "engines",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Frostfire-Interactive/Frostfire-Forge \u2014 2D MMO engine that runs in the browser. Build maps, quests, items and spells in editors inside the game. Built on Bun and WebTransport.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Frostfire-Forge",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "frostfire-interactive-frostfire-forge",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 98,
+ "system": "2D MMO engine that runs in the browser. Build maps, quests, items and spells in editors inside the game. Built on Bun and WebTransport.",
+ "upstream": "https://github.com/Frostfire-Interactive/Frostfire-Forge",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

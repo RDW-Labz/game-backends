@@ -1,0 +1,194 @@
+/** The bounded Variant subset Godot's remote debugger speaks (`[uint32 length][Variant]` packets): nil/bool/int/float/string/array and packed numeric arrays, typed arrays decoding to plain ones. Objects, dictionaries and vectors are deliberately not decoded, so an unrelated packet fails loudly instead of driving allocation from an attacker-shaped length.
+ * Callers treat a decode failure as 'not a message I care about'. Separate from `bridge-protocol.ts`: that framing is ours, this one is Godot's. */
+
+/** A decoded packed numeric array; `PackedInt64Array` lands in a Float64Array, exact up to 2^53 like a scalar 64-bit int. */
+export type PackedArray = Uint8Array | Int32Array | Float32Array | Float64Array;
+
+/** Every value this codec can represent. */
+export type Variant = null | boolean | number | string | Variant[] | PackedArray;
+
+/** Matches the engine's own debugger packet ceiling. */
+export const MAX_PACKET_BYTES = 16 * 1024 * 1024;
+
+const TYPE_NIL = 0;
+const TYPE_BOOL = 1;
+const TYPE_INT = 2;
+const TYPE_FLOAT = 3;
+const TYPE_STRING = 4;
+const TYPE_STRING_NAME = 21;
+const TYPE_ARRAY = 28;
+const TYPE_PACKED_BYTE_ARRAY = 29;
+const TYPE_PACKED_INT32_ARRAY = 30;
+const TYPE_PACKED_INT64_ARRAY = 31;
+const TYPE_PACKED_FLOAT32_ARRAY = 32;
+const TYPE_PACKED_FLOAT64_ARRAY = 33;
+const TYPE_PACKED_STRING_ARRAY = 34;
+
+// Bit 16 of the header word marks the 64-bit encoding of INT and FLOAT.
+const FLAG_WIDE = 1 << 16;
+// On an ARRAY, bits 16-17 instead say how the element type is declared.
+const TYPED_ARRAY_SHIFT = 16;
+const TYPED_ARRAY_MASK = 0b11 << TYPED_ARRAY_SHIFT;
+const TYPED_BUILTIN = 1;
+const MAX_NESTING = 64;
+const WORD_BYTES = 4;
+// The top bit of an array's count word is the engine's "shared" marker.
+const ARRAY_COUNT_MASK = 0x7fffffff;
+
+const padding = (length: number): number => (4 - (length % 4)) % 4;
+
+/** Encodes one outgoing debugger command; only the types the debugger accepts from us are supported. */
+export function encodeVariant(value: Variant): Buffer {
+  if (value === null) {
+    const buf = Buffer.alloc(4);
+    buf.writeUInt32LE(TYPE_NIL, 0);
+    return buf;
+  }
+  if (typeof value === 'boolean') {
+    const buf = Buffer.alloc(8);
+    buf.writeUInt32LE(TYPE_BOOL, 0);
+    buf.writeUInt32LE(value ? 1 : 0, 4);
+    return buf;
+  }
+  if (typeof value === 'number') {
+    const buf = Buffer.alloc(12);
+    if (Number.isInteger(value)) {
+      buf.writeUInt32LE(TYPE_INT | FLAG_WIDE, 0);
+      buf.writeBigInt64LE(BigInt(value), 4);
+    } else {
+      buf.writeUInt32LE(TYPE_FLOAT | FLAG_WIDE, 0);
+      buf.writeDoubleLE(value, 4);
+    }
+    return buf;
+  }
+  if (typeof value === 'string') {
+    const raw = Buffer.from(value, 'utf8');
+    const head = Buffer.alloc(8);
+    head.writeUInt32LE(TYPE_STRING, 0);
+    head.writeUInt32LE(raw.length, 4);
+    return Buffer.concat([head, raw, Buffer.alloc(padding(raw.length))]);
+  }
+  if (Array.isArray(value)) {
+    const head = Buffer.alloc(8);
+    head.writeUInt32LE(TYPE_ARRAY, 0);
+    head.writeUInt32LE(value.length, 4);
+    return Buffer.concat([head, ...value.map(encodeVariant)]);
+  }
+  throw new Error('Unsupported outgoing debugger value');
+}
+
+/** Decodes one incoming packet payload; throws on truncation, trailing bytes or a type outside the subset. */
+export function decodeVariant(raw: Buffer): Variant {
+  let offset = 0;
+
+  const take = (size: number, read: (buf: Buffer, at: number) => number): number => {
+    if (offset + size > raw.length) throw new Error('Truncated Variant');
+    const value = read(raw, offset);
+    offset += size;
+    return value;
+  };
+  const u32 = (): number => take(4, (buf, at) => buf.readUInt32LE(at));
+  const readString = (): string => {
+    const size = u32();
+    const end = offset + size;
+    if (end + padding(size) > raw.length) throw new Error('Truncated string');
+    const value = raw.toString('utf8', offset, end);
+    offset = end + padding(size);
+    return value;
+  };
+
+  const item = (depth: number): Variant => {
+    if (depth > MAX_NESTING) throw new Error('Variant nesting limit');
+    const header = u32();
+    const kind = header & 0xffff;
+    const wide = (header & FLAG_WIDE) !== 0;
+    switch (kind) {
+      case TYPE_NIL:
+        return null;
+      case TYPE_BOOL:
+        return u32() !== 0;
+      case TYPE_INT:
+        return wide
+          ? Number(take(8, (buf, at) => Number(buf.readBigInt64LE(at))))
+          : take(4, (buf, at) => buf.readInt32LE(at));
+      case TYPE_FLOAT:
+        return wide
+          ? take(8, (buf, at) => buf.readDoubleLE(at))
+          : take(4, (buf, at) => buf.readFloatLE(at));
+      case TYPE_STRING:
+      case TYPE_STRING_NAME:
+        return readString();
+      case TYPE_PACKED_BYTE_ARRAY:
+      case TYPE_PACKED_INT32_ARRAY:
+      case TYPE_PACKED_INT64_ARRAY:
+      case TYPE_PACKED_FLOAT32_ARRAY:
+      case TYPE_PACKED_FLOAT64_ARRAY: {
+        const reader = PACKED_READERS[kind];
+        if (reader === undefined) throw new Error(`Unsupported debugger Variant ${header}`);
+        const [size, read, allocate] = reader;
+        const count = u32();
+        if (count > (raw.length - offset) / size) throw new Error('Invalid packed array length');
+        const values = allocate(count);
+        for (let i = 0; i < count; i++) values[i] = take(size, read);
+        if (kind === TYPE_PACKED_BYTE_ARRAY) offset += padding(count);
+        return values;
+      }
+      case TYPE_ARRAY:
+      case TYPE_PACKED_STRING_ARRAY: {
+        const typed = kind === TYPE_ARRAY ? header & TYPED_ARRAY_MASK : 0;
+        if ((header & ~typed) !== kind) throw new Error(`Unsupported debugger Variant ${header}`);
+        if (typed !== 0) {
+          // The element type precedes the count (a builtin type id, or an object's class name / script path); elements decode on their own, so the declaration is skipped.
+          if (typed >> TYPED_ARRAY_SHIFT === TYPED_BUILTIN) u32();
+          else readString();
+        }
+        const count = u32() & ARRAY_COUNT_MASK;
+        if (count > (raw.length - offset) / 4) throw new Error('Invalid array length');
+        const values: Variant[] = [];
+        for (let i = 0; i < count; i++) {
+          values.push(kind === TYPE_ARRAY ? item(depth + 1) : readString());
+        }
+        return values;
+      }
+      default:
+        throw new Error(`Unsupported debugger Variant ${header}`);
+    }
+  };
+
+  const value = item(0);
+  if (offset !== raw.length) throw new Error('Trailing Variant bytes');
+  return value;
+}
+
+/** Element width in bytes, how one element is read, and the typed array that holds them. */
+type PackedReader = [
+  size: number,
+  read: (buf: Buffer, at: number) => number,
+  allocate: (count: number) => PackedArray,
+];
+
+const PACKED_READERS: Record<number, PackedReader> = {
+  [TYPE_PACKED_BYTE_ARRAY]: [1, (buf, at) => buf.readUInt8(at), (n) => new Uint8Array(n)],
+  [TYPE_PACKED_INT32_ARRAY]: [4, (buf, at) => buf.readInt32LE(at), (n) => new Int32Array(n)],
+  [TYPE_PACKED_INT64_ARRAY]: [
+    8,
+    (buf, at) => Number(buf.readBigInt64LE(at)),
+    (n) => new Float64Array(n),
+  ],
+  [TYPE_PACKED_FLOAT32_ARRAY]: [4, (buf, at) => buf.readFloatLE(at), (n) => new Float32Array(n)],
+  [TYPE_PACKED_FLOAT64_ARRAY]: [8, (buf, at) => buf.readDoubleLE(at), (n) => new Float64Array(n)],
+};
+
+/** The name of a debugger message read without decoding the rest: every message is an untyped array starting with its name. Null when the packet does not start that way; the caller then decodes it in full. */
+export function peekMessageName(raw: Buffer): string | null {
+  // Array header, element count, string header, string length.
+  const nameAt = 4 * WORD_BYTES;
+  if (raw.length < nameAt) return null;
+  if (raw.readUInt32LE(0) !== TYPE_ARRAY) return null;
+  if ((raw.readUInt32LE(WORD_BYTES) & ARRAY_COUNT_MASK) === 0) return null;
+  const kind = raw.readUInt32LE(2 * WORD_BYTES);
+  if (kind !== TYPE_STRING && kind !== TYPE_STRING_NAME) return null;
+  const size = raw.readUInt32LE(3 * WORD_BYTES);
+  if (size > raw.length - nameAt) return null;
+  return raw.toString('utf8', nameAt, nameAt + size);
+}

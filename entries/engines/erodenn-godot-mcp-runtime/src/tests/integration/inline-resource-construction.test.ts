@@ -1,0 +1,309 @@
+/** Typed-dict form `{"type": "<ResourceClassName>", ...props}` constructs a Resource inline; `{x,y}` and `{r,g,b}` dicts stay Vector/Color (checked first), res:// strings still load, null still clears. */
+
+import { describe, beforeAll, beforeEach, afterAll, expect } from 'vitest';
+import { cpSync, readFileSync } from 'fs';
+import { removeTmpDir } from '../helpers/tmp.js';
+import { join } from 'path';
+import { tmpdir } from 'os';
+import { randomBytes } from 'crypto';
+import { itGodot } from '../helpers/godot-skip.js';
+import { fixtureProjectPath } from '../helpers/fixture-paths.js';
+import { GodotRunner } from '../../src/utils/godot-runner.js';
+import { extractJson, OPERATION_RESULT_SENTINEL } from '../../src/utils/output-parsing.js';
+
+function makeTmpProject(): string {
+  const id = randomBytes(6).toString('hex');
+  const dst = join(tmpdir(), `godot-mcp-test-${id}`);
+  cpSync(fixtureProjectPath, dst, { recursive: true });
+  return dst;
+}
+
+const ESCAPING_RESOURCE_PATH = 'res://../x.gd';
+
+const tmpDirs: string[] = [];
+
+let runner: GodotRunner;
+
+beforeAll(async () => {
+  runner = new GodotRunner({ godotPath: process.env.GODOT_PATH });
+  await runner.detectGodotPath();
+});
+
+beforeEach(() => {
+  tmpDirs.push(makeTmpProject());
+});
+
+afterAll(() => {
+  for (const dir of tmpDirs) {
+    try {
+      removeTmpDir(dir);
+    } catch {}
+  }
+});
+
+describe('inline Resource construction (typed-dict form)', () => {
+  itGodot(
+    'add_node constructs a Resource from a typed dict and it round-trips through the saved scene',
+    async () => {
+      const tmpProject = tmpDirs[tmpDirs.length - 1];
+      const scenePath = join(tmpProject, 'main.tscn');
+
+      const { stdout } = await runner.executeOperation(
+        'add_node',
+        {
+          scenePath: 'main.tscn',
+          nodeType: 'CollisionShape2D',
+          nodeName: 'ShapeHolder',
+          parentNodePath: '.',
+          properties: {
+            shape: { type: 'RectangleShape2D', size: { x: 80, y: 16 } },
+          },
+        },
+        tmpProject,
+        30000,
+      );
+
+      expect(stdout).toContain(OPERATION_RESULT_SENTINEL);
+
+      const sceneText = readFileSync(scenePath, 'utf-8');
+      expect(sceneText).toContain('[sub_resource type="RectangleShape2D"');
+      expect(sceneText).toContain('size = Vector2(80, 16)');
+    },
+    60000,
+  );
+
+  itGodot(
+    'set_node_properties constructs a Resource on an existing node and persists it',
+    async () => {
+      const tmpProject = tmpDirs[tmpDirs.length - 1];
+
+      await runner.executeOperation(
+        'add_node',
+        {
+          scenePath: 'main.tscn',
+          nodeType: 'CollisionShape2D',
+          nodeName: 'ShapeHolder',
+          parentNodePath: '.',
+        },
+        tmpProject,
+        30000,
+      );
+
+      const { stdout } = await runner.executeOperation(
+        'set_node_properties',
+        {
+          scenePath: 'main.tscn',
+          updates: [
+            {
+              nodePath: 'ShapeHolder',
+              property: 'shape',
+              value: { type: 'CircleShape2D', radius: 12.5 },
+            },
+          ],
+        },
+        tmpProject,
+        30000,
+      );
+
+      const parsed = JSON.parse(extractJson(stdout));
+      expect(parsed.results[0].success).toBe(true);
+      const sceneText = readFileSync(join(tmpProject, 'main.tscn'), 'utf-8');
+      expect(sceneText).toContain('[sub_resource type="CircleShape2D"');
+      expect(sceneText).toContain('radius = 12.5');
+    },
+    60000,
+  );
+
+  itGodot(
+    'invalid resource class name returns the explicit error and persists nothing',
+    async () => {
+      const tmpProject = tmpDirs[tmpDirs.length - 1];
+      const scenePath = join(tmpProject, 'main.tscn');
+
+      let stdoutSeen = '';
+      let stderrSeen = '';
+      try {
+        ({ stdout: stdoutSeen, stderr: stderrSeen } = await runner.executeOperation(
+          'add_node',
+          {
+            scenePath: 'main.tscn',
+            nodeType: 'CollisionShape2D',
+            nodeName: 'ShapeHolder',
+            parentNodePath: '.',
+            properties: { shape: { type: 'NotARealResourceClass', size: { x: 1, y: 1 } } },
+          },
+          tmpProject,
+          30000,
+        ));
+      } catch (err) {
+        stderrSeen = err instanceof Error ? err.message : String(err);
+      }
+
+      expect(stdoutSeen).not.toContain(OPERATION_RESULT_SENTINEL);
+      expect(stderrSeen).toMatch(/unknown class 'NotARealResourceClass'/i);
+      const sceneText = readFileSync(scenePath, 'utf-8');
+      expect(sceneText).not.toMatch(/sub_resource/);
+    },
+    60000,
+  );
+
+  itGodot(
+    'node-typed class name is rejected (Resources only)',
+    async () => {
+      const tmpProject = tmpDirs[tmpDirs.length - 1];
+
+      let stdoutSeen = '';
+      let stderrSeen = '';
+      try {
+        ({ stdout: stdoutSeen, stderr: stderrSeen } = await runner.executeOperation(
+          'add_node',
+          {
+            scenePath: 'main.tscn',
+            nodeType: 'CollisionShape2D',
+            nodeName: 'ShapeHolder',
+            parentNodePath: '.',
+            properties: { shape: { type: 'Node2D' } },
+          },
+          tmpProject,
+          30000,
+        ));
+      } catch (err) {
+        stderrSeen = err instanceof Error ? err.message : String(err);
+      }
+
+      expect(stdoutSeen).not.toContain(OPERATION_RESULT_SENTINEL);
+      expect(stderrSeen).toMatch(/is not a Resource/i);
+    },
+    60000,
+  );
+
+  itGodot(
+    'inner property type violation returns an explicit error naming the inner property',
+    async () => {
+      const tmpProject = tmpDirs[tmpDirs.length - 1];
+      const scenePath = join(tmpProject, 'main.tscn');
+
+      let stdoutSeen = '';
+      let stderrSeen = '';
+      try {
+        ({ stdout: stdoutSeen, stderr: stderrSeen } = await runner.executeOperation(
+          'add_node',
+          {
+            scenePath: 'main.tscn',
+            nodeType: 'CollisionShape2D',
+            nodeName: 'ShapeHolder',
+            parentNodePath: '.',
+            properties: { shape: { type: 'RectangleShape2D', size: 'wide' } },
+          },
+          tmpProject,
+          30000,
+        ));
+      } catch (err) {
+        stderrSeen = err instanceof Error ? err.message : String(err);
+      }
+
+      expect(stdoutSeen).not.toContain(OPERATION_RESULT_SENTINEL);
+      expect(stderrSeen).toMatch(/size/i);
+      expect(stderrSeen).toMatch(/expected|type|incompatible/i);
+      const sceneText = readFileSync(scenePath, 'utf-8');
+      expect(sceneText).not.toMatch(/sub_resource/);
+    },
+    60000,
+  );
+
+  itGodot(
+    'property hint class check still applies to constructed resources',
+    async () => {
+      const tmpProject = tmpDirs[tmpDirs.length - 1];
+
+      // texture is Texture2D-typed; a correctly-typed but wrong-class Resource must error.
+      let stdoutSeen = '';
+      let stderrSeen = '';
+      try {
+        ({ stdout: stdoutSeen, stderr: stderrSeen } = await runner.executeOperation(
+          'add_node',
+          {
+            scenePath: 'main.tscn',
+            nodeType: 'Sprite2D',
+            nodeName: 'Spr',
+            parentNodePath: '.',
+            properties: { texture: { type: 'RectangleShape2D', size: { x: 1, y: 1 } } },
+          },
+          tmpProject,
+          30000,
+        ));
+      } catch (err) {
+        stderrSeen = err instanceof Error ? err.message : String(err);
+      }
+
+      expect(stdoutSeen).not.toContain(OPERATION_RESULT_SENTINEL);
+      expect(stderrSeen).toMatch(/expects|texture|RectangleShape2D/i);
+    },
+    60000,
+  );
+
+  itGodot(
+    'refuses a resource_path that escapes the project and leaves the scene file unchanged',
+    async () => {
+      const tmpProject = tmpDirs[tmpDirs.length - 1];
+      const scenePath = join(tmpProject, 'main.tscn');
+      const before = readFileSync(scenePath, 'utf-8');
+
+      const { stdout } = await runner.executeOperation(
+        'set_node_properties',
+        {
+          scenePath: 'main.tscn',
+          updates: [
+            {
+              nodePath: '.',
+              property: 'script',
+              value: { type: 'GDScript', resource_path: ESCAPING_RESOURCE_PATH },
+            },
+          ],
+        },
+        tmpProject,
+        30000,
+      );
+
+      const parsed = JSON.parse(extractJson(stdout));
+      expect(parsed.results[0].success).toBeUndefined();
+      expect(parsed.results[0].error).toContain(ESCAPING_RESOURCE_PATH);
+      expect(readFileSync(scenePath, 'utf-8')).toBe(before);
+    },
+    60000,
+  );
+
+  itGodot(
+    'refuses an escaping resource_path on an inline resource nested inside another',
+    async () => {
+      const tmpProject = tmpDirs[tmpDirs.length - 1];
+      const scenePath = join(tmpProject, 'main.tscn');
+      const before = readFileSync(scenePath, 'utf-8');
+
+      const { stdout } = await runner.executeOperation(
+        'set_node_properties',
+        {
+          scenePath: 'main.tscn',
+          updates: [
+            {
+              nodePath: 'Sprite2D',
+              property: 'material',
+              value: {
+                type: 'ShaderMaterial',
+                shader: { type: 'Shader', resource_path: ESCAPING_RESOURCE_PATH },
+              },
+            },
+          ],
+        },
+        tmpProject,
+        30000,
+      );
+
+      const parsed = JSON.parse(extractJson(stdout));
+      expect(parsed.results[0].success).toBeUndefined();
+      expect(parsed.results[0].error).toContain(ESCAPING_RESOURCE_PATH);
+      expect(readFileSync(scenePath, 'utf-8')).toBe(before);
+    },
+    60000,
+  );
+});

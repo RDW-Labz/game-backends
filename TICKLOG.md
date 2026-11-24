@@ -2721,3 +2721,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/0x0funky-agent-game-forge
   - reference engines/abouchedidxcode-open-source-hands
   - reference engines/stem-studio-engine
+
+- **2026-11-24 16:36 UTC** — tick 795: +2 screened, +4 reference, 8 skipped, catalogue=1294
+  - added engines/travisvroman-namorvtech (none, reference)
+  - added engines/erodenn-godot-mcp-runtime (MIT, vendored)
+  - reference engines/alaingalvan-image-editor-effects
+  - reference engines/frostfire-interactive-frostfire-forge
+  - reference engines/dylanebert-vibegame
+  - reference engines/bradypp-godot-mcp

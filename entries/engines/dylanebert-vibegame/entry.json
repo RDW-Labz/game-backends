@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T16:36:16Z",
+ "category": "engines",
+ "commit": "2025-12-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dylanebert/VibeGame \u2014 A 3D game engine designed for vibe coding",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "VibeGame",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dylanebert-vibegame",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 97,
+ "system": "A 3D game engine designed for vibe coding",
+ "upstream": "https://github.com/dylanebert/VibeGame",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

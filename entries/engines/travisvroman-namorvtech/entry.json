@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T16:36:12Z",
+ "category": "engines",
+ "commit": "10471fe80a30",
+ "delivery": "reference",
+ "description": "travisvroman/NamorvTech \u2014 NamorvTech Game Engine (Created during the TypeScript Game Engine Tutorial)",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "NamorvTech",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 236107,
+ "slug": "travisvroman-namorvtech",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 105,
+ "system": "NamorvTech Game Engine (Created during the TypeScript Game Engine Tutorial)",
+ "upstream": "https://github.com/travisvroman/NamorvTech",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

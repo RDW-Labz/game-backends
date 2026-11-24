@@ -1,0 +1,427 @@
+import { describe, it, expect } from 'vitest';
+import { resolve, sep } from 'path';
+import {
+  normalizeParameters,
+  convertCamelToSnakeCase,
+  OPAQUE_VALUE_KEYS,
+} from '../../src/utils/parameter-conversion.js';
+import { validatePath, validateNodePath, isUnderDir } from '../../src/utils/path-validation.js';
+import {
+  extractGdError,
+  createErrorResponse,
+  STDERR_TAIL_LINES,
+} from '../../src/utils/error-response.js';
+import {
+  extractJson,
+  cleanStdout,
+  OPERATION_RESULT_SENTINEL,
+  OPERATION_RESULT_TOKEN_END,
+} from '../../src/utils/output-parsing.js';
+
+const RUN_TOKEN = '0123456789abcdef0123456789abcdef';
+const RESULT_FRAME = `${OPERATION_RESULT_SENTINEL}${RUN_TOKEN}${OPERATION_RESULT_TOKEN_END}`;
+
+describe('normalizeParameters', () => {
+  it('converts known snake_case keys to camelCase', () => {
+    const input = { project_path: '/p', scene_path: 's.tscn' };
+    expect(normalizeParameters(input)).toEqual({ projectPath: '/p', scenePath: 's.tscn' });
+  });
+
+  it('passes through unknown snake_case keys unchanged', () => {
+    const input = { not_in_mapping: 'x' };
+    expect(normalizeParameters(input)).toEqual({ not_in_mapping: 'x' });
+  });
+
+  it('passes through camelCase keys unchanged', () => {
+    const input = { projectPath: '/p', custom: 1 };
+    expect(normalizeParameters(input)).toEqual({ projectPath: '/p', custom: 1 });
+  });
+
+  it('recurses into nested objects', () => {
+    const input = { project_path: '/p', meta: { node_path: 'root/Player' } };
+    expect(normalizeParameters(input)).toEqual({
+      projectPath: '/p',
+      meta: { nodePath: 'root/Player' },
+    });
+  });
+
+  it('preserves arrays without recursing into them', () => {
+    const input = { mesh_item_names: ['a', 'b'] };
+    const result = normalizeParameters(input);
+    expect(result.meshItemNames).toEqual(['a', 'b']);
+  });
+
+  it('returns non-objects as-is', () => {
+    expect(normalizeParameters(null as never)).toBe(null);
+    expect(normalizeParameters('x' as never)).toBe('x');
+  });
+
+  it('does not rename mapping keys inside a properties dict', () => {
+    const input = {
+      project_path: '/p',
+      properties: { scene_path: 'data.tscn', node_path: 'root/X' },
+    };
+    expect(normalizeParameters(input)).toEqual({
+      projectPath: '/p',
+      properties: { scene_path: 'data.tscn', node_path: 'root/X' },
+    });
+  });
+
+  it('does not rename mapping keys inside a value', () => {
+    const input = {
+      project_path: '/p',
+      value: { scene_path: 'data.tscn', node_path: 'root/X' },
+    };
+    expect(normalizeParameters(input)).toEqual({
+      projectPath: '/p',
+      value: { scene_path: 'data.tscn', node_path: 'root/X' },
+    });
+  });
+
+  it('converts a sibling structural key while leaving the value subtree alone', () => {
+    // The shape set_node_properties arrives in: keys inside `value` are a shader uniform name and must reach Godot byte for byte,
+    // while `node_path` beside it is ours to rename.
+    const input = {
+      node_path: 'root/Sprite',
+      property: 'material',
+      value: { type: 'ShaderMaterial', 'shader_parameter/glowAmount': 2.5 },
+    };
+    expect(normalizeParameters(input)).toEqual({
+      nodePath: 'root/Sprite',
+      property: 'material',
+      value: { type: 'ShaderMaterial', 'shader_parameter/glowAmount': 2.5 },
+    });
+    expect(convertCamelToSnakeCase(normalizeParameters(input))).toEqual(input);
+  });
+
+  it('round-trips a properties dict with mixed key styles unchanged', () => {
+    const input = {
+      project_path: '/p',
+      properties: { scene_path: 's', glowAmount: 1, 'metadata/myKey': 2 },
+    };
+    expect(convertCamelToSnakeCase(normalizeParameters(input))).toEqual(input);
+  });
+});
+
+describe('convertCamelToSnakeCase', () => {
+  it('converts mapped camelCase keys back to snake_case', () => {
+    const input = { projectPath: '/p', scenePath: 's.tscn' };
+    expect(convertCamelToSnakeCase(input)).toEqual({ project_path: '/p', scene_path: 's.tscn' });
+  });
+
+  it('throws in test env when an unmapped camelCase key falls through', () => {
+    expect(() => convertCamelToSnakeCase({ someCustomKey: 1 })).toThrow(
+      /unmapped camelCase key 'someCustomKey'/,
+    );
+  });
+
+  it('falls back to regex conversion in production env', () => {
+    const prevNodeEnv = process.env.NODE_ENV;
+    const prevVitest = process.env.VITEST;
+    process.env.NODE_ENV = 'production';
+    delete process.env.VITEST;
+    try {
+      expect(convertCamelToSnakeCase({ someCustomKey: 1 })).toEqual({ some_custom_key: 1 });
+    } finally {
+      if (prevNodeEnv === undefined) delete process.env.NODE_ENV;
+      else process.env.NODE_ENV = prevNodeEnv;
+      if (prevVitest !== undefined) process.env.VITEST = prevVitest;
+    }
+  });
+
+  it('round-trips through normalizeParameters', () => {
+    const original = { project_path: '/p', node_path: 'root/X' };
+    const round = convertCamelToSnakeCase(normalizeParameters(original));
+    expect(round).toEqual(original);
+  });
+
+  it('recurses into nested objects', () => {
+    const input = { projectPath: '/p', nested: { nodePath: 'root' } };
+    expect(convertCamelToSnakeCase(input)).toEqual({
+      project_path: '/p',
+      nested: { node_path: 'root' },
+    });
+  });
+
+  it('walks arrays and converts nested object keys', () => {
+    const input = {
+      updates: [
+        { nodePath: 'root/A', property: 'position', value: 1 },
+        { nodePath: 'root/B', property: 'rotation', value: 2 },
+      ],
+    };
+    expect(convertCamelToSnakeCase(input)).toEqual({
+      updates: [
+        { node_path: 'root/A', property: 'position', value: 1 },
+        { node_path: 'root/B', property: 'rotation', value: 2 },
+      ],
+    });
+  });
+
+  it('rewrites hasProperty nested inside validate checks schema children', () => {
+    // The structure check depends on this: GDScript reads has_property, and
+    // the only converter that ever sees the nested key is this one.
+    const input = {
+      scenePath: 'main.tscn',
+      checks: [
+        {
+          type: 'structure',
+          schema: { type: 'Node2D', children: [{ type: 'Sprite2D', hasProperty: 'texture' }] },
+        },
+      ],
+    };
+    expect(convertCamelToSnakeCase(input)).toEqual({
+      scene_path: 'main.tscn',
+      checks: [
+        {
+          type: 'structure',
+          schema: { type: 'Node2D', children: [{ type: 'Sprite2D', has_property: 'texture' }] },
+        },
+      ],
+    });
+  });
+
+  it('preserves arrays of primitives as-is', () => {
+    expect(convertCamelToSnakeCase({ meshItemNames: ['a', 'b'] })).toEqual({
+      mesh_item_names: ['a', 'b'],
+    });
+  });
+
+  it('leaves camelCase keys inside a properties dict untouched', () => {
+    const input = {
+      nodeType: 'Sprite2D',
+      properties: { 'shader_parameter/glowAmount': 2.5, myExportedVar: 1 },
+    };
+    expect(convertCamelToSnakeCase(input)).toEqual({
+      node_type: 'Sprite2D',
+      properties: { 'shader_parameter/glowAmount': 2.5, myExportedVar: 1 },
+    });
+  });
+
+  it('leaves camelCase keys inside an update value untouched', () => {
+    const input = {
+      updates: [
+        {
+          nodePath: 'root/A',
+          property: 'material',
+          value: { type: 'ShaderMaterial', 'shader_parameter/glowAmount': 1 },
+        },
+      ],
+    };
+    expect(convertCamelToSnakeCase(input)).toEqual({
+      updates: [
+        {
+          node_path: 'root/A',
+          property: 'material',
+          value: { type: 'ShaderMaterial', 'shader_parameter/glowAmount': 1 },
+        },
+      ],
+    });
+  });
+
+  it('does not recurse into a nested typed dict under properties', () => {
+    const input = {
+      properties: {
+        material: {
+          type: 'ShaderMaterial',
+          next_pass: { type: 'ShaderMaterial', 'shader_parameter/innerGlow': 1 },
+        },
+      },
+    };
+    expect(convertCamelToSnakeCase(input)).toEqual(input);
+  });
+
+  it('still converts structural keys in a batch operations item alongside an opaque properties dict', () => {
+    const input = {
+      operations: [
+        {
+          nodeName: 'A',
+          parentNodePath: '.',
+          texturePath: 'res://a.png',
+          properties: { camelKey: 1 },
+        },
+      ],
+    };
+    expect(convertCamelToSnakeCase(input)).toEqual({
+      operations: [
+        {
+          node_name: 'A',
+          parent_node_path: '.',
+          texture_path: 'res://a.png',
+          properties: { camelKey: 1 },
+        },
+      ],
+    });
+  });
+
+  it('exposes OPAQUE_VALUE_KEYS as exactly properties and value', () => {
+    expect(OPAQUE_VALUE_KEYS).toEqual(new Set(['properties', 'value']));
+  });
+});
+
+describe('validatePath', () => {
+  it('rejects empty paths', () => {
+    expect(validatePath('')).toBe(false);
+  });
+
+  it('rejects paths containing ..', () => {
+    expect(validatePath('../etc/passwd')).toBe(false);
+    expect(validatePath('foo/../bar')).toBe(false);
+  });
+
+  it('accepts well-formed relative paths', () => {
+    expect(validatePath('scenes/main.tscn')).toBe(true);
+  });
+
+  it('accepts absolute paths', () => {
+    expect(validatePath('/abs/path/to/project')).toBe(true);
+  });
+});
+
+describe('validateNodePath', () => {
+  it('accepts well-formed relative scene-tree paths', () => {
+    expect(validateNodePath('root/Player')).toBe(true);
+    expect(validateNodePath('root/Player/Sprite2D')).toBe(true);
+  });
+
+  it('accepts absolute scene-tree paths', () => {
+    expect(validateNodePath('/root/Player')).toBe(true);
+  });
+
+  it('rejects empty strings', () => {
+    expect(validateNodePath('')).toBe(false);
+  });
+
+  it('rejects paths containing ".."', () => {
+    expect(validateNodePath('root/..')).toBe(false);
+    expect(validateNodePath('../escape')).toBe(false);
+    expect(validateNodePath('root/Player/../Other')).toBe(false);
+  });
+
+  it('rejects non-string input', () => {
+    expect(validateNodePath(null as unknown as string)).toBe(false);
+    expect(validateNodePath(undefined as unknown as string)).toBe(false);
+    expect(validateNodePath(42 as unknown as string)).toBe(false);
+  });
+});
+
+describe('isUnderDir', () => {
+  const parent = resolve('/parent');
+
+  it('returns true for the parent itself', () => {
+    expect(isUnderDir(parent, parent)).toBe(true);
+  });
+
+  it('returns true for a child path', () => {
+    expect(isUnderDir(parent, resolve(parent, 'child/file.txt'))).toBe(true);
+  });
+
+  it('returns false for a sibling with the same prefix', () => {
+    const sibling = parent + '-evil' + sep + 'file.txt';
+    expect(isUnderDir(parent, sibling)).toBe(false);
+  });
+
+  it('returns false for an unrelated absolute path', () => {
+    expect(isUnderDir(parent, resolve('/elsewhere/file.txt'))).toBe(false);
+  });
+});
+
+describe('extractGdError', () => {
+  it('extracts the first [ERROR] line', () => {
+    const stderr = 'noise line\n[ERROR] something broke\nmore noise';
+    expect(extractGdError(stderr)).toBe('something broke');
+  });
+
+  it('says no reason was given and carries the end of stderr when no [ERROR] line is present', () => {
+    // Red when the bare message is returned: the engine's last lines are the
+    // only account of why the run stopped.
+    const fallback = extractGdError('just noise\n\n[INFO] ok\n');
+    expect(fallback).toBe(
+      'the operation gave no reason (it printed no [ERROR] line)\nstderr (last lines): just noise\n[INFO] ok',
+    );
+    // get_debug_output reads a runtime session, never a headless run, so the
+    // fallback must not send the caller there.
+    expect(fallback).not.toContain('get_debug_output');
+  });
+
+  it('keeps only the last lines of a long stderr, skipping blank ones', () => {
+    const lines = Array.from({ length: 12 }, (_, i) => `line ${i + 1}`);
+    const fallback = extractGdError(lines.join('\n\n'));
+    expect(fallback).toContain(lines.slice(-STDERR_TAIL_LINES).join('\n'));
+    expect(fallback).not.toContain(`line ${12 - STDERR_TAIL_LINES}\n`);
+  });
+
+  it('says stderr was empty when it was', () => {
+    expect(extractGdError(' \n')).toBe(
+      'the operation gave no reason (it printed no [ERROR] line); its stderr was empty',
+    );
+  });
+
+  it('strips the prefix correctly when [ERROR] has surrounding context', () => {
+    const stderr = '2026-01-01 [ERROR] failed to save scene';
+    expect(extractGdError(stderr)).toBe('failed to save scene');
+  });
+});
+
+describe('createErrorResponse', () => {
+  it('returns isError:true with a single content block when no solutions', () => {
+    const r = createErrorResponse('boom');
+    expect(r.isError).toBe(true);
+    expect(r.content).toHaveLength(1);
+    expect(r.content[0].text).toBe('boom');
+  });
+
+  it('appends a solutions block when solutions provided', () => {
+    const r = createErrorResponse('boom', ['try X', 'try Y']);
+    expect(r.content).toHaveLength(2);
+    expect(r.content[1].text).toContain('try X');
+    expect(r.content[1].text).toContain('try Y');
+  });
+});
+
+describe('extractJson', () => {
+  it('strips Godot version banner before a sentinel payload line', () => {
+    const out = `Godot Engine v4.5.stable\n${OPERATION_RESULT_SENTINEL}{"ok": true}`;
+    expect(JSON.parse(extractJson(out))).toEqual({ ok: true });
+  });
+
+  it('returns an array payload from a sentinel line', () => {
+    const out = `Godot Engine v4.5.stable\n${OPERATION_RESULT_SENTINEL}[1, 2, 3]`;
+    expect(JSON.parse(extractJson(out))).toEqual([1, 2, 3]);
+  });
+
+  it('returns input unchanged when no sentinel line is present', () => {
+    expect(extractJson('just text, no json')).toBe('just text, no json');
+  });
+
+  it('parses cleanly when no bracket-noise surrounds the payload', () => {
+    const out = `INFO: starting up\n${OPERATION_RESULT_SENTINEL}{"ok": true}`;
+    expect(JSON.parse(extractJson(out))).toEqual({ ok: true });
+  });
+});
+
+describe('cleanStdout', () => {
+  it('reduces output with a sentinel line to that line (strips banner and noise)', () => {
+    const out = `Godot Engine v4.5.stable\nINFO line\n${RESULT_FRAME}{"ok": true}`;
+    expect(JSON.parse(extractJson(cleanStdout(out, RUN_TOKEN)))).toEqual({ ok: true });
+  });
+
+  it('keeps a sentinel array payload (no `{` present)', () => {
+    const out = `Godot Engine v4.5.stable\n${RESULT_FRAME}[1, 2, 3]`;
+    expect(JSON.parse(extractJson(cleanStdout(out, RUN_TOKEN)))).toEqual([1, 2, 3]);
+  });
+
+  it('routes output without a sentinel line through cleanOutput (drops banner)', () => {
+    const out = 'Godot Engine v4.5.stable\nplain success';
+    expect(cleanStdout(out, RUN_TOKEN)).toBe('plain success');
+  });
+
+  it('does not treat bracketed lines without a sentinel as a payload', () => {
+    const out = 'Godot Engine v4.5.stable\n[Audio] ready\n{"a": 1}';
+    expect(cleanStdout(out, RUN_TOKEN)).toBe('[Audio] ready\n{"a": 1}');
+  });
+
+  it('handles empty stdout', () => {
+    expect(cleanStdout('', RUN_TOKEN)).toBe('');
+  });
+});

@@ -1,0 +1,834 @@
+// The `hit` field and occlusion check come from the viewport's hovered control behind a `has_method` guard; every assertion that depends on them branches on `probeHoverApi`.
+// The probe scene launches through a rewritten `run/main_scene` in a disposable project copy, one launch per test, so toggled or revealed UI cannot leak into a later UI-delta assertion.
+
+import { describe, beforeAll, beforeEach, afterEach, afterAll, expect } from 'vitest';
+import { cpSync, readFileSync, writeFileSync } from 'fs';
+import { removeTmpDir } from '../helpers/tmp.js';
+import { join } from 'path';
+import { tmpdir } from 'os';
+import { randomBytes } from 'crypto';
+import { itGodot } from '../helpers/godot-skip.js';
+import { runProjectOrSkip } from '../helpers/run-project-or-skip.js';
+import { fixtureProjectPath, inputProbeScenePath } from '../helpers/fixture-paths.js';
+import { GodotRunner } from '../../src/utils/godot-runner.js';
+import { handleSimulateInput } from '../../src/tools/runtime-tools.js';
+import type { HandlerResult } from '../../src/mcp.types.js';
+
+const PROBE_ROOT = '/root/InputProbe';
+
+function p(sub: string): string {
+  return `${PROBE_ROOT}/${sub}`;
+}
+
+const MOTION_X = 300;
+const MOTION_Y = 200;
+const MOTION_TOLERANCE_PX = 1;
+const MOVER_START_X = 400;
+const MOVER_WATCH = `${p('Mover')}:position:x`;
+const WAIT_FRAMES_EXACT = 10;
+const WAIT_MS_MIN = 200;
+const SHORT_WAIT_FRAMES = 2;
+const HOLD_WAIT_FRAMES = 3;
+const TEST_TIMEOUT_MS = 60000;
+const BRIDGE_CMD_TIMEOUT_MS = 15000;
+const RECENT_ERROR_LINES = 200;
+/** Wall clock, not frames: a frame count makes the test frame-rate dependent, and the window it must outlast is in seconds. */
+const STALE_BATCH_WAIT_MS = 6000;
+const STALE_CLIENT_TIMEOUT_MS = 300;
+// Must outlast STALE_BATCH_WAIT_MS, or the test passes before an abandoned batch could print; the client timeout must stay far below it.
+const STALE_RESUME_MARGIN_MS = STALE_BATCH_WAIT_MS + 3000;
+const STALE_DRAIN_TIMEOUT_MS = 1000;
+
+type InputEntry = Record<string, unknown>;
+
+interface InputPayload {
+  success?: boolean;
+  results: InputEntry[];
+  still_held?: string[];
+}
+
+const tmpDirs: string[] = [];
+
+let runner: GodotRunner;
+
+/** Rewrites `run/main_scene` rather than using `runProject`'s positional scene argument, which no other test covers, so a bad scene argument stays distinguishable from a bad fixture. */
+function makeProbeProject(): string {
+  const id = randomBytes(6).toString('hex');
+  const dst = join(tmpdir(), `godot-mcp-input-${id}`);
+  cpSync(fixtureProjectPath, dst, { recursive: true });
+  const projectFile = join(dst, 'project.godot');
+  const content = readFileSync(projectFile, 'utf8').replace(
+    'res://main.tscn',
+    `res://${inputProbeScenePath}`,
+  );
+  expect(content, 'project.godot main scene must point at the probe scene').toContain(
+    inputProbeScenePath,
+  );
+  writeFileSync(projectFile, content, 'utf8');
+  return dst;
+}
+
+function currentProject(): string {
+  return tmpDirs[tmpDirs.length - 1]!;
+}
+
+async function script(bodyLines: string[]): Promise<unknown> {
+  const source =
+    'extends RefCounted\n' +
+    'func execute(scene_tree: SceneTree) -> Variant:\n' +
+    `${bodyLines.map((line) => `\t${line}`).join('\n')}\n`;
+  const raw = await runner.sendCommand('run_script', { source }, BRIDGE_CMD_TIMEOUT_MS);
+  const parsed = JSON.parse(raw) as { error?: string; result?: unknown };
+  if (parsed.error) {
+    throw new Error(`bridge run_script failed: ${JSON.stringify(parsed)}`);
+  }
+  return parsed.result;
+}
+
+/** The bridge reads `get_viewport()`, the root Window for an autoload, so this probes the same object. */
+async function probeHoverApi(): Promise<boolean> {
+  const result = (await script([
+    'return {"has_api": scene_tree.root.has_method("gui_get_hovered_control")}',
+  ])) as { has_api?: boolean } | null;
+  return result?.has_api === true;
+}
+
+async function simulate(args: Record<string, unknown>): Promise<InputPayload> {
+  const result = await handleSimulateInput(runner, args);
+  if (!result.ok) {
+    throw new Error(`simulate_input returned an error response: ${JSON.stringify(result.error)}`);
+  }
+  const structured = result.value.structuredContent;
+  expect(structured, 'a simulate_input success must carry structuredContent').toBeDefined();
+  return structured as unknown as InputPayload;
+}
+
+function simulateExpectingError(args: Record<string, unknown>): Promise<HandlerResult> {
+  return handleSimulateInput(runner, args);
+}
+
+beforeAll(async () => {
+  runner = new GodotRunner({ godotPath: process.env.GODOT_PATH });
+  await runner.detectGodotPath();
+});
+
+beforeEach(() => {
+  tmpDirs.push(makeProbeProject());
+});
+
+afterEach(async () => {
+  await runner.stopProject().catch(() => undefined);
+});
+
+afterAll(() => {
+  for (const dir of tmpDirs) {
+    try {
+      removeTmpDir(dir);
+    } catch {}
+  }
+});
+
+describe('simulate_input observed results (live bridge)', () => {
+  itGodot(
+    'plain click reports the pressed signal and the Control it hit',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+      const hoverApi = await probeHoverApi();
+
+      const payload = await simulate({
+        actions: [{ type: 'click_element', element: p('PlainBtn') }],
+      });
+
+      expect(payload.results).toHaveLength(1);
+      const entry = payload.results[0]!;
+      expect(entry).toMatchObject({
+        index: 0,
+        type: 'click_element',
+        ok: true,
+        signals: ['pressed'],
+      });
+      expect(payload.success).toBe(true);
+      if (hoverApi) {
+        expect(entry.hit, `hit must name the clicked Button; entry=${JSON.stringify(entry)}`).toBe(
+          p('PlainBtn'),
+        );
+      } else {
+        expect(entry.hit).toBeUndefined();
+      }
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'mouse_motion reports the position the event reached the viewport at, not the OS cursor',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const payload = await simulate({
+        actions: [{ type: 'mouse_motion', x: MOTION_X, y: MOTION_Y }],
+      });
+      const entry = payload.results[0]!;
+      const position = entry.position as { x: number; y: number } | undefined;
+
+      expect(entry.ok, `entry=${JSON.stringify(entry)}`).toBe(true);
+      expect(position, `entry=${JSON.stringify(entry)}`).toBeDefined();
+      expect(Math.abs(position!.x - MOTION_X)).toBeLessThanOrEqual(MOTION_TOLERANCE_PX);
+      expect(Math.abs(position!.y - MOTION_Y)).toBeLessThanOrEqual(MOTION_TOLERANCE_PX);
+      expect(entry.note).toBeUndefined();
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'toggle click reports the toggled signal',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const payload = await simulate({
+        actions: [{ type: 'click_element', element: p('ToggleBtn') }],
+      });
+
+      expect(payload.results).toHaveLength(1);
+      const entry = payload.results[0]!;
+      expect(entry).toMatchObject({ index: 0, type: 'click_element', ok: true });
+      // A toggle Button also emits pressed, so the presence of toggled is the contract, not the exact array.
+      expect(entry.signals, `toggled must be observed; entry=${JSON.stringify(entry)}`).toContain(
+        'toggled',
+      );
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'click on a disabled button fails with no signals',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const payload = await simulate({
+        actions: [{ type: 'click_element', element: p('DisabledBtn') }],
+      });
+
+      expect(payload.results).toHaveLength(1);
+      const entry = payload.results[0]!;
+      expect(entry).toMatchObject({ index: 0, type: 'click_element', ok: false });
+      expect(entry.signals).toBeUndefined();
+      expect(String(entry.error)).toMatch(/disabled/i);
+      expect(entry.hit).toBeUndefined();
+      expect(payload.success).toBe(false);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'occluded click fails, names the occluder, and skips the rest of the batch',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+      const hoverApi = await probeHoverApi();
+
+      const result = await simulateExpectingError({
+        actions: [
+          { type: 'click_element', element: p('CoveredBtn') },
+          { type: 'wait', frames: 1 },
+        ],
+      });
+
+      expect(
+        result.ok,
+        `a partially failed batch must return a success-shaped response; result=${JSON.stringify(result)}`,
+      ).toBe(true);
+      if (!result.ok) return;
+      const payload = result.value.structuredContent as unknown as InputPayload;
+      expect(payload.results).toHaveLength(2);
+      const first = payload.results[0]!;
+      const second = payload.results[1]!;
+
+      if (hoverApi) {
+        expect(first).toMatchObject({ index: 0, type: 'click_element', ok: false });
+        expect(String(first.error)).toMatch(/occluded by .*Occluder/);
+        expect(second).toMatchObject({ index: 1, type: 'wait', skipped: true });
+        expect(payload.success).toBe(false);
+      } else {
+        // Without the hovered-control API there is no occlusion signal, so the click reports plain success.
+        expect(first).toMatchObject({ index: 0, type: 'click_element', ok: true });
+        expect(first.error).toBeUndefined();
+        expect(second.skipped).toBeUndefined();
+        expect(payload.success).toBe(true);
+      }
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'panel-opening click reports the panel in changes.appeared without its children',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const payload = await simulate({
+        actions: [{ type: 'click_element', element: p('PanelBtn') }],
+      });
+
+      expect(payload.results).toHaveLength(1);
+      const entry = payload.results[0]!;
+      expect(entry.ok).toBe(true);
+      const changes = entry.changes as { appeared?: string[] } | undefined;
+      const seen = `changes=${JSON.stringify(entry.changes)}`;
+      expect(changes?.appeared, `the revealed Panel must appear; ${seen}`).toContain(
+        p('HiddenPanel'),
+      );
+      expect(changes?.appeared, `PanelLabel must be collapsed away; ${seen}`).not.toContain(
+        p('HiddenPanel/PanelLabel'),
+      );
+      expect(changes?.appeared, `InnerBtn must be collapsed away; ${seen}`).not.toContain(
+        p('HiddenPanel/InnerBtn'),
+      );
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'a script error in a handler is attributed to that action only',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const payload = await simulate({
+        actions: [
+          { type: 'click_element', element: p('PlainBtn') },
+          { type: 'click_element', element: p('ErrorBtn') },
+          { type: 'wait', frames: SHORT_WAIT_FRAMES },
+        ],
+      });
+
+      expect(payload.results).toHaveLength(3);
+      const [clean, failing, trailing] = payload.results as [InputEntry, InputEntry, InputEntry];
+      expect(payload.success).toBe(true);
+      expect(clean.errors).toBeUndefined();
+      expect(trailing.errors).toBeUndefined();
+      const errors = failing.errors as string[] | undefined;
+      expect(
+        Array.isArray(errors) && errors.length > 0,
+        `the erroring handler's action must carry errors; results=${JSON.stringify(payload.results)}`,
+      ).toBe(true);
+      expect((errors ?? []).join('\n')).toContain('SCRIPT ERROR');
+
+      // Boundary sentinels are stripped at the single stderr ingestion site, so this covers get_debug_output and stop_project's finalErrors too.
+      expect(runner.getRecentErrors(RECENT_ERROR_LINES).join('\n')).not.toContain(
+        'MCP_ACTION_BOUNDARY',
+      );
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'a key tap with pressed omitted drives an is_action_pressed poll',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const payload = await simulate({
+        watch: [MOVER_WATCH],
+        actions: [
+          { type: 'wait', frames: SHORT_WAIT_FRAMES },
+          { type: 'key', key: 'W' },
+        ],
+      });
+
+      expect(payload.results).toHaveLength(2);
+      const [baseline, tap] = payload.results as [InputEntry, InputEntry];
+      const before = (baseline.watch as Record<string, unknown> | undefined)?.[MOVER_WATCH];
+      const after = (tap.watch as Record<string, unknown> | undefined)?.[MOVER_WATCH];
+      const seen = `results=${JSON.stringify(payload.results)}`;
+
+      expect(typeof before, `baseline sample must be a number; ${seen}`).toBe('number');
+      expect(typeof after, `post-tap sample must be a number; ${seen}`).toBe('number');
+      expect(before, `the Mover must start where the scene places it; ${seen}`).toBe(MOVER_START_X);
+      expect(
+        after as number,
+        'Mover x must advance across the tap. Three things can break this: the ' +
+          'project.godot InputMap entry not matching the injected event, the ' +
+          'injected key event not carrying the keycode the map is bound to, or ' +
+          "the event never reaching the engine's action state. " +
+          seen,
+      ).toBeGreaterThan(before as number);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'an action tap reaches _input handlers as well as the is_action_pressed poll',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const payload = await simulate({
+        watch: [MOVER_WATCH],
+        actions: [
+          { type: 'wait', frames: SHORT_WAIT_FRAMES },
+          { type: 'action', action: 'probe_move' },
+        ],
+      });
+
+      expect(payload.results).toHaveLength(2);
+      const [baseline, tap] = payload.results as [InputEntry, InputEntry];
+      const before = (baseline.watch as Record<string, unknown> | undefined)?.[MOVER_WATCH];
+      const after = (tap.watch as Record<string, unknown> | undefined)?.[MOVER_WATCH];
+      const seen = `results=${JSON.stringify(payload.results)}`;
+      expect(before, `the Mover must start where the scene places it; ${seen}`).toBe(MOVER_START_X);
+      expect(after as number, `the polled action must move the Mover; ${seen}`).toBeGreaterThan(
+        before as number,
+      );
+      expect(tap.pressed, `a tap releases itself; ${seen}`).toBe(false);
+
+      // An action that only sets the polled state leaves the probe's _input counter at 0.
+      const state = (await script([
+        'return {"events": scene_tree.root.get_node("InputProbe").move_events}',
+      ])) as { events?: number } | null;
+      expect(state?.events, `one tap must reach _input once; state=${JSON.stringify(state)}`).toBe(
+        1,
+      );
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'a ui_accept action presses the focused Button, as Enter would',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const focused = (await script([
+        'var btn := scene_tree.root.get_node("InputProbe/PanelBtn") as Button',
+        'btn.grab_focus()',
+        'return {"focused": btn.has_focus()}',
+      ])) as { focused?: boolean } | null;
+      expect(focused?.focused, `PanelBtn must take focus; got ${JSON.stringify(focused)}`).toBe(
+        true,
+      );
+
+      const payload = await simulate({ actions: [{ type: 'action', action: 'ui_accept' }] });
+      expect(payload.results).toHaveLength(1);
+      const entry = payload.results[0]!;
+      expect(entry.ok).toBe(true);
+      const changes = entry.changes as { appeared?: string[] } | undefined;
+      expect(
+        changes?.appeared,
+        `the result must report HiddenPanel appearing; changes=${JSON.stringify(entry.changes)}`,
+      ).toContain(p('HiddenPanel'));
+      const state = (await script([
+        'return {"visible": scene_tree.root.get_node("InputProbe/HiddenPanel").visible}',
+      ])) as { visible?: boolean } | null;
+      expect(
+        state?.visible,
+        `ui_accept must press PanelBtn, which shows HiddenPanel; results=${JSON.stringify(payload.results)}`,
+      ).toBe(true);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'an explicit key press reports still_held and a later call releases it',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+      const watch = [MOVER_WATCH];
+
+      const held = await simulate({
+        watch,
+        actions: [
+          { type: 'key', key: 'W', pressed: true },
+          { type: 'wait', frames: HOLD_WAIT_FRAMES },
+        ],
+      });
+      expect(held.results).toHaveLength(2);
+      expect(
+        held.still_held,
+        `an unreleased press must be reported; payload=${JSON.stringify(held)}`,
+      ).toContain('key:W');
+      const atPress = (held.results[0]!.watch as Record<string, unknown>)[MOVER_WATCH] as number;
+      const afterHold = (held.results[1]!.watch as Record<string, unknown>)[MOVER_WATCH] as number;
+      expect(
+        afterHold,
+        `the hold must keep moving the Mover; results=${JSON.stringify(held.results)}`,
+      ).toBeGreaterThan(atPress);
+
+      const released = await simulate({
+        watch,
+        actions: [
+          { type: 'key', key: 'W', pressed: false },
+          { type: 'wait', frames: HOLD_WAIT_FRAMES },
+        ],
+      });
+      expect(released.results).toHaveLength(2);
+      expect(released.still_held).toBeUndefined();
+
+      // The release event flushes on the following frame, so one more step of movement inside the release batch is legitimate.
+      const settled = await simulate({
+        watch,
+        actions: [
+          { type: 'wait', frames: SHORT_WAIT_FRAMES },
+          { type: 'wait', frames: SHORT_WAIT_FRAMES },
+        ],
+      });
+      expect(settled.results).toHaveLength(2);
+      const restA = (settled.results[0]!.watch as Record<string, unknown>)[MOVER_WATCH];
+      const restB = (settled.results[1]!.watch as Record<string, unknown>)[MOVER_WATCH];
+      expect(
+        restB,
+        `the Mover must be at rest once the release landed; results=${JSON.stringify(settled.results)}`,
+      ).toBe(restA);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  // Red when still_held goes back to the request's own spelling: "w" and "W" would be two entries, and
+  // the release of "W" would leave "w" reported as held.
+  itGodot(
+    'pressing w and releasing W in one batch leaves still_held absent',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const payload = await simulate({
+        actions: [
+          { type: 'key', key: 'w', pressed: true },
+          { type: 'key', key: 'W', pressed: false },
+          { type: 'wait', frames: SHORT_WAIT_FRAMES },
+        ],
+      });
+
+      expect(payload.results).toHaveLength(3);
+      expect(
+        payload.still_held,
+        `a press released under another case must not stay reported; payload=${JSON.stringify(payload)}`,
+      ).toBeUndefined();
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  // Red when still_held echoes the request text ("key:w") instead of the engine's keycode string. The
+  // release runs in a new batch, which has no candidates, so this case cannot see whether Input is read.
+  itGodot(
+    'an unreleased key press is reported in the engine keycode spelling, whatever case the request used',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const held = await simulate({
+        actions: [
+          { type: 'key', key: 'w', pressed: true },
+          { type: 'wait', frames: SHORT_WAIT_FRAMES },
+        ],
+      });
+      expect(
+        held.still_held,
+        `the press of "w" must be reported as the engine spells the key; payload=${JSON.stringify(held)}`,
+      ).toEqual(['key:W']);
+
+      const released = await simulate({
+        actions: [
+          { type: 'key', key: 'W', pressed: false },
+          { type: 'wait', frames: SHORT_WAIT_FRAMES },
+        ],
+      });
+      expect(released.still_held).toBeUndefined();
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  // Red when still_held stops asking Input: the click's release of left is one the request never names,
+  // so a still_held built from the batch's own presses and releases would still report mouse_button:left.
+  itGodot(
+    'a held mouse button released by a later click_element in the same batch is not reported',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const clicked = await simulate({
+        actions: [
+          { type: 'mouse_button', button: 'left', x: 0, y: 0, pressed: true },
+          { type: 'click_element', element: p('PlainBtn') },
+        ],
+      });
+      expect(clicked.results).toHaveLength(2);
+      expect(
+        clicked.results[1]!,
+        `the click must inject its press and release; payload=${JSON.stringify(clicked)}`,
+      ).toMatchObject({ type: 'click_element', ok: true });
+      expect(
+        clicked.still_held,
+        `the click released left, so it must not be reported; payload=${JSON.stringify(clicked)}`,
+      ).toBeUndefined();
+
+      // The same press with nothing after it is reported, so the absence above is the engine's answer.
+      const held = await simulate({
+        actions: [{ type: 'mouse_button', button: 'left', x: 0, y: 0, pressed: true }],
+      });
+      expect(
+        held.still_held,
+        `an unreleased mouse press must be reported; payload=${JSON.stringify(held)}`,
+      ).toEqual(['mouse_button:left']);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'text types into the focused LineEdit and reports its value',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const focused = (await script([
+        'var entry := scene_tree.root.get_node("InputProbe/Entry") as LineEdit',
+        'entry.grab_focus()',
+        'return {"focused": entry.has_focus()}',
+      ])) as { focused?: boolean } | null;
+      expect(
+        focused?.focused,
+        `the LineEdit must hold focus before typing; probe=${JSON.stringify(focused)}`,
+      ).toBe(true);
+
+      const payload = await simulate({ actions: [{ type: 'text', text: 'abc' }] });
+
+      expect(payload.results).toHaveLength(1);
+      expect(payload.results[0]!).toMatchObject({
+        index: 0,
+        type: 'text',
+        ok: true,
+        value: 'abc',
+        focus: p('Entry'),
+      });
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'text with nothing focused fails',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const result = await simulateExpectingError({ actions: [{ type: 'text', text: 'x' }] });
+      expect(result.ok, `result=${JSON.stringify(result)}`).toBe(true);
+      if (!result.ok) return;
+      const payload = result.value.structuredContent as unknown as InputPayload;
+
+      expect(payload.results).toHaveLength(1);
+      const entry = payload.results[0]!;
+      expect(entry).toMatchObject({ index: 0, type: 'text', ok: false });
+      expect(String(entry.error)).toMatch(/focus/i);
+      expect(payload.success).toBe(false);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'wait advances frame by exactly the requested frames and elapsed_ms by at least the requested ms',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const byFrames = await simulate({ actions: [{ type: 'wait', frames: WAIT_FRAMES_EXACT }] });
+      expect(byFrames.results).toHaveLength(1);
+      expect(byFrames.results[0]!).toMatchObject({
+        index: 0,
+        type: 'wait',
+        ok: true,
+        frame: WAIT_FRAMES_EXACT,
+      });
+
+      const byMs = await simulate({ actions: [{ type: 'wait', ms: WAIT_MS_MIN }] });
+      expect(byMs.results).toHaveLength(1);
+      const entry = byMs.results[0]!;
+      expect(entry).toMatchObject({ index: 0, type: 'wait', ok: true });
+      expect(
+        entry.elapsed_ms as number,
+        `a ms wait has a lower bound and no upper bound; entry=${JSON.stringify(entry)}`,
+      ).toBeGreaterThanOrEqual(WAIT_MS_MIN);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'a malformed batch is rejected and injects nothing',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const result = await simulateExpectingError({
+        actions: [
+          { type: 'action', action: 'probe_move', pressed: true },
+          { type: 'key', key: 'NotARealKeyName' },
+        ],
+      });
+
+      expect(
+        result.ok,
+        `a batch rejected before injection must be an error response; result=${JSON.stringify(result)}`,
+      ).toBe(false);
+      if (result.ok) return;
+      const text = JSON.stringify(result.error);
+      expect(text).toContain('action 1');
+      expect(text).toContain('NotARealKeyName');
+
+      const state = (await script([
+        'return {',
+        '\t"pressed": Input.is_action_pressed("probe_move"),',
+        '\t"x": scene_tree.root.get_node("InputProbe/Mover").position.x,',
+        '}',
+      ])) as { pressed?: boolean; x?: number } | null;
+      expect(state?.pressed, `nothing may be held; state=${JSON.stringify(state)}`).toBe(false);
+      expect(state?.x, `the Mover must not have moved; state=${JSON.stringify(state)}`).toBe(
+        MOVER_START_X,
+      );
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'a non-boolean double_click is rejected before anything is injected',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const result = await simulateExpectingError({
+        actions: [{ type: 'click_element', element: p('PanelBtn'), double_click: 'yes' }],
+      });
+
+      expect(
+        result.ok,
+        `a batch rejected before injection must be an error response; result=${JSON.stringify(result)}`,
+      ).toBe(false);
+      if (result.ok) return;
+      const text = JSON.stringify(result.error);
+      expect(text).toContain('action 0');
+      expect(text).toContain('double_click');
+
+      const state = (await script([
+        'return {',
+        '\t"visible": scene_tree.root.get_node("InputProbe/HiddenPanel").visible,',
+        '}',
+      ])) as { visible?: boolean } | null;
+      expect(state?.visible, `the panel must not have opened; state=${JSON.stringify(state)}`).toBe(
+        false,
+      );
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'an unresolvable watch path samples null',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+      const missing = '/root/NoSuchNode:position';
+
+      const payload = await simulate({
+        watch: [missing, MOVER_WATCH],
+        actions: [{ type: 'wait', frames: 1 }],
+      });
+
+      expect(payload.results).toHaveLength(1);
+      const entry = payload.results[0]!;
+      expect(entry.ok).toBe(true);
+      expect(entry).toHaveProperty(['watch', missing], null);
+      expect(
+        typeof (entry.watch as Record<string, unknown>)[MOVER_WATCH],
+        `the resolvable spec must still sample; entry=${JSON.stringify(entry)}`,
+      ).toBe('number');
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'a handler that frees its own target does not break the post-action read',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      const payload = await simulate({
+        actions: [
+          { type: 'click_element', element: p('FreeMe/FreeSelfBtn') },
+          { type: 'wait', frames: SHORT_WAIT_FRAMES },
+        ],
+      });
+
+      expect(payload.results).toHaveLength(2);
+      // changes.disappeared is not asserted: queue_free's timing relative to the settle frame is unknowable here.
+      expect(payload.results[0]!).toMatchObject({ index: 0, type: 'click_element', ok: true });
+      expect(payload.results[1]!).toMatchObject({ index: 1, type: 'wait', ok: true });
+
+      const state = (await script([
+        'return {',
+        '\t"alive": true,',
+        '\t"gone": scene_tree.root.get_node_or_null("InputProbe/FreeMe") == null,',
+        '}',
+      ])) as { alive?: boolean; gone?: boolean } | null;
+      expect(state?.alive, `the game must still be running; state=${JSON.stringify(state)}`).toBe(
+        true,
+      );
+      expect(
+        state?.gone,
+        `the handler's queue_free must have landed; state=${JSON.stringify(state)}`,
+      ).toBe(true);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'a wrongly typed per-action scalar is refused before anything is injected',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      // Each is read into a typed event property or numeric cast at injection time, where a wrong type raises mid-batch and the peer never gets a response.
+      const cases: Array<[Record<string, unknown>, RegExp]> = [
+        [{ type: 'mouse_motion', x: 'nope', y: 0 }, /x must be a number/],
+        [{ type: 'mouse_motion', x: 0, y: 0, relative_x: {} }, /relative_x must be a number/],
+        [{ type: 'action', action: 'probe_move', strength: 'full' }, /strength must be a number/],
+        [{ type: 'key', key: 'W', shift: 'yes' }, /shift must be a boolean/],
+        [{ type: 'key', key: 'W', unicode: [] }, /unicode must be a number/],
+      ];
+
+      for (const [bad, expected] of cases) {
+        const result = await simulateExpectingError({
+          actions: [{ type: 'wait', frames: 1 }, bad],
+        });
+        expect(result.ok, `${JSON.stringify(bad)} must be refused`).toBe(false);
+        const message = result.ok ? '' : (result.error.content[0]?.text ?? '');
+        expect(message).toMatch(expected);
+        expect(message).toMatch(/action 1/);
+      }
+
+      const payload = await simulate({ actions: [{ type: 'wait', frames: 1 }] });
+      expect(payload.results).toHaveLength(1);
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  itGodot(
+    'an abandoned batch contributes no boundary to a later batch window',
+    async (ctx) => {
+      await runProjectOrSkip(runner, ctx, currentProject());
+
+      // Park a batch in a wall-clock wait far past the client's patience, so the timeout destroys the socket while the batch is parked.
+      await expect(
+        runner.sendCommand(
+          'input',
+          {
+            actions: [
+              { type: 'wait', ms: STALE_BATCH_WAIT_MS },
+              { type: 'key', key: 'W' },
+            ],
+          },
+          STALE_CLIENT_TIMEOUT_MS,
+        ),
+      ).rejects.toThrow(/timed out/);
+
+      // The retry reconnects and starts another batch; either event tells the bridge the parked batch has nobody to report to.
+      // The platform may never report the destroyed peer while the client is idle, so the guarantee below is what is tested.
+      const capture = runner.beginActionErrorCapture();
+      const raw = await runner.sendCommand(
+        'input',
+        { actions: [{ type: 'wait', frames: 1 }] },
+        BRIDGE_CMD_TIMEOUT_MS,
+      );
+      expect((JSON.parse(raw) as { success?: boolean }).success).toBe(true);
+
+      await new Promise((resolve) => setTimeout(resolve, STALE_RESUME_MARGIN_MS));
+      const collected = await runner.collectActionErrors(capture, 1, STALE_DRAIN_TIMEOUT_MS);
+      expect(collected.sentinelTimedOut, 'this batch marked its own boundary').toBe(false);
+
+      // Exactly one boundary here: an abandoned batch that kept running would add its own marks, which the ingestion site cannot tell from this batch's.
+      const boundaries = runner.activeProcess?.actionBoundaries ?? [];
+      expect(
+        boundaries.map((mark) => mark.index),
+        `only this batch's own boundary may appear; boundaries=${JSON.stringify(boundaries)}`,
+      ).toEqual([0]);
+    },
+    TEST_TIMEOUT_MS,
+  );
+});

@@ -1,0 +1,141 @@
+// Unknown tool names throw ProtocolError(MethodNotFound) in `dispatchToolCall`.
+
+import { ProtocolError, ProtocolErrorCode } from '@modelcontextprotocol/server';
+
+import type { GodotRunner } from './utils/godot-runner.js';
+import type { OperationParams, ToolHandler, ToolName, ToolResponse } from './mcp.types.js';
+import { createNullContext, type McpContext } from './utils/mcp-context.js';
+import { isOk } from './utils/result.js';
+
+import {
+  handleLaunchEditor,
+  handleRunProject,
+  handleSwitchProject,
+  handleGetDebugOutput,
+  handleStopProject,
+  handleTakeScreenshot,
+  handleSimulateInput,
+  handleGetUiElements,
+  handleRunScript,
+} from './tools/runtime-tools.js';
+
+import {
+  handleListAutoloads,
+  handleAddAutoload,
+  handleRemoveAutoload,
+  handleUpdateAutoload,
+} from './tools/autoload-tools.js';
+
+import {
+  handleListProjects,
+  handleCheckProject,
+  handleGetProjectFiles,
+  handleSearchProject,
+  handleGetSceneDependencies,
+  handleGetProjectSettings,
+  handleSetProjectSetting,
+} from './tools/project-tools.js';
+
+import {
+  handleCreateScene,
+  handleAddNode,
+  handleLoadSprite,
+  handleSaveScene,
+  handleExportMeshLibrary,
+  handleBatchSceneOperations,
+  handleCreateResource,
+  handleSetResourceProperties,
+} from './tools/scene-tools.js';
+
+import {
+  handleDeleteNodes,
+  handleSetNodeProperties,
+  handleGetNodeProperties,
+  handleAttachScript,
+  handleGetSceneTree,
+  handleDuplicateNode,
+  handleMoveNodes,
+  handleGetNodeSignals,
+  handleConnectSignal,
+  handleDisconnectSignal,
+} from './tools/node-tools.js';
+
+import {
+  handleProfileProject,
+  handleStartProfiler,
+  handleStopProfiler,
+} from './tools/profiler-tools.js';
+
+import { handleRenderMovie } from './tools/render-tools.js';
+
+import { handleValidate } from './tools/validate-tools.js';
+
+export const toolDispatch = {
+  launch_editor: handleLaunchEditor,
+  run_project: handleRunProject,
+  switch_project: handleSwitchProject,
+  get_debug_output: handleGetDebugOutput,
+  stop_project: handleStopProject,
+  list_projects: (_runner, args) => handleListProjects(args),
+  check_project: handleCheckProject,
+  take_screenshot: handleTakeScreenshot,
+  simulate_input: handleSimulateInput,
+  get_ui_elements: handleGetUiElements,
+  run_script: handleRunScript,
+  list_autoloads: (_runner, args) => handleListAutoloads(args),
+  add_autoload: (_runner, args) => handleAddAutoload(args),
+  remove_autoload: (_runner, args) => handleRemoveAutoload(args),
+  update_autoload: (_runner, args) => handleUpdateAutoload(args),
+  get_project_files: (_runner, args) => handleGetProjectFiles(args),
+  search_project: (_runner, args) => handleSearchProject(args),
+  get_scene_dependencies: (_runner, args) => handleGetSceneDependencies(args),
+  get_project_settings: (_runner, args) => handleGetProjectSettings(args),
+  set_project_setting: (_runner, args) => handleSetProjectSetting(args),
+
+  render_movie: handleRenderMovie,
+
+  create_scene: handleCreateScene,
+  add_node: handleAddNode,
+  load_sprite: handleLoadSprite,
+  save_scene: handleSaveScene,
+  export_mesh_library: handleExportMeshLibrary,
+  batch_scene_operations: handleBatchSceneOperations,
+  create_resource: handleCreateResource,
+  set_resource_properties: handleSetResourceProperties,
+
+  delete_nodes: handleDeleteNodes,
+  set_node_properties: handleSetNodeProperties,
+  get_node_properties: handleGetNodeProperties,
+  attach_script: handleAttachScript,
+  get_scene_tree: handleGetSceneTree,
+  duplicate_node: handleDuplicateNode,
+  move_nodes: handleMoveNodes,
+  get_node_signals: handleGetNodeSignals,
+  connect_signal: handleConnectSignal,
+  disconnect_signal: handleDisconnectSignal,
+
+  profile_project: handleProfileProject,
+  start_profiler: handleStartProfiler,
+  stop_profiler: handleStopProfiler,
+
+  validate: handleValidate,
+} as const satisfies Record<ToolName, ToolHandler>;
+
+export async function dispatchToolCall(
+  runner: GodotRunner,
+  toolName: string,
+  args: OperationParams,
+  ctx: McpContext = createNullContext(),
+): Promise<ToolResponse> {
+  // Own keys only: `constructor`, `toString` and `__proto__` resolve on the
+  // table through Object.prototype and would be called as handlers.
+  const handler = Object.hasOwn(toolDispatch, toolName)
+    ? (toolDispatch[toolName as ToolName] as ToolHandler)
+    : undefined;
+  if (!handler) {
+    throw new ProtocolError(ProtocolErrorCode.MethodNotFound, `Unknown tool: ${toolName}`);
+  }
+  const result = await handler(runner, args, ctx);
+  // The only edge where the wire envelope is emitted; handlers stay Result-shaped end to end.
+  return isOk(result) ? result.value : result.error;
+}

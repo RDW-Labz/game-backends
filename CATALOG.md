@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 16:13 UTC · 1288 entries · 333 vendored, 955 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 16:36 UTC · 1294 entries · 334 vendored, 960 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 481 | 111 | 370 |
+| [engines](#engines) — Game engines and engine subsystems | 487 | 112 | 375 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 16:13 UTC · 1288 entries · 333 vendored, 955 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 481 entries
+**Game engines and engine subsystems** — 487 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -188,6 +188,7 @@ _Generated 2026-11-24 16:13 UTC · 1288 entries · 333 vendored, 955 reference-o
 | [forge](entries/engines/card-forge-forge/README.md) | An unofficial rules engine for the world's greatest card game. | java | GPL-3.0 | reference | [Card-Forge/forge](https://github.com/Card-Forge/forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Forme](entries/engines/aristurtledev-forme/README.md) | GPU acelerated text rendering library for MonoGame build on the Slug algorithm | c# | MIT | reference | [AristurtleDev/Forme](https://github.com/AristurtleDev/Forme) @ `2026-07-24 (branch tip at catalogue time)` |
 | [freeablo](entries/engines/wheybags-freeablo/README.md) | [ARCHIVED] Modern reimplementation of the Diablo 1 game engine | c++ | GPL-3.0 | reference | [wheybags/freeablo](https://github.com/wheybags/freeablo) @ `2023-04-13 (branch tip at catalogue time)` |
+| [Frostfire-Forge](entries/engines/frostfire-interactive-frostfire-forge/README.md) | 2D MMO engine that runs in the browser. Build maps, quests, items and spells in editors inside the game. Built on Bun and WebTransport. | typescript | unknown | reference | [Frostfire-Interactive/Frostfire-Forge](https://github.com/Frostfire-Interactive/Frostfire-Forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [func_godot_plugin](entries/engines/func-godot-func-godot-plugin/README.md) | Quake .map support for Godot 4 | gdscript | MIT | vendored | [func-godot/func_godot_plugin](https://github.com/func-godot/func_godot_plugin) @ `352f3d3083f1` |
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
 | [Fyrox](entries/engines/fyroxengine-fyrox/README.md) | 3D and 2D game engine written in Rust | rust | MIT | vendored | [FyroxEngine/Fyrox](https://github.com/FyroxEngine/Fyrox) @ `e47bf0f35c9e` |
@@ -226,11 +227,13 @@ _Generated 2026-11-24 16:13 UTC · 1288 entries · 333 vendored, 955 reference-o
 | [godot-gameplay-systems](entries/engines/octod-godot-gameplay-systems/README.md) | ⚔️ A plugin for Godot to create your gameplay systems in a Godot way. | gdscript | MIT | reference | [OctoD/godot-gameplay-systems](https://github.com/OctoD/godot-gameplay-systems) @ `2025-06-06 (branch tip at catalogue time)` |
 | [godot-lua-pluginscript](entries/engines/gilzoide-godot-lua-pluginscript/README.md) | Godot 3.X PluginScript for the Lua language, based on LuaJIT's FFI | lua | MIT | vendored | [gilzoide/godot-lua-pluginscript](https://github.com/gilzoide/godot-lua-pluginscript) @ `610a8d4788ab` |
 | [godot-manager](entries/engines/eumario-godot-manager/README.md) | A Project, Version and Addons/Plugins manager for Godot Game Engine. | c# | MIT | reference | [eumario/godot-manager](https://github.com/eumario/godot-manager) @ `2026-03-31 (branch tip at catalogue time)` |
+| [godot-mcp](entries/engines/bradypp-godot-mcp/README.md) | A Model Context Protocol (MCP) server for interacting with the Godot game engine. | typescript | MIT | reference | [bradypp/godot-mcp](https://github.com/bradypp/godot-mcp) @ `2025-05-31 (branch tip at catalogue time)` |
 | [godot-mcp](entries/engines/coding-solo-godot-mcp/README.md) | MCP server for interfacing with Godot game engine. Provides tools for launching the editor, running projects, and capturing debug output. | javascript | MIT | vendored | [Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp) @ `1209744fad78` |
 | [Godot-MCP](entries/engines/ivanmurzak-godot-mcp/README.md) | Godot-MCP — Model Context Protocol (MCP) integration for the Godot Engine. AI tools for the Godot Editor in C#, with cloud connection to ai-game.dev. Apache-2.0 | c# | Apache-2.0 | reference | [IvanMurzak/Godot-MCP](https://github.com/IvanMurzak/Godot-MCP) @ `2026-11-21 (branch tip at catalogue time)` |
 | [godot-mcp](entries/engines/tomyud1-godot-mcp/README.md) | MCP Server and Godot Plugin for AI-assisted game development | gdscript | MIT | reference | [tomyud1/godot-mcp](https://github.com/tomyud1/godot-mcp) @ `2026-10-17 (branch tip at catalogue time)` |
 | [godot-mcp](entries/engines/tugcantopaloglu-godot-mcp/README.md) | MCP server for full Godot 4.x engine control: 157 tools for AI-driven game development (GDScript and C#/.NET). Tested with Godot 4.7. | typescript | MIT | reference | [tugcantopaloglu/godot-mcp](https://github.com/tugcantopaloglu/godot-mcp) @ `2026-10-09 (branch tip at catalogue time)` |
 | [Godot-MCP-Native](entries/engines/yurineko73-godot-mcp-native/README.md) | 一款支持godot开源引擎的的mcp插件，支持常见godot引擎操作，使用Godot原生实现MCPServer，无需安装依赖，开箱即用，支持多种AI工具调用。An MCP plugin that supports the open-source Godot engine, enabling common Godot e | gdscript | MIT | reference | [yurineko73/Godot-MCP-Native](https://github.com/yurineko73/Godot-MCP-Native) @ `2026-08-03 (branch tip at catalogue time)` |
+| [godot-mcp-runtime](entries/engines/erodenn-godot-mcp-runtime/README.md) | A lightweight, zero-footprint TypeScript MCP server that lets AI assistants drive the Godot 4.x game engine. | typescript | MIT | vendored | [Erodenn/godot-mcp-runtime](https://github.com/Erodenn/godot-mcp-runtime) @ `3b8a4f311d29` |
 | [godot-minimal-theme](entries/engines/passivestar-godot-minimal-theme/README.md) | Godot Minimal Theme | n/a | MIT | vendored | [passivestar/godot-minimal-theme](https://github.com/passivestar/godot-minimal-theme) @ `3250c3c79860` |
 | [godot-ply](entries/engines/jarneson-godot-ply/README.md) | Godot plugin for in-editor box modeling | gdscript | MIT | reference | [jarneson/godot-ply](https://github.com/jarneson/godot-ply) @ `2024-12-20 (branch tip at catalogue time)` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
@@ -254,6 +257,7 @@ _Generated 2026-11-24 16:13 UTC · 1288 entries · 333 vendored, 955 reference-o
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
 | [hyperion](entries/engines/hyperion-mc-hyperion/README.md) | Minecraft game engine for massive custom events | rust | Apache-2.0 | reference | [hyperion-mc/hyperion](https://github.com/hyperion-mc/hyperion) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Ikemen-GO](entries/engines/ikemen-engine-ikemen-go/README.md) | An open-source fighting game engine that supports MUGEN resources. | go | unknown | reference | [ikemen-engine/Ikemen-GO](https://github.com/ikemen-engine/Ikemen-GO) @ `2026-11-22 (branch tip at catalogue time)` |
+| [image-editor-effects](entries/engines/alaingalvan-image-editor-effects/README.md) | 💎 A WebGL example of image adjustment / effects shaders found in Photoshop, other image editors and game engines. | typescript | Unlicense | reference | [alaingalvan/image-editor-effects](https://github.com/alaingalvan/image-editor-effects) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Image32](entries/engines/angusjohnson-image32/README.md) | A comprehensive 2D graphics library written in Delphi Pascal | pascal | BSL-1.0 | reference | [AngusJohnson/Image32](https://github.com/AngusJohnson/Image32) @ `2026-11-16 (branch tip at catalogue time)` |
 | [imgui](entries/engines/ocornut-imgui/README.md) | Dear ImGui: Bloat-free Graphical User interface for C++ with minimal dependencies | c++ | MIT | vendored | [ocornut/imgui](https://github.com/ocornut/imgui) @ `77fe4588e6af` |
 | [imgui-godot](entries/engines/pkdawson-imgui-godot/README.md) | Dear ImGui plugin for Godot 4 | c++ | MIT | vendored | [pkdawson/imgui-godot](https://github.com/pkdawson/imgui-godot) @ `8a9f0c423533` |
@@ -307,6 +311,7 @@ _Generated 2026-11-24 16:13 UTC · 1288 entries · 333 vendored, 955 reference-o
 | [MusicEngine](entries/engines/geekdrums-musicengine/README.md) | make music synced game with Unity / ADX2 / Wwise | c# | unknown | reference | [geekdrums/MusicEngine](https://github.com/geekdrums/MusicEngine) @ `2023-01-09 (branch tip at catalogue time)` |
 | [MxEngine](entries/engines/asc-community-mxengine/README.md) | C++ open source 3D game engine | c++ | BSD-3-Clause | reference | [ASC-Community/MxEngine](https://github.com/ASC-Community/MxEngine) @ `2024-04-06 (branch tip at catalogue time)` |
 | [Myra](entries/engines/myraui-myra/README.md) | UI Library for MonoGame, FNA and Stride | c# | MIT | vendored | [MyraUI/Myra](https://github.com/MyraUI/Myra) @ `f605da2bba59` |
+| [NamorvTech](entries/engines/travisvroman-namorvtech/README.md) | NamorvTech Game Engine (Created during the TypeScript Game Engine Tutorial) | typescript | none | reference | [travisvroman/NamorvTech](https://github.com/travisvroman/NamorvTech) @ `10471fe80a30` |
 | [Nav3D](entries/engines/darbycostello-nav3d/README.md) | 3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning | c++ | MIT | reference | [darbycostello/Nav3D](https://github.com/darbycostello/Nav3D) @ `2026-01-12 (branch tip at catalogue time)` |
 | [nCine](entries/engines/ncine-ncine/README.md) | A cross-platform 2D game engine | c++ | MIT | reference | [nCine/nCine](https://github.com/nCine/nCine) @ `2026-11-13 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
@@ -464,6 +469,7 @@ _Generated 2026-11-24 16:13 UTC · 1288 entries · 333 vendored, 955 reference-o
 | [vek](entries/engines/yoanlcq-vek/README.md) | Generic 2D-3D math swiss army knife for game engines, with SIMD support and focus on convenience. | rust | Apache-2.0 | reference | [yoanlcq/vek](https://github.com/yoanlcq/vek) @ `2025-09-23 (branch tip at catalogue time)` |
 | [Velaptor](entries/engines/kinsondigital-velaptor/README.md) | 2D game development framework | c# | MIT | reference | [KinsonDigital/Velaptor](https://github.com/KinsonDigital/Velaptor) @ `2026-11-22 (branch tip at catalogue time)` |
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
+| [VibeGame](entries/engines/dylanebert-vibegame/README.md) | A 3D game engine designed for vibe coding | typescript | MIT | reference | [dylanebert/VibeGame](https://github.com/dylanebert/VibeGame) @ `2025-12-21 (branch tip at catalogue time)` |
 | [VisualPinball.Engine](entries/engines/freezy-visualpinball-engine/README.md) | :video_game: Visual Pinball Engine for Unity | c# | GPL-3.0 | reference | [freezy/VisualPinball.Engine](https://github.com/freezy/VisualPinball.Engine) @ `2026-11-24 (branch tip at catalogue time)` |
 | [VloxyEngine](entries/engines/blazekill-vloxyengine/README.md) | Performance oriented voxel engine for unity. | c# | MIT | reference | [BLaZeKiLL/VloxyEngine](https://github.com/BLaZeKiLL/VloxyEngine) @ `2024-11-27 (branch tip at catalogue time)` |
 | [vmprint](entries/engines/cosmiciron-vmprint/README.md) | This layout engine can solve the hardest layout problems imaginable. Its output is DTP grade and deterministic. It's faster than engines written in C++ because  | typescript | Apache-2.0 | reference | [cosmiciron/vmprint](https://github.com/cosmiciron/vmprint) @ `1e327f9a0e7a` |

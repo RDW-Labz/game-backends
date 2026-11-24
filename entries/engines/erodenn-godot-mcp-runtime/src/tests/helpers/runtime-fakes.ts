@@ -1,0 +1,195 @@
+/** Models the live-bridge command path (sendCommandWithErrors and the public session fields handlers guard on), unlike the headless fake-runner.ts. */
+
+import type {
+  GodotRunner,
+  GodotProcess,
+  RuntimeSessionInfo,
+  RuntimeSessionMode,
+  RuntimeStopResult,
+} from '../../src/utils/godot-runner.js';
+import type { Elicitor, McpContext } from '../../src/utils/mcp-context.js';
+import { fakeSessionApi } from './fake-sessions.js';
+
+export interface BridgeCall {
+  command: string;
+  params: Record<string, unknown>;
+  timeoutMs?: number;
+}
+
+export interface RuntimeFake {
+  asRunner: GodotRunner;
+  bridgeCalls: BridgeCall[];
+  stopCalls(): number;
+  setSession(opts: {
+    mode: RuntimeSessionMode | null;
+    projectPath?: string | null;
+    process?: Partial<GodotProcess> | null;
+    hasExited?: boolean;
+  }): void;
+  setOtherSessions(infos: RuntimeSessionInfo[]): void;
+  setBridgeResponse(response: unknown, runtimeErrors?: string[]): void;
+  setSendCommandError(error: Error | null): void;
+  setBridgeHook(hook: (() => void) | null): void;
+  /** Stands in for the per-action stderr attribution the real runner derives from boundary sentinels. */
+  setActionErrorBuckets(buckets: string[][], trailing?: string[], timedOut?: boolean): void;
+}
+
+/** Test context with the given elicitor; the default accepts every prompt. Its clock moves only by `promptMs` per prompt (0 by default), so a budget edge holds to the millisecond. */
+export function makeContext(
+  opts: {
+    elicit?: Elicitor;
+    disableElicitation?: boolean;
+    /** How long each prompt stays open on the context's clock before it is answered. */
+    promptMs?: number;
+  } = {},
+): McpContext {
+  const defaultElicit: Elicitor = async () => ({
+    action: 'accept',
+    content: { confirm: true },
+  });
+  const answer = opts.elicit ?? defaultElicit;
+  let clockMs = 0;
+  return {
+    elicitor: async (request) => {
+      clockMs += opts.promptMs ?? 0;
+      return answer(request);
+    },
+    disableElicitation: opts.disableElicitation === true,
+    sessionState: { runProjectConfirmed: new Set<string>(), runScriptConfirmed: new Set<string>() },
+    now: () => clockMs,
+  };
+}
+
+export function createRuntimeFake(): RuntimeFake {
+  const bridgeCalls: BridgeCall[] = [];
+  let stopCallsCount = 0;
+  let bridgeResponse: unknown = {};
+  let bridgeRuntimeErrors: string[] = [];
+  let sendCommandError: Error | null = null;
+  let bridgeHook: (() => void) | null = null;
+  let actionErrorBuckets: string[][] = [];
+  let actionErrorTrailing: string[] = [];
+  let actionSentinelTimedOut = false;
+  let others: RuntimeSessionInfo[] = [];
+
+  let state = {
+    activeSessionMode: null as RuntimeSessionMode | null,
+    activeProjectPath: null as string | null,
+    activeProcess: null as GodotProcess | null,
+  };
+
+  const runner = {
+    get activeSessionMode() {
+      return state.activeSessionMode;
+    },
+    get activeProjectPath() {
+      return state.activeProjectPath;
+    },
+    get activeProcess() {
+      return state.activeProcess;
+    },
+    ...fakeSessionApi(() => ({
+      current: {
+        mode: state.activeSessionMode,
+        projectPath: state.activeProjectPath,
+        process: state.activeProcess,
+      },
+      others,
+    })),
+    // The fake has nothing to serialize, so the operation runs at once.
+    runExclusive: <T>(_label: string, operation: () => Promise<T>): Promise<T> => operation(),
+    queueTurn: () => null,
+    detectGodotPath: async () => '/usr/local/bin/godot',
+    getVersion: async () => '4.7.2.stable.official',
+    sendCommandWithErrors: async (
+      command: string,
+      params: Record<string, unknown>,
+      timeoutMs?: number,
+    ) => {
+      if (sendCommandError) throw sendCommandError;
+      if (bridgeHook) bridgeHook();
+      bridgeCalls.push({ command, params, timeoutMs });
+      return {
+        response:
+          typeof bridgeResponse === 'string' ? bridgeResponse : JSON.stringify(bridgeResponse),
+        runtimeErrors: bridgeRuntimeErrors,
+        stderrWindow: '',
+      };
+    },
+    sendCommandWithReconnect: async (
+      command: string,
+      params: Record<string, unknown>,
+      timeoutMs?: number,
+    ) => {
+      return runner.sendCommandWithErrors(command, params, timeoutMs);
+    },
+    stopProject: async (): Promise<RuntimeStopResult> => {
+      stopCallsCount++;
+      state.activeSessionMode = null;
+      state.activeProjectPath = null;
+      state.activeProcess = null;
+      return {
+        mode: 'spawned',
+        projectPath: '/fake/project',
+        output: [],
+        errors: [],
+        cleanupProblems: [],
+      };
+    },
+    getErrorCount: () => 0,
+    beginActionErrorCapture: () => ({ marker: 0 }),
+    collectActionErrors: async (_capture: unknown, expectedSentinels: number) => ({
+      buckets: Array.from(
+        { length: Math.max(0, expectedSentinels) },
+        (_unused, i) => actionErrorBuckets[i] ?? [],
+      ),
+      trailing: actionErrorTrailing,
+      sentinelTimedOut: actionSentinelTimedOut,
+    }),
+  } as unknown as GodotRunner;
+
+  return {
+    asRunner: runner,
+    bridgeCalls,
+    stopCalls: () => stopCallsCount,
+    setSession(opts) {
+      const proc =
+        opts.process !== undefined
+          ? (opts.process as GodotProcess | null)
+          : opts.hasExited !== undefined
+            ? ({
+                output: [],
+                errors: [],
+                hasExited: opts.hasExited,
+                exitCode: null,
+                sessionToken: 'test-token',
+                totalErrorsWritten: 0,
+              } as GodotProcess)
+            : null;
+      state = {
+        ...state,
+        activeSessionMode: opts.mode,
+        activeProjectPath: opts.projectPath ?? null,
+        activeProcess: proc,
+      };
+    },
+    setOtherSessions(infos: RuntimeSessionInfo[]) {
+      others = infos;
+    },
+    setBridgeResponse(response: unknown, runtimeErrors?: string[]) {
+      bridgeResponse = response;
+      bridgeRuntimeErrors = runtimeErrors ?? [];
+    },
+    setSendCommandError(error: Error | null) {
+      sendCommandError = error;
+    },
+    setBridgeHook(hook: (() => void) | null) {
+      bridgeHook = hook;
+    },
+    setActionErrorBuckets(buckets: string[][], trailing?: string[], timedOut?: boolean) {
+      actionErrorBuckets = buckets;
+      actionErrorTrailing = trailing ?? [];
+      actionSentinelTimedOut = timedOut === true;
+    },
+  };
+}
