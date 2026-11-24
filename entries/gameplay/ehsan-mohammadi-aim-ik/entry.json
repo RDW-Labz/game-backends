@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:04:09Z",
+ "category": "gameplay",
+ "commit": "2022-08-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ehsan-mohammadi/Aim-IK \u2014 A Unity package, to procedurally orientate the character's head (and spine) in a direction without using any animation data.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Aim-IK",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ehsan-mohammadi-aim-ik",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 360,
+ "system": "A Unity package, to procedurally orientate the character's head (and spine) in a direction without using any animation data.",
+ "upstream": "https://github.com/ehsan-mohammadi/Aim-IK",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

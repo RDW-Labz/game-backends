@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:04:09Z",
+ "category": "gameplay",
+ "commit": "2020-09-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "oguzeroglu/Ego \u2014 A lightweight decision making library for game AI.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Ego",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "oguzeroglu-ego",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 173,
+ "system": "A lightweight decision making library for game AI.",
+ "upstream": "https://github.com/oguzeroglu/Ego",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

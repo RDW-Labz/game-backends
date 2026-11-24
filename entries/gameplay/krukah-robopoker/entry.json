@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:04:09Z",
+ "category": "gameplay",
+ "commit": "2026-10-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "krukah/robopoker \u2014 Everything you could wish for in a library called RoboPoker. Full suite of data structures, algorithms, solvers, ML models, and more.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "robopoker",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "krukah-robopoker",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 235,
+ "system": "Everything you could wish for in a library called RoboPoker. Full suite of data structures, algorithms, solvers, ML models, and more.",
+ "upstream": "https://github.com/krukah/robopoker",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

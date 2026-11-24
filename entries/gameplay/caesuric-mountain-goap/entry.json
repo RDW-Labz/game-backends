@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T02:04:09Z",
+ "category": "gameplay",
+ "commit": "2025-03-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "caesuric/mountain-goap \u2014 A GOAP (Goal Oriented Action Planning) AI library, written in C#.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "mountain-goap",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "caesuric-mountain-goap",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 129,
+ "system": "A GOAP (Goal Oriented Action Planning) AI library, written in C#.",
+ "upstream": "https://github.com/caesuric/mountain-goap",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2399,3 +2399,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/abelvm-omt-router
   - reference gameplay/mgerhardy-simpleai
   - reference gameplay/dschungelabenteuer-vite-plugin-entry-shaking
+
+- **2026-11-24 02:04 UTC** — tick 747: +2 screened, +4 reference, 17 skipped, catalogue=1060
+  - added gameplay/bartoleo-bteditor (none, reference)
+  - added gameplay/splintered-reality-py-trees-ros-viewer (BSD-3-Clause, vendored)
+  - reference gameplay/ehsan-mohammadi-aim-ik
+  - reference gameplay/krukah-robopoker
+  - reference gameplay/oguzeroglu-ego
+  - reference gameplay/caesuric-mountain-goap

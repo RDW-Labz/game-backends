@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T02:04:08Z",
+ "category": "gameplay",
+ "commit": "2e3e8bfd72c2",
+ "delivery": "vendored",
+ "description": "splintered-reality/py_trees_ros_viewer \u2014 A Qt-Js hybrid application for visualisation of executing or log-replayed behaviour trees in a ROS2 ecosystem.",
+ "language": "python",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "py_trees_ros_viewer",
+ "size_bytes": 112069,
+ "slug": "splintered-reality-py-trees-ros-viewer",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 50,
+ "system": "A Qt-Js hybrid application for visualisation of executing or log-replayed behaviour trees in a ROS2 ecosystem.",
+ "upstream": "https://github.com/splintered-reality/py_trees_ros_viewer",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

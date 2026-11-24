@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 01:48 UTC · 1054 entries · 277 vendored, 777 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 02:04 UTC · 1060 entries · 278 vendored, 782 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-24 01:48 UTC · 1054 entries · 277 vendored, 777 reference-o
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 147 | 40 | 107 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 153 | 41 | 112 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
@@ -686,13 +686,14 @@ _Generated 2026-11-24 01:48 UTC · 1054 entries · 277 vendored, 777 reference-o
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 147 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 153 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [A-Star-Pathfinding-for-Platformers](entries/gameplay/tutsplus-a-star-pathfinding-for-platformers/README.md) | How to Adapt A* Pathfinding to a 2D Grid-Based Platformer | c# | BSD-2-Clause | reference | [tutsplus/A-Star-Pathfinding-for-Platformers](https://github.com/tutsplus/A-Star-Pathfinding-for-Platformers) @ `2015-12-29 (branch tip at catalogue time)` |
 | [abstreet — pathfind](entries/gameplay/abstreet-pathfind/README.md) | combat, AI, pathing, quest or inventory logic | rs | Apache-2.0 | vendored | [a-b-street/abstreet](https://github.com/a-b-street/abstreet) @ `0964f29` |
 | [Agentic-Among-Us-](entries/gameplay/darkmatter2222-agentic-among-us/README.md) | Autonomous LLM-driven Among Us simulation with memory, social reasoning, pathfinding, sabotage, emergent behavior, and real-time React/PixiJS visualization. | typescript | unknown | reference | [darkmatter2222/Agentic-Among-Us-](https://github.com/darkmatter2222/Agentic-Among-Us-) @ `2026-09-13 (branch tip at catalogue time)` |
+| [Aim-IK](entries/gameplay/ehsan-mohammadi-aim-ik/README.md) | A Unity package, to procedurally orientate the character's head (and spine) in a direction without using any animation data. | c# | MIT | reference | [ehsan-mohammadi/Aim-IK](https://github.com/ehsan-mohammadi/Aim-IK) @ `2022-08-16 (branch tip at catalogue time)` |
 | [algorithms-visualizer](entries/gameplay/sonngdev-algorithms-visualizer/README.md) | Visualization of common pathfinding algorithms 🧭 🗺️ | typescript | none | reference | [sonngdev/algorithms-visualizer](https://github.com/sonngdev/algorithms-visualizer) @ `23a20d434f93` |
 | [Algorust](entries/gameplay/jondolf-algorust/README.md) | Various algorithms visualized interactively on the web, entirely with Rust 🦀 | rust | unknown | reference | [Jondolf/Algorust](https://github.com/Jondolf/Algorust) @ `2024-07-17 (branch tip at catalogue time)` |
 | [ancientbeast — abilities](entries/gameplay/ancientbeast-abilities/README.md) | combat, AI, pathing, quest or inventory logic | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
@@ -708,6 +709,7 @@ _Generated 2026-11-24 01:48 UTC · 1054 entries · 277 vendored, 777 reference-o
 | [blitz-path](entries/gameplay/bezpowell-blitz-path/README.md) | Various pathfinding algorithms implemented in rust. Currently very WIP. | rust | MIT | vendored | [BezPowell/blitz-path](https://github.com/BezPowell/blitz-path) @ `b2dbaa0de368` |
 | [BlockMaps](entries/gameplay/p-svacha-blockmaps/README.md) | Unity framework to create detailed, 3D, grid-based worlds with real-time navmesh generation and integrated pathfinding, vision and movement systems. | c# | unknown | reference | [p-svacha/BlockMaps](https://github.com/p-svacha/BlockMaps) @ `2025-11-04 (branch tip at catalogue time)` |
 | [BonsaiBehaviourTree](entries/gameplay/luis-l-bonsaibehaviourtree/README.md) | An advanced behaviour tree solution for the Unity game engine | c# | MIT | vendored | [luis-l/BonsaiBehaviourTree](https://github.com/luis-l/BonsaiBehaviourTree) @ `6aa41f3006e9` |
+| [BTEditor](entries/gameplay/bartoleo-bteditor/README.md) | Behaviour Tree Editor made with Löve | lua | none | reference | [bartoleo/BTEditor](https://github.com/bartoleo/BTEditor) @ `259d1c81930c` |
 | [check_redfish](entries/gameplay/bb-ricardo-check-redfish/README.md) | A monitoring/inventory plugin to check components and health status of systems which support Redfish. It will also create an inventory of all components of a sy | python | MIT | reference | [bb-Ricardo/check_redfish](https://github.com/bb-Ricardo/check_redfish) @ `2026-11-16 (branch tip at catalogue time)` |
 | [chess-engine](entries/gameplay/adam-mcdaniel-chess-engine/README.md) | A dependency-free chess engine♟️ library built to run anywhere. | rust | MIT | reference | [adam-mcdaniel/chess-engine](https://github.com/adam-mcdaniel/chess-engine) @ `2024-04-18 (branch tip at catalogue time)` |
 | [cocos-pathfinding](entries/gameplay/goldest-star-cocos-pathfinding/README.md) | Pathfinding 2D in Cocos Creator in cocos creator 3.6 | typescript | none | reference | [goldest-star/cocos-pathfinding](https://github.com/goldest-star/cocos-pathfinding) @ `825183bdc477` |
@@ -717,6 +719,7 @@ _Generated 2026-11-24 01:48 UTC · 1054 entries · 277 vendored, 777 reference-o
 | [DSA-Study-Hub](entries/gameplay/toxicbishop-dsa-study-hub/README.md) | DSA Study Hub is an interactive educational web application designed to streamline the learning process for Data Structures and Algorithms (DSA). Built with a m | typescript | GPL-3.0 | reference | [toxicbishop/DSA-Study-Hub](https://github.com/toxicbishop/DSA-Study-Hub) @ `2026-11-23 (branch tip at catalogue time)` |
 | [easystarjs](entries/gameplay/prettymuchbryce-easystarjs/README.md) | An asynchronous A* pathfinding API written in Javascript. | javascript | MIT | reference | [prettymuchbryce/easystarjs](https://github.com/prettymuchbryce/easystarjs) @ `2024-01-23 (branch tip at catalogue time)` |
 | [ecs](entries/gameplay/chromealex-ecs/README.md) | ECS for Unity with full game state automatic rollbacks | n/a | MIT | reference | [chromealex/ecs](https://github.com/chromealex/ecs) @ `2023-06-01 (branch tip at catalogue time)` |
+| [Ego](entries/gameplay/oguzeroglu-ego/README.md) | A lightweight decision making library for game AI. | javascript | MIT | reference | [oguzeroglu/Ego](https://github.com/oguzeroglu/Ego) @ `2020-09-25 (branch tip at catalogue time)` |
 | [EvolutionAquerium](entries/gameplay/anuraghazra-evolutionaquerium/README.md) | :fish: :bug: Small Inteli Creatures Based On Steering Behaviours | javascript | MIT | reference | [anuraghazra/EvolutionAquerium](https://github.com/anuraghazra/EvolutionAquerium) @ `2022-02-12 (branch tip at catalogue time)` |
 | [FyWorld](entries/gameplay/fy-fyworld/README.md) | FyWorld - Base-Building / Simulation Game & Tutorial in Unity | c# | GPL-3.0 | reference | [Fy-/FyWorld](https://github.com/Fy-/FyWorld) @ `2022-12-28 (branch tip at catalogue time)` |
 | [geotic](entries/gameplay/ddmills-geotic/README.md) | Entity Component System library for javascript | javascript | MIT | reference | [ddmills/geotic](https://github.com/ddmills/geotic) @ `2025-03-05 (branch tip at catalogue time)` |
@@ -756,6 +759,7 @@ _Generated 2026-11-24 01:48 UTC · 1054 entries · 277 vendored, 777 reference-o
 | [mineflayer-pathfinder](entries/gameplay/prismarinejs-mineflayer-pathfinder/README.md) | Pathfinding plugin that gives bot the ability to go from A to B | javascript | MIT | reference | [PrismarineJS/mineflayer-pathfinder](https://github.com/PrismarineJS/mineflayer-pathfinder) @ `2026-11-14 (branch tip at catalogue time)` |
 | [mistreevous](entries/gameplay/nikkorn-mistreevous/README.md) | A tool to build and execute behaviour trees in JavaScript and TypeScript | typescript | MIT | vendored | [nikkorn/mistreevous](https://github.com/nikkorn/mistreevous) @ `026f1ffe0623` |
 | [MonoBehaviourTree](entries/gameplay/qriva-monobehaviourtree/README.md) | Simple event driven Behaviour tree for Unity projects | c# | MIT | reference | [Qriva/MonoBehaviourTree](https://github.com/Qriva/MonoBehaviourTree) @ `2024-09-25 (branch tip at catalogue time)` |
+| [mountain-goap](entries/gameplay/caesuric-mountain-goap/README.md) | A GOAP (Goal Oriented Action Planning) AI library, written in C#. | c# | unknown | reference | [caesuric/mountain-goap](https://github.com/caesuric/mountain-goap) @ `2025-03-18 (branch tip at catalogue time)` |
 | [moveet](entries/gameplay/ivannovazzi-moveet/README.md) | see upstream | typescript | MIT | reference | [ivannovazzi/moveet](https://github.com/ivannovazzi/moveet) @ `2026-11-23 (branch tip at catalogue time)` |
 | [MultiTree-Behavior](entries/gameplay/thomheymann-multitree-behavior/README.md) | MultiTree is a drop-in behaviour to CakePHP's Core Tree Behavior allowing for more advanced operations and better performance on large data sets | php | unknown | reference | [thomheymann/MultiTree-Behavior](https://github.com/thomheymann/MultiTree-Behavior) @ `2013-09-21 (branch tip at catalogue time)` |
 | [naev — ai](entries/gameplay/naev-ai/README.md) | combat, AI, pathing, quest or inventory logic | lua | BSD-2-Clause | vendored | [naev/naev.git](https://github.com/naev/naev.git) @ `7f58510` |
@@ -785,6 +789,7 @@ _Generated 2026-11-24 01:48 UTC · 1054 entries · 277 vendored, 777 reference-o
 | [procedural-generation-2](entries/gameplay/kimgoetzke-procedural-generation-2/README.md) | A small Bevy project that procedurally generates a 2D pixel art landscape. | rust | MIT | reference | [kimgoetzke/procedural-generation-2](https://github.com/kimgoetzke/procedural-generation-2) @ `2026-10-11 (branch tip at catalogue time)` |
 | [Procedural_Planet_Generation](entries/gameplay/dennisboon-procedural-planet-generation/README.md) | Procedural planet generation application made in Unity for the Oculus Quest. | c# | none | reference | [DennisBoon/Procedural_Planet_Generation](https://github.com/DennisBoon/Procedural_Planet_Generation) @ `863b32640d48` |
 | [py_trees](entries/gameplay/splintered-reality-py-trees/README.md) | Python implementation of behaviour trees. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees](https://github.com/splintered-reality/py_trees) @ `49bcffd069af` |
+| [py_trees_ros_viewer](entries/gameplay/splintered-reality-py-trees-ros-viewer/README.md) | A Qt-Js hybrid application for visualisation of executing or log-replayed behaviour trees in a ROS2 ecosystem. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees_ros_viewer](https://github.com/splintered-reality/py_trees_ros_viewer) @ `2e3e8bfd72c2` |
 | [python-pathfinding](entries/gameplay/brean-python-pathfinding/README.md) | Implementation of common pathfinding algorithms | python | MIT | vendored | [brean/python-pathfinding](https://github.com/brean/python-pathfinding) @ `e271d46f53b3` |
 | [quest-manager](entries/gameplay/rubonnek-quest-manager/README.md) | A powerful and flexible quest management system for the Godot Game Engine | gdscript | MIT | reference | [Rubonnek/quest-manager](https://github.com/Rubonnek/quest-manager) @ `2026-06-07 (branch tip at catalogue time)` |
 | [Rakugo-Dialogue-System](entries/gameplay/rakugoteam-rakugo-dialogue-system/README.md) | Inspired by Ren'Py, Rakugo is a project aiming to provide a way to make narrative-based games on Godot easily. Simplify your project, if it is a visual novel, p | gdscript | MIT | vendored | [rakugoteam/Rakugo-Dialogue-System](https://github.com/rakugoteam/Rakugo-Dialogue-System) @ `8cb205634c3c` |
@@ -797,6 +802,7 @@ _Generated 2026-11-24 01:48 UTC · 1054 entries · 277 vendored, 777 reference-o
 | [Restaurant-Management-System](entries/gameplay/harismuneer-restaurant-management-system/README.md) | 👨‍🍳  An Android based RMS that aims to digitalize the day to day processes of various restaurant operations including ordering, billing, kitchen, hall and inven | java | MIT | vendored | [harismuneer/Restaurant-Management-System](https://github.com/harismuneer/Restaurant-Management-System) @ `0946070cde2f` |
 | [Restaurant_POS_System](entries/gameplay/amritmaurya1504-restaurant-pos-system/README.md) | A full-featured Restaurant POS System built using the MERN Stack to streamline restaurant operations, enhance customer experience, and manage orders, payments,  | javascript | unknown | reference | [amritmaurya1504/Restaurant_POS_System](https://github.com/amritmaurya1504/Restaurant_POS_System) @ `2025-03-02 (branch tip at catalogue time)` |
 | [Revengate — combat](entries/gameplay/revengate-combat/README.md) | combat, AI, pathing, quest or inventory logic | gd | GPL-3.0 | reference | [https://gitlab.com/ygingras/revengate](https://gitlab.com/ygingras/revengate) @ `ad6b2ee` |
+| [robopoker](entries/gameplay/krukah-robopoker/README.md) | Everything you could wish for in a library called RoboPoker. Full suite of data structures, algorithms, solvers, ML models, and more. | rust | MIT | reference | [krukah/robopoker](https://github.com/krukah/robopoker) @ `2026-10-28 (branch tip at catalogue time)` |
 | [RogueSharp](entries/gameplay/faronbracy-roguesharp/README.md) | A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired | c# | MIT | reference | [FaronBracy/RogueSharp](https://github.com/FaronBracy/RogueSharp) @ `2024-08-03 (branch tip at catalogue time)` |
 | [RoseWish](entries/gameplay/ahmadhassan-bted-rosewish/README.md) | A heartfelt, interactive narrative mini-game built in Python for Rose Day. Features custom entities, a dynamic dialogue system, animated particle effects, and i | python | MIT | vendored | [AhmadHassan-BTed/RoseWish](https://github.com/AhmadHassan-BTed/RoseWish) @ `6d3e9e155ba5` |
 | [rot.js](entries/gameplay/ondras-rot-js/README.md) | ROguelike Toolkit in JavaScript. Cool dungeon-related stuff, interactive manual, documentation, tests! | javascript | BSD-3-Clause | vendored | [ondras/rot.js](https://github.com/ondras/rot.js) @ `46782e248c2d` |

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T02:04:06Z",
+ "category": "gameplay",
+ "commit": "259d1c81930c",
+ "delivery": "reference",
+ "description": "bartoleo/BTEditor \u2014 Behaviour Tree Editor made with L\u00f6ve",
+ "language": "lua",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "BTEditor",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 585601,
+ "slug": "bartoleo-bteditor",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 51,
+ "system": "Behaviour Tree Editor made with L\u00f6ve",
+ "upstream": "https://github.com/bartoleo/BTEditor",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
