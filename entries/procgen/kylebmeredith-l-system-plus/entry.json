@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T09:54:00Z",
+ "category": "procgen",
+ "commit": "2026-05-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kylebmeredith/L-System-Plus \u2014 A TouchDesigner component for creating procedural plants with L Systems",
+ "language": "n/a",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "L-System-Plus",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "kylebmeredith-l-system-plus",
+ "source": "github-search:l-system procedural stars:>10",
+ "stars": 21,
+ "system": "A TouchDesigner component for creating procedural plants with L Systems",
+ "upstream": "https://github.com/kylebmeredith/L-System-Plus",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

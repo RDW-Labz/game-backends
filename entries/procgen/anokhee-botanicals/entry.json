@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T09:53:56Z",
+ "category": "procgen",
+ "commit": "430709d8d209",
+ "delivery": "reference",
+ "description": "anokhee/botanicals \u2014 Generates procedural flower-like structures with L-Systems and randomized Bezier curves.",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "botanicals",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 6528,
+ "slug": "anokhee-botanicals",
+ "source": "github-search:l-system procedural stars:>10",
+ "stars": 41,
+ "system": "Generates procedural flower-like structures with L-Systems and randomized Bezier curves. ",
+ "upstream": "https://github.com/anokhee/botanicals",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

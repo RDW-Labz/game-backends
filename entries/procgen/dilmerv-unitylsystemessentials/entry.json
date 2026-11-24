@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T09:53:58Z",
+ "category": "procgen",
+ "commit": "0ef8c686ee28",
+ "delivery": "reference",
+ "description": "dilmerv/UnityLSystemEssentials \u2014 L-System implementation in Unity3d for procedurally generated trees",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "UnityLSystemEssentials",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 12886,
+ "slug": "dilmerv-unitylsystemessentials",
+ "source": "github-search:l-system procedural stars:>10",
+ "stars": 27,
+ "system": "L-System implementation in Unity3d for procedurally generated trees ",
+ "upstream": "https://github.com/dilmerv/UnityLSystemEssentials",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -2599,3 +2599,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-24 09:38 UTC** — tick 775: +2 screened, +0 reference, 19 skipped, catalogue=1198
   - added procgen/eudycontreras-calendar-heatmap (MIT, vendored)
   - added procgen/amidos2006-procengine (none, reference)
+
+- **2026-11-24 09:54 UTC** — tick 776: +2 screened, +4 reference, 2 skipped, catalogue=1204
+  - added procgen/anokhee-botanicals (none, reference)
+  - added procgen/dilmerv-unitylsystemessentials (none, reference)
+  - reference procgen/sunnyvalleystudio-procedural-town-unity
+  - reference procgen/sammurphy-l-system-trees-in-unity
+  - reference procgen/kylebmeredith-l-system-plus
+  - reference procgen/janbrohl-pandaplant

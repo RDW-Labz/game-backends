@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T09:54:00Z",
+ "category": "procgen",
+ "commit": "2020-10-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "janbrohl/pandaplant \u2014 Improved procedural trees for Panda3D",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "pandaplant",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "janbrohl-pandaplant",
+ "source": "github-search:l-system procedural stars:>10",
+ "stars": 11,
+ "system": "Improved procedural trees for Panda3D",
+ "upstream": "https://github.com/janbrohl/pandaplant",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
