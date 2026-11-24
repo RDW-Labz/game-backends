@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:00:55Z",
+ "category": "engines",
+ "commit": "2026-10-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "lordmauve/wasabi2d \u2014 Cutting-edge 2D game framework for Python",
+ "language": "python",
+ "license": "LGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "wasabi2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-3.0)",
+ "slug": "lordmauve-wasabi2d",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 167,
+ "system": "Cutting-edge 2D game framework for Python",
+ "upstream": "https://github.com/lordmauve/wasabi2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

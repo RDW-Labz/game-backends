@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T20:00:54Z",
+ "category": "engines",
+ "commit": "ada01cf32ad4",
+ "delivery": "vendored",
+ "description": "ChrisPritchard/Xelmish \u2014 XNA + Elmish - 2D game development framework with F#",
+ "language": "f#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Xelmish",
+ "size_bytes": 155,
+ "slug": "chrispritchard-xelmish",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 171,
+ "system": "XNA + Elmish - 2D game development framework with F#",
+ "upstream": "https://github.com/ChrisPritchard/Xelmish",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

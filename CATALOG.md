@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 19:44 UTC · 1354 entries · 350 vendored, 1004 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 20:00 UTC · 1360 entries · 352 vendored, 1008 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 547 | 128 | 419 |
+| [engines](#engines) — Game engines and engine subsystems | 553 | 130 | 423 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 19:44 UTC · 1354 entries · 350 vendored, 1004 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 547 entries
+**Game engines and engine subsystems** — 553 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -210,6 +210,7 @@ _Generated 2026-11-24 19:44 UTC · 1354 entries · 350 vendored, 1004 reference-
 | [Flecs-Rust](entries/engines/indra-db-flecs-rust/README.md) | Rust API for Flecs: A Fast and Flexible Entity Component System (ECS) | rust | MIT | reference | [Indra-db/Flecs-Rust](https://github.com/Indra-db/Flecs-Rust) @ `2026-07-26 (branch tip at catalogue time)` |
 | [FlexEngine](entries/engines/ajweeks-flexengine/README.md) | Cross-platform game engine with Vulkan backend | c++ | MIT | reference | [ajweeks/FlexEngine](https://github.com/ajweeks/FlexEngine) @ `03aab462249b` |
 | [flint](entries/engines/zoeesilcock-flint/README.md) | Building blocks for the game engine your game actually needs. | zig | MIT | reference | [zoeesilcock/flint](https://github.com/zoeesilcock/flint) @ `2026-11-15 (branch tip at catalogue time)` |
+| [flixel-gdx](entries/engines/flixel-gdx-flixel-gdx/README.md) | A cross-platform 2D game framework based on flixel by AdamAtomic. | java | unknown | reference | [flixel-gdx/flixel-gdx](https://github.com/flixel-gdx/flixel-gdx) @ `2017-04-18 (branch tip at catalogue time)` |
 | [fmod-gdextension](entries/engines/utopia-rise-fmod-gdextension/README.md) | FMOD Studio GDExtension bindings for the Godot game engine | c++ | unknown | reference | [utopia-rise/fmod-gdextension](https://github.com/utopia-rise/fmod-gdextension) @ `2026-11-07 (branch tip at catalogue time)` |
 | [forge](entries/engines/card-forge-forge/README.md) | An unofficial rules engine for the world's greatest card game. | java | GPL-3.0 | reference | [Card-Forge/forge](https://github.com/Card-Forge/forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Forme](entries/engines/aristurtledev-forme/README.md) | GPU acelerated text rendering library for MonoGame build on the Slug algorithm | c# | MIT | reference | [AristurtleDev/Forme](https://github.com/AristurtleDev/Forme) @ `2026-07-24 (branch tip at catalogue time)` |
@@ -304,6 +305,7 @@ _Generated 2026-11-24 19:44 UTC · 1354 entries · 350 vendored, 1004 reference-
 | [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [legion](entries/engines/amethyst-legion/README.md) | High performance Rust ECS library | rust | MIT | vendored | [amethyst/legion](https://github.com/amethyst/legion) @ `32df916517fa` |
+| [lena](entries/engines/lichendust-lena/README.md) | 🕹️ A handmade framework for making tiny games | odin | BSD-3-Clause | reference | [lichendust/lena](https://github.com/lichendust/lena) @ `2026-07-23 (branch tip at catalogue time)` |
 | [LGame](entries/engines/cping-lgame/README.md) | A cross-platform Java game Engine (Framework) , support JavaFX / Android / IOS / HTML5 / Linux / MAC / Windows | java | Apache-2.0 | reference | [cping/LGame](https://github.com/cping/LGame) @ `2026-06-05 (branch tip at catalogue time)` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [libgdx-demos](entries/engines/alistairrutherford-libgdx-demos/README.md) | LibGDX Demos using my LibGDX Scene2D netthreads-libgdx extension library. | java | unknown | reference | [alistairrutherford/libgdx-demos](https://github.com/alistairrutherford/libgdx-demos) @ `2016-11-27 (branch tip at catalogue time)` |
@@ -349,6 +351,7 @@ _Generated 2026-11-24 19:44 UTC · 1354 entries · 350 vendored, 1004 reference-
 | [MxEngine](entries/engines/asc-community-mxengine/README.md) | C++ open source 3D game engine | c++ | BSD-3-Clause | reference | [ASC-Community/MxEngine](https://github.com/ASC-Community/MxEngine) @ `2024-04-06 (branch tip at catalogue time)` |
 | [Myra](entries/engines/myraui-myra/README.md) | UI Library for MonoGame, FNA and Stride | c# | MIT | vendored | [MyraUI/Myra](https://github.com/MyraUI/Myra) @ `f605da2bba59` |
 | [NamorvTech](entries/engines/travisvroman-namorvtech/README.md) | NamorvTech Game Engine (Created during the TypeScript Game Engine Tutorial) | typescript | none | reference | [travisvroman/NamorvTech](https://github.com/travisvroman/NamorvTech) @ `10471fe80a30` |
+| [NasNas](entries/engines/madour-nasnas/README.md) | An intuitive and beginner friendly 2D game framework for C++ | c++ | unknown | reference | [Madour/NasNas](https://github.com/Madour/NasNas) @ `2024-02-25 (branch tip at catalogue time)` |
 | [Nav3D](entries/engines/darbycostello-nav3d/README.md) | 3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning | c++ | MIT | reference | [darbycostello/Nav3D](https://github.com/darbycostello/Nav3D) @ `2026-01-12 (branch tip at catalogue time)` |
 | [nCine](entries/engines/ncine-ncine/README.md) | A cross-platform 2D game engine | c++ | MIT | reference | [nCine/nCine](https://github.com/nCine/nCine) @ `2026-11-13 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
@@ -508,6 +511,7 @@ _Generated 2026-11-24 19:44 UTC · 1354 entries · 350 vendored, 1004 reference-
 | [totk-pc-recomp — runtime](entries/engines/totk-pc-recomp-runtime/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | reference | [valentderah/totk-pc-recomp](https://github.com/valentderah/totk-pc-recomp) @ `ae30a61` |
 | [toy](entries/engines/hugoam-toy/README.md) | the thin c++ game engine | c++ | GPL-3.0 | reference | [hugoam/toy](https://github.com/hugoam/toy) @ `2021-04-25 (branch tip at catalogue time)` |
 | [traviso.js](entries/engines/axaq-traviso-js/README.md) | Traviso is an open source JS engine that makes it easy to build isometric applications that run in a web browser. | typescript | MIT | reference | [axaq/traviso.js](https://github.com/axaq/traviso.js) @ `2026-06-17 (branch tip at catalogue time)` |
+| [trivial-gamekit](entries/engines/borodust-trivial-gamekit/README.md) | Simple framework for making 2D games | common lisp | MIT | vendored | [borodust/trivial-gamekit](https://github.com/borodust/trivial-gamekit) @ `541ad83af7e8` |
 | [turbulenz_engine](entries/engines/turbulenz-turbulenz-engine/README.md) | Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices. | typescript | MIT | reference | [turbulenz/turbulenz_engine](https://github.com/turbulenz/turbulenz_engine) @ `2023-05-28 (branch tip at catalogue time)` |
 | [UEAESKeyFinder](entries/engines/ezfndev-ueaeskeyfinder/README.md) | This tool can find the AES Key of probably any Unreal Engine game | c# | none | reference | [EZFNDEV/UEAESKeyFinder](https://github.com/EZFNDEV/UEAESKeyFinder) @ `eeacbb1f0e7d` |
 | [UECS](entries/engines/ubpa-uecs/README.md) | Ubpa Entity-Component-System (U ECS) in Unity3D-style | c++ | MIT | vendored | [Ubpa/UECS](https://github.com/Ubpa/UECS) @ `98feb3939e66` |
@@ -551,6 +555,7 @@ _Generated 2026-11-24 19:44 UTC · 1354 entries · 350 vendored, 1004 reference-
 | [vulkan-renderer](entries/engines/inexorgame-vulkan-renderer/README.md) | A new, render-graph based 3D game engine for Linux and Windows using C++20 and Vulkan API 1.3 (in early development) | c++ | MIT | reference | [inexorgame/vulkan-renderer](https://github.com/inexorgame/vulkan-renderer) @ `2026-11-07 (branch tip at catalogue time)` |
 | [vx_bevy](entries/engines/game4all-vx-bevy/README.md) | 🧊 Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy. | rust | MIT | reference | [Game4all/vx_bevy](https://github.com/Game4all/vx_bevy) @ `2024-12-11 (branch tip at catalogue time)` |
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |
+| [wasabi2d](entries/engines/lordmauve-wasabi2d/README.md) | Cutting-edge 2D game framework for Python | python | LGPL-3.0 | reference | [lordmauve/wasabi2d](https://github.com/lordmauve/wasabi2d) @ `2026-10-22 (branch tip at catalogue time)` |
 | [wat](entries/engines/alexdarigan-wat/README.md) | A Testing Plugin for Godot Game Engine | gdscript | MIT | reference | [AlexDarigan/wat](https://github.com/AlexDarigan/wat) @ `2023-07-10 (branch tip at catalogue time)` |
 | [web-sdk](entries/engines/engineio-web-sdk/README.md) | About The Web Game Engine: Create your own web game with in a declarative way. | typescript | unknown | reference | [engineio/web-sdk](https://github.com/engineio/web-sdk) @ `2025-11-27 (branch tip at catalogue time)` |
 | [WebGAL](entries/engines/openwebgal-webgal/README.md) | A brand new web Visual Novel engine / 全新的网页端视觉小说引擎 | typescript | MPL-2.0 | reference | [OpenWebGAL/WebGAL](https://github.com/OpenWebGAL/WebGAL) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -560,6 +565,7 @@ _Generated 2026-11-24 19:44 UTC · 1354 entries · 350 vendored, 1004 reference-
 | [world-walker](entries/engines/badhope-world-walker/README.md) | A single-player AI tabletop RPG engine: deterministic rules own the numbers, saves and replay; any OpenAI-compatible model writes the scene. | python | MIT | reference | [badhope/world-walker](https://github.com/badhope/world-walker) @ `2026-11-22 (branch tip at catalogue time)` |
 | [WorldLines](entries/engines/ludicdynamics-worldlines/README.md) | Agents for Role Play. Agents for Game. Agents as a Game. An orchestrator-agents engine for living worlds — file-backed, event-sourced. | python | unknown | reference | [LudicDynamics/WorldLines](https://github.com/LudicDynamics/WorldLines) @ `2026-10-26 (branch tip at catalogue time)` |
 | [xash3d-fwgs](entries/engines/fwgs-xash3d-fwgs/README.md) | Xash3D FWGS engine | c | GPL-3.0 | reference | [FWGS/xash3d-fwgs](https://github.com/FWGS/xash3d-fwgs) @ `bc1b4515e1f6` |
+| [Xelmish](entries/engines/chrispritchard-xelmish/README.md) | XNA + Elmish - 2D game development framework with F# | f# | MIT | vendored | [ChrisPritchard/Xelmish](https://github.com/ChrisPritchard/Xelmish) @ `ada01cf32ad4` |
 | [XNAGameStudio](entries/engines/simondarksidej-xnagamestudio/README.md) | The Education library from the Xbox Live Indie games repository, valuable for MonoGame Developers for advanced samples | n/a | MIT | reference | [SimonDarksideJ/XNAGameStudio](https://github.com/SimonDarksideJ/XNAGameStudio) @ `2025-11-14 (branch tip at catalogue time)` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |

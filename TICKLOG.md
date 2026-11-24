@@ -2809,3 +2809,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/noelfb-blah
   - reference engines/littlektframework-littlekt
   - reference engines/useflashpunk-flashpunk
+
+- **2026-11-24 20:00 UTC** — tick 806: +2 screened, +4 reference, 9 skipped, catalogue=1360
+  - added engines/borodust-trivial-gamekit (MIT, vendored)
+  - added engines/chrispritchard-xelmish (MIT, vendored)
+  - reference engines/lordmauve-wasabi2d
+  - reference engines/madour-nasnas
+  - reference engines/flixel-gdx-flixel-gdx
+  - reference engines/lichendust-lena

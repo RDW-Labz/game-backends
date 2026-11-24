@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:00:55Z",
+ "category": "engines",
+ "commit": "2026-07-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "lichendust/lena \u2014 \ud83d\udd79\ufe0f A handmade framework for making tiny games",
+ "language": "odin",
+ "license": "BSD-3-Clause",
+ "license_verdict": "clean",
+ "name": "lena",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-3-Clause)",
+ "slug": "lichendust-lena",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 138,
+ "system": "\ud83d\udd79\ufe0f A handmade framework for making tiny games",
+ "upstream": "https://github.com/lichendust/lena",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

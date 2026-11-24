@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T20:00:55Z",
+ "category": "engines",
+ "commit": "2017-04-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "flixel-gdx/flixel-gdx \u2014 A cross-platform 2D game framework based on flixel by AdamAtomic.",
+ "language": "java",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "flixel-gdx",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "flixel-gdx-flixel-gdx",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 148,
+ "system": "A cross-platform 2D game framework based on flixel by AdamAtomic.",
+ "upstream": "https://github.com/flixel-gdx/flixel-gdx",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

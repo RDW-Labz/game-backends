@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T20:00:51Z",
+ "category": "engines",
+ "commit": "541ad83af7e8",
+ "delivery": "vendored",
+ "description": "borodust/trivial-gamekit \u2014 Simple framework for making 2D games",
+ "language": "common lisp",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "trivial-gamekit",
+ "size_bytes": 0,
+ "slug": "borodust-trivial-gamekit",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 178,
+ "system": "Simple framework for making 2D games",
+ "upstream": "https://github.com/borodust/trivial-gamekit",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
