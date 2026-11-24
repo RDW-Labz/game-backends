@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T09:21:07Z",
+ "category": "procgen",
+ "commit": "2026-01-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "statico/godot-roguelike-example \u2014 \ud83e\uddd9\u200d\u2642\ufe0f\ud83d\udc7e Roguelike game made with Godot 4 with vision, inventory, BSP dungeon generation, behavior trees, and more (unfinished)",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-roguelike-example",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "statico-godot-roguelike-example",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 50,
+ "system": "\ud83e\uddd9\u200d\u2642\ufe0f\ud83d\udc7e Roguelike game made with Godot 4 with vision, inventory, BSP dungeon generation, behavior trees, and more (unfinished)",
+ "upstream": "https://github.com/statico/godot-roguelike-example",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T09:21:03Z",
+ "category": "procgen",
+ "commit": "d15583202642",
+ "delivery": "vendored",
+ "description": "aaronjolson/Blender-Python-Procedural-Level-Generation \u2014 Collection of scripts for generating 3D levels (environments/dungeons) procedurally using Blender's Python API.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Blender-Python-Procedural-Level-Generation",
+ "size_bytes": 129666,
+ "slug": "aaronjolson-blender-python-procedural-level-generation",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 55,
+ "system": "Collection of scripts for generating 3D levels (environments/dungeons) procedurally using Blender's Python API.",
+ "upstream": "https://github.com/aaronjolson/Blender-Python-Procedural-Level-Generation",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

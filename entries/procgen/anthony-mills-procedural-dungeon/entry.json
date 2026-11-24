@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T09:21:07Z",
+ "category": "procgen",
+ "commit": "2019-06-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "anthony-mills/procedural_dungeon \u2014 PhaserJS plugin for the procedural generation of dungeon layouts for games.",
+ "language": "javascript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "procedural_dungeon",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "anthony-mills-procedural-dungeon",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 40,
+ "system": "PhaserJS plugin for the procedural generation of dungeon layouts for games.",
+ "upstream": "https://github.com/anthony-mills/procedural_dungeon",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

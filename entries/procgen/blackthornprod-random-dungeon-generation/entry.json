@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T09:21:07Z",
+ "category": "procgen",
+ "commit": "2018-06-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BlackthornProd/Random-Dungeon-Generation \u2014 The Random Dungeon Generation project !",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Random-Dungeon-Generation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "blackthornprod-random-dungeon-generation",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 44,
+ "system": "The Random Dungeon Generation project ! ",
+ "upstream": "https://github.com/BlackthornProd/Random-Dungeon-Generation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

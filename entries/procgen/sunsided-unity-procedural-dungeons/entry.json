@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T09:21:05Z",
+ "category": "procgen",
+ "commit": "22e0e52c41cd",
+ "delivery": "vendored",
+ "description": "sunsided/unity-procedural-dungeons \u2014 Dungeon generation and navigation using constrained random walks and A* in Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "unity-procedural-dungeons",
+ "size_bytes": 28554,
+ "slug": "sunsided-unity-procedural-dungeons",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 54,
+ "system": "Dungeon generation and navigation using constrained random walks and A* in Unity",
+ "upstream": "https://github.com/sunsided/unity-procedural-dungeons",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

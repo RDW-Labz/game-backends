@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T09:21:07Z",
+ "category": "procgen",
+ "commit": "2021-03-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fdefelici/dungen-unity \u2014 Unity3D plugin for procedural generation of dungeons based on a tweaked Cellular Automata model",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "dungen-unity",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "fdefelici-dungen-unity",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 43,
+ "system": "Unity3D plugin for procedural generation of dungeons based on a tweaked Cellular Automata model",
+ "upstream": "https://github.com/fdefelici/dungen-unity",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

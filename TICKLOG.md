@@ -2587,3 +2587,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/mgaillard-noise
   - reference procgen/bones-ai-rust-procedural-world
   - reference procgen/theorioli-procedural
+
+- **2026-11-24 09:21 UTC** — tick 774: +2 screened, +4 reference, 25 skipped, catalogue=1196
+  - added procgen/aaronjolson-blender-python-procedural-level-generation (MIT, vendored)
+  - added procgen/sunsided-unity-procedural-dungeons (MIT, vendored)
+  - reference procgen/statico-godot-roguelike-example
+  - reference procgen/blackthornprod-random-dungeon-generation
+  - reference procgen/fdefelici-dungen-unity
+  - reference procgen/anthony-mills-procedural-dungeon
