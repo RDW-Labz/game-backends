@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T14:16:38Z",
+ "category": "engines",
+ "commit": "2023-07-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Justin-sky/Nice-Lua \u2014 \u57fa\u4e8exlua\u7684MVVM\u6846\u67b6\uff0c\u652f\u6301Addressables, \u7edf\u4e00\u6e32\u67d3\u7ba1\u7ebf\u7b49Unity\u65b0\u7279\u6027",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Nice-Lua",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "justin-sky-nice-lua",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 340,
+ "system": "\u57fa\u4e8exlua\u7684MVVM\u6846\u67b6\uff0c\u652f\u6301Addressables, \u7edf\u4e00\u6e32\u67d3\u7ba1\u7ebf\u7b49Unity\u65b0\u7279\u6027",
+ "upstream": "https://github.com/Justin-sky/Nice-Lua",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,77 @@
+﻿<winui:TabView
+    x:Class="DirectX12GameEngine.Editor.Views.EditorTabView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:io="using:System.IO"
+    xmlns:local="using:DirectX12GameEngine.Editor.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="using:DirectX12GameEngine.Editor.ViewModels"
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    SelectedItem="{x:Bind ViewModel.SelectedTab, Mode=TwoWay}"
+    TabItemsSource="{x:Bind ViewModel.Tabs}"
+    mc:Ignorable="d">
+
+    <winui:TabView.Resources>
+        <DataTemplate x:Key="SolutionExplorerTemplate" x:DataType="viewmodels:SolutionExplorerViewModel">
+            <winui:TabViewItem Header="Solution Explorer">
+                <local:SolutionExplorerView />
+            </winui:TabViewItem>
+        </DataTemplate>
+
+        <DataTemplate x:Key="PropertyManagerTemplate" x:DataType="viewmodels:PropertyManagerViewModel">
+            <winui:TabViewItem Header="Properties">
+                <local:PropertyManagerView />
+            </winui:TabViewItem>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SdkManagerTemplate" x:DataType="viewmodels:SdkManagerViewModel">
+            <winui:TabViewItem Header="SDK Manager">
+                <local:SdkManagerView />
+            </winui:TabViewItem>
+        </DataTemplate>
+
+        <DataTemplate x:Key="TerminalTemplate" x:DataType="viewmodels:TerminalViewModel">
+            <winui:TabViewItem Header="Terminal">
+                <local:TerminalView />
+            </winui:TabViewItem>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CodeEditorTemplate" x:DataType="viewmodels:CodeEditorViewModel">
+            <winui:TabViewItem Header="{x:Bind File.Name}">
+                <local:CodeEditorView />
+            </winui:TabViewItem>
+        </DataTemplate>
+
+        <DataTemplate x:Key="SceneEditorTemplate" x:DataType="viewmodels:SceneEditorViewModel">
+            <winui:TabViewItem Header="{x:Bind io:Path.GetFileName(ScenePath)}">
+                <local:SceneEditorView />
+            </winui:TabViewItem>
+        </DataTemplate>
+
+        <local:DataTypeTemplateSelector x:Key="EditorTemplateSelector">
+            <local:TemplateDefinition DataTemplate="{StaticResource SolutionExplorerTemplate}" DataType="viewmodels:SolutionExplorerViewModel" />
+            <local:TemplateDefinition DataTemplate="{StaticResource PropertyManagerTemplate}" DataType="viewmodels:PropertyManagerViewModel" />
+            <local:TemplateDefinition DataTemplate="{StaticResource SdkManagerTemplate}" DataType="viewmodels:SdkManagerViewModel" />
+            <local:TemplateDefinition DataTemplate="{StaticResource TerminalTemplate}" DataType="viewmodels:TerminalViewModel" />
+            <local:TemplateDefinition DataTemplate="{StaticResource CodeEditorTemplate}" DataType="viewmodels:CodeEditorViewModel" />
+            <local:TemplateDefinition DataTemplate="{StaticResource SceneEditorTemplate}" DataType="viewmodels:SceneEditorViewModel" />
+        </local:DataTypeTemplateSelector>
+    </winui:TabView.Resources>
+
+    <winui:TabView.Style>
+        <Style TargetType="winui:TabView">
+            <Setter Property="AllowDrop" Value="True" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="CanDragTabs" Value="True" />
+            <Setter Property="CanReorderTabs" Value="True" />
+            <Setter Property="IsAddTabButtonVisible" Value="False" />
+            <Setter Property="TabWidthMode" Value="SizeToContent" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="TabItemTemplateSelector" Value="{StaticResource EditorTemplateSelector}" />
+        </Style>
+    </winui:TabView.Style>
+</winui:TabView>

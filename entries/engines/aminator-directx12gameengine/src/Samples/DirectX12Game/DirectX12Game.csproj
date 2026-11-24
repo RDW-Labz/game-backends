@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Log\ShaderCache\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\DirectX12GameEngine.Assets\DirectX12GameEngine.Assets.csproj" />
+    <ProjectReference Include="..\..\DirectX12GameEngine.Engine\DirectX12GameEngine.Engine.csproj" />
+    <ProjectReference Include="..\..\DirectX12GameEngine.Physics\DirectX12GameEngine.Physics.csproj" />
+    <ProjectReference Include="..\..\DirectX12GameEngine.Shaders.Tasks\DirectX12GameEngine.Shaders.Tasks.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Analyzer Include="..\..\DirectX12GameEngine.Shaders.Tasks\bin\$(Configuration)\netstandard2.0\DirectX12GameEngine.Shaders.Tasks.dll" />
+  </ItemGroup>
+
+</Project>

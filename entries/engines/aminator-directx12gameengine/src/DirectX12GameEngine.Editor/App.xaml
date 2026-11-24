@@ -1,0 +1,69 @@
+﻿<Application
+    x:Class="DirectX12GameEngine.Editor.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DirectX12GameEngine.Editor"
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <winui:XamlControlsResources />
+            </ResourceDictionary.MergedDictionaries>
+
+            <FontFamily x:Key="Codicon">/Assets/Fonts/codicon.ttf#codicon</FontFamily>
+
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <AcrylicBrush
+                        x:Key="AcrylicTitleBarBackground"
+                        BackgroundSource="HostBackdrop"
+                        FallbackColor="#FFE0E0E5"
+                        TintColor="#FFE0E0E5"
+                        TintOpacity="0.8" />
+
+                    <AcrylicBrush
+                        x:Key="AcrylicSolutionExplorerBackground"
+                        BackgroundSource="HostBackdrop"
+                        FallbackColor="#FFFFFFFF"
+                        TintColor="#FFFFFFFF"
+                        TintOpacity="0.8" />
+
+                    <AcrylicBrush
+                        x:Key="AcrylicWindowBackground"
+                        BackgroundSource="HostBackdrop"
+                        FallbackColor="#FFE8E8ED"
+                        TintColor="#FFE8E8ED"
+                        TintOpacity="0.8" />
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="Dark">
+                    <AcrylicBrush
+                        x:Key="AcrylicTitleBarBackground"
+                        BackgroundSource="HostBackdrop"
+                        FallbackColor="#FF1E2124"
+                        TintColor="#FF1E2124"
+                        TintLuminosityOpacity="0.95"
+                        TintOpacity="0.8" />
+
+                    <AcrylicBrush
+                        x:Key="AcrylicSolutionExplorerBackground"
+                        BackgroundSource="HostBackdrop"
+                        FallbackColor="#FF33353B"
+                        TintColor="#FF33353B"
+                        TintLuminosityOpacity="0.95"
+                        TintOpacity="0.8" />
+
+                    <AcrylicBrush
+                        x:Key="AcrylicWindowBackground"
+                        BackgroundSource="HostBackdrop"
+                        FallbackColor="#FF2F3136"
+                        TintColor="#FF2A2C31"
+                        TintLuminosityOpacity="0.95"
+                        TintOpacity="0.8" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>

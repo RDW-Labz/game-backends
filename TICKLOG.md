@@ -2689,3 +2689,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/scellecs-morpeh
   - reference engines/vchelaru-flatredball
   - reference engines/freezy-visualpinball-engine
+
+- **2026-11-24 14:16 UTC** — tick 791: +2 screened, +4 reference, 8 skipped, catalogue=1270
+  - added engines/microsoft-godot-csharp-essentials (MIT, vendored)
+  - added engines/aminator-directx12gameengine (MIT, vendored)
+  - reference engines/justin-sky-nice-lua
+  - reference engines/bijington-orbit
+  - reference engines/cat-lips-godotsharp-sourcegenerators
+  - reference engines/mellinoe-ge

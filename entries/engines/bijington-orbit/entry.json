@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T14:16:38Z",
+ "category": "engines",
+ "commit": "2025-07-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "bijington/orbit \u2014 The Orbit engine is a game engine built on top of .NET MAUI Graphics. The objective is to firstly enjoy the journey of building a game engine and secondly providing a framework that allows us to utilise the best parts of a cross-platform framework while building a 'typical' game.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "orbit",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "bijington-orbit",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 322,
+ "system": "The Orbit engine is a game engine built on top of .NET MAUI Graphics. The objective is to firstly enjoy the journey of building a game engine and secondly provi",
+ "upstream": "https://github.com/bijington/orbit",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

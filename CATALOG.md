@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 13:50 UTC · 1264 entries · 327 vendored, 937 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 14:16 UTC · 1270 entries · 329 vendored, 941 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 457 | 105 | 352 |
+| [engines](#engines) — Game engines and engine subsystems | 463 | 107 | 356 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 13:50 UTC · 1264 entries · 327 vendored, 937 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 457 entries
+**Game engines and engine subsystems** — 463 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -121,6 +121,7 @@ _Generated 2026-11-24 13:50 UTC · 1264 entries · 327 vendored, 937 reference-o
 | [dialogic](entries/engines/dialogic-godot-dialogic/README.md) | 💬 Create Dialogs, Visual Novels, RPGs, and manage Characters with Godot to create your Game! | gdscript | MIT | reference | [dialogic-godot/dialogic](https://github.com/dialogic-godot/dialogic) @ `2026-11-19 (branch tip at catalogue time)` |
 | [DigitalRune](entries/engines/digitalrune-digitalrune/README.md) | DigitalRune Engine - .NET libraries for developing 3D games with XNA and MonoGame | c# | unknown | reference | [DigitalRune/DigitalRune](https://github.com/DigitalRune/DigitalRune) @ `2016-06-05 (branch tip at catalogue time)` |
 | [dip](entries/engines/diptools-dip/README.md) | Rust application framework focuses on composability, ECS and Web3.  Powered by Bevy game engine, Tauri, and Dioxus. From desktop apps to the Metaverse. | rust | unknown | reference | [diptools/dip](https://github.com/diptools/dip) @ `2026-04-13 (branch tip at catalogue time)` |
+| [DirectX12GameEngine](entries/engines/aminator-directx12gameengine/README.md) | DirectX 12 .NET game engine | c# | MIT | vendored | [Aminator/DirectX12GameEngine](https://github.com/Aminator/DirectX12GameEngine) @ `efb7d4c0852c` |
 | [DLSS5oneclick](entries/engines/faisalkindi-dlss5oneclick/README.md) | One-click setup of the leaked DLSS 5 neural-rendering build for any DX11/DX12 game on RTX 20–50, with or without DLSS. ReShade + RenoDX add-on (or OptiScaler en | rust | MIT | vendored | [faisalkindi/DLSS5oneclick](https://github.com/faisalkindi/DLSS5oneclick) @ `19122547cc51` |
 | [dogfight-sandbox-hg2](entries/engines/harfang3d-dogfight-sandbox-hg2/README.md) | Air to air combat sandbox, created in Python 3 using the HARFANG 3D 2 framework. | python | GPL-3.0 | reference | [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2) @ `2026-04-01 (branch tip at catalogue time)` |
 | [dominion-ecs-java](entries/engines/dominion-dev-dominion-ecs-java/README.md) | Insanely fast ECS (Entity Component System) for Java | java | MIT | vendored | [dominion-dev/dominion-ecs-java](https://github.com/dominion-dev/dominion-ecs-java) @ `e3c99d10ffcc` |
@@ -200,6 +201,7 @@ _Generated 2026-11-24 13:50 UTC · 1264 entries · 327 vendored, 937 reference-o
 | [gdcef](entries/engines/lecrapouille-gdcef/README.md) | [Godot Plugin][Version 0.21.0][Functional] Chromium Embedded Framework Webview for Godot 4 | c++ | MIT | reference | [Lecrapouille/gdcef](https://github.com/Lecrapouille/gdcef) @ `2026-11-05 (branch tip at catalogue time)` |
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
 | [gdx-jnigen](entries/engines/libgdx-gdx-jnigen/README.md) | jnigen is a small library that can be used with or without libGDX which allows C/C++ code to be written inline with Java source code.  | java | Apache-2.0 | reference | [libgdx/gdx-jnigen](https://github.com/libgdx/gdx-jnigen) @ `2026-11-16 (branch tip at catalogue time)` |
+| [ge](entries/engines/mellinoe-ge/README.md) | A general-purpose 3D game engine with editor, built with .NET Core | c# | unknown | reference | [mellinoe/ge](https://github.com/mellinoe/ge) @ `2020-03-22 (branch tip at catalogue time)` |
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
 | [gemrb](entries/engines/gemrb-gemrb/README.md) | GemRB is a portable open-source implementation of Bioware’s Infinity Engine. | c++ | GPL-2.0 | reference | [gemrb/gemrb](https://github.com/gemrb/gemrb) @ `2026-11-15 (branch tip at catalogue time)` |
 | [genex-desktop](entries/engines/genex-games-genex-desktop/README.md) | Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models. | typescript | MIT | reference | [genex-games/genex-desktop](https://github.com/genex-games/genex-desktop) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -213,6 +215,7 @@ _Generated 2026-11-24 13:50 UTC · 1264 entries · 327 vendored, 937 reference-o
 | [godot-2d-space-game](entries/engines/gdquest-demos-godot-2d-space-game/README.md) | A 2D space exploration and mining game made with Godot and our AI framework | gdscript | unknown | reference | [gdquest-demos/godot-2d-space-game](https://github.com/gdquest-demos/godot-2d-space-game) @ `2026-05-16 (branch tip at catalogue time)` |
 | [godot-block-coding](entries/engines/endlessm-godot-block-coding/README.md) | Block-based visual programming plugin for Godot | gdscript | MIT | vendored | [endlessm/godot-block-coding](https://github.com/endlessm/godot-block-coding) @ `006e31ebe795` |
 | [godot-cpp (GDExtension bindings)](entries/engines/godot-cpp/README.md) | C++ bindings/extension ABI for Godot | c++ | MIT | reference | [godotengine/godot-cpp](https://github.com/godotengine/godot-cpp) @ `2a4c066e1e8c` |
+| [godot-csharp-essentials](entries/engines/microsoft-godot-csharp-essentials/README.md) | This repository hosts course material designed for C# developers who want to learn game development using the Godot Engine. | c# | MIT | vendored | [microsoft/godot-csharp-essentials](https://github.com/microsoft/godot-csharp-essentials) @ `781ebb984d67` |
 | [godot-deformablemesh](entries/engines/cloudofoz-godot-deformablemesh/README.md) | Addon to deform 3D meshes using customizable deformers at run-time. | gdscript | MIT | reference | [cloudofoz/godot-deformablemesh](https://github.com/cloudofoz/godot-deformablemesh) @ `2025-10-21 (branch tip at catalogue time)` |
 | [godot-docs](entries/engines/godotengine-godot-docs/README.md) | Godot Engine official documentation | restructuredtext | unknown | reference | [godotengine/godot-docs](https://github.com/godotengine/godot-docs) @ `2026-11-22 (branch tip at catalogue time)` |
 | [godot-ecs](entries/engines/godothub-godot-ecs/README.md) | A lightweight yet powerful Entity Component System (ECS) framework designed specifically for Godot 4. | gdscript | MIT | reference | [godothub/godot-ecs](https://github.com/godothub/godot-ecs) @ `2026-08-21 (branch tip at catalogue time)` |
@@ -231,6 +234,7 @@ _Generated 2026-11-24 13:50 UTC · 1264 entries · 327 vendored, 937 reference-o
 | [godot-vscode-plugin](entries/engines/godotengine-godot-vscode-plugin/README.md) | Godot development tools for VSCode | typescript | MIT | reference | [godotengine/godot-vscode-plugin](https://github.com/godotengine/godot-vscode-plugin) @ `2026-09-10 (branch tip at catalogue time)` |
 | [godot_heightmap_plugin](entries/engines/zylann-godot-heightmap-plugin/README.md) | HeightMap terrain for Godot implemented in GDScript | gdscript | unknown | reference | [Zylann/godot_heightmap_plugin](https://github.com/Zylann/godot_heightmap_plugin) @ `2026-11-13 (branch tip at catalogue time)` |
 | [godot_voxel](entries/engines/zylann-godot-voxel/README.md) | Voxel module for Godot Engine | c++ | MIT | reference | [Zylann/godot_voxel](https://github.com/Zylann/godot_voxel) @ `4b29b0781723` |
+| [GodotSharp.SourceGenerators](entries/engines/cat-lips-godotsharp-sourcegenerators/README.md) | C# source generators for the Godot Game Engine | c# | MIT | reference | [Cat-Lips/GodotSharp.SourceGenerators](https://github.com/Cat-Lips/GodotSharp.SourceGenerators) @ `2026-09-16 (branch tip at catalogue time)` |
 | [golf-engine](entries/engines/bjatkin-golf-engine/README.md) | A small fantasy game engine in WASM using GoLang | go | MIT | reference | [bjatkin/golf-engine](https://github.com/bjatkin/golf-engine) @ `2021-11-27 (branch tip at catalogue time)` |
 | [goworld](entries/engines/xiaonanln-goworld/README.md) | Scalable Distributed Game Server Engine with Hot Swapping in Golang | go | Apache-2.0 | reference | [xiaonanln/goworld](https://github.com/xiaonanln/goworld) @ `2025-11-14 (branch tip at catalogue time)` |
 | [GPUTrail](entries/engines/celyk-gputrail/README.md) | A GPU based trail plugin for Godot 4 | gdscript | MIT | reference | [celyk/GPUTrail](https://github.com/celyk/GPUTrail) @ `2026-09-27 (branch tip at catalogue time)` |
@@ -298,6 +302,7 @@ _Generated 2026-11-24 13:50 UTC · 1264 entries · 327 vendored, 937 reference-o
 | [nCine](entries/engines/ncine-ncine/README.md) | A cross-platform 2D game engine | c++ | MIT | reference | [nCine/nCine](https://github.com/nCine/nCine) @ `2026-11-13 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
+| [Nice-Lua](entries/engines/justin-sky-nice-lua/README.md) | 基于xlua的MVVM框架，支持Addressables, 统一渲染管线等Unity新特性 | c# | unknown | reference | [Justin-sky/Nice-Lua](https://github.com/Justin-sky/Nice-Lua) @ `2023-07-11 (branch tip at catalogue time)` |
 | [nmage](entries/engines/bloeys-nmage/README.md) | 3D Game Engine in Go | go | MIT | vendored | [bloeys/nmage](https://github.com/bloeys/nmage) @ `fd59705ddac9` |
 | [NoahGameFrame](entries/engines/ketoo-noahgameframe/README.md) | A fast, scalable, distributed game server engine/framework for C++, include the actor library, network library, can be used as a  real time multiplayer game eng | c++ | Apache-2.0 | reference | [ketoo/NoahGameFrame](https://github.com/ketoo/NoahGameFrame) @ `2023-02-25 (branch tip at catalogue time)` |
 | [NoesisGUI.MonoGameWrapper](entries/engines/atomictorchstudio-noesisgui-monogamewrapper/README.md) | NoesisGUI MonoGame Integration Library | c# | MIT | reference | [AtomicTorchStudio/NoesisGUI.MonoGameWrapper](https://github.com/AtomicTorchStudio/NoesisGUI.MonoGameWrapper) @ `2025-10-14 (branch tip at catalogue time)` |
@@ -324,6 +329,7 @@ _Generated 2026-11-24 13:50 UTC · 1264 entries · 327 vendored, 937 reference-o
 | [OpenSurge — core](entries/engines/opensurge-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [opentk](entries/engines/opentk-opentk/README.md) | The Open Toolkit library is a fast, low-level C# wrapper for OpenGL, OpenAL & OpenCL. It also includes windowing, mouse, keyboard and joystick input and a robus | c# | MIT | vendored | [opentk/opentk](https://github.com/opentk/opentk) @ `21a53d478fd9` |
 | [optick — core](entries/engines/optick-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
+| [orbit](entries/engines/bijington-orbit/README.md) | The Orbit engine is a game engine built on top of .NET MAUI Graphics. The objective is to firstly enjoy the journey of building a game engine and secondly provi | c# | unknown | reference | [bijington/orbit](https://github.com/bijington/orbit) @ `2025-07-29 (branch tip at catalogue time)` |
 | [ouzel](entries/engines/elnormous-ouzel/README.md) | C++ game engine for Windows, macOS, Linux, iOS, tvOS, Android, and web browsers | c++ | Unlicense | reference | [elnormous/ouzel](https://github.com/elnormous/ouzel) @ `2024-03-01 (branch tip at catalogue time)` |
 | [Overload](entries/engines/overload-technologies-overload/README.md) | 3D game engine with lua scripting | c++ | MIT | reference | [Overload-Technologies/Overload](https://github.com/Overload-Technologies/Overload) @ `26efaa5dc92b` |
 | [overtime](entries/engines/ukanwat-overtime/README.md) | Give a coding agent a brief, not a chat, and it works on its own across sessions. Includes an example run: an open-world city built in a real game engine with n | typescript | MIT | vendored | [ukanwat/overtime](https://github.com/ukanwat/overtime) @ `7be7242a0d46` |

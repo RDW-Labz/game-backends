@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <LangVersion>preview</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\DirectX12GameEngine.Graphics\DirectX12GameEngine.Graphics.csproj" />
+    <ProjectReference Include="..\DirectX12GameEngine.Shaders\DirectX12GameEngine.Shaders.csproj" />
+    <ProjectReference Include="..\DirectX12GameEngine.Shaders.Tasks\DirectX12GameEngine.Shaders.Tasks.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Analyzer Include="..\DirectX12GameEngine.Shaders.Tasks\bin\$(Configuration)\netstandard2.0\DirectX12GameEngine.Shaders.Tasks.dll" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T14:16:36Z",
+ "category": "engines",
+ "commit": "efb7d4c0852c",
+ "delivery": "vendored",
+ "description": "Aminator/DirectX12GameEngine \u2014 DirectX 12 .NET game engine",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "DirectX12GameEngine",
+ "size_bytes": 813268,
+ "slug": "aminator-directx12gameengine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 353,
+ "system": "DirectX 12 .NET game engine",
+ "upstream": "https://github.com/Aminator/DirectX12GameEngine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

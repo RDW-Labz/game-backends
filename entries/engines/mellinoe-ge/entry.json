@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T14:16:38Z",
+ "category": "engines",
+ "commit": "2020-03-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mellinoe/ge \u2014 A general-purpose 3D game engine with editor, built with .NET Core",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ge",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mellinoe-ge",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 317,
+ "system": "A general-purpose 3D game engine with editor, built with .NET Core",
+ "upstream": "https://github.com/mellinoe/ge",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T14:16:38Z",
+ "category": "engines",
+ "commit": "2026-09-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Cat-Lips/GodotSharp.SourceGenerators \u2014 C# source generators for the Godot Game Engine",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "GodotSharp.SourceGenerators",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "cat-lips-godotsharp-sourcegenerators",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 320,
+ "system": "C# source generators for the Godot Game Engine",
+ "upstream": "https://github.com/Cat-Lips/GodotSharp.SourceGenerators",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

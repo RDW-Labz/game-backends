@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T14:16:32Z",
+ "category": "engines",
+ "commit": "781ebb984d67",
+ "delivery": "vendored",
+ "description": "microsoft/godot-csharp-essentials \u2014 This repository hosts course material designed for C# developers who want to learn game development using the Godot Engine.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-csharp-essentials",
+ "size_bytes": 120237,
+ "slug": "microsoft-godot-csharp-essentials",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 365,
+ "system": "This repository hosts course material designed for C# developers who want to learn game development using the Godot Engine.",
+ "upstream": "https://github.com/microsoft/godot-csharp-essentials",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
