@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T22:45:31Z",
+ "category": "engines",
+ "commit": "9617190250d0",
+ "delivery": "vendored",
+ "description": "SirRamEsq/SmartShape2D \u2014 A 2D Terrain Tool for Godot",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "SmartShape2D",
+ "size_bytes": 956718,
+ "slug": "sirramesq-smartshape2d",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 1762,
+ "system": "A 2D Terrain Tool for Godot",
+ "upstream": "https://github.com/SirRamEsq/SmartShape2D",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

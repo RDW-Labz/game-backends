@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T22:45:37Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "cherriesandmochi/gdmaim \u2014 GDMaim is a GDScript obfuscation plugin for the Godot Engine.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "gdmaim",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "cherriesandmochi-gdmaim",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 1346,
+ "system": "GDMaim is a GDScript obfuscation plugin for the Godot Engine.",
+ "upstream": "https://github.com/cherriesandmochi/gdmaim",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

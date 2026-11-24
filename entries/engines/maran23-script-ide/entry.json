@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T22:45:37Z",
+ "category": "engines",
+ "commit": "2026-10-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Maran23/script-ide \u2014 Transforms the Script UI into an IDE like UI. Multiline Tabs, Splitting, Outline with unique icons that shows all members of the script. Quick search and function override functionality.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "script-ide",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "maran23-script-ide",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 1071,
+ "system": "Transforms the Script UI into an IDE like UI. Multiline Tabs, Splitting, Outline with unique icons that shows all members of the script. Quick search and functi",
+ "upstream": "https://github.com/Maran23/script-ide",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

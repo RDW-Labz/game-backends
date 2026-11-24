@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 22:29 UTC · 1403 entries · 363 vendored, 1040 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 22:45 UTC · 1409 entries · 365 vendored, 1044 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 596 | 141 | 455 |
+| [engines](#engines) — Game engines and engine subsystems | 602 | 143 | 459 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 22:29 UTC · 1403 entries · 363 vendored, 1040 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 596 entries
+**Game engines and engine subsystems** — 602 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -137,6 +137,7 @@ _Generated 2026-11-24 22:29 UTC · 1403 entries · 363 vendored, 1040 reference-
 | [ct-js](entries/engines/ct-js-ct-js/README.md) | Ct.js is a desktop game engine that makes learning programming fun and game development easy by its visual editors and well-documented code library | typescript | MIT | reference | [ct-js/ct-js](https://github.com/ct-js/ct-js) @ `2026-05-23 (branch tip at catalogue time)` |
 | [CubbyFlow](entries/engines/utilforever-cubbyflow/README.md) | Voxel-based fluid simulation engine for computer games | c++ | MIT | reference | [utilForever/CubbyFlow](https://github.com/utilForever/CubbyFlow) @ `2026-11-06 (branch tip at catalogue time)` |
 | [cubiquity](entries/engines/davidwilliams81-cubiquity/README.md) | Cubiquity is an experimental micro-voxel engine written in C++ and released into the public domain. | c++ | CC0-1.0 | reference | [DavidWilliams81/cubiquity](https://github.com/DavidWilliams81/cubiquity) @ `2026-07-17 (branch tip at catalogue time)` |
+| [cyclopsLevelBuilder](entries/engines/blackears-cyclopslevelbuilder/README.md) | A Godot plugin to let you block in levels inside the Godot editor. | gdscript | MIT | vendored | [blackears/cyclopsLevelBuilder](https://github.com/blackears/cyclopsLevelBuilder) @ `ea41feaab5dd` |
 | [DefaultEcs](entries/engines/doraku-defaultecs/README.md) | Entity Component System framework aiming for syntax and usage simplicity with maximum performance for game development. | c# | MIT | vendored | [Doraku/DefaultEcs](https://github.com/Doraku/DefaultEcs) @ `508033cfa22d` |
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Descent3](entries/engines/descentdevelopers-descent3/README.md) | Descent 3 by Outrage Entertainment | c++ | GPL-3.0 | reference | [DescentDevelopers/Descent3](https://github.com/DescentDevelopers/Descent3) @ `de4bebf5f2d2` |
@@ -244,6 +245,7 @@ _Generated 2026-11-24 22:29 UTC · 1403 entries · 363 vendored, 1040 reference-
 | [GBM2K-Framework](entries/engines/oplexitie-gbm2k-framework/README.md) | A 2D Grid Based Movement framework made for the Godot game engine. | gdscript | MIT | reference | [Oplexitie/GBM2K-Framework](https://github.com/Oplexitie/GBM2K-Framework) @ `2026-10-09 (branch tip at catalogue time)` |
 | [gdcef](entries/engines/lecrapouille-gdcef/README.md) | [Godot Plugin][Version 0.21.0][Functional] Chromium Embedded Framework Webview for Godot 4 | c++ | MIT | reference | [Lecrapouille/gdcef](https://github.com/Lecrapouille/gdcef) @ `2026-11-05 (branch tip at catalogue time)` |
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
+| [gdmaim](entries/engines/cherriesandmochi-gdmaim/README.md) | GDMaim is a GDScript obfuscation plugin for the Godot Engine. | gdscript | MIT | reference | [cherriesandmochi/gdmaim](https://github.com/cherriesandmochi/gdmaim) @ `2026-11-23 (branch tip at catalogue time)` |
 | [gdx-jnigen](entries/engines/libgdx-gdx-jnigen/README.md) | jnigen is a small library that can be used with or without libGDX which allows C/C++ code to be written inline with Java source code.  | java | Apache-2.0 | reference | [libgdx/gdx-jnigen](https://github.com/libgdx/gdx-jnigen) @ `2026-11-16 (branch tip at catalogue time)` |
 | [ge](entries/engines/mellinoe-ge/README.md) | A general-purpose 3D game engine with editor, built with .NET Core | c# | unknown | reference | [mellinoe/ge](https://github.com/mellinoe/ge) @ `2020-03-22 (branch tip at catalogue time)` |
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
@@ -277,11 +279,13 @@ _Generated 2026-11-24 22:29 UTC · 1403 entries · 363 vendored, 1040 reference-
 | [godot-mcp-runtime](entries/engines/erodenn-godot-mcp-runtime/README.md) | A lightweight, zero-footprint TypeScript MCP server that lets AI assistants drive the Godot 4.x game engine. | typescript | MIT | vendored | [Erodenn/godot-mcp-runtime](https://github.com/Erodenn/godot-mcp-runtime) @ `3b8a4f311d29` |
 | [godot-minimal-theme](entries/engines/passivestar-godot-minimal-theme/README.md) | Godot Minimal Theme | n/a | MIT | vendored | [passivestar/godot-minimal-theme](https://github.com/passivestar/godot-minimal-theme) @ `3250c3c79860` |
 | [godot-ply](entries/engines/jarneson-godot-ply/README.md) | Godot plugin for in-editor box modeling | gdscript | MIT | reference | [jarneson/godot-ply](https://github.com/jarneson/godot-ply) @ `2024-12-20 (branch tip at catalogue time)` |
+| [godot-road-generator](entries/engines/theduckcow-godot-road-generator/README.md) | A Godot plugin for creating 3D highways/streets and lane-following traffic | gdscript | MIT | reference | [TheDuckCow/godot-road-generator](https://github.com/TheDuckCow/godot-road-generator) @ `2026-11-22 (branch tip at catalogue time)` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
 | [godot-voip](entries/engines/ikbencasdoei-godot-voip/README.md) | godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project. | rust | MIT | reference | [ikbencasdoei/godot-voip](https://github.com/ikbencasdoei/godot-voip) @ `2024-09-22 (branch tip at catalogue time)` |
 | [Godot-Voxel-Game-MineCraftClone](entries/engines/toger5-godot-voxel-game-minecraftclone/README.md) | This is a Godot project where I try to get familiar with the Engine. | gdscript | MIT | reference | [toger5/Godot-Voxel-Game-MineCraftClone](https://github.com/toger5/Godot-Voxel-Game-MineCraftClone) @ `2016-04-06 (branch tip at catalogue time)` |
 | [godot-vscode-plugin](entries/engines/godotengine-godot-vscode-plugin/README.md) | Godot development tools for VSCode | typescript | MIT | reference | [godotengine/godot-vscode-plugin](https://github.com/godotengine/godot-vscode-plugin) @ `2026-09-10 (branch tip at catalogue time)` |
 | [godot_heightmap_plugin](entries/engines/zylann-godot-heightmap-plugin/README.md) | HeightMap terrain for Godot implemented in GDScript | gdscript | unknown | reference | [Zylann/godot_heightmap_plugin](https://github.com/Zylann/godot_heightmap_plugin) @ `2026-11-13 (branch tip at catalogue time)` |
+| [godot_spatial_gardener](entries/engines/dreadpon-godot-spatial-gardener/README.md) | A Godot plugin for painting plants and props on arbitrary 3D surfaces implemented in GDScript | gdscript | MIT | reference | [dreadpon/godot_spatial_gardener](https://github.com/dreadpon/godot_spatial_gardener) @ `2025-03-05 (branch tip at catalogue time)` |
 | [godot_voxel](entries/engines/zylann-godot-voxel/README.md) | Voxel module for Godot Engine | c++ | MIT | reference | [Zylann/godot_voxel](https://github.com/Zylann/godot_voxel) @ `4b29b0781723` |
 | [GodotSharp.SourceGenerators](entries/engines/cat-lips-godotsharp-sourcegenerators/README.md) | C# source generators for the Godot Game Engine | c# | MIT | reference | [Cat-Lips/GodotSharp.SourceGenerators](https://github.com/Cat-Lips/GodotSharp.SourceGenerators) @ `2026-09-16 (branch tip at catalogue time)` |
 | [golf-engine](entries/engines/bjatkin-golf-engine/README.md) | A small fantasy game engine in WASM using GoLang | go | MIT | reference | [bjatkin/golf-engine](https://github.com/bjatkin/golf-engine) @ `2021-11-27 (branch tip at catalogue time)` |
@@ -491,6 +495,7 @@ _Generated 2026-11-24 22:29 UTC · 1403 entries · 363 vendored, 1040 reference-
 | [SakuraEngine](entries/engines/sakuraengine-sakuraengine/README.md) | 为高性能而生的游戏运行时与工具箱 | c++ | MIT | reference | [SakuraEngine/SakuraEngine](https://github.com/SakuraEngine/SakuraEngine) @ `c0fdb2bb3007` |
 | [SanAndreasUnity](entries/engines/in0finite-sanandreasunity/README.md) | Open source reimplementation of GTA San Andreas game engine in Unity | c# | MIT | reference | [in0finite/SanAndreasUnity](https://github.com/in0finite/SanAndreasUnity) @ `2023-06-16 (branch tip at catalogue time)` |
 | [sbox-public](entries/engines/facepunch-sbox-public/README.md) | s&box is a modern game engine, built on Valve's Source 2 and the latest .NET technology, it provides a modern intuitive editor for creating games | c# | unknown | reference | [Facepunch/sbox-public](https://github.com/Facepunch/sbox-public) @ `2026-11-22 (branch tip at catalogue time)` |
+| [script-ide](entries/engines/maran23-script-ide/README.md) | Transforms the Script UI into an IDE like UI. Multiline Tabs, Splitting, Outline with unique icons that shows all members of the script. Quick search and functi | gdscript | MIT | reference | [Maran23/script-ide](https://github.com/Maran23/script-ide) @ `2026-10-20 (branch tip at catalogue time)` |
 | [Sein.js](entries/engines/hiloteam-sein-js/README.md) | Progressive web 3D game engine. | typescript | MIT | reference | [hiloteam/Sein.js](https://github.com/hiloteam/Sein.js) @ `2024-10-17 (branch tip at catalogue time)` |
 | [Serious-Engine](entries/engines/croteam-official-serious-engine/README.md) | An open source version of a game engine developed by Croteam for the classic Serious Sam games. | c++ | GPL-2.0 | reference | [Croteam-official/Serious-Engine](https://github.com/Croteam-official/Serious-Engine) @ `2020-10-31 (branch tip at catalogue time)` |
 | [server](entries/engines/runejs-server/README.md) | RuneJS is a RuneScape game server written in TypeScript and JavaScript. The goal of the project is to create a comprehensive game engine, while also providing s | typescript | GPL-3.0 | reference | [runejs/server](https://github.com/runejs/server) @ `2026-09-03 (branch tip at catalogue time)` |
@@ -506,6 +511,7 @@ _Generated 2026-11-24 22:29 UTC · 1403 entries · 363 vendored, 1040 reference-
 | [skia4delphi](entries/engines/skia4delphi-skia4delphi/README.md) | Skia4Delphi is a cross-platform 2D graphics API for Delphi platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be use | pascal | MIT | vendored | [skia4delphi/skia4delphi](https://github.com/skia4delphi/skia4delphi) @ `7bf46ee53de2` |
 | [SkiaSharp](entries/engines/mono-skiasharp/README.md) | SkiaSharp is a cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be used ac | c# | MIT | reference | [mono/SkiaSharp](https://github.com/mono/SkiaSharp) @ `0cd43f16dd4b` |
 | [skylicht-engine](entries/engines/skylicht-lab-skylicht-engine/README.md) | Skylicht Engine is C++ Game Engine based on Irrlicht 3D. And my goal is to create a high-performance and lightweight Game Framework that can seamlessly function | c++ | MIT | reference | [skylicht-lab/skylicht-engine](https://github.com/skylicht-lab/skylicht-engine) @ `d27288111de5` |
+| [SmartShape2D](entries/engines/sirramesq-smartshape2d/README.md) | A 2D Terrain Tool for Godot | gdscript | MIT | vendored | [SirRamEsq/SmartShape2D](https://github.com/SirRamEsq/SmartShape2D) @ `9617190250d0` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
 | [SolarWM](entries/engines/junchao-cs-solarwm/README.md) | Open data and scalable training for long-horizon video world models. | python | Apache-2.0 | reference | [Junchao-cs/SolarWM](https://github.com/Junchao-cs/SolarWM) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |

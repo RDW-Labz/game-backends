@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T22:45:37Z",
+ "category": "engines",
+ "commit": "2025-03-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dreadpon/godot_spatial_gardener \u2014 A Godot plugin for painting plants and props on arbitrary 3D surfaces implemented in GDScript",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot_spatial_gardener",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dreadpon-godot-spatial-gardener",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 1325,
+ "system": "A Godot plugin for painting plants and props on arbitrary 3D surfaces implemented in GDScript",
+ "upstream": "https://github.com/dreadpon/godot_spatial_gardener",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

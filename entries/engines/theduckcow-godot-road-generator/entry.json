@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T22:45:37Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "TheDuckCow/godot-road-generator \u2014 A Godot plugin for creating 3D highways/streets and lane-following traffic",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-road-generator",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "theduckcow-godot-road-generator",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 1273,
+ "system": "A Godot plugin for creating 3D highways/streets and lane-following traffic",
+ "upstream": "https://github.com/TheDuckCow/godot-road-generator",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

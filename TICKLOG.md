@@ -2876,3 +2876,11 @@ One line per 15-minute extension tick, newest last.
   - added engines/devdecoder-hiddevices (Apache-2.0, vendored)
   - reference engines/mtwilliams-libgamepad
   - reference engines/orsinium-labs-gamepad
+
+- **2026-11-24 22:45 UTC** — tick 815: +2 screened, +4 reference, 7 skipped, catalogue=1409
+  - added engines/sirramesq-smartshape2d (MIT, vendored)
+  - added engines/blackears-cyclopslevelbuilder (MIT, vendored)
+  - reference engines/cherriesandmochi-gdmaim
+  - reference engines/dreadpon-godot-spatial-gardener
+  - reference engines/theduckcow-godot-road-generator
+  - reference engines/maran23-script-ide
