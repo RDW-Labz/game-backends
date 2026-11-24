@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:23:00Z",
+ "category": "engines",
+ "commit": "2023-11-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mik14a/VOX4U \u2014 MagicaVoxel VOX Format import plugin for Unreal Engine 5",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "VOX4U",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mik14a-vox4u",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 201,
+ "system": "MagicaVoxel VOX Format import plugin for Unreal Engine 5",
+ "upstream": "https://github.com/mik14a/VOX4U",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

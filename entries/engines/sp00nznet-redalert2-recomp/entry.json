@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:22:59Z",
+ "category": "engines",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sp00nznet/redalert2-recomp \u2014 Static recompilation of Command & Conquer: Red Alert 2 / Yuri's Revenge (Westwood, 2000-01) to native C, with the remaster the engine never got: a D3D11 presenter, 720p to 4K, HD voxel units. Built on pcrecomp.",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "redalert2-recomp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "sp00nznet-redalert2-recomp",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 238,
+ "system": "Static recompilation of Command & Conquer: Red Alert 2 / Yuri's Revenge (Westwood, 2000-01) to native C, with the remaster the engine never got: a D3D11 present",
+ "upstream": "https://github.com/sp00nznet/redalert2-recomp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

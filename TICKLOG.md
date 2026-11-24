@@ -2841,3 +2841,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/bw2012-ue4voxelterrain
   - reference engines/lin20-binarymeshfitting
   - reference engines/boybaykiller-idkengine
+
+- **2026-11-24 21:23 UTC** — tick 810: +2 screened, +4 reference, 9 skipped, catalogue=1384
+  - added engines/divine-star-software-divinevoxelengine (MIT, vendored)
+  - added engines/jamesrandall-simplevoxelengine (MIT, vendored)
+  - reference engines/sp00nznet-redalert2-recomp
+  - reference engines/hugobros3-chunkstories
+  - reference engines/lallassu-voxlords
+  - reference engines/mik14a-vox4u

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:23:00Z",
+ "category": "engines",
+ "commit": "2020-10-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Lallassu/VoxLords \u2014 VoxLords - ThreeJS WebGL game with a simple voxel engine",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "VoxLords",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "lallassu-voxlords",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 201,
+ "system": "VoxLords - ThreeJS WebGL game with a simple voxel engine",
+ "upstream": "https://github.com/Lallassu/VoxLords",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

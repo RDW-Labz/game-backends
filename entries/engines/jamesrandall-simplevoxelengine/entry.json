@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T21:22:57Z",
+ "category": "engines",
+ "commit": "7dcabb818ff1",
+ "delivery": "vendored",
+ "description": "JamesRandall/SimpleVoxelEngine \u2014 A simple voxel engine written from the ground up in C++ and OpenGL",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "SimpleVoxelEngine",
+ "size_bytes": 4602080,
+ "slug": "jamesrandall-simplevoxelengine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 255,
+ "system": "A simple voxel engine written from the ground up in C++ and OpenGL",
+ "upstream": "https://github.com/JamesRandall/SimpleVoxelEngine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

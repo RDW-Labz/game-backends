@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:23:00Z",
+ "category": "engines",
+ "commit": "2025-04-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Hugobros3/chunkstories \u2014 Somewhat fancy blocky game engine written in Kotlin",
+ "language": "kotlin",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "chunkstories",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "hugobros3-chunkstories",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 223,
+ "system": "Somewhat fancy blocky game engine written in Kotlin",
+ "upstream": "https://github.com/Hugobros3/chunkstories",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

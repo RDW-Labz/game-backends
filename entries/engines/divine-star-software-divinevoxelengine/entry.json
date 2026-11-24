@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T21:22:51Z",
+ "category": "engines",
+ "commit": "5080a27d2aeb",
+ "delivery": "vendored",
+ "description": "Divine-Star-Software/DivineVoxelEngine \u2014 A multi-threaded, renderer-independent voxel engine in TypeScript. Build Minecraft-style voxel worlds and games that run in the browser.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "DivineVoxelEngine",
+ "size_bytes": 924661,
+ "slug": "divine-star-software-divinevoxelengine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 267,
+ "system": "A multi-threaded, renderer-independent voxel engine in TypeScript. Build Minecraft-style voxel worlds and games that run in the browser.",
+ "upstream": "https://github.com/Divine-Star-Software/DivineVoxelEngine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

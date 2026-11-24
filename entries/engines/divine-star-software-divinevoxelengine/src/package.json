@@ -1,0 +1,51 @@
+{
+  "name": "dve",
+  "version": "0.0.0",
+  "main": "index.js",
+  "scripts": {
+    "init:divinevoxel:vlox": "node ./scripts/init-lib.js ./packages/vlox \"@divinevoxel\"",
+    "init:divinevoxel:vlox-babylon": "node ./scripts/init-lib.js ./packages/vlox-babylon \"@divinevoxel\"",
+    "init:divinevoxel:vlox-quantum": "node ./scripts/init-lib.js ./packages/vlox-quantum \"@divinevoxel\"",
+    "init:divinevoxel:all": "npm run init:divinevoxel:vlox ; npm run init:divinevoxel:vlox-babylon ; npm run init:dvetesting:vlox",
+    "init:dvegames:vlox": "node ./scripts/init-lib.js ./games/vlox \"@dvegames\"",
+    "init:dvegames:vlox-tools": "node ./scripts/init-lib.js ./games/vlox-tools \"@dvegames\"",
+    "init:dvegames:vlox-flow": "node ./scripts/init-lib.js ./games/vlox-flow \"@dvegames\"",
+    "init:dvetesting:vlox": "node ./scripts/init-lib.js ./testing/VloxShared \"@dvetesting\"",
+    "init:dvegames:all": "npm run init:dvegames:vlox ; npm run init:dvegames:vlox-tools ; npm run init:dvegames:vlox-flow",
+    "init:all": "npm run init:divinevoxel:all ; npm run init:dvegames:all",
+    "test-vlox": "cd ./testing/Vlox ; npm run start"
+  },
+  "author": "Divine Star Software",
+  "license": "MIT",
+  "workspaces": [
+    "packages/vlox/dist",
+    "packages/vlox-babylon/dist",
+    "games/vlox/dist",
+    "games/vlox-tools/dist",
+    "games/vlox-flow/dist",
+    "testing/VloxShared/dist",
+    "packages/vlox-quantum/dist"
+  ],
+  "dependencies": {
+    "@amodx-elms/flow": "0.0.13",
+    "@amodx/suite": "^0.0.1",
+    "@babylonjs/core": "^9.15.0",
+    "@babylonjs/inspector": "^9.15.0"
+  },
+  "devDependencies": {
+    "@types/dat.gui": "^0.7.13",
+    "@webgpu/types": "^0.1.51",
+    "css-loader": "^7.1.2",
+    "dat.gui": "^0.7.9",
+    "file-loader": "^6.2.0",
+    "html-loader": "^5.1.0",
+    "html-webpack-plugin": "^5.6.3",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.1",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
+    "typescript": "^5.8.3",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.1.0"
+  }
+}

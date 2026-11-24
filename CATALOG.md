@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 20:59 UTC · 1378 entries · 355 vendored, 1023 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 21:23 UTC · 1384 entries · 357 vendored, 1027 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 571 | 133 | 438 |
+| [engines](#engines) — Game engines and engine subsystems | 577 | 135 | 442 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 20:59 UTC · 1378 entries · 355 vendored, 1023 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 571 entries
+**Game engines and engine subsystems** — 577 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -118,6 +118,7 @@ _Generated 2026-11-24 20:59 UTC · 1378 entries · 355 vendored, 1023 reference-
 | [channeld](entries/engines/channeldorg-channeld/README.md) | Next-Gen Gateway Service for distributed game servers built with Unreal or Unity Engine | go | Apache-2.0 | reference | [channeldorg/channeld](https://github.com/channeldorg/channeld) @ `2026-01-22 (branch tip at catalogue time)` |
 | [chingu](entries/engines/ippa-chingu/README.md) | OpenGL accelerated 2D game framework for Ruby | ruby | LGPL-2.1 | reference | [ippa/chingu](https://github.com/ippa/chingu) @ `d3ed0ff0e0fa` |
 | [chronos](entries/engines/chronos-kit-chronos/README.md) | A versatile framework designed to integrate high-performance 2D / 3D content and fluid animations into your app, or to create a game using a comprehensive set o | c++ | Apache-2.0 | reference | [chronos-kit/chronos](https://github.com/chronos-kit/chronos) @ `2026-07-09 (branch tip at catalogue time)` |
+| [chunkstories](entries/engines/hugobros3-chunkstories/README.md) | Somewhat fancy blocky game engine written in Kotlin | kotlin | unknown | reference | [Hugobros3/chunkstories](https://github.com/Hugobros3/chunkstories) @ `2025-04-21 (branch tip at catalogue time)` |
 | [ClashRoyaleAi](entries/engines/itzik123-clashroyaleai/README.md) | A fast, deterministic Clash Royale battle simulator in C++ with Python bindings, a recurrent PPO agent, lookahead search, and a computer-vision bridge to the re | python | MIT | vendored | [itzik123/ClashRoyaleAi](https://github.com/itzik123/ClashRoyaleAi) @ `ec28641b59e0` |
 | [cocos-engine](entries/engines/cocos-cocos-engine/README.md) | Cocos simplifies game creation and distribution with Cocos Creator, a free, open-source, cross-platform game engine. Empowering millions of developers to create | c++ | MIT | reference | [cocos/cocos-engine](https://github.com/cocos/cocos-engine) @ `90ad7072a332` |
 | [Cocos2d-x](entries/engines/cocos2d-x/README.md) | mobile-first 2D/3D engine core | c++ | MIT | reference | [cocos2d/cocos2d-x](https://github.com/cocos2d/cocos2d-x) @ `7a5282a301a1` |
@@ -142,6 +143,7 @@ _Generated 2026-11-24 20:59 UTC · 1378 entries · 355 vendored, 1023 reference-
 | [DigitalRune](entries/engines/digitalrune-digitalrune/README.md) | DigitalRune Engine - .NET libraries for developing 3D games with XNA and MonoGame | c# | unknown | reference | [DigitalRune/DigitalRune](https://github.com/DigitalRune/DigitalRune) @ `2016-06-05 (branch tip at catalogue time)` |
 | [dip](entries/engines/diptools-dip/README.md) | Rust application framework focuses on composability, ECS and Web3.  Powered by Bevy game engine, Tauri, and Dioxus. From desktop apps to the Metaverse. | rust | unknown | reference | [diptools/dip](https://github.com/diptools/dip) @ `2026-04-13 (branch tip at catalogue time)` |
 | [DirectX12GameEngine](entries/engines/aminator-directx12gameengine/README.md) | DirectX 12 .NET game engine | c# | MIT | vendored | [Aminator/DirectX12GameEngine](https://github.com/Aminator/DirectX12GameEngine) @ `efb7d4c0852c` |
+| [DivineVoxelEngine](entries/engines/divine-star-software-divinevoxelengine/README.md) | A multi-threaded, renderer-independent voxel engine in TypeScript. Build Minecraft-style voxel worlds and games that run in the browser. | typescript | MIT | vendored | [Divine-Star-Software/DivineVoxelEngine](https://github.com/Divine-Star-Software/DivineVoxelEngine) @ `5080a27d2aeb` |
 | [DLSS5oneclick](entries/engines/faisalkindi-dlss5oneclick/README.md) | One-click setup of the leaked DLSS 5 neural-rendering build for any DX11/DX12 game on RTX 20–50, with or without DLSS. ReShade + RenoDX add-on (or OptiScaler en | rust | MIT | vendored | [faisalkindi/DLSS5oneclick](https://github.com/faisalkindi/DLSS5oneclick) @ `19122547cc51` |
 | [dogfight-sandbox-hg2](entries/engines/harfang3d-dogfight-sandbox-hg2/README.md) | Air to air combat sandbox, created in Python 3 using the HARFANG 3D 2 framework. | python | GPL-3.0 | reference | [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2) @ `2026-04-01 (branch tip at catalogue time)` |
 | [dominion-ecs-java](entries/engines/dominion-dev-dominion-ecs-java/README.md) | Insanely fast ECS (Entity Component System) for Java | java | MIT | vendored | [dominion-dev/dominion-ecs-java](https://github.com/dominion-dev/dominion-ecs-java) @ `e3c99d10ffcc` |
@@ -458,6 +460,7 @@ _Generated 2026-11-24 20:59 UTC · 1378 entries · 355 vendored, 1023 reference-
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [react-native-game-engine](entries/engines/bberak-react-native-game-engine/README.md) | A lightweight Game Engine for React Native 🕹⚡🎮 | javascript | MIT | reference | [bberak/react-native-game-engine](https://github.com/bberak/react-native-game-engine) @ `2024-12-31 (branch tip at catalogue time)` |
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
+| [redalert2-recomp](entries/engines/sp00nznet-redalert2-recomp/README.md) | Static recompilation of Command & Conquer: Red Alert 2 / Yuri's Revenge (Westwood, 2000-01) to native C, with the remaster the engine never got: a D3D11 present | c | MIT | reference | [sp00nznet/redalert2-recomp](https://github.com/sp00nznet/redalert2-recomp) @ `2026-11-21 (branch tip at catalogue time)` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [ReksioEngine](entries/engines/reksioengine-reksioengine/README.md) | Reimplementation of BlooMoo and Piklib game engines for "Przygody Reksia" PC games series | typescript | none | reference | [ReksioEngine/ReksioEngine](https://github.com/ReksioEngine/ReksioEngine) @ `57871e8368b7` |
 | [renpy](entries/engines/renpy-renpy/README.md) | The Ren'Py Visual Novel Engine | ren'py | unknown | reference | [renpy/renpy](https://github.com/renpy/renpy) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -485,6 +488,7 @@ _Generated 2026-11-24 20:59 UTC · 1378 entries · 355 vendored, 1023 reference-
 | [SharpLibHid](entries/engines/slion-sharplibhid/README.md) | C# HID Library using Windows Raw Input. | c# | unknown | reference | [Slion/SharpLibHid](https://github.com/Slion/SharpLibHid) @ `2022-06-22 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [shura](entries/engines/andribaal-shura/README.md) | A safe, fast and cross-platform 2D component-based game framework written in rust | rust | Apache-2.0 | reference | [AndriBaal/shura](https://github.com/AndriBaal/shura) @ `2024-09-05 (branch tip at catalogue time)` |
+| [SimpleVoxelEngine](entries/engines/jamesrandall-simplevoxelengine/README.md) | A simple voxel engine written from the ground up in C++ and OpenGL | c++ | MIT | vendored | [JamesRandall/SimpleVoxelEngine](https://github.com/JamesRandall/SimpleVoxelEngine) @ `7dcabb818ff1` |
 | [sketch](entries/engines/vydd-sketch/README.md) | A Common Lisp framework for the creation of electronic art, visual design, game prototyping, game making, computer graphics, exploration of human-computer inter | common lisp | MIT | reference | [vydd/sketch](https://github.com/vydd/sketch) @ `2026-01-18 (branch tip at catalogue time)` |
 | [skia4delphi](entries/engines/skia4delphi-skia4delphi/README.md) | Skia4Delphi is a cross-platform 2D graphics API for Delphi platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be use | pascal | MIT | vendored | [skia4delphi/skia4delphi](https://github.com/skia4delphi/skia4delphi) @ `7bf46ee53de2` |
 | [SkiaSharp](entries/engines/mono-skiasharp/README.md) | SkiaSharp is a cross-platform 2D graphics API for .NET platforms based on Google's Skia Graphics Library. It provides a comprehensive 2D API that can be used ac | c# | MIT | reference | [mono/SkiaSharp](https://github.com/mono/SkiaSharp) @ `0cd43f16dd4b` |
@@ -555,6 +559,7 @@ _Generated 2026-11-24 20:59 UTC · 1378 entries · 355 vendored, 1023 reference-
 | [vmprint](entries/engines/cosmiciron-vmprint/README.md) | This layout engine can solve the hardest layout problems imaginable. Its output is DTP grade and deterministic. It's faster than engines written in C++ because  | typescript | Apache-2.0 | reference | [cosmiciron/vmprint](https://github.com/cosmiciron/vmprint) @ `1e327f9a0e7a` |
 | [Void](entries/engines/shmellyorc-void/README.md) | A modular, extensible 2D game framework for .NET. | c# | MIT | vendored | [Shmellyorc/Void](https://github.com/Shmellyorc/Void) @ `fee9b4ffecfe` |
 | [vox2](entries/engines/lallassu-vox2/README.md) | Simple POC of PCG voxel-engine | javascript | MIT | vendored | [Lallassu/vox2](https://github.com/Lallassu/vox2) @ `4280b7463082` |
+| [VOX4U](entries/engines/mik14a-vox4u/README.md) | MagicaVoxel VOX Format import plugin for Unreal Engine 5 | c++ | MIT | reference | [mik14a/VOX4U](https://github.com/mik14a/VOX4U) @ `2023-11-11 (branch tip at catalogue time)` |
 | [voxel-engine](entries/engines/max-mapper-voxel-engine/README.md) | 3D HTML5 voxel game engine | javascript | BSD-3-Clause | reference | [max-mapper/voxel-engine](https://github.com/max-mapper/voxel-engine) @ `2017-12-08 (branch tip at catalogue time)` |
 | [voxel-mesh-generation](entries/engines/vercidium-voxel-mesh-generation/README.md) | Optimised voxel mesh generation, written in C# and open sourced from the Vercidium Engine. | c# | Apache-2.0 | reference | [Vercidium/voxel-mesh-generation](https://github.com/Vercidium/voxel-mesh-generation) @ `2024-03-27 (branch tip at catalogue time)` |
 | [voxel-physics-engine](entries/engines/fenomas-voxel-physics-engine/README.md) | Simple but physical engine for voxels. Demo:  | javascript | MIT | reference | [fenomas/voxel-physics-engine](https://github.com/fenomas/voxel-physics-engine) @ `2024-03-15 (branch tip at catalogue time)` |
@@ -568,6 +573,7 @@ _Generated 2026-11-24 20:59 UTC · 1378 entries · 355 vendored, 1023 reference-
 | [voxelize](entries/engines/voxelize-voxelize/README.md) | :mushroom: Full stack voxel engine | typescript | MIT | reference | [voxelize/voxelize](https://github.com/voxelize/voxelize) @ `2026-11-23 (branch tip at catalogue time)` |
 | [voxelman](entries/engines/mrsmith33-voxelman/README.md) | Plugin-based client-server voxel game engine written in D language | d | BSL-1.0 | reference | [MrSmith33/voxelman](https://github.com/MrSmith33/voxelman) @ `2022-05-10 (branch tip at catalogue time)` |
 | [VoxelPluginFreeLegacy](entries/engines/voxelplugin-voxelpluginfreelegacy/README.md) | Voxel Plugin Legacy for Unreal Engine | c++ | none | reference | [VoxelPlugin/VoxelPluginFreeLegacy](https://github.com/VoxelPlugin/VoxelPluginFreeLegacy) @ `7e64a89ce827` |
+| [VoxLords](entries/engines/lallassu-voxlords/README.md) | VoxLords - ThreeJS WebGL game with a simple voxel engine | javascript | MIT | reference | [Lallassu/VoxLords](https://github.com/Lallassu/VoxLords) @ `2020-10-01 (branch tip at catalogue time)` |
 | [voxplat](entries/engines/kosshi-net-voxplat/README.md) | A hybrid voxel rendering engine | c | unknown | reference | [kosshi-net/voxplat](https://github.com/kosshi-net/voxplat) @ `2022-02-21 (branch tip at catalogue time)` |
 | [vulkan-renderer](entries/engines/inexorgame-vulkan-renderer/README.md) | A new, render-graph based 3D game engine for Linux and Windows using C++20 and Vulkan API 1.3 (in early development) | c++ | MIT | reference | [inexorgame/vulkan-renderer](https://github.com/inexorgame/vulkan-renderer) @ `2026-11-07 (branch tip at catalogue time)` |
 | [vx_bevy](entries/engines/game4all-vx-bevy/README.md) | 🧊 Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy. | rust | MIT | reference | [Game4all/vx_bevy](https://github.com/Game4all/vx_bevy) @ `2024-12-11 (branch tip at catalogue time)` |

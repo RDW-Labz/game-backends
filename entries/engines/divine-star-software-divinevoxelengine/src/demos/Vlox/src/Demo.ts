@@ -1,0 +1,195 @@
+import { LoadingScreen } from "./Loader/LoadingScreen";
+LoadingScreen.Init();
+import { Engine } from "@babylonjs/core/Engines/engine";
+import { WebGPUEngine } from "@babylonjs/core/Engines/webgpuEngine";
+import { Scene } from "@babylonjs/core/scene";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector";
+import { FreeCamera } from "@babylonjs/core/Cameras/freeCamera";
+
+import { DVEVoxelData } from "@dvetesting/vlox/Data/VoxelData";
+import { Textures } from "@dvetesting/vlox/Data/TextureData";
+import { StartRenderer } from "@divinevoxel/vlox/Init/StartRenderer";
+import { DebugGenMap } from "@divinevoxel/vlox-babylon/Debug/GenMap/DebugGenMap";
+
+import { Tools } from "@babylonjs/core/Misc/tools";
+import { DVEBabylonRenderer } from "@divinevoxel/vlox-babylon/Renderer/DVEBabylonRenderer";
+import InitPBR from "Init/InitPBR";
+import InitClassic from "Init/InitClassic";
+export async function Demo() {
+  await LoadingScreen.Show();
+
+  LoadingScreen.progress.text("Init");
+  LoadingScreen.progress.value = 0;
+
+  const params = new URLSearchParams(
+    new URL(window.location.href).searchParams,
+  );
+  const appContainer = document.createElement("div");
+  appContainer.id = "render-canvas-container";
+  const canvas = document.createElement("canvas");
+  canvas.id = "render-canvas";
+  document.body.append(appContainer);
+  appContainer.append(canvas);
+
+  const halfThreads = Math.ceil((navigator.hardwareConcurrency - 3) / 2);
+  const worldWorker = new Worker(
+    new URL("./Contexts/World/", import.meta.url),
+    {
+      type: "module",
+    },
+  );
+
+  const mesherWorkers: Worker[] = [];
+  for (let i = 0; i < halfThreads; i++) {
+    mesherWorkers.push(
+      new Worker(new URL("./Contexts/Mesher/", import.meta.url), {
+        type: "module",
+      }),
+    );
+  }
+  const generatorWorkers: Worker[] = [];
+  for (let i = 0; i < halfThreads; i++) {
+    generatorWorkers.push(
+      new Worker(new URL("./Contexts/Generator", import.meta.url), {
+        type: "module",
+      }),
+    );
+  }
+
+  let antialias = false;
+  let engine: Engine | WebGPUEngine;
+  const isWebGPUSuppourted =
+    params.get("webgpu") && (await WebGPUEngine.IsSupportedAsync);
+  if (isWebGPUSuppourted) {
+    engine = new WebGPUEngine(canvas);
+    const glslangOptions = {
+      jsPath: "libs/glslang/glslang.js",
+      wasmPath: "libs/glslang/glslang.wasm",
+    };
+
+    const twgslOptions = {
+      jsPath: "libs/twgsl/twgsl.js",
+      wasmPath: "libs/twgsl/twgsl.wasm",
+    };
+
+    await engine.initAsync(glslangOptions, twgslOptions);
+  } else {
+    engine = new Engine(canvas, antialias, {
+      powerPreference: "high-performance",
+    });
+  }
+
+  engine.doNotHandleContextLost = true;
+  engine.enableOfflineSupport = false;
+
+  engine.setSize(window.innerWidth, window.innerHeight);
+  let dirty = false;
+  window.addEventListener("resize", function () {
+    engine.resize();
+    dirty = true;
+  });
+
+  const canvasResized = new ResizeObserver(() => {
+    engine.resize();
+    dirty = true;
+  });
+  canvasResized.observe(canvas!);
+  const scene = new Scene(engine);
+  scene.clearColor.set(1, 1, 1, 0);
+  /*   const light = new HemisphericLight("", new Vector3(0, 0, 0), scene);
+  light.specular.set(0, 0, 0); */
+
+  const camera = new FreeCamera("", new Vector3(-1, 64, -1), scene);
+
+  camera.setTarget(new Vector3(8, 0, 8));
+
+  camera.speed = 2;
+  camera.maxZ = 500;
+  camera.minZ = 0.01;
+  camera.fov = Tools.ToRadians(70);
+  camera.attachControl(canvas, true);
+
+  scene.activeCamera = camera;
+  scene.collisionsEnabled = false;
+  camera.inertia = 0.2;
+
+  await LoadingScreen.progress.updateProgressPercent(100);
+
+  LoadingScreen.progress.text("Init Babylon DVE Renderer");
+  LoadingScreen.progress.value = 0;
+
+  let renderer: DVEBabylonRenderer;
+  if (params.has("pbr")) {
+    renderer = await InitPBR({
+      scene: scene,
+      textureData: Textures,
+      voxelData: DVEVoxelData,
+      camera,
+    });
+  } else {
+    renderer = await InitClassic({
+      scene: scene,
+      textureData: Textures,
+      voxelData: DVEVoxelData,
+      camera,
+    });
+  }
+
+  await LoadingScreen.progress.updateProgressPercent(100);
+
+  LoadingScreen.progress.text("Init Divine Voxel Engine");
+  LoadingScreen.progress.value = 0;
+
+  renderer.sceneOptions.levels.sunLevel = 1;
+
+  const DVER = await StartRenderer({
+    rendererSettings: {
+      cpuBound: true,
+    },
+    renderer,
+    worldWorker,
+    mesherWorkers,
+    generatorWorkers,
+    voxels: DVEVoxelData,
+    memoryAndCPU: {
+      useSharedMemory: false,
+    },
+  });
+
+  await LoadingScreen.progress.updateProgressPercent(100);
+
+  if (params.get("tools")) {
+    LoadingScreen.progress.text("Init DVE Tools");
+    LoadingScreen.progress.value = 0;
+    const initTools = (await import("./Init/InitTools")).default;
+    await initTools({ voxelData: DVEVoxelData, scene, renderer });
+    await LoadingScreen.progress.updateProgressPercent(100);
+  }
+
+  const demo = params.get("demo")!;
+  if (params.get("debug-map")) {
+    DVER.threads.world.runTask("enable-debug-map", []);
+    const map = new DebugGenMap(DVER);
+    map.init(camera.globalPosition, Vector3.Zero(), 0);
+  }
+
+  engine.runRenderLoop(() => {
+    scene.render();
+  });
+
+  LoadingScreen.progress.text("Create World");
+  LoadingScreen.progress.value = 0;
+
+  DVER.threads.generators.runTaskForAll("set-gen-type", demo);
+  
+  await LoadingScreen.levelLoaderProgress.init();
+  LoadingScreen.levelLoaderProgress.start();
+
+  await DVER.threads.world.runTaskAsync("start-world", []);
+
+  await LoadingScreen.progress.updateProgressPercent(100);
+  LoadingScreen.progress.text("Done");
+  LoadingScreen.levelLoaderProgress.stop();
+
+  await LoadingScreen.Hide();
+}

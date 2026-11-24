@@ -1,0 +1,11 @@
+dist
+node_modules
+package-lock.json
+meta.json
+*.env
+emsdk
+.vscode
+/local
+localscripts
+/demos/Vlox/out
+.npmrc
