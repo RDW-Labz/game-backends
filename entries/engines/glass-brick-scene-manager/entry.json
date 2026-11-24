@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T23:01:32Z",
+ "category": "engines",
+ "commit": "bf3b1feff0e3",
+ "delivery": "reference",
+ "description": "glass-brick/Scene-Manager \u2014 Godot plugin for managing scenes and transitions",
+ "language": "gdscript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Scene-Manager",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 691055,
+ "slug": "glass-brick-scene-manager",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 657,
+ "system": "Godot plugin for managing scenes and transitions",
+ "upstream": "https://github.com/glass-brick/Scene-Manager",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

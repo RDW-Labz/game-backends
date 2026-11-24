@@ -2884,3 +2884,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/dreadpon-godot-spatial-gardener
   - reference engines/theduckcow-godot-road-generator
   - reference engines/maran23-script-ide
+
+- **2026-11-24 23:01 UTC** — tick 816: +2 screened, +4 reference, 6 skipped, catalogue=1415
+  - added engines/ericdowney-signalvisualizer (MIT, vendored)
+  - added engines/glass-brick-scene-manager (none, reference)
+  - reference engines/poingstudios-godot-admob-plugin
+  - reference engines/toumakamijou-yugens-terrain-authoring-toolkit
+  - reference engines/icterusgames-simplegrasstextured
+  - reference engines/daxianlee-godot-mcp

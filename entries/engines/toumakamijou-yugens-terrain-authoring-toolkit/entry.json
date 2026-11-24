@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:01:34Z",
+ "category": "engines",
+ "commit": "2026-10-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ToumaKamijou/Yugens-Terrain-Authoring-Toolkit \u2014 The public version of the Marching Squares Terrain plugin for godot.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Yugens-Terrain-Authoring-Toolkit",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "toumakamijou-yugens-terrain-authoring-toolkit",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 655,
+ "system": "The public version of the Marching Squares Terrain plugin for godot.",
+ "upstream": "https://github.com/ToumaKamijou/Yugens-Terrain-Authoring-Toolkit",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

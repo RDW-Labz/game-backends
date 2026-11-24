@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:01:34Z",
+ "category": "engines",
+ "commit": "2026-10-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "IcterusGames/SimpleGrassTextured \u2014 Plugin to make grass on Godot 4",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SimpleGrassTextured",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "icterusgames-simplegrasstextured",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 587,
+ "system": "Plugin to make grass on Godot 4",
+ "upstream": "https://github.com/IcterusGames/SimpleGrassTextured",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

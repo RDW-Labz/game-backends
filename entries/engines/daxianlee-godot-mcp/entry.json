@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:01:34Z",
+ "category": "engines",
+ "commit": "2026-01-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "DaxianLee/godot-mcp \u2014 \u4e00\u6b3e\u652f\u6301godot\u5f00\u6e90\u5f15\u64ce\u7684\u7684mcp\u63d2\u4ef6\uff0c\u652f\u6301\u5e38\u89c1godot\u5f15\u64ce\u64cd\u4f5c\uff0c\u4e00\u952e\u914d\u7f6e\u670d\u52a1\u3002This is an MCP plugin that supports the Godot open-source engine, offering support for common Godot engine operations and one-click service configuration.",
+ "language": "gdscript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "godot-mcp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "daxianlee-godot-mcp",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 558,
+ "system": "\u4e00\u6b3e\u652f\u6301godot\u5f00\u6e90\u5f15\u64ce\u7684\u7684mcp\u63d2\u4ef6\uff0c\u652f\u6301\u5e38\u89c1godot\u5f15\u64ce\u64cd\u4f5c\uff0c\u4e00\u952e\u914d\u7f6e\u670d\u52a1\u3002This is an MCP plugin that supports the Godot open-source engine, offering support for common Godot engine operations ",
+ "upstream": "https://github.com/DaxianLee/godot-mcp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

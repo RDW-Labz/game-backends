@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T23:01:30Z",
+ "category": "engines",
+ "commit": "06a46e553897",
+ "delivery": "vendored",
+ "description": "Ericdowney/SignalVisualizer \u2014 A plugin for Godot 4.x. SignalVisualizer displays the current scene's signals and connections in a easy to read graph and tree dock.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "SignalVisualizer",
+ "size_bytes": 36304,
+ "slug": "ericdowney-signalvisualizer",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 693,
+ "system": "A plugin for Godot 4.x. SignalVisualizer displays the current scene's signals and connections in a easy to read graph and tree dock.",
+ "upstream": "https://github.com/Ericdowney/SignalVisualizer",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
