@@ -2870,3 +2870,9 @@ One line per 15-minute extension tick, newest last.
   - added engines/raylib-extras-raytilemap (Zlib, vendored)
   - added engines/zulu-inuoe-cl-tiled (Zlib, vendored)
   - reference engines/allison-casey-wavefunctioncollapse-clj
+
+- **2026-11-24 22:29 UTC** — tick 814: +2 screened, +2 reference, 12 skipped, catalogue=1403
+  - added engines/jbuck-input-js (MIT, vendored)
+  - added engines/devdecoder-hiddevices (Apache-2.0, vendored)
+  - reference engines/mtwilliams-libgamepad
+  - reference engines/orsinium-labs-gamepad

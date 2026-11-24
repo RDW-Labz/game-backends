@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T22:29:35Z",
+ "category": "engines",
+ "commit": "e2147a3e835f",
+ "delivery": "vendored",
+ "description": "DevDecoder/HIDDevices \u2014 Cross-platform .NET Standard library for asynchronous controller input reading (e.g. gamepads, joysticks, etc.)",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "HIDDevices",
+ "size_bytes": 1434309,
+ "slug": "devdecoder-hiddevices",
+ "source": "github-search:input library gamepad stars:>20",
+ "stars": 48,
+ "system": "Cross-platform .NET Standard library for asynchronous controller input reading (e.g. gamepads, joysticks, etc.)",
+ "upstream": "https://github.com/DevDecoder/HIDDevices",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

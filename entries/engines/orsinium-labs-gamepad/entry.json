@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T22:29:37Z",
+ "category": "engines",
+ "commit": "2021-08-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "orsinium-labs/gamepad \u2014 \ud83c\udfae Cross-platform Go library to read input from an Xbox 360 controller (or another compatible gamepad).",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "gamepad",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "orsinium-labs-gamepad",
+ "source": "github-search:input library gamepad stars:>20",
+ "stars": 25,
+ "system": "\ud83c\udfae Cross-platform Go library to read input from an Xbox 360 controller (or another compatible gamepad).",
+ "upstream": "https://github.com/orsinium-labs/gamepad",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

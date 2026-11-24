@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 22:13 UTC · 1399 entries · 361 vendored, 1038 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 22:29 UTC · 1403 entries · 363 vendored, 1040 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 592 | 139 | 453 |
+| [engines](#engines) — Game engines and engine subsystems | 596 | 141 | 455 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 22:13 UTC · 1399 entries · 361 vendored, 1038 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 592 entries
+**Game engines and engine subsystems** — 596 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -235,6 +235,7 @@ _Generated 2026-11-24 22:13 UTC · 1399 entries · 361 vendored, 1038 reference-
 | [GameDevMind](entries/engines/gonglei007-gamedevmind/README.md) | 最全面的游戏开发技术图谱(Game Development Map)。帮助游戏开发者们在已知问题上节省时间，省出更多的精力投入到更有创造性的工作中去。 | python | MIT | vendored | [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) @ `652be106e9df` |
 | [GameDevMind-EN](entries/engines/gonglei007-gamedevmind-en/README.md) | The most comprehensive technical map of game development. Help game developers save time on known problems and save more energy for more creative work. | shell | MIT | reference | [gonglei007/GameDevMind-EN](https://github.com/gonglei007/GameDevMind-EN) @ `2023-10-18 (branch tip at catalogue time)` |
 | [GameFramework](entries/engines/ellanjiang-gameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | vendored | [EllanJiang/GameFramework](https://github.com/EllanJiang/GameFramework) @ `d0c010b05167` |
+| [gamepad](entries/engines/orsinium-labs-gamepad/README.md) | 🎮 Cross-platform Go library to read input from an Xbox 360 controller (or another compatible gamepad). | go | MIT | reference | [orsinium-labs/gamepad](https://github.com/orsinium-labs/gamepad) @ `2021-08-12 (branch tip at catalogue time)` |
 | [Gamepad](entries/engines/piborg-gamepad/README.md) | A simple library for getting game controller and joystick inputs into Python in Linux. | python | MIT | vendored | [piborg/Gamepad](https://github.com/piborg/Gamepad) @ `016628623078` |
 | [GamepadMotionHelpers](entries/engines/jibbsmart-gamepadmotionhelpers/README.md) | Lightweight header-only library for sensor fusion, gyro calibration, etc. BYO input library (eg SDL2). | c++ | MIT | reference | [JibbSmart/GamepadMotionHelpers](https://github.com/JibbSmart/GamepadMotionHelpers) @ `2026-07-13 (branch tip at catalogue time)` |
 | [gameplay](entries/engines/gameplay3d-gameplay/README.md) | Open-source, cross-platform, C++ game engine for creating 2D/3D games. | c++ | unknown | reference | [gameplay3d/gameplay](https://github.com/gameplay3d/gameplay) @ `2025-02-25 (branch tip at catalogue time)` |
@@ -295,6 +296,7 @@ _Generated 2026-11-24 22:13 UTC · 1399 entries · 361 vendored, 1038 reference-
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
 | [hex-engine](entries/engines/suchipi-hex-engine/README.md) | A modern 2D game engine for the browser. | typescript | none | reference | [suchipi/hex-engine](https://github.com/suchipi/hex-engine) @ `17f41d6902c0` |
 | [HexaEngine](entries/engines/hexaengine-hexaengine/README.md) | The official repo of the HexaEngine game engine | c# | MIT | reference | [HexaEngine/HexaEngine](https://github.com/HexaEngine/HexaEngine) @ `2026-08-22 (branch tip at catalogue time)` |
+| [HIDDevices](entries/engines/devdecoder-hiddevices/README.md) | Cross-platform .NET Standard library for asynchronous controller input reading (e.g. gamepads, joysticks, etc.) | c# | Apache-2.0 | vendored | [DevDecoder/HIDDevices](https://github.com/DevDecoder/HIDDevices) @ `e2147a3e835f` |
 | [hoodie-legacy](entries/engines/greencrowdev-hoodie-legacy/README.md) | Hoodie is a plugin for Godot Engine 4 that offers a visual scripting interface for generating procedural geometry. | c++ | MIT | vendored | [GreenCrowDev/hoodie-legacy](https://github.com/GreenCrowDev/hoodie-legacy) @ `f860d4ce2afe` |
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
 | [hyperion](entries/engines/hyperion-mc-hyperion/README.md) | Minecraft game engine for massive custom events | rust | Apache-2.0 | reference | [hyperion-mc/hyperion](https://github.com/hyperion-mc/hyperion) @ `2026-10-29 (branch tip at catalogue time)` |
@@ -306,6 +308,7 @@ _Generated 2026-11-24 22:13 UTC · 1399 entries · 361 vendored, 1038 reference-
 | [imgui-godot](entries/engines/pkdawson-imgui-godot/README.md) | Dear ImGui plugin for Godot 4 | c++ | MIT | vendored | [pkdawson/imgui-godot](https://github.com/pkdawson/imgui-godot) @ `8a9f0c423533` |
 | [Infernux](entries/engines/chenlizheme-infernux/README.md) | Building a Neural Network-Native Engine (3N). Python authoring, C++ runtime, Vulkan/WebGPU. Windows, Linux, Android and Web. | python | MIT | reference | [ChenlizheMe/Infernux](https://github.com/ChenlizheMe/Infernux) @ `b5eba5c42ea0` |
 | [inks2d](entries/engines/nicklessone-inks2d/README.md) | A free no-dependency Typescript game engine designed for developing 2D games | typescript | MIT | reference | [NicklessOne/inks2d](https://github.com/NicklessOne/inks2d) @ `2023-08-23 (branch tip at catalogue time)` |
+| [input.js](entries/engines/jbuck-input-js/README.md) | Input.js is a JavaScript library to map controller and OS-specific USB enumerations provided by the Gamepad API in Mozilla Firefox to an ideal virtual gamepad. | javascript | MIT | vendored | [jbuck/input.js](https://github.com/jbuck/input.js) @ `1edf2a435417` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
 | [Jin](entries/engines/chaifix-jin/README.md) | A 2D game framework for simplifying game making process in Lua.  | c++ | MIT | reference | [chaifix/Jin](https://github.com/chaifix/Jin) @ `2017-08-09 (branch tip at catalogue time)` |
@@ -324,6 +327,7 @@ _Generated 2026-11-24 22:13 UTC · 1399 entries · 361 vendored, 1038 reference-
 | [lena](entries/engines/lichendust-lena/README.md) | 🕹️ A handmade framework for making tiny games | odin | BSD-3-Clause | reference | [lichendust/lena](https://github.com/lichendust/lena) @ `2026-07-23 (branch tip at catalogue time)` |
 | [leven](entries/engines/nickgildea-leven/README.md) | Complete source for my experimental voxel engine | c++ | Unlicense | reference | [nickgildea/leven](https://github.com/nickgildea/leven) @ `2017-10-09 (branch tip at catalogue time)` |
 | [LGame](entries/engines/cping-lgame/README.md) | A cross-platform Java game Engine (Framework) , support JavaFX / Android / IOS / HTML5 / Linux / MAC / Windows | java | Apache-2.0 | reference | [cping/LGame](https://github.com/cping/LGame) @ `2026-06-05 (branch tip at catalogue time)` |
+| [libgamepad](entries/engines/mtwilliams-libgamepad/README.md) | :video_game: Cross-platform library for gamepad input.  MIT licensed. | c | MIT | reference | [mtwilliams/libgamepad](https://github.com/mtwilliams/libgamepad) @ `2021-06-12 (branch tip at catalogue time)` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [libgdx-demos](entries/engines/alistairrutherford-libgdx-demos/README.md) | LibGDX Demos using my LibGDX Scene2D netthreads-libgdx extension library. | java | unknown | reference | [alistairrutherford/libgdx-demos](https://github.com/alistairrutherford/libgdx-demos) @ `2016-11-27 (branch tip at catalogue time)` |
 | [libgdx-inGameConsole](entries/engines/strongjoshua-libgdx-ingameconsole/README.md) | A LibGdx library that allows a developer to add a console (similar to how it is featured in Source games) to their game. | java | Apache-2.0 | vendored | [StrongJoshua/libgdx-inGameConsole](https://github.com/StrongJoshua/libgdx-inGameConsole) @ `6ef713ee3fe2` |

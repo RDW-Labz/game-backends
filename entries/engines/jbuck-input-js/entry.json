@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T22:29:31Z",
+ "category": "engines",
+ "commit": "1edf2a435417",
+ "delivery": "vendored",
+ "description": "jbuck/input.js \u2014 Input.js is a JavaScript library to map controller and OS-specific USB enumerations provided by the Gamepad API in Mozilla Firefox to an ideal virtual gamepad.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "input.js",
+ "size_bytes": 28961,
+ "slug": "jbuck-input-js",
+ "source": "github-search:input library gamepad stars:>20",
+ "stars": 58,
+ "system": "Input.js is a JavaScript library to map controller and OS-specific USB enumerations provided by the Gamepad API in Mozilla Firefox to an ideal virtual gamepad.",
+ "upstream": "https://github.com/jbuck/input.js",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

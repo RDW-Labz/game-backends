@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T22:29:37Z",
+ "category": "engines",
+ "commit": "2021-06-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mtwilliams/libgamepad \u2014 :video_game: Cross-platform library for gamepad input.  MIT licensed.",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "libgamepad",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mtwilliams-libgamepad",
+ "source": "github-search:input library gamepad stars:>20",
+ "stars": 25,
+ "system": ":video_game: Cross-platform library for gamepad input.  MIT licensed.",
+ "upstream": "https://github.com/mtwilliams/libgamepad",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
