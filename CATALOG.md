@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 17:36 UTC · 1312 entries · 336 vendored, 976 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 17:55 UTC · 1318 entries · 338 vendored, 980 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 505 | 114 | 391 |
+| [engines](#engines) — Game engines and engine subsystems | 511 | 116 | 395 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 17:36 UTC · 1312 entries · 336 vendored, 976 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 505 entries
+**Game engines and engine subsystems** — 511 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -31,6 +31,7 @@ _Generated 2026-11-24 17:36 UTC · 1312 entries · 336 vendored, 976 reference-o
 | [advjs](entries/engines/yunyoujun-advjs/README.md) | 🎮 ADV.JS Web AVG Engine 面向未来与前端的文字冒险游戏引擎（WIP） | typescript | MPL-2.0 | reference | [YunYouJun/advjs](https://github.com/YunYouJun/advjs) @ `2026-11-20 (branch tip at catalogue time)` |
 | [aframe](entries/engines/aframevr-aframe/README.md) | :a: Web framework for building virtual reality experiences. | javascript | MIT | reference | [aframevr/aframe](https://github.com/aframevr/aframe) @ `2026-07-13 (branch tip at catalogue time)` |
 | [agent-game-forge](entries/engines/0x0funky-agent-game-forge/README.md) | The local-first, bring-your-own-agent 2D game IDE. Codex or Claude Code drives, multi-engine on the roadmap. | typescript | Apache-2.0 | reference | [0x0funky/agent-game-forge](https://github.com/0x0funky/agent-game-forge) @ `2026-05-20 (branch tip at catalogue time)` |
+| [agentodyssey](entries/engines/agentodyssey-agentodyssey/README.md) | Open-Ended Long-Horizon Text Game Generation for Test-Time Continual Learning Agents | python | Apache-2.0 | reference | [agentodyssey/agentodyssey](https://github.com/agentodyssey/agentodyssey) @ `2026-10-19 (branch tip at catalogue time)` |
 | [Ambient](entries/engines/ambientrun-ambient/README.md) | The multiplayer game engine | rust | Apache-2.0 | reference | [AmbientRun/Ambient](https://github.com/AmbientRun/Ambient) @ `2025-01-07 (branch tip at catalogue time)` |
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AndEngine](entries/engines/nicolasgramlich-andengine/README.md) | Free Android 2D OpenGL Game Engine | java | Apache-2.0 | reference | [nicolasgramlich/AndEngine](https://github.com/nicolasgramlich/AndEngine) @ `2018-11-16 (branch tip at catalogue time)` |
@@ -352,6 +353,7 @@ _Generated 2026-11-24 17:36 UTC · 1312 entries · 336 vendored, 976 reference-o
 | [openreliant](entries/engines/openreliant-openreliant/README.md) | An open-source reimplementation of StarLancer's engine, in Zig on SDL3. Needs your own copy of the game. | zig | GPL-3.0 | reference | [OpenReliant/openreliant](https://github.com/OpenReliant/openreliant) @ `6f7aed3d7f6f` |
 | [OpenSurge — core](entries/engines/opensurge-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [opentk](entries/engines/opentk-opentk/README.md) | The Open Toolkit library is a fast, low-level C# wrapper for OpenGL, OpenAL & OpenCL. It also includes windowing, mouse, keyboard and joystick input and a robus | c# | MIT | vendored | [opentk/opentk](https://github.com/opentk/opentk) @ `21a53d478fd9` |
+| [OpenUniverse](entries/engines/matinafzal-openuniverse/README.md) | 3D Infinite Computer Universe | python | MIT | vendored | [MatinAfzal/OpenUniverse](https://github.com/MatinAfzal/OpenUniverse) @ `520b1022ef95` |
 | [optick — core](entries/engines/optick-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
 | [orbit](entries/engines/bijington-orbit/README.md) | The Orbit engine is a game engine built on top of .NET MAUI Graphics. The objective is to firstly enjoy the journey of building a game engine and secondly provi | c# | unknown | reference | [bijington/orbit](https://github.com/bijington/orbit) @ `2025-07-29 (branch tip at catalogue time)` |
 | [ouzel](entries/engines/elnormous-ouzel/README.md) | C++ game engine for Windows, macOS, Linux, iOS, tvOS, Android, and web browsers | c++ | Unlicense | reference | [elnormous/ouzel](https://github.com/elnormous/ouzel) @ `2024-03-01 (branch tip at catalogue time)` |
@@ -361,6 +363,7 @@ _Generated 2026-11-24 17:36 UTC · 1312 entries · 336 vendored, 976 reference-o
 | [oxygen](entries/engines/flame-engine-oxygen/README.md) | A lightweight Entity Component System written in Dart. | dart | MIT | reference | [flame-engine/oxygen](https://github.com/flame-engine/oxygen) @ `2024-03-19 (branch tip at catalogue time)` |
 | [PainterEngine](entries/engines/matrixcascade-painterengine/README.md) | PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C | c | MIT | reference | [matrixcascade/PainterEngine](https://github.com/matrixcascade/PainterEngine) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
+| [panic-panda](entries/engines/gabdube-panic-panda/README.md) | A 3D rendering demo powered by Python and Vulkan | python | MIT | vendored | [gabdube/panic-panda](https://github.com/gabdube/panic-panda) @ `ecbda506eeaf` |
 | [Pekka-Kana-2 — engine](entries/engines/pekka-kana-2-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | vendored | [danilolc/pk2](https://github.com/danilolc/pk2) @ `b1c5597` |
 | [permafrost-engine](entries/engines/eduard-permyakov-permafrost-engine/README.md) | An OpenGL RTS game engine written in C | c | GPL-3.0 | reference | [eduard-permyakov/permafrost-engine](https://github.com/eduard-permyakov/permafrost-engine) @ `2026-11-21 (branch tip at catalogue time)` |
 | [phantom-camera](entries/engines/ramokz-phantom-camera/README.md) | A Camera addon for Godot 4. Inspired by Cinemachine.  | gdscript | MIT | reference | [ramokz/phantom-camera](https://github.com/ramokz/phantom-camera) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -397,6 +400,8 @@ _Generated 2026-11-24 17:36 UTC · 1312 entries · 336 vendored, 976 reference-o
 | [pyera](entries/engines/qsjl11-pyera/README.md) | Era-like game engine by python | python | unknown | reference | [qsjl11/pyera](https://github.com/qsjl11/pyera) @ `2017-08-31 (branch tip at catalogue time)` |
 | [pylash_engine](entries/engines/yuehaowang-pylash-engine/README.md) | A lightweight and relaxed game engine for Python. | python | MIT | reference | [yuehaowang/pylash_engine](https://github.com/yuehaowang/pylash_engine) @ `2021-03-12 (branch tip at catalogue time)` |
 | [pyrite64](entries/engines/hailtododongo-pyrite64/README.md) | N64 Game-Engine and Editor using libdragon & tiny3d | c++ | MIT | reference | [HailToDodongo/pyrite64](https://github.com/HailToDodongo/pyrite64) @ `2026-11-22 (branch tip at catalogue time)` |
+| [PyRPG_Mini](entries/engines/crawsome-pyrpg-mini/README.md) | A small Python RPG, focused on RPG elements like battle and grinding | python | MIT | reference | [crawsome/PyRPG_Mini](https://github.com/crawsome/PyRPG_Mini) @ `2026-11-09 (branch tip at catalogue time)` |
+| [pyved-engine](entries/engines/pyved-solution-pyved-engine/README.md) | a pythonic❤️ modern game engine. Compatible with Python 3.x and built around pygame | python | LGPL-3.0 | reference | [pyved-solution/pyved-engine](https://github.com/pyved-solution/pyved-engine) @ `2026-06-08 (branch tip at catalogue time)` |
 | [pyxel](entries/engines/kitao-pyxel/README.md) | A retro game engine for Python | rust | unknown | reference | [kitao/pyxel](https://github.com/kitao/pyxel) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Qake](entries/engines/lallassu-qake/README.md) | Qake voxel-engine demo | javascript | MIT | vendored | [Lallassu/Qake](https://github.com/Lallassu/Qake) @ `6c8da7a83b72` |
 | [Quasi-Engine](entries/engines/indt-quasi-engine/README.md) | Quasi Engine is a framework that intends to be a complete toolset to ease 2d game development, providing ready-to-use QML elements representing basic game entit | c++ | LGPL-3.0 | reference | [INdT/Quasi-Engine](https://github.com/INdT/Quasi-Engine) @ `7d496613c31b` |
@@ -456,6 +461,7 @@ _Generated 2026-11-24 17:36 UTC · 1312 entries · 336 vendored, 976 reference-o
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
 | [Terasology](entries/engines/movingblocks-terasology/README.md) | Terasology - open source voxel world | java | Apache-2.0 | reference | [MovingBlocks/Terasology](https://github.com/MovingBlocks/Terasology) @ `2026-11-18 (branch tip at catalogue time)` |
 | [termloop](entries/engines/joelotter-termloop/README.md) | Terminal-based game engine for Go, built on top of Termbox | go | MIT | vendored | [JoelOtter/termloop](https://github.com/JoelOtter/termloop) @ `5f7c38744afb` |
+| [TerraCraft](entries/engines/retrofloppy77-terracraft/README.md) | Voxel Engine written in Python 3 + Pyglet. | python | GPL-3.0 | reference | [RetroFloppy77/TerraCraft](https://github.com/RetroFloppy77/TerraCraft) @ `2026-11-08 (branch tip at catalogue time)` |
 | [tetra](entries/engines/17cupsofcoffee-tetra/README.md) | 🎮 A simple 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/tetra](https://github.com/17cupsofcoffee/tetra) @ `2026-07-22 (branch tip at catalogue time)` |
 | [the-superviral-word-game](entries/engines/the-illarionov-the-superviral-word-game/README.md) | A Vue word game based on the Yakut national sport "Mas-wrestling". Uses XState for state management, WebRTC for multiplayer and has custom WebGL engine | typescript | GPL-3.0 | reference | [the-illarionov/the-superviral-word-game](https://github.com/the-illarionov/the-superviral-word-game) @ `2025-01-08 (branch tip at catalogue time)` |
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |

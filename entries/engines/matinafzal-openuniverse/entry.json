@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T17:55:50Z",
+ "category": "engines",
+ "commit": "520b1022ef95",
+ "delivery": "vendored",
+ "description": "MatinAfzal/OpenUniverse \u2014 3D Infinite Computer Universe",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "OpenUniverse",
+ "size_bytes": 287000,
+ "slug": "matinafzal-openuniverse",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 79,
+ "system": "3D Infinite Computer Universe",
+ "upstream": "https://github.com/MatinAfzal/OpenUniverse",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T17:55:52Z",
+ "category": "engines",
+ "commit": "ecbda506eeaf",
+ "delivery": "vendored",
+ "description": "gabdube/panic-panda \u2014 A 3D rendering demo powered by Python and Vulkan",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "panic-panda",
+ "size_bytes": 635902,
+ "slug": "gabdube-panic-panda",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 78,
+ "system": "A 3D rendering demo powered by Python and Vulkan",
+ "upstream": "https://github.com/gabdube/panic-panda",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:55:54Z",
+ "category": "engines",
+ "commit": "2026-11-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "crawsome/PyRPG_Mini \u2014 A small Python RPG, focused on RPG elements like battle and grinding",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "PyRPG_Mini",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "crawsome-pyrpg-mini",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 76,
+ "system": "A small Python RPG, focused on RPG elements like battle and grinding",
+ "upstream": "https://github.com/crawsome/PyRPG_Mini",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

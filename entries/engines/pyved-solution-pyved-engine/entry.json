@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:55:54Z",
+ "category": "engines",
+ "commit": "2026-06-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "pyved-solution/pyved-engine \u2014 a pythonic\u2764\ufe0f modern game engine. Compatible with Python 3.x and built around pygame",
+ "language": "python",
+ "license": "LGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "pyved-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-3.0)",
+ "slug": "pyved-solution-pyved-engine",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 75,
+ "system": "a pythonic\u2764\ufe0f modern game engine. Compatible with Python 3.x and built around pygame",
+ "upstream": "https://github.com/pyved-solution/pyved-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

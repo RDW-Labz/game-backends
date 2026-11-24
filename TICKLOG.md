@@ -2753,3 +2753,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/bjornbytes-lovr
   - reference engines/efroemling-ballistica
   - reference engines/jslee02-awesome-graphics-libraries
+
+- **2026-11-24 17:55 UTC** — tick 799: +2 screened, +4 reference, 7 skipped, catalogue=1318
+  - added engines/matinafzal-openuniverse (MIT, vendored)
+  - added engines/gabdube-panic-panda (MIT, vendored)
+  - reference engines/crawsome-pyrpg-mini
+  - reference engines/pyved-solution-pyved-engine
+  - reference engines/retrofloppy77-terracraft
+  - reference engines/agentodyssey-agentodyssey

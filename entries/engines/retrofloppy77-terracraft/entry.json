@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:55:54Z",
+ "category": "engines",
+ "commit": "2026-11-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RetroFloppy77/TerraCraft \u2014 Voxel Engine written in Python 3 + Pyglet.",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "TerraCraft",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "retrofloppy77-terracraft",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 62,
+ "system": "Voxel Engine written in Python 3 + Pyglet.",
+ "upstream": "https://github.com/RetroFloppy77/TerraCraft",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

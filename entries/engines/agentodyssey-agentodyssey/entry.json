@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T17:55:54Z",
+ "category": "engines",
+ "commit": "2026-10-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "agentodyssey/agentodyssey \u2014 Open-Ended Long-Horizon Text Game Generation for Test-Time Continual Learning Agents",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "agentodyssey",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "agentodyssey-agentodyssey",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 57,
+ "system": "Open-Ended Long-Horizon Text Game Generation for Test-Time Continual Learning Agents",
+ "upstream": "https://github.com/agentodyssey/agentodyssey",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
