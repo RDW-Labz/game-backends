@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T00:44:04Z",
+ "category": "gameplay",
+ "commit": "80ed0fa487c9",
+ "delivery": "vendored",
+ "description": "JasonFengGit/Visualizer \u2014 A single-page website aiming to provide innovative and intuitive visualizations of common and AI algorithms.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Visualizer",
+ "size_bytes": 1384866,
+ "slug": "jasonfenggit-visualizer",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 214,
+ "system": "A single-page website aiming to provide innovative and intuitive visualizations of common and AI algorithms.",
+ "upstream": "https://github.com/JasonFengGit/Visualizer",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

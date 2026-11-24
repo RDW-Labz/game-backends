@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:44:08Z",
+ "category": "gameplay",
+ "commit": "2025-11-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "andreasdr/tdme2 \u2014 TDME2 - ThreeDeeMiniEngine2 is a lightweight, multi-platform 3D engine including tools suited for 3D game/application development using C++, Mini(t)Script, GLSL, ...",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "tdme2",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "andreasdr-tdme2",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 186,
+ "system": "TDME2 - ThreeDeeMiniEngine2 is a lightweight, multi-platform 3D engine including tools suited for 3D game/application development using C++, Mini(t)Script, GLSL",
+ "upstream": "https://github.com/andreasdr/tdme2",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

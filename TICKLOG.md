@@ -2359,3 +2359,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/fy-fyworld
   - reference gameplay/prismarinejs-mineflayer-pathfinder
   - reference gameplay/cognitive-ai-systems-pogema
+
+- **2026-11-24 00:44 UTC** — tick 742: +2 screened, +4 reference, 0 skipped, catalogue=1030
+  - added gameplay/jasonfenggit-visualizer (MIT, vendored)
+  - added gameplay/sunxvming-navmesh (GPL-3.0, reference)
+  - reference gameplay/hugoscurti-hierarchical-pathfinding
+  - reference gameplay/tutsplus-a-star-pathfinding-for-platformers
+  - reference gameplay/andreasdr-tdme2
+  - reference gameplay/npretto-pathfinding

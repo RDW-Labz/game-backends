@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:44:08Z",
+ "category": "gameplay",
+ "commit": "2022-01-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "npretto/pathfinding \u2014 Visual explanation of pathfinding algorithms and how a*, Dijkstra and BFS can be seen as the same algorithm with different parameter/data structures used under the hood",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "npretto-pathfinding",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 184,
+ "system": "Visual explanation of pathfinding algorithms and how a*, Dijkstra and BFS can be seen as the same algorithm with different parameter/data structures used under ",
+ "upstream": "https://github.com/npretto/pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

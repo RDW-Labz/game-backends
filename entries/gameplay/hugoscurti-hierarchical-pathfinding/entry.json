@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:44:08Z",
+ "category": "gameplay",
+ "commit": "2022-12-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hugoscurti/hierarchical-pathfinding \u2014 Implementation of Near-Optimal Hierarchical Pathfinding (HPA*) algorithm in Unity, tested with maps from Dragon Age: Origins",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "hierarchical-pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hugoscurti-hierarchical-pathfinding",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 196,
+ "system": "Implementation of Near-Optimal Hierarchical Pathfinding (HPA*) algorithm in Unity, tested with maps from Dragon Age: Origins",
+ "upstream": "https://github.com/hugoscurti/hierarchical-pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

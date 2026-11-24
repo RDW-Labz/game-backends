@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T00:44:06Z",
+ "category": "gameplay",
+ "commit": "38741fcee3be",
+ "delivery": "reference",
+ "description": "sunxvming/navmesh \u2014 \u5bfc\u822a\u7f51\u683c\u5bfb\u8defC++\u5b9e\u73b0\u7248(\u5165\u95e8\u7248)",
+ "language": "c",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "navmesh",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 134411,
+ "slug": "sunxvming-navmesh",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 206,
+ "system": "\u5bfc\u822a\u7f51\u683c\u5bfb\u8defC++\u5b9e\u73b0\u7248(\u5165\u95e8\u7248)",
+ "upstream": "https://github.com/sunxvming/navmesh",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

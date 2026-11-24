@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:44:08Z",
+ "category": "gameplay",
+ "commit": "2015-12-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tutsplus/A-Star-Pathfinding-for-Platformers \u2014 How to Adapt A* Pathfinding to a 2D Grid-Based Platformer",
+ "language": "c#",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "A-Star-Pathfinding-for-Platformers",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "tutsplus-a-star-pathfinding-for-platformers",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 186,
+ "system": "How to Adapt A* Pathfinding to a 2D Grid-Based Platformer",
+ "upstream": "https://github.com/tutsplus/A-Star-Pathfinding-for-Platformers",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
