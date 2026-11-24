@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T18:53:03Z",
+ "category": "engines",
+ "commit": "2e364524a9bc",
+ "delivery": "vendored",
+ "description": "EngoEngine/ecs \u2014 A Go-implementation of the Entity-Component-System paradigm",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ecs",
+ "size_bytes": 30419,
+ "slug": "engoengine-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 337,
+ "system": "A Go-implementation of the Entity-Component-System paradigm",
+ "upstream": "https://github.com/EngoEngine/ecs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

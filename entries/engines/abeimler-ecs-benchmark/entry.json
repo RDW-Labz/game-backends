@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:53:08Z",
+ "category": "engines",
+ "commit": "2024-08-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "abeimler/ecs_benchmark \u2014 Benchmarks of common ECS (Entity-Component-System)-Frameworks in C++ (or C)",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ecs_benchmark",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "abeimler-ecs-benchmark",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 308,
+ "system": "Benchmarks of common ECS (Entity-Component-System)-Frameworks in C++ (or C)",
+ "upstream": "https://github.com/abeimler/ecs_benchmark",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:53:08Z",
+ "category": "engines",
+ "commit": "2026-11-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mlange-42/ark \u2014 Ark -- Archetype-based Entity Component System (ECS) for Go.",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "ark",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "mlange-42-ark",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 313,
+ "system": "Ark -- Archetype-based Entity Component System (ECS) for Go.",
+ "upstream": "https://github.com/mlange-42/ark",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

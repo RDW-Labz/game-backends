@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:53:08Z",
+ "category": "engines",
+ "commit": "2023-03-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fritzy/ape-ecs \u2014 Entity-Component-System library for JavaScript.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ape-ecs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "fritzy-ape-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 311,
+ "system": "Entity-Component-System library for JavaScript.",
+ "upstream": "https://github.com/fritzy/ape-ecs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

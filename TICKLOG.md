@@ -2777,3 +2777,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/fireclawthefox-frame
   - reference engines/cptx032-calcium
   - reference engines/miskibin-py-draughts
+
+- **2026-11-24 18:53 UTC** — tick 802: +2 screened, +4 reference, 27 skipped, catalogue=1336
+  - added engines/engoengine-ecs (MIT, vendored)
+  - added engines/m110-airplanes (MIT, vendored)
+  - reference engines/mlange-42-ark
+  - reference engines/fritzy-ape-ecs
+  - reference engines/abeimler-ecs-benchmark
+  - reference engines/lastolivegames-becsy

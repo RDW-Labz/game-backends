@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T18:53:08Z",
+ "category": "engines",
+ "commit": "2026-10-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LastOliveGames/becsy \u2014 A multithreaded Entity Component System (ECS) for TypeScript and JavaScript, inspired by ECSY and bitecs.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "becsy",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "lastolivegames-becsy",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 299,
+ "system": "A multithreaded Entity Component System (ECS) for TypeScript and JavaScript, inspired by ECSY and bitecs.",
+ "upstream": "https://github.com/LastOliveGames/becsy",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

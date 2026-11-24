@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T18:53:06Z",
+ "category": "engines",
+ "commit": "bccbc35fafc8",
+ "delivery": "vendored",
+ "description": "m110/airplanes \u2014 A 2D shoot 'em up game made with Go, Ebitengine, and donburi. Featuring ECS (Entity Component System).",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "airplanes",
+ "size_bytes": 117359,
+ "slug": "m110-airplanes",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 323,
+ "system": "A 2D shoot 'em up game made with Go, Ebitengine, and donburi. Featuring ECS (Entity Component System).",
+ "upstream": "https://github.com/m110/airplanes",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
