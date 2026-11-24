@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T16:13:16Z",
+ "category": "engines",
+ "commit": "2026-05-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "0x0funky/agent-game-forge \u2014 The local-first, bring-your-own-agent 2D game IDE. Codex or Claude Code drives, multi-engine on the roadmap.",
+ "language": "typescript",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "agent-game-forge",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "0x0funky-agent-game-forge",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 228,
+ "system": "The local-first, bring-your-own-agent 2D game IDE. Codex or Claude Code drives, multi-engine on the roadmap.",
+ "upstream": "https://github.com/0x0funky/agent-game-forge",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

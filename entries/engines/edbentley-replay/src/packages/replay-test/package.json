@@ -1,0 +1,34 @@
+{
+  "name": "@replay/test",
+  "version": "0.11.0",
+  "description": "A cross-platform JS game engine inspired by React (test)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist/ && tsc -p ./tsconfig.json",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "author": "Ed Bentley",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edbentley/replay.git",
+    "directory": "packages/replay-test"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@replay/core": "~0.11.0",
+    "jest": ">=20"
+  },
+  "devDependencies": {
+    "@replay/core": "0.11.0",
+    "jest": "^26.6.3",
+    "typescript": "^4.1.3"
+  }
+}

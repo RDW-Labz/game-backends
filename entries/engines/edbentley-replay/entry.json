@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T16:13:09Z",
+ "category": "engines",
+ "commit": "d10084041f8a",
+ "delivery": "vendored",
+ "description": "edbentley/replay \u2014 A cross-platform JS game engine inspired by React",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "replay",
+ "size_bytes": 3875751,
+ "slug": "edbentley-replay",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 293,
+ "system": "A cross-platform JS game engine inspired by React",
+ "upstream": "https://github.com/edbentley/replay",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

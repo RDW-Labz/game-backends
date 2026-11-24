@@ -1,0 +1,8 @@
+/.build
+/Packages
+/*.xcodeproj
+xcuserdata/
+.swiftpm
+renderCanvas.js
+game.js
+.DS_Store

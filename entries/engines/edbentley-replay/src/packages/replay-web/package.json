@@ -1,0 +1,38 @@
+{
+  "name": "@replay/web",
+  "version": "0.11.0",
+  "description": "A cross-platform JS game engine inspired by React (web)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "umd"
+  ],
+  "scripts": {
+    "build": "npm run build-dist && npm run build-umd",
+    "build-dist": "rm -rf dist/ && tsc -p ./tsconfig.json",
+    "build-umd": "webpack --config webpack.config.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "author": "Ed Bentley",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edbentley/replay.git",
+    "directory": "packages/replay-web"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@replay/core": "~0.11.0"
+  },
+  "devDependencies": {
+    "@replay/core": "0.11.0",
+    "jest": "^26.6.3",
+    "typescript": "^4.1.3",
+    "webpack": "^5.20.1",
+    "webpack-cli": "^4.5.0"
+  }
+}

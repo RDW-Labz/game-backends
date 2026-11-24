@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T16:13:16Z",
+ "category": "engines",
+ "commit": "2026-11-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "abouchedidxcode/open-source-hands \u2014 Make webcam hand games in the browser, or point your coding agent here and have it make one. MediaPipe hand tracking + a gesture engine + a starter game + a playbook.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "open-source-hands",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "abouchedidxcode-open-source-hands",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 224,
+ "system": "Make webcam hand games in the browser, or point your coding agent here and have it make one. MediaPipe hand tracking + a gesture engine + a starter game + a pla",
+ "upstream": "https://github.com/abouchedidxcode/open-source-hands",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

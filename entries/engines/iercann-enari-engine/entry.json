@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T16:13:14Z",
+ "category": "engines",
+ "commit": "b2e17ff75e66",
+ "delivery": "vendored",
+ "description": "iErcann/enari-engine \u2014 ThreeJS First Person Shooter Playground",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "enari-engine",
+ "size_bytes": 227239,
+ "slug": "iercann-enari-engine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 285,
+ "system": "ThreeJS First Person Shooter Playground",
+ "upstream": "https://github.com/iErcann/enari-engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

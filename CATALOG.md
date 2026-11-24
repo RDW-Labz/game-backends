@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 15:36 UTC · 1282 entries · 331 vendored, 951 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 16:13 UTC · 1288 entries · 333 vendored, 955 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 475 | 109 | 366 |
+| [engines](#engines) — Game engines and engine subsystems | 481 | 111 | 370 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 15:36 UTC · 1282 entries · 331 vendored, 951 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 475 entries
+**Game engines and engine subsystems** — 481 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -30,6 +30,7 @@ _Generated 2026-11-24 15:36 UTC · 1282 entries · 331 vendored, 951 reference-o
 | [AdMobBuddy](entries/engines/dmanning23-admobbuddy/README.md) | Library for viewing AdMob ads into a Xamarin.Android, Xamarin.iOS, and MonoGame apps | c# | MIT | reference | [dmanning23/AdMobBuddy](https://github.com/dmanning23/AdMobBuddy) @ `2022-02-15 (branch tip at catalogue time)` |
 | [advjs](entries/engines/yunyoujun-advjs/README.md) | 🎮 ADV.JS Web AVG Engine 面向未来与前端的文字冒险游戏引擎（WIP） | typescript | MPL-2.0 | reference | [YunYouJun/advjs](https://github.com/YunYouJun/advjs) @ `2026-11-20 (branch tip at catalogue time)` |
 | [aframe](entries/engines/aframevr-aframe/README.md) | :a: Web framework for building virtual reality experiences. | javascript | MIT | reference | [aframevr/aframe](https://github.com/aframevr/aframe) @ `2026-07-13 (branch tip at catalogue time)` |
+| [agent-game-forge](entries/engines/0x0funky-agent-game-forge/README.md) | The local-first, bring-your-own-agent 2D game IDE. Codex or Claude Code drives, multi-engine on the roadmap. | typescript | Apache-2.0 | reference | [0x0funky/agent-game-forge](https://github.com/0x0funky/agent-game-forge) @ `2026-05-20 (branch tip at catalogue time)` |
 | [Ambient](entries/engines/ambientrun-ambient/README.md) | The multiplayer game engine | rust | Apache-2.0 | reference | [AmbientRun/Ambient](https://github.com/AmbientRun/Ambient) @ `2025-01-07 (branch tip at catalogue time)` |
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AndEngine](entries/engines/nicolasgramlich-andengine/README.md) | Free Android 2D OpenGL Game Engine | java | Apache-2.0 | reference | [nicolasgramlich/AndEngine](https://github.com/nicolasgramlich/AndEngine) @ `2018-11-16 (branch tip at catalogue time)` |
@@ -145,11 +146,13 @@ _Generated 2026-11-24 15:36 UTC · 1282 entries · 331 vendored, 951 reference-o
 | [EgretGameEngine](entries/engines/yicaoyimuys-egretgameengine/README.md) | A game client engine in Egret | typescript | none | reference | [yicaoyimuys/EgretGameEngine](https://github.com/yicaoyimuys/EgretGameEngine) @ `d60a02cfaee2` |
 | [EIRTeam.FFmpeg](entries/engines/eirteam-eirteam-ffmpeg/README.md) | Plugin for godot that adds an FFmpeg-based decoder. | c++ | MIT | reference | [EIRTeam/EIRTeam.FFmpeg](https://github.com/EIRTeam/EIRTeam.FFmpeg) @ `2026-11-20 (branch tip at catalogue time)` |
 | [element-behaviors](entries/engines/lume-element-behaviors/README.md) | An entity-component system for HTML elements. | typescript | LGPL-3.0 | reference | [lume/element-behaviors](https://github.com/lume/element-behaviors) @ `2024-10-02 (branch tip at catalogue time)` |
+| [enari-engine](entries/engines/iercann-enari-engine/README.md) | ThreeJS First Person Shooter Playground | typescript | MIT | vendored | [iErcann/enari-engine](https://github.com/iErcann/enari-engine) @ `b2e17ff75e66` |
 | [Engine](entries/engines/boldtemplegaming-engine/README.md) | C++11 and SDL2 lightweight 2d game framework | c++ | unknown | reference | [boldtempleGaming/Engine](https://github.com/boldtempleGaming/Engine) @ `2020-03-01 (branch tip at catalogue time)` |
 | [engine](entries/engines/g3n-engine/README.md) | Go 3D Game Engine (http://g3n.rocks) | go | BSD-2-Clause | reference | [g3n/engine](https://github.com/g3n/engine) @ `2026-11-21 (branch tip at catalogue time)` |
 | [engine](entries/engines/overreactjs-engine/README.md) | Browser-based game engine, built on top of React. | typescript | MIT | reference | [overreactjs/engine](https://github.com/overreactjs/engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [engine](entries/engines/pkmn-engine/README.md) | A minimal, complete, Pokémon battle simulation engine optimized for performance | zig | MIT | vendored | [pkmn/engine](https://github.com/pkmn/engine) @ `df3c333f0947` |
 | [engine](entries/engines/playcanvas-engine/README.md) | Open-source web graphics engine built on WebGPU and WebGL2 | javascript | MIT | reference | [playcanvas/engine](https://github.com/playcanvas/engine) @ `2026-11-23 (branch tip at catalogue time)` |
+| [Engine](entries/engines/stem-studio-engine/README.md) | Stem Studio, the web game engine | typescript | MIT | reference | [Stem-Studio/Engine](https://github.com/Stem-Studio/Engine) @ `2026-08-09 (branch tip at catalogue time)` |
 | [engine-sim-community-edition](entries/engines/engine-simulator-engine-sim-community-edition/README.md) | Combustion engine simulation game that generates realistic audio. | n/a | unknown | reference | [Engine-Simulator/engine-sim-community-edition](https://github.com/Engine-Simulator/engine-sim-community-edition) @ `2025-09-11 (branch tip at catalogue time)` |
 | [engo](entries/engines/engoengine-engo/README.md) | Engo is an open-source 2D game engine written in Go. | go | MIT | reference | [EngoEngine/engo](https://github.com/EngoEngine/engo) @ `2026-03-30 (branch tip at catalogue time)` |
 | [Entitas](entries/engines/sschmid-entitas/README.md) | Entitas is a super fast Entity Component System (ECS) Framework specifically made for C# and Unity | c# | MIT | vendored | [sschmid/Entitas](https://github.com/sschmid/Entitas) @ `37547d1bd280` |
@@ -320,6 +323,7 @@ _Generated 2026-11-24 15:36 UTC · 1282 entries · 331 vendored, 951 reference-o
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [omath](entries/engines/orange-cpp-omath/README.md) | Cross-platform modern general purpose game/mods/cheats development framework written in C++23. | c++ | Zlib | reference | [orange-cpp/omath](https://github.com/orange-cpp/omath) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
+| [open-source-hands](entries/engines/abouchedidxcode-open-source-hands/README.md) | Make webcam hand games in the browser, or point your coding agent here and have it make one. MediaPipe hand tracking + a gesture engine + a starter game + a pla | typescript | MIT | reference | [abouchedidxcode/open-source-hands](https://github.com/abouchedidxcode/open-source-hands) @ `2026-11-03 (branch tip at catalogue time)` |
 | [open_spiel — core](entries/engines/open-spiel-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | py | Apache-2.0 | vendored | [google-deepmind/open_spiel](https://github.com/google-deepmind/open_spiel) @ `3c53616` |
 | [openage](entries/engines/sfttech-openage/README.md) | Clone of the Age of Empires II engine 🚀  | python | unknown | reference | [SFTtech/openage](https://github.com/SFTtech/openage) @ `2026-11-22 (branch tip at catalogue time)` |
 | [OpenAI-Unity](entries/engines/srcnalt-openai-unity/README.md) | An unofficial OpenAI Unity Package that aims to help you use OpenAI API directly in Unity Game engine. | c# | MIT | reference | [srcnalt/OpenAI-Unity](https://github.com/srcnalt/OpenAI-Unity) @ `2024-11-27 (branch tip at catalogue time)` |
@@ -349,6 +353,7 @@ _Generated 2026-11-24 15:36 UTC · 1282 entries · 331 vendored, 951 reference-o
 | [phaser](entries/engines/phaserjs-phaser/README.md) | Phaser is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser](https://github.com/phaserjs/phaser) @ `02d8931b626d` |
 | [phaser-candy-crush](entries/engines/anjmao-phaser-candy-crush/README.md) | Candy crush like game made with Phaser HTML5 game engine | typescript | MIT | reference | [anjmao/phaser-candy-crush](https://github.com/anjmao/phaser-candy-crush) @ `2022-09-27 (branch tip at catalogue time)` |
 | [phaser-ce](entries/engines/phaserjs-phaser-ce/README.md) | Phaser CE is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser-ce](https://github.com/phaserjs/phaser-ce) @ `2026-11-19 (branch tip at catalogue time)` |
+| [phd-game](entries/engines/morriswmz-phd-game/README.md) | A random event driven text-based game engine. | typescript | MIT | reference | [morriswmz/phd-game](https://github.com/morriswmz/phd-game) @ `2024-08-19 (branch tip at catalogue time)` |
 | [phoria.js](entries/engines/kevinroast-phoria-js/README.md) | JavaScript library for simple 3D graphics and visualisation on a HTML5 canvas 2D renderer. It does not use WebGL. Works on all HTML5 browsers, including desktop | javascript | BSD-3-Clause | reference | [kevinroast/phoria.js](https://github.com/kevinroast/phoria.js) @ `2026-11-05 (branch tip at catalogue time)` |
 | [pi](entries/engines/elgopher-pi/README.md) | Game engine for creating retro games for modern computers. Inspired by Pico-8 and powered by Ebitengine. | go | MIT | vendored | [elgopher/pi](https://github.com/elgopher/pi) @ `3a3b7de5a3ed` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
@@ -386,6 +391,7 @@ _Generated 2026-11-24 15:36 UTC · 1282 entries · 331 vendored, 951 reference-o
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
 | [renpy](entries/engines/renpy-renpy/README.md) | The Ren'Py Visual Novel Engine | ren'py | unknown | reference | [renpy/renpy](https://github.com/renpy/renpy) @ `2026-11-23 (branch tip at catalogue time)` |
+| [replay](entries/engines/edbentley-replay/README.md) | A cross-platform JS game engine inspired by React | typescript | MIT | vendored | [edbentley/replay](https://github.com/edbentley/replay) @ `d10084041f8a` |
 | [rerecast](entries/engines/janhohenheim-rerecast/README.md) | Rust port of Recast, the industry-standard navigation mesh generator used by Unreal, Unity, Godot, and other game engines. | rust | Apache-2.0 | reference | [janhohenheim/rerecast](https://github.com/janhohenheim/rerecast) @ `beda61552ef6` |
 | [rhusics](entries/engines/rustgd-rhusics/README.md) | A cgmath physics library that can be used with Specs | rust | Apache-2.0 | reference | [rustgd/rhusics](https://github.com/rustgd/rhusics) @ `2020-08-04 (branch tip at catalogue time)` |
 | [RigelEngine](entries/engines/lethal-guitar-rigelengine/README.md) | A modern re-implementation of the classic DOS game Duke Nukem II | c++ | GPL-2.0 | reference | [lethal-guitar/RigelEngine](https://github.com/lethal-guitar/RigelEngine) @ `30afeff8f0b1` |

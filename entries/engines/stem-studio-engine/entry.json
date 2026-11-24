@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T16:13:16Z",
+ "category": "engines",
+ "commit": "2026-08-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Stem-Studio/Engine \u2014 Stem Studio, the web game engine",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "stem-studio-engine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 213,
+ "system": "Stem Studio, the web game engine",
+ "upstream": "https://github.com/Stem-Studio/Engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

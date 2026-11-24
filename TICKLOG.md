@@ -2713,3 +2713,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/tugcantopaloglu-godot-mcp
   - reference engines/dylanebert-shallot
   - reference engines/luckyyyyy-miu2d
+
+- **2026-11-24 16:13 UTC** — tick 794: +2 screened, +4 reference, 7 skipped, catalogue=1288
+  - added engines/edbentley-replay (MIT, vendored)
+  - added engines/iercann-enari-engine (MIT, vendored)
+  - reference engines/morriswmz-phd-game
+  - reference engines/0x0funky-agent-game-forge
+  - reference engines/abouchedidxcode-open-source-hands
+  - reference engines/stem-studio-engine
