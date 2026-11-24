@@ -1,0 +1,332 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.12.0] - 2026-11-07
+
+The planet graph file changes (rebuilt 2026-11-07, format is still v5). Download it again with the new release, or rebuild. The new planet graph has 40,569,057 nodes and 306,603,632 edges (1,467 MB). osmdata.openstreetmap.de, where the build downloads the land polygons, was down, so this graph uses land polygons made from the OSM planet of 7 November 2026 with osmcoastline and the osmdata split scripts.
+
+The 81 new passage boxes add about 1.5 million nodes, and routes whose search passes near them take longer. On 500 random port pairs the total routing time grew by 28 % (the median route from 21.4 to 22.1 ms). The long routes from the Gulf of Bothnia around Norway, which already took over 1 s, take 40 to 60 % longer (up to 2.1 s). The `asw bench` Panama Canal route takes 91 ms (was 63 ms) because it now goes through the locks.
+
+### Added
+
+- Three passages found with an audit of OpenStreetMap ferry routes. For each `route=ferry` way, the audit compares the ferry line with the route between its two ends; on the v0.10.0 graph 168 of 19,023 ferries have a much longer route, in 116 places. Poros Strait (res-11): Poros town to the eastern exit is 1.3 nm, was 12.2 nm around the island, and Poros to Hydra is 11.7 nm, was 20.5 nm. East River in New York (res-11), both channels at Roosevelt Island: East 34th Street to East 90th Street is 2.4 nm, was 217.6 nm around Long Island. Vistula Spit Canal (res-13, opened in 2022): Gdańsk Bay to the Vistula Lagoon is 2.7 nm, was 54.0 nm through the Strait of Baltiysk; it is a man-made canal, so `canals=false` closes it at the lock. On the new planet graph the audit finds 87 such ferries in 82 places (167 in 112 on the v0.10.0 graph, same code).
+- 65 more narrow sounds from the same audit, in the Stockholm and Turku archipelagos, Bohuslän, the Norwegian coast, Helsinki, Zadar, the Seto Inland Sea, Myanmar and the Faroe Islands. Each box covers one stretch of a ferry line that had no water cells. Its resolution comes from the narrowest width measured land to land across the line: res-11 from about 100 m, res-12 from 40 m and res-13 below that. Herttoniemi to Laajasalo in Helsinki (about 10 m) needs res-14. All 73 ferries in these places now pass the audit: the route is at most 1.5 times the ferry line, or at most 1 nm longer. Examples: Oldeide to Måløy 4.2 nm, was 21.0 nm; Malkenes to Rosendal 14.0 nm, was 40.5 nm; Kragerø to Tangane 3.7 nm, was 13.2 nm; Zadar to Sali 13.1 nm, was 21.8 nm; Hvannasund to Svínoy 4.9 nm, was 15.5 nm; Herttoniemi to Laajasalo 1.6 nm, was 12.2 nm. The boxes add cells only around the coast inside them: the 16 Stockholm boxes take a regional build from 176,473 to 403,203 nodes. Places where the missing water is not in the OSM coastline at all (mangrove channels at Boipeba and Paranaguá in Brazil) are left for later.
+- Eleven passages for ports behind a narrow channel, found with a test of 500 random pairs of Natural Earth ports, 10 to 300 nm apart. On the v0.10.0 graph the fjord, bay or river behind each channel had no cells, so routes to these ports ended with a straight land leg of up to 19 nm: Kirke Narrows to Puerto Natales (Chile), Hario Strait into Omura Bay (Japan), the Oder at Szczecin and the Piast Canal from the Szczecin Lagoon to the Świna (Poland), Randers Fjord (Denmark), Iddefjord to Halden, Svelvik into the Drammensfjord and the river mouth at Drammen (Norway), the entrance of Banes Bay (Cuba), the Morlaix River (France) and the Aura River at Turku (Finland). Each box covers the stretches of the water path from the port to the open sea that had no cells, and its resolution comes from the narrowest width of that path, with the same rule as the audit boxes. On regional builds all ten ports are reachable from the water next to them without a land leg, for example Drammen to the Oslofjord 19.1 nm, Randers to the Kattegat 18.4 nm and Szczecin to the Baltic 36.5 nm. The Piast Canal is a sea-level fairway without locks, so `canals=false` keeps it open. On the new planet graph 88 of the 500 routes have more than 1 nm of land legs (112 on the v0.10.0 graph, same code).
+- Chesapeake and Delaware Canal (thanks to @MartinHoblisch, who noticed in #69 that it could not be used). The OSM coastline closes across the Elk River mouth, so the Elk River and Back Creek at the west end of the canal were land; a new box takes their water from the Maryland Geofabrik extract. In OSM the canal polygon stops 49 m short of the Delaware River at Reedy Point, so a second box with res-13 cells opens the Delaware City Branch Channel, 35 m wide at its narrowest. On a regional build, upper Chesapeake Bay (39.45°N 76.05°W) to the Delaware River (39.565°N 75.535°W) is 26.8 nm with no land legs (27.4 nm at a 1 nm shore buffer). On the v0.10.0 graph the route from the upper bay to the Delaware River went around Cape Charles (312 nm). The planet graph is built from newer coastline data, in which the canal also opens into the Delaware River at Reedy Point, and the same route is 25.8 nm.
+
+### Fixed
+
+- Passage boxes could leave a narrow channel without cells. The build drops a cell that lies fully on land unless its centre is inside a passage box. But the children of an H3 cell reach a little outside its hexagon, so a land cell next to a narrow box can own part of the channel, and when the build dropped it, its children in the channel were never made. In Randers Fjord this left about 950 m of a 130 m wide channel with no cells, inside a res-12 box. A cell is now kept when its centre is within two cell radii of a box. Regional builds: Randers Fjord and the Oder at Szczecin now connect; in the other eight regions the node count changed by at most 16.
+- Panama Canal: routes from west of Colón no longer go up the Chagres River and over Gatun Dam into Gatun Lake. The passage took every OSM water polygon that touches its box, and the box reached the river polygon below the dam, which joins the lake at the spillway. The box now starts east of the river, and these routes go through the locks (9.40°N 80.05°W to 8.80°N 79.45°W: 56.2 nm through the locks, was 53.5 nm over the dam). The reference test no longer exempts the area, and the README no longer lists it as a limitation.
+- Points next to a narrow channel snapped to a coarse node far away. `nearest_node` searched the cells at res 10 to 14 only three rings around the point (about 0.2 nm at res 10 and 0.01 nm at res 13). So a port pin on land 0.2 to 0.5 nm from a channel in a passage snapped to a node up to 3 nm away, and the route started with a long land leg (Morlaix, Turku and Stockholm, found with 500 random port pairs). When nothing is closer than 0.5 nm, it now also searches these cells as children of res-9 cells, up to about 1.4 nm away. Of the 1,081 Natural Earth ports, 918 have a node within 2 nm. 862 of them now snap to the nearest node (679 before), and 1 is more than 0.5 nm off (39 before, up to 4.4 nm). In the planet reference test five routes change by 0.1 to 1.5 nm. Short `asw bench` routes with endpoints on land take up to 0.3 ms more, because they now start at a shore cell and A* visits more nodes.
+- Water polygons that two passages brought in twice stayed land. The build cut the water out of the land with the even-odd rule, so two copies of one polygon cancelled each other. The C&D Canal polygon is in both the Delaware and the Maryland extract, so the canal stayed land next to the Elk River. The build now uses the non-zero rule, which also keeps the overlap of two water polygons as water. A regional build with no Geofabrik extracts (Szczecin) has the same node and edge count as before.
+
+## [0.11.2] - 2026-11-06
+
+The planet graph file is unchanged from 0.10.0 (format v5); the release carries the same `asw.graph`.
+
+### Fixed
+
+- Ocean crossings that followed a coast at a shore buffer. Smoothing keeps the farthest node its probes find, and the probes double their step, so they jumped over single nodes far out in open water that were visible while the next stretch of coast was hidden. With a buffer this kept Cape Town to New York on the African coast as far as Guinea-Bissau: 6884.3 nm at a 1 nm buffer, against 6789.0 nm without a buffer. With a buffer, a search now looks for the shortest route over anchor nodes (the corners of the greedy pass and 128 evenly spaced raw nodes), and every leg must pass the same land and shore buffer check. The greedy route is always one of the options, so no route gets longer. Cape Town to New York is 6791.1 nm at a 1 nm buffer, and the planet reference test now checks it. On 45 routes in both directions at five buffers (450 results), 7 got shorter, none longer, and none got more land legs. Without a buffer nothing changes. With a 1 nm buffer, `asw bench` takes up to 14 ms more per route: 0 to 6 % on the four longest routes, and up to 2.3 times as long on routes that take a few milliseconds.
+- Two `asw bench` routes started or ended on land. The Kiel Canal route ended at 54.25°N 9.10°E, on farmland about 10 nm north of the canal, so it went out through the Eider and finished with a land leg (84.3 nm); it now ends in the Elbe off the Brunsbüttel locks (53.88°N 9.15°E) and runs through the canal (55.6 nm). The Dardanelles route started on land near Bolayır and went around the Gallipoli peninsula (45.1 nm); it now starts in the strait off Gelibolu (40.40°N 26.70°E) and runs through it (35.4 nm). Benchmark results for these two routes are not comparable with older runs.
+
+## [0.11.1] - 2026-11-05
+
+The planet graph file is unchanged from 0.10.0 (format v5); the release carries the same `asw.graph`.
+
+### Fixed
+
+- Corners in open water. Smoothing jumped to the farthest node it could see, so a route could turn far from the obstacle that forced the turn. A new pass moves each corner to a better node, and every change must pass the same land and shore buffer check. Las Palmas to Mindelo at a 0.2 nm buffer is 865.2 nm (was 912.8 nm), Rotterdam to Singapore 8234.2 nm (was 8289.4 nm) and Tokyo to Seattle 4237.6 nm (was 4287.8 nm). On 30 routes in both directions at five buffers, 248 of 300 results got shorter and none longer, and the results for the two directions of a route now differ by more than 2 % in one case (was 11). Routing takes about 5 to 15 % longer, under 130 ms on the longest benchmark route.
+
+## [0.11.0] - 2026-10-31
+
+The planet graph file is unchanged from 0.10.0 (format v5); the release carries the same `asw.graph`.
+
+### Added
+
+- `--graph-url` / `ASW_GRAPH_URL` accept the compressed `asw.graph.zst` (540 MB instead of 1.4 GB). The file is unpacked while downloading and must open as a graph, otherwise nothing is left behind. A plain URL download is now also checked (opened as a graph) and removed if it does not open.
+- Reference test for planet routes. Twenty-two routes from NGA Pub 151 (Distances Between Ports), eight of them across the Pacific, must match the published distance within 2 %; today all are within 1.2 %. Every water leg of these routes and of the two routes from #65 is also walked along its great circle and checked against Natural Earth 1:10m land, a coastline that does not come from OpenStreetMap: no point may lie 3 nm or more inside one land polygon. On the code before the great-circle fix this check finds five Pub 151 routes with a leg over land (Baja California, Jalisco, Kauai, Socotra, Long Island), although their distances were within 2 %. The test needs the planet graph and the Natural Earth land shapefile in `export/`: `cargo test --release -p asw-core --test reference_distances -- --ignored --nocapture` (`ASW_GRAPH` and `ASW_CHECK_LAND` override the paths).
+
+### Fixed
+
+- `shore_buffer` no longer sends routes around a man-made canal (#69 — thanks to @MartinHoblisch for measuring it on every canal and for the fix). Every cell of a canal lies within the buffer, so with the penalty of up to 16× a route under 500 nm (no corridor) took the way around whenever it was shorter than the canal's penalised length. Above 500 nm the corridor kept the route in the canal, so a farther start could get a shorter route. The penalty is now off inside the corridor of each passage with a `cut`. For Suez and Panama the corridor also covers the Bitter Lakes, Gatun Lake and Limón Bay, so the buffer does not apply there either. Planet, 0.1 nm buffer: Elbe mouth to Kiel Bay 97 nm (was 409 nm), Lefkada 12 nm (was 37 nm); 0.3 nm: Cape Cod Canal 15 nm (was 102 nm). Narrow approaches outside a corridor keep the penalty: Privlaka at 0.6 nm and Cape May still go around.
+- Route geometry on long legs (#65 — thanks to @GLatourZ for measuring the problem on two ocean crossings). Smoothing and the direct-line shortcut tested a leg as a straight line in longitude and latitude, while `distance_nm` summed great-circle lengths between the same waypoints. On a leg of thousands of miles the two curves lie hundreds of miles apart, so the great circle between two returned waypoints could cross land (Saint-Nazaire to the Bahamas clipped Belle-Île, Panama to Japan ran through Mexico) and `distance_nm` was the length of a line that could not be sailed. A leg is now checked along its great circle every 20 nm, and the returned polyline is split to the same step, so great-circle, rhumb-line and straight-line readings of the geometry agree within 0.1 nm and `distance_nm` is the length of the returned polyline. Routes have more points (a transatlantic route has about 190 instead of 4); `smooth_hops` still counts the waypoints before the split. Planet: Miami to 30°N 140°E follows the Central American coast and is 9,024 nm (was 9,020 nm along a line through Mexico), Rotterdam to Singapore 8,289 nm (was 8,246 nm), New York to Southampton 3,048 nm (was 3,041 nm).
+
+### Changed
+
+- The graph download stops after 2 minutes without data (was 1 hour), so a dropped connection gives an error soon. A slow but working connection is not affected, because the limit applies to each read.
+- Long routes are faster. The land check on a long leg scanned every coastline inside the leg's bounding box; it now scans only the 20 nm pieces. Planet: Rotterdam to Singapore 1.14 s → 0.44 s, Shanghai to Rotterdam 1.36 s → 0.74 s, New York to Southampton 323 ms → 215 ms, Cape Town to Rio de Janeiro 26 ms → 16 ms. Short routes are unchanged.
+
+## [0.10.0] - 2026-10-04
+
+The planet graph file changes (rebuilt 2026-10-04, format is still v5). Download it again with the new release, or rebuild. The new planet graph has 39,068,079 nodes and 296,619,250 edges (1,429 MB), and the build takes the same 4.5 hours.
+
+### Added
+
+- `canals` option on `/route` and on `Graph.route` in `asw-mobile` (default `true`). With `canals=false` the router closes the man-made canals (Suez, Panama, Kiel, Corinth, Lefkada, Potidea, Osor, Privlaka, Cape Cod, Cape May, Chesapeake–Delaware) and goes around them, for routes that avoid canal fees. Each canal is closed in the middle, so ports at both ends stay reachable. On the planet graph, Port Said to Suez is 101.5 nm by default and 12,171 nm with `canals=false`.
+- Lefkada Canal as a passage. The channel between Lefkada and the mainland is now refined to res-13 and routable: from north of the floating bridge to Nidri is 9.3 nm through the channel, where the route went 37.1 nm around the island before.
+- Four more narrow channels as passages. Evripos Strait at the Chalkis old bridge: North to South Euboean Gulf is 23.0 nm, where the route went 199.1 nm around Euboea before. Potidea Canal: 1.8 nm, was 58.7 nm around Kassandra. Osor Channel between Cres and Lošinj (about 11 m wide, refined to res-14): 2.5 nm, was 33.5 nm. Trogir Channel: 1.3 nm, was 17.6 nm around Čiovo.
+- Five more passages. Privlaka Channel at Mali Lošinj (res-14): 3.3 nm, was 11.4 nm. Menai Strait: 10.8 nm, was about 50 nm around Anglesey. Swinomish Channel: 6.7 nm, was 82.8 nm. Cape May Canal: 4.5 nm, and 8.3 nm with `canals=false`. Šibenik: St. Anthony Channel, the harbour and the Krka estuary come from the Croatia OSM extract, so Šibenik is reachable for the first time.
+
+### Changed
+
+- The build keeps an edge only when the segment between the two cell centres does not cross the coastline. It tested only the midpoint before. This is the same test the router uses for smoothing, so a route no longer reports a land leg on a graph edge that clips a quay corner (seen at the Lefkada and Trogir bridges). On the planet build the check removes 9,215 of about 152.5 million edges and takes 47 seconds.
+- Passages refine up to res-14 (was res-13), and nearest-node snapping searches res-14 too.
+- With `canals=false`, the coarse search keeps out of the res-3 regions that hold a closed canal, so the corridor goes around and long routes keep the corridor speed. The coarse graph cannot see the small closed areas themselves. Planet: Rotterdam to Singapore around Africa (11,704 nm) takes 0.5 s, and New York to Los Angeles around South America (12,863 nm) takes 1.7 s. A long route that starts or ends in the region of a closed canal uses the full search: Colón to Callao takes about 4 s.
+- A downloaded OSM extract is cached under its own file name, so passages that use the same extract share one download.
+
+### Removed
+
+- Welland Canal passage. The Great Lakes are not in the graph, so the entry produced no cells and only cost an Ontario extract download on every build.
+
+## [0.9.0] - 2026-09-30
+
+The planet graph file changes (format v5, rebuilt 2026-09-30). Download it again with the new release, or rebuild.
+
+### Changed
+
+- **BREAKING:** graph format v4 → v5. The file adds a coarse graph (one node per connected piece of water inside each res-3 H3 region, about 41k nodes and 2 MB on the planet). Routes longer than 500 nm first run A* on the coarse graph and then limit the fine search to a corridor around that path, falling back to the full search when the corridor has no route. Planet, same machine: Rotterdam to Singapore 4.5 s → 0.81 s, Shanghai to Rotterdam 8.5 s → 1.19 s (with the Arctic fix), North Atlantic 579 → 286 ms; routes under 500 nm are unchanged. Distances stay within 0.4 %. v4 files are rejected; the planet graph must be downloaded again or rebuilt. Spec: `docs/superpowers/specs/2026-09-30-graph-format-v5-corridor-design.md`.
+- The build drops cells north of 80°N, which the router never enters (543k nodes, 12 MB). `is_water` there now returns false.
+- `asw bench` has three ocean crossings around continents (Rotterdam–Singapore, Shanghai–Rotterdam, Tokyo–Seattle).
+
+### Fixed
+
+- Routes no longer cross the Arctic ice cap. The graph is built from land polygons only, so the Arctic Ocean counted as open water and Shanghai to Rotterdam went over the North Pole (7,124 nm). The router now never enters the sea north of 80°N, and it closes the Northern Sea Route and the Northwest Passage by default. Shanghai to Rotterdam now goes via Suez (10,380 nm).
+
+### Added
+
+- `arctic` option on `/route` and on `Graph.route` in `asw-mobile` (default `false`) to open the Northern Sea Route and the Northwest Passage for summer or ice-class voyages.
+
+## [0.8.1] - 2026-09-28
+
+The planet graph file is unchanged from 0.7.0 (format v4).
+
+### Added
+
+- `asw.graph.zst` release asset: the planet graph compressed with zstd level 19 (about 540 MB instead of 1,437 MB), listed in `SHA256SUMS`.
+- `asw-mobile`: `installGraph(source, destination)` decompresses a downloaded `asw.graph.zst`, verifies the zstd checksum and the graph header, and atomically renames the result over the destination; on failure the old file is untouched. This is now the recommended way to install or update the graph on a phone.
+
+## [0.8.0] - 2026-09-28
+
+The planet graph file is unchanged from 0.7.0 (format v4); the release carries the same `asw.graph`.
+
+### Added
+
+- `asw-mobile`: Swift and Kotlin bindings (UniFFI) over the v4 graph file with `openGraph`, `version`, `isWater` and `route`, shipped as an iOS xcframework and an Android AAR on every release.
+
+### Changed
+
+- `RoutingGraph::open(path, false)` skips the monotonicity scans over the coastline and grid tables, so a phone opens the planet file with a few pages resident; the server, the build self-check and `asw geojson` open with `populate = true` and still scan.
+
+## [0.7.0] - 2026-09-28
+
+### Changed
+
+- **BREAKING:** graph format v3 → v4. The file is now flat and memory-mapped: the server opens the planet in seconds instead of 60-90 s, and resident memory drops from ~4.1 GiB to the working set. Edge weights are no longer stored (recomputed from cell centres, so distances move in the second decimal); the coastline lives in the file as delta-coded microdegree runs with a 0.1° grid index instead of an R-tree built at load. Planet file: 1.44 GB. v3 files are rejected; the planet graph must be rebuilt.
+- `nearest_node` moved from asw-serve into asw-core; `LandIndex` moved from asw-core into asw-build. asw-core no longer depends on `bitcode`, `zstd`, `serde`, `rstar` or `rayon`.
+- `/info` reports `graph_version`, the version string stored in the graph header.
+- Documentation: the shoreline leaf resolution is res-10 (it has been since the res-9 → res-10 refinement tier), not res-9.
+- `asw cloud build` caches the remote compile by `git rev-parse HEAD` instead of a hash of the working tree (the upload is `git archive HEAD` anyway)
+- Server readiness uses `std::sync::OnceLock` instead of an async `RwLock<Option<_>>`
+- Shapefile rings convert through the `shapefile` crate's `geo-types` support; zip extraction uses `ZipArchive::extract_unwrapped_root_dir`; graph download streams with `std::io::copy` (no 50 MB progress lines)
+- Cell classification, progress bars, API error responses, SSH/scp process spawning, Hetzner requests and bench result structs each share one helper instead of repeated copies
+- Bench timestamps use the `time` crate instead of hand-rolled calendar math; bench timings are sorted once per route instead of on every stat call
+- Hand-rolled bounding-box code replaced with geo's `BoundingRect` (load/build time only; the hot-path point-to-segment distance stays hand-rolled — geo's `hypot`-based version measured +9-30% p50 on short-route benches)
+
+### Added
+
+- `asw_core::routing::is_water(graph, lat, lon)`: water test by coastline crossing parity from the nearest water node, correct inside marina basins narrower than a leaf cell.
+
+### Removed
+
+- Dead code found by a repo-wide audit (~850 lines, no behavior change — verified against `main` with a planet-graph benchmark: identical distances and hop counts on all 20 routes):
+  - `asw_core::routing::smooth` (superseded by `smooth_indices`), `RoutingGraph::connected_components`, `AstarPool::capacity`, the `graph_compare` example, and thin `h3` wrappers (`parent`, `children`, `resolution`, `lat_lng_to_cell`)
+  - `Passage.zone_resolution` — all passages use resolution 5; replaced by the `ZONE_RESOLUTION` const
+  - `load_raw_polygons` (no callers) and the load-time bbox filter on `load_land_polygons` (documented footgun, only ever called with `None`)
+  - asw-cloud: SSH-key name-conflict retry machinery (key names now include a hash of the key material, so the conflict cannot occur), the string-keyed step-dispatch table (replaced by a linear step sequence), the `~/.ssh` pubkey fallback scan (the `.pub` must sit next to the private key), `SshConfig.user` (always root), and assorted dead constants
+  - Unused dependencies: `sha2` and `serde_json` (asw-cloud), `geojson` (asw-core), `geojson` and `anyhow` (asw-serve), `geo-types` (asw-core, asw-build, and the workspace — no crate imports it directly; the types come via `geo`); `tokio` trimmed from `full` to the used features
+  - `asw-serve` stub binary (the crate is a library; the binary is `asw`)
+
+- Second audit pass (~930 lines, 1 dependency, 11k lines of historical plan/spec docs):
+  - Serve-time connected-component labels (the build already prunes the graph to one component): saves ~160 MB RSS and a union-find pass on planet load
+  - `RangeMin` sparse table in route smoothing (a slice min is cheaper than the R-tree query next to it), `ShorePenalty` struct (now `shore_buffer_q` + `shore_factor`), `AstarPool` capacity cap (the `/route` semaphore already bounds it), unused lat/lng on `GraphBuilder::add_node`, `Passage.water_types` (one hardcoded list; Panama now also keeps `water=canal`), `tier_name`, per-passage SSH key display names, the `asw --version` integration test
+  - `asw-cli/src/srcdir.rs`: `asw cloud build --src` now simply defaults to the current directory
+  - `docs/superpowers/` and `docs/reviews/` (history keeps them)
+  - Dependency `ordered-float`: A* orders its heap on `f32::to_bits`, valid because f-scores are never negative
+
+## [0.6.1] - 2026-07-08
+
+### Added
+
+- `land_legs` on `/route` responses: segment indices of the returned geometry that cross land (pin-on-land stitch legs and coastline-clipping smoothed segments), so clients can style them differently
+- Bench GeoJSON draws only the water spans of each route — land legs appear as gaps (GitHub's geojson preview ignores styling, so color could not carry the signal); land-leg indices are kept as feature properties
+
+### Changed
+
+- `distance_nm` counts only water segments — overland stitch legs are excluded (previously inflated distances for pins placed on land, e.g. Kiel transit benchmark)
+
+## [0.6.0] - 2026-07-07
+
+### Added
+
+- `shore_buffer` query parameter on `/route` (nautical miles, 0–5.0): keeps routes a configurable clearance from the coastline via a graded A* cost penalty and buffer-aware path smoothing (#26 — thanks to @Damiasroca for highlighting a real safety gap in near-shore routing)
+- Per-node distance-to-shore stored in the graph (1 byte/node, 0.02 nm quantization, saturating at 5.1 nm)
+- `--shore-buffer` flag on `asw bench`
+
+### Fixed
+
+- Deep-water routes: geometry now starts and ends exactly at the requested coordinates instead of at snapped node centers (on res-3 ocean cells the nearest node can be tens of nm away, leaving the polyline visibly detached from the route markers); two points inside the same cell no longer return a single-point 0.00 nm route
+
+### Changed
+
+- **BREAKING:** graph format v2 → v3 (adds `shore_dist`) — existing graph files must be rebuilt
+- Direct-line shortcut: when the straight line between the requested points does not cross land — and keeps the requested `shore_buffer` clearance, degraded to the endpoints' own shore distance when they start closer — `/route` returns a 2-point great-circle route without a graph search (faster for open-water queries)
+- A pin on land (or blocked from its snapped node) still returns a route: the first/last segment keeps the direct connection to the graph (small shoreline clip) instead of erroring
+- `asw_core::routing::smooth` is now a thin wrapper over the new coordinate-based `smooth_indices` (same algorithm, same buffer semantics)
+- Crate versions now track the release version — `asw --version` reports the actual release (was stuck at 0.1.0)
+- Planet graph rebuilt in format v3: 39,412,823 nodes / 299,517,836 edges, 717 MB (+15 MB for per-node shore distances; topology identical to v0.5.0)
+
+## [0.5.0] - 2026-07-07
+
+### Fixed
+
+- Edge weight quantization: clamp to >= 1 centi-nm so res-13 passage-corridor edges (Panama, Kiel, Corinth, Welland) are no longer free for A*; hard error (was debug-only assert) on u16 weight overflow. Requires a graph rebuild to take effect
+- Antimeridian handling: `crosses_land` splits seam-crossing segments instead of testing a near-global planar chord; edge midpoints wrap longitudes before averaging; `cell_polygon` unwraps transmeridian H3 cells instead of producing degenerate world-spanning rings (fixes false land classification around the date line — Bering Strait, Fiji, Chukchi Sea)
+- Cloud build step cache keyed by bbox: changing the bbox no longer silently reuses a stale remote graph or local download; scp downloads are atomic (`.tmp` + rename)
+- Remote compile cache probe now works: `asw --version` exists (clap `version` attribute added)
+- Hetzner SSH key creation: uniqueness-conflict recovery reads the error body and retries with a uniquified name instead of silently binding an arbitrary existing key; non-ASCII key comments no longer panic
+- `asw cloud build` resolves the source directory at runtime (CWD, `--src` flag) instead of embedding the compile-time workspace path; warns when the working tree is dirty
+- Shapefile download: HTTP status checked; extraction is atomic (temp dir + rename), so a failed download no longer poisons the cache
+- Passage zone split probes every distinct `zone_resolution` instead of assuming all passages share the first one
+
+### Changed
+
+- A* buffer pool: O(1) generation-counter reset instead of a full-graph memset (~358 MB of writes per request at planet scale, previously hidden from benchmarks); per-node heuristic cached per query. Measured on Linux (Docker, planet graph): ~4.1 GiB RSS after load, 4.3 GiB after a globally diverse route mix, ~4.8 GiB hard ceiling as lazily-touched buffer pages accumulate (the `gen`/`h_score`/`closed` arrays start on untouched zero pages). Short-route p50 improves 1.1-2x and served-request latency no longer pays a hidden 10-35 ms reset
+- `/route` computation runs on `tokio::task::spawn_blocking` (long routes no longer stall health probes); `ServerState` holds `Arc<AppState>`
+- `nearest_node` exhaustive fallback uses geometrically-doubled eager disk scans (worst case ~1.56x one full-disk call, typical early exit far cheaper)
+- `min_distance_deg` iterates coastline pairs without per-segment allocation
+- Planet graph rebuilt (39,412,823 nodes / 299,517,836 edges, 702 MB): canal corridor edges carry real weights, and ~433K spurious fine-resolution nodes along the antimeridian are gone (previously over-refined by degenerate transmeridian cell polygons)
+
+## [0.4.0] - 2026-03-28
+
+### Added
+
+- Build-time component pruning: keep only the largest connected component, removing ~1.65M disconnected nodes in ~91.5K small components
+- `LandIndex::polygons()` method for accessing post-subtraction land polygons
+
+### Fixed
+
+- Kiel Canal routing: bumped from res-11 to res-13 for lock entrance/exit connectivity (was routing around Denmark at 409 nm, now 84 nm through canal)
+- Coastline extraction now uses post-subtraction land polygons — canal waterway boundaries included in coastline index, fixing route over-smoothing near canals
+- Safe coordinate parsing in `coords_to_polygon` — skip malformed GeoJSON instead of panicking on short coordinate arrays
+- Deferred osmium availability check — builds without osmium-tool no longer fail when no canals are in the build region
+- Partial `.pbf.tmp` cleanup on download failure
+- `nearest_node` `found_at_k` semantics: stop k-ring expansion when any main-component node is found, not only when improving best distance
+
+### Changed
+
+- Planet graph: 39.8M nodes / 302M edges (was 41.3M / 310M — pruned nodes were disconnected fragments)
+- `search_resolution` returns `()` instead of unused `bool`
+- Updated doc comments for `nearest_node` (two-pass adaptive k-ring, not "H3 binary search") and `H3_EDGE_NM`
+
+### Documentation
+
+- Added osmium-tool prerequisite to CLAUDE.md build instructions
+
+## [0.3.1] - 2026-03-24
+
+### Fixed
+
+- Nearest-node snapping regression: routes to remote islands (Grenada, Palagruza) and coastal towns (Gallipoli, Monopoli) now resolve correctly
+- Coastal snap quality restored to v0.2.0 level — ports snap to nearby fine-resolution nodes instead of distant coarse ones
+- Adaptive two-pass snapping: fast k=3 scan handles 99% of queries, proportional refinement only when needed
+
+### Performance
+
+- Short/medium routes 2-18x faster than v0.2.0 (H3 binary search + pre-allocated A* buffers)
+- Panama Canal: 47x faster (51 nm through canal vs 10,340 nm around continent in v0.2.0)
+
+## [0.3.0] - 2026-03-24
+
+### Added
+
+- Canal water subtraction: download Geofabrik PBFs at build time, extract inland water polygons via osmium, subtract from land index
+- Panama Canal routable (49.7 nm through canal, previously 10,337 nm around South America)
+- Kiel Canal, Houston Ship Channel, Cape Cod Canal, Chesapeake-Delaware Canal, Welland Canal passage definitions
+- `geofabrik_url` and `water_types` fields on `Passage` struct for automated canal water extraction
+- ODbL attribution for OSM-derived geographic data
+
+### Changed
+
+- Graph format v2: bitcode + zstd-19 serialization (replaces bincode)
+- Sorted `node_h3: Vec<u64>` for O(log n) spatial lookup (replaces R-tree for nearest-node)
+- Pre-allocated A* buffer pool (2 buffer sets) eliminates per-request allocation spikes
+- Panama Canal passage bumped from res-11 to res-13 (lock channels need 3.5m cell edges)
+- `osmium-tool` added to cloud build bootstrap packages
+
+### Performance
+
+- 47% server memory reduction: ~3.5 GiB RSS (was ~6.4 GiB) via H3 binary search replacing R-tree
+- `subtract_water` uses per-polygon water R-tree spatial lookup + rayon parallelization (<1s for 860K land polygons)
+- Panama Canal routing: 6.91s → 72.4ms (95x faster — no longer searching around the continent)
+
+## [0.2.0] - 2026-03-16
+
+### Added
+
+- API key authentication for `/route` and `/info` endpoints via `X-Api-Key` header
+- `--api-key` CLI argument with `ASW_API_KEY` environment variable fallback
+- Constant-time key comparison (subtle crate) to prevent timing attacks
+
+### Changed
+
+- `/health` and `/ready` endpoints remain public (no auth required)
+- Server refuses to start without a valid API key
+- Linux binaries now statically linked with musl (fixes GLIBC version mismatch with distroless base image)
+- Docker base image switched from `distroless/cc-debian12` to `distroless/static-debian12`
+- Release binaries stripped for smaller file size
+
+## [0.1.0] - 2026-03-16
+
+### Added
+
+- Maritime auto-routing using H3 hexagonal grid (adaptive cascade: res-3 ocean through res-9 shoreline)
+- Compact binary graph format with varint-encoded edges and i32 coordinates
+- HTTP API server (axum) with `/route`, `/health`, `/ready`, `/info` endpoints
+- A* routing with Haversine heuristic and Chaikin curve smoothing
+- Critical narrow passage edges (Suez, Bosphorus, Dover, Malacca, etc.)
+- Cloud build pipeline (Hetzner provisioning + SSH/SCP)
+- GeoJSON export for visualization
+- Docker images (slim + full with graph included) on ghcr.io
+- Cross-platform binary releases (Linux x86_64/ARM64, macOS x86_64/ARM64)
+- CI/CD with GitHub Actions (CI checks, Docker push, binary releases)
+- Readiness probe — server accepts connections immediately, returns 503 until graph loaded
+
+### Performance
+
+- 41% peak memory reduction during server init (6.4 GB → 3.8 GB)
+- Pre-built statically-linked musl binaries in Docker images
+
+[0.12.0]: https://github.com/auto-sea-way/asw/compare/v0.11.2...v0.12.0
+[0.11.2]: https://github.com/auto-sea-way/asw/compare/v0.11.1...v0.11.2
+[0.11.1]: https://github.com/auto-sea-way/asw/compare/v0.11.0...v0.11.1
+[0.11.0]: https://github.com/auto-sea-way/asw/compare/v0.10.0...v0.11.0
+[0.10.0]: https://github.com/auto-sea-way/asw/compare/v0.9.0...v0.10.0
+[0.9.0]: https://github.com/auto-sea-way/asw/compare/v0.8.1...v0.9.0
+[0.8.1]: https://github.com/auto-sea-way/asw/compare/v0.8.0...v0.8.1
+[0.8.0]: https://github.com/auto-sea-way/asw/compare/v0.7.0...v0.8.0
+[0.7.0]: https://github.com/auto-sea-way/asw/compare/v0.6.1...v0.7.0
+[0.6.1]: https://github.com/auto-sea-way/asw/compare/v0.6.0...v0.6.1
+[0.6.0]: https://github.com/auto-sea-way/asw/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/auto-sea-way/asw/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/auto-sea-way/asw/compare/v0.3.1...v0.4.0
+[0.3.1]: https://github.com/auto-sea-way/asw/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/auto-sea-way/asw/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/auto-sea-way/asw/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/auto-sea-way/asw/releases/tag/v0.1.0

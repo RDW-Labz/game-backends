@@ -1,0 +1,36 @@
+[advisories]
+ignore = [
+    # basic-toml is unmaintained. It comes only through uniffi's binding
+    # generator (uniffi_bindgen -> askama), at build time, and uniffi 0.32.2
+    # is the latest release. Remove when uniffi drops it.
+    { id = "RUSTSEC-2026-0374", reason = "unmaintained, build-time only via uniffi, no release without it" },
+]
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+    "Zlib",
+    "OpenSSL",
+    "MPL-2.0",
+    "CC0-1.0",
+    "MIT-0",
+    "CDLA-Permissive-2.0",
+    "bzip2-1.0.6",
+]
+confidence-threshold = 0.8
+
+[bans]
+multiple-versions = "warn"
+wildcards = "allow"
+
+[sources]
+unknown-registry = "warn"
+unknown-git = "warn"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

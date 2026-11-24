@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:48:09Z",
+ "category": "gameplay",
+ "commit": "2019-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mgerhardy/simpleai \u2014 SimpleAI is a small C++ AI behaviour tree based library with a QT5 based remote debugger (and with optional LUA bindings) released under MIT.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "simpleai",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mgerhardy-simpleai",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 177,
+ "system": "SimpleAI is a small C++ AI behaviour tree based library with a QT5 based remote debugger (and with optional LUA bindings) released under MIT.",
+ "upstream": "https://github.com/mgerhardy/simpleai",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

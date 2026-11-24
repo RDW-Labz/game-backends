@@ -1,0 +1,216 @@
+//! Download and extract canal water polygons from Geofabrik PBF files.
+
+use anyhow::{Context, Result};
+use asw_core::passages::Passage;
+use geo::{Coord, LineString, Polygon};
+use std::path::Path;
+use std::process::Command;
+use tracing::info;
+
+use crate::shapefile::{polygon_intersects_bbox, Bbox};
+
+/// OSM `water=` tag values kept as canal water. Features without a matching
+/// tag (unnamed ponds, etc.) are excluded to avoid pulling in thousands of
+/// irrelevant water bodies from the regional PBF.
+const WATER_TYPES: &[&str] = &["lock", "reservoir", "lake", "river", "canal"];
+
+/// Extract canal water polygons for all passages that have a `geofabrik_url`.
+pub fn extract_canal_water(
+    passages: &[Passage],
+    build_bbox: Option<Bbox>,
+    work_dir: &Path,
+) -> Result<Vec<Polygon<f64>>> {
+    let canal_dir = work_dir.join("canal-water");
+    std::fs::create_dir_all(&canal_dir)?;
+
+    let mut osmium_checked = false;
+    let mut all_water = Vec::new();
+
+    for passage in passages {
+        let url = match passage.geofabrik_url {
+            Some(url) => url,
+            None => continue,
+        };
+
+        // Skip if passage corridor doesn't overlap build bbox
+        if let Some(bb) = build_bbox {
+            let (p_min_lon, p_min_lat, p_max_lon, p_max_lat) = passage.corridor;
+            let (b_min_lon, b_min_lat, b_max_lon, b_max_lat) = bb;
+            if p_max_lon < b_min_lon
+                || p_min_lon > b_max_lon
+                || p_max_lat < b_min_lat
+                || p_min_lat > b_max_lat
+            {
+                info!("Skipping canal '{}' — outside build bbox", passage.name);
+                continue;
+            }
+        }
+
+        // Lazy osmium check — only on first passage that needs PBF processing
+        if !osmium_checked {
+            let osmium_check = Command::new("osmium").arg("--version").output();
+            if osmium_check.is_err() || !osmium_check.unwrap().status.success() {
+                anyhow::bail!(
+                    "osmium-tool is required for canal water extraction. \
+                     Install: apt install osmium-tool (Linux) or brew install osmium-tool (macOS)"
+                );
+            }
+            osmium_checked = true;
+        }
+
+        info!("Processing canal water for '{}'...", passage.name);
+        let water = extract_single_passage(passage, url, &canal_dir)?;
+        info!("  {} water polygons for '{}'", water.len(), passage.name);
+        all_water.extend(water);
+    }
+
+    if !all_water.is_empty() {
+        info!("Total canal water polygons: {}", all_water.len());
+    }
+
+    Ok(all_water)
+}
+
+fn extract_single_passage(
+    passage: &Passage,
+    url: &str,
+    work_dir: &Path,
+) -> Result<Vec<Polygon<f64>>> {
+    let safe_name = passage.name.to_lowercase().replace(' ', "-");
+    // Cached under the extract's own file name, so passages that use the
+    // same extract share one download.
+    let pbf_path = work_dir.join(url.rsplit('/').next().unwrap_or(url));
+    let water_pbf_path = work_dir.join(format!("{}-water.osm.pbf", safe_name));
+    let geojson_path = work_dir.join(format!("{}-water.geojson", safe_name));
+
+    // Step 1: Download PBF (with caching)
+    if !pbf_path.exists() {
+        info!("  Downloading {}...", url);
+        let client = reqwest::blocking::Client::builder()
+            .connect_timeout(std::time::Duration::from_secs(30))
+            .timeout(std::time::Duration::from_secs(600))
+            .build()?;
+        let mut resp = client
+            .get(url)
+            .send()?
+            .error_for_status()
+            .context("Failed to download PBF")?;
+        let tmp_path = pbf_path.with_extension("pbf.tmp");
+        let mut file = std::fs::File::create(&tmp_path)?;
+        let result = std::io::copy(&mut resp, &mut file);
+        if result.is_err() {
+            let _ = std::fs::remove_file(&tmp_path);
+        }
+        let bytes = result?;
+        std::fs::rename(&tmp_path, &pbf_path)?;
+        info!("  Downloaded {} MB", bytes / 1_000_000);
+    } else {
+        info!("  Using cached PBF: {:?}", pbf_path);
+    }
+
+    // Step 2: osmium tags-filter for natural=water
+    // Always run — the water PBF is deleted during cleanup, so caching never applies.
+    info!("  Filtering for natural=water...");
+    let status = Command::new("osmium")
+        .arg("tags-filter")
+        .arg(pbf_path.as_os_str())
+        .arg("nwr/natural=water")
+        .arg("-o")
+        .arg(water_pbf_path.as_os_str())
+        .arg("--overwrite")
+        .status()
+        .context("Failed to run osmium tags-filter")?;
+    if !status.success() {
+        anyhow::bail!("osmium tags-filter failed for {}", passage.name);
+    }
+
+    // Step 3: osmium export to GeoJSON
+    info!("  Exporting to GeoJSON...");
+    let status = Command::new("osmium")
+        .arg("export")
+        .arg(water_pbf_path.as_os_str())
+        .arg("-o")
+        .arg(geojson_path.as_os_str())
+        .arg("--overwrite")
+        .status()
+        .context("Failed to run osmium export")?;
+    if !status.success() {
+        anyhow::bail!("osmium export failed for {}", passage.name);
+    }
+
+    // Step 4: Parse GeoJSON, clip to corridor, filter by water type
+    let geojson_str = std::fs::read_to_string(&geojson_path)?;
+    let geojson: geojson::GeoJson = geojson_str.parse().context("Failed to parse GeoJSON")?;
+
+    let (min_lon, min_lat, max_lon, max_lat) = passage.corridor;
+
+    let mut polygons = Vec::new();
+
+    if let geojson::GeoJson::FeatureCollection(fc) = geojson {
+        for feature in fc.features {
+            if let Some(ref props) = feature.properties {
+                let natural = props.get("natural").and_then(|v| v.as_str()).unwrap_or("");
+                if natural != "water" {
+                    continue;
+                }
+                let water_val = props.get("water").and_then(|v| v.as_str()).unwrap_or("");
+                if !WATER_TYPES.contains(&water_val) {
+                    continue;
+                }
+            } else {
+                continue;
+            }
+
+            if let Some(geom) = feature.geometry {
+                let polys = geojson_geometry_to_polygons(&geom.value);
+                for poly in polys {
+                    if polygon_intersects_bbox(&poly, (min_lon, min_lat, max_lon, max_lat)) {
+                        polygons.push(poly);
+                    }
+                }
+            }
+        }
+    }
+
+    // Cleanup intermediate files (keep PBF cache)
+    let _ = std::fs::remove_file(&geojson_path);
+    let _ = std::fs::remove_file(&water_pbf_path);
+
+    Ok(polygons)
+}
+
+fn geojson_geometry_to_polygons(value: &geojson::GeometryValue) -> Vec<Polygon<f64>> {
+    match value {
+        geojson::GeometryValue::Polygon { coordinates } => {
+            coords_to_polygon(coordinates).into_iter().collect()
+        }
+        geojson::GeometryValue::MultiPolygon { coordinates } => coordinates
+            .iter()
+            .filter_map(|c| coords_to_polygon(c))
+            .collect(),
+        _ => vec![],
+    }
+}
+
+fn position_to_coord(p: &geojson::Position) -> Option<Coord<f64>> {
+    if p.len() < 2 {
+        return None;
+    }
+    Some(Coord { x: p[0], y: p[1] })
+}
+
+fn coords_to_polygon(coords: &[Vec<geojson::Position>]) -> Option<Polygon<f64>> {
+    if coords.is_empty() {
+        return None;
+    }
+    let exterior = LineString::new(coords[0].iter().filter_map(position_to_coord).collect());
+    if exterior.0.len() < 3 {
+        return None;
+    }
+    let holes: Vec<LineString<f64>> = coords[1..]
+        .iter()
+        .map(|ring| LineString::new(ring.iter().filter_map(position_to_coord).collect()))
+        .filter(|ls| ls.0.len() >= 3)
+        .collect();
+    Some(Polygon::new(exterior, holes))
+}

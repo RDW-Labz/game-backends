@@ -1,0 +1,707 @@
+use asw_core::routing::compute_route;
+use axum::{
+    extract::{Query, Request, State},
+    http::StatusCode,
+    middleware::{self, Next},
+    response::Json,
+    routing::get,
+    Router,
+};
+use serde::{Deserialize, Serialize};
+use std::sync::Arc;
+use subtle::ConstantTimeEq;
+use tower_http::cors::{Any, CorsLayer};
+
+use crate::state::ServerState;
+
+#[derive(Deserialize)]
+struct RouteQuery {
+    /// "lat,lon"
+    from: String,
+    /// "lat,lon"
+    to: String,
+    /// Minimum distance from shore in nautical miles (0..=5.0, default 0).
+    shore_buffer: Option<f64>,
+    /// Open the seasonal Arctic passages (default false).
+    arctic: Option<bool>,
+    /// Allow man-made canals (default true). `false` routes around them.
+    canals: Option<bool>,
+}
+
+#[derive(Serialize)]
+struct RouteResponse {
+    distance_nm: f64,
+    raw_hops: usize,
+    smooth_hops: usize,
+    geometry: serde_json::Value,
+    shore_buffer_nm: f64,
+    /// Segment indices of `geometry.coordinates` that cross land
+    /// (pin-on-land stitch legs and coastline-clipping smoothed segments).
+    /// Excluded from `distance_nm`.
+    land_legs: Vec<usize>,
+}
+
+#[derive(Serialize)]
+struct ErrorResponse {
+    error: String,
+}
+
+type ApiError = (StatusCode, Json<ErrorResponse>);
+
+fn err(status: StatusCode, msg: &str) -> ApiError {
+    (status, Json(ErrorResponse { error: msg.into() }))
+}
+
+#[derive(Serialize)]
+struct InfoResponse {
+    nodes: u32,
+    edges: u32,
+    graph_path: String,
+    version: String,
+    /// Version string stored in the graph file header.
+    graph_version: String,
+}
+
+fn parse_latlng(s: &str) -> Option<(f64, f64)> {
+    let (lat_s, lon_s) = s.split_once(',')?;
+    if lon_s.contains(',') {
+        return None;
+    }
+    let lat: f64 = lat_s.trim().parse().ok()?;
+    let lon: f64 = lon_s.trim().parse().ok()?;
+    Some((lat, lon))
+}
+
+async fn route_handler(
+    State(state): State<Arc<ServerState>>,
+    Query(params): Query<RouteQuery>,
+) -> Result<Json<RouteResponse>, ApiError> {
+    let app = state.app.get().cloned().ok_or_else(|| {
+        err(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "Server is loading graph...",
+        )
+    })?;
+
+    let (from_lat, from_lon) = parse_latlng(&params.from).ok_or_else(|| {
+        err(
+            StatusCode::BAD_REQUEST,
+            "Invalid 'from' parameter. Expected: lat,lon",
+        )
+    })?;
+
+    let (to_lat, to_lon) = parse_latlng(&params.to).ok_or_else(|| {
+        err(
+            StatusCode::BAD_REQUEST,
+            "Invalid 'to' parameter. Expected: lat,lon",
+        )
+    })?;
+
+    let shore_buffer_nm = params.shore_buffer.unwrap_or(0.0);
+    if !shore_buffer_nm.is_finite() || !(0.0..=5.0).contains(&shore_buffer_nm) {
+        return Err(err(
+            StatusCode::BAD_REQUEST,
+            "Invalid 'shore_buffer' parameter. Expected nautical miles from 0 to 5.0 inclusive",
+        ));
+    }
+
+    let arctic = params.arctic.unwrap_or(false);
+    let canals = params.canals.unwrap_or(true);
+
+    // Bound concurrent A* computations to the buffer pool's capacity before
+    // handing off to the blocking pool: without this, `spawn_blocking` can
+    // spin up to Tokio's 512-thread blocking pool, and each thread beyond the
+    // pool's `DEFAULT_POOL_SIZE` buffer sets forces `AstarPool::acquire` to
+    // allocate a fresh full-size buffer set (hundreds of MB at planet scale),
+    // which can OOM a small instance under a handful of concurrent long
+    // routes (see finding 1 in the 2026-07-06 project review). Acquiring is
+    // `async`, so requests beyond the limit queue here instead of consuming a
+    // blocking-pool thread. `acquire()` only errs if the semaphore has been
+    // closed, which this server never does — map defensively to 503 rather
+    // than panicking via `unwrap`/`expect`.
+    let _permit = state.route_permits.acquire().await.map_err(|_| {
+        err(
+            StatusCode::SERVICE_UNAVAILABLE,
+            "Server is at capacity, please retry",
+        )
+    })?;
+
+    // Run nearest-node snapping + A* + smoothing on a blocking-pool thread:
+    // this is CPU-bound work (tens of ms to >1s for long routes) that must
+    // not occupy a tokio worker thread, or it starves other tasks scheduled
+    // on the same worker (see finding 6 in the 2026-07-06 project review).
+    let result = tokio::task::spawn_blocking(move || {
+        let knn = |lat: f64, lon: f64| -> Option<(u32, f64)> { app.graph.nearest_node(lat, lon) };
+        let mut buffers = app.astar_pool.acquire();
+        let result = compute_route(
+            &app.graph,
+            from_lat,
+            from_lon,
+            to_lat,
+            to_lon,
+            &app.graph.coastline(),
+            &knn,
+            &mut buffers,
+            shore_buffer_nm,
+            arctic,
+            canals,
+        );
+        app.astar_pool.release(buffers);
+        result
+    })
+    .await
+    .map_err(|_| {
+        err(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Route computation failed unexpectedly",
+        )
+    })?
+    .ok_or_else(|| {
+        err(
+            StatusCode::NOT_FOUND,
+            "No route found between the given points",
+        )
+    })?;
+
+    let land_legs = result.land_legs;
+    let geometry = serde_json::json!({
+        "type": "LineString",
+        "coordinates": result.coordinates
+    });
+
+    Ok(Json(RouteResponse {
+        distance_nm: (result.distance_nm * 10.0).round() / 10.0,
+        raw_hops: result.raw_hops,
+        smooth_hops: result.smooth_hops,
+        geometry,
+        shore_buffer_nm,
+        land_legs,
+    }))
+}
+
+async fn health_handler() -> &'static str {
+    "ok"
+}
+
+async fn ready_handler(State(state): State<Arc<ServerState>>) -> Result<&'static str, StatusCode> {
+    if state.app.get().is_some() {
+        Ok("ready")
+    } else {
+        Err(StatusCode::SERVICE_UNAVAILABLE)
+    }
+}
+
+async fn info_handler(
+    State(state): State<Arc<ServerState>>,
+) -> Result<Json<InfoResponse>, StatusCode> {
+    let app = state.app.get().ok_or(StatusCode::SERVICE_UNAVAILABLE)?;
+
+    Ok(Json(InfoResponse {
+        nodes: app.graph.num_nodes(),
+        edges: app.graph.num_edges(),
+        graph_path: state.graph_path.clone(),
+        version: env!("CARGO_PKG_VERSION").to_string(),
+        graph_version: app.graph.version().to_string(),
+    }))
+}
+
+async fn api_key_middleware(
+    State(state): State<Arc<ServerState>>,
+    req: Request,
+    next: Next,
+) -> Result<axum::response::Response, ApiError> {
+    let provided = req.headers().get("X-Api-Key").and_then(|v| v.to_str().ok());
+
+    match provided {
+        Some(key) if key.as_bytes().ct_eq(state.api_key.as_bytes()).into() => {
+            Ok(next.run(req).await)
+        }
+        _ => {
+            tracing::warn!("Rejected request: invalid or missing API key");
+            Err(err(StatusCode::UNAUTHORIZED, "unauthorized"))
+        }
+    }
+}
+
+pub fn create_router(state: Arc<ServerState>) -> Router {
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods([axum::http::Method::GET])
+        .allow_headers(Any);
+
+    let protected = Router::new()
+        .route("/route", get(route_handler))
+        .route("/info", get(info_handler))
+        .layer(middleware::from_fn_with_state(
+            state.clone(),
+            api_key_middleware,
+        ));
+
+    Router::new()
+        .route("/health", get(health_handler))
+        .route("/ready", get(ready_handler))
+        .merge(protected)
+        .layer(cors)
+        .with_state(state)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_valid() {
+        let (lat, lon) = parse_latlng("36.85,28.27").unwrap();
+        assert!((lat - 36.85).abs() < 1e-10);
+        assert!((lon - 28.27).abs() < 1e-10);
+    }
+
+    #[test]
+    fn parse_whitespace() {
+        let (lat, lon) = parse_latlng(" 36.85 , 28.27 ").unwrap();
+        assert!((lat - 36.85).abs() < 1e-10);
+        assert!((lon - 28.27).abs() < 1e-10);
+    }
+
+    #[test]
+    fn parse_negative() {
+        let (lat, lon) = parse_latlng("-33.9,18.4").unwrap();
+        assert!((lat - -33.9).abs() < 1e-10);
+        assert!((lon - 18.4).abs() < 1e-10);
+    }
+
+    #[test]
+    fn parse_invalid() {
+        assert!(parse_latlng("abc,def").is_none());
+    }
+
+    #[test]
+    fn parse_too_many_commas() {
+        assert!(parse_latlng("1,2,3").is_none());
+    }
+
+    #[test]
+    fn parse_empty() {
+        assert!(parse_latlng("").is_none());
+    }
+
+    use axum::body::Body;
+    use axum::http::{Request, StatusCode as HyperStatus};
+    use tower::ServiceExt;
+
+    fn test_state() -> Arc<ServerState> {
+        Arc::new(ServerState::new(
+            "test.graph".into(),
+            "secret-key-1234567890".into(),
+        ))
+    }
+
+    fn mark_ready(state: &ServerState, app: crate::state::AppState) {
+        assert!(state.app.set(Arc::new(app)).is_ok());
+    }
+
+    /// Like `ready_state_with_small_graph`, but with an injected coastline
+    /// (lon, lat) polyline so tests can block specific lines of sight.
+    async fn ready_state_with_graph(coastline: Vec<Vec<(f64, f64)>>) -> Arc<ServerState> {
+        let coords = [(36.848, 28.268), (36.9, 28.3), (37.0, 28.5)];
+        let h3s: Vec<u64> = coords
+            .iter()
+            .map(|&(lat, lng)| {
+                u64::from(
+                    h3o::LatLng::new(lat, lng)
+                        .unwrap()
+                        .to_cell(h3o::Resolution::Five),
+                )
+            })
+            .collect();
+        let mut h3s = h3s;
+        h3s.sort_unstable();
+        h3s.dedup();
+        let mut b = asw_core::graph::GraphBuilder::default();
+        let ids: Vec<u32> = h3s.iter().map(|&h| b.add_node(h, 255)).collect();
+        for w in ids.windows(2) {
+            b.add_edge(w[0], w[1]);
+        }
+        b.coastline_runs = coastline;
+        let graph = b.build();
+
+        let state = test_state();
+        mark_ready(&state, crate::state::AppState::new(graph));
+        state
+    }
+
+    /// Build a `ServerState` whose graph has already finished loading,
+    /// backed by a tiny 3-node chain graph. Used to exercise the `/route`
+    /// happy path end-to-end through the new `Arc<AppState>` +
+    /// `spawn_blocking` pipeline (finding 6), rather than only the "still
+    /// loading" 503 path the other tests cover.
+    async fn ready_state_with_small_graph() -> Arc<ServerState> {
+        ready_state_with_graph(Vec::new()).await
+    }
+
+    #[tokio::test]
+    async fn health_no_auth_required() {
+        let app = create_router(test_state());
+        let req = Request::get("/health").body(Body::empty()).unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::OK);
+    }
+
+    #[tokio::test]
+    async fn ready_no_auth_required() {
+        let app = create_router(test_state());
+        let req = Request::get("/ready").body(Body::empty()).unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::SERVICE_UNAVAILABLE);
+    }
+
+    #[tokio::test]
+    async fn route_returns_401_without_key() {
+        let app = create_router(test_state());
+        let req = Request::get("/route?from=36.85,28.27&to=36.90,28.30")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::UNAUTHORIZED);
+    }
+
+    #[tokio::test]
+    async fn info_reports_graph_version() {
+        let app = create_router(ready_state_with_small_graph().await);
+        let req = Request::get("/info")
+            .header("X-Api-Key", "secret-key-1234567890")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::OK);
+        let body = axum::body::to_bytes(resp.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert!(
+            json["graph_version"].is_string(),
+            "graph_version missing: {json}"
+        );
+    }
+
+    #[tokio::test]
+    async fn info_returns_401_without_key() {
+        let app = create_router(test_state());
+        let req = Request::get("/info").body(Body::empty()).unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::UNAUTHORIZED);
+    }
+
+    #[tokio::test]
+    async fn route_returns_401_with_wrong_key() {
+        let app = create_router(test_state());
+        let req = Request::get("/route?from=36.85,28.27&to=36.90,28.30")
+            .header("X-Api-Key", "wrong-key")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::UNAUTHORIZED);
+        let body = axum::body::to_bytes(resp.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json, serde_json::json!({"error": "unauthorized"}));
+    }
+
+    #[tokio::test]
+    async fn info_returns_401_with_wrong_key() {
+        let app = create_router(test_state());
+        let req = Request::get("/info")
+            .header("X-Api-Key", "wrong-key")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::UNAUTHORIZED);
+    }
+
+    #[tokio::test]
+    async fn route_passes_with_correct_key() {
+        let app = create_router(test_state());
+        let req = Request::get("/route?from=36.85,28.27&to=36.90,28.30")
+            .header("X-Api-Key", "secret-key-1234567890")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::SERVICE_UNAVAILABLE);
+    }
+
+    #[tokio::test]
+    async fn info_passes_with_correct_key() {
+        let app = create_router(test_state());
+        let req = Request::get("/info")
+            .header("X-Api-Key", "secret-key-1234567890")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::SERVICE_UNAVAILABLE);
+    }
+
+    /// End-to-end happy path once the graph is loaded: exercises the full
+    /// `state.app()` clone -> `spawn_blocking` -> `nearest_node` ->
+    /// `compute_route` pipeline (with the A* buffer-pool acquire/release
+    /// around it) introduced for finding 6, verifying it still produces a
+    /// correct route (not just that the code compiles / doesn't deadlock).
+    #[tokio::test]
+    async fn route_returns_200_with_valid_route_once_ready() {
+        let app = create_router(ready_state_with_small_graph().await);
+        let req = Request::get("/route?from=36.848,28.268&to=37.0,28.5")
+            .header("X-Api-Key", "secret-key-1234567890")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::OK);
+
+        let body = axum::body::to_bytes(resp.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert!(
+            json["distance_nm"].as_f64().unwrap() > 0.0,
+            "expected a positive route distance, got {json:?}"
+        );
+        assert!(json["raw_hops"].as_u64().unwrap() >= 1);
+        assert_eq!(json["geometry"]["type"], "LineString");
+    }
+
+    /// More concurrent `/route` requests than the A* buffer pool holds
+    /// (`DEFAULT_POOL_SIZE` buffer sets) must all still complete successfully
+    /// — the `route_permits` semaphore queues the surplus request(s) rather
+    /// than letting them fail, panic, or force the pool to allocate beyond
+    /// its capacity (finding 1, 2026-07-06 review).
+    #[tokio::test]
+    async fn concurrent_route_requests_beyond_pool_capacity_all_succeed() {
+        let state = ready_state_with_small_graph().await;
+        let app = create_router(state);
+
+        let concurrency = asw_core::astar_pool::DEFAULT_POOL_SIZE + 1;
+        let mut handles = Vec::with_capacity(concurrency);
+        for _ in 0..concurrency {
+            let app = app.clone();
+            handles.push(tokio::spawn(async move {
+                let req = Request::get("/route?from=36.848,28.268&to=37.0,28.5")
+                    .header("X-Api-Key", "secret-key-1234567890")
+                    .body(Body::empty())
+                    .unwrap();
+                app.oneshot(req).await.unwrap()
+            }));
+        }
+
+        for handle in handles {
+            let resp = handle.await.expect("request task must not panic");
+            assert_eq!(
+                resp.status(),
+                HyperStatus::OK,
+                "every request must complete successfully, queueing rather than failing"
+            );
+        }
+    }
+
+    /// A query whose direct line is blocked by land and with no reachable
+    /// node (empty graph) must still surface as 404, not hang or panic,
+    /// through the spawn_blocking path. (The coastline wall prevents the
+    /// direct-line shortcut from answering instead.)
+    #[tokio::test]
+    async fn route_returns_404_when_no_route_found_once_ready() {
+        use crate::state::AppState;
+        use asw_core::graph::GraphBuilder;
+
+        let state = Arc::new(ServerState::new(
+            "test.graph".into(),
+            "secret-key-1234567890".into(),
+        ));
+        let mut b = GraphBuilder::default();
+        // Wall crossing the from->to line (lon 28.4, lat 36.0..37.5), so the
+        // direct-line shortcut cannot answer; with no nodes to snap to, the
+        // route must still surface as 404.
+        b.coastline_runs = vec![vec![(28.4, 36.0), (28.4, 37.5)]];
+        mark_ready(&state, AppState::new(b.build()));
+
+        let app = create_router(state);
+        let req = Request::get("/route?from=36.848,28.268&to=37.0,28.5")
+            .header("X-Api-Key", "secret-key-1234567890")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::NOT_FOUND);
+    }
+
+    /// Deep-water fix, shortcut path: two points far from any graph node
+    /// with a clear line of sight return the two requested points exactly
+    /// and a positive distance (was: polyline floating at distant node
+    /// centers, or 0.00 nm for same-cell pairs).
+    #[tokio::test]
+    async fn route_open_water_returns_requested_points_exactly() {
+        let app = create_router(ready_state_with_small_graph().await);
+        let req = Request::get("/route?from=36.5,28.0&to=36.6,28.1")
+            .header("X-Api-Key", "secret-key-1234567890")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::OK);
+
+        let body = axum::body::to_bytes(resp.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert!(json["distance_nm"].as_f64().unwrap() > 0.0);
+        let coords = json["geometry"]["coordinates"].as_array().unwrap();
+        assert_eq!(coords.first().unwrap(), &serde_json::json!([28.0, 36.5]));
+        assert_eq!(coords.last().unwrap(), &serde_json::json!([28.1, 36.6]));
+        assert_eq!(json["land_legs"], serde_json::json!([]));
+    }
+
+    /// Deep-water fix, stitched path: a wall blocks the direct line, so the
+    /// route goes through the graph — but the geometry must still start and
+    /// end exactly at the requested coordinates, not at node centers.
+    #[tokio::test]
+    async fn route_geometry_starts_and_ends_at_requested_points() {
+        // Wall at lon 28.35 (lat 36.88..36.92): blocks pin->pin and
+        // pin->node3, but not node2->pin_to — forcing a stitched route.
+        let state = ready_state_with_graph(vec![vec![(28.35, 36.88), (28.35, 36.92)]]).await;
+        let app = create_router(state);
+        let req = Request::get("/route?from=36.84,28.26&to=37.01,28.51")
+            .header("X-Api-Key", "secret-key-1234567890")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::OK);
+
+        let body = axum::body::to_bytes(resp.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert!(json["distance_nm"].as_f64().unwrap() > 0.0);
+        let coords = json["geometry"]["coordinates"].as_array().unwrap();
+        assert_eq!(coords.first().unwrap(), &serde_json::json!([28.26, 36.84]));
+        assert_eq!(coords.last().unwrap(), &serde_json::json!([28.51, 37.01]));
+        assert!(
+            coords.len() >= 3,
+            "expected a stitched route, got {coords:?}"
+        );
+        assert_eq!(json["land_legs"], serde_json::json!([]));
+    }
+
+    /// A from-pin inside a ring island: the first stitched leg crosses land,
+    /// is reported in land_legs, and does not count toward distance_nm.
+    #[tokio::test]
+    async fn route_flags_overland_stitch_leg() {
+        let ring = vec![vec![
+            (28.25, 36.83),
+            (28.27, 36.83),
+            (28.27, 36.85),
+            (28.25, 36.85),
+            (28.25, 36.83),
+        ]];
+        let state = ready_state_with_graph(ring).await;
+        let app = create_router(state);
+        let req = Request::get("/route?from=36.84,28.26&to=37.01,28.51")
+            .header("X-Api-Key", "secret-key-1234567890")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::OK);
+
+        let body = axum::body::to_bytes(resp.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(json["land_legs"], serde_json::json!([0]));
+
+        // Water-only distance: strictly less than the full polyline length.
+        let coords = json["geometry"]["coordinates"].as_array().unwrap();
+        assert!(coords.len() >= 3);
+        let full_length: f64 = coords
+            .windows(2)
+            .map(|w| {
+                let (lon1, lat1) = (w[0][0].as_f64().unwrap(), w[0][1].as_f64().unwrap());
+                let (lon2, lat2) = (w[1][0].as_f64().unwrap(), w[1][1].as_f64().unwrap());
+                asw_core::h3::haversine_nm(lat1, lon1, lat2, lon2)
+            })
+            .sum();
+        let distance_nm = json["distance_nm"].as_f64().unwrap();
+        assert!(distance_nm > 0.0);
+        assert!(
+            distance_nm < full_length,
+            "water-only distance {distance_nm} must be strictly less than the full polyline length {full_length}"
+        );
+    }
+
+    #[tokio::test]
+    async fn health_includes_cors_header() {
+        let app = create_router(test_state());
+        let req = Request::get("/health")
+            .header("Origin", "http://localhost:8080")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::OK);
+        assert!(
+            resp.headers().contains_key("access-control-allow-origin"),
+            "expected Access-Control-Allow-Origin header on response"
+        );
+    }
+
+    async fn get_route(query: &str) -> (HyperStatus, serde_json::Value) {
+        let app = create_router(ready_state_with_small_graph().await);
+        let req = Request::get(format!("/route?{query}"))
+            .header("X-Api-Key", "secret-key-1234567890")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        let status = resp.status();
+        let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let json: serde_json::Value =
+            serde_json::from_slice(&bytes).unwrap_or(serde_json::Value::Null);
+        (status, json)
+    }
+
+    #[tokio::test]
+    async fn shore_buffer_out_of_range_is_400() {
+        let (status, body) = get_route("from=36.0,28.0&to=36.5,28.5&shore_buffer=5.1").await;
+        assert_eq!(status, HyperStatus::BAD_REQUEST);
+        assert!(body["error"].as_str().unwrap().contains("shore_buffer"));
+
+        let (status, _) = get_route("from=36.0,28.0&to=36.5,28.5&shore_buffer=-0.1").await;
+        assert_eq!(status, HyperStatus::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn shore_buffer_echoed_in_response() {
+        let (status, body) = get_route("from=36.0,28.0&to=36.5,28.5&shore_buffer=0.2").await;
+        assert_eq!(status, HyperStatus::OK, "body: {body}");
+        assert!((body["shore_buffer_nm"].as_f64().unwrap() - 0.2).abs() < 1e-9);
+    }
+
+    #[tokio::test]
+    async fn shore_buffer_defaults_to_zero() {
+        let (status, body) = get_route("from=36.0,28.0&to=36.5,28.5").await;
+        assert_eq!(status, HyperStatus::OK, "body: {body}");
+        assert_eq!(body["shore_buffer_nm"].as_f64().unwrap(), 0.0);
+    }
+
+    #[tokio::test]
+    async fn preflight_allows_api_key_header() {
+        let app = create_router(test_state());
+        let req = Request::builder()
+            .method("OPTIONS")
+            .uri("/route")
+            .header("Origin", "http://localhost:8080")
+            .header("Access-Control-Request-Method", "GET")
+            .header("Access-Control-Request-Headers", "x-api-key")
+            .body(Body::empty())
+            .unwrap();
+        let resp = app.oneshot(req).await.unwrap();
+        assert_eq!(resp.status(), HyperStatus::OK);
+        assert!(
+            resp.headers().contains_key("access-control-allow-headers"),
+            "expected Access-Control-Allow-Headers on preflight response"
+        );
+    }
+}

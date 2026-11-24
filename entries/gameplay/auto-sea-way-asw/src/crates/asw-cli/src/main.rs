@@ -1,0 +1,639 @@
+mod bench;
+mod download;
+
+use anyhow::{Context, Result};
+use clap::{Parser, Subcommand};
+
+use std::io::Write;
+use std::path::{Path, PathBuf};
+use tracing::info;
+
+#[derive(Parser)]
+#[command(
+    name = "asw",
+    version,
+    about = "Maritime routing graph builder and server"
+)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand)]
+enum Commands {
+    /// Build the routing graph from water polygon shapefiles
+    Build {
+        /// Path to land_polygons.shp or directory of split shapefiles (downloads if not provided)
+        #[arg(long)]
+        shp: Option<PathBuf>,
+
+        /// Bounding box: min_lon,min_lat,max_lon,max_lat or preset name (dev, dev-small, marmaris)
+        #[arg(long, allow_hyphen_values = true)]
+        bbox: Option<String>,
+
+        /// Output graph file path
+        #[arg(long, default_value = "export/asw.graph")]
+        output: PathBuf,
+
+        /// Working directory for downloads
+        #[arg(long, default_value = ".")]
+        workdir: PathBuf,
+    },
+    /// Serve the routing API over HTTP
+    Serve {
+        /// Path to the graph file
+        #[arg(long, env = "ASW_GRAPH", default_value = "export/asw.graph")]
+        graph: PathBuf,
+
+        /// Bind address
+        #[arg(long, env = "ASW_HOST", default_value = "0.0.0.0")]
+        host: String,
+
+        /// Listen port
+        #[arg(long, env = "ASW_PORT", default_value = "3000")]
+        port: u16,
+
+        /// URL to download graph from if file doesn't exist
+        #[arg(long, env = "ASW_GRAPH_URL")]
+        graph_url: Option<String>,
+
+        /// API key for authenticating requests (required)
+        #[arg(long, env = "ASW_API_KEY", hide_env_values = true)]
+        api_key: String,
+    },
+    /// Export graph as GeoJSON for visualization
+    Geojson {
+        /// Path to the graph file
+        #[arg(long, default_value = "export/asw.graph")]
+        graph: PathBuf,
+
+        /// Output GeoJSON file path
+        #[arg(long, default_value = "export/asw.geojson")]
+        output: PathBuf,
+
+        /// Include coastline segments
+        #[arg(long)]
+        coastline: bool,
+
+        /// Bounding box: preset name or min_lon,min_lat,max_lon,max_lat
+        #[arg(long, allow_hyphen_values = true)]
+        bbox: Option<String>,
+    },
+    /// Cloud build: provision server, build remotely, download result
+    Cloud {
+        #[command(subcommand)]
+        action: CloudAction,
+    },
+    /// Benchmark routing performance
+    Bench {
+        /// Path to the graph file
+        #[arg(long, env = "ASW_GRAPH", default_value = "export/asw.graph")]
+        graph: PathBuf,
+
+        /// Measured iterations per route
+        #[arg(long, default_value_t = 50)]
+        iterations: usize,
+
+        /// Output results as JSON to stdout
+        #[arg(long)]
+        json: bool,
+
+        /// Write JSON results to file
+        #[arg(long)]
+        output: Option<PathBuf>,
+
+        /// Compare against previous JSON baseline
+        #[arg(long)]
+        compare: Option<PathBuf>,
+
+        /// Shore clearance in nautical miles (0 = off); applies the routing penalty
+        #[arg(long, default_value_t = 0.0, value_parser = parse_shore_buffer)]
+        shore_buffer: f64,
+    },
+    /// Health check: exit 0 if server is ready, 1 otherwise (for Docker HEALTHCHECK)
+    Healthcheck {
+        /// Server port to check
+        #[arg(long, env = "ASW_PORT", default_value = "3000")]
+        port: u16,
+
+        /// Server host to check
+        #[arg(long, env = "ASW_HOST", default_value = "127.0.0.1")]
+        host: String,
+    },
+}
+
+/// clap `value_parser` for `--shore-buffer`: must be finite and within the
+/// same 0.0..=5.0 nm range the `/route` HTTP API enforces (see
+/// asw-serve/src/api.rs), so an out-of-range value fails fast at the CLI
+/// instead of silently reaching `shore_buffer_q`.
+fn parse_shore_buffer(s: &str) -> Result<f64, String> {
+    let value: f64 = s
+        .parse()
+        .map_err(|_| format!("invalid nautical-mile value: {s}"))?;
+    if !value.is_finite() || !(0.0..=5.0).contains(&value) {
+        return Err(format!(
+            "shore-buffer must be a finite number between 0.0 and 5.0 nautical miles inclusive, got {value}"
+        ));
+    }
+    Ok(value)
+}
+
+#[derive(Subcommand)]
+enum CloudAction {
+    /// Full remote build: provision → upload → compile → build → download
+    Build {
+        /// Hetzner API token
+        #[arg(long, env = "HETZNER_TOKEN", hide_env_values = true)]
+        hetzner_token: String,
+
+        /// Bounding box: preset name (dev, dev-small, marmaris) or min_lon,min_lat,max_lon,max_lat
+        #[arg(long, allow_hyphen_values = true)]
+        bbox: Option<String>,
+
+        /// Output graph file path
+        #[arg(short, long, default_value = "export/asw.graph")]
+        output: PathBuf,
+
+        /// Keep server alive after build
+        #[arg(long)]
+        keep_server: bool,
+
+        /// SSH private key path (auto-detected if not specified)
+        #[arg(long)]
+        ssh_key: Option<PathBuf>,
+
+        /// Workspace root to upload for the remote build (a git checkout)
+        #[arg(long, default_value = ".")]
+        src: PathBuf,
+    },
+    /// Provision a Hetzner server (create + bootstrap)
+    Provision {
+        /// Hetzner API token
+        #[arg(long, env = "HETZNER_TOKEN", hide_env_values = true)]
+        hetzner_token: String,
+
+        /// SSH private key path (auto-detected if not specified)
+        #[arg(long)]
+        ssh_key: Option<PathBuf>,
+    },
+    /// Teardown: delete the Hetzner server
+    Teardown {
+        /// Hetzner API token
+        #[arg(long, env = "HETZNER_TOKEN", hide_env_values = true)]
+        hetzner_token: String,
+    },
+    /// Check server status
+    Status {
+        /// Hetzner API token
+        #[arg(long, env = "HETZNER_TOKEN", hide_env_values = true)]
+        hetzner_token: String,
+    },
+}
+
+fn parse_bbox(s: &str) -> Result<(f64, f64, f64, f64)> {
+    // Try preset first
+    if let Some(bbox) = asw_cloud::config::resolve_bbox(s) {
+        return Ok(bbox);
+    }
+
+    // Parse as comma-separated floats
+    let parts: Vec<f64> = s
+        .split(',')
+        .map(|p| p.trim().parse::<f64>())
+        .collect::<Result<Vec<_>, _>>()
+        .context("bbox must be 4 comma-separated floats: min_lon,min_lat,max_lon,max_lat")?;
+    if parts.len() != 4 {
+        anyhow::bail!("bbox must have exactly 4 values");
+    }
+    Ok((parts[0], parts[1], parts[2], parts[3]))
+}
+
+fn resolve_ssh_key(ssh_key: Option<PathBuf>) -> Result<PathBuf> {
+    match ssh_key {
+        Some(p) => Ok(p),
+        None => asw_cloud::ssh::find_ssh_key(),
+    }
+}
+
+/// Warn (non-fatal) if `dir`'s git working tree has uncommitted changes:
+/// the cloud build uploads `git archive HEAD`, so they are silently excluded.
+fn warn_if_dirty(dir: &Path) {
+    let output = std::process::Command::new("git")
+        .args(["-C", &dir.to_string_lossy(), "status", "--porcelain"])
+        .output();
+    if let Ok(out) = output {
+        if out.status.success() && !out.stdout.is_empty() {
+            tracing::warn!(
+                "Working tree at {:?} has uncommitted changes. `asw cloud build` uploads \
+                 `git archive HEAD` (the last commit), so those changes will NOT be included \
+                 in the remote build.",
+                dir
+            );
+        }
+    }
+}
+
+fn main() -> Result<()> {
+    tracing_subscriber::fmt()
+        .with_writer(std::io::stderr)
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
+        )
+        .init();
+
+    // Load .env before clap parses env vars
+    dotenvy::dotenv().ok();
+
+    let cli = Cli::parse();
+
+    match cli.command {
+        Commands::Build {
+            shp,
+            bbox,
+            output,
+            workdir,
+        } => {
+            let bbox = bbox.map(|b| parse_bbox(&b)).transpose()?;
+
+            let shp_path = match shp {
+                Some(p) => p,
+                None => {
+                    info!("No shapefile provided, downloading...");
+                    asw_build::shapefile::download_and_extract(&workdir)?
+                }
+            };
+
+            asw_build::pipeline::run(&shp_path, bbox, &output)?;
+            info!("Build complete!");
+        }
+        Commands::Serve {
+            graph,
+            host,
+            port,
+            graph_url,
+            api_key,
+        } => {
+            // Download graph if missing
+            download::ensure_graph(&graph, graph_url.as_deref())?;
+
+            let api_key = api_key.trim().to_string();
+            if api_key.is_empty() {
+                anyhow::bail!("ASW_API_KEY must not be empty or whitespace-only");
+            }
+
+            let listen = format!("{}:{}", host, port);
+            let graph_path = graph.display().to_string();
+
+            let rt = tokio::runtime::Runtime::new()?;
+            rt.block_on(async {
+                // Create server state (graph not loaded yet)
+                let state =
+                    std::sync::Arc::new(asw_serve::state::ServerState::new(graph_path, api_key));
+
+                let app = asw_serve::api::create_router(state.clone());
+                let listener = tokio::net::TcpListener::bind(&listen).await?;
+                info!("Listening on {}", listen);
+
+                // Load graph in background; exit on failure so an orchestrator can restart.
+                let graph_file = graph.clone();
+                let bg_state = state.clone();
+                let loader = tokio::task::spawn_blocking(move || -> anyhow::Result<()> {
+                    info!("Loading graph from {:?}...", graph_file);
+                    let routing_graph = asw_core::graph::RoutingGraph::open(&graph_file, true)
+                        .context("Failed to open graph")?;
+
+                    info!(
+                        "Graph opened: {} nodes, {} edges, version {}",
+                        routing_graph.num_nodes(),
+                        routing_graph.num_edges(),
+                        routing_graph.version()
+                    );
+
+                    let app_state = asw_serve::state::AppState::new(routing_graph);
+                    info!(
+                        "Coastline: {} runs",
+                        app_state.graph.coastline().run_count()
+                    );
+
+                    let _ = bg_state.app.set(std::sync::Arc::new(app_state));
+                    info!("Server ready");
+                    Ok(())
+                });
+                tokio::spawn(async move {
+                    let outcome = loader.await.map_err(anyhow::Error::from).and_then(|r| r);
+                    if let Err(e) = outcome {
+                        tracing::error!("Graph loading failed: {:#}", e);
+                        std::process::exit(1);
+                    }
+                });
+
+                axum::serve(listener, app).await?;
+                Ok::<(), anyhow::Error>(())
+            })?;
+        }
+        Commands::Geojson {
+            graph,
+            output,
+            coastline,
+            bbox,
+        } => {
+            let bbox = bbox.map(|b| parse_bbox(&b)).transpose()?;
+            export_geojson(&graph, &output, coastline, bbox)?;
+        }
+        Commands::Bench {
+            graph,
+            iterations,
+            json,
+            output,
+            compare,
+            shore_buffer,
+        } => {
+            bench::run(
+                &graph,
+                iterations,
+                json,
+                output.as_deref(),
+                compare.as_deref(),
+                shore_buffer,
+            )?;
+        }
+        Commands::Healthcheck { port, host } => {
+            let url = format!("http://{}:{}/ready", host, port);
+            match reqwest::blocking::get(&url) {
+                Ok(r) if r.status().is_success() => std::process::exit(0),
+                _ => std::process::exit(1),
+            }
+        }
+        Commands::Cloud { action } => match action {
+            CloudAction::Build {
+                hetzner_token,
+                bbox,
+                output,
+                keep_server,
+                ssh_key,
+                src,
+            } => {
+                let ssh_key_path = resolve_ssh_key(ssh_key)?;
+                let bbox = bbox.map(|b| parse_bbox(&b)).transpose()?;
+
+                warn_if_dirty(&src);
+
+                let mut pipeline = asw_cloud::pipeline::Pipeline {
+                    host: None,
+                    ssh_key_path,
+                    output_path: output,
+                    keep_server,
+                    hetzner_token: Some(hetzner_token),
+                    bbox,
+                    rust_src_dir: src,
+                };
+                pipeline.run()?;
+            }
+            CloudAction::Provision {
+                hetzner_token,
+                ssh_key,
+            } => {
+                let ssh_key_path = resolve_ssh_key(ssh_key)?;
+                let ip = asw_cloud::hetzner::provision(&hetzner_token, &ssh_key_path)?;
+                println!("Server ready: {}", ip);
+            }
+            CloudAction::Teardown { hetzner_token } => {
+                asw_cloud::hetzner::teardown(&hetzner_token)?;
+            }
+            CloudAction::Status { hetzner_token } => {
+                match asw_cloud::hetzner::status(&hetzner_token)? {
+                    Some((id, ip, status)) => {
+                        println!("Server: {} (id={}, status={})", ip, id, status);
+                    }
+                    None => {
+                        println!("No server found.");
+                    }
+                }
+            }
+        },
+    }
+
+    Ok(())
+}
+
+/// GeoJSON feature for a hex cell polygon, serialized to a string.
+fn hex_feature_string(boundary: &[(f64, f64)], res: u8, color: &str) -> String {
+    let mut ring: Vec<[f64; 2]> = boundary.iter().map(|&(lat, lon)| [lon, lat]).collect();
+    if let Some(&first) = ring.first() {
+        ring.push(first);
+    }
+    serde_json::json!({
+        "type": "Feature",
+        "geometry": {"type": "Polygon", "coordinates": [ring]},
+        "properties": {
+            "layer": format!("hex-res-{res}"),
+            "fill": color, "fill-opacity": 0.38,
+            "stroke": color, "stroke-opacity": 1.0, "stroke-width": 1
+        }
+    })
+    .to_string()
+}
+
+/// GeoJSON feature for a coastline segment, serialized to a string.
+fn coastline_feature_string(seg: &[(f64, f64)]) -> String {
+    let coords: Vec<[f64; 2]> = seg.iter().map(|&(lon, lat)| [lon, lat]).collect();
+    serde_json::json!({
+        "type": "Feature",
+        "geometry": {"type": "LineString", "coordinates": coords},
+        "properties": {"layer": "coastline", "stroke": "#ff0000", "stroke-width": 1.5}
+    })
+    .to_string()
+}
+
+/// Stream pre-serialized features into a FeatureCollection at `path`.
+fn write_feature_collection<S: AsRef<str>>(path: &Path, features: &[S]) -> Result<()> {
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    let mut out = std::io::BufWriter::new(
+        std::fs::File::create(path)
+            .with_context(|| format!("Failed to create {}", path.display()))?,
+    );
+    write!(out, r#"{{"type":"FeatureCollection","features":["#)?;
+    for (i, feat) in features.iter().enumerate() {
+        if i > 0 {
+            write!(out, ",")?;
+        }
+        write!(out, "{}", feat.as_ref())?;
+    }
+    write!(out, "]}}")?;
+    out.flush()?;
+    Ok(())
+}
+
+fn export_geojson(
+    graph_path: &Path,
+    output: &Path,
+    include_coastline: bool,
+    bbox: Option<(f64, f64, f64, f64)>,
+) -> Result<()> {
+    info!("Loading graph from {:?}...", graph_path);
+    let graph =
+        // populate = true also runs the coastline and grid table checks, so a
+        // corrupt file fails here instead of panicking in the export loop.
+        asw_core::graph::RoutingGraph::open(graph_path, true).context("Failed to open graph")?;
+
+    info!(
+        "Graph: {} nodes, {} edges",
+        graph.num_nodes(),
+        graph.num_edges()
+    );
+
+    if let Some(parent) = output.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+
+    let mut hex_features: Vec<String> = Vec::new();
+    let mut coastline_features: Vec<String> = Vec::new();
+
+    // Hex polygons
+    let mut hex_count: u64 = 0;
+    for i in 0..graph.num_nodes() as usize {
+        let h3 = graph.node_h3(i as u32);
+        let cell = h3o::CellIndex::try_from(h3).expect("valid H3");
+        let res = cell.resolution() as u8;
+
+        let (lat, lng) = graph.node_pos(i as u32);
+
+        // Bbox filter
+        if let Some((min_lon, min_lat, max_lon, max_lat)) = bbox {
+            if lng < min_lon || lng > max_lon || lat < min_lat || lat > max_lat {
+                continue;
+            }
+        }
+
+        let boundary = asw_core::h3::cell_boundary(cell);
+        let color = match res {
+            0..=3 => "#0088ff",
+            4..=5 => "#00cc00",
+            6..=7 => "#ffaa00",
+            8 => "#00ffff",
+            _ => "#ff00ff",
+        };
+
+        let feat = hex_feature_string(&boundary, res, color);
+        hex_features.push(feat);
+
+        hex_count += 1;
+        if hex_count.is_multiple_of(1_000_000) {
+            info!("  processed {} hex features...", hex_count);
+        }
+    }
+
+    // Coastline segments
+    if include_coastline {
+        let coast = graph.coastline();
+        for run in 0..coast.run_count() {
+            let seg: Vec<(f64, f64)> = coast.run_points(run).collect();
+
+            if let Some((min_lon, min_lat, max_lon, max_lat)) = bbox {
+                let in_bbox = seg.iter().any(|&(lon, lat)| {
+                    lon >= min_lon && lon <= max_lon && lat >= min_lat && lat <= max_lat
+                });
+                if !in_bbox {
+                    continue;
+                }
+            }
+
+            let feat = coastline_feature_string(&seg);
+            coastline_features.push(feat);
+        }
+    }
+
+    // Derive base path: strip .geojson extension
+    let stem = output
+        .file_stem()
+        .unwrap_or_default()
+        .to_string_lossy()
+        .to_string();
+    let parent = output.parent().unwrap_or(Path::new("."));
+
+    // Write layer files: hexagons, coastline
+    if !hex_features.is_empty() {
+        let hex_path = parent.join(format!("{}-hexagons.geojson", stem));
+        write_feature_collection(&hex_path, &hex_features)?;
+        let size = std::fs::metadata(&hex_path)?.len();
+        info!(
+            "  Layer {:?}: {} features, {:.1} MB",
+            hex_path,
+            hex_features.len(),
+            size as f64 / 1_000_000.0
+        );
+    }
+
+    if !coastline_features.is_empty() {
+        let coastline_path = parent.join(format!("{}-coastline.geojson", stem));
+        write_feature_collection(&coastline_path, &coastline_features)?;
+        let size = std::fs::metadata(&coastline_path)?.len();
+        info!(
+            "  Layer {:?}: {} features, {:.1} MB",
+            coastline_path,
+            coastline_features.len(),
+            size as f64 / 1_000_000.0
+        );
+    }
+
+    // Write combined file (all features in one FeatureCollection)
+    let all_features: Vec<&String> = hex_features
+        .iter()
+        .chain(coastline_features.iter())
+        .collect();
+    write_feature_collection(output, &all_features)?;
+
+    let total_features = all_features.len();
+    let file_size = std::fs::metadata(output)?.len();
+    info!(
+        "Combined GeoJSON exported to {:?} ({} features, {:.1} MB)",
+        output,
+        total_features,
+        file_size as f64 / 1_000_000.0
+    );
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A graph whose `coast_runs` table is non-monotonic but whose section
+    /// lengths and sentinels are intact: `asw geojson --coastline` must
+    /// report a clean open error, not panic while slicing the runs.
+    #[test]
+    fn geojson_rejects_a_corrupt_coastline_table_at_open() {
+        let mut b = asw_core::graph::GraphBuilder::default();
+        b.coastline_runs = vec![
+            vec![(28.0, 36.0), (28.01, 36.0)],
+            vec![(28.1, 36.0), (28.11, 36.0)],
+        ];
+        let mut bytes = b.build_bytes();
+        // Section 4 is coast_runs: [0, a, b]. Set the middle entry above the
+        // sentinel so the table is non-monotonic but still passes the
+        // first-entry and sentinel checks.
+        let off = u64::from_le_bytes(bytes[88 + 4 * 16..96 + 4 * 16].try_into().unwrap()) as usize;
+        let sentinel = u32::from_le_bytes(bytes[off + 8..off + 12].try_into().unwrap());
+        bytes[off + 4..off + 8].copy_from_slice(&(sentinel + 5).to_le_bytes());
+
+        let dir = std::env::temp_dir().join(format!("asw-cli-geojson-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let graph = dir.join("corrupt.graph");
+        std::fs::write(&graph, &bytes).unwrap();
+        let out = dir.join("out.geojson");
+
+        let result = std::panic::catch_unwind(|| export_geojson(&graph, &out, true, None));
+        std::fs::remove_dir_all(&dir).unwrap();
+        let err = result
+            .expect("export_geojson must not panic on a corrupt file")
+            .expect_err("a corrupt coastline table must be rejected");
+        assert!(
+            format!("{err:#}").contains("coast_runs not monotonic"),
+            "{err:#}"
+        );
+    }
+}

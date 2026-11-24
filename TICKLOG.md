@@ -2391,3 +2391,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/jtothethree-bevy-northstar
   - reference gameplay/kimgoetzke-procedural-generation-2
   - reference gameplay/blondeburrito-bevy-flowfield-tiles-plugin
+
+- **2026-11-24 01:48 UTC** — tick 746: +2 screened, +4 reference, 8 skipped, catalogue=1054
+  - added gameplay/auto-sea-way-asw (Apache-2.0, vendored)
+  - added gameplay/bezpowell-blitz-path (MIT, vendored)
+  - reference gameplay/const-i-snake-01
+  - reference gameplay/abelvm-omt-router
+  - reference gameplay/mgerhardy-simpleai
+  - reference gameplay/dschungelabenteuer-vite-plugin-entry-shaking

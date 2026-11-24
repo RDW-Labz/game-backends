@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:48:09Z",
+ "category": "gameplay",
+ "commit": "2023-11-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "const-i/snake_01 \u2014 Snake AI, Genetic Algorithm, Rust",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "snake_01",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "const-i-snake-01",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 16,
+ "system": "Snake AI, Genetic Algorithm, Rust",
+ "upstream": "https://github.com/const-i/snake_01",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

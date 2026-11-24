@@ -1,0 +1,21 @@
+[package]
+name = "asw-build"
+version = "0.12.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+asw-core = { path = "../asw-core" }
+h3o.workspace = true
+geo.workspace = true
+geojson.workspace = true
+rstar.workspace = true
+rayon.workspace = true
+serde.workspace = true
+tracing.workspace = true
+indicatif.workspace = true
+anyhow.workspace = true
+shapefile = { version = "0.9", features = ["geo-types"] }
+reqwest = { version = "0.13", features = ["blocking"] }
+time = { version = "0.3", features = ["formatting"] }
+zip = "9"

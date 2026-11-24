@@ -1,0 +1,2409 @@
+use crate::coast::CoastlineIndex;
+use crate::graph::RoutingGraph;
+use crate::h3::{great_circle_point, haversine_nm};
+use crate::passages::PASSAGES;
+use std::cmp::Reverse;
+use std::collections::BinaryHeap;
+
+/// Longest leg the route may contain, in nm. Land checks sample the great
+/// circle at this step, and output legs are split to it, so great-circle,
+/// rhumb-line and straight lon/lat readings of a leg agree within 0.1 nm
+/// up to 79°N (0.02 nm at 47°N).
+pub const LEG_STEP_NM: f64 = 20.0;
+
+/// Result of a route computation.
+pub struct RouteResult {
+    /// Water distance in nm (land legs excluded)
+    pub distance_nm: f64,
+    /// Raw A* path node count
+    pub raw_hops: usize,
+    /// Smoothed waypoint count, before long legs are split
+    pub smooth_hops: usize,
+    /// Route polyline as (lon, lat) for GeoJSON; consecutive points are at
+    /// most `LEG_STEP_NM` apart along the great circle
+    pub coordinates: Vec<[f64; 2]>,
+    /// Segment indices that cross land: `s` means the segment
+    /// `coordinates[s] -> coordinates[s+1]`. These segments contribute
+    /// zero to `distance_nm`.
+    pub land_legs: Vec<usize>,
+}
+
+/// Ensure `node` is valid for the current generation in `buffers`, computing
+/// and caching its cell centre and haversine heuristic to `(goal_lat,
+/// goal_lon)` on first touch this generation. `g_score`/`came_from`/`closed` are reset to their
+/// defaults by `touch()` itself; the heuristic decode (H3 -> lat/lng + trig)
+/// only happens once per node per search, no matter how many times the node
+/// is relaxed afterwards. A node the search must not use (closed Arctic
+/// area, closed canal, or outside `corridor`) is marked closed right here,
+/// so it is never expanded and the test runs once per node, not once per
+/// edge.
+#[inline(always)]
+fn touch_and_cache_h(
+    buffers: &mut crate::astar_pool::AstarBuffers,
+    node: u32,
+    graph: &RoutingGraph,
+    (goal_lat, goal_lon): (f64, f64),
+    arctic: bool,
+    canals: bool,
+    corridor: Option<&[u64]>,
+) {
+    if buffers.touch(node) {
+        let (nlat, nlon) = graph.node_pos(node);
+        buffers.pos[node as usize] = [nlat, nlon];
+        buffers.h_score[node as usize] = haversine_nm(nlat, nlon, goal_lat, goal_lon) as f32;
+        if blocked(nlat, nlon, arctic, canals)
+            || corridor.is_some_and(|c| {
+                c.binary_search(&crate::coarse::region_of(graph.node_h3(node)))
+                    .is_err()
+            })
+        {
+            buffers.closed[node as usize] = true;
+        }
+    }
+}
+
+/// Query-time shore clearance in shore_dist units (SHORE_DIST_UNIT_NM each).
+/// Returns None for buffer <= 0 (and for NaN). Quantizes UP so the requested
+/// clearance is never understated.
+pub fn shore_buffer_q(buffer_nm: f64) -> Option<u8> {
+    if buffer_nm.is_nan() || buffer_nm <= 0.0 {
+        return None;
+    }
+    // Subtract a small epsilon before ceiling so float error on an exact
+    // multiple (e.g. 0.14 / 0.02 = 7.000000000000001) doesn't overstate
+    // buffer_q by one unit. Mirrors quantize_shore_dist's epsilon guard
+    // in graph.rs (added before floor there; subtracted before ceil here).
+    Some(
+        (buffer_nm / crate::graph::SHORE_DIST_UNIT_NM - 1e-9)
+            .ceil()
+            .clamp(1.0, 255.0) as u8,
+    )
+}
+
+/// Fixed penalty strength: nothing varies it per request.
+const SHORE_K: f32 = 15.0;
+
+/// Weight multiplier for an edge into a node `d` shore_dist units from shore:
+/// `1 + SHORE_K * (1 - d/buffer_q)` inside the buffer, 1 outside.
+#[inline]
+fn shore_factor(d: u8, buffer_q: u8) -> f32 {
+    if d >= buffer_q {
+        1.0
+    } else {
+        1.0 + SHORE_K * (1.0 - d as f32 / buffer_q as f32)
+    }
+}
+
+/// Is the point inside the corridor of a man-made canal (a passage with a
+/// `cut`)? A canal is narrower than most buffers, so every cell in it would
+/// pay the shore penalty, and A* would rather sail around: Elbe to Kiel Bay
+/// was 409 nm at a 0.1 nm buffer instead of 97 nm through the Kiel Canal.
+/// Within these corridors the penalty is off.
+#[inline]
+fn in_canal(lat: f64, lon: f64) -> bool {
+    CANAL_CORRIDORS
+        .iter()
+        .any(|&(x0, y0, x1, y1)| lon >= x0 && lon <= x1 && lat >= y0 && lat <= y1)
+}
+
+/// Corridors of the passages with a `cut`, collected once: `in_canal` runs
+/// on every relaxed edge into a cell inside the buffer.
+static CANAL_CORRIDORS: std::sync::LazyLock<Vec<(f64, f64, f64, f64)>> =
+    std::sync::LazyLock::new(|| {
+        PASSAGES
+            .iter()
+            .filter(|p| p.cut.is_some())
+            .map(|p| p.corridor)
+            .collect()
+    });
+
+/// North of this latitude the sea is permanent pack ice: never routable.
+/// The graph is built from land polygons only, so without this the Arctic
+/// Ocean is open water and Asia-Europe routes go over the pole.
+// ponytail: a fixed latitude and two boxes stand in for real ice data. Swap
+// in a sea-ice mask (e.g. NSIDC median September extent) if routes near the
+// ice edge ever matter.
+pub const ICE_CAP_LAT: f64 = 80.0;
+
+/// Seasonal Arctic passages, closed unless the request sets `arctic`:
+/// (min_lon, min_lat, max_lon, max_lat). Each box runs from the mainland
+/// coast up to the ice cap, cutting the transit in the middle, so ports on
+/// either side stay reachable from their own ocean.
+const ARCTIC_PASSAGES: [(f64, f64, f64, f64); 2] = [
+    // Northern Sea Route: Vilkitsky Strait and Severnaya Zemlya.
+    (94.0, 75.5, 112.0, ICE_CAP_LAT),
+    // Northwest Passage: across the Canadian Arctic Archipelago, from
+    // Boothia to Queen Maud Gulf (Cambridge Bay stays outside).
+    (-104.5, 67.0, -92.0, ICE_CAP_LAT),
+];
+
+/// Cut boxes of the man-made canals, closed when the request sets
+/// `canals=false`. Empty while the canals are open.
+fn canal_cuts(canals: bool) -> impl Iterator<Item = &'static (f64, f64, f64, f64)> {
+    let passages = if canals { &[][..] } else { PASSAGES };
+    passages.iter().filter_map(|p| p.cut.as_ref())
+}
+
+/// Sorted res-3 regions that hold a closed canal cut. Empty while the canals
+/// are open. The coarse search keeps out of them (see `coarse::corridor`).
+fn closed_canal_regions(canals: bool) -> Vec<u64> {
+    let mut regions: Vec<u64> = canal_cuts(canals)
+        .flat_map(|&(x0, y0, x1, y1)| [(y0, x0), (y0, x1), (y1, x0), (y1, x1)])
+        .filter_map(|(lat, lon)| h3o::LatLng::new(lat, lon).ok())
+        .map(|ll| u64::from(ll.to_cell(h3o::Resolution::Three)))
+        .collect();
+    regions.sort_unstable();
+    regions.dedup();
+    regions
+}
+
+/// Is the point in the ice cap, in a closed Arctic passage, or in a closed
+/// canal?
+pub(crate) fn blocked(lat: f64, lon: f64, arctic: bool, canals: bool) -> bool {
+    let inside = |b: &(f64, f64, f64, f64)| lon >= b.0 && lon <= b.2 && lat >= b.1 && lat <= b.3;
+    lat > ICE_CAP_LAT
+        || (!arctic && ARCTIC_PASSAGES.iter().any(inside))
+        || canal_cuts(canals).any(inside)
+}
+
+/// Does the planar lon/lat segment (the same geometry `crosses_land` tests)
+/// enter the ice cap, a closed Arctic passage or a closed canal?
+fn segment_blocked(lon1: f64, lat1: f64, lon2: f64, lat2: f64, arctic: bool, canals: bool) -> bool {
+    if lat1.max(lat2) > ICE_CAP_LAT {
+        return true;
+    }
+    // A segment across the antimeridian is split into two pieces hugging
+    // lon ±180, far from every box.
+    if (lon1 - lon2).abs() > 180.0 {
+        return false;
+    }
+    let arctic_boxes = if arctic {
+        &[][..]
+    } else {
+        &ARCTIC_PASSAGES[..]
+    };
+    let mut boxes = arctic_boxes.iter().chain(canal_cuts(canals));
+    boxes.any(|&(x0, y0, x1, y1)| {
+        // Liang-Barsky: clip the segment's parameter range to the box.
+        let (dx, dy) = (lon2 - lon1, lat2 - lat1);
+        let (mut t0, mut t1) = (0.0f64, 1.0f64);
+        for (p, q) in [
+            (-dx, lon1 - x0),
+            (dx, x1 - lon1),
+            (-dy, lat1 - y0),
+            (dy, y1 - lat1),
+        ] {
+            if p == 0.0 {
+                if q < 0.0 {
+                    return false;
+                }
+            } else if p < 0.0 {
+                t0 = t0.max(q / p);
+            } else {
+                t1 = t1.min(q / p);
+            }
+        }
+        t0 <= t1
+    })
+}
+
+/// A* pathfinding with haversine heuristic. `shore` is the clearance from
+/// `shore_buffer_q`, or None for no penalty. Never enters the ice cap, nor a
+/// seasonal Arctic passage unless `arctic` is set, nor a man-made canal
+/// unless `canals` is set. With `corridor` (sorted
+/// region ids from `coarse::corridor`) it only expands nodes in those regions.
+#[allow(clippy::too_many_arguments)]
+pub fn astar(
+    graph: &RoutingGraph,
+    start: u32,
+    goal: u32,
+    buffers: &mut crate::astar_pool::AstarBuffers,
+    shore: Option<u8>,
+    arctic: bool,
+    canals: bool,
+    corridor: Option<&[u64]>,
+) -> Option<(Vec<u32>, f64)> {
+    // Priority queue: (f_score bits, node_id).
+    // ponytail: f >= 0 always (g and haversine h are non-negative), so the
+    // raw IEEE-754 bit pattern orders exactly like the float. Swap in
+    // ordered-float if a negative or NaN score ever becomes possible.
+    let mut open: BinaryHeap<Reverse<(u32, u32)>> = BinaryHeap::new();
+
+    let goal_pos = graph.node_pos(goal);
+
+    touch_and_cache_h(buffers, start, graph, goal_pos, arctic, canals, corridor);
+    buffers.g_score[start as usize] = 0.0;
+    let h_start = buffers.h_score[start as usize];
+    open.push(Reverse((h_start.to_bits(), start)));
+
+    while let Some(Reverse((_, current))) = open.pop() {
+        if current == goal {
+            // Reconstruct path
+            let mut path = vec![goal];
+            let mut node = goal;
+            while node != start {
+                node = buffers.came_from[node as usize];
+                path.push(node);
+            }
+            path.reverse();
+            let total_dist = buffers.g_score[goal as usize] as f64;
+            return Some((path, total_dist));
+        }
+
+        touch_and_cache_h(buffers, current, graph, goal_pos, arctic, canals, corridor);
+        if buffers.closed[current as usize] {
+            continue;
+        }
+        buffers.closed[current as usize] = true;
+
+        let current_g = buffers.g_score[current as usize];
+        let [clat, clon] = buffers.pos[current as usize];
+
+        for neighbor in graph.neighbor_ids(current) {
+            touch_and_cache_h(buffers, neighbor, graph, goal_pos, arctic, canals, corridor);
+            if buffers.closed[neighbor as usize] {
+                continue;
+            }
+            // Edge length from the cached centres: one haversine per
+            // relaxation, no H3 decode (the file stores no weights).
+            let [nlat, nlon] = buffers.pos[neighbor as usize];
+            let weight = haversine_nm(clat, clon, nlat, nlon) as f32;
+            let weight = match shore {
+                Some(q) => {
+                    let f = shore_factor(graph.shore_dist(neighbor), q);
+                    if f > 1.0 && in_canal(nlat, nlon) {
+                        weight
+                    } else {
+                        weight * f
+                    }
+                }
+                None => weight,
+            };
+            let tentative_g = current_g + weight;
+            if tentative_g < buffers.g_score[neighbor as usize] {
+                buffers.g_score[neighbor as usize] = tentative_g;
+                buffers.came_from[neighbor as usize] = current;
+                let h = buffers.h_score[neighbor as usize];
+                let f = tentative_g + h;
+                open.push(Reverse((f.to_bits(), neighbor)));
+            }
+        }
+    }
+
+    None // No path found
+}
+
+/// Result of `smooth_indices`: the kept waypoint indices plus which kept
+/// segments are known to cross land (the forced-progress land-pin case).
+/// `land_segs[j] == k` means the segment `kept[k] -> kept[k+1]` crosses
+/// land. Since output coordinate `k` is `coords[kept[k]]`, these values
+/// are also segment indices of the smoothed polyline.
+pub struct SmoothResult {
+    pub kept: Vec<usize>,
+    pub land_segs: Vec<usize>,
+}
+
+/// Greedy line-of-sight smoothing over raw `[lon, lat]` coordinates.
+///
+/// Removes waypoints whose direct predecessor→successor great circle (a)
+/// doesn't cross any coastline and (b) when `shore_buffer_nm > 0`, doesn't come
+/// closer to the coastline than min(buffer, the input's own minimum
+/// clearance over the skipped span, per `shore_dist`). Rule (b) means
+/// smoothing never brings the route closer to shore than the raw input
+/// already accepted — full buffer in open water, graceful degradation near
+/// endpoints/in coves.
+///
+/// `shore_dist[i]` is the quantized (`SHORE_DIST_UNIT_NM` units) shore
+/// distance of `coords[i]`; it must have the same length as `coords` and is
+/// only consulted when `shore_buffer_nm > 0`. Returns strictly increasing
+/// indices into `coords`, always keeping the first and last. When even the
+/// next hop is blocked (e.g. a pin on land), the blocked segment is kept and
+/// smoothing continues from that point. A shortcut into the ice cap, a
+/// closed Arctic passage or a closed canal (see `astar`) counts as blocked.
+pub fn smooth_indices(
+    coords: &[[f64; 2]],
+    shore_dist: &[u8],
+    coastline: &CoastlineIndex<'_>,
+    shore_buffer_nm: f64,
+    arctic: bool,
+    canals: bool,
+) -> SmoothResult {
+    if coords.len() <= 2 {
+        return SmoothResult {
+            kept: (0..coords.len()).collect(),
+            land_segs: Vec::new(),
+        };
+    }
+    let use_buffer = shore_buffer_nm > 0.0;
+    debug_assert!(
+        !use_buffer || shore_dist.len() == coords.len(),
+        "shore_dist must be parallel to coords when a buffer is requested"
+    );
+
+    let threshold = |i: usize, j: usize| -> f64 {
+        if use_buffer {
+            // ponytail: O(n) slice scan per probe; the coastline queries
+            // dwarf it (a sparse table measured no faster with the anchor
+            // search).
+            let raw_min = shore_dist[i..=j].iter().min().copied();
+            let raw_min_nm = raw_min.unwrap_or(u8::MAX) as f64 * crate::graph::SHORE_DIST_UNIT_NM;
+            shore_buffer_nm.min(raw_min_nm)
+        } else {
+            0.0
+        }
+    };
+    let clear_leg = |i: usize, j: usize| -> bool {
+        let ([i_lon, i_lat], [j_lon, j_lat]) = (coords[i], coords[j]);
+        leg_clear(
+            coastline,
+            i_lon,
+            i_lat,
+            j_lon,
+            j_lat,
+            threshold(i, j),
+            arctic,
+            canals,
+        )
+    };
+    let (mut result, mut land_segs) = greedy_pass(coords, coastline, &clear_leg);
+    refine_corners(&mut result, &mut land_segs, coords, &clear_leg);
+
+    // Greedy smoothing depends on its first corners and only sees the raw
+    // nodes its probes test, so with a shore buffer it can follow a coast
+    // that a single long leg would have crossed in open water (Cape Town to
+    // New York at a 1 nm buffer ran up the African coast, 95 nm too long).
+    // With a buffer, search for the shortest route over anchor points: the
+    // corners of this pass and evenly spaced raw nodes.
+    // ponytail: buffer only; without one it changed none of 225 test routes
+    // and cost up to 3x the smoothing time on short routes.
+    if use_buffer {
+        let greedy_cost = kept_len(coords, &result) + LAND_LEG_COST_NM * land_segs.len() as f64;
+        let (kept, land, cost) =
+            shortest_over_anchors(coords, &clear_leg, &[(&result, &land_segs)]);
+        if cost < greedy_cost - 1e-6 {
+            result = kept;
+            land_segs = land;
+            refine_corners(&mut result, &mut land_segs, coords, &clear_leg);
+        }
+    }
+
+    SmoothResult {
+        kept: result,
+        land_segs,
+    }
+}
+
+/// One greedy pass: from each kept node, keep the farthest node that
+/// `clear_leg` accepts, found by exponential probing and a binary search.
+/// Returns the kept indices and the legs that cross land.
+fn greedy_pass(
+    coords: &[[f64; 2]],
+    coastline: &CoastlineIndex<'_>,
+    clear_leg: &impl Fn(usize, usize) -> bool,
+) -> (Vec<usize>, Vec<usize>) {
+    let mut result = vec![0];
+    let mut land_segs = Vec::new();
+    let mut current_idx = 0;
+    let end_idx = coords.len() - 1;
+
+    while current_idx < end_idx {
+        let [c_lon, c_lat] = coords[current_idx];
+        let clear = |j: usize| clear_leg(current_idx, j);
+
+        // Try direct line to destination
+        if clear(end_idx) {
+            result.push(end_idx);
+            break;
+        }
+
+        // Exponential forward search: find boundary between clear and blocked
+        let mut step = 1usize;
+        let mut v_lo = current_idx + 1;
+        let mut v_lo_verified = false;
+        let mut v_hi;
+        loop {
+            let test_idx = (current_idx + step).min(end_idx);
+            if !clear(test_idx) {
+                v_hi = test_idx;
+                break;
+            }
+            v_lo = test_idx;
+            v_lo_verified = true;
+            if test_idx >= end_idx {
+                v_lo = end_idx;
+                v_hi = end_idx;
+                break;
+            }
+            step *= 2;
+        }
+
+        if v_lo == end_idx {
+            result.push(end_idx);
+            if !v_lo_verified
+                && leg_crosses_land(
+                    coastline,
+                    c_lon,
+                    c_lat,
+                    coords[end_idx][0],
+                    coords[end_idx][1],
+                )
+            {
+                land_segs.push(result.len() - 2);
+            }
+            break;
+        }
+
+        // Binary search between v_lo (clear) and v_hi (blocked)
+        while v_hi - v_lo > 1 {
+            let mid = (v_lo + v_hi) / 2;
+            if !clear(mid) {
+                v_hi = mid;
+            } else {
+                v_lo = mid;
+                v_lo_verified = true;
+            }
+        }
+
+        // v_lo_verified is false only when the very first probe
+        // (current_idx + 1) was blocked: v_lo was never verified clear and
+        // the segment is kept anyway to make progress (land pin case).
+        // Flag it as a land leg only when it actually crosses land — a
+        // pure buffer violation is still a water segment.
+        let forced = !v_lo_verified;
+        if v_lo <= current_idx {
+            v_lo = current_idx + 1;
+        }
+        result.push(v_lo);
+        if forced && leg_crosses_land(coastline, c_lon, c_lat, coords[v_lo][0], coords[v_lo][1]) {
+            land_segs.push(result.len() - 2);
+        }
+        current_idx = v_lo;
+    }
+
+    (result, land_segs)
+}
+
+/// About this many evenly spaced raw nodes join the anchors of
+/// `shortest_over_anchors`.
+const EVEN_ANCHORS: usize = 128;
+
+/// Land checks per anchor, cheapest candidates first, before the best known
+/// leg into it is taken.
+const ANCHOR_TRIES: usize = 5;
+
+/// An anchor leg is only tried when it saves at least this much against the
+/// best known way: smaller gains are left to `refine_corners`, and they would
+/// cost most of the land checks.
+const ANCHOR_MIN_GAIN_NM: f64 = 1.0;
+
+/// A leg over land (a pin on land) counts as this much longer, so a route
+/// keeps no more of them than it needs.
+const LAND_LEG_COST_NM: f64 = 1.0e6;
+
+/// Shortest route from the first to the last raw node over anchor nodes: the
+/// nodes of the `known` routes (kept indices and land legs, every leg known
+/// to pass or to be a forced land leg) plus evenly spaced raw nodes. For each
+/// anchor, the known legs into it set the price to beat, and the cheapest
+/// other anchors are tried with `clear` until one passes. The known routes
+/// are always possible, so the result is never longer than the shortest of
+/// them. Returns the kept indices, the land legs and the cost (length plus
+/// `LAND_LEG_COST_NM` per land leg).
+// ponytail: anchors and ANCHOR_TRIES bound the land checks; a route over all
+// raw nodes would be exact but needs O(n^2) of them.
+fn shortest_over_anchors(
+    coords: &[[f64; 2]],
+    clear: &impl Fn(usize, usize) -> bool,
+    known: &[(&[usize], &[usize])],
+) -> (Vec<usize>, Vec<usize>, f64) {
+    let n = coords.len();
+    let len =
+        |i: usize, j: usize| haversine_nm(coords[i][1], coords[i][0], coords[j][1], coords[j][0]);
+    let mut anchors: Vec<usize> = (0..n)
+        .step_by(n.div_ceil(EVEN_ANCHORS).max(1))
+        .chain([n - 1])
+        .collect();
+    for (kept, _) in known {
+        anchors.extend_from_slice(kept);
+    }
+    anchors.sort_unstable();
+    anchors.dedup();
+    let at = |node: usize| {
+        anchors
+            .binary_search(&node)
+            .expect("known node is an anchor")
+    };
+    let mut known_into: std::collections::HashMap<usize, Vec<(usize, bool)>> =
+        std::collections::HashMap::new();
+    for (kept, land) in known {
+        for (k, w) in kept.windows(2).enumerate() {
+            known_into
+                .entry(w[1])
+                .or_default()
+                .push((w[0], land.contains(&k)));
+        }
+    }
+
+    // Best known route; a leg is only tried when a route through it, with a
+    // straight line on to the end, could still beat this by the minimum gain.
+    let bound = known
+        .iter()
+        .map(|(kept, land)| kept_len(coords, kept) + LAND_LEG_COST_NM * land.len() as f64)
+        .fold(f64::INFINITY, f64::min);
+    let m = anchors.len();
+    let mut cost = vec![f64::INFINITY; m];
+    let mut pred = vec![(usize::MAX, false); m];
+    cost[0] = 0.0;
+    for b in 1..m {
+        let j = anchors[b];
+        let mut best = f64::INFINITY;
+        let mut best_pred = (usize::MAX, false);
+        for &(i, land) in known_into.get(&j).map(Vec::as_slice).unwrap_or(&[]) {
+            let a = at(i);
+            let c = cost[a] + len(i, j) + if land { LAND_LEG_COST_NM } else { 0.0 };
+            if c < best {
+                best = c;
+                best_pred = (a, land);
+            }
+        }
+        let to_end = len(j, n - 1);
+        let mut tries: Vec<(f64, usize)> = (0..b)
+            .filter(|&a| cost[a].is_finite())
+            .map(|a| (cost[a] + len(anchors[a], j), a))
+            .filter(|&(c, _)| {
+                c < best - ANCHOR_MIN_GAIN_NM && c + to_end < bound - ANCHOR_MIN_GAIN_NM
+            })
+            .collect();
+        tries.sort_by(|x, y| x.0.total_cmp(&y.0));
+        for &(c, a) in tries.iter().take(ANCHOR_TRIES) {
+            if clear(anchors[a], j) {
+                best = c;
+                best_pred = (a, false);
+                break;
+            }
+        }
+        cost[b] = best;
+        pred[b] = best_pred;
+    }
+
+    let mut path = vec![(m - 1, false)];
+    while path.last().unwrap().0 != 0 {
+        let (a, land) = pred[path.last().unwrap().0];
+        path.last_mut().unwrap().1 = land;
+        path.push((a, false));
+    }
+    path.reverse();
+    let kept: Vec<usize> = path.iter().map(|&(a, _)| anchors[a]).collect();
+    // path[k + 1].1 marks the leg that ends at the (k + 1)-th kept node
+    let land_segs: Vec<usize> = (0..path.len() - 1).filter(|&k| path[k + 1].1).collect();
+    (kept, land_segs, cost[m - 1])
+}
+
+/// Length in nm of the polyline through `coords` at the `kept` indices.
+fn kept_len(coords: &[[f64; 2]], kept: &[usize]) -> f64 {
+    kept.windows(2)
+        .map(|w| {
+            haversine_nm(
+                coords[w[0]][1],
+                coords[w[0]][0],
+                coords[w[1]][1],
+                coords[w[1]][0],
+            )
+        })
+        .sum()
+}
+
+/// Passes of `refine_corners`: moving a corner can open a better place for
+/// its neighbours.
+// ponytail: fixed cap, a shortest path over all raw nodes is exact but needs
+// O(n^2) land checks.
+const REFINE_PASSES: usize = 5;
+
+/// Candidates tried per corner, shortest first. The best one is often hidden:
+/// visibility along a raw path has gaps.
+const CORNER_TRIES: usize = 8;
+
+/// A corner that could save less than this even with a straight line is left
+/// alone, so it costs no land checks.
+const MIN_SAVING_NM: f64 = 0.02;
+
+/// A cut adds a waypoint, so it must save at least this much.
+const CUT_MIN_GAIN_NM: f64 = 0.1;
+
+/// Greedy smoothing stops at the farthest node it can see. That node can be
+/// far from the obstacle that forced the turn, and the route then turns in
+/// open water: Las Palmas to Mindelo at a 0.2 nm buffer was 47 nm too long.
+/// For each corner, take the raw node with the shortest two legs among the
+/// nodes that see both neighbours, or cut the corner with two nodes when no
+/// single node helps. A change needs every new leg to pass `clear` and a
+/// shorter route, so the route gets shorter and never closer to land than
+/// `clear` allows. Land legs and their corners stay as they are.
+fn refine_corners(
+    kept: &mut Vec<usize>,
+    land_segs: &mut [usize],
+    coords: &[[f64; 2]],
+    clear: &impl Fn(usize, usize) -> bool,
+) {
+    let len =
+        |i: usize, j: usize| haversine_nm(coords[i][1], coords[i][0], coords[j][1], coords[j][0]);
+    // Corners already looked at with these neighbours: a pass after a change
+    // elsewhere would only repeat the same land checks for them.
+    let mut settled = std::collections::HashSet::new();
+    for _ in 0..REFINE_PASSES {
+        let mut changed = false;
+        let mut t = 1;
+        while t + 1 < kept.len() {
+            if land_segs.contains(&(t - 1)) || land_segs.contains(&t) {
+                t += 1;
+                continue;
+            }
+            let (a, b, c) = (kept[t - 1], kept[t], kept[t + 1]);
+            let current = len(a, b) + len(b, c);
+            if current - len(a, c) < MIN_SAVING_NM || settled.contains(&(a, b, c)) {
+                t += 1;
+                continue;
+            }
+            if clear(a, c) {
+                kept.remove(t);
+                for s in land_segs.iter_mut().filter(|s| **s >= t) {
+                    *s -= 1;
+                }
+                changed = true;
+                continue;
+            }
+            // A leg kept only because nothing better passed `clear` (a pin
+            // inside the buffer) gives no window to search.
+            if !clear(a, b) || !clear(b, c) {
+                settled.insert((a, b, c));
+                t += 1;
+                continue;
+            }
+            // First node after a that sees c, and last node before c that a
+            // sees. Binary search assumes visibility has one boundary, so the
+            // result is checked with `clear` before it is used.
+            let (mut lo, mut hi) = (a + 1, b);
+            while lo < hi {
+                let mid = (lo + hi) / 2;
+                if clear(mid, c) {
+                    hi = mid;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+            let first = lo;
+            let (mut lo, mut hi) = (b, c - 1);
+            while lo < hi {
+                let mid = (lo + hi).div_ceil(2);
+                if clear(a, mid) {
+                    lo = mid;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+            let last = lo;
+            let mut candidates: Vec<(f64, usize)> = (first..=last)
+                .map(|m| (len(a, m) + len(m, c), m))
+                .filter(|&(d, _)| d < current - 1e-6)
+                .collect();
+            candidates.sort_by(|x, y| x.0.total_cmp(&y.0));
+            let better = candidates
+                .iter()
+                .take(CORNER_TRIES)
+                .find(|&&(_, m)| clear(a, m) && clear(m, c));
+            if let Some(&(_, m)) = better {
+                kept[t] = m;
+                changed = true;
+                t += 1;
+                continue;
+            }
+            // No single node is better: an obstacle near a and another near c
+            // can each hold the corner back. Cut it with two nodes, and the
+            // next passes move them out to the obstacles.
+            let (p, q) = ((a + b) / 2, (b + c) / 2);
+            if p > a
+                && q > b
+                && len(a, p) + len(p, q) + len(q, c) < current - CUT_MIN_GAIN_NM
+                && clear(p, q)
+                && clear(a, p)
+                && clear(q, c)
+            {
+                kept[t] = p;
+                kept.insert(t + 1, q);
+                for s in land_segs.iter_mut().filter(|s| **s > t) {
+                    *s += 1;
+                }
+                changed = true;
+                t += 1;
+            } else {
+                settled.insert((a, b, c));
+            }
+            t += 1;
+        }
+        if !changed {
+            break;
+        }
+    }
+}
+
+/// Number of pieces of at most `LEG_STEP_NM` the great circle a -> b splits into.
+fn piece_count(lon1: f64, lat1: f64, lon2: f64, lat2: f64) -> usize {
+    (haversine_nm(lat1, lon1, lat2, lon2) / LEG_STEP_NM)
+        .ceil()
+        .max(1.0) as usize
+}
+
+/// Run `f` on each piece (lon1, lat1, lon2, lat2) of the great circle
+/// a -> b, in order, until it returns true. Each piece is at most
+/// `LEG_STEP_NM` long, so testing it as a straight lon/lat line is within
+/// 0.1 nm of testing the arc itself.
+fn any_piece(
+    lon1: f64,
+    lat1: f64,
+    lon2: f64,
+    lat2: f64,
+    mut f: impl FnMut(f64, f64, f64, f64) -> bool,
+) -> bool {
+    let n = piece_count(lon1, lat1, lon2, lat2);
+    let (mut plon, mut plat) = (lon1, lat1);
+    for i in 1..=n {
+        let (lat, lon) = if i == n {
+            (lat2, lon2)
+        } else {
+            great_circle_point(lat1, lon1, lat2, lon2, i as f64 / n as f64)
+        };
+        if f(plon, plat, lon, lat) {
+            return true;
+        }
+        (plon, plat) = (lon, lat);
+    }
+    false
+}
+
+/// Does the great circle a -> b cross any coastline?
+fn leg_crosses_land(
+    coastline: &CoastlineIndex<'_>,
+    lon1: f64,
+    lat1: f64,
+    lon2: f64,
+    lat2: f64,
+) -> bool {
+    any_piece(lon1, lat1, lon2, lat2, |a, b, c, d| {
+        coastline.crosses_land(a, b, c, d)
+    })
+}
+
+/// Can the great circle a -> b be sailed: it stays out of the ice cap,
+/// closed Arctic passages and closed canals, crosses no coastline, and
+/// when `threshold > 0` keeps that clearance from the coastline. The
+/// small epsilon absorbs float noise when the closest approach is exactly
+/// an endpoint (its point clearance and the segment clearance are then the
+/// same geometric quantity computed via different code paths).
+#[allow(clippy::too_many_arguments)]
+fn leg_clear(
+    coastline: &CoastlineIndex<'_>,
+    lon1: f64,
+    lat1: f64,
+    lon2: f64,
+    lat2: f64,
+    threshold: f64,
+    arctic: bool,
+    canals: bool,
+) -> bool {
+    !any_piece(lon1, lat1, lon2, lat2, |a, b, c, d| {
+        piece_blocked(coastline, a, b, c, d, threshold, arctic, canals)
+    })
+}
+
+/// Is one piece of a leg (at most `LEG_STEP_NM`) blocked: closed area,
+/// coastline crossing, or closer to the coast than `threshold`?
+#[allow(clippy::too_many_arguments)]
+fn piece_blocked(
+    coastline: &CoastlineIndex<'_>,
+    lon1: f64,
+    lat1: f64,
+    lon2: f64,
+    lat2: f64,
+    threshold: f64,
+    arctic: bool,
+    canals: bool,
+) -> bool {
+    segment_blocked(lon1, lat1, lon2, lat2, arctic, canals)
+        || coastline.crosses_land(lon1, lat1, lon2, lat2)
+        || (threshold > 0.0
+            && coastline.segment_min_distance_nm(lon1, lat1, lon2, lat2, threshold)
+                < threshold - 1e-9)
+}
+
+/// Can the great circle between the requested points be used as the route?
+///
+/// Requires (a) no coastline crossing and (b) when a shore buffer is
+/// requested, that the arc keeps min(buffer, both endpoints' own shore
+/// clearance) from the coastline — the same graceful-degradation rule
+/// `smooth_indices` applies, with the two pins as the whole "path".
+#[allow(clippy::too_many_arguments)]
+fn direct_line_ok(
+    coastline: &CoastlineIndex<'_>,
+    from_lat: f64,
+    from_lon: f64,
+    to_lat: f64,
+    to_lon: f64,
+    shore_buffer_nm: f64,
+    arctic: bool,
+    canals: bool,
+) -> bool {
+    let threshold = if shore_buffer_nm > 0.0 {
+        let from_d = coastline.min_distance_nm(from_lon, from_lat, shore_buffer_nm);
+        let to_d = coastline.min_distance_nm(to_lon, to_lat, shore_buffer_nm);
+        shore_buffer_nm.min(from_d).min(to_d)
+    } else {
+        0.0
+    };
+    leg_clear(
+        coastline, from_lon, from_lat, to_lon, to_lat, threshold, arctic, canals,
+    )
+}
+
+/// Build the result: every leg is split along its great circle into pieces
+/// of at most `LEG_STEP_NM`, so the polyline reads the same as great-circle,
+/// rhumb-line or straight lon/lat legs, and `distance_nm` is its water
+/// length. Flagged land legs (pin on land, peninsula clip) are not sailed
+/// and contribute nothing; all their pieces stay flagged.
+fn finish(waypoints: &[[f64; 2]], land: &[usize], raw_hops: usize) -> RouteResult {
+    let mut coordinates = vec![waypoints[0]];
+    let mut land_legs = Vec::new();
+    let mut distance_nm = 0.0;
+    for (i, w) in waypoints.windows(2).enumerate() {
+        let is_land = land.contains(&i);
+        any_piece(
+            w[0][0],
+            w[0][1],
+            w[1][0],
+            w[1][1],
+            |lon1, lat1, lon2, lat2| {
+                if is_land {
+                    land_legs.push(coordinates.len() - 1);
+                } else {
+                    distance_nm += haversine_nm(lat1, lon1, lat2, lon2);
+                }
+                coordinates.push([lon2, lat2]);
+                false
+            },
+        );
+    }
+    RouteResult {
+        distance_nm,
+        raw_hops,
+        smooth_hops: waypoints.len(),
+        coordinates,
+        land_legs,
+    }
+}
+
+/// Is the point on navigable water? Snap to the nearest water node (its
+/// centre is known water) and count coastline crossings on the way to the
+/// point: even means water. No node within the snapping ladder means land.
+pub fn is_water(graph: &RoutingGraph, lat: f64, lon: f64) -> bool {
+    let Some((node, _)) = graph.nearest_node(lat, lon) else {
+        return false;
+    };
+    let (nlat, nlon) = graph.node_pos(node);
+    graph
+        .coastline()
+        .crossing_count(nlon, nlat, lon, lat)
+        .is_multiple_of(2)
+}
+
+/// Compute a full route: direct-line shortcut → snap → A* → stitch true
+/// endpoints → smooth → build result. `arctic` opens the seasonal Arctic
+/// passages; the ice cap stays closed either way. `canals = false` closes
+/// the man-made canals (the `cut` boxes in `passages`).
+#[allow(clippy::too_many_arguments)]
+pub fn compute_route(
+    graph: &RoutingGraph,
+    from_lat: f64,
+    from_lon: f64,
+    to_lat: f64,
+    to_lon: f64,
+    coastline: &CoastlineIndex<'_>,
+    node_knn: &dyn Fn(f64, f64) -> Option<(u32, f64)>,
+    buffers: &mut crate::astar_pool::AstarBuffers,
+    shore_buffer_nm: f64,
+    arctic: bool,
+    canals: bool,
+) -> Option<RouteResult> {
+    // Direct-line shortcut: if the straight line between the requested
+    // points is usable, no graph search is needed. This also covers points
+    // that snap to the same deep-ocean node, which would otherwise produce
+    // a single-point route with distance 0.
+    if direct_line_ok(
+        coastline,
+        from_lat,
+        from_lon,
+        to_lat,
+        to_lon,
+        shore_buffer_nm,
+        arctic,
+        canals,
+    ) {
+        return Some(finish(&[[from_lon, from_lat], [to_lon, to_lat]], &[], 2));
+    }
+
+    let (start, _) = node_knn(from_lat, from_lon)?;
+    let (goal, _) = node_knn(to_lat, to_lon)?;
+    // An endpoint in a closed area has no route; say so now instead of
+    // letting A* exhaust the whole graph first.
+    for n in [start, goal] {
+        let (lat, lon) = graph.node_pos(n);
+        if blocked(lat, lon, arctic, canals) {
+            return None;
+        }
+    }
+
+    let shore = shore_buffer_q(shore_buffer_nm);
+    // Long routes: fine A* inside the corridor along the coarse path. No
+    // corridor (short route) or nothing found inside it: search everything.
+    // An end point in the region of a closed canal also gets no corridor:
+    // its coarse node can include the canal itself, and a corridor through
+    // the canal would fail at the cut or return a detour that is only the
+    // shortest inside the corridor.
+    let closed_regions = closed_canal_regions(canals);
+    let near_closed_canal = [start, goal].iter().any(|&n| {
+        let region = crate::coarse::region_of(graph.node_h3(n));
+        closed_regions.binary_search(&region).is_ok()
+    });
+    let corridor = (!near_closed_canal
+        && haversine_nm(from_lat, from_lon, to_lat, to_lon) >= crate::coarse::CORRIDOR_MIN_NM)
+        .then(|| crate::coarse::corridor(graph, start, goal, arctic, &closed_regions))
+        .flatten();
+    let found = corridor.as_deref().and_then(|c| {
+        let r = astar(graph, start, goal, buffers, shore, arctic, canals, Some(c));
+        buffers.reset();
+        r
+    });
+    let (raw_path, _distance_nm) = match found {
+        Some(r) => r,
+        None => astar(graph, start, goal, buffers, shore, arctic, canals, None)?,
+    };
+    let raw_hops = raw_path.len();
+
+    // Stitch the true endpoints onto the node path so the route starts and
+    // ends exactly at the requested coordinates. Smoothing from the pin
+    // itself removes the dog-leg to the snapped node center (which can be
+    // tens of nm away on res-3 deep-ocean cells). Pins get their own
+    // quantized shore distance so buffer-aware smoothing treats them like
+    // any near-shore waypoint (graceful degradation, not a hard failure).
+    let pin_q = |lon: f64, lat: f64| -> u8 {
+        if shore_buffer_nm > 0.0 {
+            crate::graph::quantize_shore_dist(coastline.min_distance_nm(
+                lon,
+                lat,
+                255.0 * crate::graph::SHORE_DIST_UNIT_NM,
+            ))
+        } else {
+            u8::MAX
+        }
+    };
+
+    let mut coords: Vec<[f64; 2]> = Vec::with_capacity(raw_path.len() + 2);
+    let mut shore_dist: Vec<u8> = Vec::with_capacity(raw_path.len() + 2);
+    coords.push([from_lon, from_lat]);
+    shore_dist.push(pin_q(from_lon, from_lat));
+    for &n in &raw_path {
+        let (lat, lon) = graph.node_pos(n);
+        coords.push([lon, lat]);
+        shore_dist.push(graph.shore_dist(n));
+    }
+    coords.push([to_lon, to_lat]);
+    shore_dist.push(pin_q(to_lon, to_lat));
+
+    let sm = smooth_indices(
+        &coords,
+        &shore_dist,
+        coastline,
+        shore_buffer_nm,
+        arctic,
+        canals,
+    );
+    let smoothed: Vec<[f64; 2]> = sm.kept.into_iter().map(|i| coords[i]).collect();
+    Some(finish(&smoothed, &sm.land_segs, raw_hops))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::graph::GraphBuilder;
+
+    /// Sum of centre-to-centre haversine along a node path.
+    fn path_len(g: &RoutingGraph, path: &[u32]) -> f64 {
+        path.windows(2)
+            .map(|w| {
+                let (a1, o1) = g.node_pos(w[0]);
+                let (a2, o2) = g.node_pos(w[1]);
+                haversine_nm(a1, o1, a2, o2)
+            })
+            .sum()
+    }
+
+    /// Returns (graph, node_a, node_d): a diamond A-B-D / A-C-D of ~60 nm edges.
+    fn diamond_graph() -> (RoutingGraph, u32, u32) {
+        // Points spaced far enough apart to map to distinct H3 cells at res-5
+        let c0 = h3o::LatLng::new(0.0, 0.0)
+            .unwrap()
+            .to_cell(h3o::Resolution::Five);
+        let c1 = h3o::LatLng::new(1.0, 0.0)
+            .unwrap()
+            .to_cell(h3o::Resolution::Five);
+        let c2 = h3o::LatLng::new(0.0, 1.0)
+            .unwrap()
+            .to_cell(h3o::Resolution::Five);
+        let c3 = h3o::LatLng::new(1.0, 1.0)
+            .unwrap()
+            .to_cell(h3o::Resolution::Five);
+
+        let mut cells: Vec<(u64, f64, f64, &str)> = vec![
+            (u64::from(c0), 0.0, 0.0, "A"),
+            (u64::from(c1), 1.0, 0.0, "B"),
+            (u64::from(c2), 0.0, 1.0, "C"),
+            (u64::from(c3), 1.0, 1.0, "D"),
+        ];
+        cells.sort_by_key(|(h3, _, _, _)| *h3);
+        cells.dedup_by_key(|(h3, _, _, _)| *h3);
+        assert_eq!(cells.len(), 4, "Need 4 distinct H3 cells for diamond graph");
+
+        let mut b = GraphBuilder::default();
+        let mut ids = std::collections::HashMap::new();
+        for (h3, _, _, label) in &cells {
+            let id = b.add_node(*h3, 255);
+            ids.insert(*label, id);
+        }
+
+        b.add_edge(ids["A"], ids["B"]);
+        b.add_edge(ids["A"], ids["C"]);
+        b.add_edge(ids["B"], ids["D"]);
+        b.add_edge(ids["C"], ids["D"]);
+        (b.build(), ids["A"], ids["D"])
+    }
+
+    #[test]
+    fn astar_shortest_path() {
+        let (g, node_a, node_d) = diamond_graph();
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let result = astar(&g, node_a, node_d, &mut buffers, None, false, true, None);
+        assert!(result.is_some());
+        let (path, cost) = result.unwrap();
+        assert!((cost - path_len(&g, &path)).abs() < 1e-3, "cost was {cost}");
+        assert_eq!(path.len(), 3);
+        assert_eq!(path[0], node_a);
+        assert_eq!(*path.last().unwrap(), node_d);
+    }
+
+    #[test]
+    fn astar_same_node() {
+        let (g, node_a, _) = diamond_graph();
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let result = astar(&g, node_a, node_a, &mut buffers, None, false, true, None);
+        assert!(result.is_some());
+        let (path, cost) = result.unwrap();
+        assert_eq!(path, vec![node_a]);
+        assert!((cost - 0.0).abs() < 1e-6);
+    }
+
+    /// THE regression test for the generation-counter reset: reusing the same
+    /// buffers across two searches (with a `reset()` in between, mimicking
+    /// `AstarPool::acquire`/`release`) must produce a result bit-identical to
+    /// running the second search on brand-new buffers. This catches stale
+    /// g_score/came_from/closed/h_score state leaking across generations.
+    #[test]
+    fn astar_reused_buffers_match_fresh_buffers_after_reset() {
+        let (g, node_a, node_d) = diamond_graph();
+
+        let mut reused = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+
+        // First search touches (and closes) every node in the tiny diamond graph.
+        let first = astar(&g, node_a, node_d, &mut reused, None, false, true, None)
+            .expect("first search finds a path");
+
+        // Simulate AstarPool::release() + acquire(): O(1) generation bump, no
+        // full-graph clear.
+        reused.reset();
+
+        // Second search on the same (now stale-but-reset) buffers.
+        let second = astar(&g, node_a, node_d, &mut reused, None, false, true, None)
+            .expect("second search finds a path");
+
+        // Baseline: identical query on completely fresh buffers.
+        let mut fresh = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let baseline = astar(&g, node_a, node_d, &mut fresh, None, false, true, None)
+            .expect("baseline search finds a path");
+
+        assert_eq!(
+            second.0, baseline.0,
+            "path nodes must match a fresh-buffer run"
+        );
+        assert!(
+            (second.1 - baseline.1).abs() < 1e-6,
+            "cost {} must match fresh-buffer cost {}",
+            second.1,
+            baseline.1
+        );
+        // Repeating the identical query twice should also yield identical results.
+        assert_eq!(first.0, second.0);
+        assert!((first.1 - second.1).abs() < 1e-6);
+    }
+
+    /// A search in one direction (closing nodes and stamping came_from/g_score
+    /// pointers) followed by reset() and a *different* query in the reverse
+    /// direction on the same buffers must not be corrupted by stale state
+    /// (e.g. `closed` flags or `came_from` pointers left over from the first
+    /// generation).
+    #[test]
+    fn astar_stale_state_does_not_leak_across_generations() {
+        let (g, node_a, node_d) = diamond_graph();
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+
+        // First: forward search closes/stamps every node on the A->D path.
+        let _ =
+            astar(&g, node_a, node_d, &mut buffers, None, false, true, None).expect("path exists");
+
+        buffers.reset();
+
+        // Second: reverse search (D -> A) on the same, now-stale buffers.
+        let reused_result =
+            astar(&g, node_d, node_a, &mut buffers, None, false, true, None).expect("path exists");
+        let mut fresh = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let fresh_result =
+            astar(&g, node_d, node_a, &mut fresh, None, false, true, None).expect("path exists");
+
+        assert_eq!(reused_result.0, fresh_result.0);
+        assert!((reused_result.1 - fresh_result.1).abs() < 1e-6);
+    }
+
+    #[test]
+    fn astar_unreachable() {
+        let c0 = h3o::LatLng::new(0.0, 0.0)
+            .unwrap()
+            .to_cell(h3o::Resolution::Five);
+        let c1 = h3o::LatLng::new(10.0, 10.0)
+            .unwrap()
+            .to_cell(h3o::Resolution::Five);
+        let mut cells = vec![(u64::from(c0), 0.0, 0.0), (u64::from(c1), 10.0, 10.0)];
+        cells.sort_by_key(|(h3, _, _)| *h3);
+        let mut b = GraphBuilder::default();
+        for (h3, _, _) in &cells {
+            b.add_node(*h3, 255);
+        }
+        let g = b.build();
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let result = astar(&g, 0, 1, &mut buffers, None, false, true, None);
+        assert!(result.is_none());
+    }
+
+    #[test]
+    fn shore_buffer_q_and_factor() {
+        assert!(shore_buffer_q(0.0).is_none());
+        assert!(shore_buffer_q(-1.0).is_none());
+        assert_eq!(shore_buffer_q(0.1), Some(5)); // 0.1 / 0.02 = 5
+        assert_eq!(shore_buffer_q(0.001), Some(1)); // rounds UP to 1
+        assert_eq!(shore_buffer_q(99.0), Some(255)); // clamps to 255
+                                                     // 0.14 / 0.02 == 7.000000000000001 in f64; without the epsilon guard
+                                                     // this ceils to 8 instead of the intended exact 7.
+        assert_eq!(shore_buffer_q(0.14), Some(7));
+
+        assert_eq!(shore_factor(5, 5), 1.0); // at the buffer: no penalty
+        assert_eq!(shore_factor(255, 5), 1.0); // far offshore: no penalty
+        assert!((shore_factor(0, 5) - 16.0).abs() < 1e-6); // 1 + 15*1
+        assert!((shore_factor(2, 5) - (1.0 + 15.0 * 0.6)).abs() < 1e-4);
+    }
+
+    /// Two corridors S->A->G (~120 nm, A hugs the shore) and S->B->G (~166 nm,
+    /// B offshore). Without a buffer the short corridor wins; with one, the long.
+    fn corridor_graph() -> (RoutingGraph, u32, u32, u32, u32) {
+        corridor_graph_at([
+            (0.0, 0.0, "S", 255u8),
+            (1.0, 0.0, "A", 0u8), // on the shore
+            (0.0, 1.6, "B", 255u8),
+            (1.0, 1.0, "G", 255u8),
+        ])
+    }
+
+    /// `corridor_graph` with the nodes at `coords` (lat, lng, label, shore_dist).
+    fn corridor_graph_at(coords: [(f64, f64, &str, u8); 4]) -> (RoutingGraph, u32, u32, u32, u32) {
+        let mut cells: Vec<(u64, f64, f64, u8, &str)> = coords
+            .iter()
+            .map(|&(lat, lng, label, q)| {
+                let cell = h3o::LatLng::new(lat, lng)
+                    .unwrap()
+                    .to_cell(h3o::Resolution::Five);
+                (u64::from(cell), lat, lng, q, label)
+            })
+            .collect();
+        cells.sort_by_key(|(h3, _, _, _, _)| *h3);
+
+        let mut b = GraphBuilder::default();
+        let mut ids = std::collections::HashMap::new();
+        for (h3, _, _, q, label) in &cells {
+            let id = b.add_node(*h3, *q);
+            ids.insert(*label, id);
+        }
+        b.add_edge(ids["S"], ids["A"]);
+        b.add_edge(ids["A"], ids["G"]);
+        b.add_edge(ids["S"], ids["B"]);
+        b.add_edge(ids["B"], ids["G"]);
+        (b.build(), ids["S"], ids["A"], ids["B"], ids["G"])
+    }
+
+    #[test]
+    fn penalty_diverts_route_offshore() {
+        let (g, s, a, b_node, goal) = corridor_graph();
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+
+        // Without penalty: short near-shore corridor via A.
+        let (path, cost) = astar(&g, s, goal, &mut buffers, None, false, true, None).unwrap();
+        assert_eq!(path, vec![s, a, goal]);
+        assert!((cost - path_len(&g, &path)).abs() < 1e-3);
+
+        // With a 0.1 nm buffer: edge S->A costs 16x -> offshore wins.
+        buffers.reset();
+        let shore = shore_buffer_q(0.1);
+        let (path, cost) = astar(&g, s, goal, &mut buffers, shore, false, true, None).unwrap();
+        assert_eq!(path, vec![s, b_node, goal]);
+        assert!(cost > path_len(&g, &path) - 1e-3);
+    }
+
+    #[test]
+    fn penalty_is_off_inside_a_canal_corridor() {
+        // A on the shore inside the Kiel Canal corridor; the offshore way
+        // via B is about twice as long.
+        let (g, s, a, b_node, goal) = corridor_graph_at([
+            (54.0, 9.0, "S", 255u8),
+            (54.1, 9.6, "A", 0u8),
+            (54.8, 9.6, "B", 255u8),
+            (54.2, 10.4, "G", 255u8),
+        ]);
+        assert!(in_canal(54.1, 9.6) && !in_canal(54.8, 9.6));
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let shore = shore_buffer_q(0.1);
+        let (path, cost) = astar(&g, s, goal, &mut buffers, shore, false, true, None).unwrap();
+        assert_eq!(path, vec![s, a, goal]);
+        assert!((cost - path_len(&g, &path)).abs() < 1e-3);
+        assert!(path_len(&g, &[s, b_node, goal]) > cost);
+    }
+
+    #[test]
+    fn penalty_with_all_nodes_offshore_is_identity() {
+        let (g, node_a, node_d) = diamond_graph(); // all nodes shore_dist=255
+        let mut b1 = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let mut b2 = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let plain = astar(&g, node_a, node_d, &mut b1, None, false, true, None).unwrap();
+        let with = astar(
+            &g,
+            node_a,
+            node_d,
+            &mut b2,
+            shore_buffer_q(0.2),
+            false,
+            true,
+            None,
+        )
+        .unwrap();
+        assert_eq!(plain.0, with.0);
+        assert!((plain.1 - with.1).abs() < 1e-6);
+    }
+
+    /// Vertical coastline "wall" at `lon`, spanning `lat_min..lat_max`.
+    fn wall(lon: f64, lat_min: f64, lat_max: f64) -> crate::coast::CoastlineSections {
+        crate::coast::CoastlineSections::from_runs(&[vec![(lon, lat_min), (lon, lat_max)]])
+    }
+
+    /// Closed square ring around (0, 0), side 0.2 degrees — a tiny "island"
+    /// used to simulate a pin on land.
+    fn island_around_origin() -> crate::coast::CoastlineSections {
+        crate::coast::CoastlineSections::from_runs(&[vec![
+            (-0.1, -0.1),
+            (0.1, -0.1),
+            (0.1, 0.1),
+            (-0.1, 0.1),
+            (-0.1, -0.1),
+        ]])
+    }
+
+    #[test]
+    fn shortest_over_anchors_mixes_the_known_routes() {
+        // Two known zigzag routes, and a straight way through node 2 that
+        // only the land checks know about.
+        let coords = [[0.0, 0.0], [1.0, 1.0], [2.0, 0.0], [3.0, 1.0], [4.0, 0.0]];
+        let clear = |i: usize, j: usize| matches!((i, j), (0, 2) | (2, 4));
+        let (kept, land, cost) =
+            shortest_over_anchors(&coords, &clear, &[(&[0, 1, 4], &[]), (&[0, 3, 4], &[])]);
+        assert_eq!(kept, vec![0, 2, 4]);
+        assert!(land.is_empty());
+        assert!((cost - kept_len(&coords, &kept)).abs() < 1e-9);
+    }
+
+    #[test]
+    fn shortest_over_anchors_keeps_a_forced_land_leg_flagged() {
+        // The only way out of node 0 is a known land leg; it stays flagged.
+        let coords = [[0.0, 0.0], [0.1, 0.0], [1.0, 0.5], [2.0, 0.0]];
+        let clear = |i: usize, j: usize| i >= 1 && j > i;
+        let (kept, land, _) = shortest_over_anchors(&coords, &clear, &[(&[0, 1, 2, 3], &[0])]);
+        assert_eq!(kept, vec![0, 1, 3]);
+        assert_eq!(land, vec![0]);
+    }
+
+    #[test]
+    fn smooth_indices_collapses_clear_path() {
+        let sections = crate::coast::CoastlineSections::from_runs(&[]);
+        let coastline = sections.index();
+        let coords = [[0.0, 0.0], [0.3, 0.1], [0.6, -0.1], [1.0, 0.0]];
+        let out = smooth_indices(&coords, &[255; 4], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 3]);
+        assert!(out.land_segs.is_empty());
+    }
+
+    #[test]
+    fn smooth_indices_keeps_necessary_corner() {
+        // Wall at lon 0.5 (lat -1..1); the path detours over its top at lat 1.5.
+        // Only the corner above the wall must survive smoothing.
+        let sections = wall(0.5, -1.0, 1.0);
+        let coastline = sections.index();
+        let coords = [[0.0, 0.0], [0.2, 0.5], [0.5, 1.5], [0.8, 0.5], [1.0, 0.0]];
+        let out = smooth_indices(&coords, &[255; 5], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 2, 4]);
+        assert!(out.land_segs.is_empty());
+    }
+
+    #[test]
+    fn smooth_indices_short_input_passthrough() {
+        let sections = wall(0.5, -1.0, 1.0);
+        let coastline = sections.index();
+        let coords = [[0.0, 0.0], [1.0, 0.0]];
+        let out = smooth_indices(&coords, &[255; 2], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 1]);
+        assert!(out.land_segs.is_empty());
+    }
+
+    #[test]
+    fn smooth_indices_blocked_next_hop_still_progresses() {
+        // First point sits inside a ring "island": it can see nothing, so the
+        // smoother must keep the (land-clipping) segment to the next point and
+        // continue — this is the approved land-pin behavior.
+        let sections = island_around_origin();
+        let coastline = sections.index();
+        let coords = [[0.0, 0.0], [0.5, 0.0], [1.0, 0.0]];
+        let out = smooth_indices(&coords, &[255; 3], &coastline, 0.0, false, true);
+        assert_eq!(*out.kept.first().unwrap(), 0);
+        assert_eq!(*out.kept.last().unwrap(), 2);
+        // The forced first segment crosses the ring: it must be flagged.
+        assert_eq!(out.land_segs, vec![0]);
+    }
+
+    #[test]
+    fn smooth_indices_buffer_forced_segment_is_not_a_land_leg() {
+        // Wall at lon 28.0; all points sit ~1 nm east of it. With a 2 nm
+        // buffer every hop violates clearance, so smoothing is forced through
+        // each point — but nothing crosses land, so no segment is flagged.
+        let sections = wall(28.0, 36.3, 36.7);
+        let coastline = sections.index();
+        let coords = [[28.02, 36.4], [28.02, 36.5], [28.02, 36.6]];
+        let out = smooth_indices(&coords, &[255; 3], &coastline, 2.0, false, true);
+        assert_eq!(out.kept, vec![0, 1, 2]);
+        assert!(
+            out.land_segs.is_empty(),
+            "buffer-forced water segments must not be flagged as land"
+        );
+    }
+
+    #[test]
+    fn smooth_indices_flags_forced_final_segment() {
+        // P0->P1 is clear; P1->P2 crosses the wall and P2 is the
+        // destination — the forced final segment must still be flagged.
+        let sections = wall(0.5, -1.0, 1.0);
+        let coastline = sections.index();
+        let coords = [[0.0, 0.0], [0.3, 0.0], [0.8, 0.0]];
+        let out = smooth_indices(&coords, &[255; 3], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 1, 2]);
+        assert_eq!(out.land_segs, vec![1]);
+    }
+
+    #[test]
+    fn smooth_indices_respects_buffer() {
+        // Same geometry as the node-based dogleg tests: coastline at lon 28.0
+        // (lat 36.45..36.55), direct P0->P2 line ~2.41 nm off the coast.
+        let sections = wall(28.0, 36.45, 36.55);
+        let coastline = sections.index();
+        let coords = [[28.05, 36.3], [28.15, 36.5], [28.05, 36.7]];
+        let loose = smooth_indices(&coords, &[255; 3], &coastline, 2.0, false, true);
+        assert_eq!(loose.kept, vec![0, 2]);
+        let strict = smooth_indices(&coords, &[255; 3], &coastline, 3.0, false, true);
+        assert_eq!(
+            strict.kept,
+            vec![0, 1, 2],
+            "3 nm buffer must keep the dogleg"
+        );
+        assert!(strict.land_segs.is_empty());
+    }
+
+    #[test]
+    fn smooth_indices_relaxes_for_near_shore_endpoints() {
+        // Endpoints themselves are close to shore (q=20 = 0.4 nm): threshold
+        // becomes min(3.0, 0.4) = 0.4 nm, so the ~2.4 nm direct line passes.
+        let sections = wall(28.0, 36.45, 36.55);
+        let coastline = sections.index();
+        let coords = [[28.05, 36.3], [28.15, 36.5], [28.05, 36.7]];
+        let out = smooth_indices(&coords, &[20, 255, 20], &coastline, 3.0, false, true);
+        assert_eq!(out.kept, vec![0, 2]);
+        assert!(out.land_segs.is_empty());
+    }
+
+    /// Las Palmas to Mindelo in small: a wall blocks the line from the start
+    /// to the end, and the raw path climbs far from that line before it comes
+    /// back. The farthest node the start can see is the top of the climb, but
+    /// the corner belongs just past the wall.
+    fn climb_past_wall() -> [[f64; 2]; 6] {
+        [
+            [0.0, 0.0],
+            [0.5, 0.2],
+            [2.5, 1.0],
+            [5.0, 2.0],
+            [7.5, 1.0],
+            [10.0, 0.0],
+        ]
+    }
+
+    #[test]
+    fn smooth_indices_puts_the_corner_at_the_obstacle() {
+        let sections = wall(0.5, -0.3, 0.1);
+        let coastline = sections.index();
+        let coords = climb_past_wall();
+        let out = smooth_indices(&coords, &[255; 6], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 1, 5]);
+        assert!(out.land_segs.is_empty());
+    }
+
+    #[test]
+    fn smooth_indices_splits_a_corner_between_two_obstacles() {
+        // A wall near each end: no single node sees both ends, so the one far
+        // corner must become two corners, one past each wall.
+        let sections = crate::coast::CoastlineSections::from_runs(&[
+            vec![(0.5, -0.3), (0.5, 0.1)],
+            vec![(9.5, -0.3), (9.5, 0.1)],
+        ]);
+        let coastline = sections.index();
+        let coords = [
+            [0.0, 0.0],
+            [0.5, 0.2],
+            [2.5, 1.0],
+            [5.0, 2.0],
+            [7.5, 1.0],
+            [9.5, 0.2],
+            [10.0, 0.0],
+        ];
+        let out = smooth_indices(&coords, &[255; 7], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 1, 5, 6]);
+        assert!(out.land_segs.is_empty());
+    }
+
+    #[test]
+    fn smooth_indices_tries_the_next_node_when_the_best_is_hidden() {
+        // Node 3 gives the shortest two legs, but a small wall hides it from
+        // the start, so the corner must go to node 2, the next best. A third
+        // wall stops a cut from reaching the same result by another way.
+        let sections = crate::coast::CoastlineSections::from_runs(&[
+            vec![(0.5, -0.3), (0.5, 0.13)],
+            vec![(0.6, 0.15), (0.6, 0.2)],
+            vec![(4.0, 0.5), (4.0, 1.0)],
+        ]);
+        let coastline = sections.index();
+        let coords = [
+            [0.0, 0.0],
+            [0.2, 0.12],
+            [0.4, 0.24],
+            [0.8, 0.24],
+            [2.0, 1.2],
+            [4.0, 2.4],
+            [7.0, 1.2],
+            [10.0, 0.0],
+        ];
+        let out = smooth_indices(&coords, &[255; 8], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 2, 7]);
+        assert!(out.land_segs.is_empty());
+    }
+
+    #[test]
+    fn smooth_indices_land_leg_stays_flagged_when_a_corner_goes() {
+        // Moving the first corner makes the second one useless. The last leg
+        // crosses a wall (a pin on land), and it must stay flagged at its new
+        // position in the shorter route.
+        let sections = crate::coast::CoastlineSections::from_runs(&[
+            vec![(0.5, -0.3), (0.5, 0.1)],
+            vec![(7.5, 0.8), (7.5, 1.2)],
+            vec![(10.25, -0.1), (10.25, 0.5)],
+        ]);
+        let coastline = sections.index();
+        let coords = [
+            [0.0, 0.0],
+            [0.5, 0.2],
+            [2.5, 1.0],
+            [5.0, 2.0],
+            [7.5, 1.3],
+            [10.0, 0.0],
+            [10.5, 0.0],
+        ];
+        let out = smooth_indices(&coords, &[255; 7], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 1, 5, 6]);
+        assert_eq!(out.land_segs, vec![2]);
+    }
+
+    #[test]
+    fn smooth_indices_keeps_the_corner_after_a_land_leg() {
+        // The first leg crosses a wall, but the start also sees node 2. The
+        // land leg and its corner stay: dropping the corner would leave the
+        // flag on a leg that no longer crosses land.
+        let sections = crate::coast::CoastlineSections::from_runs(&[
+            vec![(0.5, -0.1), (0.5, 0.1)],
+            vec![(1.5, -0.1), (1.5, 0.1)],
+        ]);
+        let coastline = sections.index();
+        let coords = [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [2.0, 0.0]];
+        let out = smooth_indices(&coords, &[255; 4], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 1, 2, 3]);
+        assert_eq!(out.land_segs, vec![0]);
+    }
+
+    #[test]
+    fn smooth_indices_land_leg_stays_flagged_when_a_corner_is_cut() {
+        // As in the two-obstacle test, with a last leg that crosses a wall:
+        // the cut adds a waypoint before it.
+        let sections = crate::coast::CoastlineSections::from_runs(&[
+            vec![(0.5, -0.3), (0.5, 0.1)],
+            vec![(9.5, -0.3), (9.5, 0.1)],
+            vec![(10.25, -0.1), (10.25, 0.1)],
+        ]);
+        let coastline = sections.index();
+        let coords = [
+            [0.0, 0.0],
+            [0.5, 0.2],
+            [2.5, 1.0],
+            [5.0, 2.0],
+            [7.5, 1.0],
+            [9.5, 0.2],
+            [10.0, 0.0],
+            [10.5, 0.0],
+        ];
+        let out = smooth_indices(&coords, &[255; 8], &coastline, 0.0, false, true);
+        assert_eq!(out.kept, vec![0, 1, 5, 6, 7]);
+        assert_eq!(out.land_segs, vec![3]);
+    }
+
+    /// Build a chain graph from (lat, lon) waypoints; returns the graph and
+    /// node ids in input order. Nodes are inserted sorted by H3 index (the
+    /// builder requires it for binary-search lookup), edges connect the
+    /// waypoints in input order.
+    fn chain_graph(coords: &[(f64, f64)]) -> (RoutingGraph, Vec<u32>) {
+        let mut cells: Vec<(u64, f64, f64, usize)> = coords
+            .iter()
+            .enumerate()
+            .map(|(i, &(lat, lon))| {
+                let cell = h3o::LatLng::new(lat, lon)
+                    .unwrap()
+                    .to_cell(h3o::Resolution::Five);
+                (u64::from(cell), lat, lon, i)
+            })
+            .collect();
+        cells.sort_by_key(|(h3, _, _, _)| *h3);
+
+        let mut b = GraphBuilder::default();
+        let mut ids = vec![0u32; coords.len()];
+        for (h3, _, _, orig) in &cells {
+            ids[*orig] = b.add_node(*h3, 255);
+        }
+        for w in ids.windows(2) {
+            b.add_edge(w[0], w[1]);
+        }
+        (b.build(), ids)
+    }
+
+    #[test]
+    fn shortcut_returns_direct_route_when_line_is_clear() {
+        let sections = crate::coast::CoastlineSections::from_runs(&[]);
+        let coastline = sections.index();
+        let g = GraphBuilder::default().build();
+        // knn returning None proves the shortcut runs BEFORE snapping.
+        let knn = |_: f64, _: f64| -> Option<(u32, f64)> { None };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(1);
+        let r = compute_route(
+            &g,
+            0.0,
+            0.0,
+            0.2,
+            0.1,
+            &coastline,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .unwrap();
+        assert_eq!(r.coordinates, vec![[0.0, 0.0], [0.1, 0.2]]);
+        assert!((r.distance_nm - haversine_nm(0.0, 0.0, 0.2, 0.1)).abs() < 1e-9);
+        assert_eq!(r.raw_hops, 2);
+        assert_eq!(r.smooth_hops, 2);
+    }
+
+    #[test]
+    fn shortcut_handles_identical_points() {
+        let sections = crate::coast::CoastlineSections::from_runs(&[]);
+        let coastline = sections.index();
+        let g = GraphBuilder::default().build();
+        let knn = |_: f64, _: f64| -> Option<(u32, f64)> { None };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(1);
+        let r = compute_route(
+            &g,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            &coastline,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .unwrap();
+        assert!(r.distance_nm.abs() < 1e-9);
+        assert_eq!(r.coordinates.len(), 2);
+    }
+
+    #[test]
+    fn shortcut_respects_shore_buffer() {
+        // Dogleg geometry: wall at lon 28.0 (lat 36.45..36.55); the direct
+        // pin-to-pin line at lon 28.05 passes ~2.41 nm off the coast.
+        let sections = wall(28.0, 36.45, 36.55);
+        let coastline = sections.index();
+        let g = GraphBuilder::default().build();
+        let knn = |_: f64, _: f64| -> Option<(u32, f64)> { None };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(1);
+
+        // 2 nm buffer: 2.41 nm clearance suffices -> shortcut fires.
+        let loose = compute_route(
+            &g,
+            36.3,
+            28.05,
+            36.7,
+            28.05,
+            &coastline,
+            &knn,
+            &mut buffers,
+            2.0,
+            false,
+            true,
+        );
+        assert!(loose.is_some_and(|r| r.smooth_hops == 2));
+
+        // 3 nm buffer: clearance violated -> shortcut declined, falls through
+        // to snapping (knn None -> no route). Proves the gate.
+        let strict = compute_route(
+            &g,
+            36.3,
+            28.05,
+            36.7,
+            28.05,
+            &coastline,
+            &knn,
+            &mut buffers,
+            3.0,
+            false,
+            true,
+        );
+        assert!(strict.is_none());
+    }
+
+    #[test]
+    fn shortcut_relaxes_for_near_shore_pins() {
+        // From-pin is only ~0.39 nm off the wall, so the threshold degrades
+        // to min(3.0, pin clearance) and the direct line (whose closest
+        // approach IS the from-pin) passes despite the 3 nm buffer.
+        let sections = wall(28.0, 36.45, 36.55);
+        let coastline = sections.index();
+        let g = GraphBuilder::default().build();
+        let knn = |_: f64, _: f64| -> Option<(u32, f64)> { None };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(1);
+        let r = compute_route(
+            &g,
+            36.5,
+            28.008,
+            36.5,
+            28.4,
+            &coastline,
+            &knn,
+            &mut buffers,
+            3.0,
+            false,
+            true,
+        );
+        assert!(
+            r.is_some_and(|r| r.coordinates.len() == 2),
+            "graceful degradation: pins closer than the buffer keep their own clearance"
+        );
+    }
+
+    #[test]
+    fn stitched_route_starts_and_ends_at_pins() {
+        // Wall at lon 0.5 (lat -1..1). Chain S(0,0) -> M(1.5,0.5) -> G(0,1)
+        // goes over the top of the wall. Pins are offset from S and G.
+        let sections = wall(0.5, -1.0, 1.0);
+        let coastline = sections.index();
+        let (g, ids) = chain_graph(&[(0.0, 0.0), (1.5, 0.5), (0.0, 1.0)]);
+        let (s, goal) = (ids[0], ids[2]);
+        let knn = move |_lat: f64, lon: f64| -> Option<(u32, f64)> {
+            Some(if lon < 0.5 { (s, 0.0) } else { (goal, 0.0) })
+        };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let r = compute_route(
+            &g,
+            0.0,
+            -0.1,
+            0.0,
+            1.1,
+            &coastline,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .unwrap();
+
+        assert_eq!(r.coordinates.first().unwrap(), &[-0.1, 0.0]);
+        assert_eq!(r.coordinates.last().unwrap(), &[1.1, 0.0]);
+        // The detour over the wall must be longer than the blocked direct line.
+        assert!(r.distance_nm > haversine_nm(0.0, -0.1, 0.0, 1.1));
+        // No segment of the returned polyline may cross the coastline
+        // (endpoints here are on open water, so no clipping is expected).
+        for w in r.coordinates.windows(2) {
+            assert!(
+                !coastline.crosses_land(w[0][0], w[0][1], w[1][0], w[1][1]),
+                "smoothed segment {:?} -> {:?} crosses land",
+                w[0],
+                w[1]
+            );
+        }
+    }
+
+    #[test]
+    fn same_node_snap_yields_positive_distance() {
+        // Both pins snap to the single node N above the wall; the direct
+        // pin-to-pin line is blocked. Expect [from, N, to] with the exact
+        // two-leg distance — this is the "0.00 NM inside one deep-ocean
+        // hexagon" regression test.
+        let sections = wall(0.5, -1.0, 1.0);
+        let coastline = sections.index();
+        let (g, ids) = chain_graph(&[(1.5, 0.5)]);
+        let n = ids[0];
+        let knn = move |_: f64, _: f64| -> Option<(u32, f64)> { Some((n, 0.0)) };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let r = compute_route(
+            &g,
+            0.0,
+            0.4,
+            0.0,
+            0.6,
+            &coastline,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .unwrap();
+
+        // node_pos decodes the H3 cell center, not the coordinates passed to
+        // add_node — compute the expected legs from the actual node position.
+        let (n_lat, n_lon) = g.node_pos(n);
+        let expected = haversine_nm(0.0, 0.4, n_lat, n_lon) + haversine_nm(n_lat, n_lon, 0.0, 0.6);
+        assert!(
+            (r.distance_nm - expected).abs() < 1e-6,
+            "distance {} != two-leg sum {expected}",
+            r.distance_nm
+        );
+        assert_eq!(r.smooth_hops, 3);
+        assert_eq!(r.coordinates[0], [0.4, 0.0]);
+        assert_eq!(*r.coordinates.last().unwrap(), [0.6, 0.0]);
+    }
+
+    #[test]
+    fn land_pin_still_returns_route() {
+        // From-pin sits inside a ring island at (0,0); to-pin is on open
+        // water. Approved behavior: no error, route starts at the pin and
+        // the first segment clips the island.
+        let sections = island_around_origin();
+        let coastline = sections.index();
+        let (g, ids) = chain_graph(&[(0.0, 0.5), (0.0, 2.0)]);
+        let (s, goal) = (ids[0], ids[1]);
+        let knn = move |_lat: f64, lon: f64| -> Option<(u32, f64)> {
+            Some(if lon < 1.0 { (s, 0.0) } else { (goal, 0.0) })
+        };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let r = compute_route(
+            &g,
+            0.0,
+            0.0,
+            0.0,
+            2.2,
+            &coastline,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .expect("land pin must still produce a route");
+        assert_eq!(r.coordinates.first().unwrap(), &[0.0, 0.0]);
+        assert_eq!(r.coordinates.last().unwrap(), &[2.2, 0.0]);
+        assert!(r.distance_nm > 0.0);
+    }
+
+    /// A pin inside a ring island forces a land-crossing first leg. The leg
+    /// must be flagged and excluded from distance_nm.
+    #[test]
+    fn compute_route_flags_and_excludes_land_leg() {
+        // 3-node chain like the serve-layer fixture.
+        let chain = [(36.848, 28.268), (36.9, 28.3), (37.0, 28.5)];
+        let mut entries: Vec<(u64, f64, f64)> = chain
+            .iter()
+            .map(|&(lat, lng)| {
+                let cell = h3o::LatLng::new(lat, lng)
+                    .unwrap()
+                    .to_cell(h3o::Resolution::Five);
+                (u64::from(cell), lat, lng)
+            })
+            .collect();
+        entries.sort_by_key(|(h3, _, _)| *h3);
+        // Two of the three points share a res-5 cell; the builder needs unique ids.
+        entries.dedup_by_key(|(h3, _, _)| *h3);
+        let mut b = GraphBuilder::default();
+        let mut ids = Vec::new();
+        for &(h3, _, _) in &entries {
+            ids.push(b.add_node(h3, 255));
+        }
+        for i in 0..ids.len() - 1 {
+            b.add_edge(ids[i], ids[i + 1]);
+        }
+        let g = b.build();
+
+        // Ring island around the from-pin (36.84, 28.26).
+        let sections = crate::coast::CoastlineSections::from_runs(&[vec![
+            (28.25, 36.83),
+            (28.27, 36.83),
+            (28.27, 36.85),
+            (28.25, 36.85),
+            (28.25, 36.83),
+        ]]);
+        let coast = sections.index();
+
+        // Nearest node by haversine over all graph nodes.
+        let knn = |lat: f64, lon: f64| -> Option<(u32, f64)> {
+            (0..g.num_nodes())
+                .map(|n| {
+                    let (nlat, nlon) = g.node_pos(n);
+                    (n, haversine_nm(lat, lon, nlat, nlon))
+                })
+                .min_by(|a, b| a.1.total_cmp(&b.1))
+        };
+
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let r = compute_route(
+            &g,
+            36.84,
+            28.26,
+            37.01,
+            28.51,
+            &coast,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .expect("route must exist despite land pin");
+
+        // First leg (pin -> first water point) crosses the ring.
+        assert_eq!(r.land_legs, vec![0]);
+
+        // distance_nm equals the polyline length minus exactly the flagged leg.
+        let full: f64 = r
+            .coordinates
+            .windows(2)
+            .map(|w| haversine_nm(w[0][1], w[0][0], w[1][1], w[1][0]))
+            .sum();
+        let first_leg = haversine_nm(
+            r.coordinates[0][1],
+            r.coordinates[0][0],
+            r.coordinates[1][1],
+            r.coordinates[1][0],
+        );
+        assert!(first_leg > 0.0);
+        assert!(
+            (r.distance_nm - (full - first_leg)).abs() < 1e-9,
+            "distance must exclude the land leg: got {}, want {}",
+            r.distance_nm,
+            full - first_leg
+        );
+    }
+
+    /// Degenerate case from the design doc: both pins snap to the same
+    /// node, and both stitch legs cross land, so the whole route is
+    /// non-sailed distance. Geometry is `pin -> node -> pin`, both legs
+    /// flagged, `distance_nm == 0.0`.
+    ///
+    /// A plain island (single convex ring) cannot produce this: two points
+    /// strictly interior to a convex polygon are always mutually visible in
+    /// a straight line, so the pin-to-pin shortcut always fires first and
+    /// no stitch leg is ever built (verified empirically before writing
+    /// this fixture). Instead this uses a U-shaped ("staple") island with
+    /// the node sitting in the open notch and one pin inside each prong:
+    /// the pin-to-pin line crosses both inner walls (blocking the
+    /// shortcut), and each pin-to-node leg crosses one inner wall.
+    #[test]
+    fn compute_route_same_node_both_legs_flagged_zero_distance() {
+        let (g, ids) = chain_graph(&[(0.0, 0.0)]);
+        let n = ids[0];
+        let (nlat, nlon) = g.node_pos(n);
+
+        let a = (nlon - 0.06, nlat - 0.02);
+        let b = (nlon - 0.06, nlat - 0.12);
+        let c = (nlon + 0.06, nlat - 0.12);
+        let d = (nlon + 0.06, nlat - 0.02);
+        let e = (nlon + 0.02, nlat - 0.02);
+        let f = (nlon + 0.02, nlat - 0.08);
+        let g_pt = (nlon - 0.02, nlat - 0.08);
+        let h = (nlon - 0.02, nlat - 0.02);
+        let sections =
+            crate::coast::CoastlineSections::from_runs(&[vec![a, b, c, d, e, f, g_pt, h, a]]);
+        let coast = sections.index();
+
+        let knn = move |_: f64, _: f64| -> Option<(u32, f64)> { Some((n, 0.0)) };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+
+        // One pin inside each prong of the U, straddling the node's notch.
+        let (from_lat, from_lon) = (nlat - 0.06, nlon - 0.04);
+        let (to_lat, to_lon) = (nlat - 0.06, nlon + 0.04);
+
+        let r = compute_route(
+            &g,
+            from_lat,
+            from_lon,
+            to_lat,
+            to_lon,
+            &coast,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .expect("route must exist: both pins snap to the same node");
+
+        assert_eq!(r.coordinates.len(), 3);
+        assert_eq!(r.coordinates[0], [from_lon, from_lat]);
+        assert_eq!(r.coordinates[2], [to_lon, to_lat]);
+        assert_eq!(r.land_legs, vec![0, 1]);
+        assert_eq!(r.distance_nm, 0.0);
+    }
+
+    /// Water pins: no land legs, distance covers the whole polyline —
+    /// including the stitch legs, which are water segments.
+    #[test]
+    fn compute_route_water_pins_have_no_land_legs() {
+        let (g, a, d) = diamond_graph();
+        let sections = crate::coast::CoastlineSections::from_runs(&[]);
+        let coast = sections.index();
+        let (alat, alon) = g.node_pos(a);
+        let (dlat, dlon) = g.node_pos(d);
+        let knn = move |lat: f64, lon: f64| -> Option<(u32, f64)> {
+            if haversine_nm(lat, lon, alat, alon) < haversine_nm(lat, lon, dlat, dlon) {
+                Some((a, 0.0))
+            } else {
+                Some((d, 0.0))
+            }
+        };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let r = compute_route(
+            &g,
+            alat,
+            alon,
+            dlat,
+            dlon,
+            &coast,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .unwrap();
+        assert!(r.land_legs.is_empty());
+        let full: f64 = r
+            .coordinates
+            .windows(2)
+            .map(|w| haversine_nm(w[0][1], w[0][0], w[1][1], w[1][0]))
+            .sum();
+        assert!((r.distance_nm - full).abs() < 1e-9);
+    }
+
+    /// One res-5 water node at (36.5, 28.3); a thin mole ring between it and
+    /// a berth at (36.5, 28.0). Parity: two crossings, still water.
+    fn mole_graph() -> RoutingGraph {
+        let cell = h3o::LatLng::new(36.5, 28.3)
+            .unwrap()
+            .to_cell(h3o::Resolution::Five);
+        let mut b = GraphBuilder::default();
+        b.add_node(u64::from(cell), 255);
+        b.coastline_runs = vec![vec![
+            (28.10, 36.40),
+            (28.11, 36.40),
+            (28.11, 36.60),
+            (28.10, 36.60),
+            (28.10, 36.40),
+        ]];
+        b.build()
+    }
+
+    #[test]
+    fn is_water_marina_behind_mole_is_water() {
+        let g = mole_graph();
+        assert!(is_water(&g, 36.5, 28.0));
+        assert!(is_water(&g, 36.5, 28.3));
+    }
+
+    #[test]
+    fn is_water_inside_island_is_land() {
+        let cell = h3o::LatLng::new(36.5, 28.3)
+            .unwrap()
+            .to_cell(h3o::Resolution::Five);
+        let mut b = GraphBuilder::default();
+        b.add_node(u64::from(cell), 255);
+        b.coastline_runs = vec![vec![
+            (27.9, 36.4),
+            (28.1, 36.4),
+            (28.1, 36.6),
+            (27.9, 36.6),
+            (27.9, 36.4),
+        ]];
+        let g = b.build();
+        assert!(!is_water(&g, 36.5, 28.0), "inside the island ring");
+        assert!(is_water(&g, 36.5, 28.3), "open water next to the node");
+    }
+
+    #[test]
+    fn is_water_without_any_node_is_land() {
+        let g = GraphBuilder::default().build();
+        assert!(!is_water(&g, 36.5, 28.0));
+    }
+
+    /// Diamond A-B-D / A-C-D where B is the shorter corner. Returns the
+    /// graph and the ids of A, B, C, D.
+    fn two_corner_graph(corners: [(f64, f64); 4]) -> (RoutingGraph, [u32; 4]) {
+        let mut cells: Vec<(u64, usize)> = corners
+            .iter()
+            .enumerate()
+            .map(|(i, &(lat, lon))| {
+                let cell = h3o::LatLng::new(lat, lon)
+                    .unwrap()
+                    .to_cell(h3o::Resolution::Ten);
+                (u64::from(cell), i)
+            })
+            .collect();
+        cells.sort_by_key(|&(h3, _)| h3);
+        let mut b = GraphBuilder::default();
+        let mut ids = [0u32; 4];
+        for &(h3, i) in &cells {
+            ids[i] = b.add_node(h3, 255);
+        }
+        let [a, bb, c, d] = ids;
+        b.add_edge(a, bb);
+        b.add_edge(bb, d);
+        b.add_edge(a, c);
+        b.add_edge(c, d);
+        (b.build(), ids)
+    }
+
+    #[test]
+    fn astar_never_crosses_the_ice_cap() {
+        // A and D on opposite sides of the Arctic; B next to the pole is the
+        // short way, C at 60N the long way round.
+        let (g, [a, _, c, d]) =
+            two_corner_graph([(75.0, 0.0), (88.0, 90.0), (60.0, 90.0), (75.0, 180.0)]);
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let (path, _) = astar(&g, a, d, &mut buffers, None, true, true, None).unwrap();
+        assert_eq!(path, vec![a, c, d], "arctic=true must not open the ice cap");
+    }
+
+    #[test]
+    fn astar_avoids_canals_when_asked() {
+        // B sits in the Suez cut box, C is the long way round.
+        let (g, [a, b, c, d]) =
+            two_corner_graph([(30.2, 32.4), (30.47, 32.35), (30.47, 34.0), (30.8, 32.3)]);
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let (open, _) = astar(&g, a, d, &mut buffers, None, false, true, None).unwrap();
+        assert_eq!(open, vec![a, b, d]);
+        buffers.reset();
+        let (closed, _) = astar(&g, a, d, &mut buffers, None, false, false, None).unwrap();
+        assert_eq!(closed, vec![a, c, d]);
+        // A smoothing shortcut across the cut is blocked too.
+        assert!(!segment_blocked(32.4, 30.2, 32.3, 30.8, false, true));
+        assert!(segment_blocked(32.4, 30.2, 32.3, 30.8, false, false));
+        // Every cut lies inside its own corridor.
+        for p in crate::passages::PASSAGES {
+            if let Some(c) = p.cut {
+                let k = p.corridor;
+                assert!(
+                    c.0 >= k.0 && c.1 >= k.1 && c.2 <= k.2 && c.3 <= k.3 && c.0 < c.2 && c.1 < c.3,
+                    "{}",
+                    p.name
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn closed_canals_close_their_regions() {
+        let region = |lat: f64, lon: f64| {
+            u64::from(
+                h3o::LatLng::new(lat, lon)
+                    .unwrap()
+                    .to_cell(h3o::Resolution::Three),
+            )
+        };
+        let closed = closed_canal_regions(false);
+        assert!(closed.contains(&region(30.47, 32.35)), "Suez");
+        assert!(!closed.contains(&region(0.0, -140.0)), "no canal there");
+        assert!(closed.is_sorted());
+        assert!(closed_canal_regions(true).is_empty(), "canals are open");
+    }
+
+    #[test]
+    fn astar_takes_northwest_passage_only_when_asked() {
+        // B sits in Barrow Strait (inside the NWP box), C far south.
+        let (g, [a, b, c, d]) =
+            two_corner_graph([(74.0, -80.0), (74.5, -97.0), (55.0, -100.0), (74.0, -125.0)]);
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let (closed, _) = astar(&g, a, d, &mut buffers, None, false, true, None).unwrap();
+        assert_eq!(closed, vec![a, c, d]);
+        buffers.reset();
+        let (open, _) = astar(&g, a, d, &mut buffers, None, true, true, None).unwrap();
+        assert_eq!(open, vec![a, b, d]);
+    }
+
+    #[test]
+    fn shortcut_declined_through_closed_passage() {
+        // Open water (no coastline) straight through Parry Channel.
+        let sections = crate::coast::CoastlineSections::from_runs(&[]);
+        let coastline = sections.index();
+        let g = GraphBuilder::default().build();
+        let knn = |_: f64, _: f64| -> Option<(u32, f64)> { None };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(1);
+        let (fl, fo, tl, to) = (74.0, -80.0, 74.0, -125.0);
+        let closed = compute_route(
+            &g,
+            fl,
+            fo,
+            tl,
+            to,
+            &coastline,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        );
+        assert!(closed.is_none(), "direct line must not cut through the NWP");
+        let open = compute_route(
+            &g,
+            fl,
+            fo,
+            tl,
+            to,
+            &coastline,
+            &knn,
+            &mut buffers,
+            0.0,
+            true,
+            true,
+        );
+        assert!(open.is_some_and(|r| r.smooth_hops == 2));
+    }
+
+    #[test]
+    fn smoothing_keeps_corner_around_closed_passage() {
+        let sections = crate::coast::CoastlineSections::from_runs(&[]);
+        let coastline = sections.index();
+        // Detour south of the NWP box; the first-to-last line crosses it.
+        let coords = [[-80.0, 74.0], [-98.0, 60.0], [-125.0, 74.0]];
+        let closed = smooth_indices(&coords, &[255; 3], &coastline, 0.0, false, true);
+        assert_eq!(closed.kept, vec![0, 1, 2]);
+        let open = smooth_indices(&coords, &[255; 3], &coastline, 0.0, true, true);
+        assert_eq!(open.kept, vec![0, 2]);
+    }
+
+    #[test]
+    fn segment_blocked_edges() {
+        assert!(
+            segment_blocked(0.0, 79.0, 10.0, 81.0, true, true),
+            "enters the ice cap"
+        );
+        assert!(
+            !segment_blocked(0.0, 79.0, 60.0, 79.0, false, true),
+            "stays under the cap"
+        );
+        assert!(
+            segment_blocked(-80.0, 74.0, -125.0, 74.0, false, true),
+            "crosses NWP box"
+        );
+        assert!(!segment_blocked(-80.0, 74.0, -125.0, 74.0, true, true));
+        assert!(
+            segment_blocked(90.0, 77.0, 115.0, 77.0, false, true),
+            "crosses NSR box"
+        );
+        assert!(
+            !segment_blocked(-80.0, 60.0, -125.0, 60.0, false, true),
+            "south of both"
+        );
+        // Antimeridian-crossing segments are nowhere near either box.
+        assert!(!segment_blocked(179.0, 70.0, -179.0, 70.0, false, true));
+    }
+
+    /// Issue #65: the great circle of the Saint-Nazaire -> Bahamas leg
+    /// clips Belle-Île although the straight lon/lat line passes south of
+    /// it. The island here is a box around the clipped part of the island.
+    fn belle_ile() -> crate::coast::CoastlineSections {
+        crate::coast::CoastlineSections::from_runs(&[vec![
+            (-3.2, 47.28),
+            (-3.0, 47.28),
+            (-3.0, 47.34),
+            (-3.2, 47.34),
+            (-3.2, 47.28),
+        ]])
+    }
+    const SAINT_NAZAIRE: [f64; 2] = [-2.2834578811579997, 47.231778110756];
+    const BAHAMAS: [f64; 2] = [-77.0, 25.9];
+
+    #[test]
+    fn smooth_indices_checks_great_circle_not_chord() {
+        let sections = belle_ile();
+        let coastline = sections.index();
+        let coords = [SAINT_NAZAIRE, [-5.0, 46.5], BAHAMAS];
+        let out = smooth_indices(&coords, &[255; 3], &coastline, 0.0, false, true);
+        assert_eq!(
+            out.kept,
+            vec![0, 1, 2],
+            "great circle clips Belle-Île, the corner must stay"
+        );
+        assert!(out.land_segs.is_empty());
+    }
+
+    #[test]
+    fn direct_line_shortcut_checks_great_circle() {
+        let sections = belle_ile();
+        let coastline = sections.index();
+        let [lon1, lat1] = SAINT_NAZAIRE;
+        let [lon2, lat2] = BAHAMAS;
+        assert!(!direct_line_ok(
+            &coastline, lat1, lon1, lat2, lon2, 0.0, false, true
+        ));
+    }
+
+    /// Every returned leg is short enough that great-circle, rhumb-line and
+    /// straight lon/lat readings agree within coastline resolution, and
+    /// `distance_nm` is exactly the great-circle length of the polyline.
+    #[test]
+    fn compute_route_densifies_long_legs() {
+        let sections = crate::coast::CoastlineSections::from_runs(&[]);
+        let coastline = sections.index();
+        let g = GraphBuilder::default().build();
+        let knn = |_: f64, _: f64| -> Option<(u32, f64)> { None };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(1);
+        let r = compute_route(
+            &g,
+            0.0,
+            0.0,
+            0.0,
+            10.0,
+            &coastline,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .unwrap();
+        assert_eq!(r.coordinates.first(), Some(&[0.0, 0.0]));
+        assert_eq!(r.coordinates.last(), Some(&[10.0, 0.0]));
+        assert!(
+            r.coordinates.len() >= 31,
+            "600 nm must become legs of at most {LEG_STEP_NM} nm, got {} points",
+            r.coordinates.len()
+        );
+        let leg = |w: &[[f64; 2]]| haversine_nm(w[0][1], w[0][0], w[1][1], w[1][0]);
+        for w in r.coordinates.windows(2) {
+            assert!(leg(w) <= LEG_STEP_NM + 1e-6, "leg of {} nm", leg(w));
+        }
+        let full: f64 = r.coordinates.windows(2).map(leg).sum();
+        assert!((r.distance_nm - full).abs() < 1e-6);
+        assert!((r.distance_nm - haversine_nm(0.0, 0.0, 0.0, 10.0)).abs() < 1e-6);
+    }
+
+    /// A land leg keeps pointing at the right segment after the water legs
+    /// before it are densified.
+    #[test]
+    fn compute_route_land_leg_index_survives_densification() {
+        let (g, _) = chain_graph(&[(0.0, 0.0), (0.0, 5.0), (0.0, 10.0)]);
+        // Ring island around the to-pin (0.0, 10.2).
+        let sections = crate::coast::CoastlineSections::from_runs(&[vec![
+            (10.15, -0.05),
+            (10.25, -0.05),
+            (10.25, 0.05),
+            (10.15, 0.05),
+            (10.15, -0.05),
+        ]]);
+        let coast = sections.index();
+        let knn = |lat: f64, lon: f64| -> Option<(u32, f64)> {
+            (0..g.num_nodes())
+                .map(|n| {
+                    let (nlat, nlon) = g.node_pos(n);
+                    (n, haversine_nm(lat, lon, nlat, nlon))
+                })
+                .min_by(|a, b| a.1.total_cmp(&b.1))
+        };
+        let mut buffers = crate::astar_pool::AstarBuffers::new(g.num_nodes() as usize);
+        let r = compute_route(
+            &g,
+            0.0,
+            0.0,
+            0.0,
+            10.2,
+            &coast,
+            &knn,
+            &mut buffers,
+            0.0,
+            false,
+            true,
+        )
+        .expect("route must exist despite land pin");
+        assert!(r.coordinates.len() > 3, "long water leg must be densified");
+        assert_eq!(
+            r.land_legs,
+            vec![r.coordinates.len() - 2],
+            "only the final pin leg crosses the ring"
+        );
+        let leg = |w: &[[f64; 2]]| haversine_nm(w[0][1], w[0][0], w[1][1], w[1][0]);
+        let water: f64 = r
+            .coordinates
+            .windows(2)
+            .take(r.coordinates.len() - 2)
+            .map(leg)
+            .sum();
+        assert!((r.distance_nm - water).abs() < 1e-6);
+    }
+}

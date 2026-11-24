@@ -1,0 +1,697 @@
+use anyhow::{Context, Result};
+use asw_core::graph::RoutingGraph;
+use asw_core::h3::haversine_nm;
+use asw_core::routing::compute_route;
+use asw_serve::state::AppState;
+use serde::{Deserialize, Serialize};
+use std::path::Path;
+use std::time::Instant;
+use tracing::info;
+
+/// Number of sailing routes (first N in ROUTES array). The rest are passage transits.
+const NUM_SAILING_ROUTES: usize = 13;
+
+/// Hardcoded real-world sailing routes: (name, from_lat, from_lon, to_lat, to_lon)
+const ROUTES: &[(&str, f64, f64, f64, f64)] = &[
+    // Short crossings (< 54nm)
+    ("English Channel", 51.11, 1.32, 50.97, 1.86),
+    ("Aegean Hop", 36.85, 28.28, 36.44, 28.23),
+    ("Strait of Gibraltar", 36.13, -5.35, 35.79, -5.81),
+    ("Baltic Crossing", 60.14, 24.97, 59.45, 24.76),
+    // Medium passages (54-270nm)
+    ("Balearic Sea", 39.55, 2.64, 41.37, 2.18),
+    ("Florida Strait", 24.55, -81.79, 23.15, -82.35),
+    ("Malacca Route", 1.26, 103.86, 7.88, 98.38),
+    // Long haul (540nm+)
+    ("Tasman Sea", -33.86, 151.28, -36.83, 174.78),
+    ("South Atlantic", -33.92, 18.43, -22.91, -43.16),
+    ("North Atlantic", 40.65, -74.03, 50.89, -1.39),
+    // Ocean crossings around continents (the great circle crosses land)
+    ("Rotterdam-Singapore", 51.95, 4.05, 1.26, 103.80),
+    ("Shanghai-Rotterdam", 31.20, 122.00, 51.95, 4.05),
+    ("Tokyo-Seattle", 35.30, 139.80, 47.60, -122.40),
+    // Passage transits (short routes forcing passage edges)
+    ("Suez Canal", 29.50, 32.85, 31.50, 32.00),
+    ("Panama Canal", 8.80, -79.45, 9.40, -80.05),
+    ("Kiel Canal", 54.40, 10.20, 53.88, 9.15),
+    ("Corinth Canal", 37.95, 22.95, 37.88, 23.05),
+    ("Bosphorus", 40.85, 28.90, 41.35, 29.15),
+    ("Dardanelles", 40.40, 26.70, 40.00, 26.15),
+    ("Malacca Strait", 1.30, 103.90, 1.15, 103.45),
+    ("Singapore Strait", 1.30, 103.80, 1.22, 104.20),
+    ("Messina Strait", 38.30, 15.65, 38.05, 15.67),
+    ("Dover Strait", 51.15, 1.30, 50.85, 1.75),
+];
+
+/// Per-route stats. Only the timing summary and route metadata are serialized;
+/// the rest is used for the markdown and GeoJSON outputs of the current run.
+#[derive(Default, Serialize, Deserialize)]
+struct RouteStats {
+    name: String,
+    distance_nm: f64,
+    raw_hops: usize,
+    smooth_hops: usize,
+    min_us: u64,
+    p50_us: u64,
+    p95_us: u64,
+    max_us: u64,
+    #[serde(skip)]
+    is_passage: bool,
+    #[serde(skip)]
+    coordinates: Vec<[f64; 2]>,
+    #[serde(skip)]
+    land_legs: Vec<usize>,
+    #[serde(skip)]
+    from_lat: f64,
+    #[serde(skip)]
+    from_lon: f64,
+    #[serde(skip)]
+    to_lat: f64,
+    #[serde(skip)]
+    to_lon: f64,
+}
+
+/// `p`-th percentile of a sorted slice (nearest-rank, 0 when empty).
+fn percentile(sorted: &[u64], p: f64) -> u64 {
+    if sorted.is_empty() {
+        return 0;
+    }
+    sorted[((sorted.len() as f64 * p / 100.0) as usize).min(sorted.len() - 1)]
+}
+
+#[derive(Serialize, Deserialize)]
+struct BenchResult {
+    graph: GraphMeta,
+    commit: String,
+    timestamp: String,
+    iterations: usize,
+    #[serde(default)]
+    shore_buffer_nm: f64,
+    routes: Vec<RouteStats>,
+}
+
+#[derive(Serialize, Deserialize)]
+struct GraphMeta {
+    nodes: u32,
+    edges: u32,
+    file: String,
+}
+
+fn format_time(us: u64) -> String {
+    if us < 1_000 {
+        format!("{}us", us)
+    } else if us < 1_000_000 {
+        format!("{:.1}ms", us as f64 / 1_000.0)
+    } else {
+        format!("{:.2}s", us as f64 / 1_000_000.0)
+    }
+}
+
+fn format_number(n: u32) -> String {
+    let s = n.to_string();
+    let mut result = String::new();
+    for (i, c) in s.chars().rev().enumerate() {
+        if i > 0 && i % 3 == 0 {
+            result.push(',');
+        }
+        result.push(c);
+    }
+    result.chars().rev().collect()
+}
+
+fn git_commit() -> String {
+    std::process::Command::new("git")
+        .args(["rev-parse", "--short", "HEAD"])
+        .output()
+        .ok()
+        .and_then(|o| {
+            if o.status.success() {
+                String::from_utf8(o.stdout)
+                    .ok()
+                    .map(|s| s.trim().to_string())
+            } else {
+                None
+            }
+        })
+        .unwrap_or_else(|| "unknown".to_string())
+}
+
+/// Indices into `ROUTES` that are routable on the loaded graph.
+fn resolve_routes(app: &AppState, shore_buffer_nm: f64) -> Vec<usize> {
+    let knn = |lat: f64, lon: f64| app.graph.nearest_node(lat, lon);
+    let mut buffers = asw_core::astar_pool::AstarBuffers::new(app.graph.num_nodes() as usize);
+    let mut routes = Vec::new();
+    for (i, &(name, from_lat, from_lon, to_lat, to_lon)) in ROUTES.iter().enumerate() {
+        buffers.reset();
+        let found = compute_route(
+            &app.graph,
+            from_lat,
+            from_lon,
+            to_lat,
+            to_lon,
+            &app.graph.coastline(),
+            &knn,
+            &mut buffers,
+            shore_buffer_nm,
+            false,
+            true,
+        )
+        .is_some();
+        if found {
+            info!("  OK   {}", name);
+            routes.push(i);
+        } else {
+            info!("  SKIP {} (no route found)", name);
+        }
+    }
+    routes
+}
+
+/// Run benchmark iterations for each route.
+fn run_benchmark(
+    app: &AppState,
+    routes: &[usize],
+    iterations: usize,
+    shore_buffer_nm: f64,
+) -> Vec<RouteStats> {
+    let warmup = 3;
+    let graph = &app.graph;
+    let knn = |lat: f64, lon: f64| app.graph.nearest_node(lat, lon);
+    let mut buffers = asw_core::astar_pool::AstarBuffers::new(graph.num_nodes() as usize);
+
+    routes
+        .iter()
+        .map(|&i| {
+            let (name, from_lat, from_lon, to_lat, to_lon) = ROUTES[i];
+            let run = |buffers: &mut asw_core::astar_pool::AstarBuffers| {
+                buffers.reset();
+                compute_route(
+                    graph,
+                    from_lat,
+                    from_lon,
+                    to_lat,
+                    to_lon,
+                    &app.graph.coastline(),
+                    &knn,
+                    buffers,
+                    shore_buffer_nm,
+                    false,
+                    true,
+                )
+            };
+            for _ in 0..warmup {
+                let _ = run(&mut buffers);
+            }
+            // Capture metadata from first measured run
+            let first = run(&mut buffers);
+
+            let mut timings_us = Vec::with_capacity(iterations);
+            for _ in 0..iterations {
+                let start = Instant::now();
+                let _ = run(&mut buffers);
+                timings_us.push(start.elapsed().as_micros() as u64);
+            }
+            timings_us.sort_unstable();
+
+            let mut stats = RouteStats {
+                name: name.to_string(),
+                min_us: timings_us.first().copied().unwrap_or(0),
+                p50_us: percentile(&timings_us, 50.0),
+                p95_us: percentile(&timings_us, 95.0),
+                max_us: timings_us.last().copied().unwrap_or(0),
+                is_passage: i >= NUM_SAILING_ROUTES,
+                from_lat,
+                from_lon,
+                to_lat,
+                to_lon,
+                ..Default::default()
+            };
+            if let Some(r) = first {
+                stats.distance_nm = r.distance_nm;
+                stats.raw_hops = r.raw_hops;
+                stats.smooth_hops = r.smooth_hops;
+                stats.coordinates = r.coordinates;
+                stats.land_legs = r.land_legs;
+            }
+            stats
+        })
+        .collect()
+}
+
+/// Print results as a formatted terminal table.
+fn print_table(stats: &[RouteStats], graph: &RoutingGraph, iterations: usize) {
+    println!(
+        "\nasw bench - {} routes x {} iterations ({} nodes, {} edges)\n",
+        stats.len(),
+        iterations,
+        graph.num_nodes(),
+        graph.num_edges(),
+    );
+    println!(
+        "{:<20} {:>10} {:>10} {:>10} {:>10} {:>10} {:>10}",
+        "Route", "Distance", "Min", "P50", "P95", "Max", "Hops"
+    );
+    println!("{}", "-".repeat(90));
+
+    for s in stats {
+        println!(
+            "{:<20} {:>9.1}nm {:>10} {:>10} {:>10} {:>10} {:>5}>{:<4}",
+            s.name,
+            s.distance_nm,
+            format_time(s.min_us),
+            format_time(s.p50_us),
+            format_time(s.p95_us),
+            format_time(s.max_us),
+            s.raw_hops,
+            s.smooth_hops,
+        );
+    }
+    println!();
+}
+
+/// ISO 8601 timestamp (UTC), e.g. "2026-07-17T12:34:56Z".
+fn now_iso8601() -> String {
+    time::OffsetDateTime::now_utc()
+        .replace_nanosecond(0)
+        .expect("0 is a valid nanosecond")
+        .format(&time::format_description::well_known::Rfc3339)
+        .expect("RFC 3339 formatting of a UTC timestamp cannot fail")
+}
+
+/// Print comparison table between current and baseline results.
+fn print_comparison(current: &BenchResult, baseline: &BenchResult) -> bool {
+    println!(
+        "\nComparing against baseline (commit {}, {})\n",
+        baseline.commit, baseline.timestamp
+    );
+
+    // Old baselines predate the `shore_buffer_nm` field and deserialize it
+    // to 0.0 via #[serde(default)]. A mismatch here means the current run
+    // and the baseline applied a different (or absent) shore penalty, so
+    // their timings/hop-counts are not comparable — regression detection
+    // must not fire off apples-to-oranges deltas.
+    let buffer_mismatch = (current.shore_buffer_nm - baseline.shore_buffer_nm).abs() > 1e-9;
+    if buffer_mismatch {
+        println!(
+            "WARNING: shore_buffer_nm differs between runs (baseline {:.3} nm vs current {:.3} nm) \
+             — timing and hop-count deltas below are not comparable across a different shore buffer; \
+             regression detection is disabled for this comparison.\n",
+            baseline.shore_buffer_nm, current.shore_buffer_nm
+        );
+    }
+
+    println!(
+        "{:<20} {:>12} {:>12} {:>10} {:>10}",
+        "Route", "P50 before", "P50 now", "Delta", "Status"
+    );
+    println!("{}", "-".repeat(74));
+
+    let mut has_regression = false;
+
+    for current_route in &current.routes {
+        let baseline_route = baseline
+            .routes
+            .iter()
+            .find(|r| r.name == current_route.name);
+        match baseline_route {
+            Some(base) => {
+                let delta_pct = if base.p50_us > 0 {
+                    ((current_route.p50_us as f64 - base.p50_us as f64) / base.p50_us as f64)
+                        * 100.0
+                } else {
+                    0.0
+                };
+                let status = if buffer_mismatch {
+                    "N/A"
+                } else if delta_pct > 10.0 {
+                    has_regression = true;
+                    "REGRESSION"
+                } else if delta_pct < -10.0 {
+                    "IMPROVED"
+                } else {
+                    "OK"
+                };
+                println!(
+                    "{:<20} {:>12} {:>12} {:>+9.1}% {:>10}",
+                    current_route.name,
+                    format_time(base.p50_us),
+                    format_time(current_route.p50_us),
+                    delta_pct,
+                    status,
+                );
+            }
+            None => {
+                println!(
+                    "{:<20} {:>12} {:>12} {:>10} {:>10}",
+                    current_route.name,
+                    "-",
+                    format_time(current_route.p50_us),
+                    "-",
+                    "NEW"
+                );
+            }
+        }
+    }
+    println!();
+
+    // Never signal a regression from a comparison whose baseline used a
+    // different shore buffer, no matter what the (incomparable) deltas above
+    // computed to.
+    has_regression && !buffer_mismatch
+}
+
+/// Append a markdown results table for `rows` under `title` (no-op when empty).
+fn push_table(md: &mut String, title: &str, rows: &[&RouteStats]) {
+    if rows.is_empty() {
+        return;
+    }
+    md.push_str(&format!("## {}\n\n", title));
+    md.push_str("| Route | Distance | Min | P50 | P95 | Max | Hops |\n");
+    md.push_str("|-------|----------|-----|-----|-----|-----|------|\n");
+    for s in rows {
+        md.push_str(&format!(
+            "| {} | {:.1}nm | {} | {} | {} | {} | {}>{} |\n",
+            s.name,
+            s.distance_nm,
+            format_time(s.min_us),
+            format_time(s.p50_us),
+            format_time(s.p95_us),
+            format_time(s.max_us),
+            s.raw_hops,
+            s.smooth_hops,
+        ));
+    }
+    md.push('\n');
+}
+
+/// Write markdown benchmark results to `benchmarks/BENCHMARKS.md`.
+fn write_markdown(stats: &[RouteStats], graph: &RoutingGraph, iterations: usize) -> Result<()> {
+    std::fs::create_dir_all("benchmarks")?;
+
+    let commit = git_commit();
+    let timestamp = now_iso8601();
+    let date = &timestamp[..10]; // YYYY-MM-DD
+
+    let sailing: Vec<&RouteStats> = stats.iter().filter(|s| !s.is_passage).collect();
+    let passages: Vec<&RouteStats> = stats.iter().filter(|s| s.is_passage).collect();
+
+    let mut md = String::new();
+    md.push_str("# Routing Benchmarks\n\n");
+    md.push_str(&format!(
+        "**Graph**: {} nodes / {} edges\n",
+        format_number(graph.num_nodes()),
+        format_number(graph.num_edges()),
+    ));
+    md.push_str(&format!(
+        "**Commit**: `{}` | **Date**: {} | **Iterations**: {}\n\n",
+        commit, date, iterations
+    ));
+
+    push_table(&mut md, "Sailing Routes", &sailing);
+    push_table(&mut md, "Passage Transits", &passages);
+
+    md.push_str("*Generated by `asw bench`*\n");
+
+    std::fs::write("benchmarks/BENCHMARKS.md", &md)
+        .context("Failed to write benchmarks/BENCHMARKS.md")?;
+    info!("Markdown results written to benchmarks/BENCHMARKS.md");
+
+    Ok(())
+}
+
+/// Write GeoJSON visualization of benchmark routes to `benchmarks/bench-routes.geojson`.
+fn write_geojson(stats: &[RouteStats]) -> Result<()> {
+    std::fs::create_dir_all("benchmarks")?;
+
+    let mut features = Vec::new();
+
+    for s in stats {
+        if s.coordinates.is_empty() {
+            continue;
+        }
+
+        let stroke = if s.is_passage { "#0000ff" } else { "#0088ff" };
+        let category = if s.is_passage { "passage" } else { "sailing" };
+
+        // Route line: draw only the water spans, so land legs appear as
+        // gaps regardless of renderer (GitHub's geojson preview ignores
+        // simplestyle colors entirely, so a red "land leg" feature is
+        // invisible there — a gap is not).
+        let mut spans: Vec<Vec<serde_json::Value>> = Vec::new();
+        let mut current: Vec<serde_json::Value> = vec![serde_json::json!([
+            s.coordinates[0][0],
+            s.coordinates[0][1]
+        ])];
+        for i in 0..s.coordinates.len() - 1 {
+            if s.land_legs.contains(&i) {
+                if current.len() >= 2 {
+                    spans.push(std::mem::take(&mut current));
+                } else {
+                    current.clear();
+                }
+            }
+            let next = &s.coordinates[i + 1];
+            current.push(serde_json::json!([next[0], next[1]]));
+        }
+        if current.len() >= 2 {
+            spans.push(current);
+        }
+
+        let properties = serde_json::json!({
+            "name": s.name,
+            "distance_nm": format!("{:.1}", s.distance_nm),
+            "category": category,
+            "stroke": stroke,
+            "stroke-width": 3,
+            "stroke-opacity": 0.8,
+            "land_legs": s.land_legs
+        });
+
+        match spans.len() {
+            0 => {}
+            1 => features.push(serde_json::json!({
+                "type": "Feature",
+                "properties": properties,
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": spans.into_iter().next().unwrap()
+                }
+            })),
+            n => {
+                // GitHub's Azure Maps geojson preview does not render
+                // MultiLineString geometries at all (empirically confirmed:
+                // the four multi-span canal routes vanished from the
+                // preview). Emit one LineString feature per span instead so
+                // every route stays visible there.
+                for (i, span) in spans.into_iter().enumerate() {
+                    let part = i + 1;
+                    let mut part_properties = properties.clone();
+                    part_properties["name"] =
+                        serde_json::json!(format!("{} (part {}/{})", s.name, part, n));
+                    part_properties["part"] = serde_json::json!(part);
+                    part_properties["parts"] = serde_json::json!(n);
+                    features.push(serde_json::json!({
+                        "type": "Feature",
+                        "properties": part_properties,
+                        "geometry": {
+                            "type": "LineString",
+                            "coordinates": span
+                        }
+                    }));
+                }
+            }
+        }
+
+        // Start point (original input coordinate)
+        features.push(serde_json::json!({
+            "type": "Feature",
+            "properties": {
+                "name": format!("{} (start)", s.name),
+                "marker-color": "#00cc00",
+                "marker-size": "small",
+                "marker-symbol": "circle"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [s.from_lon, s.from_lat]
+            }
+        }));
+
+        // End point (original input coordinate)
+        features.push(serde_json::json!({
+            "type": "Feature",
+            "properties": {
+                "name": format!("{} (end)", s.name),
+                "marker-color": "#ff0000",
+                "marker-size": "small",
+                "marker-symbol": "circle"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [s.to_lon, s.to_lat]
+            }
+        }));
+    }
+
+    let geojson = serde_json::json!({
+        "type": "FeatureCollection",
+        "features": features
+    });
+
+    let json_str = serde_json::to_string_pretty(&geojson).context("Failed to serialize GeoJSON")?;
+    std::fs::write("benchmarks/bench-routes.geojson", json_str)
+        .context("Failed to write bench-routes.geojson")?;
+
+    info!("GeoJSON routes written to benchmarks/bench-routes.geojson");
+    Ok(())
+}
+
+/// Entry point for `asw bench`.
+pub fn run(
+    graph_path: &Path,
+    iterations: usize,
+    json: bool,
+    output: Option<&Path>,
+    compare: Option<&Path>,
+    shore_buffer_nm: f64,
+) -> Result<()> {
+    info!("Loading graph from {:?}...", graph_path);
+    let graph = RoutingGraph::open(graph_path, true).context("Failed to open graph")?;
+    info!(
+        "Graph loaded: {} nodes, {} edges",
+        graph.num_nodes(),
+        graph.num_edges()
+    );
+
+    info!("Building app state...");
+    let app = AppState::new(graph);
+    info!("App state ready");
+
+    info!("Resolving benchmark routes...");
+    let routes = resolve_routes(&app, shore_buffer_nm);
+    if routes.is_empty() {
+        anyhow::bail!("No routable benchmark routes found in graph");
+    }
+    info!("Resolved {} benchmark routes", routes.len());
+
+    for &i in &routes {
+        let (name, from_lat, from_lon, to_lat, to_lon) = ROUTES[i];
+        let dist = haversine_nm(from_lat, from_lon, to_lat, to_lon);
+        info!(
+            "  {} ({:.1}nm): ({:.4},{:.4}) -> ({:.4},{:.4}){}",
+            name,
+            dist,
+            from_lat,
+            from_lon,
+            to_lat,
+            to_lon,
+            if i >= NUM_SAILING_ROUTES {
+                " [passage]"
+            } else {
+                ""
+            }
+        );
+    }
+
+    info!("Running {} iterations per route...", iterations);
+    let result = BenchResult {
+        graph: GraphMeta {
+            nodes: app.graph.num_nodes(),
+            edges: app.graph.num_edges(),
+            file: graph_path.display().to_string(),
+        },
+        commit: git_commit(),
+        timestamp: now_iso8601(),
+        iterations,
+        shore_buffer_nm,
+        routes: run_benchmark(&app, &routes, iterations, shore_buffer_nm),
+    };
+    let stats = &result.routes;
+
+    if json {
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&result).context("Failed to serialize results")?
+        );
+    } else {
+        print_table(stats, &app.graph, iterations);
+    }
+
+    if let Some(out_path) = output {
+        let json_str =
+            serde_json::to_string_pretty(&result).context("Failed to serialize results")?;
+        std::fs::write(out_path, json_str).context("Failed to write output file")?;
+        info!("Results written to {:?}", out_path);
+    }
+
+    // Always write markdown and GeoJSON
+    write_markdown(stats, &app.graph, iterations)?;
+    write_geojson(stats)?;
+
+    if let Some(compare_path) = compare {
+        let baseline_str =
+            std::fs::read_to_string(compare_path).context("Failed to read baseline file")?;
+        let baseline: BenchResult =
+            serde_json::from_str(&baseline_str).context("Failed to parse baseline JSON")?;
+        let has_regression = print_comparison(&result, &baseline);
+        if has_regression {
+            std::process::exit(1);
+        }
+    }
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn bench_result(shore_buffer_nm: f64, p50_us: u64) -> BenchResult {
+        BenchResult {
+            graph: GraphMeta {
+                nodes: 100,
+                edges: 200,
+                file: "test.graph".to_string(),
+            },
+            commit: "abc123".to_string(),
+            timestamp: "2026-01-01T00:00:00Z".to_string(),
+            iterations: 50,
+            shore_buffer_nm,
+            routes: vec![RouteStats {
+                name: "Test Route".to_string(),
+                distance_nm: 10.0,
+                raw_hops: 5,
+                smooth_hops: 3,
+                min_us: p50_us,
+                p50_us,
+                p95_us: p50_us,
+                max_us: p50_us,
+                ..Default::default()
+            }],
+        }
+    }
+
+    #[test]
+    fn comparison_flags_regression_when_buffers_match() {
+        let baseline = bench_result(0.2, 1000);
+        let current = bench_result(0.2, 2000); // +100%, well over the 10% threshold
+        assert!(print_comparison(&current, &baseline));
+    }
+
+    #[test]
+    fn comparison_does_not_flag_regression_when_buffers_differ() {
+        let baseline = bench_result(0.0, 1000);
+        let current = bench_result(0.2, 2000); // same delta as above, but buffers differ
+        assert!(
+            !print_comparison(&current, &baseline),
+            "a shore_buffer_nm mismatch must suppress the regression flag regardless of timing delta"
+        );
+    }
+
+    #[test]
+    fn comparison_unaffected_when_buffers_match_and_no_regression() {
+        let baseline = bench_result(0.1, 1000);
+        let current = bench_result(0.1, 1010); // well under the 10% threshold
+        assert!(!print_comparison(&current, &baseline));
+    }
+}

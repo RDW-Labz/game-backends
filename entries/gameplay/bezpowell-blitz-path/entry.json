@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T01:48:08Z",
+ "category": "gameplay",
+ "commit": "b2dbaa0de368",
+ "delivery": "vendored",
+ "description": "BezPowell/blitz-path \u2014 Various pathfinding algorithms implemented in rust. Currently very WIP.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "blitz-path",
+ "size_bytes": 21703,
+ "slug": "bezpowell-blitz-path",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 16,
+ "system": "Various pathfinding algorithms implemented in rust. Currently very WIP.",
+ "upstream": "https://github.com/BezPowell/blitz-path",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

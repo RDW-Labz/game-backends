@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 01:32 UTC · 1048 entries · 275 vendored, 773 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 01:48 UTC · 1054 entries · 277 vendored, 777 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-24 01:32 UTC · 1048 entries · 275 vendored, 773 reference-o
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 141 | 38 | 103 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 147 | 40 | 107 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
@@ -686,7 +686,7 @@ _Generated 2026-11-24 01:32 UTC · 1048 entries · 275 vendored, 773 reference-o
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 141 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 147 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -698,12 +698,14 @@ _Generated 2026-11-24 01:32 UTC · 1048 entries · 275 vendored, 773 reference-o
 | [ancientbeast — abilities](entries/gameplay/ancientbeast-abilities/README.md) | combat, AI, pathing, quest or inventory logic | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AStar](entries/gameplay/roy-t-astar/README.md) | A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher.  | c# | MIT | vendored | [roy-t/AStar](https://github.com/roy-t/AStar) @ `3d57efaa83c8` |
 | [astar-typescript](entries/gameplay/digitsensitive-astar-typescript/README.md) | A* search algorithm in TypeScript | typescript | MIT | reference | [digitsensitive/astar-typescript](https://github.com/digitsensitive/astar-typescript) @ `2023-04-26 (branch tip at catalogue time)` |
+| [asw](entries/gameplay/auto-sea-way-asw/README.md) | Open source sea routing between any two coordinates. Global routing graph built from OpenStreetMap coastlines with H3 hexagons. Rust, HTTP API, self-hosted. | rust | Apache-2.0 | vendored | [auto-sea-way/asw](https://github.com/auto-sea-way/asw) @ `72a3e891d1b1` |
 | [baritone](entries/gameplay/cabaletta-baritone/README.md) | google maps for block game | java | LGPL-3.0 | reference | [cabaletta/baritone](https://github.com/cabaletta/baritone) @ `2264210f943d` |
 | [behaviac](entries/gameplay/tencent-behaviac/README.md) | behaviac is a framework of the game AI development, and it also can be used as a rapid game prototype design tool. behaviac supports the behavior tree, finite s | c# | MIT | reference | [Tencent/behaviac](https://github.com/Tencent/behaviac) @ `351442b36726` |
 | [BehaviorTree.CPP](entries/gameplay/behaviortree-cpp/README.md) | behaviour trees for AI agents with blackboards | c++ | MIT | vendored | [BehaviorTree/BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP) @ `365b2e499d34` |
 | [bevy_flowfield_tiles_plugin](entries/gameplay/blondeburrito-bevy-flowfield-tiles-plugin/README.md) | Bevy plugin for Flowfield based pathfinding | rust | unknown | reference | [BlondeBurrito/bevy_flowfield_tiles_plugin](https://github.com/BlondeBurrito/bevy_flowfield_tiles_plugin) @ `2026-10-22 (branch tip at catalogue time)` |
 | [bevy_northstar](entries/gameplay/jtothethree-bevy-northstar/README.md) | Hierachical Pathfinding for Bevy | rust | MIT | reference | [JtotheThree/bevy_northstar](https://github.com/JtotheThree/bevy_northstar) @ `2026-10-29 (branch tip at catalogue time)` |
 | [biomes-game — items](entries/gameplay/biomes-game-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
+| [blitz-path](entries/gameplay/bezpowell-blitz-path/README.md) | Various pathfinding algorithms implemented in rust. Currently very WIP. | rust | MIT | vendored | [BezPowell/blitz-path](https://github.com/BezPowell/blitz-path) @ `b2dbaa0de368` |
 | [BlockMaps](entries/gameplay/p-svacha-blockmaps/README.md) | Unity framework to create detailed, 3D, grid-based worlds with real-time navmesh generation and integrated pathfinding, vision and movement systems. | c# | unknown | reference | [p-svacha/BlockMaps](https://github.com/p-svacha/BlockMaps) @ `2025-11-04 (branch tip at catalogue time)` |
 | [BonsaiBehaviourTree](entries/gameplay/luis-l-bonsaibehaviourtree/README.md) | An advanced behaviour tree solution for the Unity game engine | c# | MIT | vendored | [luis-l/BonsaiBehaviourTree](https://github.com/luis-l/BonsaiBehaviourTree) @ `6aa41f3006e9` |
 | [check_redfish](entries/gameplay/bb-ricardo-check-redfish/README.md) | A monitoring/inventory plugin to check components and health status of systems which support Redfish. It will also create an inventory of all components of a sy | python | MIT | reference | [bb-Ricardo/check_redfish](https://github.com/bb-Ricardo/check_redfish) @ `2026-11-16 (branch tip at catalogue time)` |
@@ -760,6 +762,7 @@ _Generated 2026-11-24 01:32 UTC · 1048 entries · 275 vendored, 773 reference-o
 | [navmesh](entries/gameplay/mikewesthad-navmesh/README.md) | A plugin for path-finding in JS using navmeshes, with wrappers for Phaser 3 and Phaser 2 | javascript | MIT | vendored | [mikewesthad/navmesh](https://github.com/mikewesthad/navmesh) @ `b264bc3c145b` |
 | [navmesh](entries/gameplay/sunxvming-navmesh/README.md) | 导航网格寻路C++实现版(入门版) | c | GPL-3.0 | reference | [sunxvming/navmesh](https://github.com/sunxvming/navmesh) @ `38741fcee3be` |
 | [NavMeshPlus](entries/gameplay/h8man-navmeshplus/README.md) | Unity NavMesh 2D Pathfinding | c# | MIT | vendored | [h8man/NavMeshPlus](https://github.com/h8man/NavMeshPlus) @ `d615919ce2d1` |
+| [omt-router](entries/gameplay/abelvm-omt-router/README.md) | Client-side routing library for OpenMapTiles vector tiles. Computes optimal routes for pedestrian, car, and bicycle travel entirely client-side — no routing bac | javascript | AGPL-3.0 | reference | [AbelVM/omt-router](https://github.com/AbelVM/omt-router) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Open-Aimbot](entries/gameplay/zackanimates08-open-aimbot/README.md) | Open Aimbot is a universal open source framework. It offers a wide selection of extensive functionality. We develop various utilities for Roblox, security syste | n/a | MIT | reference | [Zackanimates08/Open-Aimbot](https://github.com/Zackanimates08/Open-Aimbot) @ `2026-03-01 (branch tip at catalogue time)` |
 | [OpenDungeons — spells](entries/gameplay/opendungeons-spells/README.md) | combat, AI, pathing, quest or inventory logic | cpp | GPL-3.0 | reference | [OpenDungeons/OpenDungeons.git](https://github.com/OpenDungeons/OpenDungeons.git) @ `a9efe49` |
 | [openmu — GameLogic](entries/gameplay/openmu-src-gamelogic/README.md) | MMO gameplay logic: combat, skills, inventory, quests | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
@@ -800,7 +803,9 @@ _Generated 2026-11-24 01:32 UTC · 1048 entries · 275 vendored, 773 reference-o
 | [SAE-based-representation-engineering](entries/gameplay/yuzhaouoe-sae-based-representation-engineering/README.md) | [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering | python | MIT | reference | [yuzhaouoe/SAE-based-representation-engineering](https://github.com/yuzhaouoe/SAE-based-representation-engineering) @ `2026-06-20 (branch tip at catalogue time)` |
 | [seldom_map_nav](entries/gameplay/seldom-se-seldom-map-nav/README.md) | Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency. | rust | Apache-2.0 | vendored | [Seldom-SE/seldom_map_nav](https://github.com/Seldom-SE/seldom_map_nav) @ `5586a0e6ad1f` |
 | [SharpNav](entries/gameplay/robmaister-sharpnav/README.md) | Advanced Pathfinding for C# | c# | unknown | reference | [Robmaister/SharpNav](https://github.com/Robmaister/SharpNav) @ `2022-06-22 (branch tip at catalogue time)` |
+| [simpleai](entries/gameplay/mgerhardy-simpleai/README.md) | SimpleAI is a small C++ AI behaviour tree based library with a QT5 based remote debugger (and with optional LUA bindings) released under MIT. | c++ | unknown | reference | [mgerhardy/simpleai](https://github.com/mgerhardy/simpleai) @ `2019-11-16 (branch tip at catalogue time)` |
 | [SkeldJS](entries/gameplay/skeldjs-skeldjs/README.md) | A JavaScript implementation of the Among Us protocol, featuring several different projects, written in TypeScript. | typescript | GPL-3.0 | reference | [SkeldJS/SkeldJS](https://github.com/SkeldJS/SkeldJS) @ `2025-11-08 (branch tip at catalogue time)` |
+| [snake_01](entries/gameplay/const-i-snake-01/README.md) | Snake AI, Genetic Algorithm, Rust | rust | MIT | reference | [const-i/snake_01](https://github.com/const-i/snake_01) @ `2023-11-05 (branch tip at catalogue time)` |
 | [spark-arc-studio](entries/gameplay/1deaaa-spark-arc-studio/README.md) | An autonomous multi-agent IDE for screenplays🎮 & novels📖. One-click to share web performances or drive Unity dialogue systems. Empowering vibe game dev with AI! | python | AGPL-3.0 | reference | [1deaaa/spark-arc-studio](https://github.com/1deaaa/spark-arc-studio) @ `2026-10-14 (branch tip at catalogue time)` |
 | [Spotlight_Storage](entries/gameplay/firemarshmellow-spotlight-storage/README.md) | MIMOSA - short for "Mellow_Labs Inventory Management and Organization System Apparatus". Just like a refreshing mimosa, this system will make your life brighter | javascript | MIT | vendored | [FireMarshmellow/Spotlight_Storage](https://github.com/FireMarshmellow/Spotlight_Storage) @ `4fe8fdafdd45` |
 | [SproutyDialogs](entries/gameplay/sproutylabs-sproutydialogs/README.md) | A graph-based visual dialogue system plugin for Godot, to create dialogues in your games incredibly easy! 🌱 | gdscript | MIT | reference | [SproutyLabs/SproutyDialogs](https://github.com/SproutyLabs/SproutyDialogs) @ `2026-11-19 (branch tip at catalogue time)` |
@@ -825,6 +830,7 @@ _Generated 2026-11-24 01:32 UTC · 1048 entries · 275 vendored, 773 reference-o
 | [veloren — comp](entries/gameplay/veloren-common-src-comp/README.md) | ECS gameplay components (combat, inventory, stats, buffs) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
 | [veloren — inventory](entries/gameplay/veloren-inventory/README.md) | combat, AI, pathing, quest or inventory logic | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
 | [Visualizer](entries/gameplay/jasonfenggit-visualizer/README.md) | A single-page website aiming to provide innovative and intuitive visualizations of common and AI algorithms. | javascript | MIT | vendored | [JasonFengGit/Visualizer](https://github.com/JasonFengGit/Visualizer) @ `80ed0fa487c9` |
+| [vite-plugin-entry-shaking](entries/gameplay/dschungelabenteuer-vite-plugin-entry-shaking/README.md) | Mimic tree-shaking behaviour when importing code from an entry file in development mode. | typescript | MIT | reference | [Dschungelabenteuer/vite-plugin-entry-shaking](https://github.com/Dschungelabenteuer/vite-plugin-entry-shaking) @ `2026-09-08 (branch tip at catalogue time)` |
 | [vleue_navigator](entries/gameplay/vleue-vleue-navigator/README.md) | Pathfinding on NavMeshes for Bevy | rust | MIT | vendored | [vleue/vleue_navigator](https://github.com/vleue/vleue_navigator) @ `1fc3f54a7169` |
 | [wargus — ai](entries/gameplay/wargus-ai/README.md) | combat, AI, pathing, quest or inventory logic | c | GPL-2.0 | reference | [Wargus/wargus.git](https://github.com/Wargus/wargus.git) @ `57f9d4d` |
 | [wasm-astar](entries/gameplay/jacobdeichert-wasm-astar/README.md) | 👾 Rust WebAssembly A* Pathfinding Demo | rust | MIT | vendored | [jacobdeichert/wasm-astar](https://github.com/jacobdeichert/wasm-astar) @ `035d8ef2848b` |

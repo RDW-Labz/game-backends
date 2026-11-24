@@ -1,0 +1,156 @@
+use anyhow::{bail, Context, Result};
+use std::net::TcpStream;
+use std::path::{Path, PathBuf};
+use std::process::Command;
+use std::time::{Duration, Instant};
+use tracing::{debug, info};
+
+/// SSH connection configuration. All remote work runs as root.
+#[derive(Clone, Debug)]
+pub(crate) struct SshConfig {
+    pub(crate) host: String,
+    pub(crate) key_path: PathBuf,
+}
+
+/// Common SSH options to avoid interactive prompts.
+const SSH_OPTS: &[&str] = &[
+    "-o",
+    "StrictHostKeyChecking=no",
+    "-o",
+    "UserKnownHostsFile=/dev/null",
+    "-o",
+    "ServerAliveInterval=30",
+    "-o",
+    "LogLevel=ERROR",
+];
+
+fn ssh_base_args(cfg: &SshConfig) -> Vec<String> {
+    let mut args: Vec<String> = SSH_OPTS.iter().map(|s| s.to_string()).collect();
+    args.push("-i".to_string());
+    args.push(cfg.key_path.to_string_lossy().to_string());
+    args
+}
+
+fn ssh_target(cfg: &SshConfig) -> String {
+    format!("root@{}", cfg.host)
+}
+
+/// Run an SSH command and capture its output.
+pub(crate) fn run_ssh(cfg: &SshConfig, cmd: &str) -> Result<String> {
+    debug!("ssh root@{}: {}", cfg.host, cmd);
+    let mut args = ssh_base_args(cfg);
+    args.push(ssh_target(cfg));
+    args.push(cmd.to_string());
+
+    let output = Command::new("ssh")
+        .args(&args)
+        .output()
+        .context("Failed to execute ssh")?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        bail!(
+            "SSH command failed (exit {}): {}\nstderr: {}",
+            output.status.code().unwrap_or(-1),
+            cmd,
+            stderr
+        );
+    }
+
+    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+}
+
+/// Run `bin` with inherited stdio (streaming output); error on non-zero exit.
+fn stream(bin: &str, args: &[String], what: &str) -> Result<()> {
+    let status = Command::new(bin)
+        .args(args)
+        .status()
+        .with_context(|| format!("Failed to execute {bin}"))?;
+    if !status.success() {
+        bail!("{} failed (exit {})", what, status.code().unwrap_or(-1));
+    }
+    Ok(())
+}
+
+/// Run an SSH command with stdio inherited (streaming output).
+pub(crate) fn run_ssh_stream(cfg: &SshConfig, cmd: &str) -> Result<()> {
+    debug!("ssh (stream) root@{}: {}", cfg.host, cmd);
+    let mut args = ssh_base_args(cfg);
+    args.push(ssh_target(cfg));
+    args.push(cmd.to_string());
+    stream("ssh", &args, &format!("SSH command `{cmd}`"))
+}
+
+/// Upload a local file to the remote server via scp.
+pub(crate) fn scp_upload(cfg: &SshConfig, local: &Path, remote: &str) -> Result<()> {
+    info!("scp upload: {:?} → {}:{}", local, cfg.host, remote);
+    let mut args = ssh_base_args(cfg);
+    args.push(local.to_string_lossy().to_string());
+    args.push(format!("{}:{}", ssh_target(cfg), remote));
+    stream("scp", &args, "scp upload")
+}
+
+/// Download a remote file to the local machine via scp.
+///
+/// Downloads to `<local>.tmp` and renames on success (mirroring
+/// `asw-cli::download::ensure_graph`), so an interrupted transfer never
+/// leaves a truncated file at `local` that a later cache check could mistake
+/// for a complete download.
+pub(crate) fn scp_download(cfg: &SshConfig, remote: &str, local: &Path) -> Result<()> {
+    info!("scp download: {}:{} → {:?}", cfg.host, remote, local);
+    if let Some(parent) = local.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+
+    let tmp_path = PathBuf::from(format!("{}.tmp", local.to_string_lossy()));
+    // Remove stale temp from any prior interrupted download.
+    let _ = std::fs::remove_file(&tmp_path);
+
+    let mut args = ssh_base_args(cfg);
+    args.push(format!("{}:{}", ssh_target(cfg), remote));
+    args.push(tmp_path.to_string_lossy().to_string());
+    stream("scp", &args, "scp download")?;
+
+    std::fs::rename(&tmp_path, local)
+        .with_context(|| format!("Failed to rename {:?} to {:?}", tmp_path, local))?;
+
+    Ok(())
+}
+
+/// Wait for SSH port 22 to become reachable via TCP connect (up to 120 s).
+pub(crate) fn wait_for_ssh(host: &str) -> Result<()> {
+    info!("Waiting for SSH on {}...", host);
+    let timeout = Duration::from_secs(120);
+    let start = Instant::now();
+    loop {
+        if start.elapsed() > timeout {
+            bail!("SSH not reachable on {} within {:?}", host, timeout);
+        }
+        let addr = format!("{}:22", host)
+            .parse()
+            .context(format!("Invalid host address: {}", host))?;
+        match TcpStream::connect_timeout(&addr, Duration::from_secs(5)) {
+            Ok(_) => {
+                info!("SSH is reachable on {}", host);
+                return Ok(());
+            }
+            Err(_) => std::thread::sleep(Duration::from_secs(3)),
+        }
+    }
+}
+
+/// Auto-detect SSH key from ~/.ssh/.
+pub fn find_ssh_key() -> Result<PathBuf> {
+    let home = std::env::var_os("HOME").context("Cannot determine home directory")?;
+    let ssh_dir = PathBuf::from(home).join(".ssh");
+    for name in &["id_ed25519", "id_rsa", "id_ecdsa"] {
+        let path = ssh_dir.join(name);
+        if path.exists() {
+            return Ok(path);
+        }
+    }
+    bail!(
+        "No SSH key found in ~/.ssh/ (looked for id_ed25519, id_rsa, id_ecdsa). \
+         Pass --ssh-key explicitly."
+    )
+}

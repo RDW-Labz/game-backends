@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:48:09Z",
+ "category": "gameplay",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AbelVM/omt-router \u2014 Client-side routing library for OpenMapTiles vector tiles. Computes optimal routes for pedestrian, car, and bicycle travel entirely client-side \u2014 no routing backend or third-party service required.",
+ "language": "javascript",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "omt-router",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "abelvm-omt-router",
+ "source": "github-search:astar navigation library stars:>15",
+ "stars": 40,
+ "system": "Client-side routing library for OpenMapTiles vector tiles. Computes optimal routes for pedestrian, car, and bicycle travel entirely client-side \u2014 no routing bac",
+ "upstream": "https://github.com/AbelVM/omt-router",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

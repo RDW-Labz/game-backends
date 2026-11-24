@@ -1,0 +1,24 @@
+[package]
+authors = ["BezPowell <bez.powell@protonmail.com>"]
+edition = "2018"
+name = "blitz-path"
+version = "0.2.0"
+description = "Implementations of the A* and JPS pathfinding algorithms."
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/BezPowell/blitz-path"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+movingai = "1.1"
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "maze512-32-9"
+harness = false
+
+[profile.bench]
+lto = "fat"

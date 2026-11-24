@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T01:48:09Z",
+ "category": "gameplay",
+ "commit": "2026-09-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Dschungelabenteuer/vite-plugin-entry-shaking \u2014 Mimic tree-shaking behaviour when importing code from an entry file in development mode.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "vite-plugin-entry-shaking",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dschungelabenteuer-vite-plugin-entry-shaking",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 158,
+ "system": "Mimic tree-shaking behaviour when importing code from an entry file in development mode.",
+ "upstream": "https://github.com/Dschungelabenteuer/vite-plugin-entry-shaking",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

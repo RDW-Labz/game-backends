@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T01:48:06Z",
+ "category": "gameplay",
+ "commit": "72a3e891d1b1",
+ "delivery": "vendored",
+ "description": "auto-sea-way/asw \u2014 Open source sea routing between any two coordinates. Global routing graph built from OpenStreetMap coastlines with H3 hexagons. Rust, HTTP API, self-hosted.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "asw",
+ "size_bytes": 475703,
+ "slug": "auto-sea-way-asw",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 19,
+ "system": "Open source sea routing between any two coordinates. Global routing graph built from OpenStreetMap coastlines with H3 hexagons. Rust, HTTP API, self-hosted.",
+ "upstream": "https://github.com/auto-sea-way/asw",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
