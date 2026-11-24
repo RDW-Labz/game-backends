@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T10:26:04Z",
+ "category": "engines",
+ "commit": "2025-11-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ejoy/ant \u2014 Ant game engine",
+ "language": "lua",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ant",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ejoy-ant",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3927,
+ "system": "Ant game engine",
+ "upstream": "https://github.com/ejoy/ant",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

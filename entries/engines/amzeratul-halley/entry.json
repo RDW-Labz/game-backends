@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T10:26:04Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "amzeratul/halley \u2014 A lightweight game engine written in modern C++",
+ "language": "c",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "halley",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "amzeratul-halley",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3871,
+ "system": "A lightweight game engine written in modern C++",
+ "upstream": "https://github.com/amzeratul/halley",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

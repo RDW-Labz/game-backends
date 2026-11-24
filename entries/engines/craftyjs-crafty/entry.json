@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T10:26:04Z",
+ "category": "engines",
+ "commit": "2023-11-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "craftyjs/Crafty \u2014 JavaScript Game Engine",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Crafty",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "craftyjs-crafty",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3617,
+ "system": "JavaScript Game Engine",
+ "upstream": "https://github.com/craftyjs/Crafty",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

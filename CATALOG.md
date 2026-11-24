@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 10:09 UTC · 1204 entries · 311 vendored, 893 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 10:26 UTC · 1210 entries · 313 vendored, 897 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 397 | 89 | 308 |
+| [engines](#engines) — Game engines and engine subsystems | 403 | 91 | 312 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 10:09 UTC · 1204 entries · 311 vendored, 893 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 397 entries
+**Game engines and engine subsystems** — 403 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -30,6 +30,7 @@ _Generated 2026-11-24 10:09 UTC · 1204 entries · 311 vendored, 893 reference-o
 | [Ambient](entries/engines/ambientrun-ambient/README.md) | The multiplayer game engine | rust | Apache-2.0 | reference | [AmbientRun/Ambient](https://github.com/AmbientRun/Ambient) @ `2025-01-07 (branch tip at catalogue time)` |
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AndEngine](entries/engines/nicolasgramlich-andengine/README.md) | Free Android 2D OpenGL Game Engine | java | Apache-2.0 | reference | [nicolasgramlich/AndEngine](https://github.com/nicolasgramlich/AndEngine) @ `2018-11-16 (branch tip at catalogue time)` |
+| [ant](entries/engines/ejoy-ant/README.md) | Ant game engine | lua | MIT | reference | [ejoy/ant](https://github.com/ejoy/ant) @ `2025-11-17 (branch tip at catalogue time)` |
 | [AnyRPGCore](entries/engines/anyrpg-anyrpgcore/README.md) | Open source Role Playing Game engine for Unity 3D written in C#. | c# | MIT | reference | [AnyRPG/AnyRPGCore](https://github.com/AnyRPG/AnyRPGCore) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Apos.Gui](entries/engines/apostolique-apos-gui/README.md) | UI library for MonoGame. | c# | MIT | reference | [Apostolique/Apos.Gui](https://github.com/Apostolique/Apos.Gui) @ `2026-11-03 (branch tip at catalogue time)` |
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
@@ -39,6 +40,8 @@ _Generated 2026-11-24 10:09 UTC · 1204 entries · 311 vendored, 893 reference-o
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
 | [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
 | [awesome-game-mashups](entries/engines/bailo167-awesome-game-mashups/README.md) | Curated list of games rebuilt inside other games — cross-game mechanics, engine/runtime mashups, playable ports, and verified viral projects. | python | CC0-1.0 | reference | [bailo167/awesome-game-mashups](https://github.com/bailo167/awesome-game-mashups) @ `2026-11-09 (branch tip at catalogue time)` |
+| [awesome-game-security](entries/engines/gmh5225-awesome-game-security/README.md) | awesome game security [Welcome to PR] | python | MIT | reference | [gmh5225/awesome-game-security](https://github.com/gmh5225/awesome-game-security) @ `2026-11-24 (branch tip at catalogue time)` |
+| [awesome-gamedev-agent-skills](entries/engines/gamedev-skills-awesome-gamedev-agent-skills/README.md) | Make games with your AI coding agent: 79 game-dev skills and a router for Godot, Unity, Unreal, Roblox, three.js, Phaser and 6 more engines. Checked on the real | python | Apache-2.0 | vendored | [gamedev-skills/awesome-gamedev-agent-skills](https://github.com/gamedev-skills/awesome-gamedev-agent-skills) @ `c6ca6c41c839` |
 | [awesome-godot](entries/engines/calinou-awesome-godot/README.md) | A curated list of free/libre plugins, scripts and add-ons for Godot | n/a | CC-BY-4.0 | vendored | [Calinou/awesome-godot](https://github.com/Calinou/awesome-godot) @ `3e8526d9e676` |
 | [awesome-monogame](entries/engines/aloisdeniel-awesome-monogame/README.md) | A collection of interesting libraries/tools for Monogame based game projects | n/a | none | reference | [aloisdeniel/awesome-monogame](https://github.com/aloisdeniel/awesome-monogame) @ `c6210d600bdd` |
 | [awesome-PICO-8](entries/engines/pico-8-awesome-pico-8/README.md) | A curated list of awesome PICO-8 resources, carts, tools and more | n/a | CC0-1.0 | reference | [pico-8/awesome-PICO-8](https://github.com/pico-8/awesome-PICO-8) @ `2026-07-28 (branch tip at catalogue time)` |
@@ -90,6 +93,7 @@ _Generated 2026-11-24 10:09 UTC · 1204 entries · 311 vendored, 893 reference-o
 | [core](entries/engines/soonfx-engine-core/README.md) | 🎮 TypeScript game numeric engine for RPG & strategy games. Zero dependencies, type-safe formula parsing, battle system simulation, and expression evaluation.  基 | typescript | Apache-2.0 | reference | [soonfx-engine/core](https://github.com/soonfx-engine/core) @ `2025-12-30 (branch tip at catalogue time)` |
 | [corona](entries/engines/coronalabs-corona/README.md) | Solar2D Game Engine main repository (ex Corona SDK) | c++ | MIT | reference | [coronalabs/corona](https://github.com/coronalabs/corona) @ `22368dfc1209` |
 | [cpp-game-engine-book](entries/engines/thisisgame-cpp-game-engine-book/README.md) | 从零编写游戏引擎教程 Writing a game engine tutorial from scratch | c++ | GPL-3.0 | reference | [ThisisGame/cpp-game-engine-book](https://github.com/ThisisGame/cpp-game-engine-book) @ `c7f9f8095274` |
+| [Crafty](entries/engines/craftyjs-crafty/README.md) | JavaScript Game Engine | javascript | MIT | reference | [craftyjs/Crafty](https://github.com/craftyjs/Crafty) @ `2023-11-04 (branch tip at catalogue time)` |
 | [crossbow](entries/engines/dodorare-crossbow/README.md) | Cross-Platform build tools and toolkit for games and game engines written in Rust! 🦀 | rust | Apache-2.0 | reference | [dodorare/crossbow](https://github.com/dodorare/crossbow) @ `2026-11-16 (branch tip at catalogue time)` |
 | [crown](entries/engines/crownengine-crown/README.md) | A complete and cross-platform game engine designed for flexibility, performance and fast iteration. | c++ | unknown | reference | [crownengine/crown](https://github.com/crownengine/crown) @ `2026-11-15 (branch tip at catalogue time)` |
 | [ct-js](entries/engines/ct-js-ct-js/README.md) | Ct.js is a desktop game engine that makes learning programming fun and game development easy by its visual editors and well-documented code library | typescript | MIT | reference | [ct-js/ct-js](https://github.com/ct-js/ct-js) @ `2026-05-23 (branch tip at catalogue time)` |
@@ -179,6 +183,7 @@ _Generated 2026-11-24 10:09 UTC · 1204 entries · 311 vendored, 893 reference-o
 | [glas — core](entries/engines/glas-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
 | [go-staticmaps](entries/engines/flopp-go-staticmaps/README.md) | A go (golang) library and command line tool to render static map images using OpenStreetMap tiles. | go | MIT | vendored | [flopp/go-staticmaps](https://github.com/flopp/go-staticmaps) @ `8cdef9842aeb` |
 | [Go2D](entries/engines/pikedev-go2d/README.md) | GoLang 2D Game Library based on SDL 1.3. This can be used to easily write games using Go (www.golang.org) using SDL 1.3 for hardware-accelerated rendering (Open | go | unknown | reference | [PikeDev/Go2D](https://github.com/PikeDev/Go2D) @ `2011-09-18 (branch tip at catalogue time)` |
+| [godogen](entries/engines/htdt-godogen/README.md) | Skills for Claude Code, Codex and Antigravity to build games, and anything else a game engine renders well | python | MIT | vendored | [htdt/godogen](https://github.com/htdt/godogen) @ `07eaa1d11e82` |
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
 | [godot-2d-space-game](entries/engines/gdquest-demos-godot-2d-space-game/README.md) | A 2D space exploration and mining game made with Godot and our AI framework | gdscript | unknown | reference | [gdquest-demos/godot-2d-space-game](https://github.com/gdquest-demos/godot-2d-space-game) @ `2026-05-16 (branch tip at catalogue time)` |
 | [godot-block-coding](entries/engines/endlessm-godot-block-coding/README.md) | Block-based visual programming plugin for Godot | gdscript | MIT | vendored | [endlessm/godot-block-coding](https://github.com/endlessm/godot-block-coding) @ `006e31ebe795` |
@@ -205,6 +210,7 @@ _Generated 2026-11-24 10:09 UTC · 1204 entries · 311 vendored, 893 reference-o
 | [goworld](entries/engines/xiaonanln-goworld/README.md) | Scalable Distributed Game Server Engine with Hot Swapping in Golang | go | Apache-2.0 | reference | [xiaonanln/goworld](https://github.com/xiaonanln/goworld) @ `2025-11-14 (branch tip at catalogue time)` |
 | [GPUTrail](entries/engines/celyk-gputrail/README.md) | A GPU based trail plugin for Godot 4 | gdscript | MIT | reference | [celyk/GPUTrail](https://github.com/celyk/GPUTrail) @ `2026-09-27 (branch tip at catalogue time)` |
 | [gzdoom — engine](entries/engines/gzdoom-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [ZDoom/gzdoom.git](https://github.com/ZDoom/gzdoom.git) @ `c26ce2e` |
+| [halley](entries/engines/amzeratul-halley/README.md) | A lightweight game engine written in modern C++ | c | Apache-2.0 | reference | [amzeratul/halley](https://github.com/amzeratul/halley) @ `2026-11-23 (branch tip at catalogue time)` |
 | [HeartbeatEngine](entries/engines/cronza-heartbeatengine/README.md) | A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5 | python | GPL-3.0 | reference | [Cronza/HeartbeatEngine](https://github.com/Cronza/HeartbeatEngine) @ `2025-08-26 (branch tip at catalogue time)` |
 | [HelloMarioFramework](entries/engines/hellofangaming-hellomarioframework/README.md) | Create your own 3D Mario game with Hello Mario Framework for Unity! | c# | MIT | reference | [HelloFangaming/HelloMarioFramework](https://github.com/HelloFangaming/HelloMarioFramework) @ `2025-11-11 (branch tip at catalogue time)` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |

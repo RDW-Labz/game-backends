@@ -2609,3 +2609,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/janbrohl-pandaplant
 
 - **2026-11-24 10:09 UTC** — tick 777: +0 screened, +0 reference, 18 skipped, catalogue=1204
+
+- **2026-11-24 10:26 UTC** — tick 778: +2 screened, +4 reference, 53 skipped, catalogue=1210
+  - added engines/gamedev-skills-awesome-gamedev-agent-skills (Apache-2.0, vendored)
+  - added engines/htdt-godogen (MIT, vendored)
+  - reference engines/ejoy-ant
+  - reference engines/amzeratul-halley
+  - reference engines/gmh5225-awesome-game-security
+  - reference engines/craftyjs-crafty

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T10:26:00Z",
+ "category": "engines",
+ "commit": "c6ca6c41c839",
+ "delivery": "vendored",
+ "description": "gamedev-skills/awesome-gamedev-agent-skills \u2014 Make games with your AI coding agent: 79 game-dev skills and a router for Godot, Unity, Unreal, Roblox, three.js, Phaser and 6 more engines. Checked on the real engines.",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "awesome-gamedev-agent-skills",
+ "size_bytes": 797075,
+ "slug": "gamedev-skills-awesome-gamedev-agent-skills",
+ "source": "github-search:game engine stars:>200",
+ "stars": 10663,
+ "system": "Make games with your AI coding agent: 79 game-dev skills and a router for Godot, Unity, Unreal, Roblox, three.js, Phaser and 6 more engines. Checked on the real",
+ "upstream": "https://github.com/gamedev-skills/awesome-gamedev-agent-skills",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

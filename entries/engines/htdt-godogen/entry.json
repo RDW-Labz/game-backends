@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T10:26:02Z",
+ "category": "engines",
+ "commit": "07eaa1d11e82",
+ "delivery": "vendored",
+ "description": "htdt/godogen \u2014 Skills for Claude Code, Codex and Antigravity to build games, and anything else a game engine renders well",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "godogen",
+ "size_bytes": 42206,
+ "slug": "htdt-godogen",
+ "source": "github-search:game engine stars:>200",
+ "stars": 7397,
+ "system": "Skills for Claude Code, Codex and Antigravity to build games, and anything else a game engine renders well",
+ "upstream": "https://github.com/htdt/godogen",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

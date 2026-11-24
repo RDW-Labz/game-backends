@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T10:26:04Z",
+ "category": "engines",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gmh5225/awesome-game-security \u2014 awesome game security [Welcome to PR]",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "awesome-game-security",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gmh5225-awesome-game-security",
+ "source": "github-search:game engine stars:>200",
+ "stars": 3790,
+ "system": "awesome game security [Welcome to PR]",
+ "upstream": "https://github.com/gmh5225/awesome-game-security",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
