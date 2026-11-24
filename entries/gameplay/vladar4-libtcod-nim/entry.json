@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:56:32Z",
+ "category": "gameplay",
+ "commit": "2020-12-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Vladar4/libtcod_nim \u2014 Wrapper of the libtcod library for the Nim language.",
+ "language": "nim",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "libtcod_nim",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "vladar4-libtcod-nim",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 36,
+ "system": "Wrapper of the libtcod library for the Nim language.",
+ "upstream": "https://github.com/Vladar4/libtcod_nim",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

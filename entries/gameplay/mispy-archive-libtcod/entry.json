@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:56:32Z",
+ "category": "gameplay",
+ "commit": "2015-07-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mispy-archive/libtcod \u2014 Ruby bindings for the libtcod roguelike library",
+ "language": "ruby",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "libtcod",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mispy-archive-libtcod",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 32,
+ "system": "Ruby bindings for the libtcod roguelike library",
+ "upstream": "https://github.com/mispy-archive/libtcod",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

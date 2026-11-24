@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T03:56:31Z",
+ "category": "gameplay",
+ "commit": "f64d42ea099f",
+ "delivery": "vendored",
+ "description": "ajhager/rog \u2014 A roguelike game library written in go",
+ "language": "go",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "rog",
+ "size_bytes": 73531,
+ "slug": "ajhager-rog",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 51,
+ "system": "A roguelike game library written in go",
+ "upstream": "https://github.com/ajhager/rog",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

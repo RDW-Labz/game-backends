@@ -2451,3 +2451,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/forien-foundryvtt-forien-quest-log
   - reference gameplay/tommy-xr-shock2quest
   - reference gameplay/andres6936-hale
+
+- **2026-11-24 03:56 UTC** — tick 754: +2 screened, +4 reference, 12 skipped, catalogue=1098
+  - added gameplay/yellowstonegames-squidsquad (Apache-2.0, reference)
+  - added gameplay/ajhager-rog (BSD-2-Clause, vendored)
+  - reference gameplay/alex-karev-godot-rgmap
+  - reference gameplay/vladar4-libtcod-nim
+  - reference gameplay/aedalus-malwoden
+  - reference gameplay/mispy-archive-libtcod

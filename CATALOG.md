@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 03:40 UTC · 1092 entries · 285 vendored, 807 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 03:56 UTC · 1098 entries · 286 vendored, 812 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-24 03:40 UTC · 1092 entries · 285 vendored, 807 reference-o
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 185 | 48 | 137 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 114 | 35 | 79 |
 | [save-state](#save-state) — Save / state systems | 66 | 18 | 48 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
@@ -686,7 +686,7 @@ _Generated 2026-11-24 03:40 UTC · 1092 entries · 285 vendored, 807 reference-o
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 185 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 191 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -731,6 +731,7 @@ _Generated 2026-11-24 03:40 UTC · 1092 entries · 285 vendored, 807 reference-o
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
 | [godot-behaviour-tree](entries/gameplay/andrew-wilkes-godot-behaviour-tree/README.md) | Behaviour Tree framework for Godot coded in GDScript. | gdscript | MIT | reference | [andrew-wilkes/godot-behaviour-tree](https://github.com/andrew-wilkes/godot-behaviour-tree) @ `2023-12-13 (branch tip at catalogue time)` |
+| [godot-rgmap](entries/gameplay/alex-karev-godot-rgmap/README.md) | A library for managing maps for roguelike games in Godot Engine | c++ | MIT | reference | [alex-karev/godot-rgmap](https://github.com/alex-karev/godot-rgmap) @ `2022-11-28 (branch tip at catalogue time)` |
 | [godot-wyvernbox-inventory](entries/gameplay/don-tnowe-godot-wyvernbox-inventory/README.md) | Action RPG-focused inventory system for Godot 3 and 4 | gdscript | MIT | reference | [don-tnowe/godot-wyvernbox-inventory](https://github.com/don-tnowe/godot-wyvernbox-inventory) @ `2026-01-27 (branch tip at catalogue time)` |
 | [GoRogue](entries/gameplay/chris3606-gorogue/README.md) | .NET Standard roguelike library in C#.  Features many algorithms and data structures pertinent to roguelike/2D game developers, specifically designed to be mini | c# | MIT | reference | [Chris3606/GoRogue](https://github.com/Chris3606/GoRogue) @ `2026-09-13 (branch tip at catalogue time)` |
 | [graphhopper](entries/gameplay/graphhopper-graphhopper/README.md) | Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server. | java | Apache-2.0 | vendored | [graphhopper/graphhopper](https://github.com/graphhopper/graphhopper) @ `9df847473a5e` |
@@ -767,8 +768,11 @@ _Generated 2026-11-24 03:40 UTC · 1092 entries · 285 vendored, 807 reference-o
 | [LambdaHack](entries/gameplay/lambdahack-lambdahack/README.md) | Haskell game engine library for roguelike dungeon crawlers; please offer feedback, e.g., after trying out the sample game with the web frontend at | haskell | BSD-3-Clause | vendored | [LambdaHack/LambdaHack](https://github.com/LambdaHack/LambdaHack) @ `62b978a3c880` |
 | [LaravelInventoryWithPOS](entries/gameplay/hassanrazadev-laravelinventorywithpos/README.md) | Inventory Management System With POS in Laravel | php | unknown | reference | [hassanrazadev/LaravelInventoryWithPOS](https://github.com/hassanrazadev/LaravelInventoryWithPOS) @ `2023-12-29 (branch tip at catalogue time)` |
 | [libtcod](entries/gameplay/libtcod/README.md) | roguelike toolkit: FOV, pathfinding, RNG, line drawing, console | c++ | BSD-3-Clause | vendored | [libtcod/libtcod](https://github.com/libtcod/libtcod) @ `de16289cd50e` |
+| [libtcod](entries/gameplay/mispy-archive-libtcod/README.md) | Ruby bindings for the libtcod roguelike library | ruby | MIT | reference | [mispy-archive/libtcod](https://github.com/mispy-archive/libtcod) @ `2015-07-19 (branch tip at catalogue time)` |
+| [libtcod_nim](entries/gameplay/vladar4-libtcod-nim/README.md) | Wrapper of the libtcod library for the Nim language. | nim | unknown | reference | [Vladar4/libtcod_nim](https://github.com/Vladar4/libtcod_nim) @ `2020-12-17 (branch tip at catalogue time)` |
 | [Lockstep.BehaviourTree](entries/gameplay/jiepengtan-lockstep-behaviourtree/README.md) | Memory-compact BehaviorTree (use c#  unsafe pointer && struct) | c# | none | reference | [JiepengTan/Lockstep.BehaviourTree](https://github.com/JiepengTan/Lockstep.BehaviourTree) @ `c17e940821ad` |
 | [LockstepEngine](entries/gameplay/jiepengtan-lockstepengine/README.md) | A lockstep solution include lots of deterministic library (Math,Collision,Navmesh,BehaviorTree,Serialization ...) | c# | unknown | reference | [JiepengTan/LockstepEngine](https://github.com/JiepengTan/LockstepEngine) @ `2020-03-23 (branch tip at catalogue time)` |
+| [malwoden](entries/gameplay/aedalus-malwoden/README.md) | A JS/TS roguelike library. | typescript | MIT | reference | [Aedalus/malwoden](https://github.com/Aedalus/malwoden) @ `2023-03-05 (branch tip at catalogue time)` |
 | [megaglest — ai](entries/gameplay/megaglest-ai/README.md) | combat, AI, pathing, quest or inventory logic | h | none | reference | [megaglest/megaglest-source.git](https://github.com/megaglest/megaglest-source.git) @ `4ab09c6` |
 | [Mindustry — abilities](entries/gameplay/mindustry-abilities/README.md) | combat, AI, pathing, quest or inventory logic | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [Mindustry — ai](entries/gameplay/mindustry-core-src-mindustry-ai/README.md) | unit AI and pathfinding | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01ed559` |
@@ -827,6 +831,7 @@ _Generated 2026-11-24 03:40 UTC · 1092 entries · 285 vendored, 807 reference-o
 | [Restaurant_POS_System](entries/gameplay/amritmaurya1504-restaurant-pos-system/README.md) | A full-featured Restaurant POS System built using the MERN Stack to streamline restaurant operations, enhance customer experience, and manage orders, payments,  | javascript | unknown | reference | [amritmaurya1504/Restaurant_POS_System](https://github.com/amritmaurya1504/Restaurant_POS_System) @ `2025-03-02 (branch tip at catalogue time)` |
 | [Revengate — combat](entries/gameplay/revengate-combat/README.md) | combat, AI, pathing, quest or inventory logic | gd | GPL-3.0 | reference | [https://gitlab.com/ygingras/revengate](https://gitlab.com/ygingras/revengate) @ `ad6b2ee` |
 | [robopoker](entries/gameplay/krukah-robopoker/README.md) | Everything you could wish for in a library called RoboPoker. Full suite of data structures, algorithms, solvers, ML models, and more. | rust | MIT | reference | [krukah/robopoker](https://github.com/krukah/robopoker) @ `2026-10-28 (branch tip at catalogue time)` |
+| [rog](entries/gameplay/ajhager-rog/README.md) | A roguelike game library written in go | go | BSD-2-Clause | vendored | [ajhager/rog](https://github.com/ajhager/rog) @ `f64d42ea099f` |
 | [RogueSharp](entries/gameplay/faronbracy-roguesharp/README.md) | A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired | c# | MIT | reference | [FaronBracy/RogueSharp](https://github.com/FaronBracy/RogueSharp) @ `2024-08-03 (branch tip at catalogue time)` |
 | [RoseWish](entries/gameplay/ahmadhassan-bted-rosewish/README.md) | A heartfelt, interactive narrative mini-game built in Python for Rose Day. Features custom entities, a dynamic dialogue system, animated particle effects, and i | python | MIT | vendored | [AhmadHassan-BTed/RoseWish](https://github.com/AhmadHassan-BTed/RoseWish) @ `6d3e9e155ba5` |
 | [rot.js](entries/gameplay/ondras-rot-js/README.md) | ROguelike Toolkit in JavaScript. Cool dungeon-related stuff, interactive manual, documentation, tests! | javascript | BSD-3-Clause | vendored | [ondras/rot.js](https://github.com/ondras/rot.js) @ `46782e248c2d` |
@@ -841,6 +846,7 @@ _Generated 2026-11-24 03:40 UTC · 1092 entries · 285 vendored, 807 reference-o
 | [spark-arc-studio](entries/gameplay/1deaaa-spark-arc-studio/README.md) | An autonomous multi-agent IDE for screenplays🎮 & novels📖. One-click to share web performances or drive Unity dialogue systems. Empowering vibe game dev with AI! | python | AGPL-3.0 | reference | [1deaaa/spark-arc-studio](https://github.com/1deaaa/spark-arc-studio) @ `2026-10-14 (branch tip at catalogue time)` |
 | [Spotlight_Storage](entries/gameplay/firemarshmellow-spotlight-storage/README.md) | MIMOSA - short for "Mellow_Labs Inventory Management and Organization System Apparatus". Just like a refreshing mimosa, this system will make your life brighter | javascript | MIT | vendored | [FireMarshmellow/Spotlight_Storage](https://github.com/FireMarshmellow/Spotlight_Storage) @ `4fe8fdafdd45` |
 | [SproutyDialogs](entries/gameplay/sproutylabs-sproutydialogs/README.md) | A graph-based visual dialogue system plugin for Godot, to create dialogues in your games incredibly easy! 🌱 | gdscript | MIT | reference | [SproutyLabs/SproutyDialogs](https://github.com/SproutyLabs/SproutyDialogs) @ `2026-11-19 (branch tip at catalogue time)` |
+| [SquidSquad](entries/gameplay/yellowstonegames-squidsquad/README.md) | Several loosely-connected libraries for procedural generation and roguelikes. Parent repo. | java | Apache-2.0 | reference | [yellowstonegames/SquidSquad](https://github.com/yellowstonegames/SquidSquad) @ `c08f11f20a5c` |
 | [Storage-Boxx-PHP-Inventory-Management-System](entries/gameplay/code-boxx-storage-boxx-php-inventory-management-system/README.md) | Open source PHP inventory management system, with built-in QR and NFC scanner. | php | unknown | reference | [code-boxx/Storage-Boxx-PHP-Inventory-Management-System](https://github.com/code-boxx/Storage-Boxx-PHP-Inventory-Management-System) @ `2024-03-07 (branch tip at catalogue time)` |
 | [storaji](entries/gameplay/indomaximtechid-storaji/README.md) | :ledger: The light/responsive inventory management system available on Windows, macOS and Linux. | php | MIT | reference | [IndomaximTechID/storaji](https://github.com/IndomaximTechID/storaji) @ `2023-08-09 (branch tip at catalogue time)` |
 | [StoreDown](entries/gameplay/jliscom-storedown/README.md) | An inventory system that is hopefully simple enough for everyone! | javascript | MIT | vendored | [JLiscom/StoreDown](https://github.com/JLiscom/StoreDown) @ `cb2746330760` |

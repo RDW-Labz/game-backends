@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:56:32Z",
+ "category": "gameplay",
+ "commit": "2023-03-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Aedalus/malwoden \u2014 A JS/TS roguelike library.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "malwoden",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "aedalus-malwoden",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 34,
+ "system": "A JS/TS roguelike library.",
+ "upstream": "https://github.com/Aedalus/malwoden",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

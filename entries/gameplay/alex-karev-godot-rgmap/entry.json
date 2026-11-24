@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T03:56:32Z",
+ "category": "gameplay",
+ "commit": "2022-11-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "alex-karev/godot-rgmap \u2014 A library for managing maps for roguelike games in Godot Engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-rgmap",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "alex-karev-godot-rgmap",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 43,
+ "system": "A library for managing maps for roguelike games in Godot Engine",
+ "upstream": "https://github.com/alex-karev/godot-rgmap",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

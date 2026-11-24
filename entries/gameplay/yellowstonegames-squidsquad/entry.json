@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T03:56:29Z",
+ "category": "gameplay",
+ "commit": "c08f11f20a5c",
+ "delivery": "reference",
+ "description": "yellowstonegames/SquidSquad \u2014 Several loosely-connected libraries for procedural generation and roguelikes. Parent repo.",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "SquidSquad",
+ "reference_reason": "size gate: 22 MB",
+ "size_bytes": 23680013,
+ "slug": "yellowstonegames-squidsquad",
+ "source": "github-search:roguelike library stars:>30",
+ "stars": 54,
+ "system": "Several loosely-connected libraries for procedural generation and roguelikes. Parent repo.",
+ "upstream": "https://github.com/yellowstonegames/SquidSquad",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
