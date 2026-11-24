@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 06:36 UTC · 1147 entries · 297 vendored, 850 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 06:52 UTC · 1153 entries · 299 vendored, 854 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-24 06:36 UTC · 1147 entries · 297 vendored, 850 reference-o
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
-| [save-state](#save-state) — Save / state systems | 72 | 20 | 52 |
+| [save-state](#save-state) — Save / state systems | 78 | 22 | 56 |
 | [procgen](#procgen) — Procedural generation | 85 | 24 | 61 |
 
 
@@ -1048,15 +1048,19 @@ _Generated 2026-11-24 06:36 UTC · 1147 entries · 297 vendored, 850 reference-o
 
 ## save-state
 
-**Save / state systems** — 72 entries
+**Save / state systems** — 78 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
+| [abomonation](entries/save-state/timelydataflow-abomonation/README.md) | A mortifying serialization library for Rust | rust | MIT | vendored | [TimelyDataflow/abomonation](https://github.com/TimelyDataflow/abomonation) @ `c2b23534549a` |
+| [alkahest](entries/save-state/zakarumych-alkahest/README.md) | Fantastic serialization library | rust | unknown | reference | [zakarumych/alkahest](https://github.com/zakarumych/alkahest) @ `2026-10-28 (branch tip at catalogue time)` |
 | [alpaca](entries/save-state/p-ranav-alpaca/README.md) | Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code | c++ | MIT | vendored | [p-ranav/alpaca](https://github.com/p-ranav/alpaca) @ `8f022bdb5106` |
 | [bevy-prefabs](entries/save-state/zylkowski-bevy-prefabs/README.md) | Entity prefabs serialization plugin for Bevy game engine | rust | MIT | reference | [zylkowski/bevy-prefabs](https://github.com/zylkowski/bevy-prefabs) @ `2021-05-25 (branch tip at catalogue time)` |
 | [biomes-game — storage](entries/save-state/biomes-game-storage/README.md) | persistence: save/load, snapshot or state serialisation | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blobify](entries/save-state/neobrain-blobify/README.md) | C++17 library for all your binary de-/serialization needs | c++ | BSL-1.0 | reference | [neobrain/blobify](https://github.com/neobrain/blobify) @ `2023-12-11 (branch tip at catalogue time)` |
+| [bsuccinct-rs](entries/save-state/beling-bsuccinct-rs/README.md) | Rust libraries and programs focused on succinct data structures | rust | Apache-2.0 | reference | [beling/bsuccinct-rs](https://github.com/beling/bsuccinct-rs) @ `2026-11-11 (branch tip at catalogue time)` |
 | [capnproto](entries/save-state/capnproto-capnproto/README.md) | Cap'n Proto serialization/RPC system - core tools and C++ library | c++ | MIT | vendored | [capnproto/capnproto](https://github.com/capnproto/capnproto) @ `5f160ba386e6` |
+| [cardano-serialization-lib](entries/save-state/emurgo-cardano-serialization-lib/README.md) | This is a library, written in Rust, for serialization & deserialization of data structures used in Cardano's Haskell implementation of Alonzo along with useful  | rust | MIT | vendored | [Emurgo/cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib) @ `6b4253814f18` |
 | [cereal](entries/save-state/cereal/README.md) | C++11 serialization: JSON/binary/XML archives, versioning | c++ | BSD-3-Clause | vendored | [USCiLab/cereal](https://github.com/USCiLab/cereal) @ `22a1b369f39b` |
 | [Chronicle-Wire](entries/save-state/openhft-chronicle-wire/README.md) | A Low Garbage Java Serialisation Library that supports multiple formats | java | Apache-2.0 | reference | [OpenHFT/Chronicle-Wire](https://github.com/OpenHFT/Chronicle-Wire) @ `2026-11-22 (branch tip at catalogue time)` |
 | [cista](entries/save-state/felixguendling-cista/README.md) | Cista is a simple, high-performance, zero-copy C++ serialization & reflection library. | c++ | MIT | reference | [felixguendling/cista](https://github.com/felixguendling/cista) @ `2026-11-06 (branch tip at catalogue time)` |
@@ -1099,6 +1103,7 @@ _Generated 2026-11-24 06:36 UTC · 1147 entries · 297 vendored, 850 reference-o
 | [ormsgpack](entries/save-state/ormsgpack-ormsgpack/README.md) | MessagePack serialization library for Python derived from orjson, written in Rust using PyO3 | rust | Apache-2.0 | reference | [ormsgpack/ormsgpack](https://github.com/ormsgpack/ormsgpack) @ `2026-11-21 (branch tip at catalogue time)` |
 | [pbf](entries/save-state/mapbox-pbf/README.md) | A low-level, lightweight protocol buffers implementation in JavaScript. | javascript | BSD-3-Clause | vendored | [mapbox/pbf](https://github.com/mapbox/pbf) @ `c5f57ace5bba` |
 | [PenguinBurner](entries/save-state/jpietek-penguinburner/README.md) | Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play | python | GPL-3.0 | reference | [jpietek/PenguinBurner](https://github.com/jpietek/PenguinBurner) @ `2026-11-17 (branch tip at catalogue time)` |
+| [prost-reflect](entries/save-state/andrewhickman-prost-reflect/README.md) | A protobuf library extending prost with reflection support and dynamic messages. | rust | Apache-2.0 | reference | [andrewhickman/prost-reflect](https://github.com/andrewhickman/prost-reflect) @ `2026-07-09 (branch tip at catalogue time)` |
 | [protopuf](entries/save-state/pragmatwice-protopuf/README.md) | Protocol Puffers: A little, highly templated, and protobuf-compatible serialization/deserialization header-only library written in C++20 | c++ | Apache-2.0 | reference | [PragmaTwice/protopuf](https://github.com/PragmaTwice/protopuf) @ `2026-10-02 (branch tip at catalogue time)` |
 | [QxOrm](entries/save-state/qxorm-qxorm/README.md) | QxOrm library - C++ Qt ORM (Object Relational Mapping) and ODM (Object Document Mapper) library - Official repository | c++ | unknown | reference | [QxOrm/QxOrm](https://github.com/QxOrm/QxOrm) @ `2026-05-12 (branch tip at catalogue time)` |
 | [refit](entries/save-state/reactiveui-refit/README.md) | The automatic type-safe REST library for .NET. Refit turns a REST API into a C# interface and generates the HttpClient implementation, with support for HttpClie | c# | MIT | vendored | [reactiveui/refit](https://github.com/reactiveui/refit) @ `f61f15a444d5` |
@@ -1109,6 +1114,7 @@ _Generated 2026-11-24 06:36 UTC · 1147 entries · 297 vendored, 850 reference-o
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
 | [SaveState](entries/save-state/matteo842-savestate/README.md) | Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ e | python | GPL-3.0 | reference | [Matteo842/SaveState](https://github.com/Matteo842/SaveState) @ `7557b3c5a788` |
 | [serde](entries/save-state/serdedotnet-serde/README.md) | Serde.NET is a C# port of the popular Serde serialization library for Rust | c# | BSD-3-Clause | reference | [serdedotnet/serde](https://github.com/serdedotnet/serde) @ `2026-11-15 (branch tip at catalogue time)` |
+| [serde-reflection](entries/save-state/serde-tools-serde-reflection/README.md) | Rust libraries and tools to help with interoperability and testing of serialization formats based on Serde. | rust | Apache-2.0 | reference | [serde-tools/serde-reflection](https://github.com/serde-tools/serde-reflection) @ `2026-11-18 (branch tip at catalogue time)` |
 | [Serialize.Linq](entries/save-state/esskar-serialize-linq/README.md) | C# library to serialize LINQ expressions | c# | MIT | vendored | [esskar/Serialize.Linq](https://github.com/esskar/Serialize.Linq) @ `44b715ffbea5` |
 | [Server-crashes-on-player-connect](entries/save-state/teehee123123-server-crashes-on-player-connect/README.md) | ---- Minecraft Crash Report ---- // Ooh. Shiny.  Time: 7/4/13 11:37 PM Description: Ticking entity  java.lang.OutOfMemoryError: Java heap space 	at net.minecraf | n/a | unknown | reference | [Teehee123123/Server-crashes-on-player-connect](https://github.com/Teehee123123/Server-crashes-on-player-connect) @ `2022-08-31 (branch tip at catalogue time)` |
 | [space_packet_parser](entries/save-state/lasp-space-packet-parser/README.md) | A CCSDS telemetry packet decoding library based on the XTCE packet format description standard. | python | unknown | reference | [lasp/space_packet_parser](https://github.com/lasp/space_packet_parser) @ `2026-11-04 (branch tip at catalogue time)` |

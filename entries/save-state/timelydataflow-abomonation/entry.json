@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T06:52:18Z",
+ "category": "save-state",
+ "commit": "c2b23534549a",
+ "delivery": "vendored",
+ "description": "TimelyDataflow/abomonation \u2014 A mortifying serialization library for Rust",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "abomonation",
+ "size_bytes": 43146,
+ "slug": "timelydataflow-abomonation",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 347,
+ "system": "A mortifying serialization library for Rust",
+ "upstream": "https://github.com/TimelyDataflow/abomonation",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

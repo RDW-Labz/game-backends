@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:52:22Z",
+ "category": "save-state",
+ "commit": "2026-07-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "andrewhickman/prost-reflect \u2014 A protobuf library extending prost with reflection support and dynamic messages.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "prost-reflect",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "andrewhickman-prost-reflect",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 148,
+ "system": "A protobuf library extending prost with reflection support and dynamic messages.",
+ "upstream": "https://github.com/andrewhickman/prost-reflect",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,181 @@
+use num_bigint::Sign;
+use num_integer::Integer;
+use num_traits::Signed;
+use crate::*;
+
+#[wasm_bindgen]
+#[derive(Clone, Debug, Default, Eq, Ord, PartialEq, PartialOrd, Hash)]
+pub struct BigInt(pub(crate) num_bigint::BigInt);
+
+impl_to_from!(BigInt);
+impl_num_ops!(BigInt, num_bigint::BigInt);
+
+impl std::ops::Neg for BigInt {
+    type Output = BigInt;
+
+    fn neg(self) -> Self::Output {
+        Self(-self.0)
+    }
+}
+
+impl std::fmt::Display for BigInt {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+impl std::str::FromStr for BigInt {
+    type Err = JsError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        s.parse::<num_bigint::BigInt>()
+            .map_err(|e| JsError::from_str(&format!("{:?}", e)))
+            .map(Self)
+    }
+}
+
+impl serde::Serialize for BigInt {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_str())
+    }
+}
+
+impl<'de> serde::de::Deserialize<'de> for BigInt {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::de::Deserializer<'de>,
+    {
+        let s = <String as serde::de::Deserialize>::deserialize(deserializer)?;
+        BigInt::from_str(&s).map_err(|_e| {
+            serde::de::Error::invalid_value(
+                serde::de::Unexpected::Str(&s),
+                &"string rep of a big int",
+            )
+        })
+    }
+}
+
+impl JsonSchema for BigInt {
+    fn schema_name() -> String {
+        String::from("BigInt")
+    }
+    fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+        String::json_schema(gen)
+    }
+    fn is_referenceable() -> bool {
+        String::is_referenceable()
+    }
+}
+
+#[wasm_bindgen]
+impl BigInt {
+    pub fn is_zero(&self) -> bool {
+        self.0.sign() == Sign::NoSign
+    }
+
+    pub fn as_u64(&self) -> Option<BigNum> {
+        let (sign, u64_digits) = self.0.to_u64_digits();
+        if sign == Sign::Minus {
+            return None;
+        }
+        match u64_digits.len() {
+            0 => Some(BigNum::zero()),
+            1 => Some((*u64_digits.first().unwrap()).into()),
+            _ => None,
+        }
+    }
+
+    pub fn as_int(&self) -> Option<Int> {
+        let (sign, u64_digits) = self.0.to_u64_digits();
+        // CBOR int range is [-2^64, 2^64-1]. Positive values must fit a u64.
+        // Negative values may reach 2^64 in magnitude (the single value -2^64),
+        // which `to_u64_digits` represents as two u64 limbs: [0, 1].
+        match (sign, u64_digits.as_slice()) {
+            (num_bigint::Sign::NoSign, _) => Some(Int::new(&BigNum::zero())),
+            (num_bigint::Sign::Plus, [lo]) => Some(Int::new(&BigNum(*lo))),
+            (num_bigint::Sign::Minus, [lo]) => Some(Int::new_negative(&BigNum(*lo))),
+            (num_bigint::Sign::Minus, [0, 1]) => Some(Int(Int::CBOR_MIN)),
+            _ => None,
+        }
+    }
+
+    pub fn from_str(text: &str) -> Result<BigInt, JsError> {
+        <Self as std::str::FromStr>::from_str(text)
+    }
+
+    pub fn to_str(&self) -> String {
+        self.0.to_string()
+    }
+
+    pub fn add(&self, other: &BigInt) -> BigInt {
+        Self(&self.0 + &other.0)
+    }
+
+    pub fn sub(&self, other: &BigInt) -> BigInt {
+        Self(&self.0 - &other.0)
+    }
+
+    pub fn mul(&self, other: &BigInt) -> BigInt {
+        Self(&self.0 * &other.0)
+    }
+
+    pub fn pow(&self, exp: u32) -> BigInt {
+        Self(self.0.pow(exp))
+    }
+
+    pub fn one() -> BigInt {
+        Self(num_bigint::BigInt::from(1))
+    }
+
+    pub fn zero() -> BigInt {
+        Self(num_bigint::BigInt::from(0))
+    }
+
+    pub fn abs(&self) -> BigInt {
+        Self(self.0.abs())
+    }
+
+    pub fn increment(&self) -> BigInt {
+        self.add(&Self::one())
+    }
+
+    pub fn div_ceil(&self, other: &BigInt) -> BigInt {
+        Self(self.0.div_ceil(&other.0))
+    }
+
+    pub fn div_floor(&self, other: &BigInt) -> BigInt {
+        Self(self.0.div_floor(&other.0))
+    }
+
+    pub(crate) fn is_negative(&self) -> bool {
+        self.0.is_negative()
+    }
+}
+
+impl<T> std::convert::From<T> for BigInt
+    where
+        T: std::convert::Into<num_bigint::BigInt>,
+{
+    fn from(x: T) -> Self {
+        Self(x.into())
+    }
+}
+
+impl From<BigNum> for BigInt {
+    fn from(x: BigNum) -> Self {
+        Self(x.0.into())
+    }
+}
+
+impl From<&BigNum> for BigInt {
+    fn from(x: &BigNum) -> Self {
+        Self(x.0.into())
+    }
+}
+
+pub fn to_bigint(val: u64) -> BigInt {
+    BigInt::from_str(&val.to_string()).unwrap()
+}

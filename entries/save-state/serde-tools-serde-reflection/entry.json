@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:52:22Z",
+ "category": "save-state",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "serde-tools/serde-reflection \u2014 Rust libraries and tools to help with interoperability and testing of serialization formats based on Serde.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "serde-reflection",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "serde-tools-serde-reflection",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 190,
+ "system": "Rust libraries and tools to help with interoperability and testing of serialization formats based on Serde.",
+ "upstream": "https://github.com/serde-tools/serde-reflection",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2528,3 +2528,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/pragmatwice-protopuf
   - reference save-state/alentoma-fastdeepcloner
   - reference save-state/aarnott-nerdbank-messagepack
+
+- **2026-11-24 06:52 UTC** — tick 765: +2 screened, +4 reference, 6 skipped, catalogue=1153
+  - added save-state/timelydataflow-abomonation (MIT, vendored)
+  - added save-state/emurgo-cardano-serialization-lib (MIT, vendored)
+  - reference save-state/serde-tools-serde-reflection
+  - reference save-state/beling-bsuccinct-rs
+  - reference save-state/zakarumych-alkahest
+  - reference save-state/andrewhickman-prost-reflect

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T06:52:22Z",
+ "category": "save-state",
+ "commit": "2026-10-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "zakarumych/alkahest \u2014 Fantastic serialization library",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "alkahest",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "zakarumych-alkahest",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 162,
+ "system": "Fantastic serialization library",
+ "upstream": "https://github.com/zakarumych/alkahest",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

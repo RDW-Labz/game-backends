@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T06:52:21Z",
+ "category": "save-state",
+ "commit": "6b4253814f18",
+ "delivery": "vendored",
+ "description": "Emurgo/cardano-serialization-lib \u2014 This is a library, written in Rust, for serialization & deserialization of data structures used in Cardano's Haskell implementation of Alonzo along with useful utility functions.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cardano-serialization-lib",
+ "size_bytes": 7282168,
+ "slug": "emurgo-cardano-serialization-lib",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 248,
+ "system": "This is a library, written in Rust, for serialization & deserialization of data structures used in Cardano's Haskell implementation of Alonzo along with useful ",
+ "upstream": "https://github.com/Emurgo/cardano-serialization-lib",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
