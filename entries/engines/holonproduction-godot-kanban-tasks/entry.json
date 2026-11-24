@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:33:35Z",
+ "category": "engines",
+ "commit": "2026-10-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "HolonProduction/godot_kanban_tasks \u2014 Another kanban board plugin for the godot engine.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot_kanban_tasks",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "holonproduction-godot-kanban-tasks",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 270,
+ "system": "Another kanban board plugin for the godot engine.",
+ "upstream": "https://github.com/HolonProduction/godot_kanban_tasks",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

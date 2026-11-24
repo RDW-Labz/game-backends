@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T23:33:34Z",
+ "category": "engines",
+ "commit": "209276d1f00d",
+ "delivery": "vendored",
+ "description": "imjp94/gd-plug \u2014 Minimal plugin manager for Godot",
+ "language": "gap",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "gd-plug",
+ "size_bytes": 41693,
+ "slug": "imjp94-gd-plug",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 303,
+ "system": "Minimal plugin manager for Godot",
+ "upstream": "https://github.com/imjp94/gd-plug",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

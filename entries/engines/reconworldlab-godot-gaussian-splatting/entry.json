@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T23:33:32Z",
+ "category": "engines",
+ "commit": "c22024b33a24",
+ "delivery": "vendored",
+ "description": "ReconWorldLab/godot-gaussian-splatting \u2014 [GDGS] A real-time 3D Gaussian Splatting (3DGS) rendering plugin for the Godot Engine. Godot\u5f15\u64ce\u7684\u5b9e\u65f63DGS\u6e32\u67d3\u63d2\u4ef6",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-gaussian-splatting",
+ "size_bytes": 483439,
+ "slug": "reconworldlab-godot-gaussian-splatting",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 311,
+ "system": "[GDGS] A real-time 3D Gaussian Splatting (3DGS) rendering plugin for the Godot Engine. Godot\u5f15\u64ce\u7684\u5b9e\u65f63DGS\u6e32\u67d3\u63d2\u4ef6",
+ "upstream": "https://github.com/ReconWorldLab/godot-gaussian-splatting",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

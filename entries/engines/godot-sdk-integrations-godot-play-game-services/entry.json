@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:33:35Z",
+ "category": "engines",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "godot-sdk-integrations/godot-play-game-services \u2014 A Godot 4.x plugin for integration with Google Play Games Services",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-play-game-services",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "godot-sdk-integrations-godot-play-game-services",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 284,
+ "system": "A Godot 4.x plugin for integration with Google Play Games Services",
+ "upstream": "https://github.com/godot-sdk-integrations/godot-play-game-services",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

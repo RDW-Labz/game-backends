@@ -2900,3 +2900,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/elliotfontaine-yard-godot
   - reference engines/dark-peace-bulletuphell
   - reference engines/obkf-godot-trail-system
+
+- **2026-11-24 23:33 UTC** — tick 818: +2 screened, +4 reference, 7 skipped, catalogue=1427
+  - added engines/reconworldlab-godot-gaussian-splatting (MIT, vendored)
+  - added engines/imjp94-gd-plug (MIT, vendored)
+  - reference engines/duongvituan-godot-awesome-splash
+  - reference engines/godot-sdk-integrations-godot-play-game-services
+  - reference engines/holonproduction-godot-kanban-tasks
+  - reference engines/godot-sdk-integrations-godot-google-play-billing

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 23:17 UTC · 1421 entries · 368 vendored, 1053 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 23:33 UTC · 1427 entries · 370 vendored, 1057 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 614 | 146 | 468 |
+| [engines](#engines) — Game engines and engine subsystems | 620 | 148 | 472 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 23:17 UTC · 1421 entries · 368 vendored, 1053 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 614 entries
+**Game engines and engine subsystems** — 620 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -245,6 +245,7 @@ _Generated 2026-11-24 23:17 UTC · 1421 entries · 368 vendored, 1053 reference-
 | [GameStringer](entries/engines/rouges78-gamestringer/README.md) | Desktop app that auto-detects a game's engine, extracts the text, translates it with local or cloud AI, and re-applies the patch. 20+ engines, 20+ AI providers, | typescript | unknown | reference | [rouges78/GameStringer](https://github.com/rouges78/GameStringer) @ `2026-11-23 (branch tip at catalogue time)` |
 | [gamezone — core](entries/engines/gamezone-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | Apache-2.0 | vendored | [kunjgit/GameZone](https://github.com/kunjgit/GameZone) @ `ac4ce20` |
 | [GBM2K-Framework](entries/engines/oplexitie-gbm2k-framework/README.md) | A 2D Grid Based Movement framework made for the Godot game engine. | gdscript | MIT | reference | [Oplexitie/GBM2K-Framework](https://github.com/Oplexitie/GBM2K-Framework) @ `2026-10-09 (branch tip at catalogue time)` |
+| [gd-plug](entries/engines/imjp94-gd-plug/README.md) | Minimal plugin manager for Godot | gap | MIT | vendored | [imjp94/gd-plug](https://github.com/imjp94/gd-plug) @ `209276d1f00d` |
 | [gdcef](entries/engines/lecrapouille-gdcef/README.md) | [Godot Plugin][Version 0.21.0][Functional] Chromium Embedded Framework Webview for Godot 4 | c++ | MIT | reference | [Lecrapouille/gdcef](https://github.com/Lecrapouille/gdcef) @ `2026-11-05 (branch tip at catalogue time)` |
 | [GDevelop](entries/engines/4ian-gdevelop/README.md) | 🎮 Open-source, cross-platform 2D/3D/multiplayer game engine designed for everyone. | javascript | MIT | reference | [4ian/GDevelop](https://github.com/4ian/GDevelop) @ `7deebc2d2ba1` |
 | [gdmaim](entries/engines/cherriesandmochi-gdmaim/README.md) | GDMaim is a GDScript obfuscation plugin for the Godot Engine. | gdscript | MIT | reference | [cherriesandmochi/gdmaim](https://github.com/cherriesandmochi/gdmaim) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -263,6 +264,7 @@ _Generated 2026-11-24 23:17 UTC · 1421 entries · 368 vendored, 1053 reference-
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
 | [godot-2d-space-game](entries/engines/gdquest-demos-godot-2d-space-game/README.md) | A 2D space exploration and mining game made with Godot and our AI framework | gdscript | unknown | reference | [gdquest-demos/godot-2d-space-game](https://github.com/gdquest-demos/godot-2d-space-game) @ `2026-05-16 (branch tip at catalogue time)` |
 | [godot-admob-plugin](entries/engines/poingstudios-godot-admob-plugin/README.md) | Complete AdMob (Google Mobile Ads SDK) plugin for Godot. Supports GDScript and C#. | gdscript | MIT | reference | [poingstudios/godot-admob-plugin](https://github.com/poingstudios/godot-admob-plugin) @ `2026-10-21 (branch tip at catalogue time)` |
+| [godot-awesome-splash](entries/engines/duongvituan-godot-awesome-splash/README.md) | Collection of splash screens in Godot | gdscript | MIT | reference | [duongvituan/godot-awesome-splash](https://github.com/duongvituan/godot-awesome-splash) @ `2023-07-09 (branch tip at catalogue time)` |
 | [godot-block-coding](entries/engines/endlessm-godot-block-coding/README.md) | Block-based visual programming plugin for Godot | gdscript | MIT | vendored | [endlessm/godot-block-coding](https://github.com/endlessm/godot-block-coding) @ `006e31ebe795` |
 | [godot-cpp (GDExtension bindings)](entries/engines/godot-cpp/README.md) | C++ bindings/extension ABI for Godot | c++ | MIT | reference | [godotengine/godot-cpp](https://github.com/godotengine/godot-cpp) @ `2a4c066e1e8c` |
 | [godot-csharp-essentials](entries/engines/microsoft-godot-csharp-essentials/README.md) | This repository hosts course material designed for C# developers who want to learn game development using the Godot Engine. | c# | MIT | vendored | [microsoft/godot-csharp-essentials](https://github.com/microsoft/godot-csharp-essentials) @ `781ebb984d67` |
@@ -271,6 +273,8 @@ _Generated 2026-11-24 23:17 UTC · 1421 entries · 368 vendored, 1053 reference-
 | [godot-ecs](entries/engines/godothub-godot-ecs/README.md) | A lightweight yet powerful Entity Component System (ECS) framework designed specifically for Godot 4. | gdscript | MIT | reference | [godothub/godot-ecs](https://github.com/godothub/godot-ecs) @ `2026-08-21 (branch tip at catalogue time)` |
 | [godot-engine.easy-charts](entries/engines/fenix-hub-godot-engine-easy-charts/README.md) | A Godot Engine addon for plotting general purpose charts. A collection of Control, 2D and 3D Nodes to plot every chart possible. | gdscript | MIT | reference | [fenix-hub/godot-engine.easy-charts](https://github.com/fenix-hub/godot-engine.easy-charts) @ `2026-10-10 (branch tip at catalogue time)` |
 | [godot-gameplay-systems](entries/engines/octod-godot-gameplay-systems/README.md) | ⚔️ A plugin for Godot to create your gameplay systems in a Godot way. | gdscript | MIT | reference | [OctoD/godot-gameplay-systems](https://github.com/OctoD/godot-gameplay-systems) @ `2025-06-06 (branch tip at catalogue time)` |
+| [godot-gaussian-splatting](entries/engines/reconworldlab-godot-gaussian-splatting/README.md) | [GDGS] A real-time 3D Gaussian Splatting (3DGS) rendering plugin for the Godot Engine. Godot引擎的实时3DGS渲染插件 | gdscript | MIT | vendored | [ReconWorldLab/godot-gaussian-splatting](https://github.com/ReconWorldLab/godot-gaussian-splatting) @ `c22024b33a24` |
+| [godot-google-play-billing](entries/engines/godot-sdk-integrations-godot-google-play-billing/README.md) | Godot Android plugin for the Google Play Billing library | kotlin | MIT | reference | [godot-sdk-integrations/godot-google-play-billing](https://github.com/godot-sdk-integrations/godot-google-play-billing) @ `2026-09-25 (branch tip at catalogue time)` |
 | [godot-lua-pluginscript](entries/engines/gilzoide-godot-lua-pluginscript/README.md) | Godot 3.X PluginScript for the Lua language, based on LuaJIT's FFI | lua | MIT | vendored | [gilzoide/godot-lua-pluginscript](https://github.com/gilzoide/godot-lua-pluginscript) @ `610a8d4788ab` |
 | [godot-manager](entries/engines/eumario-godot-manager/README.md) | A Project, Version and Addons/Plugins manager for Godot Game Engine. | c# | MIT | reference | [eumario/godot-manager](https://github.com/eumario/godot-manager) @ `2026-03-31 (branch tip at catalogue time)` |
 | [godot-mcp](entries/engines/bradypp-godot-mcp/README.md) | A Model Context Protocol (MCP) server for interacting with the Godot game engine. | typescript | MIT | reference | [bradypp/godot-mcp](https://github.com/bradypp/godot-mcp) @ `2025-05-31 (branch tip at catalogue time)` |
@@ -283,6 +287,7 @@ _Generated 2026-11-24 23:17 UTC · 1421 entries · 368 vendored, 1053 reference-
 | [godot-mcp-runtime](entries/engines/erodenn-godot-mcp-runtime/README.md) | A lightweight, zero-footprint TypeScript MCP server that lets AI assistants drive the Godot 4.x game engine. | typescript | MIT | vendored | [Erodenn/godot-mcp-runtime](https://github.com/Erodenn/godot-mcp-runtime) @ `3b8a4f311d29` |
 | [godot-minimal-theme](entries/engines/passivestar-godot-minimal-theme/README.md) | Godot Minimal Theme | n/a | MIT | vendored | [passivestar/godot-minimal-theme](https://github.com/passivestar/godot-minimal-theme) @ `3250c3c79860` |
 | [Godot-PerfBullets](entries/engines/moonzel-godot-perfbullets/README.md) | This plugin uses the MultiMeshInstance2D to render thousands of bullets easily while running the logic in C++ to run at maximum performance.  | c++ | MIT | vendored | [Moonzel/Godot-PerfBullets](https://github.com/Moonzel/Godot-PerfBullets) @ `80829fb0cf41` |
+| [godot-play-game-services](entries/engines/godot-sdk-integrations-godot-play-game-services/README.md) | A Godot 4.x plugin for integration with Google Play Games Services | gdscript | MIT | reference | [godot-sdk-integrations/godot-play-game-services](https://github.com/godot-sdk-integrations/godot-play-game-services) @ `2026-11-21 (branch tip at catalogue time)` |
 | [godot-ply](entries/engines/jarneson-godot-ply/README.md) | Godot plugin for in-editor box modeling | gdscript | MIT | reference | [jarneson/godot-ply](https://github.com/jarneson/godot-ply) @ `2024-12-20 (branch tip at catalogue time)` |
 | [godot-road-generator](entries/engines/theduckcow-godot-road-generator/README.md) | A Godot plugin for creating 3D highways/streets and lane-following traffic | gdscript | MIT | reference | [TheDuckCow/godot-road-generator](https://github.com/TheDuckCow/godot-road-generator) @ `2026-11-22 (branch tip at catalogue time)` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
@@ -292,6 +297,7 @@ _Generated 2026-11-24 23:17 UTC · 1421 entries · 368 vendored, 1053 reference-
 | [Godot-Voxel-Game-MineCraftClone](entries/engines/toger5-godot-voxel-game-minecraftclone/README.md) | This is a Godot project where I try to get familiar with the Engine. | gdscript | MIT | reference | [toger5/Godot-Voxel-Game-MineCraftClone](https://github.com/toger5/Godot-Voxel-Game-MineCraftClone) @ `2016-04-06 (branch tip at catalogue time)` |
 | [godot-vscode-plugin](entries/engines/godotengine-godot-vscode-plugin/README.md) | Godot development tools for VSCode | typescript | MIT | reference | [godotengine/godot-vscode-plugin](https://github.com/godotengine/godot-vscode-plugin) @ `2026-09-10 (branch tip at catalogue time)` |
 | [godot_heightmap_plugin](entries/engines/zylann-godot-heightmap-plugin/README.md) | HeightMap terrain for Godot implemented in GDScript | gdscript | unknown | reference | [Zylann/godot_heightmap_plugin](https://github.com/Zylann/godot_heightmap_plugin) @ `2026-11-13 (branch tip at catalogue time)` |
+| [godot_kanban_tasks](entries/engines/holonproduction-godot-kanban-tasks/README.md) | Another kanban board plugin for the godot engine. | gdscript | MIT | reference | [HolonProduction/godot_kanban_tasks](https://github.com/HolonProduction/godot_kanban_tasks) @ `2026-10-13 (branch tip at catalogue time)` |
 | [godot_spatial_gardener](entries/engines/dreadpon-godot-spatial-gardener/README.md) | A Godot plugin for painting plants and props on arbitrary 3D surfaces implemented in GDScript | gdscript | MIT | reference | [dreadpon/godot_spatial_gardener](https://github.com/dreadpon/godot_spatial_gardener) @ `2025-03-05 (branch tip at catalogue time)` |
 | [godot_voxel](entries/engines/zylann-godot-voxel/README.md) | Voxel module for Godot Engine | c++ | MIT | reference | [Zylann/godot_voxel](https://github.com/Zylann/godot_voxel) @ `4b29b0781723` |
 | [GodotSharp.SourceGenerators](entries/engines/cat-lips-godotsharp-sourcegenerators/README.md) | C# source generators for the Godot Game Engine | c# | MIT | reference | [Cat-Lips/GodotSharp.SourceGenerators](https://github.com/Cat-Lips/GodotSharp.SourceGenerators) @ `2026-09-16 (branch tip at catalogue time)` |

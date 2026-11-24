@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:33:35Z",
+ "category": "engines",
+ "commit": "2023-07-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "duongvituan/godot-awesome-splash \u2014 Collection of splash screens in Godot",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-awesome-splash",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "duongvituan-godot-awesome-splash",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 302,
+ "system": "Collection of splash screens in Godot",
+ "upstream": "https://github.com/duongvituan/godot-awesome-splash",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

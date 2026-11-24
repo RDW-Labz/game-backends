@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T23:33:35Z",
+ "category": "engines",
+ "commit": "2026-09-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "godot-sdk-integrations/godot-google-play-billing \u2014 Godot Android plugin for the Google Play Billing library",
+ "language": "kotlin",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-google-play-billing",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "godot-sdk-integrations-godot-google-play-billing",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 269,
+ "system": "Godot Android plugin for the Google Play Billing library",
+ "upstream": "https://github.com/godot-sdk-integrations/godot-google-play-billing",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
