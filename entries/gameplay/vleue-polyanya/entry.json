@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:12:54Z",
+ "category": "gameplay",
+ "commit": "2026-11-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vleue/polyanya \u2014 Pathfinding using Polyanya",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "polyanya",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "vleue-polyanya",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 529,
+ "system": "Pathfinding using Polyanya",
+ "upstream": "https://github.com/vleue/polyanya",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

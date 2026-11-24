@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:12:54Z",
+ "category": "gameplay",
+ "commit": "2022-06-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Robmaister/SharpNav \u2014 Advanced Pathfinding for C#",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "SharpNav",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "robmaister-sharpnav",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 557,
+ "system": "Advanced Pathfinding for C#",
+ "upstream": "https://github.com/Robmaister/SharpNav",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

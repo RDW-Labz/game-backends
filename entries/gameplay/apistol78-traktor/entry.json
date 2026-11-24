@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T00:12:53Z",
+ "category": "gameplay",
+ "commit": "29b0bf723568",
+ "delivery": "reference",
+ "description": "apistol78/traktor \u2014 Traktor Game Engine",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "copyleft-reference",
+ "name": "traktor",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 18955896,
+ "slug": "apistol78-traktor",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 589,
+ "system": "Traktor Game Engine",
+ "upstream": "https://github.com/apistol78/traktor",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

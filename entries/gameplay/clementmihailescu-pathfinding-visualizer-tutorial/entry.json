@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T00:12:54Z",
+ "category": "gameplay",
+ "commit": "2023-03-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "clementmihailescu/Pathfinding-Visualizer-Tutorial \u2014 Tutorial for my original Pathfinding Visualizer project.",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Pathfinding-Visualizer-Tutorial",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "clementmihailescu-pathfinding-visualizer-tutorial",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 581,
+ "system": "Tutorial for my original Pathfinding Visualizer project.",
+ "upstream": "https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -2343,3 +2343,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/clementmihailescu-pathfinding-visualizer
   - reference gameplay/bgrins-javascript-astar
   - reference gameplay/donmccurdy-three-pathfinding
+
+- **2026-11-24 00:12 UTC** — tick 740: +2 screened, +4 reference, 2 skipped, catalogue=1018
+  - added gameplay/seblague-pathfinding (MIT, vendored)
+  - added gameplay/apistol78-traktor (GPL-3.0, reference)
+  - reference gameplay/clementmihailescu-pathfinding-visualizer-tutorial
+  - reference gameplay/chromealex-ecs
+  - reference gameplay/robmaister-sharpnav
+  - reference gameplay/vleue-polyanya
