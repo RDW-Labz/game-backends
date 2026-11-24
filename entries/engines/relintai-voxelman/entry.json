@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:41:40Z",
+ "category": "engines",
+ "commit": "2023-01-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Relintai/voxelman \u2014 A voxel engine for godot. I'ts a c++ engine module.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "voxelman",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "relintai-voxelman",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 111,
+ "system": "A voxel engine for godot. I'ts a c++ engine module.",
+ "upstream": "https://github.com/Relintai/voxelman",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

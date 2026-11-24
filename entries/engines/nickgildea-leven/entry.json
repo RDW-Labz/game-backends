@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:41:40Z",
+ "category": "engines",
+ "commit": "2017-10-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "nickgildea/leven \u2014 Complete source for my experimental voxel engine",
+ "language": "c++",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "leven",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "nickgildea-leven",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 117,
+ "system": "Complete source for my experimental voxel engine",
+ "upstream": "https://github.com/nickgildea/leven",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

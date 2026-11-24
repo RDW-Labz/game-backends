@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 21:23 UTC · 1384 entries · 357 vendored, 1027 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 21:41 UTC · 1390 entries · 358 vendored, 1032 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 577 | 135 | 442 |
+| [engines](#engines) — Game engines and engine subsystems | 583 | 136 | 447 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 21:23 UTC · 1384 entries · 357 vendored, 1027 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 577 entries
+**Game engines and engine subsystems** — 583 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -222,6 +222,7 @@ _Generated 2026-11-24 21:23 UTC · 1384 entries · 357 vendored, 1027 reference-
 | [Foster](entries/engines/fosterframework-foster/README.md) | A small C# game framework | c# | MIT | vendored | [FosterFramework/Foster](https://github.com/FosterFramework/Foster) @ `647e582148e5` |
 | [FRAME](entries/engines/fireclawthefox-frame/README.md) | The modular Game Editor for Panda3D | python | BSD-2-Clause | reference | [fireclawthefox/FRAME](https://github.com/fireclawthefox/FRAME) @ `2024-04-22 (branch tip at catalogue time)` |
 | [freeablo](entries/engines/wheybags-freeablo/README.md) | [ARCHIVED] Modern reimplementation of the Diablo 1 game engine | c++ | GPL-3.0 | reference | [wheybags/freeablo](https://github.com/wheybags/freeablo) @ `2023-04-13 (branch tip at catalogue time)` |
+| [fromage](entries/engines/chenthread-fromage/README.md) | PlayStation 1 voxel engine | c | unknown | reference | [ChenThread/fromage](https://github.com/ChenThread/fromage) @ `2024-03-16 (branch tip at catalogue time)` |
 | [Frostfire-Forge](entries/engines/frostfire-interactive-frostfire-forge/README.md) | 2D MMO engine that runs in the browser. Build maps, quests, items and spells in editors inside the game. Built on Bun and WebTransport. | typescript | unknown | reference | [Frostfire-Interactive/Frostfire-Forge](https://github.com/Frostfire-Interactive/Frostfire-Forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [func_godot_plugin](entries/engines/func-godot-func-godot-plugin/README.md) | Quake .map support for Godot 4 | gdscript | MIT | vendored | [func-godot/func_godot_plugin](https://github.com/func-godot/func_godot_plugin) @ `352f3d3083f1` |
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
@@ -244,6 +245,7 @@ _Generated 2026-11-24 21:23 UTC · 1384 entries · 357 vendored, 1027 reference-
 | [gecs](entries/engines/csprance-gecs/README.md) | Godot Entity Component System - GECS | gdscript | CC0-1.0 | reference | [csprance/gecs](https://github.com/csprance/gecs) @ `2026-09-19 (branch tip at catalogue time)` |
 | [gemrb](entries/engines/gemrb-gemrb/README.md) | GemRB is a portable open-source implementation of Bioware’s Infinity Engine. | c++ | GPL-2.0 | reference | [gemrb/gemrb](https://github.com/gemrb/gemrb) @ `2026-11-15 (branch tip at catalogue time)` |
 | [genex-desktop](entries/engines/genex-games-genex-desktop/README.md) | Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models. | typescript | MIT | reference | [genex-games/genex-desktop](https://github.com/genex-games/genex-desktop) @ `2026-11-22 (branch tip at catalogue time)` |
+| [Gengine](entries/engines/juandiegomontoya-gengine/README.md) | C++/OpenGL 4.6 voxel game engine. | c++ | none | reference | [JuanDiegoMontoya/Gengine](https://github.com/JuanDiegoMontoya/Gengine) @ `69b8355143df` |
 | [ggez](entries/engines/ggez-ggez/README.md) | Rust library to create a Good Game Easily | rust | MIT | reference | [ggez/ggez](https://github.com/ggez/ggez) @ `2026-10-26 (branch tip at catalogue time)` |
 | [ggpoker](entries/engines/anthdm-ggpoker/README.md) | A decentralized poker game engine written in Golang and Solidity | go | unknown | reference | [anthdm/ggpoker](https://github.com/anthdm/ggpoker) @ `2024-01-27 (branch tip at catalogue time)` |
 | [glas — core](entries/engines/glas-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
@@ -316,6 +318,7 @@ _Generated 2026-11-24 21:23 UTC · 1384 entries · 357 vendored, 1027 reference-
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [legion](entries/engines/amethyst-legion/README.md) | High performance Rust ECS library | rust | MIT | vendored | [amethyst/legion](https://github.com/amethyst/legion) @ `32df916517fa` |
 | [lena](entries/engines/lichendust-lena/README.md) | 🕹️ A handmade framework for making tiny games | odin | BSD-3-Clause | reference | [lichendust/lena](https://github.com/lichendust/lena) @ `2026-07-23 (branch tip at catalogue time)` |
+| [leven](entries/engines/nickgildea-leven/README.md) | Complete source for my experimental voxel engine | c++ | Unlicense | reference | [nickgildea/leven](https://github.com/nickgildea/leven) @ `2017-10-09 (branch tip at catalogue time)` |
 | [LGame](entries/engines/cping-lgame/README.md) | A cross-platform Java game Engine (Framework) , support JavaFX / Android / IOS / HTML5 / Linux / MAC / Windows | java | Apache-2.0 | reference | [cping/LGame](https://github.com/cping/LGame) @ `2026-06-05 (branch tip at catalogue time)` |
 | [libGDX](entries/engines/libgdx/README.md) | cross-platform game framework, scene2d, asset manager | java | Apache-2.0 | reference | [libgdx/libgdx](https://github.com/libgdx/libgdx) @ `b5494c47d9ae` |
 | [libgdx-demos](entries/engines/alistairrutherford-libgdx-demos/README.md) | LibGDX Demos using my LibGDX Scene2D netthreads-libgdx extension library. | java | unknown | reference | [alistairrutherford/libgdx-demos](https://github.com/alistairrutherford/libgdx-demos) @ `2016-11-27 (branch tip at catalogue time)` |
@@ -566,12 +569,15 @@ _Generated 2026-11-24 21:23 UTC · 1384 entries · 357 vendored, 1027 reference-
 | [voxelcore](entries/engines/mihailris-voxelcore/README.md) | VoxelCore – voxel game engine in C++ | c++ | MPL-2.0 | reference | [MihailRis/voxelcore](https://github.com/MihailRis/voxelcore) @ `2026-11-22 (branch tip at catalogue time)` |
 | [VoxelEngine](entries/engines/seannikkel-voxelengine/README.md) | Custom voxel engine written in C++ and OpenGL | c++ | MIT | vendored | [SeanNikkel/VoxelEngine](https://github.com/SeanNikkel/VoxelEngine) @ `31949ccd1836` |
 | [voxelengine3](entries/engines/lallassu-voxelengine3/README.md) | Voxel-engine in Javascript | javascript | MIT | vendored | [Lallassu/voxelengine3](https://github.com/Lallassu/voxelengine3) @ `bb80288743a1` |
+| [voxelengine_urho3d](entries/engines/lallassu-voxelengine-urho3d/README.md) | Voxel engine in C++ using Urho3D | c++ | MIT | reference | [Lallassu/voxelengine_urho3d](https://github.com/Lallassu/voxelengine_urho3d) @ `2018-03-26 (branch tip at catalogue time)` |
 | [VoxelFactory](entries/engines/antopilo-voxelfactory/README.md) | A simple to use Voxel library for Godot engine.  | gdscript | MIT | vendored | [antopilo/VoxelFactory](https://github.com/antopilo/VoxelFactory) @ `6c5254d083f3` |
 | [VoxelFramework](entries/engines/bayatgames-voxelframework/README.md) | An awesome Voxel framework for Unity (Game Engine) | c# | MIT | reference | [BayatGames/VoxelFramework](https://github.com/BayatGames/VoxelFramework) @ `2018-04-29 (branch tip at catalogue time)` |
 | [voxelgame](entries/engines/zylann-voxelgame/README.md) | Voxel world prototype made with Godot Engine | gdscript | unknown | reference | [Zylann/voxelgame](https://github.com/Zylann/voxelgame) @ `2025-12-04 (branch tip at catalogue time)` |
 | [voxeliq](entries/engines/bonesoul-voxeliq/README.md) | voxeliq is an open source block-based game engine implementation developed with C# | c# | MS-PL | reference | [bonesoul/voxeliq](https://github.com/bonesoul/voxeliq) @ `2020-02-13 (branch tip at catalogue time)` |
+| [voxelis](entries/engines/wildpixelgames-voxelis/README.md) | Tiny voxels. Huge worlds. Voxelis — a pure Rust voxel engine based on Sparse Voxel Octree DAG. | rust | Apache-2.0 | vendored | [WildPixelGames/voxelis](https://github.com/WildPixelGames/voxelis) @ `a7a9ac337f37` |
 | [voxelize](entries/engines/voxelize-voxelize/README.md) | :mushroom: Full stack voxel engine | typescript | MIT | reference | [voxelize/voxelize](https://github.com/voxelize/voxelize) @ `2026-11-23 (branch tip at catalogue time)` |
 | [voxelman](entries/engines/mrsmith33-voxelman/README.md) | Plugin-based client-server voxel game engine written in D language | d | BSL-1.0 | reference | [MrSmith33/voxelman](https://github.com/MrSmith33/voxelman) @ `2022-05-10 (branch tip at catalogue time)` |
+| [voxelman](entries/engines/relintai-voxelman/README.md) | A voxel engine for godot. I'ts a c++ engine module. | c++ | MIT | reference | [Relintai/voxelman](https://github.com/Relintai/voxelman) @ `2023-01-09 (branch tip at catalogue time)` |
 | [VoxelPluginFreeLegacy](entries/engines/voxelplugin-voxelpluginfreelegacy/README.md) | Voxel Plugin Legacy for Unreal Engine | c++ | none | reference | [VoxelPlugin/VoxelPluginFreeLegacy](https://github.com/VoxelPlugin/VoxelPluginFreeLegacy) @ `7e64a89ce827` |
 | [VoxLords](entries/engines/lallassu-voxlords/README.md) | VoxLords - ThreeJS WebGL game with a simple voxel engine | javascript | MIT | reference | [Lallassu/VoxLords](https://github.com/Lallassu/VoxLords) @ `2020-10-01 (branch tip at catalogue time)` |
 | [voxplat](entries/engines/kosshi-net-voxplat/README.md) | A hybrid voxel rendering engine | c | unknown | reference | [kosshi-net/voxplat](https://github.com/kosshi-net/voxplat) @ `2022-02-21 (branch tip at catalogue time)` |

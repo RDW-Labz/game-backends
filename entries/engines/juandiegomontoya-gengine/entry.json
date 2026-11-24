@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-24T21:41:39Z",
+ "category": "engines",
+ "commit": "69b8355143df",
+ "delivery": "reference",
+ "description": "JuanDiegoMontoya/Gengine \u2014 C++/OpenGL 4.6 voxel game engine.",
+ "language": "c++",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Gengine",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 10771367,
+ "slug": "juandiegomontoya-gengine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 123,
+ "system": "C++/OpenGL 4.6 voxel game engine.",
+ "upstream": "https://github.com/JuanDiegoMontoya/Gengine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

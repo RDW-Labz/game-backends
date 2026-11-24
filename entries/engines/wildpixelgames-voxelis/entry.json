@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T21:41:30Z",
+ "category": "engines",
+ "commit": "a7a9ac337f37",
+ "delivery": "vendored",
+ "description": "WildPixelGames/voxelis \u2014 Tiny voxels. Huge worlds. Voxelis \u2014 a pure Rust voxel engine based on Sparse Voxel Octree DAG.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "voxelis",
+ "size_bytes": 500003,
+ "slug": "wildpixelgames-voxelis",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 124,
+ "system": "Tiny voxels. Huge worlds. Voxelis \u2014 a pure Rust voxel engine based on Sparse Voxel Octree DAG.",
+ "upstream": "https://github.com/WildPixelGames/voxelis",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

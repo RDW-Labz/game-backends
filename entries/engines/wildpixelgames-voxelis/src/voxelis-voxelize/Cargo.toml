@@ -1,0 +1,21 @@
+[package]
+name = "voxelis-voxelize"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition = "2024"
+
+[features]
+default = []
+memory_stats = ["voxelis/memory_stats"]
+tracy = ["voxelis/tracy", "dep:tracy-client"]
+
+[dependencies]
+voxelis.workspace = true
+voxelis-math.workspace = true
+crossbeam.workspace = true
+glam.workspace = true
+indicatif.workspace = true
+rayon.workspace = true
+rustc-hash.workspace = true
+tracy-client = { workspace = true, optional = true }

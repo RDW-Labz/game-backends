@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T21:41:40Z",
+ "category": "engines",
+ "commit": "2018-03-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Lallassu/voxelengine_urho3d \u2014 Voxel engine in C++ using Urho3D",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "voxelengine_urho3d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "lallassu-voxelengine-urho3d",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 110,
+ "system": "Voxel engine in C++ using Urho3D",
+ "upstream": "https://github.com/Lallassu/voxelengine_urho3d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

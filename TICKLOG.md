@@ -2849,3 +2849,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/hugobros3-chunkstories
   - reference engines/lallassu-voxlords
   - reference engines/mik14a-vox4u
+
+- **2026-11-24 21:41 UTC** — tick 811: +2 screened, +4 reference, 6 skipped, catalogue=1390
+  - added engines/wildpixelgames-voxelis (Apache-2.0, vendored)
+  - added engines/juandiegomontoya-gengine (none, reference)
+  - reference engines/nickgildea-leven
+  - reference engines/chenthread-fromage
+  - reference engines/relintai-voxelman
+  - reference engines/lallassu-voxelengine-urho3d
