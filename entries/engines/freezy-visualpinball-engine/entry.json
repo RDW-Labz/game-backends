@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T13:50:09Z",
+ "category": "engines",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "freezy/VisualPinball.Engine \u2014 :video_game: Visual Pinball Engine for Unity",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "VisualPinball.Engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "freezy-visualpinball-engine",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 519,
+ "system": ":video_game: Visual Pinball Engine for Unity",
+ "upstream": "https://github.com/freezy/VisualPinball.Engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 13:25 UTC · 1258 entries · 326 vendored, 932 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-24 13:50 UTC · 1264 entries · 327 vendored, 937 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 451 | 104 | 347 |
+| [engines](#engines) — Game engines and engine subsystems | 457 | 105 | 352 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 13:25 UTC · 1258 entries · 326 vendored, 932 reference-o
 
 ## engines
 
-**Game engines and engine subsystems** — 451 entries
+**Game engines and engine subsystems** — 457 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -173,6 +173,7 @@ _Generated 2026-11-24 13:25 UTC · 1258 entries · 326 vendored, 932 reference-o
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
 | [flame](entries/engines/flame-engine-flame/README.md) | A Flutter based game engine. | dart | MIT | vendored | [flame-engine/flame](https://github.com/flame-engine/flame) @ `c4c6b3f163d5` |
 | [flappyphpant](entries/engines/phpgl-flappyphpant/README.md) | A very simple Flappy Bird-like game written in PHP, built on PHP-GLFW and the VISU framework. | php | MIT | vendored | [phpgl/flappyphpant](https://github.com/phpgl/flappyphpant) @ `764e716a1080` |
+| [FlatRedBall](entries/engines/vchelaru-flatredball/README.md) | Cross-platform 2D game engine focused on ultimate productivity built in .NET | c# | MIT | reference | [vchelaru/FlatRedBall](https://github.com/vchelaru/FlatRedBall) @ `2026-11-24 (branch tip at catalogue time)` |
 | [flax](entries/engines/ten3roberts-flax/README.md) | Batteries included ECS library for rust with entity relations and much more | rust | unknown | reference | [ten3roberts/flax](https://github.com/ten3roberts/flax) @ `2026-11-02 (branch tip at catalogue time)` |
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
 | [Flecs](entries/engines/flecs/README.md) | ECS with prefabs, pipelines, hierarchies, REST explorer | c | MIT | reference | [SanderMertens/flecs](https://github.com/SanderMertens/flecs) @ `fa6554710d0d` |
@@ -286,6 +287,7 @@ _Generated 2026-11-24 13:25 UTC · 1258 entries · 326 vendored, 932 reference-o
 | [monogame-aseprite](entries/engines/aristurtledev-monogame-aseprite/README.md) | A Cross Platform C# Library That Adds Support For Aseprite Files in MonoGame Projects.  | c# | MIT | reference | [AristurtleDev/monogame-aseprite](https://github.com/AristurtleDev/monogame-aseprite) @ `2026-10-08 (branch tip at catalogue time)` |
 | [MonoGameFramework.Net8](entries/engines/catfortman-monogameframework-net8/README.md) | Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development. | c# | MIT | reference | [CatFortman/MonoGameFramework.Net8](https://github.com/CatFortman/MonoGameFramework.Net8) @ `2026-07-17 (branch tip at catalogue time)` |
 | [MoravaEngine](entries/engines/dtrajko-moravaengine/README.md) | C++ 2D/3D graphics engine and scene editor for Vulkan 1.4, OpenGL and DirectX 11, on Windows and Linux. Physically based rendering, global illumination, ray-tra | c++ | Apache-2.0 | reference | [dtrajko/MoravaEngine](https://github.com/dtrajko/MoravaEngine) @ `535e8fb78cad` |
+| [morpeh](entries/engines/scellecs-morpeh/README.md) | 🎲 ECS Framework for Unity Game Engine and .Net Platform | c# | MIT | reference | [scellecs/morpeh](https://github.com/scellecs/morpeh) @ `2026-11-17 (branch tip at catalogue time)` |
 | [MPG](entries/engines/feralai-mpg/README.md) | C++ library for handling USB gamepad inputs on multiple platforms. | c | MIT | reference | [FeralAI/MPG](https://github.com/FeralAI/MPG) @ `2022-02-02 (branch tip at catalogue time)` |
 | [multiplayer-voxel-browser-game-engine](entries/engines/kevzettler-multiplayer-voxel-browser-game-engine/README.md) | A multiplayer voxel browser game engine | typescript | unknown | reference | [kevzettler/multiplayer-voxel-browser-game-engine](https://github.com/kevzettler/multiplayer-voxel-browser-game-engine) @ `2023-04-24 (branch tip at catalogue time)` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
@@ -311,6 +313,7 @@ _Generated 2026-11-24 13:25 UTC · 1258 entries · 326 vendored, 932 reference-o
 | [openage](entries/engines/sfttech-openage/README.md) | Clone of the Age of Empires II engine 🚀  | python | unknown | reference | [SFTtech/openage](https://github.com/SFTtech/openage) @ `2026-11-22 (branch tip at catalogue time)` |
 | [OpenAI-Unity](entries/engines/srcnalt-openai-unity/README.md) | An unofficial OpenAI Unity Package that aims to help you use OpenAI API directly in Unity Game engine. | c# | MIT | reference | [srcnalt/OpenAI-Unity](https://github.com/srcnalt/OpenAI-Unity) @ `2024-11-27 (branch tip at catalogue time)` |
 | [openblack](entries/engines/openblack-openblack/README.md) | openblack is an open-source game engine that supports playing Black & White (2001). | c++ | GPL-3.0 | reference | [openblack/openblack](https://github.com/openblack/openblack) @ `744c0febf53b` |
+| [OpenCiv3](entries/engines/c7-game-openciv3/README.md) | OpenCiv3 is an open-source, cross-platform, mod-oriented, modernized remake of Civilization III by the fan community built with the Godot Engine and C#, with ca | c# | MIT | reference | [C7-Game/OpenCiv3](https://github.com/C7-Game/OpenCiv3) @ `2026-11-16 (branch tip at catalogue time)` |
 | [OpenEnroth](entries/engines/openenroth-openenroth/README.md) | Open reimplementation of Might and Magic 6 7 8 game engine | c++ | LGPL-3.0 | reference | [OpenEnroth/OpenEnroth](https://github.com/OpenEnroth/OpenEnroth) @ `2026-11-24 (branch tip at catalogue time)` |
 | [openfootmanager](entries/engines/openfootmanager-openfootmanager/README.md) | An open source soccer/football manager game | rust | GPL-3.0 | reference | [openfootmanager/openfootmanager](https://github.com/openfootmanager/openfootmanager) @ `2026-11-18 (branch tip at catalogue time)` |
 | [OpenGameAgent](entries/engines/ericsun0218-opengameagent/README.md) | MIT-licensed TypeScript runtime for AI-native game characters and worlds, with durable state, reliable actions, memory, tools, and Unity, Godot, and Unreal Engi | typescript | MIT | vendored | [EricSun0218/OpenGameAgent](https://github.com/EricSun0218/OpenGameAgent) @ `06294f101b5d` |
@@ -373,6 +376,7 @@ _Generated 2026-11-24 13:25 UTC · 1258 entries · 326 vendored, 932 reference-o
 | [rerecast](entries/engines/janhohenheim-rerecast/README.md) | Rust port of Recast, the industry-standard navigation mesh generator used by Unreal, Unity, Godot, and other game engines. | rust | Apache-2.0 | reference | [janhohenheim/rerecast](https://github.com/janhohenheim/rerecast) @ `beda61552ef6` |
 | [rhusics](entries/engines/rustgd-rhusics/README.md) | A cgmath physics library that can be used with Specs | rust | Apache-2.0 | reference | [rustgd/rhusics](https://github.com/rustgd/rhusics) @ `2020-08-04 (branch tip at catalogue time)` |
 | [RigelEngine](entries/engines/lethal-guitar-rigelengine/README.md) | A modern re-implementation of the classic DOS game Duke Nukem II | c++ | GPL-2.0 | reference | [lethal-guitar/RigelEngine](https://github.com/lethal-guitar/RigelEngine) @ `30afeff8f0b1` |
+| [RobustToolbox](entries/engines/space-wizards-robusttoolbox/README.md) | Robust multiplayer game engine, used by Space Station 14 | c# | GPL-3.0 | reference | [space-wizards/RobustToolbox](https://github.com/space-wizards/RobustToolbox) @ `ec12ca54db27` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
 | [RPG-Core](entries/engines/delmarle-rpg-core/README.md) | UNITY engine RPG framework | c# | unknown | reference | [delmarle/RPG-Core](https://github.com/delmarle/RPG-Core) @ `2026-04-14 (branch tip at catalogue time)` |
 | [RuntimeUnityEditor](entries/engines/manlymarco-runtimeunityeditor/README.md) | In-game inspector and debugging tools for applications made with Unity3D game engine | c# | GPL-3.0 | reference | [ManlyMarco/RuntimeUnityEditor](https://github.com/ManlyMarco/RuntimeUnityEditor) @ `1ce168c7acfd` |
@@ -430,6 +434,7 @@ _Generated 2026-11-24 13:25 UTC · 1258 entries · 326 vendored, 932 reference-o
 | [UnityGameFramework](entries/engines/ellanjiang-unitygameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | reference | [EllanJiang/UnityGameFramework](https://github.com/EllanJiang/UnityGameFramework) @ `2023-05-21 (branch tip at catalogue time)` |
 | [UnityHexagonLibrary2d](entries/engines/ycarowr-unityhexagonlibrary2d/README.md) | A library to manage 2D hexagonal tiles in Unity. | c# | MIT | reference | [ycarowr/UnityHexagonLibrary2d](https://github.com/ycarowr/UnityHexagonLibrary2d) @ `2021-04-17 (branch tip at catalogue time)` |
 | [UnityTileMap](entries/engines/alexanderfast-unitytilemap/README.md) | A TileMap library for Unity written in C#. | c# | MIT | reference | [alexanderfast/UnityTileMap](https://github.com/alexanderfast/UnityTileMap) @ `2015-04-21 (branch tip at catalogue time)` |
+| [UnityTutorials-RTS](entries/engines/minapecheux-unitytutorials-rts/README.md) | The code for my series of tutorials on how to make a real-time stategy (RTS) game in the well-know Unity game engine (with C# scripting)!  | c# | MIT | vendored | [MinaPecheux/UnityTutorials-RTS](https://github.com/MinaPecheux/UnityTutorials-RTS) @ `152128b8dde0` |
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
 | [ursina](entries/engines/pokepetter-ursina/README.md) | A 3D and 2D game engine for Python | python | MIT | vendored | [pokepetter/ursina](https://github.com/pokepetter/ursina) @ `11ac1f7bab99` |
 | [v1](entries/engines/r-lyeh-v1/README.md) | 💎 3D game framework in C, v1. | c | unknown | reference | [r-lyeh/v1](https://github.com/r-lyeh/v1) @ `2025-08-04 (branch tip at catalogue time)` |
@@ -438,6 +443,7 @@ _Generated 2026-11-24 13:25 UTC · 1258 entries · 326 vendored, 932 reference-o
 | [vek](entries/engines/yoanlcq-vek/README.md) | Generic 2D-3D math swiss army knife for game engines, with SIMD support and focus on convenience. | rust | Apache-2.0 | reference | [yoanlcq/vek](https://github.com/yoanlcq/vek) @ `2025-09-23 (branch tip at catalogue time)` |
 | [Velaptor](entries/engines/kinsondigital-velaptor/README.md) | 2D game development framework | c# | MIT | reference | [KinsonDigital/Velaptor](https://github.com/KinsonDigital/Velaptor) @ `2026-11-22 (branch tip at catalogue time)` |
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
+| [VisualPinball.Engine](entries/engines/freezy-visualpinball-engine/README.md) | :video_game: Visual Pinball Engine for Unity | c# | GPL-3.0 | reference | [freezy/VisualPinball.Engine](https://github.com/freezy/VisualPinball.Engine) @ `2026-11-24 (branch tip at catalogue time)` |
 | [VloxyEngine](entries/engines/blazekill-vloxyengine/README.md) | Performance oriented voxel engine for unity. | c# | MIT | reference | [BLaZeKiLL/VloxyEngine](https://github.com/BLaZeKiLL/VloxyEngine) @ `2024-11-27 (branch tip at catalogue time)` |
 | [Void](entries/engines/shmellyorc-void/README.md) | A modular, extensible 2D game framework for .NET. | c# | MIT | vendored | [Shmellyorc/Void](https://github.com/Shmellyorc/Void) @ `fee9b4ffecfe` |
 | [vox2](entries/engines/lallassu-vox2/README.md) | Simple POC of PCG voxel-engine | javascript | MIT | vendored | [Lallassu/vox2](https://github.com/Lallassu/vox2) @ `4280b7463082` |

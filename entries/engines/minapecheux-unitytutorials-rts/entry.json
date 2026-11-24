@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T13:50:04Z",
+ "category": "engines",
+ "commit": "152128b8dde0",
+ "delivery": "vendored",
+ "description": "MinaPecheux/UnityTutorials-RTS \u2014 The code for my series of tutorials on how to make a real-time stategy (RTS) game in the well-know Unity game engine (with C# scripting)!",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "UnityTutorials-RTS",
+ "size_bytes": 380972,
+ "slug": "minapecheux-unitytutorials-rts",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 732,
+ "system": "The code for my series of tutorials on how to make a real-time stategy (RTS) game in the well-know Unity game engine (with C# scripting)! ",
+ "upstream": "https://github.com/MinaPecheux/UnityTutorials-RTS",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

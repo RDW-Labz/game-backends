@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-24T13:50:07Z",
+ "category": "engines",
+ "commit": "ec12ca54db27",
+ "delivery": "reference",
+ "description": "space-wizards/RobustToolbox \u2014 Robust multiplayer game engine, used by Space Station 14",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE-GPLv3.TXT",
+ "license_verdict": "copyleft-reference",
+ "name": "RobustToolbox",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 13238829,
+ "slug": "space-wizards-robusttoolbox",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 711,
+ "system": "Robust multiplayer game engine, used by Space Station 14",
+ "upstream": "https://github.com/space-wizards/RobustToolbox",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

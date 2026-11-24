@@ -2681,3 +2681,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/thegtproject-gravity
   - reference engines/adel-ayoub-zigvulkanengine
   - reference engines/ahwootech-brutal
+
+- **2026-11-24 13:50 UTC** — tick 790: +2 screened, +4 reference, 9 skipped, catalogue=1264
+  - added engines/minapecheux-unitytutorials-rts (MIT, vendored)
+  - added engines/space-wizards-robusttoolbox (GPL-3.0, reference)
+  - reference engines/c7-game-openciv3
+  - reference engines/scellecs-morpeh
+  - reference engines/vchelaru-flatredball
+  - reference engines/freezy-visualpinball-engine

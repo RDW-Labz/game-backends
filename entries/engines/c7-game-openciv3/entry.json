@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T13:50:09Z",
+ "category": "engines",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "C7-Game/OpenCiv3 \u2014 OpenCiv3 is an open-source, cross-platform, mod-oriented, modernized remake of Civilization III by the fan community built with the Godot Engine and C#, with capabilities inspired by the best of the 4X genre and lessons learned from modding Civ3.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "OpenCiv3",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "c7-game-openciv3",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 704,
+ "system": "OpenCiv3 is an open-source, cross-platform, mod-oriented, modernized remake of Civilization III by the fan community built with the Godot Engine and C#, with ca",
+ "upstream": "https://github.com/C7-Game/OpenCiv3",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

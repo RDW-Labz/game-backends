@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-24T13:50:09Z",
+ "category": "engines",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vchelaru/FlatRedBall \u2014 Cross-platform 2D game engine focused on ultimate productivity built in .NET",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "FlatRedBall",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "vchelaru-flatredball",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 583,
+ "system": "Cross-platform 2D game engine focused on ultimate productivity built in .NET",
+ "upstream": "https://github.com/vchelaru/FlatRedBall",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
