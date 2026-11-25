@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T01:06:40Z",
+ "category": "physics",
+ "commit": "d914c4aa1eea",
+ "delivery": "vendored",
+ "description": "MyoHub/myosuite \u2014 MyoSuite is a collection of environments/tasks to be solved by musculoskeletal models simulated with the MuJoCo physics engine and wrapped in the OpenAI gym API.",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "myosuite",
+ "size_bytes": 5388369,
+ "slug": "myohub-myosuite",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 1291,
+ "system": "MyoSuite is a collection of environments/tasks to be solved by musculoskeletal models simulated with the MuJoCo physics engine and wrapped in the OpenAI gym API",
+ "upstream": "https://github.com/MyoHub/myosuite",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

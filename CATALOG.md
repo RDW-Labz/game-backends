@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 00:49 UTC · 1451 entries · 377 vendored, 1074 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 01:06 UTC · 1457 entries · 378 vendored, 1079 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
-| [physics](#physics) — Physics | 132 | 34 | 98 |
+| [physics](#physics) — Physics | 138 | 35 | 103 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
@@ -666,7 +666,7 @@ _Generated 2026-11-25 00:49 UTC · 1451 entries · 377 vendored, 1074 reference-
 
 ## physics
 
-**Physics** — 132 entries
+**Physics** — 138 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -705,8 +705,10 @@ _Generated 2026-11-25 00:49 UTC · 1451 entries · 377 vendored, 1074 reference-
 | [cloth-physics](entries/physics/esimov-cloth-physics/README.md) | Desktop application for cloth physics simulation using Gio GUI. | go | MIT | reference | [esimov/cloth-physics](https://github.com/esimov/cloth-physics) @ `2026-06-29 (branch tip at catalogue time)` |
 | [Cloth-Simulation-With-python---Verlet-Integration](entries/physics/josephbakulikira-cloth-simulation-with-python-verlet-integration/README.md) | see upstream | python | unknown | reference | [Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration](https://github.com/Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration) @ `2023-02-03 (branch tip at catalogue time)` |
 | [ClothSimulation](entries/physics/johnbuffer-clothsimulation/README.md) | Basic cloth simulation using Verlet integration | c++ | MIT | vendored | [johnBuffer/ClothSimulation](https://github.com/johnBuffer/ClothSimulation) @ `ac5bbce045e8` |
+| [Coffee-Physics](entries/physics/soulwire-coffee-physics/README.md) | A simple, lightweight physics engine written in CoffeeScript | coffeescript | MIT | reference | [soulwire/Coffee-Physics](https://github.com/soulwire/Coffee-Physics) @ `2016-12-12 (branch tip at catalogue time)` |
 | [confetti](entries/physics/jinatonic-confetti/README.md) | An Android particle system library for displaying confetti! | java | Apache-2.0 | vendored | [jinatonic/confetti](https://github.com/jinatonic/confetti) @ `db8a475f7716` |
 | [crashcat](entries/physics/isaac-mason-crashcat/README.md) | physics engine for javascript, built for games, simulations, and creative websites | typescript | MIT | reference | [isaac-mason/crashcat](https://github.com/isaac-mason/crashcat) @ `2026-10-30 (branch tip at catalogue time)` |
+| [cyclone-physics](entries/physics/idmillington-cyclone-physics/README.md) | The Physics engine that accompanies the book "Game Physics Engine Design" | c++ | MIT | reference | [idmillington/cyclone-physics](https://github.com/idmillington/cyclone-physics) @ `2023-09-25 (branch tip at catalogue time)` |
 | [defold-box2d](entries/physics/d954mas-defold-box2d/README.md) | defold-box2d bindings | c++ | MIT | reference | [d954mas/defold-box2d](https://github.com/d954mas/defold-box2d) @ `2025-08-28 (branch tip at catalogue time)` |
 | [dyn4j](entries/physics/dyn4j-dyn4j/README.md) | Java Collision Detection and Physics Engine | java | BSD-3-Clause | vendored | [dyn4j/dyn4j](https://github.com/dyn4j/dyn4j) @ `bcf942adaa9b` |
 | [edyn](entries/physics/xissburg-edyn/README.md) | Edyn is a real-time physics engine organized as an ECS. | c++ | MIT | reference | [xissburg/edyn](https://github.com/xissburg/edyn) @ `2026-09-08 (branch tip at catalogue time)` |
@@ -714,6 +716,7 @@ _Generated 2026-11-25 00:49 UTC · 1451 entries · 377 vendored, 1074 reference-
 | [elastica](entries/physics/darkroomengineering-elastica/README.md) | Physics engine for 2D rigid body collisions with React bindings. | typescript | MIT | reference | [darkroomengineering/elastica](https://github.com/darkroomengineering/elastica) @ `2026-10-31 (branch tip at catalogue time)` |
 | [engine](entries/physics/galacean-engine/README.md) | A typescript interactive engine, support 2D, 3D, animation, physics, built on WebGL and glTF. | typescript | MIT | reference | [galacean/engine](https://github.com/galacean/engine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [engine](entries/physics/renzora-engine/README.md) | 2D & 3D game engine & scene editor using bevy 0.20 | rust | Apache-2.0 | reference | [renzora/engine](https://github.com/renzora/engine) @ `2026-11-05 (branch tip at catalogue time)` |
+| [Engineering-Books](entries/physics/gigahidjrikaaa-engineering-books/README.md) | Softcopy of Engineering Books. If you want a book{s} to be taken down, please contact me. | n/a | unknown | reference | [gigahidjrikaaa/Engineering-Books](https://github.com/gigahidjrikaaa/Engineering-Books) @ `2024-01-12 (branch tip at catalogue time)` |
 | [FlatPhysics](entries/physics/twobitcoder101-flatphysics/README.md) | Basic 2D rigid body physics engine. | c# | MIT | reference | [twobitcoder101/FlatPhysics](https://github.com/twobitcoder101/FlatPhysics) @ `2021-08-18 (branch tip at catalogue time)` |
 | [Gaia](entries/physics/ankachan-gaia/README.md) | Gaia Physics Engine | raku | Apache-2.0 | reference | [AnkaChan/Gaia](https://github.com/AnkaChan/Gaia) @ `c22969204546` |
 | [GDCustomRaycastVehicle](entries/physics/tobalation-gdcustomraycastvehicle/README.md) | A simple custom raycast vehicle implementation | gdscript | MIT | vendored | [Tobalation/GDCustomRaycastVehicle](https://github.com/Tobalation/GDCustomRaycastVehicle) @ `8d608d28b5f5` |
@@ -735,6 +738,7 @@ _Generated 2026-11-25 00:49 UTC · 1451 entries · 377 vendored, 1074 reference-
 | [matter-js](entries/physics/liabru-matter-js/README.md) | a 2D rigid body physics engine for the web ▲● ■ | javascript | MIT | vendored | [liabru/matter-js](https://github.com/liabru/matter-js) @ `b8ee71cd7f9b` |
 | [melonJS](entries/physics/melonjs-melonjs/README.md) | A modern & fully featured HTML5 game engine (2D & 3D) for JavaScript/TypeScript, with WebGL/WebGPU rendering, built-in physics, Tiled map & glTF support and Web | javascript | MIT | reference | [melonjs/melonJS](https://github.com/melonjs/melonJS) @ `91f4396452e0` |
 | [mujoco_menagerie](entries/physics/google-deepmind-mujoco-menagerie/README.md) | A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind. | python | unknown | reference | [google-deepmind/mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie) @ `2026-11-10 (branch tip at catalogue time)` |
+| [myosuite](entries/physics/myohub-myosuite/README.md) | MyoSuite is a collection of environments/tasks to be solved by musculoskeletal models simulated with the MuJoCo physics engine and wrapped in the OpenAI gym API | python | Apache-2.0 | vendored | [MyoHub/myosuite](https://github.com/MyoHub/myosuite) @ `d914c4aa1eea` |
 | [Nature2D](entries/physics/jaipack17-nature2d/README.md) | A 2D physics engine for Roblox. Create versatile physics simulations and mechanics with GUIs! | lua | MIT | reference | [jaipack17/Nature2D](https://github.com/jaipack17/Nature2D) @ `2025-12-11 (branch tip at catalogue time)` |
 | [ncollide](entries/physics/dimforge-ncollide/README.md) | 2 and 3-dimensional collision detection library in Rust. | rust | Apache-2.0 | reference | [dimforge/ncollide](https://github.com/dimforge/ncollide) @ `2023-01-31 (branch tip at catalogue time)` |
 | [newton](entries/physics/newton-physics-newton/README.md) | An open-source, GPU-accelerated physics simulation engine built upon NVIDIA Warp, specifically targeting roboticists and simulation researchers. | python | Apache-2.0 | reference | [newton-physics/newton](https://github.com/newton-physics/newton) @ `f27aea83286e` |
@@ -745,6 +749,7 @@ _Generated 2026-11-25 00:49 UTC · 1451 entries · 377 vendored, 1074 reference-
 | [numbat](entries/physics/sharkdp-numbat/README.md) | A statically typed programming language for scientific computations with first class support for physical dimensions and units | rust | Apache-2.0 | vendored | [sharkdp/numbat](https://github.com/sharkdp/numbat) @ `e8abf32b975f` |
 | [NVIDIA PhysX](entries/physics/physx/README.md) | GPU/CPU 3D rigid body, cloth, particles, vehicles | c++ | BSD-3-Clause | reference | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX) @ `7d6f6ac8b83e` |
 | [Oimo.js](entries/physics/lo-th-oimo-js/README.md) | Lightweight 3d physics engine for javascript | javascript | MIT | reference | [lo-th/Oimo.js](https://github.com/lo-th/Oimo.js) @ `2021-07-08 (branch tip at catalogue time)` |
+| [OimoPhysics](entries/physics/saharan-oimophysics/README.md) | A cross-platform 3D physics engine | javascript | MIT | reference | [saharan/OimoPhysics](https://github.com/saharan/OimoPhysics) @ `2025-05-18 (branch tip at catalogue time)` |
 | [OpenBSE](entries/physics/bbrannon4-openbse/README.md) | Open-source building energy simulation engine — modern architecture, validated physics, built for programmatic and AI-assisted workflows. | rust | AGPL-3.0 | reference | [bbrannon4/OpenBSE](https://github.com/bbrannon4/OpenBSE) @ `2026-11-20 (branch tip at catalogue time)` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [panda-gym](entries/physics/qgallouedec-panda-gym/README.md) | Set of robotic environments based on PyBullet physics engine and gymnasium. | python | MIT | reference | [qgallouedec/panda-gym](https://github.com/qgallouedec/panda-gym) @ `2024-07-23 (branch tip at catalogue time)` |
@@ -780,6 +785,7 @@ _Generated 2026-11-25 00:49 UTC · 1451 entries · 377 vendored, 1074 reference-
 | [sat-js](entries/physics/jriecken-sat-js/README.md) | A simple JavaScript library for performing 2D collision detection | javascript | MIT | reference | [jriecken/sat-js](https://github.com/jriecken/sat-js) @ `2021-04-05 (branch tip at catalogue time)` |
 | [SIMple-Mechanics](entries/physics/mkhan45-simple-mechanics/README.md) | An educational physics sim for high school physics, part of the SIMple Physics project | rust | GPL-3.0 | reference | [mkhan45/SIMple-Mechanics](https://github.com/mkhan45/SIMple-Mechanics) @ `b5b2b8ed6ba1` |
 | [slice-4d-shooter](entries/physics/maffi44-slice-4d-shooter/README.md) | Slice: 4D Shooter - the first multiplayer action shooter set in four-dimensional space | rust | MIT | reference | [maffi44/slice-4d-shooter](https://github.com/maffi44/slice-4d-shooter) @ `2026-11-23 (branch tip at catalogue time)` |
+| [sofa](entries/physics/sofa-framework-sofa/README.md) | Real-time multi-physics simulation with an emphasis on medical simulation. | c++ | LGPL-2.1 | reference | [sofa-framework/sofa](https://github.com/sofa-framework/sofa) @ `7b976d788ad7` |
 | [SpaceHuggers](entries/physics/killedbyapixel-spacehuggers/README.md) | A roguelike platformer with destructible environments in 13KB of JavaScript | javascript | GPL-3.0 | reference | [KilledByAPixel/SpaceHuggers](https://github.com/KilledByAPixel/SpaceHuggers) @ `c31a5aaa1168` |
 | [SPHinXsys](entries/physics/xiangyu-hu-sphinxsys/README.md) | SPHinXsys provides C++ APIs for engineering simulation and optimization. It aims at complex systems driven by fluid, structure, multi-body dynamics and beyond.  | c++ | Apache-2.0 | reference | [Xiangyu-Hu/SPHinXsys](https://github.com/Xiangyu-Hu/SPHinXsys) @ `2026-11-23 (branch tip at catalogue time)` |
 | [spintronics](entries/physics/cool-japan-spintronics/README.md) | A pure Rust library for simulating spin dynamics, spin current generation, and conversion phenomena in magnetic and topological materials. | rust | Apache-2.0 | reference | [cool-japan/spintronics](https://github.com/cool-japan/spintronics) @ `2026-11-12 (branch tip at catalogue time)` |

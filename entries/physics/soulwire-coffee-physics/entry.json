@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T01:06:42Z",
+ "category": "physics",
+ "commit": "2016-12-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "soulwire/Coffee-Physics \u2014 A simple, lightweight physics engine written in CoffeeScript",
+ "language": "coffeescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Coffee-Physics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "soulwire-coffee-physics",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 1047,
+ "system": "A simple, lightweight physics engine written in CoffeeScript",
+ "upstream": "https://github.com/soulwire/Coffee-Physics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

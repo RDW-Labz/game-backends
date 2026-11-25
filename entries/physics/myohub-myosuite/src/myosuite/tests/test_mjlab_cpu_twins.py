@@ -1,0 +1,715 @@
+# Copyright (c) MyoSuite Authors. All rights reserved.
+#
+# This source code is licensed under the Apache 2 license found in the
+# LICENSE file in the root directory of this source tree.
+"""CPU <-> mjlab parity of the basic-suite task twins.
+
+The mjlab twin of an env id must score the same state the same way as the
+CPU env. Open-loop rollouts diverge (float32 Warp vs float64 MuJoCo in a
+chaotic muscle system), so parity is checked one step at a time: the mjlab
+env is synced to the CPU state, both take the same action, and observation,
+reward and termination are compared.
+"""
+
+from __future__ import annotations
+
+import os
+import sys
+
+import gymnasium as gym
+from gymnasium.envs.registration import WrapperSpec
+import mujoco
+import numpy as np
+import pytest
+
+pytest.importorskip("mjlab")
+torch = pytest.importorskip("torch")
+
+pytestmark = pytest.mark.tier2
+
+from mjlab.envs import ManagerBasedRlEnv  # noqa: E402
+from mjlab.tasks.registry import list_tasks, load_env_cfg  # noqa: E402
+
+import myosuite  # noqa: E402, F401
+from myosuite.core.muscle_conditions import (  # noqa: E402
+    MUSCLE_FATIGUE_PARAMS,
+    CumulativeFatigue,
+    TorchFatigueState,
+)
+from myosuite.envs.myo.backends.mjlab.tasks.mdp import write_cpu_state  # noqa: E402
+from myosuite.envs.myo.tasks.basic.arm.reach import ReachEnvV0  # noqa: E402
+from myosuite.envs.modular_env import ModularTaskEnv  # noqa: E402
+from myosuite.envs.wrappers import FatigueWrapper  # noqa: E402
+from myosuite.envs.myo.tasks.basic.leg.reach import LegReachEnvV0  # noqa: E402
+from myosuite.envs.myo.tasks.basic.leg.walk import LegWalkEnvV0  # noqa: E402
+from myosuite import make_env  # noqa: E402
+from myosuite.tests.support.joint_couplings import (  # noqa: E402
+    joint_equality_residuals,
+)
+
+if sys.platform.startswith("linux"):  # "egl" is an invalid MUJOCO_GL on Windows/macOS
+    os.environ.setdefault("MUJOCO_GL", "egl")
+
+# Entry points of the basic suite that have an mjlab twin.
+_PORTED_ENTRY_POINTS = (
+    "arm.pose:PoseEnvV0",
+    "torso.pose:TorsoEnvV0",
+    "arm.reach:ReachEnvV0",
+    "leg.reach:LegReachEnvV0",
+    "leg.walk:LegWalkEnvV0",
+    "leg.walk:LegTerrainEnvV0",
+)
+
+PARITY_IDS = (
+    "myoFingerPoseRandom-v0",
+    "motorFingerPoseFixed-v0",
+    "myoElbowPose1D6MRandom-v0",
+    "myoElbowPose1D6MExoRandom-v0",
+    "myoHandPoseRandom-v0",
+    "myoHandPose3Fixed-v0",
+    "myoSarcFingerPoseRandom-v0",
+    "myoFatiElbowPose1D6MRandom-v0",
+    "myoReafHandPoseRandom-v0",
+    "myoTorsoPoseFixed-v0",
+    "myoFatiTorsoPoseFixed-v0",
+    "myoFingerReachRandom-v0",
+    "motorFingerReachRandom-v0",
+    "myoHandReachRandom-v0",
+    "myoArmReachRandom-v0",
+    "myoReafHandReachFixed-v0",
+    "myoSarcArmReachFixed-v0",
+    "myoLegStandRandom-v0",
+    "myoLegWalk-v0",
+    "myoSarcLegWalk-v0",
+    "myoFatiLegWalk-v0",
+    "myoLegRoughTerrainWalk-v0",
+    "myoLegHillyTerrainWalk-v0",
+    "myoLegStairTerrainWalk-v0",
+    "myoLegDirectionalForward-v0",
+    "myoLegDirectionalBackward-v0",
+    "myoLegDirectionalRandom-v0",
+)
+
+# Ported families whose multi-floating-body models still need the
+# entity-splitting scene builder (mjlab allows one freejoint per entity).
+_PENDING_TWINS: set[str] = set()
+
+
+# MuJoCo Warp computes a longer wrapped length than C MuJoCo for some side-site
+# wraps at some poses, where the CPU length is smooth. The cause is the float32
+# tendon wrapping of MuJoCo Warp (``wrap_inside`` and ``wrap_circle``, see the
+# upstream items UP-1 and UP-2 of issue #419), not an inherent float32 limit. It
+# shows up as differences of up to ~8e-3 in qvel*dt after a step (muscle forces
+# differ). The hand and arm models get a looser tolerance.
+_WARP_WRAP_DIFF_OBS_ATOL = 1e-2
+_WARP_WRAP_DIFF_REW_ATOL = 5e-2
+
+
+# Foot-contact events: one step can differ by ~5e-3 in velocities although the muscle
+# lengths agree to 1e-5 (constraint-solver ordering; the other steps match to ~1e-6).
+_CONTACT_OBS_ATOL, _CONTACT_REW_ATOL = 1e-2, 1e-2
+# Height-field terrain: MuJoCo Warp generates at most one capsule-hfield contact where
+# C MuJoCo can create several, so a step that lands a foot gets other contact impulses.
+# One tolerance per actor obs term, about twice the worst gaps over 750 synced random
+# steps (30 action seeds) of each terrain, with the old and the coupled-joint reset:
+# qpos_without_xy 7.6e-2, qvel (qvel * ctrl dt) 0.13, com_vel 0.19, muscle_length 9.6e-2
+# (one step; the 90th percentile is 1.3e-3), muscle_velocity 0.51, muscle_force (/ 1000)
+# 1.75 and the reward 0.61; the pose terms 1e-2 or less, act 1.8e-7. A single 0.3 / 0.1
+# failed 1 to 14 of 20 action seeds per terrain (the test's one seed passed by chance).
+# A halved action fails act here; 10% weaker muscles fail the flat walk twin, which is
+# built by the same config function (muscle_force 25x, reward 17x its tolerance).
+_HFIELD_OBS_TERM_ATOL: dict[str, float] = {
+    "qpos_without_xy": 0.15,
+    "qvel": 0.25,
+    "com_vel": 0.4,
+    "torso_angle": 2e-3,
+    "feet_heights": 1e-2,
+    "height": 1e-3,
+    "feet_rel_positions": 2e-2,
+    "phase_var": 1e-6,
+    "muscle_length": 0.2,
+    "muscle_velocity": 1.0,
+    "muscle_force": 3.5,
+    "act": 1e-5,
+}
+_HFIELD_REW_ATOL = 1.25
+# Directional legs: one tolerance per actor obs term. Worst gaps over 500 synced random
+# steps (20 action seeds): joint_pos 1.9e-3, joint_vel (qvel * ctrl dt, |obs| <= 0.08)
+# 3.0e-3 and root_planar_vel 2.1e-3 from the falling start pose's contacts (float32 Warp
+# vs float64 MuJoCo); muscle_act 1.2e-7; heading_cmd 0 (synced). A 2x joint_vel scale
+# error, as between c6c0bb0 and cd7ab9e, fails joint_vel.
+_DIRECTIONAL_OBS_TERM_ATOL: dict[str, float] = {
+    "joint_pos": 5e-3,
+    "joint_vel": 5e-3,
+    "muscle_act": 1e-5,
+    "root_planar_vel": 5e-3,
+    "heading_cmd": 1e-6,
+}
+
+
+# Random actions keep most hand, arm and reach states far from their target (the
+# myoArmReachRandom tip stays ~35 success radii away), so test_one_step_parity never
+# sees the solved flag or the bonus switch on for them. test_success_parity_near_target
+# puts the target this many success thresholds away: solved (+2 bonus), +1, none.
+_NEAR_TARGET_MULTIPLES = (0.5, 1.25, 2.2)
+
+
+def _tolerances(env_id: str) -> tuple[float | dict[str, float], float]:
+    """Return (obs atol, reward atol); the obs atol may be per actor obs term."""
+    if "Hand" in env_id or "Arm" in env_id:
+        return _WARP_WRAP_DIFF_OBS_ATOL, _WARP_WRAP_DIFF_REW_ATOL
+    if "TerrainWalk" in env_id:
+        return _HFIELD_OBS_TERM_ATOL, _HFIELD_REW_ATOL
+    if "LegDirectional" in env_id:
+        return _DIRECTIONAL_OBS_TERM_ATOL, _CONTACT_REW_ATOL
+    if "LegWalk" in env_id:
+        return _CONTACT_OBS_ATOL, _CONTACT_REW_ATOL
+    return 5e-4, 5e-3
+
+
+def _assert_obs_close(
+    mj: ManagerBasedRlEnv,
+    mj_obs: np.ndarray,
+    cpu_obs: np.ndarray,
+    atol: float | dict[str, float],
+) -> None:
+    """Compare the twin's actor obs with the CPU obs, term by term if atol is a dict."""
+    if not isinstance(atol, dict):
+        np.testing.assert_allclose(mj_obs, cpu_obs, atol=atol)
+        return
+    om = mj.observation_manager
+    start = 0
+    for name, shape in zip(om.active_terms["actor"], om.group_obs_term_dim["actor"]):
+        stop = start + int(np.prod(shape))
+        np.testing.assert_allclose(
+            mj_obs[start:stop],
+            cpu_obs[start:stop],
+            atol=atol[name],
+            err_msg=f"actor obs term {name!r}",
+        )
+        start = stop
+    assert start == cpu_obs.size
+
+
+def _basic_suite_ids(entry_points: tuple[str, ...]) -> list[str]:
+    return sorted(
+        env_id
+        for env_id, spec in gym.registry.items()
+        if any(str(spec.entry_point).endswith(ep) for ep in entry_points)
+        and "tasks.basic" in str(spec.entry_point)
+    )
+
+
+def _make_pair(env_id: str) -> tuple[gym.Env, ManagerBasedRlEnv]:
+    import myosuite.envs.myo.backends.mjlab  # noqa: F401, PLC0415 (registers twins)
+
+    cpu = make_env(env_id).unwrapped
+    cpu.reset(seed=0)
+    mj = ManagerBasedRlEnv(cfg=load_env_cfg(env_id), device="cpu")
+    mj.reset()
+    return cpu, mj
+
+
+def _sync(cpu: gym.Env, mj: ManagerBasedRlEnv) -> None:
+    """Copy CPU state (physics, task target, fatigue, perturbations) into mjlab."""
+
+    def _t(x: np.ndarray) -> torch.Tensor:
+        return torch.as_tensor(np.asarray(x)[None], dtype=torch.float32)
+
+    robot = mj.scene["robot"]
+    write_cpu_state(  # CPU layout: a free root joint first, if any
+        mj,
+        "robot",
+        torch.zeros(1, dtype=torch.long),
+        _t(cpu.data.qpos),
+        _t(cpu.data.qvel),
+    )
+    if cpu.model.na:
+        mj.sim.data.act[:] = _t(cpu.data.act)
+    if "pose" in mj.command_manager.active_terms:
+        mj.command_manager.get_term("pose")._target[:] = _t(cpu.target_jnt_value)
+    elif "heading" in mj.command_manager.active_terms:
+        heading = np.asarray(
+            cpu._task_state.get(
+                "heading_dir", mj.command_manager.get_command("heading")[0].numpy()
+            )
+        )
+        mj.command_manager.get_term("heading")._target[:] = _t(heading)
+    elif hasattr(cpu, "target_sids"):
+        target = np.concatenate([cpu.data.site_xpos[s] for s in cpu.target_sids])
+        mj.command_manager.get_term("reach")._target[:] = _t(target)
+
+    fatigue = mj.action_manager.get_term("muscles")._fatigue
+    if fatigue is not None:
+        fatigue.MA[:], fatigue.MR[:], fatigue.MF[:] = (
+            _t(cpu.muscle_fatigue.MA),
+            _t(cpu.muscle_fatigue.MR),
+            _t(cpu.muscle_fatigue.MF),
+        )
+    if getattr(cpu, "weight_bodyname", None) is not None:
+        body = cpu.model.body(cpu.weight_bodyname).id
+        geom = cpu.model.body_geomadr[body]
+        mj_body = int(
+            robot.indexing.body_ids[robot.find_bodies(cpu.weight_bodyname)[0][0]]
+        )
+        mj.sim.model.body_mass[:, mj_body] = float(cpu.model.body_mass[body])
+        mj.sim.model.geom_size[:, int(mj.sim.mj_model.body_geomadr[mj_body]), 0] = (
+            float(cpu.model.geom_size[geom, 0])
+        )
+    mj.episode_length_buf[:] = round(cpu.data.time / mj.step_dt)
+    mj.sim.forward()
+
+
+@pytest.mark.parametrize("env_id", PARITY_IDS)
+def test_one_step_parity(env_id: str) -> None:
+    """Same state + same action -> same obs, reward and termination."""
+    cpu, mj = _make_pair(env_id)
+    assert mj.action_manager.total_action_dim == cpu.action_space.shape[0]
+    assert (
+        mj.observation_manager.group_obs_dim["actor"][0]
+        == cpu.observation_space.shape[0]
+    )
+
+    # Same control step: it scales the velocity observation and every dt-based term.
+    assert cpu.unwrapped._ctrl_dt == pytest.approx(float(mj.step_dt))
+
+    _sync(cpu, mj)
+    obs0 = mj.observation_manager.compute_group("actor")[0].numpy()
+    if isinstance(cpu, LegReachEnvV0 | LegWalkEnvV0 | ModularTaskEnv):
+        expected = cpu._obs_dict_to_vec(cpu._get_obs_dict(cpu._accessor))
+    else:
+        expected = cpu.get_obs()
+    np.testing.assert_allclose(obs0, expected, atol=1e-5)
+
+    obs_atol, rew_atol = _tolerances(env_id)
+    rng = np.random.default_rng(0)
+    for _ in range(25):
+        _sync(cpu, mj)
+        action = rng.uniform(-1.2, 1.2, cpu.action_space.shape).astype(np.float32)
+        cpu_obs, cpu_rew, cpu_term, _, cpu_info = cpu.step(action)
+        mj_obs, mj_rew, mj_term, mj_trunc, _ = mj.step(torch.as_tensor(action[None]))
+        assert not bool(mj_trunc[0])
+        assert bool(mj_term[0]) == cpu_term
+        if cpu_term:
+            break
+        _assert_obs_close(mj, mj_obs["actor"][0].numpy(), cpu_obs, obs_atol)
+        np.testing.assert_allclose(float(mj_rew[0]), cpu_rew, atol=rew_atol)
+        values = dict(mj.metrics_manager.get_active_iterable_terms(0))
+        assert bool(values["success"][0]) == bool(cpu_info["solved"])
+
+
+def _move_target_near(
+    cpu: gym.Env, multiple: float, rng: np.random.Generator
+) -> np.ndarray:
+    """Move the CPU target ``multiple`` success thresholds from the current state.
+
+    Returns:
+        The new target in the layout of the twin's ``pose``/``reach`` command.
+    """
+    if isinstance(cpu, ReachEnvV0):
+        tip = np.concatenate([cpu.data.site_xpos[s] for s in cpu.tip_sids])
+        thd = 0.0125 * len(cpu.tip_sids)  # "near" of multi_site_reach_reward
+        direction = rng.normal(size=tip.shape)
+        target = tip + multiple * thd * direction / np.linalg.norm(direction)
+        for i, sid in enumerate(cpu.target_sids):
+            body = cpu.model.site_bodyid[sid]
+            cpu.model.site_pos[sid] = cpu.data.xmat[body].reshape(3, 3).T @ (
+                target[3 * i : 3 * i + 3] - cpu.data.xpos[body]
+            )
+        mujoco.mj_kinematics(cpu.model, cpu.data)
+        return target
+    n = len(cpu.target_jnt_value)
+    direction = rng.normal(size=n)
+    target = cpu.data.qpos[:n] + multiple * cpu.pose_thd * direction / np.linalg.norm(
+        direction
+    )
+    cpu.target_jnt_value = target.copy()
+    return target
+
+
+@pytest.mark.parametrize("env_id", [e for e in PARITY_IDS if "Leg" not in e])
+def test_success_parity_near_target(env_id: str) -> None:
+    """Solved flag and bonus agree when the step ends near the target.
+
+    As :func:`test_one_step_parity`, but after the CPU step the target is moved
+    ``_NEAR_TARGET_MULTIPLES`` success thresholds from the reached pose or tip, the
+    CPU reward is recomputed and the twin steps against the same target.
+    """
+    cpu, mj = _make_pair(env_id)
+    _, rew_atol = _tolerances(env_id)
+    command = "reach" if isinstance(cpu, ReachEnvV0) else "pose"
+    rng = np.random.default_rng(0)
+    solved_steps = 0
+    for multiple in _NEAR_TARGET_MULTIPLES * 3:
+        _sync(cpu, mj)
+        action = rng.uniform(-1.2, 1.2, cpu.action_space.shape).astype(np.float32)
+        cpu.step(action)
+        target = _move_target_near(cpu, multiple, rng)
+        cpu_rwd = cpu.get_reward_dict(cpu.get_obs_dict(cpu._accessor))
+        mj.command_manager.get_term(command)._target[:] = torch.as_tensor(
+            target[None], dtype=torch.float32
+        )
+        _, mj_rew, mj_term, _, _ = mj.step(torch.as_tensor(action[None]))
+        assert bool(mj_term[0]) == bool(cpu_rwd["done"])
+        if cpu_rwd["done"]:
+            continue
+        np.testing.assert_allclose(float(mj_rew[0]), cpu_rwd["dense"], atol=rew_atol)
+        values = dict(mj.metrics_manager.get_active_iterable_terms(0))
+        assert bool(values["success"][0]) == bool(cpu_rwd["solved"])
+        solved_steps += bool(cpu_rwd["solved"])
+    assert solved_steps > 0, "the solved flag was never exercised"
+
+
+def test_fatigue_torch_matches_numpy() -> None:
+    """Batched torch 3CC-r fatigue reproduces the CPU model step by step."""
+    import mujoco  # noqa: PLC0415
+
+    model = make_env("myoFatiElbowPose1D6MRandom-v0").unwrapped.model
+    cpu = CumulativeFatigue(model, frame_skip=10)
+    gpu = TorchFatigueState.from_mj_model(model, num_envs=1)
+    rng = np.random.default_rng(0)
+    dt = model.opt.timestep * 10
+    for _ in range(200):
+        excitation = rng.uniform(0, 1, cpu.na)
+        cpu_ctrl, _, _ = cpu.compute_act(excitation.copy(), dt=dt)
+        gpu_ctrl = gpu.step(torch.as_tensor(excitation[None], dtype=torch.float32), dt)
+        np.testing.assert_allclose(gpu_ctrl[0].numpy(), cpu_ctrl, atol=1e-5)
+    assert int(sum(model.actuator_dyntype == mujoco.mjtDyn.mjDYN_MUSCLE)) == cpu.na
+
+
+@pytest.mark.parametrize(
+    "env_id",
+    [
+        "myoFatiElbowPose1D6MRandom-v0",
+        "myoFatiHandPoseRandom-v0",
+        "myoFatiArmReachRandom-v0",
+        "myoFatiLegWalk-v0",
+    ],
+)
+def test_twin_fatigue_parameters_match_cpu(env_id: str) -> None:
+    """The twin's fatigue model has the CPU env's per-muscle F / R / r.
+
+    Twin actuators carry the scene prefix (``robot/BIClong``) and the hand's
+    muscles a side suffix (``ECRL_r``); neither may make the lookup fall back
+    to ``Default``. The step-parity test re-syncs MA / MR / MF every step, so
+    it cannot see F / R / r.
+    """
+    import myosuite.envs.myo.backends.mjlab  # noqa: F401, PLC0415 (registers twins)
+
+    cpu = make_env(env_id).muscle_fatigue
+    mj = ManagerBasedRlEnv(cfg=load_env_cfg(env_id), device="cpu")
+    twin = mj.action_manager.get_term("muscles")._fatigue
+    assert np.any(cpu.F != MUSCLE_FATIGUE_PARAMS["Default"]["F"])
+    for p in ("F", "R", "r"):
+        np.testing.assert_allclose(
+            getattr(twin, f"_{p}").numpy(), getattr(cpu, p), rtol=1e-6, err_msg=p
+        )
+
+
+@pytest.mark.parametrize("reset", ["vec", "random"])
+def test_twin_fatigue_reset_options_match_cpu(
+    reset: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """``fatigue_reset_vec`` / ``fatigue_reset_random`` of the ``FatigueWrapper`` reach the twin.
+
+    The twin config is derived from the registered wrapper specs; here the options go
+    to a ``FatigueWrapper`` on the CPU env and to the ``cpu_task_spec`` the twin config reads. A fixed vector
+    must give the CPU state in every env (and the CPU ctrl on the next step); a
+    random reset draws a valid, seeded state per env (CPU and torch use different
+    generators, so the draws themselves differ).
+    """
+    import myosuite.envs.myo.backends.mjlab  # noqa: F401, PLC0415 (registers twins)
+    from myosuite.envs.myo.backends.mjlab.tasks import cpu_reference as ref  # noqa: PLC0415
+    from myosuite.envs.myo.backends.mjlab.tasks.pose.pose_env_cfg import (  # noqa: PLC0415
+        make_pose_env_cfg,
+    )
+
+    env_id = "myoFatiElbowPose1D6MRandom-v0"
+    extra = (
+        {"fatigue_reset_vec": np.linspace(0.1, 0.6, 6).tolist()}
+        if reset == "vec"
+        else {"fatigue_reset_random": True}
+    )
+    spec = ref.cpu_task_spec(env_id)
+    wrapper = WrapperSpec(
+        name="FatigueWrapper",
+        entry_point="myosuite.envs.wrappers:FatigueWrapper",
+        kwargs=extra,
+    )
+    monkeypatch.setattr(
+        ref,
+        "cpu_task_spec",
+        lambda _: ref.CpuTaskSpec(
+            env_id, spec.kwargs, spec.max_episode_steps, wrappers=(wrapper,)
+        ),
+    )
+    cfg = make_pose_env_cfg(env_id)
+    cfg.scene.num_envs = 3
+    cpu_env = FatigueWrapper(make_env("myoElbowPose1D6MRandom-v0"), **extra)
+    cpu = cpu_env.unwrapped
+    cpu.reset(seed=0)
+    mj = ManagerBasedRlEnv(cfg=cfg, device="cpu")
+    mj.reset(seed=0)
+    twin = mj.action_manager.get_term("muscles")._fatigue
+    state = {k: getattr(twin, k).double().numpy() for k in ("MA", "MR", "MF")}
+    np.testing.assert_allclose(sum(state.values()), 1.0, atol=1e-6)
+
+    if reset == "vec":
+        for k, v in state.items():
+            np.testing.assert_allclose(
+                v, np.tile(getattr(cpu.muscle_fatigue, k), (3, 1)), atol=1e-7
+            )
+        # The ctrl depends only on the action and the fatigue state.
+        action = np.full(cpu.action_space.shape, 0.3, dtype=np.float32)
+        cpu.step(action)
+        mj.step(torch.as_tensor(np.tile(action, (3, 1))))
+        ctrl = mj.action_manager.get_term("muscles").processed_action.numpy()
+        np.testing.assert_allclose(ctrl, np.tile(cpu.data.ctrl, (3, 1)), atol=1e-5)
+    else:
+        assert np.all(cpu.muscle_fatigue.MF > 0.0)
+        assert np.all(state["MF"] > 0.0), "twin reset to a fresh state"
+        assert not np.allclose(state["MF"][0], state["MF"][1])
+        mj.reset(seed=0)
+        np.testing.assert_array_equal(twin.MF.double().numpy(), state["MF"])
+        mj.reset(env_ids=torch.tensor([1]))
+        mf = twin.MF.double().numpy()
+        np.testing.assert_array_equal(mf[[0, 2]], state["MF"][[0, 2]])
+        assert not np.allclose(mf[1], state["MF"][1])
+
+
+@pytest.mark.parametrize("by", ["name", "id"])
+def test_twin_fatigue_muscle_subset_matches_cpu(
+    by: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """``FatigueWrapper(muscles=...)`` reaches the twin: same muscles, same ctrl.
+
+    The ctrl depends only on the action and the fatigue state, so the twin runs
+    unsynced; the listed muscles (out of model order, with a reset vector) tire,
+    the others keep their unfatigued ctrl.
+    """
+    import myosuite.envs.myo.backends.mjlab  # noqa: F401, PLC0415 (registers twins)
+    from myosuite.envs.myo.backends.mjlab.tasks import cpu_reference as ref  # noqa: PLC0415
+    from myosuite.envs.myo.backends.mjlab.tasks.pose.pose_env_cfg import (  # noqa: PLC0415
+        make_pose_env_cfg,
+    )
+
+    env_id = "myoFatiElbowPose1D6MRandom-v0"
+    plain = make_env("myoElbowPose1D6MRandom-v0")
+    listed = [4, 1]
+    muscles = (
+        [plain.unwrapped.model.actuator(i).name for i in listed]
+        if by == "name"
+        else listed
+    )
+    extra = {"muscles": muscles, "fatigue_reset_vec": [0.2, 0.1]}
+    spec = ref.cpu_task_spec(env_id)
+    wrapper = WrapperSpec(
+        name="FatigueWrapper",
+        entry_point="myosuite.envs.wrappers:FatigueWrapper",
+        kwargs=extra,
+    )
+    monkeypatch.setattr(
+        ref,
+        "cpu_task_spec",
+        lambda _: ref.CpuTaskSpec(
+            env_id, spec.kwargs, spec.max_episode_steps, wrappers=(wrapper,)
+        ),
+    )
+    cfg = make_pose_env_cfg(env_id)
+    cfg.scene.num_envs = 2
+    cpu_env = FatigueWrapper(plain, **extra)
+    cpu = cpu_env.unwrapped
+    cpu_env.reset(seed=0)
+    mj = ManagerBasedRlEnv(cfg=cfg, device="cpu")
+    try:
+        mj.reset(seed=0)
+        term = mj.action_manager.get_term("muscles")
+        assert term._fatigue.MF.shape == (2, 2)
+        np.testing.assert_allclose(term._fatigue.MF.numpy()[0], [0.2, 0.1], atol=1e-7)
+        action = np.full(cpu.action_space.shape, 0.6, dtype=np.float32)
+        for _ in range(90):  # within the 100-step episode (no twin auto-reset)
+            cpu_env.step(action)
+            mj.step(torch.as_tensor(np.tile(action, (2, 1))))
+            ctrl = term.processed_action.numpy()
+            np.testing.assert_allclose(ctrl, np.tile(cpu.data.ctrl, (2, 1)), atol=1e-5)
+        np.testing.assert_allclose(
+            term._fatigue.MF.double().numpy()[0], cpu_env.muscle_fatigue.MF, rtol=1e-4
+        )
+        others = np.setdiff1d(np.arange(6), listed)
+        assert np.allclose(ctrl[0, others], ctrl[0, others].max())  # untouched
+        assert (ctrl[0, listed] < ctrl[0, others].max()).all()  # fatigued
+    finally:
+        mj.close()
+        cpu_env.close()
+
+
+def test_every_ported_cpu_env_has_mjlab_twin() -> None:
+    """Every basic-suite CPU id of a ported family is registered with mjlab."""
+    import myosuite.envs.myo.backends.mjlab  # noqa: F401, PLC0415
+
+    registered = set(list_tasks())
+    missing = [
+        e
+        for e in _basic_suite_ids(_PORTED_ENTRY_POINTS)
+        if e not in registered and e not in _PENDING_TWINS
+    ]
+    assert not missing, f"CPU envs without mjlab twin: {missing}"
+
+
+@pytest.mark.parametrize(
+    "env_id",
+    [
+        "myoTorsoExoPoseFixed-v0",
+        "myoSarcTorsoExoPoseFixed-v0",
+        "myoFatiTorsoExoPoseFixed-v0",
+    ],
+)
+def test_torso_exo_observation_matches_cpu(env_id: str) -> None:
+    """The exo twin's 6-DoF chains are converted back to the CPU ``qpos``/``qvel``.
+
+    Both envs start from the same reset and get the same random actions (free run, no
+    state sync); the CPU observation layout and values must agree.
+    """
+    cpu = make_env(env_id).unwrapped
+    obs_cpu, _ = cpu.reset(seed=0)
+    mj = ManagerBasedRlEnv(cfg=load_env_cfg(env_id), device="cpu")
+    obs_mj = mj.reset()[0]["actor"][0].numpy()
+    assert obs_mj.shape == obs_cpu.shape
+    np.testing.assert_allclose(obs_mj, obs_cpu, atol=1e-5)
+    rng = np.random.default_rng(0)
+    for _ in range(10):
+        action = rng.uniform(-1, 1, cpu.action_space.shape).astype(np.float32)
+        obs_cpu = cpu.step(action)[0]
+        obs_mj = mj.step(torch.as_tensor(action[None]))[0]["actor"][0].numpy()
+        np.testing.assert_allclose(obs_mj, obs_cpu, atol=2e-3)
+
+
+# Twins whose CPU model couples joints (mjEQ_JOINT: knee mechanisms and patellae,
+# shoulder and lumbar rhythms); test_every_coupled_twin_is_listed keeps this complete.
+COUPLED_TWIN_IDS = (
+    "myoArmReachFixed-v0",
+    "myoArmReachRandom-v0",
+    "myoFullBodyWaypoint-v0",
+    "myoLegDirectionalBackward-v0",
+    "myoLegDirectionalForward-v0",
+    "myoLegDirectionalRandom-v0",
+    "myoLegHillyTerrainWalk-v0",
+    "myoLegRoughTerrainWalk-v0",
+    "myoLegStairTerrainWalk-v0",
+    "myoLegStandRandom-v0",
+    "myoLegWalk-v0",
+    "myoMimic-v0",
+    "myoTorsoExoPoseFixed-v0",
+    "myoTorsoPoseFixed-v0",
+)
+# MyoChallenge twins: their CPU envs do not project at reset yet (a competition
+# contract, pinned by the PyPI baselines), so neither do the twins.
+_PENDING_COUPLED_TWINS = (
+    "myoChallengeChaseTagFBP2-v0",
+    "myoChallengeTableTennisP0-v0",
+    "myoChallengeTableTennisP1-v0",
+    "myoChallengeTableTennisP2-v0",
+)
+# float32 states: rounding leaves ~1e-7 (positions) and ~1e-6 (velocities up to 5 rad/s).
+_TWIN_COUPLING_ATOL = 1e-5
+
+
+def _joint_equality_count(model: mujoco.MjModel) -> int:
+    active = (model.eq_type == mujoco.mjtEq.mjEQ_JOINT) & (model.eq_active0 != 0)
+    return int(active.sum())
+
+
+@pytest.mark.parametrize("env_id", COUPLED_TWIN_IDS)
+def test_twin_resets_on_the_joint_couplings(env_id: str) -> None:
+    """Every env of the twin starts on the joint couplings, as the CPU env does.
+
+    The walk keyframe left the patella rotation 0.74 rad off its knee coupling and the
+    stand reset noise 0.18 rad; a deterministic CPU reset is replayed by the twin.
+    """
+    import myosuite.envs.myo.backends.mjlab  # noqa: F401, PLC0415 (registers twins)
+
+    from myosuite.envs.myo.tasks.mimic.tracking import MissingMotionData  # noqa: PLC0415
+
+    try:
+        cfg = load_env_cfg(env_id)
+        cfg.scene.num_envs = 4  # several draws of any reset noise
+        mj = ManagerBasedRlEnv(cfg=cfg, device="cpu")
+    except MissingMotionData as exc:  # myoMimic-v0 without its clips (CI)
+        pytest.skip(f"{env_id}: motion clips unavailable ({exc})")
+    cpu = make_env(env_id).unwrapped
+    try:
+        mj.reset()
+        qpos = mj.sim.data.qpos[:].cpu().numpy().astype(np.float64)
+        qvel = mj.sim.data.qvel[:].cpu().numpy().astype(np.float64)
+        assert _joint_equality_count(mj.sim.mj_model) == _joint_equality_count(
+            cpu.model
+        )
+        for i in range(cfg.scene.num_envs):
+            pos, vel = joint_equality_residuals(mj.sim.mj_model, qpos[i], qvel[i])
+            worst = (np.abs(pos).max(), np.abs(vel).max())
+            assert max(worst) < _TWIN_COUPLING_ATOL, f"env {i}: {worst}"
+
+        cpu.reset(seed=0)
+        cpu_qpos = cpu.data.qpos.copy()
+        cpu.reset(seed=1)
+        joints = mj.scene["robot"].data.joint_pos.cpu().numpy()
+        root = 7 if cpu.model.jnt_type[0] == mujoco.mjtJoint.mjJNT_FREE else 0
+        # A deterministic reset is replayed (an exo twin's chains have their own layout).
+        if np.array_equal(cpu_qpos, cpu.data.qpos) and joints.shape[1] == (
+            cpu.model.nq - root
+        ):
+            np.testing.assert_allclose(
+                joints, np.tile(cpu_qpos[root:], (len(joints), 1)), atol=1e-6
+            )
+    finally:
+        mj.close()
+        cpu.close()
+
+
+def test_every_coupled_twin_is_listed() -> None:
+    """Each base twin of a CPU env with joint couplings is in COUPLED_TWIN_IDS."""
+    import myosuite.envs.myo.backends.mjlab  # noqa: F401, PLC0415
+
+    unlisted = []
+    for env_id in set(list_tasks()) - set(COUPLED_TWIN_IDS):
+        if env_id not in gym.registry or env_id.startswith(
+            ("myoSarc", "myoFati", "myoReaf")
+        ):
+            continue
+        env = make_env(env_id)
+        if _joint_equality_count(env.unwrapped.model):
+            unlisted.append(env_id)
+        env.close()
+    assert sorted(unlisted) == sorted(_PENDING_COUPLED_TWINS), unlisted
+
+
+def test_every_twin_logs_a_success_metric() -> None:
+    """Success rate is a standard metric (``Episode_Metrics/success``) of every twin."""
+    import myosuite.envs.myo.backends.mjlab  # noqa: F401, PLC0415
+
+    registered = set(list_tasks())
+    twins = [e for e in _basic_suite_ids(_PORTED_ENTRY_POINTS) if e in registered]
+    # Legacy leg/torso twins are not in the basic-suite entry-point list.
+    twins += [e for e in registered if "Leg" in e or "Torso" in e]
+    assert twins
+    missing = [
+        e
+        for e in twins
+        if "success" not in load_env_cfg(e).metrics
+        or load_env_cfg(e).metrics["success"].reduce != "last"
+    ]
+    assert not missing, f"twins without a 'last'-reduced success metric: {missing}"
+
+
+def test_twin_rejects_unknown_obs_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A twin fails loudly on an obs key it has no term for, as the CPU env does."""
+    from myosuite.envs.myo.backends.mjlab.tasks.pose.pose_env_cfg import (  # noqa: PLC0415
+        make_pose_env_cfg,
+    )
+
+    env_id = "myoElbowPose1D6MRandom-v0"
+    monkeypatch.setitem(
+        gym.spec(env_id).kwargs, "obs_keys", ["qpos", "no_such_obs_key"]
+    )
+    with pytest.raises(KeyError, match="no_such_obs_key"):
+        make_pose_env_cfg(env_id)

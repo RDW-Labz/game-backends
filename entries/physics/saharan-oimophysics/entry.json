@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T01:06:42Z",
+ "category": "physics",
+ "commit": "2025-05-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "saharan/OimoPhysics \u2014 A cross-platform 3D physics engine",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "OimoPhysics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "saharan-oimophysics",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 960,
+ "system": "A cross-platform 3D physics engine",
+ "upstream": "https://github.com/saharan/OimoPhysics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

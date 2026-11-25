@@ -2940,3 +2940,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/maltaisn-msdf-gdx
   - reference engines/mini2dx-miniscript
   - reference physics/lo-th-oimo-js
+
+- **2026-11-25 01:06 UTC** — tick 823: +2 screened, +4 reference, 12 skipped, catalogue=1457
+  - added physics/sofa-framework-sofa (LGPL-2.1, reference)
+  - added physics/myohub-myosuite (Apache-2.0, vendored)
+  - reference physics/gigahidjrikaaa-engineering-books
+  - reference physics/idmillington-cyclone-physics
+  - reference physics/soulwire-coffee-physics
+  - reference physics/saharan-oimophysics
