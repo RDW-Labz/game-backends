@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:43:40Z",
+ "category": "gameplay",
+ "commit": "2025-05-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SMITTY-94/bevy_pathfinding",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "smitty-94-bevy-pathfinding",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 37,
+ "system": "see upstream",
+ "upstream": "https://github.com/SMITTY-94/bevy_pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

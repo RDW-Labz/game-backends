@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:43:40Z",
+ "category": "gameplay",
+ "commit": "2025-12-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "openrr/rrt \u2014 RRT (Rapidly-exploring Random Tree) library in Rust",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "rrt",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "openrr-rrt",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 41,
+ "system": "RRT (Rapidly-exploring Random Tree) library in Rust",
+ "upstream": "https://github.com/openrr/rrt",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

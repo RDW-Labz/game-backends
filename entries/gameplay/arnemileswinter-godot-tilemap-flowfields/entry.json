@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:43:40Z",
+ "category": "gameplay",
+ "commit": "2022-10-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "arnemileswinter/godot-tilemap-flowfields \u2014 Plugin to generate flowfields from tilemaps in the Godot Engine!",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "godot-tilemap-flowfields",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "arnemileswinter-godot-tilemap-flowfields",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 32,
+ "system": "Plugin to generate flowfields from tilemaps in the Godot Engine!",
+ "upstream": "https://github.com/arnemileswinter/godot-tilemap-flowfields",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

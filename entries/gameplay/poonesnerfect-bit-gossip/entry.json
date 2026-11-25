@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T09:43:35Z",
+ "category": "gameplay",
+ "commit": "93af57ad9251",
+ "delivery": "reference",
+ "description": "PoOnesNerfect/bit_gossip \u2014 Pathfinding library for calculating all node pairs' shortest paths in an unweighted undirected graph.",
+ "language": "rust",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "bit_gossip",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 156539,
+ "slug": "poonesnerfect-bit-gossip",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 49,
+ "system": "Pathfinding library for calculating all node pairs' shortest paths in an unweighted undirected graph.",
+ "upstream": "https://github.com/PoOnesNerfect/bit_gossip",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:43:40Z",
+ "category": "gameplay",
+ "commit": "2026-09-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mich101mich/hierarchical_pathfinding \u2014 A Rust crate to find Paths on a Grid using HPA* (Hierarchical Pathfinding A*) and Hierarchical Dijkstra",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "hierarchical_pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mich101mich-hierarchical-pathfinding",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 30,
+ "system": "A Rust crate to find Paths on a Grid using HPA* (Hierarchical Pathfinding A*) and Hierarchical Dijkstra",
+ "upstream": "https://github.com/mich101mich/hierarchical_pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

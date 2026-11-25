@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T09:43:38Z",
+ "category": "gameplay",
+ "commit": "6f2e1e968ba2",
+ "delivery": "reference",
+ "description": "ohchase/divert \u2014 Rust bindings for Recast Navigation.",
+ "language": "rust",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "divert",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 50193,
+ "slug": "ohchase-divert",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 41,
+ "system": "Rust bindings for Recast Navigation.",
+ "upstream": "https://github.com/ohchase/divert",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

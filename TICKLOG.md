@@ -3156,3 +3156,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/aghilestma-robomaze
   - reference gameplay/gonuit-goal-based-vector-field-pathfinding
   - reference gameplay/cinatitbr-amazing-pathfinding-visualizer
+
+- **2026-11-25 09:43 UTC** — tick 852: +2 screened, +4 reference, 10 skipped, catalogue=1615
+  - added gameplay/poonesnerfect-bit-gossip (none, reference)
+  - added gameplay/ohchase-divert (none, reference)
+  - reference gameplay/openrr-rrt
+  - reference gameplay/smitty-94-bevy-pathfinding
+  - reference gameplay/arnemileswinter-godot-tilemap-flowfields
+  - reference gameplay/mich101mich-hierarchical-pathfinding
