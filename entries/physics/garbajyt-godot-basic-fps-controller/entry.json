@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:26:52Z",
+ "category": "physics",
+ "commit": "2021-04-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "GarbajYT/godot-basic-fps-controller \u2014 A simple first person character controller for the Godot game engine. In the project settings, under General/Physics/Common, be sure to set Physics FPS to 240",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-basic-fps-controller",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "garbajyt-godot-basic-fps-controller",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 36,
+ "system": "A simple first person character controller for the Godot game engine. In the project settings, under General/Physics/Common, be sure to set Physics FPS to 240",
+ "upstream": "https://github.com/GarbajYT/godot-basic-fps-controller",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

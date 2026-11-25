@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T03:26:50Z",
+ "category": "physics",
+ "commit": "00304c8708c8",
+ "delivery": "reference",
+ "description": "mehedimaruf4t2/roblox-sphere-motion-lab \u2014 Roblox Ball Movement System 2026: Open-Source Physics Controller Guide",
+ "language": "html",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "roblox-sphere-motion-lab",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "mehedimaruf4t2-roblox-sphere-motion-lab",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 71,
+ "system": "Roblox Ball Movement System 2026: Open-Source Physics Controller Guide",
+ "upstream": "https://github.com/mehedimaruf4t2/roblox-sphere-motion-lab",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

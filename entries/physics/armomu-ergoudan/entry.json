@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:26:52Z",
+ "category": "physics",
+ "commit": "2026-01-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "armomu/ergoudan \u2014 Havok physics character controller using Babylon.js\uff0cAchieved walking, climbing stairs and up and down slopes",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ergoudan",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "armomu-ergoudan",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 69,
+ "system": "Havok physics character controller using Babylon.js\uff0cAchieved walking, climbing stairs and up and down slopes",
+ "upstream": "https://github.com/armomu/ergoudan",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

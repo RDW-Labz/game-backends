@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:26:52Z",
+ "category": "physics",
+ "commit": "2025-05-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "icurtis1/character-controller-sample-project \u2014 A 3D character controller built with React Three Fiber, Rapier physics.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "character-controller-sample-project",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "icurtis1-character-controller-sample-project",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 40,
+ "system": "A 3D character controller built with React Three Fiber, Rapier physics.",
+ "upstream": "https://github.com/icurtis1/character-controller-sample-project",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

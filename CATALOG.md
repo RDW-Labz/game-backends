@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 03:09 UTC · 1499 entries · 384 vendored, 1115 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 03:26 UTC · 1505 entries · 385 vendored, 1120 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
-| [physics](#physics) — Physics | 180 | 41 | 139 |
+| [physics](#physics) — Physics | 186 | 42 | 144 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
@@ -666,7 +666,7 @@ _Generated 2026-11-25 03:09 UTC · 1499 entries · 384 vendored, 1115 reference-
 
 ## physics
 
-**Physics** — 180 entries
+**Physics** — 186 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -706,6 +706,7 @@ _Generated 2026-11-25 03:09 UTC · 1499 entries · 384 vendored, 1115 reference-
 | [bump.lua](entries/physics/kikito-bump-lua/README.md) | A collision detection library for Lua | lua | MIT | vendored | [kikito/bump.lua](https://github.com/kikito/bump.lua) @ `95d9e40b8aee` |
 | [CadetEngine-as](entries/physics/cadeteditor-cadetengine-as/README.md) | CadetEngine is a component-based AS3 Scene Engine supporting 2D and 3D GPU accelerated rendering, physics, custom behaviours and 3rd party library integration.  | actionscript | unknown | reference | [CadetEditor/CadetEngine-as](https://github.com/CadetEditor/CadetEngine-as) @ `2014-07-10 (branch tip at catalogue time)` |
 | [cannon.js](entries/physics/schteppe-cannon-js/README.md) | A lightweight 3D physics engine written in JavaScript. | javascript | MIT | reference | [schteppe/cannon.js](https://github.com/schteppe/cannon.js) @ `2023-08-04 (branch tip at catalogue time)` |
+| [character-controller-sample-project](entries/physics/icurtis1-character-controller-sample-project/README.md) | A 3D character controller built with React Three Fiber, Rapier physics. | typescript | unknown | reference | [icurtis1/character-controller-sample-project](https://github.com/icurtis1/character-controller-sample-project) @ `2025-05-14 (branch tip at catalogue time)` |
 | [CharacterMovementFundamentals](entries/physics/jan-ott-charactermovementfundamentals/README.md) | A physics-based character controller system for Unity | c# | MIT | reference | [Jan-Ott/CharacterMovementFundamentals](https://github.com/Jan-Ott/CharacterMovementFundamentals) @ `2025-02-09 (branch tip at catalogue time)` |
 | [Chipmunk2D](entries/physics/chipmunk2d/README.md) | 2D rigid bodies, constraints, spatial index | c | MIT | vendored | [slembcke/Chipmunk2D](https://github.com/slembcke/Chipmunk2D) @ `f2f3d66220b8` |
 | [cirobb](entries/physics/joncodeofficial-cirobb/README.md) | A small, readable 2D rigid body physics engine in C++, built around one state-of-the-art solver. | c++ | MIT | reference | [joncodeofficial/cirobb](https://github.com/joncodeofficial/cirobb) @ `2026-10-27 (branch tip at catalogue time)` |
@@ -732,12 +733,14 @@ _Generated 2026-11-25 03:09 UTC · 1499 entries · 384 vendored, 1115 reference-
 | [engine](entries/physics/galacean-engine/README.md) | A typescript interactive engine, support 2D, 3D, animation, physics, built on WebGL and glTF. | typescript | MIT | reference | [galacean/engine](https://github.com/galacean/engine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [engine](entries/physics/renzora-engine/README.md) | 2D & 3D game engine & scene editor using bevy 0.20 | rust | Apache-2.0 | reference | [renzora/engine](https://github.com/renzora/engine) @ `2026-11-05 (branch tip at catalogue time)` |
 | [Engineering-Books](entries/physics/gigahidjrikaaa-engineering-books/README.md) | Softcopy of Engineering Books. If you want a book{s} to be taken down, please contact me. | n/a | unknown | reference | [gigahidjrikaaa/Engineering-Books](https://github.com/gigahidjrikaaa/Engineering-Books) @ `2024-01-12 (branch tip at catalogue time)` |
+| [ergoudan](entries/physics/armomu-ergoudan/README.md) | Havok physics character controller using Babylon.js，Achieved walking, climbing stairs and up and down slopes | typescript | MIT | reference | [armomu/ergoudan](https://github.com/armomu/ergoudan) @ `2026-01-29 (branch tip at catalogue time)` |
 | [feos](entries/physics/feos-org-feos/README.md) | FeOs - A Framework for Equations of State and Classical Density Functional Theory | rust | Apache-2.0 | reference | [feos-org/feos](https://github.com/feos-org/feos) @ `2026-11-18 (branch tip at catalogue time)` |
 | [FLAT](entries/physics/yuanming-hu-flat/README.md) | A 2D rigid body physics engine. | c++ | unknown | reference | [yuanming-hu/FLAT](https://github.com/yuanming-hu/FLAT) @ `2017-05-07 (branch tip at catalogue time)` |
 | [FlatPhysics](entries/physics/twobitcoder101-flatphysics/README.md) | Basic 2D rigid body physics engine. | c# | MIT | reference | [twobitcoder101/FlatPhysics](https://github.com/twobitcoder101/FlatPhysics) @ `2021-08-18 (branch tip at catalogue time)` |
 | [Gaia](entries/physics/ankachan-gaia/README.md) | Gaia Physics Engine | raku | Apache-2.0 | reference | [AnkaChan/Gaia](https://github.com/AnkaChan/Gaia) @ `c22969204546` |
 | [GDCustomRaycastVehicle](entries/physics/tobalation-gdcustomraycastvehicle/README.md) | A simple custom raycast vehicle implementation | gdscript | MIT | vendored | [Tobalation/GDCustomRaycastVehicle](https://github.com/Tobalation/GDCustomRaycastVehicle) @ `8d608d28b5f5` |
 | [Gepe3D](entries/physics/gonkee-gepe3d/README.md) | Gonkee's Epic Physics Engine 3D (Gepe3D) | c# | MIT | reference | [Gonkee/Gepe3D](https://github.com/Gonkee/Gepe3D) @ `2026-11-04 (branch tip at catalogue time)` |
+| [godot-basic-fps-controller](entries/physics/garbajyt-godot-basic-fps-controller/README.md) | A simple first person character controller for the Godot game engine. In the project settings, under General/Physics/Common, be sure to set Physics FPS to 240 | gdscript | MIT | reference | [GarbajYT/godot-basic-fps-controller](https://github.com/GarbajYT/godot-basic-fps-controller) @ `2021-04-26 (branch tip at catalogue time)` |
 | [godot-jolt](entries/physics/godot-jolt-godot-jolt/README.md) | Godot Jolt is a Godot extension that integrates the Jolt physics engine | c++ | MIT | vendored | [godot-jolt/godot-jolt](https://github.com/godot-jolt/godot-jolt) @ `7f225894706b` |
 | [godot-rapier-physics](entries/physics/appsinacup-godot-rapier-physics/README.md) | Godot Rapier Physics – 2D and 3D physics engine for the Godot game engine. with better stability, performance, liquids, determinism, state serialization and no  | rust | MIT | reference | [appsinacup/godot-rapier-physics](https://github.com/appsinacup/godot-rapier-physics) @ `2026-11-08 (branch tip at catalogue time)` |
 | [godot-vehicle](entries/physics/seerban-godot-vehicle/README.md) | WIP Racing Game and 3d vehicle physics implementation in Godot Engine. | gdscript | MIT | reference | [Seerban/godot-vehicle](https://github.com/Seerban/godot-vehicle) @ `2026-08-03 (branch tip at catalogue time)` |
@@ -810,7 +813,9 @@ _Generated 2026-11-25 03:09 UTC · 1499 entries · 384 vendored, 1115 reference-
 | [react-native-reanimated-dnd](entries/physics/entropyconquers-react-native-reanimated-dnd/README.md) | A powerful, performant drag-and-drop library for React Native built on Reanimated 4 and Gesture Handler. Smooth 60fps animations, sortable lists & grids, collis | typescript | MIT | vendored | [entropyconquers/react-native-reanimated-dnd](https://github.com/entropyconquers/react-native-reanimated-dnd) @ `86fb5ab21cc3` |
 | [ReactPhysics3D](entries/physics/reactphysics3d/README.md) | 3D physics: broadphase, constraints, raycast | c++ | Zlib | vendored | [DanielChappuis/reactphysics3d](https://github.com/DanielChappuis/reactphysics3d) @ `7000610a244e` |
 | [resolv](entries/physics/solarlune-resolv/README.md) | A Simple 2D Golang collision detection and resolution library for games | go | MIT | vendored | [SolarLune/resolv](https://github.com/SolarLune/resolv) @ `8b4e8c15ba3b` |
+| [RigidBodyController](entries/physics/freeflyfall-rigidbodycontroller/README.md) | Physics based first person character controller in Godot | gdscript | MIT | reference | [FreeFlyFall/RigidBodyController](https://github.com/FreeFlyFall/RigidBodyController) @ `2024-11-08 (branch tip at catalogue time)` |
 | [rigs-of-rods — physics](entries/physics/rigs-of-rods-physics/README.md) | rigid-body collision and dynamics | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
+| [roblox-sphere-motion-lab](entries/physics/mehedimaruf4t2-roblox-sphere-motion-lab/README.md) | Roblox Ball Movement System 2026: Open-Source Physics Controller Guide | html | none | reference | [mehedimaruf4t2/roblox-sphere-motion-lab](https://github.com/mehedimaruf4t2/roblox-sphere-motion-lab) @ `00304c8708c8` |
 | [RobotNativeEngine](entries/physics/rsasaki0109-robotnativeengine/README.md) | Robot Native Engine — robot-native Rust simulation core with physics, sensors, Python bindings, and optional ROS 2 adapters. | rust | Apache-2.0 | reference | [rsasaki0109/RobotNativeEngine](https://github.com/rsasaki0109/RobotNativeEngine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [rumoca](entries/physics/cognipilot-rumoca/README.md) | a rust-native Modelica compiler for fast, composable, scientific computing | rust | Apache-2.0 | reference | [CogniPilot/rumoca](https://github.com/CogniPilot/rumoca) @ `488d6d5f239f` |
 | [runmat](entries/physics/runmat-org-runmat/README.md) | A high-performance engine for matrix math, physics simulation, and MCAD and ECAD as code. RunMat checks types, sizes and units before anything runs, executes on | rust | Apache-2.0 | reference | [runmat-org/runmat](https://github.com/runmat-org/runmat) @ `0359e282f5d0` |
@@ -839,6 +844,7 @@ _Generated 2026-11-25 03:09 UTC · 1499 entries · 384 vendored, 1115 reference-
 | [thrive — physics](entries/physics/thrive-physics/README.md) | rigid-body collision and dynamics | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [thrive — physics](entries/physics/thrive-src-native-physics/README.md) | custom rigid-body physics for a sim game | c++ | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f4f2e0` |
 | [tork](entries/physics/adrenak-tork/README.md) | Vehicle physics for Unity | c# | MIT | vendored | [adrenak/tork](https://github.com/adrenak/tork) @ `17ae6323c007` |
+| [UnityDotsCharacterController](entries/physics/ssell-unitydotscharactercontroller/README.md) | Basic Character Controller Using ECS and Unity.Physics Packages | c# | MIT | vendored | [ssell/UnityDotsCharacterController](https://github.com/ssell/UnityDotsCharacterController) @ `0ae709bb2015` |
 | [unrust](entries/physics/unrust-unrust/README.md) | unrust - A pure rust based (webgl 2.0 / native) game engine | rust | Apache-2.0 | reference | [unrust/unrust](https://github.com/unrust/unrust) @ `2018-08-13 (branch tip at catalogue time)` |
 | [VectorizedMultiAgentSimulator](entries/physics/proroklab-vectorizedmultiagentsimulator/README.md) | VMAS is a vectorized differentiable simulator designed for efficient Multi-Agent Reinforcement Learning benchmarking. It is comprised of a vectorized 2D physics | python | GPL-3.0 | reference | [proroklab/VectorizedMultiAgentSimulator](https://github.com/proroklab/VectorizedMultiAgentSimulator) @ `2026-05-19 (branch tip at catalogue time)` |
 | [vehicle-physics](entries/physics/hayden-donnelly-vehicle-physics/README.md) | This is a Unity project implementing a custom vehicle controller with a raycast suspension. | c# | MIT | reference | [hayden-donnelly/vehicle-physics](https://github.com/hayden-donnelly/vehicle-physics) @ `2024-12-14 (branch tip at catalogue time)` |

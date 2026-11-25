@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T03:26:48Z",
+ "category": "physics",
+ "commit": "0ae709bb2015",
+ "delivery": "vendored",
+ "description": "ssell/UnityDotsCharacterController \u2014 Basic Character Controller Using ECS and Unity.Physics Packages",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "UnityDotsCharacterController",
+ "size_bytes": 67279,
+ "slug": "ssell-unitydotscharactercontroller",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 136,
+ "system": "Basic Character Controller Using ECS and Unity.Physics Packages",
+ "upstream": "https://github.com/ssell/UnityDotsCharacterController",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

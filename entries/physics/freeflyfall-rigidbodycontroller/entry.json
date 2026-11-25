@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:26:52Z",
+ "category": "physics",
+ "commit": "2024-11-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "FreeFlyFall/RigidBodyController \u2014 Physics based first person character controller in Godot",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "RigidBodyController",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "freeflyfall-rigidbodycontroller",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 61,
+ "system": "Physics based first person character controller in Godot",
+ "upstream": "https://github.com/FreeFlyFall/RigidBodyController",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

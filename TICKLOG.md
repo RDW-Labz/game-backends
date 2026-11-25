@@ -3004,3 +3004,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/fzi-forschungszentrum-informatik-gpu-voxels
   - reference physics/sergiusiw-collider-rs
   - reference physics/qwertyquerty-collision
+
+- **2026-11-25 03:26 UTC** — tick 831: +2 screened, +4 reference, 9 skipped, catalogue=1505
+  - added physics/ssell-unitydotscharactercontroller (MIT, vendored)
+  - added physics/mehedimaruf4t2-roblox-sphere-motion-lab (none, reference)
+  - reference physics/armomu-ergoudan
+  - reference physics/freeflyfall-rigidbodycontroller
+  - reference physics/icurtis1-character-controller-sample-project
+  - reference physics/garbajyt-godot-basic-fps-controller
