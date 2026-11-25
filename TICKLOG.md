@@ -3436,3 +3436,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/stanislavpetrovv-minecraft
   - reference engines/gavanw-voxelquestiso
   - reference engines/frozein-doonengine
+
+- **2026-11-25 21:38 UTC** — tick 896: +2 screened, +4 reference, 12 skipped, catalogue=1806
+  - added engines/ericson2314-voxlap (none, reference)
+  - added engines/leonmavr-retrovoxel (MIT, vendored)
+  - reference engines/ria8651-bevy-voxel-engine
+  - reference engines/gamedevtecnico-cubos
+  - reference engines/mt-ctf-capturetheflag
+  - reference engines/chippington-quixel

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T21:38:37Z",
+ "category": "engines",
+ "commit": "7b82ceb34062",
+ "delivery": "vendored",
+ "description": "leonmavr/retrovoxel \u2014 \ud83d\udcfa\ud83d\udc7d 3D voxel graphics engine on the terminal in standard C without third parties",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "retrovoxel",
+ "size_bytes": 89486,
+ "slug": "leonmavr-retrovoxel",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 108,
+ "system": "\ud83d\udcfa\ud83d\udc7d 3D voxel graphics engine on the terminal in standard C without third parties",
+ "upstream": "https://github.com/leonmavr/retrovoxel",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

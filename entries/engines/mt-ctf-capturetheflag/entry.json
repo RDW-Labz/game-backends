@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:38:38Z",
+ "category": "engines",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "MT-CTF/capturetheflag \u2014 Capture the Flag game using the Minetest Voxel Engine",
+ "language": "lua",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "capturetheflag",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mt-ctf-capturetheflag",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 102,
+ "system": "Capture the Flag game using the Minetest Voxel Engine",
+ "upstream": "https://github.com/MT-CTF/capturetheflag",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

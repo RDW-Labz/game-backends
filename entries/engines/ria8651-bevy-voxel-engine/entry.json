@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:38:38Z",
+ "category": "engines",
+ "commit": "2025-03-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ria8651/bevy-voxel-engine \u2014 A voxel renderer for the bevy game engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy-voxel-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "ria8651-bevy-voxel-engine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 105,
+ "system": "A voxel renderer for the bevy game engine",
+ "upstream": "https://github.com/ria8651/bevy-voxel-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

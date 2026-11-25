@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:38:38Z",
+ "category": "engines",
+ "commit": "2017-02-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Chippington/Quixel \u2014 Quick Voxel Terrain Engine for Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Quixel",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "chippington-quixel",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 96,
+ "system": "Quick Voxel Terrain Engine for Unity",
+ "upstream": "https://github.com/Chippington/Quixel",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

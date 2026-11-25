@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:38:38Z",
+ "category": "engines",
+ "commit": "2026-07-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "GameDevTecnico/cubos \u2014 A still very barebones game engine focused on voxels and data-oriented programming",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "cubos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gamedevtecnico-cubos",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 103,
+ "system": "A still very barebones game engine focused on voxels and data-oriented programming",
+ "upstream": "https://github.com/GameDevTecnico/cubos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

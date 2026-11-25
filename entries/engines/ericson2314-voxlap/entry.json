@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T21:38:34Z",
+ "category": "engines",
+ "commit": "10251feb799e",
+ "delivery": "reference",
+ "description": "Ericson2314/Voxlap \u2014 Making Ken Silverman's \"Voxlap\" voxel graphics engine run on any platform with SDL.",
+ "language": "c++",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Voxlap",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 1185312,
+ "slug": "ericson2314-voxlap",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 110,
+ "system": "Making Ken Silverman's \"Voxlap\" voxel graphics engine run on any platform with SDL.",
+ "upstream": "https://github.com/Ericson2314/Voxlap",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
