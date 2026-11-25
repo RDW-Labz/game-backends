@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T04:04:08Z",
+ "category": "physics",
+ "commit": "3ef6d14e4383",
+ "delivery": "reference",
+ "description": "sq/Illuminant \u2014 Realtime 2D lighting and particle system library",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Illuminant",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 1202510,
+ "slug": "sq-illuminant",
+ "source": "github-search:particle system library stars:>30",
+ "stars": 48,
+ "system": "Realtime 2D lighting and particle system library",
+ "upstream": "https://github.com/sq/Illuminant",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

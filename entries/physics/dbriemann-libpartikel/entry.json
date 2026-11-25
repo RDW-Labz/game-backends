@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T04:04:02Z",
+ "category": "physics",
+ "commit": "09373edc0909",
+ "delivery": "vendored",
+ "description": "dbriemann/libpartikel \u2014 A simple particle system library made with and for raylib. Works as header only library.",
+ "language": "c",
+ "license": "Zlib",
+ "license_file": "partikel.h",
+ "license_verdict": "clean",
+ "name": "libpartikel",
+ "size_bytes": 32709,
+ "slug": "dbriemann-libpartikel",
+ "source": "github-search:particle system library stars:>30",
+ "stars": 49,
+ "system": "A simple particle system library made with and for raylib. Works as header only library.",
+ "upstream": "https://github.com/dbriemann/libpartikel",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

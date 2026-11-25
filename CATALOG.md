@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 03:45 UTC · 1511 entries · 386 vendored, 1125 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 04:04 UTC · 1514 entries · 387 vendored, 1127 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
-| [physics](#physics) — Physics | 192 | 43 | 149 |
+| [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
@@ -666,7 +666,7 @@ _Generated 2026-11-25 03:45 UTC · 1511 entries · 386 vendored, 1125 reference-
 
 ## physics
 
-**Physics** — 192 entries
+**Physics** — 195 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -727,6 +727,7 @@ _Generated 2026-11-25 03:45 UTC · 1511 entries · 386 vendored, 1125 reference-
 | [defold-box2d](entries/physics/d954mas-defold-box2d/README.md) | defold-box2d bindings | c++ | MIT | reference | [d954mas/defold-box2d](https://github.com/d954mas/defold-box2d) @ `2025-08-28 (branch tip at catalogue time)` |
 | [delirium-physics](entries/physics/pvcpc-delirium-physics/README.md) | Reverse-engineered Rust port of Euphoria as it runs in GTA IV (ragdoll and character physics), with an SDK and a playroom. Needs your own GTA IV. Not affiliated | rust | unknown | reference | [PVCPC/delirium-physics](https://github.com/PVCPC/delirium-physics) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Dojo.jl](entries/physics/dojo-sim-dojo-jl/README.md) | A differentiable physics engine for robotics | julia | MIT | reference | [dojo-sim/Dojo.jl](https://github.com/dojo-sim/Dojo.jl) @ `2024-09-23 (branch tip at catalogue time)` |
+| [DroidParticle](entries/physics/sunty2016-droidparticle/README.md) | A Particle System Library for Android Application | java | Apache-2.0 | reference | [sunty2016/DroidParticle](https://github.com/sunty2016/DroidParticle) @ `2016-06-25 (branch tip at catalogue time)` |
 | [dyn4j](entries/physics/dyn4j-dyn4j/README.md) | Java Collision Detection and Physics Engine | java | BSD-3-Clause | vendored | [dyn4j/dyn4j](https://github.com/dyn4j/dyn4j) @ `bcf942adaa9b` |
 | [edyn](entries/physics/xissburg-edyn/README.md) | Edyn is a real-time physics engine organized as an ECS. | c++ | MIT | reference | [xissburg/edyn](https://github.com/xissburg/edyn) @ `2026-09-08 (branch tip at catalogue time)` |
 | [effects-library](entries/physics/getstream-effects-library/README.md) | The Effects Library allows developers to create sophisticated and realistic particle systems such as snow, fire, rain, confetti, fireworks, and smoke with no or | swift | Apache-2.0 | reference | [GetStream/effects-library](https://github.com/GetStream/effects-library) @ `eaf607ba6d02` |
@@ -753,6 +754,7 @@ _Generated 2026-11-25 03:45 UTC · 1511 entries · 386 vendored, 1125 reference-
 | [Hanachan](entries/physics/stblr-hanachan/README.md) | Mario Kart Wii physics reimplementation | rust | GPL-2.0 | reference | [stblr/Hanachan](https://github.com/stblr/Hanachan) @ `bd57482be685` |
 | [HC](entries/physics/vrld-hc/README.md) | General purpose collision detection library for the use with LÖVE. | lua | unknown | reference | [vrld/HC](https://github.com/vrld/HC) @ `2025-12-31 (branch tip at catalogue time)` |
 | [hypersomnia — physics](entries/physics/hypersomnia-physics/README.md) | rigid-body collision and dynamics | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
+| [Illuminant](entries/physics/sq-illuminant/README.md) | Realtime 2D lighting and particle system library | c# | none | reference | [sq/Illuminant](https://github.com/sq/Illuminant) @ `3ef6d14e4383` |
 | [ImpulseEngine](entries/physics/randygaul-impulseengine/README.md) | Simple, open source, 2D impulse based physics engine for educational use. | c++ | Zlib | reference | [RandyGaul/ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) @ `2019-10-28 (branch tip at catalogue time)` |
 | [inertia](entries/physics/aclfe-inertia/README.md) | A physics sandbox that runs in your terminal: rigid bodies, n-body gravity, cloth, and fluid, projected in 3D onto braille with no GPU. | rust | Apache-2.0 | reference | [aclfe/inertia](https://github.com/aclfe/inertia) @ `2026-07-19 (branch tip at catalogue time)` |
 | [Jax2D](entries/physics/michaeltmatthews-jax2d/README.md) | Highly scalable 2D JAX physics engine. | python | MIT | vendored | [MichaelTMatthews/Jax2D](https://github.com/MichaelTMatthews/Jax2D) @ `3c902a2b8e78` |
@@ -765,6 +767,7 @@ _Generated 2026-11-25 03:45 UTC · 1511 entries · 386 vendored, 1125 reference-
 | [kool](entries/physics/kool-engine-kool/README.md) | A Vulkan /  WebGPU / OpenGL engine for Desktop JVM, Android and Javascript written in Kotlin | kotlin | Apache-2.0 | reference | [kool-engine/kool](https://github.com/kool-engine/kool) @ `2026-11-23 (branch tip at catalogue time)` |
 | [LayaAir](entries/physics/layabox-layaair/README.md) | LayaAir is a fully platform rendering engine with rich 2D/3D rendering capabilities and a mature integrated development platform | typescript | MIT | reference | [layabox/LayaAir](https://github.com/layabox/LayaAir) @ `2026-11-13 (branch tip at catalogue time)` |
 | [libccd](entries/physics/libccd/README.md) | convex collision detection (GJK/EPA) library | c | BSD-3-Clause | vendored | [danfis/libccd](https://github.com/danfis/libccd) @ `7931e764a19e` |
+| [libpartikel](entries/physics/dbriemann-libpartikel/README.md) | A simple particle system library made with and for raylib. Works as header only library. | c | Zlib | vendored | [dbriemann/libpartikel](https://github.com/dbriemann/libpartikel) @ `09373edc0909` |
 | [limonEngine](entries/physics/enginmanap-limonengine/README.md) | 3D FPS game engine with full dynamic lighting and shadows | c++ | LGPL-3.0 | reference | [enginmanap/limonEngine](https://github.com/enginmanap/limonEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [matter-js](entries/physics/liabru-matter-js/README.md) | a 2D rigid body physics engine for the web ▲● ■ | javascript | MIT | vendored | [liabru/matter-js](https://github.com/liabru/matter-js) @ `b8ee71cd7f9b` |
 | [melonJS](entries/physics/melonjs-melonjs/README.md) | A modern & fully featured HTML5 game engine (2D & 3D) for JavaScript/TypeScript, with WebGL/WebGPU rendering, built-in physics, Tiled map & glTF support and Web | javascript | MIT | reference | [melonjs/melonJS](https://github.com/melonjs/melonJS) @ `91f4396452e0` |

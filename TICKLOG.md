@@ -3020,3 +3020,8 @@ One line per 15-minute extension tick, newest last.
   - reference physics/javeke-ripit
   - reference physics/nvidiagameworks-flow
   - reference physics/interactivecomputergraphics-compactnsearch
+
+- **2026-11-25 04:04 UTC** — tick 833: +2 screened, +1 reference, 19 skipped, catalogue=1514
+  - added physics/dbriemann-libpartikel (Zlib, vendored)
+  - added physics/sq-illuminant (none, reference)
+  - reference physics/sunty2016-droidparticle

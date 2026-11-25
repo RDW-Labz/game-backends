@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:04:09Z",
+ "category": "physics",
+ "commit": "2016-06-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sunty2016/DroidParticle \u2014 A Particle System Library for Android Application",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "DroidParticle",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "sunty2016-droidparticle",
+ "source": "github-search:particle system library stars:>30",
+ "stars": 47,
+ "system": "A Particle System Library for Android Application",
+ "upstream": "https://github.com/sunty2016/DroidParticle",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
