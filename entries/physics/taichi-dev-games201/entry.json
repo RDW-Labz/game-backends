@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T23:46:41Z",
+ "category": "physics",
+ "commit": "2020-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "taichi-dev/games201 \u2014 Advanced Physics Engines 2020: A Hands-on Tutorial",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "games201",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "taichi-dev-games201",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 590,
+ "system": "Advanced Physics Engines 2020: A Hands-on Tutorial",
+ "upstream": "https://github.com/taichi-dev/games201",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

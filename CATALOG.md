@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 23:30 UTC · 1834 entries · 460 vendored, 1374 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 23:46 UTC · 1840 entries · 461 vendored, 1379 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
-| [physics](#physics) — Physics | 195 | 44 | 151 |
+| [physics](#physics) — Physics | 201 | 45 | 156 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
@@ -811,7 +811,7 @@ _Generated 2026-11-25 23:30 UTC · 1834 entries · 460 vendored, 1374 reference-
 
 ## physics
 
-**Physics** — 195 entries
+**Physics** — 201 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -849,6 +849,7 @@ _Generated 2026-11-25 23:30 UTC · 1834 entries · 460 vendored, 1374 reference-
 | [breeze](entries/physics/holtsetio-breeze/README.md) | A realtime verlet-based cloth simulation, running in the browser using the three.js WebGPURenderer. | javascript | MIT | vendored | [holtsetio/breeze](https://github.com/holtsetio/breeze) @ `0ab82342f916` |
 | [Bullet Physics](entries/physics/bullet3/README.md) | 3D collision/dynamics + soft body + ML | c++ | Zlib | reference | [bulletphysics/bullet3](https://github.com/bulletphysics/bullet3) @ `d3afe76132fc` |
 | [bulletrs](entries/physics/not-fl3-bulletrs/README.md) | Bullet Physics wrapper for the Rust language. | rust | MIT | reference | [not-fl3/bulletrs](https://github.com/not-fl3/bulletrs) @ `2018-03-08 (branch tip at catalogue time)` |
+| [BulletSharpUnity3d](entries/physics/phong13-bulletsharpunity3d/README.md) | A fork of the BulletSharp project to make the Bullet Physics Engine usable from C# code in Unity3d | c# | unknown | reference | [Phong13/BulletSharpUnity3d](https://github.com/Phong13/BulletSharpUnity3d) @ `2023-10-26 (branch tip at catalogue time)` |
 | [bump.lua](entries/physics/kikito-bump-lua/README.md) | A collision detection library for Lua | lua | MIT | vendored | [kikito/bump.lua](https://github.com/kikito/bump.lua) @ `95d9e40b8aee` |
 | [CadetEngine-as](entries/physics/cadeteditor-cadetengine-as/README.md) | CadetEngine is a component-based AS3 Scene Engine supporting 2D and 3D GPU accelerated rendering, physics, custom behaviours and 3rd party library integration.  | actionscript | unknown | reference | [CadetEditor/CadetEngine-as](https://github.com/CadetEditor/CadetEngine-as) @ `2014-07-10 (branch tip at catalogue time)` |
 | [cannon.js](entries/physics/schteppe-cannon-js/README.md) | A lightweight 3D physics engine written in JavaScript. | javascript | MIT | reference | [schteppe/cannon.js](https://github.com/schteppe/cannon.js) @ `2023-08-04 (branch tip at catalogue time)` |
@@ -887,6 +888,7 @@ _Generated 2026-11-25 23:30 UTC · 1834 entries · 460 vendored, 1374 reference-
 | [FlatPhysics](entries/physics/twobitcoder101-flatphysics/README.md) | Basic 2D rigid body physics engine. | c# | MIT | reference | [twobitcoder101/FlatPhysics](https://github.com/twobitcoder101/FlatPhysics) @ `2021-08-18 (branch tip at catalogue time)` |
 | [Flow](entries/physics/nvidiagameworks-flow/README.md) | Flow is a sparse grid-based fluid simulation library for real-time applications.  | c | unknown | reference | [NVIDIAGameWorks/Flow](https://github.com/NVIDIAGameWorks/Flow) @ `2025-03-31 (branch tip at catalogue time)` |
 | [Gaia](entries/physics/ankachan-gaia/README.md) | Gaia Physics Engine | raku | Apache-2.0 | reference | [AnkaChan/Gaia](https://github.com/AnkaChan/Gaia) @ `c22969204546` |
+| [games201](entries/physics/taichi-dev-games201/README.md) | Advanced Physics Engines 2020: A Hands-on Tutorial | python | unknown | reference | [taichi-dev/games201](https://github.com/taichi-dev/games201) @ `2020-11-23 (branch tip at catalogue time)` |
 | [GDCustomRaycastVehicle](entries/physics/tobalation-gdcustomraycastvehicle/README.md) | A simple custom raycast vehicle implementation | gdscript | MIT | vendored | [Tobalation/GDCustomRaycastVehicle](https://github.com/Tobalation/GDCustomRaycastVehicle) @ `8d608d28b5f5` |
 | [Gepe3D](entries/physics/gonkee-gepe3d/README.md) | Gonkee's Epic Physics Engine 3D (Gepe3D) | c# | MIT | reference | [Gonkee/Gepe3D](https://github.com/Gonkee/Gepe3D) @ `2026-11-04 (branch tip at catalogue time)` |
 | [godot-basic-fps-controller](entries/physics/garbajyt-godot-basic-fps-controller/README.md) | A simple first person character controller for the Godot game engine. In the project settings, under General/Physics/Common, be sure to set Physics FPS to 240 | gdscript | MIT | reference | [GarbajYT/godot-basic-fps-controller](https://github.com/GarbajYT/godot-basic-fps-controller) @ `2021-04-26 (branch tip at catalogue time)` |
@@ -922,6 +924,7 @@ _Generated 2026-11-25 23:30 UTC · 1834 entries · 460 vendored, 1374 reference-
 | [Nature2D](entries/physics/jaipack17-nature2d/README.md) | A 2D physics engine for Roblox. Create versatile physics simulations and mechanics with GUIs! | lua | MIT | reference | [jaipack17/Nature2D](https://github.com/jaipack17/Nature2D) @ `2025-12-11 (branch tip at catalogue time)` |
 | [ncollide](entries/physics/dimforge-ncollide/README.md) | 2 and 3-dimensional collision detection library in Rust. | rust | Apache-2.0 | reference | [dimforge/ncollide](https://github.com/dimforge/ncollide) @ `2023-01-31 (branch tip at catalogue time)` |
 | [Nectar](entries/physics/kua8-nectar/README.md) | A notch and a dock for Windows: physics-animated, reactive, and built to replace your taskbar. | rust | GPL-3.0 | reference | [kua8/Nectar](https://github.com/kua8/Nectar) @ `2026-11-22 (branch tip at catalogue time)` |
+| [newton](entries/physics/hunterloftis-newton/README.md) | A playful, particle-based physics engine designed from the ground up for JavaScript. | javascript | none | reference | [hunterloftis/newton](https://github.com/hunterloftis/newton) @ `fc2c5f383fa4` |
 | [newton](entries/physics/newton-physics-newton/README.md) | An open-source, GPU-accelerated physics simulation engine built upon NVIDIA Warp, specifically targeting roboticists and simulation researchers. | python | Apache-2.0 | reference | [newton-physics/newton](https://github.com/newton-physics/newton) @ `f27aea83286e` |
 | [nexus](entries/physics/dimforge-nexus/README.md) | 2D and 3D cross-platform GPU multi-physics engine in Rust | rust | Apache-2.0 | reference | [dimforge/nexus](https://github.com/dimforge/nexus) @ `2026-11-01 (branch tip at catalogue time)` |
 | [nimblephysics](entries/physics/keenon-nimblephysics/README.md) | Nimble: Physics Engine for Biomechanics and Deep Learning | c++ | unknown | reference | [keenon/nimblephysics](https://github.com/keenon/nimblephysics) @ `2025-09-14 (branch tip at catalogue time)` |
@@ -959,6 +962,7 @@ _Generated 2026-11-25 23:30 UTC · 1834 entries · 460 vendored, 1374 reference-
 | [pymunk](entries/physics/viblo-pymunk/README.md) | Pymunk is a easy-to-use pythonic 2d physics library that can be used whenever  you need 2d rigid body physics from Python | python | MIT | vendored | [viblo/pymunk](https://github.com/viblo/pymunk) @ `b993f9b3ef2d` |
 | [python-hacked-mobile-phone-](entries/physics/masudbro94-python-hacked-mobile-phone/README.md) | Open in app Get started   ITNEXT Published in ITNEXT  You have 2 free member-only stories left this month. Sign up for Medium and get an extra one  Kush Kush Fo | n/a | unknown | reference | [Masudbro94/python-hacked-mobile-phone-](https://github.com/Masudbro94/python-hacked-mobile-phone-) @ `2022-06-30 (branch tip at catalogue time)` |
 | [QuarkPhysics](entries/physics/erayzesen-quarkphysics/README.md) | A 2D Soft Body and Rigid Body Physics Engine. | c++ | MIT | reference | [erayzesen/QuarkPhysics](https://github.com/erayzesen/QuarkPhysics) @ `2025-10-17 (branch tip at catalogue time)` |
+| [Randomation-Vehicle-Physics](entries/physics/justinvoke-randomation-vehicle-physics/README.md) | Vehicle physics system for the Unity engine. | c# | MIT | vendored | [JustInvoke/Randomation-Vehicle-Physics](https://github.com/JustInvoke/Randomation-Vehicle-Physics) @ `192ba860c3c9` |
 | [Rapier](entries/physics/rapier/README.md) | Rust 2D/3D physics with deterministic solver + WASM build | rust | Apache-2.0 | reference | [dimforge/rapier](https://github.com/dimforge/rapier) @ `475caa3ff464` |
 | [react-babylonjs](entries/physics/brianzinn-react-babylonjs/README.md) | React for Babylon 3D engine | typescript | none | reference | [brianzinn/react-babylonjs](https://github.com/brianzinn/react-babylonjs) @ `97595cd62895` |
 | [react-native-filament](entries/physics/margelo-react-native-filament/README.md) | 🐧 A real-time physically based 3D rendering engine for React Native | c++ | MIT | reference | [margelo/react-native-filament](https://github.com/margelo/react-native-filament) @ `2026-05-27 (branch tip at catalogue time)` |
@@ -990,6 +994,7 @@ _Generated 2026-11-25 23:30 UTC · 1834 entries · 460 vendored, 1374 reference-
 | [supertux — collision](entries/physics/supertux-collision/README.md) | rigid-body collision and dynamics | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [symbolica](entries/physics/symbolica-dev-symbolica/README.md) | Symbolica is a high-performance computer algebra library for Python and Rust. Manipulate large expressions, match patterns, and generate optimized numerical cod | rust | none | reference | [symbolica-dev/symbolica](https://github.com/symbolica-dev/symbolica) @ `bf6e4e2813db` |
 | [tabletop-club](entries/physics/drwhut-tabletop-club/README.md) | An open-source platform for playing tabletop games in a physics-based 3D environment for Windows, macOS, and Linux! Made with the Godot Engine. | gdscript | MIT | reference | [drwhut/tabletop-club](https://github.com/drwhut/tabletop-club) @ `2026-08-30 (branch tip at catalogue time)` |
+| [taichi_elements](entries/physics/taichi-dev-taichi-elements/README.md) | High-performance multi-material continuum physics engine in Taichi | python | MIT | reference | [taichi-dev/taichi_elements](https://github.com/taichi-dev/taichi_elements) @ `2024-04-14 (branch tip at catalogue time)` |
 | [taro](entries/physics/cloud9c-taro/README.md) | A lightweight 3D game engine for the web. | javascript | MIT | reference | [cloud9c/taro](https://github.com/cloud9c/taro) @ `2025-02-13 (branch tip at catalogue time)` |
 | [ten-minute-physics-rs](entries/physics/lucas-schuermann-ten-minute-physics-rs/README.md) | Reimplementation of Matthias Müller's "Ten Minute Physics" demos in Rust with WASM + WebGL | rust | MIT | vendored | [lucas-schuermann/ten-minute-physics-rs](https://github.com/lucas-schuermann/ten-minute-physics-rs) @ `e5c448022c80` |
 | [thetawave](entries/physics/thetawavegame-thetawave/README.md) | A physics based, space shooter game made with Rust and the Bevy engine. | rust | MIT | vendored | [thetawavegame/thetawave](https://github.com/thetawavegame/thetawave) @ `94fad04fb913` |
@@ -998,6 +1003,7 @@ _Generated 2026-11-25 23:30 UTC · 1834 entries · 460 vendored, 1374 reference-
 | [thrive — physics](entries/physics/thrive-src-native-physics/README.md) | custom rigid-body physics for a sim game | c++ | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f4f2e0` |
 | [tork](entries/physics/adrenak-tork/README.md) | Vehicle physics for Unity | c# | MIT | vendored | [adrenak/tork](https://github.com/adrenak/tork) @ `17ae6323c007` |
 | [UnityDotsCharacterController](entries/physics/ssell-unitydotscharactercontroller/README.md) | Basic Character Controller Using ECS and Unity.Physics Packages | c# | MIT | vendored | [ssell/UnityDotsCharacterController](https://github.com/ssell/UnityDotsCharacterController) @ `0ae709bb2015` |
+| [UnrealRoboticsLab](entries/physics/urlab-sim-unrealroboticslab/README.md) | A high-fidelity, open-source robotics simulator integrating Unreal Engine's photorealistic rendering with MuJoCo's precision physics. | c++ | Apache-2.0 | reference | [URLab-Sim/UnrealRoboticsLab](https://github.com/URLab-Sim/UnrealRoboticsLab) @ `2026-11-14 (branch tip at catalogue time)` |
 | [unrust](entries/physics/unrust-unrust/README.md) | unrust - A pure rust based (webgl 2.0 / native) game engine | rust | Apache-2.0 | reference | [unrust/unrust](https://github.com/unrust/unrust) @ `2018-08-13 (branch tip at catalogue time)` |
 | [VectorizedMultiAgentSimulator](entries/physics/proroklab-vectorizedmultiagentsimulator/README.md) | VMAS is a vectorized differentiable simulator designed for efficient Multi-Agent Reinforcement Learning benchmarking. It is comprised of a vectorized 2D physics | python | GPL-3.0 | reference | [proroklab/VectorizedMultiAgentSimulator](https://github.com/proroklab/VectorizedMultiAgentSimulator) @ `2026-05-19 (branch tip at catalogue time)` |
 | [vehicle-physics](entries/physics/hayden-donnelly-vehicle-physics/README.md) | This is a Unity project implementing a custom vehicle controller with a raycast suspension. | c# | MIT | reference | [hayden-donnelly/vehicle-physics](https://github.com/hayden-donnelly/vehicle-physics) @ `2024-12-14 (branch tip at catalogue time)` |

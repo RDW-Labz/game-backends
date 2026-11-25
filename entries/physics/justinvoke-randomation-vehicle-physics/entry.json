@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T23:46:38Z",
+ "category": "physics",
+ "commit": "192ba860c3c9",
+ "delivery": "vendored",
+ "description": "JustInvoke/Randomation-Vehicle-Physics \u2014 Vehicle physics system for the Unity engine.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "MIT LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "Randomation-Vehicle-Physics",
+ "size_bytes": 280335,
+ "slug": "justinvoke-randomation-vehicle-physics",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 939,
+ "system": "Vehicle physics system for the Unity engine.",
+ "upstream": "https://github.com/JustInvoke/Randomation-Vehicle-Physics",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

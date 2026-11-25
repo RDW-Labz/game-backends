@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T23:46:40Z",
+ "category": "physics",
+ "commit": "fc2c5f383fa4",
+ "delivery": "reference",
+ "description": "hunterloftis/newton \u2014 A playful, particle-based physics engine designed from the ground up for JavaScript.",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "newton",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 2134759,
+ "slug": "hunterloftis-newton",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 913,
+ "system": "A playful, particle-based physics engine designed from the ground up for JavaScript.",
+ "upstream": "https://github.com/hunterloftis/newton",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

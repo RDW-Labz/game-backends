@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T23:46:41Z",
+ "category": "physics",
+ "commit": "2024-04-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "taichi-dev/taichi_elements \u2014 High-performance multi-material continuum physics engine in Taichi",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "taichi_elements",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "taichi-dev-taichi-elements",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 571,
+ "system": "High-performance multi-material continuum physics engine in Taichi",
+ "upstream": "https://github.com/taichi-dev/taichi_elements",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

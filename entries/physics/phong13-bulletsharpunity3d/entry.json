@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T23:46:41Z",
+ "category": "physics",
+ "commit": "2023-10-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Phong13/BulletSharpUnity3d \u2014 A fork of the BulletSharp project to make the Bullet Physics Engine usable from C# code in Unity3d",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "BulletSharpUnity3d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "phong13-bulletsharpunity3d",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 568,
+ "system": "A fork of the BulletSharp project to make the Bullet Physics Engine usable from C# code in Unity3d",
+ "upstream": "https://github.com/Phong13/BulletSharpUnity3d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
