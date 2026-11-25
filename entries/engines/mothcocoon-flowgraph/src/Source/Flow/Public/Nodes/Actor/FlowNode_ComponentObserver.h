@@ -1,0 +1,91 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#pragma once
+
+#include "GameplayTagContainer.h"
+
+#include "Nodes/FlowNode.h"
+#include "FlowNode_ComponentObserver.generated.h"
+
+class UFlowComponent;
+
+/**
+ * Base class for nodes operating on actors with the Flow Component.
+ * Such nodes usually wait until a specific action occurs in the actor.
+ */
+UCLASS(Abstract, NotBlueprintable)
+class FLOW_API UFlowNode_ComponentObserver : public UFlowNode
+{
+	GENERATED_BODY()
+
+public:
+	UFlowNode_ComponentObserver();
+	
+	friend class FFlowNode_ComponentObserverDetails;
+
+protected:
+	UPROPERTY(EditAnywhere, Category = "ObservedComponent")
+	FGameplayTagContainer IdentityTags;
+
+	/* Container A: Identity Tags in Flow Component.
+	 * Container B: Identity Tags listed above. */
+	UPROPERTY(EditAnywhere, Category = "ObservedComponent")
+	EFlowTagContainerMatchType IdentityMatchType = EFlowTagContainerMatchType::HasAnyExact;
+
+	/* This node will become Completed, if Success Limit > 0 and Success Count reaches this limit.
+	 * Set this to zero, if you'd like receive events indefinitely (node would finish work only if explicitly Stopped). */
+	UPROPERTY(EditAnywhere, Category = "Lifetime", meta = (ClampMin = 0))
+	int32 SuccessLimit = 1;
+
+	/* This node will become Completed, if Success Limit > 0 and Success Count reaches this limit. */
+	UPROPERTY(VisibleAnywhere, Category = "Lifetime", SaveGame)
+	int32 SuccessCount = 0;
+
+	TMap<TWeakObjectPtr<AActor>, TWeakObjectPtr<UFlowComponent>> RegisteredActors;
+
+public:
+	virtual void ExecuteInput(const FName& PinName) override;
+
+protected:
+	virtual void FastForwardInput(const FName& PinName, const FName& OutputPinName) override;
+
+public:
+	virtual bool CanFastForward(const FName& InputPinName, const FName& OutputPinName) const override;
+
+protected:
+	virtual void OnLoad_Implementation() override;
+
+	virtual void StartObserving();
+	virtual void StopObserving();
+
+	UFUNCTION()
+	virtual void OnComponentRegistered(UFlowComponent* Component);
+
+	UFUNCTION()
+	virtual void OnComponentTagAdded(UFlowComponent* Component, const FGameplayTagContainer& AddedTags);
+
+	UFUNCTION()
+	virtual void OnComponentTagRemoved(UFlowComponent* Component, const FGameplayTagContainer& RemovedTags);
+
+	UFUNCTION()
+	virtual void OnComponentUnregistered(UFlowComponent* Component);
+
+	virtual void ObserveActor(TWeakObjectPtr<AActor> Actor, TWeakObjectPtr<UFlowComponent> Component) {}
+	virtual void ForgetActor(TWeakObjectPtr<AActor> Actor, TWeakObjectPtr<UFlowComponent> Component) {}
+
+	UFUNCTION()
+	virtual void OnEventReceived();
+
+	/* Emulates the game event this node waits for at its source. */
+	virtual void FastForwardEvent() {}
+
+public:
+	virtual void Cleanup() override;
+
+#if WITH_EDITOR
+	virtual FString GetNodeDescription() const override;
+	virtual FString GetStatusString() const override;
+	
+protected:	
+	virtual EDataValidationResult ValidateNode() override;
+#endif
+};

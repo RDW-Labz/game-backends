@@ -1,0 +1,176 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#pragma once
+
+#include "EngineDefines.h"
+#include "Engine/StreamableManager.h"
+#include "LevelSequencePlayer.h"
+#include "MovieSceneSequencePlayer.h"
+
+#include "Interfaces/FlowPreloadableInterface.h"
+#include "Nodes/FlowNode.h"
+#include "FlowNode_PlayLevelSequence.generated.h"
+
+class AFlowLevelSequenceActor;
+class UFlowLevelSequencePlayer;
+
+DECLARE_MULTICAST_DELEGATE(FFlowNodeLevelSequenceEvent);
+
+/**
+ * Plays a Level Sequence asset, firing PreStart, Started, Out, and Completed outputs in that order, and supports
+ * save/restore of playback position. Attach LevelSequenceActorBinding AddOns to override named sequence actor
+ * bindings before playback begins.
+ */
+UCLASS(NotBlueprintable, meta = (DisplayName = "Play Level Sequence", Keywords = "cutscene"))
+class FLOW_API UFlowNode_PlayLevelSequence
+	: public UFlowNode
+	, public IFlowPreloadableInterface
+{
+	GENERATED_BODY()
+
+public:
+	UFlowNode_PlayLevelSequence();
+
+	friend struct FFlowTrackExecutionToken;
+
+public:
+	static FFlowNodeLevelSequenceEvent OnPlaybackStarted;
+	static FFlowNodeLevelSequenceEvent OnPlaybackCompleted;
+
+	/* The Level Sequence asset to play. */
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	TSoftObjectPtr<ULevelSequence> Sequence;
+
+	/* Playback settings: start/end frames, play rate, loop count, etc. */
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	FMovieSceneSequencePlaybackSettings PlaybackSettings;
+
+	/* When true, plays the sequence in reverse. */
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	bool bPlayReverse = false;
+
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	FLevelSequenceCameraSettings CameraSettings;
+
+	/* Level Sequence playback can be moved to any place in the world by applying Transform Origin.
+	 * Enabling this option will use actor that created Root Flow instance, i.e. World Settings or Player Controller/
+	 * See https://docs.unrealengine.com/5.0/en-US/creating-level-sequences-with-dynamic-transforms-in-unreal-engine/ */
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	bool bUseGraphOwnerAsTransformOrigin = false;
+
+	/* If true, playback of this level sequence on the server will be synchronized across other clients. */
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	bool bReplicates = false;
+
+	/* Always relevant for network (overrides bOnlyRelevantToOwner). */
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	bool bAlwaysRelevant = false;
+
+	/* If True, Play Rate will be multiplied by Custom Time Dilation.
+	 * Enabling this option will use Custom Time Dilation from actor that created Root Flow instance, i.e. World Settings or Player Controller. */
+	UPROPERTY(EditAnywhere, Category = "Sequence")
+	bool bApplyOwnerTimeDilation = true;
+
+protected:
+	UPROPERTY()
+	TObjectPtr<ULevelSequence> LoadedSequence;
+
+	UPROPERTY()
+	TObjectPtr<UFlowLevelSequencePlayer> SequencePlayer;
+
+	UPROPERTY()
+	TObjectPtr<AFlowLevelSequenceActor> SequenceActor;
+
+	/* Play Rate set by the user in PlaybackSettings. */
+	float CachedPlayRate = 0.0f;
+
+	UPROPERTY(SaveGame)
+	float StartTime = 0.0f;
+
+	UPROPERTY(SaveGame)
+	float ElapsedTime = 0.0f;
+
+	UPROPERTY(SaveGame)
+	float TimeDilation = 1.0f;
+
+	FStreamableManager StreamableManager;
+
+	TSharedPtr<FStreamableHandle> PreloadHandle;
+
+public:
+#if WITH_EDITOR
+	// IFlowContextPinSupplierInterface
+	virtual bool SupportsContextPins() const override { return true; }
+	virtual TArray<FFlowPin> GetContextOutputs() const override;
+	// --
+
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+
+	// IFlowPreloadableInterface
+	virtual EFlowPreloadResult PreloadContent() override;
+	virtual void FlushContent() override;
+	// --
+
+protected:
+	// UFlowNodeBase
+	virtual EFlowAddOnAcceptResult AcceptFlowNodeAddOnChild_Implementation(const UFlowNodeAddOn* AddOnTemplate, const TArray<UFlowNodeAddOn*>& AdditionalAddOnsToAssumeAreChildren) const override;
+	// --
+
+public:
+	virtual void InitializeInstance() override;
+	void CreatePlayer();
+
+	virtual void ExecuteInput(const FName& PinName) override;
+
+protected:
+	virtual void FastForwardInput(const FName& PinName, const FName& OutputPinName) override;
+
+public:
+	virtual bool CanFastForward(const FName& InputPinName, const FName& OutputPinName) const override;
+
+protected:
+	/* Evaluates playback up to the given frame at once, firing sequence events on the way. */
+	void FastForwardPlaybackTo(const FFrameTime& Frame) const;
+
+	/* Frame of the first Flow track event with the given name, in the player's frame rate. */
+	TOptional<FFrameTime> FindEventTime(const FString& EventName) const;
+
+	virtual void OnSave_Implementation() override;
+	virtual void OnLoad_Implementation() override;
+
+private:
+	void TriggerEvent(const FString& EventName);
+
+public:
+	void OnTimeDilationUpdate(const float NewTimeDilation);
+
+protected:
+	UFUNCTION()
+	virtual void OnPlaybackFinished();
+
+public:
+	virtual void StopPlayback();
+	virtual void Cleanup() override;
+
+public:
+	FString GetPlaybackProgress() const;
+
+#if WITH_EDITOR
+	virtual FString GetNodeDescription() const override;
+	virtual FString GetStatusString() const override;
+	virtual UObject* GetAssetToEdit() override;
+	
+protected:	
+	virtual EDataValidationResult ValidateNode() override;
+#endif
+
+#if ENABLE_VISUAL_LOG
+public:	
+	virtual void GrabDebugSnapshot(struct FVisualLogEntry* Snapshot) const override;
+#endif
+
+#if WITH_EDITOR
+public:
+	virtual const FFlowAgentDoc& GetAgentDoc() const override;
+#endif
+};

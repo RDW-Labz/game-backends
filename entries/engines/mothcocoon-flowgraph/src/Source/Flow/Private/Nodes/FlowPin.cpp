@@ -1,0 +1,289 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#include "Nodes/FlowPin.h"
+
+#include "FlowLogChannels.h"
+#include "Types/FlowPinType.h"
+#include "Types/FlowPinTypesStandard.h"
+
+#include "GameplayTagContainer.h"
+#include "Misc/DateTime.h"
+#include "Misc/MessageDialog.h"
+#include "StructUtils/InstancedStruct.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(FlowPin)
+
+#define LOCTEXT_NAMESPACE "FlowPin"
+
+//////////////////////////////////////////////////////////////////////////
+// Flow Pin
+
+const FName FFlowPin::MetadataKey_SourceForOutputFlowPin = "SourceForOutputFlowPin";
+const FName FFlowPin::MetadataKey_DefaultForInputFlowPin = "DefaultForInputFlowPin";
+const FName FFlowPin::MetadataKey_FlowPinType = "FlowPinType";
+
+#if WITH_EDITOR
+FText FFlowPin::BuildHeaderText() const
+{
+	const FText PinNameToUse = !PinFriendlyName.IsEmpty() ? PinFriendlyName : FText::FromName(PinName);
+
+	if (IsExecPin())
+	{
+		return PinNameToUse;
+	}
+	else
+	{
+		return FText::Format(LOCTEXT("FlowPinNameAndType", "{0} ({1})"), {PinNameToUse, FText::FromString(PinTypeName.ToString())});
+	}
+}
+
+bool FFlowPin::ValidateEnum(const UEnum& EnumType)
+{
+	// This function copied and adapted from UBlackboardKeyType_Enum::ValidateEnum(),
+	// because it is inaccessible w/o AIModule and private access
+
+	bool bAllValid = true;
+
+	// Do not test the max value (if present) since it is an internal value and users don't have access to it
+	const int32 NumEnums = EnumType.ContainsExistingMax() ? EnumType.NumEnums() - 1 : EnumType.NumEnums();
+	for (int32 i = 0; i < NumEnums; i++)
+	{
+		// Enum data type is uint8 (based on UBlackboardKeyType_Enum::ValidateEnum())
+		typedef uint8 FDataType;
+
+		const int64 Value = EnumType.GetValueByIndex(i);
+		if (Value < std::numeric_limits<FDataType>::min() || Value > std::numeric_limits<FDataType>::max())
+		{
+			UE_LOG(LogFlow, Error, TEXT("'%s' value %lld is outside the range of supported key values for enum [%d, %d].")
+			       , *EnumType.GenerateFullEnumName(*EnumType.GetDisplayNameTextByIndex(i).ToString())
+			       , Value, std::numeric_limits<FDataType>::min(), std::numeric_limits<FDataType>::max());
+
+			bAllValid = false;
+		}
+	}
+
+	if (!bAllValid)
+	{
+		FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("Unsupported enumeration"
+		                                              , "Specified enumeration contains one or more values outside supported value range for enum keys and can not be used for Flow Data Pins. See log for details."));
+	}
+
+	return bAllValid;
+}
+
+FEdGraphPinType FFlowPin::BuildEdGraphPinType() const
+{
+	check(!PinTypeName.Name.IsNone());
+
+	FEdGraphPinType EdGraphPinType;
+	EdGraphPinType.PinCategory = PinTypeName.Name;
+
+	// TODO (gtaylor) possible future extension for types, to allow sub categories
+	EdGraphPinType.PinSubCategory = NAME_None;
+
+	EdGraphPinType.PinSubCategoryObject = PinSubCategoryObject;
+	EdGraphPinType.ContainerType = ContainerType;
+
+	return EdGraphPinType;
+}
+
+void FFlowPin::ConfigureFromEdGraphPin(const FEdGraphPinType& EdGraphPinType)
+{
+	PinTypeName.Name = EdGraphPinType.PinCategory;
+	PinSubCategoryObject = EdGraphPinType.PinSubCategoryObject;
+	ContainerType = EdGraphPinType.ContainerType;
+}
+#endif //WITH_EDITOR
+
+void FFlowPin::SetPinTypeName(const FFlowPinTypeName& InTypeName)
+{
+	if (PinTypeName == InTypeName)
+	{
+		return;
+	}
+
+	PinTypeName = InTypeName;
+}
+
+const FFlowPinType* FFlowPin::ResolveFlowPinType() const
+{
+	// TODO (gtaylor) consider caching this in a mutable?
+	return FFlowPinType::LookupPinType(PinTypeName);
+}
+
+
+bool FFlowPin::IsExecPin() const
+{
+	return PinTypeName == FFlowPinType_Exec::GetPinTypeNameStatic();
+}
+
+bool FFlowPin::IsExecPinCategory(const FName& PC)
+{
+	return PC == FFlowPinType_Exec::GetPinTypeNameStatic().Name;
+}
+
+void FFlowPin::TrySetStructSubCategoryObjectFromPinType()
+{
+	if (PinTypeName == FFlowPinType_Vector::GetPinTypeNameStatic())
+	{
+		PinSubCategoryObject = TBaseStructure<FVector>::Get();
+	}
+	else if (PinTypeName == FFlowPinType_Rotator::GetPinTypeNameStatic())
+	{
+		PinSubCategoryObject = TBaseStructure<FRotator>::Get();
+	}
+	else if (PinTypeName == FFlowPinType_Transform::GetPinTypeNameStatic())
+	{
+		PinSubCategoryObject = TBaseStructure<FTransform>::Get();
+	}
+	else if (PinTypeName == FFlowPinType_GameplayTag::GetPinTypeNameStatic())
+	{
+		PinSubCategoryObject = TBaseStructure<FGameplayTag>::Get();
+	}
+	else if (PinTypeName == FFlowPinType_GameplayTagContainer::GetPinTypeNameStatic())
+	{
+		PinSubCategoryObject = TBaseStructure<FGameplayTagContainer>::Get();
+	}
+	else if (PinTypeName == FFlowPinType_InstancedStruct::GetPinTypeNameStatic())
+	{
+		PinSubCategoryObject = TBaseStructure<FInstancedStruct>::Get();
+	}
+	else if (PinTypeName == FFlowPinType_Enum::GetPinTypeNameStatic())
+	{
+		// Clear the PinSubCategoryObject if it is not an Enum
+		const UObject* PinSubCategoryObjectPtr = PinSubCategoryObject.Get();
+		if (PinSubCategoryObjectPtr && !PinSubCategoryObjectPtr->IsA<UEnum>())
+		{
+			PinSubCategoryObject = nullptr;
+		}
+	}
+	else if (PinTypeName == FFlowPinType_Object::GetPinTypeNameStatic())
+	{
+		// Clear the PinSubCategoryObject if it is not an Object
+		const UObject* PinSubCategoryObjectPtr = PinSubCategoryObject.Get();
+		if (PinSubCategoryObjectPtr && !PinSubCategoryObjectPtr->IsA<UObject>())
+		{
+			PinSubCategoryObject = nullptr;
+		}
+	}
+	else if (PinTypeName == FFlowPinType_Class::GetPinTypeNameStatic())
+	{
+		// Clear the PinSubCategoryObject if it is not a Class
+		const UObject* PinSubCategoryObjectPtr = PinSubCategoryObject.Get();
+		if (PinSubCategoryObjectPtr && !PinSubCategoryObjectPtr->IsA<UClass>())
+		{
+			PinSubCategoryObject = nullptr;
+		}
+	}
+	else
+	{
+		// Clear the PinSubCategoryObject for all PinTypes that do not use it.
+		PinSubCategoryObject = nullptr;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Pin Record
+
+#if !UE_BUILD_SHIPPING
+FString FPinRecord::PinActivations = TEXT("Pin activations");
+FString FPinRecord::ForcedActivation = TEXT(" (forced activation)");
+FString FPinRecord::PassThroughActivation = TEXT(" (pass-through activation)");
+
+FPinRecord::FPinRecord(const double InTime, const EFlowPinActivationType InActivationType)
+	: Time(InTime)
+	, ActivationType(InActivationType)
+{
+	const FDateTime SystemTime(FDateTime::Now());
+	HumanReadableTime = DoubleDigit(SystemTime.GetHour()) + TEXT(".")
+		+ DoubleDigit(SystemTime.GetMinute()) + TEXT(".")
+		+ DoubleDigit(SystemTime.GetSecond()) + TEXT(":")
+		+ DoubleDigit(SystemTime.GetMillisecond()).Left(3);
+}
+
+FORCEINLINE FString FPinRecord::DoubleDigit(const int32 Number)
+{
+	return Number > 9 ? FString::FromInt(Number) : TEXT("0") + FString::FromInt(Number);
+}
+
+void FPinRecordBuffer::Add(const FName& PinName, const FPinRecord& NewRecord)
+{
+	RecentPinRecords[NextPinRecordIndex] = NewRecord;
+	const FPinRecord& CurrentRecord = RecentPinRecords[NextPinRecordIndex];
+	NextPinRecordIndex = RecentPinRecords.GetNextIndex(NextPinRecordIndex);
+	TotalPinRecords++;
+	Log(PinName, CurrentRecord);
+}
+
+void FPinRecordBuffer::Add(const FName& PinName, FPinRecord&& NewRecord)
+{
+	RecentPinRecords[NextPinRecordIndex] = MoveTemp(NewRecord);
+	const FPinRecord& CurrentRecord = RecentPinRecords[NextPinRecordIndex];
+	NextPinRecordIndex = RecentPinRecords.GetNextIndex(NextPinRecordIndex);
+	TotalPinRecords++;
+	Log(PinName, CurrentRecord);
+}
+
+TArray<FPinRecord> FPinRecordBuffer::GetArray() const
+{
+    TArray<FPinRecord> Results;
+	uint32 Count = FMath::Min(TotalPinRecords, RecentPinRecordsCapacity);
+	if (Count <= 0)
+	{
+		return Results;
+	}
+
+	Results.Reserve(Count);
+
+	// If buffer is full, the oldest is at NextPinRecordIndex
+	// If buffer is not full, the oldest is at index 0
+	const uint32 StartIndex = (TotalPinRecords >= RecentPinRecordsCapacity) ? NextPinRecordIndex : 0;
+	for (uint32 ProcessedRecordsCount = 0, CurrentIndex = StartIndex;
+		ProcessedRecordsCount < Count;
+		ProcessedRecordsCount++, CurrentIndex = RecentPinRecords.GetNextIndex(CurrentIndex))
+	{
+		Results.Add(RecentPinRecords[CurrentIndex]);
+	}
+
+	return Results;
+}
+
+FPinRecord& FPinRecordBuffer::Last()
+{
+	const uint32 Index = RecentPinRecords.GetPreviousIndex(NextPinRecordIndex);
+	RangeCheck(Index);
+	return RecentPinRecords[Index];
+}
+
+const FPinRecord& FPinRecordBuffer::Last() const
+{
+	return const_cast<FPinRecordBuffer*>(this)->Last();
+}
+
+void FPinRecordBuffer::RangeCheck(const uint32 Index) const
+{
+	checkf(Index < RecentPinRecords.Capacity(),TEXT("Buffer index out of bounds: %lld into an buffer of size %lld"),static_cast<long long>(Index), static_cast<long long>(RecentPinRecords.Capacity()));
+}
+
+bool FPinRecordBuffer::IsValidIndex(const uint32 Index) const
+{
+	return Index < RecentPinRecords.Capacity();
+}
+
+uint32 FPinRecordBuffer::Capacity() const
+{
+	return RecentPinRecords.Capacity();
+}
+
+void FPinRecordBuffer::Log(const FName& PinName, const FPinRecord& Record)
+{
+	UE_LOG(LogFlow, VeryVerbose, TEXT("%s: %s: %s%s")
+		, *PinName.ToString()
+		, *FPinRecord::PinActivations
+		, *Record.HumanReadableTime
+		, Record.ActivationType == EFlowPinActivationType::Forced ? *FPinRecord::ForcedActivation
+		: Record.ActivationType == EFlowPinActivationType::PassThrough ? *FPinRecord::PassThroughActivation
+		: TEXT(""));
+}
+#endif
+
+#undef LOCTEXT_NAMESPACE

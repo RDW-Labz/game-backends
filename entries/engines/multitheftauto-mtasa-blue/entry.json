@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:15:15Z",
+ "category": "engines",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "multitheftauto/mtasa-blue \u2014 Multi Theft Auto is a game engine that turns Grand Theft Auto: San Andreas into networked multiplayer.",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "mtasa-blue",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "multitheftauto-mtasa-blue",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1910,
+ "system": "Multi Theft Auto is a game engine that turns Grand Theft Auto: San Andreas into networked multiplayer.",
+ "upstream": "https://github.com/multitheftauto/mtasa-blue",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

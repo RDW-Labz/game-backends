@@ -1,0 +1,194 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#pragma once
+
+#include "GraphEditor.h"
+#include "Widgets/DeclarativeSyntaxSupport.h"
+
+#include "FlowGraph.h"
+
+class FFlowAssetEditor;
+class FFlowSubGraphExtractionTool;
+class IDetailsView;
+class UEdGraphPin;
+class UFlowDebuggerSubsystem;
+struct FFlowBreakpoint;
+
+/**
+ * Flow-specific implementation of engine's Graph Editor.
+ */
+class FLOWEDITOR_API SFlowGraphEditor : public SGraphEditor
+{
+	friend class FFlowSubGraphExtractionTool;
+
+public:
+	SLATE_BEGIN_ARGS(SFlowGraphEditor)
+		: _CanEditInPIE(false)
+		{
+		}
+
+		SLATE_ARGUMENT(FGraphEditorEvents, GraphEvents)
+		SLATE_ARGUMENT(TSharedPtr<IDetailsView>, DetailsView)
+		SLATE_ARGUMENT(bool, CanEditInPIE)
+	SLATE_END_ARGS()
+
+protected:
+	TWeakObjectPtr<UFlowAsset> FlowAsset;
+
+	TWeakPtr<FFlowAssetEditor> FlowAssetEditor;
+	TSharedPtr<IDetailsView> DetailsView;
+	TSharedPtr<FUICommandList> CommandList;
+	bool bCanEditInPIE = false;
+
+	TWeakObjectPtr<UFlowDebuggerSubsystem> DebuggerSubsystem;
+
+public:
+	void Construct(const FArguments& InArgs, const TSharedPtr<FFlowAssetEditor> InAssetEditor);
+
+	virtual void CreateDebugMenu();
+	virtual void BindGraphCommands();
+
+	virtual FGraphAppearanceInfo GetGraphAppearanceInfo() const;
+	virtual FText GetCornerText() const;
+	virtual FText GetPIENotifyText() const;
+
+private:
+	static void UndoGraphAction();
+	static void RedoGraphAction();
+
+	static FReply OnSpawnGraphNodeByShortcut(FInputChord InChord, const FVector2f& InPosition, UEdGraph* InGraph);
+
+	void OnCreateComment() const;
+
+public:
+	virtual bool IsTabFocused() const;
+
+	bool CanEdit() const;
+	static bool IsPIE();
+	static bool IsPlaySessionPaused();
+
+	virtual void SelectSingleNode(UEdGraphNode* Node);
+
+protected:
+	virtual void OnSelectedNodesChanged(const TSet<UObject*>& Nodes);
+
+public:
+	FOnSelectionChanged OnSelectionChangedEvent;
+
+	TArray<UFlowGraphNode*> GetSelectedFlowNodes() const;
+
+protected:
+	virtual bool CanSelectAllNodes() const { return true; }
+
+	static void ReconnectExecPins(const UFlowGraphNode* Node);
+	virtual void DeleteSelectedNodes();
+	virtual void DeleteSelectedDuplicableNodes();
+	virtual bool CanDeleteNodes() const;
+
+	virtual void CopySelectedNodes() const;
+	static void PrepareFlowGraphNodeForCopy(UFlowGraphNode& FlowGraphNode, const FGuid& ParentGuid, FGraphPanelSelectionSet& NewSelectedNodes);
+	virtual bool CanCopyNodes() const;
+
+	virtual void CutSelectedNodes();
+	virtual bool CanCutNodes() const;
+
+	virtual void PasteNodes();
+
+public:
+	virtual void PasteNodesHere(const FVector2f& Location);
+
+protected:
+	virtual void ClipboardCopy(const FString& Text) const;
+	virtual void ClipboardPaste(FString& OutText) const;
+
+	TSet<UEdGraphNode*> ImportNodesToPasteFromClipboard(UFlowGraph& FlowGraph, FString& OutTextToImport) const;
+	TSet<UEdGraphNode*> ImportAndValidatePastedNodes(FString& OutTextToImport, TMap<FGuid, UFlowGraphNode*>& OutSourceGuidToPastedNode, const UFlowGraphNode* AddOnPasteTarget) const;
+	void PreparePastedNodesForPaste(const TSet<UEdGraphNode*>& NodesToPaste, const FVector2f& Location);
+	static void AttachPastedSubNodes(const TSet<UEdGraphNode*>& NodesToPaste, const TMap<FGuid, UFlowGraphNode*>& SourceGuidToPastedNode, UFlowGraphNode* AddOnPasteTarget);
+
+public:
+	virtual bool CanPasteNodes() const;
+
+protected:
+	static bool CanPasteNodesAsSubNodes(const TSet<UEdGraphNode*>& NodesToPaste, const UFlowGraphNode& PasteTargetNode);
+
+	virtual void DuplicateNodes();
+	virtual bool CanDuplicateNodes() const;
+
+	virtual void OnNodeDoubleClicked(class UEdGraphNode* Node) const;
+	virtual void OnNodeTitleCommitted(const FText& NewText, ETextCommit::Type CommitInfo, UEdGraphNode* NodeBeingChanged);
+
+	virtual void ReconstructNode() const;
+	virtual bool CanReconstructNode() const;
+
+	virtual void ExtractToSubGraph();
+	virtual bool CanExtractToSubGraph() const;
+
+	// ---- Pin breakpoint helpers ----
+	static bool GetValidExecBreakpointPinContext(const UEdGraphPin* Pin, FGuid& OutNodeGuid, FName& OutPinName);
+	static const FFlowBreakpoint* FindPinBreakpoint(UFlowDebuggerSubsystem* InDebuggerSubsystem, const UEdGraphPin* Pin);
+	static bool HasPinBreakpoint(UFlowDebuggerSubsystem* InDebuggerSubsystem, const UEdGraphPin* Pin);
+	static bool HasEnabledPinBreakpoint(UFlowDebuggerSubsystem* InDebuggerSubsystem, const UEdGraphPin* Pin);
+
+private:
+	void AddInput() const;
+	bool CanAddInput() const;
+
+	void AddOutput() const;
+	bool CanAddOutput() const;
+
+	void RemovePin();
+	bool CanRemovePin();
+
+	void OnAddBreakpoint() const;
+	void OnAddPinBreakpoint();
+
+	bool CanAddBreakpoint() const;
+	bool CanAddPinBreakpoint();
+
+	void OnRemoveBreakpoint() const;
+	void OnRemovePinBreakpoint();
+
+	bool CanRemoveBreakpoint() const;
+	bool CanRemovePinBreakpoint();
+
+	void OnEnableBreakpoint() const;
+	void OnEnablePinBreakpoint();
+
+	bool CanEnableBreakpoint() const;
+	bool CanEnablePinBreakpoint();
+
+	void OnDisableBreakpoint() const;
+	void OnDisablePinBreakpoint();
+
+	bool CanDisableBreakpoint() const;
+	bool CanDisablePinBreakpoint();
+
+	void OnToggleBreakpoint() const;
+	void OnTogglePinBreakpoint();
+
+	bool CanToggleBreakpoint() const;
+	bool CanTogglePinBreakpoint();
+
+	void EnableAllBreakpoints() const;
+	bool HasAnyDisabledBreakpoints() const;
+
+	void DisableAllBreakpoints() const;
+	bool HasAnyEnabledBreakpoints() const;
+
+	void RemoveAllBreakpoints() const;
+	bool HasAnyBreakpoints() const;
+
+	void SetSignalMode(const EFlowSignalMode Mode) const;
+	bool CanSetSignalMode(const EFlowSignalMode Mode) const;
+
+	void OnForcePinActivation();
+
+	void FastForwardToHere() const;
+	bool CanFastForwardToHere() const;
+
+	void FocusViewport() const;
+	bool CanFocusViewport() const;
+
+	void JumpToNodeDefinition() const;
+	bool CanJumpToNodeDefinition() const;
+};

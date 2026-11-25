@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T16:15:13Z",
+ "category": "engines",
+ "commit": "5b00f48c20ef",
+ "delivery": "reference",
+ "description": "Awakenchan/LanternEngine \u2014 Lantern Engine: run your own copy of Bloodborne on Windows. A launcher and engine where the game's code runs natively; bring your own game dump.",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "LanternEngine",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 63712794,
+ "slug": "awakenchan-lanternengine",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1934,
+ "system": "Lantern Engine: run your own copy of Bloodborne on Windows. A launcher and engine where the game's code runs natively; bring your own game dump.",
+ "upstream": "https://github.com/Awakenchan/LanternEngine",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

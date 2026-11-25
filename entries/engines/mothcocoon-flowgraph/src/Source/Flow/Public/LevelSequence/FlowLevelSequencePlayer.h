@@ -1,0 +1,42 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#pragma once
+
+#include "LevelSequencePlayer.h"
+#include "FlowLevelSequencePlayer.generated.h"
+
+class AFlowLevelSequenceActor;
+class UFlowNode;
+
+/**
+ * Custom ULevelSequencePlayer allows for binding Flow Nodes to Level Sequence events.
+ */
+UCLASS()
+class FLOW_API UFlowLevelSequencePlayer : public ULevelSequencePlayer
+{
+	GENERATED_BODY()
+
+private:
+	/* Most likely this is a UFlowNode_PlayLevelSequence or its child. */
+	UPROPERTY()
+	TObjectPtr<UFlowNode> FlowEventReceiver;
+
+public:
+	/* Variant of ULevelSequencePlayer::CreateLevelSequencePlayer.
+	 * ActorClass has to be a child of AFlowLevelSequenceActor, nullptr spawns AFlowLevelSequenceActor. */
+	static UFlowLevelSequencePlayer* CreateFlowLevelSequencePlayer(
+		const UObject* WorldContextObject,
+		ULevelSequence* LevelSequence,
+		const FMovieSceneSequencePlaybackSettings& Settings,
+		const FLevelSequenceCameraSettings InCameraSettings,
+		const AActor* TransformOriginActor,
+		const bool bReplicates,
+		const bool bAlwaysRelevant,
+		TObjectPtr<AFlowLevelSequenceActor>& OutActor,
+		TSubclassOf<AFlowLevelSequenceActor> ActorClass = nullptr);
+
+	void SetFlowEventReceiver(UFlowNode* FlowNode) { FlowEventReceiver = FlowNode; }
+
+	// IMovieScenePlayer
+	virtual TArray<UObject*> GetEventContexts() const override;
+	// --
+};

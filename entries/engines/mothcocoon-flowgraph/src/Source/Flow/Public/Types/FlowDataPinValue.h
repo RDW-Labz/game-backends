@@ -1,0 +1,63 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#pragma once
+
+#include "UObject/NameTypes.h"
+
+#include "FlowPinEnums.h"
+#include "FlowPinType.h"
+#include "FlowDataPinValue.generated.h"
+
+struct FFlowDataPinResult;
+class FProperty;
+class UObject;
+class IPropertyHandle;
+class UScriptStruct;
+
+USTRUCT()
+struct FFlowDataPinValue
+{
+	GENERATED_BODY()
+
+	friend class FFlowDataPinValueCustomization;
+
+public:
+	/* If a pin was created from this property, this is the cached pin name that was used.
+	 * Which can be used in UFlowDataPinBlueprintLibrary::ResolveAs... functions to lookup the correct pin by name. */
+	UPROPERTY(VisibleAnywhere, Category = DataPins)
+	mutable FName PropertyPinName;
+
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, Category = DataPins)
+	bool bIsInputPin = false;
+
+	UPROPERTY(EditAnywhere, Category = DataPins)
+	EFlowDataMultiType MultiType = EFlowDataMultiType::Single;
+#endif
+
+	virtual ~FFlowDataPinValue() {}
+
+#if WITH_EDITOR
+	FLOW_API bool IsInputPin() const { return bIsInputPin; }
+	FLOW_API bool IsArray() const { FLOW_ASSERT_ENUM_MAX(EFlowDataMultiType, 2); return MultiType == EFlowDataMultiType::Array; }
+#endif
+
+	/* Pin Type Name (identity). */
+	FLOW_API virtual const FFlowPinTypeName& GetPinTypeName() const
+	{
+		checkNoEntry();
+		return FFlowPinType::PinTypeNameUnknown;
+	}
+
+	/* (optional) Get the field type if one exists (only used for UEnum For Now). */
+	FLOW_API virtual UField* GetFieldType() const { return nullptr; }
+
+	/* (optional) */
+	FLOW_API virtual bool TryConvertValuesToString(FString& OutString) const { return false; }
+
+	FLOW_API virtual bool GetDebugString(FString& OutString) const { return TryConvertValuesToString(OutString); }
+
+	/* Resolve the registered data pin type. */
+	FLOW_API const FFlowPinType* LookupPinType() const;
+
+	FLOW_API static const FString StringArraySeparator;
+};

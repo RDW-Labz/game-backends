@@ -1,0 +1,84 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#include "Nodes/Route/FlowNode_LogicalOR.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(FlowNode_LogicalOR)
+
+UFlowNode_LogicalOR::UFlowNode_LogicalOR()
+{
+#if WITH_EDITOR
+	Category = TEXT("Route|Logic");
+	NodeDisplayStyle = FlowNodeStyle::Logic;
+#endif
+
+	SetNumberedInputPins(0, 1);
+	InputPins.Add(FFlowPin(TEXT("Enable"), TEXT("Enabling resets Execution Count")));
+	InputPins.Add(FFlowPin(TEXT("Disable"), TEXT("Disabling resets Execution Count")));
+}
+
+void UFlowNode_LogicalOR::ExecuteInput(const FName& PinName)
+{
+	if (PinName == TEXT("Enable"))
+	{
+		if (!bEnabled)
+		{
+			ResetCounter();
+			bEnabled = true;
+		}
+		return;
+	}
+
+	if (PinName == TEXT("Disable"))
+	{
+		if (bEnabled)
+		{
+			bEnabled = false;
+			Finish();
+		}
+		return;
+	}
+
+	if (bEnabled && PinName.ToString().IsNumeric())
+	{
+		ExecutionCount++;
+		if (ExecutionLimit > 0 && ExecutionCount == ExecutionLimit)
+		{
+			bEnabled = false;
+		}
+
+		TriggerFirstOutput(true);
+	}
+}
+
+bool UFlowNode_LogicalOR::CanFastForward(const FName& InputPinName, const FName& OutputPinName) const
+{
+	// Only numbered inputs of the enabled node trigger the output
+	return bEnabled && InputPinName.ToString().IsNumeric();
+}
+
+void UFlowNode_LogicalOR::ResetCounter()
+{
+	ExecutionCount = 0;
+}
+
+#if WITH_EDITOR
+FString UFlowNode_LogicalOR::GetStatusString() const
+{
+	if (ExecutionLimit > 1)
+	{
+		return FString::Printf(TEXT("ExecutionCount: %d/%d"), ExecutionCount, ExecutionLimit);
+	}
+
+	return Super::GetStatusString();
+}
+#endif
+
+#if WITH_EDITOR
+const FFlowAgentDoc& UFlowNode_LogicalOR::GetAgentDoc() const
+{
+	static const FFlowAgentDoc Doc = MakeAgentDoc(
+		/*Guidance*/ TEXT("Use to merge multiple parallel branches into a single continuation point. Set ExecutionLimit to 0 for unlimited firings, or to N to block permanently after N total firings until re-enabled."),
+		/*Tags*/     { TEXT("route"), TEXT("logic"), TEXT("merge") },
+		/*Articles*/ {  });
+	return Doc;
+}
+#endif

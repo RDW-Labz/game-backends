@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:15:15Z",
+ "category": "engines",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "netwarm007/GameEngineFromScratch \u2014 \u914d\u5408\u6211\u7684\u77e5\u4e4e\u4e13\u680f\u5199\u7684\u9879\u76ee",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "GameEngineFromScratch",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "netwarm007-gameenginefromscratch",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1810,
+ "system": "\u914d\u5408\u6211\u7684\u77e5\u4e4e\u4e13\u680f\u5199\u7684\u9879\u76ee",
+ "upstream": "https://github.com/netwarm007/GameEngineFromScratch",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

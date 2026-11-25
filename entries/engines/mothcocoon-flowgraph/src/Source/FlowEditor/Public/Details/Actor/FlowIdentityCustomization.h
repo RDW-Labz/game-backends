@@ -1,0 +1,160 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#pragma once
+
+#include "Framework/SlateDelegates.h"
+#include "GameplayTagContainer.h"
+#include "IPropertyTypeCustomization.h"
+#include "StructUtils/InstancedStruct.h"
+#include "Styling/SlateTypes.h"
+#include "Widgets/SBoxPanel.h"
+#include "Widgets/SCompoundWidget.h"
+
+#include "FlowComponent.h"
+#include "Types/FlowIdentity.h"
+
+class IDetailsView;
+class SButton;
+
+/**
+ * Gameplay tag chip drawn with the engine's GameplayTagStyle.
+ * Replaces SGameplayTagChip, which the engine doesn't export completely, so clang builds fail to link it.
+ */
+class FLOWEDITOR_API SFlowIdentityTagChip : public SCompoundWidget
+{
+public:
+	SLATE_BEGIN_ARGS(SFlowIdentityTagChip)
+		: _IsSelected(true)
+		, _ShowClearButton(true)
+	{
+	}
+		SLATE_ATTRIBUTE(FText, Text)
+		SLATE_ATTRIBUTE(bool, IsSelected)
+		SLATE_ARGUMENT(bool, ShowClearButton)
+		SLATE_EVENT(FOnClicked, OnEditPressed)
+		SLATE_EVENT(FOnClicked, OnClearPressed)
+	SLATE_END_ARGS()
+
+	void Construct(const FArguments& InArgs);
+
+	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
+
+protected:
+	void UpdateButtonStyle();
+
+private:
+	TAttribute<bool> IsSelected;
+	bool bShownAsSelected = false;
+
+	TSharedPtr<SButton> ChipButton;
+	TSharedPtr<SButton> ClearButton;
+};
+
+/**
+ * Flow Identity Tag Selector
+ */
+class FLOWEDITOR_API SFlowIdentityTagSelector : public SCompoundWidget
+{
+public:
+	SLATE_BEGIN_ARGS(SFlowIdentityTagSelector)
+	{
+	}
+
+	SLATE_END_ARGS()
+
+public:
+	FSimpleDelegate OnAction;
+
+public:
+	void Construct(const FArguments& InArgs, const TSharedPtr<IPropertyHandle>& InIdentityTagsHandle);
+
+	void SetSourceFromComponent(UFlowComponent* Component);
+
+protected:
+	TArray<FGameplayTagContainer> GetCurrentTags() const;
+	FText GetSourceName() const;
+	FText GetSourceTooltip() const;
+
+	void RebuildTagOptions();
+
+	bool IsTagSelected(const FGameplayTag GameplayTag) const { return GetTagState(GameplayTag) == ECheckBoxState::Checked; }
+	ECheckBoxState GetTagState(const FGameplayTag GameplayTag) const;
+	void SetTagSelected(const FGameplayTag GameplayTag, const bool bNewSelected);
+
+	void ApplyAll();
+	void AppendAll();
+	void ClearTags();
+
+	void ActionExecuted();
+
+	static TSharedRef<SWidget> CreateSettingsMenu();
+
+	static FString TagsToPropertyString(const FGameplayTagContainer& Tags)
+	{
+		FString Value;
+		FGameplayTagContainer::StaticStruct()->ExportText(Value, &Tags, &Tags, nullptr, PPF_None, nullptr);
+		return Value;
+	}
+
+private:
+	TWeakObjectPtr<UFlowComponent> SelectionSource;
+	TWeakPtr<IPropertyHandle> WeakTagsHandle;
+
+	TSharedPtr<SVerticalBox> TagOptions;
+	TSharedPtr<SVerticalBox> CurrentTagsPanel;
+};
+
+/**
+ * Flow Identity Customization
+ */
+class FLOWEDITOR_API FFlowIdentityCustomization : public IPropertyTypeCustomization
+{
+public:
+	static TSharedRef<IPropertyTypeCustomization> MakeInstance()
+	{
+		return MakeShareable(new FFlowIdentityCustomization);
+	}
+
+	virtual void CustomizeHeader(TSharedRef<IPropertyHandle> PropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& CustomizationUtils) override;
+	virtual void CustomizeChildren(TSharedRef<IPropertyHandle> PropertyHandle, IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& CustomizationUtils) override;
+
+protected:
+	void UpdateCachedStructs();
+	
+	virtual bool DoesActorPassFilters(const AActor* Actor) const;
+	virtual UFlowComponent* FindSourceComponent(const AActor* Actor) const;
+	
+	virtual bool IsActorMatches(const AActor* Actor) const;		
+
+	virtual void ResolveCategoriesMeta(TSharedPtr<IPropertyHandle> PropertyHandle, FString& MetaString) const;
+
+	virtual TSharedRef<SWidget> CreateHeaderWidget();
+	virtual TSharedRef<SWidget> CreateTagPicker();
+
+	void OpenTagPicker_UseCurrentSelection();
+	void OpenTagPicker_UseActor(AActor* Actor);
+
+	void FocusActor(AActor* Actor);
+
+	void UseActor_SelectedInViewport() const;
+	void UseActor_Explicit(AActor* Actor) const;
+	void UseActor_FromEyeDrop();
+
+	virtual TSharedRef<SWidget> MenuContent_ActorPicker();
+	virtual TSharedRef<SWidget> MenuContent_FindMatching();
+
+	static bool CanOpenMatchingPopup();
+	void FindMatchingPopup();
+
+protected:
+	TSharedPtr<IPropertyHandle> StructPropertyHandle;
+	TSharedPtr<IPropertyHandle> IdentityTagsHandle;	
+
+	TArray<TInstancedStruct<FFlowIdentity>> CachedIdentities;
+
+	TSharedPtr<IDetailsView> OwningView;
+
+	TSharedPtr<SWidget> HeaderWidget;
+	TSharedPtr<SWidget> PopUpAnchor;
+
+	TSharedPtr<class SFlowIdentityTagSelector> TagSelector;
+};

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 15:59 UTC · 1689 entries · 428 vendored, 1261 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 16:15 UTC · 1695 entries · 429 vendored, 1266 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
+| [engines](#engines) — Game engines and engine subsystems | 649 | 156 | 493 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 15:59 UTC · 1689 entries · 428 vendored, 1261 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 643 entries
+**Game engines and engine subsystems** — 649 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -213,6 +213,7 @@ _Generated 2026-11-25 15:59 UTC · 1689 entries · 428 vendored, 1261 reference-
 | [EpicSurvivalGame](entries/engines/tomlooman-epicsurvivalgame/README.md) | Third-person Survival Game for Unreal Engine (Sample Project) | c++ | MIT | vendored | [tomlooman/EpicSurvivalGame](https://github.com/tomlooman/EpicSurvivalGame) @ `23159c1c8560` |
 | [EQAI](entries/engines/ahmadhassan-bted-eqai/README.md) | A highly specialized reverse-engineering pipeline designed to structurally transplant original Vanilla character models into the EverQuest Online Adventures: Fr | python | unknown | reference | [AhmadHassan-BTed/EQAI](https://github.com/AhmadHassan-BTed/EQAI) @ `2026-07-03 (branch tip at catalogue time)` |
 | [erajs](entries/engines/miswanting-erajs/README.md) | Text-based game engine: TypeScript/Vue front end, Python game scripts, Tauri desktop shell. v0.3 alpha, paused since 2022. | typescript | none | reference | [miswanting/erajs](https://github.com/miswanting/erajs) @ `029e756f07d6` |
+| [Esoterica](entries/engines/bobbyanguelov-esoterica/README.md) | Esoterica Engine | c++ | unknown | reference | [BobbyAnguelov/Esoterica](https://github.com/BobbyAnguelov/Esoterica) @ `2026-10-30 (branch tip at catalogue time)` |
 | [esper](entries/engines/benmoran56-esper/README.md) | An ECS (Entity Component System) for Python | python | MIT | reference | [benmoran56/esper](https://github.com/benmoran56/esper) @ `2026-09-20 (branch tip at catalogue time)` |
 | [estella](entries/engines/esengine-estella/README.md) | A fast 2D and 3D game engine — TypeScript SDK, C++/WebAssembly core, visual editor. Ship one project to web, desktop, WeChat MiniGames, playable ads, and native | typescript | Apache-2.0 | reference | [esengine/estella](https://github.com/esengine/estella) @ `2026-11-23 (branch tip at catalogue time)` |
 | [ET](entries/engines/egametang-et/README.md) | Unity3D Client And C# Server Framework | c# | unknown | reference | [egametang/ET](https://github.com/egametang/ET) @ `2026-08-26 (branch tip at catalogue time)` |
@@ -237,6 +238,7 @@ _Generated 2026-11-25 15:59 UTC · 1689 entries · 428 vendored, 1261 reference-
 | [FlexEngine](entries/engines/ajweeks-flexengine/README.md) | Cross-platform game engine with Vulkan backend | c++ | MIT | reference | [ajweeks/FlexEngine](https://github.com/ajweeks/FlexEngine) @ `03aab462249b` |
 | [flint](entries/engines/zoeesilcock-flint/README.md) | Building blocks for the game engine your game actually needs. | zig | MIT | reference | [zoeesilcock/flint](https://github.com/zoeesilcock/flint) @ `2026-11-15 (branch tip at catalogue time)` |
 | [flixel-gdx](entries/engines/flixel-gdx-flixel-gdx/README.md) | A cross-platform 2D game framework based on flixel by AdamAtomic. | java | unknown | reference | [flixel-gdx/flixel-gdx](https://github.com/flixel-gdx/flixel-gdx) @ `2017-04-18 (branch tip at catalogue time)` |
+| [FlowGraph](entries/engines/mothcocoon-flowgraph/README.md) | Design-agnostic node system for scripting game’s flow in Unreal Engine  | c++ | MIT | vendored | [MothCocoon/FlowGraph](https://github.com/MothCocoon/FlowGraph) @ `185ec5b7506e` |
 | [fmod-gdextension](entries/engines/utopia-rise-fmod-gdextension/README.md) | FMOD Studio GDExtension bindings for the Godot game engine | c++ | unknown | reference | [utopia-rise/fmod-gdextension](https://github.com/utopia-rise/fmod-gdextension) @ `2026-11-07 (branch tip at catalogue time)` |
 | [forge](entries/engines/card-forge-forge/README.md) | An unofficial rules engine for the world's greatest card game. | java | GPL-3.0 | reference | [Card-Forge/forge](https://github.com/Card-Forge/forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Forme](entries/engines/aristurtledev-forme/README.md) | GPU acelerated text rendering library for MonoGame build on the Slug algorithm | c# | MIT | reference | [AristurtleDev/Forme](https://github.com/AristurtleDev/Forme) @ `2026-07-24 (branch tip at catalogue time)` |
@@ -252,6 +254,7 @@ _Generated 2026-11-25 15:59 UTC · 1689 entries · 428 vendored, 1261 reference-
 | [game-mixer](entries/engines/auburnsounds-game-mixer/README.md) | Audio mixer and playback library like SDL_mixer but without dependencies. | d | MIT | vendored | [AuburnSounds/game-mixer](https://github.com/AuburnSounds/game-mixer) @ `f64c464ab025` |
 | [GameDevMind](entries/engines/gonglei007-gamedevmind/README.md) | 最全面的游戏开发技术图谱(Game Development Map)。帮助游戏开发者们在已知问题上节省时间，省出更多的精力投入到更有创造性的工作中去。 | python | MIT | vendored | [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) @ `652be106e9df` |
 | [GameDevMind-EN](entries/engines/gonglei007-gamedevmind-en/README.md) | The most comprehensive technical map of game development. Help game developers save time on known problems and save more energy for more creative work. | shell | MIT | reference | [gonglei007/GameDevMind-EN](https://github.com/gonglei007/GameDevMind-EN) @ `2023-10-18 (branch tip at catalogue time)` |
+| [GameEngineFromScratch](entries/engines/netwarm007-gameenginefromscratch/README.md) | 配合我的知乎专栏写的项目 | c++ | unknown | reference | [netwarm007/GameEngineFromScratch](https://github.com/netwarm007/GameEngineFromScratch) @ `2026-11-25 (branch tip at catalogue time)` |
 | [GameFramework](entries/engines/ellanjiang-gameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | vendored | [EllanJiang/GameFramework](https://github.com/EllanJiang/GameFramework) @ `d0c010b05167` |
 | [gamepad](entries/engines/orsinium-labs-gamepad/README.md) | 🎮 Cross-platform Go library to read input from an Xbox 360 controller (or another compatible gamepad). | go | MIT | reference | [orsinium-labs/gamepad](https://github.com/orsinium-labs/gamepad) @ `2021-08-12 (branch tip at catalogue time)` |
 | [Gamepad](entries/engines/piborg-gamepad/README.md) | A simple library for getting game controller and joystick inputs into Python in Linux. | python | MIT | vendored | [piborg/Gamepad](https://github.com/piborg/Gamepad) @ `016628623078` |
@@ -355,6 +358,7 @@ _Generated 2026-11-25 15:59 UTC · 1689 entries · 428 vendored, 1261 reference-
 | [Korok](entries/engines/korokengine-korok/README.md) | korok.io - golang game engine | go | Zlib | reference | [KorokEngine/Korok](https://github.com/KorokEngine/Korok) @ `2021-10-23 (branch tip at catalogue time)` |
 | [kotlin-voxel](entries/engines/jrenner-kotlin-voxel/README.md) | A voxel engine (like Minecraft) written in Kotlin | kotlin | Apache-2.0 | reference | [jrenner/kotlin-voxel](https://github.com/jrenner/kotlin-voxel) @ `2025-11-21 (branch tip at catalogue time)` |
 | [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
+| [LanternEngine](entries/engines/awakenchan-lanternengine/README.md) | Lantern Engine: run your own copy of Bloodborne on Windows. A launcher and engine where the game's code runs natively; bring your own game dump. | c++ | GPL-3.0 | reference | [Awakenchan/LanternEngine](https://github.com/Awakenchan/LanternEngine) @ `5b00f48c20ef` |
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
 | [legion](entries/engines/amethyst-legion/README.md) | High performance Rust ECS library | rust | MIT | vendored | [amethyst/legion](https://github.com/amethyst/legion) @ `32df916517fa` |
 | [lena](entries/engines/lichendust-lena/README.md) | 🕹️ A handmade framework for making tiny games | odin | BSD-3-Clause | reference | [lichendust/lena](https://github.com/lichendust/lena) @ `2026-07-23 (branch tip at catalogue time)` |
@@ -404,6 +408,7 @@ _Generated 2026-11-25 15:59 UTC · 1689 entries · 428 vendored, 1261 reference-
 | [morpeh](entries/engines/scellecs-morpeh/README.md) | 🎲 ECS Framework for Unity Game Engine and .Net Platform | c# | MIT | reference | [scellecs/morpeh](https://github.com/scellecs/morpeh) @ `2026-11-17 (branch tip at catalogue time)` |
 | [MPG](entries/engines/feralai-mpg/README.md) | C++ library for handling USB gamepad inputs on multiple platforms. | c | MIT | reference | [FeralAI/MPG](https://github.com/FeralAI/MPG) @ `2022-02-02 (branch tip at catalogue time)` |
 | [msdf-gdx](entries/engines/maltaisn-msdf-gdx/README.md) | Provides lightweight utilities to draw MSDF text on LibGDX | kotlin | Apache-2.0 | reference | [maltaisn/msdf-gdx](https://github.com/maltaisn/msdf-gdx) @ `2023-12-21 (branch tip at catalogue time)` |
+| [mtasa-blue](entries/engines/multitheftauto-mtasa-blue/README.md) | Multi Theft Auto is a game engine that turns Grand Theft Auto: San Andreas into networked multiplayer. | c++ | GPL-3.0 | reference | [multitheftauto/mtasa-blue](https://github.com/multitheftauto/mtasa-blue) @ `2026-11-24 (branch tip at catalogue time)` |
 | [MTX](entries/engines/moribitotech-mtx/README.md) | Compact Mtx Framework over LibGDX Game Library | java | Apache-2.0 | vendored | [moribitotech/MTX](https://github.com/moribitotech/MTX) @ `9472d98c3960` |
 | [multiplayer-voxel-browser-game-engine](entries/engines/kevzettler-multiplayer-voxel-browser-game-engine/README.md) | A multiplayer voxel browser game engine | typescript | unknown | reference | [kevzettler/multiplayer-voxel-browser-game-engine](https://github.com/kevzettler/multiplayer-voxel-browser-game-engine) @ `2023-04-24 (branch tip at catalogue time)` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
@@ -601,6 +606,7 @@ _Generated 2026-11-25 15:59 UTC · 1689 entries · 428 vendored, 1261 reference-
 | [UnityHexagonLibrary2d](entries/engines/ycarowr-unityhexagonlibrary2d/README.md) | A library to manage 2D hexagonal tiles in Unity. | c# | MIT | reference | [ycarowr/UnityHexagonLibrary2d](https://github.com/ycarowr/UnityHexagonLibrary2d) @ `2021-04-17 (branch tip at catalogue time)` |
 | [UnityTileMap](entries/engines/alexanderfast-unitytilemap/README.md) | A TileMap library for Unity written in C#. | c# | MIT | reference | [alexanderfast/UnityTileMap](https://github.com/alexanderfast/UnityTileMap) @ `2015-04-21 (branch tip at catalogue time)` |
 | [UnityTutorials-RTS](entries/engines/minapecheux-unitytutorials-rts/README.md) | The code for my series of tutorials on how to make a real-time stategy (RTS) game in the well-know Unity game engine (with C# scripting)!  | c# | MIT | vendored | [MinaPecheux/UnityTutorials-RTS](https://github.com/MinaPecheux/UnityTutorials-RTS) @ `152128b8dde0` |
+| [upbge](entries/engines/upbge-upbge/README.md) | UPBGE, the best integrated game engine in Blender | c++ | unknown | reference | [UPBGE/upbge](https://github.com/UPBGE/upbge) @ `2026-11-25 (branch tip at catalogue time)` |
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
 | [ursina](entries/engines/pokepetter-ursina/README.md) | A 3D and 2D game engine for Python | python | MIT | vendored | [pokepetter/ursina](https://github.com/pokepetter/ursina) @ `11ac1f7bab99` |
 | [v1](entries/engines/r-lyeh-v1/README.md) | 💎 3D game framework in C, v1. | c | unknown | reference | [r-lyeh/v1](https://github.com/r-lyeh/v1) @ `2025-08-04 (branch tip at catalogue time)` |

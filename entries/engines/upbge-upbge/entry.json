@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:15:15Z",
+ "category": "engines",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "UPBGE/upbge \u2014 UPBGE, the best integrated game engine in Blender",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "upbge",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "upbge-upbge",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1880,
+ "system": "UPBGE, the best integrated game engine in Blender",
+ "upstream": "https://github.com/UPBGE/upbge",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

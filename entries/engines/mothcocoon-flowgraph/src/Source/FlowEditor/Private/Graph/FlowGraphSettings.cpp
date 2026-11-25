@@ -1,0 +1,175 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#include "Graph/FlowGraphSettings.h"
+
+#include "FlowAsset.h"
+#include "FlowTags.h"
+#include "Graph/FlowGraphSchema.h"
+#include "Nodes/FlowNode.h"
+#include "Types/FlowGameplayTagMapUtils.h"
+
+#include "Framework/Notifications/NotificationManager.h"
+#include "Widgets/Notifications/SNotificationList.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(FlowGraphSettings)
+
+#define LOCTEXT_NAMESPACE "FlowGraphSettings"
+
+UFlowGraphSettings::UFlowGraphSettings(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+	, FlowAssetCategoryName(LOCTEXT("FlowAssetCategory", "Flow"))
+	, DefaultFlowAssetClass(UFlowAsset::StaticClass())
+	, WorldAssetClass(UFlowAsset::StaticClass())
+{
+	NodePrefixesToRemove.Emplace("FN");
+	NodePrefixesToRemove.Emplace("FlowNode");
+	NodePrefixesToRemove.Emplace("FlowNodeAddOn");
+}
+
+void UFlowGraphSettings::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	NodePrefixesToRemove.Sort(TGreater{});
+}
+
+void UFlowGraphSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	const FName MemberPropertyName = PropertyChangedEvent.GetMemberPropertyName();
+	
+	if (MemberPropertyName == GET_MEMBER_NAME_CHECKED( UFlowGraphSettings, NodePrefixesToRemove ))
+	{
+		//
+		// We need to sort items in array, because unsorted array can cause only partial prefix removal.
+		// For example, we have a NodeName = "UFlowNode_Custom" and these elements in the array:
+		//		NodePrefixesToRemove = {"FN", "Flow", "FlowNode"};
+		// Note: Prefix "U" is removed by Unreal
+		// 
+		//	First prefix does not match start of NodeName, so nothing changes.
+		//	Second prefix match start of the name and is removed, NodeName becomes "Node_Custom"
+		//  Third prefix does not match start of NodeName, so nothing changes.
+		//  After complete process NodeName == "Node_Custom", but expected result is "Custom"
+		//
+		// If NodePrefixesToRemove = {"FN", "FlowNode", "Flow"} instead, everything will be removed as expected.
+		//
+		
+		if (FlowArray::TrySortAndRemoveDuplicatesFromArrayInPlace(NodePrefixesToRemove))
+		{
+			// error notification
+			FNotificationInfo Info(LOCTEXT("FlowGraphSettings_DuplicatePrefixError", "Added prefix already exists in array."));
+			Info.ExpireDuration = 3.0f;
+			FSlateNotificationManager::Get().AddNotification(Info)->SetCompletionState(SNotificationItem::CS_Fail);
+		}
+		else
+		{
+			UFlowGraphSchema::UpdateGeneratedDisplayNames();
+		}
+	}
+	else if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(UFlowGraphSettings, NodeDisplayStyles))
+	{
+		if (FlowArray::TrySortAndRemoveDuplicatesFromArrayInPlace(NodeDisplayStyles))
+		{
+			// error notification
+			FNotificationInfo Info(LOCTEXT("FlowGraphSettings_DuplicateNodeDisplayStyleError", "Added NodeDisplayStyle already exists in array."));
+			Info.ExpireDuration = 3.0f;
+			FSlateNotificationManager::Get().AddNotification(Info)->SetCompletionState(SNotificationItem::CS_Fail);
+		}
+	}
+}
+
+FString UFlowGraphSettings::GetNodeCategoryForNode(const UFlowNodeBase& FlowNodeBase)
+{
+	const UFlowGraphSettings* GraphSettings = GetDefault<UFlowGraphSettings>();
+	if (const FString* CategoryOverridenByUser = GraphSettings->OverridenNodeCategories.Find(FlowNodeBase.GetClass()))
+	{
+		return *CategoryOverridenByUser;
+	}
+
+	return FlowNodeBase.GetNodeCategory();
+}
+
+FString UFlowGraphSettings::GetIdentityTagCategories(const UClass* ComponentClass) const
+{
+	// The most derived class with an entry wins
+	const FGameplayTagContainer* ClassTags = nullptr;
+	for (const UClass* Class = ComponentClass; Class && ClassTags == nullptr; Class = Class->GetSuperClass())
+	{
+		ClassTags = ComponentIdentityTagCategories.Find(Class);
+	}
+
+	if (ClassTags)
+	{
+		return FString::JoinBy(*ClassTags, TEXT(","), [](const FGameplayTag& Tag) { return Tag.ToString(); });
+	}
+
+	return FString::JoinBy(DefaultIdentityTagCategories, TEXT(","), [](const FGameplayTag& Tag) { return Tag.ToString(); });
+}
+
+const TMap<FGameplayTag, FFlowNodeDisplayStyleConfig>& UFlowGraphSettings::EnsureNodeDisplayStylesMap()
+{
+	if (NodeDisplayStylesAuthoredTags.Num() != NodeDisplayStyles.Num())
+	{
+		NodeDisplayStylesAuthoredTags.Reset();
+
+		// Create an expanded GameplayTag map that will allow the settings to be looked up by subtag
+		TMap<FGameplayTag, FFlowNodeDisplayStyleConfig> UnexpandedMap;
+		UnexpandedMap.Reserve(NodeDisplayStyles.Num());
+
+		for (const FFlowNodeDisplayStyleConfig& Config : NodeDisplayStyles)
+		{
+			UnexpandedMap.Add(Config.Tag, Config);
+			NodeDisplayStylesAuthoredTags.AddTag(Config.Tag);
+		}
+
+		// Expand the map
+		NodeDisplayStylesMap.Empty();
+		FlowMap::PatchGameplayTagMap<EFlowGameplayTagMapExpandPolicy::AllSubtags>(UnexpandedMap, NodeDisplayStylesMap);
+	}
+
+	return NodeDisplayStylesMap;
+}
+
+void UFlowGraphSettings::TryAddDefaultNodeDisplayStyle(const FFlowNodeDisplayStyleConfig& StyleConfig)
+{
+	const int32 FoundIndex = 
+		NodeDisplayStyles.FindLastByPredicate(
+			[&StyleConfig](const FFlowNodeDisplayStyleConfig& CurConfig)
+			{
+				if (CurConfig.Tag == StyleConfig.Tag)
+				{
+					return true;
+				}
+
+				return false;
+			});
+
+	if (FoundIndex != INDEX_NONE)
+	{
+		// Keep the existing config
+		return;
+	}
+
+	NodeDisplayStyles.Add(StyleConfig);
+	return;
+}
+
+const FLinearColor* UFlowGraphSettings::LookupNodeTitleColorForNode(const UFlowNodeBase& FlowNodeBase)
+{
+	if (const FLinearColor* NodeSpecificColor = NodeSpecificColors.Find(FlowNodeBase.GetClass()))
+	{
+		return NodeSpecificColor;
+	}
+
+	const FGameplayTag& StyleTag = FlowNodeBase.GetNodeDisplayStyle();
+	const TMap<FGameplayTag, FFlowNodeDisplayStyleConfig>& StyleMap = EnsureNodeDisplayStylesMap();
+
+	if (const FFlowNodeDisplayStyleConfig* Config = FlowMap::TryLookupGameplayTagKey(StyleTag, StyleMap, FlowNodeStyle::CategoryName))
+	{
+		return &Config->TitleColor;
+	}
+
+	return nullptr;
+}
+
+#undef LOCTEXT_NAMESPACE

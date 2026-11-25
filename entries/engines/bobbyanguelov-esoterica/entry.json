@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:15:15Z",
+ "category": "engines",
+ "commit": "2026-10-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BobbyAnguelov/Esoterica \u2014 Esoterica Engine",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Esoterica",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "bobbyanguelov-esoterica",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1883,
+ "system": "Esoterica Engine",
+ "upstream": "https://github.com/BobbyAnguelov/Esoterica",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

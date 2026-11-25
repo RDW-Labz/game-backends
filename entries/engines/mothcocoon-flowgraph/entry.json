@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T16:15:05Z",
+ "category": "engines",
+ "commit": "185ec5b7506e",
+ "delivery": "vendored",
+ "description": "MothCocoon/FlowGraph \u2014 Design-agnostic node system for scripting game\u2019s flow in Unreal Engine",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "FlowGraph",
+ "size_bytes": 2360808,
+ "slug": "mothcocoon-flowgraph",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1960,
+ "system": "Design-agnostic node system for scripting game\u2019s flow in Unreal Engine ",
+ "upstream": "https://github.com/MothCocoon/FlowGraph",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -3284,3 +3284,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-25 15:43 UTC** — tick 874: +0 screened, +0 reference, 46 skipped, catalogue=1689
 
 - **2026-11-25 15:59 UTC** — tick 875: +0 screened, +0 reference, 60 skipped, catalogue=1689
+
+- **2026-11-25 16:15 UTC** — tick 876: +2 screened, +4 reference, 12 skipped, catalogue=1695
+  - added engines/mothcocoon-flowgraph (MIT, vendored)
+  - added engines/awakenchan-lanternengine (GPL-3.0, reference)
+  - reference engines/multitheftauto-mtasa-blue
+  - reference engines/bobbyanguelov-esoterica
+  - reference engines/upbge-upbge
+  - reference engines/netwarm007-gameenginefromscratch

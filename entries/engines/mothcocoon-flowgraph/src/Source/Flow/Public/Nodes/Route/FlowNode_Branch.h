@@ -1,0 +1,47 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#pragma once
+
+#include "Nodes/FlowNode.h"
+#include "Types/FlowBranchEnums.h"
+#include "FlowNode_Branch.generated.h"
+
+/**
+ * Evaluates all attached predicate AddOns (IFlowPredicateInterface) and fires the True or False
+ *  output pin based on the result.
+ */
+UCLASS(MinimalApi, NotBlueprintable, meta = (DisplayName = "Branch", Keywords = "branch predicate"))
+class UFlowNode_Branch : public UFlowNode
+{
+	GENERATED_BODY()
+
+public:
+	UFlowNode_Branch();
+
+	/* For root-level predicates on this branch, do we treat them as an "AND" (all must pass) or an "OR" (at least one must pass)? */
+	UPROPERTY(EditAnywhere, Category = "Branch", DisplayName = "Root Combination Rule")
+	EFlowPredicateCombinationRule BranchCombinationRule = EFlowPredicateCombinationRule::AND;
+
+protected:
+	// UFlowNodeBase
+	virtual EFlowAddOnAcceptResult AcceptFlowNodeAddOnChild_Implementation(const UFlowNodeAddOn* AddOnTemplate, const TArray<UFlowNodeAddOn*>& AdditionalAddOnsToAssumeAreChildren) const override;
+
+public:
+	virtual FText K2_GetNodeTitle_Implementation() const override;
+	// --
+
+	/* Event reacting on triggering Input pin. */
+	virtual void ExecuteInput(const FName& PinName) override;
+
+protected:
+	virtual void FastForwardInput(const FName& PinName, const FName& OutputPinName) override;
+
+public:
+	static const FName INPIN_Evaluate;
+	static const FName OUTPIN_True;
+	static const FName OUTPIN_False;
+
+#if WITH_EDITOR
+public:
+	virtual const FFlowAgentDoc& GetAgentDoc() const override;
+#endif
+};

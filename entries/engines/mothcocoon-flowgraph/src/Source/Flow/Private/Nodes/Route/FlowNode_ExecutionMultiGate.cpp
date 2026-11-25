@@ -1,0 +1,180 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#include "Nodes/Route/FlowNode_ExecutionMultiGate.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(FlowNode_ExecutionMultiGate)
+
+UFlowNode_ExecutionMultiGate::UFlowNode_ExecutionMultiGate()
+{
+#if WITH_EDITOR
+	Category = TEXT("Route");
+	NodeDisplayStyle = FlowNodeStyle::Logic;
+#endif
+
+	FFlowPin ResetPin(TEXT("Reset"));
+#if WITH_EDITORONLY_DATA
+	ResetPin.PinToolTip = TEXT("Finish work of this node.");
+	ResetPin.PinToolTip += LINE_TERMINATOR;
+	ResetPin.PinToolTip += TEXT("Calling In input will start triggering output pins once again.");
+#endif
+	InputPins.Add(ResetPin);
+
+	SetNumberedOutputPins(0, 1);
+	AllowedSignalModes = {EFlowSignalMode::Enabled, EFlowSignalMode::Disabled};
+}
+
+void UFlowNode_ExecutionMultiGate::ExecuteInput(const FName& PinName)
+{
+	if (PinName == DefaultInputPin.PinName)
+	{
+		if (Completed.Num() == 0)
+		{
+			Completed.Init(false, OutputPins.Num());
+		}
+
+		if (!Completed.Contains(false))
+		{
+			return;
+		}
+
+		const bool bUseStartIndex = !Completed.Contains(true) && Completed.IsValidIndex(StartIndex);
+
+		if (bRandom)
+		{
+			int32 Index;
+			if (bUseStartIndex)
+			{
+				Index = StartIndex;
+			}
+			else
+			{
+				TArray<int32> AvailableIndexes;
+				AvailableIndexes.Reserve(Completed.Num()); // todo
+
+				for (int32 i = 0; i < Completed.Num(); i++)
+				{
+					if (Completed[i] == false)
+					{
+						AvailableIndexes.Emplace(i);
+					}
+				}
+
+				const int32 Random = FMath::RandRange(0, AvailableIndexes.Num() - 1);
+				Index = AvailableIndexes[Random];
+			}
+
+			Completed[Index] = true;
+			TriggerOutput(OutputPins[Index].PinName, bLoop && !Completed.Contains(false));
+		}
+		else
+		{
+			if (bUseStartIndex)
+			{
+				NextOutput = StartIndex;
+			}
+
+			const int32 CurrentOutput = NextOutput;
+			// We have to calculate NextOutput before TriggerOutput(..)
+			// TriggerOutput may call Reset and Cleanup
+			NextOutput = ++NextOutput % OutputPins.Num();
+
+			Completed[CurrentOutput] = true;
+			TriggerOutput(OutputPins[CurrentOutput].PinName, bLoop && !Completed.Contains(false));
+		}
+	}
+	else if (PinName == TEXT("Reset"))
+	{
+		Finish();
+	}
+}
+
+void UFlowNode_ExecutionMultiGate::FastForwardInput(const FName& PinName, const FName& OutputPinName)
+{
+	const int32 OutputIndex = OutputPins.IndexOfByKey(OutputPinName);
+
+	if (Completed.Num() == 0)
+	{
+		Completed.Init(false, OutputPins.Num());
+	}
+
+	if (Completed.IsValidIndex(OutputIndex))
+	{
+		ExecuteInputForAddOns(PinName);
+
+		// Route requires this output, whatever the order or randomness of the gate
+		Completed[OutputIndex] = true;
+		NextOutput = (OutputIndex + 1) % OutputPins.Num();
+		TriggerOutput(OutputPinName, bLoop && !Completed.Contains(false));
+	}
+	else
+	{
+		Super::FastForwardInput(PinName, OutputPinName);
+	}
+}
+
+bool UFlowNode_ExecutionMultiGate::CanFastForward(const FName& InputPinName, const FName& OutputPinName) const
+{
+	// Reset input finishes the gate without triggering any output, opened output doesn't open again until the gate finishes
+	const int32 OutputIndex = OutputPins.IndexOfByKey(OutputPinName);
+	return InputPinName != TEXT("Reset") && !(Completed.IsValidIndex(OutputIndex) && Completed[OutputIndex]);
+}
+
+void UFlowNode_ExecutionMultiGate::Cleanup()
+{
+	NextOutput = 0;
+	Completed.Reset();
+
+	Super::Cleanup();
+}
+
+#if WITH_EDITOR
+FString UFlowNode_ExecutionMultiGate::GetNodeDescription() const
+{
+	FString Result;
+	Result.Reserve(128);
+
+	if (bRandom)
+	{
+		Result.Append(TEXT("Random"));
+	}
+
+	if (bRandom && bLoop)
+	{
+		Result.Append(TEXT(", "));
+	}
+
+	if (bLoop)
+	{
+		Result.Append(TEXT("Loop"));
+	}
+
+	if (StartIndex != INDEX_NONE)
+	{
+		if (bRandom || bLoop)
+		{
+			Result.Append(TEXT(", "));
+		}
+
+		if (OutputPins.IsValidIndex(StartIndex))
+		{
+			Result.Appendf(TEXT("Start Index: %d"), StartIndex);
+		}
+		else
+		{
+			Result.Append(TEXT("StartIndex: Invalid"));
+		}
+	}
+
+	return Result;
+}
+#endif
+
+#if WITH_EDITOR
+const FFlowAgentDoc& UFlowNode_ExecutionMultiGate::GetAgentDoc() const
+{
+	static const FFlowAgentDoc Doc = MakeAgentDoc(
+		/*Guidance*/ TEXT("Enable bLoop to allow the cycle to wrap back to already-fired outputs without an explicit Reset; leave it off if each output should only ever fire once. StartIndex chooses which pin fires first."),
+		/*Tags*/     { TEXT("route"), TEXT("multigate"), TEXT("random") },
+		/*Articles*/ {  });
+	return Doc;
+}
+#endif

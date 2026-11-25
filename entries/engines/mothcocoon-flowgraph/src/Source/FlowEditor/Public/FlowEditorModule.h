@@ -1,0 +1,76 @@
+// Copyright https://github.com/MothCocoon/FlowGraph/graphs/contributors
+#pragma once
+
+#include "AssetTypeCategories.h"
+#include "IAssetTypeActions.h"
+#include "Modules/ModuleManager.h"
+#include "PropertyEditorDelegates.h"
+#include "Toolkits/AssetEditorToolkit.h"
+#include "Toolkits/IToolkit.h"
+
+class FSlateStyleSet;
+class FToolBarBuilder;
+class IPropertyTypeIdentifier;
+struct FGraphPanelPinConnectionFactory;
+
+class FFlowAssetEditor;
+class UEdGraphNode;
+class UEdGraphPin;
+class UFlowAsset;
+
+struct FLOWEDITOR_API FFlowAssetCategoryPaths : EAssetCategoryPaths
+{
+	static FAssetCategoryPath Flow;
+};
+
+class FLOWEDITOR_API FFlowEditorModule : public IModuleInterface
+{
+public:
+	static EAssetTypeCategories::Type FlowAssetCategory;
+
+private:
+	TArray<TSharedRef<IAssetTypeActions>> RegisteredAssetActions;
+	TSet<FName> CustomClassLayouts;
+	TSet<FName> CustomStructLayouts;
+	TSharedPtr<IPropertyTypeIdentifier> FlowDataPinValueInstancedStructIdentifier;
+	TSharedPtr<class FFlowActorDetails> ActorDetails;
+
+	FDelegateHandle AssetUpdatedHandle;
+	FDelegateHandle AssetRenamedHandle;
+	FDelegateHandle AssetRemovedHandle;
+	bool bIsRegisteredForAssetChanges = false;
+
+public:
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+
+	void RegisterForAssetChanges();
+
+private:
+	static void TrySetFlowNodeDisplayStyleDefaults();
+
+	void RegisterAssets();
+	void UnregisterAssets();
+
+	void RegisterDetailCustomizations();
+	void UnregisterDetailCustomizations() const;
+
+	void RegisterCustomClassLayout(const TSubclassOf<UObject> Class, const FOnGetDetailCustomizationInstance DetailLayout);
+	void RegisterCustomStructLayout(const UScriptStruct& Struct, const FOnGetPropertyTypeCustomizationInstance DetailLayout);
+
+public:
+	FDelegateHandle FlowTrackCreateEditorHandle;
+	FDelegateHandle ModulesChangedHandle;
+
+private:
+	static void ModulesChangesCallback(FName ModuleName, EModuleChangeReason ReasonForChange);
+	static void RegisterAssetIndexers();
+
+	static void JumpToNodeFromLogToken(UObject* Asset, const UEdGraphNode* Node, const UEdGraphPin* Pin);
+
+public:
+	static TSharedRef<FFlowAssetEditor> CreateFlowAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UFlowAsset* FlowAsset);
+
+	static void OnAssetUpdated(const FAssetData& AssetData);
+	static void OnAssetRenamed(const FAssetData& AssetData, const FString& OldObjectPath);
+};

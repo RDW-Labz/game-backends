@@ -1,0 +1,15 @@
+*/.claude
+/.idea
+/.vs
+/_ReSharper.Caches
+/Binaries
+/Intermediate
+
+*.sln
+
+*.exe
+*.exp
+*.lib
+*.patch_*
+*.pdb
+*.target
