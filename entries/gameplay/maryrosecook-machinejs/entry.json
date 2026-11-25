@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T10:01:04Z",
+ "category": "gameplay",
+ "commit": "96cf613769b6",
+ "delivery": "vendored",
+ "description": "maryrosecook/machinejs \u2014 Make behaviour trees in JavaScript",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "machinejs",
+ "size_bytes": 11976,
+ "slug": "maryrosecook-machinejs",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 157,
+ "system": "Make behaviour trees in JavaScript",
+ "upstream": "https://github.com/maryrosecook/machinejs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

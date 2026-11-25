@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T10:01:09Z",
+ "category": "gameplay",
+ "commit": "2022-12-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Eraclys/BehaviourTree",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "BehaviourTree",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "eraclys-behaviourtree",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 114,
+ "system": "see upstream",
+ "upstream": "https://github.com/Eraclys/BehaviourTree",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

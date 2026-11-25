@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 09:43 UTC · 1615 entries · 411 vendored, 1204 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 10:01 UTC · 1621 entries · 413 vendored, 1208 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-25 09:43 UTC · 1615 entries · 411 vendored, 1204 reference-
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 233 | 58 | 175 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 239 | 60 | 179 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
@@ -1055,7 +1055,7 @@ _Generated 2026-11-25 09:43 UTC · 1615 entries · 411 vendored, 1204 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 233 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 239 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1079,6 +1079,9 @@ _Generated 2026-11-25 09:43 UTC · 1615 entries · 411 vendored, 1204 reference-
 | [baritone](entries/gameplay/cabaletta-baritone/README.md) | google maps for block game | java | LGPL-3.0 | reference | [cabaletta/baritone](https://github.com/cabaletta/baritone) @ `2264210f943d` |
 | [behaviac](entries/gameplay/tencent-behaviac/README.md) | behaviac is a framework of the game AI development, and it also can be used as a rapid game prototype design tool. behaviac supports the behavior tree, finite s | c# | MIT | reference | [Tencent/behaviac](https://github.com/Tencent/behaviac) @ `351442b36726` |
 | [BehaviorTree.CPP](entries/gameplay/behaviortree-cpp/README.md) | behaviour trees for AI agents with blackboards | c++ | MIT | vendored | [BehaviorTree/BehaviorTree.CPP](https://github.com/BehaviorTree/BehaviorTree.CPP) @ `365b2e499d34` |
+| [BehaviourTree](entries/gameplay/eraclys-behaviourtree/README.md) | see upstream | c# | MIT | reference | [Eraclys/BehaviourTree](https://github.com/Eraclys/BehaviourTree) @ `2022-12-27 (branch tip at catalogue time)` |
+| [behaviourtree.lua](entries/gameplay/tanema-behaviourtree-lua/README.md) | a simple behaviour tree library for lua ported from javascript | lua | MIT | vendored | [tanema/behaviourtree.lua](https://github.com/tanema/behaviourtree.lua) @ `fe37dec0c365` |
+| [bevy_behave](entries/gameplay/rj-bevy-behave/README.md) | Behaviour trees for bevy, with on-demand entity spawning for task nodes. | rust | Apache-2.0 | reference | [RJ/bevy_behave](https://github.com/RJ/bevy_behave) @ `2026-07-07 (branch tip at catalogue time)` |
 | [bevy_flowfield_tiles_plugin](entries/gameplay/blondeburrito-bevy-flowfield-tiles-plugin/README.md) | Bevy plugin for Flowfield based pathfinding | rust | unknown | reference | [BlondeBurrito/bevy_flowfield_tiles_plugin](https://github.com/BlondeBurrito/bevy_flowfield_tiles_plugin) @ `2026-10-22 (branch tip at catalogue time)` |
 | [bevy_northstar](entries/gameplay/jtothethree-bevy-northstar/README.md) | Hierachical Pathfinding for Bevy | rust | MIT | reference | [JtotheThree/bevy_northstar](https://github.com/JtotheThree/bevy_northstar) @ `2026-10-29 (branch tip at catalogue time)` |
 | [bevy_pathfinding](entries/gameplay/smitty-94-bevy-pathfinding/README.md) | see upstream | rust | Apache-2.0 | reference | [SMITTY-94/bevy_pathfinding](https://github.com/SMITTY-94/bevy_pathfinding) @ `2025-05-23 (branch tip at catalogue time)` |
@@ -1087,6 +1090,7 @@ _Generated 2026-11-25 09:43 UTC · 1615 entries · 411 vendored, 1204 reference-
 | [blitz-path](entries/gameplay/bezpowell-blitz-path/README.md) | Various pathfinding algorithms implemented in rust. Currently very WIP. | rust | MIT | vendored | [BezPowell/blitz-path](https://github.com/BezPowell/blitz-path) @ `b2dbaa0de368` |
 | [BlockMaps](entries/gameplay/p-svacha-blockmaps/README.md) | Unity framework to create detailed, 3D, grid-based worlds with real-time navmesh generation and integrated pathfinding, vision and movement systems. | c# | unknown | reference | [p-svacha/BlockMaps](https://github.com/p-svacha/BlockMaps) @ `2025-11-04 (branch tip at catalogue time)` |
 | [BonsaiBehaviourTree](entries/gameplay/luis-l-bonsaibehaviourtree/README.md) | An advanced behaviour tree solution for the Unity game engine | c# | MIT | vendored | [luis-l/BonsaiBehaviourTree](https://github.com/luis-l/BonsaiBehaviourTree) @ `6aa41f3006e9` |
+| [Brainiac](entries/gameplay/daemon3000-brainiac/README.md) | Behaviour tree editor for Unity3D | c# | unknown | reference | [daemon3000/Brainiac](https://github.com/daemon3000/Brainiac) @ `2020-03-14 (branch tip at catalogue time)` |
 | [BTEditor](entries/gameplay/bartoleo-bteditor/README.md) | Behaviour Tree Editor made with Löve | lua | none | reference | [bartoleo/BTEditor](https://github.com/bartoleo/BTEditor) @ `259d1c81930c` |
 | [check_redfish](entries/gameplay/bb-ricardo-check-redfish/README.md) | A monitoring/inventory plugin to check components and health status of systems which support Redfish. It will also create an inventory of all components of a sy | python | MIT | reference | [bb-Ricardo/check_redfish](https://github.com/bb-Ricardo/check_redfish) @ `2026-11-16 (branch tip at catalogue time)` |
 | [chess-engine](entries/gameplay/adam-mcdaniel-chess-engine/README.md) | A dependency-free chess engine♟️ library built to run anywhere. | rust | MIT | reference | [adam-mcdaniel/chess-engine](https://github.com/adam-mcdaniel/chess-engine) @ `2024-04-18 (branch tip at catalogue time)` |
@@ -1162,6 +1166,7 @@ _Generated 2026-11-25 09:43 UTC · 1615 entries · 411 vendored, 1204 reference-
 | [libtcod_nim](entries/gameplay/vladar4-libtcod-nim/README.md) | Wrapper of the libtcod library for the Nim language. | nim | unknown | reference | [Vladar4/libtcod_nim](https://github.com/Vladar4/libtcod_nim) @ `2020-12-17 (branch tip at catalogue time)` |
 | [Lockstep.BehaviourTree](entries/gameplay/jiepengtan-lockstep-behaviourtree/README.md) | Memory-compact BehaviorTree (use c#  unsafe pointer && struct) | c# | none | reference | [JiepengTan/Lockstep.BehaviourTree](https://github.com/JiepengTan/Lockstep.BehaviourTree) @ `c17e940821ad` |
 | [LockstepEngine](entries/gameplay/jiepengtan-lockstepengine/README.md) | A lockstep solution include lots of deterministic library (Math,Collision,Navmesh,BehaviorTree,Serialization ...) | c# | unknown | reference | [JiepengTan/LockstepEngine](https://github.com/JiepengTan/LockstepEngine) @ `2020-03-23 (branch tip at catalogue time)` |
+| [machinejs](entries/gameplay/maryrosecook-machinejs/README.md) | Make behaviour trees in JavaScript | javascript | MIT | vendored | [maryrosecook/machinejs](https://github.com/maryrosecook/machinejs) @ `96cf613769b6` |
 | [malwoden](entries/gameplay/aedalus-malwoden/README.md) | A JS/TS roguelike library. | typescript | MIT | reference | [Aedalus/malwoden](https://github.com/Aedalus/malwoden) @ `2023-03-05 (branch tip at catalogue time)` |
 | [megaglest — ai](entries/gameplay/megaglest-ai/README.md) | combat, AI, pathing, quest or inventory logic | h | none | reference | [megaglest/megaglest-source.git](https://github.com/megaglest/megaglest-source.git) @ `4ab09c6` |
 | [Mindustry — abilities](entries/gameplay/mindustry-abilities/README.md) | combat, AI, pathing, quest or inventory logic | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
@@ -1276,6 +1281,7 @@ _Generated 2026-11-25 09:43 UTC · 1615 entries · 411 vendored, 1204 reference-
 | [UnityBehaviourTree](entries/gameplay/grymmyd-unitybehaviourtree/README.md) | A simple behaviour tree implementation for Unity | c# | Apache-2.0 | vendored | [GrymmyD/UnityBehaviourTree](https://github.com/GrymmyD/UnityBehaviourTree) @ `eae4a24ea5bd` |
 | [UnityBehaviourTreeEditor](entries/gameplay/thekiwicoder0-unitybehaviourtreeeditor/README.md) | Behaviour Tree Editor for Unity built with UIToolkit | c# | MIT | reference | [thekiwicoder0/UnityBehaviourTreeEditor](https://github.com/thekiwicoder0/UnityBehaviourTreeEditor) @ `2026-05-14 (branch tip at catalogue time)` |
 | [UnitySteeringBehaviours](entries/gameplay/skooter500-unitysteeringbehaviours/README.md) | Steering behaviours for autonomous agents implemented in Unity | c# | MIT | vendored | [skooter500/UnitySteeringBehaviours](https://github.com/skooter500/UnitySteeringBehaviours) @ `d1c09ce837fd` |
+| [UnityTutorials-BehaviourTrees](entries/gameplay/minapecheux-unitytutorials-behaviourtrees/README.md) | The code for a short tutorial on how to create a simple guard AI using behaviour trees in Unity/C# (in text or video format)! | c# | MIT | reference | [MinaPecheux/UnityTutorials-BehaviourTrees](https://github.com/MinaPecheux/UnityTutorials-BehaviourTrees) @ `2021-11-02 (branch tip at catalogue time)` |
 | [UniversalInventorySystem](entries/gameplay/heymity-universalinventorysystem/README.md) | A Unity Package for creating easy to use and highly customizable inventories and inventory`s UI | c# | Apache-2.0 | reference | [Heymity/UniversalInventorySystem](https://github.com/Heymity/UniversalInventorySystem) @ `2024-03-14 (branch tip at catalogue time)` |
 | [VCMI — spells](entries/gameplay/vcmi-spells/README.md) | combat, AI, pathing, quest or inventory logic | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [vector-field-pathfinding](entries/gameplay/solasxer-vector-field-pathfinding/README.md) | Vector field pathfinding demo implementation, using Cocos Creator 3.8.7 | typescript | MIT | reference | [SolasXer/vector-field-pathfinding](https://github.com/SolasXer/vector-field-pathfinding) @ `2025-12-06 (branch tip at catalogue time)` |

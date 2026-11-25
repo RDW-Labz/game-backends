@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T10:01:07Z",
+ "category": "gameplay",
+ "commit": "fe37dec0c365",
+ "delivery": "vendored",
+ "description": "tanema/behaviourtree.lua \u2014 a simple behaviour tree library for lua ported from javascript",
+ "language": "lua",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "behaviourtree.lua",
+ "size_bytes": 75311,
+ "slug": "tanema-behaviourtree-lua",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 145,
+ "system": "a simple behaviour tree library for lua ported from javascript",
+ "upstream": "https://github.com/tanema/behaviourtree.lua",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

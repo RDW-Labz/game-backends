@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T10:01:09Z",
+ "category": "gameplay",
+ "commit": "2020-03-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "daemon3000/Brainiac \u2014 Behaviour tree editor for Unity3D",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Brainiac",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "daemon3000-brainiac",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 117,
+ "system": "Behaviour tree editor for Unity3D",
+ "upstream": "https://github.com/daemon3000/Brainiac",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

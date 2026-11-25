@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T10:01:09Z",
+ "category": "gameplay",
+ "commit": "2026-07-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RJ/bevy_behave \u2014 Behaviour trees for bevy, with on-demand entity spawning for task nodes.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_behave",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rj-bevy-behave",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 131,
+ "system": "Behaviour trees for bevy, with on-demand entity spawning for task nodes.",
+ "upstream": "https://github.com/RJ/bevy_behave",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

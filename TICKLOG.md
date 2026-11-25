@@ -3164,3 +3164,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/smitty-94-bevy-pathfinding
   - reference gameplay/arnemileswinter-godot-tilemap-flowfields
   - reference gameplay/mich101mich-hierarchical-pathfinding
+
+- **2026-11-25 10:01 UTC** — tick 853: +2 screened, +4 reference, 16 skipped, catalogue=1621
+  - added gameplay/maryrosecook-machinejs (MIT, vendored)
+  - added gameplay/tanema-behaviourtree-lua (MIT, vendored)
+  - reference gameplay/rj-bevy-behave
+  - reference gameplay/daemon3000-brainiac
+  - reference gameplay/eraclys-behaviourtree
+  - reference gameplay/minapecheux-unitytutorials-behaviourtrees

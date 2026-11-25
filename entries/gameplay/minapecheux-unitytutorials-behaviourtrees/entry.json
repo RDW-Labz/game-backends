@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T10:01:09Z",
+ "category": "gameplay",
+ "commit": "2021-11-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "MinaPecheux/UnityTutorials-BehaviourTrees \u2014 The code for a short tutorial on how to create a simple guard AI using behaviour trees in Unity/C# (in text or video format)!",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "UnityTutorials-BehaviourTrees",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "minapecheux-unitytutorials-behaviourtrees",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 108,
+ "system": "The code for a short tutorial on how to create a simple guard AI using behaviour trees in Unity/C# (in text or video format)!",
+ "upstream": "https://github.com/MinaPecheux/UnityTutorials-BehaviourTrees",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
