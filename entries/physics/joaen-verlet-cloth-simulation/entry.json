@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T03:45:12Z",
+ "category": "physics",
+ "commit": "407e0c2aece0",
+ "delivery": "reference",
+ "description": "joaen/verlet-cloth-simulation \u2014 2D cloth simulation in Unity using simple Verlet integration.",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "verlet-cloth-simulation",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 25536,
+ "slug": "joaen-verlet-cloth-simulation",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 41,
+ "system": "2D cloth simulation in Unity using simple Verlet integration.",
+ "upstream": "https://github.com/joaen/verlet-cloth-simulation",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

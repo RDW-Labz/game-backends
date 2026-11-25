@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:45:17Z",
+ "category": "physics",
+ "commit": "2024-05-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "agorkem/JS-Cloth-Simulation \u2014 A Cloth simulation with Verlet Integration.",
+ "language": "javascript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "JS-Cloth-Simulation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "agorkem-js-cloth-simulation",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 16,
+ "system": "A Cloth simulation with Verlet Integration.",
+ "upstream": "https://github.com/agorkem/JS-Cloth-Simulation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

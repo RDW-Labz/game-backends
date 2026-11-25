@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:45:17Z",
+ "category": "physics",
+ "commit": "2026-05-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "javeke/ripit \u2014 An interactive, tearable cloth simulation in the browser ; a modern rebuild of the classic [Tearable Cloth](https://pushmatrix.github.io/tearable/) demo by Daniel Beauchamp ([@pushmatrix](https://github.com/pushmatrix)), itself based on the Verlet-integrated cloth by [dissimulate](https://github.com/dissimulate/Tearable-Cloth).",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ripit",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "javeke-ripit",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 13,
+ "system": "An interactive, tearable cloth simulation in the browser ; a modern rebuild of the classic [Tearable Cloth](https://pushmatrix.github.io/tearable/) demo by Dani",
+ "upstream": "https://github.com/javeke/ripit",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

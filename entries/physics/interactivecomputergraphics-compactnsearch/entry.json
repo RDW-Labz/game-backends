@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:45:17Z",
+ "category": "physics",
+ "commit": "2026-09-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "InteractiveComputerGraphics/CompactNSearch \u2014 A C++ library to compute neighborhood information for point clouds within a fixed radius. Suitable for many applications, e.g. neighborhood search for SPH fluid simulations.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "CompactNSearch",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "interactivecomputergraphics-compactnsearch",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 180,
+ "system": "A C++ library to compute neighborhood information for point clouds within a fixed radius. Suitable for many applications, e.g. neighborhood search for SPH fluid",
+ "upstream": "https://github.com/InteractiveComputerGraphics/CompactNSearch",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

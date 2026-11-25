@@ -3012,3 +3012,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/freeflyfall-rigidbodycontroller
   - reference physics/icurtis1-character-controller-sample-project
   - reference physics/garbajyt-godot-basic-fps-controller
+
+- **2026-11-25 03:45 UTC** — tick 832: +2 screened, +4 reference, 14 skipped, catalogue=1511
+  - added physics/joaen-verlet-cloth-simulation (none, reference)
+  - added physics/holtsetio-breeze (MIT, vendored)
+  - reference physics/agorkem-js-cloth-simulation
+  - reference physics/javeke-ripit
+  - reference physics/nvidiagameworks-flow
+  - reference physics/interactivecomputergraphics-compactnsearch

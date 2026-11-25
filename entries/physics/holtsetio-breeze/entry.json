@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T03:45:16Z",
+ "category": "physics",
+ "commit": "0ab82342f916",
+ "delivery": "vendored",
+ "description": "holtsetio/breeze \u2014 A realtime verlet-based cloth simulation, running in the browser using the three.js WebGPURenderer.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "breeze",
+ "size_bytes": 153284,
+ "slug": "holtsetio-breeze",
+ "source": "github-search:verlet cloth simulation stars:>10",
+ "stars": 36,
+ "system": "A realtime verlet-based cloth simulation, running in the browser using the three.js WebGPURenderer.",
+ "upstream": "https://github.com/holtsetio/breeze",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
