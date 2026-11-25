@@ -3172,3 +3172,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/daemon3000-brainiac
   - reference gameplay/eraclys-behaviourtree
   - reference gameplay/minapecheux-unitytutorials-behaviourtrees
+
+- **2026-11-25 10:16 UTC** — tick 854: +2 screened, +4 reference, 24 skipped, catalogue=1627
+  - added gameplay/bastiaankang-ram-cleaner-ai (MIT, vendored)
+  - added gameplay/srivera3321-ram-optimizer-ai (MIT, vendored)
+  - reference gameplay/navigoyapi91-memory-tuner-x
+  - reference gameplay/wesleywh-gamedevrepo
+  - reference gameplay/adamstelmaszczyk-gtsa
+  - reference gameplay/sanusanth-c-basic-programs

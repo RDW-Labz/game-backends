@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T10:16:42Z",
+ "category": "gameplay",
+ "commit": "a8d39728ec2f",
+ "delivery": "vendored",
+ "description": "BastiaanKang/ram-cleaner-ai \u2014 Smart RAM cleanup: AI decides what to compress or unload \u2014 games stay protected. | ram cleaner ram ai gaming optimization | Portable x64 prebuilt for Windows",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ram-cleaner-ai",
+ "size_bytes": 4446,
+ "slug": "bastiaankang-ram-cleaner-ai",
+ "source": "github-search:utility ai game stars:>15",
+ "stars": 66,
+ "system": "Smart RAM cleanup: AI decides what to compress or unload \u2014 games stay protected. | ram cleaner ram ai gaming optimization | Portable x64 prebuilt for Windows",
+ "upstream": "https://github.com/BastiaanKang/ram-cleaner-ai",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

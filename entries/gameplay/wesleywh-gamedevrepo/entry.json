@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T10:16:45Z",
+ "category": "gameplay",
+ "commit": "2019-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "wesleywh/GameDevRepo \u2014 Free Unity C# Script library used to make a full Unity3d game.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "GameDevRepo",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "wesleywh-gamedevrepo",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 100,
+ "system": "Free Unity C# Script library used to make a full Unity3d game.",
+ "upstream": "https://github.com/wesleywh/GameDevRepo",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

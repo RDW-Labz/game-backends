@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 10:01 UTC · 1621 entries · 413 vendored, 1208 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 10:16 UTC · 1627 entries · 415 vendored, 1212 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-25 10:01 UTC · 1621 entries · 413 vendored, 1208 reference-
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 239 | 60 | 179 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 245 | 62 | 183 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
@@ -1055,7 +1055,7 @@ _Generated 2026-11-25 10:01 UTC · 1621 entries · 413 vendored, 1208 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 239 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 245 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1092,6 +1092,7 @@ _Generated 2026-11-25 10:01 UTC · 1621 entries · 413 vendored, 1208 reference-
 | [BonsaiBehaviourTree](entries/gameplay/luis-l-bonsaibehaviourtree/README.md) | An advanced behaviour tree solution for the Unity game engine | c# | MIT | vendored | [luis-l/BonsaiBehaviourTree](https://github.com/luis-l/BonsaiBehaviourTree) @ `6aa41f3006e9` |
 | [Brainiac](entries/gameplay/daemon3000-brainiac/README.md) | Behaviour tree editor for Unity3D | c# | unknown | reference | [daemon3000/Brainiac](https://github.com/daemon3000/Brainiac) @ `2020-03-14 (branch tip at catalogue time)` |
 | [BTEditor](entries/gameplay/bartoleo-bteditor/README.md) | Behaviour Tree Editor made with Löve | lua | none | reference | [bartoleo/BTEditor](https://github.com/bartoleo/BTEditor) @ `259d1c81930c` |
+| [c-basic-programs](entries/gameplay/sanusanth-c-basic-programs/README.md) | What is C#? C# is pronounced "C-Sharp".  It is an object-oriented programming language created by Microsoft that runs on the .NET Framework.  C# has roots from  | n/a | unknown | reference | [sanusanth/c-basic-programs](https://github.com/sanusanth/c-basic-programs) @ `2021-07-24 (branch tip at catalogue time)` |
 | [check_redfish](entries/gameplay/bb-ricardo-check-redfish/README.md) | A monitoring/inventory plugin to check components and health status of systems which support Redfish. It will also create an inventory of all components of a sy | python | MIT | reference | [bb-Ricardo/check_redfish](https://github.com/bb-Ricardo/check_redfish) @ `2026-11-16 (branch tip at catalogue time)` |
 | [chess-engine](entries/gameplay/adam-mcdaniel-chess-engine/README.md) | A dependency-free chess engine♟️ library built to run anywhere. | rust | MIT | reference | [adam-mcdaniel/chess-engine](https://github.com/adam-mcdaniel/chess-engine) @ `2024-04-18 (branch tip at catalogue time)` |
 | [cocos-pathfinding](entries/gameplay/goldest-star-cocos-pathfinding/README.md) | Pathfinding 2D in Cocos Creator in cocos creator 3.6 | typescript | none | reference | [goldest-star/cocos-pathfinding](https://github.com/goldest-star/cocos-pathfinding) @ `825183bdc477` |
@@ -1115,6 +1116,7 @@ _Generated 2026-11-25 10:01 UTC · 1621 entries · 413 vendored, 1208 reference-
 | [foundryvtt-forien-quest-log](entries/gameplay/forien-foundryvtt-forien-quest-log/README.md) | This module provides comprehensive Quest Log system for players and Game Masters to use with Foundry Virtual Tabletop | javascript | MIT | reference | [Forien/foundryvtt-forien-quest-log](https://github.com/Forien/foundryvtt-forien-quest-log) @ `2025-05-02 (branch tip at catalogue time)` |
 | [FyWorld](entries/gameplay/fy-fyworld/README.md) | FyWorld - Base-Building / Simulation Game & Tutorial in Unity | c# | GPL-3.0 | reference | [Fy-/FyWorld](https://github.com/Fy-/FyWorld) @ `2022-12-28 (branch tip at catalogue time)` |
 | [game-server](entries/gameplay/jzyong-game-server/README.md) | Distributed Java game server, including cluster management server, gateway server, hall server, game logic server, background monitoring server and a running we | java | MIT | reference | [jzyong/game-server](https://github.com/jzyong/game-server) @ `2025-12-19 (branch tip at catalogue time)` |
+| [GameDevRepo](entries/gameplay/wesleywh-gamedevrepo/README.md) | Free Unity C# Script library used to make a full Unity3d game. | c# | MIT | reference | [wesleywh/GameDevRepo](https://github.com/wesleywh/GameDevRepo) @ `2019-11-22 (branch tip at catalogue time)` |
 | [gdx-ai](entries/gameplay/libgdx-gdx-ai/README.md) | Artificial Intelligence framework for games based on libGDX or not. Features: Steering Behaviors, Formation Motion, Pathfinding, Behavior Trees and Finite State | java | Apache-2.0 | vendored | [libgdx/gdx-ai](https://github.com/libgdx/gdx-ai) @ `6726e345248d` |
 | [geotic](entries/gameplay/ddmills-geotic/README.md) | Entity Component System library for javascript | javascript | MIT | reference | [ddmills/geotic](https://github.com/ddmills/geotic) @ `2025-03-05 (branch tip at catalogue time)` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
@@ -1128,6 +1130,7 @@ _Generated 2026-11-25 10:01 UTC · 1621 entries · 413 vendored, 1208 reference-
 | [GoRogue](entries/gameplay/chris3606-gorogue/README.md) | .NET Standard roguelike library in C#.  Features many algorithms and data structures pertinent to roguelike/2D game developers, specifically designed to be mini | c# | MIT | reference | [Chris3606/GoRogue](https://github.com/Chris3606/GoRogue) @ `2026-09-13 (branch tip at catalogue time)` |
 | [graphhopper](entries/gameplay/graphhopper-graphhopper/README.md) | Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server. | java | Apache-2.0 | vendored | [graphhopper/graphhopper](https://github.com/graphhopper/graphhopper) @ `9df847473a5e` |
 | [GreaterWMS](entries/gameplay/greaterwms-greaterwms/README.md) | This Inventory management system is the currently Ford Asia Pacific after-sales logistics warehousing supply chain process . After I leave Ford , I start this p | python | Apache-2.0 | vendored | [GreaterWMS/GreaterWMS](https://github.com/GreaterWMS/GreaterWMS) @ `8344f3872155` |
+| [gtsa](entries/gameplay/adamstelmaszczyk-gtsa/README.md) | Game Tree Search Algorithms - C++ library for AI bot programming | c++ | GPL-3.0 | reference | [AdamStelmaszczyk/gtsa](https://github.com/AdamStelmaszczyk/gtsa) @ `2025-04-27 (branch tip at catalogue time)` |
 | [HALE](entries/gameplay/andres6936-hale/README.md) | Hale is a turn based RPG with deep tactical combat and character customization. Included is a lengthy and varied campaign with many quests, items and monsters,  | java | GPL-2.0 | reference | [Andres6936/HALE](https://github.com/Andres6936/HALE) @ `2020-08-04 (branch tip at catalogue time)` |
 | [hierarchical-pathfinding](entries/gameplay/hugoscurti-hierarchical-pathfinding/README.md) | Implementation of Near-Optimal Hierarchical Pathfinding (HPA*) algorithm in Unity, tested with maps from Dragon Age: Origins | c# | MIT | reference | [hugoscurti/hierarchical-pathfinding](https://github.com/hugoscurti/hierarchical-pathfinding) @ `2022-12-26 (branch tip at catalogue time)` |
 | [hierarchical_pathfinding](entries/gameplay/mich101mich-hierarchical-pathfinding/README.md) | A Rust crate to find Paths on a Grid using HPA* (Hierarchical Pathfinding A*) and Hierarchical Dijkstra | rust | MIT | reference | [mich101mich/hierarchical_pathfinding](https://github.com/mich101mich/hierarchical_pathfinding) @ `2026-09-16 (branch tip at catalogue time)` |
@@ -1169,6 +1172,7 @@ _Generated 2026-11-25 10:01 UTC · 1621 entries · 413 vendored, 1208 reference-
 | [machinejs](entries/gameplay/maryrosecook-machinejs/README.md) | Make behaviour trees in JavaScript | javascript | MIT | vendored | [maryrosecook/machinejs](https://github.com/maryrosecook/machinejs) @ `96cf613769b6` |
 | [malwoden](entries/gameplay/aedalus-malwoden/README.md) | A JS/TS roguelike library. | typescript | MIT | reference | [Aedalus/malwoden](https://github.com/Aedalus/malwoden) @ `2023-03-05 (branch tip at catalogue time)` |
 | [megaglest — ai](entries/gameplay/megaglest-ai/README.md) | combat, AI, pathing, quest or inventory logic | h | none | reference | [megaglest/megaglest-source.git](https://github.com/megaglest/megaglest-source.git) @ `4ab09c6` |
+| [memory-tuner-x](entries/gameplay/navigoyapi91-memory-tuner-x/README.md) | Smart RAM cleanup: AI decides what to compress or unload — games stay protected. / ram cleaner ram ai gaming optimization / Portable x64 prebuilt for Windows | c++ | MIT | reference | [NavigoYapi91/memory-tuner-x](https://github.com/NavigoYapi91/memory-tuner-x) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Mindustry — abilities](entries/gameplay/mindustry-abilities/README.md) | combat, AI, pathing, quest or inventory logic | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [Mindustry — ai](entries/gameplay/mindustry-core-src-mindustry-ai/README.md) | unit AI and pathfinding | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01ed559` |
 | [Mindustry — entities](entries/gameplay/mindustry-core-src-mindustry-entities/README.md) | entity/unit/bullet systems for a shipped RTS | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01ed559` |
@@ -1228,6 +1232,8 @@ _Generated 2026-11-25 10:01 UTC · 1621 entries · 413 vendored, 1208 reference-
 | [Quest-Game-Tuner](entries/gameplay/threethan-quest-game-tuner/README.md) | Unlock the full power of Meta Quest headsets by modifying system parameters | n/a | none | reference | [threethan/Quest-Game-Tuner](https://github.com/threethan/Quest-Game-Tuner) @ `6ee00366cf64` |
 | [quest-manager](entries/gameplay/rubonnek-quest-manager/README.md) | A powerful and flexible quest management system for the Godot Game Engine | gdscript | MIT | reference | [Rubonnek/quest-manager](https://github.com/Rubonnek/quest-manager) @ `2026-06-07 (branch tip at catalogue time)` |
 | [Rakugo-Dialogue-System](entries/gameplay/rakugoteam-rakugo-dialogue-system/README.md) | Inspired by Ren'Py, Rakugo is a project aiming to provide a way to make narrative-based games on Godot easily. Simplify your project, if it is a visual novel, p | gdscript | MIT | vendored | [rakugoteam/Rakugo-Dialogue-System](https://github.com/rakugoteam/Rakugo-Dialogue-System) @ `8cb205634c3c` |
+| [ram-cleaner-ai](entries/gameplay/bastiaankang-ram-cleaner-ai/README.md) | Smart RAM cleanup: AI decides what to compress or unload — games stay protected. / ram cleaner ram ai gaming optimization / Portable x64 prebuilt for Windows | c++ | MIT | vendored | [BastiaanKang/ram-cleaner-ai](https://github.com/BastiaanKang/ram-cleaner-ai) @ `a8d39728ec2f` |
+| [ram-optimizer-ai](entries/gameplay/srivera3321-ram-optimizer-ai/README.md) | Smart RAM cleanup: AI decides what to compress or unload — games stay protected. / ram cleaner ram ai gaming optimization / Portable x64 prebuilt for Windows | c++ | MIT | vendored | [sRivera3321/ram-optimizer-ai](https://github.com/sRivera3321/ram-optimizer-ai) @ `5998b3e17923` |
 | [react-flow-smart-edge](entries/gameplay/tisoap-react-flow-smart-edge/README.md) | Custom Edge for React Flow that never intersects with other nodes | typescript | MIT | reference | [tisoap/react-flow-smart-edge](https://github.com/tisoap/react-flow-smart-edge) @ `2026-11-11 (branch tip at catalogue time)` |
 | [React-Inventory-Management-System](entries/gameplay/mhamzashaikh-react-inventory-management-system/README.md) | Inventory Management Built with React JS, Node JS, Express JS, MongoDB and Tailwind CSS. | javascript | unknown | reference | [mhamzashaikh/React-Inventory-Management-System](https://github.com/mhamzashaikh/React-Inventory-Management-System) @ `2024-12-06 (branch tip at catalogue time)` |
 | [react-three-yuka-pathfinding](entries/gameplay/amaranthusss-react-three-yuka-pathfinding/README.md) | React 3D game engine prototype - Finding path AI | typescript | MIT | reference | [Amaranthusss/react-three-yuka-pathfinding](https://github.com/Amaranthusss/react-three-yuka-pathfinding) @ `2023-04-16 (branch tip at catalogue time)` |

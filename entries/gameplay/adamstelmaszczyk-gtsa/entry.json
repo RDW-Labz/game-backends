@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T10:16:45Z",
+ "category": "gameplay",
+ "commit": "2025-04-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AdamStelmaszczyk/gtsa \u2014 Game Tree Search Algorithms - C++ library for AI bot programming",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "gtsa",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "adamstelmaszczyk-gtsa",
+ "source": "github-search:game ai library stars:>40",
+ "stars": 87,
+ "system": "Game Tree Search Algorithms - C++ library for AI bot programming",
+ "upstream": "https://github.com/AdamStelmaszczyk/gtsa",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

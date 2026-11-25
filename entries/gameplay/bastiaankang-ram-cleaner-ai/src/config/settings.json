@@ -1,0 +1,23 @@
+{
+  "module": "ram-cleaner-ai",
+  "version": "0.1.0",
+  "runtime": {
+    "threads": 4,
+    "verbose": false,
+    "hot_reload": true
+  },
+  "modules": {
+    "monitor": {
+      "enabled": true
+    },
+    "smart": {
+      "enabled": true
+    },
+    "protect": {
+      "enabled": true
+    },
+    "cli": {
+      "enabled": true
+    }
+  }
+}
