@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:56:56Z",
+ "category": "loot-economy",
+ "commit": "2023-03-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Balastrong/wrand \u2014 \ud83c\udfb2 Extract one or more random elements from a weighted array (aka loot table or gacha)",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "wrand",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "balastrong-wrand",
+ "source": "github-search:loot table stars:>10",
+ "stars": 21,
+ "system": "\ud83c\udfb2 Extract one or more random elements from a weighted array (aka loot table or gacha)",
+ "upstream": "https://github.com/Balastrong/wrand",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

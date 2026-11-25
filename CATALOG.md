@@ -1,13 +1,13 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 06:40 UTC · 1565 entries · 400 vendored, 1165 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 06:56 UTC · 1571 entries · 402 vendored, 1169 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
-| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
+| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 36 | 9 | 27 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
@@ -1010,12 +1010,13 @@ _Generated 2026-11-25 06:40 UTC · 1565 entries · 400 vendored, 1165 reference-
 
 ## loot-economy
 
-**Loot / drop and economy rolls** — 30 entries
+**Loot / drop and economy rolls** — 36 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [3DGame_TheLostVillage](entries/loot-economy/leethebuilder-3dgame-thelostvillage/README.md) | A 3D RPG adventure game developed with Unity3D. The game has built-in quest systems, battle systems and traditional RPG elements (Shops, Collections etc). | c# | unknown | reference | [LeeTheBuilder/3DGame_TheLostVillage](https://github.com/LeeTheBuilder/3DGame_TheLostVillage) @ `2021-04-21 (branch tip at catalogue time)` |
 | [Apex-Legends-Game-Assistant-Cheats-Hacks-2026](entries/loot-economy/pausesocialkinks-apex-legends-game-assistant-cheats-hacks-2026/README.md) |  🛡️⚡ Apex Legends Game Assistant 2026 with aiming assistance, visual feedback system (players/loot/deathboxes/care packages/beacons through walls), position tra | c++ | none | reference | [pausesocialkinks/Apex-Legends-Game-Assistant-Cheats-Hacks-2026](https://github.com/pausesocialkinks/Apex-Legends-Game-Assistant-Cheats-Hacks-2026) @ `fb1ab2a406eb` |
+| [BG3LootTableGenerator](entries/loot-economy/liareth-bg3loottablegenerator/README.md) | Dumps all items to .json, and creates treasure tables for armours | c# | unknown | reference | [Liareth/BG3LootTableGenerator](https://github.com/Liareth/BG3LootTableGenerator) @ `2023-08-24 (branch tip at catalogue time)` |
 | [BlockState](entries/loot-economy/triton365-blockstate/README.md) | A very, very large loot-table that extracts the BlockState data of any block at given position | mcfunction | MIT | reference | [Triton365/BlockState](https://github.com/Triton365/BlockState) @ `2026-09-26 (branch tip at catalogue time)` |
 | [Cataclysm-DDA — itemgroups](entries/loot-economy/cataclysm-dda-data-json-itemgroups/README.md) | item group / loot tables (JSON) | json | CC-BY-SA-3.0 | reference | [CleverRaven/Cataclysm-DDA.git](https://github.com/CleverRaven/Cataclysm-DDA.git) @ `2599825ebb8c` |
 | [com.unity.game-foundation](entries/loot-economy/needle-mirror-com-unity-game-foundation/README.md) | Game Foundation core package.This package contains the following components: ▪ Inventory System ▪ Virtual Currency Wallet ▪ Properties System ▪ Transaction Syst | c# | unknown | reference | [needle-mirror/com.unity.game-foundation](https://github.com/needle-mirror/com.unity.game-foundation) @ `2021-06-11 (branch tip at catalogue time)` |
@@ -1023,6 +1024,8 @@ _Generated 2026-11-25 06:40 UTC · 1565 entries · 400 vendored, 1165 reference-
 | [cyber-acid](entries/loot-economy/stateless-minds-cyber-acid/README.md) | Liquid democracy political simulator based on the automated data feed from the moneyless economy simulator Cyber Stasis. | go | MIT | reference | [stateless-minds/cyber-acid](https://github.com/stateless-minds/cyber-acid) @ `2024-12-04 (branch tip at catalogue time)` |
 | [cyber-stasis](entries/loot-economy/stateless-minds-cyber-stasis/README.md) | Post-money economy simulator in the form of a free fictional game based on gift economy that tests the hypothesis of having a market system without any exchange | go | MIT | vendored | [stateless-minds/cyber-stasis](https://github.com/stateless-minds/cyber-stasis) @ `cd2585927609` |
 | [DayZEditor](entries/loot-economy/mrx13415-dayzeditor/README.md) | A loot table editor for DayZ (Standalone) | c# | MIT | vendored | [MrX13415/DayZEditor](https://github.com/MrX13415/DayZEditor) @ `40f6eaa76eba` |
+| [DayZLootEdit](entries/loot-economy/ojemineh-dayzlootedit/README.md) | An editor to comfortably modify the loot table of the game "DayZ (Standalone)". | c# | MIT | vendored | [ojemineh/DayZLootEdit](https://github.com/ojemineh/DayZLootEdit) @ `0f13b38df48a` |
+| [DayZLootEditor](entries/loot-economy/packjc-dayzlooteditor/README.md) | An Electron.js App built to edit loot tables in a fast and easy manner. Win/OSX/Linux. | javascript | GPL-3.0 | reference | [PackJC/DayZLootEditor](https://github.com/PackJC/DayZLootEditor) @ `2022-04-13 (branch tip at catalogue time)` |
 | [DevilutionX — Source](entries/loot-economy/devilutionx-source/README.md) | Diablo item generation, affixes, quest drops | c++ | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996a89c5` |
 | [die-gulde](entries/loot-economy/europa1400-community-die-gulde/README.md) | A middle age economy simulation game made with Unity. Based on the classic medieval economy simulation game Europa 1400 - The Guild. | c# | MIT | reference | [europa1400-community/die-gulde](https://github.com/europa1400-community/die-gulde) @ `2025-03-26 (branch tip at catalogue time)` |
 | [konzole](entries/loot-economy/marostcs-konzole/README.md) | 09:17:02 Steam Console Client (c) Valve Corporation 09:17:02 -- type 'quit' to exit -- 09:17:02 Loading Steam API...OK. 09:17:02  09:17:03 Connecting anonymousl | n/a | unknown | reference | [marostcs/konzole](https://github.com/marostcs/konzole) @ `2021-01-15 (branch tip at catalogue time)` |
@@ -1030,6 +1033,7 @@ _Generated 2026-11-25 06:40 UTC · 1565 entries · 400 vendored, 1165 reference-
 | [Loot-Tables (JS)](entries/loot-economy/loot-tables-js/README.md) | declarative weighted loot tables with nested rolls | javascript | MIT | vendored | [Mopolo/Loot-Tables](https://github.com/Mopolo/Loot-Tables) @ `8de49aeab208` |
 | [Lootie](entries/loot-economy/sempitern0-lootie/README.md) | Portable loot table for Godot class that facilitates generating random loot based on specified items and their associated probabilities. | gdscript | MIT | vendored | [sempitern0/Lootie](https://github.com/sempitern0/Lootie) @ `ab2b6065789b` |
 | [LootTable.js](entries/loot-economy/jotson-loottable-js/README.md) | A loot drop table implementation in JavaScript | javascript | MIT | reference | [jotson/LootTable.js](https://github.com/jotson/LootTable.js) @ `2023-10-11 (branch tip at catalogue time)` |
+| [LootTweaker](entries/loot-economy/daomephsta-loottweaker/README.md) | A CraftTweaker addon that adds the ability to tweak loot tables | java | MIT | reference | [Daomephsta/LootTweaker](https://github.com/Daomephsta/LootTweaker) @ `2026-10-21 (branch tip at catalogue time)` |
 | [Major-project-list](entries/loot-economy/manojkumarpatnaik-major-project-list/README.md) | A list of practical projects that anyone can solve in any programming language (See solutions). These projects are divided into multiple categories, and each ca | n/a | MIT | vendored | [ManojKumarPatnaik/Major-project-list](https://github.com/ManojKumarPatnaik/Major-project-list) @ `1bc6f5724b21` |
 | [Moonmission-NFT-Game](entries/loot-economy/chakra377-moonmission-nft-game/README.md) | Bulls & Bears is an on-chain token generation and staking ecosystem inspired by The Whales Game, built to explore asymmetric reward mechanics and market-driven  | solidity | unknown | reference | [chakra377/Moonmission-NFT-Game](https://github.com/chakra377/Moonmission-NFT-Game) @ `2025-10-23 (branch tip at catalogue time)` |
 | [openmu — Trade](entries/loot-economy/openmu-src-gamelogic-views-trade/README.md) | player trade/market views and pricing | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
@@ -1039,11 +1043,13 @@ _Generated 2026-11-25 06:40 UTC · 1565 entries · 400 vendored, 1165 reference-
 | [Surviv.io](entries/loot-economy/ronald106-surviv-io/README.md) |  <!doctype html> <html lang='en'>   <head>     <!-- Meta Properties -->     <meta charset='UTF-8'>     <title>surviv.io - 2d battle royale game</title>     <met | n/a | none | reference | [Ronald106/Surviv.io](https://github.com/Ronald106/Surviv.io) @ `HEAD` |
 | [syrup-lite-rpg-framework](entries/loot-economy/nomnomnami-syrup-lite-rpg-framework/README.md) | inventory, shop, crafting, quests, and battle systems for ren'py! | ren'py | MIT | vendored | [nomnomnami/syrup-lite-rpg-framework](https://github.com/nomnomnami/syrup-lite-rpg-framework) @ `9b435afd1038` |
 | [Treasure-Chest-System](entries/loot-economy/zyggy123-treasure-chest-system/README.md) | A dynamic treasure chest system for AzerothCore that allows Game Masters to create and manage treasure chests with custom loot and hints. Players can find and l | lua | AGPL-3.0 | reference | [zyggy123/Treasure-Chest-System](https://github.com/zyggy123/Treasure-Chest-System) @ `a11167b11280` |
+| [trove](entries/loot-economy/goldenstack-trove/README.md) | Loot table parser and evaluator for Minestom. | java | MIT | vendored | [GoldenStack/trove](https://github.com/GoldenStack/trove) @ `799ea5758ea7` |
 | [ultraloot](entries/loot-economy/manticorp-ultraloot/README.md) | Highly functional loot table implementation in Javascript. Extendable, inheritance based tables with multiple pools and a flexible workflow. | typescript | MIT | reference | [manticorp/ultraloot](https://github.com/manticorp/ultraloot) @ `2026-11-22 (branch tip at catalogue time)` |
 | [unity-blockventure](entries/loot-economy/thirdweb-example-unity-blockventure/README.md) | Unity SDK Starter Template - Lite RPG Gathering, Shopping and Trading Systems. | javascript | none | reference | [thirdweb-example/unity-blockventure](https://github.com/thirdweb-example/unity-blockventure) @ `6cb410de03ba` |
 | [valhallarpg](entries/loot-economy/bartoszsdr-valhallarpg/README.md) | Discord Bot RPG game inspired by many RPGs and cRPGs featuring adventures, quests, character development, PvP, riddles to solve, loot, inventory, training syste | javascript | unknown | reference | [bartoszsdr/valhallarpg](https://github.com/bartoszsdr/valhallarpg) @ `2022-11-17 (branch tip at catalogue time)` |
 | [widelands — economy](entries/loot-economy/widelands-economy/README.md) | loot, drop-rate, trade or economy simulation | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
 | [widelands — economy](entries/loot-economy/widelands-src-economy/README.md) | economy simulation: production chains, ware routing, markets | c++ | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `29753773d9c1` |
+| [wrand](entries/loot-economy/balastrong-wrand/README.md) | 🎲 Extract one or more random elements from a weighted array (aka loot table or gacha) | typescript | MIT | reference | [Balastrong/wrand](https://github.com/Balastrong/wrand) @ `2023-03-15 (branch tip at catalogue time)` |
 
 ## gameplay
 

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:56:56Z",
+ "category": "loot-economy",
+ "commit": "2023-08-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Liareth/BG3LootTableGenerator \u2014 Dumps all items to .json, and creates treasure tables for armours",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "BG3LootTableGenerator",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "liareth-bg3loottablegenerator",
+ "source": "github-search:loot table stars:>10",
+ "stars": 16,
+ "system": "Dumps all items to .json, and creates treasure tables for armours",
+ "upstream": "https://github.com/Liareth/BG3LootTableGenerator",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T06:56:51Z",
+ "category": "loot-economy",
+ "commit": "799ea5758ea7",
+ "delivery": "vendored",
+ "description": "GoldenStack/trove \u2014 Loot table parser and evaluator for Minestom.",
+ "language": "java",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "trove",
+ "size_bytes": 180508,
+ "slug": "goldenstack-trove",
+ "source": "github-search:loot table stars:>10",
+ "stars": 22,
+ "system": "Loot table parser and evaluator for Minestom.",
+ "upstream": "https://github.com/GoldenStack/trove",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

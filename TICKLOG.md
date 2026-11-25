@@ -3094,3 +3094,11 @@ One line per 15-minute extension tick, newest last.
   - added math/krubbles-icaria-noise (MIT, vendored)
   - reference math/covexp-cuda-noise
   - reference math/keijiro-noisetools
+
+- **2026-11-25 06:57 UTC** — tick 843: +2 screened, +4 reference, 8 skipped, catalogue=1571
+  - added loot-economy/goldenstack-trove (MIT, vendored)
+  - added loot-economy/ojemineh-dayzlootedit (MIT, vendored)
+  - reference loot-economy/balastrong-wrand
+  - reference loot-economy/packjc-dayzlooteditor
+  - reference loot-economy/daomephsta-loottweaker
+  - reference loot-economy/liareth-bg3loottablegenerator

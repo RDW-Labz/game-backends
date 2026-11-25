@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:56:56Z",
+ "category": "loot-economy",
+ "commit": "2026-10-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Daomephsta/LootTweaker \u2014 A CraftTweaker addon that adds the ability to tweak loot tables",
+ "language": "java",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "LootTweaker",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "daomephsta-loottweaker",
+ "source": "github-search:loot table stars:>10",
+ "stars": 17,
+ "system": "A CraftTweaker addon that adds the ability to tweak loot tables",
+ "upstream": "https://github.com/Daomephsta/LootTweaker",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

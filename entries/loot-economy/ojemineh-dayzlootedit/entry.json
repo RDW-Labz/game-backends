@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T06:56:55Z",
+ "category": "loot-economy",
+ "commit": "0f13b38df48a",
+ "delivery": "vendored",
+ "description": "ojemineh/DayZLootEdit \u2014 An editor to comfortably modify the loot table of the game \"DayZ (Standalone)\".",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "DayZLootEdit",
+ "size_bytes": 58244,
+ "slug": "ojemineh-dayzlootedit",
+ "source": "github-search:loot table stars:>10",
+ "stars": 21,
+ "system": "An editor to comfortably modify the loot table of the game \"DayZ (Standalone)\".",
+ "upstream": "https://github.com/ojemineh/DayZLootEdit",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

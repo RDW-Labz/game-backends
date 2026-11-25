@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:56:56Z",
+ "category": "loot-economy",
+ "commit": "2022-04-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "PackJC/DayZLootEditor \u2014 An Electron.js App built to edit loot tables in a fast and easy manner. Win/OSX/Linux.",
+ "language": "javascript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "DayZLootEditor",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "packjc-dayzlooteditor",
+ "source": "github-search:loot table stars:>10",
+ "stars": 20,
+ "system": "An Electron.js App built to edit loot tables in a fast and easy manner. Win/OSX/Linux.",
+ "upstream": "https://github.com/PackJC/DayZLootEditor",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
