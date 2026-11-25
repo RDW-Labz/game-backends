@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:50:05Z",
+ "category": "gameplay",
+ "commit": "2025-02-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Dicklesworthstone/visual_astar_python \u2014 Generate Cool-Looking Mazes and Animations Illustrating the A* Pathfinding Algorithm",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "visual_astar_python",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "dicklesworthstone-visual-astar-python",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 176,
+ "system": "Generate Cool-Looking Mazes and Animations Illustrating the A* Pathfinding Algorithm",
+ "upstream": "https://github.com/Dicklesworthstone/visual_astar_python",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

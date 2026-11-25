@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T08:50:01Z",
+ "category": "gameplay",
+ "commit": "7264718f883b",
+ "delivery": "vendored",
+ "description": "RyanCarrier/dijkstra \u2014 Fast golang Dijkstra path finder",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "dijkstra",
+ "size_bytes": 59401,
+ "slug": "ryancarrier-dijkstra",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 181,
+ "system": "Fast golang Dijkstra path finder",
+ "upstream": "https://github.com/RyanCarrier/dijkstra",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

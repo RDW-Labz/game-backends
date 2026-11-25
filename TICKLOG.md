@@ -3132,3 +3132,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/vszue-donainavigation
   - reference gameplay/brunomikoski-simple-optimized-a-pathfinder
   - reference gameplay/jrialland-python-astar
+
+- **2026-11-25 08:50 UTC** — tick 849: +2 screened, +4 reference, 6 skipped, catalogue=1597
+  - added gameplay/ryancarrier-dijkstra (MIT, vendored)
+  - added gameplay/matthew-j-spencer-pathfinding (none, reference)
+  - reference gameplay/dicklesworthstone-visual-astar-python
+  - reference gameplay/bigzaphod-astar
+  - reference gameplay/ohohcakester-any-angle-pathfinding
+  - reference gameplay/datadog-pathfinding-cloud

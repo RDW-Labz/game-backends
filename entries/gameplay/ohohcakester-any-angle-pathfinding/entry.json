@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:50:05Z",
+ "category": "gameplay",
+ "commit": "2022-12-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Ohohcakester/Any-Angle-Pathfinding \u2014 A collection of algorithms used for any-angle pathfinding with visualisations.",
+ "language": "java",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "Any-Angle-Pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "ohohcakester-any-angle-pathfinding",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 169,
+ "system": "A collection of algorithms used for any-angle pathfinding with visualisations.",
+ "upstream": "https://github.com/Ohohcakester/Any-Angle-Pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

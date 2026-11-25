@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T08:50:03Z",
+ "category": "gameplay",
+ "commit": "4f7c9a1f3c0e",
+ "delivery": "reference",
+ "description": "Matthew-J-Spencer/Pathfinding \u2014 Related to this video: https://www.youtube.com/watch?v=i0x5fj4PqP4",
+ "language": "c#",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Pathfinding",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 15575,
+ "slug": "matthew-j-spencer-pathfinding",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 179,
+ "system": "Related to this video: https://www.youtube.com/watch?v=i0x5fj4PqP4",
+ "upstream": "https://github.com/Matthew-J-Spencer/Pathfinding",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 08:34 UTC · 1591 entries · 407 vendored, 1184 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 08:50 UTC · 1597 entries · 408 vendored, 1189 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-25 08:34 UTC · 1591 entries · 407 vendored, 1184 reference-
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 209 | 54 | 155 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 215 | 55 | 160 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
@@ -1055,7 +1055,7 @@ _Generated 2026-11-25 08:34 UTC · 1591 entries · 407 vendored, 1184 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 209 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 215 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1067,8 +1067,10 @@ _Generated 2026-11-25 08:34 UTC · 1591 entries · 407 vendored, 1184 reference-
 | [algorithms-visualizer](entries/gameplay/sonngdev-algorithms-visualizer/README.md) | Visualization of common pathfinding algorithms 🧭 🗺️ | typescript | none | reference | [sonngdev/algorithms-visualizer](https://github.com/sonngdev/algorithms-visualizer) @ `23a20d434f93` |
 | [Algorust](entries/gameplay/jondolf-algorust/README.md) | Various algorithms visualized interactively on the web, entirely with Rust 🦀 | rust | unknown | reference | [Jondolf/Algorust](https://github.com/Jondolf/Algorust) @ `2024-07-17 (branch tip at catalogue time)` |
 | [ancientbeast — abilities](entries/gameplay/ancientbeast-abilities/README.md) | combat, AI, pathing, quest or inventory logic | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
+| [Any-Angle-Pathfinding](entries/gameplay/ohohcakester-any-angle-pathfinding/README.md) | A collection of algorithms used for any-angle pathfinding with visualisations. | java | Unlicense | reference | [Ohohcakester/Any-Angle-Pathfinding](https://github.com/Ohohcakester/Any-Angle-Pathfinding) @ `2022-12-21 (branch tip at catalogue time)` |
 | [anydesign](entries/gameplay/uxkero-anydesign/README.md) | Claude skill that analyzes images, websites, and Figma files and generates a structured design.md with token system, component inventory, and reconstruction not | python | MIT | reference | [uxKero/anydesign](https://github.com/uxKero/anydesign) @ `2026-09-15 (branch tip at catalogue time)` |
 | [anystore](entries/gameplay/vijaythapa333-anystore/README.md) | Billing and Inventory Management System Build in C# and MS SQL Server 2014 | c# | MIT | vendored | [vijaythapa333/anystore](https://github.com/vijaythapa333/anystore) @ `09ea150f474f` |
+| [AStar](entries/gameplay/bigzaphod-astar/README.md) | C Implementation of the A* Pathfinding Algorithm | c | unknown | reference | [BigZaphod/AStar](https://github.com/BigZaphod/AStar) @ `2017-04-16 (branch tip at catalogue time)` |
 | [AStar](entries/gameplay/roy-t-astar/README.md) | A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher.  | c# | MIT | vendored | [roy-t/AStar](https://github.com/roy-t/AStar) @ `3d57efaa83c8` |
 | [astar-typescript](entries/gameplay/digitsensitive-astar-typescript/README.md) | A* search algorithm in TypeScript | typescript | MIT | reference | [digitsensitive/astar-typescript](https://github.com/digitsensitive/astar-typescript) @ `2023-04-26 (branch tip at catalogue time)` |
 | [asw](entries/gameplay/auto-sea-way-asw/README.md) | Open source sea routing between any two coordinates. Global routing graph built from OpenStreetMap coastlines with H3 hexagons. Rust, HTTP API, self-hosted. | rust | Apache-2.0 | vendored | [auto-sea-way/asw](https://github.com/auto-sea-way/asw) @ `72a3e891d1b1` |
@@ -1089,6 +1091,7 @@ _Generated 2026-11-25 08:34 UTC · 1591 entries · 407 vendored, 1184 reference-
 | [ContextSteering](entries/gameplay/friedforfun-contextsteering/README.md) | Unity package to add context steering behaviours to your GameObjects | c# | GPL-3.0 | reference | [friedforfun/ContextSteering](https://github.com/friedforfun/ContextSteering) @ `1478f88a1cf2` |
 | [Continuous-CBS](entries/gameplay/pathplanning-continuous-cbs/README.md) | Continuous CBS - a modification of conflict based search algorithm, that allows to perform actions (move, wait) of arbitrary duration. Timeline is not discretiz | c++ | MIT | reference | [PathPlanning/Continuous-CBS](https://github.com/PathPlanning/Continuous-CBS) @ `2025-05-30 (branch tip at catalogue time)` |
 | [cupoch](entries/gameplay/neka-nat-cupoch/README.md) | Robotics with GPU computing | c++ | MIT | reference | [neka-nat/cupoch](https://github.com/neka-nat/cupoch) @ `2026-06-25 (branch tip at catalogue time)` |
+| [dijkstra](entries/gameplay/ryancarrier-dijkstra/README.md) | Fast golang Dijkstra path finder | go | MIT | vendored | [RyanCarrier/dijkstra](https://github.com/RyanCarrier/dijkstra) @ `7264718f883b` |
 | [Django-Inventory-Management-System](entries/gameplay/kenbrotech-django-inventory-management-system/README.md) | This is a Django Inventory Management System Web Application. This course contains the basics of Django to intermediary and advanced concepts in Django, Web Dev | javascript | none | reference | [KenBroTech/Django-Inventory-Management-System](https://github.com/KenBroTech/Django-Inventory-Management-System) @ `f43bfb6439fa` |
 | [DODBT](entries/gameplay/vadimburym-dodbt/README.md) | High-performance Behaviour Tree system inspired by Data-Oriented Design. Zero MonoBehaviour, zero runtime allocations, graph-to-runtime compilation, clean debug | c# | unknown | reference | [vadimburym/DODBT](https://github.com/vadimburym/DODBT) @ `2026-10-21 (branch tip at catalogue time)` |
 | [DonAINavigation](entries/gameplay/vszue-donainavigation/README.md) | This plugin provides a 3D dynamic pathfinding system for use with Unreal Engine 4. It's primarly designed for Flying AI creatures based in dynamic or procedural | c++ | MIT | reference | [VSZue/DonAINavigation](https://github.com/VSZue/DonAINavigation) @ `2023-01-25 (branch tip at catalogue time)` |
@@ -1180,11 +1183,13 @@ _Generated 2026-11-25 08:34 UTC · 1591 entries · 407 vendored, 1184 reference-
 | [Part-DB-server](entries/gameplay/part-db-part-db-server/README.md) | Part-DB is an Open source inventory management system for your electronic components | php | AGPL-3.0 | reference | [Part-DB/Part-DB-server](https://github.com/Part-DB/Part-DB-server) @ `04aeda78ac8c` |
 | [pathfinding](entries/gameplay/evenfurther-pathfinding/README.md) | Pathfinding library for rust | rust | unknown | reference | [evenfurther/pathfinding](https://github.com/evenfurther/pathfinding) @ `2026-10-23 (branch tip at catalogue time)` |
 | [Pathfinding](entries/gameplay/honzaap-pathfinding/README.md) | Pathfinding on a real map anywhere in the world | javascript | MIT | reference | [honzaap/Pathfinding](https://github.com/honzaap/Pathfinding) @ `2023-11-07 (branch tip at catalogue time)` |
+| [Pathfinding](entries/gameplay/matthew-j-spencer-pathfinding/README.md) | Related to this video: https://www.youtube.com/watch?v=i0x5fj4PqP4 | c# | none | reference | [Matthew-J-Spencer/Pathfinding](https://github.com/Matthew-J-Spencer/Pathfinding) @ `4f7c9a1f3c0e` |
 | [pathfinding](entries/gameplay/npretto-pathfinding/README.md) | Visual explanation of pathfinding algorithms and how a*, Dijkstra and BFS can be seen as the same algorithm with different parameter/data structures used under  | javascript | unknown | reference | [npretto/pathfinding](https://github.com/npretto/pathfinding) @ `2022-01-09 (branch tip at catalogue time)` |
 | [Pathfinding](entries/gameplay/seblague-pathfinding/README.md) | see upstream | c# | MIT | vendored | [SebLague/Pathfinding](https://github.com/SebLague/Pathfinding) @ `b938872d12bb` |
 | [Pathfinding-Visualizer](entries/gameplay/clementmihailescu-pathfinding-visualizer/README.md) | A visualization tool for various pathfinding algorithms. | css | unknown | reference | [clementmihailescu/Pathfinding-Visualizer](https://github.com/clementmihailescu/Pathfinding-Visualizer) @ `2023-09-23 (branch tip at catalogue time)` |
 | [Pathfinding-Visualizer-ThreeJS](entries/gameplay/dhruvmisra-pathfinding-visualizer-threejs/README.md) | A visualizer for pathfinding algorithms in 3D with maze generation, first-person view and device camera input. | vue | none | reference | [dhruvmisra/Pathfinding-Visualizer-ThreeJS](https://github.com/dhruvmisra/Pathfinding-Visualizer-ThreeJS) @ `7dc1b69df7f4` |
 | [Pathfinding-Visualizer-Tutorial](entries/gameplay/clementmihailescu-pathfinding-visualizer-tutorial/README.md) | Tutorial for my original Pathfinding Visualizer project. | javascript | unknown | reference | [clementmihailescu/Pathfinding-Visualizer-Tutorial](https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial) @ `2023-03-03 (branch tip at catalogue time)` |
+| [pathfinding.cloud](entries/gameplay/datadog-pathfinding-cloud/README.md) | An AWS IAM Privilege Escalation Path Library | python | Apache-2.0 | reference | [DataDog/pathfinding.cloud](https://github.com/DataDog/pathfinding.cloud) @ `2026-11-16 (branch tip at catalogue time)` |
 | [PathFinding.js](entries/gameplay/pathfinding-js/README.md) | A*, IDA*, JPS, Dijkstra, BiA* on grids | javascript | MIT | vendored | [qiao/PathFinding.js](https://github.com/qiao/PathFinding.js) @ `2904a9afba48` |
 | [Pathfinding_Visualization](entries/gameplay/ngquhuanbl-pathfinding-visualization/README.md) | A ReactJS project visualizes the path-finding algorithms with additional cool features like speed adjustment, maze generation, mobile support, etc. | typescript | unknown | reference | [ngquhuanbl/Pathfinding_Visualization](https://github.com/ngquhuanbl/Pathfinding_Visualization) @ `2021-10-21 (branch tip at catalogue time)` |
 | [php-inventory-management-system](entries/gameplay/stemword-php-inventory-management-system/README.md) | Open source inventory management system with php and mysql Invoice generation and easy to download invoice in PDF format Lightweight and easy to use Order manag | php | MIT | vendored | [stemword/php-inventory-management-system](https://github.com/stemword/php-inventory-management-system) @ `862705a9724a` |
@@ -1259,6 +1264,7 @@ _Generated 2026-11-25 08:34 UTC · 1591 entries · 407 vendored, 1184 reference-
 | [VCMI — spells](entries/gameplay/vcmi-spells/README.md) | combat, AI, pathing, quest or inventory logic | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
 | [veloren — comp](entries/gameplay/veloren-common-src-comp/README.md) | ECS gameplay components (combat, inventory, stats, buffs) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
 | [veloren — inventory](entries/gameplay/veloren-inventory/README.md) | combat, AI, pathing, quest or inventory logic | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
+| [visual_astar_python](entries/gameplay/dicklesworthstone-visual-astar-python/README.md) | Generate Cool-Looking Mazes and Animations Illustrating the A* Pathfinding Algorithm | python | unknown | reference | [Dicklesworthstone/visual_astar_python](https://github.com/Dicklesworthstone/visual_astar_python) @ `2025-02-27 (branch tip at catalogue time)` |
 | [Visualizer](entries/gameplay/jasonfenggit-visualizer/README.md) | A single-page website aiming to provide innovative and intuitive visualizations of common and AI algorithms. | javascript | MIT | vendored | [JasonFengGit/Visualizer](https://github.com/JasonFengGit/Visualizer) @ `80ed0fa487c9` |
 | [vite-plugin-entry-shaking](entries/gameplay/dschungelabenteuer-vite-plugin-entry-shaking/README.md) | Mimic tree-shaking behaviour when importing code from an entry file in development mode. | typescript | MIT | reference | [Dschungelabenteuer/vite-plugin-entry-shaking](https://github.com/Dschungelabenteuer/vite-plugin-entry-shaking) @ `2026-09-08 (branch tip at catalogue time)` |
 | [vleue_navigator](entries/gameplay/vleue-vleue-navigator/README.md) | Pathfinding on NavMeshes for Bevy | rust | MIT | vendored | [vleue/vleue_navigator](https://github.com/vleue/vleue_navigator) @ `1fc3f54a7169` |

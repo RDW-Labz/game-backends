@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:50:05Z",
+ "category": "gameplay",
+ "commit": "2017-04-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BigZaphod/AStar \u2014 C Implementation of the A* Pathfinding Algorithm",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "AStar",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "bigzaphod-astar",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 175,
+ "system": "C Implementation of the A* Pathfinding Algorithm",
+ "upstream": "https://github.com/BigZaphod/AStar",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
