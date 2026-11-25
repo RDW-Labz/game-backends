@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T00:10:51Z",
+ "category": "engines",
+ "commit": "74205eba76df",
+ "delivery": "vendored",
+ "description": "kgv/bevy_fluent \u2014 Bevy plugin for localization using Fluent.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "bevy_fluent",
+ "size_bytes": 27352,
+ "slug": "kgv-bevy-fluent",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 168,
+ "system": "Bevy plugin for localization using Fluent.",
+ "upstream": "https://github.com/kgv/bevy_fluent",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

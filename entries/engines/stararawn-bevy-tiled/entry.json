@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:10:52Z",
+ "category": "engines",
+ "commit": "2022-01-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "StarArawn/bevy_tiled \u2014 A plugin for rendering tiled maps.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy_tiled",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "stararawn-bevy-tiled",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 164,
+ "system": "A plugin for rendering tiled maps.",
+ "upstream": "https://github.com/StarArawn/bevy_tiled",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

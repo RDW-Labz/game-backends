@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:10:52Z",
+ "category": "engines",
+ "commit": "2024-06-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Toqozz/bevy_debug_lines \u2014 A prototype plugin providing a simple line drawing api for bevy.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy_debug_lines",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "toqozz-bevy-debug-lines",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 143,
+ "system": "A prototype plugin providing a simple line drawing api for bevy.",
+ "upstream": "https://github.com/Toqozz/bevy_debug_lines",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T00:10:48Z",
+ "category": "engines",
+ "commit": "e2405629c544",
+ "delivery": "vendored",
+ "description": "Kurble/bevy_mod_inverse_kinematics \u2014 An inverse kinematics plugin for the Bevy engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "README.MD",
+ "license_verdict": "clean",
+ "name": "bevy_mod_inverse_kinematics",
+ "size_bytes": 13149,
+ "slug": "kurble-bevy-mod-inverse-kinematics",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 177,
+ "system": "An inverse kinematics plugin for the Bevy engine",
+ "upstream": "https://github.com/Kurble/bevy_mod_inverse_kinematics",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

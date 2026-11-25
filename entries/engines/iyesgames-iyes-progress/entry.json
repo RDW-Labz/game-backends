@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:10:52Z",
+ "category": "engines",
+ "commit": "2026-10-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "IyesGames/iyes_progress \u2014 Bevy plugin to help track progress and perform state transitions",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "iyes_progress",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "iyesgames-iyes-progress",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 164,
+ "system": "Bevy plugin to help track progress and perform state transitions",
+ "upstream": "https://github.com/IyesGames/iyes_progress",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:10:52Z",
+ "category": "engines",
+ "commit": "2024-07-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "drakmaniso/bevy_pixel_camera \u2014 A simple pixel-perfect camera plugin for Bevy, suitable for pixel-art.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_pixel_camera",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "drakmaniso-bevy-pixel-camera",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 155,
+ "system": "A simple pixel-perfect camera plugin for Bevy, suitable for pixel-art.",
+ "upstream": "https://github.com/drakmaniso/bevy_pixel_camera",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

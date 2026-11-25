@@ -1,0 +1,41 @@
+[package]
+name = "bevy_fluent"
+version = "0.16.0"
+authors = ["g <kgv@users.noreply.github.com>"]
+edition = "2021"
+description = "Bevy plugin for localization using Fluent"
+readme = "README.md"
+homepage = "https://crates.io/crates/bevy_fluent"
+repository = "https://github.com/kgv/bevy_fluent"
+license = "MIT OR Apache-2.0"
+keywords = ["bevy", "gamedev", "internationalization", "localization", "plugin"]
+categories = [
+  "game-development",
+  "games",
+  "internationalization",
+  "localization",
+]
+exclude = [".github/**/*"]
+
+[dependencies]
+bevy = { version = "0.20", default-features = false, features = [
+  "bevy_asset",
+  "bevy_log",
+] }
+fluent = "0.16.0"
+fluent-langneg = "0.13.0"
+fluent_content = "0.0.5"
+futures-lite = "2.2.0"
+indexmap = { version = "2.2.5", features = ["serde"] }
+intl-memoizer = "0.5.1"
+ron = "0.12"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_yaml = "0.9.32"
+thiserror = "2.0.18"
+tracing = "0.1.40"
+unic-langid = { version = "0.9.4", features = ["serde"] }
+uuid = { version = "1.7.0", features = ["serde", "v4", "v5"] }
+
+[dev-dependencies]
+bevy = "0.20"
+unic-langid = { version = "0.9.4", features = ["macros"] }

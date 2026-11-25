@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-24 23:50 UTC · 1433 entries · 372 vendored, 1061 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 00:10 UTC · 1439 entries · 374 vendored, 1065 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 626 | 150 | 476 |
+| [engines](#engines) — Game engines and engine subsystems | 632 | 152 | 480 |
 | [physics](#physics) — Physics | 131 | 34 | 97 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
@@ -16,7 +16,7 @@ _Generated 2026-11-24 23:50 UTC · 1433 entries · 372 vendored, 1061 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 626 entries
+**Game engines and engine subsystems** — 632 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -79,17 +79,21 @@ _Generated 2026-11-24 23:50 UTC · 1433 entries · 372 vendored, 1061 reference-
 | [bevy_atmosphere](entries/engines/jonahplusplus-bevy-atmosphere/README.md) | A procedural sky plugin for bevy | rust | Apache-2.0 | reference | [JonahPlusPlus/bevy_atmosphere](https://github.com/JonahPlusPlus/bevy_atmosphere) @ `2026-01-19 (branch tip at catalogue time)` |
 | [bevy_config_cam](entries/engines/blackphlox-bevy-config-cam/README.md) | A Swiss Army knife of a camera plugin that allows for easy setup and configuration of a wide variety of types of moveable cameras and player cameras for a scene | rust | unknown | reference | [BlackPhlox/bevy_config_cam](https://github.com/BlackPhlox/bevy_config_cam) @ `2023-09-17 (branch tip at catalogue time)` |
 | [bevy_crossterm](entries/engines/octotep-bevy-crossterm/README.md) | Crossterm plugin for the bevy game engine | rust | MIT | reference | [octotep/bevy_crossterm](https://github.com/octotep/bevy_crossterm) @ `2021-12-02 (branch tip at catalogue time)` |
+| [bevy_debug_lines](entries/engines/toqozz-bevy-debug-lines/README.md) | A prototype plugin providing a simple line drawing api for bevy. | rust | MIT | reference | [Toqozz/bevy_debug_lines](https://github.com/Toqozz/bevy_debug_lines) @ `2024-06-19 (branch tip at catalogue time)` |
 | [bevy_ecs_ldtk](entries/engines/trouv-bevy-ecs-ldtk/README.md) | ECS-friendly ldtk plugin for bevy, leveraging bevy_ecs_tilemap | rust | unknown | reference | [Trouv/bevy_ecs_ldtk](https://github.com/Trouv/bevy_ecs_ldtk) @ `2026-10-25 (branch tip at catalogue time)` |
 | [bevy_egui](entries/engines/vladbat00-bevy-egui/README.md) | This crate provides an Egui integration for the Bevy game engine. 🇺🇦 Please support the Ukrainian army: https://savelife.in.ua/en/ | rust | MIT | vendored | [vladbat00/bevy_egui](https://github.com/vladbat00/bevy_egui) @ `dd1f8d8a31db` |
 | [bevy_entitiles](entries/engines/443eb9-bevy-entitiles/README.md) | A 2d tilemap library for bevy. With many useful algorithms/tools built in. | rust | MIT | reference | [443eb9/bevy_entitiles](https://github.com/443eb9/bevy_entitiles) @ `2024-11-07 (branch tip at catalogue time)` |
+| [bevy_fluent](entries/engines/kgv-bevy-fluent/README.md) | Bevy plugin for localization using Fluent. | rust | Apache-2.0 | vendored | [kgv/bevy_fluent](https://github.com/kgv/bevy_fluent) @ `74205eba76df` |
 | [bevy_flycam](entries/engines/sburris0-bevy-flycam/README.md) | Basic first-person fly camera for the Bevy game engine | rust | ISC | vendored | [sburris0/bevy_flycam](https://github.com/sburris0/bevy_flycam) @ `c8a573879011` |
 | [bevy_gaussian_splatting](entries/engines/mosure-bevy-gaussian-splatting/README.md) | bevy gaussian splatting render pipeline plugin 🕊️🌌 | rust | Apache-2.0 | reference | [mosure/bevy_gaussian_splatting](https://github.com/mosure/bevy_gaussian_splatting) @ `2026-10-24 (branch tip at catalogue time)` |
 | [bevy_ggrs](entries/engines/gschup-bevy-ggrs/README.md) | Bevy plugin for the GGRS P2P rollback networking library. | rust | unknown | reference | [gschup/bevy_ggrs](https://github.com/gschup/bevy_ggrs) @ `2026-11-22 (branch tip at catalogue time)` |
 | [bevy_hanabi](entries/engines/djeedai-bevy-hanabi/README.md) | 🎆 Hanabi — a GPU particle system plugin for the Bevy game engine. | rust | Apache-2.0 | vendored | [djeedai/bevy_hanabi](https://github.com/djeedai/bevy_hanabi) @ `738b353d9e11` |
 | [bevy_kira_audio](entries/engines/niklasei-bevy-kira-audio/README.md) | A Bevy plugin to use Kira for game audio | rust | Apache-2.0 | reference | [NiklasEi/bevy_kira_audio](https://github.com/NiklasEi/bevy_kira_audio) @ `2026-10-13 (branch tip at catalogue time)` |
 | [bevy_light_2d](entries/engines/jgayfer-bevy-light-2d/README.md) | General purpose 2D lighting for the Bevy game engine. | rust | MIT | reference | [jgayfer/bevy_light_2d](https://github.com/jgayfer/bevy_light_2d) @ `2026-10-09 (branch tip at catalogue time)` |
+| [bevy_mod_inverse_kinematics](entries/engines/kurble-bevy-mod-inverse-kinematics/README.md) | An inverse kinematics plugin for the Bevy engine | rust | Apache-2.0 | vendored | [Kurble/bevy_mod_inverse_kinematics](https://github.com/Kurble/bevy_mod_inverse_kinematics) @ `e2405629c544` |
 | [bevy_mod_scripting](entries/engines/makspll-bevy-mod-scripting/README.md) | Bevy Scripting Plugin | rust | Apache-2.0 | reference | [makspll/bevy_mod_scripting](https://github.com/makspll/bevy_mod_scripting) @ `2026-11-23 (branch tip at catalogue time)` |
 | [bevy_pancam](entries/engines/johanhelsing-bevy-pancam/README.md) | A  bevy plugin for panning orthographic cameras  | rust | Apache-2.0 | vendored | [johanhelsing/bevy_pancam](https://github.com/johanhelsing/bevy_pancam) @ `c9e527a85e72` |
+| [bevy_pixel_camera](entries/engines/drakmaniso-bevy-pixel-camera/README.md) | A simple pixel-perfect camera plugin for Bevy, suitable for pixel-art. | rust | Apache-2.0 | reference | [drakmaniso/bevy_pixel_camera](https://github.com/drakmaniso/bevy_pixel_camera) @ `2024-07-05 (branch tip at catalogue time)` |
 | [bevy_pkv](entries/engines/johanhelsing-bevy-pkv/README.md) | Cross-platform (including wasm) persistent key value store plugin for rust games/apps | rust | unknown | reference | [johanhelsing/bevy_pkv](https://github.com/johanhelsing/bevy_pkv) @ `2026-10-23 (branch tip at catalogue time)` |
 | [bevy_quinnet](entries/engines/henauxg-bevy-quinnet/README.md) | A Client/Server game networking plugin using QUIC, for the Bevy game engine. | rust | Apache-2.0 | vendored | [Henauxg/bevy_quinnet](https://github.com/Henauxg/bevy_quinnet) @ `d8b985eb8f96` |
 | [bevy_rand](entries/engines/bluefinger-bevy-rand/README.md) | A plugin to integrate rand for ECS optimised RNG for the Bevy game engine. | rust | Apache-2.0 | reference | [Bluefinger/bevy_rand](https://github.com/Bluefinger/bevy_rand) @ `2026-10-11 (branch tip at catalogue time)` |
@@ -98,6 +102,7 @@ _Generated 2026-11-24 23:50 UTC · 1433 entries · 372 vendored, 1061 reference-
 | [bevy_scriptum](entries/engines/jarkonik-bevy-scriptum/README.md) | 📜 A plugin for Bevy that allows you to write some of your game or application logic in a scripting language. | rust | Apache-2.0 | reference | [jarkonik/bevy_scriptum](https://github.com/jarkonik/bevy_scriptum) @ `2026-04-15 (branch tip at catalogue time)` |
 | [bevy_steamworks](entries/engines/houraiteahouse-bevy-steamworks/README.md) | A Bevy plugin for integrating with the Steamworks SDK  | rust | Apache-2.0 | reference | [HouraiTeahouse/bevy_steamworks](https://github.com/HouraiTeahouse/bevy_steamworks) @ `2026-10-13 (branch tip at catalogue time)` |
 | [bevy_terrain](entries/engines/kurtkuehnert-bevy-terrain/README.md) | A terrain rendering plugin for the bevy game engine. | rust | Apache-2.0 | vendored | [kurtkuehnert/bevy_terrain](https://github.com/kurtkuehnert/bevy_terrain) @ `5a88daf4a419` |
+| [bevy_tiled](entries/engines/stararawn-bevy-tiled/README.md) | A plugin for rendering tiled maps. | rust | MIT | reference | [StarArawn/bevy_tiled](https://github.com/StarArawn/bevy_tiled) @ `2022-01-25 (branch tip at catalogue time)` |
 | [bevy_tween](entries/engines/multirious-bevy-tween/README.md) | Flexible tweening plugin library for Bevy. | rust | Apache-2.0 | reference | [Multirious/bevy_tween](https://github.com/Multirious/bevy_tween) @ `2026-11-16 (branch tip at catalogue time)` |
 | [bevy_tweening](entries/engines/djeedai-bevy-tweening/README.md) | Tweening animation plugin for the Bevy game engine. | rust | Apache-2.0 | reference | [djeedai/bevy_tweening](https://github.com/djeedai/bevy_tweening) @ `2026-11-01 (branch tip at catalogue time)` |
 | [bevy_vector_shapes](entries/engines/james-j-obrien-bevy-vector-shapes/README.md) | A library for rendering vector shapes using the Bevy game engine | rust | unknown | reference | [james-j-obrien/bevy_vector_shapes](https://github.com/james-j-obrien/bevy_vector_shapes) @ `2026-10-12 (branch tip at catalogue time)` |
@@ -331,6 +336,7 @@ _Generated 2026-11-24 23:50 UTC · 1433 entries · 372 vendored, 1061 reference-
 | [Infernux](entries/engines/chenlizheme-infernux/README.md) | Building a Neural Network-Native Engine (3N). Python authoring, C++ runtime, Vulkan/WebGPU. Windows, Linux, Android and Web. | python | MIT | reference | [ChenlizheMe/Infernux](https://github.com/ChenlizheMe/Infernux) @ `b5eba5c42ea0` |
 | [inks2d](entries/engines/nicklessone-inks2d/README.md) | A free no-dependency Typescript game engine designed for developing 2D games | typescript | MIT | reference | [NicklessOne/inks2d](https://github.com/NicklessOne/inks2d) @ `2023-08-23 (branch tip at catalogue time)` |
 | [input.js](entries/engines/jbuck-input-js/README.md) | Input.js is a JavaScript library to map controller and OS-specific USB enumerations provided by the Gamepad API in Mozilla Firefox to an ideal virtual gamepad. | javascript | MIT | vendored | [jbuck/input.js](https://github.com/jbuck/input.js) @ `1edf2a435417` |
+| [iyes_progress](entries/engines/iyesgames-iyes-progress/README.md) | Bevy plugin to help track progress and perform state transitions | rust | unknown | reference | [IyesGames/iyes_progress](https://github.com/IyesGames/iyes_progress) @ `2026-10-09 (branch tip at catalogue time)` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
 | [Jin](entries/engines/chaifix-jin/README.md) | A 2D game framework for simplifying game making process in Lua.  | c++ | MIT | reference | [chaifix/Jin](https://github.com/chaifix/Jin) @ `2017-08-09 (branch tip at catalogue time)` |

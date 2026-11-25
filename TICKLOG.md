@@ -2916,3 +2916,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/jonahplusplus-bevy-atmosphere
   - reference engines/houraiteahouse-bevy-steamworks
   - reference engines/mosure-bevy-gaussian-splatting
+
+- **2026-11-25 00:10 UTC** — tick 820: +2 screened, +4 reference, 10 skipped, catalogue=1439
+  - added engines/kurble-bevy-mod-inverse-kinematics (Apache-2.0, vendored)
+  - added engines/kgv-bevy-fluent (Apache-2.0, vendored)
+  - reference engines/stararawn-bevy-tiled
+  - reference engines/iyesgames-iyes-progress
+  - reference engines/drakmaniso-bevy-pixel-camera
+  - reference engines/toqozz-bevy-debug-lines
