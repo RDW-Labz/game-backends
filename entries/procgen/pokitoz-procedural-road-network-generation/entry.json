@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T15:27:25Z",
+ "category": "procgen",
+ "commit": "aecb957f7382",
+ "delivery": "reference",
+ "description": "pokitoz/Procedural-road-network-generation \u2014 Creates a network of roads taking different parameters in account",
+ "language": "html",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Procedural-road-network-generation",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 1425174,
+ "slug": "pokitoz-procedural-road-network-generation",
+ "source": "github-search:l-system procedural stars:>10",
+ "stars": 11,
+ "system": "Creates a network of roads taking different parameters in account",
+ "upstream": "https://github.com/pokitoz/Procedural-road-network-generation",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

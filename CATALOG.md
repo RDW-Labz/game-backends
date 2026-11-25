@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 15:09 UTC · 1687 entries · 427 vendored, 1260 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 15:27 UTC · 1689 entries · 428 vendored, 1261 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-25 15:09 UTC · 1687 entries · 427 vendored, 1260 reference-
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
-| [procgen](#procgen) — Procedural generation | 141 | 34 | 107 |
+| [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
 
 
 ## engines
@@ -1611,7 +1611,7 @@ _Generated 2026-11-25 15:09 UTC · 1687 entries · 427 vendored, 1260 reference-
 
 ## procgen
 
-**Procedural generation** — 141 entries
+**Procedural generation** — 143 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1671,6 +1671,7 @@ _Generated 2026-11-25 15:09 UTC · 1687 entries · 427 vendored, 1260 reference-
 | [infinigen](entries/procgen/princeton-vl-infinigen/README.md) | Infinite Photorealistic Worlds using Procedural Generation | python | BSD-3-Clause | reference | [princeton-vl/infinigen](https://github.com/princeton-vl/infinigen) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Infinite-Runner-Ultimate](entries/procgen/subho406-infinite-runner-ultimate/README.md) | A cross-platform procedural environment generation and Endless Runner engine. Features real-time object pooling and includes an interactive level editor. | c# | GPL-3.0 | reference | [subho406/Infinite-Runner-Ultimate](https://github.com/subho406/Infinite-Runner-Ultimate) @ `ad12afbf1c38` |
 | [jigsaw-puzzle](entries/procgen/shamim-akhtar-jigsaw-puzzle/README.md) | A complete Jigsaw Puzzle game built in Unity and C#. This repository contains the source code for the tutorial series covering Bézier curve mathematics, procedu | c# | unknown | reference | [shamim-akhtar/jigsaw-puzzle](https://github.com/shamim-akhtar/jigsaw-puzzle) @ `2025-12-28 (branch tip at catalogue time)` |
+| [l-system](entries/procgen/manuelpagliuca-l-system/README.md) | Project for the course of A.I. For Videogames, University of Milan, M.Sc. in Computer Science, A.Y. 2021/2022. Procedural generation of a tree using L-system. | c# | MIT | vendored | [manuelpagliuca/l-system](https://github.com/manuelpagliuca/l-system) @ `79fe89bd7b25` |
 | [L-System-Plus](entries/procgen/kylebmeredith-l-system-plus/README.md) | A TouchDesigner component for creating procedural plants with L Systems | n/a | unknown | reference | [kylebmeredith/L-System-Plus](https://github.com/kylebmeredith/L-System-Plus) @ `2026-05-05 (branch tip at catalogue time)` |
 | [L-System-Trees-in-Unity](entries/procgen/sammurphy-l-system-trees-in-unity/README.md) | Procedural trees generated using L-Systems | c# | MIT | reference | [SamMurphy/L-System-Trees-in-Unity](https://github.com/SamMurphy/L-System-Trees-in-Unity) @ `2016-09-15 (branch tip at catalogue time)` |
 | [LayerProcGen](entries/procgen/runevision-layerprocgen/README.md) | Layer-based infinite procedural generation | c# | MPL-2.0 | reference | [runevision/LayerProcGen](https://github.com/runevision/LayerProcGen) @ `2026-10-18 (branch tip at catalogue time)` |
@@ -1698,6 +1699,7 @@ _Generated 2026-11-25 15:09 UTC · 1687 entries · 427 vendored, 1260 reference-
 | [procedural-cities](entries/procgen/phiresky-procedural-cities/README.md) | Information about procedural city generation | tex | AGPL-3.0 | reference | [phiresky/procedural-cities](https://github.com/phiresky/procedural-cities) @ `f0c2c86e4289` |
 | [procedural-generation](entries/procgen/kchapelier-procedural-generation/README.md) | A mostly javascript-centric resource / links list on procedural content generation (PCG). | n/a | MIT | vendored | [kchapelier/procedural-generation](https://github.com/kchapelier/procedural-generation) @ `6a3ab9eac7e8` |
 | [Procedural-Landmass-Generation](entries/procgen/seblague-procedural-landmass-generation/README.md) | Procedural Landmass Generation in Unity | c# | MIT | reference | [SebLague/Procedural-Landmass-Generation](https://github.com/SebLague/Procedural-Landmass-Generation) @ `2024-01-12 (branch tip at catalogue time)` |
+| [Procedural-road-network-generation](entries/procgen/pokitoz-procedural-road-network-generation/README.md) | Creates a network of roads taking different parameters in account | html | none | reference | [pokitoz/Procedural-road-network-generation](https://github.com/pokitoz/Procedural-road-network-generation) @ `aecb957f7382` |
 | [procedural_city_generation](entries/procgen/josauder-procedural-city-generation/README.md) | Procedural City Generation program implemented in Python and Visualized with Blender. | python | MPL-2.0 | reference | [josauder/procedural_city_generation](https://github.com/josauder/procedural_city_generation) @ `2023-01-12 (branch tip at catalogue time)` |
 | [procedural_dungeon](entries/procgen/anthony-mills-procedural-dungeon/README.md) | PhaserJS plugin for the procedural generation of dungeon layouts for games. | javascript | GPL-3.0 | reference | [anthony-mills/procedural_dungeon](https://github.com/anthony-mills/procedural_dungeon) @ `2019-06-06 (branch tip at catalogue time)` |
 | [procedural_town_unity](entries/procgen/sunnyvalleystudio-procedural-town-unity/README.md) | How to create a simple procedural town in Unity using L-system. | c# | unknown | reference | [SunnyValleyStudio/procedural_town_unity](https://github.com/SunnyValleyStudio/procedural_town_unity) @ `2020-09-06 (branch tip at catalogue time)` |
