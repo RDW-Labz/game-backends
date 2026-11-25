@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T08:15:50Z",
+ "category": "gameplay",
+ "commit": "7dc1b69df7f4",
+ "delivery": "reference",
+ "description": "dhruvmisra/Pathfinding-Visualizer-ThreeJS \u2014 A visualizer for pathfinding algorithms in 3D with maze generation, first-person view and device camera input.",
+ "language": "vue",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Pathfinding-Visualizer-ThreeJS",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 1313159,
+ "slug": "dhruvmisra-pathfinding-visualizer-threejs",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 481,
+ "system": "A visualizer for pathfinding algorithms in 3D with maze generation, first-person view and device camera input.",
+ "upstream": "https://github.com/dhruvmisra/Pathfinding-Visualizer-ThreeJS",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

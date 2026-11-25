@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:15:52Z",
+ "category": "gameplay",
+ "commit": "2023-09-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Habrador/Self-driving-vehicle \u2014 Simulation of path planning for self-driving vehicles in Unity. This is also an implementation of the Hybrid A* pathfinding algorithm which is useful if you are interested in pathfinding for vehicles.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Self-driving-vehicle",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "habrador-self-driving-vehicle",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 463,
+ "system": "Simulation of path planning for self-driving vehicles in Unity. This is also an implementation of the Hybrid A* pathfinding algorithm which is useful if you are",
+ "upstream": "https://github.com/Habrador/Self-driving-vehicle",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

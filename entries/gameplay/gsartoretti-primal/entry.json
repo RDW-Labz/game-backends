@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:15:52Z",
+ "category": "gameplay",
+ "commit": "2024-04-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gsartoretti/PRIMAL \u2014 PRIMAL: Pathfinding via Reinforcement and Imitation Multi-Agent Learning  --  Distributed RL/IL code for Multi-Agent Path Finding (MAPF)",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "PRIMAL",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gsartoretti-primal",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 448,
+ "system": "PRIMAL: Pathfinding via Reinforcement and Imitation Multi-Agent Learning  --  Distributed RL/IL code for Multi-Agent Path Finding (MAPF)",
+ "upstream": "https://github.com/gsartoretti/PRIMAL",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

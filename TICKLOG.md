@@ -3116,3 +3116,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/neka-nat-cupoch
   - reference gameplay/ramaureirac-godot-tactical-rpg
   - reference gameplay/ikpil-dotrecast
+
+- **2026-11-25 08:15 UTC** — tick 847: +2 screened, +4 reference, 11 skipped, catalogue=1585
+  - added gameplay/dotsnav-dotsnav (Zlib, vendored)
+  - added gameplay/dhruvmisra-pathfinding-visualizer-threejs (none, reference)
+  - reference gameplay/libtcod-python-tcod
+  - reference gameplay/habrador-self-driving-vehicle
+  - reference gameplay/gsartoretti-primal
+  - reference gameplay/honzaap-pathfinding

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T08:15:33Z",
+ "category": "gameplay",
+ "commit": "0987a11c1edd",
+ "delivery": "vendored",
+ "description": "dotsnav/dotsnav \u2014 A fully dynamic planar navmesh for Unity supporting agents of any size",
+ "language": "c#",
+ "license": "Zlib",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "dotsnav",
+ "size_bytes": 803798,
+ "slug": "dotsnav-dotsnav",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 512,
+ "system": "A fully dynamic planar navmesh for Unity supporting agents of any size",
+ "upstream": "https://github.com/dotsnav/dotsnav",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

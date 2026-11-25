@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:15:52Z",
+ "category": "gameplay",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "libtcod/python-tcod \u2014 A high-performance Python port of libtcod.  Includes the libtcodpy module for backwards compatibility with older projects.",
+ "language": "python",
+ "license": "BSD-2-Clause",
+ "license_verdict": "clean",
+ "name": "python-tcod",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-2-Clause)",
+ "slug": "libtcod-python-tcod",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 481,
+ "system": "A high-performance Python port of libtcod.  Includes the libtcodpy module for backwards compatibility with older projects.",
+ "upstream": "https://github.com/libtcod/python-tcod",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

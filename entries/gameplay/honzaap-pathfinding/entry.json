@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:15:52Z",
+ "category": "gameplay",
+ "commit": "2023-11-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "honzaap/Pathfinding \u2014 Pathfinding on a real map anywhere in the world",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "honzaap-pathfinding",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 411,
+ "system": "Pathfinding on a real map anywhere in the world",
+ "upstream": "https://github.com/honzaap/Pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
