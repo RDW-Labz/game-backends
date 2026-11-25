@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:18:40Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Log2n-io/Typhon \u2014 A microsecond-latency ACID database engine with a native Entity-Component-System data model, built for real-time systems.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Typhon",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "log2n-io-typhon",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 253,
+ "system": "A microsecond-latency ACID database engine with a native Entity-Component-System data model, built for real-time systems.",
+ "upstream": "https://github.com/Log2n-io/Typhon",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T20:18:37Z",
+ "category": "engines",
+ "commit": "4835419c9008",
+ "delivery": "vendored",
+ "description": "Quillraven/Fleks \u2014 Fast, lightweight, multi-platform entity component system in Kotlin",
+ "language": "kotlin",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Fleks",
+ "size_bytes": 430561,
+ "slug": "quillraven-fleks",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 274,
+ "system": "Fast, lightweight, multi-platform entity component system in Kotlin",
+ "upstream": "https://github.com/Quillraven/Fleks",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

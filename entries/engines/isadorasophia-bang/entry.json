@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:18:40Z",
+ "category": "engines",
+ "commit": "2026-11-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "isadorasophia/bang \u2014 Entity Component System (ECS) framework made in C#.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bang",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "isadorasophia-bang",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 270,
+ "system": "Entity Component System (ECS) framework made in C#.",
+ "upstream": "https://github.com/isadorasophia/bang",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

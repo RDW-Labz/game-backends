@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:18:40Z",
+ "category": "engines",
+ "commit": "2024-06-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "nidorx/ecs-lua \u2014 ECS Lua is a fast and easy to use ECS (Entity Component System) engine for game development.",
+ "language": "lua",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ecs-lua",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "nidorx-ecs-lua",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 236,
+ "system": "ECS Lua is a fast and easy to use ECS (Entity Component System) engine for game development.",
+ "upstream": "https://github.com/nidorx/ecs-lua",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

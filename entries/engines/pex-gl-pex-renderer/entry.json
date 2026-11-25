@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:18:40Z",
+ "category": "engines",
+ "commit": "2026-11-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "pex-gl/pex-renderer \u2014 Physically Based Renderer (PBR) and scene graph designed as ECS for PEX: define entities to be rendered as collections of components with their update orchestrated by systems.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pex-renderer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "pex-gl-pex-renderer",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 249,
+ "system": "Physically Based Renderer (PBR) and scene graph designed as ECS for PEX: define entities to be rendered as collections of components with their update orchestra",
+ "upstream": "https://github.com/pex-gl/pex-renderer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T20:18:39Z",
+ "category": "engines",
+ "commit": "ed1f4891a714",
+ "delivery": "reference",
+ "description": "ecsx-framework/ECSx \u2014 An Entity-Component-System framework for Elixir",
+ "language": "elixir",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "ECSx",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 0,
+ "slug": "ecsx-framework-ecsx",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 270,
+ "system": "An Entity-Component-System framework for Elixir",
+ "upstream": "https://github.com/ecsx-framework/ECSx",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

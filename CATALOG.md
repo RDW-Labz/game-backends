@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 20:03 UTC · 1772 entries · 445 vendored, 1327 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 20:18 UTC · 1778 entries · 446 vendored, 1332 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 726 | 172 | 554 |
+| [engines](#engines) — Game engines and engine subsystems | 732 | 173 | 559 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 20:03 UTC · 1772 entries · 445 vendored, 1327 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 726 entries
+**Game engines and engine subsystems** — 732 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -66,6 +66,7 @@ _Generated 2026-11-25 20:03 UTC · 1772 entries · 445 vendored, 1327 reference-
 | [Bacon2D](entries/engines/bacon2d-bacon2d/README.md) | Bacon2D is a framework to ease 2D game development, providing ready-to-use QML elements representing basic game entities needed by most of games. | c++ | MIT | reference | [Bacon2D/Bacon2D](https://github.com/Bacon2D/Bacon2D) @ `2019-12-16 (branch tip at catalogue time)` |
 | [ballistica](entries/engines/efroemling-ballistica/README.md) | The BombSquad Game Engine | python | unknown | reference | [efroemling/ballistica](https://github.com/efroemling/ballistica) @ `2026-11-22 (branch tip at catalogue time)` |
 | [BananaBread](entries/engines/kripken-bananabread/README.md) | BananaBread is a C++ 3D game engine that runs on the web using JavaScript+WebGL+HTML | c++ | Zlib | vendored | [kripken/BananaBread](https://github.com/kripken/BananaBread) @ `455191d2e289` |
+| [bang](entries/engines/isadorasophia-bang/README.md) | Entity Component System (ECS) framework made in C#. | c# | MIT | reference | [isadorasophia/bang](https://github.com/isadorasophia/bang) @ `2026-11-10 (branch tip at catalogue time)` |
 | [bardic](entries/engines/katelouie-bardic/README.md) | A Python-first interactive fiction engine and authoring system. Frontend-agnostic and portable. | python | MIT | reference | [katelouie/bardic](https://github.com/katelouie/bardic) @ `2026-05-22 (branch tip at catalogue time)` |
 | [becsy](entries/engines/lastolivegames-becsy/README.md) | A multithreaded Entity Component System (ECS) for TypeScript and JavaScript, inspired by ECSY and bitecs. | typescript | MIT | reference | [LastOliveGames/becsy](https://github.com/LastOliveGames/becsy) @ `2026-10-02 (branch tip at catalogue time)` |
 | [better-terrain](entries/engines/portponky-better-terrain/README.md) | Terrain plugin for Godot 4 | gdscript | Unlicense | reference | [Portponky/better-terrain](https://github.com/Portponky/better-terrain) @ `2026-02-09 (branch tip at catalogue time)` |
@@ -199,10 +200,12 @@ _Generated 2026-11-25 20:03 UTC · 1772 entries · 445 vendored, 1327 reference-
 | [ecs](entries/engines/zllangct-ecs/README.md) | A Go-implementation of the ECS (Entity-Component-System), focus on the development of game server. | go | BSD-3-Clause | reference | [zllangct/ecs](https://github.com/zllangct/ecs) @ `2026-09-21 (branch tip at catalogue time)` |
 | [ecs-faq](entries/engines/sandermertens-ecs-faq/README.md) | Frequently asked questions about Entity Component Systems | n/a | unknown | reference | [SanderMertens/ecs-faq](https://github.com/SanderMertens/ecs-faq) @ `2026-07-01 (branch tip at catalogue time)` |
 | [ecs-lib](entries/engines/nidorx-ecs-lib/README.md) | Tiny and easy to use ECS (Entity Component System) library for game programming | typescript | MIT | vendored | [nidorx/ecs-lib](https://github.com/nidorx/ecs-lib) @ `e4738e088e46` |
+| [ecs-lua](entries/engines/nidorx-ecs-lua/README.md) | ECS Lua is a fast and easy to use ECS (Entity Component System) engine for game development. | lua | MIT | reference | [nidorx/ecs-lua](https://github.com/nidorx/ecs-lua) @ `2024-06-24 (branch tip at catalogue time)` |
 | [ECS_101](entries/engines/arturonereu-ecs-101/README.md) | This repository contains an introduction to Unity's Entity Component System. The purpose of this is to help developers understand this paradigm, and why it is i | c# | MIT | vendored | [ArturoNereu/ECS_101](https://github.com/ArturoNereu/ECS_101) @ `1063c46fb6f5` |
 | [ecs_benchmark](entries/engines/abeimler-ecs-benchmark/README.md) | Benchmarks of common ECS (Entity-Component-System)-Frameworks in C++ (or C) | c++ | MIT | reference | [abeimler/ecs_benchmark](https://github.com/abeimler/ecs_benchmark) @ `2024-08-16 (branch tip at catalogue time)` |
 | [ECSLight](entries/engines/robert-wallis-ecslight/README.md) | A lightweight Entity Component System in a portable library. | c# | MIT | reference | [robert-wallis/ECSLight](https://github.com/robert-wallis/ECSLight) @ `2017-11-24 (branch tip at catalogue time)` |
 | [ecst](entries/engines/vittorioromeo-ecst/README.md) | [WIP] Experimental C++14 multithreaded compile-time entity-component-system library. | c++ | unknown | reference | [vittorioromeo/ecst](https://github.com/vittorioromeo/ecst) @ `2019-09-03 (branch tip at catalogue time)` |
+| [ECSx](entries/engines/ecsx-framework-ecsx/README.md) | An Entity-Component-System framework for Elixir | elixir | GPL-3.0 | reference | [ecsx-framework/ECSx](https://github.com/ecsx-framework/ECSx) @ `ed1f4891a714` |
 | [EdenLive](entries/engines/vast-ai-research-edenlive/README.md) | Real-time generative rendering for interactive worlds, from any visual reference. | python | Apache-2.0 | vendored | [VAST-AI-Research/EdenLive](https://github.com/VAST-AI-Research/EdenLive) @ `2ea01626e6ea` |
 | [egret-core](entries/engines/egret-labs-egret-core/README.md) | Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows. | javascript | unknown | reference | [egret-labs/egret-core](https://github.com/egret-labs/egret-core) @ `2022-07-20 (branch tip at catalogue time)` |
 | [EgretGameEngine](entries/engines/yicaoyimuys-egretgameengine/README.md) | A game client engine in Egret | typescript | none | reference | [yicaoyimuys/EgretGameEngine](https://github.com/yicaoyimuys/EgretGameEngine) @ `d60a02cfaee2` |
@@ -253,6 +256,7 @@ _Generated 2026-11-25 20:03 UTC · 1772 entries · 445 vendored, 1327 reference-
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
 | [Flecs](entries/engines/flecs/README.md) | ECS with prefabs, pipelines, hierarchies, REST explorer | c | MIT | reference | [SanderMertens/flecs](https://github.com/SanderMertens/flecs) @ `fa6554710d0d` |
 | [Flecs-Rust](entries/engines/indra-db-flecs-rust/README.md) | Rust API for Flecs: A Fast and Flexible Entity Component System (ECS) | rust | MIT | reference | [Indra-db/Flecs-Rust](https://github.com/Indra-db/Flecs-Rust) @ `2026-07-26 (branch tip at catalogue time)` |
+| [Fleks](entries/engines/quillraven-fleks/README.md) | Fast, lightweight, multi-platform entity component system in Kotlin | kotlin | MIT | vendored | [Quillraven/Fleks](https://github.com/Quillraven/Fleks) @ `4835419c9008` |
 | [FlexEngine](entries/engines/ajweeks-flexengine/README.md) | Cross-platform game engine with Vulkan backend | c++ | MIT | reference | [ajweeks/FlexEngine](https://github.com/ajweeks/FlexEngine) @ `03aab462249b` |
 | [flint](entries/engines/zoeesilcock-flint/README.md) | Building blocks for the game engine your game actually needs. | zig | MIT | reference | [zoeesilcock/flint](https://github.com/zoeesilcock/flint) @ `2026-11-15 (branch tip at catalogue time)` |
 | [flixel-gdx](entries/engines/flixel-gdx-flixel-gdx/README.md) | A cross-platform 2D game framework based on flixel by AdamAtomic. | java | unknown | reference | [flixel-gdx/flixel-gdx](https://github.com/flixel-gdx/flixel-gdx) @ `2017-04-18 (branch tip at catalogue time)` |
@@ -503,6 +507,7 @@ _Generated 2026-11-25 20:03 UTC · 1772 entries · 445 vendored, 1327 reference-
 | [pecs](entries/engines/jesstelford-pecs/README.md) | Entity Component System (ECS) for PICO-8 & Picotron | lua | MIT | reference | [jesstelford/pecs](https://github.com/jesstelford/pecs) @ `2024-07-21 (branch tip at catalogue time)` |
 | [Pekka-Kana-2 — engine](entries/engines/pekka-kana-2-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | vendored | [danilolc/pk2](https://github.com/danilolc/pk2) @ `b1c5597` |
 | [permafrost-engine](entries/engines/eduard-permyakov-permafrost-engine/README.md) | An OpenGL RTS game engine written in C | c | GPL-3.0 | reference | [eduard-permyakov/permafrost-engine](https://github.com/eduard-permyakov/permafrost-engine) @ `2026-11-21 (branch tip at catalogue time)` |
+| [pex-renderer](entries/engines/pex-gl-pex-renderer/README.md) | Physically Based Renderer (PBR) and scene graph designed as ECS for PEX: define entities to be rendered as collections of components with their update orchestra | javascript | MIT | reference | [pex-gl/pex-renderer](https://github.com/pex-gl/pex-renderer) @ `2026-11-13 (branch tip at catalogue time)` |
 | [phantom-camera](entries/engines/ramokz-phantom-camera/README.md) | A Camera addon for Godot 4. Inspired by Cinemachine.  | gdscript | MIT | reference | [ramokz/phantom-camera](https://github.com/ramokz/phantom-camera) @ `2026-11-22 (branch tip at catalogue time)` |
 | [phase](entries/engines/phase-rs-phase/README.md) | A rules engine and game client — Rust + WASM + React | rust | Apache-2.0 | reference | [phase-rs/phase](https://github.com/phase-rs/phase) @ `2026-11-23 (branch tip at catalogue time)` |
 | [phaser](entries/engines/phaserjs-phaser/README.md) | Phaser is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser](https://github.com/phaserjs/phaser) @ `02d8931b626d` |
@@ -657,6 +662,7 @@ _Generated 2026-11-25 20:03 UTC · 1772 entries · 445 vendored, 1327 reference-
 | [traviso.js](entries/engines/axaq-traviso-js/README.md) | Traviso is an open source JS engine that makes it easy to build isometric applications that run in a web browser. | typescript | MIT | reference | [axaq/traviso.js](https://github.com/axaq/traviso.js) @ `2026-06-17 (branch tip at catalogue time)` |
 | [trivial-gamekit](entries/engines/borodust-trivial-gamekit/README.md) | Simple framework for making 2D games | common lisp | MIT | vendored | [borodust/trivial-gamekit](https://github.com/borodust/trivial-gamekit) @ `541ad83af7e8` |
 | [turbulenz_engine](entries/engines/turbulenz-turbulenz-engine/README.md) | Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices. | typescript | MIT | reference | [turbulenz/turbulenz_engine](https://github.com/turbulenz/turbulenz_engine) @ `2023-05-28 (branch tip at catalogue time)` |
+| [Typhon](entries/engines/log2n-io-typhon/README.md) | A microsecond-latency ACID database engine with a native Entity-Component-System data model, built for real-time systems. | c# | unknown | reference | [Log2n-io/Typhon](https://github.com/Log2n-io/Typhon) @ `2026-11-23 (branch tip at catalogue time)` |
 | [UE4VoxelTerrain](entries/engines/bw2012-ue4voxelterrain/README.md) | Unreal Engine 4: Smooth voxel terrian example | c++ | GPL-3.0 | reference | [bw2012/UE4VoxelTerrain](https://github.com/bw2012/UE4VoxelTerrain) @ `2025-02-17 (branch tip at catalogue time)` |
 | [UEAESKeyFinder](entries/engines/ezfndev-ueaeskeyfinder/README.md) | This tool can find the AES Key of probably any Unreal Engine game | c# | none | reference | [EZFNDEV/UEAESKeyFinder](https://github.com/EZFNDEV/UEAESKeyFinder) @ `eeacbb1f0e7d` |
 | [UeCore](entries/engines/geektcp-uecore/README.md) | UeCore(Universe Engine Core) is an Open Source MMO RPG Framework World of Warcraft Server Engine (NOT Unreal Engine) | c++ | GPL-3.0 | reference | [geektcp/UeCore](https://github.com/geektcp/UeCore) @ `da40c4ffa99c` |

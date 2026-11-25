@@ -3397,3 +3397,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/rubatopy-rubato
   - reference engines/ossls-blendyard
   - reference engines/individualcoder-gameplus-editor
+
+- **2026-11-25 20:18 UTC** — tick 891: +2 screened, +4 reference, 33 skipped, catalogue=1778
+  - added engines/quillraven-fleks (MIT, vendored)
+  - added engines/ecsx-framework-ecsx (GPL-3.0, reference)
+  - reference engines/isadorasophia-bang
+  - reference engines/log2n-io-typhon
+  - reference engines/pex-gl-pex-renderer
+  - reference engines/nidorx-ecs-lua
