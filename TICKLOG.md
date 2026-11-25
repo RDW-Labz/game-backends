@@ -3081,3 +3081,10 @@ One line per 15-minute extension tick, newest last.
   - reference math/meshinspector-meshlib
   - reference math/nicklockwood-euclid
   - reference math/leomariga-pyransac-3d
+
+- **2026-11-25 06:23 UTC** — tick 841: +2 screened, +3 reference, 12 skipped, catalogue=1561
+  - added math/orbingol-nurbs-python (MIT, vendored)
+  - added math/pradeep-pyro-tinynurbs (BSD-3-Clause, vendored)
+  - reference math/soufianekhiat-qaws
+  - reference math/turbo-sim-nurbspy
+  - reference math/dorianprill-stroke

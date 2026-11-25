@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T06:23:45Z",
+ "category": "math",
+ "commit": "2669a6b4b6c3",
+ "delivery": "vendored",
+ "description": "pradeep-pyro/tinynurbs \u2014 C++ library for NURBS curves and surfaces",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "tinynurbs",
+ "size_bytes": 595367,
+ "slug": "pradeep-pyro-tinynurbs",
+ "source": "github-search:spline curve library stars:>20",
+ "stars": 514,
+ "system": "C++ library for NURBS curves and surfaces",
+ "upstream": "https://github.com/pradeep-pyro/tinynurbs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

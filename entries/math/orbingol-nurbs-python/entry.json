@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T06:23:41Z",
+ "category": "math",
+ "commit": "2d19713a5e09",
+ "delivery": "vendored",
+ "description": "orbingol/NURBS-Python \u2014 Object-oriented pure Python B-Spline and NURBS library",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "NURBS-Python",
+ "size_bytes": 812060,
+ "slug": "orbingol-nurbs-python",
+ "source": "github-search:spline curve library stars:>20",
+ "stars": 770,
+ "system": "Object-oriented pure Python B-Spline and NURBS library",
+ "upstream": "https://github.com/orbingol/NURBS-Python",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

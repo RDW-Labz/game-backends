@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:23:47Z",
+ "category": "math",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "soufianekhiat/qaws \u2014 A dependency-free C11 library for creating, evaluating, sampling, traversing, and inspecting parametric curves and surfaces in 2D and 3D.  One source, four backends: C, HLSL, GLSL, Halide",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "qaws",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "soufianekhiat-qaws",
+ "source": "github-search:spline curve library stars:>20",
+ "stars": 100,
+ "system": "A dependency-free C11 library for creating, evaluating, sampling, traversing, and inspecting parametric curves and surfaces in 2D and 3D.  One source, four back",
+ "upstream": "https://github.com/soufianekhiat/qaws",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

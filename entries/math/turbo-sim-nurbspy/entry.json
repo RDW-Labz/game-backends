@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:23:47Z",
+ "category": "math",
+ "commit": "2026-11-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "turbo-sim/nurbspy \u2014 Python library for B-Spline and NURBS curves and surfaces, with analytical derivatives, geometric analysis and support for shape optimization.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "nurbspy",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "turbo-sim-nurbspy",
+ "source": "github-search:spline curve library stars:>20",
+ "stars": 89,
+ "system": "Python library for B-Spline and NURBS curves and surfaces, with analytical derivatives, geometric analysis and support for shape optimization.",
+ "upstream": "https://github.com/turbo-sim/nurbspy",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

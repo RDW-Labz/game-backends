@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:23:47Z",
+ "category": "math",
+ "commit": "2026-10-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dorianprill/stroke \u2014 A zero-allocation library providing const-generic implementations of B\u00e9zier curves, B-Spline curves and specialized implementations of up to cubic B\u00e9zier curves in N-dimensional euclidean space. It is intended for general/embedded/wasm use supporting #![no_std] environments written in 100% safe Rust with minimal dependencies.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "stroke",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dorianprill-stroke",
+ "source": "github-search:spline curve library stars:>20",
+ "stars": 55,
+ "system": "A zero-allocation library providing const-generic implementations of B\u00e9zier curves, B-Spline curves and specialized implementations of up to cubic B\u00e9zier curves",
+ "upstream": "https://github.com/dorianprill/stroke",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

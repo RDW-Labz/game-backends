@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 06:06 UTC · 1556 entries · 396 vendored, 1160 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 06:23 UTC · 1561 entries · 398 vendored, 1163 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
-| [math](#math) — Math libraries | 126 | 39 | 87 |
+| [math](#math) — Math libraries | 131 | 41 | 90 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
@@ -868,7 +868,7 @@ _Generated 2026-11-25 06:06 UTC · 1556 entries · 396 vendored, 1160 reference-
 
 ## math
 
-**Math libraries** — 126 entries
+**Math libraries** — 131 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -948,6 +948,8 @@ _Generated 2026-11-25 06:06 UTC · 1556 entries · 396 vendored, 1160 reference-
 | [miniply](entries/math/vilya-miniply/README.md) | A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file | c++ | MIT | reference | [vilya/miniply](https://github.com/vilya/miniply) @ `2023-03-14 (branch tip at catalogue time)` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
 | [NTSC-CRT](entries/math/lmp88959-ntsc-crt/README.md) | NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time application | c | unknown | reference | [LMP88959/NTSC-CRT](https://github.com/LMP88959/NTSC-CRT) @ `2026-07-19 (branch tip at catalogue time)` |
+| [NURBS-Python](entries/math/orbingol-nurbs-python/README.md) | Object-oriented pure Python B-Spline and NURBS library | python | MIT | vendored | [orbingol/NURBS-Python](https://github.com/orbingol/NURBS-Python) @ `2d19713a5e09` |
+| [nurbspy](entries/math/turbo-sim-nurbspy/README.md) | Python library for B-Spline and NURBS curves and surfaces, with analytical derivatives, geometric analysis and support for shape optimization. | python | MIT | reference | [turbo-sim/nurbspy](https://github.com/turbo-sim/nurbspy) @ `2026-11-12 (branch tip at catalogue time)` |
 | [NWaves](entries/math/ar1st0crat-nwaves/README.md) | .NET DSP library with a lot of audio processing functions | c# | MIT | reference | [ar1st0crat/NWaves](https://github.com/ar1st0crat/NWaves) @ `2022-09-27 (branch tip at catalogue time)` |
 | [opencascade.js](entries/math/donalffons-opencascade-js/README.md) | Port of the OpenCascade CAD library to JavaScript and WebAssembly via Emscripten. | python | LGPL-2.1 | reference | [donalffons/opencascade.js](https://github.com/donalffons/opencascade.js) @ `2023-08-15 (branch tip at catalogue time)` |
 | [openMVG](entries/math/openmvg-openmvg/README.md) | open Multiple View Geometry library. Basis for 3D computer vision and Structure from Motion. | c++ | MPL-2.0 | reference | [openMVG/openMVG](https://github.com/openMVG/openMVG) @ `2026-11-07 (branch tip at catalogue time)` |
@@ -961,6 +963,7 @@ _Generated 2026-11-25 06:06 UTC · 1556 entries · 396 vendored, 1160 reference-
 | [pyquaternion](entries/math/kieranwynn-pyquaternion/README.md) | A fully featured, pythonic library for representing and using quaternions | python | MIT | vendored | [KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion) @ `99025c17bab1` |
 | [pyRANSAC-3D](entries/math/leomariga-pyransac-3d/README.md) | Python library for fitting 3D primitive shapes to point clouds with RANSAC. Detect planes, spheres, cylinders, cuboids, circles, and lines. | python | Apache-2.0 | reference | [leomariga/pyRANSAC-3D](https://github.com/leomariga/pyRANSAC-3D) @ `2026-08-28 (branch tip at catalogue time)` |
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
+| [qaws](entries/math/soufianekhiat-qaws/README.md) | A dependency-free C11 library for creating, evaluating, sampling, traversing, and inspecting parametric curves and surfaces in 2D and 3D.  One source, four back | c | MIT | reference | [soufianekhiat/qaws](https://github.com/soufianekhiat/qaws) @ `2026-11-22 (branch tip at catalogue time)` |
 | [qlibs](entries/math/kmilo17pet-qlibs/README.md) | A collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more... | c | MIT | reference | [kmilo17pet/qlibs](https://github.com/kmilo17pet/qlibs) @ `2026-03-17 (branch tip at catalogue time)` |
 | [Quaternion-MATLAB-Library](entries/math/xiotechnologies-quaternion-matlab-library/README.md) | see upstream | matlab | none | reference | [xioTechnologies/Quaternion-MATLAB-Library](https://github.com/xioTechnologies/Quaternion-MATLAB-Library) @ `a2c20b81e0a7` |
 | [Quaternion.js](entries/math/rawify-quaternion-js/README.md) | The RAW JavaScript Quaternion library | javascript | MIT | reference | [rawify/Quaternion.js](https://github.com/rawify/Quaternion.js) @ `2025-09-17 (branch tip at catalogue time)` |
@@ -978,6 +981,7 @@ _Generated 2026-11-25 06:06 UTC · 1556 entries · 396 vendored, 1160 reference-
 | [SpaceVecAlg](entries/math/jrl-umi3218-spacevecalg/README.md) | Implementation of spatial vector algebra with the Eigen3 linear algebra library. | c++ | BSD-2-Clause | reference | [jrl-umi3218/SpaceVecAlg](https://github.com/jrl-umi3218/SpaceVecAlg) @ `2026-11-18 (branch tip at catalogue time)` |
 | [sprs](entries/math/sparsemat-sprs/README.md) | sparse linear algebra library for rust | rust | Apache-2.0 | reference | [sparsemat/sprs](https://github.com/sparsemat/sprs) @ `2026-10-20 (branch tip at catalogue time)` |
 | [Stewart.js](entries/math/rawify-stewart-js/README.md) | The RAW inverse kinematics library for Stewart Platforms written in JavaScript | javascript | MIT | vendored | [rawify/Stewart.js](https://github.com/rawify/Stewart.js) @ `63665d90b94c` |
+| [stroke](entries/math/dorianprill-stroke/README.md) | A zero-allocation library providing const-generic implementations of Bézier curves, B-Spline curves and specialized implementations of up to cubic Bézier curves | rust | MIT | reference | [dorianprill/stroke](https://github.com/dorianprill/stroke) @ `2026-10-21 (branch tip at catalogue time)` |
 | [substrate-fixed](entries/math/encointer-substrate-fixed/README.md) | a fixed point library for substrate based on `fixed`, providing transcendent math functions | rust | Apache-2.0 | vendored | [encointer/substrate-fixed](https://github.com/encointer/substrate-fixed) @ `d5f70362f2e0` |
 | [supertux — math](entries/math/supertux-math/README.md) | vector/matrix/quaternion math substrate | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [SwiftMath](entries/math/swiftgfx-swiftmath/README.md) | Cross-platform math library with SIMD support | swift | BSD-2-Clause | reference | [SwiftGFX/SwiftMath](https://github.com/SwiftGFX/SwiftMath) @ `2022-07-30 (branch tip at catalogue time)` |
@@ -985,6 +989,7 @@ _Generated 2026-11-25 06:06 UTC · 1556 entries · 396 vendored, 1160 reference-
 | [Tessel-A-tile-game — geom](entries/math/tessel-a-tile-game-geom/README.md) | vector/matrix/quaternion math substrate | ts | GPL-3.0 | reference | [gvtulder/tessel](https://github.com/gvtulder/tessel) @ `6249857` |
 | [TestU01-2009](entries/math/umontreal-simul-testu01-2009/README.md) | This is the 2009 version of TestU01, a software library, implemented in the ANSI C language, and offering a collection of utilities for the empirical statistica | c | Apache-2.0 | reference | [umontreal-simul/TestU01-2009](https://github.com/umontreal-simul/TestU01-2009) @ `2026-04-12 (branch tip at catalogue time)` |
 | [theoretica](entries/math/chaotic-society-theoretica/README.md) | A C++ math library for scientific computing with a simple and elegant interface. | c++ | LGPL-3.0 | reference | [chaotic-society/theoretica](https://github.com/chaotic-society/theoretica) @ `2026-11-13 (branch tip at catalogue time)` |
+| [tinynurbs](entries/math/pradeep-pyro-tinynurbs/README.md) | C++ library for NURBS curves and surfaces | c++ | BSD-3-Clause | vendored | [pradeep-pyro/tinynurbs](https://github.com/pradeep-pyro/tinynurbs) @ `2669a6b4b6c3` |
 | [tinyspline](entries/math/msteinbeck-tinyspline/README.md) | ANSI C library for NURBS, B-Splines, and Bézier curves with interfaces for C++, C#, D, Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby. | c | MIT | reference | [msteinbeck/tinyspline](https://github.com/msteinbeck/tinyspline) @ `2024-09-03 (branch tip at catalogue time)` |
 | [tpp-mlir](entries/math/libxsmm-tpp-mlir/README.md) | TPP experimentation on MLIR for linear algebra | mlir | Apache-2.0 | vendored | [libxsmm/tpp-mlir](https://github.com/libxsmm/tpp-mlir) @ `14368326a83f` |
 | [Trackball.js](entries/math/rawify-trackball-js/README.md) | The RAW library to add a virtual Trackball to your DOM | javascript | MIT | reference | [rawify/Trackball.js](https://github.com/rawify/Trackball.js) @ `2025-09-12 (branch tip at catalogue time)` |
