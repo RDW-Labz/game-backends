@@ -1,0 +1,3 @@
+FROM minidocks/mkdocs:latest
+
+RUN pip install mkdocs-nav-weight mkdocs-mermaid2-plugin fontawesome-in-markdown mkdocs-redirects

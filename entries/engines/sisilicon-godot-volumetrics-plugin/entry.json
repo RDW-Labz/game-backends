@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T22:42:40Z",
+ "category": "engines",
+ "commit": "2020-11-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SIsilicon/Godot-Volumetrics-Plugin",
+ "language": "gdscript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Godot-Volumetrics-Plugin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "sisilicon-godot-volumetrics-plugin",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 357,
+ "system": "see upstream",
+ "upstream": "https://github.com/SIsilicon/Godot-Volumetrics-Plugin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

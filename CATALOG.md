@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 22:26 UTC · 1817 entries · 455 vendored, 1362 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 22:42 UTC · 1823 entries · 457 vendored, 1366 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 771 | 182 | 589 |
+| [engines](#engines) — Game engines and engine subsystems | 777 | 184 | 593 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 22:26 UTC · 1817 entries · 455 vendored, 1362 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 771 entries
+**Game engines and engine subsystems** — 777 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -341,6 +341,7 @@ _Generated 2026-11-25 22:26 UTC · 1817 entries · 455 vendored, 1362 reference-
 | [Godot-MCP-Native](entries/engines/yurineko73-godot-mcp-native/README.md) | 一款支持godot开源引擎的的mcp插件，支持常见godot引擎操作，使用Godot原生实现MCPServer，无需安装依赖，开箱即用，支持多种AI工具调用。An MCP plugin that supports the open-source Godot engine, enabling common Godot e | gdscript | MIT | reference | [yurineko73/Godot-MCP-Native](https://github.com/yurineko73/Godot-MCP-Native) @ `2026-08-03 (branch tip at catalogue time)` |
 | [godot-mcp-runtime](entries/engines/erodenn-godot-mcp-runtime/README.md) | A lightweight, zero-footprint TypeScript MCP server that lets AI assistants drive the Godot 4.x game engine. | typescript | MIT | vendored | [Erodenn/godot-mcp-runtime](https://github.com/Erodenn/godot-mcp-runtime) @ `3b8a4f311d29` |
 | [godot-minimal-theme](entries/engines/passivestar-godot-minimal-theme/README.md) | Godot Minimal Theme | n/a | MIT | vendored | [passivestar/godot-minimal-theme](https://github.com/passivestar/godot-minimal-theme) @ `3250c3c79860` |
+| [godot-motion-matching](entries/engines/guilhermegsousa-godot-motion-matching/README.md) | A Motion Matching plugin for Godot 4 | c++ | MIT | reference | [GuilhermeGSousa/godot-motion-matching](https://github.com/GuilhermeGSousa/godot-motion-matching) @ `2026-11-10 (branch tip at catalogue time)` |
 | [Godot-MTerrain-plugin](entries/engines/mohsenph69-godot-mterrain-plugin/README.md) | A GDExtension plugin which give godot the ability to produce highly optimized Terrain for Open world games | c++ | MIT | vendored | [mohsenph69/Godot-MTerrain-plugin](https://github.com/mohsenph69/Godot-MTerrain-plugin) @ `e981512d5bfb` |
 | [Godot-PerfBullets](entries/engines/moonzel-godot-perfbullets/README.md) | This plugin uses the MultiMeshInstance2D to render thousands of bullets easily while running the logic in C++ to run at maximum performance.  | c++ | MIT | vendored | [Moonzel/Godot-PerfBullets](https://github.com/Moonzel/Godot-PerfBullets) @ `80829fb0cf41` |
 | [godot-play-game-services](entries/engines/godot-sdk-integrations-godot-play-game-services/README.md) | A Godot 4.x plugin for integration with Google Play Games Services | gdscript | MIT | reference | [godot-sdk-integrations/godot-play-game-services](https://github.com/godot-sdk-integrations/godot-play-game-services) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -353,8 +354,11 @@ _Generated 2026-11-25 22:26 UTC · 1817 entries · 455 vendored, 1362 reference-
 | [godot-tiled-importer](entries/engines/vnen-godot-tiled-importer/README.md) | Plugin for Godot Engine to import Tiled Map Editor tilemaps and tilesets | gdscript | MIT | reference | [vnen/godot-tiled-importer](https://github.com/vnen/godot-tiled-importer) @ `2023-03-15 (branch tip at catalogue time)` |
 | [Godot-Trail-System](entries/engines/obkf-godot-trail-system/README.md) | Advanced trail/ribbon plugin for the Godot Engine | gdscript | MIT | reference | [OBKF/Godot-Trail-System](https://github.com/OBKF/Godot-Trail-System) @ `2021-05-29 (branch tip at catalogue time)` |
 | [godot-voip](entries/engines/ikbencasdoei-godot-voip/README.md) | godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project. | rust | MIT | reference | [ikbencasdoei/godot-voip](https://github.com/ikbencasdoei/godot-voip) @ `2024-09-22 (branch tip at catalogue time)` |
+| [Godot-Volumetrics-Plugin](entries/engines/sisilicon-godot-volumetrics-plugin/README.md) | see upstream | gdscript | unknown | reference | [SIsilicon/Godot-Volumetrics-Plugin](https://github.com/SIsilicon/Godot-Volumetrics-Plugin) @ `2020-11-27 (branch tip at catalogue time)` |
 | [Godot-Voxel-Game-MineCraftClone](entries/engines/toger5-godot-voxel-game-minecraftclone/README.md) | This is a Godot project where I try to get familiar with the Engine. | gdscript | MIT | reference | [toger5/Godot-Voxel-Game-MineCraftClone](https://github.com/toger5/Godot-Voxel-Game-MineCraftClone) @ `2016-04-06 (branch tip at catalogue time)` |
 | [godot-vscode-plugin](entries/engines/godotengine-godot-vscode-plugin/README.md) | Godot development tools for VSCode | typescript | MIT | reference | [godotengine/godot-vscode-plugin](https://github.com/godotengine/godot-vscode-plugin) @ `2026-09-10 (branch tip at catalogue time)` |
+| [godot_card_engine](entries/engines/braindeadbzh-godot-card-engine/README.md) | A plugin for Godot to create card based games | gdscript | MIT | vendored | [BraindeadBZH/godot_card_engine](https://github.com/BraindeadBZH/godot_card_engine) @ `2747ac911ef2` |
+| [godot_editor_debugger_plugin](entries/engines/zylann-godot-editor-debugger-plugin/README.md) | A plugin to inspect the editor's scene tree itself, within the editor. | gdscript | unknown | reference | [Zylann/godot_editor_debugger_plugin](https://github.com/Zylann/godot_editor_debugger_plugin) @ `2026-08-26 (branch tip at catalogue time)` |
 | [godot_heightmap_plugin](entries/engines/zylann-godot-heightmap-plugin/README.md) | HeightMap terrain for Godot implemented in GDScript | gdscript | unknown | reference | [Zylann/godot_heightmap_plugin](https://github.com/Zylann/godot_heightmap_plugin) @ `2026-11-13 (branch tip at catalogue time)` |
 | [godot_kanban_tasks](entries/engines/holonproduction-godot-kanban-tasks/README.md) | Another kanban board plugin for the godot engine. | gdscript | MIT | reference | [HolonProduction/godot_kanban_tasks](https://github.com/HolonProduction/godot_kanban_tasks) @ `2026-10-13 (branch tip at catalogue time)` |
 | [godot_spatial_gardener](entries/engines/dreadpon-godot-spatial-gardener/README.md) | A Godot plugin for painting plants and props on arbitrary 3D surfaces implemented in GDScript | gdscript | MIT | reference | [dreadpon/godot_spatial_gardener](https://github.com/dreadpon/godot_spatial_gardener) @ `2025-03-05 (branch tip at catalogue time)` |
@@ -556,6 +560,7 @@ _Generated 2026-11-25 22:26 UTC · 1817 entries · 455 vendored, 1362 reference-
 | [PokemonBattleEngine](entries/engines/kermalis-pokemonbattleengine/README.md) | A C# library that can emulate Pokémon battles. | c# | MIT | vendored | [Kermalis/PokemonBattleEngine](https://github.com/Kermalis/PokemonBattleEngine) @ `e733883abb04` |
 | [pokewilds](entries/engines/sheerst-pokewilds/README.md) | PokeWilds - A Gen 2 Game/Engine using libGDX | assembly | unknown | reference | [SheerSt/pokewilds](https://github.com/SheerSt/pokewilds) @ `2026-08-16 (branch tip at catalogue time)` |
 | [polymorph](entries/engines/rlipsc-polymorph/README.md) | A fast and frugal entity-component-system library with a focus on code generation and compile time optimisation. | nim | Apache-2.0 | reference | [rlipsc/polymorph](https://github.com/rlipsc/polymorph) @ `2025-02-22 (branch tip at catalogue time)` |
+| [popochiu](entries/engines/carenalgas-popochiu/README.md) | Godot plugin to make point-and-click adventure games, inspired by tools like Adventure Game Studio and PowerQuest. | gdscript | MIT | vendored | [carenalgas/popochiu](https://github.com/carenalgas/popochiu) @ `e8ab6c1f79ce` |
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
 | [PowerOf2ImageResizer](entries/engines/ryanawalters-powerof2imageresizer/README.md) | Power of 2 Image Resizer for Game Engine Textures | python | unknown | reference | [RyanAWalters/PowerOf2ImageResizer](https://github.com/RyanAWalters/PowerOf2ImageResizer) @ `2017-06-13 (branch tip at catalogue time)` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
@@ -635,6 +640,7 @@ _Generated 2026-11-25 22:26 UTC · 1817 entries · 455 vendored, 1362 reference-
 | [SharpLibHid](entries/engines/slion-sharplibhid/README.md) | C# HID Library using Windows Raw Input. | c# | unknown | reference | [Slion/SharpLibHid](https://github.com/Slion/SharpLibHid) @ `2022-06-22 (branch tip at catalogue time)` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [shura](entries/engines/andribaal-shura/README.md) | A safe, fast and cross-platform 2D component-based game framework written in rust | rust | Apache-2.0 | reference | [AndriBaal/shura](https://github.com/AndriBaal/shura) @ `2024-09-05 (branch tip at catalogue time)` |
+| [Signal-Lens](entries/engines/yannlemos-signal-lens/README.md) | A visual debugger for Godot's signals. Plugin for Godot 4.3+ | gdscript | MIT | reference | [yannlemos/Signal-Lens](https://github.com/yannlemos/Signal-Lens) @ `2026-07-25 (branch tip at catalogue time)` |
 | [SignalVisualizer](entries/engines/ericdowney-signalvisualizer/README.md) | A plugin for Godot 4.x. SignalVisualizer displays the current scene's signals and connections in a easy to read graph and tree dock. | gdscript | MIT | vendored | [Ericdowney/SignalVisualizer](https://github.com/Ericdowney/SignalVisualizer) @ `06a46e553897` |
 | [SimpleGrassTextured](entries/engines/icterusgames-simplegrasstextured/README.md) | Plugin to make grass on Godot 4 | gdscript | MIT | reference | [IcterusGames/SimpleGrassTextured](https://github.com/IcterusGames/SimpleGrassTextured) @ `2026-10-31 (branch tip at catalogue time)` |
 | [SimpleVoxelEngine](entries/engines/jamesrandall-simplevoxelengine/README.md) | A simple voxel engine written from the ground up in C++ and OpenGL | c++ | MIT | vendored | [JamesRandall/SimpleVoxelEngine](https://github.com/JamesRandall/SimpleVoxelEngine) @ `7dcabb818ff1` |

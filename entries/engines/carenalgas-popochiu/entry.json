@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T22:42:36Z",
+ "category": "engines",
+ "commit": "e8ab6c1f79ce",
+ "delivery": "vendored",
+ "description": "carenalgas/popochiu \u2014 Godot plugin to make point-and-click adventure games, inspired by tools like Adventure Game Studio and PowerQuest.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "popochiu",
+ "size_bytes": 1367891,
+ "slug": "carenalgas-popochiu",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 367,
+ "system": "Godot plugin to make point-and-click adventure games, inspired by tools like Adventure Game Studio and PowerQuest.",
+ "upstream": "https://github.com/carenalgas/popochiu",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

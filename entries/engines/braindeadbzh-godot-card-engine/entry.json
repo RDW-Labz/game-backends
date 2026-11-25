@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T22:42:38Z",
+ "category": "engines",
+ "commit": "2747ac911ef2",
+ "delivery": "vendored",
+ "description": "BraindeadBZH/godot_card_engine \u2014 A plugin for Godot to create card based games",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot_card_engine",
+ "size_bytes": 213047,
+ "slug": "braindeadbzh-godot-card-engine",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 364,
+ "system": "A plugin for Godot to create card based games",
+ "upstream": "https://github.com/BraindeadBZH/godot_card_engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

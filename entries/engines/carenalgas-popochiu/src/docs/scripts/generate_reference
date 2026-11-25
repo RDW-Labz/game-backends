@@ -1,0 +1,149 @@
+#!/usr/bin/env sh
+#
+# Popochiu Documentation Reference Generator
+#
+# Generates API reference documentation from GDScript source files.
+# This script uses a Python-based parser that directly reads .gd files,
+# eliminating the need for Godot to be installed.
+#
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DEFAULT_INPUT="$SCRIPT_DIR/../../addons/popochiu/engine"
+DEFAULT_OUTPUT="$SCRIPT_DIR/../src/reference/scripting-api"
+
+input_directory=""
+output_directory=""
+include_private=""
+include_private_methods=""
+generate_index=""
+verbose=""
+dry_run=""
+
+echo_help() {
+    cat <<'EOT'
+Popochiu Documentation Reference Generator
+
+Generates Godot-style API reference documentation from GDScript source files.
+No Godot installation required - parses .gd files directly using Python.
+
+Usage:
+    generate_reference [options] [input_directory]
+
+Arguments:
+    input_directory     Path to directory containing GDScript files.
+                        Default: addons/popochiu/engine
+
+Options:
+    -h, --help                  Display this help message.
+    -o, --output <directory>    Output directory for generated Markdown files.
+                                Default: docs/src/reference/scripting-api
+    --include-private           Include private properties (starting with _)
+    --include-private-methods   Include private methods (starting with _)
+    --generate-index            Generate an index.md file listing all classes
+    -v, --verbose               Enable verbose output
+    --dry-run                   Parse files but don't write output
+
+Annotations (place in GDScript source files):
+    @popochiu-docs-ignore-class     Exclude an entire class from docs
+    @popochiu-docs-ignore           Exclude the next documented member
+    @popochiu-docs-include          Force-include a member even if class is ignored
+    @popochiu-docs-category <slug>  Place the class in a subdirectory named <slug>.
+                                    Example: # @popochiu-docs-category game-objects
+                                    Classes with the same slug are grouped together
+                                    and get their own index page.
+
+Examples:
+    # Generate docs with defaults (engine classes)
+    generate_reference
+
+    # Generate docs for a specific directory
+    generate_reference ./addons/popochiu/engine/objects
+
+    # Generate to a custom output directory
+    generate_reference -o ./my-docs ./addons/popochiu/engine
+
+    # Verbose mode with private members
+    generate_reference -v --include-private
+
+EOT
+    exit 0
+}
+
+# Parse arguments
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            echo_help
+            ;;
+        -o|--output)
+            shift
+            output_directory="$1"
+            ;;
+        --include-private)
+            include_private="--include-private"
+            ;;
+        --include-private-methods)
+            include_private_methods="--include-private-methods"
+            ;;
+        --generate-index)
+            generate_index="--generate-index"
+            ;;
+        -v|--verbose)
+            verbose="--verbose"
+            ;;
+        --dry-run)
+            dry_run="--dry-run"
+            ;;
+        -*)
+            echo "Unknown option: $1"
+            echo "Try 'generate_reference --help' for more information."
+            exit 1
+            ;;
+        *)
+            input_directory="$1"
+            ;;
+    esac
+    shift
+done
+
+# Set defaults if not provided
+if [ -z "$input_directory" ]; then
+    input_directory="$DEFAULT_INPUT"
+fi
+
+if [ -z "$output_directory" ]; then
+    output_directory="$DEFAULT_OUTPUT"
+fi
+
+# Validate input directory exists
+if [ ! -d "$input_directory" ]; then
+    echo "Error: Input directory does not exist: $input_directory"
+    exit 1
+fi
+
+# Check Python is available
+if ! command -v python3 > /dev/null 2>&1; then
+    echo "Error: Python 3 is required but not found in PATH."
+    exit 1
+fi
+
+echo "Popochiu Documentation Generator"
+echo "================================"
+echo "Input:  $input_directory"
+echo "Output: $output_directory"
+echo ""
+
+# Run the Python generator
+python3 "$SCRIPT_DIR/generate_reference.py" \
+    "$input_directory" \
+    -o "$output_directory" \
+    $include_private \
+    $include_private_methods \
+    $generate_index \
+    $verbose \
+    $dry_run
+
+echo ""
+echo "Documentation generation complete!"

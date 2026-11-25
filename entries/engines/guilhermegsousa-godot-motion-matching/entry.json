@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T22:42:40Z",
+ "category": "engines",
+ "commit": "2026-11-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "GuilhermeGSousa/godot-motion-matching \u2014 A Motion Matching plugin for Godot 4",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-motion-matching",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "guilhermegsousa-godot-motion-matching",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 268,
+ "system": "A Motion Matching plugin for Godot 4",
+ "upstream": "https://github.com/GuilhermeGSousa/godot-motion-matching",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

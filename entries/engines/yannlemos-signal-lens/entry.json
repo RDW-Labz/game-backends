@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T22:42:40Z",
+ "category": "engines",
+ "commit": "2026-07-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "yannlemos/Signal-Lens \u2014 A visual debugger for Godot's signals. Plugin for Godot 4.3+",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Signal-Lens",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "yannlemos-signal-lens",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 356,
+ "system": "A visual debugger for Godot's signals. Plugin for Godot 4.3+",
+ "upstream": "https://github.com/yannlemos/Signal-Lens",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

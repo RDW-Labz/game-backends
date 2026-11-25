@@ -3461,3 +3461,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/qodotplugin-qodot-plugin
   - reference engines/godotengine-godot-git-plugin
   - reference engines/vnen-godot-tiled-importer
+
+- **2026-11-25 22:42 UTC** — tick 900: +2 screened, +4 reference, 29 skipped, catalogue=1823
+  - added engines/carenalgas-popochiu (MIT, vendored)
+  - added engines/braindeadbzh-godot-card-engine (MIT, vendored)
+  - reference engines/sisilicon-godot-volumetrics-plugin
+  - reference engines/yannlemos-signal-lens
+  - reference engines/guilhermegsousa-godot-motion-matching
+  - reference engines/zylann-godot-editor-debugger-plugin
