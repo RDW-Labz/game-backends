@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T01:39:56Z",
+ "category": "physics",
+ "commit": "2024-09-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dojo-sim/Dojo.jl \u2014 A differentiable physics engine for robotics",
+ "language": "julia",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Dojo.jl",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "dojo-sim-dojo-jl",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 399,
+ "system": "A differentiable physics engine for robotics",
+ "upstream": "https://github.com/dojo-sim/Dojo.jl",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

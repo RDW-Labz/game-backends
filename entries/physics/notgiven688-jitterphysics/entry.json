@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T01:39:56Z",
+ "category": "physics",
+ "commit": "2023-10-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "notgiven688/jitterphysics \u2014 A cross-platform, realtime physics engine for all .NET apps.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "jitterphysics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "notgiven688-jitterphysics",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 407,
+ "system": "A cross-platform, realtime physics engine for all .NET apps.",
+ "upstream": "https://github.com/notgiven688/jitterphysics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

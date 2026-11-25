@@ -1,0 +1,36 @@
+<svg width="680" height="310" viewBox="0 0 680 310" xmlns="http://www.w3.org/2000/svg">
+  <g shape-rendering="geometricPrecision">
+    <polygon points="340.0,89.22 313.13,104.73 340.0,120.24 366.87,104.73" fill="#F59E0B" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="340.0" y1="89.22" x2="340.0" y2="120.24" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="313.13,104.73 313.13,135.76 340.0,151.27 340.0,120.24" fill="#D97706" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="313.13" y1="104.73" x2="340.0" y2="151.27" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="340.0,151.27 366.87,135.76 366.87,104.73 340.0,120.24" fill="#FBBF24" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="340.0" y1="151.27" x2="366.87" y2="104.73" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="313.13,104.73 286.26,120.24 313.13,135.76 340.0,120.24" fill="#F59E0B" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="313.13" y1="104.73" x2="313.13" y2="135.76" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="366.87,104.73 340.0,120.24 366.87,135.76 393.74,120.24" fill="#F59E0B" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="366.87" y1="104.73" x2="366.87" y2="135.76" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="313.13,166.78 340.0,151.27 340.0,120.24 313.13,135.76" fill="#FBBF24" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="313.13" y1="166.78" x2="340.0" y2="120.24" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="286.26,120.24 286.26,151.27 313.13,166.78 313.13,135.76" fill="#D97706" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="286.26" y1="120.24" x2="313.13" y2="166.78" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="340.0,120.24 340.0,151.27 366.87,166.78 366.87,135.76" fill="#D97706" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="340.0" y1="120.24" x2="366.87" y2="166.78" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="366.87,166.78 393.74,151.27 393.74,120.24 366.87,135.76" fill="#FBBF24" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="366.87" y1="166.78" x2="393.74" y2="120.24" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="340.0,120.24 313.13,135.76 340.0,151.27 366.87,135.76" fill="#F59E0B" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="340.0" y1="120.24" x2="340.0" y2="151.27" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="340.0,182.3 366.87,166.78 366.87,135.76 340.0,151.27" fill="#FBBF24" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="340.0" y1="182.3" x2="366.87" y2="135.76" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="313.13,135.76 313.13,166.78 340.0,182.3 340.0,151.27" fill="#D97706" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="313.13" y1="135.76" x2="340.0" y2="182.3" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="340.0,73.7 313.13,89.22 340.0,104.73 366.87,89.22" fill="#F59E0B" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="340.0" y1="73.7" x2="340.0" y2="104.73" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="340.0,135.76 366.87,120.24 366.87,89.22 340.0,104.73" fill="#FBBF24" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="340.0" y1="135.76" x2="366.87" y2="89.22" stroke="#0b0e12" stroke-width="1.45"/>
+    <polygon points="313.13,89.22 313.13,120.24 340.0,135.76 340.0,104.73" fill="#D97706" stroke="#0b0e12" stroke-width="1.45" stroke-linejoin="round"/>
+    <line x1="313.13" y1="89.22" x2="340.0" y2="135.76" stroke="#0b0e12" stroke-width="1.45"/>
+  </g>
+  <text x="340" y="238" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="32" font-weight="600" letter-spacing="-0.7px" fill="#E7EAEE" stroke="#0b0e12" stroke-width="2.4" paint-order="stroke" text-rendering="geometricPrecision">web<tspan font-weight="300" fill="#A4ABB4">physics</tspan></text>
+  <text x="340" y="264" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10.5" font-weight="500" letter-spacing="3.1px" fill="#98A2AD" text-rendering="geometricPrecision">WEBGPU AVBD PHYSICS ENGINE</text>
+</svg>

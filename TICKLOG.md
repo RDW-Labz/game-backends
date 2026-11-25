@@ -2956,3 +2956,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/anuraghazra-verly-js
   - reference physics/klassenkonstantin-composephysicslayout
   - reference physics/kool-engine-kool
+
+- **2026-11-25 01:39 UTC** — tick 825: +2 screened, +4 reference, 7 skipped, catalogue=1469
+  - added physics/bootloops-ai-bootloops (MIT, reference)
+  - added physics/jure-webphysics (MIT, vendored)
+  - reference physics/notgiven688-jitterphysics
+  - reference physics/alattanzio-box3dunreal
+  - reference physics/dojo-sim-dojo-jl
+  - reference physics/yuki-koyama-elasty

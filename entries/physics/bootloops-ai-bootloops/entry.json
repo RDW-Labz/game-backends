@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T01:39:12Z",
+ "category": "physics",
+ "commit": "95dfb7251f00",
+ "delivery": "reference",
+ "description": "BootLoops-ai/bootloops \u2014 BootLoops 1.0: certified computational tools and house engines for exact and high-precision physics and quantitative science, built to be driven by LLM agents. MIT; docs CC BY 4.0.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "bootloops",
+ "reference_reason": "size gate: 15 MB",
+ "size_bytes": 16570978,
+ "slug": "bootloops-ai-bootloops",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 449,
+ "system": "BootLoops 1.0: certified computational tools and house engines for exact and high-precision physics and quantitative science, built to be driven by LLM agents. ",
+ "upstream": "https://github.com/BootLoops-ai/bootloops",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

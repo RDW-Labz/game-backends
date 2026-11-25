@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 01:22 UTC · 1463 entries · 378 vendored, 1085 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 01:39 UTC · 1469 entries · 379 vendored, 1090 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
-| [physics](#physics) — Physics | 144 | 35 | 109 |
+| [physics](#physics) — Physics | 150 | 36 | 114 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
@@ -666,7 +666,7 @@ _Generated 2026-11-25 01:22 UTC · 1463 entries · 378 vendored, 1085 reference-
 
 ## physics
 
-**Physics** — 144 entries
+**Physics** — 150 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -685,6 +685,7 @@ _Generated 2026-11-25 01:22 UTC · 1463 entries · 378 vendored, 1085 reference-
 | [bevy_verlet](entries/physics/manevillef-bevy-verlet/README.md) | Verlet physics plugin for bevy. | rust | MIT | reference | [ManevilleF/bevy_verlet](https://github.com/ManevilleF/bevy_verlet) @ `2026-05-04 (branch tip at catalogue time)` |
 | [Blinc](entries/physics/project-blinc-blinc/README.md) | A declarative, reactive UI system with first-class state machines, spring physics animations, and GPU-accelerated rendering | rust | Apache-2.0 | reference | [project-blinc/Blinc](https://github.com/project-blinc/Blinc) @ `2026-11-23 (branch tip at catalogue time)` |
 | [boks2d](entries/physics/joaomcl-boks2d/README.md) | Kotlin Multiplatform bindings for the Box2D physics engine. | kotlin | MIT | reference | [joaomcl/boks2d](https://github.com/joaomcl/boks2d) @ `2026-03-23 (branch tip at catalogue time)` |
+| [bootloops](entries/physics/bootloops-ai-bootloops/README.md) | BootLoops 1.0: certified computational tools and house engines for exact and high-precision physics and quantitative science, built to be driven by LLM agents.  | python | MIT | reference | [BootLoops-ai/bootloops](https://github.com/BootLoops-ai/bootloops) @ `95dfb7251f00` |
 | [box2cpp](entries/physics/holyblackcat-box2cpp/README.md) | C++ bindings for box2d 3.x physics engine (aka box2c) | c++ | Zlib | vendored | [HolyBlackCat/box2cpp](https://github.com/HolyBlackCat/box2cpp) @ `a912a4e0ff5e` |
 | [Box2D](entries/physics/box2d/README.md) | 2D rigid-body collision + dynamics solver | c++ | MIT | vendored | [erincatto/box2d](https://github.com/erincatto/box2d) @ `dd8bd3fb525f` |
 | [box2d](entries/physics/bytearena-box2d/README.md) | Box2D.go - Go port of Box2D - a 2D Physics Engine for Games. | go | Zlib | vendored | [ByteArena/box2d](https://github.com/ByteArena/box2d) @ `acbde413692f` |
@@ -693,6 +694,7 @@ _Generated 2026-11-25 01:22 UTC · 1463 entries · 378 vendored, 1085 reference-
 | [box2d-netstandard](entries/physics/codingben-box2d-netstandard/README.md) | C# port of Box2D - Erin Catto's 2D Physics Engine | c# | MIT | vendored | [codingben/box2d-netstandard](https://github.com/codingben/box2d-netstandard) @ `b34d6238011a` |
 | [Box2D.NET](entries/physics/beancheeseburrito-box2d-net/README.md) | Auto-generated C# bindings for Box2D 3.0 | c# | MIT | reference | [BeanCheeseBurrito/Box2D.NET](https://github.com/BeanCheeseBurrito/Box2D.NET) @ `2025-05-23 (branch tip at catalogue time)` |
 | [box3d](entries/physics/erincatto-box3d/README.md) | Box3D is a 3D physics engine for games | c | MIT | vendored | [erincatto/box3d](https://github.com/erincatto/box3d) @ `e48b902fee41` |
+| [Box3DUnreal](entries/physics/alattanzio-box3dunreal/README.md) | Box3DUnreal: Box3D Physics for Unreal Engine | c++ | MIT | reference | [alattanzio/Box3DUnreal](https://github.com/alattanzio/Box3DUnreal) @ `2026-10-05 (branch tip at catalogue time)` |
 | [Bullet Physics](entries/physics/bullet3/README.md) | 3D collision/dynamics + soft body + ML | c++ | Zlib | reference | [bulletphysics/bullet3](https://github.com/bulletphysics/bullet3) @ `d3afe76132fc` |
 | [bulletrs](entries/physics/not-fl3-bulletrs/README.md) | Bullet Physics wrapper for the Rust language. | rust | MIT | reference | [not-fl3/bulletrs](https://github.com/not-fl3/bulletrs) @ `2018-03-08 (branch tip at catalogue time)` |
 | [bump.lua](entries/physics/kikito-bump-lua/README.md) | A collision detection library for Lua | lua | MIT | vendored | [kikito/bump.lua](https://github.com/kikito/bump.lua) @ `95d9e40b8aee` |
@@ -711,10 +713,12 @@ _Generated 2026-11-25 01:22 UTC · 1463 entries · 378 vendored, 1085 reference-
 | [crashcat](entries/physics/isaac-mason-crashcat/README.md) | physics engine for javascript, built for games, simulations, and creative websites | typescript | MIT | reference | [isaac-mason/crashcat](https://github.com/isaac-mason/crashcat) @ `2026-10-30 (branch tip at catalogue time)` |
 | [cyclone-physics](entries/physics/idmillington-cyclone-physics/README.md) | The Physics engine that accompanies the book "Game Physics Engine Design" | c++ | MIT | reference | [idmillington/cyclone-physics](https://github.com/idmillington/cyclone-physics) @ `2023-09-25 (branch tip at catalogue time)` |
 | [defold-box2d](entries/physics/d954mas-defold-box2d/README.md) | defold-box2d bindings | c++ | MIT | reference | [d954mas/defold-box2d](https://github.com/d954mas/defold-box2d) @ `2025-08-28 (branch tip at catalogue time)` |
+| [Dojo.jl](entries/physics/dojo-sim-dojo-jl/README.md) | A differentiable physics engine for robotics | julia | MIT | reference | [dojo-sim/Dojo.jl](https://github.com/dojo-sim/Dojo.jl) @ `2024-09-23 (branch tip at catalogue time)` |
 | [dyn4j](entries/physics/dyn4j-dyn4j/README.md) | Java Collision Detection and Physics Engine | java | BSD-3-Clause | vendored | [dyn4j/dyn4j](https://github.com/dyn4j/dyn4j) @ `bcf942adaa9b` |
 | [edyn](entries/physics/xissburg-edyn/README.md) | Edyn is a real-time physics engine organized as an ECS. | c++ | MIT | reference | [xissburg/edyn](https://github.com/xissburg/edyn) @ `2026-09-08 (branch tip at catalogue time)` |
 | [effects-library](entries/physics/getstream-effects-library/README.md) | The Effects Library allows developers to create sophisticated and realistic particle systems such as snow, fire, rain, confetti, fireworks, and smoke with no or | swift | Apache-2.0 | reference | [GetStream/effects-library](https://github.com/GetStream/effects-library) @ `eaf607ba6d02` |
 | [elastica](entries/physics/darkroomengineering-elastica/README.md) | Physics engine for 2D rigid body collisions with React bindings. | typescript | MIT | reference | [darkroomengineering/elastica](https://github.com/darkroomengineering/elastica) @ `2026-10-31 (branch tip at catalogue time)` |
+| [elasty](entries/physics/yuki-koyama-elasty/README.md) | A research-oriented elastic body simulator | c++ | MIT | reference | [yuki-koyama/elasty](https://github.com/yuki-koyama/elasty) @ `2022-10-14 (branch tip at catalogue time)` |
 | [engine](entries/physics/galacean-engine/README.md) | A typescript interactive engine, support 2D, 3D, animation, physics, built on WebGL and glTF. | typescript | MIT | reference | [galacean/engine](https://github.com/galacean/engine) @ `2026-11-15 (branch tip at catalogue time)` |
 | [engine](entries/physics/renzora-engine/README.md) | 2D & 3D game engine & scene editor using bevy 0.20 | rust | Apache-2.0 | reference | [renzora/engine](https://github.com/renzora/engine) @ `2026-11-05 (branch tip at catalogue time)` |
 | [Engineering-Books](entries/physics/gigahidjrikaaa-engineering-books/README.md) | Softcopy of Engineering Books. If you want a book{s} to be taken down, please contact me. | n/a | unknown | reference | [gigahidjrikaaa/Engineering-Books](https://github.com/gigahidjrikaaa/Engineering-Books) @ `2024-01-12 (branch tip at catalogue time)` |
@@ -731,6 +735,7 @@ _Generated 2026-11-25 01:22 UTC · 1463 entries · 378 vendored, 1085 reference-
 | [inertia](entries/physics/aclfe-inertia/README.md) | A physics sandbox that runs in your terminal: rigid bodies, n-body gravity, cloth, and fluid, projected in 3D onto braille with no GPU. | rust | Apache-2.0 | reference | [aclfe/inertia](https://github.com/aclfe/inertia) @ `2026-07-19 (branch tip at catalogue time)` |
 | [Jax2D](entries/physics/michaeltmatthews-jax2d/README.md) | Highly scalable 2D JAX physics engine. | python | MIT | vendored | [MichaelTMatthews/Jax2D](https://github.com/MichaelTMatthews/Jax2D) @ `3c902a2b8e78` |
 | [jbox2d](entries/physics/jbox2d-jbox2d/README.md) | a 2d Java physics engine, native java port of the C++ physics engines Box2D and LiquidFun  | java | BSD-2-Clause | vendored | [jbox2d/jbox2d](https://github.com/jbox2d/jbox2d) @ `2f56e93d99a6` |
+| [jitterphysics](entries/physics/notgiven688-jitterphysics/README.md) | A cross-platform, realtime physics engine for all .NET apps. | c# | MIT | reference | [notgiven688/jitterphysics](https://github.com/notgiven688/jitterphysics) @ `2023-10-12 (branch tip at catalogue time)` |
 | [jitterphysics2](entries/physics/notgiven688-jitterphysics2/README.md) | Fast, simple to use, and dependency-free physics engine written in C# with a clear and user-friendly API. | c# | MIT | reference | [notgiven688/jitterphysics2](https://github.com/notgiven688/jitterphysics2) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Jolt Physics](entries/physics/joltphysics/README.md) | 3D rigid bodies, constraints, character controller, vehicles | c++ | MIT | vendored | [jrouwe/JoltPhysics](https://github.com/jrouwe/JoltPhysics) @ `cf16769bb0ed` |
 | [jolt-rust](entries/physics/secondhalfgames-jolt-rust/README.md) | Rust bindings to Jolt Physics | rust | Apache-2.0 | reference | [SecondHalfGames/jolt-rust](https://github.com/SecondHalfGames/jolt-rust) @ `2026-11-09 (branch tip at catalogue time)` |
@@ -813,6 +818,7 @@ _Generated 2026-11-25 01:22 UTC · 1463 entries · 378 vendored, 1085 reference-
 | [VerletClothMeshComponent](entries/physics/niallhornfx-verletclothmeshcomponent/README.md) | Cloth Simulation using Position Based Dynamics (PBD) with Verlet integration in Unreal Engine 4 | c++ | MIT | reference | [NiallHornFX/VerletClothMeshComponent](https://github.com/NiallHornFX/VerletClothMeshComponent) @ `2023-11-26 (branch tip at catalogue time)` |
 | [Verly.js](entries/physics/anuraghazra-verly-js/README.md) | :red_circle::wavy_dash::large_blue_circle::wavy_dash::black_circle: Easy to integrate Verlet physics engine. :link:  | javascript | MIT | reference | [anuraghazra/Verly.js](https://github.com/anuraghazra/Verly.js) @ `2025-02-19 (branch tip at catalogue time)` |
 | [VPhysics-Jolt](entries/physics/misyltoad-vphysics-jolt/README.md) | Volt (VPhysics Jolt) is a replacement physics module for the Source Engine. | c++ | MIT | reference | [misyltoad/VPhysics-Jolt](https://github.com/misyltoad/VPhysics-Jolt) @ `2025-05-18 (branch tip at catalogue time)` |
+| [webphysics](entries/physics/jure-webphysics/README.md) | WebGPU physics engine based on the AVBD solver | typescript | MIT | vendored | [jure/webphysics](https://github.com/jure/webphysics) @ `96b043c88dc2` |
 | [Woxi](entries/physics/ad-si-woxi/README.md) | Wolfram Language / Mathematica reimplementation in Rust (Wolfram oxidized) | rust | AGPL-3.0 | reference | [ad-si/Woxi](https://github.com/ad-si/Woxi) @ `2026-11-23 (branch tip at catalogue time)` |
 
 ## math

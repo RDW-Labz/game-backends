@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T01:39:56Z",
+ "category": "physics",
+ "commit": "2022-10-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "yuki-koyama/elasty \u2014 A research-oriented elastic body simulator",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "elasty",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "yuki-koyama-elasty",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 398,
+ "system": "A research-oriented elastic body simulator",
+ "upstream": "https://github.com/yuki-koyama/elasty",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T01:39:54Z",
+ "category": "physics",
+ "commit": "96b043c88dc2",
+ "delivery": "vendored",
+ "description": "jure/webphysics \u2014 WebGPU physics engine based on the AVBD solver",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "webphysics",
+ "size_bytes": 1520391,
+ "slug": "jure-webphysics",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 429,
+ "system": "WebGPU physics engine based on the AVBD solver",
+ "upstream": "https://github.com/jure/webphysics",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

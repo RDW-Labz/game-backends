@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AVBD Regression</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --text: #eef0f4;
+      --muted: #aeb6c2;
+      --good: #8fcb72;
+      --bad: #e57f6b;
+      --warn: #e0c15a;
+      --button: rgba(16, 20, 28, 0.84);
+      --button-hover: rgba(28, 34, 46, 0.92);
+      --button-primary: #a96c18;
+      --button-primary-hover: #c48221;
+      --button-border: rgba(255, 255, 255, 0.12);
+      --tooltip-bg: rgba(10, 13, 18, 0.96);
+      --tooltip-border: rgba(255, 255, 255, 0.08);
+      --tooltip-shadow: rgba(0, 0, 0, 0.34);
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      overflow: hidden;
+      background: #0f1117;
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    canvas {
+      position: fixed;
+      inset: 0;
+      display: block;
+    }
+
+    #app {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .rail-button,
+    .scenario-status {
+      appearance: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font: inherit;
+      line-height: 1;
+      transition: color 0.15s ease, transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .rail-button {
+      border: 1px solid var(--button-border);
+      background: var(--button);
+      color: var(--text);
+      backdrop-filter: blur(10px);
+    }
+
+    .rail-button:hover:enabled,
+    .rail-button:focus-visible {
+      background: var(--button-hover);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .rail-button {
+      font-size: 18px;
+    }
+
+    .rail-button.primary {
+      background: var(--button-primary);
+      color: #fff8ed;
+      border-color: rgba(0, 0, 0, 0.16);
+    }
+
+    .rail-button.primary:hover:enabled {
+      background: var(--button-primary-hover);
+    }
+
+    .rail-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      transform: none;
+    }
+
+    .results {
+      display: grid;
+      gap: 8px;
+    }
+
+    .scenario-row {
+      display: flex;
+      justify-content: center;
+    }
+
+    .scenario-status {
+      position: relative;
+      border: 0;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--muted);
+      --progress: 0;
+      --status-fill: rgba(255, 255, 255, 0.72);
+      overflow: visible;
+    }
+
+    .scenario-status:hover,
+    .scenario-status:focus-visible {
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .scenario-status.pass {
+      color: var(--good);
+      --status-fill: rgba(143, 203, 114, 0.9);
+    }
+
+    .scenario-status.fail {
+      color: var(--bad);
+      --status-fill: rgba(229, 127, 107, 0.9);
+    }
+
+    .scenario-status.running {
+      color: var(--warn);
+      --status-fill: rgba(224, 193, 90, 0.92);
+    }
+
+    .scenario-progress {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transform: rotate(-90deg);
+    }
+
+    .scenario-progress-track,
+    .scenario-progress-value {
+      fill: none;
+      stroke-width: 3;
+      transition: stroke-dashoffset 0.14s linear, stroke 0.15s ease, opacity 0.15s ease;
+    }
+
+    .scenario-progress-track {
+      stroke: rgba(255, 255, 255, 0.08);
+      opacity: 1;
+    }
+
+    .scenario-progress-value {
+      stroke: var(--status-fill);
+      stroke-linecap: round;
+      stroke-dasharray: 100;
+      stroke-dashoffset: calc(100 - (var(--progress) * 100));
+      opacity: 0;
+    }
+
+    .scenario-status.has-progress .scenario-progress-value {
+      opacity: 1;
+    }
+
+    .scenario-label {
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+      min-width: 1ch;
+      text-align: center;
+    }
+
+    .hover-card {
+      position: fixed;
+      z-index: 2;
+      max-width: min(360px, calc(100vw - 80px));
+      padding: 10px 12px;
+      border: 1px solid var(--tooltip-border);
+      border-radius: 14px;
+      background: var(--tooltip-bg);
+      color: var(--text);
+      box-shadow: 0 18px 40px var(--tooltip-shadow);
+      backdrop-filter: blur(16px);
+      pointer-events: none;
+      white-space: pre-line;
+      font-size: 12px;
+      line-height: 1.45;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .hover-card[hidden] {
+      display: none;
+    }
+
+    .hover-title {
+      display: block;
+      margin-bottom: 4px;
+      color: #fbf7ee;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .hover-ref {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <button id="run-all" class="rail-button primary" type="button" title="Run all">▶</button>
+    <div id="results-body" class="results"></div>
+  </div>
+  <div id="hover-card" class="hover-card" hidden></div>
+  <div id="live-status" class="sr-only" aria-live="polite">Ready.</div>
+
+  <script type="module" src="/src/avbdRegressionMain.ts"></script>
+</body>
+</html>
