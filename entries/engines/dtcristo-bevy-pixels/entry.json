@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:30:48Z",
+ "category": "engines",
+ "commit": "2026-08-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "dtcristo/bevy_pixels \u2014 Bevy plugin that uses Pixels (a tiny pixel buffer) for rendering",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_pixels",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "dtcristo-bevy-pixels",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 92,
+ "system": "Bevy plugin that uses Pixels (a tiny pixel buffer) for rendering",
+ "upstream": "https://github.com/dtcristo/bevy_pixels",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T00:30:46Z",
+ "category": "engines",
+ "commit": "0256ed415f03",
+ "delivery": "vendored",
+ "description": "Plonq/bevy_rts_camera \u2014 RTS-style camera controls plugin for Bevy Engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "bevy_rts_camera",
+ "size_bytes": 40252,
+ "slug": "plonq-bevy-rts-camera",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 100,
+ "system": "RTS-style camera controls plugin for Bevy Engine",
+ "upstream": "https://github.com/Plonq/bevy_rts_camera",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

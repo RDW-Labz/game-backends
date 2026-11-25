@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T00:30:38Z",
+ "category": "engines",
+ "commit": "1fa2d5e87334",
+ "delivery": "vendored",
+ "description": "Hexorg/bevy_copperfield \u2014 Bevy plugin for procedural modelling, inspired by [Blender's geometry nodes]",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "bevy_copperfield",
+ "size_bytes": 181066,
+ "slug": "hexorg-bevy-copperfield",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 101,
+ "system": "Bevy plugin for procedural modelling, inspired by [Blender's geometry nodes]",
+ "upstream": "https://github.com/Hexorg/bevy_copperfield",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

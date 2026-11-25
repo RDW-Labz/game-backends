@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:30:48Z",
+ "category": "engines",
+ "commit": "2024-08-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "harudagondi/bevy_fundsp \u2014 A Bevy plugin that integrates FunDSP into Bevy.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_fundsp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "harudagondi-bevy-fundsp",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 82,
+ "system": "A Bevy plugin that integrates FunDSP into Bevy.",
+ "upstream": "https://github.com/harudagondi/bevy_fundsp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:30:48Z",
+ "category": "engines",
+ "commit": "2026-02-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ManevilleF/bevy_life \u2014 Generic cellular automaton plugin for bevy.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy_life",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "manevillef-bevy-life",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 83,
+ "system": "Generic cellular automaton plugin for bevy.",
+ "upstream": "https://github.com/ManevilleF/bevy_life",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

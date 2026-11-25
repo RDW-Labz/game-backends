@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:30:48Z",
+ "category": "engines",
+ "commit": "2026-11-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Ellpeck/MLEM \u2014 Libraries for MonoGame and FNA that provide abstractions, quality of life improvements and additional features like a ui system and easy input handling.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "MLEM",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ellpeck-mlem",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 126,
+ "system": "Libraries for MonoGame and FNA that provide abstractions, quality of life improvements and additional features like a ui system and easy input handling.",
+ "upstream": "https://github.com/Ellpeck/MLEM",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

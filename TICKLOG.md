@@ -2924,3 +2924,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/iyesgames-iyes-progress
   - reference engines/drakmaniso-bevy-pixel-camera
   - reference engines/toqozz-bevy-debug-lines
+
+- **2026-11-25 00:30 UTC** — tick 821: +2 screened, +4 reference, 19 skipped, catalogue=1445
+  - added engines/hexorg-bevy-copperfield (MIT, vendored)
+  - added engines/plonq-bevy-rts-camera (Apache-2.0, vendored)
+  - reference engines/dtcristo-bevy-pixels
+  - reference engines/manevillef-bevy-life
+  - reference engines/harudagondi-bevy-fundsp
+  - reference engines/ellpeck-mlem
