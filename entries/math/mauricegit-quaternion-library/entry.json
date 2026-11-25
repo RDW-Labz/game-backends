@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:15:21Z",
+ "category": "math",
+ "commit": "2016-09-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "MauriceGit/Quaternion_Library \u2014 A small library that capsulates most commonly used operations on Quaternions. Also a small sample implementation, that rotates an object around an axis, using Quaternions.",
+ "language": "c",
+ "license": "ISC",
+ "license_verdict": "clean",
+ "name": "Quaternion_Library",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (ISC)",
+ "slug": "mauricegit-quaternion-library",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 39,
+ "system": "A small library that capsulates most commonly used operations on Quaternions. Also a small sample implementation, that rotates an object around an axis, using Q",
+ "upstream": "https://github.com/MauriceGit/Quaternion_Library",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

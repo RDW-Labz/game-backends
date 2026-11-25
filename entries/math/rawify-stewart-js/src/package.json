@@ -1,0 +1,64 @@
+{
+    "name": "stewart",
+    "title": "Stewart",
+    "version": "1.2.0",
+    "description": "The RAW library to calculate the inverse kinematics of a Stewart Platform",
+    "homepage": "https://raw.org/research/inverse-kinematics-of-a-stewart-platform/",
+    "bugs": "https://github.com/rawify/Stewart.js/issues",
+    "keywords": [
+        "math",
+        "stewart platform",
+        "inverse kinematics",
+        "quaternion",
+        "kinematics",
+        "animation",
+        "p5"
+    ],
+    "private": false,
+    "main": "./dist/stewart.js",
+    "module": "./dist/stewart.mjs",
+    "browser": "./dist/stewart.min.js",
+    "unpkg": "./dist/stewart.min.js",
+    "exports": {
+        ".": {
+            "require": "./dist/stewart.js",
+            "import": "./dist/stewart.mjs",
+            "default": "./dist/stewart.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "sideEffects": false,
+    "repository": {
+        "type": "git",
+        "url": "git+ssh://git@github.com/rawify/Stewart.js.git"
+    },
+    "funding": {
+        "type": "github",
+        "url": "https://github.com/sponsors/rawify"
+    },
+    "author": {
+        "name": "Robert Eisele",
+        "email": "robert@raw.org",
+        "url": "https://raw.org/"
+    },
+    "license": "MIT",
+    "engines": {
+        "node": "*"
+    },
+    "directories": {
+        "example": "examples"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "crude-build Stewart"
+    },
+    "dependencies": {
+        "bezier-js": "^6.1.4",
+        "leapjs": "^1.1.1",
+        "p5": "^2.0.4",
+        "quaternion": "^2.1.1"
+    },
+    "devDependencies": {
+        "crude-build": "^0.1.2"
+    }
+}

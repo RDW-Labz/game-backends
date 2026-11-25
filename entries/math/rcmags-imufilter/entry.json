@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:15:21Z",
+ "category": "math",
+ "commit": "2024-01-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RCmags/imuFilter \u2014 Arduino library for an IMU filter based on a quaternion",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "imuFilter",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rcmags-imufilter",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 32,
+ "system": "Arduino library for an IMU filter based on a quaternion ",
+ "upstream": "https://github.com/RCmags/imuFilter",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

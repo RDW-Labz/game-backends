@@ -3049,3 +3049,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/zuzu-typ-pyglm
   - reference math/rawify-quaternion-js
   - reference math/polymonster-maths
+
+- **2026-11-25 05:15 UTC** — tick 837: +2 screened, +4 reference, 9 skipped, catalogue=1538
+  - added math/rawify-stewart-js (MIT, vendored)
+  - added math/yclepticstudios-gmath (MIT, vendored)
+  - reference math/ilmola-gml
+  - reference math/mauricegit-quaternion-library
+  - reference math/chaotic-society-theoretica
+  - reference math/rcmags-imufilter

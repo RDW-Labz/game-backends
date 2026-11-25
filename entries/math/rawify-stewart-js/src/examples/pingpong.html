@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Stewart Platform</title>
+</head>
+
+<body>
+
+  <script src="../node_modules/p5/lib/p5.min.js"></script>
+  <script src="../node_modules/quaternion/dist/quaternion.min.js"></script>
+  <script src="../dist/stewart.min.js"></script>
+
+  <div id="canvas" style="text-align: center"></div>
+
+  <script>
+    let ball;
+    let platform;
+
+    function Ball(p) {
+      this.platform = p;
+
+      this.translation = [0, 0, 0];
+      this.dtranslation = [0, 0, 0];
+      this.ddtranslation = [0, 0, 0];
+      this.orientiation = Quaternion.ONE;
+
+      // Controller
+      this.ctrl = {
+        e: 0.80,         // restitution
+        Ht: 140,         // target apex above the platform (mm)
+        vMax: 800,       // platform velocity limit (mm/s)
+        aMax: 4000,      // platform acceleration limit (mm/s^2)
+        zMin: 0,         // platform stroke limits (mm)
+        zMax: 30,
+        tPlan: 0.12,     // start planning when time-to-impact < tPlan (s)
+        tMin: 0.015      // minimum planning horizon to avoid huge accel (s)
+      };
+    }
+
+    Ball.prototype = {
+      platform: null,
+      translation: null,
+      dtranslation: null,
+      ddtranslation: null,
+      orientiation: null,
+      x: 0, y: 0, z: 300, // mm
+      dx: 0, dy: 0, dz: 0, // mm/s
+      mass: 2.7 / 1000, // kg
+      r: 20, // mm
+      k: 0,
+      c: 0,
+      paddle: null,
+
+      update: function () {
+        const plat = this.platform;
+        const zoff = plat.T0[2];
+
+        const dt = 1 / 40;           // seconds
+        const g = -9.81 * 100;      // mm/s^2
+
+        let zp = this.translation[2];   // mm
+        let vzp = this.dtranslation[2];  // mm/s
+        let azp = this.ddtranslation[2]; // mm/s^2
+
+        // Predict impact time (assume platform height ~ constant during flight)
+        const zSurf = zp + zoff + this.r;            // contact plane (mm)
+        const A = 0.5 * g;                           // for quadratic  A t^2 + B t + C = 0
+        const B = this.dz;
+        const C = this.z - zSurf;
+
+        let tHit = null;
+        if (A !== 0) {
+          const D = B * B - 4 * A * C;
+          if (D >= 0) {
+            const sqrtD = Math.sqrt(D);
+            // two roots; want the *future* positive time
+            const t1 = (-B - sqrtD) / (2 * A);
+            const t2 = (-B + sqrtD) / (2 * A);
+            if (t1 > 1e-6) tHit = t1;
+            else if (t2 > 1e-6) tHit = t2;
+          }
+        } else if (B < 0) {
+          // linear fallback (no gravity case)
+          tHit = -C / B;
+        }
+
+        // If impact soon, compute desired platform impact velocity vp
+        let vp_des = 0; // default
+        if (tHit !== null && tHit < this.ctrl.tPlan) {
+          // desired post-impact ball velocity to reach apex Ht:
+          // v_post^2 = 2 |g| Ht  -> upwards
+          const v_post = Math.sqrt(2 * Math.abs(g) * this.ctrl.Ht);
+
+          // restitution relation with moving platform:
+          // v_rel_post = -e * v_rel_pre
+          // (v_post - vp) = -e * (v_pre - vp)
+          // => vp = (v_post + e * v_pre) / (1 + e)
+          const v_pre = this.dz; // ball velocity just before impact (mm/s) – good approx
+          const e = this.ctrl.e;
+          vp_des = (v_post + e * v_pre) / (1 + e);
+
+          // shape acceleration to reach vp_des at tHit
+          const tH = Math.max(this.ctrl.tMin, tHit);
+          const a_cmd = (vp_des - vzp) / tH;                  // mm/s^2
+          // limit accel
+          if (a_cmd > this.ctrl.aMax) a_cmd = this.ctrl.aMax;
+          if (a_cmd < -this.ctrl.aMax) a_cmd = -this.ctrl.aMax;
+          azp = a_cmd;
+        } else {
+          // No impact soon → relax toward mid-stroke with gentle damping
+          const zMid = 0.5 * (this.ctrl.zMin + this.ctrl.zMax);
+          const w = 12; const zeta = 1; // critically damped
+          azp = (w * w) * (zMid - zp) + (2 * zeta * w) * (0 - vzp);
+        }
+
+        // Integrate platform (semi-implicit) with limits
+        vzp += azp * dt;
+        // limit platform speed
+        if (vzp > this.ctrl.vMax) vzp = this.ctrl.vMax;
+        if (vzp < -this.ctrl.vMax) vzp = -this.ctrl.vMax;
+
+        zp += vzp * dt;
+
+        if (zp > this.ctrl.zMax) { zp = this.ctrl.zMax; if (vzp > 0) vzp = 0; }
+        if (zp < this.ctrl.zMin) { zp = this.ctrl.zMin; if (vzp < 0) vzp = 0; }
+
+        this.translation[2] = zp;
+        this.dtranslation[2] = vzp;
+        this.ddtranslation[2] = azp;
+
+        const az = g;               // only gravity
+        this.dz += az * dt;       // mm/s
+        this.z += this.dz * dt;  // mm
+
+        // Contact & restitution using relative velocity
+        const paddleTop = zp + zoff + this.r;
+        const vp = vzp;
+        if (this.z <= paddleTop) {
+          const vrel = this.dz - vp;
+          if (vrel < 0) {
+            const e2 = this.ctrl.e;
+            const vrel_post = -e2 * vrel;
+            this.dz = vp + vrel_post;
+          }
+          this.z = paddleTop;
+        }
+
+        plat.update(this.translation, this.orientiation);
+      },
+      draw: function (p) {
+        p.push();
+        p.translate(this.x, this.y, this.z);
+        p.sphere(this.r);
+        p.pop();
+      }
+    };
+
+    function setupPlatform() {
+
+      const rotation = { active: false, x: -15, y: -150, cx: 0, cy: 0 };
+
+      const sketch = function (p) {
+
+        p.setup = function () {
+          p.createCanvas(600, 600, p.WEBGL);
+
+          p.camera(100.0, -290.0, (p.height / 2.0) / Math.tan(Math.PI / 6),
+            0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0);
+
+          platform = new Stewart;
+          platform.initHexagonal();
+
+          ball = new Ball(platform);
+
+        };
+
+        p.draw = function () {
+
+          p.background(255);
+
+          p.push();
+
+          p.translate(0, 100, 100);
+          p.rotateX(Math.PI / 2 - rotation.y / 400); // Work in correct X-Y-Z plane
+          p.rotateY(rotation.x / 400);
+
+
+          ball.update();
+
+          // Draw the updated platform
+          platform.draw(p);
+
+          ball.draw(p);
+
+          // Send to servos
+          // platform.getServoAngles();
+
+          p.pop();
+
+        };
+      };
+      new p5(sketch, 'canvas');
+
+      document.getElementById("canvas").onmousedown = function (ev) {
+        rotation.cx = ev.pageX - rotation.x;
+        rotation.cy = ev.pageY - rotation.y;
+        rotation.active = true;
+      };
+      document.onmouseup = function () {
+        rotation.active = false;
+      };
+      document.onmousemove = function (ev) {
+        if (rotation.active) {
+          rotation.x = ev.pageX - rotation.cx;
+          rotation.y = ev.pageY - rotation.cy;
+        }
+
+      };
+    }
+
+    window.onload = setupPlatform;
+  </script>
+
+</body>
+
+</html>

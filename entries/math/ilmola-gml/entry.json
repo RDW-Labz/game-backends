@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:15:21Z",
+ "category": "math",
+ "commit": "2021-03-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ilmola/gml \u2014 GLSL like minimalist vector, matrix and quaternion math library for C++11",
+ "language": "c++",
+ "license": "BSL-1.0",
+ "license_verdict": "gated-reference",
+ "name": "gml",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSL-1.0)",
+ "slug": "ilmola-gml",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 40,
+ "system": "GLSL like minimalist vector, matrix and quaternion math library for C++11",
+ "upstream": "https://github.com/ilmola/gml",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

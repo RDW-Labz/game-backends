@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T05:15:20Z",
+ "category": "math",
+ "commit": "151591f7d9d4",
+ "delivery": "vendored",
+ "description": "YclepticStudios/gmath \u2014 Lightweight C++ geometry math library (Vectors, Quaternions and Matrices)",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "gmath",
+ "size_bytes": 551160,
+ "slug": "yclepticstudios-gmath",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 42,
+ "system": "Lightweight C++ geometry math library (Vectors, Quaternions and Matrices)",
+ "upstream": "https://github.com/YclepticStudios/gmath",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

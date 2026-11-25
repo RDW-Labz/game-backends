@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 04:58 UTC · 1532 entries · 390 vendored, 1142 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 05:15 UTC · 1538 entries · 392 vendored, 1146 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
-| [math](#math) — Math libraries | 102 | 33 | 69 |
+| [math](#math) — Math libraries | 108 | 35 | 73 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
@@ -868,7 +868,7 @@ _Generated 2026-11-25 04:58 UTC · 1532 entries · 390 vendored, 1142 reference-
 
 ## math
 
-**Math libraries** — 102 entries
+**Math libraries** — 108 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -908,11 +908,14 @@ _Generated 2026-11-25 04:58 UTC · 1532 entries · 390 vendored, 1142 reference-
 | [glam-rs](entries/math/bitshifter-glam-rs/README.md) | A simple and fast linear algebra library for games and graphics | rust | Apache-2.0 | reference | [bitshifter/glam-rs](https://github.com/bitshifter/glam-rs) @ `2026-11-08 (branch tip at catalogue time)` |
 | [glas — math](entries/math/glas-math/README.md) | vector/matrix/quaternion math substrate | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
 | [GLM](entries/math/glm/README.md) | header-only GLSL-style vector/matrix/quaternion math | c++ | MIT | vendored | [g-truc/glm](https://github.com/g-truc/glm) @ `6f14f4792a0c` |
+| [gmath](entries/math/yclepticstudios-gmath/README.md) | Lightweight C++ geometry math library (Vectors, Quaternions and Matrices) | c++ | MIT | vendored | [YclepticStudios/gmath](https://github.com/YclepticStudios/gmath) @ `151591f7d9d4` |
+| [gml](entries/math/ilmola-gml/README.md) | GLSL like minimalist vector, matrix and quaternion math library for C++11 | c++ | BSL-1.0 | reference | [ilmola/gml](https://github.com/ilmola/gml) @ `2021-03-01 (branch tip at catalogue time)` |
 | [Handmade Math](entries/math/handmademath/README.md) | single-header 3D math for games | c | CC0-1.0 | vendored | [HandmadeMath/HandmadeMath](https://github.com/HandmadeMath/HandmadeMath) @ `661fef0893bc` |
 | [hlml](entries/math/fmutant-hlml/README.md) | vectorized high-level math library | c++ | WTFPL | reference | [fmutant/hlml](https://github.com/fmutant/hlml) @ `2019-06-24 (branch tip at catalogue time)` |
 | [hlslpp](entries/math/redorav-hlslpp/README.md) | Math library using HLSL syntax with multiplatform SIMD support | c++ | MIT | vendored | [redorav/hlslpp](https://github.com/redorav/hlslpp) @ `3d9af2e77a89` |
 | [hypercomplex](entries/math/discretegames-hypercomplex/README.md) | A Python library for working with arbitrary-dimension hypercomplex numbers following the Cayley-Dickson construction of algebras. | python | MIT | reference | [discretegames/hypercomplex](https://github.com/discretegames/hypercomplex) @ `2022-08-14 (branch tip at catalogue time)` |
 | [hypersomnia — math](entries/math/hypersomnia-math/README.md) | vector/matrix/quaternion math substrate | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
+| [imuFilter](entries/math/rcmags-imufilter/README.md) | Arduino library for an IMU filter based on a quaternion  | c++ | MIT | reference | [RCmags/imuFilter](https://github.com/RCmags/imuFilter) @ `2024-01-04 (branch tip at catalogue time)` |
 | [InterpolatePy](entries/math/giorgiomedico-interpolatepy/README.md) | 🚀 InterpolatePy: A fast and precise Python library for production-ready trajectory planning, offering 20+ algorithms for C² continuous splines, jerk-limited S-c | python | MIT | reference | [GiorgioMedico/InterpolatePy](https://github.com/GiorgioMedico/InterpolatePy) @ `2026-11-19 (branch tip at catalogue time)` |
 | [JavaCode](entries/math/rick2785-javacode/README.md) | I specifically cover the following topics: Java primitive data types, declaration statements, expression statements, importing class libraries, excepting user i | java | none | reference | [rick2785/JavaCode](https://github.com/rick2785/JavaCode) @ `746587dd0dd1` |
 | [Kalman](entries/math/francoiscarouge-kalman/README.md) | Kalman filter for C++26 that turns dimension and unit mistakes into compile errors. You describe the filter with named arguments and the library deduces a lean, | c++ | Unlicense | vendored | [FrancoisCarouge/Kalman](https://github.com/FrancoisCarouge/Kalman) @ `cdd8a9387943` |
@@ -946,6 +949,7 @@ _Generated 2026-11-25 04:58 UTC · 1532 entries · 390 vendored, 1142 reference-
 | [pyquaternion](entries/math/kieranwynn-pyquaternion/README.md) | A fully featured, pythonic library for representing and using quaternions | python | MIT | vendored | [KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion) @ `99025c17bab1` |
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
 | [Quaternion.js](entries/math/rawify-quaternion-js/README.md) | The RAW JavaScript Quaternion library | javascript | MIT | reference | [rawify/Quaternion.js](https://github.com/rawify/Quaternion.js) @ `2025-09-17 (branch tip at catalogue time)` |
+| [Quaternion_Library](entries/math/mauricegit-quaternion-library/README.md) | A small library that capsulates most commonly used operations on Quaternions. Also a small sample implementation, that rotates an object around an axis, using Q | c | ISC | reference | [MauriceGit/Quaternion_Library](https://github.com/MauriceGit/Quaternion_Library) @ `2016-09-07 (branch tip at catalogue time)` |
 | [RandBLAS](entries/math/ballisticla-randblas/README.md) | A header-only C++ library for sketching in randomized linear algebra | c++ | unknown | reference | [BallisticLA/RandBLAS](https://github.com/BallisticLA/RandBLAS) @ `2026-11-24 (branch tip at catalogue time)` |
 | [random-js](entries/math/ckknight-random-js/README.md) | A mathematically correct random number generator library for JavaScript. | typescript | MIT | vendored | [ckknight/random-js](https://github.com/ckknight/random-js) @ `f000fd5c286b` |
 | [RcppEigen](entries/math/rcppcore-rcppeigen/README.md) | Rcpp integration for the Eigen templated linear algebra library | c++ | none | reference | [RcppCore/RcppEigen](https://github.com/RcppCore/RcppEigen) @ `c6a32a22da4f` |
@@ -957,11 +961,13 @@ _Generated 2026-11-25 04:58 UTC · 1532 entries · 390 vendored, 1142 reference-
 | [soroban-fixed-point-math](entries/math/script3-soroban-fixed-point-math/README.md) | Fixed point math library for Soroban smart contracts. | rust | MIT | reference | [script3/soroban-fixed-point-math](https://github.com/script3/soroban-fixed-point-math) @ `2026-04-28 (branch tip at catalogue time)` |
 | [SpaceVecAlg](entries/math/jrl-umi3218-spacevecalg/README.md) | Implementation of spatial vector algebra with the Eigen3 linear algebra library. | c++ | BSD-2-Clause | reference | [jrl-umi3218/SpaceVecAlg](https://github.com/jrl-umi3218/SpaceVecAlg) @ `2026-11-18 (branch tip at catalogue time)` |
 | [sprs](entries/math/sparsemat-sprs/README.md) | sparse linear algebra library for rust | rust | Apache-2.0 | reference | [sparsemat/sprs](https://github.com/sparsemat/sprs) @ `2026-10-20 (branch tip at catalogue time)` |
+| [Stewart.js](entries/math/rawify-stewart-js/README.md) | The RAW inverse kinematics library for Stewart Platforms written in JavaScript | javascript | MIT | vendored | [rawify/Stewart.js](https://github.com/rawify/Stewart.js) @ `63665d90b94c` |
 | [supertux — math](entries/math/supertux-math/README.md) | vector/matrix/quaternion math substrate | hpp | GPL-3.0 | reference | [SuperTux/supertux.git](https://github.com/SuperTux/supertux.git) @ `c7cceeb` |
 | [SwiftMath](entries/math/swiftgfx-swiftmath/README.md) | Cross-platform math library with SIMD support | swift | BSD-2-Clause | reference | [SwiftGFX/SwiftMath](https://github.com/SwiftGFX/SwiftMath) @ `2022-07-30 (branch tip at catalogue time)` |
 | [Terathon-Math-Library](entries/math/ericlengyel-terathon-math-library/README.md) | C++ math library for 2D/3D/4D vector, matrix, quaternion, and geometric algebra. | c++ | MIT | reference | [EricLengyel/Terathon-Math-Library](https://github.com/EricLengyel/Terathon-Math-Library) @ `2026-07-27 (branch tip at catalogue time)` |
 | [Tessel-A-tile-game — geom](entries/math/tessel-a-tile-game-geom/README.md) | vector/matrix/quaternion math substrate | ts | GPL-3.0 | reference | [gvtulder/tessel](https://github.com/gvtulder/tessel) @ `6249857` |
 | [TestU01-2009](entries/math/umontreal-simul-testu01-2009/README.md) | This is the 2009 version of TestU01, a software library, implemented in the ANSI C language, and offering a collection of utilities for the empirical statistica | c | Apache-2.0 | reference | [umontreal-simul/TestU01-2009](https://github.com/umontreal-simul/TestU01-2009) @ `2026-04-12 (branch tip at catalogue time)` |
+| [theoretica](entries/math/chaotic-society-theoretica/README.md) | A C++ math library for scientific computing with a simple and elegant interface. | c++ | LGPL-3.0 | reference | [chaotic-society/theoretica](https://github.com/chaotic-society/theoretica) @ `2026-11-13 (branch tip at catalogue time)` |
 | [tinyspline](entries/math/msteinbeck-tinyspline/README.md) | ANSI C library for NURBS, B-Splines, and Bézier curves with interfaces for C++, C#, D, Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby. | c | MIT | reference | [msteinbeck/tinyspline](https://github.com/msteinbeck/tinyspline) @ `2024-09-03 (branch tip at catalogue time)` |
 | [tpp-mlir](entries/math/libxsmm-tpp-mlir/README.md) | TPP experimentation on MLIR for linear algebra | mlir | Apache-2.0 | vendored | [libxsmm/tpp-mlir](https://github.com/libxsmm/tpp-mlir) @ `14368326a83f` |
 | [Trackball.js](entries/math/rawify-trackball-js/README.md) | The RAW library to add a virtual Trackball to your DOM | javascript | MIT | reference | [rawify/Trackball.js](https://github.com/rawify/Trackball.js) @ `2025-09-12 (branch tip at catalogue time)` |

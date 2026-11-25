@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:15:21Z",
+ "category": "math",
+ "commit": "2026-11-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "chaotic-society/theoretica \u2014 A C++ math library for scientific computing with a simple and elegant interface.",
+ "language": "c++",
+ "license": "LGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "theoretica",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-3.0)",
+ "slug": "chaotic-society-theoretica",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 36,
+ "system": "A C++ math library for scientific computing with a simple and elegant interface.",
+ "upstream": "https://github.com/chaotic-society/theoretica",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
