@@ -1,0 +1,249 @@
+// SPDX-FileCopyrightText : © 2022-2026 Galvanized Logic Inc.
+// SPDX-License-Identifier: MIT
+
+package main
+
+import (
+	"fmt"
+	"log/slog"
+	"time"
+
+	"gopkg.in/yaml.v3"
+
+	"github.com/gazed/vu"
+	"github.com/gazed/vu/load"
+	"github.com/gazed/vu/math/lin"
+)
+
+// is draws instanced stars showing that it is possible to render
+// many models (over 9000) in a single draw call.
+// This example demonstrates:
+//   - loading assets.
+//   - creating a 3D scene with models.
+//   - creating a 2D scene with labels.
+//   - changing the scene camera direction.
+//   - instanced models - drawing many models in a single draw call.
+//   - billboard shader where the models always face the camera.
+//   - ray picking - using the mouse to interact with a 3D model.
+//
+// Controls
+//   - RMouse : look around
+//   - Q      : quit and close window.
+func is() {
+	defer catchErrors()
+	is := &istag{ww: 1600, wh: 900, names: map[int]*vu.Entity{}}
+	eng, err := vu.NewEngine(
+		vu.Windowed(),
+		vu.Title("Instanced Stars"),
+		vu.Size(200, 200, int32(is.ww), int32(is.wh)),
+		vu.Background(0.0, 0.0, 0.0, 1.0),
+	)
+	if err != nil {
+		slog.Error("is: engine start", "err", err)
+		return
+	}
+
+	// listen for screen resizes.
+	eng.SetResizeListener(is)
+
+	// load the bright star data.
+	is.stars, is.starData, err = is.loadBrightStars()
+
+	// Run will call Load once and then call Update each engine tick.
+	eng.Run(is, is) // does not return while example is running.
+}
+
+// Globally unique "tag" that encapsulates example specific data.
+type istag struct {
+	scene3D  *vu.Entity    // stars
+	scene2D  *vu.Entity    // star names
+	pick     *vu.Entity    // highlight a picked star
+	ww, wh   int           // window width, height
+	mx, my   int32         // mouse position
+	pitch    float64       // Up-down look direction.
+	yaw      float64       // Left-right look direction.
+	stars    []brightStar  // bright star data.
+	starData []load.Buffer //
+
+	// star names are created as needed and then reused.
+	names map[int]*vu.Entity
+}
+
+// Load is the one time startup engine callback to create initial assets.
+func (is *istag) Load(eng *vu.Engine) error {
+
+	// import assets from asset files.
+	// This creates the assets referenced by the models below.
+	eng.ImportAssets("label.shd", "billboardI.shd", "billboard.shd") // shaders
+	eng.ImportAssets("star.png", "ring.png")                         // textures
+	eng.ImportAssets("22:hack.ttf")                                  // font
+
+	// The scene holds the cameras and lighting information
+	// and acts as the root for all models added to the scene.
+	is.scene3D = eng.AddScene(vu.Scene3D)
+	is.scene3D.Cam().SetClip(0.1, 100000)
+
+	// show a picked star by drawing a ring around it.
+	// Create before instance data so it is drawn after the instanced data.
+	// This is because the normal transparency sorting doesn't work with instanced
+	// data since instanced data does not have a distance to the camera..
+	is.pick = is.scene3D.AddModel("shd:billboard", "msh:quad", "tex:color:ring")
+	is.pick.SetLayer(1) // draw over stars.
+	is.pick.Cull(true)  // hide until mouse is over a star
+
+	// Create instanced model to draw over 9000 stars with one draw call.
+	stars := is.scene3D.AddModel("shd:billboardI", "msh:quad", "tex:color:star")
+	stars.SetInstanced(eng, uint32(len(is.stars)), is.starData) // instance data.
+
+	// create a 2D scene to show the star name when holding the mouse over a star.
+	is.scene2D = eng.AddScene(vu.Scene2D)
+	return nil
+}
+
+// Resize is called by the engine when the window size changes.
+func (is *istag) Resize(windowLeft, windowTop int32, windowWidth, windowHeight uint32) {
+	// keep these updated for ray picking.
+	is.ww, is.wh = int(windowWidth), int(windowHeight)
+}
+
+// FrameUpdate is the pre render frame engine callback
+func (is *istag) FrameUpdate(eng *vu.Engine, in *vu.Input, delta time.Duration, interpolate float64) {
+
+	// react to one time press events.
+	for press := range in.Pressed {
+		switch press {
+		case vu.KQ, vu.KEsc:
+			eng.Shutdown()
+			return
+		case vu.KF11:
+			eng.ToggleFullscreen()
+		}
+	}
+
+	// raycast: show the label for a star if the mouse is over that star.
+	for _, v := range is.names { // hide all names
+		v.Cull(true)
+	}
+	is.pick.Cull(true)
+	if starID := is.hitStar(is.stars); starID > -1 {
+		s := &is.stars[starID]
+		if name, ok := is.names[starID]; !ok {
+			name = is.scene2D.AddLabel(s.Name, 0, "shd:label", "fnt:hack22", "tex:color:hack22")
+			name.SetAt(20, 20, 0).SetColor(1, 1, 0, 1) // yellow label
+			is.names[starID] = name
+		} else {
+			name.Cull(false) // show the name
+		}
+
+		// draw the pick ring around the star.
+		x, y, z := s.Locus[0], s.Locus[1], s.Locus[2]
+		dist2 := x*x + y*y + z*z // distance squared
+		at := lin.NewV3().SetS(x, y, z)
+		scale := 1.0
+		if dist2 < 1000 {
+			scale = 0.2 // scale down for really close stars
+		}
+		is.pick.SetAt(at.X, at.Y, at.Z).SetScale(scale, scale, 1).Cull(false)
+	}
+}
+
+// FixedUpdate is the pre-physics fixed timestep engine callback.
+func (is *istag) FixedUpdate(eng *vu.Engine, in *vu.Input, timestep time.Duration) {
+	cam := is.scene3D.Cam()
+
+	// get mouse position difference from last update.
+	xdiff, ydiff := in.Mx-is.mx, in.My-is.my // mouse move differences...
+	is.mx, is.my = in.Mx, in.My              // ... from last mouse location.
+
+	// react to continuous press events.
+	lookSpeed := 15.0 * timestep.Seconds()
+	for press := range in.Down {
+		switch press {
+		case vu.KMR:
+			if ydiff != 0 {
+				is.pitch += float64(ydiff) * lookSpeed
+			}
+			if xdiff != 0 {
+				is.yaw += float64(-xdiff) * lookSpeed
+			}
+			cam.SetPitch(is.pitch)
+			cam.SetYaw(is.yaw)
+		}
+	}
+}
+
+// hitStar returns a star that is under the mouse.
+func (is *istag) hitStar(stars []brightStar) (starID int) {
+	cam := is.scene3D.Cam()
+
+	// get unit ray direction from camera.
+	rx, ry, rz, err := cam.Ray(int(is.mx), int(is.my), is.ww, is.wh)
+	if err != nil {
+		return -1 // mouse is not not over window.
+	}
+	ray := lin.NewV3().SetS(rx, ry, rz)
+	sphere := lin.NewV3()
+	for i, s := range stars {
+		sphere.SetS(s.Locus[0], s.Locus[1], s.Locus[2])
+		if cam.RayCastSphere(ray, sphere, 0.5) {
+			return i
+		}
+	}
+	return -1
+}
+
+// loadBrightStars converts the yaml star data to instanced GPU buffer data.
+func (is *istag) loadBrightStars() (stars []brightStar, data load.MeshData, err error) {
+	bytes, err := load.DataBytes("bright_star.yaml")
+	if err != nil {
+		return stars, data, fmt.Errorf("is:loadBrightStars %w", err)
+	}
+	stars = make([]brightStar, 9101)
+	err = yaml.Unmarshal(bytes, &stars)
+	if err != nil {
+		return stars, data, fmt.Errorf("is:loadBrightStars %w", err)
+	}
+	positions := []float32{}
+	colors := []float32{}
+	scales := []float32{}
+	for _, s := range stars {
+		x, y, z := float32(s.Locus[0]), float32(s.Locus[1]), float32(s.Locus[2])
+		if x == 0 && y == 0 && z == 0 {
+			fmt.Printf("%d %+v\n", s.ID, s)
+		}
+		positions = append(positions, x, y, z)
+		r, g, b := float32(s.Color[0]), float32(s.Color[1]), float32(s.Color[2])
+		colors = append(colors, r, g, b)
+
+		// tweak scale based on lumens and distance.
+		scale := float32(1.0)
+		dist2 := x*x + y*y + z*z // distance squared
+		if dist2 < 1000 {
+			scale = 0.1 // scale down really close stars
+		}
+
+		// scale up a bit based on lumens.
+		lumens := float32(s.Lumen)
+		if lumens > 1000 {
+			lumens = 1000
+		}
+		scale += lumens / 1000.0
+		scales = append(scales, scale)
+	}
+
+	// convert the bright star data to instanced data.
+	data = make(load.MeshData, load.VertexTypes)
+	data[load.InstancePosition] = load.F32Buffer(positions, 3)
+	data[load.InstanceColors] = load.F32Buffer(colors, 3)
+	data[load.InstanceScales] = load.F32Buffer(scales, 1)
+	return stars, data, nil
+}
+
+// brightStar is used to import the bright_star data.
+type brightStar struct {
+	ID    int       `yaml:"id"`    // bright star ID
+	Name  string    `yaml:"name"`  // bright star name, proper name if available
+	Locus []float64 `yaml:"locus"` // xyz in light years
+	Color []float64 `yaml:"color"` // rgb in range 0-1
+	Lumen float64   `yaml:"lumen"` // luminosity used for scaling
+}

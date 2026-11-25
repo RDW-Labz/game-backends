@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:38:52Z",
+ "category": "engines",
+ "commit": "2026-10-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "harbdog/raycaster-go \u2014 Golang raycaster engine using the Ebitengine 2D Game Library",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "raycaster-go",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "harbdog-raycaster-go",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 175,
+ "system": "Golang raycaster engine using the Ebitengine 2D Game Library",
+ "upstream": "https://github.com/harbdog/raycaster-go",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

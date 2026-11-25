@@ -1,0 +1,114 @@
+// SPDX-FileCopyrightText : © 2022-2025 Galvanized Logic Inc.
+// SPDX-License-Identifier: MIT
+
+package vu
+
+import (
+	"math"
+	"testing"
+
+	"github.com/gazed/vu/load"
+	"github.com/gazed/vu/render"
+)
+
+// go test -run Scene
+func TestScene(t *testing.T) {
+	rc := &mrc{} // mock render context.
+
+	t.Run("scene with lights", func(t *testing.T) {
+		app := newApplication()
+		app.ld.loadDefaultAssets(rc) // direct loads (no goroutine)
+		scene := app.addScene(Scene3D)
+		scene.AddLight(SpotLight).SetLight(1.0, 0.1, 0.1, 10).SetAt(5, 4, 3)
+		scene.AddLight(SunLight).SetLight(0.8, 0.8, 0.8, 10).SetAt(1, 2, 3)
+		scene.AddLight(PointLight).SetLight(0.3, 0.3, 0.3, 12).SetAt(3, 4, 5)
+
+		// check passes
+		passes := app.scenes.getFrame(app, app.frame)
+		if len(passes) != 2 {
+			t.Errorf("expected 2 render passes, got %d", len(passes))
+		}
+
+		// check that the lights are sorted in the render pass.
+		lights := passes[Scene3D].Lights
+		if lights[0].Type != SunLight {
+			t.Errorf("expected sunlight, got %d", lights[0].Type)
+		}
+		if lights[1].Type != PointLight {
+			t.Errorf("expected pointlight, got %d", lights[0].Type)
+		}
+		if lights[2].Type != SpotLight {
+			t.Errorf("expected pointlight, got %d", lights[0].Type)
+		}
+		if lights[3].Type != NoLight {
+			t.Errorf("expected Nolight, got %d", lights[3].Type)
+		}
+	})
+
+	t.Run("scene with three models", func(t *testing.T) {
+		app := newApplication()
+		app.ld.loadDefaultAssets(rc) // direct loads (no goroutine)
+		scene := app.addScene(Scene3D)
+		scene.AddModel("shd:image2D", "msh:cube", "tex:color:test")
+		scene.AddModel("shd:image2D", "msh:icon", "tex:color:test")
+		scene.AddModel("shd:image2D", "msh:quad", "tex:color:test")
+
+		// check passes
+		passes := app.scenes.getFrame(app, app.frame)
+		if len(passes) != 2 {
+			t.Errorf("expected 2 render passes, got %d", len(passes))
+		}
+
+		// check packets
+		packetCount := len(passes[Scene3D].Packets)
+		if packetCount != 3 {
+			t.Errorf("expected 3-3D render packets, got %d", packetCount)
+		}
+	})
+}
+
+// mock render context.
+type mrc struct{}
+
+func (rc *mrc) LoadTexture(img *load.ImageData) (uint32, error)           { return 0, nil }
+func (rc *mrc) UpdateTexture(tid uint32, img *load.ImageData) (err error) { return nil }
+func (rc *mrc) LoadMesh(load.MeshData) (uint32, error)                    { return 0, nil }
+func (rc *mrc) LoadMeshes([]load.MeshData) ([]uint32, error)              { return []uint32{0}, nil }
+func (rc *mrc) LoadShader(config *load.Shader) (uint16, error)            { return 0, nil }
+
+// go test -run Bucket
+func TestBucket(t *testing.T) {
+
+	// Check the bits placement
+	t.Run("set bucket", func(t *testing.T) {
+		b := setBucketShader(setBucketDistance(newBucket(Scene2D), 2.4), 21)
+		b = setBucketLayer(b, 2) // stored as to 16-2
+
+		// pull out the values to check placement.
+		dist := math.Float32frombits(uint32(b & 0x00000000FFFFFFFF))
+		draw := uint16((b & 0x000F000000000000) >> 48) // drawOpaque == 4
+		shid := uint16((b & 0x0000FFFF00000000) >> 40)
+		pass := uint8((b & 0xFF00000000000000) >> 56)
+		layer := uint16((b & 0x00F0000000000000) >> 52)
+		if pass != 254 || layer != 14 || draw != 4 || shid != 21 || dist != 2.4 {
+			t.Errorf("bad bucket %016x %d %d %d %d %f\n", b, pass, draw, layer, shid, dist)
+		}
+	})
+
+	// check sorting
+	t.Run("bucket sort", func(t *testing.T) {
+		packets := render.Packets{
+			render.Packet{Bucket: 256},
+			render.Packet{Bucket: 10},
+			render.Packet{Bucket: 0},
+			render.Packet{Bucket: 1025},
+			render.Packet{Bucket: 20},
+		}
+
+		// sort the render packets.
+		sortPackets(packets)
+		if packets[0].Bucket != 1025 || packets[4].Bucket != 0 {
+			t.Errorf("expected high to low %+v\n", packets)
+		}
+	})
+}

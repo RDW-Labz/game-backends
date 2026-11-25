@@ -1,0 +1,177 @@
+// SPDX-FileCopyrightText : © 2015-2024 Galvanized Logic Inc.
+// SPDX-License-Identifier: MIT
+
+package vu
+
+// light.go holder for lighting related code.
+// FUTURE: different types of lights and more lights.
+
+import (
+	"log/slog"
+	"math"
+
+	"github.com/gazed/vu/math/lin"
+	"github.com/gazed/vu/render"
+)
+
+// Types of lights
+const (
+	NoLight    = iota //
+	SunLight          // sun rays   : position implies direction.
+	PointLight        // light bulb : position and direction.
+	SpotLight         // flash light: position and direction and cone cutoff angle.
+)
+
+// AddLight adds a light to a scene.
+// Lighting aware shaders combine the light with the models material
+// values. Objects in the scene with lighting capable shaders will
+// be influenced by the light.
+//
+// Each light is has a position and orientation in world space.
+// The default position is 0,0,0 and the default direction is 0,0,-1.
+// A lights default color is white 1,1,1.
+//
+// Depends on Eng.AddScene.
+func (e *Entity) AddLight(lightType int) *Entity {
+
+	// lights must be set directly on scenes
+	if s := e.app.scenes.get(e.eid); s != nil {
+		me := e.AddPart() // add a transform node for the light.
+		if l := me.app.lights.create(me, e, lightType); l != nil {
+			return me
+		}
+	}
+	slog.Error("AddLight requires scene", "eid", e.eid)
+	return e
+}
+
+// SetLight assigns a color and intensity to the light. The lights color is combined
+// with objects material color to produce a final color. The R,G,B light values
+// are between 0 (no color), and 1 (full color).
+//
+// Depends on Entity.AddLight.
+func (e *Entity) SetLight(r, g, b, intensity float32) *Entity {
+	if l := e.app.lights.get(e.eid); l != nil {
+		l.r, l.g, l.b = r, g, b
+		l.intensity = intensity
+		return e
+	}
+	slog.Error("SetLight needs AddLight", "eid", e.eid)
+	return e
+}
+
+// SetCutoff assigns the cone cutoff angle, in radians, that
+// is required for spot lights. The default is 0.5 radians, about 28.6deg.
+//
+// Depends on Entity.AddLight.
+func (e *Entity) SetCutoff(angleInRadians float64) *Entity {
+	if l := e.app.lights.get(e.eid); l != nil {
+		l.cutoff = float32(math.Cos(angleInRadians))
+		return e
+	}
+	slog.Error("SetCutoff needs AddLight", "eid", e.eid)
+	return e
+}
+
+// SetRadius limits the lights attenuation.
+//
+// Depends on Entity.AddLight.
+func (e *Entity) SetRadius(radius float64) *Entity {
+	if l := e.app.lights.get(e.eid); l != nil {
+		l.radius = float32(radius)
+		return e
+	}
+	slog.Error("SetRadius needs AddLight", "eid", e.eid)
+	return e
+}
+
+// =============================================================================
+// light data.
+
+// lights have color and intensity. Spot lights have a cutoff angle.
+// The position and orientation of lights are handle by pov components.
+type light struct {
+	kind      int     // light type
+	r, g, b   float32 // Light color: values are 0 to 1.
+	intensity float32 // light intensity.
+	radius    float32 // light attenuation.
+	cutoff    float32 // spot light cone.
+}
+
+// newLight creates a white light.
+func newLight(lightType int) (l *light) {
+	cutoffAngle := float32(math.Cos(0.5)) // default spotlight cutoff angle ~28.6deg.
+	defaultRadius := float32(10.0)
+	return &light{
+		kind:      lightType,
+		r:         1.0,           // default white color.
+		g:         1.0,           //   ""
+		b:         1.0,           //   ""
+		intensity: 5.0,           // default intensity.
+		cutoff:    cutoffAngle,   // default cutoff angle.
+		radius:    defaultRadius, //
+	}
+}
+
+// fillLight populates the render.Pass data with the light information
+// at the given pov.
+func (l *light) fillLight(light *render.Light, pov *pov) {
+	light.Type = int32(l.kind)
+
+	// light color.
+	light.R, light.G, light.B = l.r, l.g, l.b
+
+	// light position.
+	px, py, pz := pov.at()
+	light.Px, light.Py, light.Pz = float32(px), float32(py), float32(pz)
+
+	// get the light direction by applying the light rotation
+	// to the original look direction (down the -Z axis).
+	dir := &lin.V3{0, 0, -1}          // original look direction
+	dir.MultQ(dir, pov.tn.Rot).Unit() // normalized
+	light.Dx, light.Dy, light.Dz = float32(dir.X), float32(dir.Y), float32(dir.Z)
+
+	// light attributes.
+	light.Intensity = l.intensity
+	light.Radius = l.radius
+	light.Cutoff = l.cutoff
+}
+
+// =============================================================================
+// light component manager.
+
+// lights manages all the active Light instances.
+// There's not many lights so not much to optimize.
+type lights struct {
+	data map[eID]*light // All light instance data.
+}
+
+// newLights creates a light component manager. Expected to be called
+// once on startup.
+func newLights() *lights {
+	return &lights{data: map[eID]*light{}}
+}
+
+// get the light associated with the given entity, returning nil
+// if there is no such light.
+func (ls *lights) get(id eID) *light {
+	if light, ok := ls.data[id]; ok {
+		return light
+	}
+	return nil
+}
+
+// create and associate a light with the given entity. If there
+// already is a light for the entity, don't create one and return
+// the existing one instead.
+func (ls *lights) create(light, scene *Entity, lightType int) (l *light) {
+	l = newLight(lightType)
+	ls.data[light.eid] = l // All lights.
+	return l
+}
+
+// dispose the light associated for the given entity. Do nothing
+// if no such light exists.
+func (ls *lights) dispose(id eID) {
+	delete(ls.data, id)
+}

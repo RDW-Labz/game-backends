@@ -3324,3 +3324,10 @@ One line per 15-minute extension tick, newest last.
   - reference engines/thephet-bevyroguelike
   - reference engines/eliotbo-bevy-shadertoy-wgsl
   - reference engines/coeuvre-rust-2048
+
+- **2026-11-25 17:38 UTC** — tick 881: +2 screened, +3 reference, 38 skipped, catalogue=1724
+  - added engines/bliporg-blip (Apache-2.0, reference)
+  - added engines/gazed-vu (MIT, vendored)
+  - reference engines/harbdog-raycaster-go
+  - reference engines/opendiablo2-hellspawner
+  - reference engines/goplus-spx

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 17:22 UTC · 1719 entries · 433 vendored, 1286 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 17:38 UTC · 1724 entries · 434 vendored, 1290 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 673 | 160 | 513 |
+| [engines](#engines) — Game engines and engine subsystems | 678 | 161 | 517 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 17:22 UTC · 1719 entries · 433 vendored, 1286 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 673 entries
+**Game engines and engine subsystems** — 678 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -123,6 +123,7 @@ _Generated 2026-11-25 17:22 UTC · 1719 entries · 433 vendored, 1286 reference-
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blah](entries/engines/noelfb-blah/README.md) | A small 2d c++ game framework | c++ | MIT | reference | [NoelFB/blah](https://github.com/NoelFB/blah) @ `2023-04-27 (branch tip at catalogue time)` |
 | [blender_bevy_toolkit](entries/engines/sdfgeoff-blender-bevy-toolkit/README.md) | A blender addon and bevy plugin to use Blender as an editor for Bevy | python | unknown | reference | [sdfgeoff/blender_bevy_toolkit](https://github.com/sdfgeoff/blender_bevy_toolkit) @ `2022-05-18 (branch tip at catalogue time)` |
+| [blip](entries/engines/bliporg-blip/README.md) | Blip is a cross-platform fully scriptable game engine and distribution platform. | go | Apache-2.0 | reference | [bliporg/blip](https://github.com/bliporg/blip) @ `905aacdb0344` |
 | [boardgame.io](entries/engines/boardgameio-boardgame-io/README.md) | State Management and Multiplayer Networking for Turn-Based Games | typescript | MIT | vendored | [boardgameio/boardgame.io](https://github.com/boardgameio/boardgame.io) @ `47adef2b46e3` |
 | [bones](entries/engines/fishfolk-bones/README.md) | An easy-to-use game engine for making real games. | rust | Apache-2.0 | vendored | [fishfolk/bones](https://github.com/fishfolk/bones) @ `cd62a2f1ccdb` |
 | [bonsai](entries/engines/scallyw4g-bonsai/README.md) | The procedural generation voxel engine | c | WTFPL | reference | [scallyw4g/bonsai](https://github.com/scallyw4g/bonsai) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -335,6 +336,7 @@ _Generated 2026-11-25 17:22 UTC · 1719 entries · 433 vendored, 1286 reference-
 | [HeartbeatEngine](entries/engines/cronza-heartbeatengine/README.md) | A Visual Novel / Dating Sim game engine written in Python using Pygame, with a full editor written in PyQt5 | python | GPL-3.0 | reference | [Cronza/HeartbeatEngine](https://github.com/Cronza/HeartbeatEngine) @ `2025-08-26 (branch tip at catalogue time)` |
 | [heerich](entries/engines/meodai-heerich/README.md) | Tiny engine for 3D voxel scenes rendered to SVG — boolean ops, oblique/perspective cameras, zero dependencies. Inspired by the geometric cardboard sculptures of | javascript | MIT | reference | [meodai/heerich](https://github.com/meodai/heerich) @ `2026-11-07 (branch tip at catalogue time)` |
 | [HelloMarioFramework](entries/engines/hellofangaming-hellomarioframework/README.md) | Create your own 3D Mario game with Hello Mario Framework for Unity! | c# | MIT | reference | [HelloFangaming/HelloMarioFramework](https://github.com/HelloFangaming/HelloMarioFramework) @ `2025-11-11 (branch tip at catalogue time)` |
+| [HellSpawner](entries/engines/opendiablo2-hellspawner/README.md) | The OpenDiablo2 toolset | go | GPL-3.0 | reference | [OpenDiablo2/HellSpawner](https://github.com/OpenDiablo2/HellSpawner) @ `2023-01-16 (branch tip at catalogue time)` |
 | [hematite](entries/engines/pistondevelopers-hematite/README.md) | A simple Minecraft written in Rust with the Piston game engine | rust | MIT | reference | [PistonDevelopers/hematite](https://github.com/PistonDevelopers/hematite) @ `2026-10-11 (branch tip at catalogue time)` |
 | [hex-engine](entries/engines/suchipi-hex-engine/README.md) | A modern 2D game engine for the browser. | typescript | none | reference | [suchipi/hex-engine](https://github.com/suchipi/hex-engine) @ `17f41d6902c0` |
 | [HexaEngine](entries/engines/hexaengine-hexaengine/README.md) | The official repo of the HexaEngine game engine | c# | MIT | reference | [HexaEngine/HexaEngine](https://github.com/HexaEngine/HexaEngine) @ `2026-08-22 (branch tip at catalogue time)` |
@@ -526,6 +528,7 @@ _Generated 2026-11-25 17:22 UTC · 1719 entries · 433 vendored, 1286 reference-
 | [raea](entries/engines/shinyobjectz-raea/README.md) | Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS,  | typescript | unknown | reference | [shinyobjectz/raea](https://github.com/shinyobjectz/raea) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Rain-Meadow](entries/engines/henpemaz-rain-meadow/README.md) | Rain World multiplayer engine and custom game mode | c# | unknown | reference | [henpemaz/Rain-Meadow](https://github.com/henpemaz/Rain-Meadow) @ `2026-11-18 (branch tip at catalogue time)` |
 | [RavEngine](entries/engines/ravengine-ravengine/README.md) | A fast C++23 3D game engine for modern devices, with wide platform support | c++ | Apache-2.0 | reference | [RavEngine/RavEngine](https://github.com/RavEngine/RavEngine) @ `2025-07-29 (branch tip at catalogue time)` |
+| [raycaster-go](entries/engines/harbdog-raycaster-go/README.md) | Golang raycaster engine using the Ebitengine 2D Game Library | go | Apache-2.0 | reference | [harbdog/raycaster-go](https://github.com/harbdog/raycaster-go) @ `2026-10-30 (branch tip at catalogue time)` |
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [raytilemap](entries/engines/raylib-extras-raytilemap/README.md) | A simple library to read and draw tilemaps from common tile editors, such as Tiled | c++ | Zlib | vendored | [raylib-extras/raytilemap](https://github.com/raylib-extras/raytilemap) @ `2ffb6480c955` |
 | [rbfx](entries/engines/rbfx-rbfx/README.md) | Lightweight Game Engine/Framework in C++17 with WYSIWYG Editor. Experimental C# bindings. | c++ | MIT | reference | [rbfx/rbfx](https://github.com/rbfx/rbfx) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -583,6 +586,7 @@ _Generated 2026-11-25 17:22 UTC · 1719 entries · 433 vendored, 1286 reference-
 | [specs-physics](entries/engines/amethyst-specs-physics/README.md) | nphysics integration for the Specs entity component system | rust | MIT | reference | [amethyst/specs-physics](https://github.com/amethyst/specs-physics) @ `2020-05-04 (branch tip at catalogue time)` |
 | [spider-engine](entries/engines/aminere-spider-engine/README.md) | WebGL game engine | typescript | GPL-3.0 | reference | [aminere/spider-engine](https://github.com/aminere/spider-engine) @ `2024-09-02 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
+| [spx](entries/engines/goplus-spx/README.md) | spx - A Scratch Compatible Go/XGo 2D Game Engine for STEM education | go | Apache-2.0 | reference | [goplus/spx](https://github.com/goplus/spx) @ `2026-11-25 (branch tip at catalogue time)` |
 | [stage.js](entries/engines/piqnt-stage-js/README.md) | 2D HTML5 rendering and layout engine for game development | typescript | MIT | vendored | [piqnt/stage.js](https://github.com/piqnt/stage.js) @ `2535352e89cd` |
 | [Starling-Framework](entries/engines/gamua-starling-framework/README.md) | The Cross Platform Game Engine | actionscript | BSD-2-Clause | vendored | [Gamua/Starling-Framework](https://github.com/Gamua/Starling-Framework) @ `ffde39a2d459` |
 | [stride](entries/engines/stride3d-stride/README.md) | Stride (formerly Xenko), a free and open-source cross-platform C# game engine. | c# | MIT | reference | [stride3d/stride](https://github.com/stride3d/stride) @ `852da2345e76` |
@@ -666,6 +670,7 @@ _Generated 2026-11-25 17:22 UTC · 1719 entries · 433 vendored, 1286 reference-
 | [VoxelPluginFreeLegacy](entries/engines/voxelplugin-voxelpluginfreelegacy/README.md) | Voxel Plugin Legacy for Unreal Engine | c++ | none | reference | [VoxelPlugin/VoxelPluginFreeLegacy](https://github.com/VoxelPlugin/VoxelPluginFreeLegacy) @ `7e64a89ce827` |
 | [VoxLords](entries/engines/lallassu-voxlords/README.md) | VoxLords - ThreeJS WebGL game with a simple voxel engine | javascript | MIT | reference | [Lallassu/VoxLords](https://github.com/Lallassu/VoxLords) @ `2020-10-01 (branch tip at catalogue time)` |
 | [voxplat](entries/engines/kosshi-net-voxplat/README.md) | A hybrid voxel rendering engine | c | unknown | reference | [kosshi-net/voxplat](https://github.com/kosshi-net/voxplat) @ `2022-02-21 (branch tip at catalogue time)` |
+| [vu](entries/engines/gazed-vu/README.md) | Virtual Universe 3D Engine | go | MIT | vendored | [gazed/vu](https://github.com/gazed/vu) @ `d3432398a4ae` |
 | [vulkan-renderer](entries/engines/inexorgame-vulkan-renderer/README.md) | A new, render-graph based 3D game engine for Linux and Windows using C++20 and Vulkan API 1.3 (in early development) | c++ | MIT | reference | [inexorgame/vulkan-renderer](https://github.com/inexorgame/vulkan-renderer) @ `2026-11-07 (branch tip at catalogue time)` |
 | [vx_bevy](entries/engines/game4all-vx-bevy/README.md) | 🧊 Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy. | rust | MIT | reference | [Game4all/vx_bevy](https://github.com/Game4all/vx_bevy) @ `2024-12-11 (branch tip at catalogue time)` |
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |

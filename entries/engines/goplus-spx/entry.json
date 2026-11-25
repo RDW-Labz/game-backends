@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:38:52Z",
+ "category": "engines",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "goplus/spx \u2014 spx - A Scratch Compatible Go/XGo 2D Game Engine for STEM education",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "spx",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "goplus-spx",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 125,
+ "system": "spx - A Scratch Compatible Go/XGo 2D Game Engine for STEM education",
+ "upstream": "https://github.com/goplus/spx",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

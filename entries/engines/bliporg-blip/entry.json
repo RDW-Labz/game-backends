@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T17:38:48Z",
+ "category": "engines",
+ "commit": "905aacdb0344",
+ "delivery": "reference",
+ "description": "bliporg/blip \u2014 Blip is a cross-platform fully scriptable game engine and distribution platform.",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "blip",
+ "reference_reason": "size gate: 112 MB",
+ "size_bytes": 118405094,
+ "slug": "bliporg-blip",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 287,
+ "system": "Blip is a cross-platform fully scriptable game engine and distribution platform.",
+ "upstream": "https://github.com/bliporg/blip",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

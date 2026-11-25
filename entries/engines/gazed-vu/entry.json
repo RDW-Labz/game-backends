@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T17:38:51Z",
+ "category": "engines",
+ "commit": "d3432398a4ae",
+ "delivery": "vendored",
+ "description": "gazed/vu \u2014 Virtual Universe 3D Engine",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "vu",
+ "size_bytes": 2485959,
+ "slug": "gazed-vu",
+ "source": "github-search:game engine language:go stars:>60",
+ "stars": 250,
+ "system": "Virtual Universe 3D Engine",
+ "upstream": "https://github.com/gazed/vu",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
