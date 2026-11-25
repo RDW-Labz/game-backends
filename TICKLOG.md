@@ -3300,3 +3300,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/gscept-nebula
   - reference engines/rbfx-rbfx
   - reference engines/begla-intrinsic
+
+- **2026-11-25 16:48 UTC** — tick 878: +2 screened, +4 reference, 14 skipped, catalogue=1707
+  - added engines/obengine-obengine (MIT, vendored)
+  - added engines/geektcp-uecore (GPL-3.0, reference)
+  - reference engines/ravengine-ravengine
+  - reference engines/aleph-one-marathon-alephone
+  - reference engines/illation-etengine
+  - reference engines/zal0-zgb

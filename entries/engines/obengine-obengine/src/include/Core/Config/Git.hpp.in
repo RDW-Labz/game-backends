@@ -1,0 +1,13 @@
+#pragma once
+
+#include <Config/Version.hpp>
+
+#include <string_view>
+
+namespace obe::config
+{
+    constexpr std::string_view OBENGINE_GIT_BRANCH = "@OBENGINE_GIT_BRANCH@";
+    constexpr std::string_view OBENGINE_GIT_HASH = "@OBENGINE_GIT_COMMIT_HASH@";
+    constexpr std::string_view OBENGINE_VERSION = "@OBENGINE_VERSION@";
+    constexpr Version OBENGINE_VERSION_OBJECT = Version(@OBENGINE_VERSION_MAJOR@, @OBENGINE_VERSION_MINOR@, @OBENGINE_VERSION_PATCH@);
+} // namespace obe::Config

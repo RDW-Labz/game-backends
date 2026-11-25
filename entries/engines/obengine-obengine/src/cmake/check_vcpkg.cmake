@@ -1,0 +1,20 @@
+function(obe_check_vcpkg ${OBE_USE_VCPKG})
+    option(USE_VCPKG "Use vcpkg to handle some of the dependencies" OFF)
+    if(USE_VCPKG)
+        if (DEFINED ENV{VCPKG_ROOT})
+            set(OBE_USE_VCPKG ON)
+            if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+                set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+                    CACHE STRING "")
+            endif()
+        elseif(USE_VCPKG)
+            message(FATAL_ERROR "USE_VCPKG is enabled but environment variable 'VCPKG_ROOT' is not defined")
+        endif()
+    else()
+        set(CMAKE_TOOLCHAIN_FILE CACHE STRING "" FORCE)
+    endif()
+
+    if(${OBE_USE_VCPKG})
+
+    endif()
+endfunction()

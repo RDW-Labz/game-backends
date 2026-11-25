@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T16:48:23Z",
+ "category": "engines",
+ "commit": "932ad92df724",
+ "delivery": "vendored",
+ "description": "ObEngine/ObEngine \u2014 2D Game Engine with Lua Scripting made on top of SFML !",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "license",
+ "license_verdict": "clean",
+ "name": "ObEngine",
+ "size_bytes": 9697147,
+ "slug": "obengine-obengine",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 868,
+ "system": "2D Game Engine with Lua Scripting made on top of SFML !",
+ "upstream": "https://github.com/ObEngine/ObEngine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

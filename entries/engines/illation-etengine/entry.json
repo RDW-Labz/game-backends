@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:48:30Z",
+ "category": "engines",
+ "commit": "2026-01-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Illation/ETEngine \u2014 Realtime 3D Game-Engine with a focus on space sim. Written in C++ 14",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ETEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "illation-etengine",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 814,
+ "system": "Realtime 3D Game-Engine with a focus on space sim. Written in C++ 14",
+ "upstream": "https://github.com/Illation/ETEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

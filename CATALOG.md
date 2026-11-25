@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 16:32 UTC · 1701 entries · 429 vendored, 1272 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 16:48 UTC · 1707 entries · 430 vendored, 1277 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 655 | 156 | 499 |
+| [engines](#engines) — Game engines and engine subsystems | 661 | 157 | 504 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 16:32 UTC · 1701 entries · 429 vendored, 1272 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 655 entries
+**Game engines and engine subsystems** — 661 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -34,6 +34,7 @@ _Generated 2026-11-25 16:32 UTC · 1701 entries · 429 vendored, 1272 reference-
 | [agentodyssey](entries/engines/agentodyssey-agentodyssey/README.md) | Open-Ended Long-Horizon Text Game Generation for Test-Time Continual Learning Agents | python | Apache-2.0 | reference | [agentodyssey/agentodyssey](https://github.com/agentodyssey/agentodyssey) @ `2026-10-19 (branch tip at catalogue time)` |
 | [AI-RPG-Engine](entries/engines/l497996153-ai-rpg-engine/README.md) | A modular AI-driven RPG engine powered by LLMs, featuring RAG-based consistent memory. | python | MIT | vendored | [l497996153/AI-RPG-Engine](https://github.com/l497996153/AI-RPG-Engine) @ `90f0b0098440` |
 | [airplanes](entries/engines/m110-airplanes/README.md) | A 2D shoot 'em up game made with Go, Ebitengine, and donburi. Featuring ECS (Entity Component System). | go | MIT | vendored | [m110/airplanes](https://github.com/m110/airplanes) @ `bccbc35fafc8` |
+| [alephone](entries/engines/aleph-one-marathon-alephone/README.md) | Aleph One is the open source continuation of Bungie’s Marathon 2 game engine. | c++ | GPL-3.0 | reference | [Aleph-One-Marathon/alephone](https://github.com/Aleph-One-Marathon/alephone) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Ambient](entries/engines/ambientrun-ambient/README.md) | The multiplayer game engine | rust | Apache-2.0 | reference | [AmbientRun/Ambient](https://github.com/AmbientRun/Ambient) @ `2025-01-07 (branch tip at catalogue time)` |
 | [ancientbeast — engine](entries/engines/ancientbeast-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [AndEngine](entries/engines/nicolasgramlich-andengine/README.md) | Free Android 2D OpenGL Game Engine | java | Apache-2.0 | reference | [nicolasgramlich/AndEngine](https://github.com/nicolasgramlich/AndEngine) @ `2018-11-16 (branch tip at catalogue time)` |
@@ -217,6 +218,7 @@ _Generated 2026-11-25 16:32 UTC · 1701 entries · 429 vendored, 1272 reference-
 | [esper](entries/engines/benmoran56-esper/README.md) | An ECS (Entity Component System) for Python | python | MIT | reference | [benmoran56/esper](https://github.com/benmoran56/esper) @ `2026-09-20 (branch tip at catalogue time)` |
 | [estella](entries/engines/esengine-estella/README.md) | A fast 2D and 3D game engine — TypeScript SDK, C++/WebAssembly core, visual editor. Ship one project to web, desktop, WeChat MiniGames, playable ads, and native | typescript | Apache-2.0 | reference | [esengine/estella](https://github.com/esengine/estella) @ `2026-11-23 (branch tip at catalogue time)` |
 | [ET](entries/engines/egametang-et/README.md) | Unity3D Client And C# Server Framework | c# | unknown | reference | [egametang/ET](https://github.com/egametang/ET) @ `2026-08-26 (branch tip at catalogue time)` |
+| [ETEngine](entries/engines/illation-etengine/README.md) | Realtime 3D Game-Engine with a focus on space sim. Written in C++ 14 | c++ | MIT | reference | [Illation/ETEngine](https://github.com/Illation/ETEngine) @ `2026-01-21 (branch tip at catalogue time)` |
 | [evennia](entries/engines/evennia-evennia/README.md) | Python MUD/MUX/MUSH/MU* development system | python | BSD-3-Clause | reference | [evennia/evennia](https://github.com/evennia/evennia) @ `2026-11-14 (branch tip at catalogue time)` |
 | [evolved.lua](entries/engines/blackmatov-evolved-lua/README.md) | Evolved ECS (Entity-Component-System) for Lua | lua | MIT | vendored | [BlackMATov/evolved.lua](https://github.com/BlackMATov/evolved.lua) @ `f8eb1f4cadc3` |
 | [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
@@ -436,6 +438,7 @@ _Generated 2026-11-25 16:32 UTC · 1701 entries · 429 vendored, 1272 reference-
 | [o2](entries/engines/o2-engine-o2/README.md) | 2D Game Engine with visual WYSIWYG editor and JS scripting | c++ | MIT | reference | [o2-engine/o2](https://github.com/o2-engine/o2) @ `2026-11-23 (branch tip at catalogue time)` |
 | [o3de-mcp](entries/engines/nickschuetz-o3de-mcp/README.md) | Automate Open 3D Engine with AI — an MCP server for editor control, project & build management | python | Apache-2.0 | vendored | [nickschuetz/o3de-mcp](https://github.com/nickschuetz/o3de-mcp) @ `f572fe4e0fbc` |
 | [oak](entries/engines/oakmound-oak/README.md) | A pure Go game engine | go | Apache-2.0 | vendored | [oakmound/oak](https://github.com/oakmound/oak) @ `ae327857d9b9` |
+| [ObEngine](entries/engines/obengine-obengine/README.md) | 2D Game Engine with Lua Scripting made on top of SFML ! | c++ | MIT | vendored | [ObEngine/ObEngine](https://github.com/ObEngine/ObEngine) @ `932ad92df724` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [omath](entries/engines/orange-cpp-omath/README.md) | Cross-platform modern general purpose game/mods/cheats development framework written in C++23. | c++ | Zlib | reference | [orange-cpp/omath](https://github.com/orange-cpp/omath) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
@@ -515,6 +518,7 @@ _Generated 2026-11-25 16:32 UTC · 1701 entries · 429 vendored, 1272 reference-
 | [ra2](entries/engines/openra-ra2/README.md) | A Red Alert 2 mod for the OpenRA game engine | c# | GPL-3.0 | reference | [OpenRA/ra2](https://github.com/OpenRA/ra2) @ `61e24e3c1d7b` |
 | [raea](entries/engines/shinyobjectz-raea/README.md) | Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS,  | typescript | unknown | reference | [shinyobjectz/raea](https://github.com/shinyobjectz/raea) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Rain-Meadow](entries/engines/henpemaz-rain-meadow/README.md) | Rain World multiplayer engine and custom game mode | c# | unknown | reference | [henpemaz/Rain-Meadow](https://github.com/henpemaz/Rain-Meadow) @ `2026-11-18 (branch tip at catalogue time)` |
+| [RavEngine](entries/engines/ravengine-ravengine/README.md) | A fast C++23 3D game engine for modern devices, with wide platform support | c++ | Apache-2.0 | reference | [RavEngine/RavEngine](https://github.com/RavEngine/RavEngine) @ `2025-07-29 (branch tip at catalogue time)` |
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [raytilemap](entries/engines/raylib-extras-raytilemap/README.md) | A simple library to read and draw tilemaps from common tile editors, such as Tiled | c++ | Zlib | vendored | [raylib-extras/raytilemap](https://github.com/raylib-extras/raytilemap) @ `2ffb6480c955` |
 | [rbfx](entries/engines/rbfx-rbfx/README.md) | Lightweight Game Engine/Framework in C++17 with WYSIWYG Editor. Experimental C# bindings. | c++ | MIT | reference | [rbfx/rbfx](https://github.com/rbfx/rbfx) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -601,6 +605,7 @@ _Generated 2026-11-25 16:32 UTC · 1701 entries · 429 vendored, 1272 reference-
 | [turbulenz_engine](entries/engines/turbulenz-turbulenz-engine/README.md) | Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices. | typescript | MIT | reference | [turbulenz/turbulenz_engine](https://github.com/turbulenz/turbulenz_engine) @ `2023-05-28 (branch tip at catalogue time)` |
 | [UE4VoxelTerrain](entries/engines/bw2012-ue4voxelterrain/README.md) | Unreal Engine 4: Smooth voxel terrian example | c++ | GPL-3.0 | reference | [bw2012/UE4VoxelTerrain](https://github.com/bw2012/UE4VoxelTerrain) @ `2025-02-17 (branch tip at catalogue time)` |
 | [UEAESKeyFinder](entries/engines/ezfndev-ueaeskeyfinder/README.md) | This tool can find the AES Key of probably any Unreal Engine game | c# | none | reference | [EZFNDEV/UEAESKeyFinder](https://github.com/EZFNDEV/UEAESKeyFinder) @ `eeacbb1f0e7d` |
+| [UeCore](entries/engines/geektcp-uecore/README.md) | UeCore(Universe Engine Core) is an Open Source MMO RPG Framework World of Warcraft Server Engine (NOT Unreal Engine) | c++ | GPL-3.0 | reference | [geektcp/UeCore](https://github.com/geektcp/UeCore) @ `da40c4ffa99c` |
 | [UECS](entries/engines/ubpa-uecs/README.md) | Ubpa Entity-Component-System (U ECS) in Unity3D-style | c++ | MIT | vendored | [Ubpa/UECS](https://github.com/Ubpa/UECS) @ `98feb3939e66` |
 | [umodel_tools](entries/engines/skarndev-umodel-tools/README.md) | A Blender add-on featuring import of Unreal Engine games static meshes and maps. It provides basic support for many UE games, while some have dedicated improved | python | GPL-3.0 | reference | [skarndev/umodel_tools](https://github.com/skarndev/umodel_tools) @ `c76ebf73bf17` |
 | [unity-ecs-navmesh](entries/engines/zulfajuniadi-unity-ecs-navmesh/README.md) | A demo implementation of Unity Entity Component System with NavMesh | c# | MIT | vendored | [zulfajuniadi/unity-ecs-navmesh](https://github.com/zulfajuniadi/unity-ecs-navmesh) @ `bb4fe6ed2f84` |
@@ -673,6 +678,7 @@ _Generated 2026-11-25 16:32 UTC · 1701 entries · 429 vendored, 1272 reference-
 | [Yuris-Revenge](entries/engines/cookgreen-yuris-revenge/README.md) | A Red Alert 2 Yuri's Revenge mod for OpenRA Engine | c# | GPL-3.0 | reference | [cookgreen/Yuris-Revenge](https://github.com/cookgreen/Yuris-Revenge) @ `2024-11-30 (branch tip at catalogue time)` |
 | [z_impact](entries/engines/scemino-z-impact/README.md) | A 2d game engine written in ZIG | zig | MIT | reference | [scemino/z_impact](https://github.com/scemino/z_impact) @ `2025-07-17 (branch tip at catalogue time)` |
 | [ZeroAllocJobScheduler](entries/engines/genaray-zeroallocjobscheduler/README.md) | A high-performance alloc free c# Jobscheduler.  | c# | Apache-2.0 | reference | [genaray/ZeroAllocJobScheduler](https://github.com/genaray/ZeroAllocJobScheduler) @ `2025-03-18 (branch tip at catalogue time)` |
+| [ZGB](entries/engines/zal0-zgb/README.md) | Game Boy / Color engine with lots of features | c++ | MIT | reference | [Zal0/ZGB](https://github.com/Zal0/ZGB) @ `2024-08-01 (branch tip at catalogue time)` |
 | [ZigVulkanEngine](entries/engines/adel-ayoub-zigvulkanengine/README.md) | 3D game engine built with Zig and Vulkan | zig | unknown | reference | [Adel-Ayoub/ZigVulkanEngine](https://github.com/Adel-Ayoub/ZigVulkanEngine) @ `2025-07-07 (branch tip at catalogue time)` |
 | [zion](entries/engines/cyan33-zion/README.md) | [Deprecated] A tentative, light-weight 2D game framework based on HTML5 canvas. | javascript | MIT | vendored | [cyan33/zion](https://github.com/cyan33/zion) @ `7be54d203fb8` |
 

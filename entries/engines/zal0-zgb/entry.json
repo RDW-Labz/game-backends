@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:48:30Z",
+ "category": "engines",
+ "commit": "2024-08-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Zal0/ZGB \u2014 Game Boy / Color engine with lots of features",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ZGB",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "zal0-zgb",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 794,
+ "system": "Game Boy / Color engine with lots of features",
+ "upstream": "https://github.com/Zal0/ZGB",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

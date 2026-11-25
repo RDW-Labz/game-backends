@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T16:48:29Z",
+ "category": "engines",
+ "commit": "da40c4ffa99c",
+ "delivery": "reference",
+ "description": "geektcp/UeCore \u2014 UeCore(Universe Engine Core) is an Open Source MMO RPG Framework World of Warcraft Server Engine (NOT Unreal Engine)",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "UeCore",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 20789698,
+ "slug": "geektcp-uecore",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 858,
+ "system": "UeCore(Universe Engine Core) is an Open Source MMO RPG Framework World of Warcraft Server Engine (NOT Unreal Engine)",
+ "upstream": "https://github.com/geektcp/UeCore",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

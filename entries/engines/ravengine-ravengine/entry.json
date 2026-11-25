@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:48:30Z",
+ "category": "engines",
+ "commit": "2025-07-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RavEngine/RavEngine \u2014 A fast C++23 3D game engine for modern devices, with wide platform support",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "RavEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "ravengine-ravengine",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 835,
+ "system": "A fast C++23 3D game engine for modern devices, with wide platform support",
+ "upstream": "https://github.com/RavEngine/RavEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
