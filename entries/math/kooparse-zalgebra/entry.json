@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:58:14Z",
+ "category": "math",
+ "commit": "2026-10-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kooparse/zalgebra \u2014 Linear algebra library for games and real-time graphics.",
+ "language": "zig",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "zalgebra",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kooparse-zalgebra",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 334,
+ "system": "Linear algebra library for games and real-time graphics.",
+ "upstream": "https://github.com/kooparse/zalgebra",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

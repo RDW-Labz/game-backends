@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 04:41 UTC · 1526 entries · 388 vendored, 1138 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 04:58 UTC · 1532 entries · 390 vendored, 1142 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
-| [math](#math) — Math libraries | 96 | 31 | 65 |
+| [math](#math) — Math libraries | 102 | 33 | 69 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
@@ -868,7 +868,7 @@ _Generated 2026-11-25 04:41 UTC · 1526 entries · 388 vendored, 1138 reference-
 
 ## math
 
-**Math libraries** — 96 entries
+**Math libraries** — 102 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -919,6 +919,7 @@ _Generated 2026-11-25 04:41 UTC · 1526 entries · 388 vendored, 1138 reference-
 | [lacaml](entries/math/mmottl-lacaml/README.md) | OCaml bindings for BLAS/LAPACK (high-performance linear algebra Fortran libraries) | ocaml | LGPL-2.1 | reference | [mmottl/lacaml](https://github.com/mmottl/lacaml) @ `b1bdee6f40ef` |
 | [LASwift](entries/math/alexandertar-laswift/README.md) | Fast linear algebra for Swift on Apple platforms, powered by Accelerate (BLAS, LAPACK, vDSP) | swift | BSD-3-Clause | reference | [AlexanderTar/LASwift](https://github.com/AlexanderTar/LASwift) @ `2026-11-19 (branch tip at catalogue time)` |
 | [libfixmath](entries/math/libfixmath/README.md) | fixed-point math for deterministic simulation | c | MIT | vendored | [PetteriAimonen/libfixmath](https://github.com/PetteriAimonen/libfixmath) @ `46e89b748b1f` |
+| [libfixmatrix](entries/math/petteriaimonen-libfixmatrix/README.md) | C library for fixed point matrix, quaternion and vector calculations | c | MIT | vendored | [PetteriAimonen/libfixmatrix](https://github.com/PetteriAimonen/libfixmatrix) @ `a8d583e4fe1f` |
 | [libraryofbabel.info-algo](entries/math/librarianofbabel-libraryofbabel-info-algo/README.md) | Invertible multi-precision pseudo random number generator example | c++ | none | reference | [librarianofbabel/libraryofbabel.info-algo](https://github.com/librarianofbabel/libraryofbabel.info-algo) @ `81b5786db9d9` |
 | [LinearAlgebra](entries/math/mcordingley-linearalgebra/README.md) | Stand-alone Linear Algebra Library for PHP | php | MIT | reference | [mcordingley/LinearAlgebra](https://github.com/mcordingley/LinearAlgebra) @ `2022-08-27 (branch tip at catalogue time)` |
 | [linmath.h](entries/math/datenwolf-linmath-h/README.md) | a lean linear math library, aimed at graphics programming. Supports vec3, vec4, mat4x4 and quaternions | c | WTFPL | reference | [datenwolf/linmath.h](https://github.com/datenwolf/linmath.h) @ `2023-05-31 (branch tip at catalogue time)` |
@@ -929,6 +930,7 @@ _Generated 2026-11-25 04:41 UTC · 1526 entries · 388 vendored, 1138 reference-
 | [mathbench-rs](entries/math/bitshifter-mathbench-rs/README.md) | Comparing performance of Rust math libraries for common 3D game and graphics tasks | rust | unknown | reference | [bitshifter/mathbench-rs](https://github.com/bitshifter/mathbench-rs) @ `2026-10-13 (branch tip at catalogue time)` |
 | [MathFu](entries/math/mathfu/README.md) | vector/matrix/quaternion math with SIMD backends | c++ | Apache-2.0 | vendored | [google/mathfu](https://github.com/google/mathfu) @ `da23a1227bb6` |
 | [MathGeoLib](entries/math/juj-mathgeolib/README.md) | A C++ library for linear algebra and geometry manipulation for computer graphics. | c++ | unknown | reference | [juj/MathGeoLib](https://github.com/juj/MathGeoLib) @ `2026-04-01 (branch tip at catalogue time)` |
+| [maths](entries/math/polymonster-maths/README.md) | Linear algebra library with vector swizzling, intersection tests and useful functions for games and graphics dev. | c++ | unknown | reference | [polymonster/maths](https://github.com/polymonster/maths) @ `2025-10-14 (branch tip at catalogue time)` |
 | [maths-rs](entries/math/polymonster-maths-rs/README.md) | Linear algebra library for graphics and gamedev. | rust | MIT | vendored | [polymonster/maths-rs](https://github.com/polymonster/maths-rs) @ `d1980e43c875` |
 | [MaxMath](entries/math/mrunbelievable92-maxmath/README.md) | A successor to the SIMD math library Unity.Mathematics, extending it to all C# numeric types while adding many new types and functions. Written entirely with ha | c# | Apache-2.0 | reference | [MrUnbelievable92/MaxMath](https://github.com/MrUnbelievable92/MaxMath) @ `bfeaf2875e07` |
 | [miniply](entries/math/vilya-miniply/README.md) | A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file | c++ | MIT | reference | [vilya/miniply](https://github.com/vilya/miniply) @ `2023-03-14 (branch tip at catalogue time)` |
@@ -939,8 +941,11 @@ _Generated 2026-11-25 04:41 UTC · 1526 entries · 388 vendored, 1138 reference-
 | [optick — simd](entries/math/optick-simd/README.md) | vector/matrix/quaternion math substrate | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
 | [PL3D-KC](entries/math/lmp88959-pl3d-kc/README.md) | A very fast and simple software renderer using only integers and fixed point math. PiSHi LE (PL) is a subset of the 3D software graphics library used in King's  | c | unknown | reference | [LMP88959/PL3D-KC](https://github.com/LMP88959/PL3D-KC) @ `2024-05-30 (branch tip at catalogue time)` |
 | [prb-math](entries/math/paulrberg-prb-math/README.md) | Solidity library for advanced fixed-point math | solidity | MIT | vendored | [PaulRBerg/prb-math](https://github.com/PaulRBerg/prb-math) @ `3fbfb3e399b2` |
+| [PyGLM](entries/math/zuzu-typ-pyglm/README.md) | Fast OpenGL Mathematics (GLM) for Python | python | Zlib | reference | [Zuzu-Typ/PyGLM](https://github.com/Zuzu-Typ/PyGLM) @ `2026-11-19 (branch tip at catalogue time)` |
 | [PyMesh](entries/math/pymesh-pymesh/README.md) | Geometry Processing Library for Python | c++ | unknown | reference | [PyMesh/PyMesh](https://github.com/PyMesh/PyMesh) @ `2024-08-08 (branch tip at catalogue time)` |
+| [pyquaternion](entries/math/kieranwynn-pyquaternion/README.md) | A fully featured, pythonic library for representing and using quaternions | python | MIT | vendored | [KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion) @ `99025c17bab1` |
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
+| [Quaternion.js](entries/math/rawify-quaternion-js/README.md) | The RAW JavaScript Quaternion library | javascript | MIT | reference | [rawify/Quaternion.js](https://github.com/rawify/Quaternion.js) @ `2025-09-17 (branch tip at catalogue time)` |
 | [RandBLAS](entries/math/ballisticla-randblas/README.md) | A header-only C++ library for sketching in randomized linear algebra | c++ | unknown | reference | [BallisticLA/RandBLAS](https://github.com/BallisticLA/RandBLAS) @ `2026-11-24 (branch tip at catalogue time)` |
 | [random-js](entries/math/ckknight-random-js/README.md) | A mathematically correct random number generator library for JavaScript. | typescript | MIT | vendored | [ckknight/random-js](https://github.com/ckknight/random-js) @ `f000fd5c286b` |
 | [RcppEigen](entries/math/rcppcore-rcppeigen/README.md) | Rcpp integration for the Eigen templated linear algebra library | c++ | none | reference | [RcppCore/RcppEigen](https://github.com/RcppCore/RcppEigen) @ `c6a32a22da4f` |
@@ -967,6 +972,7 @@ _Generated 2026-11-25 04:41 UTC · 1526 entries · 388 vendored, 1138 reference-
 | [universal-java-matrix-package](entries/math/ujmp-universal-java-matrix-package/README.md) | A Java Library for sparse and dense matrices, linear algebra, visualization and big data | java | LGPL-3.0 | reference | [ujmp/universal-java-matrix-package](https://github.com/ujmp/universal-java-matrix-package) @ `2022-07-07 (branch tip at catalogue time)` |
 | [vec-mat-comp-quat](entries/math/mrmcsoftware-vec-mat-comp-quat/README.md) | C++ 2d/3d/4d Vector, 2x2/3x3/4x4 Matrix, Complex Number, Quaternion, and 3d Transformation Classes / Functions (Header Only libraries) | c++ | LGPL-3.0 | reference | [mrmcsoftware/vec-mat-comp-quat](https://github.com/mrmcsoftware/vec-mat-comp-quat) @ `2024-06-23 (branch tip at catalogue time)` |
 | [vgMath](entries/math/brutpitt-vgmath/README.md) | vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ... | c++ | BSD-2-Clause | reference | [BrutPitt/vgMath](https://github.com/BrutPitt/vgMath) @ `2025-03-16 (branch tip at catalogue time)` |
+| [zalgebra](entries/math/kooparse-zalgebra/README.md) | Linear algebra library for games and real-time graphics. | zig | MIT | reference | [kooparse/zalgebra](https://github.com/kooparse/zalgebra) @ `2026-10-14 (branch tip at catalogue time)` |
 | [zmath](entries/math/zig-gamedev-zmath/README.md) | SIMD math library for Zig game developers | zig | MIT | vendored | [zig-gamedev/zmath](https://github.com/zig-gamedev/zmath) @ `43250209495c` |
 
 ## loot-economy

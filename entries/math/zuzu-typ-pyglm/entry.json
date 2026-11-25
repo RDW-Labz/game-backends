@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:58:14Z",
+ "category": "math",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Zuzu-Typ/PyGLM \u2014 Fast OpenGL Mathematics (GLM) for Python",
+ "language": "python",
+ "license": "Zlib",
+ "license_verdict": "clean",
+ "name": "PyGLM",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Zlib)",
+ "slug": "zuzu-typ-pyglm",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 241,
+ "system": "Fast OpenGL Mathematics (GLM) for Python",
+ "upstream": "https://github.com/Zuzu-Typ/PyGLM",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

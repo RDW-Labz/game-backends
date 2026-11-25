@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T04:58:13Z",
+ "category": "math",
+ "commit": "99025c17bab1",
+ "delivery": "vendored",
+ "description": "KieranWynn/pyquaternion \u2014 A fully featured, pythonic library for representing and using quaternions",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "pyquaternion",
+ "size_bytes": 96103,
+ "slug": "kieranwynn-pyquaternion",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 367,
+ "system": "A fully featured, pythonic library for representing and using quaternions",
+ "upstream": "https://github.com/KieranWynn/pyquaternion",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

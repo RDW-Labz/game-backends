@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T04:58:11Z",
+ "category": "math",
+ "commit": "a8d583e4fe1f",
+ "delivery": "vendored",
+ "description": "PetteriAimonen/libfixmatrix \u2014 C library for fixed point matrix, quaternion and vector calculations",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "libfixmatrix",
+ "size_bytes": 68229,
+ "slug": "petteriaimonen-libfixmatrix",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 457,
+ "system": "C library for fixed point matrix, quaternion and vector calculations",
+ "upstream": "https://github.com/PetteriAimonen/libfixmatrix",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

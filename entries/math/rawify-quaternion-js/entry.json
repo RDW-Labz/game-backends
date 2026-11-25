@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:58:14Z",
+ "category": "math",
+ "commit": "2025-09-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rawify/Quaternion.js \u2014 The RAW JavaScript Quaternion library",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Quaternion.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rawify-quaternion-js",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 194,
+ "system": "The RAW JavaScript Quaternion library",
+ "upstream": "https://github.com/rawify/Quaternion.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
