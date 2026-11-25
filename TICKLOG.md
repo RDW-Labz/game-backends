@@ -3073,3 +3073,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/alcueca-decimalmath
   - reference math/robertoduarte-saturnmathpp
   - reference math/hvhdl-hvhdl-example-project
+
+- **2026-11-25 06:06 UTC** — tick 840: +2 screened, +4 reference, 7 skipped, catalogue=1556
+  - added math/artivis-manif (MIT, vendored)
+  - added math/fwilliams-point-cloud-utils (MIT, vendored)
+  - reference math/donalffons-opencascade-js
+  - reference math/meshinspector-meshlib
+  - reference math/nicklockwood-euclid
+  - reference math/leomariga-pyransac-3d

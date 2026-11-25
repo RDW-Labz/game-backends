@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T06:06:05Z",
+ "category": "math",
+ "commit": "a5ce154b32b9",
+ "delivery": "vendored",
+ "description": "fwilliams/point-cloud-utils \u2014 An easy-to-use Python library for processing and manipulating 3D point clouds and meshes.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "point-cloud-utils",
+ "size_bytes": 1742391,
+ "slug": "fwilliams-point-cloud-utils",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 1559,
+ "system": "An easy-to-use Python library for processing and manipulating 3D point clouds and meshes.",
+ "upstream": "https://github.com/fwilliams/point-cloud-utils",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

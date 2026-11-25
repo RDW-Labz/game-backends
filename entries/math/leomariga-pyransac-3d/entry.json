@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:06:07Z",
+ "category": "math",
+ "commit": "2026-08-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "leomariga/pyRANSAC-3D \u2014 Python library for fitting 3D primitive shapes to point clouds with RANSAC. Detect planes, spheres, cylinders, cuboids, circles, and lines.",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "pyRANSAC-3D",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "leomariga-pyransac-3d",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 675,
+ "system": "Python library for fitting 3D primitive shapes to point clouds with RANSAC. Detect planes, spheres, cylinders, cuboids, circles, and lines.",
+ "upstream": "https://github.com/leomariga/pyRANSAC-3D",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

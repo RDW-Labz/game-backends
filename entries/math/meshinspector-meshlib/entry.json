@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:06:07Z",
+ "category": "math",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "MeshInspector/MeshLib \u2014 3D geometry processing SDK: fast mesh boolean, mesh repair, decimation, remeshing, offset, point cloud triangulation and ICP registration. C++ with Python, C#, C and JavaScript bindings.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "MeshLib",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "meshinspector-meshlib",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 848,
+ "system": "3D geometry processing SDK: fast mesh boolean, mesh repair, decimation, remeshing, offset, point cloud triangulation and ICP registration. C++ with Python, C#, ",
+ "upstream": "https://github.com/MeshInspector/MeshLib",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

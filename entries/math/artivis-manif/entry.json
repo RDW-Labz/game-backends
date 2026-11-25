@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T06:05:54Z",
+ "category": "math",
+ "commit": "65166b3bfd15",
+ "delivery": "vendored",
+ "description": "artivis/manif \u2014 A small C++11 header-only library for Lie theory.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "manif",
+ "size_bytes": 1079859,
+ "slug": "artivis-manif",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 1828,
+ "system": "A small C++11 header-only library for Lie theory.",
+ "upstream": "https://github.com/artivis/manif",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

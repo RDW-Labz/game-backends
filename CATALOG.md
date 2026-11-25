@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 05:48 UTC · 1550 entries · 394 vendored, 1156 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 06:06 UTC · 1556 entries · 396 vendored, 1160 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
-| [math](#math) — Math libraries | 120 | 37 | 83 |
+| [math](#math) — Math libraries | 126 | 39 | 87 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
@@ -868,7 +868,7 @@ _Generated 2026-11-25 05:48 UTC · 1550 entries · 394 vendored, 1156 reference-
 
 ## math
 
-**Math libraries** — 120 entries
+**Math libraries** — 126 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -895,6 +895,7 @@ _Generated 2026-11-25 05:48 UTC · 1550 entries · 394 vendored, 1156 reference-
 | [Eigen](entries/math/eigen/README.md) | dense/sparse linear algebra (MPL-2.0) | c++ | GPL-3.0 | reference | [eigenteam/eigen-git-mirror](https://github.com/eigenteam/eigen-git-mirror) @ `36b95962756c` |
 | [eigen](entries/math/px4-eigen/README.md) | Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms. | c++ | unknown | reference | [PX4/eigen](https://github.com/PX4/eigen) @ `2023-10-18 (branch tip at catalogue time)` |
 | [en_cl_fix](entries/math/enclustra-en-cl-fix/README.md) | Fixed-point math library with VHDL, Python and MATLAB support | vhdl | MIT | reference | [enclustra/en_cl_fix](https://github.com/enclustra/en_cl_fix) @ `2026-08-12 (branch tip at catalogue time)` |
+| [Euclid](entries/math/nicklockwood-euclid/README.md) | A Swift library for creating and manipulating 3D geometry | swift | MIT | reference | [nicklockwood/Euclid](https://github.com/nicklockwood/Euclid) @ `2026-11-23 (branch tip at catalogue time)` |
 | [fixed-point](entries/math/nilpunch-fixed-point/README.md) | Configurable 32-bit and 64-bit fixed point math library. | c# | MIT | vendored | [nilpunch/fixed-point](https://github.com/nilpunch/fixed-point) @ `e88d23b07774` |
 | [fixed_math](entries/math/arturbac-fixed-math/README.md) | FixedMath: A High-Performance C++23, C++17 Library for Fixed-Point 48.16 Arithmetic | c++ | BSL-1.0 | reference | [arturbac/fixed_math](https://github.com/arturbac/fixed_math) @ `2025-06-14 (branch tip at catalogue time)` |
 | [fixed_point_math](entries/math/electricrcaircraftguy-fixed-point-math/README.md) | Fixed point math practice & test code | c++ | BSD-3-Clause | reference | [ElectricRCAircraftGuy/fixed_point_math](https://github.com/ElectricRCAircraftGuy/fixed_point_math) @ `2018-12-26 (branch tip at catalogue time)` |
@@ -932,6 +933,7 @@ _Generated 2026-11-25 05:48 UTC · 1550 entries · 394 vendored, 1156 reference-
 | [libraryofbabel.info-algo](entries/math/librarianofbabel-libraryofbabel-info-algo/README.md) | Invertible multi-precision pseudo random number generator example | c++ | none | reference | [librarianofbabel/libraryofbabel.info-algo](https://github.com/librarianofbabel/libraryofbabel.info-algo) @ `81b5786db9d9` |
 | [LinearAlgebra](entries/math/mcordingley-linearalgebra/README.md) | Stand-alone Linear Algebra Library for PHP | php | MIT | reference | [mcordingley/LinearAlgebra](https://github.com/mcordingley/LinearAlgebra) @ `2022-08-27 (branch tip at catalogue time)` |
 | [linmath.h](entries/math/datenwolf-linmath-h/README.md) | a lean linear math library, aimed at graphics programming. Supports vec3, vec4, mat4x4 and quaternions | c | WTFPL | reference | [datenwolf/linmath.h](https://github.com/datenwolf/linmath.h) @ `2023-05-31 (branch tip at catalogue time)` |
+| [manif](entries/math/artivis-manif/README.md) | A small C++11 header-only library for Lie theory. | c++ | MIT | vendored | [artivis/manif](https://github.com/artivis/manif) @ `65166b3bfd15` |
 | [math](entries/math/fireblade-engine-math/README.md) | A dependency free, lightweight, fast math library for 2D and 3D vectors, quaternions and matrices in Swift with (optional) SIMD support. | swift | MIT | reference | [fireblade-engine/math](https://github.com/fireblade-engine/math) @ `2026-11-14 (branch tip at catalogue time)` |
 | [math](entries/math/stan-dev-math/README.md) | The Stan Math Library is a C++ template library for automatic differentiation of any order using forward, reverse, and mixed modes.  It includes a range of buil | c++ | BSD-3-Clause | reference | [stan-dev/math](https://github.com/stan-dev/math) @ `2026-11-20 (branch tip at catalogue time)` |
 | [math](entries/math/zmij-math/README.md) | Small C++17 library for vector and matrix computations | c++ | Apache-2.0 | reference | [zmij/math](https://github.com/zmij/math) @ `2022-02-14 (branch tip at catalogue time)` |
@@ -942,18 +944,22 @@ _Generated 2026-11-25 05:48 UTC · 1550 entries · 394 vendored, 1156 reference-
 | [maths](entries/math/polymonster-maths/README.md) | Linear algebra library with vector swizzling, intersection tests and useful functions for games and graphics dev. | c++ | unknown | reference | [polymonster/maths](https://github.com/polymonster/maths) @ `2025-10-14 (branch tip at catalogue time)` |
 | [maths-rs](entries/math/polymonster-maths-rs/README.md) | Linear algebra library for graphics and gamedev. | rust | MIT | vendored | [polymonster/maths-rs](https://github.com/polymonster/maths-rs) @ `d1980e43c875` |
 | [MaxMath](entries/math/mrunbelievable92-maxmath/README.md) | A successor to the SIMD math library Unity.Mathematics, extending it to all C# numeric types while adding many new types and functions. Written entirely with ha | c# | Apache-2.0 | reference | [MrUnbelievable92/MaxMath](https://github.com/MrUnbelievable92/MaxMath) @ `bfeaf2875e07` |
+| [MeshLib](entries/math/meshinspector-meshlib/README.md) | 3D geometry processing SDK: fast mesh boolean, mesh repair, decimation, remeshing, offset, point cloud triangulation and ICP registration. C++ with Python, C#,  | c++ | unknown | reference | [MeshInspector/MeshLib](https://github.com/MeshInspector/MeshLib) @ `2026-11-25 (branch tip at catalogue time)` |
 | [miniply](entries/math/vilya-miniply/README.md) | A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file | c++ | MIT | reference | [vilya/miniply](https://github.com/vilya/miniply) @ `2023-03-14 (branch tip at catalogue time)` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
 | [NTSC-CRT](entries/math/lmp88959-ntsc-crt/README.md) | NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time application | c | unknown | reference | [LMP88959/NTSC-CRT](https://github.com/LMP88959/NTSC-CRT) @ `2026-07-19 (branch tip at catalogue time)` |
 | [NWaves](entries/math/ar1st0crat-nwaves/README.md) | .NET DSP library with a lot of audio processing functions | c# | MIT | reference | [ar1st0crat/NWaves](https://github.com/ar1st0crat/NWaves) @ `2022-09-27 (branch tip at catalogue time)` |
+| [opencascade.js](entries/math/donalffons-opencascade-js/README.md) | Port of the OpenCascade CAD library to JavaScript and WebAssembly via Emscripten. | python | LGPL-2.1 | reference | [donalffons/opencascade.js](https://github.com/donalffons/opencascade.js) @ `2023-08-15 (branch tip at catalogue time)` |
 | [openMVG](entries/math/openmvg-openmvg/README.md) | open Multiple View Geometry library. Basis for 3D computer vision and Structure from Motion. | c++ | MPL-2.0 | reference | [openMVG/openMVG](https://github.com/openMVG/openMVG) @ `2026-11-07 (branch tip at catalogue time)` |
 | [optick — simd](entries/math/optick-simd/README.md) | vector/matrix/quaternion math substrate | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
 | [PAL-CRT](entries/math/lmp88959-pal-crt/README.md) | PAL encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time applications | c | unknown | reference | [LMP88959/PAL-CRT](https://github.com/LMP88959/PAL-CRT) @ `2025-10-15 (branch tip at catalogue time)` |
 | [PL3D-KC](entries/math/lmp88959-pl3d-kc/README.md) | A very fast and simple software renderer using only integers and fixed point math. PiSHi LE (PL) is a subset of the 3D software graphics library used in King's  | c | unknown | reference | [LMP88959/PL3D-KC](https://github.com/LMP88959/PL3D-KC) @ `2024-05-30 (branch tip at catalogue time)` |
+| [point-cloud-utils](entries/math/fwilliams-point-cloud-utils/README.md) | An easy-to-use Python library for processing and manipulating 3D point clouds and meshes. | c++ | MIT | vendored | [fwilliams/point-cloud-utils](https://github.com/fwilliams/point-cloud-utils) @ `a5ce154b32b9` |
 | [prb-math](entries/math/paulrberg-prb-math/README.md) | Solidity library for advanced fixed-point math | solidity | MIT | vendored | [PaulRBerg/prb-math](https://github.com/PaulRBerg/prb-math) @ `3fbfb3e399b2` |
 | [PyGLM](entries/math/zuzu-typ-pyglm/README.md) | Fast OpenGL Mathematics (GLM) for Python | python | Zlib | reference | [Zuzu-Typ/PyGLM](https://github.com/Zuzu-Typ/PyGLM) @ `2026-11-19 (branch tip at catalogue time)` |
 | [PyMesh](entries/math/pymesh-pymesh/README.md) | Geometry Processing Library for Python | c++ | unknown | reference | [PyMesh/PyMesh](https://github.com/PyMesh/PyMesh) @ `2024-08-08 (branch tip at catalogue time)` |
 | [pyquaternion](entries/math/kieranwynn-pyquaternion/README.md) | A fully featured, pythonic library for representing and using quaternions | python | MIT | vendored | [KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion) @ `99025c17bab1` |
+| [pyRANSAC-3D](entries/math/leomariga-pyransac-3d/README.md) | Python library for fitting 3D primitive shapes to point clouds with RANSAC. Detect planes, spheres, cylinders, cuboids, circles, and lines. | python | Apache-2.0 | reference | [leomariga/pyRANSAC-3D](https://github.com/leomariga/pyRANSAC-3D) @ `2026-08-28 (branch tip at catalogue time)` |
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
 | [qlibs](entries/math/kmilo17pet-qlibs/README.md) | A collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more... | c | MIT | reference | [kmilo17pet/qlibs](https://github.com/kmilo17pet/qlibs) @ `2026-03-17 (branch tip at catalogue time)` |
 | [Quaternion-MATLAB-Library](entries/math/xiotechnologies-quaternion-matlab-library/README.md) | see upstream | matlab | none | reference | [xioTechnologies/Quaternion-MATLAB-Library](https://github.com/xioTechnologies/Quaternion-MATLAB-Library) @ `a2c20b81e0a7` |

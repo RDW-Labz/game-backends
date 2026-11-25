@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:06:07Z",
+ "category": "math",
+ "commit": "2023-08-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "donalffons/opencascade.js \u2014 Port of the OpenCascade CAD library to JavaScript and WebAssembly via Emscripten.",
+ "language": "python",
+ "license": "LGPL-2.1",
+ "license_verdict": "copyleft-reference",
+ "name": "opencascade.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-2.1)",
+ "slug": "donalffons-opencascade-js",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 945,
+ "system": "Port of the OpenCascade CAD library to JavaScript and WebAssembly via Emscripten.",
+ "upstream": "https://github.com/donalffons/opencascade.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
