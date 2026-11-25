@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T12:43:53Z",
+ "category": "netcode",
+ "commit": "6c36cc43b52c",
+ "delivery": "reference",
+ "description": "timriker/bzo \u2014 Battlezone Online: a free 3D multiplayer tank game in the browser (desktop, phone or VR) that plays with BZFlag clients and servers.",
+ "language": "javascript",
+ "license": "AGPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "bzo",
+ "reference_reason": "licence: AGPL-3.0 (copyleft-reference)",
+ "size_bytes": 5571078,
+ "slug": "timriker-bzo",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 42,
+ "system": "Battlezone Online: a free 3D multiplayer tank game in the browser (desktop, phone or VR) that plays with BZFlag clients and servers.",
+ "upstream": "https://github.com/timriker/bzo",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

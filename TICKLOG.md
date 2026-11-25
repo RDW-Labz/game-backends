@@ -3218,3 +3218,6 @@ One line per 15-minute extension tick, newest last.
   - reference netcode/li9chuan-baseservice
   - reference netcode/facepunch-webrcon
   - reference netcode/scgywx-fooking
+
+- **2026-11-25 12:43 UTC** — tick 863: +1 screened, +0 reference, 24 skipped, catalogue=1650
+  - added netcode/timriker-bzo (AGPL-3.0, reference)

@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 12:26 UTC · 1649 entries · 420 vendored, 1229 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 12:43 UTC · 1650 entries · 420 vendored, 1230 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-25 12:26 UTC · 1649 entries · 420 vendored, 1229 reference-
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
-| [netcode](#netcode) — Networking / netcode | 167 | 47 | 120 |
+| [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
 
@@ -1319,7 +1319,7 @@ _Generated 2026-11-25 12:26 UTC · 1649 entries · 420 vendored, 1229 reference-
 
 ## netcode
 
-**Networking / netcode** — 167 entries
+**Networking / netcode** — 168 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1343,6 +1343,7 @@ _Generated 2026-11-25 12:26 UTC · 1649 entries · 420 vendored, 1229 reference-
 | [bevy_gaff](entries/netcode/johanhelsing-bevy-gaff/README.md) | a networked (p2p), cross-platform physics simulation example using rollback netcode | rust | Apache-2.0 | reference | [johanhelsing/bevy_gaff](https://github.com/johanhelsing/bevy_gaff) @ `2023-10-22 (branch tip at catalogue time)` |
 | [BoomNetwork](entries/netcode/boomlulu-boomnetwork/README.md) | 帧驱动状态同步框架 — C# client + Go server + Unity UPM. No rollback, zero-latency self-authority, 5-min onboarding. | c# | MIT | reference | [boomlulu/BoomNetwork](https://github.com/boomlulu/BoomNetwork) @ `2026-04-15 (branch tip at catalogue time)` |
 | [BrowserQuest-PHP](entries/netcode/walkor-browserquest-php/README.md) | BrowserQuest server in PHP base on workerman. A PHP/HTML5/JavaScript multiplayer game experiment. | php | MIT | vendored | [walkor/BrowserQuest-PHP](https://github.com/walkor/BrowserQuest-PHP) @ `4a4734f23737` |
+| [bzo](entries/netcode/timriker-bzo/README.md) | Battlezone Online: a free 3D multiplayer tank game in the browser (desktop, phone or VR) that plays with BZFlag clients and servers. | javascript | AGPL-3.0 | reference | [timriker/bzo](https://github.com/timriker/bzo) @ `6c36cc43b52c` |
 | [cellnet](entries/netcode/davyxu-cellnet/README.md) | High performance, simple, extensible golang open source network library | go | MIT | vendored | [davyxu/cellnet](https://github.com/davyxu/cellnet) @ `916a7eaabb30` |
 | [cherry](entries/netcode/cherry-game-cherry/README.md) | 🍒 Cherry — Go game server framework powered by Actor Model. Serial goroutine per actor, NATS/etcd discovery, pluggable connectors (TCP/WS/HTTP), protobuf & obje | go | MIT | vendored | [cherry-game/cherry](https://github.com/cherry-game/cherry) @ `343463fce07d` |
 | [Chrono](entries/netcode/parihsz-chrono/README.md) | Drop-in custom physics replication library | luau | MIT | vendored | [Parihsz/Chrono](https://github.com/Parihsz/Chrono) @ `1d7682d60e9d` |
