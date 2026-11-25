@@ -3207,3 +3207,6 @@ One line per 15-minute extension tick, newest last.
   - added netcode/walkor-browserquest-php (MIT, vendored)
   - added netcode/armchairdevelopers-kyber (GPL-3.0, reference)
   - reference netcode/googleforgames-global-multiplayer-demo
+
+- **2026-11-25 12:08 UTC** — tick 861: +1 screened, +0 reference, 38 skipped, catalogue=1643
+  - added netcode/kochol-ariyana (MIT, vendored)

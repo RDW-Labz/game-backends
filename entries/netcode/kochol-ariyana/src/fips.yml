@@ -1,0 +1,68 @@
+#
+# ariyana
+#
+---
+imports:
+    fips-sx:
+        git: https://github.com/kochol/fips-sx.git
+    sokol:
+        git: https://github.com/kochol/sokol.git
+    sokol-tools-bin:
+        git: https://github.com/floooh/sokol-tools-bin      
+    fips-glfw:
+        git: https://github.com/fips-libs/fips-glfw.git
+    fips-memory-allocators:
+        git: https://github.com/kochol/fips-memory-allocators.git
+    fips-cimgui:
+        git: https://github.com/fips-libs/fips-cimgui.git
+    yojimbo:
+        git: https://github.com/kochol/yojimbo.git
+    fips-MetaStuff:
+        git: https://github.com/kochol/fips-MetaStuff.git
+    pmfx-shader:
+        git: https://github.com/polymonster/pmfx-shader
+
+    # Beef modules
+    CurlBeef:
+        git: https://github.com/kochol/CurlBeef.git
+    Beef-Extensions:
+        git: https://github.com/kochol/Beef-Extensions-Lib.git
+    imgui-beef:
+        git: https://github.com/kochol/imgui-beef.git
+    sokol-beef:
+        git: https://github.com/kochol/sokol-beef
+        branch: main
+    Atma-Json:
+        git: https://github.com/kochol/Atma.Json.git
+
+exports:
+    header-dirs :
+        - src
+    modules :
+        # engine modules
+        ari_2d   :          src/2d
+        ari_3d   :          src/3d
+        ari_core :          src/core
+        ari_en   :          src/en
+        ari_fs_local    :   src/fs_local
+        ari_gfx  :          src/gfx
+        ari_gui  :          src/gui
+        ari_io   :          src/io
+        ari_net  :          src/net
+        cari_2d  :          src/c99
+        cari_3d  :          src/c99
+        cari_core  :        src/c99
+        cari_io  :          src/c99
+        cari_en  :          src/c99
+        cari_gfx :          src/c99
+        cari_gui :          src/c99
+        cari_net :          src/c99
+        cari_net_3d :       src/c99
+
+run:
+    t05texcube:
+        cwd: tests/05-texcube
+    t07gltf: 
+        cwd: tests/07-gltf
+    t082d:
+        cwd: tests/08-2d

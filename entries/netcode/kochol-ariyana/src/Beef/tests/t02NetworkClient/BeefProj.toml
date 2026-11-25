@@ -1,0 +1,6 @@
+FileVersion = 1
+Dependencies = {corlib = "*", corlib = "*", ari_3d = "*", ari_net_3d = "*"}
+
+[Project]
+Name = "t02NetworkClient"
+StartupObject = "Program"

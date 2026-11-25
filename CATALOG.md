@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 11:52 UTC · 1642 entries · 418 vendored, 1224 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 12:08 UTC · 1643 entries · 419 vendored, 1224 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-25 11:52 UTC · 1642 entries · 418 vendored, 1224 reference-
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
-| [netcode](#netcode) — Networking / netcode | 160 | 45 | 115 |
+| [netcode](#netcode) — Networking / netcode | 161 | 46 | 115 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
 
@@ -1319,7 +1319,7 @@ _Generated 2026-11-25 11:52 UTC · 1642 entries · 418 vendored, 1224 reference-
 
 ## netcode
 
-**Networking / netcode** — 160 entries
+**Networking / netcode** — 161 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1331,6 +1331,7 @@ _Generated 2026-11-25 11:52 UTC · 1642 entries · 418 vendored, 1224 reference-
 | [Akka-Streams-Websocket-Game-Server](entries/netcode/jakubdziworski-akka-streams-websocket-game-server/README.md) | Game server and client based on scala, akka streams and websocket | scala | none | reference | [JakubDziworski/Akka-Streams-Websocket-Game-Server](https://github.com/JakubDziworski/Akka-Streams-Websocket-Game-Server) @ `b4350b7f78fd` |
 | [ancientbeast — multiplayer](entries/netcode/ancientbeast-multiplayer/README.md) | network transport, protocol, replication or server loop | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [arcomage-hd](entries/netcode/arcomage-arcomage-hd/README.md) | Web-based, free and open source, remastered 3D clone of 3DO/NWC's 2000 card game Arcomage. 16 languages. Desktop or mobile Android iOS. Online or offline PWA. A | typescript | MIT | reference | [arcomage/arcomage-hd](https://github.com/arcomage/arcomage-hd) @ `2025-11-15 (branch tip at catalogue time)` |
+| [ariyana](entries/netcode/kochol-ariyana/README.md) | Ariyana is an ECS work in progress game engine written in Orthodox C++ and Beef with a focus on cross-platform and multiplayer games | c++ | MIT | vendored | [kochol/ariyana](https://github.com/kochol/ariyana) @ `71652081c6c0` |
 | [asyncio](entries/netcode/yongxin-ms-asyncio/README.md) | A C++ implementation of an industrial-grade high-performance asynchronous network library, based on asio, similar to Python's asyncio, designed for stateful ser | c++ | MIT | reference | [yongxin-ms/asyncio](https://github.com/yongxin-ms/asyncio) @ `2026-11-22 (branch tip at catalogue time)` |
 | [AuthoritativeMovementExample](entries/netcode/relic-authoritativemovementexample/README.md) | An example of authoritative server movement using Forge Networking Remastered for Unity. | c# | MIT | vendored | [Relic/AuthoritativeMovementExample](https://github.com/Relic/AuthoritativeMovementExample) @ `e4922771b2a7` |
 | [Backdash](entries/netcode/delta3-studio-backdash/README.md) | C# Rollback network SDK | c# | MIT | reference | [Delta3-Studio/Backdash](https://github.com/Delta3-Studio/Backdash) @ `2026-11-10 (branch tip at catalogue time)` |

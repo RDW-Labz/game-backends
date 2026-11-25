@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T12:08:42Z",
+ "category": "netcode",
+ "commit": "71652081c6c0",
+ "delivery": "vendored",
+ "description": "kochol/ariyana \u2014 Ariyana is an ECS work in progress game engine written in Orthodox C++ and Beef with a focus on cross-platform and multiplayer games",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ariyana",
+ "size_bytes": 1968257,
+ "slug": "kochol-ariyana",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 81,
+ "system": "Ariyana is an ECS work in progress game engine written in Orthodox C++ and Beef with a focus on cross-platform and multiplayer games",
+ "upstream": "https://github.com/kochol/ariyana",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

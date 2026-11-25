@@ -1,0 +1,7 @@
+FileVersion = 1
+Dependencies = {corlib = "*", ari_net = "*", ari_io = "*", "Atma.Json" = "*"}
+
+[Project]
+Name = "ari_user"
+TargetType = "BeefLib"
+StartupObject = "ari_user.Program"
