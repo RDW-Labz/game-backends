@@ -3371,3 +3371,5 @@ One line per 15-minute extension tick, newest last.
   - reference engines/hikkywannafly-steam-workshop-download
   - reference engines/m11m-houseki
   - reference engines/dasannikov-defoldtypescript
+
+- **2026-11-25 19:14 UTC** — tick 887: +0 screened, +0 reference, 60 skipped, catalogue=1754
