@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T11:52:43Z",
+ "category": "netcode",
+ "commit": "4a4734f23737",
+ "delivery": "vendored",
+ "description": "walkor/BrowserQuest-PHP \u2014 BrowserQuest server in PHP base on workerman. A PHP/HTML5/JavaScript multiplayer game experiment.",
+ "language": "php",
+ "license": "MIT",
+ "license_file": "MIT-LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "BrowserQuest-PHP",
+ "size_bytes": 1741210,
+ "slug": "walkor-browserquest-php",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 409,
+ "system": "BrowserQuest server in PHP base on workerman. A PHP/HTML5/JavaScript multiplayer game experiment.",
+ "upstream": "https://github.com/walkor/BrowserQuest-PHP",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

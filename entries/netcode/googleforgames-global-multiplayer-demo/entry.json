@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T11:52:53Z",
+ "category": "netcode",
+ "commit": "2026-04-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "googleforgames/global-multiplayer-demo \u2014 This multiplayer demo is a cloud first implementation of a global scale, realtime multiplayer game utilising dedicated game servers, utilising both Google Cloud's products and open source gaming solutions.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "global-multiplayer-demo",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "googleforgames-global-multiplayer-demo",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 141,
+ "system": "This multiplayer demo is a cloud first implementation of a global scale, realtime multiplayer game utilising dedicated game servers, utilising both Google Cloud",
+ "upstream": "https://github.com/googleforgames/global-multiplayer-demo",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

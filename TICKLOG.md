@@ -3202,3 +3202,8 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-25 11:20 UTC** — tick 858: +0 screened, +0 reference, 31 skipped, catalogue=1639
 
 - **2026-11-25 11:36 UTC** — tick 859: +0 screened, +0 reference, 2 skipped, catalogue=1639
+
+- **2026-11-25 11:52 UTC** — tick 860: +2 screened, +1 reference, 56 skipped, catalogue=1642
+  - added netcode/walkor-browserquest-php (MIT, vendored)
+  - added netcode/armchairdevelopers-kyber (GPL-3.0, reference)
+  - reference netcode/googleforgames-global-multiplayer-demo

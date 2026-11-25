@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 11:36 UTC · 1639 entries · 417 vendored, 1222 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 11:52 UTC · 1642 entries · 418 vendored, 1224 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-25 11:36 UTC · 1639 entries · 417 vendored, 1222 reference-
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
-| [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
+| [netcode](#netcode) — Networking / netcode | 160 | 45 | 115 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
 
@@ -1319,7 +1319,7 @@ _Generated 2026-11-25 11:36 UTC · 1639 entries · 417 vendored, 1222 reference-
 
 ## netcode
 
-**Networking / netcode** — 157 entries
+**Networking / netcode** — 160 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1340,6 +1340,7 @@ _Generated 2026-11-25 11:36 UTC · 1639 entries · 417 vendored, 1222 reference-
 | [BestoNet](entries/netcode/bestogames-bestonet/README.md) | BestoNet is a custom rollback networking solution developed for the fighting game Idol Showdown. Built in C# for Unity, it integrates with Facepunch Steamworks  | c# | MIT | reference | [BestoGames/BestoNet](https://github.com/BestoGames/BestoNet) @ `2026-06-02 (branch tip at catalogue time)` |
 | [bevy_gaff](entries/netcode/johanhelsing-bevy-gaff/README.md) | a networked (p2p), cross-platform physics simulation example using rollback netcode | rust | Apache-2.0 | reference | [johanhelsing/bevy_gaff](https://github.com/johanhelsing/bevy_gaff) @ `2023-10-22 (branch tip at catalogue time)` |
 | [BoomNetwork](entries/netcode/boomlulu-boomnetwork/README.md) | 帧驱动状态同步框架 — C# client + Go server + Unity UPM. No rollback, zero-latency self-authority, 5-min onboarding. | c# | MIT | reference | [boomlulu/BoomNetwork](https://github.com/boomlulu/BoomNetwork) @ `2026-04-15 (branch tip at catalogue time)` |
+| [BrowserQuest-PHP](entries/netcode/walkor-browserquest-php/README.md) | BrowserQuest server in PHP base on workerman. A PHP/HTML5/JavaScript multiplayer game experiment. | php | MIT | vendored | [walkor/BrowserQuest-PHP](https://github.com/walkor/BrowserQuest-PHP) @ `4a4734f23737` |
 | [cellnet](entries/netcode/davyxu-cellnet/README.md) | High performance, simple, extensible golang open source network library | go | MIT | vendored | [davyxu/cellnet](https://github.com/davyxu/cellnet) @ `916a7eaabb30` |
 | [cherry](entries/netcode/cherry-game-cherry/README.md) | 🍒 Cherry — Go game server framework powered by Actor Model. Serial goroutine per actor, NATS/etcd discovery, pluggable connectors (TCP/WS/HTTP), protobuf & obje | go | MIT | vendored | [cherry-game/cherry](https://github.com/cherry-game/cherry) @ `343463fce07d` |
 | [Chrono](entries/netcode/parihsz-chrono/README.md) | Drop-in custom physics replication library | luau | MIT | vendored | [Parihsz/Chrono](https://github.com/Parihsz/Chrono) @ `1d7682d60e9d` |
@@ -1381,6 +1382,7 @@ _Generated 2026-11-25 11:36 UTC · 1639 entries · 417 vendored, 1222 reference-
 | [GekkoNet](entries/netcode/heatxd-gekkonet/README.md) | P2P Rollback Game Networking SDK | c++ | BSD-2-Clause | vendored | [HeatXD/GekkoNet](https://github.com/HeatXD/GekkoNet) @ `45dac7e50fd3` |
 | [GGRS](entries/netcode/ggrs/README.md) | rollback netcode (GGPO-style) in Rust with WASM support | rust | Apache-2.0 | vendored | [gschup/ggrs](https://github.com/gschup/ggrs) @ `25bd9983dee3` |
 | [Girls-with-swords-GGRS](entries/netcode/trian-gles-girls-with-swords-ggrs/README.md) | A 2D fighting game with rollback netcode | c# | none | reference | [trian-gles/Girls-with-swords-GGRS](https://github.com/trian-gles/Girls-with-swords-GGRS) @ `a6cbc7e5c9cf` |
+| [global-multiplayer-demo](entries/netcode/googleforgames-global-multiplayer-demo/README.md) | This multiplayer demo is a cloud first implementation of a global scale, realtime multiplayer game utilising dedicated game servers, utilising both Google Cloud | c++ | Apache-2.0 | reference | [googleforgames/global-multiplayer-demo](https://github.com/googleforgames/global-multiplayer-demo) @ `2026-04-08 (branch tip at catalogue time)` |
 | [godot-mcp-enhanced](entries/netcode/wgt19861219-godot-mcp-enhanced/README.md) | Enhanced MCP server for Godot 4.5-4.7: 33 tools / 199 actions, 3-layer architecture (headless + editor + game bridge), secure sandbox, recording & frame-verify, | typescript | MIT | reference | [wgt19861219/godot-mcp-enhanced](https://github.com/wgt19861219/godot-mcp-enhanced) @ `9cc3b70ec11b` |
 | [godot-multiplayer-starter](entries/netcode/codingquests-godot-multiplayer-starter/README.md) | A server-authoritative co-op multiplayer starter for Godot 4 with a ready-up lobby, client-side prediction, reconciliation and validated RPCs. | gdscript | MIT | vendored | [CodingQuests/godot-multiplayer-starter](https://github.com/CodingQuests/godot-multiplayer-starter) @ `ccde74b9490c` |
 | [godot-rocket-league](entries/netcode/albertok-godot-rocket-league/README.md) | Network physics with rollback test using Godot and netfox | gdscript | MIT | vendored | [albertok/godot-rocket-league](https://github.com/albertok/godot-rocket-league) @ `78b28ce495fa` |
@@ -1402,6 +1404,7 @@ _Generated 2026-11-25 11:36 UTC · 1639 entries · 417 vendored, 1222 reference-
 | [kof-xiii-global-match-rollback-enhanced](entries/netcode/slipcar-kof-xiii-global-match-rollback-enhanced/README.md) | Projeto de melhoria do rollback netcode do KOF XIII | n/a | none | reference | [Slipcar/kof-xiii-global-match-rollback-enhanced](https://github.com/Slipcar/kof-xiii-global-match-rollback-enhanced) @ `06ef1443218b` |
 | [kruise-game](entries/netcode/openkruise-kruise-game/README.md) | Game Servers Management on Kubernetes | go | Apache-2.0 | reference | [openkruise/kruise-game](https://github.com/openkruise/kruise-game) @ `2026-07-24 (branch tip at catalogue time)` |
 | [ksd](entries/netcode/vtivanov20-ksd/README.md) | C++ GUI implementation of a nand gate game. Supports local and multiplayer lobbies through a TypeScript matchmaking server. | c++ | MIT | vendored | [VTIvanov20/ksd](https://github.com/VTIvanov20/ksd) @ `ce4f2dd46b34` |
+| [Kyber](entries/netcode/armchairdevelopers-kyber/README.md) | A unified game launcher for STAR WARS Battlefront II (EA) that adds community-hosted multiplayer with full mod support, a server browser, private games, and mor | dart | GPL-3.0 | reference | [ArmchairDevelopers/Kyber](https://github.com/ArmchairDevelopers/Kyber) @ `2fd075d9889c` |
 | [lance](entries/netcode/lance-gg-lance/README.md) | Multiplayer game server based on Node.JS | typescript | Apache-2.0 | vendored | [lance-gg/lance](https://github.com/lance-gg/lance) @ `fd9bc5dce93f` |
 | [lgsl](entries/netcode/tltneon-lgsl/README.md) | LGSL v6.2.1/v7.0.0 for PHP 5.4-8.5+ (Live Game Server List): online status for CS2 (Source Query), Discord, FiveM, Rust, SA:MP, GMOD, Minecraft, Teamspeak and 2 | php | GPL-3.0 | reference | [tltneon/lgsl](https://github.com/tltneon/lgsl) @ `2026-09-11 (branch tip at catalogue time)` |
 | [librg](entries/netcode/zpl-c-librg/README.md) | 🚀  Making multi-player gamedev simpler since 2017 | c | BSD-3-Clause | vendored | [zpl-c/librg](https://github.com/zpl-c/librg) @ `106c658620d8` |

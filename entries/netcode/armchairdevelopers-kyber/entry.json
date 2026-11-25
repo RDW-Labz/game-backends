@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T11:52:52Z",
+ "category": "netcode",
+ "commit": "2fd075d9889c",
+ "delivery": "reference",
+ "description": "ArmchairDevelopers/Kyber \u2014 A unified game launcher for STAR WARS Battlefront II (EA) that adds community-hosted multiplayer with full mod support, a server browser, private games, and more.",
+ "language": "dart",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Kyber",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 44922616,
+ "slug": "armchairdevelopers-kyber",
+ "source": "github-search:multiplayer game server stars:>80",
+ "stars": 387,
+ "system": "A unified game launcher for STAR WARS Battlefront II (EA) that adds community-hosted multiplayer with full mod support, a server browser, private games, and mor",
+ "upstream": "https://github.com/ArmchairDevelopers/Kyber",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
