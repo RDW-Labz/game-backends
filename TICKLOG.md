@@ -3198,3 +3198,5 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/hugech39-dims
   - reference gameplay/tr7zw-itemswapper
   - reference gameplay/ahmedali5530-restaurant-pos
+
+- **2026-11-25 11:20 UTC** — tick 858: +0 screened, +0 reference, 31 skipped, catalogue=1639
