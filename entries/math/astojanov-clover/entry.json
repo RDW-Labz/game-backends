@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:41:56Z",
+ "category": "math",
+ "commit": "2018-05-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "astojanov/Clover \u2014 Clover: Quantized 4-bit Linear Algebra Library",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "Clover",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "astojanov-clover",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 114,
+ "system": "Clover: Quantized 4-bit Linear Algebra Library",
+ "upstream": "https://github.com/astojanov/Clover",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

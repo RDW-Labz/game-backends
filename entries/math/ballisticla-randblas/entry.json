@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:41:56Z",
+ "category": "math",
+ "commit": "2026-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BallisticLA/RandBLAS \u2014 A header-only C++ library for sketching in randomized linear algebra",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "RandBLAS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ballisticla-randblas",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 113,
+ "system": "A header-only C++ library for sketching in randomized linear algebra",
+ "upstream": "https://github.com/BallisticLA/RandBLAS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

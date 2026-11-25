@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 04:23 UTC · 1520 entries · 388 vendored, 1132 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 04:41 UTC · 1526 entries · 388 vendored, 1138 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
-| [math](#math) — Math libraries | 90 | 31 | 59 |
+| [math](#math) — Math libraries | 96 | 31 | 65 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
@@ -868,7 +868,7 @@ _Generated 2026-11-25 04:23 UTC · 1520 entries · 388 vendored, 1132 reference-
 
 ## math
 
-**Math libraries** — 90 entries
+**Math libraries** — 96 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -876,10 +876,12 @@ _Generated 2026-11-25 04:23 UTC · 1520 entries · 388 vendored, 1132 reference-
 | [amgcl](entries/math/ddemidov-amgcl/README.md) | C++ library for solving large sparse linear systems with algebraic multigrid method | c++ | MIT | reference | [ddemidov/amgcl](https://github.com/ddemidov/amgcl) @ `2026-11-18 (branch tip at catalogue time)` |
 | [biomes-game — math](entries/math/biomes-game-math/README.md) | vector/matrix/quaternion math substrate | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [brine-fp](entries/math/zfedoran-brine-fp/README.md) | Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications. | rust | Apache-2.0 | vendored | [zfedoran/brine-fp](https://github.com/zfedoran/brine-fp) @ `377beff01dfe` |
+| [C-Linear-Algebra](entries/math/jcchurch-c-linear-algebra/README.md) | My personal set of C libraries for linear algebra computation based on The Matrix Cookbook and Numerical Recipes in C. | c | unknown | reference | [jcchurch/C-Linear-Algebra](https://github.com/jcchurch/C-Linear-Algebra) @ `2019-10-31 (branch tip at catalogue time)` |
 | [ccVector](entries/math/jobtalle-ccvector/README.md) | A vector and matrix math library | c | Public-Domain | vendored | [jobtalle/ccVector](https://github.com/jobtalle/ccVector) @ `ffefafe5a0b9` |
 | [cfmm-math-libraries](entries/math/0xosiris-cfmm-math-libraries/README.md) | CFMM Fixed Point Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. | solidity | unknown | reference | [0xOsiris/cfmm-math-libraries](https://github.com/0xOsiris/cfmm-math-libraries) @ `2023-01-21 (branch tip at catalogue time)` |
 | [cglm](entries/math/cglm/README.md) | SIMD-accelerated C math (vec/mat/quat/affine/euler) | c | MIT | vendored | [recp/cglm](https://github.com/recp/cglm) @ `b9b570b78d58` |
 | [cgmath](entries/math/rustgd-cgmath/README.md) | A linear algebra and mathematics library for computer graphics. | rust | Apache-2.0 | reference | [rustgd/cgmath](https://github.com/rustgd/cgmath) @ `2024-12-07 (branch tip at catalogue time)` |
+| [Clover](entries/math/astojanov-clover/README.md) | Clover: Quantized 4-bit Linear Algebra Library | c++ | Apache-2.0 | reference | [astojanov/Clover](https://github.com/astojanov/Clover) @ `2018-05-29 (branch tip at catalogue time)` |
 | [cmath3d](entries/math/jpreiss-cmath3d/README.md) | 3d math library for C. Vectors, 3x3 matrices, quaternions, polytopes. | c | MIT | vendored | [jpreiss/cmath3d](https://github.com/jpreiss/cmath3d) @ `39f4fcdc8ec4` |
 | [CombBLAS](entries/math/passionlab-combblas/README.md) | The Combinatorial BLAS (CombBLAS) is an extensible distributed-memory parallel graph library offering a small but powerful set of linear algebra primitives spec | c++ | BSD-3-Clause | vendored | [PASSIONLab/CombBLAS](https://github.com/PASSIONLab/CombBLAS) @ `2381a1f7a028` |
 | [crystaledge](entries/math/unn4m3d-crystaledge/README.md) | A pure Crystal Vector Math library | crystal | MIT | vendored | [unn4m3d/crystaledge](https://github.com/unn4m3d/crystaledge) @ `0f5e82952b95` |
@@ -914,6 +916,7 @@ _Generated 2026-11-25 04:23 UTC · 1520 entries · 388 vendored, 1132 reference-
 | [InterpolatePy](entries/math/giorgiomedico-interpolatepy/README.md) | 🚀 InterpolatePy: A fast and precise Python library for production-ready trajectory planning, offering 20+ algorithms for C² continuous splines, jerk-limited S-c | python | MIT | reference | [GiorgioMedico/InterpolatePy](https://github.com/GiorgioMedico/InterpolatePy) @ `2026-11-19 (branch tip at catalogue time)` |
 | [JavaCode](entries/math/rick2785-javacode/README.md) | I specifically cover the following topics: Java primitive data types, declaration statements, expression statements, importing class libraries, excepting user i | java | none | reference | [rick2785/JavaCode](https://github.com/rick2785/JavaCode) @ `746587dd0dd1` |
 | [Kalman](entries/math/francoiscarouge-kalman/README.md) | Kalman filter for C++26 that turns dimension and unit mistakes into compile errors. You describe the filter with named arguments and the library deduces a lean, | c++ | Unlicense | vendored | [FrancoisCarouge/Kalman](https://github.com/FrancoisCarouge/Kalman) @ `cdd8a9387943` |
+| [lacaml](entries/math/mmottl-lacaml/README.md) | OCaml bindings for BLAS/LAPACK (high-performance linear algebra Fortran libraries) | ocaml | LGPL-2.1 | reference | [mmottl/lacaml](https://github.com/mmottl/lacaml) @ `b1bdee6f40ef` |
 | [LASwift](entries/math/alexandertar-laswift/README.md) | Fast linear algebra for Swift on Apple platforms, powered by Accelerate (BLAS, LAPACK, vDSP) | swift | BSD-3-Clause | reference | [AlexanderTar/LASwift](https://github.com/AlexanderTar/LASwift) @ `2026-11-19 (branch tip at catalogue time)` |
 | [libfixmath](entries/math/libfixmath/README.md) | fixed-point math for deterministic simulation | c | MIT | vendored | [PetteriAimonen/libfixmath](https://github.com/PetteriAimonen/libfixmath) @ `46e89b748b1f` |
 | [libraryofbabel.info-algo](entries/math/librarianofbabel-libraryofbabel-info-algo/README.md) | Invertible multi-precision pseudo random number generator example | c++ | none | reference | [librarianofbabel/libraryofbabel.info-algo](https://github.com/librarianofbabel/libraryofbabel.info-algo) @ `81b5786db9d9` |
@@ -938,7 +941,9 @@ _Generated 2026-11-25 04:23 UTC · 1520 entries · 388 vendored, 1132 reference-
 | [prb-math](entries/math/paulrberg-prb-math/README.md) | Solidity library for advanced fixed-point math | solidity | MIT | vendored | [PaulRBerg/prb-math](https://github.com/PaulRBerg/prb-math) @ `3fbfb3e399b2` |
 | [PyMesh](entries/math/pymesh-pymesh/README.md) | Geometry Processing Library for Python | c++ | unknown | reference | [PyMesh/PyMesh](https://github.com/PyMesh/PyMesh) @ `2024-08-08 (branch tip at catalogue time)` |
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
+| [RandBLAS](entries/math/ballisticla-randblas/README.md) | A header-only C++ library for sketching in randomized linear algebra | c++ | unknown | reference | [BallisticLA/RandBLAS](https://github.com/BallisticLA/RandBLAS) @ `2026-11-24 (branch tip at catalogue time)` |
 | [random-js](entries/math/ckknight-random-js/README.md) | A mathematically correct random number generator library for JavaScript. | typescript | MIT | vendored | [ckknight/random-js](https://github.com/ckknight/random-js) @ `f000fd5c286b` |
+| [RcppEigen](entries/math/rcppcore-rcppeigen/README.md) | Rcpp integration for the Eigen templated linear algebra library | c++ | none | reference | [RcppCore/RcppEigen](https://github.com/RcppCore/RcppEigen) @ `c6a32a22da4f` |
 | [russell](entries/math/cpmech-russell/README.md) | Rust Scientific Library. ODE, DAE, and PDE solvers. Special functions (Bessel, Elliptic, Beta, Gamma, Erf). Linear algebra. Sparse solvers. Probability distribu | rust | MIT | vendored | [cpmech/russell](https://github.com/cpmech/russell) @ `261fc91f7592` |
 | [sh4zam](entries/math/gyrovorbis-sh4zam/README.md) | Fast linear algebra and math library for the Hitachi SuperH4 Processor (used by the Sega Dreamcast). | c | MIT | vendored | [gyrovorbis/sh4zam](https://github.com/gyrovorbis/sh4zam) @ `5b7dfc22a91f` |
 | [SIFT3D](entries/math/bbrister-sift3d/README.md) | Analogue of the scale-invariant feature transform (SIFT) for three-dimensional images. Includes an image processing and linear algebra library with feature matc | c | MIT | reference | [bbrister/SIFT3D](https://github.com/bbrister/SIFT3D) @ `2020-08-28 (branch tip at catalogue time)` |
@@ -959,6 +964,7 @@ _Generated 2026-11-25 04:23 UTC · 1520 entries · 388 vendored, 1132 reference-
 | [tue](entries/math/cincinesh-tue/README.md) | The Tuesday C++ Vector Math and SIMD Library | c++ | BSL-1.0 | reference | [Cincinesh/tue](https://github.com/Cincinesh/tue) @ `2017-04-17 (branch tip at catalogue time)` |
 | [Unity-Raymarching-Framework](entries/math/jiepengtan-unity-raymarching-framework/README.md) | A framework to easy implement raymarching in unity. Include lots of hash,noise,fbm,SDF,rotate functions | hlsl | MIT | reference | [JiepengTan/Unity-Raymarching-Framework](https://github.com/JiepengTan/Unity-Raymarching-Framework) @ `2018-04-27 (branch tip at catalogue time)` |
 | [Unity.Mathematics.FixedPoint](entries/math/danielmansson-unity-mathematics-fixedpoint/README.md) | Fixed-point extension of Unity's C# math library based on FixedMath.Net and Unity.Mathematics. | c# | MIT | reference | [danielmansson/Unity.Mathematics.FixedPoint](https://github.com/danielmansson/Unity.Mathematics.FixedPoint) @ `2021-04-22 (branch tip at catalogue time)` |
+| [universal-java-matrix-package](entries/math/ujmp-universal-java-matrix-package/README.md) | A Java Library for sparse and dense matrices, linear algebra, visualization and big data | java | LGPL-3.0 | reference | [ujmp/universal-java-matrix-package](https://github.com/ujmp/universal-java-matrix-package) @ `2022-07-07 (branch tip at catalogue time)` |
 | [vec-mat-comp-quat](entries/math/mrmcsoftware-vec-mat-comp-quat/README.md) | C++ 2d/3d/4d Vector, 2x2/3x3/4x4 Matrix, Complex Number, Quaternion, and 3d Transformation Classes / Functions (Header Only libraries) | c++ | LGPL-3.0 | reference | [mrmcsoftware/vec-mat-comp-quat](https://github.com/mrmcsoftware/vec-mat-comp-quat) @ `2024-06-23 (branch tip at catalogue time)` |
 | [vgMath](entries/math/brutpitt-vgmath/README.md) | vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ... | c++ | BSD-2-Clause | reference | [BrutPitt/vgMath](https://github.com/BrutPitt/vgMath) @ `2025-03-16 (branch tip at catalogue time)` |
 | [zmath](entries/math/zig-gamedev-zmath/README.md) | SIMD math library for Zig game developers | zig | MIT | vendored | [zig-gamedev/zmath](https://github.com/zig-gamedev/zmath) @ `43250209495c` |

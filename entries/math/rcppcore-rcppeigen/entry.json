@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T04:41:55Z",
+ "category": "math",
+ "commit": "c6a32a22da4f",
+ "delivery": "reference",
+ "description": "RcppCore/RcppEigen \u2014 Rcpp integration for the Eigen templated linear algebra library",
+ "language": "c++",
+ "license": "none",
+ "license_file": "LICENSE",
+ "license_verdict": "unlicensed-reference",
+ "name": "RcppEigen",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 9484853,
+ "slug": "rcppcore-rcppeigen",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 117,
+ "system": "Rcpp integration for the Eigen templated linear algebra library",
+ "upstream": "https://github.com/RcppCore/RcppEigen",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

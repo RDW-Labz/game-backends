@@ -3033,3 +3033,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/stan-dev-math
   - reference math/juj-mathgeolib
   - reference math/sparsemat-sprs
+
+- **2026-11-25 04:41 UTC** — tick 835: +2 screened, +4 reference, 6 skipped, catalogue=1526
+  - added math/mmottl-lacaml (LGPL-2.1, reference)
+  - added math/rcppcore-rcppeigen (none, reference)
+  - reference math/ujmp-universal-java-matrix-package
+  - reference math/astojanov-clover
+  - reference math/ballisticla-randblas
+  - reference math/jcchurch-c-linear-algebra

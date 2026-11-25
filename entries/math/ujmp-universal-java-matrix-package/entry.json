@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:41:56Z",
+ "category": "math",
+ "commit": "2022-07-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ujmp/universal-java-matrix-package \u2014 A Java Library for sparse and dense matrices, linear algebra, visualization and big data",
+ "language": "java",
+ "license": "LGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "universal-java-matrix-package",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-3.0)",
+ "slug": "ujmp-universal-java-matrix-package",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 116,
+ "system": "A Java Library for sparse and dense matrices, linear algebra, visualization and big data",
+ "upstream": "https://github.com/ujmp/universal-java-matrix-package",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

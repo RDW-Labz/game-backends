@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:41:56Z",
+ "category": "math",
+ "commit": "2019-10-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jcchurch/C-Linear-Algebra \u2014 My personal set of C libraries for linear algebra computation based on The Matrix Cookbook and Numerical Recipes in C.",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "C-Linear-Algebra",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "jcchurch-c-linear-algebra",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 109,
+ "system": "My personal set of C libraries for linear algebra computation based on The Matrix Cookbook and Numerical Recipes in C.",
+ "upstream": "https://github.com/jcchurch/C-Linear-Algebra",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
