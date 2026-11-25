@@ -3242,3 +3242,11 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-25 13:47 UTC** — tick 867: +1 screened, +0 reference, 11 skipped, catalogue=1663
   - added save-state/horizon-25-game-booster (none, reference)
+
+- **2026-11-25 14:03 UTC** — tick 868: +2 screened, +4 reference, 24 skipped, catalogue=1669
+  - added save-state/lean-dojo-floatlib (MIT, vendored)
+  - added save-state/dotarj-protobuf-net-data (Apache-2.0, vendored)
+  - reference save-state/harrah-sbinary
+  - reference save-state/2tvenom-cbor
+  - reference save-state/moralrecordings-mrcrowbar
+  - reference save-state/jonathanbeck-libplist

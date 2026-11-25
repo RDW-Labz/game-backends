@@ -1,0 +1,200 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.P3109.Arithmetic.Sqrt.Scaling
+public import FloatLib.Floats.Formats.P3109.Projection.Correctness
+
+/-!
+# Real semantics and executable refinement of P3109 square root
+
+Two rounders appear here. The reference one takes the floor of a real square root and runs the
+report's rounding decision (`Format.roundMagnitudeUp`) by comparing that root with the decision's
+thresholds. The executable one gets the same result from natural-number square roots and
+products. Neither first projects a rational approximation of the root.
+
+`sqrtValue_eq_real` establishes that the integer arithmetic is exact. Both rounders share the
+quantum selection and the decision procedure, though, so a wrong quantum or tie rule would be
+shared too, and we don't prove here that the decision selects the correctly rounded neighbour of
+`√x` in every mode.
+
+`decode_projectSqrt` composes this equality with the report's saturation and encoding
+theorem. Reciprocal square root and hypotenuse reuse the same rounder after forming
+their exact rational radicands, whose real roots are `1 / √x` on positive finite inputs and
+`√(x² + y²)` on finite operands (`rsqrtRadicand_finite_real`, `hypotRadicand_finite_real`).
+
+Reference: P3109 Interim Report v4.1 (unapproved draft), §§4.7.3–4.7.6, 4.10.8 and 4.10.14.
+-/
+
+@[expose] public section
+
+open FloatLib.Numerics
+
+namespace FloatLib.Floats.Formats.P3109.Arithmetic
+
+/-- The report's upper-candidate decision expressed using the real square root. -/
+noncomputable def sqrtRoundAwayReal (format : Format) (mode : RoundingMode)
+    (quantum : Int) (numerator denominator lower : Nat) : Bool :=
+  let root := Real.sqrt ((numerator : Real) / denominator)
+  Format.roundMagnitudeUp format mode quantum lower (decide (root = lower))
+    (fun scale threshold => compare root ((threshold : Real) / scale))
+
+/-- Exact integer threshold tests implement real square-root rounding in every supplied mode. -/
+theorem sqrtRoundAway_eq_real (format : Format) (mode : RoundingMode)
+    (quantum : Int) (numerator denominator lower : Nat) (hd : 0 < denominator) :
+    sqrtRoundAway format mode quantum numerator denominator lower =
+      sqrtRoundAwayReal format mode quantum numerator denominator lower := by
+  have hexact :
+      Real.sqrt ((numerator : Real) / denominator) = lower ↔
+        numerator = denominator * lower ^ 2 := by
+    simpa using sqrt_eq_threshold_iff numerator denominator 1 lower hd (by decide)
+  have hcompare := compareSqrt_eq_real numerator denominator
+  unfold sqrtRoundAway sqrtRoundAwayReal
+  simp only [hexact]
+  cases mode <;>
+    simp [Format.roundMagnitudeUp, hcompare, hd]
+
+/--
+Reference precision rounding takes the floor and threshold comparisons of a real root.
+As in the executable precision helper, the radicand magnitude is used, and the closed operation
+rejects negative inputs before calling this helper.
+-/
+noncomputable def roundSqrtRealToPrecision (format : Format) (mode : RoundingMode)
+    (radicand : Rat) : FloatLib.Numerics.Dyadic :=
+  if radicand.num.natAbs == 0 then .zero
+  else
+    let quantum := sqrtQuantum format radicand.num.natAbs radicand.den
+    let scaled :=
+      RationalBinary.scaleByPowerOfTwo radicand.num.natAbs radicand.den (-2 * quantum)
+    let lower := ⌊Real.sqrt ((scaled.1 : Real) / scaled.2)⌋₊
+    let rounded :=
+      if sqrtRoundAwayReal format mode quantum scaled.1 scaled.2 lower then lower + 1 else lower
+    if rounded == 0 then .zero else ⟨false, rounded, quantum⟩
+
+/-- The executable precision rounder equals the rounder defined with the real root. -/
+theorem roundSqrtRatToPrecision_eq_real (format : Format) (mode : RoundingMode)
+    (radicand : Rat) :
+    roundSqrtRatToPrecision format mode radicand =
+      roundSqrtRealToPrecision format mode radicand := by
+  unfold roundSqrtRatToPrecision roundSqrtRealToPrecision
+  split
+  · rfl
+  · have hd := Nat.pos_of_ne_zero
+      (RationalBinary.scaleByPowerOfTwo_snd_ne_zero
+        radicand.num.natAbs radicand.den
+        (-2 * sqrtQuantum format radicand.num.natAbs radicand.den) radicand.den_nz)
+    simp only [floor_real_sqrt _ _ hd, sqrtRoundAway_eq_real _ _ _ _ _ _ hd]
+
+/-- Closed square-root reference for `format` under `policy`: the canonical NaN for every
+exceptional input, `-∞` and negative finite `value`, `+∞` for `+∞`, and otherwise the real-root
+evaluation of the report's precision rounding (`roundSqrtRealToPrecision`), followed by the
+supplied saturation policy. It reuses the executable quantum and decision procedure, so it checks
+the integer arithmetic rather than independently specifying correct rounding. -/
+noncomputable def sqrtRealValue (format : Format) (policy : ProjectionPolicy)
+    (value : NumericalValue Rat) : NumericalValue FloatLib.Numerics.Dyadic :=
+  format.saturate policy.saturation policy.rounding
+    (match value with
+    | .exceptional _ | .infinity true => .exceptional (.nan)
+    | .infinity false => .infinity false
+    | .finite value =>
+        if value < 0 then .exceptional (.nan)
+        else .finite (roundSqrtRealToPrecision format policy.rounding value))
+
+/-- Closed executable square root refines the real-root reference for every input and policy. -/
+theorem sqrtValue_eq_real (format : Format) (policy : ProjectionPolicy)
+    (value : NumericalValue Rat) :
+    sqrtValue format policy value = sqrtRealValue format policy value := by
+  cases value with
+  | finite value =>
+      simp [sqrtValue, sqrtRounded, sqrtRealValue, roundSqrtRatToPrecision_eq_real]
+  | infinity negative => cases negative <;> rfl
+  | exceptional _ => rfl
+
+/-- Encoding and decoding preserves the single rounded and saturated square-root datum. -/
+theorem sameDatum_decode_sqrtCode (format : Format) (policy : ProjectionPolicy)
+    (value : NumericalValue Rat) :
+    Format.SameDatum (format.decode (sqrtCode format policy value))
+      (sqrtValue format policy value) := by
+  unfold sqrtCode sqrtValue
+  apply format.sameDatum_decode_encodeSaturate
+  cases value with
+  | finite value =>
+      by_cases hnegative : value < 0 <;>
+        simp [sqrtRounded, hnegative, roundSqrtRatToPrecision_fitsPrecisionGrid]
+  | infinity negative => cases negative <;> trivial
+  | exceptional _ => trivial
+
+/--
+On a positive finite input the reciprocal-square-root radicand is `1 / value`, whose real square
+root is the reciprocal of the positive root of `value`. Composed with `decode_rsqrt`, the result is
+the reference rounding (`sqrtRealValue`) of that radicand. The other inputs are covered by
+`rsqrtRadicand_finite_of_nonpos` and the definition: NaN and `-∞` give NaN, and `+∞` gives the
+radicand zero, whose root is zero.
+-/
+theorem rsqrtRadicand_finite_real {value : Rat} (h : 0 < value) :
+    rsqrtRadicand (.finite value) = .finite (1 / value) ∧
+      Real.sqrt ((1 / value : Rat) : Real) = 1 / Real.sqrt (value : Real) :=
+  ⟨by simp [rsqrtRadicand, not_le.2 h], by simp [one_div, Real.sqrt_inv]⟩
+
+/-- A zero or negative finite input has no real reciprocal square root: its radicand is NaN. -/
+theorem rsqrtRadicand_finite_of_nonpos {value : Rat} (h : value ≤ 0) :
+    rsqrtRadicand (.finite value) = nan := by
+  simp [rsqrtRadicand, h]
+
+/--
+On finite operands the hypotenuse radicand is the exact sum of squares, a nonnegative rational
+whose real square root is `√(left ^ 2 + right ^ 2)`. Composed with `decode_hypot`, the result is
+the reference rounding (`sqrtRealValue`) of that radicand.
+-/
+theorem hypotRadicand_finite_real (left right : Rat) :
+    hypotRadicand (.finite left) (.finite right) = .finite (left * left + right * right) ∧
+      0 ≤ left * left + right * right ∧
+      Real.sqrt ((left * left + right * right : Rat) : Real) =
+        Real.sqrt ((left : Real) ^ 2 + (right : Real) ^ 2) :=
+  ⟨rfl, add_nonneg (mul_self_nonneg left) (mul_self_nonneg right), by simp [pow_two]⟩
+
+end FloatLib.Floats.Formats.P3109.Arithmetic
+
+namespace FloatLib.Floats.ExecFloat.P3109
+
+open Formats.P3109
+
+variable {format : Format}
+
+/-- Decoding the square-root projector returns the real-root report reference. -/
+theorem decode_projectSqrt (value : NumericalValue Rat) (mode : RoundingMode)
+    (saturation : SaturationMode) :
+    Format.SameDatum (decode (projectSqrt (format := format) value mode saturation))
+      (Arithmetic.sqrtRealValue format { rounding := mode, saturation } value) := by
+  rw [decode_eq_format_decode, ← Arithmetic.sqrtValue_eq_real]
+  exact Arithmetic.sameDatum_decode_sqrtCode format _ value
+
+/-- Square root evaluates the source value and rounds once into the target. -/
+theorem decode_sqrt (value : ExecFloat.P3109 format) (target : Format) (mode : RoundingMode)
+    (saturation : SaturationMode) :
+    Format.SameDatum (decode (Sqrt value target mode saturation))
+      (Arithmetic.sqrtRealValue target { rounding := mode, saturation } value.toClosedRat) :=
+  decode_projectSqrt value.toClosedRat mode saturation
+
+/-- Reciprocal square root projects the root of the exact reciprocal, with its report domain. -/
+theorem decode_rsqrt (value : ExecFloat.P3109 format) (target : Format) (mode : RoundingMode)
+    (saturation : SaturationMode) :
+    Format.SameDatum (decode (RSqrt value target mode saturation))
+      (Arithmetic.sqrtRealValue target { rounding := mode, saturation }
+        (Arithmetic.rsqrtRadicand value.toClosedRat)) :=
+  decode_projectSqrt _ mode saturation
+
+/-- Hypotenuse projects the root of the exact sum of squares without intermediate overflow. -/
+theorem decode_hypot {rightFormat : Format}
+    (left : ExecFloat.P3109 format) (right : ExecFloat.P3109 rightFormat)
+    (target : Format) (mode : RoundingMode) (saturation : SaturationMode) :
+    Format.SameDatum (decode (Hypot left right target mode saturation))
+      (Arithmetic.sqrtRealValue target { rounding := mode, saturation }
+        (Arithmetic.hypotRadicand left.toClosedRat right.toClosedRat)) :=
+  decode_projectSqrt _ mode saturation
+
+end FloatLib.Floats.ExecFloat.P3109

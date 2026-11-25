@@ -1,0 +1,168 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.DirectedSemantics.Positive
+
+/-!
+# Signed directed rounding for arbitrary executable float formats
+
+Signed floor and ceiling semantics follow from the positive scaled-mantissa results. For a
+negative input, downward rounding uses the upward-rounded magnitude, and upward rounding uses the
+downward-rounded one. When `fmt.isIEEE = true`, the final theorems lift these integer identities
+through `round` to exact real equations for every dyadic. A zero significand gives zero on both
+sides, and only the private helper they share needs a nonzero significand.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange
+namespace Model
+
+open FloatLib.Floats
+open FloatLib.Floats.Formats.Flocq
+
+section
+
+/-! ## Signed scaled mantissas -/
+
+/-- Signed mantissa selected by rounding a dyadic toward negative infinity. -/
+def roundSignedMantissaAtExponentDown
+    (sign : Bool) (mantissa : Nat) (exponent targetExponent : Int) : Int :=
+  if sign then
+    -Int.ofNat (roundMantissaAtExponentUp mantissa exponent targetExponent)
+  else
+    Int.ofNat (roundMantissaAtExponentDown mantissa exponent targetExponent)
+
+/-- Signed mantissa selected by rounding a dyadic toward positive infinity. -/
+def roundSignedMantissaAtExponentUp
+    (sign : Bool) (mantissa : Nat) (exponent targetExponent : Int) : Int :=
+  if sign then
+    -Int.ofNat (roundMantissaAtExponentDown mantissa exponent targetExponent)
+  else
+    Int.ofNat (roundMantissaAtExponentUp mantissa exponent targetExponent)
+
+/-- Signed floor rounding swaps to ceiling on the magnitude of a negative dyadic. -/
+theorem floor_scaledDyadic
+    (sign : Bool) (mantissa : Nat) (exponent targetExponent : Int) :
+    floorRound
+        ((if sign then (-1 : ℝ) else 1) * (mantissa : ℝ) *
+          FloatLib.Floats.Formats.Flocq.bpow Numerics.binaryRadix
+            (exponent - targetExponent)) =
+      roundSignedMantissaAtExponentDown sign mantissa exponent targetExponent := by
+  cases sign with
+  | false =>
+      simpa [roundSignedMantissaAtExponentDown] using
+        floor_scaledMagnitude mantissa exponent targetExponent
+  | true =>
+      simp only [roundSignedMantissaAtExponentDown, ite_true]
+      rw [neg_one_mul, neg_mul]
+      unfold floorRound
+      rw [Int.floor_neg]
+      exact congrArg Neg.neg
+        (ceil_scaledMagnitude mantissa exponent targetExponent)
+
+/-- Signed ceiling rounding swaps to floor on the magnitude of a negative dyadic. -/
+theorem ceil_scaledDyadic
+    (sign : Bool) (mantissa : Nat) (exponent targetExponent : Int) :
+    ceilRound
+        ((if sign then (-1 : ℝ) else 1) * (mantissa : ℝ) *
+          FloatLib.Floats.Formats.Flocq.bpow Numerics.binaryRadix
+            (exponent - targetExponent)) =
+      roundSignedMantissaAtExponentUp sign mantissa exponent targetExponent := by
+  cases sign with
+  | false =>
+      simpa [roundSignedMantissaAtExponentUp] using
+        ceil_scaledMagnitude mantissa exponent targetExponent
+  | true =>
+      simp only [roundSignedMantissaAtExponentUp, ite_true]
+      rw [neg_one_mul, neg_mul]
+      unfold ceilRound
+      rw [Int.ceil_neg]
+      exact congrArg Neg.neg
+        (floor_scaledMagnitude mantissa exponent targetExponent)
+
+/-! ## Numerics.Dyadic rounded-real semantics -/
+
+private theorem round_dyadic_eq_of_scaled_round_eq
+    (fmt : FloatFormat) (d : Numerics.Dyadic) (hfmt : fmt.isIEEE = true) (hm : d.significand ≠ 0)
+    (rnd : ℝ → Int) (roundedMantissa : Int)
+    (hscaled :
+      rnd
+          ((if d.negative then (-1 : ℝ) else 1) * (d.significand : ℝ) *
+            FloatLib.Floats.Formats.Flocq.bpow Numerics.binaryRadix
+              (d.exponent -
+                (FloatFormat.toModel fmt).targetExponent
+                  (Float.Model.totalExponent d.significand d.exponent))) =
+        roundedMantissa) :
+    round (β := Numerics.binaryRadix) (fexp := fexpOf fmt) rnd d.toReal =
+      (roundedMantissa : ℝ) *
+        FloatLib.Floats.Formats.Flocq.bpow Numerics.binaryRadix
+          ((FloatFormat.toModel fmt).targetExponent
+            (Float.Model.totalExponent d.significand d.exponent)) := by
+  have hscaled' :
+      rnd (scaledMantissa Numerics.binaryRadix (fexpOf fmt) d.toReal) =
+        roundedMantissa := by
+    rw [scaledMantissa_toReal fmt d hfmt]
+    exact hscaled
+  calc
+    round (β := Numerics.binaryRadix) (fexp := fexpOf fmt) rnd d.toReal =
+        FloatLib.Floats.Formats.Flocq.toReal (β := Numerics.binaryRadix) {
+          mantissa := roundedMantissa
+          exponent := cexp Numerics.binaryRadix (fexpOf fmt) d.toReal } :=
+      round_eq_toReal_of_scaled_round_eq rnd d.toReal roundedMantissa hscaled'
+    _ = (roundedMantissa : ℝ) *
+          FloatLib.Floats.Formats.Flocq.bpow Numerics.binaryRadix
+            ((FloatFormat.toModel fmt).targetExponent
+              (Float.Model.totalExponent d.significand d.exponent)) := by
+      rw [cexp_toReal_eq_targetExponent fmt d hfmt hm]
+      rfl
+
+/--
+Rounded-real semantics of downward rounding for a signed dyadic. A zero significand denotes zero
+on both sides.
+-/
+theorem roundAt_down_dyadic_eq (fmt : FloatFormat) (d : Numerics.Dyadic)
+    (hfmt : fmt.isIEEE = true) :
+    let target :=
+      (FloatFormat.toModel fmt).targetExponent
+        (Float.Model.totalExponent d.significand d.exponent)
+    roundAt fmt d.toReal .down =
+      (roundSignedMantissaAtExponentDown d.negative d.significand d.exponent target : ℝ) *
+        FloatLib.Floats.Formats.Flocq.bpow Numerics.binaryRadix target := by
+  dsimp only
+  by_cases hm : d.significand = 0
+  · simp [hm, Numerics.Dyadic.toReal, Numerics.Dyadic.signedSignificand,
+      roundSignedMantissaAtExponentDown, roundMantissaAtExponentDown, roundMantissaAtExponentUp,
+      Numerics.shiftRightCeil]
+  apply round_dyadic_eq_of_scaled_round_eq fmt d hfmt hm floorRound
+  exact floor_scaledDyadic d.negative d.significand d.exponent _
+
+/--
+Rounded-real semantics of upward rounding for a signed dyadic. A zero significand denotes zero
+on both sides.
+-/
+theorem roundAt_up_dyadic_eq (fmt : FloatFormat) (d : Numerics.Dyadic)
+    (hfmt : fmt.isIEEE = true) :
+    let target :=
+      (FloatFormat.toModel fmt).targetExponent
+        (Float.Model.totalExponent d.significand d.exponent)
+    roundAt fmt d.toReal .up =
+      (roundSignedMantissaAtExponentUp d.negative d.significand d.exponent target : ℝ) *
+        FloatLib.Floats.Formats.Flocq.bpow Numerics.binaryRadix target := by
+  dsimp only
+  by_cases hm : d.significand = 0
+  · simp [hm, Numerics.Dyadic.toReal, Numerics.Dyadic.signedSignificand,
+      roundSignedMantissaAtExponentUp, roundMantissaAtExponentDown, roundMantissaAtExponentUp,
+      Numerics.shiftRightCeil]
+  apply round_dyadic_eq_of_scaled_round_eq fmt d hfmt hm ceilRound
+  exact ceil_scaledDyadic d.negative d.significand d.exponent _
+
+end
+
+end Model
+end FloatLib.Floats.Formats.BinaryInterchange

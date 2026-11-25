@@ -1,0 +1,123 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+module
+
+public import FloatLib.Floats.Formats.DecimalInterchange.Neighbors.Proof
+
+/-!
+# Adjacency of the public decimal neighbor operations
+
+Adjacency means that nothing valid lies in between, so the bounds here compare the delivered
+result with every valid finite datum, other cohorts and both signs of zero included. Infinite
+results get endpoint theorems of their own.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.DecimalInterchange
+namespace Arithmetic
+
+/-- The finite successor is strictly greater, and no valid finite value lies between them. -/
+theorem nextUp_finite_adjacent (f : Format) (s : Bool) (c : Nat) (q : Int)
+    (hx : (Datum.finite s c q).Valid f) (v : ℚ)
+    (hout : (nextUp f (.finite s c q)).value.toRat? = some v) :
+    Datum.finiteValue s c q < v ∧
+      ∀ (t : Bool) (d : Nat) (r : Int), (Datum.finite t d r).Valid f →
+        Datum.finiteValue s c q < Datum.finiteValue t d r →
+        v ≤ Datum.finiteValue t d r := by
+  by_cases hc : c = 0
+  · have hv : v = (10 : ℚ) ^ f.minQuantum := by
+      simpa [nextUp, hc, Datum.toRat?_eq] using hout.symm
+    rw [hv]
+    simp only [hc, Datum.finiteValue, Nat.cast_zero, mul_zero, zero_mul]
+    refine ⟨zpow_pos (by norm_num) _, ?_⟩
+    intro t d r hd hlt
+    have hr := ((Datum.valid_quantum_iff ..).mp hd).2.1
+    have hn : 0 ≤ (d : ℚ) * (10 : ℚ) ^ r :=
+      mul_nonneg (Nat.cast_nonneg _) (zpow_pos (by norm_num) _).le
+    cases t
+    · simpa using neighbor_integer_gap 0 d f.minQuantum r hr (by simpa using hlt)
+    · simp only [↓reduceIte, neg_mul, one_mul] at hlt
+      linarith
+  · obtain ⟨a, b, hp, ha, hapos, hbmin, hbmax, hfull, he⟩ :=
+      neighbor_normalize f s c q hx hc
+    have hpb : 0 < (10 : ℚ) ^ b := zpow_pos (by norm_num) _
+    have han : (0 : ℚ) ≤ a := Nat.cast_nonneg _
+    simp only [nextUp, ite_eq_right hc, hp] at hout
+    cases s
+    · simp only [Bool.false_eq_true, ↓reduceIte] at hout
+      obtain ⟨t, d, r, hv, hvalue⟩ := Datum.toRat?_eq_some_iff.mp hout
+      obtain ⟨rfl, hdvalue⟩ := neighborAbove_finite f a d b r t ha hv
+      have hv' : v = ((a + 1 : Nat) : ℚ) * (10 : ℚ) ^ b := by
+        simpa [Datum.finiteValue] using hvalue.trans (by simpa [Datum.finiteValue] using hdvalue)
+      rw [hv']
+      simp only [Datum.finiteValue, Bool.false_eq_true, ↓reduceIte, one_mul]
+      constructor
+      · rw [← he, Nat.cast_add, Nat.cast_one]
+        linarith
+      · intro t e u hu hlt
+        have hu' := (Datum.valid_quantum_iff ..).mp hu
+        have hn : 0 ≤ (e : ℚ) * (10 : ℚ) ^ u :=
+          mul_nonneg (Nat.cast_nonneg _) (zpow_pos (by norm_num) _).le
+        cases t
+        · simp only [Bool.false_eq_true, ↓reduceIte, one_mul] at hlt ⊢
+          exact neighbor_gap f a e b u hfull hu'.1 hu'.2.1 (by rwa [he])
+        · simp only [↓reduceIte, neg_mul, one_mul] at hlt
+          linarith [mul_nonneg han hpb.le]
+    · simp only [↓reduceIte] at hout
+      obtain ⟨d, r, hv, _, hdfull, hstep⟩ :=
+        neighborBelow_spec f a b ha hapos hbmin hbmax hfull
+      have hv' : v = -((d : ℚ) * (10 : ℚ) ^ r) := by
+        simpa [hv, Datum.negate, Datum.toRat?_eq] using hout.symm
+      have hpr : 0 < (10 : ℚ) ^ r := zpow_pos (by norm_num) _
+      have hdnonneg : 0 ≤ (d : ℚ) * (10 : ℚ) ^ r :=
+        mul_nonneg (Nat.cast_nonneg _) hpr.le
+      have hstep' : ((d : ℚ) + 1) * (10 : ℚ) ^ r = (c : ℚ) * (10 : ℚ) ^ q := by
+        simpa using hstep.trans he
+      rw [hv']
+      simp only [Datum.finiteValue, ↓reduceIte, neg_mul, one_mul]
+      constructor
+      · linarith [hstep']
+      · intro t e u hu hlt
+        have hu' := (Datum.valid_quantum_iff ..).mp hu
+        have hn : 0 ≤ (e : ℚ) * (10 : ℚ) ^ u :=
+          mul_nonneg (Nat.cast_nonneg _) (zpow_pos (by norm_num) _).le
+        cases t
+        · simpa using neg_nonpos.mpr hdnonneg |>.trans hn
+        · simp only [↓reduceIte, neg_mul, one_mul] at hlt ⊢
+          by_contra h
+          have hlt' : (d : ℚ) * (10 : ℚ) ^ r < (e : ℚ) * (10 : ℚ) ^ u := by
+            linarith
+          have hgap := neighbor_gap f d e r u hdfull hu'.1 hu'.2.1 hlt'
+          rw [hstep, he] at hgap
+          linarith
+
+/-- Public successor adjacency expressed entirely in exact numerical values. -/
+theorem nextUp_adjacent (f : Format) (x : Datum) (hx : x.Valid f)
+    (a b : ℚ) (ha : x.toRat? = some a) (hb : (nextUp f x).value.toRat? = some b) :
+    a < b ∧ ∀ (y : Datum) (v : ℚ), y.Valid f → y.toRat? = some v → a < v → b ≤ v := by
+  obtain ⟨s, c, q, rfl, rfl⟩ := Datum.toRat?_eq_some_iff.mp ha
+  have h := nextUp_finite_adjacent f s c q hx b hb
+  refine ⟨h.1, ?_⟩
+  intro y v hy hv hlt
+  obtain ⟨t, d, r, rfl, rfl⟩ := Datum.toRat?_eq_some_iff.mp hv
+  exact h.2 t d r hy hlt
+
+/-- Negation transfers successor adjacency to the public predecessor operation. -/
+theorem nextDown_adjacent (f : Format) (x : Datum) (hx : x.Valid f)
+    (a b : ℚ) (ha : x.toRat? = some a) (hb : (nextDown f x).value.toRat? = some b) :
+    b < a ∧ ∀ (y : Datum) (v : ℚ), y.Valid f → y.toRat? = some v → v < a → v ≤ b := by
+  have hnb := Datum.negate_toRat?_of_eq_some hb
+  rw [nextDown_value, Datum.negate_negate] at hnb
+  have h := nextUp_adjacent f x.negate (by simpa using hx) (-a) (-b)
+    (Datum.negate_toRat?_of_eq_some ha) hnb
+  refine ⟨by linarith [h.1], fun y v hy hv hlt => ?_⟩
+  have hle := h.2 y.negate (-v) (by simpa using hy) (Datum.negate_toRat?_of_eq_some hv)
+    (by linarith)
+  linarith
+
+end Arithmetic
+end FloatLib.Floats.Formats.DecimalInterchange

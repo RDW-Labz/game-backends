@@ -1,0 +1,112 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Model.ExactValue
+public import FloatLib.Floats.Formats.BinaryInterchange.Model.NumericalSystem
+public import FloatLib.Numerics.Core.ExactSemantics
+
+/-!
+# Proof-indexed binary-interchange values
+
+Erased proof views refine one executable `Model fmt` by its encoded interpretation or numerical
+value. `AtExact` keeps the complete encoded interpretation, `AtValue` records the general
+numerical value, and `At` is the finite real specialization. All three are refinement views and
+add no runtime representation.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange
+namespace Model
+
+open FloatLib.Numerics
+
+/--
+An executable float bundled with a proof of its complete numerical interpretation.
+
+It is a refinement view and adds no second floating-point representation.
+-/
+abbrev AtValue (fmt : FloatFormat) (v : NumericalValue ℝ) :=
+  (numericalSystem fmt).At v
+
+/--
+An executable float bundled with a proof of its finite real interpretation.
+-/
+abbrev At (fmt : FloatFormat) (r : ℝ) :=
+  (numericalSystem fmt).AtFinite r
+
+namespace ExactValue
+
+/-- Forget encoding distinctions and retain the general numerical-system interpretation. -/
+noncomputable def toNumericalValue (value : ExactValue)
+    (encoding : FloatFormat.Encoding := .ieee) : NumericalValue ℝ :=
+  match value with
+  | .finite value => .finite value.toReal
+  | .infinity sign => .infinity sign
+  | .nan sign signaling field =>
+      .exceptional (.nan (some (payloadOfNaNField signaling field encoding)) sign signaling)
+
+end ExactValue
+
+/--
+Forgetting exact encoding distinctions agrees with the numerical-system interpretation.
+-/
+theorem toNumericalValue_eq_exactValue_toNumericalValue
+    {fmt : FloatFormat} (x : Model fmt) :
+    toNumericalValue x = (exactValue x).toNumericalValue fmt.encoding := by
+  cases hdecode : toDyadic? x with
+  | some value =>
+      have hnan := isNaN_eq_false_of_toDyadic?_some hdecode
+      have hinf := isInfinite_eq_false_of_toDyadic?_some hdecode
+      simp [toNumericalValue, exactValue, ExactValue.toNumericalValue, toReal_eq,
+        hdecode, hnan, hinf]
+  | none =>
+      cases hinf : isInfinite x with
+      | true =>
+          have hnan := isNaN_eq_false_of_isInfinite_eq_true x hinf
+          simp [toNumericalValue, exactValue, ExactValue.toNumericalValue,
+            hdecode, hnan, hinf]
+      | false =>
+          have hnan := isNaN_eq_true_of_toDyadic?_eq_none_of_isInfinite_eq_false hdecode hinf
+          simp [toNumericalValue, exactValue, ExactValue.toNumericalValue, nanPayload,
+            hdecode, hnan, hinf]
+
+/--
+The richer exact interpretation of `Model` and its coherent forgetting map.
+
+Only proof APIs use it. Executable kernels call `exactValue`, field decoders, and arithmetic
+functions themselves.
+-/
+noncomputable def exactSemantics (fmt : FloatFormat) :
+    ExactSemantics (numericalSystem fmt) where
+  Exact := ExactValue
+  decode := exactValue
+  forget := fun value => value.toNumericalValue fmt.encoding
+  forget_decode x :=
+    (toNumericalValue_eq_exactValue_toNumericalValue x).symm
+
+/--
+An executable float bundled with a proof of its complete exact interpretation.
+
+This is the generic exact proof view specialized to `Model`. It keeps signed zero and complete
+NaN metadata and carries one runtime `Model fmt`.
+-/
+abbrev AtExact (fmt : FloatFormat) (v : ExactValue) :=
+  (exactSemantics fmt).At v
+
+/--
+An IEEE outcome bundled with proofs of both its complete value and its exception status.
+
+The outcome is the runtime data. Only the two indexing equalities are erased.
+-/
+abbrev OutcomeAt (fmt : FloatFormat) (v : ExactValue) (status : Numerics.IEEEStatus) :=
+  { outcome : IEEEOutcome fmt //
+      exactValue outcome.value = v ∧ outcome.status = status }
+
+end Model
+end FloatLib.Floats.Formats.BinaryInterchange

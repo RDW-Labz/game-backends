@@ -1,0 +1,225 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Operations.TotalOrder.Semantics
+public import FloatLib.Floats.Formats.BinaryInterchange.Operations.TotalOrder.Sign
+
+/-!
+# Total ordering by magnitude
+
+Magnitude comparison is a total preorder on complete data. If each of two values is at most the
+other, their absolute data agree, NaN signaling status and payload included. On finite operands it
+agrees with comparing absolute values numerically. In signed-zero formats, which include every
+IEEE encoding, it is `totalOrder (abs x) (abs y)`, as IEEE 754-2019 §5.7.2 specifies.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange.Model
+
+namespace ExactValue
+
+/-- Clearing a dyadic's sign computes the absolute value of its exact rational denotation. -/
+theorem dyadic_toRat_clearSign (d : Numerics.Dyadic) :
+    ({ d with negative := false } : Numerics.Dyadic).toRat = |d.toRat| := by
+  cases d with
+  | mk sign significand exponent =>
+      cases sign <;>
+        simp [Numerics.Dyadic.toRat, Numerics.Dyadic.signedSignificand, abs_mul,
+          abs_of_nonneg (zpow_nonneg (by norm_num : (0 : Rat) ≤ 2) exponent)]
+
+/-- Finite magnitude order compares absolute numerical values, then their exponents. -/
+theorem totalOrderMag_finite_iff (a b : Numerics.Dyadic) :
+    totalOrderMag (.finite a) (.finite b) = true ↔
+      |a.toRat| < |b.toRat| ∨ |a.toRat| = |b.toRat| ∧ a.exponent ≤ b.exponent := by
+  change totalOrder (.finite { a with negative := false })
+    (.finite { b with negative := false }) = true ↔ _
+  rw [totalOrder_finite_iff]
+  simp [dyadic_toRat_clearSign]
+
+/-- A strict increase in absolute numerical value gives magnitude ordering. -/
+theorem totalOrderMag_finite_of_lt {a b : Numerics.Dyadic} (h : |a.toRat| < |b.toRat|) :
+    totalOrderMag (.finite a) (.finite b) = true :=
+  (totalOrderMag_finite_iff a b).2 (Or.inl h)
+
+/-- A strict decrease in absolute numerical value fails magnitude ordering. -/
+theorem totalOrderMag_finite_eq_false_of_gt {a b : Numerics.Dyadic}
+    (h : |b.toRat| < |a.toRat|) : totalOrderMag (.finite a) (.finite b) = false := by
+  apply Bool.eq_false_iff.mpr
+  intro horder
+  rcases (totalOrderMag_finite_iff a b).1 horder with hlt | ⟨heq, _⟩
+  · exact (not_lt_of_ge h.le) hlt
+  · exact (ne_of_lt h) heq.symm
+
+/-- NaN magnitudes place signaling before quiet, with increasing payloads within each class. -/
+theorem totalOrderMag_nan_iff (s t q r : Bool) (p n : Nat) :
+    totalOrderMag (.nan s q p) (.nan t r n) = true ↔
+      (q = true ∧ r = false) ∨ q = r ∧ p ≤ n := by
+  change totalOrder (.nan false q p) (.nan false r n) = true ↔ _
+  rw [totalOrder_nan_iff]
+  simp
+
+end ExactValue
+
+/-- Magnitude comparison uses the same exact order for every binary descriptor. -/
+theorem totalOrderMag_eq_exactValue {fmt : FloatFormat} (x y : Model fmt) :
+    totalOrderMag x y = ExactValue.totalOrderMag (exactValue x) (exactValue y) := rfl
+
+/-- IEEE's definition using encoded absolute value holds for every signed-zero format. -/
+theorem totalOrderMag_eq_totalOrder_abs {fmt : FloatFormat} (x y : Model fmt)
+    (hfmt : fmt.supportsSignedZero = true) :
+    totalOrderMag x y = totalOrder (abs x) (abs y) := by
+  simp [totalOrderMag, totalOrder, ExactValue.totalOrderMag,
+    exactValue_abs_of_supportsSignedZero _ hfmt]
+
+/-- The encoded-absolute-value definition holds for every IEEE encoding, with arbitrary bias. -/
+theorem totalOrderMag_eq_totalOrder_abs_of_ieee {fmt : FloatFormat} (x y : Model fmt)
+    (hfmt : fmt.encoding = .ieee) :
+    totalOrderMag x y = totalOrder (abs x) (abs y) :=
+  totalOrderMag_eq_totalOrder_abs x y (by simp [FloatFormat.supportsSignedZero, hfmt])
+
+/-- Magnitude order is reflexive on every binary datum. -/
+@[simp] theorem totalOrderMag_refl {fmt : FloatFormat} (x : Model fmt) :
+    totalOrderMag x x = true := ExactValue.totalOrderMag_refl _
+
+/-- Magnitude order is total, including NaN magnitudes. -/
+theorem totalOrderMag_total {fmt : FloatFormat} (x y : Model fmt) :
+    totalOrderMag x y = true ∨ totalOrderMag y x = true :=
+  ExactValue.totalOrderMag_total _ _
+
+/-- Magnitude order is transitive for every descriptor. -/
+theorem totalOrderMag_trans {fmt : FloatFormat} {x y z : Model fmt}
+    (hxy : totalOrderMag x y = true) (hyz : totalOrderMag y z = true) :
+    totalOrderMag x z = true := ExactValue.totalOrderMag_trans hxy hyz
+
+/-- Mutual magnitude comparison identifies absolute complete data, including NaN metadata. -/
+theorem totalOrderMag_both_iff_exactValue_abs_eq {fmt : FloatFormat} (x y : Model fmt) :
+    totalOrderMag x y = true ∧ totalOrderMag y x = true ↔
+      ExactValue.abs (exactValue x) = ExactValue.abs (exactValue y) :=
+  ExactValue.totalOrderMag_both_iff _ _
+
+/-- For signed-zero formats, mutual magnitude comparison identifies absolute encoded words. -/
+theorem totalOrderMag_both_iff_abs_eq {fmt : FloatFormat} (x y : Model fmt)
+    (hfmt : fmt.supportsSignedZero = true) :
+    totalOrderMag x y = true ∧ totalOrderMag y x = true ↔ abs x = abs y := by
+  rw [totalOrderMag_eq_totalOrder_abs x y hfmt,
+    totalOrderMag_eq_totalOrder_abs y x hfmt, totalOrder_both_iff]
+
+/-- The full finite magnitude rule is uniform in format width, bias, and encoding policy. -/
+theorem totalOrderMag_iff_of_toDyadic? {fmt : FloatFormat} {x y : Model fmt}
+    {a b : Numerics.Dyadic} (hx : toDyadic? x = some a) (hy : toDyadic? y = some b) :
+    totalOrderMag x y = true ↔
+      |a.toRat| < |b.toRat| ∨ |a.toRat| = |b.toRat| ∧ a.exponent ≤ b.exponent := by
+  rw [totalOrderMag, exactValue_eq_finite_of_toDyadic?_eq_some hx,
+    exactValue_eq_finite_of_toDyadic?_eq_some hy, ExactValue.totalOrderMag_finite_iff]
+
+/-- A strict order of absolute real values of decoded finite values is that of their rationals. -/
+private theorem abs_toRat_lt_of_abs_toReal_lt {fmt : FloatFormat} {x y : Model fmt}
+    {a b : Numerics.Dyadic} (ha : toDyadic? x = some a) (hb : toDyadic? y = some b)
+    (h : |toReal x| < |toReal y|) : |a.toRat| < |b.toRat| := by
+  have hab : |a.toReal| < |b.toReal| := by simpa [toReal_eq, ha, hb] using h
+  exact_mod_cast (show |(a.toRat : ℝ)| < |(b.toRat : ℝ)| by simpa using hab)
+
+/--
+The larger side of a strict order of absolute real values is finite, since `toReal` sends NaNs and
+infinities to zero.
+-/
+private theorem isFinite_of_abs_toReal_lt {fmt : FloatFormat} {x y : Model fmt}
+    (h : |toReal x| < |toReal y|) : isFinite y = true := by
+  cases hfinite : isFinite y
+  · have hzero : toReal y = 0 := by
+      simp [toReal_eq, toDyadic?_eq_none_of_isFinite_eq_false hfinite]
+    rw [hzero, abs_zero] at h
+    exact absurd h (not_lt.2 (abs_nonneg _))
+  · rfl
+
+/--
+Strict increase in absolute real value from a finite operand gives magnitude ordering. The larger
+operand is then finite as well, so it needs no hypothesis.
+-/
+theorem totalOrderMag_of_abs_toReal_lt {fmt : FloatFormat} {x y : Model fmt}
+    (hx : isFinite x = true) (h : |toReal x| < |toReal y|) :
+    totalOrderMag x y = true := by
+  obtain ⟨a, ha⟩ := exists_toDyadic?_of_isFinite hx
+  obtain ⟨b, hb⟩ := exists_toDyadic?_of_isFinite (isFinite_of_abs_toReal_lt h)
+  exact (totalOrderMag_iff_of_toDyadic? ha hb).2 (Or.inl (abs_toRat_lt_of_abs_toReal_lt ha hb h))
+
+/--
+Strict decrease in absolute real value to a finite operand fails magnitude ordering. The larger
+operand is then finite as well, so it needs no hypothesis.
+-/
+theorem totalOrderMag_eq_false_of_abs_toReal_gt {fmt : FloatFormat} {x y : Model fmt}
+    (hy : isFinite y = true) (h : |toReal y| < |toReal x|) :
+    totalOrderMag x y = false := by
+  obtain ⟨a, ha⟩ := exists_toDyadic?_of_isFinite (isFinite_of_abs_toReal_lt h)
+  obtain ⟨b, hb⟩ := exists_toDyadic?_of_isFinite hy
+  have hrat := abs_toRat_lt_of_abs_toReal_lt hb ha h
+  simpa [totalOrderMag, exactValue_eq_finite_of_toDyadic?_eq_some ha,
+    exactValue_eq_finite_of_toDyadic?_eq_some hb] using
+    ExactValue.totalOrderMag_finite_eq_false_of_gt hrat
+
+/-- A NaN magnitude is strictly above every numerical magnitude, regardless of its sign. -/
+theorem totalOrderMag_nan_number {fmt : FloatFormat} {x y : Model fmt}
+    (hx : isNaN x = true) (hy : isNaN y = false) : totalOrderMag x y = false := by
+  rw [totalOrderMag, exactValue_eq_nan_of_isNaN hx]
+  rcases exactValue_finite_or_infinity_of_isNaN_eq_false hy with ⟨d, hd⟩ | hinf
+  · rw [hd]
+    simp [ExactValue.totalOrderMag, ExactValue.abs]
+  · rw [hinf]
+    simp [ExactValue.totalOrderMag, ExactValue.abs]
+
+/-- Every numerical magnitude precedes every NaN magnitude. -/
+theorem totalOrderMag_number_nan {fmt : FloatFormat} {x y : Model fmt}
+    (hx : isNaN x = false) (hy : isNaN y = true) : totalOrderMag x y = true := by
+  rcases totalOrderMag_total x y with h | h
+  · exact h
+  · rw [totalOrderMag_nan_number hy hx] at h
+    contradiction
+
+/--
+A zero has the least magnitude: it precedes every datum, NaNs and infinities included, and zeros of
+either sign tie.
+-/
+theorem totalOrderMag_zero {fmt : FloatFormat} {x y : Model fmt}
+    (hx : isZero x = true) : totalOrderMag x y = true := by
+  have hxd := toDyadic?_eq_zero_of_isZero_eq_true x hx
+  cases hynan : isNaN y
+  · cases hyinf : isInfinite y
+    · by_cases hy : isZero y = true
+      · rw [totalOrderMag_iff_of_toDyadic? hxd (toDyadic?_eq_zero_of_isZero_eq_true y hy)]
+        simp
+      · have hfin := isFinite_eq_true_of_isNaN_eq_false_of_isInfinite_eq_false y hynan hyinf
+        apply totalOrderMag_of_abs_toReal_lt (isFinite_eq_true_of_isZero_eq_true x hx)
+        rw [toReal_eq_zero_of_isZero x hx, abs_zero, abs_pos]
+        exact fun h => hy ((isZero_eq_true_iff_toReal_eq_zero y hfin).2 h)
+    · rw [totalOrderMag, exactValue_eq_finite_of_toDyadic?_eq_some hxd,
+        exactValue_eq_infinity_of_isInfinite hyinf]
+      simp [ExactValue.totalOrderMag, ExactValue.abs, ExactValue.totalOrder]
+  · exact totalOrderMag_number_nan
+      (isNaN_eq_false_of_isFinite_eq_true x (isFinite_eq_true_of_isZero_eq_true x hx)) hynan
+
+
+/-- NaN magnitude order ignores signs and compares signaling class before payload. -/
+theorem totalOrderMag_nan_iff {fmt : FloatFormat} {x y : Model fmt}
+    (hx : isNaN x = true) (hy : isNaN y = true) :
+    totalOrderMag x y = true ↔
+      (isSignaling x = true ∧ isSignaling y = false) ∨
+        isSignaling x = isSignaling y ∧ fracField x ≤ fracField y := by
+  rw [totalOrderMag, exactValue_eq_nan_of_isNaN hx, exactValue_eq_nan_of_isNaN hy,
+    ExactValue.totalOrderMag_nan_iff]
+
+/-- Magnitude equality of NaNs retains both signaling class and complete fraction payload. -/
+theorem totalOrderMag_nan_both_iff {fmt : FloatFormat} {x y : Model fmt}
+    (hx : isNaN x = true) (hy : isNaN y = true) :
+    totalOrderMag x y = true ∧ totalOrderMag y x = true ↔
+      isSignaling x = isSignaling y ∧ fracField x = fracField y := by
+  rw [totalOrderMag_both_iff_exactValue_abs_eq,
+    exactValue_eq_nan_of_isNaN hx, exactValue_eq_nan_of_isNaN hy]
+  simp [ExactValue.abs]
+
+end FloatLib.Floats.Formats.BinaryInterchange.Model

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T14:03:57Z",
+ "category": "save-state",
+ "commit": "45d28b5388de",
+ "delivery": "vendored",
+ "description": "dotarj/protobuf-net-data \u2014 A library for serializing ADO.NET DataTables and DataReaders into a portable binary format.",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "protobuf-net-data",
+ "size_bytes": 357161,
+ "slug": "dotarj-protobuf-net-data",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 81,
+ "system": "A library for serializing ADO.NET DataTables and DataReaders into a portable binary format.",
+ "upstream": "https://github.com/dotarj/protobuf-net-data",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

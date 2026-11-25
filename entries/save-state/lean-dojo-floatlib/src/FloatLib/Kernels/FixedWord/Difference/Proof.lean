@@ -1,0 +1,437 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Kernels.FixedWord.Core.Proof
+public import FloatLib.Kernels.FixedWord.Difference.Runtime
+
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Data.Rat.Cast.Order
+import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.Positivity.Finset
+import Mathlib.Tactic.Ring.RingNF
+
+/-!
+# Verified fixed-limb differences
+
+The helpers in `Difference.Runtime` compare, subtract, normalize, and shift two-word unsigned values
+without converting the executable path to `Nat`. The theorems here give their mathematical values.
+Format-specific subtraction proofs build on them.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.FixedWord.UInt128
+
+/-- Native two-word comparison agrees with comparison of mathematical values. -/
+@[simp, grind =] theorem less_eq_true_iff (x y : UInt128) :
+    less x y = true ↔ x.toNat < y.toNat := by
+  unfold less UInt128.toNat
+  simp only [Bool.or_eq_true, Bool.and_eq_true, decide_eq_true_eq,
+    beq_iff_eq, UInt64.lt_iff_toNat_lt]
+  have hxLow := x.lo.toNat_lt
+  have hyLow := y.lo.toNat_lt
+  simp only [← UInt64.toNat_inj]
+  omega
+
+/-- A false native two-word comparison gives the reverse weak inequality. -/
+@[simp, grind =] theorem less_eq_false_iff (x y : UInt128) :
+    less x y = false ↔ y.toNat ≤ x.toNat := by
+  simp only [Bool.eq_false_iff, ne_eq, less_eq_true_iff, not_lt]
+
+/-- Native three-way comparison agrees with comparison of mathematical values. -/
+@[simp, grind =] theorem compare_eq_toNat_compare_toNat (x y : UInt128) :
+    compare x y = Ord.compare x.toNat y.toNat := by
+  unfold compare
+  split
+  · rename_i hless
+    have hxy : x.toNat < y.toNat :=
+      (less_eq_true_iff x y).mp hless
+    exact (Nat.compare_eq_lt.mpr hxy).symm
+  · rename_i hnotLess
+    split
+    · rename_i hgreater
+      have hyx : y.toNat < x.toNat :=
+        (less_eq_true_iff y x).mp hgreater
+      exact (Nat.compare_eq_gt.mpr hyx).symm
+    · rename_i hnotGreater
+      have hxy : ¬x.toNat < y.toNat := by
+        intro hxy
+        exact hnotLess ((less_eq_true_iff x y).mpr hxy)
+      have hyx : ¬y.toNat < x.toNat := by
+        intro hyx
+        exact hnotGreater ((less_eq_true_iff y x).mpr hyx)
+      have hequal : x.toNat = y.toNat :=
+        Nat.le_antisymm (Nat.le_of_not_gt hyx) (Nat.le_of_not_gt hxy)
+      exact (Nat.compare_eq_eq.mpr hequal).symm
+
+/-- Ordered two-word subtraction agrees with natural-number subtraction. -/
+theorem sub_toNat (x y : UInt128) (hordered : y.toNat ≤ x.toNat) :
+    (sub x y).toNat = x.toNat - y.toNat := by
+  unfold sub UInt128.toNat
+  unfold UInt128.toNat at hordered
+  have hxLow := x.lo.toNat_lt
+  have hyLow := y.lo.toNat_lt
+  by_cases hborrow : x.lo < y.lo
+  · have hlowLt : x.lo.toNat < y.lo.toNat :=
+      UInt64.lt_iff_toNat_lt.mp hborrow
+    have hhighLt : y.hi.toNat < x.hi.toNat := by
+      omega
+    have hhighBaseLe : y.hi ≤ x.hi :=
+      UInt64.le_iff_toNat_le.mpr hhighLt.le
+    have hhighAfterLe : (1 : UInt64) ≤ x.hi - y.hi := by
+      apply UInt64.le_iff_toNat_le.mpr
+      rw [UInt64.toNat_sub_of_le _ _ hhighBaseLe]
+      simp only [UInt64.reduceToNat]
+      omega
+    simp only [hborrow, ite_true]
+    rw [UInt64.toNat_sub,
+      UInt64.toNat_sub_of_le _ _ hhighAfterLe,
+      UInt64.toNat_sub_of_le _ _ hhighBaseLe]
+    simp only [UInt64.reduceToNat]
+    have hlowWrap :
+        (2 ^ 64 - y.lo.toNat + x.lo.toNat) % 2 ^ 64 =
+          2 ^ 64 - y.lo.toNat + x.lo.toNat := by
+      rw [Nat.mod_eq_of_lt]
+      omega
+    rw [hlowWrap]
+    omega
+  · have hlowLeNat : y.lo.toNat ≤ x.lo.toNat := by
+      apply Nat.le_of_not_gt
+      intro hlowLt
+      exact hborrow (UInt64.lt_iff_toNat_lt.mpr hlowLt)
+    have hlowLe : y.lo ≤ x.lo :=
+      UInt64.le_iff_toNat_le.mpr hlowLeNat
+    have hhighLe : y.hi ≤ x.hi := by
+      apply UInt64.le_iff_toNat_le.mpr
+      omega
+    simp only [hborrow, ite_false]
+    rw [UInt64.sub_zero, UInt64.toNat_sub_of_le _ _ hlowLe,
+      UInt64.toNat_sub_of_le _ _ hhighLe]
+    omega
+
+/-- Native two-word leading-bit selection agrees with `Nat.log2`. -/
+@[simp, grind =] theorem log2_toNat (value : UInt128) :
+    log2 value = value.toNat.log2 := by
+  unfold log2
+  simp only [log2Word_eq_log2]
+  by_cases hhigh : value.hi = 0
+  · simp [hhigh, UInt128.toNat, FloatLib.Numerics.FixedWord.log2_toNat]
+  · have hhighBool : ¬value.hi == 0 := by
+      simpa only [beq_iff_eq] using hhigh
+    rw [ite_eq_right hhighBool, FloatLib.Numerics.FixedWord.log2_toNat]
+    have hhighNat : value.hi.toNat ≠ 0 :=
+      (uint64_toNat_eq_zero _).not.mpr hhigh
+    unfold UInt128.toNat
+    exact (log2_low_add_high_mul_pow
+      value.lo.toNat value.hi.toNat 64 value.lo.toNat_lt hhighNat).symm
+
+/-- Native two-word right shift, defined for every shift, is floor division by a power of two. -/
+@[simp, grind =] theorem shiftRight_toNat (value : UInt128) (shift : Nat) :
+    (shiftRight value shift).toNat = value.toNat / 2 ^ shift := by
+  by_cases hzero : shift = 0
+  · subst shift
+    simp [shiftRight]
+  by_cases hsmall : shift < 64
+  · have hpositive : 0 < shift := Nat.pos_of_ne_zero hzero
+    have hhigh :
+        (value.hi >>> UInt64.ofNat shift).toNat =
+          value.hi.toNat / 2 ^ shift := by
+      rw [FloatLib.Numerics.FixedWord.shiftRight_toNat _ _ hsmall,
+        Nat.shiftRight_eq_div_pow]
+    -- Masking the high word to its low `shift` bits does not change what the shift moves in.
+    have hcarry :
+        lowBitsWord value.hi (UInt64.ofNat shift) <<< UInt64.ofNat (64 - shift) =
+          value.hi <<< UInt64.ofNat (64 - shift) := by
+      apply UInt64.toNat_inj.mp
+      rw [shiftLeftLowBits_toNat _ _ hpositive, shiftLeftLowBits_toNat _ _ hpositive,
+        lowBitsWord_toNat, UInt64.toNat_ofNat_of_lt' (hsmall.trans (by decide)), Nat.mod_mod]
+    have hpow : 2 ^ 64 = 2 ^ shift * 2 ^ (64 - shift) :=
+      (pow_mul_pow_sub 2 hsmall.le).symm
+    have hhighDecompose :=
+      Nat.mod_add_div value.hi.toNat (2 ^ shift)
+    have hdivisible :
+        2 ^ shift ∣ value.hi.toNat * 2 ^ 64 := by
+      rw [hpow]
+      refine ⟨value.hi.toNat * 2 ^ (64 - shift), ?_⟩
+      ring
+    simp only [shiftRight, hzero, beq_iff_eq, ite_false,
+      hsmall, ite_true]
+    unfold UInt128.toNat
+    rw [hcarry, shiftedPair_toNat _ _ _ hpositive hsmall, hhigh]
+    rw [Nat.add_div_of_dvd_left hdivisible]
+    have hproductDiv :
+        value.hi.toNat * 2 ^ 64 / 2 ^ shift =
+          value.hi.toNat * 2 ^ (64 - shift) := by
+      rw [hpow]
+      calc
+        value.hi.toNat * (2 ^ shift * 2 ^ (64 - shift)) /
+              2 ^ shift =
+            (value.hi.toNat * 2 ^ (64 - shift)) * 2 ^ shift /
+              2 ^ shift := by
+          congr 1
+          ac_rfl
+        _ = value.hi.toNat * 2 ^ (64 - shift) :=
+          Nat.mul_div_left _ (Nat.two_pow_pos shift)
+    rw [hproductDiv, hpow]
+    calc _ = value.lo.toNat / 2 ^ shift + (value.hi.toNat % 2 ^ shift +
+          2 ^ shift * (value.hi.toNat / 2 ^ shift)) * 2 ^ (64 - shift) := by ring
+      _ = _ := by rw [hhighDecompose]
+  · by_cases hwidth : shift < 128
+    · let inner := shift - 64
+      have hinner : inner < 64 := by
+        dsimp [inner]
+        omega
+      have hshiftEq : shift = 64 + inner := by
+        dsimp [inner]
+        omega
+      have hword :
+          (value.hi >>> UInt64.ofNat inner).toNat =
+            value.hi.toNat / 2 ^ inner := by
+        rw [FloatLib.Numerics.FixedWord.shiftRight_toNat _ _ hinner,
+          Nat.shiftRight_eq_div_pow]
+      have hbaseQuotient :
+          (value.lo.toNat + value.hi.toNat * 2 ^ 64) / 2 ^ 64 =
+            value.hi.toNat := by
+        rw [Nat.mul_comm value.hi.toNat, Nat.add_mul_div_left _ _
+          (Nat.two_pow_pos 64), Nat.div_eq_of_lt value.lo.toNat_lt,
+          Nat.zero_add]
+      simp only [shiftRight, hzero, beq_iff_eq, ite_false,
+        hsmall, hwidth, ite_true]
+      unfold UInt128.toNat
+      simp only [UInt64.reduceToNat, zero_mul, add_zero]
+      rw [hword, hshiftEq, pow_add, ← Nat.div_div_eq_div_mul,
+        hbaseQuotient]
+    · have hlarge : 128 ≤ shift := Nat.le_of_not_gt hwidth
+      have hvalue := value.toNat_lt
+      have hpower : 2 ^ 128 ≤ 2 ^ shift :=
+        Nat.pow_le_pow_right (by decide) hlarge
+      simp only [shiftRight, hzero, beq_iff_eq, ite_false,
+        hsmall, hwidth]
+      unfold UInt128.toNat at hvalue ⊢
+      simp only [UInt64.reduceToNat, zero_mul, add_zero]
+      exact (Nat.div_eq_of_lt (hvalue.trans_le hpower)).symm
+
+/-- A bounded native one-hot value represents the corresponding power of two. -/
+theorem singleBit_toNat_of_lt (index : Nat) (hindex : index < 128) :
+    (singleBit index).toNat = 2 ^ index := by
+  by_cases hsmall : index < 64
+  · have hfit : (1 : UInt64).toNat <<< index < 2 ^ 64 := by
+      simp only [UInt64.toNat_one, Nat.shiftLeft_eq, one_mul]
+      exact Nat.pow_lt_pow_right (by decide) hsmall
+    simp only [singleBit, hsmall, ite_true]
+    unfold UInt128.toNat
+    rw [FloatLib.Numerics.FixedWord.shiftLeft_toNat
+      (1 : UInt64) index hfit]
+    simp [Nat.shiftLeft_eq]
+  · have hinner : index - 64 < 64 := by omega
+    have hfit : (1 : UInt64).toNat <<< (index - 64) < 2 ^ 64 := by
+      simp only [UInt64.toNat_one, Nat.shiftLeft_eq, one_mul]
+      exact Nat.pow_lt_pow_right (by decide) hinner
+    simp only [singleBit, hsmall, ite_false, hindex, ite_true]
+    unfold UInt128.toNat
+    rw [FloatLib.Numerics.FixedWord.shiftLeft_toNat
+      (1 : UInt64) (index - 64) hfit]
+    simp only [UInt64.reduceToNat, zero_add, UInt64.toNat_one,
+      Nat.shiftLeft_eq, one_mul]
+    calc
+      2 ^ (index - 64) * 2 ^ 64 =
+          2 ^ ((index - 64) + 64) := by rw [pow_add]
+      _ = 2 ^ index := by congr; omega
+
+/-- If a shifted two-word value fits in two words, so does its shifted high word alone. -/
+private theorem high_mul_pow_lt_of_fit (low high shift : Nat)
+    (hfit : (low + high * 2 ^ 64) * 2 ^ shift < 2 ^ 128) :
+    high * 2 ^ shift < 2 ^ 64 := by
+  have hbelow :
+      (high * 2 ^ shift) * 2 ^ 64 ≤ (low + high * 2 ^ 64) * 2 ^ shift := by
+    calc
+      (high * 2 ^ shift) * 2 ^ 64 = (high * 2 ^ 64) * 2 ^ shift := by ring
+      _ ≤ (low + high * 2 ^ 64) * 2 ^ shift :=
+        Nat.mul_le_mul_right _ (Nat.le_add_left _ _)
+  have hpow128 : (2 : Nat) ^ 128 = 2 ^ 64 * 2 ^ 64 := by
+    rw [← pow_add]
+  apply Nat.lt_of_mul_lt_mul_right (a := 2 ^ 64)
+  rw [← hpow128]
+  exact hbelow.trans_lt hfit
+
+/--
+A two-word left shift that does not overflow agrees with the natural-number shift.
+
+A fitting result bounds the shift below the carrier width, except for zero, which every shift
+leaves at zero.
+-/
+theorem shiftLeft_toNat (value : UInt128) (shift : Nat)
+    (hfit : value.toNat <<< shift < 2 ^ 128) :
+    (shiftLeft value shift).toNat = value.toNat <<< shift := by
+  by_cases hzero : shift = 0
+  · subst shift
+    simp [shiftLeft]
+  by_cases hsmall : shift < 64
+  · have hpositive : 0 < shift := Nat.pos_of_ne_zero hzero
+    have hcomplement : 64 - shift < 64 := by omega
+    have htotalFit :
+        (value.lo.toNat + value.hi.toNat * 2 ^ 64) * 2 ^ shift <
+          2 ^ 128 := by
+      simpa [UInt128.toNat, Nat.shiftLeft_eq] using hfit
+    have hhighFit := high_mul_pow_lt_of_fit _ _ _ htotalFit
+    have hhigh :
+        (value.hi <<< UInt64.ofNat shift).toNat =
+          value.hi.toNat * 2 ^ shift := by
+      simpa [Nat.shiftLeft_eq] using
+        FloatLib.Numerics.FixedWord.shiftLeft_toNat
+          value.hi shift
+          (by simpa [Nat.shiftLeft_eq] using hhighFit)
+    have hcarry :
+        (value.lo >>> UInt64.ofNat (64 - shift)).toNat =
+          value.lo.toNat / 2 ^ (64 - shift) :=
+      by
+        rw [FloatLib.Numerics.FixedWord.shiftRight_toNat
+            _ _ hcomplement,
+          Nat.shiftRight_eq_div_pow]
+    have hcarryBound :
+        value.lo.toNat / 2 ^ (64 - shift) < 2 ^ shift := by
+      rw [Nat.div_lt_iff_lt_mul (by positivity), pow_mul_pow_sub 2 hsmall.le]
+      exact value.lo.toNat_lt
+    have hor :
+        (value.hi.toNat * 2 ^ shift) |||
+            (value.lo.toNat / 2 ^ (64 - shift)) =
+          value.hi.toNat * 2 ^ shift +
+            value.lo.toNat / 2 ^ (64 - shift) := by
+      simpa [Nat.shiftLeft_eq] using
+        (Nat.shiftLeft_add_eq_or_of_lt hcarryBound value.hi.toNat).symm
+    have hlow :=
+      FloatLib.Numerics.FixedWord.shiftLeft_toNat_mod
+        value.lo shift hsmall
+    have hpow : 2 ^ 64 = 2 ^ (64 - shift) * 2 ^ shift := by
+      rw [Nat.mul_comm, pow_mul_pow_sub 2 hsmall.le]
+    have hdiv :
+        value.lo.toNat * 2 ^ shift / 2 ^ 64 =
+          value.lo.toNat / 2 ^ (64 - shift) := by
+      rw [hpow]
+      exact Nat.mul_div_mul_right _ _ (by positivity)
+    have hdecompose :
+        (value.lo.toNat * 2 ^ shift) % 2 ^ 64 +
+            value.lo.toNat / 2 ^ (64 - shift) * 2 ^ 64 =
+          value.lo.toNat * 2 ^ shift := by
+      rw [← hdiv]
+      calc
+        (value.lo.toNat * 2 ^ shift) % 2 ^ 64 +
+            (value.lo.toNat * 2 ^ shift) / 2 ^ 64 * 2 ^ 64 =
+          (value.lo.toNat * 2 ^ shift) % 2 ^ 64 +
+            2 ^ 64 * ((value.lo.toNat * 2 ^ shift) / 2 ^ 64) := by ring
+        _ = value.lo.toNat * 2 ^ shift :=
+          Nat.mod_add_div _ _
+    simp only [shiftLeft, hzero, beq_iff_eq, ite_false, hsmall, ite_true]
+    unfold UInt128.toNat
+    rw [UInt64.toNat_or, hhigh, hcarry, hor, hlow]
+    simp only [Nat.shiftLeft_eq]
+    calc
+      (value.lo.toNat * 2 ^ shift) % 2 ^ 64 +
+          (value.hi.toNat * 2 ^ shift +
+            value.lo.toNat / 2 ^ (64 - shift)) * 2 ^ 64 =
+          ((value.lo.toNat * 2 ^ shift) % 2 ^ 64 +
+            value.lo.toNat / 2 ^ (64 - shift) * 2 ^ 64) +
+            value.hi.toNat * 2 ^ 64 * 2 ^ shift := by ring
+      _ = value.lo.toNat * 2 ^ shift +
+            value.hi.toNat * 2 ^ 64 * 2 ^ shift := by rw [hdecompose]
+      _ = (value.lo.toNat + value.hi.toNat * 2 ^ 64) * 2 ^ shift := by ring
+  · have hlarge : 64 ≤ shift := Nat.le_of_not_gt hsmall
+    by_cases hshift : shift < 128
+    swap
+    · have hvalueZero : value.toNat = 0 :=
+        eq_zero_of_mul_two_pow_lt (by rwa [Nat.shiftLeft_eq] at hfit) (by omega)
+      simp only [shiftLeft, hzero, beq_iff_eq, ite_false, hsmall, hshift]
+      rw [hvalueZero]
+      simp [UInt128.toNat]
+    let inner := shift - 64
+    have hshiftEq : shift = 64 + inner := by
+      unfold inner
+      omega
+    have htotalFit :
+        (value.lo.toNat + value.hi.toNat * 2 ^ 64) * 2 ^ shift <
+          2 ^ 128 := by
+      simpa [UInt128.toNat, Nat.shiftLeft_eq] using hfit
+    have hhighZero : value.hi = 0 :=
+      (uint64_toNat_eq_zero _).mp
+        (eq_zero_of_mul_two_pow_lt (high_mul_pow_lt_of_fit _ _ _ htotalFit) hlarge)
+    have hlowFit : value.lo.toNat * 2 ^ inner < 2 ^ 64 := by
+      rw [hhighZero] at htotalFit
+      simp only [UInt64.reduceToNat, zero_mul, add_zero] at htotalFit
+      rw [hshiftEq, pow_add] at htotalFit
+      linarith
+    have hlow :
+        (value.lo <<< UInt64.ofNat inner).toNat =
+          value.lo.toNat * 2 ^ inner := by
+      simpa [Nat.shiftLeft_eq] using
+        FloatLib.Numerics.FixedWord.shiftLeft_toNat
+          value.lo inner
+          (by simpa [Nat.shiftLeft_eq] using hlowFit)
+    simp only [shiftLeft, hzero, beq_iff_eq, ite_false, hsmall, hshift, ite_true]
+    unfold UInt128.toNat
+    rw [hlow, hhighZero]
+    simp only [UInt64.reduceToNat, zero_mul, zero_add, Nat.shiftLeft_eq]
+    rw [hshiftEq, pow_add]
+    ring
+
+/-- A two-word left shift whose product fits in two words multiplies by the power of two. -/
+theorem shiftLeft_toNat_eq_mul (value : UInt128) (shift : Nat)
+    (hfit : value.toNat * 2 ^ shift < 2 ^ 128) :
+    (shiftLeft value shift).toNat = value.toNat * 2 ^ shift := by
+  rw [shiftLeft_toNat value shift (by rwa [Nat.shiftLeft_eq]), Nat.shiftLeft_eq]
+
+/-- Shifting a two-word value left by at least the carrier width returns zero. -/
+theorem shiftLeft_of_ge (value : UInt128) (shift : Nat) (hshift : 128 ≤ shift) :
+    shiftLeft value shift = ⟨0, 0⟩ := by
+  have hzero : shift ≠ 0 := by omega
+  have hsmall : ¬ shift < 64 := by omega
+  have hmid : ¬ shift < 128 := by omega
+  simp [shiftLeft, hzero, hsmall, hmid]
+
+/-- Shifting a two-word value right and back left returns it exactly when the shift drops only
+zero bits. -/
+theorem shiftRight_shiftLeft_beq (low : UInt128) (d : Nat) :
+    ((low.shiftRight d).shiftLeft d == low) = decide (low.toNat % 2 ^ d = 0) := by
+  by_cases hsmall : d < 128
+  · have hfit : (low.toNat / 2 ^ d) <<< d < 2 ^ 128 := by
+      rw [Nat.shiftLeft_eq]
+      exact (Nat.div_mul_le_self _ _).trans_lt low.toNat_lt
+    have hshift :
+        ((low.shiftRight d).shiftLeft d).toNat = low.toNat / 2 ^ d * 2 ^ d := by
+      rw [UInt128.shiftLeft_toNat _ _ (by rw [UInt128.shiftRight_toNat]; exact hfit),
+        UInt128.shiftRight_toNat, Nat.shiftLeft_eq]
+    apply Bool.eq_iff_iff.mpr
+    rw [beq_iff_eq, decide_eq_true_eq]
+    constructor
+    · intro heq
+      have hnat := congrArg UInt128.toNat heq
+      rw [hshift] at hnat
+      exact Nat.mod_eq_zero_of_dvd ⟨low.toNat / 2 ^ d, by rw [Nat.mul_comm]; exact hnat.symm⟩
+    · intro hmod
+      apply UInt128.toNat_injective
+      rw [hshift, Nat.div_mul_cancel (Nat.dvd_of_mod_eq_zero hmod)]
+  · by_cases hlowZero : low.toNat = 0
+    · have hlow : low = ⟨0, 0⟩ :=
+        UInt128.toNat_injective (by simpa [UInt128.toNat] using hlowZero)
+      rw [UInt128.shiftLeft_of_ge _ _ (by omega), hlow]
+      simp [UInt128.toNat]
+    have hlowSmall : low.toNat < 2 ^ d :=
+      low.toNat_lt.trans_le (Nat.pow_le_pow_right (by decide) (by omega))
+    have hmodNe : ¬low.toNat % 2 ^ d = 0 := by
+      rw [Nat.mod_eq_of_lt hlowSmall]
+      exact hlowZero
+    rw [decide_eq_false hmodNe]
+    apply Bool.eq_false_iff.mpr
+    intro heq
+    have hnat := congrArg UInt128.toNat (beq_iff_eq.mp heq)
+    rw [UInt128.shiftLeft_of_ge _ _ (by omega)] at hnat
+    exact hlowZero (by simpa [UInt128.toNat] using hnat.symm)
+
+end FloatLib.Numerics.FixedWord.UInt128

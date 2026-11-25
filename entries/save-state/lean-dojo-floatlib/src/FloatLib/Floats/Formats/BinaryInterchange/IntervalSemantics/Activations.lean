@@ -1,0 +1,259 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.DirectedSemantics.SquareRoot
+public import FloatLib.Floats.Formats.BinaryInterchange.Interval.Activations
+public import FloatLib.Floats.Formats.BinaryInterchange.IntervalSemantics.Arithmetic
+
+/-!
+# Activation enclosures for executable binary intervals
+
+ReLU, absolute value, and square root have enclosure and interval-validity theorems with
+operation-specific hypotheses. The executable definitions live in `Interval.Activations`, and
+shared endpoint order and negation facts come from `IntervalSemantics.Arithmetic`.
+
+ReLU and absolute value work for every descriptor and accept ordered non-NaN endpoints, including
+infinities from an earlier operation. Their finite-input theorems specialize the same proofs.
+Square root uses directed IEEE rounding and requires finite valid input bounds with a nonnegative
+lower endpoint. These differences show up in the theorem statements. There is no second
+interval carrier and no implicit execution mode.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange
+namespace Model
+namespace Interval
+
+section
+
+/-! ## ReLU -/
+
+/-- The ReLU endpoints of non-NaN bounds are non-NaN and decode to the endpoints clipped at zero. -/
+private theorem relu_endpoints {fmt : FloatFormat} {A : Interval fmt} (hA : ValidExtended A) :
+    isNaN (relu A).lo = false ∧ isNaN (relu A).hi = false ∧
+      toEReal (relu A).lo = max (toEReal A.lo) 0 ∧ toEReal (relu A).hi = max (toEReal A.hi) 0 :=
+  ⟨isNaN_maximum_eq_false_of_isNaN_eq_false _ _ hA.lo_isNaN_eq_false (isNaN_zero fmt false),
+    isNaN_maximum_eq_false_of_isNaN_eq_false _ _ hA.hi_isNaN_eq_false (isNaN_zero fmt false),
+    by rw [relu, toEReal_maximum_eq_max _ _ hA.lo_isNaN_eq_false (isNaN_zero fmt false),
+      toEReal_zero],
+    by rw [relu, toEReal_maximum_eq_max _ _ hA.hi_isNaN_eq_false (isNaN_zero fmt false),
+      toEReal_zero]⟩
+
+/-- The ReLU interval encloses each member's ReLU, including with infinite endpoints. -/
+theorem relu_sound_extended
+    {fmt : FloatFormat} (A : Interval fmt) (hA : ValidExtended A)
+    {x : ℝ} (hx : ERealMem A (x : EReal)) :
+    ERealMem (relu A) ((max x 0 : ℝ) : EReal) := by
+  obtain ⟨-, -, hlo, hhi⟩ := relu_endpoints hA
+  rw [ERealMem, hlo, hhi, FloatLib.Floats.Interval.coe_max, EReal.coe_zero]
+  exact ⟨max_le_max hx.1 le_rfl, max_le_max hx.2 le_rfl⟩
+
+/-- ReLU preserves ordered, non-NaN endpoints in every format. -/
+theorem relu_validExtended
+    {fmt : FloatFormat} (A : Interval fmt) (hA : ValidExtended A) :
+    ValidExtended (relu A) := by
+  obtain ⟨hloNaN, hhiNaN, hlo, hhi⟩ := relu_endpoints hA
+  apply validExtended_of_toEReal_le hloNaN hhiNaN
+  rw [hlo, hhi]
+  exact max_le_max hA.toEReal_ordered le_rfl
+
+/-- Executable interval ReLU encloses the ReLU of every represented real value. -/
+theorem relu_sound
+    {fmt : FloatFormat} (A : Interval fmt) (hA : Valid A)
+    {x : ℝ} (hx : RealMem A x) :
+    ERealMem (relu A) ((max x 0 : ℝ) : EReal) :=
+  relu_sound_extended A hA.validExtended ((eRealMem_coe_iff_of_valid hA x).2 hx)
+
+/-! ## Absolute value -/
+
+/--
+In the zero-crossing branch of `abs`, the upper endpoint `maximum (-lo) hi` of non-NaN bounds is
+non-NaN and decodes to the larger of `-lo` and `hi`.
+-/
+private theorem abs_crossing_hi {fmt : FloatFormat} {A : Interval fmt} (hA : ValidExtended A) :
+    isNaN (maximum (Model.neg A.lo) A.hi) = false ∧
+      toEReal (maximum (Model.neg A.lo) A.hi) = max (-toEReal A.lo) (toEReal A.hi) := by
+  have hnegLoNaN : isNaN (Model.neg A.lo) = false := by
+    simpa using hA.lo_isNaN_eq_false
+  exact ⟨isNaN_maximum_eq_false_of_isNaN_eq_false _ _ hnegLoNaN hA.hi_isNaN_eq_false,
+    by rw [toEReal_maximum_eq_max _ _ hnegLoNaN hA.hi_isNaN_eq_false,
+      toEReal_neg_of_isNaN_eq_false A.lo hA.lo_isNaN_eq_false]⟩
+
+/-- For a non-NaN upper bound, the executable test `hi ≤ -0` decodes to `hi ≤ 0`. -/
+private theorem leB_hi_negZero_iff {fmt : FloatFormat} {A : Interval fmt}
+    (hA : ValidExtended A) : leB A.hi (zero fmt true) = true ↔ toEReal A.hi ≤ 0 := by
+  simpa using leB_eq_true_iff_toEReal_le_of_isNaN_eq_false
+    A.hi (zero fmt true) hA.hi_isNaN_eq_false (isNaN_zero fmt true)
+
+/-- Absolute value encloses every represented real magnitude, including with infinite endpoints. -/
+theorem abs_sound_extended
+    {fmt : FloatFormat} (A : Interval fmt) (hA : ValidExtended A)
+    {x : ℝ} (hx : ERealMem A (x : EReal)) :
+    ERealMem (abs A) ((|x| : ℝ) : EReal) := by
+  by_cases hneg : leB A.hi (zero fmt true) = true
+  · have hhiNonpos : toEReal A.hi ≤ 0 := (leB_hi_negZero_iff hA).1 hneg
+    have hxNonpos : x ≤ 0 := EReal.coe_nonpos.1 (hx.2.trans hhiNonpos)
+    rw [abs, ite_eq_left hneg]
+    simpa [abs_of_nonpos hxNonpos] using neg_sound_extended A hA hx
+  · by_cases hpos : leB (zero fmt false) A.lo = true
+    · have hloNonneg : 0 ≤ toEReal A.lo := by
+        simpa using (leB_eq_true_iff_toEReal_le_of_isNaN_eq_false
+          (zero fmt false) A.lo (isNaN_zero fmt false) hA.lo_isNaN_eq_false).1 hpos
+      have hxNonneg : 0 ≤ x := EReal.coe_nonneg.1 (hloNonneg.trans hx.1)
+      rw [abs, ite_eq_right hneg, ite_eq_left hpos]
+      simpa [abs_of_nonneg hxNonneg] using hx
+    · have hxAbs :
+          ((|x| : ℝ) : EReal) ≤ max (-toEReal A.lo) (toEReal A.hi) := by
+        by_cases hxNonpos : x ≤ 0
+        · rw [abs_of_nonpos hxNonpos, EReal.coe_neg]
+          exact (EReal.neg_le_neg_iff.2 hx.1).trans (le_max_left _ _)
+        · rw [abs_of_nonneg (le_of_not_ge hxNonpos)]
+          exact hx.2.trans (le_max_right _ _)
+      rw [abs, ite_eq_right hneg, ite_eq_right hpos]
+      constructor
+      · change toEReal (zero fmt false) ≤ ((|x| : ℝ) : EReal)
+        rw [toEReal_zero]
+        exact EReal.coe_le_coe_iff.2 (abs_nonneg x)
+      · change
+          ((|x| : ℝ) : EReal) ≤
+            toEReal (maximum (Model.neg A.lo) A.hi)
+        rw [(abs_crossing_hi hA).2]
+        exact hxAbs
+
+/-- Absolute value preserves ordered, non-NaN endpoints in every format. -/
+theorem abs_validExtended
+    {fmt : FloatFormat} (A : Interval fmt) (hA : ValidExtended A) :
+    ValidExtended (abs A) := by
+  unfold abs
+  split
+  · exact neg_validExtended A hA
+  · split
+    · exact hA
+    next hneg _ =>
+      have hhiNonneg : 0 ≤ toEReal A.hi := le_of_not_ge ((leB_hi_negZero_iff hA).not.mp hneg)
+      obtain ⟨hcrossNaN, hcross⟩ := abs_crossing_hi hA
+      refine validExtended_of_toEReal_le (isNaN_zero fmt false) hcrossNaN ?_
+      rw [toEReal_zero, hcross]
+      exact hhiNonneg.trans (le_max_right _ _)
+
+/-- Executable interval absolute value encloses the absolute value of every represented real. -/
+theorem abs_sound
+    {fmt : FloatFormat} (A : Interval fmt) (hA : Valid A)
+    {x : ℝ} (hx : RealMem A x) :
+    ERealMem (abs A) ((|x| : ℝ) : EReal) :=
+  abs_sound_extended A hA.validExtended ((eRealMem_coe_iff_of_valid hA x).2 hx)
+
+/-! ## Directed square root -/
+
+/-- For a finite lower endpoint that is not below zero, `sqrt` rounds that endpoint downward. -/
+private theorem sqrt_lo_of_nonneg {fmt : FloatFormat} {A : Interval fmt}
+    (hfinite : isFinite A.lo = true) (hnonnegative : 0 ≤ toReal A.lo) :
+    (sqrt A).lo = Model.sqrt A.lo (mode := .down) := by
+  have hkeep : leB (zero fmt true) A.lo = true := by
+    rw [leB_eq_true_iff_toEReal_le_of_isNaN_eq_false _ _ (isNaN_zero fmt true)
+      (isNaN_eq_false_of_isFinite_eq_true A.lo hfinite),
+      toEReal_eq_coe_toReal_of_isFinite A.lo hfinite, toEReal_zero]
+    exact EReal.coe_nonneg.2 hnonnegative
+  simp [sqrt, hkeep]
+
+/-- For a finite lower endpoint below zero, `sqrt` clips the lower endpoint to `+0`. -/
+private theorem sqrt_lo_of_neg {fmt : FloatFormat} {A : Interval fmt}
+    (hfinite : isFinite A.lo = true) (hnegative : toReal A.lo < 0) :
+    (sqrt A).lo = zero fmt false := by
+  have hclip : leB (zero fmt true) A.lo = false := by
+    rw [Bool.eq_false_iff, ne_eq, leB_eq_true_iff_toEReal_le_of_isNaN_eq_false _ _
+      (isNaN_zero fmt true) (isNaN_eq_false_of_isFinite_eq_true A.lo hfinite),
+      toEReal_eq_coe_toReal_of_isFinite A.lo hfinite, toEReal_zero, not_le]
+    exact EReal.coe_lt_coe_iff.2 hnegative
+  simp [sqrt, hclip, isNaN_eq_false_of_isFinite_eq_true A.lo hfinite]
+
+/--
+Executable interval square root encloses the square root of every represented real value.
+
+The lower endpoint's decoded value must be nonnegative. Validity and endpoint order then imply
+that the upper endpoint is nonnegative as well. `sqrt_sound_of_hi_nonneg` needs only the upper
+endpoint to be nonnegative.
+-/
+theorem sqrt_sound
+    {fmt : FloatFormat} (A : Interval fmt) (hfmt : fmt.isIEEE = true) (hA : Valid A)
+    (hnonnegative : 0 ≤ toReal A.lo)
+    {x : ℝ} (hx : RealMem A x) :
+    ERealMem (sqrt A) ((Real.sqrt x : ℝ) : EReal) := by
+  have hhiNonnegative : 0 ≤ toReal A.hi :=
+    hnonnegative.trans hA.toReal_ordered
+  constructor
+  · rw [sqrt_lo_of_nonneg hA.lo_isFinite hnonnegative]
+    calc
+      toEReal (Model.sqrt A.lo (mode := .down)) ≤
+          ((Real.sqrt (toReal A.lo) : ℝ) : EReal) :=
+        toEReal_sqrt_down_le_of_nonnegative A.lo hfmt hA.lo_isFinite hnonnegative
+      _ ≤ ((Real.sqrt x : ℝ) : EReal) :=
+        EReal.coe_le_coe_iff.2 (Real.sqrt_le_sqrt hx.1)
+  · change
+      ((Real.sqrt x : ℝ) : EReal) ≤ toEReal (Model.sqrt A.hi (mode := .up))
+    calc
+      ((Real.sqrt x : ℝ) : EReal) ≤
+          ((Real.sqrt (toReal A.hi) : ℝ) : EReal) :=
+        EReal.coe_le_coe_iff.2 (Real.sqrt_le_sqrt hx.2)
+      _ ≤ toEReal (Model.sqrt A.hi (mode := .up)) :=
+        le_toEReal_sqrt_up_of_nonnegative A.hi hfmt hA.hi_isFinite hhiNonnegative
+
+/--
+Interval square root also encloses intervals that reach below zero: with the lower endpoint
+clipped to `+0`, it contains the square root of every member, which `Real.sqrt` takes to be zero
+below zero. Only the upper endpoint has to be nonnegative.
+-/
+theorem sqrt_sound_of_hi_nonneg
+    {fmt : FloatFormat} (A : Interval fmt) (hfmt : fmt.isIEEE = true) (hA : Valid A)
+    (hhiNonnegative : 0 ≤ toReal A.hi)
+    {x : ℝ} (hx : RealMem A x) :
+    ERealMem (sqrt A) ((Real.sqrt x : ℝ) : EReal) := by
+  by_cases hnonnegative : 0 ≤ toReal A.lo
+  · exact sqrt_sound A hfmt hA hnonnegative hx
+  constructor
+  · rw [sqrt_lo_of_neg hA.lo_isFinite (lt_of_not_ge hnonnegative), toEReal_zero]
+    exact EReal.coe_nonneg.2 (Real.sqrt_nonneg x)
+  · change
+      ((Real.sqrt x : ℝ) : EReal) ≤ toEReal (Model.sqrt A.hi (mode := .up))
+    calc
+      ((Real.sqrt x : ℝ) : EReal) ≤
+          ((Real.sqrt (toReal A.hi) : ℝ) : EReal) :=
+        EReal.coe_le_coe_iff.2 (Real.sqrt_le_sqrt hx.2)
+      _ ≤ toEReal (Model.sqrt A.hi (mode := .up)) :=
+        le_toEReal_sqrt_up_of_nonnegative A.hi hfmt hA.hi_isFinite hhiNonnegative
+
+/--
+Square root maps a finite valid nonnegative interval to an ordered interval with non-NaN
+endpoints. Concluding extended validity avoids an output-finiteness premise.
+-/
+theorem sqrt_validExtended
+    {fmt : FloatFormat} (A : Interval fmt) (hfmt : fmt.isIEEE = true) (hA : Valid A)
+    (hnonnegative : 0 ≤ toReal A.lo) :
+    ValidExtended (sqrt A) := by
+  have hhiNonnegative : 0 ≤ toReal A.hi :=
+    hnonnegative.trans hA.toReal_ordered
+  have hloNaN : isNaN (sqrt A).lo = false := by
+    rw [sqrt_lo_of_nonneg hA.lo_isFinite hnonnegative]
+    exact isNaN_sqrt_down_eq_false_of_isFinite_of_nonnegative
+      A.lo hA.lo_isFinite hnonnegative
+  have hhiNaN : isNaN (Model.sqrt A.hi (mode := .up)) = false :=
+    isNaN_sqrt_up_eq_false_of_isFinite_of_nonnegative
+      A.hi hfmt hA.hi_isFinite hhiNonnegative
+  refine ⟨hloNaN, hhiNaN, ?_⟩
+  apply (le_iff_toEReal_le_of_isNaN_eq_false _ _ hloNaN hhiNaN).2
+  have hmem : RealMem A (toReal A.lo) :=
+    ⟨le_rfl, hA.toReal_ordered⟩
+  have henclosure := sqrt_sound A hfmt hA hnonnegative hmem
+  exact henclosure.1.trans henclosure.2
+
+end
+
+end Interval
+end Model
+end FloatLib.Floats.Formats.BinaryInterchange

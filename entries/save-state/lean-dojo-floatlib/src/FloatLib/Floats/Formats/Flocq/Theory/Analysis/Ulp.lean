@@ -1,0 +1,146 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Flocq.Theory.Format.Generic
+
+/-!
+# Unit in the Last Place
+
+These are the `ulp` laws that hold in every format. They cover the negligible-exponent witness
+behind `ulp 0`, invariance under sign, representability, and how the ULP relates to adjacent
+rounded values. Definitions and hypotheses follow Flocq's `Core/Ulp.v`.
+
+Nothing here is an executable kernel. We keep these analysis lemmas in the Flocq theory namespace
+so that their provenance and their correspondence with Flocq's theorems stay visible, and runtime
+formats can depend on smaller exact-arithmetic modules.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Flocq
+
+variable {β : Numerics.Radix} {fexp : ℤ → ℤ}
+
+/-- Absence of a negligible exponent means `fexp n < n` at every exponent. -/
+theorem negligibleExp_none_iff_forall_lt :
+    negligibleExp fexp = none ↔ ∀ n, fexp n < n := by
+  rw [negligibleExp_eq_none_iff]
+  constructor
+  · intro h n
+    exact lt_of_not_ge (fun hn => h ⟨n, hn⟩)
+  · intro h
+    rintro ⟨n, hn⟩
+    exact (not_le_of_gt (h n)) hn
+
+variable [ValidExp fexp]
+
+/-- ULP is invariant under negation. -/
+@[simp] theorem ulp_neg (x : ℝ) : ulp β fexp (-x) = ulp β fexp x := by
+  by_cases hx : x = 0
+  · subst x
+    simp
+  · simp [ulp, hx, cexp]
+
+/-- ULP is invariant under absolute value. -/
+@[simp] theorem ulp_abs (x : ℝ) : ulp β fexp (abs x) = ulp β fexp x := by
+  rcases le_total 0 x with hx | hx
+  · simp [abs_of_nonneg hx]
+  · rw [abs_of_nonpos hx, ulp_neg]
+
+/-- The ULP of a radix power is selected at the next magnitude. -/
+theorem ulp_bpow (e : ℤ) :
+    ulp β fexp (bpow β e) = bpow β (fexp (e + 1)) := by
+  rw [ulp.of_ne_zero β fexp _ (bpow.ne_zero β e)]
+  simp [cexp]
+
+/-- Exponent functions for which ULP values themselves remain representable. -/
+class ExpNotFlushToZero (fexp : ℤ → ℤ) : Prop where
+  /-- The radix power selected as a ULP is representable at its own magnitude. -/
+  ulp_exponent : ∀ e, fexp (fexp e + 1) ≤ fexp e
+
+/-- The zero ULP is representable, including the FLX case where it equals zero. -/
+theorem genericRepresentable_ulp_zero : GenericRepresentable β fexp (ulp β fexp 0) := by
+  rw [ulp.zero]
+  cases hopt : negligibleExp fexp with
+  | none =>
+      simp
+  | some n =>
+      have hn := negligibleExp_spec hopt
+      apply genericRepresentable_bpow
+      exact ((ValidExp.flocq_valid (fexp := fexp) n).2 hn).1
+
+/-- Under the non-flush-to-zero condition, every ULP is representable. -/
+theorem genericRepresentable_ulp [ExpNotFlushToZero fexp] (x : ℝ) :
+    GenericRepresentable β fexp (ulp β fexp x) := by
+  by_cases hx : x = 0
+  · subst x
+    exact genericRepresentable_ulp_zero
+  · rw [ulp.of_ne_zero β fexp x hx]
+    exact genericRepresentable_bpow _
+      (ExpNotFlushToZero.ulp_exponent (fexp := fexp) (magnitude β x))
+
+/-- For a nonrepresentable input, directed-up and directed-down rounding differ by one ULP. -/
+theorem round_ceil_eq_floor_add_ulp {x : ℝ} (hx : ¬GenericRepresentable β fexp x) :
+    round (β := β) (fexp := fexp) ceilRound x =
+      round (β := β) (fexp := fexp) floorRound x + ulp β fexp x := by
+  have hx0 : x ≠ 0 := by
+    intro hzero
+    subst x
+    exact hx genericRepresentable_zero
+  have hsnot : scaledMantissa β fexp x ∉ Set.range ((↑·) : ℤ → ℝ) := by
+    rintro ⟨n, hn⟩
+    apply hx
+    apply genericRepresentable_of_scaledMantissa_int (n := n)
+    exact hn.symm
+  have hceil : ceilRound (scaledMantissa β fexp x) =
+      floorRound (scaledMantissa β fexp x) + 1 := by
+    exact (Int.ceil_eq_floor_add_one_iff_notMem _).2 hsnot
+  rw [ulp.of_ne_zero β fexp x hx0]
+  unfold round toReal
+  rw [hceil]
+  push_cast
+  rw [add_mul]; ac_rfl
+
+/--
+A nonzero representable number is a nonzero integer multiple of the radix power at its canonical
+exponent, so that power is no larger than its absolute value.
+-/
+theorem bpow_cexp_le_abs_of_generic {x : ℝ} (hx0 : x ≠ 0)
+    (hx : GenericRepresentable β fexp x) : bpow β (cexp β fexp x) ≤ abs x := by
+  obtain ⟨n, hxn⟩ := exists_int_mul_bpow_cexp_of_generic hx
+  have hn0 : n ≠ 0 := by
+    rintro rfl
+    exact hx0 (by simpa using hxn)
+  have habsn : (1 : ℝ) ≤ abs (n : ℝ) := by
+    exact_mod_cast (Int.one_le_abs hn0)
+  have hb := bpow.nonneg β (cexp β fexp x)
+  calc
+    bpow β (cexp β fexp x) =
+        1 * bpow β (cexp β fexp x) := by ac_rfl
+    _ ≤ abs (n : ℝ) * bpow β (cexp β fexp x) :=
+      mul_le_mul_of_nonneg_right habsn hb
+    _ = abs ((n : ℝ) * bpow β (cexp β fexp x)) := by
+      rw [abs_mul, abs_of_nonneg hb]
+    _ = abs x := by rw [← hxn]
+
+/-- One ULP is no larger than the absolute value of a nonzero representable number. -/
+theorem ulp_le_abs_of_generic {x : ℝ} (hx0 : x ≠ 0)
+    (hx : GenericRepresentable β fexp x) : ulp β fexp x ≤ abs x := by
+  rw [ulp.of_ne_zero β fexp x hx0]
+  exact bpow_cexp_le_abs_of_generic hx0 hx
+
+/-- ULP is monotone on positive inputs when the exponent selector is monotone. -/
+theorem ulp_mono_pos [MonotoneExp fexp] {x y : ℝ}
+    (hx : 0 < x) (hxy : x ≤ y) : ulp β fexp x ≤ ulp β fexp y := by
+  have hy : 0 < y := hx.trans_le hxy
+  have hmag := magnitude_mono_pos β hx hxy
+  rw [ulp.of_ne_zero β fexp x hx.ne', ulp.of_ne_zero β fexp y hy.ne']
+  exact (bpow_le_bpow_iff β _ _).2
+    (MonotoneExp.monotone _ _ hmag)
+
+end FloatLib.Floats.Formats.Flocq

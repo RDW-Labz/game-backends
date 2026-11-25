@@ -1,0 +1,70 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Kernel.Root
+public import Mathlib.Data.Nat.NthRoot.Defs
+
+/-!
+# Integer roots by seeded Newton iteration
+
+Mathlib's `Nat.nthRoot` runs Newton's method from the radicand itself, and for a large radicand and
+a large degree each of the first steps shrinks the guess by a factor of only `(n - 1) / n`. We start
+from a power of two read off the radicand's binary logarithm, which for a positive radicand lies
+above the root and within a factor of two of it. Zero and one return themselves for every positive
+degree, before any seed is built or raised to a power that could be enormous when the degree is
+large.
+
+The iteration itself is `Kernel.rootGuess`, written for Lean's kernel, and its result is checked
+(`Kernel.isRoot`) before it is returned. In `FloatLib.Kernels`, `IntegerRoot.root` answers
+degrees zero and one at once, uses a native-word
+square root for degree two, and calls this kernel for every degree from three. Format-independent
+exact arithmetic can't depend on the kernels, so it uses this module itself. Its proof module
+identifies the result with `Nat.nthRoot`.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.IntegerRoot
+
+namespace Seeded
+
+/--
+Floor `degree`-th root of `value` by Mathlib's Newton loop from a seed read off the binary
+logarithm, with degree zero returning one as in `Nat.nthRoot`. `newton` falls back on it, and
+`newton_eq_seeded` states that the two agree.
+-/
+def newton (degree value : Nat) : Nat :=
+  match degree with
+  | 0 => 1
+  | 1 => value
+  | degree + 2 =>
+    if value ≤ 1 then value
+    else
+      let initial := 2 ^ ((value.log2 + degree + 2) / (degree + 2))
+      Nat.nthRoot.go degree value initial initial
+
+end Seeded
+
+/--
+Floor `degree`-th root of `value`, with degree zero returning one as in `Nat.nthRoot`.
+
+Zero and one are answered by `Seeded.newton` at once, so that they return themselves for a
+symbolic degree too. For a larger value the result is the Newton result of `Kernel.rootGuess` when
+the check `Kernel.isRoot` accepts it, which Lean's kernel evaluates with native powers and
+comparisons, and `Seeded.newton` otherwise. The check decides, so the result is the floor root
+whatever the iteration does.
+-/
+def newton (degree value : Nat) : Nat :=
+  Bool.casesOn (motive := fun _ => Nat) (Nat.ble value 1)
+    ((fun r =>
+      Bool.casesOn (motive := fun _ => Nat) (Kernel.isRoot degree r value)
+        (Seeded.newton degree value) r)
+      (Kernel.rootGuess degree value))
+    (Seeded.newton degree value)
+
+end FloatLib.Numerics.IntegerRoot

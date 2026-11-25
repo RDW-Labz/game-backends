@@ -1,0 +1,138 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Configured.Backend.FixedWords.Byte.Runtime
+public import FloatLib.Floats.Formats.Posit.Configured.Backend.Proof
+public import FloatLib.Floats.Formats.Posit.Configured.Storage.Native.Instances
+
+/-!
+# Correctness of the fixed `UInt8` posit backend
+
+Each proof here takes two steps. The monomorphic `UInt8` operation is shown equal to the shared
+packed kernel, which is generic in the carrier, and then it inherits that kernel's proof against
+the representation-independent specification.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Posit.Configured.Backend.Byte
+
+open FloatLib.Numerics
+
+variable {format : Format}
+
+/-- The `UInt8` storage plan reads a packed code through the `UInt8` carrier. -/
+private theorem nativeWord_eq (width_le : format.bits ≤ 8) (code : Code (.byte width_le)) :
+    NativeCode.word code = FixedWords.uint8Carrier.toUInt64 code.1 :=
+  rfl
+
+/-- The `UInt8` storage plan packs a range-checked code through the `UInt8` carrier. -/
+private theorem nativePack_eq (width_le : format.bits ≤ 8) (bits : Nat)
+    (hbits : bits < format.modulus) :
+    NativeCode.pack (plan := .byte width_le) bits hbits =
+      ⟨FixedWords.uint8Carrier.ofNat bits,
+        FixedWords.observed_lt_modulus (FixedWords.uint8Carrier.toNat_ofNat bits) hbits⟩ :=
+  rfl
+
+/-! ## Addition and subtraction -/
+
+/-- Fixed `UInt8` addition refines configured posit addition. -/
+theorem add_eq_spec
+    (width_le : format.bits ≤ 8)
+    (left right :
+      FloatLib.Floats.ExecFloat
+        (Family format (Code (.byte width_le)) (.byte width_le))) :
+    add width_le left right = Spec.addition left right := by
+  refine Eq.trans ?_
+    (storedNativeWordAdd_eq_spec (le_trans width_le (by decide)) left right)
+  apply FloatLib.Floats.ExecFloat.ext
+  simpa only [add, addRaw, storedNativeWordAdd, nativeWord_eq, nativePack_eq,
+    FloatLib.Floats.ExecFloat.raw_ofRaw] using
+    FixedWords.addCode_eq FixedWords.uint8Carrier
+      width_le left.raw right.raw
+
+/-- Fixed `UInt8` subtraction refines configured posit subtraction. -/
+theorem sub_eq_spec
+    (width_le : format.bits ≤ 8)
+    (left right :
+      FloatLib.Floats.ExecFloat
+        (Family format (Code (.byte width_le)) (.byte width_le))) :
+    sub width_le left right = Spec.subtraction left right := by
+  refine Eq.trans ?_
+    (storedNativeWordSub_eq_spec (le_trans width_le (by decide)) left right)
+  apply FloatLib.Floats.ExecFloat.ext
+  simpa only [sub, subRaw, storedNativeWordSub, nativeWord_eq, nativePack_eq,
+    FloatLib.Floats.ExecFloat.raw_ofRaw] using
+    FixedWords.subCode_eq FixedWords.uint8Carrier
+      width_le left.raw right.raw
+
+/-! ## Multiplication and division -/
+
+/-- Fixed `UInt8` multiplication refines configured posit multiplication. -/
+theorem mul_eq_spec
+    (width_le : format.bits ≤ 8)
+    (left right :
+      FloatLib.Floats.ExecFloat
+        (Family format (Code (.byte width_le)) (.byte width_le))) :
+    mul width_le left right = Spec.multiplication left right := by
+  refine Eq.trans ?_
+    (storedNativeWordMul_eq_spec (le_trans width_le (by decide)) left right)
+  apply FloatLib.Floats.ExecFloat.ext
+  simpa only [mul, mulRaw, storedNativeWordMul, nativeWord_eq, nativePack_eq,
+    FloatLib.Floats.ExecFloat.raw_ofRaw] using
+    FixedWords.mulCode_eq FixedWords.uint8Carrier
+      width_le left.raw right.raw
+
+/-- Fixed `UInt8` division refines configured posit division. -/
+theorem div_eq_spec
+    (width_le : format.bits ≤ 8)
+    (left right :
+      FloatLib.Floats.ExecFloat
+        (Family format (Code (.byte width_le)) (.byte width_le))) :
+    div width_le left right = Spec.division left right := by
+  refine Eq.trans ?_
+    (storedNativeWordDiv_eq_spec (le_trans width_le (by decide)) left right)
+  apply FloatLib.Floats.ExecFloat.ext
+  simpa only [div, divRaw, storedNativeWordDiv, nativeWord_eq, nativePack_eq,
+    FloatLib.Floats.ExecFloat.raw_ofRaw] using
+    FixedWords.divCode_eq FixedWords.uint8Carrier
+      width_le left.raw right.raw
+
+/-! ## Square root and fused multiply-add -/
+
+/-- Fixed `UInt8` square root refines configured posit square root. -/
+theorem sqrt_eq_spec
+    (width_le : format.bits ≤ 8)
+    (value :
+      FloatLib.Floats.ExecFloat
+        (Family format (Code (.byte width_le)) (.byte width_le))) :
+    sqrt width_le value = Spec.sqrt value := by
+  refine Eq.trans ?_
+    (storedNativeWordSqrt_eq_spec (le_trans width_le (by decide)) value)
+  apply FloatLib.Floats.ExecFloat.ext
+  simpa only [sqrt, sqrtRaw, storedNativeWordSqrt, nativeWord_eq, nativePack_eq,
+    FloatLib.Floats.ExecFloat.raw_ofRaw] using
+    FixedWords.sqrtCode_eq FixedWords.uint8Carrier width_le value.raw
+
+/-- Fixed `UInt8` FMA refines configured posit FMA. -/
+theorem fma_eq_spec
+    (width_le : format.bits ≤ 8)
+    (left right addend :
+      FloatLib.Floats.ExecFloat
+        (Family format (Code (.byte width_le)) (.byte width_le))) :
+    fma width_le left right addend = Spec.fma left right addend := by
+  refine Eq.trans ?_
+    (storedNativeWordFma_eq_spec
+      (le_trans width_le (by decide)) left right addend)
+  apply FloatLib.Floats.ExecFloat.ext
+  simpa only [fma, fmaRaw, storedNativeWordFma, nativeWord_eq, nativePack_eq,
+    FloatLib.Floats.ExecFloat.raw_ofRaw] using
+    FixedWords.fmaCode_eq FixedWords.uint8Carrier
+      width_le left.raw right.raw addend.raw
+
+end FloatLib.Floats.Formats.Posit.Configured.Backend.Byte

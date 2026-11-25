@@ -1,0 +1,41 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Enclosure.Rational.Runtime
+public import FloatLib.Numerics.Order.Search.Runtime
+
+/-!
+# Adaptive comparison with rational enclosures
+
+Everything in the search is rational arithmetic. Its termination argument is a proposition, so it's
+erased from executable code. Callers supply a sequence of increasingly accurate intervals and a
+proof that some interval excludes the boundary, and real containment is used on its own to prove the
+returned ordering correct.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.Enclosure.Comparison
+
+/-- An interval lies strictly on one side of a rational boundary. -/
+def Separates (interval : RationalInterval) (boundary : ℚ) : Prop :=
+  interval.hi < boundary ∨ boundary < interval.lo
+
+instance (interval : RationalInterval) (boundary : ℚ) :
+    Decidable (Separates interval boundary) :=
+  inferInstanceAs (Decidable (_ ∨ _))
+
+/-- Search for the first separating interval and return whether it lies below or above the
+boundary. -/
+def compare (intervals : Nat → RationalInterval) (boundary : ℚ)
+    (terminates : ∃ n, Separates (intervals n) boundary) : Ordering :=
+  let interval := intervals (findWithPrefix (fun n => Separates (intervals n) boundary)
+    terminates 16)
+  if interval.hi < boundary then .lt else .gt
+
+end FloatLib.Numerics.Enclosure.Comparison

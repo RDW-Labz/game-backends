@@ -1,0 +1,103 @@
+precision,operation,nanoseconds,backend
+2,add,121.0,binary-interchange addition exhaustive table
+3,add,118.9,binary-interchange addition exhaustive table
+4,add,121.6,binary-interchange addition exhaustive table
+5,add,120.6,binary-interchange addition exhaustive table
+6,add,15.6,binary-interchange addition native-word kernel
+7,add,15.7,binary-interchange addition native-word kernel
+8,add,17.9,binary-interchange addition native-word kernel
+11,add,18.6,binary-interchange addition native-word kernel
+24,add,25.6,binary-interchange addition fixed-format kernel
+53,add,16.8,binary-interchange addition fixed-format kernel
+113,add,69.0,binary-interchange addition fixed-limb kernel
+161,add,1883.2,binary-interchange addition exact baseline
+237,add,1805.0,binary-interchange addition exact baseline
+493,add,1858.6,binary-interchange addition exact baseline
+1024,add,1943.7,binary-interchange addition exact baseline
+2048,add,2125.3,binary-interchange addition exact baseline
+4096,add,2372.8,binary-interchange addition exact baseline
+2,sub,118.3,binary-interchange subtraction exhaustive table
+3,sub,120.0,binary-interchange subtraction exhaustive table
+4,sub,119.8,binary-interchange subtraction exhaustive table
+5,sub,120.4,binary-interchange subtraction exhaustive table
+6,sub,14.5,binary-interchange subtraction native-word kernel
+7,sub,15.8,binary-interchange subtraction native-word kernel
+8,sub,16.9,binary-interchange subtraction native-word kernel
+11,sub,14.8,binary-interchange subtraction native-word kernel
+24,sub,24.8,binary-interchange subtraction fixed-format kernel
+53,sub,16.2,binary-interchange subtraction fixed-format kernel
+113,sub,70.3,binary-interchange subtraction fixed-limb kernel
+161,sub,1902.3,binary-interchange subtraction exact baseline
+237,sub,1796.2,binary-interchange subtraction exact baseline
+493,sub,1956.0,binary-interchange subtraction exact baseline
+1024,sub,2193.2,binary-interchange subtraction exact baseline
+2048,sub,2841.8,binary-interchange subtraction exact baseline
+4096,sub,3117.9,binary-interchange subtraction exact baseline
+2,mul,118.5,binary-interchange multiplication exhaustive table
+3,mul,119.6,binary-interchange multiplication exhaustive table
+4,mul,120.2,binary-interchange multiplication exhaustive table
+5,mul,127.8,binary-interchange multiplication exhaustive table
+6,mul,12.6,binary-interchange multiplication native-word kernel
+7,mul,13.2,binary-interchange multiplication native-word kernel
+8,mul,12.6,binary-interchange multiplication native-word kernel
+11,mul,10.9,binary-interchange multiplication native-word kernel
+24,mul,20.0,binary-interchange multiplication fixed-format kernel
+53,mul,11.3,binary-interchange multiplication fixed-format kernel
+113,mul,38.1,binary-interchange multiplication fixed-limb kernel
+161,mul,2184.2,binary-interchange multiplication exact baseline
+237,mul,1719.9,binary-interchange multiplication exact baseline
+493,mul,1794.6,binary-interchange multiplication exact baseline
+1024,mul,2124.1,binary-interchange multiplication exact baseline
+2048,mul,2654.8,binary-interchange multiplication exact baseline
+4096,mul,8274.1,binary-interchange multiplication exact baseline
+2,div,120.3,binary-interchange division exhaustive table
+3,div,165.7,binary-interchange division exhaustive table
+4,div,123.7,binary-interchange division exhaustive table
+5,div,125.2,binary-interchange division exhaustive table
+6,div,55.1,binary-interchange division native-word kernel
+7,div,54.7,binary-interchange division native-word kernel
+8,div,53.5,binary-interchange division native-word kernel
+11,div,54.6,binary-interchange division native-word kernel
+24,div,50.9,binary-interchange division fixed-format kernel
+53,div,57.8,binary-interchange division fixed-format kernel
+113,div,185.8,binary-interchange division fixed-limb kernel
+161,div,1973.7,binary-interchange division exact baseline
+237,div,2031.8,binary-interchange division exact baseline
+493,div,2652.5,binary-interchange division exact baseline
+1024,div,2232.0,binary-interchange division exact baseline
+2048,div,2791.2,binary-interchange division exact baseline
+4096,div,4536.7,binary-interchange division exact baseline
+2,sqrt,22.5,binary-interchange square root exhaustive table
+3,sqrt,22.7,binary-interchange square root exhaustive table
+4,sqrt,22.7,binary-interchange square root exhaustive table
+5,sqrt,22.6,binary-interchange square root exhaustive table
+6,sqrt,22.6,binary-interchange square root native-word kernel
+7,sqrt,24.5,binary-interchange square root native-word kernel
+8,sqrt,22.6,binary-interchange square root native-word kernel
+11,sqrt,22.5,binary-interchange square root native-word kernel
+24,sqrt,17.4,binary-interchange square root fixed-format kernel
+53,sqrt,90.6,binary-interchange square root fixed-format kernel
+113,sqrt,210.0,binary-interchange square root fixed-limb kernel
+161,sqrt,4504.8,binary-interchange square root exact baseline
+237,sqrt,4526.0,binary-interchange square root exact baseline
+493,sqrt,5478.9,binary-interchange square root exact baseline
+1024,sqrt,6673.8,binary-interchange square root exact baseline
+2048,sqrt,10038.7,binary-interchange square root exact baseline
+4096,sqrt,14058.3,binary-interchange square root exact baseline
+2,fma,122.5,binary-interchange fused multiply-add exhaustive table
+3,fma,121.6,binary-interchange fused multiply-add exhaustive table
+4,fma,123.2,binary-interchange fused multiply-add exhaustive table
+5,fma,1218.9,binary-interchange fused multiply-add exact baseline
+6,fma,35.2,binary-interchange fused multiply-add native-word kernel
+7,fma,37.5,binary-interchange fused multiply-add native-word kernel
+8,fma,23.6,binary-interchange fused multiply-add native-word kernel
+11,fma,28.7,binary-interchange fused multiply-add native-word kernel
+24,fma,30.3,binary-interchange fused multiply-add fixed-format kernel
+53,fma,114.6,binary-interchange fused multiply-add fixed-format kernel
+113,fma,129.3,binary-interchange fused multiply-add fixed-limb kernel
+161,fma,2346.6,binary-interchange fused multiply-add exact baseline
+237,fma,2293.6,binary-interchange fused multiply-add exact baseline
+493,fma,7478.5,binary-interchange fused multiply-add exact baseline
+1024,fma,2715.6,binary-interchange fused multiply-add exact baseline
+2048,fma,3401.6,binary-interchange fused multiply-add exact baseline
+4096,fma,10123.9,binary-interchange fused multiply-add exact baseline

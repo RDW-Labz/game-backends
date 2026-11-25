@@ -1,0 +1,115 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Core.Proof
+public import FloatLib.Numerics.Representations.FixedInt.Core
+
+/-!
+# Representation semantics of fixed-width signed integers
+
+Here the executable two's-complement carrier gets a `NumericalSystem` interpretation, and its
+representation laws describe the signed interval, encoding and decoding, and the clamp that
+saturating arithmetic uses.
+
+We keep this adapter apart from the arithmetic, because generic operation contracts only need to
+know what a code denotes, while the implementation stays free to use `BitVec` overflow instructions
+and fixed-width storage.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.Representations.FixedInt
+
+/-- Fixed-width integers interpreted as their signed two's-complement values. -/
+def numericalSystem (width : Nat) : NumericalSystem :=
+  NumericalSystem.ofFinite (fun value : FixedInt width ↦ value.toInt)
+
+/-- A fixed-width word with an erased proof of its signed value. -/
+abbrev AtFinite (width : Nat) (value : Int) :=
+  (numericalSystem width).AtFinite value
+
+/-- Representation by a fixed-width integer is equality with its signed two's-complement value. -/
+@[simp, grind =] theorem numericalSystem_represents_iff {width : Nat}
+    (code : FixedInt width) (value : Int) :
+    (numericalSystem width).Represents code value ↔ code.toInt = value := by
+  simp [numericalSystem]
+
+/-- Converting an integer to fixed width denotes centered reduction modulo `2 ^ width`. -/
+@[simp, grind =] theorem toInt_ofInt {width : Nat} (value : Int) :
+    (ofInt (width := width) value).toInt = value.bmod (2 ^ width) :=
+  BitVec.toInt_ofInt value
+
+/-- Re-encoding the signed value of a fixed-width integer recovers its original bits. -/
+@[simp, grind =] theorem ofInt_toInt {width : Nat} (value : FixedInt width) :
+    ofInt value.toInt = value := by
+  cases value
+  simp [ofInt, toInt, BitVec.ofInt_toInt]
+
+/-- The minimum fixed-width code denotes the signed lower bound. -/
+@[simp, grind =] theorem toInt_minCode {width : Nat} :
+    (minCode width).toInt = minValue width :=
+  rfl
+
+/-- The maximum fixed-width code denotes the signed upper bound. -/
+@[simp, grind =] theorem toInt_maxCode {width : Nat} :
+    (maxCode width).toInt = maxValue width :=
+  rfl
+
+/-- At positive width, the signed lower bound is `-(2 ^ (width - 1))`. -/
+theorem minValue_eq {width : Nat} (hwidth : 0 < width) :
+    minValue width = -(2 ^ (width - 1) : Int) := by
+  simp [minValue, BitVec.toInt_intMin_of_pos hwidth]
+
+/-- The signed upper bound is `2 ^ (width - 1) - 1`. -/
+theorem maxValue_eq (width : Nat) :
+    maxValue width = (2 ^ (width - 1) : Int) - 1 := by
+  simp [maxValue]
+
+/-- The signed storage interval is nonempty, and at width zero it is the single value zero. -/
+theorem minValue_le_maxValue {width : Nat} :
+    minValue width ≤ maxValue width :=
+  BitVec.toInt_intMin_le _
+
+/-- Clamping always produces an in-range integer. -/
+theorem clamp_inRange {width : Nat} (value : Int) :
+    InRange width (clamp width value) :=
+  ⟨Quantization.Saturating.lower_le_clamp _ _ _,
+    Quantization.Saturating.clamp_le_upper minValue_le_maxValue⟩
+
+/-- Clamping fixes every integer already in the signed storage interval. -/
+theorem clamp_eq_self {width : Nat} {value : Int} (hvalue : InRange width value) :
+    clamp width value = value :=
+  Quantization.Saturating.clamp_eq_self hvalue.1 hvalue.2
+
+/--
+Encoding an in-range integer preserves its exact signed value.
+
+At width zero the only in-range integer is zero, which every code denotes.
+-/
+theorem toInt_ofInt_eq_self {width : Nat}
+    {value : Int} (hvalue : InRange width value) :
+    (ofInt (width := width) value).toInt = value := by
+  rcases Nat.eq_zero_or_pos width with rfl | hwidth
+  · have hbounds := hvalue
+    simp only [InRange, minValue, maxValue, BitVec.toInt_zero_length] at hbounds
+    simp only [toInt, BitVec.toInt_zero_length]
+    omega
+  apply BitVec.toInt_ofInt_eq_self hwidth
+  · rw [← minValue_eq hwidth]
+    exact hvalue.1
+  · have hupper := hvalue.2
+    rw [maxValue_eq] at hupper
+    omega
+
+/-- Saturating conversion denotes exact clamping to the signed storage interval. -/
+@[simp, grind =] theorem toInt_ofIntSaturating {width : Nat}
+    (value : Int) :
+    (ofIntSaturating (width := width) value).toInt = clamp width value :=
+  toInt_ofInt_eq_self (clamp_inRange value)
+
+end FloatLib.Numerics.Representations.FixedInt

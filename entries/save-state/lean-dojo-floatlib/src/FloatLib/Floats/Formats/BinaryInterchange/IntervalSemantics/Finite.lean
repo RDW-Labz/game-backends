@@ -1,0 +1,115 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.DirectedSemantics.FiniteBounds
+public import FloatLib.Floats.Formats.BinaryInterchange.Interval.Arithmetic
+public import FloatLib.Floats.Formats.BinaryInterchange.IntervalSemantics.Order
+public import FloatLib.Numerics.Enclosure.Interval.Bounds
+
+/-!
+# Range-limited finite-only interval enclosures
+
+Finite-only formats saturate instead of producing infinity, so their outward interval operations
+are sound only when the exact endpoint expressions stay inside the finite range. Every theorem
+here states that range premise.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange
+namespace Model
+namespace Interval
+
+section
+
+/--
+Finite-only interval addition encloses every selected sum when both exact endpoint sums fit in the
+format's symmetric finite range.
+-/
+theorem add_sound_of_encoding_finite
+    {fmt : FloatFormat} (A B : Interval fmt) (hfmt : fmt.encoding = .finite)
+    (hloRange :
+      |toReal A.lo + toReal B.lo| ≤ toReal (posMaxFinite fmt))
+    (hhiRange :
+      |toReal A.hi + toReal B.hi| ≤ toReal (posMaxFinite fmt))
+    {x y : ℝ} (hx : RealMem A x) (hy : RealMem B y) :
+    RealMem (add A B) (x + y) := by
+  apply realMem_ofBounds
+    (isFinite_eq_true_of_encoding_finite hfmt _)
+    (isFinite_eq_true_of_encoding_finite hfmt _)
+  constructor
+  · change toReal (Model.add A.lo B.lo (mode := .down)) ≤ x + y
+    exact (toReal_add_down_le_of_encoding_finite A.lo B.lo hfmt hloRange).trans
+      (add_le_add hx.1 hy.1)
+  · change x + y ≤ toReal (Model.add A.hi B.hi (mode := .up))
+    exact (add_le_add hx.2 hy.2).trans
+      (le_toReal_add_up_of_encoding_finite A.hi B.hi hfmt hhiRange)
+
+/--
+Finite-only interval subtraction is sound when its two exact endpoint differences fit in range.
+-/
+theorem sub_sound_of_encoding_finite
+    {fmt : FloatFormat} (A B : Interval fmt) (hfmt : fmt.encoding = .finite)
+    (hloRange :
+      |toReal A.lo - toReal B.hi| ≤ toReal (posMaxFinite fmt))
+    (hhiRange :
+      |toReal A.hi - toReal B.lo| ≤ toReal (posMaxFinite fmt))
+    {x y : ℝ} (hx : RealMem A x) (hy : RealMem B y) :
+    RealMem (sub A B) (x - y) := by
+  apply realMem_ofBounds
+    (isFinite_eq_true_of_encoding_finite hfmt _)
+    (isFinite_eq_true_of_encoding_finite hfmt _)
+  constructor
+  · change toReal (Model.sub A.lo B.hi (mode := .down)) ≤ x - y
+    exact (toReal_sub_down_le_of_encoding_finite A.lo B.hi hfmt hloRange).trans
+      (sub_le_sub hx.1 hy.2)
+  · change x - y ≤ toReal (Model.sub A.hi B.lo (mode := .up))
+    exact (sub_le_sub hx.2 hy.1).trans
+      (le_toReal_sub_up_of_encoding_finite A.hi B.lo hfmt hhiRange)
+
+/--
+Finite-only interval multiplication is sound when all four exact corner products fit in range.
+-/
+theorem mul_sound_of_encoding_finite
+    {fmt : FloatFormat} (A B : Interval fmt) (hfmt : fmt.encoding = .finite)
+    (h00 : |toReal A.lo * toReal B.lo| ≤ toReal (posMaxFinite fmt))
+    (h01 : |toReal A.lo * toReal B.hi| ≤ toReal (posMaxFinite fmt))
+    (h10 : |toReal A.hi * toReal B.lo| ≤ toReal (posMaxFinite fmt))
+    (h11 : |toReal A.hi * toReal B.hi| ≤ toReal (posMaxFinite fmt))
+    {x y : ℝ} (hx : RealMem A x) (hy : RealMem B y) :
+    RealMem (mul A B) (x * y) := by
+  have hfinite (z : Model fmt) : isFinite z = true :=
+    isFinite_eq_true_of_encoding_finite hfmt z
+  have hxy :=
+    FloatLib.Numerics.Interval.mul_bounds_Icc
+      (toReal A.lo) (toReal A.hi) (toReal B.lo) (toReal B.hi) x y hx hy
+  refine realMem_ofBounds (hfinite _) (hfinite _) ⟨le_trans ?_ hxy.1, hxy.2.trans ?_⟩
+  · simp only [minOfFour, FloatLib.Numerics.Interval.minOfFour,
+      toReal_minimum_eq_min_of_isFinite _ _ (hfinite _) (hfinite _)]
+    exact min_le_min
+      (min_le_min
+        (toReal_mul_down_le_of_encoding_finite A.lo B.lo hfmt h00)
+        (toReal_mul_down_le_of_encoding_finite A.lo B.hi hfmt h01))
+      (min_le_min
+        (toReal_mul_down_le_of_encoding_finite A.hi B.lo hfmt h10)
+        (toReal_mul_down_le_of_encoding_finite A.hi B.hi hfmt h11))
+  · simp only [maxOfFour, FloatLib.Numerics.Interval.maxOfFour,
+      toReal_maximum_eq_max_of_isFinite _ _ (hfinite _) (hfinite _)]
+    exact max_le_max
+      (max_le_max
+        (le_toReal_mul_up_of_encoding_finite A.lo B.lo hfmt h00)
+        (le_toReal_mul_up_of_encoding_finite A.lo B.hi hfmt h01))
+      (max_le_max
+        (le_toReal_mul_up_of_encoding_finite A.hi B.lo hfmt h10)
+        (le_toReal_mul_up_of_encoding_finite A.hi B.hi hfmt h11))
+
+end
+
+end Interval
+end Model
+end FloatLib.Floats.Formats.BinaryInterchange

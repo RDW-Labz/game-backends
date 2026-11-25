@@ -1,0 +1,224 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Configured.Conversion.Runtime
+public import FloatLib.Floats.Formats.P3109.Arithmetic.Mixed.Runtime
+
+/-!
+# P3109 arithmetic with external binary destinations
+
+Here P3109 arithmetic delivers its result into an ordinary binary format such as binary32. The
+report's projection then uses the external format's actual precision, bias, and finite endpoints,
+and it keeps all nine rounding modes and all three saturation modes, with caller-supplied
+stochastic bits. Under `SaturationMode.propagate`, finite overflow clamps, while an infinite exact
+input stays infinite. As §4.8.2 requires, the destination encoder writes positive zero and the
+canonical quiet NaN.
+
+Finite encoding runs the proved binary dyadic encoder on a datum that is already rounded and in
+range, and `External.Proof` shows that this adds no second rounding error. The adapters accept
+IEEE-style encoding descriptors, including binary16, binary32, binary64, and BFloat16. They
+install no instances, so the ordinary IEEE arithmetic and signed-zero conversion APIs stay as they
+are. A binary `Model` operand of mixed report arithmetic decodes through the binary
+`ExecFloat.Binary.Conversion.modelDecoder`. `Mixed.decode` then drops its zero sign through
+`ExactMap.signedRatToRat` and turns a NaN into the report's one NaN, which is the observation
+`decode` gives (`mixed_decode_eq_decode`).
+
+Reference: P3109 unapproved interim report v4.1 (14 September 2026),
+revision `2d45cf2`, §§4.7–4.10 and 4.14.
+-/
+
+@[expose] public section
+
+open FloatLib.Numerics
+
+namespace FloatLib.Floats.Formats.P3109.Arithmetic.External
+
+open BinaryInterchange
+
+/-- Round an exact rational with the external format's precision and exponent bias. -/
+def roundFinite (format : FloatFormat) (mode : P3109.RoundingMode) (exact : Rat) :
+    Numerics.Dyadic :=
+  let numerator := exact.num.natAbs
+  if numerator == 0 then .zero
+  else
+    let leading := RationalBinary.floorLog2 numerator exact.den
+    let quantum := max leading format.minNormalExponent - Int.ofNat format.fracWidth
+    let scaled := RationalBinary.scaleByPowerOfTwo numerator exact.den (-quantum)
+    let lower := scaled.1 / scaled.2
+    let rounded :=
+      if P3109.Format.Internal.roundRationalAwayWithParity mode (exact.num < 0)
+          (lower % 2 == 0) (scaled.1 % scaled.2) scaled.2 then lower + 1 else lower
+    if rounded == 0 then .zero
+    else { negative := exact.num < 0, significand := rounded, exponent := quantum }
+
+/-- Apply precision rounding, retaining infinity and canonicalizing NaN. -/
+def roundValue (format : FloatFormat) (mode : P3109.RoundingMode) :
+    NumericalValue Rat → NumericalValue Numerics.Dyadic
+  | .finite value => .finite (roundFinite format mode value)
+  | .infinity sign => .infinity sign
+  | .exceptional _ => .exceptional (.nan)
+
+/--
+Exact largest finite value of an IEEE-encoded external binary format, an all-ones significand at
+the largest normal exponent, with a supplied sign. Under a `finiteMaxNaN` encoding the largest
+finite value is lower (`Model.maxFinite`), so this helper, and `finiteOverflow`, `saturate` and
+`projectValue` built on it, describe the external format only when `format.isIEEE`, which
+`project` requires.
+-/
+def endpoint (format : FloatFormat) (negative : Bool) : Numerics.Dyadic :=
+  { negative
+    significand := 2 ^ (format.fracWidth + 1) - 1
+    exponent := format.maxNormalExponent - Int.ofNat format.fracWidth }
+
+/-- Saturate a finite overflow under the external format's signed, extended domain. -/
+def finiteOverflow (format : FloatFormat) (policy : ProjectionPolicy) (negative : Bool) :
+    NumericalValue Numerics.Dyadic :=
+  match policy.saturation with
+  | .finite | .propagate => .finite (endpoint format negative)
+  | .none =>
+      match policy.rounding with
+      | .towardZero => .finite (endpoint format negative)
+      | .up =>
+          if negative then .finite (endpoint format true) else .infinity false
+      | .down =>
+          if negative then .infinity true else .finite (endpoint format false)
+      | _ => .infinity negative
+
+/-- Saturate after rounding. Under `.propagate`, finite overflow clamps but infinity stays. -/
+def saturate (format : FloatFormat) (policy : ProjectionPolicy) :
+    NumericalValue Numerics.Dyadic → NumericalValue Numerics.Dyadic
+  | .exceptional _ => .exceptional (.nan)
+  | .infinity negative =>
+      if policy.saturation == .finite then .finite (endpoint format negative)
+      else .infinity negative
+  | .finite value =>
+      if Numerics.Dyadic.Internal.compareScalable
+          (endpoint format false) { value with negative := false } == .lt then
+        finiteOverflow format policy value.negative
+      else .finite value
+
+/-- Exact rounded and saturated result, before external encoding. -/
+def projectValue (format : FloatFormat) (policy : ProjectionPolicy) (value : NumericalValue Rat) :
+    NumericalValue Numerics.Dyadic :=
+  saturate format policy (roundValue format policy.rounding value)
+
+/-- Encode a projected external datum, using positive zero and canonical quiet NaN. -/
+def encode (format : FloatFormat) : NumericalValue Numerics.Dyadic → Model format
+  | .exceptional _ => Model.canonicalNaN format
+  | .infinity negative => if negative then Model.negInf format else Model.posInf format
+  | .finite value =>
+      if value.significand == 0 then Model.zero format false
+      else Model.roundDyadic format value
+
+/-- External report projection. The `isIEEE` evidence excludes non-IEEE exceptional encodings. -/
+def project (format : FloatFormat) (_ieee : format.isIEEE = true)
+    (policy : ProjectionPolicy) (value : NumericalValue Rat) : Model format :=
+  encode format (projectValue format policy value)
+
+/--
+Complete exact external decoding with zero signs and NaN payloads erased.
+
+Mixed report arithmetic reaches the same observation through the binary `SignedRat` decoder
+(`mixed_decode_eq_decode`).
+-/
+def decode {format : FloatFormat} (value : Model format) : NumericalValue Rat :=
+  Arithmetic.toRat ((Model.exactNumericalSystem format).denote value)
+
+/-- Report projection into an external model, with no storage-plan requirements. -/
+def destination (format : FloatFormat) (ieee : format.isIEEE = true := by decide) :
+    Destination (Model format) :=
+  ⟨project format ieee⟩
+
+/-- Report projection into a configured external carrier through its exact model codec. -/
+def configuredDestination (format : FloatFormat)
+    (plan : Configured.StoragePlan format) (code : Type)
+    [ExecFloat.ModelCodec plan (Model format) code]
+    (ieee : format.isIEEE = true := by decide) :
+    Destination (ExecFloat (Configured.Family format code plan)) :=
+  ⟨fun policy value => ExecFloat.Binary.ofModel (project format ieee policy value)⟩
+
+/-- External bit width from the complete binary descriptor.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def BitwidthOf (format : FloatFormat) : Nat := format.bitWidth
+
+/-- External precision includes the implicit leading bit.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def PrecisionOf (format : FloatFormat) : Nat := format.fracWidth + 1
+
+/-- The P3109 signedness of an external IEEE descriptor, `.signed`. The descriptor argument is
+ignored, so the answer describes the IEEE descriptors that `project` and `destination` accept and
+is never read from `format`.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def SignednessOf (_format : FloatFormat) : Signedness := .signed
+
+/-- The P3109 domain of an external IEEE descriptor, `.extended`, since IEEE formats have
+infinities. The descriptor argument is ignored: for a finite-only encoding such as `finiteMaxNaN`,
+which has no infinity, the answer is wrong. Use it only for the IEEE descriptors that `project` and
+`destination` accept.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def DomainOf (_format : FloatFormat) : Domain := .extended
+
+/-- External exponent-field width.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def ExponentBitwidthOf (format : FloatFormat) : Nat := format.expWidth
+
+/-- External fraction-field width.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def TrailingSignificandBitwidthOf (format : FloatFormat) : Nat := format.fracWidth
+
+/-- The external format's own bias, with no P3109 bias substituted.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def ExponentBiasOf (format : FloatFormat) : Nat := format.exponentBias
+
+/-- Largest finite external datum.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def MaxFiniteOf (format : FloatFormat) : Model format := Model.posMaxFinite format
+
+/-- Smallest finite external datum.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def MinFiniteOf (format : FloatFormat) : Model format := Model.negMaxFinite format
+
+/-- Smallest strictly positive external datum.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def MinPositiveOf (format : FloatFormat) : Model format := Model.ofNatBits 1
+
+/-- Largest positive external subnormal.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def MaxSubnormalOf (format : FloatFormat) : Model format :=
+  Model.ofNatBits (2 ^ format.fracWidth - 1)
+
+/-- Smallest positive external normal.
+
+P3109 interim report v4.1 (14 September 2026), §4.14; unapproved draft.
+-/
+@[inline] def MinNormalOf (format : FloatFormat) : Model format :=
+  Model.ofNatBits (2 ^ format.fracWidth)
+
+end FloatLib.Floats.Formats.P3109.Arithmetic.External

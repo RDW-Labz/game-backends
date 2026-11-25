@@ -1,0 +1,42 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+module
+
+public import FloatLib.Floats.Formats.DecimalInterchange.Projection.Exact
+
+/-!
+# Signed zero and its preferred quantum
+
+A zero projects with the supplied sign and with the preferred exponent clamped into the
+representable exponent interval, so a zero that asks for quantum `200` in decimal32 gets `90`. No
+exception is raised, even when clamping changes the representation.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.DecimalInterchange
+
+/-- Stripping trailing zeros from a zero coefficient consumes all of the fuel. -/
+theorem stripTrailing_zero (fuel : Nat) : stripTrailing fuel 0 = (0, fuel) := by
+  cases fuel <;> simp [stripTrailing]
+
+/-- An exact zero retains its sign and chooses the closest representable preferred exponent. -/
+theorem projectMagnitude_zero (f : Format) (mode : RoundingMode) (s : Bool)
+    (preferred : Int) :
+    projectMagnitude f mode s 0 preferred =
+      { value := .finite s 0 (max f.minQuantum (min preferred f.maxQuantum)) } := by
+  simp only [projectMagnitude, ↓reduceIte, preferredCohort, stripTrailing_zero, Int.ofNat_toNat,
+    Outcome.mk.injEq, Datum.finite.injEq, true_and, and_true]
+  omega
+
+/-- An exact zero projects to a zero with the requested sign and no flags, at the preferred quantum
+clamped to the format's quantum range. -/
+theorem project_zero (f : Format) (mode : RoundingMode) (s : Bool) (preferred : Int) :
+    project f mode 0 preferred s =
+      { value := .finite s 0 (max f.minQuantum (min preferred f.maxQuantum)) } := by
+  simpa [project] using projectMagnitude_zero f mode s preferred
+
+end FloatLib.Floats.Formats.DecimalInterchange

@@ -1,0 +1,140 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Tactic.Positivity.Finset
+
+/-!
+# Right shift with sticky-bit jamming
+
+`shiftRightJam` is the representation-independent contract that fixed words, dynamic limbs, and
+format-specific rounding kernels all use. It returns the exact quotient when no discarded bit is
+set, and otherwise records the nonzero discarded suffix in the quotient's low bit. Shifting binary
+10110 right by three gives 10, and since the discarded 110 isn't zero the result is 11. Shifting
+10000 by three gives 10 as it is.
+
+We keep the operation in `Numerics` so that a generic rounding argument never depends on one
+particular fixed-word backend.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics
+
+/--
+Shift right and preserve whether any discarded bit was nonzero in the result's low bit.
+
+Exact shifts are unchanged. Inexact shifts return an odd result. This is the proof-facing
+definition: it materializes `2^shift` to form the quotient and remainder, so fixed-word backends
+execute the limb kernels in `FloatLib.Kernels` (such as `UInt256.shiftRightJam128`) and use this
+definition only as their specification.
+-/
+@[inline] def shiftRightJam (value shift : Nat) : Nat :=
+  let divisor := 2 ^ shift
+  let quotient := value / divisor
+  if value % divisor == 0 then
+    quotient
+  else
+    quotient ||| 1
+
+/-- A nonzero remainder modulo `2 ^ small` stays nonzero modulo every larger power of two. -/
+private theorem mod_two_pow_ne_zero_of_le (value : Nat) {small large : Nat}
+    (hle : small ≤ large) (hsmall : value % 2 ^ small ≠ 0) :
+    value % 2 ^ large ≠ 0 := by
+  intro hzero
+  have hmod := Nat.mod_mod_of_dvd value (Nat.pow_dvd_pow 2 hle)
+  rw [hzero, Nat.zero_mod] at hmod
+  exact hsmall hmod.symm
+
+/-- Exact right shifts are unchanged by jamming. -/
+theorem shiftRightJam_eq_of_mod_eq_zero
+    (value shift : Nat) (hexact : value % 2 ^ shift = 0) :
+    shiftRightJam value shift = value / 2 ^ shift := by
+  simp [shiftRightJam, hexact]
+
+/-- An inexact right shift with jamming always returns an odd result. -/
+theorem shiftRightJam_mod_two_eq_one
+    (value shift : Nat) (hinexact : value % 2 ^ shift ≠ 0) :
+    shiftRightJam value shift % 2 = 1 := by
+  unfold shiftRightJam
+  rw [ite_eq_right (by simpa only [beq_iff_eq] using hinexact)]
+  rw [Nat.or_mod_two_eq_one]
+  simp
+
+/--
+Every bit above the jammed low bit is the corresponding bit of the exact shifted value.
+
+Truncating by at least one more bit therefore gives the same result as a single unjammed shift
+by the sum of the two shift counts.
+-/
+theorem shiftRightJam_div_pow
+    (value shift extra : Nat) (hextra : 0 < extra) :
+    shiftRightJam value shift / 2 ^ extra =
+      value / 2 ^ (shift + extra) := by
+  unfold shiftRightJam
+  by_cases hexact : value % 2 ^ shift = 0
+  · rw [ite_eq_left (by simpa only [beq_iff_eq] using hexact)]
+    rw [pow_add, ← Nat.div_div_eq_div_mul]
+  · rw [ite_eq_right (by simpa only [beq_iff_eq] using hexact)]
+    rw [Nat.or_div_two_pow]
+    have honeSmall : 1 < 2 ^ extra :=
+      Nat.one_lt_two_pow (Nat.ne_of_gt hextra)
+    rw [Nat.div_eq_of_lt honeSmall, Nat.or_zero]
+    rw [pow_add, ← Nat.div_div_eq_div_mul]
+
+/-- Every positive-index bit of a jammed quotient is the corresponding original bit. -/
+theorem shiftRightJam_testBit
+    (value shift index : Nat) (hindex : 0 < index) :
+    (shiftRightJam value shift).testBit index =
+      value.testBit (shift + index) := by
+  simp only [Nat.testBit, Nat.shiftRight_eq_div_pow]
+  rw [shiftRightJam_div_pow value shift index hindex]
+
+/--
+A positive-width suffix is nonzero after jamming exactly when the corresponding original suffix
+was nonzero. This preserves sticky-bit information when shifts are composed.
+-/
+theorem shiftRightJam_mod_pow_ne_zero_iff
+    (value shift extra : Nat) (hextra : 0 < extra) :
+    shiftRightJam value shift % 2 ^ extra ≠ 0 ↔
+      value % 2 ^ (shift + extra) ≠ 0 := by
+  by_cases hexact : value % 2 ^ shift = 0
+  · rw [shiftRightJam_eq_of_mod_eq_zero value shift hexact]
+    let quotient := value / 2 ^ shift
+    have hdecompose := Nat.mod_add_div value (2 ^ shift)
+    have hvalue :
+        value = 2 ^ shift * quotient := by
+      dsimp [quotient]
+      omega
+    have horiginal :
+        value % 2 ^ (shift + extra) =
+          2 ^ shift * (quotient % 2 ^ extra) := by
+      rw [pow_add, hvalue, Nat.mul_mod_mul_left]
+    change quotient % 2 ^ extra ≠ 0 ↔
+      value % 2 ^ (shift + extra) ≠ 0
+    rw [horiginal]
+    constructor
+    · intro hnonzero
+      exact Nat.mul_ne_zero (by positivity) hnonzero
+    · intro hnonzero hzero
+      apply hnonzero
+      simp [hzero]
+  · have hjammedOdd :
+        shiftRightJam value shift % 2 ≠ 0 := by
+      rw [shiftRightJam_mod_two_eq_one value shift hexact]
+      decide
+    have hleft :=
+      mod_two_pow_ne_zero_of_le (shiftRightJam value shift) hextra
+        (by rwa [pow_one])
+    have hright :=
+      mod_two_pow_ne_zero_of_le value (Nat.le_add_right shift extra) hexact
+    exact ⟨fun _ => hright, fun _ => hleft⟩
+
+end FloatLib.Numerics

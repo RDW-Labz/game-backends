@@ -1,0 +1,58 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Enclosure.Trigonometric.Runtime
+
+/-!
+# Rational period reduction for sine and cosine
+
+An enclosed quarter period gives an approximate full period in `[4, 8]`, and rounding the quotient
+to an integer leaves a rational Taylor argument in `[-4, 4]`. The output radius includes the
+accumulated period error through the global Lipschitz bound of sine and cosine. That's why the
+reduction stays valid even when the chosen integer changes as precision grows.
+
+Series terms don't have to grow in number with the magnitude of the reduced argument. Precision in
+the period does grow with the input magnitude, as you'd expect for range reduction. All the
+arithmetic is rational, and no machine approximation to π is used.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.Enclosure
+
+/-- A positive rational approximation to π/4, bounded between one half and one. -/
+def trigQuarter (degree : Nat) : ℚ :=
+  max (1 / 2) (min 1 (piQuarter degree).lo)
+
+/-- The nearest integer number of approximate full periods, with upward half ties. -/
+def trigTurns (x : ℚ) (degree : Nat) : Int :=
+  ⌊x / (8 * trigQuarter degree) + 1 / 2⌋
+
+/-- The exact rational remainder after removing the approximate periods. -/
+def trigReducedArgument (x : ℚ) (degree : Nat) : ℚ :=
+  x - 8 * (trigTurns x degree : ℚ) * trigQuarter degree
+
+/-- Error from replacing true periods by the rational approximate periods. -/
+def trigReductionError (x : ℚ) (degree : Nat) : ℚ :=
+  8 * |(trigTurns x degree : ℚ)| * ((piQuarter degree).hi - trigQuarter degree)
+
+/-- Combined Taylor and period-reduction error. -/
+def trigReducedRadius (x : ℚ) (degree : Nat) : ℚ :=
+  trigRadius (trigReducedArgument x degree) degree + trigReductionError x degree
+
+/-- A sine enclosure with a Taylor argument of magnitude at most four. -/
+def sinReduced (x : ℚ) (degree : Nat) : RationalInterval :=
+  restrictUnit (RationalInterval.around
+    (sinTaylor (trigReducedArgument x degree) degree) (trigReducedRadius x degree))
+
+/-- A cosine enclosure with the same bounded rational period reduction. -/
+def cosReduced (x : ℚ) (degree : Nat) : RationalInterval :=
+  restrictUnit (RationalInterval.around
+    (cosTaylor (trigReducedArgument x degree) degree) (trigReducedRadius x degree))
+
+end FloatLib.Numerics.Enclosure

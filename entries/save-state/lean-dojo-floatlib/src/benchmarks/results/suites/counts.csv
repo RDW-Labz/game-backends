@@ -1,0 +1,111 @@
+suite,group,outcome,count
+fpbench,"backward, conditional theorem",proved,22
+fpbench,"backward, conditional theorem",refused,166
+fpbench,"backward, conditional theorem",translation_refusal,84
+fpbench,"closed, conditional theorem",proved,180
+fpbench,"closed, conditional theorem",refused,8
+fpbench,"closed, conditional theorem",translation_refusal,84
+fpbench,"forward, conditional theorem",proved,184
+fpbench,"forward, conditional theorem",refused,4
+fpbench,"forward, conditional theorem",translation_refusal,84
+fpbench,"closed, numerical bound",not_attempted,6
+fpbench,"closed, numerical bound",proved,18
+fpbench,"closed, numerical bound",refused,82
+fpbench,"closed, numerical bound",timeout,2
+fpbench,"closed, numerical bound",translation_refusal,164
+fpbench,"forward, numerical bound",not_attempted,4
+fpbench,"forward, numerical bound",proved,33
+fpbench,"forward, numerical bound",refused,71
+fpbench,"forward, numerical bound",translation_refusal,164
+fpbench,"forward, conditional theorem",proved within 20 s of process time,184
+fpbench,"forward, numerical bound",proved within 20 s of process time,33
+fpbench,"closed, conditional theorem",proved within 20 s of process time,174
+fpbench,"closed, numerical bound",proved within 20 s of process time,18
+fpbench,"backward, conditional theorem",proved within 20 s of process time,22
+fpbench,tool daisy,bounded,117
+fpbench,tool daisy,export_refusal,54
+fpbench,tool daisy,no_bound,58
+fpbench,tool daisy,tool_refusal,43
+fpbench,tool fptaylor,bounded,106
+fpbench,tool fptaylor,export_refusal,118
+fpbench,tool fptaylor,no_bound,42
+fpbench,tool fptaylor,timeout,6
+fpbench,tool gappa,bounded,96
+fpbench,tool gappa,export_refusal,142
+fpbench,tool gappa,tool_refusal,34
+fpbench,tool satire,tool_unavailable,272
+fpbench,tool smtlib,export_refusal,130
+fpbench,tool smtlib,exported,142
+fpbench,tool sollya,export_refusal,10
+fpbench,tool sollya,loaded_no_bound,262
+fpbench,numerical coverage (FloatLib and the local tools),both,41
+fpbench,numerical coverage (FloatLib and the local tools),neither,143
+fpbench,numerical coverage (FloatLib and the local tools),other_tool_only,88
+fpbench,forward bound over the bound of fptaylor,ratio,17
+fpbench,closed bound over the bound of fptaylor,ratio,6
+fpbench,forward bound over the bound of gappa,ratio,8
+fpbench,closed bound over the bound of gappa,ratio,6
+fpbench,forward bound over the bound of daisy,ratio,0
+fpbench,closed bound over the bound of daisy,ratio,0
+inequalities,"flyspeck, constraint",proved,6
+inequalities,"flyspeck, constraint",refused,11
+inequalities,"flyspeck, constraint",timeout,3
+inequalities,"flyspeck, constraint",translation_refusal,144
+inequalities,"flyspeck, interval",proved,3
+inequalities,"flyspeck, interval",refused,17
+inequalities,"flyspeck, interval",translation_refusal,144
+inequalities,"metitarski, constraint",proved,340
+inequalities,"metitarski, constraint",refused,394
+inequalities,"metitarski, constraint",timeout,64
+inequalities,"metitarski, constraint",translation_refusal,150
+inequalities,"metitarski, interval",proved,124
+inequalities,"metitarski, interval",refused,674
+inequalities,"metitarski, interval",translation_refusal,150
+inequalities,"flyspeck, either route",not proved,158
+inequalities,"flyspeck, either route",proved,6
+inequalities,"metitarski, either route",not proved,608
+inequalities,"metitarski, either route",proved,340
+correct-rounding,"real, CORE-MATH, binary64, exp",matched,16384
+correct-rounding,"complex, CORE-MATH, binary64, exp",matched,32768
+correct-rounding,"real, CORE-MATH, binary64, expm1",matched,16384
+correct-rounding,"complex, CORE-MATH, binary64, expm1",matched,32766
+correct-rounding,"complex, CORE-MATH, binary64, expm1",excluded,2
+correct-rounding,"real, CORE-MATH, binary64, log",matched,16384
+correct-rounding,"complex, CORE-MATH, binary64, log",matched,32768
+correct-rounding,"real, CORE-MATH, binary64, log1p",matched,16384
+correct-rounding,"complex, CORE-MATH, binary64, log1p",matched,32768
+correct-rounding,"real, Lefèvre testlibm, binary64, exp",matched,4800
+correct-rounding,"complex, Lefèvre testlibm, binary64, exp",matched,9600
+correct-rounding,"real, Lefèvre testlibm, binary64, exp",translation_refusal,4
+correct-rounding,"complex, Lefèvre testlibm, binary64, exp",translation_refusal,8
+correct-rounding,"real, Lefèvre testlibm, binary64, expm1",matched,15156
+correct-rounding,"complex, Lefèvre testlibm, binary64, expm1",matched,30312
+correct-rounding,"real, Lefèvre testlibm, binary64, log",matched,5583
+correct-rounding,"complex, Lefèvre testlibm, binary64, log",matched,11166
+correct-rounding,"real, Lefèvre testlibm, binary64, log",translation_refusal,12
+correct-rounding,"complex, Lefèvre testlibm, binary64, log",translation_refusal,24
+correct-rounding,"real, Lefèvre testlibm, binary64, log1p",matched,15100
+correct-rounding,"complex, Lefèvre testlibm, binary64, log1p",matched,30200
+correct-rounding,"real, CORE-MATH binary32 exhaustive input screen, binary32, exp",matched,256
+correct-rounding,"complex, CORE-MATH binary32 exhaustive input screen, binary32, exp",matched,512
+correct-rounding,"real, CORE-MATH binary32 exhaustive input screen, binary32, expm1",matched,256
+correct-rounding,"complex, CORE-MATH binary32 exhaustive input screen, binary32, expm1",matched,512
+correct-rounding,"real, CORE-MATH binary32 exhaustive input screen, binary32, log",matched,256
+correct-rounding,"complex, CORE-MATH binary32 exhaustive input screen, binary32, log",matched,512
+correct-rounding,"real, CORE-MATH binary32 exhaustive input screen, binary32, log1p",matched,256
+correct-rounding,"complex, CORE-MATH binary32 exhaustive input screen, binary32, log1p",matched,512
+correct-rounding,"complex, all",excluded,2
+correct-rounding,"complex, all",matched,214396
+correct-rounding,"complex, all",translation_refusal,32
+correct-rounding,"real, all",matched,107199
+correct-rounding,"real, all",translation_refusal,16
+testfloat,"arithmetic, comparisons and the rest",matched,148
+testfloat,"arithmetic, comparisons and the rest",matched: vectors,5045232
+testfloat,conversions between formats,matched,42
+testfloat,conversions between formats,matched: vectors,31512
+testfloat,fused multiply-add,matched,20
+testfloat,fused multiply-add,matched: vectors,122664960
+testfloat,all,campaigns,210
+testfloat,all,vectors,127741704
+testfloat,all,value mismatches,0
+testfloat,all,flag mismatches,0

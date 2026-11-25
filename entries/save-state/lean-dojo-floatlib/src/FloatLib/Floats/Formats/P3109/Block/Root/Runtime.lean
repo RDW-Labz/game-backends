@@ -1,0 +1,138 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.P3109.Arithmetic.Sqrt.Runtime
+public import FloatLib.Floats.Formats.P3109.Block.Runtime
+
+/-!
+# P3109 block square roots and norms
+
+A block root is normalized at the result scale before it is rounded. A finite nonzero scale `s`
+turns `BlockSqrt(q) / s` into the signed root of `q / s²`, so with `s = -2` and `q = 16` the
+    lane value
+is `-2`. Exact square comparisons then do the one destination rounding, negative scales and
+lane-specific stochastic words included. Zero, infinite, and NaN scales follow the rules of
+ordinary block projection.
+
+Reference: P3109 Interim Report v4.1 (unapproved draft), §§4.10.8, 4.10.14, 5.4.2 and 5.7.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.P3109
+
+open FloatLib.Numerics FloatLib.Floats.ExecFloat Arithmetic
+
+/-- An exact signed root of a closed rational radicand, before destination rounding. -/
+structure BlockRoot where
+  /-- Sign of the result after normalization at a possibly negative scale. -/
+  negative : Bool := false
+  /-- Squared magnitude. Square-root rounding sends a negative finite radicand to NaN. -/
+  radicand : NumericalValue Rat
+  deriving DecidableEq, Repr
+
+namespace BlockRoot
+
+/-- Normalize an exact square root under the special scale rules of §5.4.2. -/
+def normalize (scale radicand : NumericalValue Rat) : BlockRoot :=
+  match scale, radicand with
+  | .exceptional _, _ | _, .exceptional _ | _, .infinity true => ⟨false, Arithmetic.nan⟩
+  | _, .finite value =>
+      if value < 0 then ⟨false, Arithmetic.nan⟩
+      else match scale with
+        | .exceptional _ => ⟨false, Arithmetic.nan⟩
+        | .infinity negative => ⟨negative, .finite (if value = 0 then 0 else 1)⟩
+        | .finite scale =>
+            if scale = 0 then ⟨false, .finite 0⟩
+            else ⟨decide (scale < 0), .finite (value / (scale * scale))⟩
+  | .infinity negative, .infinity false => ⟨negative, .finite 1⟩
+  | .finite scale, .infinity false =>
+      if scale = 0 then ⟨false, .finite 0⟩
+      else ⟨decide (scale < 0), .infinity false⟩
+
+/-- Directed rounding of a negative root reverses the direction on its positive magnitude. -/
+def magnitudeMode (negative : Bool) : RoundingMode → RoundingMode
+  | .up => if negative then .down else .up
+  | .down => if negative then .up else .down
+  | mode => mode
+
+/-- Apply a root's sign after magnitude rounding, retaining the closed exceptional rules. -/
+def applySign (negative : Bool) : NumericalValue Numerics.Dyadic →
+    NumericalValue Numerics.Dyadic
+  | .finite value => .finite (if negative then value.neg else value)
+  | .infinity sign => .infinity (negative != sign)
+  | .exceptional _ => .exceptional .nan
+
+/-- Round the normalized signed root once to the destination precision by exact square tests. -/
+def rounded (format : Format) (mode : RoundingMode) (root : BlockRoot) :
+    NumericalValue Numerics.Dyadic :=
+  applySign root.negative
+    (Arithmetic.sqrtRounded format (magnitudeMode root.negative mode) root.radicand)
+
+/-- Saturate the rounded signed root in the requested direction, as given, where rounding the
+magnitude used the direction adjusted for the sign. -/
+def value (format : Format) (policy : ProjectionPolicy) (root : BlockRoot) :
+    NumericalValue Numerics.Dyadic :=
+  format.saturate policy.saturation policy.rounding (rounded format policy.rounding root)
+
+/-- Encode a normalized root after its single precision rounding and saturation. -/
+def project (format : Format) (policy : ProjectionPolicy) (root : BlockRoot) :
+    ExecFloat.P3109 format :=
+  ExecFloat.Codebook.ofCode (BitVec.ofNat format.bitWidth
+    (Format.Internal.encodeDatumNat format (value format policy root)))
+
+end BlockRoot
+
+namespace Block
+
+variable {length : ℕ+}
+variable {Scale ScaleExact Source SourceExact ResultScale ResultScaleExact : Type}
+variable [ExactDecoder Scale ScaleExact] [ExactMap ScaleExact Rat]
+variable [ExactDecoder Source SourceExact] [ExactMap SourceExact Rat]
+variable [ExactDecoder ResultScale ResultScaleExact] [ExactMap ResultScaleExact Rat]
+
+/-- Project exact root radicands at a shared result scale, with independent lane rounding words. -/
+def projectRoots (format : Format) (policy : BlockPolicy length) (scale : ResultScale)
+    (radicands : Vector (NumericalValue Rat) length) :
+    Block ResultScale (ExecFloat.P3109 format) length :=
+  let exactScale := Mixed.decode scale
+  ⟨scale, Vector.ofFn fun lane : Fin (length : Nat) =>
+    BlockRoot.project format (policy.at lane)
+      (BlockRoot.normalize exactScale radicands[lane.val])⟩
+
+/-- P3109 interim report v4.1 (unapproved), §§5.7, 4.10.8: normalize exact square roots before
+    final rounding. -/
+def BlockSqrt (format : Format) (policy : BlockPolicy length)
+    (block : Block Scale Source length) (resultScale : ResultScale) :
+    Block ResultScale (ExecFloat.P3109 format) length :=
+  projectRoots format policy resultScale (decode block)
+
+/-- P3109 interim report v4.1 (unapproved), §§5.7, 4.10.8: reciprocal root with the
+    nonpositive-domain rule. -/
+def BlockRSqrt (format : Format) (policy : BlockPolicy length)
+    (block : Block Scale Source length) (resultScale : ResultScale) :
+    Block ResultScale (ExecFloat.P3109 format) length :=
+  projectRoots format policy resultScale ((decode block).map Arithmetic.rsqrtRadicand)
+
+variable {RightScale RightScaleExact Right RightExact : Type}
+variable [ExactDecoder RightScale RightScaleExact] [ExactMap RightScaleExact Rat]
+variable [ExactDecoder Right RightExact] [ExactMap RightExact Rat]
+
+/-- P3109 interim report v4.1 (unapproved), §§5.7, 4.10.14: hypotenuse retaining the exact sum
+    of squares. -/
+def BlockHypot (format : Format) (policy : BlockPolicy length)
+    (left : Block Scale Source length) (right : Block RightScale Right length)
+    (resultScale : ResultScale) : Block ResultScale (ExecFloat.P3109 format) length :=
+  let leftValues := decode left
+  let rightValues := decode right
+  projectRoots format policy resultScale
+    (Vector.ofFn fun lane : Fin (length : Nat) =>
+      Arithmetic.hypotRadicand leftValues[lane.val] rightValues[lane.val])
+
+end Block
+end FloatLib.Floats.Formats.P3109

@@ -1,0 +1,5 @@
+ROW	core only: `FloatLib.Numerics.Kernel.Frac`	3360	0.27 s	461 MB
+ROW	the proof module: `FloatLib.Numerics.Kernel.FracProof`	17840	1.83 s	2286 MB
+ROW	`Frac` and one analysis module of Mathlib (`Mathlib.Analysis.SpecialFunctions.Log.Basic`)	18255	1.83 s	2453 MB
+ROW	all of FloatLib: `FloatLib`	36875	3.03 s	4316 MB
+ROW	all of Mathlib: `Mathlib`	55645	4.62 s	6566 MB

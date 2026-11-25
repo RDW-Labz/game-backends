@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 13:47 UTC · 1663 entries · 422 vendored, 1241 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 14:03 UTC · 1669 entries · 424 vendored, 1245 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-25 13:47 UTC · 1663 entries · 422 vendored, 1241 reference-
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
-| [save-state](#save-state) — Save / state systems | 104 | 29 | 75 |
+| [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
 
 
@@ -1494,7 +1494,7 @@ _Generated 2026-11-25 13:47 UTC · 1663 entries · 422 vendored, 1241 reference-
 
 ## save-state
 
-**Save / state systems** — 104 entries
+**Save / state systems** — 110 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1510,6 +1510,7 @@ _Generated 2026-11-25 13:47 UTC · 1663 entries · 422 vendored, 1241 reference-
 | [bsuccinct-rs](entries/save-state/beling-bsuccinct-rs/README.md) | Rust libraries and programs focused on succinct data structures | rust | Apache-2.0 | reference | [beling/bsuccinct-rs](https://github.com/beling/bsuccinct-rs) @ `2026-11-11 (branch tip at catalogue time)` |
 | [capnproto](entries/save-state/capnproto-capnproto/README.md) | Cap'n Proto serialization/RPC system - core tools and C++ library | c++ | MIT | vendored | [capnproto/capnproto](https://github.com/capnproto/capnproto) @ `5f160ba386e6` |
 | [cardano-serialization-lib](entries/save-state/emurgo-cardano-serialization-lib/README.md) | This is a library, written in Rust, for serialization & deserialization of data structures used in Cardano's Haskell implementation of Alonzo along with useful  | rust | MIT | vendored | [Emurgo/cardano-serialization-lib](https://github.com/Emurgo/cardano-serialization-lib) @ `6b4253814f18` |
+| [cbor](entries/save-state/2tvenom-cbor/README.md) | Golang library for working with cbor binary format | go | WTFPL | reference | [2tvenom/cbor](https://github.com/2tvenom/cbor) @ `2018-02-09 (branch tip at catalogue time)` |
 | [cereal](entries/save-state/cereal/README.md) | C++11 serialization: JSON/binary/XML archives, versioning | c++ | BSD-3-Clause | vendored | [USCiLab/cereal](https://github.com/USCiLab/cereal) @ `22a1b369f39b` |
 | [Chronicle-Wire](entries/save-state/openhft-chronicle-wire/README.md) | A Low Garbage Java Serialisation Library that supports multiple formats | java | Apache-2.0 | reference | [OpenHFT/Chronicle-Wire](https://github.com/OpenHFT/Chronicle-Wire) @ `2026-11-22 (branch tip at catalogue time)` |
 | [cista](entries/save-state/felixguendling-cista/README.md) | Cista is a simple, high-performance, zero-copy C++ serialization & reflection library. | c++ | MIT | reference | [felixguendling/cista](https://github.com/felixguendling/cista) @ `2026-11-06 (branch tip at catalogue time)` |
@@ -1534,6 +1535,7 @@ _Generated 2026-11-25 13:47 UTC · 1663 entries · 422 vendored, 1241 reference-
 | [fitsjs](entries/save-state/astrojs-fitsjs/README.md) | JavaScript library for reading the FITS astronomical format.  Functionality includes reading of images, data cubes, compressed images, binary and ascii tables. | javascript | MIT | reference | [astrojs/fitsjs](https://github.com/astrojs/fitsjs) @ `2015-04-09 (branch tip at catalogue time)` |
 | [FlatBuffers](entries/save-state/flatbuffers/README.md) | zero-copy serialization, schema-driven | c++ | Apache-2.0 | vendored | [google/flatbuffers](https://github.com/google/flatbuffers) @ `5eb190f00005` |
 | [flatcc](entries/save-state/dvidelabs-flatcc/README.md) | FlatBuffers Compiler and Library in C for C | c | Apache-2.0 | vendored | [dvidelabs/flatcc](https://github.com/dvidelabs/flatcc) @ `0df9c097a19b` |
+| [FloatLib](entries/save-state/lean-dojo-floatlib/README.md) | Arbitrary verified fast precision floating point arithmetic in Lean, with proofs, optimized backends, and support for IEEE binary and decimal, posits, and custo | lean | MIT | vendored | [lean-dojo/FloatLib](https://github.com/lean-dojo/FloatLib) @ `d24844f03932` |
 | [FluidFramework](entries/save-state/microsoft-fluidframework/README.md) | Library for building distributed, real-time collaborative web  applications | typescript | MIT | reference | [microsoft/FluidFramework](https://github.com/microsoft/FluidFramework) @ `bd9ed94824fe` |
 | [Freeciv — savegame](entries/save-state/freeciv-savegame/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [FTC-Skystone-Dark-Angels-Romania-2020](entries/save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020/README.md) | NOTICE This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season. If you are looking for the current season's FTC SDK software | java | BSD-3-Clause | vendored | [chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020](https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020) @ `b5132793582a` |
@@ -1553,10 +1555,12 @@ _Generated 2026-11-25 13:47 UTC · 1663 entries · 422 vendored, 1241 reference-
 | [kaitai_struct_formats](entries/save-state/kaitai-io-kaitai-struct-formats/README.md) | Kaitai Struct: library of binary file formats (.ksy) | kaitai struct | none | reference | [kaitai-io/kaitai_struct_formats](https://github.com/kaitai-io/kaitai_struct_formats) @ `8d8353c5059e` |
 | [kura](entries/save-state/nookieai-kura/README.md) | Scan, identify, organize, and transfer your PS1-PS5 & Vita game library (Windows, macOS, Linux), with a bundled PS5 payload for installs, cheats, saves, and fan | n/a | unknown | reference | [NookieAI/kura](https://github.com/NookieAI/kura) @ `2026-11-22 (branch tip at catalogue time)` |
 | [libNOM.io](entries/save-state/zencq-libnom-io/README.md) | A .NET class library to read and write save files from the game No Man's Sky for all possible platforms as well as related actions. | c# | GPL-3.0 | reference | [zencq/libNOM.io](https://github.com/zencq/libNOM.io) @ `2026-02-02 (branch tip at catalogue time)` |
+| [libplist](entries/save-state/jonathanbeck-libplist/README.md) | A library to handle Apple Property List format whereas it's binary or XML | c | LGPL-2.1 | reference | [JonathanBeck/libplist](https://github.com/JonathanBeck/libplist) @ `2010-08-23 (branch tip at catalogue time)` |
 | [libplist](entries/save-state/libimobiledevice-libplist/README.md) | A library to handle Apple Property List format in binary or XML | c | LGPL-2.1 | reference | [libimobiledevice/libplist](https://github.com/libimobiledevice/libplist) @ `2026-11-16 (branch tip at catalogue time)` |
 | [lisp-binary](entries/save-state/j3pic-lisp-binary/README.md) | A library to easily read and write complex binary formats. | common lisp | GPL-3.0 | reference | [j3pic/lisp-binary](https://github.com/j3pic/lisp-binary) @ `2026-07-09 (branch tip at catalogue time)` |
 | [loom](entries/save-state/asonge-loom/README.md) | A CRDT library with δ-CRDT support. | elixir | unknown | reference | [asonge/loom](https://github.com/asonge/loom) @ `2017-05-30 (branch tip at catalogue time)` |
 | [miniserde](entries/save-state/dtolnay-miniserde/README.md) | Data structure serialization library with several opposite design goals from Serde | rust | Apache-2.0 | vendored | [dtolnay/miniserde](https://github.com/dtolnay/miniserde) @ `6dfa4fa395f3` |
+| [mrcrowbar](entries/save-state/moralrecordings-mrcrowbar/README.md) | A library and model framework for reverse engineering binary file formats | python | BSD-3-Clause | reference | [moralrecordings/mrcrowbar](https://github.com/moralrecordings/mrcrowbar) @ `2026-01-22 (branch tip at catalogue time)` |
 | [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
 | [Nerdbank.MessagePack](entries/save-state/aarnott-nerdbank-messagepack/README.md) | A feature-packed .NET MessagePack serialization library with great performance and simplicity. msgpack.io[C#] | c# | MIT | reference | [AArnott/Nerdbank.MessagePack](https://github.com/AArnott/Nerdbank.MessagePack) @ `2026-11-24 (branch tip at catalogue time)` |
 | [nes-emulator](entries/save-state/nicolfo-nes-emulator/README.md) | Cycle-accurate NES emulator in Rust - CPU/PPU/APU, 43 mappers with expansion audio (incl. VRC7 FM), NTSC/PAL auto-detect, gamepad + savestates. | rust | GPL-3.0 | reference | [Nicolfo/nes-emulator](https://github.com/Nicolfo/nes-emulator) @ `2026-11-13 (branch tip at catalogue time)` |
@@ -1567,6 +1571,7 @@ _Generated 2026-11-25 13:47 UTC · 1663 entries · 422 vendored, 1241 reference-
 | [PenguinBurner](entries/save-state/jpietek-penguinburner/README.md) | Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play | python | GPL-3.0 | reference | [jpietek/PenguinBurner](https://github.com/jpietek/PenguinBurner) @ `2026-11-17 (branch tip at catalogue time)` |
 | [phigros-save-manager](entries/save-state/lamadaemon-phigros-save-manager/README.md) | A Typescript library for parse and modify the save file of game Phigros | typescript | unknown | reference | [lamadaemon/phigros-save-manager](https://github.com/lamadaemon/phigros-save-manager) @ `2024-11-19 (branch tip at catalogue time)` |
 | [prost-reflect](entries/save-state/andrewhickman-prost-reflect/README.md) | A protobuf library extending prost with reflection support and dynamic messages. | rust | Apache-2.0 | reference | [andrewhickman/prost-reflect](https://github.com/andrewhickman/prost-reflect) @ `2026-07-09 (branch tip at catalogue time)` |
+| [protobuf-net-data](entries/save-state/dotarj-protobuf-net-data/README.md) | A library for serializing ADO.NET DataTables and DataReaders into a portable binary format. | c# | Apache-2.0 | vendored | [dotarj/protobuf-net-data](https://github.com/dotarj/protobuf-net-data) @ `45d28b5388de` |
 | [protopuf](entries/save-state/pragmatwice-protopuf/README.md) | Protocol Puffers: A little, highly templated, and protobuf-compatible serialization/deserialization header-only library written in C++20 | c++ | Apache-2.0 | reference | [PragmaTwice/protopuf](https://github.com/PragmaTwice/protopuf) @ `2026-10-02 (branch tip at catalogue time)` |
 | [pypsu](entries/save-state/mccaulay-pypsu/README.md) | Library for analyzing and creating PS2 PSU game save files | python | MIT | vendored | [McCaulay/pypsu](https://github.com/McCaulay/pypsu) @ `97c473cc25ea` |
 | [python3-crdt](entries/save-state/anshulahuja98-python3-crdt/README.md) | A python library for CRDTs (Conflict-free Replicated Data types) | python | MIT | reference | [anshulahuja98/python3-crdt](https://github.com/anshulahuja98/python3-crdt) @ `2021-01-23 (branch tip at catalogue time)` |
@@ -1582,6 +1587,7 @@ _Generated 2026-11-25 13:47 UTC · 1663 entries · 422 vendored, 1241 reference-
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
 | [savefile](entries/save-state/avl-savefile/README.md) | An easy to use library to save arbitrary rust data-structures to disk (or serialize to any other stream) | rust | MIT | reference | [avl/savefile](https://github.com/avl/savefile) @ `2026-11-22 (branch tip at catalogue time)` |
 | [SaveState](entries/save-state/matteo842-savestate/README.md) | Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ e | python | GPL-3.0 | reference | [Matteo842/SaveState](https://github.com/Matteo842/SaveState) @ `7557b3c5a788` |
+| [sbinary](entries/save-state/harrah-sbinary/README.md) | Library for describing binary formats for Scala types | scala | MIT | reference | [harrah/sbinary](https://github.com/harrah/sbinary) @ `2015-12-06 (branch tip at catalogue time)` |
 | [serde](entries/save-state/serdedotnet-serde/README.md) | Serde.NET is a C# port of the popular Serde serialization library for Rust | c# | BSD-3-Clause | reference | [serdedotnet/serde](https://github.com/serdedotnet/serde) @ `2026-11-15 (branch tip at catalogue time)` |
 | [serde-reflection](entries/save-state/serde-tools-serde-reflection/README.md) | Rust libraries and tools to help with interoperability and testing of serialization formats based on Serde. | rust | Apache-2.0 | reference | [serde-tools/serde-reflection](https://github.com/serde-tools/serde-reflection) @ `2026-11-18 (branch tip at catalogue time)` |
 | [Serialize.Linq](entries/save-state/esskar-serialize-linq/README.md) | C# library to serialize LINQ expressions | c# | MIT | vendored | [esskar/Serialize.Linq](https://github.com/esskar/Serialize.Linq) @ `44b715ffbea5` |

@@ -1,0 +1,236 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Configured.Conversion.Runtime
+public import FloatLib.Floats.Formats.BinaryInterchange.Conversion.Proof
+
+/-!
+# Configured binary-interchange conversion proofs
+
+Configured conversion inherits the descriptor's default IEEE nearest-value contract and preserves
+the complete outcome for every context.
+
+It is the final transport layer between descriptor-level conversion semantics and the public packed
+carrier. Storage selection never appears in the statements. Every configured backend must decode to
+the same converted value and status, so moving from a native word to arbitrary-width storage
+cannot change the numerical contract.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats
+
+open FloatLib.Numerics
+open FloatLib.Floats.Formats.BinaryInterchange
+
+namespace ExecFloat.Binary
+namespace Conversion
+
+universe u v
+
+variable {format : FloatFormat} {plan : Configured.StoragePlan format} {code : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec plan (Model format) code]
+
+/-- Finite observations are handled by the configured binary finite quantizer. -/
+@[simp, grind =] theorem run_finite (context : Context) (exact : SignedRat) :
+    run (format := format) (plan := plan) (code := code)
+        context (.finite exact) =
+      quantizeFinite context exact :=
+  rfl
+
+/-- Infinity observations are handled by the infinity policy alone. -/
+@[simp, grind =] theorem run_infinity (context : Context) (negative : Bool) :
+    run (format := format) (plan := plan) (code := code)
+        context (.infinity negative) =
+      quantizeInfinity context negative :=
+  rfl
+
+/-- Exceptional observations are handled by the exceptional policy alone. -/
+@[simp, grind =] theorem run_exceptional
+    (context : Context) (exceptional : ExceptionalValue) :
+    run (format := format) (plan := plan) (code := code)
+        context (.exceptional exceptional) =
+      quantizeExceptional context exceptional :=
+  rfl
+
+/-- The configured carrier inherits the descriptor's nearest-value and complete-outcome clauses. -/
+theorem implements_run :
+    Quantization.Spec.Implements
+      (spec (format := format) (plan := plan) (code := code))
+      (run (format := format) (plan := plan) (code := code)) :=
+  implements_runWith configuredPack
+
+/--
+An outcome satisfies the semantic contract if and only if it is the outcome of `run`, configured
+word and status fields included.
+-/
+theorem spec_iff_eq_run (context : Context) (input : NumericalValue SignedRat)
+    (outcome : FloatLib.Floats.ExecFloat.ConversionOutcome
+      (FloatLib.Floats.ExecFloat (Configured.Family format code plan))) :
+    spec context input outcome ↔ outcome = run context input :=
+  specWith_iff_eq_runWith configuredPack context input outcome
+
+/-- A successful default IEEE conversion satisfies the nearest-value predicate after decoding. -/
+theorem nearestFinite_of_spec (context : Context) (exact : SignedRat)
+    (rounded : FloatLib.Floats.ExecFloat (Configured.Family format code plan))
+    (indicators : FloatLib.Floats.ExecFloat.ConversionStatus)
+    (hpolicy : context.quantization = QuantizationPolicy.nearest)
+    (h : spec context (.finite exact) (.success rounded indicators))
+    (hformat : format.isIEEE = true := by ieee_format) :
+    NearestFinite exact.value (toModel rounded) := by
+  obtain ⟨model, houtcome, hnearest⟩ := h.2 hpolicy hformat
+  have hrounded : rounded = configuredPack model := (ConversionOutcome.success.inj houtcome).1
+  rw [hrounded]
+  simpa only [configuredPack, toModel, ofModel, Configured.Family.toModel_ofModel] using hnearest
+
+/-- The installed exact decoder is the public signed-rational decoder. -/
+@[simp, grind =] theorem exactDecoder_run
+    (value : FloatLib.Floats.ExecFloat (Configured.Family format code plan)) :
+    FloatLib.Floats.ExecFloat.ExactDecoder.run value =
+      ExecFloat.Binary.decode value :=
+  rfl
+
+/--
+Converting a binary model gives the outcome of casting the configured value that stores it, for
+every destination, mode, and context.
+
+Both decode through `SignedRat`, so a negative zero and a NaN's sign, payload, and signaling class
+reach the destination's policy from either source.
+-/
+theorem convert_model_eq_cast_ofModel {target : Type u} {TargetExact : Type v}
+    [FloatLib.Floats.ExecFloat.ExactMap SignedRat TargetExact]
+    [FloatLib.Floats.ExecFloat.Quantizer target TargetExact]
+    {Mode : Type} [modes : FloatLib.Floats.ExecFloat.RoundingModes target TargetExact Mode]
+    (value : Model format) (mode : Mode) (context : modes.Policy) :
+    FloatLib.Floats.ExecFloat.convert (target := target) value mode context =
+      FloatLib.Floats.ExecFloat.cast
+        (ofModel value : FloatLib.Floats.ExecFloat (Configured.Family format code plan))
+        mode context := by
+  have hdecode :
+      FloatLib.Floats.ExecFloat.ExactDecoder.run (ofModel value :
+          FloatLib.Floats.ExecFloat (Configured.Family format code plan)) =
+        FloatLib.Floats.ExecFloat.ExactDecoder.run value := by
+    change ((Model.exactNumericalSystem format).denote (toModel (ofModel value))).map
+        SignedRat.ofDyadic = _
+    rw [toModel, ofModel, Configured.Family.toModel_ofModel]
+    rfl
+  simp only [FloatLib.Floats.ExecFloat.cast, FloatLib.Floats.ExecFloat.convert,
+    FloatLib.Floats.ExecFloat.ExactDecoder.decodeTo, hdecode]
+
+/--
+A default-context finite conversion is the canonical nearest-even rational rounder applied to the
+sign bit and magnitude of the signed rational.
+
+The delivered value is `Model.roundRat`. For conventional IEEE destinations and finite results,
+`Model.toReal_roundRatScaled_eq_roundAt` relates that rounder to nearest-even rounding over `ℝ`.
+-/
+theorem run_default_finite (exact : SignedRat) :
+    run (format := format) (plan := plan) (code := code) Context.default (.finite exact) =
+      .success
+        (ofModel (Model.roundRat format exact.negative exact.value.num.natAbs exact.value.den))
+        (finiteStatus Context.default exact.value
+          (Model.roundRat format exact.negative exact.value.num.natAbs exact.value.den)) := by
+  have hpolicy : Context.default.quantization = QuantizationPolicy.nearest := rfl
+  simp only [run, runWith, quantizeFiniteWith, hpolicy,
+    Model.Policy.roundRat_nearest_eq_execFloat _ _ _ _ _ exact.value.den_nz]
+  rfl
+
+/--
+Converting an exact negative zero preserves its sign when the destination supports negative zero.
+
+For an encoding with one unsigned zero, `zero true` is that encoding's positive zero, so the
+statement also covers FNUZ destinations.
+-/
+theorem run_default_negZero_value? :
+    (run (format := format) (plan := plan) (code := code) Context.default
+      (.finite SignedRat.negZero)).value? = some (ExecFloat.Binary.zero true) := by
+  rw [run_default_finite]
+  simp [ExecFloat.Binary.zero, Model.roundRat_num_zero, ConversionOutcome.value?]
+
+/-- Rejecting infinity fails with the source infinity and its sign. -/
+@[grind =] theorem run_infinity_reject (negative : Bool) :
+    run (format := format) (plan := plan) (code := code)
+        ({ infinity := .reject } : Context) (.infinity negative) =
+      .failure (.infinity .source negative) :=
+  rfl
+
+/-- Rejecting an exceptional observation preserves its complete common classification. -/
+@[grind =] theorem run_exceptional_reject (exceptional : ExceptionalValue) :
+    run (format := format) (plan := plan) (code := code)
+        ({ exceptional := .reject } : Context) (.exceptional exceptional) =
+      .failure (.exceptional .source exceptional) :=
+  rfl
+
+/-- A configured NaN decodes to its diagnostic payload without the quiet bit, sign, and class. -/
+theorem decode_of_isNaN {source : FloatFormat}
+    {sourcePlan : Configured.StoragePlan source} {sourceCode : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec sourcePlan (Model source) sourceCode]
+    (value : FloatLib.Floats.ExecFloat (Configured.Family source sourceCode sourcePlan))
+    (hnan : Model.isNaN (toModel value) = true) :
+    ExecFloat.Binary.decode value =
+      .exceptional (.nan (some (Model.nanPayload (toModel value)))
+        (Model.signBit (toModel value)) (Model.isSignaling (toModel value))) := by
+  have hdyadic : Model.toDyadic? (toModel value) = none := by
+    cases h : Model.toDyadic? (toModel value) with
+    | none => rfl
+    | some d => simp [Model.isNaN_eq_false_of_toDyadic?_some h] at hnan
+  have hinf : Model.isInfinite (toModel value) = false := by
+    cases h : Model.isInfinite (toModel value) with
+    | false => rfl
+    | true => simp [Model.isNaN_eq_false_of_isInfinite_eq_true _ h] at hnan
+  simp [ExecFloat.Binary.decode, Model.exactNumericalSystem, hdyadic, hinf, NumericalValue.map]
+
+/--
+Default conversion of a decoded configured NaN is `Model.cast` on the source model.
+An IEEE destination keeps the sign and any payload that fits, and an oversized payload becomes zero.
+Maximum-NaN encodings keep only the sign, while FNUZ has a single NaN. Invalid is raised if and
+only if the source is signaling. The destination must have a NaN encoding. When it has none,
+`run_default_decode_of_isNaN_of_encoding_finite` shows that conversion fails while
+`Model.cast` raises invalid.
+-/
+theorem run_default_decode_of_isNaN {source : FloatFormat}
+    {sourcePlan : Configured.StoragePlan source} {sourceCode : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec sourcePlan (Model source) sourceCode]
+    (value : FloatLib.Floats.ExecFloat (Configured.Family source sourceCode sourcePlan))
+    (mode : Model.IEEERoundingMode)
+    (hnan : Model.isNaN (toModel value) = true) (hformat : format.encoding ≠ .finite) :
+    run (format := format) (plan := plan) (code := code) Context.default
+        (ExecFloat.Binary.decode value) =
+      .success (ofModel (Model.cast source format (toModel value) mode (status := true)).value)
+        { invalid := (Model.cast source format (toModel value) mode (status :=
+          true)).status.invalid } := by
+  rw [decode_of_isNaN value hnan]
+  exact runWith_default_nan_eq_cast_status configuredPack (toModel value) mode hnan hformat
+
+/--
+Default conversion of a decoded configured NaN into a destination with no NaN encoding fails with
+the source NaN as the reported exceptional value, and `Model.cast` on the same source
+raises invalid.
+
+`ExecFloat` reports a failure because the destination has no NaN to deliver, while the descriptor
+model returns positive zero with the invalid flag set. Both paths classify the conversion as
+invalid.
+-/
+theorem run_default_decode_of_isNaN_of_encoding_finite {source : FloatFormat}
+    {sourcePlan : Configured.StoragePlan source} {sourceCode : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec sourcePlan (Model source) sourceCode]
+    (value : FloatLib.Floats.ExecFloat (Configured.Family source sourceCode sourcePlan))
+    (mode : Model.IEEERoundingMode)
+    (hnan : Model.isNaN (toModel value) = true) (hformat : format.encoding = .finite) :
+    run (format := format) (plan := plan) (code := code) Context.default
+        (ExecFloat.Binary.decode value) =
+      .failure (.exceptional .source
+        (.nan (some (Model.nanPayload (toModel value)))
+          (Model.signBit (toModel value)) (Model.isSignaling (toModel value)))) ∧
+      (Model.cast source format (toModel value) mode (status := true)).status.invalid = true := by
+  rw [decode_of_isNaN value hnan]
+  exact runWith_default_nan_of_encoding_finite configuredPack (toModel value) mode hnan hformat
+
+end Conversion
+end ExecFloat.Binary
+end FloatLib.Floats

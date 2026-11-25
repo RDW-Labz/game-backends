@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:03:58Z",
+ "category": "save-state",
+ "commit": "2018-02-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "2tvenom/cbor \u2014 Golang library for working with cbor binary format",
+ "language": "go",
+ "license": "WTFPL",
+ "license_verdict": "gated-reference",
+ "name": "cbor",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (WTFPL)",
+ "slug": "2tvenom-cbor",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 60,
+ "system": "Golang library for working with cbor binary format",
+ "upstream": "https://github.com/2tvenom/cbor",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

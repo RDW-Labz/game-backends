@@ -1,0 +1,49 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Executable.Carrier
+public import FloatLib.Floats.Formats.Logarithmic.Exact.Proof
+
+/-!
+# Configured exact logarithmic identity
+
+This is where the public `ExecFloat.Logarithmic` type comes from, the encoded logarithmic family on
+the common carrier. A value is zero or a sign with an unbounded integer exponent, and no bit layout
+is imposed on either.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats
+
+open FloatLib.Numerics
+
+namespace ExecFloat
+namespace Logarithmic
+
+/-- Type-level identity of an exact logarithmic format at one radix. -/
+inductive Family (radix : Radix) where
+  /-- The only value: the family names a format in types and carries no data. -/
+  | format
+
+instance (radix : Radix) : EncodedFormat (Family radix) where
+  Code := Formats.Logarithmic.Code radix
+  Scalar := ℝ
+
+noncomputable instance (radix : Radix) : FormatSemantics (Family radix) :=
+  FormatSemantics.ofFinite _ fun code ↦ code.toReal
+
+end Logarithmic
+
+/-- Exact zero and signed integral powers of `radix`, using the common `ExecFloat` carrier. -/
+abbrev Logarithmic (radix : Radix) :=
+  FloatLib.Floats.ExecFloat (Logarithmic.Family radix)
+
+end ExecFloat
+
+end FloatLib.Floats

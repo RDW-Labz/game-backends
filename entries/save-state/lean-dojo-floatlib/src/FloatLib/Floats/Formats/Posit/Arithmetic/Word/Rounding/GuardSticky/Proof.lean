@@ -1,0 +1,210 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Arithmetic.GuardSticky.Proof
+public import FloatLib.Floats.Formats.Posit.Arithmetic.Word.Rounding.GuardSticky.Runtime
+public import FloatLib.Floats.Formats.Posit.Rounding.Direct.Proof
+public import FloatLib.Kernels.FixedWord.DyadicCompare.Proof
+
+import FloatLib.Floats.Formats.Posit.Arithmetic.Word.Core.Primitive.Fields.Proof
+
+/-!
+# Correctness of direct one-word guard-and-sticky Posit rounding
+
+This proof and its two-limb twin together make the one-word and two-limb kernels execution
+refinements of a single rounding rule, chosen by exact intermediate capacity alone.
+
+`lawfulCandidateCarrier_candidateCarrier` shows that the `UInt64` candidate carrier satisfies the
+shared carrier
+laws at capacity 64, and the shared theorems then give the packing and rounding refinement. The
+remaining proofs connect the one-word entry points to the arbitrary-width direct rounder. Those
+entry points add the zero test, the exact minimum-positive comparison, and sign restoration.
+
+Operations with a two-limb intermediate get their cross-carrier projection theorem from the
+`WordLimb` proof module, so importing this scalar proof doesn't load the two-limb rounding proof.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Posit.Model.NativeWordRounding.GuardSticky
+
+open FloatLib.Numerics
+
+/--
+Natural-number laws of the one-word candidate carrier at capacity 64.
+
+Bit and suffix reads are exact at every width. The arithmetic laws hold under the bounds the
+shared rounder establishes: shifts stay below 64 positions, sums and successors fit the word, and
+masks are narrower than the word.
+-/
+theorem lawfulCandidateCarrier_candidateCarrier :
+    GuardStickyCarrier.LawfulCandidateCarrier candidateCarrier UInt64.toNat 64 where
+  bitAt_eq_testBit := NativeWord.bitAt_eq_testBit
+  hasLowBits_eq value width := by
+    have htoNat := NativeWord.lowBits_toNat value width
+    apply Bool.eq_iff_iff.mpr
+    simp only [hasLowBits, bne_iff_ne]
+    constructor
+    · intro hword hremainder
+      apply hword
+      apply UInt64.toNat_inj.mp
+      rw [htoNat]
+      simpa using hremainder
+    · intro hremainder hword
+      apply hremainder
+      have equality := congrArg UInt64.toNat hword
+      rw [htoNat] at equality
+      simpa using equality
+  toNat_lt := UInt64.toNat_lt
+  toNat_ofWord _ := rfl
+  shiftLeft_toNat value shift hshift hfit := by
+    simpa only [shiftLeft, ite_eq_left hshift] using
+      FixedWord.shiftLeft_toNat value shift hfit
+  shiftRight_toNat value shift _ := NativeWord.shiftRight_toNat value shift
+  fractionBelow_toNat value leading hleading hlower _ := by
+    have honeShift : (shiftLeft 1 leading).toNat = 2 ^ leading := by
+      simpa only [shiftLeft, ite_eq_left hleading] using
+        FixedWord.uint64_powTwo_toNat leading hleading
+    have honeLe : shiftLeft 1 leading ≤ value := by
+      rw [UInt64.le_iff_toNat_le, honeShift]
+      exact hlower
+    change (value - shiftLeft 1 leading).toNat = value.toNat - 2 ^ leading
+    rw [UInt64.toNat_sub_of_le value (shiftLeft 1 leading) honeLe, honeShift]
+  add_toNat left right hfit := by
+    change (left + right).toNat = left.toNat + right.toNat
+    rw [UInt64.toNat_add, Nat.mod_eq_of_lt hfit]
+  lowOnes_toNat := NativeWord.lowMask_toNat
+  increment_toNat value hfit := by
+    change (value + 1).toNat = value.toNat + 1
+    rw [UInt64.toNat_add, UInt64.toNat_one, Nat.mod_eq_of_lt hfit]
+  isOdd_eq := FixedWord.lowBitIsNonzero_eq_odd
+  log2_eq := FixedWord.log2Word_toNat
+
+/-- Under one-word eligibility the payload is shorter than the carrier. -/
+theorem payloadBits_lt_of_eligible
+    (format : Format) (heligible : NativeWord.Eligible format) :
+    format.payloadBits < 64 := by
+  unfold NativeWord.Eligible Format.payloadBits at *
+  omega
+
+/-- The scalar minimum-positive comparison is exact dyadic comparison. -/
+private theorem isLessMinPositive_eq
+    (format : Format) (significand : UInt64) (exponent : Int) :
+    isLessMinPositive format significand exponent =
+      ({ negative := false
+         significand := significand.toNat
+         exponent } : FloatLib.Numerics.Dyadic).isLess
+        (DyadicRounding.minPositive format) := by
+  rw [DyadicRounding.minPositive_eq_fields]
+  unfold isLessMinPositive
+  dsimp only
+  rw [FixedWord.DyadicCompare.isLessPowerOfTwo_eq]
+  rw [Dyadic.isLessNonnegativeFields_eq, Dyadic.isLessFields_eq]
+
+/-! ## Positive rounding -/
+
+/-- The positive one-word kernel is the shared arbitrary-width direct rounder. -/
+theorem roundPositiveCodeWord_toNat_eq_direct
+    (format : Format) (heligible : NativeWord.Eligible format)
+    (significand : UInt64) (exponent : Int) :
+    (roundPositiveCodeWord format heligible significand exponent).toNat =
+      DirectDyadicPacking.roundPositiveCode format
+        { negative := false
+          significand := significand.toNat
+          exponent } := by
+  by_cases hzero : significand = 0
+  · subst significand
+    rfl
+  have hnonzero : significand.toNat ≠ 0 := by
+    intro hzeroNat
+    apply hzero
+    apply UInt64.toNat_inj.mp
+    simpa using hzeroNat
+  unfold roundPositiveCodeWord
+  simp only [beq_iff_eq, hzero, ite_false]
+  by_cases hunderflow :
+      isLessMinPositive format significand exponent = true
+  · rw [ite_eq_left hunderflow]
+    rw [isLessMinPositive_eq] at hunderflow
+    rw [DirectDyadicPacking.roundPositiveCode_eq_dyadic]
+    unfold DyadicRounding.roundPositiveCode
+    have hspecial :
+        ¬(significand.toNat == 0 || false) = true := by
+      simp [hnonzero]
+    rw [ite_eq_right hspecial, ite_eq_left hunderflow, UInt64.toNat_one]
+  · rw [ite_eq_right hunderflow]
+    exact GuardStickyCarrier.roundNormalizedPositive_toNat_eq_direct
+      lawfulCandidateCarrier_candidateCarrier
+      format significand exponent (payloadBits_lt_of_eligible format heligible) hnonzero
+
+/-- Natural-number positive rounding has the same direct semantics. -/
+theorem roundPositiveCode_eq_direct
+    (format : Format) (heligible : NativeWord.Eligible format)
+    (significand : UInt64) (exponent : Int) :
+    roundPositiveCode format heligible significand exponent =
+      DirectDyadicPacking.roundPositiveCode format
+        { negative := false
+          significand := significand.toNat
+          exponent } := by
+  exact roundPositiveCodeWord_toNat_eq_direct
+    format heligible significand exponent
+
+/-- Positive scalar rounding always remains below the Posit sign bit. -/
+private theorem roundPositiveCodeWord_lt_signMask
+    (format : Format) (heligible : NativeWord.Eligible format)
+    (significand : UInt64) (exponent : Int) :
+    (roundPositiveCodeWord format heligible significand exponent).toNat <
+      format.signMaskNat := by
+  rw [roundPositiveCodeWord_toNat_eq_direct]
+  exact DirectDyadicPacking.roundPositiveCode_lt_signMask format _
+
+/-! ## Signed rounding -/
+
+/-- The signed one-word kernel is the shared arbitrary-width direct rounder. -/
+theorem roundCodeWord_toNat_eq_direct
+    (format : Format) (heligible : NativeWord.Eligible format)
+    (negative : Bool) (significand : UInt64) (exponent : Int) :
+    (roundCodeWord format heligible negative significand exponent).toNat =
+      DirectDyadicPacking.roundCode format
+        { negative
+          significand := significand.toNat
+          exponent } := by
+  unfold roundCodeWord
+  rw [NativeWord.restoreSignWord_toNat format heligible negative
+    (roundPositiveCodeWord format heligible significand exponent)
+    (roundPositiveCodeWord_lt_signMask
+      format heligible significand exponent)]
+  rw [roundPositiveCodeWord_toNat_eq_direct]
+  unfold DirectDyadicPacking.roundCode
+  by_cases hzero : significand.toNat = 0
+  · simp [hzero, DirectDyadicPacking.roundPositiveCode,
+      DyadicRounding.restoreSignCode]
+  · simp [hzero, DyadicRounding.magnitude]
+
+/-- Complete natural-number native-field rounding has the shared direct semantics. -/
+theorem roundCodeNat_eq_direct
+    (format : Format) (heligible : NativeWord.Eligible format)
+    (negative : Bool) (significand : UInt64) (exponent : Int) :
+    roundCodeNat format heligible negative significand exponent =
+      DirectDyadicPacking.roundCode format
+        { negative
+          significand := significand.toNat
+          exponent } := by
+  exact roundCodeWord_toNat_eq_direct
+    format heligible negative significand exponent
+
+/-- Direct one-word field rounding always returns a valid complete Posit code. -/
+theorem roundCodeNat_lt_modulus
+    (format : Format) (heligible : NativeWord.Eligible format)
+    (negative : Bool) (significand : UInt64) (exponent : Int) :
+    roundCodeNat format heligible negative significand exponent <
+      format.modulus := by
+  rw [roundCodeNat_eq_direct]
+  exact DirectDyadicPacking.roundCode_lt_modulus format _
+
+end FloatLib.Floats.Formats.Posit.Model.NativeWordRounding.GuardSticky

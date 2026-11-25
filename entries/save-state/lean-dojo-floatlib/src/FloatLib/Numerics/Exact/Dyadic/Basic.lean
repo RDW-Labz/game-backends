@@ -1,0 +1,161 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import Mathlib.Data.Rat.Cast.Order
+
+/-!
+# Exact dyadic values
+
+A `FloatLib.Numerics.Dyadic` stores a sign, a natural significand, and an integral power-of-two
+scale, so arithmetic and rounding can work on these fields without rational normalization.
+
+Lean core has its own `_root_.Dyadic`, defined in `Init.Data.Dyadic.Basic`, which normalizes nonzero
+values to an odd integer times a power of two and has a single zero. Ours keeps an unnormalized
+significand and scale and a separate sign, because the IEEE signed-zero rules need one. Its `toRat`
+identifies both zero signs, and formats with a single zero discard that sign on encoding. `toCore`
+converts to Lean's normalized carrier and preserves the rational value.
+
+This module gives the carrier its integer conversions and rational denotation. Arithmetic and order
+have modules of their own.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics
+
+/--
+An exact signed integer multiple of an integral power of two.
+
+`significand = 0` denotes zero for every sign and exponent. Families that distinguish signed zero
+can keep that distinction in their semantics and rounding rules, while `toRat` identifies both
+zeros.
+-/
+structure Dyadic where
+  /-- `true` means negative. -/
+  negative : Bool
+  /-- Nonnegative integer significand. -/
+  significand : Nat
+  /-- Integral power-of-two scale. -/
+  exponent : Int
+  deriving DecidableEq, Repr
+
+namespace Dyadic
+
+/-- Exact dyadics are equal when all three stored scalar fields are equal. -/
+@[ext] theorem ext {left right : Dyadic}
+    (hnegative : left.negative = right.negative)
+    (hsignificand : left.significand = right.significand)
+    (hexponent : left.exponent = right.exponent) :
+    left = right := by
+  cases left
+  cases right
+  simp_all
+
+/-- Exact dyadics are equal exactly when all three stored scalar fields are equal. -/
+add_decl_doc FloatLib.Numerics.Dyadic.ext_iff
+
+/-- Exact zero with the conventional nonnegative canonical fields. -/
+@[inline] def zero : Dyadic :=
+  { negative := false, significand := 0, exponent := 0 }
+
+/-- Canonical exact zero has a nonnegative sign field. -/
+@[simp, grind =] theorem zero_negative : zero.negative = false := rfl
+
+/-- Canonical exact zero has a zero significand. -/
+@[simp, grind =] theorem zero_significand : zero.significand = 0 := rfl
+
+/-- Canonical exact zero uses exponent zero. -/
+@[simp, grind =] theorem zero_exponent : zero.exponent = 0 := rfl
+
+/--
+Represent `coefficient * 2 ^ exponent` by extracting the integer's sign and magnitude.
+Fixed-point accumulators use this conversion before rounding, without rational normalization.
+-/
+@[inline] def ofScaledInt (coefficient : Int) (exponent : Int) : Dyadic :=
+  { negative := coefficient < 0
+    significand := coefficient.natAbs
+    exponent }
+
+/-- Signed integer significand before the power-of-two scale is applied. -/
+@[inline] def signedSignificand (value : Dyadic) : Int :=
+  if value.negative then
+    -Int.ofNat value.significand
+  else
+    Int.ofNat value.significand
+
+/-- Taking the absolute value of the signed significand recovers its stored magnitude. -/
+@[simp, grind =] theorem natAbs_signedSignificand (value : Dyadic) :
+    value.signedSignificand.natAbs = value.significand := by
+  cases hnegative : value.negative <;>
+    simp [signedSignificand, hnegative]
+
+/-- The signed significand vanishes exactly when its stored magnitude does. -/
+@[simp] theorem signedSignificand_eq_zero (value : Dyadic) :
+    value.signedSignificand = 0 ↔ value.significand = 0 := by
+  rw [← Int.natAbs_eq_zero, natAbs_signedSignificand]
+
+/-- A nonzero dyadic is recovered from its signed significand and stored exponent. -/
+theorem ofScaledInt_signedSignificand (value : Dyadic) (h : value.significand ≠ 0) :
+    ofScaledInt value.signedSignificand value.exponent = value := by
+  rcases value with ⟨negative, magnitude, exponent⟩
+  cases negative <;>
+    simp [ofScaledInt, signedSignificand, Nat.pos_of_ne_zero h]
+
+/-- Exact rational denotation of a dyadic value. -/
+@[inline] def toRat (value : Dyadic) : Rat :=
+  Rat.ofInt value.signedSignificand * (2 : Rat) ^ value.exponent
+
+/-- Normalize into Lean's dyadic carrier, identifying the two representations of zero. -/
+def toCore (value : Dyadic) : _root_.Dyadic :=
+  _root_.Dyadic.ofIntWithPrec value.signedSignificand (-value.exponent)
+
+/-- Converting to Lean's normalized dyadics preserves the exact rational value. -/
+@[simp, grind =] theorem toRat_toCore (value : Dyadic) :
+    value.toCore.toRat = value.toRat := by
+  simp only [toCore, _root_.Dyadic.toRat_ofIntWithPrec_eq_mul_two_pow, neg_neg,
+    toRat, Rat.ofInt_eq_cast]
+
+/-- A dyadic with a clear sign field denotes its magnitude times its power-of-two scale. -/
+theorem toRat_mk_false (significand : Nat) (exponent : Int) :
+    (Dyadic.mk false significand exponent).toRat =
+      (significand : Rat) * 2 ^ exponent :=
+  rfl
+
+/-- Any dyadic record with zero significand denotes rational zero. -/
+@[simp, grind =] theorem toRat_mk_zero (negative : Bool) (exponent : Int) :
+    (Dyadic.mk negative 0 exponent).toRat = 0 := by
+  cases negative <;> simp [toRat, signedSignificand]
+
+/--
+Reverse the sign, including the sign of zero. Formats with a single zero apply that policy when
+encoding the result.
+-/
+@[inline] def neg (value : Dyadic) : Dyadic :=
+  { value with negative := !value.negative }
+
+/-- Negation flips only the stored sign field. -/
+@[simp, grind =] theorem neg_eq (value : Dyadic) :
+    value.neg =
+      { negative := !value.negative
+        significand := value.significand
+        exponent := value.exponent } := rfl
+
+/-- Negation complements the stored sign. -/
+@[simp, grind =] theorem neg_negative (value : Dyadic) :
+    value.neg.negative = !value.negative := rfl
+
+/-- Negation preserves the stored significand. -/
+@[simp, grind =] theorem neg_significand (value : Dyadic) :
+    value.neg.significand = value.significand := rfl
+
+/-- Negation preserves the stored exponent. -/
+@[simp, grind =] theorem neg_exponent (value : Dyadic) :
+    value.neg.exponent = value.exponent := rfl
+
+end Dyadic
+end FloatLib.Numerics

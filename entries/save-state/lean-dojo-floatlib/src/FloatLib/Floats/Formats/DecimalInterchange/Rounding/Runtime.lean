@@ -1,0 +1,88 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+module
+
+public import Mathlib.Data.Rat.Floor
+
+/-!
+# Exact rounding on a decimal coefficient grid
+
+IEEE 754-2019 §4.3 requires five rounding directions for decimal arithmetic. The integer decision
+below works on an exact rational magnitude, so `0.15` on the tenths grid is a true midpoint, which
+a binary approximation of `0.15` would miss. Format precision, exponent range, and cohort
+selection are handled elsewhere.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.DecimalInterchange
+
+/--
+The five IEEE 754-2019 §4.3 decimal rounding-direction attributes, with the constructor names of
+the binary `IEEERoundingMode` and the P3109 `RoundingMode`.
+-/
+inductive RoundingMode where
+  /-- roundTiesToEven: the nearer neighbour, ties to the even coefficient. -/
+  | nearest
+  /-- roundTiesToAway: the nearer neighbour, ties to the larger magnitude. -/
+  | nearestAway
+  /-- roundTowardZero: the neighbour of smaller magnitude. -/
+  | towardZero
+  /-- roundTowardPositive: the neighbour toward positive infinity. -/
+  | up
+  /-- roundTowardNegative: the neighbour toward negative infinity. -/
+  | down
+  deriving DecidableEq, Repr, Inhabited
+
+namespace RoundingMode
+
+/-- Whether an inexact result should increase in magnitude at a given integer grid point.
+`remainder` is the exact fractional part, between zero and one. -/
+def increment (mode : RoundingMode) (negative : Bool) (lower : Nat)
+    (remainder : ℚ) : Bool :=
+  match mode with
+  | .nearest =>
+      decide (1 < 2 * remainder ∨ (2 * remainder = 1 ∧ lower % 2 = 1))
+  | .nearestAway => decide (1 ≤ 2 * remainder)
+  | .towardZero => false
+  | .up => !negative && decide (0 < remainder)
+  | .down => negative && decide (0 < remainder)
+
+/-- Round a nonnegative exact rational magnitude to an integer coefficient.
+The sign affects the directed modes, including rounding a negative value to zero.
+The integer remainder avoids constructing and normalizing a fractional rational. -/
+def roundMagnitude (mode : RoundingMode) (negative : Bool) (x : ℚ) : Nat :=
+  let numerator := x.num.toNat
+  let lower := numerator / x.den
+  let remainder := numerator % x.den
+  let increase := match mode with
+    | .nearest =>
+        decide (x.den < 2 * remainder ∨ (2 * remainder = x.den ∧ lower % 2 = 1))
+    | .nearestAway => decide (x.den ≤ 2 * remainder)
+    | .towardZero => false
+    | .up => !negative && decide (0 < remainder)
+    | .down => negative && decide (0 < remainder)
+  if increase then lower + 1 else lower
+
+/-- Apply the sign after rounding. Callers keep the sign on its own for signed zero. -/
+def roundSigned (mode : RoundingMode) (negative : Bool) (x : ℚ) : ℚ :=
+  if negative then -(mode.roundMagnitude negative x : ℚ)
+  else mode.roundMagnitude negative x
+
+/-- Rounding on a decimal grid whose quantum is `10 ^ q`. -/
+def roundAt (mode : RoundingMode) (negative : Bool) (x : ℚ) (q : Int) : Nat :=
+  mode.roundMagnitude negative (x / (10 : ℚ) ^ q)
+
+end RoundingMode
+
+end FloatLib.Floats.Formats.DecimalInterchange
+
+namespace FloatLib.Floats.Formats.DecimalInterchange.RoundingMode
+
+/-- Reconstruct a `RoundingMode` constructor from its constructor index. -/
+add_decl_doc ofNat_ctorIdx
+
+end FloatLib.Floats.Formats.DecimalInterchange.RoundingMode

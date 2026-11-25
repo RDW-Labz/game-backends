@@ -1,0 +1,245 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.P3109.Arithmetic.Mixed.Proof
+public import FloatLib.Floats.Formats.P3109.Block.Runtime
+
+/-!
+# Semantics of P3109 blocks
+
+Projecting a lane refines the report's projection rule: exact normalization followed by destination
+projection. The special scale laws cover NaN precedence and zero and infinite result scales.
+Finite reductions keep the whole rational sum or product and round nothing along the way.
+
+Reference: P3109 Interim Report v4.1 (unapproved draft), §§5.6.1.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.P3109
+
+open FloatLib.Numerics FloatLib.Floats.ExecFloat Arithmetic
+
+variable {length : ℕ+}
+
+/-- Each lane takes its own word from a block's stochastic rounding words. -/
+@[simp] theorem BlockPolicy.at_stochasticA (width : Nat)
+    (words : Vector (BitVec width) length) (saturation : SaturationMode)
+    (lane : Fin (length : Nat)) :
+    (BlockPolicy.at ⟨.stochasticA width words, saturation⟩ lane).rounding =
+      .stochasticA ⟨width, words[lane.val]⟩ := rfl
+
+namespace Block
+
+/-- A finite nonzero scale normalizes a finite value by exact division. -/
+@[simp] theorem normalize_finite (scale value : Rat) (hscale : scale ≠ 0) :
+    normalize (.finite scale) (.finite value) = .finite (value / scale) := by
+  simp [normalize, hscale, Arithmetic.Divide]
+
+/-- NaN inputs take precedence even when the result scale is zero. -/
+@[simp] theorem normalize_exceptional (scale : NumericalValue Rat) (kind : ExceptionalValue) :
+    normalize scale (.exceptional kind) = Arithmetic.nan := by
+  cases scale <;> rfl
+
+/-- A non-NaN input normalized at a zero scale becomes zero, including either infinity. -/
+theorem normalize_zero (value : NumericalValue Rat)
+    (hvalue : ∀ kind, value ≠ .exceptional kind) :
+    normalize (.finite 0) value = .finite 0 := by
+  cases value <;> simp_all [normalize]
+
+/-- Infinite scales reduce a finite input to its sign and the scale's sign. -/
+@[simp] theorem normalize_infinite_finite (negative : Bool) (value : Rat) :
+    normalize (.infinity negative) (.finite value) =
+      .finite ((if negative then (-1 : Rat) else 1) *
+        (if value = 0 then 0 else if value < 0 then -1 else 1)) := by
+  cases negative <;> by_cases hzero : value = 0 <;> by_cases hneg : value < 0 <;>
+    simp [normalize, signum, Arithmetic.Negate, hzero, hneg]
+
+private theorem foldl_add_finite (values : List Rat) (initial : Rat) :
+    (values.map NumericalValue.finite).foldl Arithmetic.Add (.finite initial) =
+      .finite (values.foldl (· + ·) initial) := by
+  induction values generalizing initial with
+  | nil => rfl
+  | cons head tail ih => simp [Arithmetic.Add, ih]
+
+private theorem foldl_mul_finite (values : List Rat) (initial : Rat) :
+    (values.map NumericalValue.finite).foldl Arithmetic.Multiply (.finite initial) =
+      .finite (values.foldl (· * ·) initial) := by
+  induction values generalizing initial with
+  | nil => rfl
+  | cons head tail ih => simp [Arithmetic.Multiply, ih]
+
+/-- Finite sum reduction is the exact rational sum with zero identity. -/
+@[simp] theorem sumExact_finite (values : Vector Rat length) :
+    sumExact (values.map NumericalValue.finite) =
+      .finite (values.toList.foldl (· + ·) 0) := by
+  unfold sumExact
+  rw [Vector.toList_map]
+  exact foldl_add_finite values.toList 0
+
+/-- Finite product reduction is the exact rational product with one identity. -/
+@[simp] theorem productExact_finite (values : Vector Rat length) :
+    productExact (values.map NumericalValue.finite) =
+      .finite (values.toList.foldl (· * ·) 1) := by
+  unfold productExact
+  rw [Vector.toList_map]
+  exact foldl_mul_finite values.toList 1
+
+variable {Scale ScaleExact Source SourceExact : Type}
+variable [ExactDecoder Scale ScaleExact] [ExactMap ScaleExact Rat]
+variable [ExactDecoder Source SourceExact] [ExactMap SourceExact Rat]
+
+/-- Decoding a finite lane multiplies the exact source scale and element. -/
+theorem decode_lane_finite (block : Block Scale Source length) (lane : Fin (length : Nat))
+    (scale value : Rat) (hscale : Mixed.decode block.scale = .finite scale)
+    (hvalue : Mixed.decode block.values[lane.val] = .finite value) :
+    (decode block)[lane.val] = .finite (scale * value) := by
+  simp [decode, hscale, hvalue, Arithmetic.Multiply]
+
+/-- Every P3109 destination lane refines the exact normalized report projection.
+
+Reference: P3109 Interim Report v4.1 (unapproved draft), §§5.4.2.
+-/
+theorem decode_project_lane (format : Format) (policy : BlockPolicy length) (scale : Scale)
+    (values : Vector (NumericalValue Rat) length) (lane : Fin (length : Nat)) :
+    Format.SameDatum
+      (ExecFloat.P3109.decode (project (Destination.p3109 format) policy scale values)[lane.val])
+      (format.projectRatValue (policy.at lane)
+        (normalize (Mixed.decode scale) values[lane.val])) := by
+  simp only [project, Vector.getElem_ofFn]
+  exact ExecFloat.P3109.decode_projectRat _ _ _
+
+/-- Conversion out projects the decoded scaled datum of each lane once. -/
+theorem decode_convertFrom_lane (format : Format) (policy : BlockPolicy length)
+    (block : Block Scale Source length) (lane : Fin (length : Nat)) :
+    Format.SameDatum
+      (ExecFloat.P3109.decode (ConvertFromBlock (Destination.p3109 format) policy block)[lane.val])
+      (format.projectRatValue (policy.at lane) (decode block)[lane.val]) := by
+  simp only [ConvertFromBlock, Vector.getElem_ofFn]
+  exact ExecFloat.P3109.decode_projectRat _ _ _
+
+/-- Conversion to a block keeps the given result scale unchanged. -/
+@[simp] theorem convertTo_scale {Result : Type} (destination : Destination Result)
+    (policy : BlockPolicy length) (values : Vector Source length) (scale : Scale) :
+    (ConvertToBlock destination policy values scale).scale = scale := rfl
+
+/-- P3109 sum reduction refines one projection of the complete exact sum.
+
+Reference: P3109 Interim Report v4.1 (unapproved draft), §§5.6.1.
+-/
+theorem decode_reduceAdd (format : Format) (policy : ProjectionPolicy)
+    (block : Block Scale Source length) :
+    Format.SameDatum
+      (ExecFloat.P3109.decode (BlockReduceAdd (Destination.p3109 format) policy block))
+      (format.projectRatValue policy (sumExact (decode block))) :=
+  ExecFloat.P3109.decode_projectRat _ _ _
+
+/-- P3109 product reduction refines one projection of the complete exact product.
+
+Reference: P3109 Interim Report v4.1 (unapproved draft), §§5.6.1.
+-/
+theorem decode_reduceMultiply (format : Format) (policy : ProjectionPolicy)
+    (block : Block Scale Source length) :
+    Format.SameDatum
+      (ExecFloat.P3109.decode (BlockReduceMultiply (Destination.p3109 format) policy block))
+      (format.projectRatValue policy (productExact (decode block))) :=
+  ExecFloat.P3109.decode_projectRat _ _ _
+
+variable {RightScale RightScaleExact Right RightExact : Type}
+variable [ExactDecoder RightScale RightScaleExact] [ExactMap RightScaleExact Rat]
+variable [ExactDecoder Right RightExact] [ExactMap RightExact Rat]
+
+/-- A finite dot product of independently scaled blocks is the rational sum of lane products. -/
+theorem dotExact_finite (left : Block Scale Source length) (right : Block RightScale Right length)
+    (x y : Vector Rat length) (hx : decode left = x.map NumericalValue.finite)
+    (hy : decode right = y.map NumericalValue.finite) :
+    dotExact left right = .finite
+      ((Vector.ofFn fun lane : Fin (length : Nat) => x[lane.val] * y[lane.val]).toList.foldl
+        (· + ·) 0) := by
+  unfold dotExact
+  rw [hx, hy]
+  dsimp only
+  have heq : (Vector.ofFn fun lane : Fin (length : Nat) =>
+      Arithmetic.Multiply (x.map NumericalValue.finite)[lane.val]
+        (y.map NumericalValue.finite)[lane.val]) =
+      (Vector.ofFn fun lane : Fin (length : Nat) => x[lane.val] * y[lane.val]).map
+        NumericalValue.finite := by
+    ext lane hlane
+    simp [Arithmetic.Multiply]
+  rw [heq, sumExact_finite]
+
+/-- A dot product of independently scaled blocks refines one projection of the exact dot product. -/
+theorem decode_dotProduct (format : Format) (policy : ProjectionPolicy)
+    (left : Block Scale Source length) (right : Block RightScale Right length) :
+    Format.SameDatum
+      (ExecFloat.P3109.decode (BlockDotProduct (Destination.p3109 format) policy left right))
+      (format.projectRatValue policy (dotExact left right)) :=
+  ExecFloat.P3109.decode_projectRat _ _ _
+
+variable {ResultScale ResultScaleExact : Type}
+variable [ExactDecoder ResultScale ResultScaleExact] [ExactMap ResultScaleExact Rat]
+
+/-- P3109 interim report v4.1, §5.7: every unary block instance normalizes its exact lane before
+    one projection. -/
+theorem decode_unary_lane (format : Format) (policy : BlockPolicy length)
+    (operation : NumericalValue Rat → NumericalValue Rat)
+    (block : Block Scale Source length) (resultScale : ResultScale)
+    (lane : Fin (length : Nat)) :
+    Format.SameDatum
+      (ExecFloat.P3109.decode
+        (unary (Destination.p3109 format) policy operation block resultScale).values[lane.val])
+      (format.projectRatValue (policy.at lane)
+        (normalize (Mixed.decode resultScale) (operation (decode block)[lane.val]))) := by
+  simpa only [unary, Vector.getElem_map] using
+    decode_project_lane format policy resultScale ((decode block).map operation) lane
+
+/-- P3109 interim report v4.1, §5.7: every binary block instance projects its complete
+    normalized lane result. -/
+theorem decode_binary_lane (format : Format) (policy : BlockPolicy length)
+    (operation : NumericalValue Rat → NumericalValue Rat → NumericalValue Rat)
+    (left : Block Scale Source length) (right : Block RightScale Right length)
+    (resultScale : ResultScale) (lane : Fin (length : Nat)) :
+    Format.SameDatum
+      (ExecFloat.P3109.decode
+        (binary (Destination.p3109 format) policy operation left right
+          resultScale).values[lane.val])
+      (format.projectRatValue (policy.at lane)
+        (normalize (Mixed.decode resultScale)
+          (operation (decode left)[lane.val] (decode right)[lane.val]))) := by
+  simpa only [binary, Vector.getElem_ofFn] using
+    decode_project_lane format policy resultScale
+      (Vector.ofFn fun i : Fin (length : Nat) =>
+        operation (decode left)[i.val] (decode right)[i.val]) lane
+
+variable {ThirdScale ThirdScaleExact Third ThirdExact : Type}
+variable [ExactDecoder ThirdScale ThirdScaleExact] [ExactMap ThirdScaleExact Rat]
+variable [ExactDecoder Third ThirdExact] [ExactMap ThirdExact Rat]
+
+/-- P3109 interim report v4.1, §5.7: every ternary block instance retains all exact
+    intermediates until
+    projection. -/
+theorem decode_ternary_lane (format : Format) (policy : BlockPolicy length)
+    (operation : NumericalValue Rat → NumericalValue Rat → NumericalValue Rat → NumericalValue Rat)
+    (left : Block Scale Source length) (right : Block RightScale Right length)
+    (third : Block ThirdScale Third length) (resultScale : ResultScale)
+    (lane : Fin (length : Nat)) :
+    Format.SameDatum
+      (ExecFloat.P3109.decode
+        (ternary (Destination.p3109 format) policy operation left right third
+          resultScale).values[lane.val])
+      (format.projectRatValue (policy.at lane)
+        (normalize (Mixed.decode resultScale)
+          (operation (decode left)[lane.val] (decode right)[lane.val]
+            (decode third)[lane.val]))) := by
+  simpa only [ternary, Vector.getElem_ofFn] using
+    decode_project_lane format policy resultScale
+      (Vector.ofFn fun i : Fin (length : Nat) =>
+        operation (decode left)[i.val] (decode right)[i.val] (decode third)[i.val]) lane
+
+end Block
+end FloatLib.Floats.Formats.P3109

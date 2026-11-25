@@ -1,0 +1,351 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Enclosure.Interval.Operations
+public import FloatLib.Numerics.Enclosure.Interval.Real
+
+/-!
+# Containment for interval powers and set operations
+
+The scalar contracts lift exact endpoint bounds through `OutwardRounding`, and for rational decoders
+the real contracts cover every real member of the input intervals. Even powers use monotonicity on
+absolute values, which keeps the zero minimum of an interval that crosses zero.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.Interval
+
+variable {α β : Type*}
+
+private theorem binaryPow_eq_pow {M : Type*} [Monoid M] (x : M) (n : ℕ) :
+    npowBinRec n x = x ^ n := by
+  induction n with
+  | zero => simp [npowBinRec_zero]
+  | succ n ih => rw [npowBinRec_succ, ih, pow_succ]
+
+section Order
+
+variable [LinearOrder β]
+
+/-- Pointwise minimum preserves containment. -/
+theorem contains_min? (R : OutwardRounding α β) {I J K : Interval α}
+    (h : min? R I J = some K) {x y : β}
+    (hx : I.Contains R.decode x) (hy : J.Contains R.decode y) :
+    K.Contains R.decode (min x y) :=
+  contains_liftBinary? R _ _
+    (fun _ _ _ _ hx hy => ⟨min_le_min hx.1 hy.1, min_le_min hx.2 hy.2⟩) h hx hy
+
+/-- Pointwise maximum preserves containment. -/
+theorem contains_max? (R : OutwardRounding α β) {I J K : Interval α}
+    (h : max? R I J = some K) {x y : β}
+    (hx : I.Contains R.decode x) (hy : J.Contains R.decode y) :
+    K.Contains R.decode (max x y) :=
+  contains_liftBinary? R _ _
+    (fun _ _ _ _ hx hy => ⟨max_le_max hx.1 hy.1, max_le_max hx.2 hy.2⟩) h hx hy
+
+/--
+Selecting between two decodable encodings by comparing their decoded values decodes to the
+minimum or the maximum: the endpoint choice made by `hull?` and `intersect?`.
+-/
+private theorem decode_ite_le {decode : α → Option β} {x y : α} {u v : β}
+    (hx : decode x = some u) (hy : decode y = some v) :
+    decode (if u ≤ v then x else y) = some (min u v) ∧
+      decode (if u ≤ v then y else x) = some (max u v) := by
+  by_cases h : u ≤ v <;> simp [h, hx, hy, min_def, max_def]
+
+/-- A successful hull decodes both inputs, and its endpoints to their minimum and maximum. -/
+private theorem decode_hull? (R : OutwardRounding α β) {I J K : Interval α}
+    (h : hull? R I J = some K) :
+    ∃ a b, I.decode? R.decode = some a ∧ J.decode? R.decode = some b ∧
+      K.decode? R.decode = some ⟨min a.lo b.lo, max a.hi b.hi⟩ := by
+  cases ha : I.decode? R.decode with
+  | none => simp [hull?, ha] at h
+  | some a =>
+    cases hb : J.decode? R.decode with
+    | none => simp [hull?, ha, hb] at h
+    | some b =>
+      by_cases horder : a.lo ≤ a.hi ∧ b.lo ≤ b.hi
+      · simp only [hull?, ha, hb, ite_eq_left horder, Option.some.injEq] at h
+        subst K
+        obtain ⟨ha₁, ha₂⟩ := (decode?_eq_some_iff _ _ _).mp ha
+        obtain ⟨hb₁, hb₂⟩ := (decode?_eq_some_iff _ _ _).mp hb
+        exact ⟨a, b, rfl, rfl, (decode?_eq_some_iff _ _ _).mpr
+          ⟨(decode_ite_le ha₁ hb₁).1, (decode_ite_le ha₂ hb₂).2⟩⟩
+      · simp [hull?, ha, hb, horder] at h
+
+/--
+A successful intersection decodes both inputs, and its endpoints to the larger lower and the
+smaller upper endpoint.
+-/
+private theorem decode_intersect? (R : OutwardRounding α β) {I J K : Interval α}
+    (h : intersect? R I J = some K) :
+    ∃ a b, I.decode? R.decode = some a ∧ J.decode? R.decode = some b ∧
+      K.decode? R.decode = some ⟨max a.lo b.lo, min a.hi b.hi⟩ := by
+  cases ha : I.decode? R.decode with
+  | none => simp [intersect?, ha] at h
+  | some a =>
+    cases hb : J.decode? R.decode with
+    | none => simp [intersect?, ha, hb] at h
+    | some b =>
+      by_cases horder : max a.lo b.lo ≤ min a.hi b.hi
+      · simp only [intersect?, ha, hb, ite_eq_left horder, Option.some.injEq] at h
+        subst K
+        obtain ⟨ha₁, ha₂⟩ := (decode?_eq_some_iff _ _ _).mp ha
+        obtain ⟨hb₁, hb₂⟩ := (decode?_eq_some_iff _ _ _).mp hb
+        exact ⟨a, b, rfl, rfl, (decode?_eq_some_iff _ _ _).mpr
+          ⟨(decode_ite_le ha₁ hb₁).2, (decode_ite_le ha₂ hb₂).1⟩⟩
+      · simp [intersect?, ha, hb, horder] at h
+
+/-- A member of either of two closed ranges lies between the smaller lower and larger upper end. -/
+private theorem hull_bounds {γ : Type*} [LinearOrder γ] {lo₁ hi₁ lo₂ hi₂ x : γ}
+    (hx : (lo₁ ≤ x ∧ x ≤ hi₁) ∨ (lo₂ ≤ x ∧ x ≤ hi₂)) : min lo₁ lo₂ ≤ x ∧ x ≤ max hi₁ hi₂ := by
+  rcases hx with hx | hx
+  · exact ⟨(min_le_left _ _).trans hx.1, hx.2.trans (le_max_left _ _)⟩
+  · exact ⟨(min_le_right _ _).trans hx.1, hx.2.trans (le_max_right _ _)⟩
+
+/-- A successful hull contains every member of either input interval. -/
+theorem contains_hull? (R : OutwardRounding α β) {I J K : Interval α}
+    (h : hull? R I J = some K) {x : β}
+    (hx : I.Contains R.decode x ∨ J.Contains R.decode x) : K.Contains R.decode x := by
+  obtain ⟨a, b, ha, hb, hK⟩ := decode_hull? R h
+  exact (contains_iff_of_decode? hK x).mpr <| hull_bounds <|
+    hx.imp (contains_iff_of_decode? ha x).mp (contains_iff_of_decode? hb x).mp
+
+/-- A successful intersection contains every common member of the input intervals. -/
+theorem contains_intersect? (R : OutwardRounding α β) {I J K : Interval α}
+    (h : intersect? R I J = some K) {x : β}
+    (hx : I.Contains R.decode x) (hy : J.Contains R.decode x) :
+    K.Contains R.decode x := by
+  obtain ⟨a, b, ha, hb, hK⟩ := decode_intersect? R h
+  obtain ⟨ha₁, ha₂⟩ := (contains_iff_of_decode? ha x).mp hx
+  obtain ⟨hb₁, hb₂⟩ := (contains_iff_of_decode? hb x).mp hy
+  exact (contains_iff_of_decode? hK x).mpr ⟨max_le ha₁ hb₁, le_min ha₂ hb₂⟩
+
+end Order
+
+variable [Field β] [LinearOrder β]
+
+/--
+A reciprocal succeeds exactly when its input decodes to a range strictly on one side of zero and
+the reciprocal bounds round outward.
+-/
+theorem inv?_eq_some_iff (R : OutwardRounding α β) {I K : Interval α} :
+    inv? R I = some K ↔
+      ∃ a, I.decode? R.decode = some a ∧ (a.hi < 0 ∨ 0 < a.lo) ∧
+        encloseInterval? R ⟨a.hi⁻¹, a.lo⁻¹⟩ = some K := by
+  unfold inv?
+  cases I.decode? R.decode <;> simp
+
+/-- A range containing zero is rejected by reciprocal, including a zero endpoint. -/
+theorem inv?_eq_none_of_contains_zero (R : OutwardRounding α β) {I : Interval α}
+    (hzero : I.Contains R.decode 0) : inv? R I = none := by
+  cases ha : I.decode? R.decode with
+  | none => simp [inv?, ha]
+  | some a =>
+    obtain ⟨hlo, hhi⟩ := (contains_iff_of_decode? ha 0).mp hzero
+    simp [inv?, ha, not_lt_of_ge hlo, not_lt_of_ge hhi]
+
+variable [IsStrictOrderedRing β]
+
+private theorem absBounds_lo_nonneg (I : Interval β) : 0 ≤ (absBounds I).lo := by
+  unfold absBounds
+  split
+  · exact ‹0 ≤ I.lo›
+  · split
+    · exact neg_nonneg.mpr ‹I.hi ≤ 0›
+    · exact le_rfl
+
+private theorem abs_bounds (I : Interval β) {x : β} (hx : I.lo ≤ x ∧ x ≤ I.hi) :
+    (absBounds I).lo ≤ |x| ∧ |x| ≤ (absBounds I).hi := by
+  unfold absBounds
+  split
+  · simpa only [abs_of_nonneg (le_trans ‹0 ≤ I.lo› hx.1)] using hx
+  · split
+    · simpa only [abs_of_nonpos (le_trans hx.2 ‹I.hi ≤ 0›)] using
+        And.intro (neg_le_neg hx.2) (neg_le_neg hx.1)
+    · refine ⟨abs_nonneg x, abs_le.mpr ⟨?_, hx.2.trans (le_max_right _ _)⟩⟩
+      have hneg : -max (-I.lo) I.hi ≤ I.lo := by
+        simpa using neg_le_neg (le_max_left (-I.lo) I.hi)
+      exact hneg.trans hx.1
+
+/-- Powers of the absolute-value bounds bound the same power of `|x|`. -/
+private theorem pow_abs_bounds (I : Interval β) (n : ℕ) {x : β} (hx : I.lo ≤ x ∧ x ≤ I.hi) :
+    (absBounds I).lo ^ n ≤ |x| ^ n ∧ |x| ^ n ≤ (absBounds I).hi ^ n :=
+  have ha := abs_bounds I hx
+  ⟨pow_le_pow_left₀ (absBounds_lo_nonneg I) ha.1 n, pow_le_pow_left₀ (abs_nonneg x) ha.2 n⟩
+
+private theorem square_bounds (I : Interval β) {x : β} (hx : I.lo ≤ x ∧ x ≤ I.hi) :
+    (squareBounds I).lo ≤ x ^ 2 ∧ x ^ 2 ≤ (squareBounds I).hi := by
+  simpa only [squareBounds, ← pow_two, sq_abs] using pow_abs_bounds I 2 hx
+
+private theorem pow_bounds (I : Interval β) (n : ℕ) {x : β}
+    (hx : I.lo ≤ x ∧ x ≤ I.hi) :
+    (powBounds I n).lo ≤ x ^ n ∧ x ^ n ≤ (powBounds I n).hi := by
+  unfold powBounds
+  split
+  · subst n
+    simp [point]
+  · split
+    · simpa only [binaryPow_eq_pow, (Nat.even_iff.mpr ‹n % 2 = 0›).pow_abs] using
+        pow_abs_bounds I n hx
+    · have hn : Odd n :=
+        Nat.not_even_iff_odd.mp (fun hn => ‹n % 2 ≠ 0› (Nat.even_iff.mp hn))
+      simpa only [binaryPow_eq_pow] using
+        And.intro (hn.strictMono_pow.monotone hx.1) (hn.strictMono_pow.monotone hx.2)
+
+/-- Every successful absolute-value operation encloses the absolute value of each member. -/
+theorem contains_abs? (R : OutwardRounding α β) {I K : Interval α}
+    (h : abs? R I = some K) {x : β} (hx : I.Contains R.decode x) :
+    K.Contains R.decode |x| :=
+  contains_liftUnary? R _ _ (fun a _ hx => abs_bounds a hx) h hx
+
+/-- Every successful square encloses the square of each member, including across zero. -/
+theorem contains_square? (R : OutwardRounding α β) {I K : Interval α}
+    (h : square? R I = some K) {x : β} (hx : I.Contains R.decode x) :
+    K.Contains R.decode (x ^ 2) :=
+  contains_liftUnary? R _ _ (fun a _ hx => square_bounds a hx) h hx
+
+/-- Every successful natural-power operation encloses the corresponding power of each member. -/
+theorem contains_pow? (R : OutwardRounding α β) {I K : Interval α} (n : ℕ)
+    (h : pow? R I n = some K) {x : β} (hx : I.Contains R.decode x) :
+    K.Contains R.decode (x ^ n) :=
+  contains_liftUnary? R _ _ (fun a _ hx => pow_bounds a n hx) h hx
+
+private theorem inv_bounds (I : Interval β) {x : β} (hx : I.lo ≤ x ∧ x ≤ I.hi)
+    (hzero : I.hi < 0 ∨ 0 < I.lo) : I.hi⁻¹ ≤ x⁻¹ ∧ x⁻¹ ≤ I.lo⁻¹ := by
+  rcases hzero with hneg | hpos
+  · simpa only [one_div] using
+      And.intro (one_div_le_one_div_of_neg_of_le hneg hx.2)
+        (one_div_le_one_div_of_neg_of_le (hx.2.trans_lt hneg) hx.1)
+  · simpa only [one_div] using
+      And.intro (one_div_le_one_div_of_le (hpos.trans_le hx.1) hx.2)
+        (one_div_le_one_div_of_le hpos hx.1)
+
+/-- Every successful reciprocal encloses the inverse of each member of a nonzero range. -/
+theorem contains_inv? (R : OutwardRounding α β) {I K : Interval α}
+    (h : inv? R I = some K) {x : β} (hx : I.Contains R.decode x) :
+    K.Contains R.decode x⁻¹ := by
+  obtain ⟨a, ha, hzero, hK⟩ := (inv?_eq_some_iff R).1 h
+  exact contains_encloseInterval? R hK (inv_bounds a ((contains_iff_of_decode? ha x).mp hx) hzero)
+
+private theorem cast_absBounds (a : Interval ℚ) :
+    (absBounds a).map (fun q : ℚ => (q : ℝ)) = absBounds (a.map (fun q : ℚ => (q : ℝ))) := by
+  by_cases hlo : 0 ≤ a.lo
+  · have hlo' : (0 : ℝ) ≤ a.lo := by exact_mod_cast hlo
+    simp [absBounds, map, hlo, hlo']
+  · have hlo' : ¬(0 : ℝ) ≤ a.lo := by exact_mod_cast hlo
+    by_cases hhi : a.hi ≤ 0
+    · have hhi' : (a.hi : ℝ) ≤ 0 := by exact_mod_cast hhi
+      simp [absBounds, map, hlo, hlo', hhi, hhi']
+    · have hhi' : ¬(a.hi : ℝ) ≤ 0 := by exact_mod_cast hhi
+      simp [absBounds, map, hlo, hlo', hhi, hhi']
+
+private theorem cast_squareBounds (a : Interval ℚ) :
+    (squareBounds a).map (fun q : ℚ => (q : ℝ)) =
+      squareBounds (a.map (fun q : ℚ => (q : ℝ))) := by
+  have h := congrArg (fun b : Interval ℝ => (⟨b.lo * b.lo, b.hi * b.hi⟩ : Interval ℝ))
+    (cast_absBounds a)
+  simpa only [squareBounds, map, Rat.cast_mul] using h
+
+private theorem cast_powBounds (a : Interval ℚ) (n : ℕ) :
+    (powBounds a n).map (fun q : ℚ => (q : ℝ)) =
+      powBounds (a.map (fun q : ℚ => (q : ℝ))) n := by
+  unfold powBounds
+  split
+  · simp [point, map]
+  · split
+    · have h := congrArg (fun b : Interval ℝ => (⟨b.lo ^ n, b.hi ^ n⟩ : Interval ℝ))
+        (cast_absBounds a)
+      simpa only [map, binaryPow_eq_pow, Rat.cast_pow] using h
+    · simp only [map, binaryPow_eq_pow, Rat.cast_pow]
+
+/--
+Exact bounds over the reals give real bounds for rational endpoints once the rational bounds
+function commutes with the cast to the reals.
+-/
+private theorem real_bounds_of_cast {f : Interval ℚ → Interval ℚ} {F : Interval ℝ → Interval ℝ}
+    {g : ℝ → ℝ}
+    (hcast : ∀ a, (f a).map (fun q : ℚ => (q : ℝ)) = F (a.map (fun q : ℚ => (q : ℝ))))
+    (hbounds : ∀ (b : Interval ℝ) {x : ℝ}, b.lo ≤ x ∧ x ≤ b.hi →
+      (F b).lo ≤ g x ∧ g x ≤ (F b).hi)
+    (a : Interval ℚ) (x : ℝ) (hx : (a.lo : ℝ) ≤ x ∧ x ≤ (a.hi : ℝ)) :
+    ((f a).lo : ℝ) ≤ g x ∧ g x ≤ ((f a).hi : ℝ) := by
+  have hb := hbounds (a.map (fun q : ℚ => (q : ℝ))) hx
+  rw [← hcast] at hb
+  exact hb
+
+/-- Rational endpoint absolute value encloses absolute values of arbitrary real members. -/
+theorem containsReal_abs? (R : OutwardRounding α ℚ) {I K : Interval α}
+    (h : abs? R I = some K) {x : ℝ} (hx : I.ContainsReal R.decode x) :
+    K.ContainsReal R.decode |x| :=
+  containsReal_liftUnary? R _ abs (real_bounds_of_cast cast_absBounds abs_bounds) h hx
+
+/-- Rational endpoint squaring encloses squares of arbitrary real members. -/
+theorem containsReal_square? (R : OutwardRounding α ℚ) {I K : Interval α}
+    (h : square? R I = some K) {x : ℝ} (hx : I.ContainsReal R.decode x) :
+    K.ContainsReal R.decode (x ^ 2) :=
+  containsReal_liftUnary? R _ (· ^ 2) (real_bounds_of_cast cast_squareBounds square_bounds) h hx
+
+/-- Rational endpoint powers enclose natural powers of arbitrary real members. -/
+theorem containsReal_pow? (R : OutwardRounding α ℚ) {I K : Interval α} (n : ℕ)
+    (h : pow? R I n = some K) {x : ℝ} (hx : I.ContainsReal R.decode x) :
+    K.ContainsReal R.decode (x ^ n) :=
+  containsReal_liftUnary? R _ (· ^ n)
+    (real_bounds_of_cast (fun a => cast_powBounds a n) (fun b _ hx => pow_bounds b n hx)) h hx
+
+/-- Rational endpoint minimum encloses minima of arbitrary real members. -/
+theorem containsReal_min? (R : OutwardRounding α ℚ) {I J K : Interval α}
+    (h : min? R I J = some K) {x y : ℝ}
+    (hx : I.ContainsReal R.decode x) (hy : J.ContainsReal R.decode y) :
+    K.ContainsReal R.decode (min x y) := by
+  apply containsReal_liftBinary? R _ min ?_ h hx hy
+  intro a b x y hx hy
+  simpa using And.intro (min_le_min hx.1 hy.1) (min_le_min hx.2 hy.2)
+
+/-- Rational endpoint maximum encloses maxima of arbitrary real members. -/
+theorem containsReal_max? (R : OutwardRounding α ℚ) {I J K : Interval α}
+    (h : max? R I J = some K) {x y : ℝ}
+    (hx : I.ContainsReal R.decode x) (hy : J.ContainsReal R.decode y) :
+    K.ContainsReal R.decode (max x y) := by
+  apply containsReal_liftBinary? R _ max ?_ h hx hy
+  intro a b x y hx hy
+  simpa using And.intro (max_le_max hx.1 hy.1) (max_le_max hx.2 hy.2)
+
+/-- Rational endpoint reciprocal encloses inverses of arbitrary real members. -/
+theorem containsReal_inv? (R : OutwardRounding α ℚ) {I K : Interval α}
+    (h : inv? R I = some K) {x : ℝ} (hx : I.ContainsReal R.decode x) :
+    K.ContainsReal R.decode x⁻¹ := by
+  obtain ⟨a, ha, hzero, hK⟩ := (inv?_eq_some_iff R).1 h
+  apply containsReal_encloseInterval? R hK
+  have hzero' : (a.hi : ℝ) < 0 ∨ 0 < (a.lo : ℝ) := by exact_mod_cast hzero
+  simpa [map] using inv_bounds (a.map (fun q : ℚ => (q : ℝ)))
+    ((containsReal_iff_of_decode? ha x).mp hx) hzero'
+
+/-- The hull contains every real member of either input interval. -/
+theorem containsReal_hull? (R : OutwardRounding α ℚ) {I J K : Interval α}
+    (h : hull? R I J = some K) {x : ℝ}
+    (hx : I.ContainsReal R.decode x ∨ J.ContainsReal R.decode x) :
+    K.ContainsReal R.decode x := by
+  obtain ⟨a, b, ha, hb, hK⟩ := decode_hull? R h
+  rw [containsReal_iff_of_decode? hK x, Rat.cast_min, Rat.cast_max]
+  exact hull_bounds <|
+    hx.imp (containsReal_iff_of_decode? ha x).mp (containsReal_iff_of_decode? hb x).mp
+
+/-- The intersection contains every common real member of the input intervals. -/
+theorem containsReal_intersect? (R : OutwardRounding α ℚ) {I J K : Interval α}
+    (h : intersect? R I J = some K) {x : ℝ}
+    (hx : I.ContainsReal R.decode x) (hy : J.ContainsReal R.decode x) :
+    K.ContainsReal R.decode x := by
+  obtain ⟨a, b, ha, hb, hK⟩ := decode_intersect? R h
+  obtain ⟨ha₁, ha₂⟩ := (containsReal_iff_of_decode? ha x).mp hx
+  obtain ⟨hb₁, hb₂⟩ := (containsReal_iff_of_decode? hb x).mp hy
+  rw [containsReal_iff_of_decode? hK x, Rat.cast_max, Rat.cast_min]
+  exact ⟨max_le ha₁ hb₁, le_min ha₂ hb₂⟩
+
+end FloatLib.Numerics.Interval

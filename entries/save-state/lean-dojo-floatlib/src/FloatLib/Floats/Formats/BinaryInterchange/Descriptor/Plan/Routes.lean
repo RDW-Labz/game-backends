@@ -1,0 +1,121 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.ExecFloat.Backends.Compiled.FixedLimb.Pair.Core.Runtime
+public import FloatLib.Floats.ExecFloat.Backends.Compiled.Word.Small.Mul.Runtime
+public import FloatLib.Floats.ExecFloat.Backends.Compiled.Word.TwoWordMul.Runtime
+public import FloatLib.Floats.Formats.BinaryInterchange.Descriptor.Plan.Estimates
+
+/-!
+# Structural routes for binary descriptor execution
+
+A structural route names the specialized kernel family that an operation's executable dispatcher
+enters. Routes and their cost metadata live apart from certified candidate construction, so
+configured-format planning can use them without importing tiny-table proofs.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange.Descriptor.Plan
+
+open FloatLib.Floats.ExecFloat
+open FloatLib.Floats.ExecFloat.Backend
+
+/--
+The structural implementation entered by an operation's executable dispatcher.
+
+It classifies the route that will actually run and is no second list of competing algorithms.
+Several routes share one dispatcher function, but retain distinct cost metadata because their
+specialized kernels have different performance.
+-/
+inductive StructuralRoute where
+  /-- The kernel specialized to binary32 or binary64. -/
+  | fixedFormat
+  /-- The kernel on one native word, for a format that one word holds. -/
+  | nativeWord
+  /-- The kernel on a fixed number of native words: the two-word pair kernels. -/
+  | fixedLimbs
+  deriving DecidableEq, Repr
+
+namespace StructuralRoute
+
+/-- Cost estimate associated with a structural route. -/
+def estimate (route : StructuralRoute)
+    (format : FloatFormat) (operation : Operation) : Candidate :=
+  match route with
+  | .fixedFormat => fixedFormatEstimate operation
+  | .nativeWord => nativeWordEstimate format operation
+  | .fixedLimbs => fixedLimbEstimate operation
+
+end StructuralRoute
+
+/-- Whether the descriptor structurally satisfies a fixed-format kernel capability. -/
+def isFixedFormat (format : FloatFormat) : Bool :=
+  decide (FloatFormat.IsBinary32 format ∨ FloatFormat.IsBinary64 format)
+
+/--
+Whether the descriptor structurally satisfies the two-word pair-kernel capability: an IEEE layout
+of at most 128 bits whose fraction is wider than one word.
+-/
+def pairKernelEligible (format : FloatFormat) : Bool :=
+  decide (Model.NativePair.Eligible format)
+
+/--
+Select the single structural route entered by the executable dispatcher.
+
+The branch order mirrors the corresponding `Model.*Backend` implementation. Returning `none`
+means that the operation goes straight to its width-generic kernel.
+-/
+def structuralRoute? (format : FloatFormat) : Operation → Option StructuralRoute
+  | .add | .sub =>
+      if isFixedFormat format then
+        some .fixedFormat
+      else if pairKernelEligible format then
+        some .fixedLimbs
+      else if decide (Model.NativeSmallWord.StorageEligible format) then
+        some .nativeWord
+      else
+        none
+  | .mul =>
+      if isFixedFormat format then
+        some .fixedFormat
+      else if pairKernelEligible format then
+        some .fixedLimbs
+      else if decide (Model.NativeSmallWordMul.Eligible format) then
+        some .nativeWord
+      else if decide (Model.NativeTwoWordMul.Eligible format) then
+        some .fixedLimbs
+      else
+        none
+  | .div =>
+      if isFixedFormat format then
+        some .fixedFormat
+      else if pairKernelEligible format then
+        some .fixedLimbs
+      else if decide (Model.NativeSmallWord.StorageEligible format) then
+        some .nativeWord
+      else
+        none
+  | .sqrt | .fma =>
+      if pairKernelEligible format then
+        some .fixedLimbs
+      else if isFixedFormat format then
+        some .fixedFormat
+      else if decide (Model.NativeSmallWord.StorageEligible format) then
+        some .nativeWord
+      else
+        none
+
+end FloatLib.Floats.Formats.BinaryInterchange.Descriptor.Plan
+
+namespace FloatLib.Floats.Formats.BinaryInterchange.Descriptor.Plan.StructuralRoute
+
+/-- Reconstruct a `StructuralRoute` constructor from its constructor index. -/
+add_decl_doc ofNat_ctorIdx
+
+end FloatLib.Floats.Formats.BinaryInterchange.Descriptor.Plan.StructuralRoute

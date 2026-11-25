@@ -1,0 +1,224 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Model.Carrier
+public import Mathlib.Data.Nat.Bitwise
+
+/-!
+# Optimized field access for binary models
+
+The public field operations in `Model.Carrier` use exact-width bit vectors, which show proofs the
+storage layout cleanly. This module defines extensionally equal `Nat` implementations and
+registers their compiler substitutions. Each field decoder reads the natural-number storage
+pattern, and packing builds one natural-number pattern with an erased proof that it fits the
+width.
+
+Every theorem here is an execution certificate, justifying an erased bound or a compiler rewrite.
+Semantic facts about the public field operations are in `Model.Fields.Proof`.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange
+namespace Model
+
+/-- A value that fits a field no wider than the storage word fits the storage word. -/
+private theorem lt_storage_of_lt_two_pow {fmt : FloatFormat} {n width : Nat}
+    (hwidth : width ≤ fmt.bitWidth) (h : n < 2 ^ width) : n < 2 ^ fmt.bitWidth :=
+  Nat.lt_of_lt_of_le h (Nat.pow_le_pow_right (by decide) hwidth)
+
+private theorem signPower_lt_storage (fmt : FloatFormat) :
+    2 ^ (fmt.expWidth + fmt.fracWidth) < 2 ^ fmt.bitWidth := by
+  apply Nat.pow_lt_pow_right (by decide)
+  unfold FloatFormat.bitWidth
+  omega
+
+private theorem fracMaskNat_lt_field (fmt : FloatFormat) :
+    FloatFormat.fracMaskNat fmt < 2 ^ fmt.fracWidth := by
+  unfold FloatFormat.fracMaskNat
+  have hpos : 0 < 2 ^ fmt.fracWidth := Nat.two_pow_pos fmt.fracWidth
+  omega
+
+private theorem expAllOnesNat_lt_field (fmt : FloatFormat) :
+    FloatFormat.expAllOnesNat fmt < 2 ^ fmt.expWidth := by
+  unfold FloatFormat.expAllOnesNat
+  have hpos : 0 < 2 ^ fmt.expWidth := Nat.two_pow_pos fmt.expWidth
+  omega
+
+private theorem fracMaskNat_lt_storage (fmt : FloatFormat) :
+    FloatFormat.fracMaskNat fmt < 2 ^ fmt.bitWidth :=
+  lt_storage_of_lt_two_pow (by unfold FloatFormat.bitWidth; omega) (fracMaskNat_lt_field fmt)
+
+private theorem expAllOnesNat_lt_storage (fmt : FloatFormat) :
+    FloatFormat.expAllOnesNat fmt < 2 ^ fmt.bitWidth :=
+  lt_storage_of_lt_two_pow (by unfold FloatFormat.bitWidth; omega) (expAllOnesNat_lt_field fmt)
+
+/-- Masked sign, exponent, and fraction fields always fit their declared storage word. -/
+theorem packedFields_lt_storage (fmt : FloatFormat) (sign : Bool)
+    (exponent fraction : Nat) :
+    (if sign then Nat.shiftLeft 1 (fmt.expWidth + fmt.fracWidth) else 0) |||
+        Nat.shiftLeft (exponent &&& FloatFormat.expAllOnesNat fmt) fmt.fracWidth |||
+          (fraction &&& FloatFormat.fracMaskNat fmt) <
+      2 ^ fmt.bitWidth := by
+  have hExponentField :
+      exponent &&& FloatFormat.expAllOnesNat fmt < 2 ^ fmt.expWidth :=
+    Nat.and_lt_two_pow exponent (expAllOnesNat_lt_field fmt)
+  have hExponent :
+      Nat.shiftLeft (exponent &&& FloatFormat.expAllOnesNat fmt) fmt.fracWidth <
+        2 ^ fmt.bitWidth :=
+    lt_storage_of_lt_two_pow (by unfold FloatFormat.bitWidth; omega)
+      (Nat.shiftLeft_lt (m := fmt.fracWidth) hExponentField)
+  have hFractionField :
+      fraction &&& FloatFormat.fracMaskNat fmt < 2 ^ fmt.fracWidth :=
+    Nat.and_lt_two_pow fraction (fracMaskNat_lt_field fmt)
+  have hFraction :
+      fraction &&& FloatFormat.fracMaskNat fmt < 2 ^ fmt.bitWidth :=
+    lt_storage_of_lt_two_pow (by unfold FloatFormat.bitWidth; omega) hFractionField
+  have hSign :
+      (if sign then Nat.shiftLeft 1 (fmt.expWidth + fmt.fracWidth) else 0) <
+        2 ^ fmt.bitWidth := by
+    cases sign
+    · exact Nat.two_pow_pos fmt.bitWidth
+    · simpa [Nat.shiftLeft_eq] using signPower_lt_storage fmt
+  exact Nat.or_lt_two_pow (Nat.or_lt_two_pow hSign hExponent) hFraction
+
+/-- Read the sign from the natural-number storage pattern. -/
+@[inline] def Internal.signBit {fmt : FloatFormat} (x : Model fmt) : Bool :=
+  x.toNatBits.testBit (fmt.expWidth + fmt.fracWidth)
+
+/-- Decode the exponent after one conversion of the storage word to `Nat`. -/
+@[inline] def Internal.expField {fmt : FloatFormat} (x : Model fmt) : Nat :=
+  (x.toNatBits >>> fmt.fracWidth) &&& FloatFormat.expAllOnesNat fmt
+
+/-- Decode the fraction after one conversion of the storage word to `Nat`. -/
+@[inline] def Internal.fracField {fmt : FloatFormat} (x : Model fmt) : Nat :=
+  x.toNatBits &&& FloatFormat.fracMaskNat fmt
+
+/-- The direct natural-number sign decoder agrees with the public bit-vector definition. -/
+theorem signBit_eq_internal_apply {fmt : FloatFormat} (x : Model fmt) :
+    signBit x = Internal.signBit x := by
+  unfold signBit Internal.signBit toNatBits
+  let index := fmt.expWidth + fmt.fracWidth
+  have hmask :
+      (FloatFormat.signMask fmt).toNat = 2 ^ index := by
+    unfold FloatFormat.signMask FloatFormat.ofWordNat
+    rw [BitVec.toNat_ofNat, FloatFormat.signMaskNat_eq_two_pow,
+      Nat.mod_eq_of_lt (signPower_lt_storage fmt)]
+  by_cases hzero : x.bits &&& FloatFormat.signMask fmt = 0
+  · have hand : x.bits.toNat &&& 2 ^ index = 0 := by
+      have h := congrArg BitVec.toNat hzero
+      simpa [BitVec.toNat_and, hmask] using h
+    have hbit : x.bits.toNat.testBit index = false := by
+      rw [Nat.and_two_pow] at hand
+      cases htest : x.bits.toNat.testBit index
+      · rfl
+      · simp [htest] at hand
+    simp [hzero, hbit, index]
+  · have hbit : x.bits.toNat.testBit index = true := by
+      cases htest : x.bits.toNat.testBit index
+      · exfalso
+        apply hzero
+        apply BitVec.eq_of_toNat_eq
+        simp [BitVec.toNat_and, hmask, Nat.and_two_pow, htest]
+      · rfl
+    rw [hbit]
+    exact bne_iff_ne.mpr hzero
+
+/-- The compiler reads the sign from the natural-number storage pattern. -/
+@[csimp] theorem signBit_eq_internal :
+    @signBit = @Internal.signBit := by
+  funext fmt x
+  exact signBit_eq_internal_apply x
+
+/-- The direct natural-number exponent decoder agrees with the public bit-vector definition. -/
+theorem expField_eq_internal_apply {fmt : FloatFormat} (x : Model fmt) :
+    expField x = Internal.expField x := by
+  unfold expField Internal.expField toNatBits
+  simp only [BitVec.toNat_and, BitVec.toNat_ushiftRight,
+    FloatFormat.expAllOnes, FloatFormat.ofWordNat, BitVec.toNat_ofNat]
+  rw [Nat.mod_eq_of_lt (expAllOnesNat_lt_storage fmt)]
+
+/-- The compiler decodes the exponent through one conversion to `Nat`. -/
+@[csimp] theorem expField_eq_internal :
+    @expField = @Internal.expField := by
+  funext fmt x
+  exact expField_eq_internal_apply x
+
+/-- The direct natural-number fraction decoder agrees with the public bit-vector definition. -/
+theorem fracField_eq_internal_apply {fmt : FloatFormat} (x : Model fmt) :
+    fracField x = Internal.fracField x := by
+  unfold fracField Internal.fracField toNatBits
+  simp only [BitVec.toNat_and, FloatFormat.fracMask, FloatFormat.ofWordNat,
+    BitVec.toNat_ofNat]
+  rw [Nat.mod_eq_of_lt (fracMaskNat_lt_storage fmt)]
+
+/-- The compiler decodes the fraction through one conversion to `Nat`. -/
+@[csimp] theorem fracField_eq_internal :
+    @fracField = @Internal.fracField := by
+  funext fmt x
+  exact fracField_eq_internal_apply x
+
+/--
+Pack fields as one natural-number bit pattern known to fit the exact storage width.
+
+The bound passed to `BitVec.ofNatLT` is erased from compiled code. This avoids the redundant
+modulus of `BitVec.ofNat`, since the masked fields already establish the width.
+-/
+@[inline] def Internal.mkBits (fmt : FloatFormat) (sign : Bool)
+    (exponent fraction : Nat) : FloatFormat.ExecWord fmt :=
+  BitVec.ofNatLT
+    ((if sign then Nat.shiftLeft 1 (fmt.expWidth + fmt.fracWidth) else 0) |||
+      Nat.shiftLeft (exponent &&& FloatFormat.expAllOnesNat fmt) fmt.fracWidth |||
+        (fraction &&& FloatFormat.fracMaskNat fmt))
+    (packedFields_lt_storage fmt sign exponent fraction)
+
+/-- The direct natural-number field packer agrees with the public mask-based definition. -/
+theorem mkBits_eq_internal_apply (fmt : FloatFormat) (sign : Bool)
+    (exponent fraction : Nat) :
+    mkBits fmt sign exponent fraction = Internal.mkBits fmt sign exponent fraction := by
+  apply BitVec.eq_of_toNat_eq
+  unfold mkBits Internal.mkBits
+  simp only [BitVec.ofNatLT_eq_ofNat, BitVec.toNat_or, BitVec.toNat_and, BitVec.toNat_shiftLeft,
+    FloatFormat.signMask, FloatFormat.expAllOnes, FloatFormat.fracMask,
+    FloatFormat.ofWordNat, BitVec.toNat_ofNat]
+  have hexponent :
+      ((exponent % 2 ^ fmt.bitWidth &&&
+          FloatFormat.expAllOnesNat fmt % 2 ^ fmt.bitWidth) <<<
+          fmt.fracWidth) % 2 ^ fmt.bitWidth =
+        ((exponent &&& FloatFormat.expAllOnesNat fmt) <<<
+          fmt.fracWidth) % 2 ^ fmt.bitWidth := by
+    rw [← Nat.and_mod_two_pow]
+    exact Nat.mod_two_pow_shiftLeft_mod_two_pow
+  have hsign :
+      FloatFormat.signMaskNat fmt % 2 ^ fmt.bitWidth =
+        Nat.shiftLeft 1 (fmt.expWidth + fmt.fracWidth) % 2 ^ fmt.bitWidth := by
+    rw [FloatFormat.signMaskNat_eq_two_pow]
+    simp [Nat.shiftLeft_eq]
+  rw [hexponent]
+  cases sign <;>
+    simp [Nat.or_mod_two_pow, Nat.and_mod_two_pow, hsign]
+
+/-- The compiler packs fields as one natural-number bit pattern. -/
+@[csimp] theorem mkBits_eq_internal :
+    mkBits = Internal.mkBits := by
+  funext fmt sign exponent fraction
+  exact mkBits_eq_internal_apply fmt sign exponent fraction
+
+/-- Construct a `Model` through the direct natural-number field packer. -/
+@[inline] def Internal.ofFields (fmt : FloatFormat) (sign : Bool)
+    (exponent fraction : Nat) : Model fmt :=
+  ofBits (Internal.mkBits fmt sign exponent fraction)
+
+/-- The compiler builds `ofFields` through the direct natural-number packer. -/
+@[csimp] theorem ofFields_eq_internal :
+    ofFields = Internal.ofFields := by
+  funext fmt sign exponent fraction
+  simp [ofFields, Internal.ofFields, mkBits_eq_internal_apply]
+
+end Model
+end FloatLib.Floats.Formats.BinaryInterchange

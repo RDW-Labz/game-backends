@@ -1,0 +1,269 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Enclosure.Expression.Check
+public import FloatLib.Numerics.Enclosure.Expression.Real
+
+/-!
+# Certified inequality checks and adaptive subdivision
+
+A rational input box stands for a set of arbitrary real assignments. Endpoint enclosure preserves
+these sets, and backend soundness carries their values through expression evaluation, so a
+successful upper-bound test proves the requested inequality on the whole box.
+
+Every midpoint split covers its parent. Induction on the subdivision depth then combines the
+successful checks of both children, and at no point do we assume that a sampled point represents the
+whole box.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.Interval
+
+variable {functions : Nat → List ℝ → ℝ}
+
+/-- Real meaning of the two relations accepted by the executable checker. -/
+def Relation.Holds (relation : Relation) (value : ℝ) : Prop :=
+  match relation with
+  | .nonpositive => value ≤ 0
+  | .negative => value < 0
+
+/-- A real assignment respects every supplied rational coordinate interval. -/
+def Box.ContainsReal (box : Box) (values : Nat → ℝ) : Prop :=
+  ∀ (i : Nat) (I : Interval ℚ), box[i]? = some I → I.ContainsReal some (values i)
+
+/-- An empty box places no restrictions on the real environment. -/
+@[simp]
+theorem Box.containsReal_nil (values : Nat → ℝ) : Box.ContainsReal [] values := by
+  intro i I h
+  simp at h
+
+/-- Separate the first coordinate's bounds from the shifted tail environment. -/
+@[simp]
+theorem Box.containsReal_cons_iff (I : Interval ℚ) (box : Box) (values : Nat → ℝ) :
+    Box.ContainsReal (I :: box) values ↔
+      ((I.lo : ℝ) ≤ values 0 ∧ values 0 ≤ (I.hi : ℝ)) ∧
+        box.ContainsReal (fun i => values (i + 1)) := by
+  constructor
+  · intro h
+    refine ⟨(containsReal_some_iff I _).1 (h 0 I rfl), ?_⟩
+    intro i J hJ
+    exact h (i + 1) J (by simpa using hJ)
+  · rintro ⟨head, tail⟩ i J hJ
+    cases i with
+    | zero =>
+      simp only [List.getElem?_cons_zero, Option.some.injEq] at hJ
+      subst J
+      exact (containsReal_some_iff I _).2 head
+    | succ i => exact tail i J (by simpa using hJ)
+
+/-- Build box membership one coordinate at a time from real bounds. -/
+theorem Box.containsReal_cons {I : Interval ℚ} {box : Box} {values : Nat → ℝ}
+    (head : (I.lo : ℝ) ≤ values 0 ∧ values 0 ≤ (I.hi : ℝ))
+    (tail : box.ContainsReal (fun i => values (i + 1))) :
+    Box.ContainsReal (I :: box) values :=
+  (Box.containsReal_cons_iff I box values).2 ⟨head, tail⟩
+
+/-- Enclosing rational endpoints contains every real between them. -/
+theorem Backend.containsReal_encloseInterval? {α : Type*} {B : Backend α}
+    (hB : B.Sound functions) {I : Interval ℚ} {J : Interval α}
+    (h : B.encloseInterval? I = some J) {x : ℝ} (hx : I.ContainsReal some x) :
+    J.ContainsReal B.decode x := by
+  cases hlo : B.const? I.lo with
+  | none => simp [Backend.encloseInterval?_def, hlo] at h
+  | some lower =>
+    cases hhi : B.const? I.hi with
+    | none => simp [Backend.encloseInterval?_def, hlo, hhi] at h
+    | some upper =>
+      simp only [encloseInterval?_def, hlo, hhi, Option.pure_def, Option.bind_eq_bind,
+        Option.bind_some, Option.some.injEq] at h
+      subst J
+      obtain ⟨a, _, ha, _, hax, _⟩ := hB.const hlo
+      obtain ⟨_, b, _, hb, _, hxb⟩ := hB.const hhi
+      obtain ⟨hlo', hhi'⟩ := (containsReal_some_iff I x).1 hx
+      exact ⟨a, b, ha, hb, hax.trans hlo', hhi'.trans hxb⟩
+
+/-- Successful box enclosure supplies sound values for every coordinate in the interval list. -/
+theorem Box.containsReal_enclose? {α : Type*} {B : Backend α} (hB : B.Sound functions)
+    {box : Box} {intervals : List (Interval α)} (h : box.enclose? B = some intervals)
+    {values : Nat → ℝ} (hbox : box.ContainsReal values) :
+    ∀ (i : Nat) (I : Interval α),
+      intervals[i]? = some I → I.ContainsReal B.decode (values i) := by
+  induction box generalizing intervals values with
+  | nil =>
+    simp only [enclose?_nil, Option.some.injEq, List.nil_eq] at h
+    subst intervals
+    intro i I hI
+    simp at hI
+  | cons J tail ih =>
+    cases hJ : B.encloseInterval? J with
+    | none => simp [Box.enclose?_cons, hJ] at h
+    | some K =>
+      cases ht : Box.enclose? tail B with
+      | none => simp [Box.enclose?_cons, hJ, ht] at h
+      | some rest =>
+        simp only [enclose?_cons, hJ, ht, Option.pure_def, Option.bind_eq_bind, Option.bind_some,
+          Option.some.injEq] at h
+        subst intervals
+        obtain ⟨head, tail⟩ := (Box.containsReal_cons_iff J _ values).1 hbox
+        intro i I hI
+        cases i with
+        | zero =>
+          simp only [List.getElem?_cons_zero, Option.some.injEq] at hI
+          subst I
+          exact Backend.containsReal_encloseInterval? hB hJ
+            ((containsReal_some_iff J _).2 head)
+        | succ i => exact ih ht tail i I (by simpa using hI)
+
+/-- A checked upper bound implies the corresponding relation for every smaller real number. -/
+theorem Relation.holds_of_check {relation : Relation} {hi : ℚ}
+    (h : relation.check hi = true) {x : ℝ} (hx : x ≤ (hi : ℝ)) :
+    relation.Holds x := by
+  cases relation with
+  | nonpositive =>
+    have hhi : hi ≤ 0 := (Kernel.Q.le_iff hi 0).1 h
+    exact hx.trans (by exact_mod_cast hhi)
+  | negative =>
+    have hhi : hi < 0 := (Kernel.Q.lt_iff hi 0).1 h
+    exact hx.trans_lt (by exact_mod_cast hhi)
+
+/-- A successful leaf check on an evaluation that encloses the real value `x` establishes the
+inequality for `x`, for every real assignment in its box. -/
+theorem Box.checkWith_sound {α : Type*} {B : Backend α} (hB : B.Sound functions)
+    {relation : Relation} {evaluate : (Nat → Option (Interval α)) → Option (Interval α)}
+    {box : Box} {values : Nat → ℝ} {x : ℝ}
+    (hevaluate : ∀ {env : Nat → Option (Interval α)} {I : Interval α}, evaluate env = some I →
+      (∀ i J, env i = some J → J.ContainsReal B.decode (values i)) → I.ContainsReal B.decode x)
+    (h : box.checkWith B relation evaluate = true) (hbox : box.ContainsReal values) :
+    relation.Holds x := by
+  cases hbox' : box.enclose? B with
+  | none => simp [Box.checkWith_def, hbox'] at h
+  | some intervals =>
+    cases heval : evaluate (fun i => intervals[i]?) with
+    | none => simp [Box.checkWith_def, hbox', heval] at h
+    | some I =>
+      cases hhi : B.decode I.hi with
+      | none => simp [Box.checkWith_def, hbox', heval, hhi] at h
+      | some hi =>
+        have hcheck : relation.check hi = true := by
+          simpa [Box.checkWith_def, hbox', heval, hhi] using h
+        obtain ⟨_, upper, _, hu, _, hx⟩ :=
+          hevaluate heval (Box.containsReal_enclose? hB hbox' hbox)
+        have hu' : (hi : ℝ) = upper := by simpa [hhi] using hu
+        exact Relation.holds_of_check hcheck (by simpa [hu'] using hx)
+
+/-- A successful leaf check establishes the inequality for every real assignment in its box. -/
+theorem Expr.checkBox_sound {α : Type*} (e : Expr) {B : Backend α} (hB : B.Sound functions)
+    {relation : Relation} {box : Box} (h : e.checkBox B relation box = true)
+    {values : Nat → ℝ} (hbox : box.ContainsReal values) :
+    relation.Holds (e.eval values functions) :=
+  Box.checkWith_sound hB (fun heval henv => e.containsReal_eval? hB henv heval) h hbox
+
+/-- A successful leaf check with the zero rule establishes the inequality for every real
+assignment in its box. -/
+theorem Expr.checkBoxZero_sound {α : Type*} (e : Expr) {B : Backend α} (hB : B.Sound functions)
+    {relation : Relation} {box : Box} (h : e.checkBoxZero B relation box = true)
+    {values : Nat → ℝ} (hbox : box.ContainsReal values) :
+    relation.Holds (e.eval values functions) :=
+  Box.checkWith_sound hB (fun heval henv => e.containsReal_evalZero? hB henv heval) h hbox
+
+/-- Replacing a coordinate preserves membership when the new interval contains its value. -/
+theorem Box.containsReal_set {box : Box} {values : Nat → ℝ}
+    (hbox : box.ContainsReal values) {i : Nat} {I : Interval ℚ}
+    (hI : I.ContainsReal some (values i)) :
+    Box.ContainsReal (box.set i I) values := by
+  intro j J hJ
+  by_cases hij : i = j
+  · subst j
+    rw [List.getElem?_set] at hJ
+    by_cases hi : i < box.length
+    · simp only [↓reduceIte, hi, Option.some.injEq] at hJ
+      subst J
+      exact hI
+    · simp [hi] at hJ
+  · exact hbox j J (by simpa [List.getElem?_set_ne hij] using hJ)
+
+/-- Every real assignment in a split box belongs to at least one of its two children. -/
+theorem Box.containsReal_bisect? {box left right : Box}
+    (h : box.bisect? = some (left, right)) {values : Nat → ℝ}
+    (hbox : box.ContainsReal values) :
+    left.ContainsReal values ∨ right.ContainsReal values := by
+  cases hw : box.widest? with
+  | none => simp [Box.bisect?_def, hw] at h
+  | some selected =>
+    rcases selected with ⟨i, width⟩
+    cases hi : box[i]? with
+    | none => simp [Box.bisect?_def, hw, hi] at h
+    | some I =>
+      by_cases hwidth : I.lo < I.hi
+      · simp only [bisect?_def, hw, Option.pure_def, Option.bind_eq_bind, Option.bind_some, hi,
+        hwidth, ↓reduceIte, Option.some.injEq, Prod.mk.injEq] at h
+        rcases h with ⟨rfl, rfl⟩
+        obtain ⟨hlo, hhi⟩ := (containsReal_some_iff I _).1 (hbox i I hi)
+        by_cases hmid : values i ≤ (((I.lo + I.hi) / 2 : ℚ) : ℝ)
+        · exact Or.inl (Box.containsReal_set hbox
+            ((containsReal_some_iff _ _).2 ⟨hlo, hmid⟩))
+        · exact Or.inr (Box.containsReal_set hbox
+            ((containsReal_some_iff _ _).2 ⟨le_of_lt (lt_of_not_ge hmid), hhi⟩))
+      · simp [Box.bisect?_def, hw, hi, hwidth] at h
+
+/--
+A successful subdivision on a leaf check that establishes a fact on the boxes it passes
+establishes that fact on the original box: every midpoint split covers its parent.
+-/
+theorem Box.checkAdaptive_sound {leaf : Box → Bool} {values : Nat → ℝ} {fact : Prop}
+    (hleaf : ∀ box : Box, leaf box = true → box.ContainsReal values → fact)
+    {box : Box} {depth : Nat} (h : Box.checkAdaptive leaf box depth = true)
+    (hbox : box.ContainsReal values) : fact := by
+  induction depth generalizing box with
+  | zero => exact hleaf box h hbox
+  | succ depth ih =>
+    rw [Box.checkAdaptive] at h
+    cases hpass : leaf box with
+    | true => exact hleaf box hpass hbox
+    | false =>
+      rw [hpass] at h
+      cases hsplit : box.bisect? with
+      | none => rw [hsplit] at h; exact absurd h Bool.false_ne_true
+      | some children =>
+        rw [hsplit] at h
+        rcases children with ⟨left, right⟩
+        change Bool.casesOn (motive := fun _ => Bool) (Box.checkAdaptive leaf left depth) false
+          (Box.checkAdaptive leaf right depth) = true at h
+        cases hl : Box.checkAdaptive leaf left depth with
+        | false => rw [hl] at h; exact absurd h Bool.false_ne_true
+        | true =>
+          rw [hl] at h
+          rcases Box.containsReal_bisect? hsplit hbox with hleft | hright
+          · exact ih hl hleft
+          · exact ih h hright
+
+/--
+A successful adaptive check proves the real inequality throughout the original rational box.
+
+The computation depends only on the backend, expression, rational box, relation, and depth.
+The real environment and its membership proof enter only this theorem.
+-/
+theorem Expr.check_sound {α : Type*} (e : Expr) {B : Backend α} (hB : B.Sound functions)
+    {relation : Relation} {box : Box} {depth : Nat}
+    (h : e.check B relation box depth = true) {values : Nat → ℝ}
+    (hbox : box.ContainsReal values) : relation.Holds (e.eval values functions) :=
+  Box.checkAdaptive_sound (fun _ hleaf hbox => e.checkBox_sound hB hleaf hbox)
+    (by rwa [← Expr.check_eq_checkAdaptive]) hbox
+
+/--
+A successful adaptive check with the zero rule proves the real inequality throughout the
+original rational box.
+-/
+theorem Expr.checkZero_sound {α : Type*} (e : Expr) {B : Backend α} (hB : B.Sound functions)
+    {relation : Relation} {box : Box} {depth : Nat}
+    (h : e.checkZero B relation box depth = true) {values : Nat → ℝ}
+    (hbox : box.ContainsReal values) : relation.Holds (e.eval values functions) :=
+  Box.checkAdaptive_sound (fun _ hleaf hbox => e.checkBoxZero_sound hB hleaf hbox) h hbox
+
+end FloatLib.Numerics.Interval

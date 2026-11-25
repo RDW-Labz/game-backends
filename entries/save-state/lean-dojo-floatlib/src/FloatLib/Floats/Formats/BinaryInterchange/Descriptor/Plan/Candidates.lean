@@ -1,0 +1,284 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Tactic.DescriptorBackends
+
+/-!
+# Certified execution candidates for arbitrary binary descriptors
+
+Every binary `FloatFormat` has proof-carrying candidates for addition, subtraction,
+multiplication, division, square root, and fused multiply-add, each tagged
+`@[compiler_optimize]`. The public `ExecFloat` dispatcher makes the only selection. Three kinds
+of candidate are tagged here:
+
+* Every format of at most eight encoded bits can use a lazily generated exhaustive table
+  (`addTable` and its siblings).
+* Each operation exposes at most one structural route, classified as fixed-format, native-word,
+  or fixed-limb in the same order as its executable dispatcher (`addStructural` and its
+  siblings).
+* Every descriptor keeps a proved width-generic baseline (`addGeneric` and its siblings).
+
+Candidates are selected from descriptor data through the structural predicates that runtime
+dispatch uses. Layout-specific kernels stay specialized, but no candidate depends on descriptor
+identity or a catalogued format name. So a new IEEE, finite-only, FNUZ, or otherwise custom
+descriptor gets table and structural candidates when eligible, together with the generic
+baseline, and a candidate tagged in another module joins them.
+
+Cost estimates are in `Descriptor.Plan.Estimates`. This module handles candidate availability
+and proof-carrying construction.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange.Descriptor.Plan
+
+open FloatLib.Floats.ExecFloat
+open FloatLib.Floats.ExecFloat.Backend
+
+/-! ## Generic certified constructors -/
+
+/-- Every word of a descriptor at most eight bits wide indexes a 256-entry table. -/
+theorem toNatBits_lt_256_of_bitWidth_le
+    {format : FloatFormat} (hwidth : format.bitWidth ≤ 8)
+    (value : Model format) :
+    value.toNatBits < 256 := by
+  calc
+    value.toNatBits < 2 ^ format.bitWidth :=
+      Model.toNatBits_lt_two_pow value
+    _ ≤ 2 ^ 8 := Nat.pow_le_pow_right (by decide) hwidth
+    _ = 256 := by decide
+
+/-! ## Descriptor-generic exhaustive tables -/
+
+/-- Build a certified exhaustive binary table for a descriptor of at most eight bits. -/
+def binaryTableCertified
+    {format : FloatFormat}
+    (operation : Operation)
+    (modelSpec modelRun : Model format → Model format → Model format)
+    (modelRun_eq_spec : ∀ left right, modelRun left right = modelSpec left right)
+    (hwidth : format.bitWidth ≤ 8) :
+    Certified
+      (ModelCodec.liftBinary
+        (F := Descriptor format) (plan := ()) modelSpec) :=
+  let radix := 2 ^ format.bitWidth
+  let table := Model.TinyTable.lazyBinaryTotal format radix modelRun
+  let runModel := fun left right =>
+    Model.TinyTable.runLazyBinaryTotal
+      format radix modelRun table (by rfl) left right
+      (Model.toNatBits_lt_two_pow left)
+      (Model.toNatBits_lt_two_pow right)
+  Certified.binary
+    (tableEstimate format operation)
+    (ModelCodec.liftBinary
+      (F := Descriptor format) (plan := ()) modelSpec)
+    (ModelCodec.liftBinary
+      (F := Descriptor format) (plan := ()) runModel)
+    fun left right => by
+      apply FloatLib.Floats.ExecFloat.ext
+      change runModel left.raw right.raw = modelSpec left.raw right.raw
+      calc
+        runModel left.raw right.raw = modelRun left.raw right.raw := by
+          exact Model.TinyTable.runLazyBinaryTotal_eq
+            format radix modelRun table (by rfl)
+            left.raw right.raw
+            (Model.toNatBits_lt_two_pow left.raw)
+            (Model.toNatBits_lt_two_pow right.raw)
+            (toNatBits_lt_256_of_bitWidth_le hwidth _)
+        _ = modelSpec left.raw right.raw :=
+          modelRun_eq_spec left.raw right.raw
+
+/-- Build a certified exhaustive unary table for a descriptor of at most eight bits. -/
+def unaryTableCertified
+    {format : FloatFormat}
+    (operation : Operation)
+    (modelSpec modelRun : Model format → Model format)
+    (modelRun_eq_spec : ∀ value, modelRun value = modelSpec value)
+    (hwidth : format.bitWidth ≤ 8) :
+    Certified
+      (ModelCodec.liftUnary
+        (F := Descriptor format) (plan := ()) modelSpec) :=
+  let radix := 2 ^ format.bitWidth
+  let table := Model.TinyTable.lazyUnaryTotal format radix modelRun
+  let runModel := fun value =>
+    Model.TinyTable.runLazyUnaryTotal
+      format radix modelRun table (by rfl) value
+      (Model.toNatBits_lt_two_pow value)
+  Certified.unary
+    (tableEstimate format operation)
+    (ModelCodec.liftUnary
+      (F := Descriptor format) (plan := ()) modelSpec)
+    (ModelCodec.liftUnary
+      (F := Descriptor format) (plan := ()) runModel)
+    fun value => by
+      apply FloatLib.Floats.ExecFloat.ext
+      change runModel value.raw = modelSpec value.raw
+      calc
+        runModel value.raw = modelRun value.raw := by
+          exact Model.TinyTable.runLazyUnaryTotal_eq
+            format radix modelRun table (by rfl) value.raw
+            (Model.toNatBits_lt_two_pow value.raw)
+            (toNatBits_lt_256_of_bitWidth_le hwidth _)
+        _ = modelSpec value.raw := modelRun_eq_spec value.raw
+
+/-- Build a certified exhaustive ternary table for a descriptor of at most eight bits. -/
+def ternaryTableCertified
+    {format : FloatFormat}
+    (operation : Operation)
+    (modelSpec modelRun :
+      Model format → Model format → Model format → Model format)
+    (modelRun_eq_spec :
+      ∀ left right addend,
+        modelRun left right addend = modelSpec left right addend)
+    (hwidth : format.bitWidth ≤ 8) :
+    Certified
+      (ModelCodec.liftTernary
+        (F := Descriptor format) (plan := ()) modelSpec) :=
+  let radix := 2 ^ format.bitWidth
+  let table := Model.TinyTable.lazyTernaryTotal format radix modelRun
+  let runModel := fun left right addend =>
+    Model.TinyTable.runLazyTernaryTotal
+      format radix modelRun table (by rfl) left right addend
+      (Model.toNatBits_lt_two_pow left)
+      (Model.toNatBits_lt_two_pow right)
+      (Model.toNatBits_lt_two_pow addend)
+  Certified.ternary
+    (tableEstimate format operation)
+    (ModelCodec.liftTernary
+      (F := Descriptor format) (plan := ()) modelSpec)
+    (ModelCodec.liftTernary
+      (F := Descriptor format) (plan := ()) runModel)
+    fun left right addend => by
+      apply FloatLib.Floats.ExecFloat.ext
+      change runModel left.raw right.raw addend.raw =
+        modelSpec left.raw right.raw addend.raw
+      calc
+        runModel left.raw right.raw addend.raw =
+            modelRun left.raw right.raw addend.raw := by
+          exact Model.TinyTable.runLazyTernaryTotal_eq
+            format radix modelRun table (by rfl)
+            left.raw right.raw addend.raw
+            (Model.toNatBits_lt_two_pow left.raw)
+            (Model.toNatBits_lt_two_pow right.raw)
+            (Model.toNatBits_lt_two_pow addend.raw)
+            (toNatBits_lt_256_of_bitWidth_le hwidth _)
+        _ = modelSpec left.raw right.raw addend.raw :=
+          modelRun_eq_spec left.raw right.raw addend.raw
+
+/-! ## Candidate availability -/
+
+/-- Offer an exhaustive binary table when the encoded width fits in one byte, and only then. -/
+def tableBinary? {format : FloatFormat}
+    (operation : Operation)
+    (modelSpec modelRun : Model format → Model format → Model format)
+    (modelRun_eq_spec : ∀ left right, modelRun left right = modelSpec left right) :
+    Option
+      (Certified
+        (ModelCodec.liftBinary
+          (F := Descriptor format) (plan := ()) modelSpec)) :=
+  if hwidth : format.bitWidth ≤ 8 then
+    some (binaryTableCertified operation modelSpec modelRun modelRun_eq_spec hwidth)
+  else
+    none
+
+/-- Offer an exhaustive unary table when the encoded width fits in one byte, and only then. -/
+def tableUnary? {format : FloatFormat}
+    (operation : Operation)
+    (modelSpec modelRun : Model format → Model format)
+    (modelRun_eq_spec : ∀ value, modelRun value = modelSpec value) :
+    Option
+      (Certified
+        (ModelCodec.liftUnary
+          (F := Descriptor format) (plan := ()) modelSpec)) :=
+  if hwidth : format.bitWidth ≤ 8 then
+    some (unaryTableCertified operation modelSpec modelRun modelRun_eq_spec hwidth)
+  else
+    none
+
+/-- Offer an exhaustive ternary table when the encoded width fits in one byte, and only then. -/
+def tableTernary? {format : FloatFormat}
+    (operation : Operation)
+    (modelSpec modelRun :
+      Model format → Model format → Model format → Model format)
+    (modelRun_eq_spec :
+      ∀ left right addend,
+        modelRun left right addend = modelSpec left right addend) :
+    Option
+      (Certified
+        (ModelCodec.liftTernary
+          (F := Descriptor format) (plan := ()) modelSpec)) :=
+  if hwidth : format.bitWidth ≤ 8 then
+    some (ternaryTableCertified operation modelSpec modelRun modelRun_eq_spec hwidth)
+  else
+    none
+
+/-! ## Tagged candidates of each operation -/
+
+descriptor_backends add :=
+  tableBinary? .add Model.Spec.add Model.AddBackend.generic Model.AddBackend.generic_eq_spec,
+  fun route =>
+    Certified.binary (route.estimate format .add)
+      Descriptor.Spec.add Descriptor.Backend.wordAdd Descriptor.Backend.wordAdd_eq_spec,
+  Certified.binary (genericEstimate format .add)
+    Descriptor.Spec.add Descriptor.Backend.genericAdd Descriptor.Backend.genericAdd_eq_spec
+
+descriptor_backends sub :=
+  tableBinary? .sub Model.Spec.sub
+    (fun left right => Model.AddBackend.generic left (Model.neg right))
+    (fun left right => by
+      simpa [Model.Spec.sub] using Model.AddBackend.generic_eq_spec left (Model.neg right)),
+  fun route =>
+    Certified.binary (route.estimate format .sub)
+      Descriptor.Spec.sub Descriptor.Backend.wordSub Descriptor.Backend.wordSub_eq_spec,
+  Certified.binary (genericEstimate format .sub)
+    Descriptor.Spec.sub Descriptor.Backend.genericSub Descriptor.Backend.genericSub_eq_spec
+
+descriptor_backends mul :=
+  tableBinary? .mul Model.Spec.mul Model.MulBackend.generic Model.MulBackend.generic_eq_spec,
+  fun route =>
+    Certified.binary (route.estimate format .mul)
+      Descriptor.Spec.mul Descriptor.Backend.wordMul Descriptor.Backend.wordMul_eq_spec,
+  Certified.binary (genericEstimate format .mul)
+    Descriptor.Spec.mul Descriptor.Backend.genericMul Descriptor.Backend.genericMul_eq_spec
+
+descriptor_backends div :=
+  tableBinary? .div Model.Spec.div Model.DivBackend.generic Model.DivBackend.generic_eq_spec,
+  fun route =>
+    Certified.binary (route.estimate format .div)
+      Descriptor.Spec.div Descriptor.Backend.wordDiv Descriptor.Backend.wordDiv_eq_spec,
+  Certified.binary (genericEstimate format .div)
+    Descriptor.Spec.div Descriptor.Backend.genericDiv Descriptor.Backend.genericDiv_eq_spec
+
+descriptor_backends sqrt :=
+  tableUnary? .sqrt Model.Spec.sqrt Model.SqrtBackend.generic Model.SqrtBackend.generic_eq_spec,
+  fun route =>
+    match route with
+    | .fixedLimbs =>
+        Certified.unary (route.estimate format .sqrt)
+          Descriptor.Spec.sqrt Descriptor.Backend.fixedLimbSqrt
+          Descriptor.Backend.fixedLimbSqrt_eq_spec
+    | .fixedFormat | .nativeWord =>
+        Certified.unary (route.estimate format .sqrt)
+          Descriptor.Spec.sqrt Descriptor.Backend.wordSqrt Descriptor.Backend.wordSqrt_eq_spec,
+  Certified.unary (genericEstimate format .sqrt)
+    Descriptor.Spec.sqrt Descriptor.Backend.genericSqrt Descriptor.Backend.genericSqrt_eq_spec
+
+descriptor_backends fma :=
+  tableTernary? .fma Model.Spec.fma Model.FmaBackend.generic Model.FmaBackend.generic_eq_spec,
+  fun route =>
+    match route with
+    | .fixedLimbs =>
+        Certified.ternary (route.estimate format .fma)
+          Descriptor.Spec.fma Descriptor.Backend.fixedLimbFma
+          Descriptor.Backend.fixedLimbFma_eq_spec
+    | .fixedFormat | .nativeWord =>
+        Certified.ternary (route.estimate format .fma)
+          Descriptor.Spec.fma Descriptor.Backend.wordFma Descriptor.Backend.wordFma_eq_spec,
+  Certified.ternary (genericEstimate format .fma)
+    Descriptor.Spec.fma Descriptor.Backend.genericFma Descriptor.Backend.genericFma_eq_spec
+
+end FloatLib.Floats.Formats.BinaryInterchange.Descriptor.Plan

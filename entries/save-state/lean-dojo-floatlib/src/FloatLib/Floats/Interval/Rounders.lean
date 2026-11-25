@@ -1,0 +1,118 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Flocq.Theory.Rounding.Properties
+
+import FloatLib.Floats.Formats.Flocq.Theory.Rounding.Generic
+
+/-!
+# Directed rounding (down/up) for Flocq-style formats
+
+When an interval is pushed through a computation on a discrete numeric grid (float, fixed-point,
+quantization), its endpoints need **directed rounding**:
+
+- `down x` is a representable value with $\operatorname{down}(x)\le x$,
+- `up x` is a representable value with $x\le\operatorname{up}(x)$.
+
+On IEEE-754 hardware these are the rounding modes toward $-\infty$ and toward $+\infty$. FloatLib
+gets the same directions from Flocq-style rounding on $\mathbb{R}$, using `round` with the
+floor/ceil rounding functions from `FloatLib/Floats/Formats/Flocq/Theory/Rounding/Core.lean`. These
+rounders work for any radix $\beta$ and any exponent selection function `fexp` satisfying
+`ValidExp`.
+
+Enclosure proofs take a `Rounder` interface that records only the two inequalities, so the identity
+maps form a `Rounder` too. Representability belongs to the particular rounder, and
+`genericFormat_roundDown` and `genericFormat_roundUp` show that `formatRounder`'s endpoints lie on
+the $(\beta,\mathtt{fexp})$ grid. `formatRounder` below gets its two inequalities from FloatLib's
+Flocq grid theorems.
+
+Our format and rounding model follows S. Boldo and G. Melquiond, [Flocq: A Unified Library for
+Proving Floating-Point Algorithms in Coq](https://doi.org/10.1109/ARITH.2011.40), ARITH 2011.
+-/
+
+@[expose] public section
+
+
+namespace FloatLib.Floats.Interval
+
+open FloatLib.Floats.Formats.Flocq
+
+variable {β : Numerics.Radix} {fexp : ℤ → ℤ} [ValidExp fexp]
+
+/-- Round down to the $(\beta,\mathtt{fexp})$ grid by taking the floor of the scaled mantissa. -/
+noncomputable def roundDown (x : ℝ) : ℝ :=
+  round (β := β) (fexp := fexp) floorRound x
+
+/-- Round up to the $(\beta,\mathtt{fexp})$ grid by taking the ceiling of the scaled mantissa. -/
+noncomputable def roundUp (x : ℝ) : ℝ :=
+  round (β := β) (fexp := fexp) ceilRound x
+
+/--
+Correctness of directed rounding down: `roundDown x` is an enclosure **lower bound**.
+
+This is the format-generic analogue of the IEEE-754 fact that rounding toward $-\infty$ never
+exceeds
+the exact real value.
+-/
+theorem roundDown_le (x : ℝ) : roundDown (β := β) (fexp := fexp) x ≤ x :=
+  round_floor_le x
+
+/--
+Correctness of directed rounding up: `roundUp x` is an enclosure **upper bound**.
+
+This is the format-generic analogue of the IEEE-754 fact that rounding toward $+\infty$ is never
+below
+the exact real value.
+-/
+theorem le_roundUp (x : ℝ) : x ≤ roundUp (β := β) (fexp := fexp) x :=
+  le_round_ceil x
+
+/-- `roundDown x` lies on the $(\beta,\mathtt{fexp})$ grid. -/
+theorem genericFormat_roundDown (x : ℝ) :
+    GenericRepresentable β fexp (roundDown (β := β) (fexp := fexp) x) :=
+  genericRepresentable_round floorRound x
+
+/-- `roundUp x` lies on the $(\beta,\mathtt{fexp})$ grid. -/
+theorem genericFormat_roundUp (x : ℝ) :
+    GenericRepresentable β fexp (roundUp (β := β) (fexp := fexp) x) :=
+  genericRepresentable_round ceilRound x
+
+/--
+A pair of real maps bracketing every real number from below and above.
+
+The enclosure proofs use $\operatorname{down}(x)\le x\le\operatorname{up}(x)$ and nothing else, so
+the structure asks neither that `down x` and `up x` lie on a representable grid nor that they be
+monotone. The identity maps satisfy both bounds. Representability is a property of an instance such
+as `formatRounder`, whose outputs lie on the $(\beta,\mathtt{fexp})$ grid
+(`genericFormat_roundDown`, `genericFormat_roundUp`).
+-/
+structure Rounder where
+  /-- A lower bound for an exact real value. -/
+  down : ℝ → ℝ
+  /-- An upper bound for an exact real value. -/
+  up : ℝ → ℝ
+  /-- Rounding down never exceeds the exact value. -/
+  down_le : ∀ x, down x ≤ x
+  /-- Rounding up never falls below the exact value. -/
+  le_up : ∀ x, x ≤ up x
+
+/--
+Canonical rounder for the $(\beta,\mathtt{fexp})$ format via `roundDown`/`roundUp`.
+
+The outputs are values of the Flocq generic format (`genericFormat_roundDown`,
+`genericFormat_roundUp`), which has an unbounded exponent range: there is
+no overflow to infinity and no largest finite value, so this rounder models a binary format's
+finite grid extended past its exponent limits rather than the encoded format itself.
+-/
+noncomputable def formatRounder (β : Numerics.Radix) (fexp : ℤ → ℤ) [ValidExp fexp] : Rounder :=
+  { down := fun x => roundDown (β := β) (fexp := fexp) x
+    up := fun x => roundUp (β := β) (fexp := fexp) x
+    down_le := fun x => roundDown_le (β := β) (fexp := fexp) x
+    le_up := fun x => le_roundUp (β := β) (fexp := fexp) x }
+
+end FloatLib.Floats.Interval

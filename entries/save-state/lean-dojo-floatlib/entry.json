@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T14:03:55Z",
+ "category": "save-state",
+ "commit": "d24844f03932",
+ "delivery": "vendored",
+ "description": "lean-dojo/FloatLib \u2014 Arbitrary verified fast precision floating point arithmetic in Lean, with proofs, optimized backends, and support for IEEE binary and decimal, posits, and custom formats.",
+ "language": "lean",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "FloatLib",
+ "size_bytes": 3731086,
+ "slug": "lean-dojo-floatlib",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 85,
+ "system": "Arbitrary verified fast precision floating point arithmetic in Lean, with proofs, optimized backends, and support for IEEE binary and decimal, posits, and custo",
+ "upstream": "https://github.com/lean-dojo/FloatLib",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

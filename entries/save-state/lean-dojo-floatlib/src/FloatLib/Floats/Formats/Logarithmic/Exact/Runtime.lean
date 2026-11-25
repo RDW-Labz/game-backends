@@ -1,0 +1,62 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Capabilities.Radix
+
+/-!
+# Exact logarithmic representation and execution
+
+A code is zero or a sign with an unbounded integer exponent at a fixed radix. This module keeps
+that representation, its executable rational decoder, and multiplication together. Multiplication
+lets zero absorb, xors the signs, and adds the exponents, so at radix 2 the codes for `-4` and
+`1/8` multiply to the code for `-1/2`. Nothing rounds or overflows, since the exponent is an
+unbounded integer.
+
+`Exact.Proof` supplies the real numerical system, erased proof views, and theorems connecting the
+rational decoder and multiplication kernel to their real semantics.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Logarithmic
+
+open FloatLib.Numerics
+
+/-- Exact logarithmic code at radix `radix`. -/
+inductive Code (radix : Radix) where
+  /-- Zero, which is no power of the radix. -/
+  | zero
+  /-- The number `radix ^ exponent`, negated when `negative` is true. -/
+  | value (negative : Bool) (exponent : Int)
+  deriving DecidableEq, Repr
+
+end FloatLib.Floats.Formats.Logarithmic
+
+/-! ## Executable operations -/
+
+namespace FloatLib.Floats.Formats.Logarithmic.Code
+
+open FloatLib.Numerics
+
+/-- Exact rational value of a logarithmic code. -/
+def toRat {radix : Radix} : Code radix → Rat
+  | .zero => 0
+  | .value negative exponent =>
+      let magnitude := (radix.base : Rat) ^ exponent
+      if negative then -magnitude else magnitude
+
+/--
+Exact logarithmic multiplication: zero absorbs, and otherwise the signs combine and the exponents
+add, so no rounding occurs.
+-/
+def mul {radix : Radix} : Code radix → Code radix → Code radix
+  | .zero, _ | _, .zero => .zero
+  | .value leftSign leftExponent, .value rightSign rightExponent =>
+      .value (Bool.xor leftSign rightSign) (leftExponent + rightExponent)
+
+end FloatLib.Floats.Formats.Logarithmic.Code

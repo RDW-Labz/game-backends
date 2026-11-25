@@ -1,0 +1,99 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Arithmetic.Dyadic.Direct.Proof
+public import FloatLib.Floats.Formats.Posit.Configured.ByteTable.Runtime
+
+/-!
+# Certified construction of byte-sized posit tables
+
+A posit of at most eight encoded bits has at most 256 possible words, few enough to put every
+result in a table. These constructors fill each entry lazily by evaluating the proved direct
+exact-dyadic kernel on it, and once a table is warm an operation costs native indexing and one
+`ByteArray` load.
+
+Dense unary and binary tables stay small all the way up to eight bits. A dense ternary table has
+`2 ^ (3 * bits)` bytes, though, so the execution planner may turn down an FMA table when the setup
+cost or the resident memory can't be amortized.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Posit.Configured.ByteTable
+
+open FloatLib.Floats.ExecFloat
+open FloatLib.Floats.ExecFloat.Backend
+
+variable {format : Format}
+
+/--
+Lazily generated direct addition table.
+
+The generator is the model-valued direct kernel `Model.DirectDyadicArithmetic.add`, so the
+refinement theorem `add_eq_spec` makes the resulting table a table for `Model.Spec.addition`.
+-/
+def addTable (width_le : format.bits ≤ 8) :
+    TinyTable.CertifiedBinary (encoding format width_le) Model.Spec.addition where
+  model := Model.DirectDyadicArithmetic.add
+  table := TinyTable.lazyBinaryTotal (encoding format width_le)
+    (Model.DirectDyadicArithmetic.add)
+  table_eq := by rfl
+  model_eq_spec :=
+    Model.DirectDyadicArithmetic.add_eq_spec
+
+/-- Lazily generated direct subtraction table from the model-valued direct kernel. -/
+def subTable (width_le : format.bits ≤ 8) :
+    TinyTable.CertifiedBinary (encoding format width_le) Model.Spec.subtraction where
+  model := Model.DirectDyadicArithmetic.sub
+  table := TinyTable.lazyBinaryTotal (encoding format width_le)
+    (Model.DirectDyadicArithmetic.sub)
+  table_eq := by rfl
+  model_eq_spec :=
+    Model.DirectDyadicArithmetic.sub_eq_spec
+
+/-- Lazily generated direct multiplication table from the model-valued direct kernel. -/
+def mulTable (width_le : format.bits ≤ 8) :
+    TinyTable.CertifiedBinary (encoding format width_le) Model.Spec.multiplication where
+  model := Model.DirectDyadicArithmetic.mul
+  table := TinyTable.lazyBinaryTotal (encoding format width_le)
+    (Model.DirectDyadicArithmetic.mul)
+  table_eq := by rfl
+  model_eq_spec :=
+    Model.DirectDyadicArithmetic.mul_eq_spec
+
+/-- Lazily generated direct division table using one quotient prefix and exact remainder. -/
+def divTable (width_le : format.bits ≤ 8) :
+    TinyTable.CertifiedBinary (encoding format width_le) Model.Spec.division where
+  model := Model.DirectDyadicArithmetic.div
+  table := TinyTable.lazyBinaryTotal (encoding format width_le)
+    (Model.DirectDyadicArithmetic.div)
+  table_eq := by rfl
+  model_eq_spec :=
+    Model.DirectDyadicArithmetic.div_eq_spec
+
+/-- Lazily generated direct square-root table using one root prefix and exact square remainder. -/
+def sqrtTable (width_le : format.bits ≤ 8) :
+    TinyTable.CertifiedUnary (encoding format width_le) Model.Spec.sqrt where
+  model := Model.DirectDyadicArithmetic.sqrt
+  table := TinyTable.lazyUnaryTotal (encoding format width_le)
+    (Model.DirectDyadicArithmetic.sqrt)
+  table_eq := by rfl
+  model_eq_spec :=
+    Model.DirectDyadicArithmetic.sqrt_eq_spec
+
+/-- Lazily generated direct fused-multiply-add table from the model-valued direct kernel. -/
+def fmaTable (width_le : format.bits ≤ 8) :
+    TinyTable.CertifiedTernary (encoding format width_le) Model.Spec.fma where
+  model := Model.DirectDyadicArithmetic.fma
+  table := TinyTable.lazyTernaryTotal (encoding format width_le)
+    (Model.DirectDyadicArithmetic.fma)
+  table_eq := by rfl
+  model_eq_spec :=
+    Model.DirectDyadicArithmetic.fma_eq_spec
+
+end FloatLib.Floats.Formats.Posit.Configured.ByteTable

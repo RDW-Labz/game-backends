@@ -1,0 +1,18 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Enclosure.Trigonometric.AtanProof
+public import FloatLib.Numerics.Enclosure.Trigonometric.SinCosProof
+
+/-!
+# Rational trigonometric containment
+
+The arctangent kernel uses exact rational argument reduction, and the sine and cosine kernels use
+global Taylor bounds. For every rational input and every finite degree, each computed interval
+contains the corresponding real function value.
+-/

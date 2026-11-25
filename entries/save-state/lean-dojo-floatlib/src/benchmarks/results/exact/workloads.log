@@ -1,0 +1,132 @@
+KTERM primecert/61/powModK ns=951657 value=Bool.true
+KTERM primecert/61/powMod ns=328590 value=Bool.true
+KTERM primecert/127/powModK ns=1932371 value=Bool.true
+KTERM primecert/127/powMod ns=564089 value=Bool.true
+KTERM primecert/255/powModK ns=3881873 value=Bool.true
+KTERM primecert/255/powMod ns=1086624 value=Bool.true
+KTERM primecert/256/powModK ns=3765319 value=Bool.true
+KTERM primecert/256/powMod ns=1102008 value=Bool.true
+KTERM primecert/384/powModK ns=5862006 value=Bool.true
+KTERM primecert/384/powMod ns=1814264 value=Bool.true
+KTERM primecert/521/powModK ns=8165155 value=Bool.true
+KTERM primecert/521/powMod ns=2978847 value=Bool.true
+KTERM primecert/1279/powModK ns=22529871 value=Bool.true
+KTERM primecert/1279/powMod ns=17000631 value=Bool.true
+KTERM primecert/2203/powModK ns=53982899 value=Bool.true
+KTERM primecert/2203/powMod ns=32127838 value=Bool.true
+KTERM primecert/4423/powModK ns=771392165 value=Bool.true
+KTERM primecert/4423/powMod ns=135701562 value=Bool.true
+KTERM ecrank/checkPoint curve1 (Int) ns=768732 value=Bool.true
+KTERM ecrank/checkPoint curve1 (Z) ns=461867 value=Bool.true
+KOP ecrank/checkPoint (Int) bits=64 ns=512963 warm=448132 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Int) bits=256 ns=509220 warm=448317 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Int) bits=1024 ns=521312 warm=462434 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Z) bits=64 ns=226478 warm=238286 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Z) bits=256 ns=225165 warm=227062 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Z) bits=1024 ns=236944 warm=244649 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KTERM ecrank/qrMask 23 ns=100762 value=340830
+KTERM ecrank/qrMask 523 ns=1956197 value=1127108976874871368304669268691206282243…
+KTERM ecrank/F2 inverse 12 (checkInv) ns=1896821 value=Bool.true
+KTERM ecrank/F2 inverse 12 (packed) ns=544056 value=Bool.true
+KTERM ecrank/F2 inverse 32 (checkInv) ns=11939713 value=Bool.true
+KTERM ecrank/F2 inverse 32 (packed) ns=1341149 value=Bool.true
+KTERM ecrank/F2 inverse 64 (checkInv) ns=53197282 value=Bool.true
+KTERM ecrank/F2 inverse 64 (packed) ns=2808508 value=Bool.true
+KOP ha/expChildren step bits=64 ns=14206 warm=15413 value= 214255689750780116926786277510072784308 223433851
+KOP ha/expChildren step bits=128 ns=13631 warm=14714 value= 5101671087113237325326546195709497589581… 5668360
+KOP ha/expChildren step bits=256 ns=13816 warm=14887 value= 7922115539692251860993735102631825686509… 1139722
+KTERM packed/row product 32 lanes (entry by entry) ns=212008671 value=95666408139655906791356334996977411786
+KTERM packed/row product 32 lanes (packed) ns=333106 value=95666408139655906791356334996977411786
+KTERM packed/row product 256 lanes (packed) ns=445307 value=1871536478217370181580625624299354802106
+KTERM packed/row product 2048 lanes (packed) ns=2041247 value=4398608166579519438357038608960334705374…
+KTERM packed/guard and norm 32 lanes ns=263323 value=Bool.true
+KTERM packed/guard and norm 256 lanes ns=279861 value=Bool.true
+KTERM packed/guard and norm 2048 lanes ns=574128 value=Bool.true
+KTERM primecert/61/powModK ns=982162 value=Bool.true
+KTERM primecert/61/powMod ns=332619 value=Bool.true
+KTERM primecert/127/powModK ns=1970558 value=Bool.true
+KTERM primecert/127/powMod ns=558922 value=Bool.true
+KTERM primecert/255/powModK ns=3935082 value=Bool.true
+KTERM primecert/255/powMod ns=1100864 value=Bool.true
+KTERM primecert/256/powModK ns=3973976 value=Bool.true
+KTERM primecert/256/powMod ns=1104288 value=Bool.true
+KTERM primecert/384/powModK ns=6115851 value=Bool.true
+KTERM primecert/384/powMod ns=1834510 value=Bool.true
+KTERM primecert/521/powModK ns=8803911 value=Bool.true
+KTERM primecert/521/powMod ns=3020712 value=Bool.true
+KTERM primecert/1279/powModK ns=24681666 value=Bool.true
+KTERM primecert/1279/powMod ns=18327813 value=Bool.true
+KTERM primecert/2203/powModK ns=63686649 value=Bool.true
+KTERM primecert/2203/powMod ns=38974144 value=Bool.true
+KTERM primecert/4423/powModK ns=836698084 value=Bool.true
+KTERM primecert/4423/powMod ns=141644799 value=Bool.true
+KTERM ecrank/checkPoint curve1 (Int) ns=801809 value=Bool.true
+KTERM ecrank/checkPoint curve1 (Z) ns=486724 value=Bool.true
+KOP ecrank/checkPoint (Int) bits=64 ns=511419 warm=450481 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Int) bits=256 ns=511339 warm=459118 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Int) bits=1024 ns=556378 warm=489008 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Z) bits=64 ns=243940 warm=249715 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Z) bits=256 ns=234032 warm=231842 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Z) bits=1024 ns=235270 warm=244741 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KTERM ecrank/qrMask 23 ns=98498 value=340830
+KTERM ecrank/qrMask 523 ns=1990054 value=1127108976874871368304669268691206282243…
+KTERM ecrank/F2 inverse 12 (checkInv) ns=1891944 value=Bool.true
+KTERM ecrank/F2 inverse 12 (packed) ns=553066 value=Bool.true
+KTERM ecrank/F2 inverse 32 (checkInv) ns=13169899 value=Bool.true
+KTERM ecrank/F2 inverse 32 (packed) ns=1381285 value=Bool.true
+KTERM ecrank/F2 inverse 64 (checkInv) ns=54500733 value=Bool.true
+KTERM ecrank/F2 inverse 64 (packed) ns=3074078 value=Bool.true
+KOP ha/expChildren step bits=64 ns=14405 warm=15088 value= 214255689750780116926786277510072784308 223433851
+KOP ha/expChildren step bits=128 ns=13865 warm=16428 value= 5101671087113237325326546195709497589581… 5668360
+KOP ha/expChildren step bits=256 ns=13999 warm=15055 value= 7922115539692251860993735102631825686509… 1139722
+KTERM packed/row product 32 lanes (entry by entry) ns=232610278 value=95666408139655906791356334996977411786
+KTERM packed/row product 32 lanes (packed) ns=335901 value=95666408139655906791356334996977411786
+KTERM packed/row product 256 lanes (packed) ns=460816 value=1871536478217370181580625624299354802106
+KTERM packed/row product 2048 lanes (packed) ns=2044201 value=4398608166579519438357038608960334705374…
+KTERM packed/guard and norm 32 lanes ns=236957 value=Bool.true
+KTERM packed/guard and norm 256 lanes ns=290649 value=Bool.true
+KTERM packed/guard and norm 2048 lanes ns=600152 value=Bool.true
+KTERM primecert/61/powModK ns=947491 value=Bool.true
+KTERM primecert/61/powMod ns=329458 value=Bool.true
+KTERM primecert/127/powModK ns=1912784 value=Bool.true
+KTERM primecert/127/powMod ns=558143 value=Bool.true
+KTERM primecert/255/powModK ns=3836318 value=Bool.true
+KTERM primecert/255/powMod ns=1098776 value=Bool.true
+KTERM primecert/256/powModK ns=3721705 value=Bool.true
+KTERM primecert/256/powMod ns=1101107 value=Bool.true
+KTERM primecert/384/powModK ns=5793109 value=Bool.true
+KTERM primecert/384/powMod ns=1812222 value=Bool.true
+KTERM primecert/521/powModK ns=8172650 value=Bool.true
+KTERM primecert/521/powMod ns=2981764 value=Bool.true
+KTERM primecert/1279/powModK ns=22853170 value=Bool.true
+KTERM primecert/1279/powMod ns=17352737 value=Bool.true
+KTERM primecert/2203/powModK ns=53340307 value=Bool.true
+KTERM primecert/2203/powMod ns=32956884 value=Bool.true
+KTERM primecert/4423/powModK ns=783422803 value=Bool.true
+KTERM primecert/4423/powMod ns=138114132 value=Bool.true
+KTERM ecrank/checkPoint curve1 (Int) ns=753414 value=Bool.true
+KTERM ecrank/checkPoint curve1 (Z) ns=461536 value=Bool.true
+KOP ecrank/checkPoint (Int) bits=64 ns=511053 warm=467967 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Int) bits=256 ns=526515 warm=474207 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Int) bits=1024 ns=537028 warm=475527 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Z) bits=64 ns=225446 warm=227992 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Z) bits=256 ns=225260 warm=228761 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KOP ecrank/checkPoint (Z) bits=1024 ns=243550 warm=247689 value= Bool.false Bool.false Bool.false Bool.false Bool.
+KTERM ecrank/qrMask 23 ns=101770 value=340830
+KTERM ecrank/qrMask 523 ns=1960443 value=1127108976874871368304669268691206282243…
+KTERM ecrank/F2 inverse 12 (checkInv) ns=1933394 value=Bool.true
+KTERM ecrank/F2 inverse 12 (packed) ns=556491 value=Bool.true
+KTERM ecrank/F2 inverse 32 (checkInv) ns=11878331 value=Bool.true
+KTERM ecrank/F2 inverse 32 (packed) ns=1359275 value=Bool.true
+KTERM ecrank/F2 inverse 64 (checkInv) ns=52522983 value=Bool.true
+KTERM ecrank/F2 inverse 64 (packed) ns=2774894 value=Bool.true
+KOP ha/expChildren step bits=64 ns=14237 warm=14912 value= 214255689750780116926786277510072784308 223433851
+KOP ha/expChildren step bits=128 ns=13724 warm=14828 value= 5101671087113237325326546195709497589581… 5668360
+KOP ha/expChildren step bits=256 ns=13958 warm=15030 value= 7922115539692251860993735102631825686509… 1139722
+KTERM packed/row product 32 lanes (entry by entry) ns=221957167 value=95666408139655906791356334996977411786
+KTERM packed/row product 32 lanes (packed) ns=330569 value=95666408139655906791356334996977411786
+KTERM packed/row product 256 lanes (packed) ns=439971 value=1871536478217370181580625624299354802106
+KTERM packed/row product 2048 lanes (packed) ns=2051443 value=4398608166579519438357038608960334705374…
+KTERM packed/guard and norm 32 lanes ns=249247 value=Bool.true
+KTERM packed/guard and norm 256 lanes ns=279365 value=Bool.true
+KTERM packed/guard and norm 2048 lanes ns=576696 value=Bool.true

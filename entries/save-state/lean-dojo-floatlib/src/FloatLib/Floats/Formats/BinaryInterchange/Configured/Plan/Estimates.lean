@@ -1,0 +1,81 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Configured.Storage.Family.Proof
+public import FloatLib.Floats.Formats.BinaryInterchange.Descriptor.Plan.Routes
+
+/-!
+# Cost estimates for configured binary execution
+
+These estimates combine arithmetic work with the cost of adapting the selected storage
+carrier to the proof model. They influence static backend selection only, and no semantic
+theorem depends on their calibration.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange.Configured.Plan
+
+open FloatLib.Floats.ExecFloat
+open FloatLib.Floats.ExecFloat.Backend
+
+/-! ## Representation-aware cost decoration -/
+
+/--
+Estimated cost of adapting one packed public value to and from the proof model.
+
+Every operand is decoded and one result packed, so the count scales with operation arity. The
+constants are calibration priors, and a direct carrier kernel sets the cost to zero.
+
+Byte and machine-word carriers cost one unit per value, on the approximate 100 ns scale of the
+tiny-format arithmetic estimates. Machine words decode with `BitVec.ofNatLT` from the stored range
+proof and pack with one narrowing conversion. The two-word carrier costs two units, since above 64
+bits each conversion builds or splits an arbitrary-precision natural number. Limbs convert through
+`LimbArray.toNat` and `LimbArray.ofNat`, one arbitrary-precision operation per limb, so the cost
+grows with the limb count. Accepted wide-limb paths read the stored fields and count any integer
+conversions in their work estimate, and declined calls use the model adapter for the exact
+fallback.
+-/
+def modelMarshallingCost {format : FloatFormat}
+    (plan : StoragePlan format) (operation : Operation) : Nat :=
+  let values := operation.arity + 1
+  values *
+    match plan with
+    | .byte _ => 1
+    | .word16 _ => 1
+    | .word32 _ => 1
+    | .word64 _ => 1
+    | .pair _ _ => 2
+    | .wide => 0
+    | .limbs _ => 8 + (format.bitWidth + 31) / 32
+
+/-- Attach the selected storage carrier and model-adapter cost to an arithmetic estimate. -/
+def modelAdapterEstimate {format : FloatFormat}
+    (plan : StoragePlan format) (operation : Operation) (estimate : Candidate) : Candidate :=
+  { estimate with
+    storage := plan.storageClass
+    marshallingCost := modelMarshallingCost plan operation }
+
+/-- Attach byte storage to a direct table estimate, since a warm lookup converts no model. -/
+def directByteEstimate (format : FloatFormat) (operation : Operation) : Candidate :=
+  { Descriptor.Plan.tableEstimate format operation with
+    storage := .byte
+    marshallingCost := 0 }
+
+/-- Generic kernel estimate for the selected carrier. -/
+def genericEstimate {format : FloatFormat}
+    (plan : StoragePlan format) (operation : Operation) : Candidate :=
+  modelAdapterEstimate plan operation (Descriptor.Plan.genericEstimate format operation)
+
+/-- Estimate for the structural route entered by the executable dispatcher. -/
+def structuralEstimate {format : FloatFormat}
+    (plan : StoragePlan format) (operation : Operation)
+    (route : Descriptor.Plan.StructuralRoute) : Candidate :=
+  modelAdapterEstimate plan operation (route.estimate format operation)
+
+end FloatLib.Floats.Formats.BinaryInterchange.Configured.Plan

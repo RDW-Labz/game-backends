@@ -1,0 +1,4 @@
+results/
+*.c
+generated/
+lake-manifest.json

@@ -1,0 +1,21 @@
+| operation | binary32 public | binary32 kernel path | binary64 public | binary64 kernel path |
+| --- | ---: | ---: | ---: | ---: |
+| add-outcome | 12238 | 306 | 12962 | 276 |
+| sub-outcome | 13497 | 289 | 13460 | 297 |
+| mul-outcome | 12073 | 231 | 13636 | 235 |
+| div-outcome | 7304 | 255 | 7123 | 274 |
+| sqrt-outcome | 10399 | 204 | 18172 | 214 |
+| fma-outcome | 15343 | 335 | 19558 | 345 |
+| roundToIntegral-outcome | 7684 | 250 | 9406 | 254 |
+| less | 2209 | 69 | 2592 | 72 |
+| equal | 2267 | 56 | 2538 | 55 |
+| totalOrder | 1849 | 67 | 2230 | 67 |
+| isNaN | 116 | 31 | 108 | 30 |
+| roundToIntegral | 5023 | 74 | 5708 | 75 |
+| toInt | 851 | 75 | 771 | 76 |
+| toRat | 636 | 118 | 615 | 119 |
+| cast | 4913 | 65 | 6299 | 68 |
+| cast-outcome | 9686 | 257 | 12587 | 265 |
+| decimal | 1994 | 77 | 2214 | 77 |
+| rational | 2117 | 294 | 2295 | 287 |
+| rational-outcome | 5744 | 522 | 5731 | 530 |

@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+# Evidence manifests hash the original bytes, including their line endings.
+/benchmarks/results/public-binary/** -text
+
+# Preserve the original bytes of upstream licenses and source notices.
+/third_party/licenses/** -text

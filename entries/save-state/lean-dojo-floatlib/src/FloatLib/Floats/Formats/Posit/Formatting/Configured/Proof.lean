@@ -1,0 +1,54 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Configured.Instances
+public import FloatLib.Floats.Formats.Posit.Formatting.Configured.Runtime
+public import FloatLib.Floats.Formats.Posit.Formatting.Proof
+
+import FloatLib.Floats.Formats.Posit.Configured.Storage.Family.Proof
+
+/-!
+# Configured posit decimal preservation
+
+A configured posit survives a trip through its decimal string, for every supported storage
+carrier and posit width, because the model preserves values exactly and the codec has an inverse
+law.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats
+
+open FloatLib.Floats.Formats.Posit
+
+namespace ExecFloat.Posit
+
+variable {format : Format} {plan : Configured.StoragePlan format} {code : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec plan (Model format) code]
+
+local notation "Value" => FloatLib.Floats.ExecFloat (Configured.Family format code plan)
+
+/-- Parsing the exact decimal display preserves the complete configured posit value. -/
+@[simp] theorem parse_display (value : Value) :
+    parse (display value) = .ok value := by
+  simp [parse, display, Except.map, ofModel, toModel]
+
+/-- Decoding a successful decimal input gives the model rounder's result. -/
+theorem toModel_parse (input : String) :
+    (parse (format := format) (plan := plan) (code := code) input).map toModel =
+      Model.parse format input := by
+  cases hparse : Model.parse format input <;>
+    simp [parse, hparse, Except.map, toModel, ofModel]
+
+/-- Exact decimal parsing inverts the configured `ToString` display. -/
+@[simp] theorem parse_toString (value : Value) :
+    parse (toString value) = .ok value :=
+  parse_display value
+
+end ExecFloat.Posit
+end FloatLib.Floats

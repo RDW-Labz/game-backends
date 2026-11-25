@@ -1,0 +1,17 @@
+Conway refinement reader attribution
+
+Copyright 2026 Dan Abramov.
+
+FloatLib's website reader contains adaptations
+of the Conway refinement reader:
+https://github.com/gaearon/conway-refinement
+Upstream reader: blueprint/src/web-reader/
+
+LICENSE contains the Apache-2.0 text from upstream commit
+264445c93b78554c408e99e4e7f663693b4e91ab.
+The revision originally adapted by FloatLib was not recorded.
+
+FloatLib modified the reader. Adaptations appear in site/reader/src/App.tsx,
+MapView.tsx, data.tsx, and site/reader/styles.css.
+
+Attribution notice prepared by FloatLib.

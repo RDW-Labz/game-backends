@@ -1,0 +1,52 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Arithmetic.GuardSticky.Spec
+public import FloatLib.Floats.Formats.Posit.Rounding.Direct.Candidate.Runtime
+
+/-!
+# Field-oriented guard-and-sticky Posit rounding
+
+Field-oriented rounding reads the finite exponent/fraction tail in place, straight from its
+normalized fields. It never concatenates the exponent and fraction into a larger temporary natural
+number the way `exactTailRaw` does.
+
+This is the representation-independent executable kernel. Arbitrary-width backends run these
+`Nat` operations as they are, while fixed-word and fixed-limb backends refine the same bit and
+suffix queries to native masks and shifts.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Posit.Model.GuardStickyRounding
+
+/--
+Round an interior normalized Posit from its fields.
+
+This is the general executable guard/sticky kernel for every width. It builds the same packed
+lower candidate as `roundInteriorCode` but reads the discarded suffix in place, without
+materializing the exponent/fraction stream.
+-/
+@[inline] def roundInteriorCodeFromFields
+    (format : Format) (regime : Int)
+    (exponentField significand leading regimeFieldBits : Nat) : Nat :=
+  let lower :=
+    DirectDyadicPacking.lowerCandidateFromFields
+      format regime exponentField significand leading
+  let retainedTailBits := format.payloadBits - regimeFieldBits
+  let guard :=
+    tailBit exponentField significand leading retainedTailBits
+  let sticky :=
+    tailHasNonzeroAfter exponentField significand leading
+      (retainedTailBits + 1)
+  if guard && (sticky || lower % 2 != 0) then
+    lower + 1
+  else
+    lower
+
+end FloatLib.Floats.Formats.Posit.Model.GuardStickyRounding

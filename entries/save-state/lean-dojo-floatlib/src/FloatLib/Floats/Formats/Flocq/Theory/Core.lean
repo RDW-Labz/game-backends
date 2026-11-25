@@ -1,0 +1,302 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Capabilities.Radix
+/-!
+# FloatRep core (Flocq-style rounded arithmetic)
+
+The rounded-real model keeps three things apart:
+
+- a value is represented by an integer mantissa $m$ and exponent $e$,
+- it is interpreted as the real number $m\beta^e$,
+- the *format* is described by an exponent-selection function `fexp : ℤ → ℤ` and a rounding
+  operator.
+
+The Coq library **Flocq** uses the same split. Many theorems then serve fixed point, unbounded
+floats, and floats with a lower exponent bound alike, and they line up well with the ULP-style
+error bounds of numerical analysis.
+
+For executable, bit-level binary semantics (NaN/Inf/signed zero), see
+`FloatLib/Floats/Formats/BinaryInterchange/`.
+
+## References
+
+- S. Boldo and G. Melquiond, “Flocq: A Unified Library for Proving Floating-Point Algorithms
+  in Coq,” ARITH 2011, pp. 243–252, §III (especially §III-D for generic formats),
+  DOI: 10.1109/ARITH.2011.40.
+- Flocq 4.2.2, `src/Core/Defs.v` and `src/Core/Generic_fmt.v`, for the real-valued
+  representation, rounding predicates, and exponent-function format:
+  <https://flocq.gitlabpages.inria.fr/releases/flocq-4.2.2.tar.gz>.
+- IEEE Standard for Floating-Point Arithmetic (IEEE 754-2019)
+- N. J. Higham, *Accuracy and Stability of Numerical Algorithms*, 2nd ed., SIAM, 2002
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Flocq
+
+/-- A radix-$\beta$ floating-point representation with integer mantissa and exponent. -/
+structure FloatRep (β : Numerics.Radix) where
+  /-- Integer mantissa `m`. -/
+  mantissa : ℤ
+  /-- Integer exponent `e`. -/
+  exponent : ℤ
+
+namespace FloatRep
+
+variable {β : Numerics.Radix} (f : FloatRep β)
+
+/-- Structural zero test: the mantissa is `0`. -/
+def IsZero : Prop := f.mantissa = 0
+
+/-- Sign of the mantissa (matches the sign of `toReal` since $\beta^e>0$). -/
+def sign : ℤ := Int.sign f.mantissa
+
+end FloatRep
+
+/--
+Base power: $\beta^e$ as a real number.
+
+This is Flocq's `bpow` concept: the scaling factor used to interpret mantissa/exponent pairs.
+-/
+noncomputable def bpow (β : Numerics.Radix) (e : ℤ) : ℝ := β.toReal ^ e
+
+namespace bpow
+
+variable (β : Numerics.Radix)
+
+/-- Base powers are positive: $\beta^e>0$ for any exponent $e$. -/
+lemma pos (e : ℤ) : 0 < bpow β e := zpow_pos (Numerics.Radix.pos β) e
+
+/-- Base powers are nonnegative: $\beta^e\ge0$ for any exponent $e$. -/
+lemma nonneg (e : ℤ) : 0 ≤ bpow β e := le_of_lt (pos β e)
+
+/-- Base powers are never zero. -/
+lemma ne_zero (e : ℤ) : bpow β e ≠ 0 := ne_of_gt (pos β e)
+
+/-- Exponent addition law: $\beta^{e_1+e_2}=\beta^{e_1}\beta^{e_2}$. -/
+lemma add_exp (e1 e2 : ℤ) : bpow β (e1 + e2) = bpow β e1 * bpow β e2 := by
+  simp [bpow, zpow_add₀ (Numerics.Radix.ne_zero β)]
+
+/-- Negating the exponent inverts the base power:
+$\beta^{-e}=(\beta^e)^{-1}$. -/
+lemma neg_exp (e : ℤ) : bpow β (-e) = (bpow β e)⁻¹ := by
+  simp [bpow, zpow_neg]
+
+/-- Exponent subtraction corresponds to division of radix powers. -/
+lemma sub_exp (e₁ e₂ : ℤ) :
+    bpow β (e₁ - e₂) = bpow β e₁ / bpow β e₂ := by
+  simp [bpow, zpow_sub₀ (Numerics.Radix.ne_zero β)]
+
+end bpow
+
+/-- Base powers of the binary radix are powers of two. -/
+theorem bpow_binaryRadix (e : ℤ) : bpow Numerics.binaryRadix e = (2 : ℝ) ^ e := by
+  simp [bpow, Numerics.binaryRadix, Numerics.Radix.toReal]
+
+/--
+Interpret a `FloatRep` as the real number $m\beta^e$.
+-/
+noncomputable def toReal {β : Numerics.Radix} (f : FloatRep β) : ℝ :=
+  f.mantissa * bpow β f.exponent
+
+namespace toReal
+
+variable {β : Numerics.Radix} (f : FloatRep β)
+
+/-- `toReal` is zero iff the mantissa is zero (since $\beta^e\ne0$). -/
+@[simp, grind =] lemma zero_iff : toReal f = 0 ↔ f.mantissa = 0 := by
+  simp [toReal, bpow.ne_zero β f.exponent]
+
+end toReal
+
+/--
+Magnitude in base $\beta$ of a real number.
+
+This matches the usual definition
+$\operatorname{mag}(x)=\lfloor\log_\beta|x|\rfloor+1$ for $x\ne0$, and $0$ for $x=0$.
+It is the bridge between a real input $x$ and the exponent-selection function `fexp`.
+-/
+noncomputable def magnitude (β : Numerics.Radix) (x : ℝ) : ℤ :=
+  if x = 0 then 0
+  else
+    let base_mag := ⌊Real.log (abs x) / Real.log β.toReal⌋ + 1
+    base_mag
+
+/--
+Validity predicate for exponent-selection functions.
+
+This is the exponent-validity condition used by Flocq. Properties that don't follow from
+validity, such as monotonicity, get classes of their own, so generic results don't pick up
+unnecessary hypotheses.
+-/
+class ValidExp (fexp : ℤ → ℤ) : Prop where
+  /-- Exponent compatibility at successive magnitudes and below a negligible exponent. -/
+  flocq_valid : ∀ k : ℤ,
+    (fexp k < k → fexp (k + 1) ≤ k) ∧
+    (k ≤ fexp k → fexp (fexp k + 1) ≤ fexp k ∧ ∀ l, l ≤ fexp k → fexp l = fexp k)
+
+/-- Exponent-selection functions that preserve order. -/
+class MonotoneExp (fexp : ℤ → ℤ) : Prop where
+  /-- Increasing the magnitude cannot decrease the selected exponent. -/
+  monotone : ∀ k1 k2 : ℤ, k1 ≤ k2 → fexp k1 ≤ fexp k2
+
+/-- Optional local growth bound used by selected numerical estimates. -/
+class BoundedExpGrowth (fexp : ℤ → ℤ) : Prop where
+  /-- Successive magnitudes select exponents differing by at most one. -/
+  bounded_growth : ∀ k : ℤ, |fexp (k + 1) - fexp k| ≤ 1
+
+/-- A witness that the format has a lower exponent region, in Flocq's sense. -/
+def IsNegligibleExp (fexp : ℤ → ℤ) (n : ℤ) : Prop :=
+  n ≤ fexp n
+
+/--
+Select a witness $n\le\mathtt{fexp}(n)$ when the format has one. Unbounded formats such as FLX
+return
+`none`, and lower-bounded formats such as FLT return `some n`.
+-/
+noncomputable def negligibleExp (fexp : ℤ → ℤ) : Option ℤ := by
+  classical
+  exact if h : ∃ n, IsNegligibleExp fexp n then some (Classical.choose h) else none
+
+/-- A selected negligible exponent satisfies $n\le\mathtt{fexp}(n)$. -/
+theorem negligibleExp_spec {fexp : ℤ → ℤ} {n : ℤ}
+    (h : negligibleExp fexp = some n) : IsNegligibleExp fexp n := by
+  classical
+  unfold negligibleExp at h
+  split at h
+  next hex =>
+    have hn : Classical.choose hex = n := Option.some.inj h
+    rw [← hn]
+    exact Classical.choose_spec hex
+  next _ => simp at h
+
+/-- A format has no selected negligible exponent if and only if no negligible exponent exists. -/
+theorem negligibleExp_eq_none_iff (fexp : ℤ → ℤ) :
+    negligibleExp fexp = none ↔ ¬∃ n, IsNegligibleExp fexp n := by
+  classical
+  unfold negligibleExp
+  split <;> simp_all
+
+/-- Two negligible-exponent witnesses select the same format exponent. -/
+theorem negligibleExp_value_unique {fexp : ℤ → ℤ} [ValidExp fexp] {n m : ℤ}
+    (hn : IsNegligibleExp fexp n) (hm : IsNegligibleExp fexp m) :
+    fexp n = fexp m := by
+  rcases le_total m (fexp n) with hmn | hnm
+  · exact (((ValidExp.flocq_valid (fexp := fexp) n).2 hn).2 m hmn).symm
+  · have hnfm : n ≤ fexp m := hn.trans (hnm.trans hm)
+    exact ((ValidExp.flocq_valid (fexp := fexp) m).2 hm).2 n hnfm
+
+/--
+Canonical exponent (`cexp` in Flocq terminology).
+
+Apply `fexp` to the input's magnitude, which at zero gives `fexp 0`. The `ValidExp` instance
+restricts the API to valid exponent functions, although evaluating this expression needs only
+`fexp`.
+-/
+@[nolint unusedArguments]
+noncomputable def cexp (β : Numerics.Radix) (fexp : ℤ → ℤ) [ValidExp fexp] (x : ℝ) : ℤ :=
+  fexp (magnitude β x)
+
+/-- A float representation is canonical when its stored exponent is the exponent selected for its
+value. -/
+def Canonical (β : Numerics.Radix) (fexp : ℤ → ℤ) [ValidExp fexp]
+    (f : FloatRep β) : Prop :=
+  f.exponent = cexp β fexp (toReal f)
+
+/--
+Scaled mantissa $x\beta^{-\operatorname{cexp}(x)}$.
+
+Intuitively: rescale `x` so that rounding “happens around exponent 0”, which is where `rnd` acts.
+-/
+noncomputable def scaledMantissa (β : Numerics.Radix) (fexp : ℤ → ℤ) [ValidExp fexp] (x :
+  ℝ) : ℝ :=
+  x * bpow β (-cexp β fexp x)
+
+/--
+Generic format predicate (Flocq-style).
+
+This says that $x$ is exactly representable in the format picked out by $\beta$ and `fexp`.
+One way to read it is: the scaled mantissa is an integer (so there is no rounding error).
+-/
+def GenericRepresentable (β : Numerics.Radix) (fexp : ℤ → ℤ) [ValidExp fexp] (x : ℝ) : Prop :=
+  x =
+    toReal (β := β)
+      { mantissa := ⌊scaledMantissa β fexp x⌋
+      , exponent := cexp β fexp x
+      }
+
+/--
+Unit in the last place (ULP) associated with $x$ and the format selected by `fexp`.
+
+This is the scale of the “one ulp” step at the exponent selected by `cexp`. For round-to-nearest,
+many standard bounds have the shape
+$|\operatorname{round}(x)-x|\le\operatorname{ulp}(x)/2$.
+
+At zero, a negligible exponent determines the spacing when one exists, and otherwise the ULP is
+zero.
+-/
+noncomputable def ulp (β : Numerics.Radix) (fexp : ℤ → ℤ) [ValidExp fexp] (x : ℝ) : ℝ :=
+  if x = 0 then
+    match negligibleExp fexp with
+    | some n => bpow β (fexp n)
+    | none => 0
+  else bpow β (cexp β fexp x)
+
+namespace ulp
+
+variable (β : Numerics.Radix) (fexp : ℤ → ℤ) [ValidExp fexp]
+
+/--
+`ulp` is always nonnegative.
+
+Informally: an ulp is a step size on a real grid, so it cannot be negative.
+-/
+lemma nonneg (x : ℝ) : 0 ≤ ulp β fexp x := by
+  by_cases hx : x = 0
+  · simp only [ulp, hx, ↓reduceIte]
+    split <;> simp [bpow.nonneg]
+  · simp [ulp, hx, bpow.nonneg]
+
+/--
+`ulp` is strictly positive away from zero.
+
+If $x\ne0$, the exponent selection $\operatorname{cexp}(x)$ picks a power of $\beta$, which is
+strictly positive.
+-/
+lemma pos_of_ne_zero (x : ℝ) (hx : x ≠ 0) : 0 < ulp β fexp x := by
+  simp [ulp, hx, bpow.pos]
+
+/-- The ULP at zero is determined by the format's negligible exponent, when one exists. -/
+@[simp] lemma zero :
+    ulp β fexp (0 : ℝ) =
+      match negligibleExp fexp with
+      | some n => bpow β (fexp n)
+      | none => 0 := by
+  simp [ulp]
+
+/-- The ULP at zero is the radix power at the exponent selected by any negligible exponent. -/
+theorem zero_of_isNegligibleExp {m : ℤ} (hm : IsNegligibleExp fexp m) :
+    ulp β fexp (0 : ℝ) = bpow β (fexp m) := by
+  rw [zero]
+  cases hopt : negligibleExp fexp with
+  | none => exact ((negligibleExp_eq_none_iff fexp).mp hopt ⟨m, hm⟩).elim
+  | some n =>
+      change bpow β (fexp n) = bpow β (fexp m)
+      rw [negligibleExp_value_unique (negligibleExp_spec hopt) hm]
+
+/--
+Away from zero, `ulp` is the base grid step $\beta^{\operatorname{cexp}(x)}$.
+-/
+@[simp] lemma of_ne_zero (x : ℝ) (hx : x ≠ 0) :
+    ulp β fexp x = bpow β (cexp β fexp x) := by
+  simp [ulp, hx]
+
+end ulp
+
+end FloatLib.Floats.Formats.Flocq

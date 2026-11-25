@@ -1,0 +1,224 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Analysis.Error
+public import FloatLib.Floats.Formats.BinaryInterchange.Operations.MixedPrecision.Accumulation
+
+import FloatLib.Numerics.ErrorBound.Algebra
+
+/-!
+# Error bounds for mixed-precision accumulation
+
+This file decomposes the real error of `mulAcc` and `dotSequential` and bounds it absolutely. A
+step's bound counts both input casts, the multiplication, the cast to the accumulator and the
+addition, and the dot bound adds the final output cast. The product, accumulator and output
+formats must be IEEE encodings and every value must be finite, but the storage format may use any
+encoding. Each local half-ULP term covers subnormals as well as normal values.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange
+namespace Model
+
+/-- All values encountered by one unfused mixed-precision multiply-accumulate are finite. -/
+def MulAccFinite (p : SitePolicy) (a b : Model p.storage)
+    (acc : Model p.accumulator) : Prop :=
+  let aP := cast p.storage p.product a
+  let bP := cast p.storage p.product b
+  let product := mul aP bP
+  let productA := cast p.product p.accumulator product
+  isFinite a = true ∧ isFinite b = true ∧
+    isFinite aP = true ∧ isFinite bP = true ∧
+    isFinite product = true ∧ isFinite productA = true ∧
+    isFinite acc = true ∧ isFinite (add productA acc) = true
+
+/--
+Sum of the local half-ULP budgets in one mixed-precision multiply-accumulate.
+
+The input-cast terms include the factors introduced when the rounded operands are multiplied.
+-/
+noncomputable def mulAccErrorBudget (p : SitePolicy) (a b : Model p.storage)
+    (acc : Model p.accumulator) : ℝ :=
+  let aP := cast p.storage p.product a
+  let bP := cast p.storage p.product b
+  let product := mul aP bP
+  let productA := cast p.product p.accumulator product
+  halfUlpAt p.product (toReal a) * |toReal b| +
+    |toReal aP| * halfUlpAt p.product (toReal b) +
+    halfUlpAt p.product (toReal aP * toReal bP) +
+    halfUlpAt p.accumulator (toReal product) +
+    halfUlpAt p.accumulator (toReal productA + toReal acc)
+
+/-- Real error introduced by one mixed-precision multiply-accumulate step. -/
+noncomputable def mulAccError (p : SitePolicy) (a b : Model p.storage)
+    (acc : Model p.accumulator) : ℝ :=
+  toReal (mulAcc p a b acc) - (toReal a * toReal b + toReal acc)
+
+/--
+The error of one mixed-precision multiply-accumulate equals the sum of its five site residuals.
+
+This algebraic identity needs no finiteness hypotheses. To interpret the residuals as rounding
+errors, use the finiteness premises of `mulAcc_abs_error_le_budget`: `toReal` maps exceptional
+values to zero and does not describe their NaN or infinity behavior.
+-/
+theorem mulAccError_eq_site_residuals (p : SitePolicy) (a b : Model p.storage)
+    (acc : Model p.accumulator) :
+    let aP := cast p.storage p.product a
+    let bP := cast p.storage p.product b
+    let product := mul aP bP
+    let productA := cast p.product p.accumulator product
+    mulAccError p a b acc =
+      (toReal aP - toReal a) * toReal b +
+      toReal aP * (toReal bP - toReal b) +
+      (toReal product - toReal aP * toReal bP) +
+      (toReal productA - toReal product) +
+      (toReal (add productA acc) - (toReal productA + toReal acc)) := by
+  simp only [mulAccError, mulAcc]
+  ring
+
+/--
+One finite mixed-precision multiply-accumulate differs from the exact source-value operation by
+at most the sum of the local cast, multiply, cast, and add budgets.
+-/
+theorem mulAcc_abs_error_le_budget (p : SitePolicy) (a b : Model p.storage)
+    (acc : Model p.accumulator)
+    (hproduct : p.product.isIEEE = true)
+    (haccumulator : p.accumulator.isIEEE = true)
+    (hfinite : MulAccFinite p a b acc) :
+    |mulAccError p a b acc| ≤ mulAccErrorBudget p a b acc := by
+  let aP := cast p.storage p.product a
+  let bP := cast p.storage p.product b
+  let product := mul aP bP
+  let productA := cast p.product p.accumulator product
+  rcases hfinite with ⟨-, -, haP, hbP, hproductFinite, hproductA, -, hresult⟩
+  have haError := abs_toReal_cast_sub_le a hproduct haP
+  have hbError := abs_toReal_cast_sub_le b hproduct hbP
+  have hmulError := abs_toReal_mul_sub_le aP bP hproduct hproductFinite
+  have hproductCastError := abs_toReal_cast_sub_le product haccumulator hproductA
+  have haddError := abs_toReal_add_sub_le productA acc haccumulator hresult
+  have hinputs := Numerics.Backward.deviation_mul_mixed hbError haError
+  have hrounded := Numerics.compose_error hmulError
+    (by simpa only [mul_comm] using hinputs)
+  have hcast := Numerics.compose_error hproductCastError hrounded
+  have hexact : |toReal acc - toReal acc| ≤ (0 : ℝ) := by simp
+  simpa only [mulAccError, mulAccErrorBudget, mulAcc, add_zero, zero_add, add_comm,
+    add_left_comm, add_assoc, mul_comm] using Numerics.add_error hcast hexact haddError
+
+/-- Accumulator state after the first `count` sequential product-add sites. -/
+def sequentialAccumulator (p : SitePolicy)
+    (xs ys : Array (Model p.storage)) (count : Nat) : Model p.accumulator :=
+  (List.range count).foldl
+    (fun acc i ↦ mulAcc p xs[i]! ys[i]! acc)
+    (posZero p.accumulator)
+
+/-- Exact real dot product of the first `count` source-value pairs. -/
+noncomputable def sequentialDotReal (p : SitePolicy)
+    (xs ys : Array (Model p.storage)) (count : Nat) : ℝ :=
+  ∑ i ∈ Finset.range count, toReal xs[i]! * toReal ys[i]!
+
+/-- Sum of the local error budgets along the actual sequential accumulator path. -/
+noncomputable def sequentialErrorBudget (p : SitePolicy)
+    (xs ys : Array (Model p.storage)) (count : Nat) : ℝ :=
+  ∑ i ∈ Finset.range count,
+    mulAccErrorBudget p xs[i]! ys[i]! (sequentialAccumulator p xs ys i)
+
+/--
+The executable accumulator's error is the sum of its local errors, evaluated at the successive
+accumulator states.
+-/
+theorem sequentialAccumulator_error_eq_sum (p : SitePolicy)
+    (xs ys : Array (Model p.storage)) (count : Nat) :
+    toReal (sequentialAccumulator p xs ys count) - sequentialDotReal p xs ys count =
+      ∑ i ∈ Finset.range count,
+        mulAccError p xs[i]! ys[i]! (sequentialAccumulator p xs ys i) := by
+  induction count with
+  | zero => simp [sequentialAccumulator, sequentialDotReal]
+  | succ count ih =>
+      rw [sequentialAccumulator, List.range_succ, List.foldl_append]
+      simp only [List.foldl_cons, List.foldl_nil]
+      rw [sequentialDotReal, Finset.sum_range_succ, Finset.sum_range_succ]
+      change toReal
+          (mulAcc p xs[count]! ys[count]! (sequentialAccumulator p xs ys count)) -
+          (sequentialDotReal p xs ys count +
+            toReal xs[count]! * toReal ys[count]!) =
+        (∑ i ∈ Finset.range count,
+          mulAccError p xs[i]! ys[i]! (sequentialAccumulator p xs ys i)) +
+          mulAccError p xs[count]! ys[count]! (sequentialAccumulator p xs ys count)
+      rw [← ih]
+      simp only [mulAccError]
+      ring
+
+/--
+The absolute error of a finite sequential accumulator is bounded by the sum of its local
+budgets. Finiteness is required along the executed prefix states. Product and accumulator may
+use different IEEE formats, and storage any encoding.
+-/
+theorem sequentialAccumulator_abs_error_le_budget (p : SitePolicy)
+    (xs ys : Array (Model p.storage)) (count : Nat)
+    (hproduct : p.product.isIEEE = true)
+    (haccumulator : p.accumulator.isIEEE = true)
+    (hfinite : ∀ i < count,
+      MulAccFinite p xs[i]! ys[i]! (sequentialAccumulator p xs ys i)) :
+    |toReal (sequentialAccumulator p xs ys count) - sequentialDotReal p xs ys count| ≤
+      sequentialErrorBudget p xs ys count := by
+  rw [sequentialAccumulator_error_eq_sum p xs ys count]
+  calc
+    |∑ i ∈ Finset.range count,
+        mulAccError p xs[i]! ys[i]! (sequentialAccumulator p xs ys i)| ≤
+        ∑ i ∈ Finset.range count,
+          |mulAccError p xs[i]! ys[i]! (sequentialAccumulator p xs ys i)| :=
+      Finset.abs_sum_le_sum_abs _ _
+    _ ≤ sequentialErrorBudget p xs ys count := by
+      apply Finset.sum_le_sum
+      intro i hi
+      exact mulAcc_abs_error_le_budget p xs[i]! ys[i]!
+        (sequentialAccumulator p xs ys i) hproduct haccumulator
+        (hfinite i (Finset.mem_range.mp hi))
+
+/-- The executable dot loop is the prefix accumulator followed by its one output cast. -/
+theorem dotSequential_eq_cast_sequentialAccumulator (p : SitePolicy)
+    (xs ys : Array (Model p.storage)) (hsize : xs.size = ys.size) :
+    dotSequential p xs ys =
+      .ok (cast p.accumulator p.output (sequentialAccumulator p xs ys xs.size)) := by
+  simp [dotSequential, hsize, sequentialAccumulator,
+    Std.Legacy.Range.forIn_eq_forIn_range', List.forIn_pure_yield_eq_foldl,
+    ← List.range_eq_range']
+
+/--
+A successful finite mixed-precision dot product is bounded by all per-step budgets plus the final
+accumulator-to-output cast budget, following the reduction order of `dotSequential`.
+-/
+theorem dotSequential_abs_error_le_budget (p : SitePolicy)
+    (xs ys : Array (Model p.storage)) (result : Model p.output)
+    (hproduct : p.product.isIEEE = true)
+    (haccumulator : p.accumulator.isIEEE = true)
+    (houtput : p.output.isIEEE = true)
+    (hfinite : ∀ i < xs.size,
+      MulAccFinite p xs[i]! ys[i]! (sequentialAccumulator p xs ys i))
+    (hresultFinite : isFinite result = true)
+    (hresult : dotSequential p xs ys = .ok result) :
+    |toReal result - sequentialDotReal p xs ys xs.size| ≤
+      halfUlpAt p.output (toReal (sequentialAccumulator p xs ys xs.size)) +
+        sequentialErrorBudget p xs ys xs.size := by
+  have hsize : xs.size = ys.size := by
+    by_contra hne
+    simp [dotSequential, hne] at hresult
+  have hresultEq :
+      result = cast p.accumulator p.output (sequentialAccumulator p xs ys xs.size) := by
+    rw [dotSequential_eq_cast_sequentialAccumulator p xs ys hsize] at hresult
+    exact Except.ok.inj hresult.symm
+  subst result
+  have hcast := abs_toReal_cast_sub_le (sequentialAccumulator p xs ys xs.size)
+    houtput hresultFinite
+  have haccError := sequentialAccumulator_abs_error_le_budget p xs ys xs.size
+    hproduct haccumulator hfinite
+  simpa only [add_comm] using Numerics.compose_error hcast haccError
+
+end Model
+end FloatLib.Floats.Formats.BinaryInterchange

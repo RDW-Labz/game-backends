@@ -1,0 +1,154 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Algebraic.Rounding.Certificate
+public import FloatLib.Floats.Formats.BinaryInterchange.Model.Packing.Special
+public import FloatLib.Floats.Formats.Posit.Algebraic.Root.Proof
+
+/-!
+# Correct rounding from exact algebraic comparisons
+
+The certificate bridge proves nearest-even rounding for every interior target, and monotonicity
+with the even tie at half the least subnormal covers the complete underflow interval. A finite
+IEEE result excludes the overflow branch, and a result that is not finite is the infinity of the
+requested sign. So the real theorem needs no search-budget or distance-from-boundaries premise,
+and it includes exact ties and subnormal results.
+
+The real-refinement theorem uses a conventional IEEE descriptor, matching the logical rounding
+bridge, so runtime handling of custom descriptors lies outside this theorem.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange.Model.AlgebraicRounding
+
+open FloatLib.Floats.Formats.Flocq
+
+/-- The midpoint between zero and the least subnormal rounds to the even endpoint, zero. -/
+theorem roundAt_halfMinSubnormal (fmt : FloatFormat) :
+    roundAt fmt (bpow Numerics.binaryRadix (lowerExponent fmt)) = 0 := by
+  have hc : cexp Numerics.binaryRadix (fexpOf fmt)
+      (bpow Numerics.binaryRadix (lowerExponent fmt)) = fmt.minSubnormalExponent := by
+    rw [cexp, magnitude_bpow, fexpOf, fltExp]
+    simp only [lowerExponent]
+    omega
+  have hs : scaledMantissa Numerics.binaryRadix (fexpOf fmt)
+      (bpow Numerics.binaryRadix (lowerExponent fmt)) = (1 / 2 : ℝ) := by
+    rw [scaledMantissa, hc, ← bpow.add_exp]
+    have he : lowerExponent fmt + -fmt.minSubnormalExponent = -1 := by
+      dsimp [lowerExponent]
+      omega
+    rw [he]
+    norm_num [bpow, Numerics.binaryRadix, Numerics.Radix.toReal]
+  unfold roundAt FloatLib.Floats.Formats.Flocq.round FloatLib.Floats.Formats.Flocq.toReal
+  rw [hs]
+  norm_num [nearestEven]
+
+/-- Every nonnegative target at or below the first midpoint rounds to zero. -/
+theorem roundAt_eq_zero_of_le_halfMinSubnormal (fmt : FloatFormat) (target : ℝ)
+    (hnonneg : 0 ≤ target)
+    (hsmall : target ≤ bpow Numerics.binaryRadix (lowerExponent fmt)) :
+    roundAt fmt target = 0 := by
+  apply le_antisymm
+  · simpa [roundAt_halfMinSubnormal] using roundAt_mono fmt hsmall
+  · simpa [roundAt_zero] using roundAt_mono fmt hnonneg
+
+/--
+An exact oracle produces one nearest-even rounding of its signed real target.
+
+The sole numerical-domain premise is nonnegativity of the magnitude. Finiteness of the packed
+IEEE result excludes overflow, while underflow to signed zero and all midpoint ties are covered.
+-/
+theorem toReal_round_eq_roundAt (fmt : FloatFormat) (hfmt : fmt.isIEEE = true)
+    (sign : Bool) (compare : Rat → Ordering) (target : ℝ) (hnonneg : 0 ≤ target)
+    (hcompare : ∀ candidate : Rat, compare candidate = cmp target (candidate : ℝ))
+    (hfinite : isFinite (round fmt sign compare) = true) :
+    toReal (round fmt sign compare) = roundAt fmt (if sign then -target else target) := by
+  rw [round_eq fmt sign hcompare] at hfinite ⊢
+  split
+  · rename_i hsmall
+    have hle : target ≤ bpow Numerics.binaryRadix (lowerExponent fmt) := by
+      simpa only [hcompare, cast_powerOfTwo, ne_eq, cmp_eq_gt_iff, not_lt] using hsmall
+    have hz := roundAt_eq_zero_of_le_halfMinSubnormal fmt target hnonneg hle
+    cases sign <;> simp [hz]
+  · rename_i hlarge
+    rw [ite_eq_right hlarge] at hfinite
+    split
+    · rename_i habove
+      rw [ite_eq_left habove] at hfinite
+      have hs := FloatFormat.supportsInfinity_eq_true_of_isIEEE fmt hfmt
+      cases sign <;> simp [nativeOverflow_eq_signedInf_of_isIEEE fmt hfmt,
+        isFinite_posInf fmt hs, isFinite_negInf fmt hs] at hfinite
+    · rename_i hbounded
+      rw [ite_eq_right hbounded] at hfinite
+      have hlo := (bpow_lowerExponent_lt_of_compare_eq_gt fmt hcompare
+        (by simpa only [not_not] using hlarge)).le
+      have hhi := lt_bpow_upperExponent_of_compare_eq_lt fmt hcompare
+        (by simpa only [not_not] using hbounded)
+      obtain ⟨hround, ha, he⟩ :=
+        roundCertificate_certificate_spec fmt hfmt sign compare target hcompare hlo hhi
+      rw [hround] at hfinite ⊢
+      rw [toReal_ofModel_roundWithAccuracy_eq_roundAt fmt hfmt (modelSign sign) _ _ _ _ ha he
+        hfinite, div_mul_cancel₀ target (bpow.ne_zero _ _)]
+      cases sign <;> simp [modelSign, modelSignBit]
+
+/--
+For an IEEE descriptor, a result of exact comparison rounding that is not finite is
+`nativeOverflow fmt sign`, the infinity of the requested sign.
+-/
+theorem round_eq_nativeOverflow_of_isFinite_eq_false (fmt : FloatFormat)
+    (hfmt : fmt.isIEEE = true) (sign : Bool) (compare : Rat → Ordering)
+    (hnonfinite : isFinite (round fmt sign compare) = false) :
+    round fmt sign compare = nativeOverflow fmt sign := by
+  simp only [round] at hnonfinite ⊢
+  split_ifs at hnonfinite ⊢
+  · simp [isFinite_eq_true_of_isZero_eq_true _ (isZero_zero fmt sign)] at hnonfinite
+  · rfl
+  · simp only [roundCertificate, hfmt, ite_true, roundWithAccuracy_eq_finishRoundedMantissa,
+      finishRoundedMantissa] at hnonfinite ⊢
+    split at hnonfinite
+    · simp [isFinite_ofModel_zero fmt hfmt] at hnonfinite
+    · rename_i hzero
+      simp only [hzero, dite_false]
+      rw [ofModel_finite_eq_ofModel_infinity_of_isFinite_eq_false fmt hfmt _ _ _ _ hnonfinite,
+        nativeOverflow_eq_signedInf_of_isIEEE fmt hfmt]
+      cases sign <;> simp [posInf_eq_ofModel_infinity, negInf_eq_ofModel_infinity]
+
+/-- Exact integer-power comparisons correctly round any characterized nonnegative root. -/
+theorem toReal_root_eq_roundAt (fmt : FloatFormat) (hfmt : fmt.isIEEE = true)
+    (sign : Bool) (radicand : Rat) (degree : Nat) (target : ℝ)
+    (hnonneg : 0 ≤ target) (hdegree : degree ≠ 0) (hroot : target ^ degree = (radicand : ℝ))
+    (hfinite : isFinite (root fmt sign radicand degree) = true) :
+    toReal (root fmt sign radicand degree) =
+      roundAt fmt (if sign then -target else target) :=
+  toReal_round_eq_roundAt fmt hfmt sign _ target hnonneg
+    (Posit.Model.RootRounding.compareRoot_eq_real radicand degree target
+      hnonneg hdegree hroot) hfinite
+
+/-- The nonnegative real root exists for every nonnegative radicand and positive degree. -/
+theorem toReal_root_eq_roundAt_rpow (fmt : FloatFormat) (hfmt : fmt.isIEEE = true)
+    (sign : Bool) (radicand : Rat) (degree : Nat)
+    (hrad : 0 ≤ radicand) (hdegree : degree ≠ 0)
+    (hfinite : isFinite (root fmt sign radicand degree) = true) :
+    toReal (root fmt sign radicand degree) =
+      roundAt fmt (if sign then -((radicand : ℝ) ^ (degree : ℝ)⁻¹)
+        else (radicand : ℝ) ^ (degree : ℝ)⁻¹) := by
+  have hreal : 0 ≤ (radicand : ℝ) := by exact_mod_cast hrad
+  exact toReal_root_eq_roundAt fmt hfmt sign radicand degree _
+    (Real.rpow_nonneg hreal _) hdegree (Real.rpow_inv_natCast_pow hreal hdegree) hfinite
+
+/-- Degree two rounds the exact square root, including zero. -/
+theorem toReal_root_two_eq_roundAt_sqrt (fmt : FloatFormat) (hfmt : fmt.isIEEE = true)
+    (sign : Bool) (radicand : Rat) (hrad : 0 ≤ radicand)
+    (hfinite : isFinite (root fmt sign radicand 2) = true) :
+    toReal (root fmt sign radicand 2) =
+      roundAt fmt (if sign then -Real.sqrt (radicand : ℝ) else Real.sqrt (radicand : ℝ)) := by
+  apply toReal_root_eq_roundAt fmt hfmt sign radicand 2 _ (Real.sqrt_nonneg _) (by decide)
+    (Real.sq_sqrt (by exact_mod_cast hrad)) hfinite
+
+end FloatLib.Floats.Formats.BinaryInterchange.Model.AlgebraicRounding

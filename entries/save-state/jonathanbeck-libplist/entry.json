@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:03:58Z",
+ "category": "save-state",
+ "commit": "2010-08-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JonathanBeck/libplist \u2014 A library to handle Apple Property List format whereas it's binary or XML",
+ "language": "c",
+ "license": "LGPL-2.1",
+ "license_verdict": "copyleft-reference",
+ "name": "libplist",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-2.1)",
+ "slug": "jonathanbeck-libplist",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 53,
+ "system": "A library to handle Apple Property List format whereas it's binary or XML",
+ "upstream": "https://github.com/JonathanBeck/libplist",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

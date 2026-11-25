@@ -1,0 +1,161 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Kernels.FixedWord.Difference.Runtime
+public import FloatLib.Numerics.Exact.Dyadic.Comparison.Runtime
+
+/-!
+# Native-word comparison of exact dyadic fields
+
+Fixed-width formats usually decode a finite value to a machine-word significand and an unbounded
+exponent. When the one alignment shift a comparison needs still fits in a word, there's no reason to
+convert that significand to `Nat` first. So the recognizer, which doesn't depend on the
+representation, has two branches:
+
+* it runs the comparison with `UInt64` shifts when the aligned operand provably fits,
+* and otherwise it calls the arbitrary-precision exact comparator.
+
+That second branch is an ordinary, verified part of the algorithm and no exceptional path, which is
+why every format can reuse this primitive. Significand alignment and comparison use native words
+whenever the capacity guards hold, and the refinement theorem is in `DyadicCompare.Proof`.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.FixedWord.DyadicCompare
+
+/--
+Whether shifting a nonnegative word significand left by `shift` preserves its exact value.
+
+For a nonzero word, `log2 + shift < 64` is the capacity condition that the native left shift needs.
+The proposition is decidable from machine-word data, and its proof is erased after compilation.
+-/
+@[inline] def ShiftFits (significand : UInt64) (shift : Nat) : Prop :=
+  significand = 0 ∨ (log2Word significand).toNat + shift < 64
+
+instance (significand : UInt64) (shift : Nat) :
+    Decidable (ShiftFits significand shift) := by
+  unfold ShiftFits
+  infer_instance
+
+/--
+Whether shifting a two-limb significand left by `shift` preserves its exact value.
+
+For a nonzero significand, `log2 + shift < 128` ensures that the shifted value fits in two limbs.
+The proof argument is erased after compilation.
+-/
+@[inline] def ShiftFits128 (significand : UInt128) (shift : Nat) : Prop :=
+  significand = ⟨0, 0⟩ ∨ UInt128.log2 significand + shift < 128
+
+instance (significand : UInt128) (shift : Nat) :
+    Decidable (ShiftFits128 significand shift) := by
+  unfold ShiftFits128
+  infer_instance
+
+/--
+Compare two nonnegative exact dyadics whose significands are native words.
+
+Only the operand with the larger dyadic exponent needs alignment. If that shift stays within one
+word, significand alignment and comparison use native operations. Large exponent gaps and over-wide
+aligned values use the exact `Nat` implementation, and exponent arithmetic uses `Int`.
+-/
+@[inline] def compareNonnegative
+    (leftSignificand : UInt64) (leftExponent : Int)
+    (rightSignificand : UInt64) (rightExponent : Int) : Ordering :=
+  if leftSignificand == 0 && rightSignificand == 0 then
+    .eq
+  else if leftExponent ≤ rightExponent then
+    let shift := Int.toNat (rightExponent - leftExponent)
+    if _hshift : shift < 64 then
+      if _hfit : ShiftFits rightSignificand shift then
+        Ord.compare leftSignificand
+          (rightSignificand <<< UInt64.ofNat shift)
+      else
+        Dyadic.compareNonnegativeFields
+          leftSignificand.toNat leftExponent
+          rightSignificand.toNat rightExponent
+    else
+      Dyadic.compareNonnegativeFields
+        leftSignificand.toNat leftExponent
+        rightSignificand.toNat rightExponent
+  else
+    let shift := Int.toNat (leftExponent - rightExponent)
+    if _hshift : shift < 64 then
+      if _hfit : ShiftFits leftSignificand shift then
+        Ord.compare
+          (leftSignificand <<< UInt64.ofNat shift)
+          rightSignificand
+      else
+        Dyadic.compareNonnegativeFields
+          leftSignificand.toNat leftExponent
+          rightSignificand.toNat rightExponent
+    else
+      Dyadic.compareNonnegativeFields
+        leftSignificand.toNat leftExponent
+        rightSignificand.toNat rightExponent
+
+/--
+Compare a nonnegative two-word dyadic with a nonnegative one-word dyadic.
+
+A value whose high limb is zero goes to `compareNonnegative`. When the left significand has a
+nonzero high limb, the only possible alignment into the wider carrier is a shift of the right word,
+and the leading-bit capacity test decides whether that shift fits in 128 bits. If it doesn't, the
+shifted right operand is larger than every `UInt128`. If the left exponent is the larger one, the
+already-wide left operand is larger than the word target. So the wide path keeps significands in
+fixed limbs, and exponent arithmetic uses `Int`.
+-/
+@[inline] def compareNonnegative128ToWord
+    (leftSignificand : UInt128) (leftExponent : Int)
+    (rightSignificand : UInt64) (rightExponent : Int) : Ordering :=
+  if leftSignificand.hi == 0 then
+    compareNonnegative leftSignificand.lo leftExponent
+      rightSignificand rightExponent
+  else if rightSignificand == 0 then
+    .gt
+  else if leftExponent ≤ rightExponent then
+    let shift := Int.toNat (rightExponent - leftExponent)
+    if _hshift : shift < 128 then
+      if _hfit : (log2Word rightSignificand).toNat + shift < 128 then
+        UInt128.compare leftSignificand
+          (UInt128.shiftLeft { hi := 0, lo := rightSignificand } shift)
+      else
+        .lt
+    else
+      .lt
+  else
+    .gt
+
+/--
+Test whether a nonnegative word dyadic is strictly below an integral power of two.
+
+For a nonzero significand, `exponent + log2 significand` is the exponent of its leading bit.
+Comparing that scalar exponent avoids both alignment shifts and the arbitrary-precision branch
+that a generic dyadic comparison needs when the exponent gap exceeds one machine word.
+-/
+@[inline] def isLessPowerOfTwo
+    (significand : UInt64) (exponent power : Int) : Bool :=
+  if significand == 0 then
+    true
+  else
+    decide (exponent + Int.ofNat (log2Word significand).toNat < power)
+
+/-- Strict comparison derived from the shared native-word ordering primitive. -/
+@[inline] def isLessNonnegative
+    (leftSignificand : UInt64) (leftExponent : Int)
+    (rightSignificand : UInt64) (rightExponent : Int) : Bool :=
+  compareNonnegative leftSignificand leftExponent
+      rightSignificand rightExponent == .lt
+
+/-- Non-strict comparison derived by reversing the native-word strict comparison. -/
+@[inline] def isLessOrEqualNonnegative
+    (leftSignificand : UInt64) (leftExponent : Int)
+    (rightSignificand : UInt64) (rightExponent : Int) : Bool :=
+  !isLessNonnegative rightSignificand rightExponent
+    leftSignificand leftExponent
+
+end FloatLib.Numerics.FixedWord.DyadicCompare

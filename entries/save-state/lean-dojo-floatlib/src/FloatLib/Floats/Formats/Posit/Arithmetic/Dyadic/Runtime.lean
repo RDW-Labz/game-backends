@@ -1,0 +1,120 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Rounding.Quotient.Runtime
+public import FloatLib.Floats.Formats.Posit.Rounding.SquareRoot.Runtime
+
+/-!
+# Exact-dyadic posit arithmetic
+
+Every finite posit is a dyadic number, an integer times a power of two. So these kernels do their
+exact intermediate work on integer significands and binary exponents, and they never build
+normalized rational operands. Addition, subtraction, multiplication, division, square root, and
+fused multiply-add each round once, by the rule of the Posit Standard (2022).
+
+`Dyadic.Proof` proves them equal to the independent rational specification.
+
+Reference: Standard for Posit Arithmetic (2022), §§4.1 and 5.4–5.7.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Posit.Model.DyadicArithmetic
+
+variable {format : Format}
+
+/--
+Exact integer addition followed by standardized posit rounding.
+
+The dyadic operands are aligned at their smaller exponent and added as signed integers. Final
+threshold comparisons remain in the exact dyadic domain.
+-/
+@[noinline] def add (left right : Model format) : Model format :=
+  match left.toDyadic?, right.toDyadic? with
+  | some leftValue, some rightValue =>
+      DyadicRounding.round format
+        (FloatLib.Numerics.Dyadic.add leftValue rightValue)
+  | _, _ =>
+      nar format
+
+/--
+Exact integer subtraction followed by standardized posit rounding.
+
+Subtraction shares the exact dyadic alignment kernel with addition and performs no host
+floating-point computation.
+-/
+@[noinline] def sub (left right : Model format) : Model format :=
+  match left.toDyadic?, right.toDyadic? with
+  | some leftValue, some rightValue =>
+      DyadicRounding.round format
+        (FloatLib.Numerics.Dyadic.sub leftValue rightValue)
+  | _, _ =>
+      nar format
+
+/--
+Exact integer multiplication followed by standardized posit rounding.
+
+Where `Model.Spec.multiplication` works with rationals, this forms one integer product and hands
+    that exact
+result to the certified dyadic rounder. It allocates no rational operands.
+-/
+@[noinline] def mul (left right : Model format) : Model format :=
+  match left.toDyadic?, right.toDyadic? with
+  | some leftValue, some rightValue =>
+      DyadicRounding.round format
+        (FloatLib.Numerics.Dyadic.mul leftValue rightValue)
+  | _, _ =>
+      nar format
+
+/--
+Correctly rounded division through exact dyadic cross-multiplication.
+
+The kernel never constructs a rational quotient. Candidate values and rounding thresholds are
+multiplied by the positive divisor magnitude and then compared with the dividend magnitude.
+Division by zero and every NaR case retain the specification's NaR result.
+-/
+@[noinline] def div (left right : Model format) : Model format :=
+  match left.toDyadic?, right.toDyadic? with
+  | some numerator, some denominator =>
+      DyadicQuotient.round format numerator denominator
+  | _, _ =>
+      nar format
+
+/--
+Correctly rounded square root through exact dyadic squared comparisons.
+
+The result itself may be irrational, so this kernel never constructs it. It compares the squares
+of the candidates and thresholds with the decoded dyadic radicand.
+-/
+@[noinline] def sqrt (value : Model format) : Model format :=
+  match value.toDyadic? with
+  | none =>
+      nar format
+  | some radicand =>
+      if radicand.isLess FloatLib.Numerics.Dyadic.zero then
+        nar format
+      else
+        DyadicSquareRoot.round format radicand
+
+/--
+Exact fused multiply-add with one final standardized rounding.
+
+Both multiplication and addition stay in the shared dyadic carrier. The exact result is converted
+only after the addend is accumulated, which keeps the specification's single rounding.
+-/
+@[noinline] def fma (left right addend : Model format) : Model format :=
+  match left.toDyadic?, right.toDyadic?, addend.toDyadic? with
+  | some leftValue, some rightValue, some addendValue =>
+      DyadicRounding.round format
+        (FloatLib.Numerics.Dyadic.add
+          (FloatLib.Numerics.Dyadic.mul leftValue rightValue)
+          addendValue)
+  | _, _, _ =>
+      nar format
+
+end FloatLib.Floats.Formats.Posit.Model.DyadicArithmetic

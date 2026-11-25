@@ -1,0 +1,132 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+module
+
+public import FloatLib.Numerics.Exact.RadixText.Runtime
+
+import all Init.Data.Repr
+
+/-!
+# Positional scanner laws shared by decimal and hexadecimal text
+
+Digit scanning computes the positional value, counts the digits it consumed, and leaves a nondigit
+suffix unchanged. For a radix greater than one and a decoder that recognizes the printed digits,
+printing and then scanning recovers any natural number, zero included. Such a decoder exists only up
+to radix 17, because `Nat.digitChar` prints `*` for every digit from 16 on. Decimal and hexadecimal
+text use radix 10 and 16.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.RadixText
+
+/-- A radix scanner leaves a nondigit suffix untouched. -/
+theorem scanDigits_stop (radix : Nat) (readDigit : Char → Option Nat)
+    (tail : List Char) (htail : ∀ c ∈ tail.head?, readDigit c = none) (accumulator : Nat) :
+    scanDigits tail accumulator radix readDigit = (accumulator, 0, tail) := by
+  cases tail with
+  | nil => rfl
+  | cons c rest => simp [scanDigits, htail c (by simp)]
+
+/-- Scanning an accepted digit list continues on its suffix with the accumulated value. -/
+theorem scanDigits_append (radix : Nat) (readDigit : Char → Option Nat)
+    (front suffix : List Char)
+    (hdigits : ∀ c ∈ front, ∃ digit, readDigit c = some digit) (accumulator : Nat) :
+    scanDigits (front ++ suffix) accumulator radix readDigit =
+      let result := scanDigits suffix
+        (scanDigits front accumulator radix readDigit).1 radix readDigit
+      (result.1, front.length + result.2.1, result.2.2) := by
+  induction front generalizing accumulator with
+  | nil => simp [scanDigits]
+  | cons c front ih =>
+      obtain ⟨digit, hdigit⟩ := hdigits c (by simp)
+      simp only [List.cons_append, scanDigits, hdigit]
+      rw [ih (fun c hc => hdigits c (by simp [hc]))]
+      simp [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+
+/-- Accepted digits followed by a nondigit suffix have exactly that digit count and suffix. -/
+theorem scanDigits_digits (radix : Nat) (readDigit : Char → Option Nat)
+    (digits tail : List Char)
+    (hdigits : ∀ c ∈ digits, ∃ digit, readDigit c = some digit)
+    (htail : ∀ c ∈ tail.head?, readDigit c = none) (accumulator : Nat) :
+    scanDigits (digits ++ tail) accumulator radix readDigit =
+      ((scanDigits digits accumulator radix readDigit).1, digits.length, tail) := by
+  rw [scanDigits_append radix readDigit digits tail hdigits,
+    scanDigits_stop radix readDigit tail htail]
+  simp
+
+/-- Every scan splits its input into accepted digits and the first nondigit with its suffix. -/
+theorem scanDigits_decomposition (radix : Nat) (readDigit : Char → Option Nat)
+    (characters : List Char) (accumulator : Nat) :
+    ∃ digits tail value,
+      characters = digits ++ tail ∧
+      (∀ c ∈ digits, ∃ digit, readDigit c = some digit) ∧
+      (∀ c ∈ tail.head?, readDigit c = none) ∧
+      scanDigits characters accumulator radix readDigit = (value, digits.length, tail) := by
+  induction characters generalizing accumulator with
+  | nil => exact ⟨[], [], accumulator, rfl, by simp, by simp, rfl⟩
+  | cons c rest ih =>
+      cases hdigit : readDigit c with
+      | none =>
+          exact ⟨[], c :: rest, accumulator, rfl, by simp,
+            by simpa using hdigit, by simp [scanDigits, hdigit]⟩
+      | some digit =>
+          obtain ⟨digits, tail, value, hrest, hdigits, htail, hscan⟩ :=
+            ih (accumulator * radix + digit)
+          refine ⟨c :: digits, tail, value, by simp [hrest], ?_, htail, ?_⟩
+          · intro d hd
+            rcases List.mem_cons.mp hd with rfl | hd
+            · exact ⟨digit, hdigit⟩
+            · exact hdigits d hd
+          · simp [scanDigits, hdigit, hscan]
+
+/-- Scanning the characters of `digits` followed by a nondigit suffix gives the positional value
+in base `radix` after `accumulator`, the digit count, and the suffix, for every radix: no bound
+`digit < radix` is assumed. -/
+theorem scanDigits_map_append (radix : Nat) (readDigit : Char → Option Nat)
+    (digits : List Nat) (tail : List Char)
+    (hdigits : ∀ digit ∈ digits, readDigit (Nat.digitChar digit) = some digit)
+    (htail : ∀ c ∈ tail.head?, readDigit c = none) (accumulator : Nat) :
+    scanDigits (digits.map Nat.digitChar ++ tail) accumulator radix readDigit =
+      (accumulator * radix ^ digits.length + Nat.ofDigits radix digits.reverse,
+        digits.length, tail) := by
+  induction digits generalizing accumulator with
+  | nil => simpa using scanDigits_stop radix readDigit tail htail accumulator
+  | cons digit digits ih =>
+      simp only [List.map_cons, List.cons_append, scanDigits, hdigits digit (by simp)]
+      rw [ih (fun d hd => hdigits d (by simp [hd]))]
+      simp only [List.length_cons, List.reverse_cons, Nat.ofDigits_append,
+        Nat.ofDigits_singleton, List.length_reverse, pow_succ]
+      apply Prod.ext
+      · dsimp
+        rw [add_mul]; ac_rfl
+      · rfl
+
+/-- Radix output has at least one digit, including for zero. -/
+@[simp] theorem naturalDigits_ne_nil (radix value : Nat) :
+    naturalDigits value radix ≠ [] := by
+  by_cases hz : value = 0
+  · simp [naturalDigits, hz]
+  · simp [naturalDigits, hz, Nat.digits_eq_nil_iff_eq_zero]
+
+/-- Printing then scanning recovers an arbitrary natural and leaves the nondigit suffix. -/
+theorem scanDigits_naturalDigits (radix : Nat) (hradix : 1 < radix)
+    (readDigit : Char → Option Nat)
+    (hdigit : ∀ digit < radix, readDigit (Nat.digitChar digit) = some digit)
+    (value : Nat) (tail : List Char)
+    (htail : ∀ c ∈ tail.head?, readDigit c = none) :
+    scanDigits (naturalDigits value radix ++ tail) 0 radix readDigit =
+      (value, (naturalDigits value radix).length, tail) := by
+  by_cases hz : value = 0
+  · subst value
+    have hzero : readDigit '0' = some 0 := hdigit 0 (by omega)
+    simp [naturalDigits, scanDigits, hzero, scanDigits_stop radix readDigit tail htail]
+  · rw [naturalDigits, ite_eq_right hz]
+    rw [scanDigits_map_append radix readDigit _ tail
+      (fun digit h => hdigit digit (Nat.digits_lt_base hradix (List.mem_reverse.mp h))) htail]
+    simp [hz, Nat.ofDigits_digits]
+
+end FloatLib.Numerics.RadixText

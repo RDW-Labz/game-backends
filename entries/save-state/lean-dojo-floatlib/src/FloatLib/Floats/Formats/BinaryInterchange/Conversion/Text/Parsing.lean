@@ -1,0 +1,267 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Status.Runtime
+public import FloatLib.Numerics.Exact.DecimalText.Special
+public import FloatLib.Numerics.Exact.HexText.Runtime
+
+/-!
+# Binary external character conversion
+
+This is the text parser for binary formats. Decimal integers, fractions and e/E exponents go
+through the shared exact scanner, and hexadecimal input follows IEEE 754 §5.12.3, including its
+mandatory p/P exponent. ASCII whitespace at either end is ignored. Finite conversion rounds once
+and reports the binary exception policy, including tininess after rounding, together with the
+ternary value of that rounding. Syntax errors are `ParseError`s.
+
+The spellings Inf, Infinity, NaN and sNaN accept either case and an optional sign. A NaN's decimal
+suffix denotes its complete fraction field, including the quiet bit, and zero or an absent suffix
+chooses a default payload. A valid written payload keeps its sign and signaling state without
+raising invalid. A descriptor unable to encode a signaling NaN may quiet the default sNaN and
+raise invalid.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange.Model
+
+/-- Why exact character input could not produce a value in the requested format. -/
+inductive ParseError where
+  /-- The input contains no non-whitespace characters. -/
+  | emptyInput
+  /--
+  The original input is not a supported decimal, radix-two, infinity, or NaN spelling, or it
+  spells a NaN whose diagnostic the destination format cannot encode.
+  -/
+  | invalidSyntax (input : String)
+  /-- The input requests an infinity from a finite-only encoding. -/
+  | unsupportedInfinity (negative : Bool)
+  /-- The input requests a NaN from an encoding with no NaN representation. -/
+  | unsupportedNaN
+  /-- The input exceeds the caller's byte limit before character scanning. -/
+  | inputTooLong (actual maximum : Nat)
+  /-- The adjusted decimal or binary exponent exceeds the caller's magnitude limit. -/
+  | exponentTooLarge (actual maximum : Nat)
+  deriving Repr, DecidableEq
+
+/-- Concise human-readable explanation of a character-input failure. -/
+def ParseError.message : ParseError → String
+  | .emptyInput => "empty floating-point input"
+  | .invalidSyntax input => s!"invalid floating-point input: {input}"
+  | .unsupportedInfinity false => "the destination format has no positive infinity"
+  | .unsupportedInfinity true => "the destination format has no negative infinity"
+  | .unsupportedNaN => "the destination format has no NaN representation"
+  | .inputTooLong actual maximum =>
+      s!"floating-point input has {actual} bytes; limit is {maximum}"
+  | .exponentTooLarge actual maximum =>
+      s!"floating-point exponent magnitude is {actual}; limit is {maximum}"
+
+instance : ToString ParseError where
+  toString := ParseError.message
+
+/-- Unrounded external text, retaining a decimal scale or binary scale and signed zero. -/
+inductive TextValue where
+  /-- An exact decimal coefficient and written decimal exponent. -/
+  | decimal (value : Numerics.DecimalText.Decimal)
+  /-- An exact dyadic from hexadecimal syntax. -/
+  | dyadic (value : Numerics.Dyadic)
+  /-- A signed infinity. -/
+  | infinity (negative : Bool)
+  /-- A signed NaN with signaling state and complete-fraction diagnostic suffix. -/
+  | nan (negative signaling : Bool) (payload : Nat)
+  deriving DecidableEq, Repr
+
+/-- Decode one complete trimmed string before choosing a destination format or rounding. -/
+def readText (text : String) : Option TextValue :=
+  match Numerics.DecimalText.parseCharacters text.toList with
+  | some value => some (.decimal value)
+  | none =>
+      match Numerics.HexText.parse text with
+      | some value => some (.dyadic value)
+      | none =>
+          let (negative, rest) := Numerics.DecimalText.splitSign text.toList
+          Numerics.SpecialText.parseSpecial TextValue.infinity TextValue.nan negative rest
+
+/--
+One exact decimal-to-binary rounding, paired with the shared binary status and ternary
+calculations.
+
+This is the reference conversion. It forms the exact rational `significand * 10^exponent`, so its
+cost grows with the written exponent. `convertDecimalText` computes the same outcome after
+clamping the exponent with `clampDecimalExponent`.
+-/
+def convertDecimalTextExact (fmt : FloatFormat) (mode : IEEERoundingMode)
+    (exact : Numerics.DecimalText.Decimal) : IEEEOutcome fmt :=
+  let magnitude := (exact.significand : Rat) * (10 : Rat) ^ exact.exponent
+  let value := Internal.Directed.roundRat fmt mode exact.negative magnitude.num.natAbs magnitude.den
+  rationalRoundingOutcomeScaled fmt mode exact.negative magnitude.num.natAbs magnitude.den 0 value
+
+/-- The binary leading exponent `log2 significand + exponent` of a dyadic. -/
+def dyadicLeadingExponent (value : Numerics.Dyadic) : Int :=
+  (value.significand.log2 : Int) + value.exponent
+
+/--
+A binary leading exponent at or above which every rational rounds to the overflow result.
+
+It exceeds the exponent tests of each rounder and the leading exponents of the overflow
+thresholds used by the status classifier, so both value and status are those of overflow.
+-/
+def decimalSaturationHigh (fmt : FloatFormat) : Int :=
+  max (max (fmt.maxNormalExponent + 1) ((FloatFormat.ieeeMaxNormalExponent fmt : Int) + 1))
+    (max (dyadicLeadingExponent (overflowMidpoint fmt) + 1)
+      (dyadicLeadingExponent (overflowLimit fmt) + 1))
+
+/--
+A binary leading exponent at or below which every positive rational rounds to the same result.
+
+It lies below each rounder's zero and least-subnormal cutoffs, below the least subnormal
+exponent, and below every threshold used by the status classifier, so the rounded value and its
+flags do not depend on the exact magnitude.
+-/
+def decimalSaturationLow (fmt : FloatFormat) : Int :=
+  min (min (min (fmt.minSubnormalExponent - 2)
+        (-(FloatFormat.normalMantissaExpOffset fmt : Int) - 1))
+      (min (fmt.maxNormalExponent - 1) ((FloatFormat.ieeeMaxNormalExponent fmt : Int) - 1)))
+    (min (min (dyadicLeadingExponent (overflowMidpoint fmt) - 1)
+        (dyadicLeadingExponent (overflowLimit fmt) - 1))
+      (min (dyadicLeadingExponent (underflowMidpoint fmt) - 1)
+        (min (dyadicLeadingExponent (minNormalDyadic fmt) - 1)
+          (dyadicLeadingExponent (underflowPredecessor fmt) - 1))))
+
+/--
+Clamp a decimal exponent to a range where binary conversion is cheap and gives the same result.
+
+A zero significand gets exponent zero. Otherwise the exponent is kept between a lower bound, where
+the magnitude is below every underflow threshold, and an upper bound, where it is above every
+overflow threshold. `convertDecimalText_eq_exact` proves that the clamp never changes the result.
+-/
+def clampDecimalExponent (fmt : FloatFormat) (exact : Numerics.DecimalText.Decimal) :
+    Numerics.DecimalText.Decimal :=
+  if exact.significand = 0 then
+    { exact with exponent := 0 }
+  else
+    let high : Int := max 0 (decimalSaturationHigh fmt / 3 + 1)
+    let low : Int :=
+      min 0 ((decimalSaturationLow fmt - (exact.significand.log2 : Int) - 1) / 3)
+    { exact with exponent := max low (min high exact.exponent) }
+
+/--
+One exact decimal-to-binary rounding, paired with the shared binary status and ternary
+calculations.
+
+An exponent beyond the decimal range of the format is first clamped by `clampDecimalExponent`, so
+inputs such as `1e99999999999` finish at once. Exponents inside that range skip the clamp, which
+would cost more than the conversion itself. The outcome, ternary value included, equals
+`convertDecimalTextExact` for every input.
+-/
+def convertDecimalText (fmt : FloatFormat) (mode : IEEERoundingMode)
+    (exact : Numerics.DecimalText.Decimal) : IEEEOutcome fmt :=
+  if exact.exponent.natAbs ≤ (fmt.exponentBias + fmt.fracWidth) / 3 + 8 then
+    inline (convertDecimalTextExact fmt mode exact)
+  else
+    inline (convertDecimalTextExact fmt mode (clampDecimalExponent fmt exact))
+
+/-- One hexadecimal dyadic conversion with binary rounding status and ternary value. -/
+def convertDyadicText (fmt : FloatFormat) (mode : IEEERoundingMode)
+    (exact : Numerics.Dyadic) : IEEEOutcome fmt :=
+  let value := Internal.Directed.roundDyadic fmt mode exact
+  dyadicRoundingOutcome fmt mode exact value
+
+/--
+Interpret a NaN diagnostic according to the descriptor. An unrepresentable payload is the error
+`invalidSyntax input`, where `input` is the text it was read from.
+
+A NaN result has the ternary value `.eq`.
+-/
+def convertNaNText (fmt : FloatFormat) (input : String) (negative signaling : Bool)
+    (payload : Nat) : Except ParseError (IEEEOutcome fmt) :=
+  match canonicalNaN? fmt with
+  | none => .error .unsupportedNaN
+  | some canonical =>
+      let defaultValue := if negative != signBit canonical then neg canonical else canonical
+      let fraction := if payload = 0 then
+          if signaling then 1 else fracField defaultValue
+        else payload
+      let candidate := match fmt.encoding with
+        | .finiteUnsignedZero => defaultValue
+        | _ => ofFields fmt negative fmt.expAllOnesNat fraction
+      if isNaN candidate && isSignaling candidate == signaling &&
+          fracField candidate == fraction then
+        .ok { value := candidate, status := {}, ternary := .eq }
+      else if payload = 0 then
+        .ok { value := defaultValue, status := { invalid := signaling }, ternary := .eq }
+      else .error (.invalidSyntax input)
+
+/--
+Convert a value decoded from the text `input`. Unsupported specials and invalid diagnostics are
+errors, and `input` is the text an invalid diagnostic reports.
+
+An infinity is delivered only by a format that has it, so its ternary value is `.eq`.
+-/
+def convertText (fmt : FloatFormat) (mode : IEEERoundingMode) (input : String) :
+    TextValue → Except ParseError (IEEEOutcome fmt)
+  | .decimal value => .ok (convertDecimalText fmt mode value)
+  | .dyadic value => .ok (convertDyadicText fmt mode value)
+  | .infinity negative =>
+      match infinity? fmt negative with
+      | some value => .ok { value, status := {}, ternary := .eq }
+      | none => .error (.unsupportedInfinity negative)
+  | .nan negative signaling payload => convertNaNText fmt input negative signaling payload
+
+/--
+The value of `convertText`, with the same errors (`Internal.Value.convertText_eq_map`).
+
+Decimal and dyadic text inline their converter and keep only its value, so finite numeric value
+parsing runs no rounding classifier. An infinity comes straight from `infinity?`, and a NaN keeps
+the value of `convertNaNText`, which builds a constant outcome.
+-/
+def Internal.Value.convertText (fmt : FloatFormat) (mode : IEEERoundingMode) (input : String) :
+    TextValue → Except ParseError (Model fmt)
+  | .decimal value => .ok (inline (convertDecimalText fmt mode value)).value
+  | .dyadic value => .ok (inline (convertDyadicText fmt mode value)).value
+  | .infinity negative =>
+      match infinity? fmt negative with
+      | some value => .ok value
+      | none => .error (.unsupportedInfinity negative)
+  | .nan negative signaling payload =>
+      (convertNaNText fmt input negative signaling payload).map (·.value)
+
+/-- Value conversion is the value of the complete conversion, with the same errors. -/
+theorem Internal.Value.convertText_eq_map (fmt : FloatFormat) (mode : IEEERoundingMode)
+    (input : String) (value : TextValue) :
+    Internal.Value.convertText fmt mode input value =
+      (Model.convertText fmt mode input value).map (·.value) := by
+  cases value with
+  | infinity negative =>
+      simp only [Internal.Value.convertText, Model.convertText]
+      cases infinity? fmt negative <;> rfl
+  | _ => rfl
+
+namespace TextParser
+
+/--
+Implementation core for character input, reporting all five IEEE exceptions.
+
+Finite input is converted from its complete exact value. Exponents far outside the format's
+range are clamped first, which leaves the outcome unchanged, so no input length or exponent limit
+is needed for termination. The caller-facing entrypoint is `Model.parse` in `BoundedParsing`.
+-/
+def run (fmt : FloatFormat) (mode : IEEERoundingMode) (input : String) :
+    Except ParseError (IEEEOutcome fmt) :=
+  match readText input with
+  | some value => convertText fmt mode input value
+  | none =>
+      let trimmed := input.trimAscii.toString
+      if trimmed.isEmpty then .error .emptyInput
+      else match readText trimmed with
+        | some value => convertText fmt mode input value
+        | none => .error (.invalidSyntax input)
+
+end TextParser
+
+end FloatLib.Floats.Formats.BinaryInterchange.Model

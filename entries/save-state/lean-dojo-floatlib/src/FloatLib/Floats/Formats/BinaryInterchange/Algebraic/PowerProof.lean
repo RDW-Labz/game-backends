@@ -1,0 +1,111 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Algebraic.Runtime
+public import FloatLib.Floats.Formats.BinaryInterchange.Arithmetic.Constants
+public import
+  FloatLib.Floats.Formats.BinaryInterchange.DirectedSemantics.Rational.RoundingSemantics.Executable
+
+/-!
+# Real semantics of exact integer powers
+
+The power is evaluated in the rationals before any format rounding. Casting commutes with
+integer exponentiation, including negative exponents, so the established rational-rounding
+theorem proves a single rounding of the exact real power. IEEE overflow has no real denotation, so
+the finite-result premise excludes it.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange.Model
+
+namespace Algebraic
+
+private theorem signedScaledRatToReal_eq_cast (value : Rat) :
+    signedScaledRatToReal (decide (value < 0)) value.num.natAbs value.den 0 =
+      (value : ℝ) := by
+  have hmagnitude : (value.num.natAbs : ℝ) / value.den = |(value : ℝ)| := by
+    simp [Rat.cast_def, abs_div]
+  simp only [signedScaledRatToReal, scaledRatToReal, bpow_zero, mul_one, hmagnitude]
+  by_cases hnegative : value < 0
+  · have hreal : (value : ℝ) < 0 := by exact_mod_cast hnegative
+    simp [hnegative, abs_of_neg hreal]
+  · have hreal : 0 ≤ (value : ℝ) := by exact_mod_cast le_of_not_gt hnegative
+    simp [hnegative, abs_of_nonneg hreal]
+
+end Algebraic
+
+/-- The exact rational boundary rounds once to the independent nearest-even real grid. -/
+theorem toReal_roundAlgebraicRat (fmt : FloatFormat) (hfmt : fmt.isIEEE = true)
+    (value : Rat) (hfinite : isFinite (roundAlgebraicRat fmt value) = true) :
+    toReal (roundAlgebraicRat fmt value) = roundAt fmt (value : ℝ) := by
+  by_cases hzero : value = 0
+  · simp [hzero, roundAlgebraicRat]
+  · rw [roundAlgebraicRat, roundRat, toReal_roundRatScaled_eq_roundAt
+      fmt (decide (value < 0)) value.num.natAbs value.den 0
+      hfmt hfinite, Algebraic.signedScaledRatToReal_eq_cast]
+
+/-- A signaling NaN is quieted before every exponent case, including exponent zero. -/
+theorem pown_of_isSignaling {fmt : FloatFormat} (value : Model fmt) (exponent : Int)
+    (hsignaling : isSignaling value = true) :
+    pown value exponent = quietNaN value := by
+  have hnan : isNaN value = true := by
+    cases hclass : isNaN value
+    · have := isSignaling_eq_false_of_isNaN_eq_false value hclass
+      simp [hsignaling] at this
+    · rfl
+  simp [pown, hsignaling, chooseNaN1, hnan]
+
+/-- The zero exponent returns one unless the base is a signaling NaN. -/
+@[simp] theorem pown_zero {fmt : FloatFormat} (value : Model fmt)
+    (hnan : isSignaling value = false) :
+    pown value 0 = posOne fmt := by
+  simp [pown, hnan]
+
+/-- A finite nonzero base uses a single rational rounding for every nonzero exponent. -/
+theorem pown_eq_roundAlgebraicRat {fmt : FloatFormat} (value : Model fmt)
+    (exponent : Int) {q : Rat} (hvalue : toRat? value = some q)
+    (hzero : isZero value = false) (hexponent : exponent ≠ 0) :
+    pown value exponent = roundAlgebraicRat fmt (q ^ exponent) := by
+  have hfinite := Algebraic.isFinite_of_toRat?_eq_some hvalue
+  have hnan : chooseNaN1 value = none := by
+    simp [chooseNaN1, isNaN_eq_false_of_isFinite_eq_true value hfinite]
+  obtain ⟨d, hd⟩ := exists_toDyadic?_of_isFinite hfinite
+  simp [pown, isSignaling_eq_false_of_toDyadic?_some hd, hexponent, hnan, hzero,
+    isInfinite_eq_false_of_toDyadic?_some hd, hvalue]
+
+/--
+Integer powers of finite inputs round the exact real power once, for positive, negative and zero
+integer exponents. A zero base gives a signed zero for positive exponents, while zero to a negative
+exponent overflows and is excluded with every other overflow by the finite-result premise. The
+output may be subnormal or zero.
+-/
+theorem toReal_pown_eq_roundAt {fmt : FloatFormat} (value : Model fmt) (exponent : Int)
+    (hfmt : fmt.isIEEE = true) (hvalue : isFinite value = true)
+    (hfinite : isFinite (pown value exponent) = true) :
+    toReal (pown value exponent) = roundAt fmt (toReal value ^ exponent) := by
+  obtain ⟨d, hd⟩ := exists_toDyadic?_of_isFinite hvalue
+  by_cases hexponent : exponent = 0
+  · subst exponent
+    simp [isSignaling_eq_false_of_toDyadic?_some hd]
+  by_cases hzero : isZero value = true
+  · have hnan : chooseNaN1 value = none := by
+      simp [chooseNaN1, isNaN_eq_false_of_isFinite_eq_true value hvalue]
+    have hsignaling := isSignaling_eq_false_of_toDyadic?_some hd
+    rcases lt_or_gt_of_ne hexponent with hnegative | hpositive
+    · simp [pown, hsignaling, hexponent, hnan, hzero, hnegative,
+        isFinite_nativeOverflow hfmt] at hfinite
+    · simp [pown, hsignaling, hexponent, hnan, hzero, not_lt.mpr hpositive.le,
+        toReal_eq_zero_of_isZero value hzero, zero_zpow _ hexponent]
+  · rw [Bool.not_eq_true] at hzero
+    have hq : toRat? value = some d.toRat := by simp [toRat?, hd]
+    rw [pown_eq_roundAlgebraicRat value exponent hq hzero hexponent] at hfinite ⊢
+    rw [toReal_roundAlgebraicRat fmt hfmt _ hfinite,
+      Algebraic.toReal_of_toRat?_eq_some hq, Rat.cast_zpow]
+
+end FloatLib.Floats.Formats.BinaryInterchange.Model

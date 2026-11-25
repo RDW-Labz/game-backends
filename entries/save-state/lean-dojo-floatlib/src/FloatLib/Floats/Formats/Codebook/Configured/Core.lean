@@ -1,0 +1,52 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Executable.Carrier
+public import FloatLib.Floats.Formats.Codebook.Core.Runtime
+
+/-!
+# Configured codebook identity
+
+Any complete lookup denotation determines a codebook family on the common `ExecFloat` carrier.
+Because the selected codebook stays in the type, two tables of the same width are never
+interchangeable, even though both store the same kind of bit vector.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats
+
+open FloatLib.Numerics
+
+universe u
+
+namespace ExecFloat
+namespace Codebook
+
+/-- Type-level identity retaining a complete lookup denotation. -/
+inductive Family {width : Nat} {α : Type u} (book : Formats.Codebook width α) where
+  /-- The only value: the family names a format in types and carries no data. -/
+  | format
+
+instance {width : Nat} {α : Type u} (book : Formats.Codebook width α) :
+    EncodedFormat (Family book) where
+  Code := Formats.Codebook.Code book
+  Scalar := α
+
+instance {width : Nat} {α : Type u} (book : Formats.Codebook width α) :
+    FormatSemantics (Family book) where
+  denote := book.denote
+
+end Codebook
+
+/-- Exact-width executable lookup encoding selected by its complete denotation table. -/
+abbrev Codebook {width : Nat} {α : Type u} (book : Formats.Codebook width α) :=
+  FloatLib.Floats.ExecFloat (Codebook.Family book)
+
+end ExecFloat
+end FloatLib.Floats

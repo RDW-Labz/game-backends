@@ -1,0 +1,93 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Kernels.Execution.Instances -- shake: keep
+public import FloatLib.Floats.Formats.Posit.Comparison
+public import FloatLib.Floats.Formats.Posit.Configured.Value.Runtime
+public import FloatLib.Floats.Formats.Posit.Formatting
+
+/-!
+# Rational construction, comparison, display, and literal instances for configured posits
+
+`ofRat` and numeric literals round once from an exact rational, so `(.ofRat (1 / 3) : Posit16)`
+is one third rounded once into a 16-bit posit, and no value passes through a host float. Display
+and comparison work on the exact-width model, whichever packed carrier the width selected. A value
+prints as its mathematical value, and NaR compares below every real posit.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats
+
+open FloatLib.Floats.Formats.Posit
+
+namespace ExecFloat.Posit
+
+variable {format : Format} {plan : Configured.StoragePlan format} {code : Type}
+    [codec : FloatLib.Floats.ExecFloat.ModelCodec plan (Model format) code]
+
+/--
+Round an exact rational once into the configured posit with the standard's rounding,
+`Model.roundRat`.
+
+The expected type selects the format, as in `(.ofRat (1 / 3) : Posit16)`. Natural and decimal
+literals round the same way, and no value passes through a host float.
+-/
+@[inline] def ofRat (value : Rat) :
+    FloatLib.Floats.ExecFloat (Configured.Family format code plan) :=
+  ofModel (Model.roundRat format value)
+
+/-- Posit Standard (2022), §5.2: whole-word two's complement, fixing zero and NaR. -/
+@[inline] def negate
+    (value : FloatLib.Floats.ExecFloat (Configured.Family format code plan)) :
+    FloatLib.Floats.ExecFloat (Configured.Family format code plan) :=
+  FloatLib.Floats.ExecFloat.ModelCodec.liftUnary
+    (Model := Model format) (plan := plan) Model.negate value
+
+/-- Configured posits print their mathematical value rather than their packed carrier. -/
+instance :
+    FloatLib.Floats.ExecFloat.FormatDisplay (Configured.Family format code plan) where
+  format raw := Model.display (codec.toModel raw)
+
+/--
+Configured posit comparison follows the standard's total signed-word order.
+
+NaR compares below every real posit because the standard compares complete words as signed
+two's-complement integers. That ordering gives NaR no real or infinite numerical meaning.
+-/
+instance configuredComparison :
+    FloatLib.Floats.ExecFloat.Comparison (Configured.Family format code plan) where
+  compare left right :=
+    some (cmp (toModel left) (toModel right))
+
+end ExecFloat.Posit
+
+namespace Formats.Posit
+
+/-- Natural literals are rounded once from their exact value into the destination posit. -/
+instance {format : Format} {plan : Configured.StoragePlan format} {code : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec plan (Model format) code] (value : Nat) :
+    OfNat (FloatLib.Floats.ExecFloat (Configured.Family format code plan)) value where
+  ofNat := ExecFloat.Posit.ofRat (value : Rat)
+
+/-- Decimal literals are rounded once from an exact rational, never through a host float. -/
+instance {format : Format} {plan : Configured.StoragePlan format} {code : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec plan (Model format) code] :
+    OfScientific (FloatLib.Floats.ExecFloat (Configured.Family format code plan)) where
+  ofScientific mantissa exponentSign decimalExponent :=
+    ExecFloat.Posit.ofRat (OfScientific.ofScientific mantissa exponentSign decimalExponent : Rat)
+
+/-- Posit negation is whole-word two's complement and fixes zero and NaR. -/
+instance {format : Format} {plan : Configured.StoragePlan format} {code : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec plan (Model format) code] :
+    Neg (FloatLib.Floats.ExecFloat (Configured.Family format code plan)) where
+  neg value :=
+    ExecFloat.Posit.negate value
+
+end Formats.Posit
+end FloatLib.Floats

@@ -1,0 +1,260 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Operations.Runtime
+
+import FloatLib.Floats.Formats.BinaryInterchange.DirectedSemantics.Basic
+
+/-!
+# Exponent-operation contracts
+
+`scale` changes the exact binary exponent before rounding, and `logB` reports the
+leading binary exponent. On finite inputs the contracts reduce each operation to the shared dyadic
+rounder and status calculation. Zero, infinity and NaNs have their own equations, which return the
+exceptional integer or its negation, and a finite nonzero answer never equals either of them
+because it lies in the descriptor's exponent range.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange
+namespace Model
+
+open FloatLib.Numerics
+
+/-- A finite nonzero input delivers its exact leading exponent without any exception. -/
+theorem logBInt_of_finite_nonzero {fmt : FloatFormat} (value : Model fmt)
+    (exact : Numerics.Dyadic) (hvalue : exactValue value = .finite exact)
+    (hsignificand : exact.significand ≠ 0) :
+    logBInt value = { value := (exact.significand.log2 : Int) + exact.exponent } := by
+  simp [logBInt, hvalue, hsignificand]
+
+/-- The integer answer brackets the exact finite magnitude between consecutive powers of two. -/
+theorem logBInt_bounds {fmt : FloatFormat} (value : Model fmt)
+    (exact : Numerics.Dyadic) (hvalue : exactValue value = .finite exact)
+    (hsignificand : exact.significand ≠ 0) :
+    (2 : Rat) ^ (logBInt value).value ≤
+        (exact.significand : Rat) * (2 : Rat) ^ exact.exponent ∧
+      (exact.significand : Rat) * (2 : Rat) ^ exact.exponent <
+        (2 : Rat) ^ ((logBInt value).value + 1) := by
+  rw [logBInt_of_finite_nonzero value exact hvalue hsignificand]
+  have hl : (2 : Rat) ^ exact.significand.log2 ≤ (exact.significand : Rat) := by
+    rw [Nat.log2_eq_log_two]
+    exact_mod_cast Nat.pow_log_le_self 2 hsignificand
+  have hu : (exact.significand : Rat) < (2 : Rat) ^ (exact.significand.log2 + 1) := by
+    rw [Nat.log2_eq_log_two]
+    exact_mod_cast Nat.lt_pow_succ_log_self (by decide : 1 < 2) exact.significand
+  have hp : 0 < (2 : Rat) ^ exact.exponent := zpow_pos (by norm_num) _
+  constructor
+  · simpa [zpow_add₀ (by norm_num : (2 : Rat) ≠ 0)] using
+      mul_le_mul_of_nonneg_right hl hp.le
+  · simpa [zpow_add₀ (by norm_num : (2 : Rat) ≠ 0), pow_succ, mul_assoc,
+      mul_comm, mul_left_comm] using mul_lt_mul_of_pos_right hu hp
+
+/--
+The exceptional integer exceeds twice the IEEE integer-result bound `emax + p - 1`, so neither it
+nor its negation lies within that bound.
+-/
+theorem logBSentinel_outside_logBBound (fmt : FloatFormat) :
+    2 * |logBBound fmt| < logBSentinel fmt := by
+  have hm := le_max_right (max |fmt.minSubnormalExponent| |fmt.maxNormalExponent|)
+    |logBBound fmt|
+  unfold logBSentinel
+  omega
+
+/--
+The integer answer for a finite nonzero value lies in the descriptor's exponent range, from the
+least subnormal exponent up to the largest normal exponent.
+-/
+theorem logBInt_mem_exponentRange {fmt : FloatFormat} (value : Model fmt)
+    (exact : Numerics.Dyadic) (hvalue : exactValue value = .finite exact)
+    (hsignificand : exact.significand ≠ 0) :
+    fmt.minSubnormalExponent ≤ (logBInt value).value ∧
+      (logBInt value).value ≤ fmt.maxNormalExponent := by
+  rw [logBInt_of_finite_nonzero value exact hvalue hsignificand]
+  have hd := exactValue_eq_finite_iff.mp hvalue
+  have hmaxPos := fmt.maxFiniteExpField_pos
+  simp only [FloatFormat.maxNormalExponent, FloatFormat.minSubnormalExponent,
+    FloatFormat.minNormalExponent, Int.ofNat_eq_natCast]
+  rcases log2_significand_of_toDyadic?_some hd hsignificand with
+    ⟨-, hlog, he⟩ | ⟨hfield, hlog, hexp⟩
+  · rw [he]
+    simp only [FloatFormat.minSubnormalExponent, FloatFormat.minNormalExponent,
+      Int.ofNat_eq_natCast]
+    omega
+  · have hle := expField_le_maxFiniteExpField_of_isFinite value
+      (isFinite_eq_true_of_toDyadic?_some hd)
+    rw [hlog, hexp]
+    simp only [Int.ofNat_eq_natCast]
+    omega
+
+/--
+The integer answer for a finite nonzero value is strictly smaller in magnitude than the
+exceptional integer, so a genuine `logB` result never collides with the sentinel or its negation.
+-/
+theorem abs_logBInt_lt_logBSentinel {fmt : FloatFormat}
+    (value : Model fmt) (exact : Numerics.Dyadic) (hvalue : exactValue value = .finite exact)
+    (hsignificand : exact.significand ≠ 0) :
+    |(logBInt value).value| < logBSentinel fmt := by
+  obtain ⟨hlow, hhigh⟩ := logBInt_mem_exponentRange value exact hvalue hsignificand
+  have h1 := le_max_left |fmt.minSubnormalExponent| |fmt.maxNormalExponent|
+  have h2 := le_max_right |fmt.minSubnormalExponent| |fmt.maxNormalExponent|
+  have h3 := le_max_left (max |fmt.minSubnormalExponent| |fmt.maxNormalExponent|)
+    |logBBound fmt|
+  have hmin := neg_abs_le fmt.minSubnormalExponent
+  have hmax := le_abs_self fmt.maxNormalExponent
+  unfold logBSentinel
+  rw [abs_lt]
+  constructor <;> omega
+
+/-- An integer-result exponent query signals invalid on zero, rather than divide-by-zero. -/
+theorem logBInt_of_zero {fmt : FloatFormat} (value : Model fmt)
+    (exact : Numerics.Dyadic) (hvalue : exactValue value = .finite exact)
+    (hsignificand : exact.significand = 0) :
+    logBInt value =
+      { value := -logBSentinel fmt, status := { invalid := true } } := by
+  simp [logBInt, hvalue, hsignificand]
+
+/-- Either infinity uses the positive exceptional integer and signals invalid. -/
+theorem logBInt_of_infinity {fmt : FloatFormat} (value : Model fmt)
+    (negative : Bool) (hvalue : exactValue value = .infinity negative) :
+    logBInt value =
+      { value := logBSentinel fmt, status := { invalid := true } } := by
+  simp [logBInt, hvalue]
+
+/-- Both quiet and signaling NaNs signal invalid for an integer-result exponent query. -/
+theorem logBInt_of_nan {fmt : FloatFormat} (value : Model fmt)
+    (negative signaling : Bool) (payload : Nat)
+    (hvalue : exactValue value = .nan negative signaling payload) :
+    logBInt value =
+      { value := logBSentinel fmt, status := { invalid := true } } := by
+  simp [logBInt, hvalue]
+
+/-- Scaling with `status := true` delivers the value of scaling. -/
+@[simp] theorem value_scale {fmt : FloatFormat}
+    (value : Model fmt) (n : Int) (mode : IEEERoundingMode) :
+    (scale value n mode (status := true)).value = scale value n mode :=
+  rfl
+
+/--
+On finite input, `scale` changes only the exact binary exponent before rounding.
+-/
+theorem scale_status_of_finite
+    {fmt : FloatFormat} (value : Model fmt) (n : Int)
+    (mode : IEEERoundingMode) (exact : Numerics.Dyadic)
+    (hvalue : exactValue value = .finite exact) :
+    scale value n mode (status := true) =
+      let scaled : Numerics.Dyadic := { exact with exponent := exact.exponent + n }
+      let rounded := Internal.Directed.roundDyadic fmt mode scaled
+      { value := rounded
+        status := dyadicRoundingStatus fmt mode scaled rounded
+        ternary := dyadicTernary scaled rounded } := by
+  simp [scale, Internal.Status.scale, dyadicRoundingOutcome, hvalue]
+
+/-- Scaling by zero uses the ordinary one-round exact-dyadic path. -/
+theorem scale_zero_status_of_finite
+    {fmt : FloatFormat} (value : Model fmt) (mode : IEEERoundingMode)
+    (exact : Numerics.Dyadic) (hvalue : exactValue value = .finite exact) :
+    scale value 0 mode (status := true) =
+      let rounded := Internal.Directed.roundDyadic fmt mode exact
+      { value := rounded
+        status := dyadicRoundingStatus fmt mode exact rounded
+        ternary := dyadicTernary exact rounded } := by
+  simp [scale, Internal.Status.scale, dyadicRoundingOutcome, hvalue]
+
+/-- `scale` returns either infinity unchanged and raises no exception. -/
+theorem scale_status_of_infinity
+    {fmt : FloatFormat} (value : Model fmt) (n : Int)
+    (mode : IEEERoundingMode) (negative : Bool)
+    (hvalue : exactValue value = .infinity negative) :
+    scale value n mode (status := true) =
+      { value
+        status := .clear
+        ternary := .eq } := by
+  simp [scale, Internal.Status.scale, hvalue, outcomeWithInvalid]
+
+/-- `scale` quiets a NaN, and raises `invalid` if and only if that NaN is signaling. -/
+theorem scale_status_of_nan
+    {fmt : FloatFormat} (value : Model fmt) (n : Int)
+    (mode : IEEERoundingMode) (negative signaling : Bool) (payload : Nat)
+    (hvalue : exactValue value = .nan negative signaling payload) :
+    scale value n mode (status := true) =
+      { value := quietNaN value
+        status := { invalid := signaling }
+        ternary := .eq } := by
+  cases signaling <;>
+    simp [scale, Internal.Status.scale, hvalue, outcomeWithInvalid, Numerics.IEEEStatus.clear]
+
+/-- `logB` with `status := true` delivers the value of `logB`. -/
+@[simp] theorem value_logB {fmt : FloatFormat} (value : Model fmt) :
+    (logB value (status := true)).value = logB value :=
+  rfl
+
+/--
+For a nonzero finite dyadic `±m * 2^e` with `m > 0`, `logB` returns the rounded
+encoding of the integer `floor(log₂ m) + e`.
+-/
+theorem logB_status_of_finite_nonzero
+    {fmt : FloatFormat} (value : Model fmt) (exact : Numerics.Dyadic)
+    (hvalue : exactValue value = .finite exact)
+    (hsignificand : exact.significand ≠ 0) :
+    logB value (status := true) =
+      let exponent := Int.ofNat exact.significand.log2 + exact.exponent
+      let exactResult := Numerics.Dyadic.ofScaledInt exponent 0
+      let rounded := roundDyadic fmt exactResult
+      { value := rounded
+        status := dyadicRoundingStatus fmt .nearest exactResult rounded
+        ternary := dyadicTernary exactResult rounded } := by
+  simp [logB, Internal.Status.logB, dyadicRoundingOutcome, hvalue, hsignificand]
+
+/--
+`logB` of finite zero raises `divideByZero` and returns the negative native overflow
+value `nativeOverflow fmt (negative := true)`.
+
+For IEEE encodings that value is negative infinity, as IEEE 754-2019 §5.3.3 requires. For the
+`finiteMaxNaN` and `finiteUnsignedZero` encodings, which have no infinity, it is the encoding's
+NaN word, with the same `divideByZero` flag for the zero input. The `finite` encoding saturates to
+its most negative finite value. The ternary value compares that delivery with the exact `-∞`.
+-/
+theorem logB_status_of_zero
+    {fmt : FloatFormat} (value : Model fmt) (exact : Numerics.Dyadic)
+    (hvalue : exactValue value = .finite exact)
+    (hsignificand : exact.significand = 0) :
+    logB value (status := true) =
+      { value := nativeOverflow fmt true
+        status := { divideByZero := true }
+        ternary := exactInfinityTernary true (nativeOverflow fmt true) } := by
+  simp [logB, Internal.Status.logB, hvalue, hsignificand]
+
+/--
+`logB` of either infinity returns `nativeOverflow fmt false` and raises no exception.
+For IEEE encodings this is positive infinity. The ternary value compares that delivery with the
+exact `+∞`.
+-/
+theorem logB_status_of_infinity
+    {fmt : FloatFormat} (value : Model fmt) (negative : Bool)
+    (hvalue : exactValue value = .infinity negative) :
+    logB value (status := true) =
+      { value := nativeOverflow fmt false
+        status := .clear
+        ternary := exactInfinityTernary false (nativeOverflow fmt false) } := by
+  simp [logB, Internal.Status.logB, hvalue]
+
+/-- `logB` quiets a NaN, and raises `invalid` if and only if that NaN is signaling. -/
+theorem logB_status_of_nan
+    {fmt : FloatFormat} (value : Model fmt)
+    (negative signaling : Bool) (payload : Nat)
+    (hvalue : exactValue value = .nan negative signaling payload) :
+    logB value (status := true) =
+      { value := quietNaN value
+        status := { invalid := signaling }
+        ternary := .eq } := by
+  simp [logB, Internal.Status.logB, hvalue]
+
+end Model
+end FloatLib.Floats.Formats.BinaryInterchange

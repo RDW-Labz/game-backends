@@ -1,0 +1,58 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.BinaryInterchange.Arithmetic.SignedSemantics.Core
+
+/-!
+# Signed extended-real interpretation of binary models
+
+Executable, policy-aware negation flips the sign of the extended-real interpretation of every
+non-NaN value, finite or infinite. NaNs are left out because they have no numerical value.
+`toEReal` sends them to a placeholder zero, and the identity would hold there only through that
+convention (negation keeps a NaN a NaN, `isNaN_neg`).
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.BinaryInterchange
+namespace Model
+
+section
+
+/-- Executable float negation distributes over a conditional choice. -/
+theorem neg_ite {fmt : FloatFormat} {p : Prop} [Decidable p]
+    (x y : Model fmt) :
+    neg (if p then x else y) = if p then neg x else neg y := by
+  by_cases hp : p <;> simp [hp]
+
+/--
+Negating any non-NaN executable float negates its extended-real interpretation. The NaN premise
+marks the numerical domain. On a NaN both sides are the placeholder zero of `toEReal`.
+-/
+theorem toEReal_neg_of_isNaN_eq_false
+    {fmt : FloatFormat} (x : Model fmt) (hnan : isNaN x = false) :
+    toEReal (neg x) = -toEReal x := by
+  rw [toEReal_eq_ite (neg x), toEReal_eq_ite x]
+  rw [isNaN_neg, hnan, isInfinite_neg]
+  simp only [Bool.false_eq_true, ite_false]
+  cases hinf : isInfinite x
+  · have hfinite :
+        isFinite x = true :=
+      isFinite_eq_true_of_isNaN_eq_false_of_isInfinite_eq_false x hnan hinf
+    rw [toReal_neg x hfinite]
+    simp
+  · have hzero := isZero_eq_false_of_isInfinite_eq_true x hinf
+    rw [signBit_neg]
+    simp only [↓reduceIte, hnan, hzero, Bool.or_self, Bool.false_eq_true, ite_self,
+      Bool.not_eq_eq_eq_not, Bool.not_true]
+    cases hsign : signBit x <;> simp
+
+end
+
+end Model
+end FloatLib.Floats.Formats.BinaryInterchange

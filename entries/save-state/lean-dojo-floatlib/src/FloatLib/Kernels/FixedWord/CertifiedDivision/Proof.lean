@@ -1,0 +1,480 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Kernels.FixedWord.CertifiedDivision.Runtime
+
+import FloatLib.Kernels.FixedWord.Quotient.Compiler
+import FloatLib.Kernels.FixedWord.Quotient.Restoring128Proof
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Tactic.NormNum.Abs
+import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.OfScientific
+import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.Positivity.Finset
+
+/-!
+# Verified fixed-word division candidates
+
+Division here is guess and check. The radix-`2^32` runtime loop only proposes a quotient and
+remainder, and they are accepted when native multiplication and addition confirm the Euclidean
+division equation and the remainder bound. A rejected pair falls back to a restoring accumulator. We
+prove that accumulator equal to the logical recurrence and certify its result on normalized inputs
+of `precision + 1` bits with `64 < precision ≤ 126`.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.FixedWord.CertifiedDivision
+
+private theorem widenLow_toNat (value : FloatLib.Numerics.FixedWord.UInt128) :
+    (widenLow value).toNat = value.toNat := by
+  unfold widenLow FloatLib.Numerics.FixedWord.UInt256.toNat
+    FloatLib.Numerics.FixedWord.UInt128.toNat
+  simp
+
+/-- Both candidate shifts of an in-range precision lie strictly between one and two words. -/
+theorem CandidateShift.toNat_bounds (precision : Nat)
+    (hprecision : 64 < precision ∧ precision ≤ 126) (shift : CandidateShift) :
+    64 < shift.toNat precision ∧ shift.toNat precision < 128 := by
+  cases shift <;> simp only [toNat] <;> omega
+
+private theorem widenShift_toNat (precision : Nat)
+    (hprecision : 64 < precision ∧ precision ≤ 126)
+    (value : FloatLib.Numerics.FixedWord.UInt128) (shift : CandidateShift) :
+    (FloatLib.Numerics.FixedWord.UInt256.ofUInt128ShiftedLeft value
+        (shift.toNat precision)).toNat =
+      value.toNat * 2 ^ shift.toNat precision := by
+  have hbounds := CandidateShift.toNat_bounds precision hprecision shift
+  rw [FloatLib.Numerics.FixedWord.UInt256.toNat_ofUInt128ShiftedLeft value _
+    hbounds.1 hbounds.2, Nat.shiftLeft_eq]
+
+/--
+The executable certificate accepts every representable Euclidean decomposition for the two shifts
+used by two-limb division.
+
+This is completeness of the independent checker. It says nothing about the speculative Algorithm D
+generator.
+-/
+theorem certificate_complete (precision : Nat)
+    (hprecision : 64 < precision ∧ precision ≤ 126)
+    (num den : FloatLib.Numerics.FixedWord.UInt128) (shift : CandidateShift)
+    (quotient remainder : FloatLib.Numerics.FixedWord.UInt128)
+    (hdecomposition :
+      quotient.toNat * den.toNat + remainder.toNat =
+        num.toNat * 2 ^ shift.toNat precision)
+    (hremainder : remainder.toNat < den.toNat) :
+    certificate precision num den shift quotient remainder = true := by
+  let product := FloatLib.Numerics.FixedWord.mul128 quotient den
+  let lowRemainder := widenLow remainder
+  let sum := FloatLib.Numerics.FixedWord.add256 product lowRemainder
+  let target :=
+    FloatLib.Numerics.FixedWord.UInt256.ofUInt128ShiftedLeft num (shift.toNat precision)
+  have hbounds := CandidateShift.toNat_bounds precision hprecision shift
+  have hproduct :
+      product.toNat = quotient.toNat * den.toNat := by
+    simpa only [product] using
+      FloatLib.Numerics.FixedWord.mul128_toNat quotient den
+  have htarget :
+      target.toNat = num.toNat * 2 ^ shift.toNat precision := by
+    simpa only [target] using
+      widenShift_toNat precision hprecision num shift
+  have htargetFit : target.toNat < 2 ^ 256 := by
+    rw [htarget]
+    calc
+      num.toNat * 2 ^ shift.toNat precision < 2 ^ 128 * 2 ^ shift.toNat precision :=
+        Nat.mul_lt_mul_of_pos_right
+          (FloatLib.Numerics.FixedWord.UInt128.toNat_lt num) (by positivity)
+      _ = 2 ^ (128 + shift.toNat precision) := by rw [pow_add]
+      _ ≤ 2 ^ 256 := by
+        apply Nat.pow_le_pow_right (by decide)
+        omega
+  have hsumExact :
+      sum.value.toNat + sum.carry.toNat * 2 ^ 256 =
+        target.toNat := by
+    have hadd :=
+      FloatLib.Numerics.FixedWord.add256_toNat product lowRemainder
+    change
+      sum.value.toNat + sum.carry.toNat * 2 ^ 256 =
+        product.toNat + lowRemainder.toNat at hadd
+    rw [hproduct, show lowRemainder.toNat = remainder.toNat by
+      simpa only [lowRemainder] using widenLow_toNat remainder,
+      hdecomposition, ← htarget] at hadd
+    exact hadd
+  have hcarryNat : sum.carry.toNat = 0 := by
+    omega
+  have hcarry : sum.carry = 0 :=
+    UInt64.toNat_inj.mp <| by simpa using hcarryNat
+  have hsumValue : sum.value = target := by
+    apply FloatLib.Numerics.FixedWord.UInt256.toNat_injective
+    omega
+  simp only [certificate, Bool.and_eq_true, beq_iff_eq]
+  exact ⟨⟨hcarry, hsumValue⟩,
+    (FloatLib.Numerics.FixedWord.UInt128.less_eq_true_iff remainder den).2
+      hremainder⟩
+
+/--
+A successful native certificate gives the quotient/remainder decomposition and the Euclidean
+remainder bound. The proof does not depend on the radix-`2^32` candidate generator.
+-/
+theorem certificate_sound (precision : Nat)
+    (hprecision : 64 < precision ∧ precision ≤ 126)
+    (num den : FloatLib.Numerics.FixedWord.UInt128) (shift : CandidateShift)
+    (quotient remainder : FloatLib.Numerics.FixedWord.UInt128)
+    (hvalid :
+      certificate precision num den shift quotient remainder = true) :
+    quotient.toNat * den.toNat + remainder.toNat =
+        num.toNat * 2 ^ shift.toNat precision ∧
+      remainder.toNat < den.toNat := by
+  let product := FloatLib.Numerics.FixedWord.mul128 quotient den
+  let sum := FloatLib.Numerics.FixedWord.add256 product (widenLow remainder)
+  simp only [certificate, Bool.and_eq_true, beq_iff_eq] at hvalid
+  rcases hvalid with ⟨⟨hsumCarry, hsumValue⟩, hremainder⟩
+  have hproduct :
+      product.toNat = quotient.toNat * den.toNat := by
+    simpa only [product] using FloatLib.Numerics.FixedWord.mul128_toNat quotient den
+  have hsum :
+      sum.value.toNat =
+        product.toNat + (widenLow remainder).toNat := by
+    simpa only [sum] using
+      FloatLib.Numerics.FixedWord.add256_value_toNat_of_carry_zero
+        product (widenLow remainder) hsumCarry
+  have hsumValueNat :
+      sum.value.toNat =
+        (FloatLib.Numerics.FixedWord.UInt256.ofUInt128ShiftedLeft num
+          (shift.toNat precision)).toNat :=
+    congrArg FloatLib.Numerics.FixedWord.UInt256.toNat hsumValue
+  constructor
+  · rw [← widenShift_toNat precision hprecision num shift,
+      ← hsumValueNat, hsum, hproduct, widenLow_toNat]
+  · exact
+      (FloatLib.Numerics.FixedWord.UInt128.less_eq_true_iff remainder den).1 hremainder
+
+/--
+The allocation-light restoring repair agrees with the logical two-limb recurrence.
+
+Runtime code calls the primitive-word accumulator, and proofs continue from this theorem through
+`quotientSteps128`.
+-/
+theorem restoringCandidate_eq_quotientSteps128 (precision : Nat)
+    (num den : FloatLib.Numerics.FixedWord.UInt128) (shift : CandidateShift) :
+    restoringCandidate precision num den shift =
+      FloatLib.Numerics.FixedWord.RestoringQuotient.quotientSteps128
+        den (shift.toNat precision) (restoringInitial num den) := by
+  unfold restoringCandidate
+  exact
+    FloatLib.Numerics.FixedWord.RestoringQuotient.Internal.quotientSteps128_eq
+      den (shift.toNat precision) (restoringInitial num den)
+
+/--
+The restoring repair is certified whenever its initial state satisfies the loop preconditions and
+represents the numerator.
+-/
+private theorem restoringCandidate_certificate_of_initial (precision : Nat)
+    (hprecision : 64 < precision ∧ precision ≤ 126)
+    (num den : FloatLib.Numerics.FixedWord.UInt128) (shift : CandidateShift)
+    (initial : FloatLib.Numerics.FixedWord.RestoringQuotient.QuotientState
+      FloatLib.Numerics.FixedWord.UInt128)
+    (hinitialState : restoringInitial num den = initial)
+    (hdenFit : den.toNat < 2 ^ 127)
+    (hremainder : initial.remainder.toNat < den.toNat)
+    (hcapacity : (initial.quotient.toNat + 1) * 2 ^ shift.toNat precision ≤ 2 ^ 128)
+    (hinitial : initial.quotient.toNat * den.toNat + initial.remainder.toNat = num.toNat) :
+    certificate precision num den shift
+        (restoringCandidate precision num den shift).quotient
+        (restoringCandidate precision num den shift).remainder =
+      true := by
+  have hspec :=
+    FloatLib.Numerics.FixedWord.RestoringQuotient.quotientSteps128_spec
+      den (shift.toNat precision) initial hdenFit hremainder hcapacity
+  rw [restoringCandidate_eq_quotientSteps128, hinitialState]
+  exact certificate_complete precision hprecision num den shift _ _
+    (by rw [hspec.1, hinitial]) hspec.2.1
+
+/--
+The restoring repair produces a certified candidate for normalized `precision + 1`-bit
+significands.
+
+The two-limb backends choose the shift `precision` when the numerator is at least the
+denominator and `precision + 1` otherwise, so that the quotient has exactly `precision + 1` bits.
+The certificate holds for either shift: the Euclidean equation does not depend on the quotient's
+width, and both shifts fit the two-word capacity.
+-/
+theorem restoringCandidate_complete (precision : Nat)
+    (hprecision : 64 < precision ∧ precision ≤ 126)
+    (num den : FloatLib.Numerics.FixedWord.UInt128) (shift : CandidateShift)
+    (hnum : 2 ^ precision ≤ num.toNat ∧ num.toNat < 2 ^ (precision + 1))
+    (hden : 2 ^ precision ≤ den.toNat ∧ den.toNat < 2 ^ (precision + 1)) :
+    certificate precision num den shift
+        (restoringCandidate precision num den shift).quotient
+        (restoringCandidate precision num den shift).remainder =
+      true := by
+  have hdenFit : den.toNat < 2 ^ 127 :=
+    hden.2.trans_le <| Nat.pow_le_pow_right (by decide) (by omega)
+  have hpowSucc : 2 ^ (precision + 1) = 2 ^ precision * 2 := pow_succ 2 precision
+  have hshiftPow : 2 ^ shift.toNat precision ≤ 2 ^ (precision + 1) :=
+    Nat.pow_le_pow_right (by decide) (by cases shift <;> simp [CandidateShift.toNat])
+  have hpowLe : 2 * 2 ^ (precision + 1) ≤ 2 ^ 128 := by
+    rw [← pow_succ']
+    exact Nat.pow_le_pow_right (by decide) (by omega)
+  by_cases hle : den.toNat ≤ num.toNat
+  · have hless :
+        FloatLib.Numerics.FixedWord.UInt128.less num den = false :=
+      (FloatLib.Numerics.FixedWord.UInt128.less_eq_false_iff num den).2 hle
+    let initial :
+        FloatLib.Numerics.FixedWord.RestoringQuotient.QuotientState
+          FloatLib.Numerics.FixedWord.UInt128 :=
+      { quotient := ⟨0, 1⟩
+        remainder := FloatLib.Numerics.FixedWord.UInt128.sub num den }
+    have hremainderNat :
+        initial.remainder.toNat = num.toNat - den.toNat := by
+      simpa only [initial] using
+        FloatLib.Numerics.FixedWord.UInt128.sub_toNat num den hle
+    have hremainder : initial.remainder.toNat < den.toNat := by
+      rw [hremainderNat]
+      have hnumLtTwice : num.toNat < den.toNat * 2 := by
+        calc
+          num.toNat < 2 ^ (precision + 1) := hnum.2
+          _ = 2 ^ precision * 2 := hpowSucc
+          _ ≤ den.toNat * 2 := Nat.mul_le_mul_right 2 hden.1
+      omega
+    have hquotientNat : initial.quotient.toNat = 1 := by
+      simp [initial, FloatLib.Numerics.FixedWord.UInt128.toNat]
+    have hcapacity :
+        (initial.quotient.toNat + 1) * 2 ^ shift.toNat precision ≤ 2 ^ 128 := by
+      rw [hquotientNat]
+      omega
+    have hinitial :
+        initial.quotient.toNat * den.toNat + initial.remainder.toNat =
+          num.toNat := by
+      rw [hquotientNat, hremainderNat]
+      omega
+    exact restoringCandidate_certificate_of_initial precision hprecision num den shift initial
+      (by simp [restoringInitial, hless, initial]) hdenFit hremainder hcapacity hinitial
+  · have hnumLt : num.toNat < den.toNat := Nat.lt_of_not_ge hle
+    have hless :
+        FloatLib.Numerics.FixedWord.UInt128.less num den = true :=
+      (FloatLib.Numerics.FixedWord.UInt128.less_eq_true_iff num den).2
+        hnumLt
+    let initial :
+        FloatLib.Numerics.FixedWord.RestoringQuotient.QuotientState
+          FloatLib.Numerics.FixedWord.UInt128 :=
+      { quotient := ⟨0, 0⟩, remainder := num }
+    have hremainder : initial.remainder.toNat < den.toNat := by
+      simpa only [initial] using hnumLt
+    have hcapacity :
+        (initial.quotient.toNat + 1) * 2 ^ shift.toNat precision ≤ 2 ^ 128 := by
+      have hquotientNat : initial.quotient.toNat = 0 := by
+        simp [initial, FloatLib.Numerics.FixedWord.UInt128.toNat]
+      rw [hquotientNat]
+      omega
+    have hinitial :
+        initial.quotient.toNat * den.toNat + initial.remainder.toNat =
+          num.toNat := by
+      simp [initial, FloatLib.Numerics.FixedWord.UInt128.toNat]
+    exact restoringCandidate_certificate_of_initial precision hprecision num den shift initial
+      (by simp [restoringInitial, hless, initial]) hdenFit hremainder hcapacity hinitial
+
+/--
+A rejected Algorithm D candidate selects the restoring repair.
+
+No hypothesis on the operands is needed beyond the failed certificate.
+-/
+theorem checkedCandidate_eq_repair_of_certificate_false (precision : Nat)
+    (num den : FloatLib.Numerics.FixedWord.UInt128) (shift : CandidateShift)
+    (hrejected :
+      certificate precision num den shift
+          (candidate precision num den shift).1
+          (candidate precision num den shift).2 =
+        false) :
+    checkedCandidate precision num den shift =
+      { quotient := (restoringCandidate precision num den shift).quotient
+        remainder := (restoringCandidate precision num den shift).remainder } := by
+  simp [checkedCandidate, hrejected]
+
+/--
+The checked candidate is complete on the normalized two-limb division domain, for either shift.
+
+Either the fast candidate passes its certificate, or the proved restoring loop supplies the
+quotient and remainder. Either way the returned pair is certified, with no second runtime check
+and no unreachable backend fallback.
+-/
+theorem checkedCandidate_complete (precision : Nat)
+    (hprecision : 64 < precision ∧ precision ≤ 126)
+    (num den : FloatLib.Numerics.FixedWord.UInt128) (shift : CandidateShift)
+    (hnum : 2 ^ precision ≤ num.toNat ∧ num.toNat < 2 ^ (precision + 1))
+    (hden : 2 ^ precision ≤ den.toNat ∧ den.toNat < 2 ^ (precision + 1)) :
+    certificate precision num den shift
+        (checkedCandidate precision num den shift).quotient
+        (checkedCandidate precision num den shift).remainder =
+      true := by
+  by_cases hfast :
+      certificate precision num den shift
+          (candidate precision num den shift).1
+          (candidate precision num den shift).2 =
+        true
+  · simp [checkedCandidate, hfast]
+  · have hrejected :
+        certificate precision num den shift
+            (candidate precision num den shift).1
+            (candidate precision num den shift).2 =
+          false :=
+      Bool.eq_false_iff.mpr hfast
+    rw [checkedCandidate_eq_repair_of_certificate_false
+      precision num den shift hrejected]
+    exact restoringCandidate_complete precision hprecision num den shift hnum hden
+
+/--
+The candidate selected by the fast-check-or-repair runtime path satisfies Euclidean division.
+
+It combines `checkedCandidate_complete` with `certificate_sound`, so callers get the equation
+and the strict remainder bound without unfolding the executable certificate. Both candidate
+shifts are covered.
+-/
+theorem checkedCandidate_sound (precision : Nat)
+    (hprecision : 64 < precision ∧ precision ≤ 126)
+    (num den : FloatLib.Numerics.FixedWord.UInt128) (shift : CandidateShift)
+    (hnum : 2 ^ precision ≤ num.toNat ∧ num.toNat < 2 ^ (precision + 1))
+    (hden : 2 ^ precision ≤ den.toNat ∧ den.toNat < 2 ^ (precision + 1)) :
+    (checkedCandidate precision num den shift).quotient.toNat * den.toNat +
+          (checkedCandidate precision num den shift).remainder.toNat =
+        num.toNat * 2 ^ shift.toNat precision ∧
+      (checkedCandidate precision num den shift).remainder.toNat < den.toNat :=
+  certificate_sound precision hprecision num den shift
+    (checkedCandidate precision num den shift).quotient
+    (checkedCandidate precision num den shift).remainder <|
+    checkedCandidate_complete precision hprecision num den shift hnum hden
+
+private theorem lowBit_eq_parity (value : FloatLib.Numerics.FixedWord.UInt128) :
+    ((value.lo &&& 1) == 0) ↔ value.toNat % 2 = 0 := by
+  simp only [beq_iff_eq]
+  have hmod :
+      value.toNat % 2 = value.lo.toNat % 2 := by
+    unfold FloatLib.Numerics.FixedWord.UInt128.toNat
+    norm_num [Nat.add_mod, Nat.mul_mod]
+  rw [hmod]
+  constructor
+  · intro h
+    have hnat := congrArg UInt64.toNat h
+    rw [UInt64.toNat_and] at hnat
+    simpa [Nat.and_one_is_mod] using hnat
+  · intro h
+    apply UInt64.toNat_inj.mp
+    rw [UInt64.toNat_and]
+    simpa [Nat.and_one_is_mod] using h
+
+/--
+Native quotient rounding agrees with exact nearest-even rational rounding for a certified
+Euclidean decomposition.
+
+A doubled remainder that carries out of 128 bits exceeds every two-word denominator, and the
+kernel rounds up on that carry.
+-/
+theorem roundQuotient_toNat
+    (den quotient remainder : FloatLib.Numerics.FixedWord.UInt128) (numerator : Nat)
+    (hdecomposition :
+      quotient.toNat * den.toNat + remainder.toNat = numerator)
+    (hremainder : remainder.toNat < den.toNat)
+    (hquotientFit : quotient.toNat + 1 < 2 ^ 128) :
+    (roundQuotient den quotient remainder).toNat =
+      Numerics.roundQuotientEven numerator den.toNat := by
+  have hdenPositive : 0 < den.toNat := by omega
+  have hdivision :
+      numerator / den.toNat = quotient.toNat ∧
+        numerator % den.toNat = remainder.toNat :=
+    (Nat.div_mod_unique hdenPositive).2 <| by
+      refine ⟨?_, hremainder⟩
+      simpa only [Nat.add_comm, Nat.mul_comm] using hdecomposition
+  have hquotient := hdivision.1
+  have hremainderEq := hdivision.2
+  let doubled := FloatLib.Numerics.FixedWord.add128 remainder remainder
+  have hincrement :
+      quotient.increment.toNat = quotient.toNat + 1 :=
+    FloatLib.Numerics.FixedWord.UInt128.increment_toNat quotient hquotientFit
+  by_cases hdoubleFit : remainder.toNat + remainder.toNat < 2 ^ 128
+  swap
+  · have hadd := FloatLib.Numerics.FixedWord.add128_toNat remainder remainder
+    have hvalue := FloatLib.Numerics.FixedWord.UInt128.toNat_lt doubled.value
+    have hcarry : doubled.carry ≠ 0 := by
+      intro hzero
+      change doubled.value.toNat + doubled.carry.toNat * 2 ^ 128 = _ at hadd
+      rw [hzero, UInt64.toNat_zero] at hadd
+      omega
+    have habove : den.toNat < 2 * remainder.toNat := by
+      have := FloatLib.Numerics.FixedWord.UInt128.toNat_lt den
+      omega
+    have hbelow : ¬2 * remainder.toNat < den.toNat := by omega
+    unfold roundQuotient Numerics.roundQuotientEven
+    simp [doubled, hcarry, hbelow, habove, hquotient, hremainderEq, hincrement]
+  have hdoubleCarry : doubled.carry = 0 := by
+    simpa only [doubled] using
+      FloatLib.Numerics.FixedWord.add128_carry_eq_zero_of_lt
+        remainder remainder hdoubleFit
+  have hdouble :
+      doubled.value.toNat = 2 * remainder.toNat := by
+    simpa only [doubled, two_mul] using
+      FloatLib.Numerics.FixedWord.add128_value_toNat_of_lt
+        remainder remainder hdoubleFit
+  have heven := lowBit_eq_parity quotient
+  by_cases hbelow : 2 * remainder.toNat < den.toNat
+  · have hnativeAbove :
+        FloatLib.Numerics.FixedWord.UInt128.less den doubled.value = false := by
+      apply (FloatLib.Numerics.FixedWord.UInt128.less_eq_false_iff _ _).2
+      simpa only [hdouble] using hbelow.le
+    have hnativeEqual : doubled.value ≠ den := by
+      intro heq
+      have hnat := congrArg FloatLib.Numerics.FixedWord.UInt128.toNat heq
+      rw [hdouble] at hnat
+      omega
+    unfold roundQuotient Numerics.roundQuotientEven
+    simp [doubled, hdoubleCarry, hnativeAbove, hnativeEqual,
+      hbelow, hquotient, hremainderEq]
+  · by_cases habove : den.toNat < 2 * remainder.toNat
+    · have hnativeAbove :
+          FloatLib.Numerics.FixedWord.UInt128.less den doubled.value = true := by
+        apply (FloatLib.Numerics.FixedWord.UInt128.less_eq_true_iff den doubled.value).2
+        rw [hdouble]
+        exact habove
+      unfold roundQuotient Numerics.roundQuotientEven
+      simp [doubled, hdoubleCarry, hnativeAbove, hbelow, habove,
+        hquotient, hremainderEq, hincrement]
+    · have htie : 2 * remainder.toNat = den.toNat := by
+        omega
+      have hnativeEqual : doubled.value = den := by
+        apply FloatLib.Numerics.FixedWord.UInt128.toNat_injective
+        rw [hdouble, htie]
+      have hlessSelf :
+          FloatLib.Numerics.FixedWord.UInt128.less den den = false :=
+        (FloatLib.Numerics.FixedWord.UInt128.less_eq_false_iff _ _).2 le_rfl
+      unfold roundQuotient Numerics.roundQuotientEven
+      simp only [hdoubleCarry, bne_self_eq_false, hnativeEqual, hlessSelf, Bool.or_self,
+        Bool.false_eq_true, ↓reduceIte, BEq.rfl, heven, hremainderEq, htie, lt_self_iff_false,
+        hquotient, beq_iff_eq, doubled]
+      by_cases hparity : quotient.toNat % 2 = 0
+      · simp [hparity]
+      · simp [hparity, hincrement]
+
+/-- Native quotient rounding returns the input quotient or its successor when incrementing fits. -/
+theorem roundQuotient_toNat_eq_or
+    (den quotient remainder : FloatLib.Numerics.FixedWord.UInt128)
+    (hquotientFit : quotient.toNat + 1 < 2 ^ 128) :
+    (roundQuotient den quotient remainder).toNat = quotient.toNat ∨
+      (roundQuotient den quotient remainder).toNat = quotient.toNat + 1 := by
+  have hincrement :
+      quotient.increment.toNat = quotient.toNat + 1 :=
+    FloatLib.Numerics.FixedWord.UInt128.increment_toNat quotient hquotientFit
+  unfold roundQuotient
+  dsimp only
+  split
+  · exact Or.inr hincrement
+  · split
+    · split
+      · exact Or.inl rfl
+      · exact Or.inr hincrement
+    · exact Or.inl rfl
+
+end FloatLib.Numerics.FixedWord.CertifiedDivision

@@ -1,0 +1,144 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.P3109.Arithmetic.Extrema.Runtime
+public import FloatLib.Floats.Formats.P3109.Arithmetic.Proof
+
+/-!
+# Mathematical order and extrema for P3109
+
+On finite values, P3109 extrema are the rational minimum and maximum, and comparisons are rational
+order, with NaN left unordered. Magnitude ties and the preference for finite values are stated
+apart from rounding. Because the executable extrema use the same `binary` refinement as
+arithmetic, these identities describe the expression at their single projection boundary.
+Clamping rejects reversed bounds, and for ordered bounds it agrees with the rational interval
+clamp.
+
+Reference: P3109 Interim Report v4.1 (unapproved draft), §§4.11–4.12.
+-/
+
+@[expose] public section
+
+open FloatLib.Numerics
+
+namespace FloatLib.Floats.Formats.P3109.Arithmetic
+
+/-- Finite strict comparison is rational strict order. -/
+@[simp] theorem less_finite (left right : Rat) :
+    CompareLess (.finite left) (.finite right) = true ↔ left < right := by
+  simp [CompareLess]
+
+/-- Finite non-strict comparison is rational order. -/
+@[simp] theorem lessEqual_finite (left right : Rat) :
+    CompareLessEqual (.finite left) (.finite right) = true ↔ left ≤ right := by
+  simp only [CompareLessEqual, CompareLess, CompareEqual, Bool.or_eq_true, decide_eq_true_eq,
+    beq_iff_eq]
+  exact ⟨fun h => h.elim le_of_lt le_of_eq, lt_or_eq_of_le⟩
+
+/-- Finite comparison equality is equality of rational values. -/
+@[simp] theorem equal_finite (left right : Rat) :
+    CompareEqual (.finite left) (.finite right) = true ↔ left = right := by
+  simp [CompareEqual]
+
+/-- No datum is strictly less than itself, even NaN. -/
+@[simp] theorem less_self (value : NumericalValue Rat) : CompareLess value value = false := by
+  cases value with
+  | finite value => simp [CompareLess]
+  | infinity sign => cases sign <;> rfl
+  | exceptional value => rfl
+
+/-- Finite minimum is the ordinary rational minimum. -/
+@[simp] theorem minimum_finite (left right : Rat) :
+    Minimum (.finite left) (.finite right) = .finite (min left right) := by
+  by_cases h : left < right
+  · simp [Minimum, CompareLess, h, min_eq_left h.le]
+  · simp [Minimum, CompareLess, h, min_eq_right (le_of_not_gt h)]
+
+/-- Finite maximum is the ordinary rational maximum. -/
+@[simp] theorem maximum_finite (left right : Rat) :
+    Maximum (.finite left) (.finite right) = .finite (max left right) := by
+  by_cases h : left < right
+  · simp [Maximum, CompareLess, h, max_eq_right h.le]
+  · simp [Maximum, CompareLess, h, max_eq_left (le_of_not_gt h)]
+
+/-- Exact closed minimum is commutative, including NaN and infinity. -/
+theorem minimum_comm (left right : NumericalValue Rat) :
+    Minimum left right = Minimum right left := by
+  cases left <;> cases right <;> (repeat' cases_type Bool) <;>
+    first | simp only [minimum_finite, _root_.min_comm] | rfl
+
+/-- Exact closed maximum is commutative, including NaN and infinity. -/
+theorem maximum_comm (left right : NumericalValue Rat) :
+    Maximum left right = Maximum right left := by
+  cases left <;> cases right <;> (repeat' cases_type Bool) <;>
+    first | simp only [maximum_finite, _root_.max_comm] | rfl
+
+/-- A finite operand wins over either infinity in minimum-finite. -/
+@[simp] theorem minimumFinite_finite_infinity (value : Rat) (negative : Bool) :
+    MinimumFinite (.finite value) (.infinity negative) = .finite value :=
+  rfl
+
+/-- A finite operand wins over either infinity in maximum-finite. -/
+@[simp] theorem maximumFinite_finite_infinity (value : Rat) (negative : Bool) :
+    MaximumFinite (.finite value) (.infinity negative) = .finite value :=
+  rfl
+
+/-- The number variant ignores NaN in favor of a finite operand. -/
+@[simp] theorem minimumNumber_nan_finite (value : Rat) :
+    MinimumNumber nan (.finite value) = .finite value :=
+  rfl
+
+/-- The number variant ignores NaN in favor of a finite operand. -/
+@[simp] theorem maximumNumber_nan_finite (value : Rat) :
+    MaximumNumber nan (.finite value) = .finite value :=
+  rfl
+
+/-- A finite rational and its negation have the same exact magnitude. -/
+private theorem abs_finite_neg (value : Rat) : Abs (.finite (-value)) = Abs (.finite value) := by
+  simp only [Abs]
+  split_ifs <;>
+    simp_all only [Left.neg_neg_iff, neg_neg, NumericalValue.finite.injEq, not_lt] <;> linarith
+
+/-- Equal nonnegative magnitudes are resolved toward the negative datum by minimum. -/
+theorem minimumMagnitude_neg_self (value : Rat) (hvalue : 0 ≤ value) :
+    MinimumMagnitude (.finite (-value)) (.finite value) = .finite (-value) := by
+  simp only [MinimumMagnitude, abs_finite_neg, less_self, Bool.false_eq_true, ite_false]
+  rw [minimum_finite, min_eq_left ((neg_nonpos.mpr hvalue).trans hvalue)]
+
+/-- Equal nonnegative magnitudes are resolved toward the positive datum by maximum. -/
+theorem maximumMagnitude_neg_self (value : Rat) (hvalue : 0 ≤ value) :
+    MaximumMagnitude (.finite (-value)) (.finite value) = .finite value := by
+  simp only [MaximumMagnitude, abs_finite_neg, less_self, Bool.false_eq_true, ite_false]
+  rw [maximum_finite, max_eq_right ((neg_nonpos.mpr hvalue).trans hvalue)]
+
+/-- Reversed clamp bounds have the report's indeterminate NaN result. -/
+theorem clamp_of_reversed (value lower upper : Numerics.NumericalValue Rat)
+    (hbounds : CompareGreater lower upper = true) : Clamp value lower upper = nan := by
+  simp [Clamp, hbounds]
+
+/-- Clamping a finite value between ordered finite bounds gives the rational interval clamp. -/
+theorem clamp_finite (value lower upper : Rat) (hbounds : lower ≤ upper) :
+    Clamp (.finite value) (.finite lower) (.finite upper) =
+      .finite (min (max value lower) upper) := by
+  simp [Clamp, CompareGreater, CompareLess, not_lt.mpr hbounds]
+
+end FloatLib.Floats.Formats.P3109.Arithmetic
+
+namespace FloatLib.Floats.ExecFloat.P3109
+
+open Formats.P3109
+
+/-- Clamp encoding refines the exact closed clamp followed by one report projection. -/
+theorem decode_clamp {format : Format} (value lower upper : ExecFloat.P3109 format)
+    (target : Format) (mode : RoundingMode) (saturation : SaturationMode) :
+    Format.SameDatum (decode (Clamp value lower upper target mode saturation))
+      (target.projectRatValue { rounding := mode, saturation }
+        (Arithmetic.Clamp value.toClosedRat lower.toClosedRat upper.toClosedRat)) :=
+  decode_projectRat _ mode saturation
+
+end FloatLib.Floats.ExecFloat.P3109

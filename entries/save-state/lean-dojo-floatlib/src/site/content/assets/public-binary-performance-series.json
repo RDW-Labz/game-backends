@@ -1,0 +1,48 @@
+{
+  "label": "Operation",
+  "compactDefault": "add",
+  "views": [
+    {
+      "id": "all",
+      "label": "All operations",
+      "src": "public-binary-performance.png",
+      "alt": "Six panels, one per operation: FloatLib and MPFR time per operation in nanoseconds, against encoded width, with whiskers from the fastest to the slowest trial. Both axes are logarithmic."
+    },
+    {
+      "id": "add",
+      "label": "Addition",
+      "src": "public-binary-performance-add.svg",
+      "alt": "Addition: FloatLib and MPFR time per operation in nanoseconds on a logarithmic vertical axis, against encoded width on a logarithmic axis. Markers are medians and whiskers run from the fastest to the slowest trial."
+    },
+    {
+      "id": "sub",
+      "label": "Subtraction",
+      "src": "public-binary-performance-sub.svg",
+      "alt": "Subtraction: FloatLib and MPFR time per operation in nanoseconds on a logarithmic vertical axis, against encoded width on a logarithmic axis. Markers are medians and whiskers run from the fastest to the slowest trial."
+    },
+    {
+      "id": "mul",
+      "label": "Multiplication",
+      "src": "public-binary-performance-mul.svg",
+      "alt": "Multiplication: FloatLib and MPFR time per operation in nanoseconds on a logarithmic vertical axis, against encoded width on a logarithmic axis. Markers are medians and whiskers run from the fastest to the slowest trial."
+    },
+    {
+      "id": "div",
+      "label": "Division",
+      "src": "public-binary-performance-div.svg",
+      "alt": "Division: FloatLib and MPFR time per operation in nanoseconds on a logarithmic vertical axis, against encoded width on a logarithmic axis. Markers are medians and whiskers run from the fastest to the slowest trial."
+    },
+    {
+      "id": "sqrt",
+      "label": "Square root",
+      "src": "public-binary-performance-sqrt.svg",
+      "alt": "Square root: FloatLib and MPFR time per operation in nanoseconds on a logarithmic vertical axis, against encoded width on a logarithmic axis. Markers are medians and whiskers run from the fastest to the slowest trial."
+    },
+    {
+      "id": "fma",
+      "label": "Fused multiply-add",
+      "src": "public-binary-performance-fma.svg",
+      "alt": "Fused multiply-add: FloatLib and MPFR time per operation in nanoseconds on a logarithmic vertical axis, against encoded width on a logarithmic axis. Markers are medians and whiskers run from the fastest to the slowest trial."
+    }
+  ]
+}

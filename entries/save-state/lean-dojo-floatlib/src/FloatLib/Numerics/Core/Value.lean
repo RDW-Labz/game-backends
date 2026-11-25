@@ -1,0 +1,179 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Numerics.Repr
+
+/-!
+# Values of encoded numerical systems
+
+An encoded numerical system may contain ordinary values, signed infinities, and exceptional bit
+patterns. None of this is specific to IEEE floating point. Posits have `NaR`, some low-precision
+formats reserve individual words, and fixed-point systems may have no exceptional values at all.
+
+`NumericalValue` records this common semantic shape without prescribing a storage layout. Its finite
+value type is a parameter, so a system may denote real numbers, rational numbers, integers, complex
+numbers, or another exact mathematical domain.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics
+
+universe u v w
+
+/-- Why an encoded word has no ordinary numerical value. -/
+inductive ExceptionalValue where
+  /--
+  A NaN encoding, optionally carrying its diagnostic payload, together with its sign bit and
+  whether it is a signaling NaN. The payload excludes encoding markers such as an IEEE quiet bit,
+  which source decoders remove before constructing this representation-independent value.
+  Encodings without these distinctions use the defaults: no payload, positive, and quiet.
+  -/
+  | nan (payload : Option Nat := none) (negative : Bool := false) (signaling : Bool := false)
+  /-- The single not-a-real value used by posit systems. -/
+  | notAReal
+  /-- A representation-specific reserved word, optionally retaining its encoded payload. -/
+  | reserved (payload : Option Nat := none)
+  /-- An operation whose result is intentionally outside the scalar semantics. -/
+  | undefined
+  deriving DecidableEq
+
+/-- Whether an exceptional observation is a signaling NaN. -/
+@[inline] def ExceptionalValue.isSignaling : ExceptionalValue → Bool
+  | .nan _ _ signaling => signaling
+  | .notAReal | .reserved _ | .undefined => false
+
+/--
+`#eval` writes the constructor with a leading dot and names only the arguments that differ from
+their defaults, as `.nan`, `.nan (negative := true) (signaling := true)` or
+`.reserved (payload := some 3)`.
+-/
+instance : Repr ExceptionalValue where
+  reprPrec value prec :=
+    let payloadArg (payload : Option Nat) :=
+      if payload.isSome then [reprNamedArg "payload" (repr payload)] else []
+    match value with
+    | .nan payload negative signaling =>
+        reprConstructor "nan"
+          (payloadArg payload ++ (if negative then [reprNamedArg "negative" "true"] else []) ++
+            (if signaling then [reprNamedArg "signaling" "true"] else []))
+          prec
+    | .notAReal => reprConstructor "notAReal" [] prec
+    | .reserved payload => reprConstructor "reserved" (payloadArg payload) prec
+    | .undefined => reprConstructor "undefined" [] prec
+
+/--
+The mathematical meaning of one encoded value.
+
+The sign on `infinity` is `true` for negative infinity. Signed finite zero, when a format
+distinguishes it, belongs to the finite semantic type: FloatLib's exact `Dyadic` representation,
+for example, stores the sign of a zero mantissa.
+-/
+inductive NumericalValue (α : Type u) where
+  /-- A finite value of the format's exact type. -/
+  | finite (value : α)
+  /-- An infinity, negative when `negative` is true. -/
+  | infinity (negative : Bool)
+  /-- A word with no numerical value, such as a NaN. -/
+  | exceptional (value : ExceptionalValue)
+  deriving DecidableEq, Repr
+
+namespace NumericalValue
+
+variable {α : Type u} {β : Type v} {γ : Type w}
+
+/--
+Text of a value: the scalar's own text, `inf` or `-inf`, `nan`, and `NaR`, `reserved` or
+`undefined` for the other exceptional values.
+-/
+instance [ToString α] : ToString (NumericalValue α) where
+  toString
+    | .finite x => toString x
+    | .infinity negative => if negative then "-inf" else "inf"
+    | .exceptional (.nan ..) => "nan"
+    | .exceptional .notAReal => "NaR"
+    | .exceptional (.reserved _) => "reserved"
+    | .exceptional .undefined => "undefined"
+
+/-- Apply a function to an ordinary value while preserving infinities and exceptional values. -/
+def map (f : α → β) : NumericalValue α → NumericalValue β
+  | .finite x => .finite (f x)
+  | .infinity sign => .infinity sign
+  | .exceptional e => .exceptional e
+
+/-- Mapping a finite value applies the supplied function to its mathematical payload. -/
+@[simp, grind =] theorem map_finite (f : α → β) (value : α) :
+    (NumericalValue.finite value).map f = .finite (f value) :=
+  rfl
+
+/-- Mapping preserves an infinity, including its sign. -/
+@[simp, grind =] theorem map_infinity (f : α → β) (negative : Bool) :
+    (NumericalValue.infinity negative).map f = .infinity negative :=
+  rfl
+
+/-- Mapping preserves an exceptional value because it has no ordinary payload to transform. -/
+@[simp, grind =] theorem map_exceptional (f : α → β) (value : ExceptionalValue) :
+    (NumericalValue.exceptional value).map f = .exceptional value :=
+  rfl
+
+/-- Extract the ordinary value, returning `none` for infinity or an exceptional encoding. -/
+def finite? : NumericalValue α → Option α
+  | .finite x => some x
+  | .infinity _ | .exceptional _ => none
+
+/-- Whether this semantic value is ordinary and finite. -/
+def isFinite : NumericalValue α → Bool
+  | .finite _ => true
+  | .infinity _ | .exceptional _ => false
+
+/-- Extracting the payload of a finite observation succeeds. -/
+@[simp, grind =] theorem finite?_finite (value : α) :
+    (NumericalValue.finite value).finite? = some value :=
+  rfl
+
+/-- Infinity has no finite payload. -/
+@[simp, grind =] theorem finite?_infinity (negative : Bool) :
+    (NumericalValue.infinity negative : NumericalValue α).finite? = none :=
+  rfl
+
+/-- An exceptional observation has no finite payload. -/
+@[simp, grind =] theorem finite?_exceptional (value : ExceptionalValue) :
+    (NumericalValue.exceptional value : NumericalValue α).finite? = none :=
+  rfl
+
+/-- A finite constructor is recognized as finite. -/
+@[simp, grind =] theorem isFinite_finite (value : α) :
+    (NumericalValue.finite value).isFinite = true :=
+  rfl
+
+/-- Infinity is not finite. -/
+@[simp, grind =] theorem isFinite_infinity (negative : Bool) :
+    (NumericalValue.infinity negative : NumericalValue α).isFinite = false :=
+  rfl
+
+/-- An exceptional observation is not finite. -/
+@[simp, grind =] theorem isFinite_exceptional (value : ExceptionalValue) :
+    (NumericalValue.exceptional value : NumericalValue α).isFinite = false :=
+  rfl
+
+/-- Mapping the identity function leaves every numerical value unchanged. -/
+@[simp, grind =] theorem map_id (x : NumericalValue α) : x.map id = x := by
+  cases x <;> rfl
+
+/-- Successive maps fuse into a single map of the composed function. -/
+@[simp, grind =] theorem map_comp (f : α → β) (g : β → γ) (x : NumericalValue α) :
+    (x.map f).map g = x.map (g ∘ f) := by
+  cases x <;> rfl
+
+/-- Extracting a finite payload commutes with mapping its scalar value. -/
+@[simp, grind =] theorem finite?_map (f : α → β) (x : NumericalValue α) :
+    (x.map f).finite? = x.finite?.map f := by
+  cases x <;> rfl
+
+end NumericalValue
+end FloatLib.Numerics

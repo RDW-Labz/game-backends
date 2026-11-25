@@ -1,0 +1,71 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Algebraic.Power.Runtime
+public import FloatLib.Floats.Formats.Posit.Algebraic.Root.Runtime
+public import FloatLib.Floats.Formats.Posit.Algebraic.Runtime
+public import FloatLib.Floats.Formats.Posit.Configured.Value.Runtime
+
+/-!
+# Configured posit algebraic functions
+
+Reciprocal square root, `hypot`, `fMM`, `rootN`, `powInt`, and `compound` run the exact rational
+algebraic kernels through the model codec of the selected carrier. Picking a storage plan adds no
+rounding. NaR and inputs outside the real domain behave as they do in the model operations.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats
+
+open FloatLib.Floats.Formats.Posit
+
+namespace ExecFloat.Posit
+
+variable {format : Format} {plan : Configured.StoragePlan format} {code : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec plan (Model format) code]
+
+local notation "Value" =>
+  FloatLib.Floats.ExecFloat (Configured.Family format code plan)
+
+/-- Posit Standard (2022), §5.5.
+Reciprocal square root, rounded once. Nonpositive inputs and NaR produce NaR. -/
+@[inline] def rSqrt (value : Value) : Value :=
+  ModelCodec.liftUnary (Model := Model format) (plan := plan) Model.rSqrt value
+
+/-- Posit Standard (2022), §5.6.
+Euclidean hypotenuse, rounded once after an exact sum of squares. NaR propagates. -/
+@[inline] def hypot (left right : Value) : Value :=
+  ModelCodec.liftBinary (Model := Model format) (plan := plan) Model.hypot left right
+
+/-- Posit Standard (2022), §5.7.
+Fused triple multiplication, with one final rounding and NaR propagation. -/
+@[inline] def fMM (left right third : Value) : Value :=
+  ModelCodec.liftTernary (Model := Model format) (plan := plan) Model.fMM left right third
+
+/-- Posit Standard (2022), §5.8.
+Integer root, rounded once, taking the signed real root for odd degrees. Degree zero, even
+roots of negative inputs, negative-degree roots of zero, and NaR inputs produce NaR. -/
+@[inline] def rootN (value : Value) (degree : Int) : Value :=
+  ModelCodec.liftUnary (Model := Model format) (plan := plan)
+    (fun x => Model.rootN x degree) value
+
+/-- Fixed integer power, rounded once. NaR and zero to a negative power produce NaR. -/
+@[inline] def powInt (value : Value) (exponent : Int) : Value :=
+  ModelCodec.liftUnary (Model := Model format) (plan := plan)
+    (fun x => Model.powInt x exponent) value
+
+/-- Posit Standard (2022), §5.8.
+Compound `(1 + x) ^ n`, rounding only the final result. NaR propagates, and `x = -1` with
+negative exponent produces NaR. Exponent zero gives one on every finite input. -/
+@[inline] def compound (value : Value) (exponent : Int) : Value :=
+  ModelCodec.liftUnary (Model := Model format) (plan := plan)
+    (fun x => Model.compound x exponent) value
+
+end ExecFloat.Posit
+end FloatLib.Floats

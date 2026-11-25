@@ -1,0 +1,44 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+
+/-!
+# Quotient and offset comparisons in ordered fields
+
+Comparing a quotient with a boundary is the same as testing a linear residual against zero, with the
+ordering reversed for a negative denominator. These identities let interval-based comparisons use
+subtraction and multiplication without building quotient intervals.
+
+Comparing `x - c` with a boundary is comparing `x` with the boundary plus `c`. Functions named
+`Minus1` use this to compare an unrounded value with shifted boundaries, so the subtraction is never
+rounded on its own.
+-/
+
+public section
+
+namespace FloatLib.Numerics
+
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+
+/-- A positive denominator preserves the ordering of the quotient's linear residual. -/
+theorem cmp_div_of_pos (s c b : α) (hc : 0 < c) :
+    cmp (s - b * c) 0 = cmp (s / c) b := by
+  simp only [cmp, cmpUsing, sub_lt_zero, sub_pos, div_lt_iff₀ hc, lt_div_iff₀ hc]
+
+/-- A negative denominator reverses the ordering of the quotient's linear residual. -/
+theorem cmp_div_of_neg (s c b : α) (hc : c < 0) :
+    (cmp (s - b * c) 0).swap = cmp (s / c) b := by
+  rw [cmp_swap]
+  simp only [cmp, cmpUsing, sub_lt_zero, sub_pos, div_lt_iff_of_neg hc, lt_div_iff_of_neg hc]
+
+/-- Subtracting a constant from the compared value adds it to the boundary. -/
+theorem cmp_sub_eq_cmp_add (x c b : α) : cmp (x - c) b = cmp x (b + c) := by
+  rw [← cmp_add_right (x - c) b c, sub_add_cancel]
+
+end FloatLib.Numerics

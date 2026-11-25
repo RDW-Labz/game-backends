@@ -1,0 +1,81 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Flocq.Calculation.Operations
+public import FloatLib.Floats.Formats.Flocq.Theory.Format.Formats
+public import FloatLib.Floats.Formats.Flocq.Theory.Format.Generic
+
+/-!
+# Exact Representations for Rounded Arithmetic
+
+A bound isn't enough for the error theorems on addition, multiplication, division, and square
+root. They also track the grid on which an intermediate value is exactly representable, and the
+lemmas below are the representation layer they share.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Flocq
+
+variable {β : Numerics.Radix} {fexp : ℤ → ℤ} [ValidExp fexp]
+
+/--
+Rounding a mantissa/exponent value can be represented using its original exponent.
+
+If the canonical exponent is no larger than the stored exponent, the input is already generic and
+rounding fixes it. Otherwise the rounded canonical mantissa is shifted by an integral radix power.
+This is the Lean counterpart of Flocq's `round_repr_same_exp`.
+-/
+theorem round_toReal_exists_same_exponent (rnd : ℝ → ℤ) [ValidRnd rnd]
+    (f : FloatRep β) :
+    ∃ m : ℤ,
+      round (β := β) (fexp := fexp) rnd (toReal f) =
+        toReal ({ mantissa := m, exponent := f.exponent } : FloatRep β) := by
+  let x := toReal f
+  let e' := cexp β fexp x
+  by_cases he : e' ≤ f.exponent
+  · refine ⟨f.mantissa, ?_⟩
+    have hx : GenericRepresentable β fexp x :=
+      genericRepresentable_of_toReal_of_cexp_le f x rfl he
+    simpa [x] using round_preserves_generic rnd x hx
+  · exact exists_int_mul_bpow_of_le β (rnd (scaledMantissa β fexp x)) (lt_of_not_ge he).le
+
+/-- The sum of two mantissa/exponent values has a representation at the smaller exponent. -/
+theorem toReal_add_exists_min_exponent (f g : FloatRep β) :
+    ∃ h : FloatRep β,
+      toReal f + toReal g = toReal h ∧
+      h.exponent = min f.exponent g.exponent := by
+  exact ⟨FloatRep.addExact f g, (FloatRep.toReal_addExact f g).symm,
+    FloatRep.align_exponent f g⟩
+
+/--
+An FLX sum is representable when it fits in `prec` radix digits relative to both operand
+representations. This is the common-grid lemma used by division and square-root residual proofs.
+-/
+theorem genericRepresentable_flx_add_of_repr_bounds (prec : ℤ) (hprec : 0 < prec)
+    (f g : FloatRep β) (x y : ℝ)
+    (hx : x = toReal f) (hy : y = toReal g)
+    (hxf : abs (x + y) < bpow β (prec + f.exponent))
+    (hyg : abs (x + y) < bpow β (prec + g.exponent)) :
+    @GenericRepresentable β (flxExp prec) (validExp_flx prec hprec) (x + y) := by
+  let : ValidExp (flxExp prec) := validExp_flx prec hprec
+  by_cases hzero : x + y = 0
+  · rw [hzero]
+    exact genericRepresentable_zero
+  obtain ⟨h, hsum, hexp⟩ := toReal_add_exists_min_exponent f g
+  have hrepr : x + y = toReal h := by simpa [hx, hy] using hsum
+  apply genericRepresentable_of_toReal_of_cexp_le h (x + y) hrepr
+  have hmagF : magnitude β (x + y) ≤ prec + f.exponent :=
+    magnitude_le_of_abs_lt_bpow β (x + y) _ hzero hxf
+  have hmagG : magnitude β (x + y) ≤ prec + g.exponent :=
+    magnitude_le_of_abs_lt_bpow β (x + y) _ hzero hyg
+  rw [hexp]
+  simp only [cexp, flxExp]
+  exact le_min (by linarith) (by omega)
+
+end FloatLib.Floats.Formats.Flocq

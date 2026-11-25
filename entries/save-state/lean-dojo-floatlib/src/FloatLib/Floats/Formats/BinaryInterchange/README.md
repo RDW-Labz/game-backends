@@ -1,0 +1,83 @@
+# Binary interchange
+
+We describe a binary format by its field widths, exponent bias, and encoding policy. `ExecFloat`
+provides the common executable interface, and `Model fmt` stores the exact `BitVec fmt.bitWidth`
+that the arithmetic specifications and proofs work with.
+
+Importing `FloatLib.Floats.Formats.BinaryInterchange` gives you executable arithmetic, and
+`.Semantics` adds the connection to rounded real operations. Our
+[theorem index](../../THEOREMS.md) collects the results, and the
+[backend guide](../../ExecFloat/Backends/README.md) shows which implementation runs each
+operation.
+
+Custom field widths use the same interface. Here's a 71-bit format:
+
+```lean
+abbrev X71 := ExecFloat.Binary (exponentBits := 11) (fractionBits := 59)
+```
+
+| Name | Exp | Frac | Bits |
+| --- | ---: | ---: | ---: |
+| `binary16` | 5 | 10 | 16 |
+| `bfloat16` | 8 | 7 | 16 |
+| `binary32` | 8 | 23 | 32 |
+| `binary64` | 11 | 52 | 64 |
+| `binary128` | 15 | 112 | 128 |
+| `binary256` | 19 | 236 | 256 |
+
+Shared algorithms take a `FloatFormat` descriptor. Besides IEEE, the encoding policies are
+`finiteMaxNaN`, `finiteUnsignedZero`, and `finite`, and `FloatFormat.custom` also lets you set
+the exponent bias yourself.
+
+## Operations and proof scope
+
+| Family | Status |
+| --- | --- |
+| `Proof.*_eq_spec` | every `FloatFormat` |
+| Field decode, classification, exact dyadics | every `FloatFormat` |
+| Real-number / Lean-model arithmetic refinement | IEEE (`fmt.isIEEE = true`); finite values |
+| Remainder, `roundToIntegral`, `scale`, `logB` | implemented with theorems |
+| Integer conversion | `DType`; IEEE needed for the real nearest-even theorem |
+| Quiet and signaling comparison predicates | shared IEEE truth tables; exact-order and invalid-flag theorems |
+| `totalOrder` / `totalOrderMag` | implemented with complete-representation order laws and configured bridges |
+| Decimal quantum operations | belong to the separate `DecimalInterchange` family |
+| Decimal interchange | proved BID/DPD codecs, arithmetic, comparisons, and explicit exception state in `DecimalInterchange` |
+| Text round trips | exact decimal and hexadecimal formatting/parsing theorems for finite conventional IEEE values; `nan` formatting drops sign/payload |
+| Elementary approximation kernels (`exp`, `log`, trig) | named import `Configured.Transcendentals` (or the model barrel); representation bridges, with no general real-error bound |
+| Certified `exp`, `log`, `pow`, `expm1`, `logp1` | the same import, in the namespace `ExecFloat.Binary.Certified`. Each `.ok` result is finite and correctly rounded, and a failure names its reason |
+| Total correctly rounded `exp`, `log`, `expm1`, `logp1`, `expMul` | named import `Configured.CorrectlyRounded` (the `MathFunctions` dictionary and scoped instance for configured values come with `Configured.Transcendentals`, for `Model` with `Transcendentals`); IEEE, with no budget premise: on a finite input in the domain, correctly rounded when the exact result is below the overflow threshold in magnitude, and otherwise the infinity with its sign. Generic code gets these `exp` and `log` through `MathFunctions` only by opting in: `open scoped FloatLib.Floats.Formats.BinaryInterchange.CorrectlyRoundedMath`, or the dictionary `CorrectlyRounded.mathFunctions` |
+| The recommended functions of IEEE 754-2019 §9.2 and `pow` | named import `Configured.CorrectlyRounded`, in the namespace `ExecFloat.Binary.CorrectlyRounded` (`Model.Transcendentals.CorrectlyRounded` for the descriptor model): each returns the value with its exception flags in the direction `mode`, with no budget. For every format descriptor, at finite operands in the domain, the value is the correct rounding in every direction, and the five flags are proved, `overflow` and `underflow` where the real value is not zero. The results at infinities, NaNs and outside the domains are definitions without a theorem |
+| Mixed relative and absolute error | `Analysis.MixedError` and `Configured.MixedError`; IEEE, finite values: operations and left-to-right sums under the premises each theorem states. Exact results by decoded value sit with the arithmetic semantics |
+| Error bounds inferred from code | named import `Tactic.Roundoff`: the `roundoff` tactic and `roundoff [mixed] theorem`, conditional bounds over scalars and over the supported traversals and operations of lists, arrays, vectors, functions on `Fin n`, matrices and registered containers; the generated conditions remain to be proved |
+
+For an IEEE descriptor, `Model.pow` is correctly rounded for a finite base and a finite
+integral exponent whenever its result is finite (`Model.Power.toReal_pow_of_eq_intCast`). A
+finite positive base with any other finite exponent goes to the certified enclosure search
+`Model.Transcendentals.Certified.pow`, and the result is correctly rounded whenever that search
+settles (`Model.Power.pow_spec_of_certified`). A certified overflow gives positive infinity, the
+format's overflow result. Most exact results on a rounding boundary and an exhausted search fall
+back to `exp (y * log x)`.
+
+## Overflow by encoding
+
+In the table below, `maxFinite` takes the sign of the exact result and `Model.invalidResult`
+selects the format's invalid-result encoding. "Away from zero" is IEEE 754-2019 §7.4. With
+`overflow := .saturate` you always get signed `maxFinite`, and `underflow := .flushToZero`
+replaces a subnormal by zero, keeping its sign when the encoding has a signed zero.
+
+| Encoding | Overflow, nearest | Toward zero | Toward ±∞ | `x / 0` (finite nonzero) | Invalid |
+| --- | --- | --- | --- | --- | --- |
+| `.ieee` | signed ∞ | signed `maxFinite` | ∞ if away from zero, else `maxFinite` | signed ∞ | canonical qNaN |
+| `.finiteMaxNaN` | NaN word | signed `maxFinite` | NaN if away from zero, else `maxFinite` | NaN word | NaN word |
+| `.finiteUnsignedZero` | NaN word (negative-zero pattern) | signed `maxFinite` | same as `.finiteMaxNaN` | NaN word | NaN word |
+| `.finite` | signed `maxFinite` | signed `maxFinite` | signed `maxFinite` | signed `maxFinite` | `+0` |
+
+`.finite` has no NaN at all, so if the invalid flag matters, use the status-bearing operations.
+The other two finite-only policies reserve a NaN encoding, as the table shows.
+
+Ordinary notation rounds to nearest-even. For another direction, every operation takes
+`(mode := ...)`, and `(status := true)` returns the value with its flags and ternary value.
+`Model.Interval fmt` uses directed kernels. Addition, subtraction, multiplication and division
+give `whole fmt` when a denominator contains zero or the computed endpoints are NaN or unordered.
+The other operations keep their endpoints as computed, a NaN included, except that square root
+clips a lower endpoint below zero to `+0`, so `sqrt [-1, 4]` is `[0, 2]`.

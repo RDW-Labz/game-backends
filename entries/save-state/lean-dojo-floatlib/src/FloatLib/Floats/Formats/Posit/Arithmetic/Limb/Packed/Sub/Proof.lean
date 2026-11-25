@@ -1,0 +1,54 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Arithmetic.Limb.Arithmetic.Runtime
+public import FloatLib.Floats.Formats.Posit.Arithmetic.Limb.Packed.SignedSum.Proof
+public import FloatLib.Floats.Formats.Posit.Arithmetic.Limb.Packed.Sub.Runtime
+public import Mathlib.Analysis.Real.Sqrt
+
+/-!
+# Refinement of direct packed-pair posit subtraction
+
+Packed subtraction stays inside the posit encoding range, and its complete result agrees with
+the two-limb subtraction kernel, exceptional operands included.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Posit.Model.NativeLimbPacked
+
+open FloatLib.Numerics
+
+variable {format : Format}
+
+/-- Every direct packed-subtraction result is a valid complete posit encoding. -/
+theorem subCode_lt_modulus
+    (heligible : NativeLimb.Eligible format)
+    (left right : FloatLib.Numerics.FixedWord.UInt128) :
+    (subCode heligible left right).toNat < format.modulus := by
+  unfold subCode
+  rw [SignedSum.subWordsCodeWord_toNat]
+  exact Boundary.binaryCode_roundCodeNat_lt_modulus heligible
+    FloatLib.Numerics.Dyadic.sub _ _
+
+/-- Direct packed subtraction re-encodes to the model-valued two-limb kernel. -/
+theorem ofNatBits_subCode_eq_sub
+    (heligible : NativeLimb.Eligible format)
+    (left right : FloatLib.Numerics.FixedWord.UInt128)
+    (hleft : left.toNat < format.modulus)
+    (hright : right.toNat < format.modulus) :
+    Model.ofNatBits (subCode heligible left right).toNat =
+      NativeLimbArithmetic.sub heligible
+        (Model.ofNatBits (format := format) left.toNat)
+        (Model.ofNatBits (format := format) right.toNat) := by
+  unfold subCode NativeLimbArithmetic.sub
+  rw [SignedSum.subWordsCodeWord_toNat]
+  exact Boundary.ofNatBits_binaryCode_roundCodeNat heligible
+    FloatLib.Numerics.Dyadic.sub left right hleft hright
+
+end FloatLib.Floats.Formats.Posit.Model.NativeLimbPacked

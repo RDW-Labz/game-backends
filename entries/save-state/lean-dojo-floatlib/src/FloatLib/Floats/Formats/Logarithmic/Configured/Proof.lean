@@ -1,0 +1,62 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Logarithmic.Configured.Runtime
+
+/-!
+# Correctness of configured exact logarithmic operations
+
+Wrapping is an equivalence with the complete code, and zero denotes real zero. For
+multiplication, the product of two values decodes to the product of their real values, with
+nothing rounded.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.ExecFloat.Logarithmic
+
+open FloatLib.Numerics
+
+variable {radix : Radix}
+
+/-- Unwrapping a freshly wrapped logarithmic code returns the original code. -/
+@[simp, grind =] theorem toCode_ofCode (code : Formats.Logarithmic.Code radix) :
+    toCode (ofCode code) = code :=
+  rfl
+
+/-- Rewrapping the code of a logarithmic value returns the original value. -/
+@[simp, grind =] theorem ofCode_toCode (value : ExecFloat.Logarithmic radix) :
+    ofCode value.toCode = value :=
+  ExecFloat.ofRaw_raw value
+
+/-- The distinguished logarithmic zero code denotes real zero. -/
+@[simp, grind =] theorem toReal_zero :
+    toReal (zero : ExecFloat.Logarithmic radix) = 0 :=
+  Formats.Logarithmic.Code.toReal_zero radix
+
+/-- The product of two logarithmic values decodes to the product of their real values. -/
+@[simp, grind =] theorem toReal_mul (left right : ExecFloat.Logarithmic radix) :
+    toReal (mul left right) = toReal left * toReal right :=
+  Formats.Logarithmic.Code.toReal_mul left.toCode right.toCode
+
+/-- The distinguished logarithmic zero code reads as the rational zero. -/
+@[simp, grind =] theorem toRat_zero :
+    toRat (zero : ExecFloat.Logarithmic radix) = 0 :=
+  Formats.Logarithmic.Code.toRat_zero radix
+
+/-- The exact rational reading agrees with the real semantics. -/
+@[simp, grind =, norm_cast] theorem cast_toRat (value : ExecFloat.Logarithmic radix) :
+    (value.toRat : ℝ) = value.toReal :=
+  Formats.Logarithmic.Code.cast_toRat value.toCode
+
+/-- The product of two logarithmic values reads as the product of their rational readings. -/
+@[simp, grind =] theorem toRat_mul (left right : ExecFloat.Logarithmic radix) :
+    toRat (mul left right) = toRat left * toRat right :=
+  Formats.Logarithmic.Code.toRat_mul left.toCode right.toCode
+
+end FloatLib.Floats.ExecFloat.Logarithmic

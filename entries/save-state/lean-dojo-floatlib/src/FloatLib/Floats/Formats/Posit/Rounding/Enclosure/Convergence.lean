@@ -1,0 +1,137 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Rounding.Enclosure.Proof
+public import FloatLib.Numerics.Enclosure.Elementary.Convergence
+public import Mathlib.NumberTheory.Real.Irrational
+
+import FloatLib.Numerics.Enclosure.Elementary.Irrational
+
+/-!
+# Eventual acceptance of converging posit enclosures
+
+Every comparison in posit rounding is against a rational boundary, so near an irrational target
+the rounded code doesn't change, and rational endpoints converging to it eventually agree. That
+leaves a caller two things to prove: the enclosure algorithm converges, and its target misses every
+rational boundary. For the exponential both hold at every nonzero rational argument
+(`eventually_roundPositive?_exp`). Any other function, or an exact case such as `exp 0 = 1`, needs
+its own irrationality theorem or exact-case handler before this gives a total elementary
+operation.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats.Formats.Posit.Model.Enclosure
+
+open Filter FloatLib.Numerics
+open scoped Topology
+
+private theorem eventually_rat_comparisons {x : ℝ} (hx : Irrational x) (q : ℚ) :
+    ∀ᶠ y in 𝓝 x,
+      (y ≤ (q : ℝ) ↔ x ≤ (q : ℝ)) ∧
+      (y < (q : ℝ) ↔ x < (q : ℝ)) ∧
+      ((q : ℝ) < y ↔ (q : ℝ) < x) := by
+  rcases lt_or_gt_of_ne (hx.ne_rat q) with hlt | hgt
+  · filter_upwards [eventually_lt_nhds hlt] with y hy
+    simp [hlt, hy, hlt.le, hy.le, not_lt_of_ge hlt.le, not_lt_of_ge hy.le]
+  · filter_upwards [eventually_gt_nhds hgt] with y hy
+    simp [hgt, hy, not_le_of_gt hgt, not_le_of_gt hy,
+      not_lt_of_ge hgt.le, not_lt_of_ge hy.le]
+
+private theorem eventually_decide_rat_le_eq {x : ℝ} (hx : Irrational x) (q : ℚ) :
+    ∀ᶠ y in 𝓝 x, decide ((q : ℝ) ≤ y) = decide ((q : ℝ) ≤ x) := by
+  filter_upwards [eventually_rat_comparisons hx q] with y hy
+  exact decide_eq_decide.mpr (by rw [← not_lt, hy.2.1, not_lt])
+
+private theorem eventually_bisection_eq (format : Format) {x : ℝ} (hx : Irrational x)
+    (steps lower upper : Nat) :
+    ∀ᶠ y in 𝓝 x,
+      Numerics.bisect
+        (fun code => decide (RealRounding.nonnegativeRealAt format code ≤ y))
+        steps lower upper =
+      Numerics.bisect
+        (fun code => decide (RealRounding.nonnegativeRealAt format code ≤ x))
+        steps lower upper := by
+  induction steps generalizing lower upper with
+  | zero => exact Eventually.of_forall fun _ => rfl
+  | succ steps ih =>
+      by_cases hsplit : lower + 1 < upper
+      · have hguard : ∀ᶠ y in 𝓝 x,
+            decide (RealRounding.nonnegativeRealAt format ((lower + upper) / 2) ≤ y) =
+              decide (RealRounding.nonnegativeRealAt format ((lower + upper) / 2) ≤ x) :=
+          eventually_decide_rat_le_eq hx
+            (Model.nonnegativeRatAt format ((lower + upper) / 2))
+        filter_upwards [hguard, ih ((lower + upper) / 2) upper,
+          ih lower ((lower + upper) / 2)] with y hy hleft hright
+        simp only [Numerics.bisect, ite_eq_left hsplit]
+        simp only [hy, hleft, hright]
+      · exact Eventually.of_forall fun _ => by
+          simp only [Numerics.bisect, ite_eq_right hsplit]
+
+/-- The finite lower-code search is locally constant at every irrational target. -/
+theorem eventually_lowerCode_eq (format : Format) {x : ℝ} (hx : Irrational x) :
+    ∀ᶠ y in 𝓝 x, RealRounding.lowerCode format y = RealRounding.lowerCode format x :=
+  eventually_bisection_eq format hx format.bits 0 format.signMaskNat
+
+/-- Standard posit rounding is locally constant at every irrational real target. -/
+theorem eventually_roundPositiveCode_eq (format : Format) {x : ℝ} (hx : Irrational x) :
+    ∀ᶠ y in 𝓝 x,
+      RealRounding.roundPositiveCode format y = RealRounding.roundPositiveCode format x := by
+  have hzero : ∀ᶠ y in 𝓝 x, (y ≤ 0 ↔ x ≤ 0) := by
+    filter_upwards [eventually_rat_comparisons hx 0] with y hy
+    simpa only [Rat.cast_zero] using hy.1
+  have hminimum : ∀ᶠ y in 𝓝 x,
+      (y < RealRounding.minPositive format ↔ x < RealRounding.minPositive format) := by
+    filter_upwards [eventually_rat_comparisons hx (Model.minPositiveRat format)] with y hy
+    exact hy.2.1
+  have hthreshold : ∀ᶠ y in 𝓝 x,
+      (y < RealRounding.roundingThreshold format (RealRounding.lowerCode format x) ↔
+        x < RealRounding.roundingThreshold format (RealRounding.lowerCode format x)) ∧
+      (RealRounding.roundingThreshold format (RealRounding.lowerCode format x) < y ↔
+        RealRounding.roundingThreshold format (RealRounding.lowerCode format x) < x) := by
+    filter_upwards [eventually_rat_comparisons hx
+      (Model.roundingThreshold format (RealRounding.lowerCode format x))] with y hy
+    exact hy.2
+  filter_upwards [eventually_lowerCode_eq format hx, hzero, hminimum, hthreshold]
+    with y hlower hzero hminimum hthreshold
+  simp only [RealRounding.roundPositiveCode, hlower, hzero, hminimum,
+    hthreshold.1, hthreshold.2]
+
+/--
+Converging rational endpoints eventually certify the posit rounding of an irrational target.
+
+This eventual statement doesn't need containment, because convergence alone puts both endpoints
+in a neighborhood where rounding is constant. Containment is what certifies each accepted result,
+including any accepted before that neighborhood is reached.
+-/
+theorem eventually_roundPositive?_eq_some (format : Format)
+    {intervals : Nat → RationalInterval} {x : ℝ} (hx : Irrational x)
+    (hlo : Tendsto (fun n => ((intervals n).lo : ℝ)) atTop (𝓝 x))
+    (hhi : Tendsto (fun n => ((intervals n).hi : ℝ)) atTop (𝓝 x)) :
+    ∀ᶠ n in atTop,
+      roundPositive? format (intervals n) = some (RealRounding.roundPositive format x) := by
+  have hround := eventually_roundPositiveCode_eq format hx
+  filter_upwards [hlo.eventually hround, hhi.eventually hround] with n hlower hupper
+  rw [RealRounding.roundPositiveCode_ratCast] at hlower hupper
+  simp [roundPositive?, hlower, hupper, RealRounding.roundPositive]
+
+/--
+At every nonzero rational argument the rational Taylor enclosures of the exponential eventually
+resolve its posit rounding. There `exp x` is irrational (`irrational_exp_ratCast`). The exact
+case `x = 0`, where `exp 0 = 1`, is not covered by this theorem.
+-/
+theorem eventually_roundPositive?_exp (format : Format) (x : ℚ) (hx : x ≠ 0) :
+    ∀ᶠ degree in atTop,
+      roundPositive? format (FloatLib.Numerics.Enclosure.exp x degree) =
+        some (RealRounding.roundPositive format (Real.exp (x : ℝ))) :=
+  eventually_roundPositive?_eq_some format
+    (FloatLib.Numerics.Enclosure.irrational_exp_ratCast x hx)
+    (FloatLib.Numerics.Enclosure.tendsto_exp_lo x)
+    (FloatLib.Numerics.Enclosure.tendsto_exp_hi x)
+
+end FloatLib.Floats.Formats.Posit.Model.Enclosure

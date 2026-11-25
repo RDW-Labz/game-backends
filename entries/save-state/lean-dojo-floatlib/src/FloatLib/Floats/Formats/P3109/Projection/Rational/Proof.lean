@@ -1,0 +1,119 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.P3109.Projection.Correctness
+public import FloatLib.Floats.Formats.P3109.Projection.Rational.Direction
+
+/-!
+# Correctness of exact-rational P3109 projection
+
+Most of the work is imported. The rational semantics prove the report's exact quantum, floor,
+parity, and selection formulas, with direction and error theorems for the deterministic modes and
+selection correctness for every supplied stochastic word. This file adds the proof that the result
+always fits the direct encoder's precision grid, and then reuses the saturation-and-encoding
+theorem of dyadic projection.
+
+The logarithm bound imported here is a theorem about exact natural-number quotients. The P3109
+runtime doesn't depend on the binary-interchange representation or policy.
+-/
+
+@[expose] public section
+
+open FloatLib.Numerics
+
+namespace FloatLib.Floats.Formats.P3109
+namespace Format
+
+/--
+Exact-rational precision rounding always lands on the descriptor's direct-encoding grid.
+
+The proof is uniform in width, precision, signedness, domain, rounding mode, and stochastic bit
+width. Every mode chooses one of the two adjacent integer candidates at the same exact quantum.
+-/
+theorem roundFiniteRatToPrecision_fitsPrecisionGrid
+    (format : Format) (mode : RoundingMode) (exact : Rat) :
+    format.FitsPrecisionGrid
+      (format.roundFiniteRatToPrecision mode exact) := by
+  unfold roundFiniteRatToPrecision
+  simp only [beq_iff_eq]
+  split
+  next hzero =>
+    exact Or.inl rfl
+  next hzero =>
+    let numerator := exact.num.natAbs
+    let leadingExponent :=
+      Numerics.RationalBinary.floorLog2 numerator exact.den
+    let quantumExponent :=
+      max leadingExponent format.minimumNormalExponent -
+        Int.ofNat format.precision + 1
+    let scaled :=
+      Numerics.RationalBinary.scaleByPowerOfTwo
+        numerator exact.den (-quantumExponent)
+    let lower := scaled.1 / scaled.2
+    let rounded :=
+      if Internal.roundRationalAway format mode (exact.num < 0)
+          quantumExponent lower (scaled.1 % scaled.2) scaled.2 then
+        lower + 1
+      else
+        lower
+    have hlower :
+        lower < 2 ^ format.precision := by
+      simpa [lower, scaled, quantumExponent, leadingExponent, numerator] using
+        RationalRounding.quotientFloor_lt_precision format.precision
+          format.minimumNormalExponent numerator exact.den exact.den_nz
+    have hrounded :
+        rounded ≤ 2 ^ format.precision := by
+      unfold rounded
+      split <;> omega
+    have hquantum :
+        format.minimumQuantumExponent ≤ quantumExponent := by
+      unfold quantumExponent
+      exact format.quantumExponent_lower leadingExponent
+    exact format.fitsPrecisionGrid_of_rounded (exact.num < 0) hrounded hquantum
+
+/--
+Decoding exact-rational projection returns its round-then-saturate datum.
+
+The encoding theorem is shared with dyadic projection, so the only new step is that rational
+rounding lands on the precision grid.
+-/
+theorem sameDatum_decode_projectRatCode
+    (format : Format) (policy : ProjectionPolicy)
+    (value : NumericalValue Rat) :
+    SameDatum
+      (format.decode (format.projectRatCode policy value))
+      (format.projectRatValue policy value) := by
+  unfold projectRatCode projectRatValue
+  apply format.sameDatum_decode_encodeSaturate
+  cases value with
+  | finite exact =>
+      exact format.roundFiniteRatToPrecision_fitsPrecisionGrid
+        policy.rounding exact
+  | infinity _ =>
+      trivial
+  | exceptional _ =>
+      trivial
+
+end Format
+end FloatLib.Floats.Formats.P3109
+
+namespace FloatLib.Floats.ExecFloat.P3109
+
+variable {format : Formats.P3109.Format}
+
+/-- Decoding `projectRat` gives the P3109 rational round-then-saturate specification. -/
+theorem decode_projectRat
+    (value : NumericalValue Rat)
+    (mode : Formats.P3109.RoundingMode) (saturation : Formats.P3109.SaturationMode) :
+    Formats.P3109.Format.SameDatum
+      (decode (projectRat (format := format) value mode saturation))
+      (format.projectRatValue { rounding := mode, saturation } value) := by
+  rw [decode_eq_format_decode]
+  exact Formats.P3109.Format.sameDatum_decode_projectRatCode format _ value
+
+end FloatLib.Floats.ExecFloat.P3109

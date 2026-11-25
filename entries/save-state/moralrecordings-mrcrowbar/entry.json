@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:03:58Z",
+ "category": "save-state",
+ "commit": "2026-01-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "moralrecordings/mrcrowbar \u2014 A library and model framework for reverse engineering binary file formats",
+ "language": "python",
+ "license": "BSD-3-Clause",
+ "license_verdict": "clean",
+ "name": "mrcrowbar",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-3-Clause)",
+ "slug": "moralrecordings-mrcrowbar",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 55,
+ "system": "A library and model framework for reverse engineering binary file formats",
+ "upstream": "https://github.com/moralrecordings/mrcrowbar",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

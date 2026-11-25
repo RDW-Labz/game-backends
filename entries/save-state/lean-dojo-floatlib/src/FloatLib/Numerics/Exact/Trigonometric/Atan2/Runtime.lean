@@ -1,0 +1,70 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+/-
+-- architecture: allow-proof-imports
+Adaptive argument comparison uses an erased proof that rational enclosures eventually separate.
+-/
+
+module
+
+public import FloatLib.Numerics.Exact.Trigonometric.Atan2.Enclosure.Proof
+public import FloatLib.Numerics.Exact.Trigonometric.Pi.Runtime
+
+/-!
+# Exact comparisons for two-coordinate arctangent
+
+We take the input as `(x, y)`, for the principal argument of `x + i*y` in `(-π, π]`. C and MPFR
+write `atan2 (y, x)`, so a wrapper in that convention swaps the coordinates once, before preparing
+the comparator. The point `(-1, 0)` has argument π, which makes `prepareAtan2 (-1) 0` an exact π
+comparator, and ordinary comparisons share reduced arctangent and π enclosures across rounding
+boundaries. Comparisons in units of π use the exact rational quadrant shift and the pi-scaled
+arctangent comparator, including its rational special values.
+
+Both comparators use zero as the value at the origin, as Mathlib's totalized argument does, and
+Posit wrappers have to reject `(0, 0)` before rounding, because the Posit Standard requires it.
+
+## Reference
+
+* Posit Standard (2022), §5.5 and footnote 11, https://posithub.org/docs/posit_standard-2.pdf
+-/
+
+@[expose] public section
+
+namespace FloatLib.Numerics.TrigonometricComparison
+
+/--
+Prepare comparisons of `arg (x + i*y)` with rational boundaries.
+The first `levels` enclosure depths are cached, and refinement past that prefix is unbounded.
+-/
+def prepareAtan2 (x y : ℚ) (levels : Nat) : Enclosure.Comparison.Prepared :=
+  if hzero : 0 ≤ x ∧ y = 0 then .direct (fun boundary => cmp 0 boundary)
+  else
+    let intervals := Enclosure.Comparison.cacheIntervals
+      (fun n => atan2Interval x y (2 ^ n)) levels
+    .enclosed intervals (fun boundary => by
+      simpa only [intervals, Enclosure.Comparison.cacheIntervals_apply] using
+        exists_atan2_separating x y boundary hzero)
+
+/-- Compare the principal argument of `x + i*y` with a rational radian boundary. -/
+def compareAtan2 (x y boundary : ℚ) : Ordering :=
+  (prepareAtan2 x y 0).compare boundary
+
+/--
+Prepare comparisons of `arg (x + i*y) / π`, using an exact rational quadrant shift.
+No rounded approximation of π and no intermediate rounding enter the comparison.
+-/
+def prepareAtan2Pi (x y : ℚ) (levels : Nat) : Enclosure.Comparison.Prepared :=
+  let reduced := atan2Reduction x y
+  let arctangent := prepareArctanPi reduced.1 levels
+  let shift := reduced.2 / 4
+  .direct (fun boundary => arctangent.compare (boundary - shift))
+
+/-- Compare the principal argument of `x + i*y`, divided by π, with a rational boundary. -/
+def compareAtan2Pi (x y boundary : ℚ) : Ordering :=
+  (prepareAtan2Pi x y 0).compare boundary
+
+end FloatLib.Numerics.TrigonometricComparison

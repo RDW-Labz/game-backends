@@ -1,0 +1,41 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Configured.Storage.Family.Proof
+
+/-!
+# Fundamental configured posit constants
+
+Arithmetic, the standard functions, conformance proofs, and the public API all need zero and NaR.
+We define both constants here, below every one of those layers, so all clients share the same
+definitions and no import cycle appears.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats
+
+open FloatLib.Floats.Formats.Posit
+
+namespace ExecFloat.Posit
+
+variable {format : Format} {plan : Configured.StoragePlan format} {code : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec plan (Model format) code]
+
+/-- Construct the unique posit zero. -/
+@[inline] def zero :
+    FloatLib.Floats.ExecFloat (Configured.Family format code plan) :=
+  Configured.Family.ofModel (Model.zero format)
+
+/-- Construct the unique posit Not-a-Real value. -/
+@[inline] def nar :
+    FloatLib.Floats.ExecFloat (Configured.Family format code plan) :=
+  Configured.Family.ofModel (Model.nar format)
+
+end ExecFloat.Posit
+end FloatLib.Floats

@@ -1,0 +1,55 @@
+/-
+Copyright (c) 2026 FloatLib. All rights reserved.
+Released under MIT license as described in the file LICENSE.
+Authors: FloatLib Team
+-/
+
+module
+
+public import FloatLib.Floats.Formats.Posit.Configured.Value.Runtime
+public import FloatLib.Floats.Formats.Posit.Elementary.Runtime
+
+/-!
+# Configured natural posit elementary functions
+
+These are the natural exponential and logarithm, with their `expMinus1` and `logPlus1` forms.
+Every lawful configured carrier runs the same correctly rounded model operation, and the codec
+changes only how the result is stored, with no intermediate rounding.
+-/
+
+@[expose] public section
+
+namespace FloatLib.Floats
+
+open FloatLib.Floats.Formats.Posit
+
+namespace ExecFloat.Posit
+
+variable {format : Format} {plan : Configured.StoragePlan format} {code : Type}
+    [FloatLib.Floats.ExecFloat.ModelCodec plan (Model format) code]
+
+local notation "Value" =>
+  FloatLib.Floats.ExecFloat (Configured.Family format code plan)
+
+/-- Posit Standard (2022), §5.5.
+Correctly rounded natural exponential. NaR propagates. -/
+@[inline] def exp (value : Value) : Value :=
+  ModelCodec.liftUnary (Model := Model format) (plan := plan) Model.exp value
+
+/-- Posit Standard (2022), §5.5.
+Exact exponential minus one, with a single final posit rounding. -/
+@[inline] def expMinus1 (value : Value) : Value :=
+  ModelCodec.liftUnary (Model := Model format) (plan := plan) Model.expMinus1 value
+
+/-- Posit Standard (2022), §5.5.
+Correctly rounded natural logarithm. NaR and nonpositive inputs produce NaR. -/
+@[inline] def log (value : Value) : Value :=
+  ModelCodec.liftUnary (Model := Model format) (plan := plan) Model.log value
+
+/-- Posit Standard (2022), §5.5.
+Natural logarithm of exact `1 + x`, with a single final posit rounding. -/
+@[inline] def logPlus1 (value : Value) : Value :=
+  ModelCodec.liftUnary (Model := Model format) (plan := plan) Model.logPlus1 value
+
+end ExecFloat.Posit
+end FloatLib.Floats
