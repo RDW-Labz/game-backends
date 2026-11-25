@@ -3239,3 +3239,6 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/arthur-moebios-npshophomebrew
   - reference save-state/ark-mod-arksavegametoolkitnet
   - reference save-state/lamadaemon-phigros-save-manager
+
+- **2026-11-25 13:47 UTC** — tick 867: +1 screened, +0 reference, 11 skipped, catalogue=1663
+  - added save-state/horizon-25-game-booster (none, reference)

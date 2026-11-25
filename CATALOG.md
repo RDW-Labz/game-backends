@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 13:31 UTC · 1662 entries · 422 vendored, 1240 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 13:47 UTC · 1663 entries · 422 vendored, 1241 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-25 13:31 UTC · 1662 entries · 422 vendored, 1240 reference-
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
-| [save-state](#save-state) — Save / state systems | 103 | 29 | 74 |
+| [save-state](#save-state) — Save / state systems | 104 | 29 | 75 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
 
 
@@ -1494,7 +1494,7 @@ _Generated 2026-11-25 13:31 UTC · 1662 entries · 422 vendored, 1240 reference-
 
 ## save-state
 
-**Save / state systems** — 103 entries
+**Save / state systems** — 104 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1538,6 +1538,7 @@ _Generated 2026-11-25 13:31 UTC · 1662 entries · 422 vendored, 1240 reference-
 | [Freeciv — savegame](entries/save-state/freeciv-savegame/README.md) | persistence: save/load, snapshot or state serialisation | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [FTC-Skystone-Dark-Angels-Romania-2020](entries/save-state/chrisneagu-ftc-skystone-dark-angels-romania-2020/README.md) | NOTICE This repository contains the public FTC SDK for the SKYSTONE (2019-2020) competition season. If you are looking for the current season's FTC SDK software | java | BSD-3-Clause | vendored | [chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020](https://github.com/chrisneagu/FTC-Skystone-Dark-Angels-Romania-2020) @ `b5132793582a` |
 | [fx-gltf](entries/save-state/jessey-git-fx-gltf/README.md) | A C++14/C++17 header-only library for simple, efficient, and robust serialization/deserialization of glTF 2.0 | c++ | MIT | reference | [jessey-git/fx-gltf](https://github.com/jessey-git/fx-gltf) @ `2022-01-01 (branch tip at catalogue time)` |
+| [Game-Booster](entries/save-state/horizon-25-game-booster/README.md) | Game Booster is a futuristic optimization tool that uses Shizuku to execute low-level system tuning without root. It features a Cyberpunk-styled dashboard with  | kotlin | none | reference | [Horizon-25/Game-Booster](https://github.com/Horizon-25/Game-Booster) @ `ac275e3f808a` |
 | [GameboyPrinterPaperSimulation](entries/save-state/raphael-boichot-gameboyprinterpapersimulation/README.md) | Overlay for Game Boy Printer emulator with e-paper feature and complete support, hints and savestates for the 110 compatible games ! | c++ | GPL-3.0 | reference | [Raphael-Boichot/GameboyPrinterPaperSimulation](https://github.com/Raphael-Boichot/GameboyPrinterPaperSimulation) @ `54273a1399ca` |
 | [geojson](entries/save-state/georust-geojson/README.md) | Library for serializing the GeoJSON vector GIS file format | rust | Apache-2.0 | reference | [georust/geojson](https://github.com/georust/geojson) @ `2026-11-18 (branch tip at catalogue time)` |
 | [glaze](entries/save-state/stephenberry-glaze/README.md) | Extremely fast, in memory, serialization, reflection, and RPC library for C++. JSON, BEVE, BSON, CBOR, CSV, JSONB, MessagePack, TOML, YAML, EETF | c++ | MIT | reference | [stephenberry/glaze](https://github.com/stephenberry/glaze) @ `2026-11-13 (branch tip at catalogue time)` |
