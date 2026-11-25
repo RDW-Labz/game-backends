@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T13:31:55Z",
+ "category": "save-state",
+ "commit": "2022-12-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ark-mod/ArkSavegameToolkitNet \u2014 Library for reading ARK Survival Evolved savegame files using C#.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ArkSavegameToolkitNet",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ark-mod-arksavegametoolkitnet",
+ "source": "github-search:save game library stars:>10",
+ "stars": 22,
+ "system": "Library for reading ARK Survival Evolved savegame files using C#.",
+ "upstream": "https://github.com/ark-mod/ArkSavegameToolkitNet",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

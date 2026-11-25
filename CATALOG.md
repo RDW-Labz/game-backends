@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 13:15 UTC · 1656 entries · 422 vendored, 1234 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 13:31 UTC · 1662 entries · 422 vendored, 1240 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-25 13:15 UTC · 1656 entries · 422 vendored, 1234 reference-
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
-| [save-state](#save-state) — Save / state systems | 97 | 29 | 68 |
+| [save-state](#save-state) — Save / state systems | 103 | 29 | 74 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
 
 
@@ -1494,13 +1494,14 @@ _Generated 2026-11-25 13:15 UTC · 1656 entries · 422 vendored, 1234 reference-
 
 ## save-state
 
-**Save / state systems** — 97 entries
+**Save / state systems** — 103 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [abomonation](entries/save-state/timelydataflow-abomonation/README.md) | A mortifying serialization library for Rust | rust | MIT | vendored | [TimelyDataflow/abomonation](https://github.com/TimelyDataflow/abomonation) @ `c2b23534549a` |
 | [alkahest](entries/save-state/zakarumych-alkahest/README.md) | Fantastic serialization library | rust | unknown | reference | [zakarumych/alkahest](https://github.com/zakarumych/alkahest) @ `2026-10-28 (branch tip at catalogue time)` |
 | [alpaca](entries/save-state/p-ranav-alpaca/README.md) | Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code | c++ | MIT | vendored | [p-ranav/alpaca](https://github.com/p-ranav/alpaca) @ `8f022bdb5106` |
+| [ArkSavegameToolkitNet](entries/save-state/ark-mod-arksavegametoolkitnet/README.md) | Library for reading ARK Survival Evolved savegame files using C#. | c# | MIT | reference | [ark-mod/ArkSavegameToolkitNet](https://github.com/ark-mod/ArkSavegameToolkitNet) @ `2022-12-07 (branch tip at catalogue time)` |
 | [atom](entries/save-state/rust-syndication-atom/README.md) | Library for serializing the Atom web content syndication format https://crates.io/crates/atom_syndication | rust | Apache-2.0 | reference | [rust-syndication/atom](https://github.com/rust-syndication/atom) @ `2026-11-16 (branch tip at catalogue time)` |
 | [bcache](entries/save-state/iwanbk-bcache/README.md) | Eventually consistent distributed in-memory  cache Go library | go | MIT | vendored | [iwanbk/bcache](https://github.com/iwanbk/bcache) @ `92331d3ef6d8` |
 | [bevy-prefabs](entries/save-state/zylkowski-bevy-prefabs/README.md) | Entity prefabs serialization plugin for Bevy game engine | rust | MIT | reference | [zylkowski/bevy-prefabs](https://github.com/zylkowski/bevy-prefabs) @ `2021-05-25 (branch tip at catalogue time)` |
@@ -1523,6 +1524,8 @@ _Generated 2026-11-25 13:15 UTC · 1656 entries · 422 vendored, 1234 reference-
 | [DecryptTruck](entries/save-state/coffesiberian-decrypttruck/README.md) | Fast library to decrypt game saves on ETS2 and ATS | rust | MIT | reference | [CoffeSiberian/DecryptTruck](https://github.com/CoffeSiberian/DecryptTruck) @ `2026-02-01 (branch tip at catalogue time)` |
 | [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
 | [DreamBotQuester](entries/save-state/notsinan-dreambotquester/README.md) | DreamBotQuester is a powerful Java library that allows players of the popular online game, RuneScape, to automate their quests using the DreamBot API. With a ra | java | MIT | reference | [NotSinan/DreamBotQuester](https://github.com/NotSinan/DreamBotQuester) @ `2023-04-30 (branch tip at catalogue time)` |
+| [ea-desktop](entries/save-state/highmoontree-ea-desktop/README.md) | Ea Desktop for Windows 10/11. Launches, installs and updates your game library from one hub, tracks playtime and manages friends, cloud saves and in-game overla | n/a | unknown | reference | [HighMoonTree/ea-desktop](https://github.com/HighMoonTree/ea-desktop) @ `2026-11-25 (branch tip at catalogue time)` |
+| [epic-games-launcher](entries/save-state/fatoudesai-epic-games-launcher/README.md) | Epic Games Launcher for Windows 10/11. Launches Unreal Engine projects and downloaded games from one library, handles updates and installs, and connects to the  | n/a | CC-BY-SA-4.0 | reference | [FatouDesai/epic-games-launcher](https://github.com/FatouDesai/epic-games-launcher) @ `dd72aaf6c891` |
 | [evolu](entries/save-state/evoluhq-evolu/README.md) | Local-first platform and TypeScript library | typescript | MIT | reference | [evoluhq/evolu](https://github.com/evoluhq/evolu) @ `4eedb2272841` |
 | [ex_image_info](entries/save-state/group4layers-ex-image-info/README.md) | ExImageInfo is an Elixir library to parse images (binaries) and get the dimensions (size), detected mime-type and overall validity for a set of image formats. I | elixir | unknown | reference | [Group4Layers/ex_image_info](https://github.com/Group4Layers/ex_image_info) @ `2025-03-28 (branch tip at catalogue time)` |
 | [FastDeepCloner](entries/save-state/alentoma-fastdeepcloner/README.md) | FastDeepCloner, This is a C# based .NET cross platform library that is used to deep clone objects, whether they are serializable or not. It intends to be much f | c# | MIT | reference | [AlenToma/FastDeepCloner](https://github.com/AlenToma/FastDeepCloner) @ `2023-10-15 (branch tip at catalogue time)` |
@@ -1556,10 +1559,12 @@ _Generated 2026-11-25 13:15 UTC · 1656 entries · 422 vendored, 1234 reference-
 | [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
 | [Nerdbank.MessagePack](entries/save-state/aarnott-nerdbank-messagepack/README.md) | A feature-packed .NET MessagePack serialization library with great performance and simplicity. msgpack.io[C#] | c# | MIT | reference | [AArnott/Nerdbank.MessagePack](https://github.com/AArnott/Nerdbank.MessagePack) @ `2026-11-24 (branch tip at catalogue time)` |
 | [nes-emulator](entries/save-state/nicolfo-nes-emulator/README.md) | Cycle-accurate NES emulator in Rust - CPU/PPU/APU, 43 mappers with expansion audio (incl. VRC7 FM), NTSC/PAL auto-detect, gamepad + savestates. | rust | GPL-3.0 | reference | [Nicolfo/nes-emulator](https://github.com/Nicolfo/nes-emulator) @ `2026-11-13 (branch tip at catalogue time)` |
+| [NPShopHomebrew](entries/save-state/arthur-moebios-npshophomebrew/README.md) | NPShop is an ecosystem composed of:  NPShop Homebrew — a Switch-side client for browsing, downloading, installing, and managing your library directly from your  | n/a | GPL-3.0 | reference | [arthur-moebios/NPShopHomebrew](https://github.com/arthur-moebios/NPShopHomebrew) @ `2026-06-19 (branch tip at catalogue time)` |
 | [NxLibrary](entries/save-state/bium23-nxlibrary/README.md) | A console-style macOS game library and launcher in SwiftUI. Features guided setup, assisted local builds for nxnative, save backup/import, and controller naviga | swift | MIT | reference | [Bium23/NxLibrary](https://github.com/Bium23/NxLibrary) @ `2026-11-20 (branch tip at catalogue time)` |
 | [ormsgpack](entries/save-state/ormsgpack-ormsgpack/README.md) | MessagePack serialization library for Python derived from orjson, written in Rust using PyO3 | rust | Apache-2.0 | reference | [ormsgpack/ormsgpack](https://github.com/ormsgpack/ormsgpack) @ `2026-11-21 (branch tip at catalogue time)` |
 | [pbf](entries/save-state/mapbox-pbf/README.md) | A low-level, lightweight protocol buffers implementation in JavaScript. | javascript | BSD-3-Clause | vendored | [mapbox/pbf](https://github.com/mapbox/pbf) @ `c5f57ace5bba` |
 | [PenguinBurner](entries/save-state/jpietek-penguinburner/README.md) | Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play | python | GPL-3.0 | reference | [jpietek/PenguinBurner](https://github.com/jpietek/PenguinBurner) @ `2026-11-17 (branch tip at catalogue time)` |
+| [phigros-save-manager](entries/save-state/lamadaemon-phigros-save-manager/README.md) | A Typescript library for parse and modify the save file of game Phigros | typescript | unknown | reference | [lamadaemon/phigros-save-manager](https://github.com/lamadaemon/phigros-save-manager) @ `2024-11-19 (branch tip at catalogue time)` |
 | [prost-reflect](entries/save-state/andrewhickman-prost-reflect/README.md) | A protobuf library extending prost with reflection support and dynamic messages. | rust | Apache-2.0 | reference | [andrewhickman/prost-reflect](https://github.com/andrewhickman/prost-reflect) @ `2026-07-09 (branch tip at catalogue time)` |
 | [protopuf](entries/save-state/pragmatwice-protopuf/README.md) | Protocol Puffers: A little, highly templated, and protobuf-compatible serialization/deserialization header-only library written in C++20 | c++ | Apache-2.0 | reference | [PragmaTwice/protopuf](https://github.com/PragmaTwice/protopuf) @ `2026-10-02 (branch tip at catalogue time)` |
 | [pypsu](entries/save-state/mccaulay-pypsu/README.md) | Library for analyzing and creating PS2 PSU game save files | python | MIT | vendored | [McCaulay/pypsu](https://github.com/McCaulay/pypsu) @ `97c473cc25ea` |
@@ -1570,6 +1575,7 @@ _Generated 2026-11-25 13:15 UTC · 1656 entries · 422 vendored, 1234 reference-
 | [retro-go-tab5](entries/save-state/andjiang0083-retro-go-tab5/README.md) | A full-speed GBA emulator for the M5Stack Tab5 (ESP32-P4): a solid 60 FPS on the 720x1280 display, 11 classic consoles in one device, touch virtual gamepad, GBA | c | GPL-2.0 | reference | [andjiang0083/retro-go-tab5](https://github.com/andjiang0083/retro-go-tab5) @ `2026-10-22 (branch tip at catalogue time)` |
 | [revision](entries/save-state/surrealdb-revision/README.md) | A Rust library for revision-tolerant serialisation and deserialisation, with support for schema evolution over time | rust | Apache-2.0 | vendored | [surrealdb/revision](https://github.com/surrealdb/revision) @ `4671d9343099` |
 | [Roblox-File-Format](entries/save-state/maximumadhd-roblox-file-format/README.md) | A C# library designed to make it easy to create and manipulate files in Roblox's serialized DOM. | c# | MIT | vendored | [MaximumADHD/Roblox-File-Format](https://github.com/MaximumADHD/Roblox-File-Format) @ `b7c566e3bef8` |
+| [rockstar-games-launcher](entries/save-state/forge-web-east8-rockstar-games-launcher/README.md) | Rockstar Games Launcher for Windows 10/11. Launches and organizes your Rockstar game library, downloads updates and cloud saves, and buys, installs and plays ti | n/a | CC-BY-SA-4.0 | reference | [forge-web-east8/rockstar-games-launcher](https://github.com/forge-web-east8/rockstar-games-launcher) @ `059d25268ac0` |
 | [ROROROblox](entries/save-state/estevanhernandez-stack-ed-rororoblox/README.md) | RoRoRo: run several Roblox clients side by side on Windows, each signed in as a different saved account. Account manager, game Library, Squad Launch, FPS caps,  | c# | MIT | vendored | [estevanhernandez-stack-ed/ROROROblox](https://github.com/estevanhernandez-stack-ed/ROROROblox) @ `93298eb64690` |
 | [rss](entries/save-state/rust-syndication-rss/README.md) | Library for serializing the RSS web content syndication format | rust | Apache-2.0 | reference | [rust-syndication/rss](https://github.com/rust-syndication/rss) @ `2026-11-10 (branch tip at catalogue time)` |
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |

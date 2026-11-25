@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T13:31:55Z",
+ "category": "save-state",
+ "commit": "2026-06-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "arthur-moebios/NPShopHomebrew \u2014 NPShop is an ecosystem composed of:  NPShop Homebrew \u2014 a Switch-side client for browsing, downloading, installing, and managing your library directly from your console. NPShop.org \u2014 a web backend and dashboard connected to your Google Drive for game management, Tinfoil catalog generation, save backup/restore, and device authorization and web ui",
+ "language": "n/a",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "NPShopHomebrew",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "arthur-moebios-npshophomebrew",
+ "source": "github-search:save game library stars:>10",
+ "stars": 25,
+ "system": "NPShop is an ecosystem composed of:  NPShop Homebrew \u2014 a Switch-side client for browsing, downloading, installing, and managing your library directly from your ",
+ "upstream": "https://github.com/arthur-moebios/NPShopHomebrew",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

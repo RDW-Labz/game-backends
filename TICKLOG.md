@@ -3231,3 +3231,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/avl-savefile
   - reference save-state/rust-syndication-atom
   - reference save-state/rust-bakery-cookie-factory
+
+- **2026-11-25 13:31 UTC** — tick 866: +2 screened, +4 reference, 13 skipped, catalogue=1662
+  - added save-state/fatoudesai-epic-games-launcher (CC-BY-SA-4.0, reference)
+  - added save-state/forge-web-east8-rockstar-games-launcher (CC-BY-SA-4.0, reference)
+  - reference save-state/highmoontree-ea-desktop
+  - reference save-state/arthur-moebios-npshophomebrew
+  - reference save-state/ark-mod-arksavegametoolkitnet
+  - reference save-state/lamadaemon-phigros-save-manager

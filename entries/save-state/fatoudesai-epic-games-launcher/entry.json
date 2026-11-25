@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T13:31:51Z",
+ "category": "save-state",
+ "commit": "dd72aaf6c891",
+ "delivery": "reference",
+ "description": "FatouDesai/epic-games-launcher \u2014 Epic Games Launcher for Windows 10/11. Launches Unreal Engine projects and downloaded games from one library, handles updates and installs, and connects to the Epic ecosystem for cloud saves and cross-platform play.",
+ "language": "n/a",
+ "license": "CC-BY-SA-4.0",
+ "license_file": "LICENSE",
+ "license_verdict": "gated-reference",
+ "name": "epic-games-launcher",
+ "reference_reason": "licence: CC-BY-SA-4.0 (gated-reference)",
+ "size_bytes": 0,
+ "slug": "fatoudesai-epic-games-launcher",
+ "source": "github-search:save game library stars:>10",
+ "stars": 114,
+ "system": "Epic Games Launcher for Windows 10/11. Launches Unreal Engine projects and downloaded games from one library, handles updates and installs, and connects to the ",
+ "upstream": "https://github.com/FatouDesai/epic-games-launcher",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T13:31:55Z",
+ "category": "save-state",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "HighMoonTree/ea-desktop \u2014 Ea Desktop for Windows 10/11. Launches, installs and updates your game library from one hub, tracks playtime and manages friends, cloud saves and in-game overlays across installed titles.",
+ "language": "n/a",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ea-desktop",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "highmoontree-ea-desktop",
+ "source": "github-search:save game library stars:>10",
+ "stars": 108,
+ "system": "Ea Desktop for Windows 10/11. Launches, installs and updates your game library from one hub, tracks playtime and manages friends, cloud saves and in-game overla",
+ "upstream": "https://github.com/HighMoonTree/ea-desktop",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

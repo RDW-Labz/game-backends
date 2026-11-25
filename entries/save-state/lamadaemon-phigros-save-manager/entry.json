@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T13:31:55Z",
+ "category": "save-state",
+ "commit": "2024-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "lamadaemon/phigros-save-manager \u2014 A Typescript library for parse and modify the save file of game Phigros",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "phigros-save-manager",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "lamadaemon-phigros-save-manager",
+ "source": "github-search:save game library stars:>10",
+ "stars": 21,
+ "system": "A Typescript library for parse and modify the save file of game Phigros",
+ "upstream": "https://github.com/lamadaemon/phigros-save-manager",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
