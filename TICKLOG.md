@@ -3308,3 +3308,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/aleph-one-marathon-alephone
   - reference engines/illation-etengine
   - reference engines/zal0-zgb
+
+- **2026-11-25 17:04 UTC** — tick 879: +2 screened, +4 reference, 34 skipped, catalogue=1713
+  - added engines/indigo-0167-universal-game-mod-manager (MIT, vendored)
+  - added engines/psichix-oxygengine (Apache-2.0, vendored)
+  - reference engines/tbillington-bevy-best-practices
+  - reference engines/far-beyond-pulsar-pulsar-native
+  - reference engines/cleancut-rusty-engine
+  - reference engines/rerun-io-revy

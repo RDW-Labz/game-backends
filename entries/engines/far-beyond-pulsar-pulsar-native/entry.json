@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:04:47Z",
+ "category": "engines",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Far-Beyond-Pulsar/Pulsar-Native \u2014 The next-generation game engine that you deserve implemented in rust https://pulsarnative.com/ Developer_Blogs: https://pulsarnative.com/blog/ Research: https://pulsarnative.com/Research/ UI-Framework: https://pulsarnative.com/UI/ Discord_Server: https://discord.gg/BXyZDMeUJc Formerly_Twitter: https://x.com/PulsarEngineRS",
+ "language": "rust",
+ "license": "MPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Pulsar-Native",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MPL-2.0)",
+ "slug": "far-beyond-pulsar-pulsar-native",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 433,
+ "system": "The next-generation game engine that you deserve implemented in rust https://pulsarnative.com/ Developer_Blogs: https://pulsarnative.com/blog/ Research: https:/",
+ "upstream": "https://github.com/Far-Beyond-Pulsar/Pulsar-Native",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

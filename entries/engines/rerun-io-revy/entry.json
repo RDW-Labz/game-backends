@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:04:47Z",
+ "category": "engines",
+ "commit": "2026-08-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rerun-io/revy \u2014 Proof-of-concept time-travel debugger for the Bevy game engine, built using Rerun.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "revy",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rerun-io-revy",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 388,
+ "system": "Proof-of-concept time-travel debugger for the Bevy game engine, built using Rerun.",
+ "upstream": "https://github.com/rerun-io/revy",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

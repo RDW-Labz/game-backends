@@ -1,0 +1,15 @@
+/target/
+/release-assets/
+/temp_release_body.md
+/latest.json
+/updater-partial-*.json
+
+.direnv
+.DS_Store
+*.swp
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea

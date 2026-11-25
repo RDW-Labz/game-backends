@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:04:47Z",
+ "category": "engines",
+ "commit": "2025-06-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tbillington/bevy_best_practices \u2014 An opionated set of Best Practices for the Bevy game engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_best_practices",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "tbillington-bevy-best-practices",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 452,
+ "system": "An opionated set of Best Practices for the Bevy game engine",
+ "upstream": "https://github.com/tbillington/bevy_best_practices",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

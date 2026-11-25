@@ -1,0 +1,45 @@
+list:
+    just --list --unsorted
+
+format PLATFORM = "desktop":
+    cargo fmt --all --manifest-path ./platforms/{{PLATFORM}}/Cargo.toml
+
+dev-build PLATFORM = "desktop":
+    cargo build --manifest-path ./platforms/{{PLATFORM}}/Cargo.toml
+
+dev-test PLATFORM = "desktop":
+    OXY_ROOT_PATH="$(pwd)/" \
+    OXY_FETCH_ENGINE_PATH="$(pwd)/assets-baked/" \
+    OXY_STORAGE_ENGINE_PATH="$(pwd)/bin/" \
+    cargo test --manifest-path ./platforms/{{PLATFORM}}/Cargo.toml
+
+dev-run PLATFORM = "desktop":
+    RUST_BACKTRACE=1 \
+    OXY_ROOT_PATH="$(pwd)/" \
+    OXY_FETCH_ENGINE_PATH="$(pwd)/assets-baked/" \
+    OXY_STORAGE_ENGINE_PATH="$(pwd)/bin/" \
+    cargo run --manifest-path ./platforms/{{PLATFORM}}/Cargo.toml
+
+dev OPERATION PLATFORM = "desktop":
+    just dev-{{OPERATION}} {{PLATFORM}}
+
+prod-build PROFILE PLATFORM = "desktop":
+    oxygengine-ignite build {{PLATFORM}} -p {{PROFILE}}
+
+prod-package PROFILE PLATFORM = "desktop":
+    oxygengine-ignite package {{PLATFORM}} -p {{PROFILE}}
+
+prod OPERATION PROFILE PLATFORM = "desktop":
+    just prod-{{OPERATION}} {{PROFILE}} {{PLATFORM}}
+
+bake PLATFORM = "desktop":
+    oxygengine-ignite pipeline -t platform-{{PLATFORM}}
+
+live-desktop:
+    oxygengine-ignite live desktop
+
+live-web:
+    oxygengine-ignite live web --wasm serve
+
+live PLATFORM = "desktop":
+    just live-{{PLATFORM}}

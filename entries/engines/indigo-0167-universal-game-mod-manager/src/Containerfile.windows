@@ -1,0 +1,44 @@
+FROM docker.io/library/ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH \
+    XWIN_ACCEPT_LICENSE=1 \
+    XWIN_CACHE_DIR=/opt/xwin
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    clang \
+    curl \
+    file \
+    git \
+    lld \
+    llvm \
+    nsis \
+    patchelf \
+    pkg-config \
+    unzip \
+    wget \
+    zip \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+    | sh -s -- -y --profile minimal
+
+WORKDIR /app
+COPY rust-toolchain.toml .
+
+RUN rustup show \
+ && rustup target add x86_64-pc-windows-msvc \
+ && cargo install --locked cargo-xwin
+
+RUN mkdir -p /tmp/xwin-bootstrap/src \
+ && printf 'fn main() {}\n' > /tmp/xwin-bootstrap/src/main.rs \
+ && printf '[package]\nname = "xwin-bootstrap"\nversion = "0.0.0"\nedition = "2021"\n' > /tmp/xwin-bootstrap/Cargo.toml \
+ && cargo xwin build --manifest-path /tmp/xwin-bootstrap/Cargo.toml --target x86_64-pc-windows-msvc \
+ && rm -rf /tmp/xwin-bootstrap
+
+CMD ["/bin/bash"]

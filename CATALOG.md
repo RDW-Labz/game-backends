@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 16:48 UTC · 1707 entries · 430 vendored, 1277 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 17:04 UTC · 1713 entries · 432 vendored, 1281 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 661 | 157 | 504 |
+| [engines](#engines) — Game engines and engine subsystems | 667 | 159 | 508 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 16:48 UTC · 1707 entries · 430 vendored, 1277 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 661 entries
+**Game engines and engine subsystems** — 667 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -78,6 +78,7 @@ _Generated 2026-11-25 16:48 UTC · 1707 entries · 430 vendored, 1277 reference-
 | [bevy_app_compute](entries/engines/kjolnyr-bevy-app-compute/README.md) | App compute plugin for Bevy | rust | unknown | reference | [Kjolnyr/bevy_app_compute](https://github.com/Kjolnyr/bevy_app_compute) @ `2026-02-02 (branch tip at catalogue time)` |
 | [bevy_aseprite_ultra](entries/engines/lommix-bevy-aseprite-ultra/README.md) | The ultimate bevy aseprite binary plugin. Featuring animations and static atlas loading with pivots. Full support for hot reloading! | rust | MIT | vendored | [Lommix/bevy_aseprite_ultra](https://github.com/Lommix/bevy_aseprite_ultra) @ `1ac745b70382` |
 | [bevy_atmosphere](entries/engines/jonahplusplus-bevy-atmosphere/README.md) | A procedural sky plugin for bevy | rust | Apache-2.0 | reference | [JonahPlusPlus/bevy_atmosphere](https://github.com/JonahPlusPlus/bevy_atmosphere) @ `2026-01-19 (branch tip at catalogue time)` |
+| [bevy_best_practices](entries/engines/tbillington-bevy-best-practices/README.md) | An opionated set of Best Practices for the Bevy game engine | rust | Apache-2.0 | reference | [tbillington/bevy_best_practices](https://github.com/tbillington/bevy_best_practices) @ `2025-06-16 (branch tip at catalogue time)` |
 | [bevy_config_cam](entries/engines/blackphlox-bevy-config-cam/README.md) | A Swiss Army knife of a camera plugin that allows for easy setup and configuration of a wide variety of types of moveable cameras and player cameras for a scene | rust | unknown | reference | [BlackPhlox/bevy_config_cam](https://github.com/BlackPhlox/bevy_config_cam) @ `2023-09-17 (branch tip at catalogue time)` |
 | [bevy_copperfield](entries/engines/hexorg-bevy-copperfield/README.md) | Bevy plugin for procedural modelling, inspired by [Blender's geometry nodes] | rust | MIT | vendored | [Hexorg/bevy_copperfield](https://github.com/Hexorg/bevy_copperfield) @ `1fa2d5e87334` |
 | [bevy_crossterm](entries/engines/octotep-bevy-crossterm/README.md) | Crossterm plugin for the bevy game engine | rust | MIT | reference | [octotep/bevy_crossterm](https://github.com/octotep/bevy_crossterm) @ `2021-12-02 (branch tip at catalogue time)` |
@@ -465,6 +466,7 @@ _Generated 2026-11-25 16:48 UTC · 1707 entries · 430 vendored, 1277 reference-
 | [overtime](entries/engines/ukanwat-overtime/README.md) | Give a coding agent a brief, not a chat, and it works on its own across sessions. Includes an example run: an open-world city built in a real game engine with n | typescript | MIT | vendored | [ukanwat/overtime](https://github.com/ukanwat/overtime) @ `7be7242a0d46` |
 | [oxidator](entries/engines/ruddle-oxidator/README.md) | RTS game/engine in Rust and WebGPU  | rust | MIT | vendored | [Ruddle/oxidator](https://github.com/Ruddle/oxidator) @ `ba77b3419a1c` |
 | [oxygen](entries/engines/flame-engine-oxygen/README.md) | A lightweight Entity Component System written in Dart. | dart | MIT | reference | [flame-engine/oxygen](https://github.com/flame-engine/oxygen) @ `2024-03-19 (branch tip at catalogue time)` |
+| [Oxygengine](entries/engines/psichix-oxygengine/README.md) | Rust implementation of Oxygen Core HTML5 game engine | rust | Apache-2.0 | vendored | [PsichiX/Oxygengine](https://github.com/PsichiX/Oxygengine) @ `f241e27cad47` |
 | [PainterEngine](entries/engines/matrixcascade-painterengine/README.md) | PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C | c | MIT | reference | [matrixcascade/PainterEngine](https://github.com/matrixcascade/PainterEngine) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
 | [panic-panda](entries/engines/gabdube-panic-panda/README.md) | A 3D rendering demo powered by Python and Vulkan | python | MIT | vendored | [gabdube/panic-panda](https://github.com/gabdube/panic-panda) @ `ecbda506eeaf` |
@@ -499,6 +501,7 @@ _Generated 2026-11-25 16:48 UTC · 1707 entries · 430 vendored, 1277 reference-
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
 | [prototype](entries/engines/gonutz-prototype/README.md) | Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM. | c | MIT | vendored | [gonutz/prototype](https://github.com/gonutz/prototype) @ `d3732ae42e68` |
+| [Pulsar-Native](entries/engines/far-beyond-pulsar-pulsar-native/README.md) | The next-generation game engine that you deserve implemented in rust https://pulsarnative.com/ Developer_Blogs: https://pulsarnative.com/blog/ Research: https:/ | rust | MPL-2.0 | reference | [Far-Beyond-Pulsar/Pulsar-Native](https://github.com/Far-Beyond-Pulsar/Pulsar-Native) @ `2026-11-25 (branch tip at catalogue time)` |
 | [py-draughts](entries/engines/miskibin-py-draughts/README.md) | Fastest Python draughts/checkers library — bitboards, 8 variants, alpha-beta engine, web UI. ~200x faster than pydraughts. | python | GPL-3.0 | reference | [miskibin/py-draughts](https://github.com/miskibin/py-draughts) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Py3ODE](entries/engines/filipeabperes-py3ode/README.md) | Port of PyODE for Python 3 | python | LGPL-2.1 | reference | [filipeabperes/Py3ODE](https://github.com/filipeabperes/Py3ODE) @ `50675f543d35` |
 | [py4godot](entries/engines/niklas2902-py4godot/README.md) | Python scripting for Godot. This GDExtension plugin allows you to use Python like GDScript, accessing the Godot engine's features and benefiting from Python's v | python | MIT | reference | [niklas2902/py4godot](https://github.com/niklas2902/py4godot) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -530,6 +533,7 @@ _Generated 2026-11-25 16:48 UTC · 1707 entries · 430 vendored, 1277 reference-
 | [renpy](entries/engines/renpy-renpy/README.md) | The Ren'Py Visual Novel Engine | ren'py | unknown | reference | [renpy/renpy](https://github.com/renpy/renpy) @ `2026-11-23 (branch tip at catalogue time)` |
 | [replay](entries/engines/edbentley-replay/README.md) | A cross-platform JS game engine inspired by React | typescript | MIT | vendored | [edbentley/replay](https://github.com/edbentley/replay) @ `d10084041f8a` |
 | [rerecast](entries/engines/janhohenheim-rerecast/README.md) | Rust port of Recast, the industry-standard navigation mesh generator used by Unreal, Unity, Godot, and other game engines. | rust | Apache-2.0 | reference | [janhohenheim/rerecast](https://github.com/janhohenheim/rerecast) @ `beda61552ef6` |
+| [revy](entries/engines/rerun-io-revy/README.md) | Proof-of-concept time-travel debugger for the Bevy game engine, built using Rerun. | rust | Apache-2.0 | reference | [rerun-io/revy](https://github.com/rerun-io/revy) @ `2026-08-24 (branch tip at catalogue time)` |
 | [rhusics](entries/engines/rustgd-rhusics/README.md) | A cgmath physics library that can be used with Specs | rust | Apache-2.0 | reference | [rustgd/rhusics](https://github.com/rustgd/rhusics) @ `2020-08-04 (branch tip at catalogue time)` |
 | [RigelEngine](entries/engines/lethal-guitar-rigelengine/README.md) | A modern re-implementation of the classic DOS game Duke Nukem II | c++ | GPL-2.0 | reference | [lethal-guitar/RigelEngine](https://github.com/lethal-guitar/RigelEngine) @ `30afeff8f0b1` |
 | [RobustToolbox](entries/engines/space-wizards-robusttoolbox/README.md) | Robust multiplayer game engine, used by Space Station 14 | c# | GPL-3.0 | reference | [space-wizards/RobustToolbox](https://github.com/space-wizards/RobustToolbox) @ `ec12ca54db27` |
@@ -538,6 +542,7 @@ _Generated 2026-11-25 16:48 UTC · 1707 entries · 430 vendored, 1277 reference-
 | [ruby2d-games](entries/engines/mariovisic-ruby2d-games/README.md) | A collection of games and demos written in ruby using the Ruby 2D framework, complete with free video tutorials | ruby | unknown | reference | [mariovisic/ruby2d-games](https://github.com/mariovisic/ruby2d-games) @ `2023-02-22 (branch tip at catalogue time)` |
 | [RuntimeUnityEditor](entries/engines/manlymarco-runtimeunityeditor/README.md) | In-game inspector and debugging tools for applications made with Unity3D game engine | c# | GPL-3.0 | reference | [ManlyMarco/RuntimeUnityEditor](https://github.com/ManlyMarco/RuntimeUnityEditor) @ `1ce168c7acfd` |
 | [rust-invaders](entries/engines/jeremychone-channel-rust-invaders/README.md) | Simple RUST game with the Bevy Engine | rust | Apache-2.0 | vendored | [jeremychone-channel/rust-invaders](https://github.com/jeremychone-channel/rust-invaders) @ `af246691ea08` |
+| [rusty_engine](entries/engines/cleancut-rusty-engine/README.md) | 2D game engine for learning Rust | rust | unknown | reference | [CleanCut/rusty_engine](https://github.com/CleanCut/rusty_engine) @ `2026-02-09 (branch tip at catalogue time)` |
 | [Sakuga-Engine](entries/engines/noisychain-sakuga-engine/README.md) | A fighting game engine made for Godot 4 written in C# | c# | MIT | vendored | [NoisyChain/Sakuga-Engine](https://github.com/NoisyChain/Sakuga-Engine) @ `866ce24da7c2` |
 | [SakuraEngine](entries/engines/sakuraengine-sakuraengine/README.md) | 为高性能而生的游戏运行时与工具箱 | c++ | MIT | reference | [SakuraEngine/SakuraEngine](https://github.com/SakuraEngine/SakuraEngine) @ `c0fdb2bb3007` |
 | [SanAndreasUnity](entries/engines/in0finite-sanandreasunity/README.md) | Open source reimplementation of GTA San Andreas game engine in Unity | c# | MIT | reference | [in0finite/SanAndreasUnity](https://github.com/in0finite/SanAndreasUnity) @ `2023-06-16 (branch tip at catalogue time)` |
@@ -615,6 +620,7 @@ _Generated 2026-11-25 16:48 UTC · 1707 entries · 430 vendored, 1277 reference-
 | [UnityHexagonLibrary2d](entries/engines/ycarowr-unityhexagonlibrary2d/README.md) | A library to manage 2D hexagonal tiles in Unity. | c# | MIT | reference | [ycarowr/UnityHexagonLibrary2d](https://github.com/ycarowr/UnityHexagonLibrary2d) @ `2021-04-17 (branch tip at catalogue time)` |
 | [UnityTileMap](entries/engines/alexanderfast-unitytilemap/README.md) | A TileMap library for Unity written in C#. | c# | MIT | reference | [alexanderfast/UnityTileMap](https://github.com/alexanderfast/UnityTileMap) @ `2015-04-21 (branch tip at catalogue time)` |
 | [UnityTutorials-RTS](entries/engines/minapecheux-unitytutorials-rts/README.md) | The code for my series of tutorials on how to make a real-time stategy (RTS) game in the well-know Unity game engine (with C# scripting)!  | c# | MIT | vendored | [MinaPecheux/UnityTutorials-RTS](https://github.com/MinaPecheux/UnityTutorials-RTS) @ `152128b8dde0` |
+| [universal-game-mod-manager](entries/engines/indigo-0167-universal-game-mod-manager/README.md) | Free Windows game mod manager to discover, install, update and manage universal Unity and Unreal Engine mods. | rust | MIT | vendored | [Indigo-0167/universal-game-mod-manager](https://github.com/Indigo-0167/universal-game-mod-manager) @ `ea301370dfaa` |
 | [Unvanquished](entries/engines/unvanquished-unvanquished/README.md) | Unvanquished is a free and open source FPS/RTS hybrid game powered by the Daemon game engine. Historically based on Tremulous as a continuation with decades of  | c++ | unknown | reference | [Unvanquished/Unvanquished](https://github.com/Unvanquished/Unvanquished) @ `2026-11-25 (branch tip at catalogue time)` |
 | [upbge](entries/engines/upbge-upbge/README.md) | UPBGE, the best integrated game engine in Blender | c++ | unknown | reference | [UPBGE/upbge](https://github.com/UPBGE/upbge) @ `2026-11-25 (branch tip at catalogue time)` |
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |

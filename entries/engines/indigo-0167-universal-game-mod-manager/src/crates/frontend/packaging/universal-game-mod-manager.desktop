@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Rai Pal
+Comment=Universal game mod manager
+Exec=universal-game-mod-manager
+Icon=universal-game-mod-manager
+Terminal=false
+Categories=Game;
+StartupNotify=true
+StartupWMClass=universal-game-mod-manager
+MimeType=x-scheme-handler/universal-game-mod-manager;

@@ -1,0 +1,9 @@
+[workspace]
+members = [
+  "./engine/*",
+  "./demos/wip/*/platforms/desktop",
+  "./templates/*/platforms/desktop",
+]
+default-members = [
+  "./engine/*",
+]

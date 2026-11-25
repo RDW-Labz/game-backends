@@ -1,0 +1,45 @@
+FROM docker.io/library/ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH \
+    XDG_CACHE_HOME=/var/cache \
+    LINUXDEPLOY=/opt/linuxdeploy/linuxdeploy-x86_64.AppImage \
+    APPIMAGE_EXTRACT_AND_RUN=1
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    build-essential \
+    ca-certificates \
+    curl \
+    file \
+    git \
+    libfontconfig1-dev \
+    libfreetype-dev \
+    libwayland-dev \
+    libxcb-xkb-dev \
+    libxkbcommon-dev \
+    libxkbcommon-x11-dev \
+    patchelf \
+    pkg-config \
+    wget \
+    xdg-utils \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+    | sh -s -- -y --profile minimal
+
+WORKDIR /app
+COPY rust-toolchain.toml .
+RUN rustup show
+
+# Clearing the AppImage magic bytes avoids binfmt_misc failures in the container.
+RUN mkdir -p /opt/linuxdeploy \
+ && wget https://github.com/linuxdeploy/linuxdeploy/releases/latest/download/linuxdeploy-x86_64.AppImage -O "$LINUXDEPLOY" \
+ && chmod +x "$LINUXDEPLOY" \
+ && wget https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-x86_64.AppImage -O /opt/linuxdeploy/linuxdeploy-plugin-appimage.AppImage \
+ && dd if=/dev/zero of=/opt/linuxdeploy/linuxdeploy-plugin-appimage.AppImage bs=1 count=4 seek=8 conv=notrunc status=none \
+ && chmod +x /opt/linuxdeploy/linuxdeploy-plugin-appimage.AppImage
+
+CMD ["/bin/bash"]

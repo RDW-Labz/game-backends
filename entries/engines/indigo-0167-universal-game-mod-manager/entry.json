@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T17:04:41Z",
+ "category": "engines",
+ "commit": "ea301370dfaa",
+ "delivery": "vendored",
+ "description": "Indigo-0167/universal-game-mod-manager \u2014 Free Windows game mod manager to discover, install, update and manage universal Unity and Unreal Engine mods.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "universal-game-mod-manager",
+ "size_bytes": 1406492,
+ "slug": "indigo-0167-universal-game-mod-manager",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 1300,
+ "system": "Free Windows game mod manager to discover, install, update and manage universal Unity and Unreal Engine mods.",
+ "upstream": "https://github.com/Indigo-0167/universal-game-mod-manager",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

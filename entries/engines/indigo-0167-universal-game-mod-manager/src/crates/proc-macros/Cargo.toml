@@ -1,0 +1,15 @@
+[package]
+name = "universal-game-mod-manager-proc-macros"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = "1.0.47"
+syn = { version = "3.0.9", features = ["full"] }
+
+[lints]
+workspace = true

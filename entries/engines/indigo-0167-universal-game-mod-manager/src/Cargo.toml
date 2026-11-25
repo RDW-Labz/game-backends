@@ -1,0 +1,80 @@
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+version = "1.0.3"
+edition = "2024"
+publish = false
+
+[workspace.dependencies]
+base64 = "0.23.1"
+chrono = { version = "0.4.44", default-features = false, features = ["std"] }
+fs-err = { version = "3.3.2", features = ["tokio"] }
+log = "0.4.34"
+universal-game-mod-manager-backend = { path = "./crates/backend" }
+universal-game-mod-manager-proc-macros = { path = "./crates/proc-macros" }
+rusqlite = { version = "0.41.1", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+strum = { version = "0.28.0", features = ["derive"] }
+thiserror = "2.0.21"
+tokio = { version = "1.53.3", features = ["fs"] }
+winreg = "0.56.0"
+
+[profile.release]
+codegen-units = 1
+incremental = false
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
+
+[profile.dev]
+debug = 0
+opt-level = 1
+
+[workspace.lints.cargo]
+unused_dependencies = "deny"
+unused_workspace_dependencies = "deny"
+
+[workspace.lints.clippy]
+# Categories that have mostly useful lints.
+# Priority is -1 so that they get overridden by priority 0 lints.
+# If Clippy gets updated with new rules on these categories, they get automatically applied.
+all = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+cargo = { level = "warn", priority = -1 }
+
+# Specific lints to override. Priority defaults to 0.
+disallowed_methods = "warn"
+disallowed_types = "warn"
+too_many_lines = "allow"
+must_use_candidate = "allow"
+missing_errors_doc = "allow"
+cargo_common_metadata = "allow"
+multiple_crate_versions = "allow"
+implicit_hasher = "allow"
+
+# Restriction rules are too restrictive, so we allow by default.
+restriction = { level = "allow", priority = -1 }
+
+# Restriction rules to override. Priority defaults to 0.
+as_underscore = "warn"
+box_collection = "warn"
+clone_on_ref_ptr = "warn"
+create_dir = "warn"
+dbg_macro = "warn"
+decimal_literal_representation = "warn"
+default_numeric_fallback = "allow"
+expect_used = "warn"
+shadow_unrelated = "warn"
+unwrap_used = "warn"
+verbose_file_reads = "warn"
+
+[patch.crates-io]
+
+# Needed for wayland drag and drop.
+# We can remove this once a published winit release includes commit 7a962fd.
+winit = { git = "https://github.com/rust-windowing/winit", rev = "7a962fd46470a137d9a7a1945bf5b5d0b95a002c" }

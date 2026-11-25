@@ -1,0 +1,7 @@
+/assets-intermediate
+/assets-baked
+/bin
+/dist
+/target
+wasm-pack.log
+Cargo.lock

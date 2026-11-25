@@ -1,0 +1,20 @@
+[triggers.mouse]
+mouse-action = "left"
+
+[axes.mouse]
+mouse-x = "x"
+mouse-y = "y"
+
+[triggers.keyboard]
+space = "Space"
+enter = "Return"
+
+[axes.keyboard]
+w = "W"
+s = "S"
+a = "A"
+d = "D"
+up = "Up"
+down = "Down"
+left = "Left"
+right = "Right"

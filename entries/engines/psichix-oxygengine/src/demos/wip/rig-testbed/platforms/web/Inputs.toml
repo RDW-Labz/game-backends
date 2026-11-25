@@ -1,0 +1,5 @@
+[triggers.keyboard]
+walk = "KeyA"
+run = "KeyS"
+watch = "KeyD"
+play = "KeyF"

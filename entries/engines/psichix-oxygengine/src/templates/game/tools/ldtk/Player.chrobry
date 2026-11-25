@@ -1,0 +1,66 @@
+inject
+```
+{
+  "Player": {
+    "level": %{ $LEVEL }%
+  },
+  "InputStackInstance": {
+    "Setup": {
+      "triggers": {
+        "pointer-action": {
+          "mappings": [
+            "mouse-action",
+            "touch-action"
+          ]
+        },
+        "action": {
+          "mappings": [
+            "mouse-action",
+            "touch-action",
+            "enter",
+            "space"
+          ]
+        }
+      },
+      "axes": {
+        "pointer": {
+          "channels": [
+            {
+              "mappings": {
+                "mouse-x": 1.0,
+                "touch-x": 1.0
+              }
+            },
+            {
+              "mappings": {
+                "mouse-y": 1.0,
+                "touch-y": 1.0
+              }
+            }
+          ]
+        },
+        "direction": {
+          "channels": [
+            {
+              "mappings": {
+                "a": -1.0,
+                "d": 1.0,
+                "left": -1.0,
+                "right": 1.0
+              }
+            },
+            {
+              "mappings": {
+                "w": -1.0,
+                "s": 1.0,
+                "up": -1.0,
+                "down": 1.0
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
