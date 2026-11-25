@@ -1,0 +1,27 @@
+options:
+  delay: 0
+  width: 350
+  keywordsPrefix: '@t{'
+  keywordsSuffix: '}@'
+  useNewSystem: true
+tooltips:
+  - keywords: ["toólt1p w/h a'postrophes"]
+    title: Tooltip with Apostrophes
+    description: This tooltip has an apostrophe in its title.
+  - keywords: ['sentence tooltip']
+    title: Sentence Tooltip
+    styling:
+      textCssClass: test
+      titleCssClass: test
+      cssClass: test
+    description: This is a tooltip that appears when you hover over a sentence.
+  - keywords: ['tooltip with accénts']
+    title: Tooltip with Accénts
+    description: This tooltip has accents in its title.
+  - keywords: [bread, breads]
+    title: Bread 🍞🥖
+    styling:
+      textCssClass: test
+      titleCssClass: test
+      cssClass: test
+    description: Bread is a staple food prepared from a dough of flour (usually wheat) and water, usually by baking. Throughout recorded history and around the world, it has been an important part of many cultures' diet. It is one of the oldest human-made foods, having been of significance since the dawn of agriculture, and plays an essential role in both religious rituals and secular culture.

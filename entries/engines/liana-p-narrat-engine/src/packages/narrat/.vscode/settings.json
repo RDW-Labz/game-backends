@@ -1,0 +1,45 @@
+{
+  "vitest.enable": true,
+  "editor.tabSize": 2,
+  "files.exclude": {
+    "**/*.rpyc": true,
+    "**/*.rpa": true,
+    "**/*.rpymc": true,
+    "**/cache/": true,
+    "**/dist/": true,
+    "**/node_modules/": true,
+    "**/lib/": true
+  },
+  "search.exclude": {
+    "**/dist/": true,
+    "**/lib/": true,
+    "**/node_modules/": true,
+    "**/built-example/": true
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "@/lib/**",
+    "@/lib**",
+    "@/lib",
+    "@/lib.ts",
+    "**/lib.ts",
+    "**/lib",
+    "src/lib",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/lib/**",
+    "src/lib.ts",
+    "lib.ts",
+    "packages/narrat/src/lib.ts",
+    "src/lib/*",
+    "lib",
+    "**/lib.ts"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "name": "@narrat/desktop-editor",
+  "version": "4.1.18",
+  "private": true,
+  "description": "Desktop editor for narrat",
+  "main": "electron-main.js",
+  "engines": {
+    "node": ">=20.x"
+  },
+  "keywords": [
+    "game",
+    "vue.js",
+    "rust",
+    "tauri",
+    "narrat"
+  ],
+  "author": "Liana Pigeot <32243840+liana-p@users.noreply.github.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "pnpm tauri dev",
+    "start": "pnpm tauri dev",
+    "ide:devtools": "npx vue-devtools",
+    "ide:start": "npm run ide:dev",
+    "ide:dev": "vite",
+    "ide:build": "cross-env VITE_BUILD=true vite build",
+    "ide:build-debug": "cross-env VITE_BUILD=true VITE_DEBUG=true vite build",
+    "ide:type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.7.0",
+    "clone-deep": "^4.0.1",
+    "es6-promise": "^4.2.8",
+    "monaco-editor": "0.52.2",
+    "monaco-yaml": "^5.4.0",
+    "oh-vue-icons": "1.0.0-rc3",
+    "pinia": "^3.0.3",
+    "steamworks.js": "^0.4.0",
+    "vue": "^3.5.18",
+    "vue-router": "4"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.7.1",
+    "@types/clone-deep": "^4.0.4",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/devtools": "^7.7.7",
+    "cross-env": "^7.0.3",
+    "prettier": "^3.6.2",
+    "shx": "^0.4.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.5",
+    "vite-plugin-monaco-editor": "^1.1.0",
+    "vite-plugin-windicss": "^1.9.4",
+    "windicss": "^3.5.6"
+  }
+}

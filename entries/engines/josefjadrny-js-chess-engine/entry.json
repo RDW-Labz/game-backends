@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:42:51Z",
+ "category": "engines",
+ "commit": "2026-02-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "josefjadrny/js-chess-engine \u2014 Complete TypeScript chess engine with zero dependencies for Node.js >=24 and browsers. Features configurable AI (5 predefined difficulty levels), stateful/stateless APIs, and supports JSON and FEN formats.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "js-chess-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "josefjadrny-js-chess-engine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 169,
+ "system": "Complete TypeScript chess engine with zero dependencies for Node.js >=24 and browsers. Features configurable AI (5 predefined difficulty levels), stateful/state",
+ "upstream": "https://github.com/josefjadrny/js-chess-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

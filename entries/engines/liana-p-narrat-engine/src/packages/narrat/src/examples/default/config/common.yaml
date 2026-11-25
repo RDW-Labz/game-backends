@@ -1,0 +1,116 @@
+---
+gameTitle: narrat.game.title
+saveFileName: Narrat Default
+images:
+  narrat: img/backgrounds/narrat.webp
+  map: img/backgrounds/map.webp
+  shopButton: img/ui/shop-button.webp
+  parkButton: img/ui/park-button.webp
+dialogPanel:
+  allowHistoryToggling: true # This will add a button with the auto/skip button that allows the player to toggle viewing dialog history.
+  textSpeed: 20
+  animateText: true
+  timeBetweenLines: 100
+  overlayMode: true
+  rightOffset: 100
+  bottomOffset: 50
+  width: 475
+  height: 680
+  historyLength: 200 # The number of dialogue lines to keep in the history
+  hideDuringTransition: true # Setting this to true will make the dialog panel hide during screen transitions
+  showAfterScriptEnd: false # Setting this to true will make the dialog panel stay on even if the narrat script ends
+  showOldChoices: false
+settings:
+  customSettings:
+    playerName:
+      category: misc
+      name: Player Name
+      type: string
+      defaultValue: Someone
+      description: The name of the player. (not actually used, this is just to test custom settings)
+graphics:
+  allowFullscreen: true
+layout:
+  defaultFontSize: 16
+  backgrounds:
+    # Default was 880 x 720
+    width: 1280
+    height: 720
+  dialogBottomPadding: '2rem'
+  mobileDialogHeightPercentage: 60
+  verticalLayoutThreshold: 600
+  portraits:
+    width: 150
+    height: 225
+    offset:
+      landscape:
+        right: 10
+        bottom: 0
+      portrait:
+        right: 10
+        bottom: 0
+saves:
+  mode: manual
+  slots: 10
+  runOnReload: 'test_label_reload'
+  autosaveDisabledOnLabels:
+    - test_no_autosave
+  disabled: false
+  allowManualSave: true
+  autosaveFeedback:
+    enabled: true
+    duration: 0.5
+    text: saving...
+    backgroundImage: 'img/ui/autosave_spinner_background.png'
+    foregroundImage: 'img/ui/autosave_spinner.png'
+input:
+  showPromptsOnGamepad: true
+  showPromptsOnKeyboard: true
+  showBottomLegend: true
+notifications:
+  timeOnScreen: 2.5
+  alsoPrintInDialogue: false
+
+hudStats:
+  money:
+    icon: img/ui/money.webp
+    name: Money
+    startingValue: 10
+    minValue: 0
+    maxValue: 99999
+    decimals: 2
+    hideName: true
+    formatting:
+      style: currency
+      currency: USD
+  energy:
+    icon: img/ui/energy.webp
+    name: Energy
+    startingValue: 10
+    minValue: 0
+    maxValue: 10
+    suffix: ' / 10'
+    decimals: 0
+  percent:
+    icon: img/ui/energy.webp
+    name: percent
+    hideName: true
+    startingValue: 0.5
+    minValue: 0
+    maxValue: 1
+    formatting:
+      style: percent
+  days:
+    icon: img/ui/energy.webp
+    name: days
+    startingValue: 2
+    minValue: 0
+    maxValue: 7
+    hideName: true
+    formatting:
+      style: unit
+      unit: day
+interactionTags:
+  default:
+    onlyInteractOutsideOfScripts: true
+menuButtons: {}

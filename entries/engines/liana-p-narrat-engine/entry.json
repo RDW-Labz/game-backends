@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T18:42:35Z",
+ "category": "engines",
+ "commit": "5ab42d5fcd79",
+ "delivery": "vendored",
+ "description": "liana-p/narrat-engine \u2014 Narrat game engine",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "narrat-engine",
+ "size_bytes": 1246892,
+ "slug": "liana-p-narrat-engine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 210,
+ "system": "Narrat game engine",
+ "upstream": "https://github.com/liana-p/narrat-engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

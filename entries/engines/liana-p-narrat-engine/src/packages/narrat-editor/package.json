@@ -1,0 +1,48 @@
+{
+  "name": "narrat-editor",
+  "description": "Interactive editor for narrat games",
+  "private": true,
+  "version": "4.1.18",
+  "type": "module",
+  "keywords": [
+    "game"
+  ],
+  "author": "Liana Pigeot",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:liana-p/narrat-engine.git",
+    "directory": "packages/narrat-editor"
+  },
+  "homepage": "https://narrat.dev",
+  "files": [
+    "dist/"
+  ],
+  "dependencies": {
+    "clone-deep": "^4.0.1",
+    "monaco-editor": "0.52.2",
+    "monaco-yaml": "^5.4.0",
+    "narrat": "workspace:*",
+    "pinia": "^3.0.3",
+    "vue": "^3.5.18"
+  },
+  "devDependencies": {
+    "@types/clone-deep": "^4.0.4",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.5",
+    "vite-plugin-monaco-editor": "^1.1.0",
+    "vite-plugin-narrat": "workspace:*",
+    "vite-plugin-windicss": "^1.9.4",
+    "vue-tsc": "^3.0.3",
+    "windicss": "^3.5.6"
+  }
+}

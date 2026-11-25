@@ -1,0 +1,46 @@
+---
+gameTitle: Narrat RPG Example
+saveFileName: Narrat RPG
+images: {}
+dialogPanel:
+  textSpeed: 30
+  animateText: true
+  timeBetweenLines: 100
+  overlayMode: true
+  rightOffset: 50
+  bottomOffset: 50
+  width: 400
+  height: 680
+layout:
+  backgrounds:
+    width: 1200
+    height: 720
+  dialogBottomPadding: 70
+  minTextWidth: 475
+  mobileDialogHeightPercentage: 60
+  verticalLayoutThreshold: 600
+  portraits:
+    width: 100
+    height: 100
+notifications:
+  timeOnScreen: 2.5
+hudStats:
+  mp:
+    icon: img/ui/energy.webp
+    name: MP
+    startingValue: 100
+    minValue: 0
+    maxValue: 100
+  hp:
+    icon: img/ui/energy.webp
+    name: HP
+    startingValue: 100
+    minValue: 0
+    maxValue: 100
+interactionTags:
+  default:
+    onlyInteractOutsideOfScripts: true
+menuButtons: {}
+saves:
+  mode: manual
+  slots: 10

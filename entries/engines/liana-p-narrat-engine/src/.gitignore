@@ -1,0 +1,43 @@
+# Vite analyzer
+packages/narrat/analyze.html
+
+# Vitepress
+
+docs/.vitepress/cache/
+docs/.vitepress/.temp/
+
+# Narrat template local testing files so they're not included in releases
+dist/
+out/
+**/template/public/
+packages/create-narrat-plugin/template/
+
+built-example/
+web_modules/
+lib/
+build/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:42:51Z",
+ "category": "engines",
+ "commit": "2026-09-11 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "chrisheninger/matchimals.fun \u2014 \ud83e\udd81 \ud83c\udccf \ud83d\udcf1 An animal matching puzzle card game\u2013\u00a0built with turn-based game engine boardgame.io and React-Native + React-Native-Web",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "matchimals.fun",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "chrisheninger-matchimals-fun",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 194,
+ "system": "\ud83e\udd81 \ud83c\udccf \ud83d\udcf1 An animal matching puzzle card game\u2013\u00a0built with turn-based game engine boardgame.io and React-Native + React-Native-Web",
+ "upstream": "https://github.com/chrisheninger/matchimals.fun",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

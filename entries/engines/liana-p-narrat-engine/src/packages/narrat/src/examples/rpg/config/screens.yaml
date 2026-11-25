@@ -1,0 +1,34 @@
+screens:
+  default:
+    background: rpg/img/backgrounds/rpg.webp
+  rpg:
+    background: rpg/img/backgrounds/rpg.webp
+    buttons:
+      - id: startGame
+        background: rpg/img/ui/start.webp
+        enabled: true
+        position:
+          left: 440
+          top: 500
+          width: 291
+          height: 64
+        anchor:
+          x: 0.5
+          y: 0.5
+        action: setup_rpg
+  battle_grass:
+    background: rpg/img/levels/grass.webp
+  battle_cave:
+    background: rpg/img/levels/cave.webp
+  battle_dungeon:
+    background: rpg/img/levels/dungeon.webp
+  dungeon_FRL:
+    background: rpg/img/levels/dungeon_FRL.webp
+  dungeon_F:
+    background: rpg/img/levels/dungeon_F.webp
+  dungeon_FL:
+    background: rpg/img/levels/dungeon_FL.webp
+  dungeon_FR:
+    background: rpg/img/levels/dungeon_FR.webp
+  dungeon_LR:
+    background: rpg/img/levels/dungeon_LR.webp

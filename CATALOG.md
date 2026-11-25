@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 18:26 UTC · 1742 entries · 439 vendored, 1303 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 18:42 UTC · 1748 entries · 440 vendored, 1308 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 696 | 166 | 530 |
+| [engines](#engines) — Game engines and engine subsystems | 702 | 167 | 535 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 18:26 UTC · 1742 entries · 439 vendored, 1303 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 696 entries
+**Game engines and engine subsystems** — 702 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -139,6 +139,7 @@ _Generated 2026-11-25 18:26 UTC · 1742 entries · 439 vendored, 1303 reference-
 | [carp — core](entries/engines/carp-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | Apache-2.0 | vendored | [carp-lang/Carp](https://github.com/carp-lang/Carp) @ `ad5a96e` |
 | [cartographer](entries/engines/awkwardpolygons-cartographer/README.md) | A GPU powered Terrain editor and renderer for Godot Engine | gdscript | Apache-2.0 | vendored | [awkwardpolygons/cartographer](https://github.com/awkwardpolygons/cartographer) @ `8703a0e9eabc` |
 | [cat-game-engine](entries/engines/kayjames196-cat-game-engine/README.md) | Cat Game Engine: three-level abstraction game engine with unbound architecture | typescript | none | reference | [KayJames196/cat-game-engine](https://github.com/KayJames196/cat-game-engine) @ `dba965822d7d` |
+| [caviar](entries/engines/load1n9-caviar/README.md) | ⚡ Blazing fast, modern, Game Engine powered by WebGPU for Deno and the browser | typescript | MIT | reference | [load1n9/caviar](https://github.com/load1n9/caviar) @ `2025-09-03 (branch tip at catalogue time)` |
 | [CBG----Clavierhaus-BackGammon — engine-core](entries/engines/cbg-clavierhaus-backgammon-engine-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [clavierhaus/gnubg-android](https://github.com/clavierhaus/gnubg-android) @ `6202857` |
 | [cgl](entries/engines/jaysmito101-cgl/README.md) | CGL (C Game Library) is a multipurpose library mainly for recreational coding / demo scenes / prototyping / small games / experimentation.  | javascript | MIT | vendored | [Jaysmito101/cgl](https://github.com/Jaysmito101/cgl) @ `bca6e65157a7` |
 | [channeld](entries/engines/channeldorg-channeld/README.md) | Next-Gen Gateway Service for distributed game servers built with Unreal or Unity Engine | go | Apache-2.0 | reference | [channeldorg/channeld](https://github.com/channeldorg/channeld) @ `2026-01-22 (branch tip at catalogue time)` |
@@ -178,6 +179,7 @@ _Generated 2026-11-25 18:26 UTC · 1742 entries · 439 vendored, 1303 reference-
 | [doriax](entries/engines/doriaxengine-doriax/README.md) | Game engine for 2D and 3D projects with entity component system (ECS) and data-oriented design | c++ | MIT | reference | [doriaxengine/doriax](https://github.com/doriaxengine/doriax) @ `2026-11-15 (branch tip at catalogue time)` |
 | [dragon-mud](entries/engines/bbuck-dragon-mud/README.md) | A text-based game engine written in Go and scripted with Lua. | go | none | reference | [bbuck/dragon-mud](https://github.com/bbuck/dragon-mud) @ `3e8c854b7aff` |
 | [DragonECS](entries/engines/dcfapixels-dragonecs/README.md) | Pure C# Entity Component System framework | c# | MIT | reference | [DCFApixels/DragonECS](https://github.com/DCFApixels/DragonECS) @ `2026-09-20 (branch tip at catalogue time)` |
+| [dreamlab-engine](entries/engines/worldql-dreamlab-engine/README.md) | Multiplayer game engine with visual editor written in TypeScript | typescript | Apache-2.0 | reference | [WorldQL/dreamlab-engine](https://github.com/WorldQL/dreamlab-engine) @ `2026-03-16 (branch tip at catalogue time)` |
 | [DuckEngine](entries/engines/art-emini-duckengine/README.md) | A 2D Game Engine for the web. | typescript | MIT | reference | [art-emini/DuckEngine](https://github.com/art-emini/DuckEngine) @ `2023-08-25 (branch tip at catalogue time)` |
 | [dungeonfs](entries/engines/chrisrx-dungeonfs/README.md) | A FUSE filesystem and dungeon crawling adventure game engine | go | BSD-2-Clause | reference | [ChrisRx/dungeonfs](https://github.com/ChrisRx/dungeonfs) @ `2025-10-29 (branch tip at catalogue time)` |
 | [DXE](entries/engines/lanlou123-dxe/README.md) | A voxel cone traced realtime Global Illumination rendering engine in dx12, wip | c++ | unknown | reference | [LanLou123/DXE](https://github.com/LanLou123/DXE) @ `2021-09-19 (branch tip at catalogue time)` |
@@ -362,6 +364,7 @@ _Generated 2026-11-25 18:26 UTC · 1742 entries · 439 vendored, 1303 reference-
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
 | [Jin](entries/engines/chaifix-jin/README.md) | A 2D game framework for simplifying game making process in Lua.  | c++ | MIT | reference | [chaifix/Jin](https://github.com/chaifix/Jin) @ `2017-08-09 (branch tip at catalogue time)` |
+| [js-chess-engine](entries/engines/josefjadrny-js-chess-engine/README.md) | Complete TypeScript chess engine with zero dependencies for Node.js >=24 and browsers. Features configurable AI (5 predefined difficulty levels), stateful/state | typescript | MIT | reference | [josefjadrny/js-chess-engine](https://github.com/josefjadrny/js-chess-engine) @ `2026-02-22 (branch tip at catalogue time)` |
 | [js13k-ecs](entries/engines/kutuluk-js13k-ecs/README.md) | A <700b entity component system, designed for Js13kGames | javascript | MIT | reference | [kutuluk/js13k-ecs](https://github.com/kutuluk/js13k-ecs) @ `2026-04-25 (branch tip at catalogue time)` |
 | [julius — core](entries/engines/julius-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | AGPL-3.0 | reference | [bvschaik/julius](https://github.com/bvschaik/julius) @ `34d1ecd` |
 | [kaiju](entries/engines/kaijuengine-kaiju/README.md) | General purpose 3D and 2D game engine using Go (golang) and Vulkan with built in editor | go | MIT | vendored | [KaijuEngine/kaiju](https://github.com/KaijuEngine/kaiju) @ `c5b49f65571f` |
@@ -403,6 +406,7 @@ _Generated 2026-11-25 18:26 UTC · 1742 entries · 439 vendored, 1303 reference-
 | [macroquad](entries/engines/not-fl3-macroquad/README.md) | Cross-platform game engine in Rust.  | rust | Apache-2.0 | vendored | [not-fl3/macroquad](https://github.com/not-fl3/macroquad) @ `8d602d3f8ebb` |
 | [magictools](entries/engines/ellisonleao-magictools/README.md) | :video_game: :pencil: A list of Game Development resources to make magic happen. | markdown | MIT | vendored | [ellisonleao/magictools](https://github.com/ellisonleao/magictools) @ `7ea0640f128c` |
 | [magnum](entries/engines/mosra-magnum/README.md) | Lightweight and modular C++11 graphics middleware for games and data visualization | c++ | MIT | reference | [mosra/magnum](https://github.com/mosra/magnum) @ `f0907f1c1d12` |
+| [matchimals.fun](entries/engines/chrisheninger-matchimals-fun/README.md) | 🦁 🃏 📱 An animal matching puzzle card game– built with turn-based game engine boardgame.io and React-Native + React-Native-Web | typescript | MIT | reference | [chrisheninger/matchimals.fun](https://github.com/chrisheninger/matchimals.fun) @ `2026-09-11 (branch tip at catalogue time)` |
 | [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Meridian](entries/engines/naxela-meridian/README.md) | Bridging Godot and Blender | python | unknown | reference | [Naxela/Meridian](https://github.com/Naxela/Meridian) @ `2026-06-08 (branch tip at catalogue time)` |
 | [Messenger](entries/engines/elm-messenger-messenger/README.md) | A 2D game engine for Elm | python | unknown | reference | [elm-messenger/Messenger](https://github.com/elm-messenger/Messenger) @ `2026-06-21 (branch tip at catalogue time)` |
@@ -433,6 +437,7 @@ _Generated 2026-11-25 18:26 UTC · 1742 entries · 439 vendored, 1303 reference-
 | [MxEngine](entries/engines/asc-community-mxengine/README.md) | C++ open source 3D game engine | c++ | BSD-3-Clause | reference | [ASC-Community/MxEngine](https://github.com/ASC-Community/MxEngine) @ `2024-04-06 (branch tip at catalogue time)` |
 | [Myra](entries/engines/myraui-myra/README.md) | UI Library for MonoGame, FNA and Stride | c# | MIT | vendored | [MyraUI/Myra](https://github.com/MyraUI/Myra) @ `f605da2bba59` |
 | [NamorvTech](entries/engines/travisvroman-namorvtech/README.md) | NamorvTech Game Engine (Created during the TypeScript Game Engine Tutorial) | typescript | none | reference | [travisvroman/NamorvTech](https://github.com/travisvroman/NamorvTech) @ `10471fe80a30` |
+| [narrat-engine](entries/engines/liana-p-narrat-engine/README.md) | Narrat game engine | typescript | MIT | vendored | [liana-p/narrat-engine](https://github.com/liana-p/narrat-engine) @ `5ab42d5fcd79` |
 | [NasNas](entries/engines/madour-nasnas/README.md) | An intuitive and beginner friendly 2D game framework for C++ | c++ | unknown | reference | [Madour/NasNas](https://github.com/Madour/NasNas) @ `2024-02-25 (branch tip at catalogue time)` |
 | [Nav3D](entries/engines/darbycostello-nav3d/README.md) | 3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning | c++ | MIT | reference | [darbycostello/Nav3D](https://github.com/darbycostello/Nav3D) @ `2026-01-12 (branch tip at catalogue time)` |
 | [nCine](entries/engines/ncine-ncine/README.md) | A cross-platform 2D game engine | c++ | MIT | reference | [nCine/nCine](https://github.com/nCine/nCine) @ `2026-11-13 (branch tip at catalogue time)` |
@@ -697,6 +702,7 @@ _Generated 2026-11-25 18:26 UTC · 1742 entries · 439 vendored, 1303 reference-
 | [wavefunctioncollapse-clj](entries/engines/allison-casey-wavefunctioncollapse-clj/README.md) | Bitmap and tilemap generation from a single example with the help of ideas from quantum mechanics. Java port of mxgmn's wavefunctioncollapse library. | clojure | MIT | reference | [allison-casey/wavefunctioncollapse-clj](https://github.com/allison-casey/wavefunctioncollapse-clj) @ `2019-12-19 (branch tip at catalogue time)` |
 | [web-sdk](entries/engines/engineio-web-sdk/README.md) | About The Web Game Engine: Create your own web game with in a declarative way. | typescript | unknown | reference | [engineio/web-sdk](https://github.com/engineio/web-sdk) @ `2025-11-27 (branch tip at catalogue time)` |
 | [WebGAL](entries/engines/openwebgal-webgal/README.md) | A brand new web Visual Novel engine / 全新的网页端视觉小说引擎 | typescript | MPL-2.0 | reference | [OpenWebGAL/WebGAL](https://github.com/OpenWebGAL/WebGAL) @ `2026-11-21 (branch tip at catalogue time)` |
+| [webgpu](entries/engines/neuroprod-webgpu/README.md) | WebGPU Game  | typescript | none | reference | [neuroprod/webgpu](https://github.com/neuroprod/webgpu) @ `2608dba4945f` |
 | [webTaleKit](entries/engines/endohizumi-webtalekit/README.md) | A visual novel game engine written in JavaScript (TypeScript) that allows full customization of the UI. | typescript | MIT | reference | [EndoHizumi/webTaleKit](https://github.com/EndoHizumi/webTaleKit) @ `2026-11-17 (branch tip at catalogue time)` |
 | [WickedEngine](entries/engines/turanszkij-wickedengine/README.md) | 3D engine with modern graphics | c++ | MIT | reference | [turanszkij/WickedEngine](https://github.com/turanszkij/WickedEngine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |

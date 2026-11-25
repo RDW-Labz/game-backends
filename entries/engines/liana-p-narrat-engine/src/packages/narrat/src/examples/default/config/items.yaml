@@ -1,0 +1,25 @@
+---
+categories:
+  - id: food
+    title: items.categories.food
+  - id: books
+    title: items.categories.books
+
+items:
+  bread:
+    name: items.bread.name
+    category: food
+    description: items.bread.description
+    icon: img/items/bread.webp
+    onUse:
+      action: jump
+      label: eat_bread
+  book:
+    name: items.book.name
+    description: items.book.description
+    icon: img/items/book.webp
+    onUse:
+      action: run
+      label: read_book
+    tag: always_interactable
+    category: books

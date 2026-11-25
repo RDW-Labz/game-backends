@@ -3355,3 +3355,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/wsm2110-faster-map
   - reference engines/natecurtiss-mirage
   - reference engines/b1rdmania-motif
+
+- **2026-11-25 18:42 UTC** — tick 885: +2 screened, +4 reference, 13 skipped, catalogue=1748
+  - added engines/liana-p-narrat-engine (MIT, vendored)
+  - added engines/neuroprod-webgpu (none, reference)
+  - reference engines/chrisheninger-matchimals-fun
+  - reference engines/worldql-dreamlab-engine
+  - reference engines/load1n9-caviar
+  - reference engines/josefjadrny-js-chess-engine

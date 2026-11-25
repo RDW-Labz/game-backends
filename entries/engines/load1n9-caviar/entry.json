@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:42:51Z",
+ "category": "engines",
+ "commit": "2025-09-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "load1n9/caviar \u2014 \u26a1 Blazing fast, modern, Game Engine powered by WebGPU for Deno and the browser",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "caviar",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "load1n9-caviar",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 172,
+ "system": "\u26a1 Blazing fast, modern, Game Engine powered by WebGPU for Deno and the browser",
+ "upstream": "https://github.com/load1n9/caviar",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

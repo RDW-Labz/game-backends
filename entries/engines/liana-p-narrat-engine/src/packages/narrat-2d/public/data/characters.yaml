@@ -1,0 +1,15 @@
+---
+config:
+  imagesPath: img/characters/
+characters:
+  game:
+    name: ''
+    color: white
+  player:
+    style:
+      color: orange
+    name: You
+  npc:
+    style:
+      color: green
+    name: Nice NPC

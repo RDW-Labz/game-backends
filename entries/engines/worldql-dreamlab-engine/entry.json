@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:42:51Z",
+ "category": "engines",
+ "commit": "2026-03-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "WorldQL/dreamlab-engine \u2014 Multiplayer game engine with visual editor written in TypeScript",
+ "language": "typescript",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "dreamlab-engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "worldql-dreamlab-engine",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 178,
+ "system": "Multiplayer game engine with visual editor written in TypeScript",
+ "upstream": "https://github.com/WorldQL/dreamlab-engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

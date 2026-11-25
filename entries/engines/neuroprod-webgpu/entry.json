@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T18:42:49Z",
+ "category": "engines",
+ "commit": "2608dba4945f",
+ "delivery": "reference",
+ "description": "neuroprod/webgpu \u2014 WebGPU Game",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "webgpu",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 5536858,
+ "slug": "neuroprod-webgpu",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 194,
+ "system": "WebGPU Game ",
+ "upstream": "https://github.com/neuroprod/webgpu",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

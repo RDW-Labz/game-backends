@@ -1,0 +1,44 @@
+{
+  "name": "@narrat/plugin-2d",
+  "description": "A 2D game engine plugin for narrat",
+  "main": "dist/narrat-plugin-counter.es.js",
+  "module": "dist/narrat-plugin-counter.es.js",
+  "types": "dist/plugin.d.ts",
+  "version": "4.1.18",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:liana-p/narrat-engine.git",
+    "directory": "packages/narrat-plugin-counter"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "homepage": "https://narrat.dev",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "generate-types": "vue-tsc --emitDeclarationOnly --outDir dist && pnpm run fix-type-aliases",
+    "fix-type-aliases": "tsc-alias -p tsconfig.json",
+    "build": "vue-tsc --noEmit && vite build && pnpm run generate-types",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "pixi.js": "^6.5.6"
+  },
+  "peerDependencies": {
+    "narrat": "workspace:*",
+    "pinia": "^2.1.7",
+    "vue": "^3.5.18"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.0",
+    "narrat": "workspace:*",
+    "pinia": "^3.0.3",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.5",
+    "vue": "^3.5.18",
+    "vue-tsc": "^3.0.3"
+  }
+}

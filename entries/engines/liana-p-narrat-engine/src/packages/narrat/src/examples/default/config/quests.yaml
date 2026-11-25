@@ -1,0 +1,68 @@
+categories:
+  - id: default
+    title: Quest Category 1
+  - id: other
+    title: qusts.categories.category_2
+
+quests:
+  breadShopping:
+    title: quests.bread_shopping.title
+    description: quests.bread_shopping.description
+    objectives:
+      bread:
+        description: quests.bread_shopping.objectives.bread.description
+      delivery:
+        hidden: true
+        description: quests.bread_shopping.objectives.delivery.description
+
+  quest1:
+    title: Lorem Ipsum Dolor
+    description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+    objectives:
+      objective1:
+        description: Ut enim ad minim veniam, quis nostrud exercitation.
+      objective2:
+        description: Duis aute irure dolor in reprehenderit.
+      objective3:
+        hidden: true
+        description: Excepteur sint occaecat cupidatat non proident.
+
+  quest2:
+    title: Consectetur Adipiscing
+    description: Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.
+    objectives:
+      objective1:
+        description: Nulla facilisi. Mauris sollicitudin fermentum libero.
+
+  quest3:
+    title: Sed Do Eiusmod
+    description: Praesent elementum facilisis leo vel fringilla est ullamcorper eget.
+    objectives:
+      objective1:
+        description: Pellentesque habitant morbi tristique senectus.
+      objective2:
+        description: Netus et malesuada fames ac turpis egestas.
+
+  quest4:
+    title: Tempor Incididunt
+    description: Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.
+    objectives:
+      objective1:
+        description: Donec rutrum congue leo eget malesuada.
+      objective2:
+        description: Vestibulum ac diam sit amet quam vehicula.
+      objective3:
+        description: Curabitur aliquet quam id dui posuere blandit.
+      objective4:
+        hidden: true
+        description: Nulla quis lorem ut libero malesuada feugiat.
+
+  quest5:
+    title: Ut Labore Et
+    description: Proin eget tortor risus. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.
+    objectives:
+      objective1:
+        description: Curabitur aliquet quam id dui posuere blandit.
+      objective2:
+        hidden: true
+        description: Nulla quis lorem ut libero malesuada feugiat.

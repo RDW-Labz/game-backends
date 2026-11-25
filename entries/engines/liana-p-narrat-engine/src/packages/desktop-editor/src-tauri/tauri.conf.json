@@ -1,0 +1,98 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
+    "beforeBuildCommand": "pnpm run ide:build",
+    "beforeDevCommand": "pnpm run ide:dev",
+    "devPath": "http://localhost:5817/",
+    "distDir": "../dist"
+  },
+  "package": {
+    "productName": "narrat-desktop-editor",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "fs": {
+        "all": true
+      },
+      "dialog": {
+        "all": true
+      },
+      "globalShortcut": {
+        "all": true
+      },
+      "shell": {
+        "all": true,
+        "scope": [
+          {
+            "name": "run-npm-scripts",
+            "cmd": "npm",
+            "args": ["run", { "validator": "\\S+" }]
+          },
+          {
+            "name": "run-npm-scripts-windows",
+            "cmd": "npm.cmd",
+            "args": ["run", { "validator": "\\S+" }]
+          },
+          {
+            "name": "npm-install",
+            "cmd": "npm",
+            "args": ["install"]
+          }
+        ]
+      },
+      "os": {
+        "all": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "category": "DeveloperTool",
+      "copyright": "MIT License",
+      "deb": {
+        "depends": []
+      },
+      "externalBin": [],
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "identifier": "dev.narrat.ide",
+      "longDescription": "The narrat game editor",
+      "macOS": {
+        "entitlements": null,
+        "exceptionDomain": "",
+        "frameworks": [],
+        "providerShortName": null,
+        "signingIdentity": null
+      },
+      "resources": [],
+      "shortDescription": "Narrat Game Editor",
+      "targets": "all",
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "security": {
+      "csp": null
+    },
+    "updater": {
+      "active": false
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "label": "narrateditor",
+        "title": "Narrat Desktop Editor",
+        "maximized": true,
+        "focus": true
+      }
+    ]
+  }
+}
