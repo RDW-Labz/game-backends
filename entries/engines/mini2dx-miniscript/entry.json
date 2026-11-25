@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:49:24Z",
+ "category": "engines",
+ "commit": "2022-08-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mini2Dx/miniscript \u2014 A scripting library for Java-based games",
+ "language": "java",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "miniscript",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mini2dx-miniscript",
+ "source": "github-search:libgdx library stars:>30",
+ "stars": 39,
+ "system": "A scripting library for Java-based games",
+ "upstream": "https://github.com/mini2Dx/miniscript",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

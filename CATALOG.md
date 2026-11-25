@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 00:30 UTC · 1445 entries · 376 vendored, 1069 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 00:49 UTC · 1451 entries · 377 vendored, 1074 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 638 | 154 | 484 |
-| [physics](#physics) — Physics | 131 | 34 | 97 |
+| [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
+| [physics](#physics) — Physics | 132 | 34 | 98 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 00:30 UTC · 1445 entries · 376 vendored, 1069 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 638 entries
+**Game engines and engine subsystems** — 643 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -393,6 +393,7 @@ _Generated 2026-11-25 00:30 UTC · 1445 entries · 376 vendored, 1069 reference-
 | [mineblox](entries/engines/real2nix-mineblox/README.md) | A highly extensible voxel engine written in Luau for Roblox. | luau | MIT | reference | [real2nix/mineblox](https://github.com/real2nix/mineblox) @ `2025-07-06 (branch tip at catalogue time)` |
 | [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
 | [minimalist-game-framework](entries/engines/zachbarth-minimalist-game-framework/README.md) | A minimalist game framework in the style of the "game engine" we use at Zachtronics. | c# | MIT | vendored | [zachbarth/minimalist-game-framework](https://github.com/zachbarth/minimalist-game-framework) @ `c9a7c1ee2392` |
+| [miniscript](entries/engines/mini2dx-miniscript/README.md) | A scripting library for Java-based games | java | MIT | reference | [mini2Dx/miniscript](https://github.com/mini2Dx/miniscript) @ `2022-08-28 (branch tip at catalogue time)` |
 | [miu2d](entries/engines/luckyyyyy-miu2d/README.md) | Miu2D is a 2D RPG game engine built with Rust + TypeScript + React + Canvas, designed for the Web platform. 剑侠情缘2/月影传说/新剑侠情缘网页复刻版 | typescript | MIT | reference | [luckyyyyy/miu2d](https://github.com/luckyyyyy/miu2d) @ `2026-09-06 (branch tip at catalogue time)` |
 | [mizu](entries/engines/sedyh-mizu/README.md) | Entity Component System framework for Ebitengine | go | MIT | vendored | [sedyh/mizu](https://github.com/sedyh/mizu) @ `f4fbe1877056` |
 | [MLEM](entries/engines/ellpeck-mlem/README.md) | Libraries for MonoGame and FNA that provide abstractions, quality of life improvements and additional features like a ui system and easy input handling. | c# | MIT | reference | [Ellpeck/MLEM](https://github.com/Ellpeck/MLEM) @ `2026-11-17 (branch tip at catalogue time)` |
@@ -402,6 +403,8 @@ _Generated 2026-11-25 00:30 UTC · 1445 entries · 376 vendored, 1069 reference-
 | [MoravaEngine](entries/engines/dtrajko-moravaengine/README.md) | C++ 2D/3D graphics engine and scene editor for Vulkan 1.4, OpenGL and DirectX 11, on Windows and Linux. Physically based rendering, global illumination, ray-tra | c++ | Apache-2.0 | reference | [dtrajko/MoravaEngine](https://github.com/dtrajko/MoravaEngine) @ `535e8fb78cad` |
 | [morpeh](entries/engines/scellecs-morpeh/README.md) | 🎲 ECS Framework for Unity Game Engine and .Net Platform | c# | MIT | reference | [scellecs/morpeh](https://github.com/scellecs/morpeh) @ `2026-11-17 (branch tip at catalogue time)` |
 | [MPG](entries/engines/feralai-mpg/README.md) | C++ library for handling USB gamepad inputs on multiple platforms. | c | MIT | reference | [FeralAI/MPG](https://github.com/FeralAI/MPG) @ `2022-02-02 (branch tip at catalogue time)` |
+| [msdf-gdx](entries/engines/maltaisn-msdf-gdx/README.md) | Provides lightweight utilities to draw MSDF text on LibGDX | kotlin | Apache-2.0 | reference | [maltaisn/msdf-gdx](https://github.com/maltaisn/msdf-gdx) @ `2023-12-21 (branch tip at catalogue time)` |
+| [MTX](entries/engines/moribitotech-mtx/README.md) | Compact Mtx Framework over LibGDX Game Library | java | Apache-2.0 | vendored | [moribitotech/MTX](https://github.com/moribitotech/MTX) @ `9472d98c3960` |
 | [multiplayer-voxel-browser-game-engine](entries/engines/kevzettler-multiplayer-voxel-browser-game-engine/README.md) | A multiplayer voxel browser game engine | typescript | unknown | reference | [kevzettler/multiplayer-voxel-browser-game-engine](https://github.com/kevzettler/multiplayer-voxel-browser-game-engine) @ `2023-04-24 (branch tip at catalogue time)` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
 | [MusicEngine](entries/engines/geekdrums-musicengine/README.md) | make music synced game with Unity / ADX2 / Wwise | c# | unknown | reference | [geekdrums/MusicEngine](https://github.com/geekdrums/MusicEngine) @ `2023-01-09 (branch tip at catalogue time)` |
@@ -412,6 +415,7 @@ _Generated 2026-11-25 00:30 UTC · 1445 entries · 376 vendored, 1069 reference-
 | [Nav3D](entries/engines/darbycostello-nav3d/README.md) | 3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning | c++ | MIT | reference | [darbycostello/Nav3D](https://github.com/darbycostello/Nav3D) @ `2026-01-12 (branch tip at catalogue time)` |
 | [nCine](entries/engines/ncine-ncine/README.md) | A cross-platform 2D game engine | c++ | MIT | reference | [nCine/nCine](https://github.com/nCine/nCine) @ `2026-11-13 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
+| [netthreads-libgdx](entries/engines/alistairrutherford-netthreads-libgdx/README.md) | Extension library for LibGDX. Implements Cocos2d-like Director, Layer, Scenes etc | java | unknown | reference | [alistairrutherford/netthreads-libgdx](https://github.com/alistairrutherford/netthreads-libgdx) @ `2016-11-27 (branch tip at catalogue time)` |
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
 | [Nice-Lua](entries/engines/justin-sky-nice-lua/README.md) | 基于xlua的MVVM框架，支持Addressables, 统一渲染管线等Unity新特性 | c# | unknown | reference | [Justin-sky/Nice-Lua](https://github.com/Justin-sky/Nice-Lua) @ `2023-07-11 (branch tip at catalogue time)` |
 | [nmage](entries/engines/bloeys-nmage/README.md) | 3D Game Engine in Go | go | MIT | vendored | [bloeys/nmage](https://github.com/bloeys/nmage) @ `fd59705ddac9` |
@@ -500,6 +504,7 @@ _Generated 2026-11-25 00:30 UTC · 1445 entries · 376 vendored, 1069 reference-
 | [pyxel-mcp](entries/engines/kitao-pyxel-mcp/README.md) | MCP server for AI-assisted retro game development with Pyxel | python | MIT | reference | [kitao/pyxel-mcp](https://github.com/kitao/pyxel-mcp) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Qake](entries/engines/lallassu-qake/README.md) | Qake voxel-engine demo | javascript | MIT | vendored | [Lallassu/Qake](https://github.com/Lallassu/Qake) @ `6c8da7a83b72` |
 | [Quasi-Engine](entries/engines/indt-quasi-engine/README.md) | Quasi Engine is a framework that intends to be a complete toolset to ease 2d game development, providing ready-to-use QML elements representing basic game entit | c++ | LGPL-3.0 | reference | [INdT/Quasi-Engine](https://github.com/INdT/Quasi-Engine) @ `7d496613c31b` |
+| [Quaver.API](entries/engines/quaver-quaver-api/README.md) | Keep developing for Quaver with these set of tools and C# libraries. | c# | GPL-3.0 | reference | [Quaver/Quaver.API](https://github.com/Quaver/Quaver.API) @ `14f39cc9331d` |
 | [ra2](entries/engines/openra-ra2/README.md) | A Red Alert 2 mod for the OpenRA game engine | c# | GPL-3.0 | reference | [OpenRA/ra2](https://github.com/OpenRA/ra2) @ `61e24e3c1d7b` |
 | [raea](entries/engines/shinyobjectz-raea/README.md) | Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS,  | typescript | unknown | reference | [shinyobjectz/raea](https://github.com/shinyobjectz/raea) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Rain-Meadow](entries/engines/henpemaz-rain-meadow/README.md) | Rain World multiplayer engine and custom game mode | c# | unknown | reference | [henpemaz/Rain-Meadow](https://github.com/henpemaz/Rain-Meadow) @ `2026-11-18 (branch tip at catalogue time)` |
@@ -661,7 +666,7 @@ _Generated 2026-11-25 00:30 UTC · 1445 entries · 376 vendored, 1069 reference-
 
 ## physics
 
-**Physics** — 131 entries
+**Physics** — 132 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -739,6 +744,7 @@ _Generated 2026-11-25 00:30 UTC · 1445 entries · 376 vendored, 1069 reference-
 | [nudge](entries/physics/rasmusbarr-nudge/README.md) | A small data-oriented and SIMD-optimized 3D rigid body physics library. | c | MIT | vendored | [rasmusbarr/nudge](https://github.com/rasmusbarr/nudge) @ `bb00cb2985aa` |
 | [numbat](entries/physics/sharkdp-numbat/README.md) | A statically typed programming language for scientific computations with first class support for physical dimensions and units | rust | Apache-2.0 | vendored | [sharkdp/numbat](https://github.com/sharkdp/numbat) @ `e8abf32b975f` |
 | [NVIDIA PhysX](entries/physics/physx/README.md) | GPU/CPU 3D rigid body, cloth, particles, vehicles | c++ | BSD-3-Clause | reference | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX) @ `7d6f6ac8b83e` |
+| [Oimo.js](entries/physics/lo-th-oimo-js/README.md) | Lightweight 3d physics engine for javascript | javascript | MIT | reference | [lo-th/Oimo.js](https://github.com/lo-th/Oimo.js) @ `2021-07-08 (branch tip at catalogue time)` |
 | [OpenBSE](entries/physics/bbrannon4-openbse/README.md) | Open-source building energy simulation engine — modern architecture, validated physics, built for programmatic and AI-assisted workflows. | rust | AGPL-3.0 | reference | [bbrannon4/OpenBSE](https://github.com/bbrannon4/OpenBSE) @ `2026-11-20 (branch tip at catalogue time)` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [panda-gym](entries/physics/qgallouedec-panda-gym/README.md) | Set of robotic environments based on PyBullet physics engine and gymnasium. | python | MIT | reference | [qgallouedec/panda-gym](https://github.com/qgallouedec/panda-gym) @ `2024-07-23 (branch tip at catalogue time)` |

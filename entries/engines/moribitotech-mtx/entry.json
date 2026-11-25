@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T00:49:22Z",
+ "category": "engines",
+ "commit": "9472d98c3960",
+ "delivery": "vendored",
+ "description": "moribitotech/MTX \u2014 Compact Mtx Framework over LibGDX Game Library",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "IAdController.java",
+ "license_verdict": "clean",
+ "name": "MTX",
+ "size_bytes": 342382,
+ "slug": "moribitotech-mtx",
+ "source": "github-search:libgdx library stars:>30",
+ "stars": 60,
+ "system": "Compact Mtx Framework over LibGDX Game Library",
+ "upstream": "https://github.com/moribitotech/MTX",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:49:24Z",
+ "category": "physics",
+ "commit": "2021-07-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "lo-th/Oimo.js \u2014 Lightweight 3d physics engine for javascript",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Oimo.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "lo-th-oimo-js",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 3181,
+ "system": "Lightweight 3d physics engine for javascript",
+ "upstream": "https://github.com/lo-th/Oimo.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

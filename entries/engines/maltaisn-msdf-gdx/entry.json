@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T00:49:24Z",
+ "category": "engines",
+ "commit": "2023-12-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "maltaisn/msdf-gdx \u2014 Provides lightweight utilities to draw MSDF text on LibGDX",
+ "language": "kotlin",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "msdf-gdx",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "maltaisn-msdf-gdx",
+ "source": "github-search:libgdx library stars:>30",
+ "stars": 41,
+ "system": "Provides lightweight utilities to draw MSDF text on LibGDX",
+ "upstream": "https://github.com/maltaisn/msdf-gdx",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

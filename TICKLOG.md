@@ -2932,3 +2932,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/manevillef-bevy-life
   - reference engines/harudagondi-bevy-fundsp
   - reference engines/ellpeck-mlem
+
+- **2026-11-25 00:49 UTC** — tick 822: +2 screened, +4 reference, 31 skipped, catalogue=1451
+  - added engines/quaver-quaver-api (GPL-3.0, reference)
+  - added engines/moribitotech-mtx (Apache-2.0, vendored)
+  - reference engines/alistairrutherford-netthreads-libgdx
+  - reference engines/maltaisn-msdf-gdx
+  - reference engines/mini2dx-miniscript
+  - reference physics/lo-th-oimo-js

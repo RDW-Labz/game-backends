@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T00:49:19Z",
+ "category": "engines",
+ "commit": "14f39cc9331d",
+ "delivery": "reference",
+ "description": "Quaver/Quaver.API \u2014 Keep developing for Quaver with these set of tools and C# libraries.",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Quaver.API",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 459479,
+ "slug": "quaver-quaver-api",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 22,
+ "system": "Keep developing for Quaver with these set of tools and C# libraries.",
+ "upstream": "https://github.com/Quaver/Quaver.API",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
