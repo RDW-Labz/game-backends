@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T21:22:47Z",
+ "category": "engines",
+ "commit": "6c134ba410b9",
+ "delivery": "vendored",
+ "description": "Javier-Garzo/Marching-cubes-on-Unity-3D \u2014 Terrain voxel engine with the use of Marching Cubes implemented in Unity 2020.3.17f1 (LTS).",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Marching-cubes-on-Unity-3D",
+ "size_bytes": 142031,
+ "slug": "javier-garzo-marching-cubes-on-unity-3d",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 380,
+ "system": "Terrain voxel engine with the use of Marching Cubes implemented in Unity 2020.3.17f1 (LTS).",
+ "upstream": "https://github.com/Javier-Garzo/Marching-cubes-on-Unity-3D",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

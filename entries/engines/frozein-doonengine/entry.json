@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:22:48Z",
+ "category": "engines",
+ "commit": "2023-11-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "frozein/DoonEngine \u2014 a voxel path-tracer",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "DoonEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "frozein-doonengine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 197,
+ "system": "a voxel path-tracer",
+ "upstream": "https://github.com/frozein/DoonEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

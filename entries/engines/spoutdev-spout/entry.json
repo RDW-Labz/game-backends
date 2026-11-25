@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:22:48Z",
+ "category": "engines",
+ "commit": "2021-11-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "spoutdev/Spout \u2014 Open source, multithreaded, voxel game engine and platform, written in Java.",
+ "language": "java",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Spout",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "spoutdev-spout",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 373,
+ "system": "Open source, multithreaded, voxel game engine and platform, written in Java.",
+ "upstream": "https://github.com/spoutdev/Spout",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:22:48Z",
+ "category": "engines",
+ "commit": "2016-08-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gavanw/voxelquestiso \u2014 First version of the Voxel Quest engine (isometric)",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "voxelquestiso",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gavanw-voxelquestiso",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 361,
+ "system": "First version of the Voxel Quest engine (isometric)",
+ "upstream": "https://github.com/gavanw/voxelquestiso",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

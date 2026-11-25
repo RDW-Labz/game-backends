@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:22:48Z",
+ "category": "engines",
+ "commit": "2023-06-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "StanislavPetrovV/Minecraft \u2014 Voxel Engine (like Minecraft) in Python and OpenGL",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Minecraft",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "stanislavpetrovv-minecraft",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 366,
+ "system": "Voxel Engine (like Minecraft) in Python and OpenGL ",
+ "upstream": "https://github.com/StanislavPetrovV/Minecraft",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

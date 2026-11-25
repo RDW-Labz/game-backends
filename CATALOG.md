@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 21:07 UTC · 1794 entries · 449 vendored, 1345 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 21:22 UTC · 1800 entries · 450 vendored, 1350 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 748 | 176 | 572 |
+| [engines](#engines) — Game engines and engine subsystems | 754 | 177 | 577 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 21:07 UTC · 1794 entries · 449 vendored, 1345 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 748 entries
+**Game engines and engine subsystems** — 754 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -183,6 +183,7 @@ _Generated 2026-11-25 21:07 UTC · 1794 entries · 449 vendored, 1345 reference-
 | [DLSS5oneclick](entries/engines/faisalkindi-dlss5oneclick/README.md) | One-click setup of the leaked DLSS 5 neural-rendering build for any DX11/DX12 game on RTX 20–50, with or without DLSS. ReShade + RenoDX add-on (or OptiScaler en | rust | MIT | vendored | [faisalkindi/DLSS5oneclick](https://github.com/faisalkindi/DLSS5oneclick) @ `19122547cc51` |
 | [dogfight-sandbox-hg2](entries/engines/harfang3d-dogfight-sandbox-hg2/README.md) | Air to air combat sandbox, created in Python 3 using the HARFANG 3D 2 framework. | python | GPL-3.0 | reference | [harfang3d/dogfight-sandbox-hg2](https://github.com/harfang3d/dogfight-sandbox-hg2) @ `2026-04-01 (branch tip at catalogue time)` |
 | [dominion-ecs-java](entries/engines/dominion-dev-dominion-ecs-java/README.md) | Insanely fast ECS (Entity Component System) for Java | java | MIT | vendored | [dominion-dev/dominion-ecs-java](https://github.com/dominion-dev/dominion-ecs-java) @ `e3c99d10ffcc` |
+| [DoonEngine](entries/engines/frozein-doonengine/README.md) | a voxel path-tracer | c | MIT | reference | [frozein/DoonEngine](https://github.com/frozein/DoonEngine) @ `2023-11-30 (branch tip at catalogue time)` |
 | [doriax](entries/engines/doriaxengine-doriax/README.md) | Game engine for 2D and 3D projects with entity component system (ECS) and data-oriented design | c++ | MIT | reference | [doriaxengine/doriax](https://github.com/doriaxengine/doriax) @ `2026-11-15 (branch tip at catalogue time)` |
 | [dragon-mud](entries/engines/bbuck-dragon-mud/README.md) | A text-based game engine written in Go and scripted with Lua. | go | none | reference | [bbuck/dragon-mud](https://github.com/bbuck/dragon-mud) @ `3e8c854b7aff` |
 | [DragonECS](entries/engines/dcfapixels-dragonecs/README.md) | Pure C# Entity Component System framework | c# | MIT | reference | [DCFApixels/DragonECS](https://github.com/DCFApixels/DragonECS) @ `2026-09-20 (branch tip at catalogue time)` |
@@ -427,6 +428,7 @@ _Generated 2026-11-25 21:07 UTC · 1794 entries · 449 vendored, 1345 reference-
 | [macroquad](entries/engines/not-fl3-macroquad/README.md) | Cross-platform game engine in Rust.  | rust | Apache-2.0 | vendored | [not-fl3/macroquad](https://github.com/not-fl3/macroquad) @ `8d602d3f8ebb` |
 | [magictools](entries/engines/ellisonleao-magictools/README.md) | :video_game: :pencil: A list of Game Development resources to make magic happen. | markdown | MIT | vendored | [ellisonleao/magictools](https://github.com/ellisonleao/magictools) @ `7ea0640f128c` |
 | [magnum](entries/engines/mosra-magnum/README.md) | Lightweight and modular C++11 graphics middleware for games and data visualization | c++ | MIT | reference | [mosra/magnum](https://github.com/mosra/magnum) @ `f0907f1c1d12` |
+| [Marching-cubes-on-Unity-3D](entries/engines/javier-garzo-marching-cubes-on-unity-3d/README.md) | Terrain voxel engine with the use of Marching Cubes implemented in Unity 2020.3.17f1 (LTS). | c# | MIT | vendored | [Javier-Garzo/Marching-cubes-on-Unity-3D](https://github.com/Javier-Garzo/Marching-cubes-on-Unity-3D) @ `6c134ba410b9` |
 | [matchimals.fun](entries/engines/chrisheninger-matchimals-fun/README.md) | 🦁 🃏 📱 An animal matching puzzle card game– built with turn-based game engine boardgame.io and React-Native + React-Native-Web | typescript | MIT | reference | [chrisheninger/matchimals.fun](https://github.com/chrisheninger/matchimals.fun) @ `2026-09-11 (branch tip at catalogue time)` |
 | [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Meridian](entries/engines/naxela-meridian/README.md) | Bridging Godot and Blender | python | unknown | reference | [Naxela/Meridian](https://github.com/Naxela/Meridian) @ `2026-06-08 (branch tip at catalogue time)` |
@@ -434,6 +436,7 @@ _Generated 2026-11-25 21:07 UTC · 1794 entries · 449 vendored, 1345 reference-
 | [Mindustry — core](entries/engines/mindustry-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
 | [mineblox](entries/engines/real2nix-mineblox/README.md) | A highly extensible voxel engine written in Luau for Roblox. | luau | MIT | reference | [real2nix/mineblox](https://github.com/real2nix/mineblox) @ `2025-07-06 (branch tip at catalogue time)` |
+| [Minecraft](entries/engines/stanislavpetrovv-minecraft/README.md) | Voxel Engine (like Minecraft) in Python and OpenGL  | python | MIT | reference | [StanislavPetrovV/Minecraft](https://github.com/StanislavPetrovV/Minecraft) @ `2023-06-30 (branch tip at catalogue time)` |
 | [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
 | [minimalist-game-framework](entries/engines/zachbarth-minimalist-game-framework/README.md) | A minimalist game framework in the style of the "game engine" we use at Zachtronics. | c# | MIT | vendored | [zachbarth/minimalist-game-framework](https://github.com/zachbarth/minimalist-game-framework) @ `c9a7c1ee2392` |
 | [miniscript](entries/engines/mini2dx-miniscript/README.md) | A scripting library for Java-based games | java | MIT | reference | [mini2Dx/miniscript](https://github.com/mini2Dx/miniscript) @ `2022-08-28 (branch tip at catalogue time)` |
@@ -637,6 +640,7 @@ _Generated 2026-11-25 21:07 UTC · 1794 entries · 449 vendored, 1345 reference-
 | [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [specs-physics](entries/engines/amethyst-specs-physics/README.md) | nphysics integration for the Specs entity component system | rust | MIT | reference | [amethyst/specs-physics](https://github.com/amethyst/specs-physics) @ `2020-05-04 (branch tip at catalogue time)` |
 | [spider-engine](entries/engines/aminere-spider-engine/README.md) | WebGL game engine | typescript | GPL-3.0 | reference | [aminere/spider-engine](https://github.com/aminere/spider-engine) @ `2024-09-02 (branch tip at catalogue time)` |
+| [Spout](entries/engines/spoutdev-spout/README.md) | Open source, multithreaded, voxel game engine and platform, written in Java. | java | unknown | reference | [spoutdev/Spout](https://github.com/spoutdev/Spout) @ `2021-11-12 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
 | [spx](entries/engines/goplus-spx/README.md) | spx - A Scratch Compatible Go/XGo 2D Game Engine for STEM education | go | Apache-2.0 | reference | [goplus/spx](https://github.com/goplus/spx) @ `2026-11-25 (branch tip at catalogue time)` |
 | [stage.js](entries/engines/piqnt-stage-js/README.md) | 2D HTML5 rendering and layout engine for game development | typescript | MIT | vendored | [piqnt/stage.js](https://github.com/piqnt/stage.js) @ `2535352e89cd` |
@@ -696,6 +700,7 @@ _Generated 2026-11-25 21:07 UTC · 1794 entries · 449 vendored, 1345 reference-
 | [UnityTileMap](entries/engines/alexanderfast-unitytilemap/README.md) | A TileMap library for Unity written in C#. | c# | MIT | reference | [alexanderfast/UnityTileMap](https://github.com/alexanderfast/UnityTileMap) @ `2015-04-21 (branch tip at catalogue time)` |
 | [UnityTutorials-RTS](entries/engines/minapecheux-unitytutorials-rts/README.md) | The code for my series of tutorials on how to make a real-time stategy (RTS) game in the well-know Unity game engine (with C# scripting)!  | c# | MIT | vendored | [MinaPecheux/UnityTutorials-RTS](https://github.com/MinaPecheux/UnityTutorials-RTS) @ `152128b8dde0` |
 | [universal-game-mod-manager](entries/engines/indigo-0167-universal-game-mod-manager/README.md) | Free Windows game mod manager to discover, install, update and manage universal Unity and Unreal Engine mods. | rust | MIT | vendored | [Indigo-0167/universal-game-mod-manager](https://github.com/Indigo-0167/universal-game-mod-manager) @ `ea301370dfaa` |
+| [UnrealSandboxTerrain](entries/engines/bw2012-unrealsandboxterrain/README.md) | Unreal Engine smooth voxel terrain plugin | c++ | GPL-3.0 | reference | [bw2012/UnrealSandboxTerrain](https://github.com/bw2012/UnrealSandboxTerrain) @ `b52f331fc76b` |
 | [Unvanquished](entries/engines/unvanquished-unvanquished/README.md) | Unvanquished is a free and open source FPS/RTS hybrid game powered by the Daemon game engine. Historically based on Tremulous as a continuation with decades of  | c++ | unknown | reference | [Unvanquished/Unvanquished](https://github.com/Unvanquished/Unvanquished) @ `2026-11-25 (branch tip at catalogue time)` |
 | [upbge](entries/engines/upbge-upbge/README.md) | UPBGE, the best integrated game engine in Blender | c++ | unknown | reference | [UPBGE/upbge](https://github.com/UPBGE/upbge) @ `2026-11-25 (branch tip at catalogue time)` |
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
@@ -735,6 +740,7 @@ _Generated 2026-11-25 21:07 UTC · 1794 entries · 449 vendored, 1345 reference-
 | [voxelman](entries/engines/mrsmith33-voxelman/README.md) | Plugin-based client-server voxel game engine written in D language | d | BSL-1.0 | reference | [MrSmith33/voxelman](https://github.com/MrSmith33/voxelman) @ `2022-05-10 (branch tip at catalogue time)` |
 | [voxelman](entries/engines/relintai-voxelman/README.md) | A voxel engine for godot. I'ts a c++ engine module. | c++ | MIT | reference | [Relintai/voxelman](https://github.com/Relintai/voxelman) @ `2023-01-09 (branch tip at catalogue time)` |
 | [VoxelPluginFreeLegacy](entries/engines/voxelplugin-voxelpluginfreelegacy/README.md) | Voxel Plugin Legacy for Unreal Engine | c++ | none | reference | [VoxelPlugin/VoxelPluginFreeLegacy](https://github.com/VoxelPlugin/VoxelPluginFreeLegacy) @ `7e64a89ce827` |
+| [voxelquestiso](entries/engines/gavanw-voxelquestiso/README.md) | First version of the Voxel Quest engine (isometric) | javascript | MIT | reference | [gavanw/voxelquestiso](https://github.com/gavanw/voxelquestiso) @ `2016-08-04 (branch tip at catalogue time)` |
 | [VoxLords](entries/engines/lallassu-voxlords/README.md) | VoxLords - ThreeJS WebGL game with a simple voxel engine | javascript | MIT | reference | [Lallassu/VoxLords](https://github.com/Lallassu/VoxLords) @ `2020-10-01 (branch tip at catalogue time)` |
 | [voxplat](entries/engines/kosshi-net-voxplat/README.md) | A hybrid voxel rendering engine | c | unknown | reference | [kosshi-net/voxplat](https://github.com/kosshi-net/voxplat) @ `2022-02-21 (branch tip at catalogue time)` |
 | [vu](entries/engines/gazed-vu/README.md) | Virtual Universe 3D Engine | go | MIT | vendored | [gazed/vu](https://github.com/gazed/vu) @ `d3432398a4ae` |

@@ -3428,3 +3428,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/hiperbou-kotlin-phaser
   - reference engines/simeonradivoev-2d-platformer
   - reference engines/r-lyeh-v2
+
+- **2026-11-25 21:22 UTC** — tick 895: +2 screened, +4 reference, 30 skipped, catalogue=1800
+  - added engines/bw2012-unrealsandboxterrain (GPL-3.0, reference)
+  - added engines/javier-garzo-marching-cubes-on-unity-3d (MIT, vendored)
+  - reference engines/spoutdev-spout
+  - reference engines/stanislavpetrovv-minecraft
+  - reference engines/gavanw-voxelquestiso
+  - reference engines/frozein-doonengine

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T21:22:44Z",
+ "category": "engines",
+ "commit": "b52f331fc76b",
+ "delivery": "reference",
+ "description": "bw2012/UnrealSandboxTerrain \u2014 Unreal Engine smooth voxel terrain plugin",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "UnrealSandboxTerrain",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 429743,
+ "slug": "bw2012-unrealsandboxterrain",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 391,
+ "system": "Unreal Engine smooth voxel terrain plugin",
+ "upstream": "https://github.com/bw2012/UnrealSandboxTerrain",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
