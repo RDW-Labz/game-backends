@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:09:48Z",
+ "category": "physics",
+ "commit": "2023-08-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fzi-forschungszentrum-informatik/gpu-voxels \u2014 GPU-Voxels is a CUDA based library which allows high resolution volumetric collision detection between animated 3D models and live pointclouds from 3D sensors of all kinds.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "gpu-voxels",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "fzi-forschungszentrum-informatik-gpu-voxels",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 318,
+ "system": "GPU-Voxels is a CUDA based library which allows high resolution volumetric collision detection between animated 3D models and live pointclouds from 3D sensors o",
+ "upstream": "https://github.com/fzi-forschungszentrum-informatik/gpu-voxels",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T03:09:44Z",
+ "category": "physics",
+ "commit": "0988172c15ae",
+ "delivery": "reference",
+ "description": "bmoren/p5.collide2D \u2014 A collision detection library for 2D geometry in p5.js",
+ "language": "javascript",
+ "license": "none",
+ "license_file": "LICENSE",
+ "license_verdict": "unlicensed-reference",
+ "name": "p5.collide2D",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 43974,
+ "slug": "bmoren-p5-collide2d",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 591,
+ "system": "A collision detection library for 2D geometry in p5.js",
+ "upstream": "https://github.com/bmoren/p5.collide2D",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

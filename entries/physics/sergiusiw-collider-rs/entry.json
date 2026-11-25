@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:09:48Z",
+ "category": "physics",
+ "commit": "2023-07-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SergiusIW/collider-rs \u2014 Rust library for continuous 2-D collision detection.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "collider-rs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "sergiusiw-collider-rs",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 95,
+ "system": "Rust library for continuous 2-D collision detection.",
+ "upstream": "https://github.com/SergiusIW/collider-rs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

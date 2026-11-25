@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 02:53 UTC · 1493 entries · 383 vendored, 1110 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 03:09 UTC · 1499 entries · 384 vendored, 1115 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
-| [physics](#physics) — Physics | 174 | 40 | 134 |
+| [physics](#physics) — Physics | 180 | 41 | 139 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
@@ -666,7 +666,7 @@ _Generated 2026-11-25 02:53 UTC · 1493 entries · 383 vendored, 1110 reference-
 
 ## physics
 
-**Physics** — 174 entries
+**Physics** — 180 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -714,6 +714,8 @@ _Generated 2026-11-25 02:53 UTC · 1493 entries · 383 vendored, 1110 reference-
 | [Cloth-Simulation-With-python---Verlet-Integration](entries/physics/josephbakulikira-cloth-simulation-with-python-verlet-integration/README.md) | see upstream | python | unknown | reference | [Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration](https://github.com/Josephbakulikira/Cloth-Simulation-With-python---Verlet-Integration) @ `2023-02-03 (branch tip at catalogue time)` |
 | [ClothSimulation](entries/physics/johnbuffer-clothsimulation/README.md) | Basic cloth simulation using Verlet integration | c++ | MIT | vendored | [johnBuffer/ClothSimulation](https://github.com/johnBuffer/ClothSimulation) @ `ac5bbce045e8` |
 | [Coffee-Physics](entries/physics/soulwire-coffee-physics/README.md) | A simple, lightweight physics engine written in CoffeeScript | coffeescript | MIT | reference | [soulwire/Coffee-Physics](https://github.com/soulwire/Coffee-Physics) @ `2016-12-12 (branch tip at catalogue time)` |
+| [collider-rs](entries/physics/sergiusiw-collider-rs/README.md) | Rust library for continuous 2-D collision detection. | rust | Apache-2.0 | reference | [SergiusIW/collider-rs](https://github.com/SergiusIW/collider-rs) @ `2023-07-13 (branch tip at catalogue time)` |
+| [collision](entries/physics/qwertyquerty-collision/README.md) | Collision is a python library meant for collision detection between convex and concave polygons, circles, and points. | python | MIT | reference | [qwertyquerty/collision](https://github.com/qwertyquerty/collision) @ `2023-02-22 (branch tip at catalogue time)` |
 | [ComposePhysicsLayout](entries/physics/klassenkonstantin-composephysicslayout/README.md) | A custom Compose layout backed by a physics engine | kotlin | unknown | reference | [KlassenKonstantin/ComposePhysicsLayout](https://github.com/KlassenKonstantin/ComposePhysicsLayout) @ `2023-05-14 (branch tip at catalogue time)` |
 | [confetti](entries/physics/jinatonic-confetti/README.md) | An Android particle system library for displaying confetti! | java | Apache-2.0 | vendored | [jinatonic/confetti](https://github.com/jinatonic/confetti) @ `db8a475f7716` |
 | [crashcat](entries/physics/isaac-mason-crashcat/README.md) | physics engine for javascript, built for games, simulations, and creative websites | typescript | MIT | reference | [isaac-mason/crashcat](https://github.com/isaac-mason/crashcat) @ `2026-10-30 (branch tip at catalogue time)` |
@@ -741,7 +743,9 @@ _Generated 2026-11-25 02:53 UTC · 1493 entries · 383 vendored, 1110 reference-
 | [godot-vehicle](entries/physics/seerban-godot-vehicle/README.md) | WIP Racing Game and 3d vehicle physics implementation in Godot Engine. | gdscript | MIT | reference | [Seerban/godot-vehicle](https://github.com/Seerban/godot-vehicle) @ `2026-08-03 (branch tip at catalogue time)` |
 | [godot_rapier3d](entries/physics/demindiro-godot-rapier3d/README.md) | Godot bindings for the Rapier3D physics engine | rust | MIT | reference | [Demindiro/godot_rapier3d](https://github.com/Demindiro/godot_rapier3d) @ `2021-07-23 (branch tip at catalogue time)` |
 | [gpu-physics-engine](entries/physics/marcvivas-gpu-physics-engine/README.md) | Experimenting with a gpu physics engine from scratch | rust | Apache-2.0 | vendored | [MarcVivas/gpu-physics-engine](https://github.com/MarcVivas/gpu-physics-engine) @ `d1131288b34f` |
+| [gpu-voxels](entries/physics/fzi-forschungszentrum-informatik-gpu-voxels/README.md) | GPU-Voxels is a CUDA based library which allows high resolution volumetric collision detection between animated 3D models and live pointclouds from 3D sensors o | c++ | unknown | reference | [fzi-forschungszentrum-informatik/gpu-voxels](https://github.com/fzi-forschungszentrum-informatik/gpu-voxels) @ `2023-08-05 (branch tip at catalogue time)` |
 | [Hanachan](entries/physics/stblr-hanachan/README.md) | Mario Kart Wii physics reimplementation | rust | GPL-2.0 | reference | [stblr/Hanachan](https://github.com/stblr/Hanachan) @ `bd57482be685` |
+| [HC](entries/physics/vrld-hc/README.md) | General purpose collision detection library for the use with LÖVE. | lua | unknown | reference | [vrld/HC](https://github.com/vrld/HC) @ `2025-12-31 (branch tip at catalogue time)` |
 | [hypersomnia — physics](entries/physics/hypersomnia-physics/README.md) | rigid-body collision and dynamics | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [ImpulseEngine](entries/physics/randygaul-impulseengine/README.md) | Simple, open source, 2D impulse based physics engine for educational use. | c++ | Zlib | reference | [RandyGaul/ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) @ `2019-10-28 (branch tip at catalogue time)` |
 | [inertia](entries/physics/aclfe-inertia/README.md) | A physics sandbox that runs in your terminal: rigid bodies, n-body gravity, cloth, and fluid, projected in 3D onto braille with no GPU. | rust | Apache-2.0 | reference | [aclfe/inertia](https://github.com/aclfe/inertia) @ `2026-07-19 (branch tip at catalogue time)` |
@@ -776,6 +780,7 @@ _Generated 2026-11-25 02:53 UTC · 1493 entries · 383 vendored, 1110 reference-
 | [OpenBSE](entries/physics/bbrannon4-openbse/README.md) | Open-source building energy simulation engine — modern architecture, validated physics, built for programmatic and AI-assisted workflows. | rust | AGPL-3.0 | reference | [bbrannon4/OpenBSE](https://github.com/bbrannon4/OpenBSE) @ `2026-11-20 (branch tip at catalogue time)` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [optics-lab](entries/physics/alexcri5an-optics-lab/README.md) | Modern, open-source optical design & ray-tracing workstation built in Rust and WebGPU. | rust | Apache-2.0 | reference | [AlexCri5an/optics-lab](https://github.com/AlexCri5an/optics-lab) @ `2026-10-28 (branch tip at catalogue time)` |
+| [p5.collide2D](entries/physics/bmoren-p5-collide2d/README.md) | A collision detection library for 2D geometry in p5.js | javascript | none | reference | [bmoren/p5.collide2D](https://github.com/bmoren/p5.collide2D) @ `0988172c15ae` |
 | [p5play](entries/physics/quinton-ashley-p5play/README.md) | JavaScript game engine that uses q5.js/p5.js for graphics and Box2D for physics. | javascript | none | reference | [quinton-ashley/p5play](https://github.com/quinton-ashley/p5play) @ `f904d169af3d` |
 | [panda-gym](entries/physics/qgallouedec-panda-gym/README.md) | Set of robotic environments based on PyBullet physics engine and gymnasium. | python | MIT | reference | [qgallouedec/panda-gym](https://github.com/qgallouedec/panda-gym) @ `2024-07-23 (branch tip at catalogue time)` |
 | [PARC](entries/physics/mshoe-parc/README.md) | PARC: Physics-based Augmentation with Reinforcement Learning for Character Controllers | python | unknown | reference | [mshoe/PARC](https://github.com/mshoe/PARC) @ `2026-02-04 (branch tip at catalogue time)` |
@@ -804,6 +809,7 @@ _Generated 2026-11-25 02:53 UTC · 1493 entries · 383 vendored, 1110 reference-
 | [react-native-filament](entries/physics/margelo-react-native-filament/README.md) | 🐧 A real-time physically based 3D rendering engine for React Native | c++ | MIT | reference | [margelo/react-native-filament](https://github.com/margelo/react-native-filament) @ `2026-05-27 (branch tip at catalogue time)` |
 | [react-native-reanimated-dnd](entries/physics/entropyconquers-react-native-reanimated-dnd/README.md) | A powerful, performant drag-and-drop library for React Native built on Reanimated 4 and Gesture Handler. Smooth 60fps animations, sortable lists & grids, collis | typescript | MIT | vendored | [entropyconquers/react-native-reanimated-dnd](https://github.com/entropyconquers/react-native-reanimated-dnd) @ `86fb5ab21cc3` |
 | [ReactPhysics3D](entries/physics/reactphysics3d/README.md) | 3D physics: broadphase, constraints, raycast | c++ | Zlib | vendored | [DanielChappuis/reactphysics3d](https://github.com/DanielChappuis/reactphysics3d) @ `7000610a244e` |
+| [resolv](entries/physics/solarlune-resolv/README.md) | A Simple 2D Golang collision detection and resolution library for games | go | MIT | vendored | [SolarLune/resolv](https://github.com/SolarLune/resolv) @ `8b4e8c15ba3b` |
 | [rigs-of-rods — physics](entries/physics/rigs-of-rods-physics/README.md) | rigid-body collision and dynamics | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
 | [RobotNativeEngine](entries/physics/rsasaki0109-robotnativeengine/README.md) | Robot Native Engine — robot-native Rust simulation core with physics, sensors, Python bindings, and optional ROS 2 adapters. | rust | Apache-2.0 | reference | [rsasaki0109/RobotNativeEngine](https://github.com/rsasaki0109/RobotNativeEngine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [rumoca](entries/physics/cognipilot-rumoca/README.md) | a rust-native Modelica compiler for fast, composable, scientific computing | rust | Apache-2.0 | reference | [CogniPilot/rumoca](https://github.com/CogniPilot/rumoca) @ `488d6d5f239f` |

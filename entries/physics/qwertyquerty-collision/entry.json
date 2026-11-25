@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:09:48Z",
+ "category": "physics",
+ "commit": "2023-02-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "qwertyquerty/collision \u2014 Collision is a python library meant for collision detection between convex and concave polygons, circles, and points.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "collision",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "qwertyquerty-collision",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 77,
+ "system": "Collision is a python library meant for collision detection between convex and concave polygons, circles, and points.",
+ "upstream": "https://github.com/qwertyquerty/collision",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

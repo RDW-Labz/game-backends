@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T03:09:48Z",
+ "category": "physics",
+ "commit": "2025-12-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vrld/HC \u2014 General purpose collision detection library for the use with L\u00d6VE.",
+ "language": "lua",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "HC",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "vrld-hc",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 486,
+ "system": "General purpose collision detection library for the use with L\u00d6VE.",
+ "upstream": "https://github.com/vrld/HC",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

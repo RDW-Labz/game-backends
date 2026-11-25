@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T03:09:47Z",
+ "category": "physics",
+ "commit": "8b4e8c15ba3b",
+ "delivery": "vendored",
+ "description": "SolarLune/resolv \u2014 A Simple 2D Golang collision detection and resolution library for games",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "resolv",
+ "size_bytes": 109185,
+ "slug": "solarlune-resolv",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 536,
+ "system": "A Simple 2D Golang collision detection and resolution library for games",
+ "upstream": "https://github.com/SolarLune/resolv",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

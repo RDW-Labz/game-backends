@@ -2996,3 +2996,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/andreacatania-amethyst-physics
   - reference physics/nobuyuki83-physics-based-animation-2025s
   - reference physics/stillonearth-bevy-urdf
+
+- **2026-11-25 03:09 UTC** — tick 830: +2 screened, +4 reference, 8 skipped, catalogue=1499
+  - added physics/bmoren-p5-collide2d (none, reference)
+  - added physics/solarlune-resolv (MIT, vendored)
+  - reference physics/vrld-hc
+  - reference physics/fzi-forschungszentrum-informatik-gpu-voxels
+  - reference physics/sergiusiw-collider-rs
+  - reference physics/qwertyquerty-collision
