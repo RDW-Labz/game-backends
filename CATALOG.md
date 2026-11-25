@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 19:14 UTC · 1754 entries · 441 vendored, 1313 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 19:30 UTC · 1760 entries · 443 vendored, 1317 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 708 | 168 | 540 |
+| [engines](#engines) — Game engines and engine subsystems | 714 | 170 | 544 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 19:14 UTC · 1754 entries · 441 vendored, 1313 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 708 entries
+**Game engines and engine subsystems** — 714 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -201,6 +201,7 @@ _Generated 2026-11-25 19:14 UTC · 1754 entries · 441 vendored, 1313 reference-
 | [ecs_benchmark](entries/engines/abeimler-ecs-benchmark/README.md) | Benchmarks of common ECS (Entity-Component-System)-Frameworks in C++ (or C) | c++ | MIT | reference | [abeimler/ecs_benchmark](https://github.com/abeimler/ecs_benchmark) @ `2024-08-16 (branch tip at catalogue time)` |
 | [ECSLight](entries/engines/robert-wallis-ecslight/README.md) | A lightweight Entity Component System in a portable library. | c# | MIT | reference | [robert-wallis/ECSLight](https://github.com/robert-wallis/ECSLight) @ `2017-11-24 (branch tip at catalogue time)` |
 | [ecst](entries/engines/vittorioromeo-ecst/README.md) | [WIP] Experimental C++14 multithreaded compile-time entity-component-system library. | c++ | unknown | reference | [vittorioromeo/ecst](https://github.com/vittorioromeo/ecst) @ `2019-09-03 (branch tip at catalogue time)` |
+| [EdenLive](entries/engines/vast-ai-research-edenlive/README.md) | Real-time generative rendering for interactive worlds, from any visual reference. | python | Apache-2.0 | vendored | [VAST-AI-Research/EdenLive](https://github.com/VAST-AI-Research/EdenLive) @ `2ea01626e6ea` |
 | [egret-core](entries/engines/egret-labs-egret-core/README.md) | Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows. | javascript | unknown | reference | [egret-labs/egret-core](https://github.com/egret-labs/egret-core) @ `2022-07-20 (branch tip at catalogue time)` |
 | [EgretGameEngine](entries/engines/yicaoyimuys-egretgameengine/README.md) | A game client engine in Egret | typescript | none | reference | [yicaoyimuys/EgretGameEngine](https://github.com/yicaoyimuys/EgretGameEngine) @ `d60a02cfaee2` |
 | [EightBittr](entries/engines/fullscreenshenanigans-eightbittr/README.md) | Bare-bones, highly modular game engine for 2D 8-bit games. | typescript | MIT | vendored | [FullScreenShenanigans/EightBittr](https://github.com/FullScreenShenanigans/EightBittr) @ `2d17b647233b` |
@@ -263,6 +264,7 @@ _Generated 2026-11-25 19:14 UTC · 1754 entries · 441 vendored, 1313 reference-
 | [fromage](entries/engines/chenthread-fromage/README.md) | PlayStation 1 voxel engine | c | unknown | reference | [ChenThread/fromage](https://github.com/ChenThread/fromage) @ `2024-03-16 (branch tip at catalogue time)` |
 | [Frostfire-Forge](entries/engines/frostfire-interactive-frostfire-forge/README.md) | 2D MMO engine that runs in the browser. Build maps, quests, items and spells in editors inside the game. Built on Bun and WebTransport. | typescript | unknown | reference | [Frostfire-Interactive/Frostfire-Forge](https://github.com/Frostfire-Interactive/Frostfire-Forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [func_godot_plugin](entries/engines/func-godot-func-godot-plugin/README.md) | Quake .map support for Godot 4 | gdscript | MIT | vendored | [func-godot/func_godot_plugin](https://github.com/func-godot/func_godot_plugin) @ `352f3d3083f1` |
+| [fury](entries/engines/fury-gl-fury/README.md) | FURY - Free Unified Rendering in pYthon. | python | unknown | reference | [fury-gl/fury](https://github.com/fury-gl/fury) @ `2026-11-23 (branch tip at catalogue time)` |
 | [FusionWater](entries/engines/nailuj05-fusionwater/README.md) | A simple way to add buoyancy / water physics in Unity, built on the existing physics engine | c# | MIT | reference | [nailuj05/FusionWater](https://github.com/nailuj05/FusionWater) @ `2022-05-12 (branch tip at catalogue time)` |
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
 | [Fyrox](entries/engines/fyroxengine-fyrox/README.md) | 3D and 2D game engine written in Rust | rust | MIT | vendored | [FyroxEngine/Fyrox](https://github.com/FyroxEngine/Fyrox) @ `e47bf0f35c9e` |
@@ -537,6 +539,7 @@ _Generated 2026-11-25 19:14 UTC · 1754 entries · 441 vendored, 1313 reference-
 | [pylash_engine](entries/engines/yuehaowang-pylash-engine/README.md) | A lightweight and relaxed game engine for Python. | python | MIT | reference | [yuehaowang/pylash_engine](https://github.com/yuehaowang/pylash_engine) @ `2021-03-12 (branch tip at catalogue time)` |
 | [pyrite64](entries/engines/hailtododongo-pyrite64/README.md) | N64 Game-Engine and Editor using libdragon & tiny3d | c++ | MIT | reference | [HailToDodongo/pyrite64](https://github.com/HailToDodongo/pyrite64) @ `2026-11-22 (branch tip at catalogue time)` |
 | [PyRPG_Mini](entries/engines/crawsome-pyrpg-mini/README.md) | A small Python RPG, focused on RPG elements like battle and grinding | python | MIT | reference | [crawsome/PyRPG_Mini](https://github.com/crawsome/PyRPG_Mini) @ `2026-11-09 (branch tip at catalogue time)` |
+| [pyunity](entries/engines/pyunity-pyunity/README.md) | A pure Python 3D Game Engine that was inspired by the structure of the Unity Game Engine | python | MIT | reference | [pyunity/pyunity](https://github.com/pyunity/pyunity) @ `2024-11-15 (branch tip at catalogue time)` |
 | [pyved-engine](entries/engines/pyved-solution-pyved-engine/README.md) | a pythonic❤️ modern game engine. Compatible with Python 3.x and built around pygame | python | LGPL-3.0 | reference | [pyved-solution/pyved-engine](https://github.com/pyved-solution/pyved-engine) @ `2026-06-08 (branch tip at catalogue time)` |
 | [pyxel](entries/engines/kitao-pyxel/README.md) | A retro game engine for Python | rust | unknown | reference | [kitao/pyxel](https://github.com/kitao/pyxel) @ `2026-11-23 (branch tip at catalogue time)` |
 | [pyxel-mcp](entries/engines/kitao-pyxel-mcp/README.md) | MCP server for AI-assisted retro game development with Pyxel | python | MIT | reference | [kitao/pyxel-mcp](https://github.com/kitao/pyxel-mcp) @ `2026-11-20 (branch tip at catalogue time)` |
@@ -564,6 +567,7 @@ _Generated 2026-11-25 19:14 UTC · 1754 entries · 441 vendored, 1313 reference-
 | [revy](entries/engines/rerun-io-revy/README.md) | Proof-of-concept time-travel debugger for the Bevy game engine, built using Rerun. | rust | Apache-2.0 | reference | [rerun-io/revy](https://github.com/rerun-io/revy) @ `2026-08-24 (branch tip at catalogue time)` |
 | [rhusics](entries/engines/rustgd-rhusics/README.md) | A cgmath physics library that can be used with Specs | rust | Apache-2.0 | reference | [rustgd/rhusics](https://github.com/rustgd/rhusics) @ `2020-08-04 (branch tip at catalogue time)` |
 | [RigelEngine](entries/engines/lethal-guitar-rigelengine/README.md) | A modern re-implementation of the classic DOS game Duke Nukem II | c++ | GPL-2.0 | reference | [lethal-guitar/RigelEngine](https://github.com/lethal-guitar/RigelEngine) @ `30afeff8f0b1` |
+| [RightMouseNavigation](entries/engines/spectralvectors-rightmousenavigation/README.md) | Game Engine-style Right Mouse Viewport Navigation | python | GPL-3.0 | reference | [SpectralVectors/RightMouseNavigation](https://github.com/SpectralVectors/RightMouseNavigation) @ `2026-04-02 (branch tip at catalogue time)` |
 | [RobustToolbox](entries/engines/space-wizards-robusttoolbox/README.md) | Robust multiplayer game engine, used by Space Station 14 | c# | GPL-3.0 | reference | [space-wizards/RobustToolbox](https://github.com/space-wizards/RobustToolbox) @ `ec12ca54db27` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
 | [RPG-Core](entries/engines/delmarle-rpg-core/README.md) | UNITY engine RPG framework | c# | unknown | reference | [delmarle/RPG-Core](https://github.com/delmarle/RPG-Core) @ `2026-04-14 (branch tip at catalogue time)` |
@@ -623,6 +627,7 @@ _Generated 2026-11-25 19:14 UTC · 1754 entries · 441 vendored, 1313 reference-
 | [taleweaver](entries/engines/jschm42-taleweaver/README.md) | A next-generation AI-powered text adventure engine featuring dynamic storytelling, procedural world-building, and immersive visual/auditory generation. | python | MIT | reference | [jschm42/taleweaver](https://github.com/jschm42/taleweaver) @ `2026-11-24 (branch tip at catalogue time)` |
 | [teeworlds — engine](entries/engines/teeworlds-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-3.0 | reference | [teeworlds/teeworlds.git](https://github.com/teeworlds/teeworlds.git) @ `5d68273` |
 | [Terasology](entries/engines/movingblocks-terasology/README.md) | Terasology - open source voxel world | java | Apache-2.0 | reference | [MovingBlocks/Terasology](https://github.com/MovingBlocks/Terasology) @ `2026-11-18 (branch tip at catalogue time)` |
+| [terminal_dungeon](entries/engines/salt-die-terminal-dungeon/README.md) | A raycasting library for your terminal! | python | MIT | reference | [salt-die/terminal_dungeon](https://github.com/salt-die/terminal_dungeon) @ `2024-05-06 (branch tip at catalogue time)` |
 | [termloop](entries/engines/joelotter-termloop/README.md) | Terminal-based game engine for Go, built on top of Termbox | go | MIT | vendored | [JoelOtter/termloop](https://github.com/JoelOtter/termloop) @ `5f7c38744afb` |
 | [TerraCraft](entries/engines/retrofloppy77-terracraft/README.md) | Voxel Engine written in Python 3 + Pyglet. | python | GPL-3.0 | reference | [RetroFloppy77/TerraCraft](https://github.com/RetroFloppy77/TerraCraft) @ `2026-11-08 (branch tip at catalogue time)` |
 | [tetra](entries/engines/17cupsofcoffee-tetra/README.md) | 🎮 A simple 2D game framework written in Rust | rust | MIT | reference | [17cupsofcoffee/tetra](https://github.com/17cupsofcoffee/tetra) @ `2026-07-22 (branch tip at catalogue time)` |
@@ -672,6 +677,7 @@ _Generated 2026-11-25 19:14 UTC · 1754 entries · 441 vendored, 1313 reference-
 | [veloren — scene](entries/engines/veloren-scene/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
 | [vibe-coder-3d](entries/engines/jonit-dev-vibe-coder-3d/README.md) | @react-three/fiber 3D game engine | typescript | MIT | vendored | [jonit-dev/vibe-coder-3d](https://github.com/jonit-dev/vibe-coder-3d) @ `0315e66378e0` |
 | [VibeGame](entries/engines/dylanebert-vibegame/README.md) | A 3D game engine designed for vibe coding | typescript | MIT | reference | [dylanebert/VibeGame](https://github.com/dylanebert/VibeGame) @ `2025-12-21 (branch tip at catalogue time)` |
+| [VibeGame](entries/engines/tettethu-vibegame/README.md) | VibeGame: Vibe Your Dream Game -- An open-source self-evolving multi-agent framework with an AI-Native game engine that turns your natural language into a fully | python | Apache-2.0 | vendored | [tettethu/VibeGame](https://github.com/tettethu/VibeGame) @ `bbfbe80789c2` |
 | [Vigilante-Game-Framework](entries/engines/gamepopper-vigilante-game-framework/README.md) | 2D/3D C++ game framework written for use with SFML. | c++ | MIT | reference | [gamepopper/Vigilante-Game-Framework](https://github.com/gamepopper/Vigilante-Game-Framework) @ `2026-06-07 (branch tip at catalogue time)` |
 | [VisualPinball.Engine](entries/engines/freezy-visualpinball-engine/README.md) | :video_game: Visual Pinball Engine for Unity | c# | GPL-3.0 | reference | [freezy/VisualPinball.Engine](https://github.com/freezy/VisualPinball.Engine) @ `2026-11-24 (branch tip at catalogue time)` |
 | [VloxyEngine](entries/engines/blazekill-vloxyengine/README.md) | Performance oriented voxel engine for unity. | c# | MIT | reference | [BLaZeKiLL/VloxyEngine](https://github.com/BLaZeKiLL/VloxyEngine) @ `2024-11-27 (branch tip at catalogue time)` |

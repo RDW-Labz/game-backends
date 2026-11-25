@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T19:30:42Z",
+ "category": "engines",
+ "commit": "2024-05-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "salt-die/terminal_dungeon \u2014 A raycasting library for your terminal!",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "terminal_dungeon",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "salt-die-terminal-dungeon",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 247,
+ "system": "A raycasting library for your terminal!",
+ "upstream": "https://github.com/salt-die/terminal_dungeon",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

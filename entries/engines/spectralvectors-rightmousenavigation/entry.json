@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T19:30:42Z",
+ "category": "engines",
+ "commit": "2026-04-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SpectralVectors/RightMouseNavigation \u2014 Game Engine-style Right Mouse Viewport Navigation",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "RightMouseNavigation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "spectralvectors-rightmousenavigation",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 281,
+ "system": "Game Engine-style Right Mouse Viewport Navigation",
+ "upstream": "https://github.com/SpectralVectors/RightMouseNavigation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

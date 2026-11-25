@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T19:30:42Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "fury-gl/fury \u2014 FURY - Free Unified Rendering in pYthon.",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "fury",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "fury-gl-fury",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 304,
+ "system": "FURY - Free Unified Rendering in pYthon.",
+ "upstream": "https://github.com/fury-gl/fury",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

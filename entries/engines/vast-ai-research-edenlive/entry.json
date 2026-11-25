@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T19:30:38Z",
+ "category": "engines",
+ "commit": "2ea01626e6ea",
+ "delivery": "vendored",
+ "description": "VAST-AI-Research/EdenLive \u2014 Real-time generative rendering for interactive worlds, from any visual reference.",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "EdenLive",
+ "size_bytes": 5674294,
+ "slug": "vast-ai-research-edenlive",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 465,
+ "system": "Real-time generative rendering for interactive worlds, from any visual reference.",
+ "upstream": "https://github.com/VAST-AI-Research/EdenLive",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

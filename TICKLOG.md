@@ -3373,3 +3373,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/dasannikov-defoldtypescript
 
 - **2026-11-25 19:14 UTC** — tick 887: +0 screened, +0 reference, 60 skipped, catalogue=1754
+
+- **2026-11-25 19:30 UTC** — tick 888: +2 screened, +4 reference, 30 skipped, catalogue=1760
+  - added engines/vast-ai-research-edenlive (Apache-2.0, vendored)
+  - added engines/tettethu-vibegame (Apache-2.0, vendored)
+  - reference engines/fury-gl-fury
+  - reference engines/pyunity-pyunity
+  - reference engines/spectralvectors-rightmousenavigation
+  - reference engines/salt-die-terminal-dungeon

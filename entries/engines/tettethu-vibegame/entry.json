@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T19:30:40Z",
+ "category": "engines",
+ "commit": "bbfbe80789c2",
+ "delivery": "vendored",
+ "description": "tettethu/VibeGame \u2014 VibeGame: Vibe Your Dream Game -- An open-source self-evolving multi-agent framework with an AI-Native game engine that turns your natural language into a fully playable 2D web game and edit it any way you want, built on Claude Code & Codex.",
+ "language": "python",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "VibeGame",
+ "size_bytes": 2205580,
+ "slug": "tettethu-vibegame",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 396,
+ "system": "VibeGame: Vibe Your Dream Game -- An open-source self-evolving multi-agent framework with an AI-Native game engine that turns your natural language into a fully",
+ "upstream": "https://github.com/tettethu/VibeGame",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

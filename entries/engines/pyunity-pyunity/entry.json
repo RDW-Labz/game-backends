@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T19:30:42Z",
+ "category": "engines",
+ "commit": "2024-11-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "pyunity/pyunity \u2014 A pure Python 3D Game Engine that was inspired by the structure of the Unity Game Engine",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pyunity",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "pyunity-pyunity",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 284,
+ "system": "A pure Python 3D Game Engine that was inspired by the structure of the Unity Game Engine",
+ "upstream": "https://github.com/pyunity/pyunity",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
