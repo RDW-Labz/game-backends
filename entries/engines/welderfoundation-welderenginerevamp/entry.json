@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:07:01Z",
+ "category": "engines",
+ "commit": "2024-03-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "WelderFoundation/WelderEngineRevamp \u2014 Major overhaul of the Zero Engine and renaming to Welder.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "WelderEngineRevamp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "welderfoundation-welderenginerevamp",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 61,
+ "system": "Major overhaul of the Zero Engine and renaming to Welder.",
+ "upstream": "https://github.com/WelderFoundation/WelderEngineRevamp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

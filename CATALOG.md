@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 20:50 UTC · 1789 entries · 449 vendored, 1340 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 21:07 UTC · 1794 entries · 449 vendored, 1345 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 743 | 176 | 567 |
+| [engines](#engines) — Game engines and engine subsystems | 748 | 176 | 572 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,11 +16,12 @@ _Generated 2026-11-25 20:50 UTC · 1789 entries · 449 vendored, 1340 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 743 entries
+**Game engines and engine subsystems** — 748 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [24a2](entries/engines/jamesroutley-24a2/README.md) | 🏵 An ultra-minimalist game engine | typescript | MIT | reference | [jamesroutley/24a2](https://github.com/jamesroutley/24a2) @ `2026-03-01 (branch tip at catalogue time)` |
+| [2D-Platformer](entries/engines/simeonradivoev-2d-platformer/README.md) | A 2D Action Platformer Experiment made with ECS/DOTS | c# | Apache-2.0 | reference | [simeonradivoev/2D-Platformer](https://github.com/simeonradivoev/2D-Platformer) @ `2022-02-12 (branch tip at catalogue time)` |
 | [3DWorld](entries/engines/fegennari-3dworld/README.md) | 3D Procedural Game Engine Using OpenGL  | c++ | GPL-3.0 | reference | [fegennari/3DWorld](https://github.com/fegennari/3DWorld) @ `a5ab0afaed5f` |
 | [AAAAXY — engine](entries/engines/aaaaxy-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | go | Apache-2.0 | vendored | [divVerent/aaaaxy](https://github.com/divVerent/aaaaxy) @ `07d7252` |
 | [AbyssEngine](entries/engines/opendiablo2-abyssengine/README.md) | A 2D ARPG game engine. | go | GPL-3.0 | reference | [OpenDiablo2/AbyssEngine](https://github.com/OpenDiablo2/AbyssEngine) @ `2025-12-05 (branch tip at catalogue time)` |
@@ -302,6 +303,7 @@ _Generated 2026-11-25 20:50 UTC · 1789 entries · 449 vendored, 1340 reference-
 | [gemrb](entries/engines/gemrb-gemrb/README.md) | GemRB is a portable open-source implementation of Bioware’s Infinity Engine. | c++ | GPL-2.0 | reference | [gemrb/gemrb](https://github.com/gemrb/gemrb) @ `2026-11-15 (branch tip at catalogue time)` |
 | [genex-desktop](entries/engines/genex-games-genex-desktop/README.md) | Open-source desktop app for AI-native game dev. Build in Unreal Engine, Unity, Godot, Roblox or Three.js with any AI, including local models. | typescript | MIT | reference | [genex-games/genex-desktop](https://github.com/genex-games/genex-desktop) @ `2026-11-22 (branch tip at catalogue time)` |
 | [Gengine](entries/engines/juandiegomontoya-gengine/README.md) | C++/OpenGL 4.6 voxel game engine. | c++ | none | reference | [JuanDiegoMontoya/Gengine](https://github.com/JuanDiegoMontoya/Gengine) @ `69b8355143df` |
+| [GFX](entries/engines/andy16823-gfx/README.md) | Simple 2D & 3D Game Framework with C# and OpenGL | c# | MIT | reference | [Andy16823/GFX](https://github.com/Andy16823/GFX) @ `c806fd12728c` |
 | [ggez](entries/engines/ggez-ggez/README.md) | Rust library to create a Good Game Easily | rust | MIT | reference | [ggez/ggez](https://github.com/ggez/ggez) @ `2026-10-26 (branch tip at catalogue time)` |
 | [ggpoker](entries/engines/anthdm-ggpoker/README.md) | A decentralized poker game engine written in Golang and Solidity | go | unknown | reference | [anthdm/ggpoker](https://github.com/anthdm/ggpoker) @ `2024-01-27 (branch tip at catalogue time)` |
 | [glas — core](entries/engines/glas-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | MIT | vendored | [lume/glas](https://github.com/lume/glas) @ `716d931` |
@@ -391,6 +393,7 @@ _Generated 2026-11-25 20:50 UTC · 1789 entries · 449 vendored, 1340 reference-
 | [KlayGE](entries/engines/gongminmin-klayge/README.md) | KlayGE is a cross-platform open source game engine with plugin-based architecture. | c++ | GPL-2.0 | reference | [gongminmin/KlayGE](https://github.com/gongminmin/KlayGE) @ `2026-07-17 (branch tip at catalogue time)` |
 | [korge](entries/engines/korlibs-korge/README.md) | Korge is a Multiplatform Game Engine written in Kotlin for JVM, Web, Android and iOS. | kotlin | unknown | reference | [korlibs/korge](https://github.com/korlibs/korge) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Korok](entries/engines/korokengine-korok/README.md) | korok.io - golang game engine | go | Zlib | reference | [KorokEngine/Korok](https://github.com/KorokEngine/Korok) @ `2021-10-23 (branch tip at catalogue time)` |
+| [kotlin-phaser](entries/engines/hiperbou-kotlin-phaser/README.md) | Use Kotlin and Phaser 2D game framework for making HTML5 games. | kotlin | MIT | reference | [hiperbou/kotlin-phaser](https://github.com/hiperbou/kotlin-phaser) @ `2023-11-08 (branch tip at catalogue time)` |
 | [kotlin-voxel](entries/engines/jrenner-kotlin-voxel/README.md) | A voxel engine (like Minecraft) written in Kotlin | kotlin | Apache-2.0 | reference | [jrenner/kotlin-voxel](https://github.com/jrenner/kotlin-voxel) @ `2025-11-21 (branch tip at catalogue time)` |
 | [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
 | [LanternEngine](entries/engines/awakenchan-lanternengine/README.md) | Lantern Engine: run your own copy of Bloodborne on Windows. A launcher and engine where the game's code runs natively; bring your own game dump. | c++ | GPL-3.0 | reference | [Awakenchan/LanternEngine](https://github.com/Awakenchan/LanternEngine) @ `5b00f48c20ef` |
@@ -698,6 +701,7 @@ _Generated 2026-11-25 20:50 UTC · 1789 entries · 449 vendored, 1340 reference-
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
 | [ursina](entries/engines/pokepetter-ursina/README.md) | A 3D and 2D game engine for Python | python | MIT | vendored | [pokepetter/ursina](https://github.com/pokepetter/ursina) @ `11ac1f7bab99` |
 | [v1](entries/engines/r-lyeh-v1/README.md) | 💎 3D game framework in C, v1. | c | unknown | reference | [r-lyeh/v1](https://github.com/r-lyeh/v1) @ `2025-08-04 (branch tip at catalogue time)` |
+| [v2](entries/engines/r-lyeh-v2/README.md) | 💎 3D game framework in C, v2. | c | unknown | reference | [r-lyeh/v2](https://github.com/r-lyeh/v2) @ `2025-08-04 (branch tip at catalogue time)` |
 | [v3](entries/engines/r-lyeh-v3/README.md) | 💎 3D game framework in C, v3. | c | unknown | reference | [r-lyeh/v3](https://github.com/r-lyeh/v3) @ `2025-11-29 (branch tip at catalogue time)` |
 | [VContainer](entries/engines/hadashia-vcontainer/README.md) | The extra fast, minimum code size, GC-free DI (Dependency Injection) library running on Unity Game Engine. | c# | MIT | reference | [hadashiA/VContainer](https://github.com/hadashiA/VContainer) @ `2026-10-06 (branch tip at catalogue time)` |
 | [vek](entries/engines/yoanlcq-vek/README.md) | Generic 2D-3D math swiss army knife for game engines, with SIMD support and focus on convenience. | rust | Apache-2.0 | reference | [yoanlcq/vek](https://github.com/yoanlcq/vek) @ `2025-09-23 (branch tip at catalogue time)` |
@@ -744,6 +748,7 @@ _Generated 2026-11-25 20:50 UTC · 1789 entries · 449 vendored, 1340 reference-
 | [WebGAL](entries/engines/openwebgal-webgal/README.md) | A brand new web Visual Novel engine / 全新的网页端视觉小说引擎 | typescript | MPL-2.0 | reference | [OpenWebGAL/WebGAL](https://github.com/OpenWebGAL/WebGAL) @ `2026-11-21 (branch tip at catalogue time)` |
 | [webgpu](entries/engines/neuroprod-webgpu/README.md) | WebGPU Game  | typescript | none | reference | [neuroprod/webgpu](https://github.com/neuroprod/webgpu) @ `2608dba4945f` |
 | [webTaleKit](entries/engines/endohizumi-webtalekit/README.md) | A visual novel game engine written in JavaScript (TypeScript) that allows full customization of the UI. | typescript | MIT | reference | [EndoHizumi/webTaleKit](https://github.com/EndoHizumi/webTaleKit) @ `2026-11-17 (branch tip at catalogue time)` |
+| [WelderEngineRevamp](entries/engines/welderfoundation-welderenginerevamp/README.md) | Major overhaul of the Zero Engine and renaming to Welder. | c++ | unknown | reference | [WelderFoundation/WelderEngineRevamp](https://github.com/WelderFoundation/WelderEngineRevamp) @ `2024-03-16 (branch tip at catalogue time)` |
 | [WickedEngine](entries/engines/turanszkij-wickedengine/README.md) | 3D engine with modern graphics | c++ | MIT | reference | [turanszkij/WickedEngine](https://github.com/turanszkij/WickedEngine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |
 | [world-walker](entries/engines/badhope-world-walker/README.md) | A single-player AI tabletop RPG engine: deterministic rules own the numbers, saves and replay; any OpenAI-compatible model writes the scene. | python | MIT | reference | [badhope/world-walker](https://github.com/badhope/world-walker) @ `2026-11-22 (branch tip at catalogue time)` |

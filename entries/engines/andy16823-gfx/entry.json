@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T21:06:56Z",
+ "category": "engines",
+ "commit": "c806fd12728c",
+ "delivery": "reference",
+ "description": "Andy16823/GFX \u2014 Simple 2D & 3D Game Framework with C# and OpenGL",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "GFX",
+ "reference_reason": "size gate: 18 MB",
+ "size_bytes": 19331848,
+ "slug": "andy16823-gfx",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 70,
+ "system": "Simple 2D & 3D Game Framework with C# and OpenGL",
+ "upstream": "https://github.com/Andy16823/GFX",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -3420,3 +3420,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/asaia-starlingpunk
   - reference engines/williammalone-blocksjs
   - reference engines/snoringcatgames-surfacer
+
+- **2026-11-25 21:07 UTC** — tick 894: +2 screened, +4 reference, 43 skipped, catalogue=1794
+  - added engines/andy16823-gfx (MIT, reference)
+  - added engines/r-lyeh-v2 (MIT, reference)
+  - reference engines/welderfoundation-welderenginerevamp
+  - reference engines/hiperbou-kotlin-phaser
+  - reference engines/simeonradivoev-2d-platformer
+  - reference engines/r-lyeh-v2

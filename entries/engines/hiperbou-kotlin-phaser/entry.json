@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:07:01Z",
+ "category": "engines",
+ "commit": "2023-11-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hiperbou/kotlin-phaser \u2014 Use Kotlin and Phaser 2D game framework for making HTML5 games.",
+ "language": "kotlin",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "kotlin-phaser",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hiperbou-kotlin-phaser",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 58,
+ "system": "Use Kotlin and Phaser 2D game framework for making HTML5 games.",
+ "upstream": "https://github.com/hiperbou/kotlin-phaser",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
