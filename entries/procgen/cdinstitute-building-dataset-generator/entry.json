@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T14:52:00Z",
+ "category": "procgen",
+ "commit": "bbec61f9037e",
+ "delivery": "reference",
+ "description": "CDInstitute/Building-Dataset-Generator \u2014 Procedural 3D data generation pipeline for architecture",
+ "language": "python",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Building-Dataset-Generator",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 99575,
+ "slug": "cdinstitute-building-dataset-generator",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 82,
+ "system": "Procedural 3D data generation pipeline for architecture",
+ "upstream": "https://github.com/CDInstitute/Building-Dataset-Generator",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

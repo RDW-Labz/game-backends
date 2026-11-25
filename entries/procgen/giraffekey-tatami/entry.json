@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:52:03Z",
+ "category": "procgen",
+ "commit": "2025-09-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "giraffekey/tatami \u2014 A roguelike dungeon generation algorithm",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "tatami",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "giraffekey-tatami",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 39,
+ "system": "A roguelike dungeon generation algorithm",
+ "upstream": "https://github.com/giraffekey/tatami",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

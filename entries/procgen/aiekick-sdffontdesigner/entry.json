@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:52:03Z",
+ "category": "procgen",
+ "commit": "2025-06-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "aiekick/SdfFontDesigner \u2014 Offline font tuning/bitmap generation via shaders",
+ "language": "glsl",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SdfFontDesigner",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "aiekick-sdffontdesigner",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 81,
+ "system": "Offline font tuning/bitmap generation via shaders",
+ "upstream": "https://github.com/aiekick/SdfFontDesigner",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

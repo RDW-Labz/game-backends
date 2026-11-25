@@ -3266,3 +3266,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/sceelix-sceelix
   - reference procgen/ryuzhihao123-modular-tree-modeler-25
   - reference procgen/mxgmn-blog
+
+- **2026-11-25 14:52 UTC** — tick 871: +2 screened, +4 reference, 46 skipped, catalogue=1687
+  - added procgen/cdinstitute-building-dataset-generator (none, reference)
+  - added procgen/remiphilippe-mcp-unreal (Apache-2.0, vendored)
+  - reference procgen/fennec-hub-three-wfc
+  - reference procgen/mirrorfishmedia-endlessrunnerunity
+  - reference procgen/aiekick-sdffontdesigner
+  - reference procgen/giraffekey-tatami

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:52:03Z",
+ "category": "procgen",
+ "commit": "2020-02-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mirrorfishmedia/EndlessRunnerUnity \u2014 Endless racer game example with procedural track generation made with Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "EndlessRunnerUnity",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mirrorfishmedia-endlessrunnerunity",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 81,
+ "system": "Endless racer game example with procedural track generation made with Unity",
+ "upstream": "https://github.com/mirrorfishmedia/EndlessRunnerUnity",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

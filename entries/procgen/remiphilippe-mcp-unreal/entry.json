@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T14:52:02Z",
+ "category": "procgen",
+ "commit": "a12bca3be3ec",
+ "delivery": "vendored",
+ "description": "remiphilippe/mcp-unreal \u2014 MCP server that gives AI coding agents (Claude Code, Cursor, etc.) full control over Unreal Engine 5.7 projects \u2014 headless builds & tests, Blueprint editing, actor manipulation, procedural mesh generation, and UE API documentation lookup.",
+ "language": "go",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "mcp-unreal",
+ "size_bytes": 898371,
+ "slug": "remiphilippe-mcp-unreal",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 82,
+ "system": "MCP server that gives AI coding agents (Claude Code, Cursor, etc.) full control over Unreal Engine 5.7 projects \u2014 headless builds & tests, Blueprint editing, ac",
+ "upstream": "https://github.com/remiphilippe/mcp-unreal",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
