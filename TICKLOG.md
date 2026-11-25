@@ -3381,3 +3381,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/pyunity-pyunity
   - reference engines/spectralvectors-rightmousenavigation
   - reference engines/salt-die-terminal-dungeon
+
+- **2026-11-25 19:46 UTC** — tick 889: +2 screened, +4 reference, 13 skipped, catalogue=1766
+  - added engines/true-grue-brus-16 (MIT, vendored)
+  - added engines/horizonfps-project-lunar (none, reference)
+  - reference engines/electronistu-project-infinity
+  - reference engines/nguyennp-24-root-motion-batch-transfer-blender
+  - reference engines/andrey1994-game-inspector
+  - reference engines/ryanawalters-powerof2imageresizer

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T19:46:33Z",
+ "category": "engines",
+ "commit": "c644d52e16bc",
+ "delivery": "vendored",
+ "description": "true-grue/Brus-16 \u2014 A tiny game console for education",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Brus-16",
+ "size_bytes": 324088,
+ "slug": "true-grue-brus-16",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 49,
+ "system": "A tiny game console for education",
+ "upstream": "https://github.com/true-grue/Brus-16",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T19:46:37Z",
+ "category": "engines",
+ "commit": "2017-06-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RyanAWalters/PowerOf2ImageResizer \u2014 Power of 2 Image Resizer for Game Engine Textures",
+ "language": "python",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "PowerOf2ImageResizer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ryanawalters-powerof2imageresizer",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 41,
+ "system": "Power of 2 Image Resizer for Game Engine Textures",
+ "upstream": "https://github.com/RyanAWalters/PowerOf2ImageResizer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 19:30 UTC · 1760 entries · 443 vendored, 1317 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 19:46 UTC · 1766 entries · 444 vendored, 1322 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 714 | 170 | 544 |
+| [engines](#engines) — Game engines and engine subsystems | 720 | 171 | 549 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 19:30 UTC · 1760 entries · 443 vendored, 1317 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 714 entries
+**Game engines and engine subsystems** — 720 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -131,6 +131,7 @@ _Generated 2026-11-25 19:30 UTC · 1760 entries · 443 vendored, 1317 reference-
 | [Box2D.NET](entries/engines/ikpil-box2d-net/README.md) | Box2D.NET - a C# port of Box2D, is a 2D physics engine for games, .NET, Unity3D, servers | c# | MIT | reference | [ikpil/Box2D.NET](https://github.com/ikpil/Box2D.NET) @ `2026-10-01 (branch tip at catalogue time)` |
 | [BRING](entries/engines/eva-e1-bring/README.md) | Next generation role-playing with LLM - with AI world and intelligent NPCs and multi-faceted Graph memory for all entities and a rich pipline and multi agent | python | Apache-2.0 | vendored | [Eva-E1/BRING](https://github.com/Eva-E1/BRING) @ `e907dee1b2a5` |
 | [brood](entries/engines/anders429-brood/README.md) | A fast and flexible entity component system library. | rust | Apache-2.0 | vendored | [Anders429/brood](https://github.com/Anders429/brood) @ `ec031b20531c` |
+| [Brus-16](entries/engines/true-grue-brus-16/README.md) | A tiny game console for education | python | MIT | vendored | [true-grue/Brus-16](https://github.com/true-grue/Brus-16) @ `c644d52e16bc` |
 | [BRUTAL](entries/engines/ahwootech-brutal/README.md) | A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. T | c# | unknown | reference | [ahwootech/BRUTAL](https://github.com/ahwootech/BRUTAL) @ `2026-11-12 (branch tip at catalogue time)` |
 | [BulletUpHell](entries/engines/dark-peace-bulletuphell/README.md) | Most feature-packed Bullethell Engine. All in 1 plugin for Godot 3 & 4. | gdscript | MIT | reference | [Dark-Peace/BulletUpHell](https://github.com/Dark-Peace/BulletUpHell) @ `2026-05-13 (branch tip at catalogue time)` |
 | [calcium](entries/engines/cptx032-calcium/README.md) | A ascii/text game library | python | MIT | reference | [cptx032/calcium](https://github.com/cptx032/calcium) @ `2022-11-11 (branch tip at catalogue time)` |
@@ -270,6 +271,7 @@ _Generated 2026-11-25 19:30 UTC · 1760 entries · 443 vendored, 1317 reference-
 | [Fyrox](entries/engines/fyroxengine-fyrox/README.md) | 3D and 2D game engine written in Rust | rust | MIT | vendored | [FyroxEngine/Fyrox](https://github.com/FyroxEngine/Fyrox) @ `e47bf0f35c9e` |
 | [g3nd](entries/engines/g3n-g3nd/README.md) | G3N Game Engine Demo | go | BSD-2-Clause | reference | [g3n/g3nd](https://github.com/g3n/g3nd) @ `2026-03-30 (branch tip at catalogue time)` |
 | [game-mixer](entries/engines/auburnsounds-game-mixer/README.md) | Audio mixer and playback library like SDL_mixer but without dependencies. | d | MIT | vendored | [AuburnSounds/game-mixer](https://github.com/AuburnSounds/game-mixer) @ `f64c464ab025` |
+| [game_inspector](entries/engines/andrey1994-game-inspector/README.md) | Tool to measure FPS, take screenshots, record video and draw overlay | python | MIT | reference | [Andrey1994/game_inspector](https://github.com/Andrey1994/game_inspector) @ `2019-06-30 (branch tip at catalogue time)` |
 | [GameDevMind](entries/engines/gonglei007-gamedevmind/README.md) | 最全面的游戏开发技术图谱(Game Development Map)。帮助游戏开发者们在已知问题上节省时间，省出更多的精力投入到更有创造性的工作中去。 | python | MIT | vendored | [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) @ `652be106e9df` |
 | [GameDevMind-EN](entries/engines/gonglei007-gamedevmind-en/README.md) | The most comprehensive technical map of game development. Help game developers save time on known problems and save more energy for more creative work. | shell | MIT | reference | [gonglei007/GameDevMind-EN](https://github.com/gonglei007/GameDevMind-EN) @ `2023-10-18 (branch tip at catalogue time)` |
 | [GameEngineFromScratch](entries/engines/netwarm007-gameenginefromscratch/README.md) | 配合我的知乎专栏写的项目 | c++ | unknown | reference | [netwarm007/GameEngineFromScratch](https://github.com/netwarm007/GameEngineFromScratch) @ `2026-11-25 (branch tip at catalogue time)` |
@@ -525,7 +527,10 @@ _Generated 2026-11-25 19:30 UTC · 1760 entries · 443 vendored, 1317 reference-
 | [pokewilds](entries/engines/sheerst-pokewilds/README.md) | PokeWilds - A Gen 2 Game/Engine using libGDX | assembly | unknown | reference | [SheerSt/pokewilds](https://github.com/SheerSt/pokewilds) @ `2026-08-16 (branch tip at catalogue time)` |
 | [polymorph](entries/engines/rlipsc-polymorph/README.md) | A fast and frugal entity-component-system library with a focus on code generation and compile time optimisation. | nim | Apache-2.0 | reference | [rlipsc/polymorph](https://github.com/rlipsc/polymorph) @ `2025-02-22 (branch tip at catalogue time)` |
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
+| [PowerOf2ImageResizer](entries/engines/ryanawalters-powerof2imageresizer/README.md) | Power of 2 Image Resizer for Game Engine Textures | python | unknown | reference | [RyanAWalters/PowerOf2ImageResizer](https://github.com/RyanAWalters/PowerOf2ImageResizer) @ `2017-06-13 (branch tip at catalogue time)` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
+| [project-lunar](entries/engines/horizonfps-project-lunar/README.md) | AI-powered interactive RPG engine with persistent memory, independent NPC minds, creativity-based combat, and a   reactive world. Build scenarios, live adventur | python | none | reference | [horizonfps/project-lunar](https://github.com/horizonfps/project-lunar) @ `20a284eb91d9` |
+| [Project_Infinity](entries/engines/electronistu-project-infinity/README.md) | A browser-based, 5e-compatible RPG with an AI Dungeon Master that rolls real dice, tracks real stats, and plays by the rules. Illustrated turns and a live comba | python | unknown | reference | [electronistu/Project_Infinity](https://github.com/electronistu/Project_Infinity) @ `2026-10-19 (branch tip at catalogue time)` |
 | [prototype](entries/engines/gonutz-prototype/README.md) | Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM. | c | MIT | vendored | [gonutz/prototype](https://github.com/gonutz/prototype) @ `d3732ae42e68` |
 | [Prowl](entries/engines/prowlengine-prowl/README.md) | An Open Source C# 3D Game Engine under MIT license, inspired by Unity and featuring a complete editor | c# | MIT | reference | [ProwlEngine/Prowl](https://github.com/ProwlEngine/Prowl) @ `2026-11-25 (branch tip at catalogue time)` |
 | [Pulsar-Native](entries/engines/far-beyond-pulsar-pulsar-native/README.md) | The next-generation game engine that you deserve implemented in rust https://pulsarnative.com/ Developer_Blogs: https://pulsarnative.com/blog/ Research: https:/ | rust | MPL-2.0 | reference | [Far-Beyond-Pulsar/Pulsar-Native](https://github.com/Far-Beyond-Pulsar/Pulsar-Native) @ `2026-11-25 (branch tip at catalogue time)` |
@@ -570,6 +575,7 @@ _Generated 2026-11-25 19:30 UTC · 1760 entries · 443 vendored, 1317 reference-
 | [RightMouseNavigation](entries/engines/spectralvectors-rightmousenavigation/README.md) | Game Engine-style Right Mouse Viewport Navigation | python | GPL-3.0 | reference | [SpectralVectors/RightMouseNavigation](https://github.com/SpectralVectors/RightMouseNavigation) @ `2026-04-02 (branch tip at catalogue time)` |
 | [RobustToolbox](entries/engines/space-wizards-robusttoolbox/README.md) | Robust multiplayer game engine, used by Space Station 14 | c# | GPL-3.0 | reference | [space-wizards/RobustToolbox](https://github.com/space-wizards/RobustToolbox) @ `ec12ca54db27` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
+| [Root-Motion-Batch-Transfer-Blender](entries/engines/nguyennp-24-root-motion-batch-transfer-blender/README.md) | A easy-to-use Blender addon for batch transferring root motion from any rig controller. Supports multiple actions, with root motion either staying static at wor | python | GPL-3.0 | reference | [NguyenNP-24/Root-Motion-Batch-Transfer-Blender](https://github.com/NguyenNP-24/Root-Motion-Batch-Transfer-Blender) @ `2026-04-02 (branch tip at catalogue time)` |
 | [RPG-Core](entries/engines/delmarle-rpg-core/README.md) | UNITY engine RPG framework | c# | unknown | reference | [delmarle/RPG-Core](https://github.com/delmarle/RPG-Core) @ `2026-04-14 (branch tip at catalogue time)` |
 | [ruby2d-games](entries/engines/mariovisic-ruby2d-games/README.md) | A collection of games and demos written in ruby using the Ruby 2D framework, complete with free video tutorials | ruby | unknown | reference | [mariovisic/ruby2d-games](https://github.com/mariovisic/ruby2d-games) @ `2023-02-22 (branch tip at catalogue time)` |
 | [RuntimeUnityEditor](entries/engines/manlymarco-runtimeunityeditor/README.md) | In-game inspector and debugging tools for applications made with Unity3D game engine | c# | GPL-3.0 | reference | [ManlyMarco/RuntimeUnityEditor](https://github.com/ManlyMarco/RuntimeUnityEditor) @ `1ce168c7acfd` |

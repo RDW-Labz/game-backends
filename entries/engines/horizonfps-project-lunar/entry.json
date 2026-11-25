@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T19:46:35Z",
+ "category": "engines",
+ "commit": "20a284eb91d9",
+ "delivery": "reference",
+ "description": "horizonfps/project-lunar \u2014 AI-powered interactive RPG engine with persistent memory, independent NPC minds, creativity-based combat, and a   reactive world. Build scenarios, live adventures \u2014 the AI narrates everything. Supports DeepSeek, Anthropic, and   OpenAI.",
+ "language": "python",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "project-lunar",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 3066058,
+ "slug": "horizonfps-project-lunar",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 49,
+ "system": "AI-powered interactive RPG engine with persistent memory, independent NPC minds, creativity-based combat, and a   reactive world. Build scenarios, live adventur",
+ "upstream": "https://github.com/horizonfps/project-lunar",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

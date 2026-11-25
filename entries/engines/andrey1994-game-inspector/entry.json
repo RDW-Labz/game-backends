@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T19:46:37Z",
+ "category": "engines",
+ "commit": "2019-06-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Andrey1994/game_inspector \u2014 Tool to measure FPS, take screenshots, record video and draw overlay",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "game_inspector",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "andrey1994-game-inspector",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 42,
+ "system": "Tool to measure FPS, take screenshots, record video and draw overlay",
+ "upstream": "https://github.com/Andrey1994/game_inspector",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
