@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:10:38Z",
+ "category": "engines",
+ "commit": "2026-03-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Ishaan35/Unity3D-Mario-Kart-Racing-Game \u2014 https://www.youtube.com/watch?v=s_nEniWLLgo. This is a 3D Mario kart game created with the unity game engine with C#. Kart racer supports items, anti-gravity mode, computer players, underwater mode, and real-time shadows and lighting.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Unity3D-Mario-Kart-Racing-Game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ishaan35-unity3d-mario-kart-racing-game",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 465,
+ "system": "https://www.youtube.com/watch?v=s_nEniWLLgo. This is a 3D Mario kart game created with the unity game engine with C#. Kart racer supports items, anti-gravity mo",
+ "upstream": "https://github.com/Ishaan35/Unity3D-Mario-Kart-Racing-Game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

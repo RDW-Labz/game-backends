@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:10:38Z",
+ "category": "engines",
+ "commit": "2026-11-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OpenKH/OpenKh \u2014 Kingdom Hearts libraries, tools, game engine and documentation",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "OpenKh",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "openkh-openkh",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 466,
+ "system": "Kingdom Hearts libraries, tools, game engine and documentation",
+ "upstream": "https://github.com/OpenKH/OpenKh",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

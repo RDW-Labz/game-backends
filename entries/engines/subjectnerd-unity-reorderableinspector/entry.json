@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:10:38Z",
+ "category": "engines",
+ "commit": "2020-05-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SubjectNerd-Unity/ReorderableInspector \u2014 Automatic reorderable lists for Unity game engine components",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "ReorderableInspector",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "subjectnerd-unity-reorderableinspector",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 490,
+ "system": "Automatic reorderable lists for Unity game engine components",
+ "upstream": "https://github.com/SubjectNerd-Unity/ReorderableInspector",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

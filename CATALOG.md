@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 17:54 UTC · 1730 entries · 436 vendored, 1294 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 18:10 UTC · 1736 entries · 438 vendored, 1298 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 684 | 163 | 521 |
+| [engines](#engines) — Game engines and engine subsystems | 690 | 165 | 525 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 17:54 UTC · 1730 entries · 436 vendored, 1294 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 684 entries
+**Game engines and engine subsystems** — 690 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -257,6 +257,7 @@ _Generated 2026-11-25 17:54 UTC · 1730 entries · 436 vendored, 1294 reference-
 | [fromage](entries/engines/chenthread-fromage/README.md) | PlayStation 1 voxel engine | c | unknown | reference | [ChenThread/fromage](https://github.com/ChenThread/fromage) @ `2024-03-16 (branch tip at catalogue time)` |
 | [Frostfire-Forge](entries/engines/frostfire-interactive-frostfire-forge/README.md) | 2D MMO engine that runs in the browser. Build maps, quests, items and spells in editors inside the game. Built on Bun and WebTransport. | typescript | unknown | reference | [Frostfire-Interactive/Frostfire-Forge](https://github.com/Frostfire-Interactive/Frostfire-Forge) @ `2026-11-24 (branch tip at catalogue time)` |
 | [func_godot_plugin](entries/engines/func-godot-func-godot-plugin/README.md) | Quake .map support for Godot 4 | gdscript | MIT | vendored | [func-godot/func_godot_plugin](https://github.com/func-godot/func_godot_plugin) @ `352f3d3083f1` |
+| [FusionWater](entries/engines/nailuj05-fusionwater/README.md) | A simple way to add buoyancy / water physics in Unity, built on the existing physics engine | c# | MIT | reference | [nailuj05/FusionWater](https://github.com/nailuj05/FusionWater) @ `2022-05-12 (branch tip at catalogue time)` |
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
 | [Fyrox](entries/engines/fyroxengine-fyrox/README.md) | 3D and 2D game engine written in Rust | rust | MIT | vendored | [FyroxEngine/Fyrox](https://github.com/FyroxEngine/Fyrox) @ `e47bf0f35c9e` |
 | [g3nd](entries/engines/g3n-g3nd/README.md) | G3N Game Engine Demo | go | BSD-2-Clause | reference | [g3n/g3nd](https://github.com/g3n/g3nd) @ `2026-03-30 (branch tip at catalogue time)` |
@@ -460,6 +461,7 @@ _Generated 2026-11-25 17:54 UTC · 1730 entries · 436 vendored, 1294 reference-
 | [OpenEnroth](entries/engines/openenroth-openenroth/README.md) | Open reimplementation of Might and Magic 6 7 8 game engine | c++ | LGPL-3.0 | reference | [OpenEnroth/OpenEnroth](https://github.com/OpenEnroth/OpenEnroth) @ `2026-11-24 (branch tip at catalogue time)` |
 | [openfootmanager](entries/engines/openfootmanager-openfootmanager/README.md) | An open source soccer/football manager game | rust | GPL-3.0 | reference | [openfootmanager/openfootmanager](https://github.com/openfootmanager/openfootmanager) @ `2026-11-18 (branch tip at catalogue time)` |
 | [OpenGameAgent](entries/engines/ericsun0218-opengameagent/README.md) | MIT-licensed TypeScript runtime for AI-native game characters and worlds, with durable state, reliable actions, memory, tools, and Unity, Godot, and Unreal Engi | typescript | MIT | vendored | [EricSun0218/OpenGameAgent](https://github.com/EricSun0218/OpenGameAgent) @ `06294f101b5d` |
+| [OpenKh](entries/engines/openkh-openkh/README.md) | Kingdom Hearts libraries, tools, game engine and documentation | c# | Apache-2.0 | reference | [OpenKH/OpenKh](https://github.com/OpenKH/OpenKh) @ `2026-11-15 (branch tip at catalogue time)` |
 | [openmw](entries/engines/openmw-openmw/README.md) | OpenMW is an open-source open-world RPG game engine that supports playing Morrowind. Main repo and issue tracker can be found here: https://gitlab.com/OpenMW/op | c++ | GPL-3.0 | reference | [OpenMW/openmw](https://github.com/OpenMW/openmw) @ `77eec0471802` |
 | [OpenRA](entries/engines/openra-openra/README.md) | Open Source real-time strategy game engine for early Westwood games such as Command & Conquer: Red Alert written in C# using SDL and OpenGL. Runs on Windows, Li | c# | GPL-3.0 | reference | [OpenRA/OpenRA](https://github.com/OpenRA/OpenRA) @ `2026-11-22 (branch tip at catalogue time)` |
 | [openrct2 — core](entries/engines/openrct2-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
@@ -543,6 +545,7 @@ _Generated 2026-11-25 17:54 UTC · 1730 entries · 436 vendored, 1294 reference-
 | [REDox](entries/engines/capcom-td-oss-redox/README.md) | High-performance, token-based structured data engine for .NET. A core component of REX, the technology behind CAPCOM's next-generation game engine. | c# | Apache-2.0 | vendored | [CAPCOM-TD-OSS/REDox](https://github.com/CAPCOM-TD-OSS/REDox) @ `98fc0062bed2` |
 | [ReksioEngine](entries/engines/reksioengine-reksioengine/README.md) | Reimplementation of BlooMoo and Piklib game engines for "Przygody Reksia" PC games series | typescript | none | reference | [ReksioEngine/ReksioEngine](https://github.com/ReksioEngine/ReksioEngine) @ `57871e8368b7` |
 | [renpy](entries/engines/renpy-renpy/README.md) | The Ren'Py Visual Novel Engine | ren'py | unknown | reference | [renpy/renpy](https://github.com/renpy/renpy) @ `2026-11-23 (branch tip at catalogue time)` |
+| [ReorderableInspector](entries/engines/subjectnerd-unity-reorderableinspector/README.md) | Automatic reorderable lists for Unity game engine components | c# | MIT | reference | [SubjectNerd-Unity/ReorderableInspector](https://github.com/SubjectNerd-Unity/ReorderableInspector) @ `2020-05-26 (branch tip at catalogue time)` |
 | [replay](entries/engines/edbentley-replay/README.md) | A cross-platform JS game engine inspired by React | typescript | MIT | vendored | [edbentley/replay](https://github.com/edbentley/replay) @ `d10084041f8a` |
 | [rerecast](entries/engines/janhohenheim-rerecast/README.md) | Rust port of Recast, the industry-standard navigation mesh generator used by Unreal, Unity, Godot, and other game engines. | rust | Apache-2.0 | reference | [janhohenheim/rerecast](https://github.com/janhohenheim/rerecast) @ `beda61552ef6` |
 | [revy](entries/engines/rerun-io-revy/README.md) | Proof-of-concept time-travel debugger for the Bevy game engine, built using Rerun. | rust | Apache-2.0 | reference | [rerun-io/revy](https://github.com/rerun-io/revy) @ `2026-08-24 (branch tip at catalogue time)` |
@@ -628,11 +631,14 @@ _Generated 2026-11-25 17:54 UTC · 1730 entries · 436 vendored, 1294 reference-
 | [UeCore](entries/engines/geektcp-uecore/README.md) | UeCore(Universe Engine Core) is an Open Source MMO RPG Framework World of Warcraft Server Engine (NOT Unreal Engine) | c++ | GPL-3.0 | reference | [geektcp/UeCore](https://github.com/geektcp/UeCore) @ `da40c4ffa99c` |
 | [UECS](entries/engines/ubpa-uecs/README.md) | Ubpa Entity-Component-System (U ECS) in Unity3D-style | c++ | MIT | vendored | [Ubpa/UECS](https://github.com/Ubpa/UECS) @ `98feb3939e66` |
 | [umodel_tools](entries/engines/skarndev-umodel-tools/README.md) | A Blender add-on featuring import of Unreal Engine games static meshes and maps. It provides basic support for many UE games, while some have dedicated improved | python | GPL-3.0 | reference | [skarndev/umodel_tools](https://github.com/skarndev/umodel_tools) @ `c76ebf73bf17` |
+| [Unity-Beat-Detection](entries/engines/allanpichardo-unity-beat-detection/README.md) | Musical beat detection and audio spectrum analysis for use with the Unity game engine. | c# | Apache-2.0 | vendored | [allanpichardo/Unity-Beat-Detection](https://github.com/allanpichardo/Unity-Beat-Detection) @ `cfd33b7282e5` |
 | [unity-ecs-navmesh](entries/engines/zulfajuniadi-unity-ecs-navmesh/README.md) | A demo implementation of Unity Entity Component System with NavMesh | c# | MIT | vendored | [zulfajuniadi/unity-ecs-navmesh](https://github.com/zulfajuniadi/unity-ecs-navmesh) @ `bb4fe6ed2f84` |
 | [unity-google-drive](entries/engines/elringus-unity-google-drive/README.md) | Google Drive SDK for the Unity game engine | c# | MIT | vendored | [elringus/unity-google-drive](https://github.com/elringus/unity-google-drive) @ `ac3f7da2013c` |
 | [unity-raw-input](entries/engines/elringus-unity-raw-input/README.md) | Windows Raw Input wrapper for Unity game engine | c# | MIT | reference | [elringus/unity-raw-input](https://github.com/elringus/unity-raw-input) @ `2025-10-15 (branch tip at catalogue time)` |
+| [Unity3D-Mario-Kart-Racing-Game](entries/engines/ishaan35-unity3d-mario-kart-racing-game/README.md) | https://www.youtube.com/watch?v=s_nEniWLLgo. This is a 3D Mario kart game created with the unity game engine with C#. Kart racer supports items, anti-gravity mo | c# | unknown | reference | [Ishaan35/Unity3D-Mario-Kart-Racing-Game](https://github.com/Ishaan35/Unity3D-Mario-Kart-Racing-Game) @ `2026-03-23 (branch tip at catalogue time)` |
 | [UnityGameFramework](entries/engines/ellanjiang-unitygameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | reference | [EllanJiang/UnityGameFramework](https://github.com/EllanJiang/UnityGameFramework) @ `2023-05-21 (branch tip at catalogue time)` |
 | [UnityHexagonLibrary2d](entries/engines/ycarowr-unityhexagonlibrary2d/README.md) | A library to manage 2D hexagonal tiles in Unity. | c# | MIT | reference | [ycarowr/UnityHexagonLibrary2d](https://github.com/ycarowr/UnityHexagonLibrary2d) @ `2021-04-17 (branch tip at catalogue time)` |
+| [UnityOSC](entries/engines/jorgegarcia-unityosc/README.md) | Open Sound Control (OSC) C# classes interface for the Unity3d game engine | c# | MIT | vendored | [jorgegarcia/UnityOSC](https://github.com/jorgegarcia/UnityOSC) @ `8ccbef2da7f5` |
 | [UnitySteer](entries/engines/ricardojmendez-unitysteer/README.md) | Steering, obstacle avoidance and path following behaviors for the Unity Game Engine | c# | unknown | reference | [ricardojmendez/UnitySteer](https://github.com/ricardojmendez/UnitySteer) @ `2019-10-01 (branch tip at catalogue time)` |
 | [UnityTileMap](entries/engines/alexanderfast-unitytilemap/README.md) | A TileMap library for Unity written in C#. | c# | MIT | reference | [alexanderfast/UnityTileMap](https://github.com/alexanderfast/UnityTileMap) @ `2015-04-21 (branch tip at catalogue time)` |
 | [UnityTutorials-RTS](entries/engines/minapecheux-unitytutorials-rts/README.md) | The code for my series of tutorials on how to make a real-time stategy (RTS) game in the well-know Unity game engine (with C# scripting)!  | c# | MIT | vendored | [MinaPecheux/UnityTutorials-RTS](https://github.com/MinaPecheux/UnityTutorials-RTS) @ `152128b8dde0` |

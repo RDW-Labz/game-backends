@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:10:38Z",
+ "category": "engines",
+ "commit": "2022-05-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "nailuj05/FusionWater \u2014 A simple way to add buoyancy / water physics in Unity, built on the existing physics engine",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "FusionWater",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "nailuj05-fusionwater",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 317,
+ "system": "A simple way to add buoyancy / water physics in Unity, built on the existing physics engine",
+ "upstream": "https://github.com/nailuj05/FusionWater",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

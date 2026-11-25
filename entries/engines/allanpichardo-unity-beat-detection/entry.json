@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T18:10:35Z",
+ "category": "engines",
+ "commit": "cfd33b7282e5",
+ "delivery": "vendored",
+ "description": "allanpichardo/Unity-Beat-Detection \u2014 Musical beat detection and audio spectrum analysis for use with the Unity game engine.",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_file": "AudioProcessor.cs",
+ "license_verdict": "clean",
+ "name": "Unity-Beat-Detection",
+ "size_bytes": 12036,
+ "slug": "allanpichardo-unity-beat-detection",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 505,
+ "system": "Musical beat detection and audio spectrum analysis for use with the Unity game engine.",
+ "upstream": "https://github.com/allanpichardo/Unity-Beat-Detection",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

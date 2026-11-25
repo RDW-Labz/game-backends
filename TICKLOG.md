@@ -3339,3 +3339,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/prowlengine-prowl
   - reference engines/armour-multiplayer-fps
   - reference engines/ricardojmendez-unitysteer
+
+- **2026-11-25 18:10 UTC** — tick 883: +2 screened, +4 reference, 29 skipped, catalogue=1736
+  - added engines/allanpichardo-unity-beat-detection (Apache-2.0, vendored)
+  - added engines/jorgegarcia-unityosc (MIT, vendored)
+  - reference engines/subjectnerd-unity-reorderableinspector
+  - reference engines/openkh-openkh
+  - reference engines/ishaan35-unity3d-mario-kart-racing-game
+  - reference engines/nailuj05-fusionwater
