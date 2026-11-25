@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T22:26:40Z",
+ "category": "engines",
+ "commit": "2026-10-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "godotengine/godot-git-plugin \u2014 Git implementation of the VCS interface in Godot",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-git-plugin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "godotengine-godot-git-plugin",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 967,
+ "system": "Git implementation of the VCS interface in Godot",
+ "upstream": "https://github.com/godotengine/godot-git-plugin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

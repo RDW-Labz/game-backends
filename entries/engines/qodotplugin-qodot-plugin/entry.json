@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T22:26:40Z",
+ "category": "engines",
+ "commit": "2023-03-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "QodotPlugin/qodot-plugin \u2014 (LEGACY) Quake .map support for Godot 3.x",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "qodot-plugin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "qodotplugin-qodot-plugin",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 984,
+ "system": "(LEGACY) Quake .map support for Godot 3.x",
+ "upstream": "https://github.com/QodotPlugin/qodot-plugin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

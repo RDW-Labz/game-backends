@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T22:26:40Z",
+ "category": "engines",
+ "commit": "2023-03-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "vnen/godot-tiled-importer \u2014 Plugin for Godot Engine to import Tiled Map Editor tilemaps and tilesets",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-tiled-importer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "vnen-godot-tiled-importer",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 900,
+ "system": "Plugin for Godot Engine to import Tiled Map Editor tilemaps and tilesets",
+ "upstream": "https://github.com/vnen/godot-tiled-importer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

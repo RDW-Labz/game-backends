@@ -3453,3 +3453,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/rornic-ochre
 
 - **2026-11-25 22:10 UTC** — tick 898: +0 screened, +0 reference, 20 skipped, catalogue=1811
+
+- **2026-11-25 22:26 UTC** — tick 899: +2 screened, +4 reference, 16 skipped, catalogue=1817
+  - added engines/don-tnowe-godot-resources-as-sheets-plugin (MIT, vendored)
+  - added engines/mohsenph69-godot-mterrain-plugin (MIT, vendored)
+  - reference engines/nonunknown-godot-powerful
+  - reference engines/qodotplugin-qodot-plugin
+  - reference engines/godotengine-godot-git-plugin
+  - reference engines/vnen-godot-tiled-importer

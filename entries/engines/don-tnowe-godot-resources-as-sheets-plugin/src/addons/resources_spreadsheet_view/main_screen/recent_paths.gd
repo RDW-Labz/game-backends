@@ -1,0 +1,67 @@
+@tool
+extends OptionButton
+
+@onready var editor_view := $"../../../../.."
+
+var recent_paths : Array[String] = []
+
+
+func _ready():
+	item_selected.connect(_on_item_selected)
+
+
+func load_paths(paths):
+	clear()
+	for x in paths:
+		add_path_to_recent(x, true)
+
+	selected = recent_paths.size() - 1
+
+
+func reload_paths():
+	var path_count := recent_paths.size()
+	var removed := 0
+	for i in path_count - removed:	
+		i -= removed
+		if not editor_view.is_valid_path(recent_paths[i]):
+			removed += 1
+			remove_path_from_recent(i)
+
+
+func add_path_to_recent(path : String, is_loading : bool = false):
+	if path in recent_paths: return
+
+	var idx_in_array := recent_paths.find(path)
+	if idx_in_array != -1:
+		remove_item(idx_in_array)
+		recent_paths.remove_at(idx_in_array)
+	
+	recent_paths.append(path)
+	add_item(path)
+	select(get_item_count() - 1)
+
+	if !is_loading:
+		editor_view.save_data()
+
+
+func remove_path_from_recent(index : int):
+	if get_item_count() == 0:
+		return
+	
+	recent_paths.remove_at(index)
+	remove_item(index)
+
+	if get_item_count() != 0:
+		select(0)
+		editor_view.display_folder(recent_paths[0])
+		editor_view.save_data()
+
+
+func _on_item_selected(index : int):
+	editor_view.current_path = recent_paths[index]
+	editor_view.node_folder_path.text = recent_paths[index]
+	editor_view.refresh()
+
+
+func _on_delete_path_pressed() -> void:
+	remove_path_from_recent(selected)

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 22:10 UTC · 1811 entries · 453 vendored, 1358 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 22:26 UTC · 1817 entries · 455 vendored, 1362 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 765 | 180 | 585 |
+| [engines](#engines) — Game engines and engine subsystems | 771 | 182 | 589 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 22:10 UTC · 1811 entries · 453 vendored, 1358 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 765 entries
+**Game engines and engine subsystems** — 771 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -328,6 +328,7 @@ _Generated 2026-11-25 22:10 UTC · 1811 entries · 453 vendored, 1358 reference-
 | [godot-engine.easy-charts](entries/engines/fenix-hub-godot-engine-easy-charts/README.md) | A Godot Engine addon for plotting general purpose charts. A collection of Control, 2D and 3D Nodes to plot every chart possible. | gdscript | MIT | reference | [fenix-hub/godot-engine.easy-charts](https://github.com/fenix-hub/godot-engine.easy-charts) @ `2026-10-10 (branch tip at catalogue time)` |
 | [godot-gameplay-systems](entries/engines/octod-godot-gameplay-systems/README.md) | ⚔️ A plugin for Godot to create your gameplay systems in a Godot way. | gdscript | MIT | reference | [OctoD/godot-gameplay-systems](https://github.com/OctoD/godot-gameplay-systems) @ `2025-06-06 (branch tip at catalogue time)` |
 | [godot-gaussian-splatting](entries/engines/reconworldlab-godot-gaussian-splatting/README.md) | [GDGS] A real-time 3D Gaussian Splatting (3DGS) rendering plugin for the Godot Engine. Godot引擎的实时3DGS渲染插件 | gdscript | MIT | vendored | [ReconWorldLab/godot-gaussian-splatting](https://github.com/ReconWorldLab/godot-gaussian-splatting) @ `c22024b33a24` |
+| [godot-git-plugin](entries/engines/godotengine-godot-git-plugin/README.md) | Git implementation of the VCS interface in Godot | c++ | MIT | reference | [godotengine/godot-git-plugin](https://github.com/godotengine/godot-git-plugin) @ `2026-10-21 (branch tip at catalogue time)` |
 | [godot-google-play-billing](entries/engines/godot-sdk-integrations-godot-google-play-billing/README.md) | Godot Android plugin for the Google Play Billing library | kotlin | MIT | reference | [godot-sdk-integrations/godot-google-play-billing](https://github.com/godot-sdk-integrations/godot-google-play-billing) @ `2026-09-25 (branch tip at catalogue time)` |
 | [godot-lua-pluginscript](entries/engines/gilzoide-godot-lua-pluginscript/README.md) | Godot 3.X PluginScript for the Lua language, based on LuaJIT's FFI | lua | MIT | vendored | [gilzoide/godot-lua-pluginscript](https://github.com/gilzoide/godot-lua-pluginscript) @ `610a8d4788ab` |
 | [godot-manager](entries/engines/eumario-godot-manager/README.md) | A Project, Version and Addons/Plugins manager for Godot Game Engine. | c# | MIT | reference | [eumario/godot-manager](https://github.com/eumario/godot-manager) @ `2026-03-31 (branch tip at catalogue time)` |
@@ -340,12 +341,16 @@ _Generated 2026-11-25 22:10 UTC · 1811 entries · 453 vendored, 1358 reference-
 | [Godot-MCP-Native](entries/engines/yurineko73-godot-mcp-native/README.md) | 一款支持godot开源引擎的的mcp插件，支持常见godot引擎操作，使用Godot原生实现MCPServer，无需安装依赖，开箱即用，支持多种AI工具调用。An MCP plugin that supports the open-source Godot engine, enabling common Godot e | gdscript | MIT | reference | [yurineko73/Godot-MCP-Native](https://github.com/yurineko73/Godot-MCP-Native) @ `2026-08-03 (branch tip at catalogue time)` |
 | [godot-mcp-runtime](entries/engines/erodenn-godot-mcp-runtime/README.md) | A lightweight, zero-footprint TypeScript MCP server that lets AI assistants drive the Godot 4.x game engine. | typescript | MIT | vendored | [Erodenn/godot-mcp-runtime](https://github.com/Erodenn/godot-mcp-runtime) @ `3b8a4f311d29` |
 | [godot-minimal-theme](entries/engines/passivestar-godot-minimal-theme/README.md) | Godot Minimal Theme | n/a | MIT | vendored | [passivestar/godot-minimal-theme](https://github.com/passivestar/godot-minimal-theme) @ `3250c3c79860` |
+| [Godot-MTerrain-plugin](entries/engines/mohsenph69-godot-mterrain-plugin/README.md) | A GDExtension plugin which give godot the ability to produce highly optimized Terrain for Open world games | c++ | MIT | vendored | [mohsenph69/Godot-MTerrain-plugin](https://github.com/mohsenph69/Godot-MTerrain-plugin) @ `e981512d5bfb` |
 | [Godot-PerfBullets](entries/engines/moonzel-godot-perfbullets/README.md) | This plugin uses the MultiMeshInstance2D to render thousands of bullets easily while running the logic in C++ to run at maximum performance.  | c++ | MIT | vendored | [Moonzel/Godot-PerfBullets](https://github.com/Moonzel/Godot-PerfBullets) @ `80829fb0cf41` |
 | [godot-play-game-services](entries/engines/godot-sdk-integrations-godot-play-game-services/README.md) | A Godot 4.x plugin for integration with Google Play Games Services | gdscript | MIT | reference | [godot-sdk-integrations/godot-play-game-services](https://github.com/godot-sdk-integrations/godot-play-game-services) @ `2026-11-21 (branch tip at catalogue time)` |
 | [godot-ply](entries/engines/jarneson-godot-ply/README.md) | Godot plugin for in-editor box modeling | gdscript | MIT | reference | [jarneson/godot-ply](https://github.com/jarneson/godot-ply) @ `2024-12-20 (branch tip at catalogue time)` |
+| [godot-powerful](entries/engines/nonunknown-godot-powerful/README.md) | List of plugins to turn godot into a most powerful engine that already is. | n/a | MIT | reference | [nonunknown/godot-powerful](https://github.com/nonunknown/godot-powerful) @ `2023-08-20 (branch tip at catalogue time)` |
+| [godot-resources-as-sheets-plugin](entries/engines/don-tnowe-godot-resources-as-sheets-plugin/README.md) | I needed to edit many Resource files, so figured someone would too. | gdscript | MIT | vendored | [don-tnowe/godot-resources-as-sheets-plugin](https://github.com/don-tnowe/godot-resources-as-sheets-plugin) @ `d89acd49344f` |
 | [godot-road-generator](entries/engines/theduckcow-godot-road-generator/README.md) | A Godot plugin for creating 3D highways/streets and lane-following traffic | gdscript | MIT | reference | [TheDuckCow/godot-road-generator](https://github.com/TheDuckCow/godot-road-generator) @ `2026-11-22 (branch tip at catalogue time)` |
 | [godot-shaders](entries/engines/gdquest-demos-godot-shaders/README.md) | A large library of free and open-source shaders for the Godot game engine. Here, you'll get 2D and 3D shaders with playable demos. | gdshader | unknown | reference | [gdquest-demos/godot-shaders](https://github.com/gdquest-demos/godot-shaders) @ `2026-11-19 (branch tip at catalogue time)` |
 | [godot-softbody2d](entries/engines/appsinacup-godot-softbody2d/README.md) | Godot SoftBody2D - Plugin that adds deformable 2D soft body. | gdscript | MIT | reference | [appsinacup/godot-softbody2d](https://github.com/appsinacup/godot-softbody2d) @ `2026-08-15 (branch tip at catalogue time)` |
+| [godot-tiled-importer](entries/engines/vnen-godot-tiled-importer/README.md) | Plugin for Godot Engine to import Tiled Map Editor tilemaps and tilesets | gdscript | MIT | reference | [vnen/godot-tiled-importer](https://github.com/vnen/godot-tiled-importer) @ `2023-03-15 (branch tip at catalogue time)` |
 | [Godot-Trail-System](entries/engines/obkf-godot-trail-system/README.md) | Advanced trail/ribbon plugin for the Godot Engine | gdscript | MIT | reference | [OBKF/Godot-Trail-System](https://github.com/OBKF/Godot-Trail-System) @ `2021-05-29 (branch tip at catalogue time)` |
 | [godot-voip](entries/engines/ikbencasdoei-godot-voip/README.md) | godot-voip is a Godot Engine addon which makes it very easy to setup a real-time voice-chat system in your Godot game. This addon also includes a demo project. | rust | MIT | reference | [ikbencasdoei/godot-voip](https://github.com/ikbencasdoei/godot-voip) @ `2024-09-22 (branch tip at catalogue time)` |
 | [Godot-Voxel-Game-MineCraftClone](entries/engines/toger5-godot-voxel-game-minecraftclone/README.md) | This is a Godot project where I try to get familiar with the Engine. | gdscript | MIT | reference | [toger5/Godot-Voxel-Game-MineCraftClone](https://github.com/toger5/Godot-Voxel-Game-MineCraftClone) @ `2016-04-06 (branch tip at catalogue time)` |
@@ -575,6 +580,7 @@ _Generated 2026-11-25 22:10 UTC · 1811 entries · 453 vendored, 1358 reference-
 | [pyxel](entries/engines/kitao-pyxel/README.md) | A retro game engine for Python | rust | unknown | reference | [kitao/pyxel](https://github.com/kitao/pyxel) @ `2026-11-23 (branch tip at catalogue time)` |
 | [pyxel-mcp](entries/engines/kitao-pyxel-mcp/README.md) | MCP server for AI-assisted retro game development with Pyxel | python | MIT | reference | [kitao/pyxel-mcp](https://github.com/kitao/pyxel-mcp) @ `2026-11-20 (branch tip at catalogue time)` |
 | [Qake](entries/engines/lallassu-qake/README.md) | Qake voxel-engine demo | javascript | MIT | vendored | [Lallassu/Qake](https://github.com/Lallassu/Qake) @ `6c8da7a83b72` |
+| [qodot-plugin](entries/engines/qodotplugin-qodot-plugin/README.md) | (LEGACY) Quake .map support for Godot 3.x | gdscript | MIT | reference | [QodotPlugin/qodot-plugin](https://github.com/QodotPlugin/qodot-plugin) @ `2023-03-09 (branch tip at catalogue time)` |
 | [Quasi-Engine](entries/engines/indt-quasi-engine/README.md) | Quasi Engine is a framework that intends to be a complete toolset to ease 2d game development, providing ready-to-use QML elements representing basic game entit | c++ | LGPL-3.0 | reference | [INdT/Quasi-Engine](https://github.com/INdT/Quasi-Engine) @ `7d496613c31b` |
 | [Quaver.API](entries/engines/quaver-quaver-api/README.md) | Keep developing for Quaver with these set of tools and C# libraries. | c# | GPL-3.0 | reference | [Quaver/Quaver.API](https://github.com/Quaver/Quaver.API) @ `14f39cc9331d` |
 | [Quixel](entries/engines/chippington-quixel/README.md) | Quick Voxel Terrain Engine for Unity | c# | MIT | reference | [Chippington/Quixel](https://github.com/Chippington/Quixel) @ `2017-02-18 (branch tip at catalogue time)` |

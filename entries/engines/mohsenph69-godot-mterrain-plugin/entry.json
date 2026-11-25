@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T22:26:38Z",
+ "category": "engines",
+ "commit": "e981512d5bfb",
+ "delivery": "vendored",
+ "description": "mohsenph69/Godot-MTerrain-plugin \u2014 A GDExtension plugin which give godot the ability to produce highly optimized Terrain for Open world games",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Godot-MTerrain-plugin",
+ "size_bytes": 1824455,
+ "slug": "mohsenph69-godot-mterrain-plugin",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 1021,
+ "system": "A GDExtension plugin which give godot the ability to produce highly optimized Terrain for Open world games",
+ "upstream": "https://github.com/mohsenph69/Godot-MTerrain-plugin",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T22:26:36Z",
+ "category": "engines",
+ "commit": "d89acd49344f",
+ "delivery": "vendored",
+ "description": "don-tnowe/godot-resources-as-sheets-plugin \u2014 I needed to edit many Resource files, so figured someone would too.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "godot-resources-as-sheets-plugin",
+ "size_bytes": 155080,
+ "slug": "don-tnowe-godot-resources-as-sheets-plugin",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 1037,
+ "system": "I needed to edit many Resource files, so figured someone would too.",
+ "upstream": "https://github.com/don-tnowe/godot-resources-as-sheets-plugin",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
