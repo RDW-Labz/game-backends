@@ -3476,3 +3476,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/doonv-bevy-dev-console
   - reference engines/emiongit-warbler-grass
   - reference engines/jabuwu-bevy-spine
+
+- **2026-11-25 23:14 UTC** — tick 902: +2 screened, +4 reference, 10 skipped, catalogue=1834
+  - added engines/blotch3d-blotch3d (MS-PL, reference)
+  - added engines/jaquadro-lilypath (MIT, vendored)
+  - reference engines/apostolique-apos-shapes
+  - reference engines/mrgrak-aui
+  - reference engines/apostolique-apos-input
+  - reference engines/emptykeys-ui-engines

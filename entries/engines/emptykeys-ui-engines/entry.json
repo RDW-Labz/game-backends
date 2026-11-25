@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T23:14:39Z",
+ "category": "engines",
+ "commit": "2025-05-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "EmptyKeys/UI_Engines \u2014 Engine specific libraries for Empty Keys UI",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "UI_Engines",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "emptykeys-ui-engines",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 60,
+ "system": "Engine specific libraries for Empty Keys UI",
+ "upstream": "https://github.com/EmptyKeys/UI_Engines",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

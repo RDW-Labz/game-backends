@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T23:14:36Z",
+ "category": "engines",
+ "commit": "86dbe46adf0f",
+ "delivery": "reference",
+ "description": "Blotch3D/Blotch3D \u2014 A high-level 3D class library that gives you real-time 3D graphics with just a few lines of C# code. Supports multiple platforms. Implemented as a .NET Standard library that works with all versions of .NET. See 'Quick start for Windows' to get started. Also available as a NuGet package without the examples or source.",
+ "language": "c#",
+ "license": "MS-PL",
+ "license_file": "LICENSE",
+ "license_verdict": "gated-reference",
+ "name": "Blotch3D",
+ "reference_reason": "licence: MS-PL (gated-reference)",
+ "size_bytes": 293101,
+ "slug": "blotch3d-blotch3d",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 126,
+ "system": "A high-level 3D class library that gives you real-time 3D graphics with just a few lines of C# code. Supports multiple platforms. Implemented as a .NET Standard",
+ "upstream": "https://github.com/Blotch3D/Blotch3D",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

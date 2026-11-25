@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 22:58 UTC · 1828 entries · 459 vendored, 1369 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 23:14 UTC · 1834 entries · 460 vendored, 1374 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 782 | 186 | 596 |
+| [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 22:58 UTC · 1828 entries · 459 vendored, 1369 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 782 entries
+**Game engines and engine subsystems** — 788 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -44,6 +44,8 @@ _Generated 2026-11-25 22:58 UTC · 1828 entries · 459 vendored, 1369 reference-
 | [anything_about_game](entries/engines/killop-anything-about-game/README.md) | A wonderful list of Game Development resources. | n/a | Apache-2.0 | reference | [killop/anything_about_game](https://github.com/killop/anything_about_game) @ `2026-11-17 (branch tip at catalogue time)` |
 | [ape-ecs](entries/engines/fritzy-ape-ecs/README.md) | Entity-Component-System library for JavaScript. | typescript | MIT | reference | [fritzy/ape-ecs](https://github.com/fritzy/ape-ecs) @ `2023-03-04 (branch tip at catalogue time)` |
 | [Apos.Gui](entries/engines/apostolique-apos-gui/README.md) | UI library for MonoGame. | c# | MIT | reference | [Apostolique/Apos.Gui](https://github.com/Apostolique/Apos.Gui) @ `2026-11-03 (branch tip at catalogue time)` |
+| [Apos.Input](entries/engines/apostolique-apos-input/README.md) | Polling input library for MonoGame. | c# | MIT | reference | [Apostolique/Apos.Input](https://github.com/Apostolique/Apos.Input) @ `2026-11-14 (branch tip at catalogue time)` |
+| [Apos.Shapes](entries/engines/apostolique-apos-shapes/README.md) | Shape rendering library for MonoGame. | c# | MIT | reference | [Apostolique/Apos.Shapes](https://github.com/Apostolique/Apos.Shapes) @ `2026-11-10 (branch tip at catalogue time)` |
 | [ArcadeMaker](entries/engines/arcademakersources-arcademaker/README.md) | A cross-platform 2D game engine with its own programming language and IDE. | c# | MIT | reference | [ArcadeMakerSources/ArcadeMaker](https://github.com/ArcadeMakerSources/ArcadeMaker) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Arch](entries/engines/genaray-arch/README.md) | A high-performance C# based Archetype & Chunks Entity Component System (ECS) with optional multithreading. | c# | Apache-2.0 | reference | [genaray/Arch](https://github.com/genaray/Arch) @ `2026-11-09 (branch tip at catalogue time)` |
 | [arche](entries/engines/mlange-42-arche/README.md) | Arche -- Archetype-based Entity Component System (ECS) for Go. | go | MIT | reference | [mlange-42/arche](https://github.com/mlange-42/arche) @ `2025-04-01 (branch tip at catalogue time)` |
@@ -52,6 +54,7 @@ _Generated 2026-11-25 22:58 UTC · 1828 entries · 459 vendored, 1369 reference-
 | [Ark.jl](entries/engines/ark-ecs-ark-jl/README.md) | Archetype-based Entity Component System (ECS) for Julia | julia | Apache-2.0 | reference | [ark-ecs/Ark.jl](https://github.com/ark-ecs/Ark.jl) @ `2026-11-13 (branch tip at catalogue time)` |
 | [armory](entries/engines/armory3d-armory/README.md) | 3D Engine with Blender Integration | c++ | Zlib | reference | [armory3d/armory](https://github.com/armory3d/armory) @ `7f7f588b5a50` |
 | [arsenal](entries/engines/katharostech-arsenal/README.md) | Blender game engine prototype written in Rust. | rust | unknown | reference | [katharostech/arsenal](https://github.com/katharostech/arsenal) @ `2023-01-18 (branch tip at catalogue time)` |
+| [AUI](entries/engines/mrgrak-aui/README.md) | Animated User Interface library for Monogame | c# | unknown | reference | [MrGrak/AUI](https://github.com/MrGrak/AUI) @ `2019-06-02 (branch tip at catalogue time)` |
 | [awesome-decomp-games](entries/engines/submitgame-awesome-decomp-games/README.md) | Rated, auto-refreshed list of decompiled, recompiled & reverse-engineered games: decomps, static recomps, source ports, engine remakes, browser ports. | python | CC0-1.0 | vendored | [SubmitGame/awesome-decomp-games](https://github.com/SubmitGame/awesome-decomp-games) @ `c3d938df47b2` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
 | [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
@@ -136,6 +139,7 @@ _Generated 2026-11-25 22:58 UTC · 1828 entries · 459 vendored, 1369 reference-
 | [blip](entries/engines/bliporg-blip/README.md) | Blip is a cross-platform fully scriptable game engine and distribution platform. | go | Apache-2.0 | reference | [bliporg/blip](https://github.com/bliporg/blip) @ `905aacdb0344` |
 | [blocks](entries/engines/danielesteban-blocks/README.md) | webxr multiplayer voxels engine | javascript | MIT | vendored | [danielesteban/blocks](https://github.com/danielesteban/blocks) @ `3bda59180fc6` |
 | [BlocksJS](entries/engines/williammalone-blocksjs/README.md) | A lightweight 2D HTML5 canvas game framework | javascript | MIT | reference | [williammalone/BlocksJS](https://github.com/williammalone/BlocksJS) @ `2016-06-30 (branch tip at catalogue time)` |
+| [Blotch3D](entries/engines/blotch3d-blotch3d/README.md) | A high-level 3D class library that gives you real-time 3D graphics with just a few lines of C# code. Supports multiple platforms. Implemented as a .NET Standard | c# | MS-PL | reference | [Blotch3D/Blotch3D](https://github.com/Blotch3D/Blotch3D) @ `86dbe46adf0f` |
 | [boardgame.io](entries/engines/boardgameio-boardgame-io/README.md) | State Management and Multiplayer Networking for Turn-Based Games | typescript | MIT | vendored | [boardgameio/boardgame.io](https://github.com/boardgameio/boardgame.io) @ `47adef2b46e3` |
 | [bones](entries/engines/fishfolk-bones/README.md) | An easy-to-use game engine for making real games. | rust | Apache-2.0 | vendored | [fishfolk/bones](https://github.com/fishfolk/bones) @ `cd62a2f1ccdb` |
 | [bonsai](entries/engines/scallyw4g-bonsai/README.md) | The procedural generation voxel engine | c | WTFPL | reference | [scallyw4g/bonsai](https://github.com/scallyw4g/bonsai) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -426,6 +430,7 @@ _Generated 2026-11-25 22:58 UTC · 1828 entries · 459 vendored, 1369 reference-
 | [libgdx-inGameConsole](entries/engines/strongjoshua-libgdx-ingameconsole/README.md) | A LibGdx library that allows a developer to add a console (similar to how it is featured in Source games) to their game. | java | Apache-2.0 | vendored | [StrongJoshua/libgdx-inGameConsole](https://github.com/StrongJoshua/libgdx-inGameConsole) @ `6ef713ee3fe2` |
 | [libretro-chailove](entries/engines/libretro-libretro-chailove/README.md) | :heart: 2D Game Framework with ChaiScript | c++ | MIT | reference | [libretro/libretro-chailove](https://github.com/libretro/libretro-chailove) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Librian](entries/engines/rimochan-librian/README.md) | 【Librian】簡明強大的 Galgame / Visual Novel 引擎 | python | MPL-2.0 | reference | [RimoChan/Librian](https://github.com/RimoChan/Librian) @ `2026-09-05 (branch tip at catalogue time)` |
+| [LilyPath](entries/engines/jaquadro-lilypath/README.md) | A 2D path and shape drawing library for MonoGame and XNA. | c# | MIT | vendored | [jaquadro/LilyPath](https://github.com/jaquadro/LilyPath) @ `718419c02295` |
 | [LinaEngine](entries/engines/inanevin-linaengine/README.md) | Lina Engine is an open-source , modular, tiny and fast C++ game engine, aimed to develop 3D desktop games. | c++ | unknown | reference | [inanevin/LinaEngine](https://github.com/inanevin/LinaEngine) @ `2025-10-08 (branch tip at catalogue time)` |
 | [lionengine](entries/engines/b3dgs-lionengine/README.md) | Java 2D Game Engine | python | GPL-3.0 | reference | [b3dgs/lionengine](https://github.com/b3dgs/lionengine) @ `4f7778642e26` |
 | [Lisien](entries/engines/tacticalmetaphysics-lisien/README.md) | Rules-based engine for life sims, with time travel | python | AGPL-3.0 | reference | [TacticalMetaphysics/Lisien](https://github.com/TacticalMetaphysics/Lisien) @ `2026-03-01 (branch tip at catalogue time)` |
@@ -710,6 +715,7 @@ _Generated 2026-11-25 22:58 UTC · 1828 entries · 459 vendored, 1369 reference-
 | [UEAESKeyFinder](entries/engines/ezfndev-ueaeskeyfinder/README.md) | This tool can find the AES Key of probably any Unreal Engine game | c# | none | reference | [EZFNDEV/UEAESKeyFinder](https://github.com/EZFNDEV/UEAESKeyFinder) @ `eeacbb1f0e7d` |
 | [UeCore](entries/engines/geektcp-uecore/README.md) | UeCore(Universe Engine Core) is an Open Source MMO RPG Framework World of Warcraft Server Engine (NOT Unreal Engine) | c++ | GPL-3.0 | reference | [geektcp/UeCore](https://github.com/geektcp/UeCore) @ `da40c4ffa99c` |
 | [UECS](entries/engines/ubpa-uecs/README.md) | Ubpa Entity-Component-System (U ECS) in Unity3D-style | c++ | MIT | vendored | [Ubpa/UECS](https://github.com/Ubpa/UECS) @ `98feb3939e66` |
+| [UI_Engines](entries/engines/emptykeys-ui-engines/README.md) | Engine specific libraries for Empty Keys UI | c# | MIT | reference | [EmptyKeys/UI_Engines](https://github.com/EmptyKeys/UI_Engines) @ `2025-05-25 (branch tip at catalogue time)` |
 | [umodel_tools](entries/engines/skarndev-umodel-tools/README.md) | A Blender add-on featuring import of Unreal Engine games static meshes and maps. It provides basic support for many UE games, while some have dedicated improved | python | GPL-3.0 | reference | [skarndev/umodel_tools](https://github.com/skarndev/umodel_tools) @ `c76ebf73bf17` |
 | [Unity-Beat-Detection](entries/engines/allanpichardo-unity-beat-detection/README.md) | Musical beat detection and audio spectrum analysis for use with the Unity game engine. | c# | Apache-2.0 | vendored | [allanpichardo/Unity-Beat-Detection](https://github.com/allanpichardo/Unity-Beat-Detection) @ `cfd33b7282e5` |
 | [unity-cli](entries/engines/rageagainstthepixel-unity-cli/README.md) | An all-in-one command line utility for the Unity Game Engine | typescript | MIT | reference | [RageAgainstThePixel/unity-cli](https://github.com/RageAgainstThePixel/unity-cli) @ `2026-11-21 (branch tip at catalogue time)` |

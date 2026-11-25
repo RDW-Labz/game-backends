@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T23:14:39Z",
+ "category": "engines",
+ "commit": "2026-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Apostolique/Apos.Input \u2014 Polling input library for MonoGame.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Apos.Input",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "apostolique-apos-input",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 67,
+ "system": "Polling input library for MonoGame.",
+ "upstream": "https://github.com/Apostolique/Apos.Input",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

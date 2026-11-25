@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T23:14:38Z",
+ "category": "engines",
+ "commit": "718419c02295",
+ "delivery": "vendored",
+ "description": "jaquadro/LilyPath \u2014 A 2D path and shape drawing library for MonoGame and XNA.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "LilyPath",
+ "size_bytes": 421908,
+ "slug": "jaquadro-lilypath",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 97,
+ "system": "A 2D path and shape drawing library for MonoGame and XNA.",
+ "upstream": "https://github.com/jaquadro/LilyPath",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
