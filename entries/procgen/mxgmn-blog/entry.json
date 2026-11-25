@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:35:58Z",
+ "category": "procgen",
+ "commit": "2022-10-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mxgmn/Blog \u2014 About math, programming and procedural generation",
+ "language": "n/a",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Blog",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mxgmn-blog",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 127,
+ "system": "About math, programming and procedural generation",
+ "upstream": "https://github.com/mxgmn/Blog",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

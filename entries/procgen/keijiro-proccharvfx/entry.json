@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T14:35:56Z",
+ "category": "procgen",
+ "commit": "e50adca901bb",
+ "delivery": "reference",
+ "description": "keijiro/ProcCharVfx \u2014 Procedural character generation with Unity Shader Graph and VFX Graph",
+ "language": "n/a",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "ProcCharVfx",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 7742,
+ "slug": "keijiro-proccharvfx",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 206,
+ "system": "Procedural character generation with Unity Shader Graph and VFX Graph",
+ "upstream": "https://github.com/keijiro/ProcCharVfx",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

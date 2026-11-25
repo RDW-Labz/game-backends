@@ -3258,3 +3258,11 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/runevision-layerprocgen
   - reference procgen/seblague-procedural-cave-generation
   - reference procgen/weigert-territory
+
+- **2026-11-25 14:35 UTC** — tick 870: +2 screened, +4 reference, 29 skipped, catalogue=1681
+  - added procgen/showlab-makeanything (MIT, vendored)
+  - added procgen/keijiro-proccharvfx (none, reference)
+  - reference procgen/henauxg-ghx-proc-gen
+  - reference procgen/sceelix-sceelix
+  - reference procgen/ryuzhihao123-modular-tree-modeler-25
+  - reference procgen/mxgmn-blog

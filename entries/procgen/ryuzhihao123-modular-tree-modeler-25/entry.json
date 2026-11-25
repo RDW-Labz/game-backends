@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:35:58Z",
+ "category": "procgen",
+ "commit": "2026-01-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RyuZhihao123/Modular-Tree-Modeler-25 \u2014 [\ud83c\udf33Software] A poweful C++ Plant Generation System by using modular procedural graphs. This is a free version with most general features. You can get a more advanced software by inquiring me to achieve more diverse species control.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Modular-Tree-Modeler-25",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ryuzhihao123-modular-tree-modeler-25",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 132,
+ "system": "[\ud83c\udf33Software] A poweful C++ Plant Generation System by using modular procedural graphs. This is a free version with most general features. You can get a more adva",
+ "upstream": "https://github.com/RyuZhihao123/Modular-Tree-Modeler-25",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

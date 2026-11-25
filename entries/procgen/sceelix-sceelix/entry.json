@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:35:58Z",
+ "category": "procgen",
+ "commit": "2025-09-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "sceelix/Sceelix \u2014 A procedural generation software for automating 2D/3D content creation.",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Sceelix",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "sceelix-sceelix",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 183,
+ "system": "A procedural generation software for automating 2D/3D content creation.",
+ "upstream": "https://github.com/sceelix/Sceelix",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

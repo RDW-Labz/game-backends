@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T14:35:54Z",
+ "category": "procgen",
+ "commit": "c8301fbdf472",
+ "delivery": "vendored",
+ "description": "showlab/MakeAnything \u2014 Official code of \"MakeAnything: Harnessing Diffusion Transformers for Multi-Domain Procedural Sequence Generation\"",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "MakeAnything",
+ "size_bytes": 1942568,
+ "slug": "showlab-makeanything",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 211,
+ "system": "Official code of \"MakeAnything: Harnessing Diffusion Transformers for Multi-Domain Procedural Sequence Generation\"",
+ "upstream": "https://github.com/showlab/MakeAnything",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 14:19 UTC · 1675 entries · 425 vendored, 1250 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 14:35 UTC · 1681 entries · 426 vendored, 1255 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-25 14:19 UTC · 1675 entries · 425 vendored, 1250 reference-
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
-| [procgen](#procgen) — Procedural generation | 129 | 32 | 97 |
+| [procgen](#procgen) — Procedural generation | 135 | 33 | 102 |
 
 
 ## engines
@@ -1611,7 +1611,7 @@ _Generated 2026-11-25 14:19 UTC · 1675 entries · 425 vendored, 1250 reference-
 
 ## procgen
 
-**Procedural generation** — 129 entries
+**Procedural generation** — 135 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1624,6 +1624,7 @@ _Generated 2026-11-25 14:19 UTC · 1675 entries · 425 vendored, 1250 reference-
 | [bevy_generative](entries/procgen/manankarnik-bevy-generative/README.md) | Real-time procedural generation of maps, textures, terrain, planets and more! | rust | Apache-2.0 | reference | [manankarnik/bevy_generative](https://github.com/manankarnik/bevy_generative) @ `2025-10-08 (branch tip at catalogue time)` |
 | [Blender-Python-Procedural-Level-Generation](entries/procgen/aaronjolson-blender-python-procedural-level-generation/README.md) | Collection of scripts for generating 3D levels (environments/dungeons) procedurally using Blender's Python API. | python | MIT | vendored | [aaronjolson/Blender-Python-Procedural-Level-Generation](https://github.com/aaronjolson/Blender-Python-Procedural-Level-Generation) @ `d15583202642` |
 | [BlenderProc](entries/procgen/dlr-rm-blenderproc/README.md) | A procedural Blender pipeline for photorealistic training image generation | python | GPL-3.0 | reference | [DLR-RM/BlenderProc](https://github.com/DLR-RM/BlenderProc) @ `76bd8b82ee19` |
+| [Blog](entries/procgen/mxgmn-blog/README.md) | About math, programming and procedural generation | n/a | unknown | reference | [mxgmn/Blog](https://github.com/mxgmn/Blog) @ `2022-10-27 (branch tip at catalogue time)` |
 | [BMeshUnity](entries/procgen/eliemichel-bmeshunity/README.md) | A Unity package to make runtime procedural mesh generation more flexible. | c# | MIT | reference | [eliemichel/BMeshUnity](https://github.com/eliemichel/BMeshUnity) @ `2023-12-13 (branch tip at catalogue time)` |
 | [botanicals](entries/procgen/anokhee-botanicals/README.md) | Generates procedural flower-like structures with L-Systems and randomized Bezier curves.  | javascript | none | reference | [anokhee/botanicals](https://github.com/anokhee/botanicals) @ `430709d8d209` |
 | [Calendar-HeatMap](entries/procgen/eudycontreras-calendar-heatmap/README.md) | Calendar Heat-Map Generation Library for Android | kotlin | MIT | vendored | [EudyContreras/Calendar-HeatMap](https://github.com/EudyContreras/Calendar-HeatMap) @ `973203fb1e06` |
@@ -1656,6 +1657,7 @@ _Generated 2026-11-25 14:19 UTC · 1675 entries · 425 vendored, 1250 reference-
 | [gaea](entries/procgen/gaea-godot-gaea/README.md) | Procedural generation add-on for Godot 4. | gdscript | MIT | reference | [gaea-godot/gaea](https://github.com/gaea-godot/gaea) @ `2026-10-18 (branch tip at catalogue time)` |
 | [gdTree3D](entries/procgen/jeksun97-gdtree3d/README.md) | 🌳 Plugin for procedural generation of 3D trees of varying complexity for Godot Engine. | c++ | MIT | vendored | [JekSun97/gdTree3D](https://github.com/JekSun97/gdTree3D) @ `e9ec657b0ee3` |
 | [generator](entries/procgen/ilmola-generator/README.md) | A procedural geometry generation library for C++11 | c++ | LGPL-2.1 | reference | [ilmola/generator](https://github.com/ilmola/generator) @ `2023-01-02 (branch tip at catalogue time)` |
+| [ghx_proc_gen](entries/procgen/henauxg-ghx-proc-gen/README.md) | 2D & 3D procedural generation with WFC/Model synthesis in Rust | rust | Apache-2.0 | reference | [Henauxg/ghx_proc_gen](https://github.com/Henauxg/ghx_proc_gen) @ `2026-10-13 (branch tip at catalogue time)` |
 | [godot-4-procedural-generation](entries/procgen/gdquest-demos-godot-4-procedural-generation/README.md) | Procedural generation algorithms and demos for the Godot game engine | gdscript | MIT | vendored | [gdquest-demos/godot-4-procedural-generation](https://github.com/gdquest-demos/godot-4-procedural-generation) @ `19c98cee16ed` |
 | [godot-constraint-solving](entries/procgen/alexeybond-godot-constraint-solving/README.md) | WFC (Wave Function Collapse) and generic constraint satisfaction problem solver implementation for Godot 4 | gdscript | MIT | vendored | [AlexeyBond/godot-constraint-solving](https://github.com/AlexeyBond/godot-constraint-solving) @ `45e3edd8ea12` |
 | [godot-nexus-vertex-painter](entries/procgen/undomick-godot-nexus-vertex-painter/README.md) | A tool for manual painting and procedural generation of vertex color channels on 3D meshes. | gdscript | MIT | vendored | [undomick/godot-nexus-vertex-painter](https://github.com/undomick/godot-nexus-vertex-painter) @ `705db59d426e` |
@@ -1673,8 +1675,10 @@ _Generated 2026-11-25 14:19 UTC · 1675 entries · 425 vendored, 1250 reference-
 | [LevelGenerator](entries/procgen/moolt-levelgenerator/README.md) | Unity plug-in for procedurally generating indoor levels using abstract chunks. | c# | MIT | reference | [Moolt/LevelGenerator](https://github.com/Moolt/LevelGenerator) @ `2018-09-07 (branch tip at catalogue time)` |
 | [libnoise-rs](entries/procgen/cookiephone-libnoise-rs/README.md) | Simple and customizable procedural noise generation library written in Rust. | rust | MIT | vendored | [cookiephone/libnoise-rs](https://github.com/cookiephone/libnoise-rs) @ `41ac16c660af` |
 | [LocomotionSystem](entries/procgen/runevision-locomotionsystem/README.md) | Automated semi-procedural walking and running on uneven terrain | c# | MPL-2.0 | reference | [runevision/LocomotionSystem](https://github.com/runevision/LocomotionSystem) @ `2025-02-08 (branch tip at catalogue time)` |
+| [MakeAnything](entries/procgen/showlab-makeanything/README.md) | Official code of "MakeAnything: Harnessing Diffusion Transformers for Multi-Domain Procedural Sequence Generation" | python | MIT | vendored | [showlab/MakeAnything](https://github.com/showlab/MakeAnything) @ `c8301fbdf472` |
 | [martini](entries/procgen/mapbox-martini/README.md) | A JavaScript library for real-time RTIN terrain mesh generation | javascript | ISC | vendored | [mapbox/martini](https://github.com/mapbox/martini) @ `f9a7a96b583a` |
 | [mazegen](entries/procgen/aleksandrbazhin-mazegen/README.md) | Maze generation header-only C++ library | c++ | MIT | vendored | [aleksandrbazhin/mazegen](https://github.com/aleksandrbazhin/mazegen) @ `85bc9cea4764` |
+| [Modular-Tree-Modeler-25](entries/procgen/ryuzhihao123-modular-tree-modeler-25/README.md) | [🌳Software] A poweful C++ Plant Generation System by using modular procedural graphs. This is a free version with most general features. You can get a more adva | c++ | unknown | reference | [RyuZhihao123/Modular-Tree-Modeler-25](https://github.com/RyuZhihao123/Modular-Tree-Modeler-25) @ `2026-01-29 (branch tip at catalogue time)` |
 | [ndwfc](entries/procgen/lingdong-ndwfc/README.md) | 🌊💥 N-dimensional Wave Function Collapse with infinite canvas | javascript | MIT | vendored | [LingDong-/ndwfc](https://github.com/LingDong-/ndwfc) @ `3479af8ee855` |
 | [Noise](entries/procgen/mgaillard-noise/README.md) | A procedural function that generates dendritic patterns and is locally computable. | c++ | GPL-3.0 | reference | [mgaillard/Noise](https://github.com/mgaillard/Noise) @ `2023-02-03 (branch tip at catalogue time)` |
 | [noise](entries/procgen/spongepowered-noise/README.md) | Noise generation library for Java, based on the libnoise C++ library. It is used to generate coherent noise, a type of smoothly-changing noise. It can also gene | java | MIT | reference | [SpongePowered/noise](https://github.com/SpongePowered/noise) @ `2026-11-11 (branch tip at catalogue time)` |
@@ -1685,6 +1689,7 @@ _Generated 2026-11-25 14:19 UTC · 1675 entries · 425 vendored, 1250 reference-
 | [pandaplant](entries/procgen/janbrohl-pandaplant/README.md) | Improved procedural trees for Panda3D | python | unknown | reference | [janbrohl/pandaplant](https://github.com/janbrohl/pandaplant) @ `2020-10-10 (branch tip at catalogue time)` |
 | [perlin](entries/procgen/joeiddon-perlin/README.md) | A JavaScript library for Perlin Noise generation | javascript | none | reference | [joeiddon/perlin](https://github.com/joeiddon/perlin) @ `5941e2b52507` |
 | [pgdrive](entries/procgen/decisionforce-pgdrive/README.md) | PGDrive: an open-ended driving simulator with infinite scenes from procedural generation | python | Apache-2.0 | reference | [decisionforce/pgdrive](https://github.com/decisionforce/pgdrive) @ `2022-06-20 (branch tip at catalogue time)` |
+| [ProcCharVfx](entries/procgen/keijiro-proccharvfx/README.md) | Procedural character generation with Unity Shader Graph and VFX Graph | n/a | none | reference | [keijiro/ProcCharVfx](https://github.com/keijiro/ProcCharVfx) @ `e50adca901bb` |
 | [procedural](entries/procgen/theorioli-procedural/README.md) | Procedural generation as a service | go | MIT | reference | [TheOrioli/procedural](https://github.com/TheOrioli/procedural) @ `2020-03-07 (branch tip at catalogue time)` |
 | [Procedural-Cave-Generation](entries/procgen/seblague-procedural-cave-generation/README.md) | see upstream | c# | MIT | reference | [SebLague/Procedural-Cave-Generation](https://github.com/SebLague/Procedural-Cave-Generation) @ `2017-01-31 (branch tip at catalogue time)` |
 | [procedural-cities](entries/procgen/phiresky-procedural-cities/README.md) | Information about procedural city generation | tex | AGPL-3.0 | reference | [phiresky/procedural-cities](https://github.com/phiresky/procedural-cities) @ `f0c2c86e4289` |
@@ -1706,6 +1711,7 @@ _Generated 2026-11-25 14:19 UTC · 1675 entries · 425 vendored, 1250 reference-
 | [rant](entries/procgen/rant-lang-rant/README.md) | Rant - The templating language for procedural generation. | rust | Apache-2.0 | reference | [rant-lang/rant](https://github.com/rant-lang/rant) @ `2022-05-20 (branch tip at catalogue time)` |
 | [roguelike-celebration-2020](entries/procgen/thebracket-roguelike-celebration-2020/README.md) | Code for my Procedural Map Generation talk at the Roguelike Celebration 2020 | rust | MIT | reference | [thebracket/roguelike-celebration-2020](https://github.com/thebracket/roguelike-celebration-2020) @ `2022-06-17 (branch tip at catalogue time)` |
 | [rust-procedural-world](entries/procgen/bones-ai-rust-procedural-world/README.md) | Procedural 2d world generation in Rust and Bevy | rust | MIT | reference | [bones-ai/rust-procedural-world](https://github.com/bones-ai/rust-procedural-world) @ `2025-04-28 (branch tip at catalogue time)` |
+| [Sceelix](entries/procgen/sceelix-sceelix/README.md) | A procedural generation software for automating 2D/3D content creation. | c# | unknown | reference | [sceelix/Sceelix](https://github.com/sceelix/Sceelix) @ `2025-09-12 (branch tip at catalogue time)` |
 | [SoilMachine](entries/procgen/weigert-soilmachine/README.md) | Advanced, modular, coupled geomorpohology simulator for real-time procedural terrain generation. | c++ | unknown | reference | [weigert/SoilMachine](https://github.com/weigert/SoilMachine) @ `2023-06-11 (branch tip at catalogue time)` |
 | [source-map](entries/procgen/parcel-bundler-source-map/README.md) | A fast source map manipulation, generation and consumption library written in Rust and Node.js | javascript | unknown | reference | [parcel-bundler/source-map](https://github.com/parcel-bundler/source-map) @ `2026-11-09 (branch tip at catalogue time)` |
 | [space-2d](entries/procgen/wwwtyro-space-2d/README.md) | Fast procedural 2D space scene generation on the GPU. | javascript | Unlicense | reference | [wwwtyro/space-2d](https://github.com/wwwtyro/space-2d) @ `2016-10-24 (branch tip at catalogue time)` |
