@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:26:43Z",
+ "category": "engines",
+ "commit": "2022-06-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "natecurtiss/mirage \u2014 A small 2D C# game engine I made in about 24 hours.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "mirage",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "natecurtiss-mirage",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 159,
+ "system": "A small 2D C# game engine I made in about 24 hours.",
+ "upstream": "https://github.com/natecurtiss/mirage",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

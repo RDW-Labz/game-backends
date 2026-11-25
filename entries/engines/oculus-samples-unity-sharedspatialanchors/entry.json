@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T18:26:42Z",
+ "category": "engines",
+ "commit": "9e57e76279cb",
+ "delivery": "vendored",
+ "description": "oculus-samples/Unity-SharedSpatialAnchors \u2014 Unity-SharedSpatialAnchors was built to demonstrate how to use the Shared Spatial Anchors API, available in the Meta XR Core SDK for the Unity game engine.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Unity-SharedSpatialAnchors",
+ "size_bytes": 1479291,
+ "slug": "oculus-samples-unity-sharedspatialanchors",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 165,
+ "system": "Unity-SharedSpatialAnchors was built to demonstrate how to use the Shared Spatial Anchors API, available in the Meta XR Core SDK for the Unity game engine. ",
+ "upstream": "https://github.com/oculus-samples/Unity-SharedSpatialAnchors",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

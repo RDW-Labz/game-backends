@@ -3347,3 +3347,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/openkh-openkh
   - reference engines/ishaan35-unity3d-mario-kart-racing-game
   - reference engines/nailuj05-fusionwater
+
+- **2026-11-25 18:26 UTC** — tick 884: +2 screened, +4 reference, 34 skipped, catalogue=1742
+  - added engines/lofcz-simplexrpgengine (none, reference)
+  - added engines/oculus-samples-unity-sharedspatialanchors (MIT, vendored)
+  - reference engines/arcademakersources-arcademaker
+  - reference engines/wsm2110-faster-map
+  - reference engines/natecurtiss-mirage
+  - reference engines/b1rdmania-motif
