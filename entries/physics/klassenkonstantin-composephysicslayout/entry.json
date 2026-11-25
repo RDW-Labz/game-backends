@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T01:22:41Z",
+ "category": "physics",
+ "commit": "2023-05-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "KlassenKonstantin/ComposePhysicsLayout \u2014 A custom Compose layout backed by a physics engine",
+ "language": "kotlin",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ComposePhysicsLayout",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "klassenkonstantin-composephysicslayout",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 641,
+ "system": "A custom Compose layout backed by a physics engine",
+ "upstream": "https://github.com/KlassenKonstantin/ComposePhysicsLayout",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

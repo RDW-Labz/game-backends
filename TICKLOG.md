@@ -2948,3 +2948,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/idmillington-cyclone-physics
   - reference physics/soulwire-coffee-physics
   - reference physics/saharan-oimophysics
+
+- **2026-11-25 01:22 UTC** — tick 824: +2 screened, +4 reference, 8 skipped, catalogue=1463
+  - added physics/lo-th-phy (MIT, reference)
+  - added physics/quinton-ashley-p5play (none, reference)
+  - reference physics/enginmanap-limonengine
+  - reference physics/anuraghazra-verly-js
+  - reference physics/klassenkonstantin-composephysicslayout
+  - reference physics/kool-engine-kool

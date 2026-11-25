@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T01:22:41Z",
+ "category": "physics",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "enginmanap/limonEngine \u2014 3D FPS game engine with full dynamic lighting and shadows",
+ "language": "c++",
+ "license": "LGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "limonEngine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-3.0)",
+ "slug": "enginmanap-limonengine",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 718,
+ "system": "3D FPS game engine with full dynamic lighting and shadows",
+ "upstream": "https://github.com/enginmanap/limonEngine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T01:22:41Z",
+ "category": "physics",
+ "commit": "2025-02-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "anuraghazra/Verly.js \u2014 :red_circle::wavy_dash::large_blue_circle::wavy_dash::black_circle: Easy to integrate Verlet physics engine. :link:",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Verly.js",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "anuraghazra-verly-js",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 711,
+ "system": ":red_circle::wavy_dash::large_blue_circle::wavy_dash::black_circle: Easy to integrate Verlet physics engine. :link: ",
+ "upstream": "https://github.com/anuraghazra/Verly.js",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

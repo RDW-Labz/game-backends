@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T01:22:40Z",
+ "category": "physics",
+ "commit": "f904d169af3d",
+ "delivery": "reference",
+ "description": "quinton-ashley/p5play \u2014 JavaScript game engine that uses q5.js/p5.js for graphics and Box2D for physics.",
+ "language": "javascript",
+ "license": "none",
+ "license_file": "LICENSE.md",
+ "license_verdict": "unlicensed-reference",
+ "name": "p5play",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 794767,
+ "slug": "quinton-ashley-p5play",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 749,
+ "system": "JavaScript game engine that uses q5.js/p5.js for graphics and Box2D for physics.",
+ "upstream": "https://github.com/quinton-ashley/p5play",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
