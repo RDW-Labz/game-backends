@@ -3221,3 +3221,5 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-25 12:43 UTC** — tick 863: +1 screened, +0 reference, 24 skipped, catalogue=1650
   - added netcode/timriker-bzo (AGPL-3.0, reference)
+
+- **2026-11-25 12:59 UTC** — tick 864: +0 screened, +0 reference, 30 skipped, catalogue=1650
