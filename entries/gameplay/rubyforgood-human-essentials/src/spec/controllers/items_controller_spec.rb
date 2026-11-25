@@ -1,0 +1,254 @@
+RSpec.describe ItemsController, type: :controller do
+  let(:organization) { create(:organization) }
+  let(:user) { create(:user, organization: organization) }
+
+  context "While signed in" do
+    before do
+      sign_in(user)
+    end
+
+    describe "GET #index" do
+      subject { get :index }
+      it "returns http success" do
+        expect(subject).to be_successful
+      end
+    end
+
+    describe "GET #new" do
+      subject { get :new }
+      it "returns http success" do
+        expect(subject).to be_successful
+      end
+    end
+
+    describe "GET #edit" do
+      subject { get :edit, params: { id: create(:item, organization: organization) } }
+      it "returns http success" do
+        expect(subject).to be_successful
+      end
+    end
+
+    describe "PUT #update" do
+      context "visible" do
+        let(:item) { create(:item, visible_to_partners: false) }
+        subject { put :update, params: { id: item.id, item: { value_in_cents: 100, visible_to_partners: true } } }
+        it "should update visible_to_partners to true" do
+          expect(subject).to redirect_to(items_path)
+          expect(item.reload.visible_to_partners).to be true
+        end
+
+        it "updates an item with new additional_info" do
+          put :update, params: { id: item.id, item: { additional_info: "Updated bank information" } }
+          expect(item.reload.additional_info).to eq "Updated bank information"
+        end
+      end
+
+      context "invisible" do
+        let(:item) { create(:item, visible_to_partners: true) }
+        subject { put :update, params: { id: item.id, item: { value_in_cents: 100, visible_to_partners: false } } }
+        it "should update visible_to_partners to false" do
+          expect(subject).to redirect_to(items_path)
+          expect(item.reload.visible_to_partners).to be false
+        end
+      end
+
+      context "changing request units (item units)" do
+        let!(:pack_unit) { create(:unit, organization: organization, name: "pack") }
+        let!(:box_unit) { create(:unit, organization: organization, name: "box") }
+        let(:item) { create(:item, organization: organization, unit_request_limit: 100) }
+
+        context "when checking pack" do
+          let(:params) do
+            {
+              id: item.id,
+              item: {
+                unit_ids: [pack_unit.id.to_s, ""],
+                unit_limits: { pack_unit.id.to_s => "500" }
+              }
+            }
+          end
+
+          it "adds pack item unit to item" do
+            expect(item.request_units).to be_empty
+
+            put :update, params: params
+            expect(response).to redirect_to(items_path)
+            expect(response).not_to have_error
+            expect(item.request_units.reload.pluck(:name)).to match_array [pack_unit.name]
+            expect(item.request_units.first.request_limit).to eq 500
+          end
+        end
+
+        context "when already has pack selected and unselects pack" do
+          let!(:item_unit) { create(:item_unit, item: item, request_limit: 500, name: pack_unit.name) }
+          let(:params) do
+            {
+              id: item.id,
+              item: { unit_ids: [""], unit_limits: {} }
+            }
+          end
+
+          it "removes item request units" do
+            expect(item.request_units.size).to eq 1
+
+            put :update, params: params
+            expect(response).not_to have_error
+            expect(response).to redirect_to(items_path)
+            expect(item.request_units.reload).to be_empty
+          end
+        end
+
+        context "when selecting pack and unselecting box" do
+          let!(:item_unit) { create(:item_unit, item: item, request_limit: 1500, name: box_unit.name) }
+          let(:params) do
+            {
+              id: item.id,
+              item: {
+                unit_ids: [pack_unit.id.to_s, ""],
+                unit_limits: { pack_unit.id.to_s => "200" }
+              }
+            }
+          end
+
+          it "adds and removes request units at the same time" do
+            expect(item.request_units.pluck(:name)).to match_array [box_unit.name]
+
+            put :update, params: params
+            expect(response).not_to have_error
+            expect(response).to redirect_to(items_path)
+
+            expect(item.request_units.reload.pluck(:name)).to match_array [pack_unit.name]
+            expect(item.request_units.first.request_limit).to eq 200
+          end
+        end
+      end
+    end
+
+    describe "GET #show" do
+      subject { get :show, params: { id: create(:item, organization: organization) } }
+      it "returns http success" do
+        expect(subject).to be_successful
+      end
+    end
+
+    describe "DELETE #destroy" do
+      subject { delete :destroy, params: { id: create(:item, organization: organization) } }
+      it "redirects to #index" do
+        expect(subject).to redirect_to(items_path)
+      end
+    end
+
+    describe "PATCH #restore" do
+      context "with a soft-deleted item" do
+        let!(:item) { create(:item, :inactive) }
+
+        it "re-activates the item" do
+          expect do
+            patch :restore, params: { id: item.id }
+          end.to change { Item.active.size }.by(1)
+        end
+      end
+
+      context "with an active item" do
+        let!(:item) { create(:item, :active) }
+        it "does nothing" do
+          expect do
+            patch :restore, params: { id: item.id }
+          end.to change { Item.active.size }.by(0)
+        end
+      end
+
+      context "with another organizations item" do
+        let!(:external_item) { create(:item, :inactive, organization: create(:organization)) }
+        it "does nothing" do
+          expect do
+            patch :restore, params: { id: external_item.id }
+          end.to change { Item.active.size }.by(0)
+        end
+      end
+    end
+
+    describe "POST #create" do
+      let(:item_params) do
+        {
+          item: {
+            name: "Really Good Item",
+            reporting_category: "other",
+            value_in_cents: 1001,
+            package_size: 5,
+            distribution_quantity: 30,
+            additional_info: "Sensitive bank information"
+          }
+        }
+      end
+
+      context "with valid params" do
+        it "should create an item" do
+          expect do
+            post :create, params: item_params
+          end.to change { Item.count }.by(1)
+        end
+
+        it "should accept params with dollar signs, periods, and commas" do
+          item_params["value_in_cents"] = "$5,432.10"
+          post :create, params: item_params
+
+          expect(response).not_to have_error
+        end
+
+        it "creates an item with additional_info" do
+          expect do
+            post :create, params: item_params
+          end.to change { Item.count }.by(1)
+          expect(Item.last.additional_info).to eq "Sensitive bank information"
+        end
+
+        it "should accept request_unit ids and create request_units" do
+          unit = create(:unit, organization: organization)
+          item_params[:item] = item_params[:item].merge({ unit_ids: [unit.id], unit_limits: {} })
+
+          post :create, params: item_params
+          expect(response).not_to have_error
+          newly_created_item = Item.last
+          expect(newly_created_item.request_units.pluck(:name)).to match_array [unit.name]
+        end
+
+        it "should redirect to the item page" do
+          post :create, params: item_params
+
+          expect(response).to redirect_to items_path
+          expect(response).to have_notice
+        end
+      end
+
+      context "with invalid params" do
+        let(:bad_params) do
+          { item: { bad: "params" } }
+        end
+
+        it "should show an error" do
+          post :create, params: bad_params
+
+          expect(response).to have_error
+        end
+      end
+    end
+
+    describe "PATCH #remove_category" do
+      let(:item_category) { create(:item_category) }
+      let!(:item) { create(:item, item_category: item_category) }
+
+      it "should remove an item's category" do
+        patch :remove_category, params: { id: item.id }
+        expect(item.reload.item_category).to be_nil
+      end
+
+      it "should redirect to the previous category page" do
+        patch :remove_category, params: { id: item.id }
+
+        expect(response).to redirect_to item_category_path(id: item_category.id)
+        expect(response).to have_notice
+      end
+    end
+  end
+end

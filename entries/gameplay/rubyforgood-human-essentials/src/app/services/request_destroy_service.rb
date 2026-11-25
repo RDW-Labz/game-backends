@@ -1,0 +1,43 @@
+class RequestDestroyService
+  include ServiceObjectErrorsMixin
+
+  def initialize(request_id:, reason: nil)
+    @request_id = request_id
+    @reason = reason
+  end
+
+  def call
+    return self unless valid?
+
+    request.discarded_at = Time.current
+    request.discard_reason = reason
+    request.status = :cancelled
+    request.save!
+
+    unless request.partner.deactivated?
+      RequestMailer.request_cancel_partner_notification(request_id: request.id).deliver_later
+    end
+
+    self
+  end
+
+  private
+
+  attr_reader :request_id, :reason
+
+  def valid?
+    if request.blank?
+      errors.add(:base, 'request_id is invalid')
+    elsif request.discarded_at.present?
+      errors.add(:base, 'request already cancelled')
+    elsif reason.blank?
+      errors.add(:base, 'a cancellation reason is required')
+    end
+
+    errors.none?
+  end
+
+  def request
+    @request ||= Request.find_by(id: request_id)
+  end
+end

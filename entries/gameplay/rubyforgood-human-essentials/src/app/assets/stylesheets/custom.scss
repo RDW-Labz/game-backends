@@ -1,0 +1,118 @@
+@import 'base/_variables';
+
+@mixin for-desktop {
+    @media (min-width: 992px) and (min-height: 769px) {
+        @content;
+    }
+}
+
+.full-height {
+    height: 'auto';
+    @include for-desktop {
+        height: calc(100vh - #{$diaper-navbar-height}px - #{$diaper-footer-height}px);
+    }
+}
+
+#calendar {
+    background-color: #ffffff;
+    width: 100%;
+    height: 80%
+}
+
+#csvImportModal .modal-dialog.onboarding_steps .modal-body li {
+  text-align: left !important;
+}
+#csvImportModal .modal-header {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  h2 {
+    text-align: center;
+  }
+  .close {
+    position: absolute;
+    margin: 0 !important;
+    top: -0.25rem;
+    left: 0.5rem;
+  }
+}
+
+#pick-ups-header {
+    height: 'auto';
+    @include for-desktop {
+        height: 10%;
+    }
+}
+
+#pick-ups-calendar {
+    height: 'auto';
+    @include for-desktop {
+        height: 90%;
+    }
+}
+
+.login-page--user {
+  background: linear-gradient(135deg, #3023AE, #C86DD7);
+  background-attachment: fixed;
+  flex-flow: wrap;
+}
+
+.login-page--consolidated {
+  background: linear-gradient(315deg, #8BC6EC 0%, #9599E2 100%);
+}
+
+.login-page--partner {
+  background-color: grey;
+}
+
+.login-page-test {
+  background-image: image-url("test-only-background.jpg");
+}
+
+.modal-body-warning-text {
+  color: #ee5034
+}
+
+.numeric,
+.quantity {
+  text-align: right;
+}
+
+.percent {
+  text-align: right;
+}
+
+.confirm {
+  .message {
+    margin-top: 40px;
+  }
+}
+
+.accordion-button.saving::after {
+  background-image:  none;
+  content: "Saving...";
+  font-size: 0.875rem;
+  color: #005568;
+  transform: none;
+  width: 3rem;
+  cursor: not-allowed;
+}
+
+// The account request form is placed inside the default devise container which
+// is too narrow for the desired form width, so we have to apply a negative
+// margin to center it (except on mobile where text would get cut off).
+.account-request {
+  $inner-width: 35rem;
+  $outer-width: 360px;
+  width: $inner-width;
+  margin-left: calc((#{$outer-width} - #{$inner-width}) / 2);
+  @media (max-width: 620px) {
+    margin-left: 0;
+    max-width: 100%;
+  }
+}
+
+.cursor-default {
+    cursor: default !important;
+}

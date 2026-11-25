@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T10:48:45Z",
+ "category": "gameplay",
+ "commit": "2026-11-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ronknight/InventorySystem \u2014 \ud83d\udda5\ufe0fCreate an open-source Inventory Management System using CodeIgniter web framework, Php and MySQL. Original source code from an Online Inventory Management Software found on https://codersfolder.com/2018/02/stock-management-system-v2-codeigniter/.",
+ "language": "php",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "InventorySystem",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ronknight-inventorysystem",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 471,
+ "system": "\ud83d\udda5\ufe0fCreate an open-source Inventory Management System using CodeIgniter web framework, Php and MySQL. Original source code from an Online Inventory Management Sof",
+ "upstream": "https://github.com/ronknight/InventorySystem",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,126 @@
+# [Organization Admin] Audits are for OrgAdmins to reconcile their real-world counts with their digital counts.
+class AuditsController < ApplicationController
+  before_action :authorize_admin
+  before_action :set_audit, only: %i(show edit update destroy finalize)
+  before_action :ensure_audit_is_editable, only: %i(finalize update)
+
+  def index
+    @selected_location = filter_params[:at_location]
+    @audits = current_organization.audits.includes(:line_items, :storage_location).class_filter(filter_params)
+    @storage_locations = StorageLocation.with_audits_for(current_organization).select(:id, :name)
+
+    respond_to do |format|
+      format.html
+      format.csv do
+        send_data Audit.generate_csv(@audits), filename: "Audits-#{Time.zone.today}.csv"
+      end
+    end
+  end
+
+  def show
+    @items = View::Inventory.items_for_location(@audit.storage_location, include_omitted: true)
+  end
+
+  def edit
+    (redirect_to audits_path unless @audit&.in_progress?) && return
+    @storage_locations = [@audit.storage_location]
+    set_items
+    @audit.line_items.build if @audit.line_items.empty?
+  end
+
+  def finalize
+    AuditEvent.publish(@audit)
+    @audit.finalized!
+    redirect_to audit_path(@audit), notice: "Audit is Finalized."
+  rescue => e
+    redirect_back_or_to(audits_path, alert: "Could not finalize audit: #{e.message}")
+  end
+
+  def update
+    @audit.line_items.destroy_all
+    if @audit.update(audit_params)
+      save_audit_status_and_redirect(params)
+    else
+      flash.now[:error] = @audit.errors.full_messages.join("\n")
+      @storage_locations = [@audit.storage_location]
+      set_items
+      @audit.line_items.build if @audit.line_items.empty?
+      render action: :edit
+    end
+  end
+
+  def new
+    @audit = current_organization.audits.new
+    @audit.line_items.build
+    set_storage_locations
+    set_items
+  end
+
+  def create
+    @audit = current_organization.audits.new(audit_params)
+    @audit.user = current_user
+    if @audit.save
+      save_audit_status_and_redirect(params)
+    else
+      handle_audit_errors
+      set_storage_locations
+      set_items
+      @audit.line_items.build if @audit.line_items.empty?
+      render :new
+    end
+  rescue Errors::InsufficientAllotment, InventoryError => e
+    flash.now[:error] = e.message
+    render :new
+  end
+
+  def destroy
+    (redirect_to audits_path if @audit.finalized?) && return
+    @audit.destroy!
+    redirect_to audits_path, notice: "Audit is successfully deleted."
+  end
+
+  private
+
+  def ensure_audit_is_editable
+    if @audit.reload.finalized?
+      redirect_to audit_path(@audit), error: "This audit has been finalized and cannot be edited."
+    end
+  end
+
+  def handle_audit_errors
+    error_message = @audit.errors.uniq(&:attribute).map do |error|
+      attr = (error.attribute.to_s == 'base') ? '' : error.attribute.capitalize
+      "#{attr} ".tr("_", " ") + error.message
+    end
+    flash.now[:error] = error_message.join(", ")
+  end
+
+  def set_audit
+    @audit = current_organization.audits.find(params[:id] || params[:audit_id])
+  end
+
+  def set_storage_locations
+    @storage_locations = current_organization.storage_locations.active
+  end
+
+  def set_items
+    @items = current_organization.items.where(active: true).alphabetized
+  end
+
+  def save_audit_status_and_redirect(params)
+    notice = params.key?(:save_progress) ? "Audit's progress was successfully saved." : "Audit is submitted for final approval."
+    params.key?(:save_progress) ? @audit.in_progress! : @audit.pending_finalization!
+    redirect_to audit_path(@audit), notice: notice
+  end
+
+  def audit_params
+    params.require(:audit).permit(:organization_id, :storage_location_id,
+                                  line_items_attributes: %i(item_id quantity _destroy))
+  end
+
+  def filter_params
+    return {} unless params.key?(:filters)
+
+    params.require(:filters).slice(:at_location)
+  end
+end

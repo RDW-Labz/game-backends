@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T10:48:44Z",
+ "category": "gameplay",
+ "commit": "b41d699c2aad",
+ "delivery": "vendored",
+ "description": "rubyforgood/human-essentials \u2014 Human Essentials is an inventory management system for diaper, incontinence, and period-supply banks. It supports them in distributing to partners, tracking inventory, and reporting stats and analytics.",
+ "language": "ruby",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "human-essentials",
+ "size_bytes": 449688,
+ "slug": "rubyforgood-human-essentials",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 602,
+ "system": "Human Essentials is an inventory management system for diaper, incontinence, and period-supply banks. It supports them in distributing to partners, tracking inv",
+ "upstream": "https://github.com/rubyforgood/human-essentials",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

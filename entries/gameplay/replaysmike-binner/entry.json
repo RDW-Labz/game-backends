@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T10:48:45Z",
+ "category": "gameplay",
+ "commit": "2026-04-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "replaysMike/Binner \u2014 Open source parts inventory system for makers, electronics hobby, and professional engineers",
+ "language": "c#",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Binner",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "replaysmike-binner",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 550,
+ "system": "Open source parts inventory system for makers, electronics hobby, and professional engineers",
+ "upstream": "https://github.com/replaysMike/Binner",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

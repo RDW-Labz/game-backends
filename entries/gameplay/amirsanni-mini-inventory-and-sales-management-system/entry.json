@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T10:48:45Z",
+ "category": "gameplay",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "amirsanni/Mini-Inventory-and-Sales-Management-System \u2014 An Inventory and Sales Management System written in PHP (codeIgniter) with support for MySQL and Sqlite3 databases",
+ "language": "php",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Mini-Inventory-and-Sales-Management-System",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "amirsanni-mini-inventory-and-sales-management-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 563,
+ "system": "An Inventory and Sales Management System written in PHP (codeIgniter) with support for MySQL and Sqlite3 databases",
+ "upstream": "https://github.com/amirsanni/Mini-Inventory-and-Sales-Management-System",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

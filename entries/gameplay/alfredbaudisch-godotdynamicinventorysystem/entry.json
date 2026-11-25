@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T10:48:40Z",
+ "category": "gameplay",
+ "commit": "bd74a72e30a6",
+ "delivery": "vendored",
+ "description": "alfredbaudisch/GodotDynamicInventorySystem \u2014 Godot's fully dynamic inventory system, UI with infinite scrolling, item categories, equipment slots, database of items, inspired by Zelda Breath of the Wild",
+ "language": "gdscript",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "GodotDynamicInventorySystem",
+ "size_bytes": 44967,
+ "slug": "alfredbaudisch-godotdynamicinventorysystem",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 670,
+ "system": "Godot's fully dynamic inventory system, UI with infinite scrolling, item categories, equipment slots, database of items, inspired by Zelda Breath of the Wild",
+ "upstream": "https://github.com/alfredbaudisch/GodotDynamicInventorySystem",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

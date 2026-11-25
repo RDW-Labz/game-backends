@@ -1,0 +1,246 @@
+RSpec.describe "Audits", type: :request do
+  let(:organization) { create(:organization) }
+  let(:organization_admin) { create(:organization_admin, organization: organization) }
+  let(:storage_location) { create(:storage_location, organization: organization) }
+  let(:valid_attributes) do
+    {
+      organization_id: organization.id,
+      storage_location_id: storage_location.id,
+      user_id: organization_admin.id
+    }
+  end
+
+  let(:invalid_storage_location_attributes) do
+    {
+      organization_id: organization.id,
+      storage_location_id: nil,
+      user_id: organization_admin.id
+    }
+  end
+
+  let(:invalid_attributes) do
+    { organization_id: nil }
+  end
+
+  describe "while signed in as an organization admin" do
+    before do
+      sign_in(organization_admin)
+    end
+
+    describe "GET #index" do
+      context "html" do
+        it "is successful" do
+          Audit.create! valid_attributes
+          get audits_path
+          expect(response).to be_successful
+        end
+      end
+
+      context "csv" do
+        let(:response_format) { 'csv' }
+        let(:csv_body) { "Stubbed CSV" }
+
+        before do
+          allow(Audit).to receive(:generate_csv).and_return(csv_body)
+        end
+
+        it "succeeds" do
+          get audits_path(format: response_format)
+          expect(response.content_type).to eq("text/csv")
+          expect(response).to be_successful
+        end
+
+        it "returns a CSV" do
+          get audits_path(format: response_format)
+
+          expect(Audit).to have_received(:generate_csv)
+          expect(response.body).to eq(csv_body)
+        end
+      end
+    end
+
+    describe "GET #show" do
+      it "is successful" do
+        audit = create(:audit, organization: organization)
+        get audits_path(id: audit.to_param)
+        expect(response).to be_successful
+      end
+    end
+
+    describe "GET #new" do
+      it "is successful" do
+        get new_audit_path
+        expect(response).to be_successful
+      end
+
+      it 'only includes active items in the line item select dropdown' do
+        create(:item, name: "TestActiveItem", organization: organization)
+        create(:item, name: "TestInactiveItem", organization: organization, active: false)
+
+        get new_audit_path
+        expect(response).to have_http_status(:ok)
+
+        html = Nokogiri::HTML(response.body)
+        options = html.css('select[name="audit[line_items_attributes][0][item_id]"] option')
+        option_values = options.map { |option| option.text.strip }
+
+        expect(option_values).to include('TestActiveItem')
+        expect(option_values).not_to include('TestInactiveItem')
+      end
+    end
+
+    describe "GET #edit" do
+      it "is successful if the status of audit is `in_progress`" do
+        audit = create(:audit, organization: organization)
+        get edit_audit_path(id: audit.to_param)
+        expect(response).to be_successful
+      end
+
+      it "redirects to #index if the status of audit is not `in_progress`" do
+        audit = create(:audit, organization: organization, status: :pending_finalization)
+        get edit_audit_path(id: audit.to_param)
+        expect(response).to redirect_to(audits_path)
+
+        audit = create(:audit, organization: organization, status: :finalized)
+        get edit_audit_path(id: audit.to_param)
+        expect(response).to redirect_to(audits_path)
+      end
+    end
+
+    describe "PUT #update" do
+      it "confirms the updated audit and redirects to the audit" do
+        audit = create(:audit, organization: organization, status: :in_progress)
+        item = create(:item)
+        audit.line_items << create(:line_item, quantity: 3, item: item)
+
+        put audit_path(id: audit.to_param, audit: {
+          storage_location_id: storage_location.id,
+          line_items_attributes: {"0" => {"item_id" => item.id, "quantity" => "4"}}
+        })
+
+        expect(response).to redirect_to(audit_path(audit))
+        expect(flash[:notice]).to include("Audit is submitted for final approval.")
+        expect(audit.reload).to be_pending_finalization
+      end
+
+      context "when the audit has already been finalized" do
+        it "does not allow updates and redirects to the finalized audit" do
+          finalized_audit = create(:audit, organization: organization, status: :finalized)
+          item = create(:item)
+          finalized_audit.line_items << create(:line_item, quantity: 3, item: item)
+
+          put audit_path(id: finalized_audit.to_param, audit: {
+            storage_location_id: storage_location.id,
+            line_items_attributes: {"0" => {"item_id" => item.id, "quantity" => "4"}}
+          })
+
+          expect(response).to redirect_to(audit_path(finalized_audit))
+          expect(flash[:error]).to include("This audit has been finalized and cannot be edited.")
+          expect(finalized_audit.line_items.first.quantity).to eq(3)
+        end
+      end
+    end
+
+    describe "POST #create" do
+      context "with valid params" do
+        it "creates a new Audit" do
+          expect do
+            post audits_path(audit: valid_attributes)
+          end.to change(Audit, :count).by(1)
+        end
+
+        it "creates a new Audit with status as `in_progress` if `save_progress` is passed as a param" do
+          expect do
+            post audits_path(audit: valid_attributes, save_progress: '')
+            expect(Audit.last.in_progress?).to be_truthy
+            expect(flash[:notice]).to include("Audit's progress was successfully saved.")
+          end.to change(Audit.in_progress, :count).by(1)
+        end
+
+        it "creates a new Audit with status as `confirmed` if `confirm_audit` is passed as a param" do
+          expect do
+            post audits_path(audit: valid_attributes, confirm_audit: '')
+            expect(Audit.last.pending_finalization?).to be_truthy
+          end.to change(Audit.pending_finalization, :count).by(1)
+        end
+
+        it "assigns a newly created audit as @audit" do
+          post audits_path(audit: valid_attributes)
+          expect(assigns(:audit)).to be_a(Audit)
+          expect(assigns(:audit)).to be_persisted
+        end
+
+        it "redirects to the #show after created audit" do
+          post audits_path(audit: valid_attributes)
+          expect(response).to redirect_to(audit_path(Audit.last))
+        end
+      end
+
+      context "with invalid params" do
+        it "assigns a newly created but unsaved audit as @audit" do
+          post audits_path(audit: invalid_attributes)
+          expect(assigns(:audit)).to be_a_new(Audit)
+        end
+
+        it "re-renders the 'new' template" do
+          post audits_path(audit: invalid_attributes)
+          expect(response).to render_template(:new)
+        end
+
+        it "re-renders the 'new' template with an error message when an invalid storage location is given" do
+          post audits_path(audit: invalid_storage_location_attributes)
+          expect(response).to render_template(:new)
+          expect(flash[:error]).to eq("Storage location must exist")
+        end
+      end
+    end
+
+    describe 'POST #finalize' do
+      it 'sets the finalize status and saves an event' do
+        audit = create(:audit, organization: organization)
+        expect(AuditEvent.count).to eq(0)
+        post audit_finalize_path(audit_id: audit.to_param)
+        expect(audit.reload).to be_finalized
+        expect(AuditEvent.count).to eq(1)
+      end
+
+      context "when the audit has already been finalized" do
+        it "does not create a new AuditEvent and redirects to the finalized audit" do
+          finalized_audit = create(:audit, organization: organization, status: :finalized)
+
+          expect do
+            post audit_finalize_path(audit_id: finalized_audit.to_param)
+          end.not_to change(AuditEvent, :count)
+
+          expect(response).to redirect_to(audit_path(finalized_audit))
+          expect(flash[:error]).to include("This audit has been finalized and cannot be edited.")
+        end
+      end
+    end
+
+    describe "DELETE #destroy" do
+      context "with valid params" do
+        it "destroys the audit if the audit's status is `in_progress`" do
+          audit = create(:audit, organization: organization)
+          expect do
+            delete audit_path(id: audit.to_param)
+          end.to change(Audit, :count).by(-1)
+        end
+
+        it "destroys the audit if the audit's status is `confirms`" do
+          audit = create(:audit, organization: organization, status: :pending_finalization)
+          expect do
+            delete audit_path(id: audit.to_param)
+          end.to change(Audit, :count).by(-1)
+        end
+
+        it "can not destroy the audit if the audit's status is `finalized`" do
+          audit = create(:audit, organization: organization, status: :finalized)
+          expect do
+            delete audit_path(id: audit.to_param)
+          end.to change(Audit, :count).by(0)
+        end
+      end
+    end
+  end
+end

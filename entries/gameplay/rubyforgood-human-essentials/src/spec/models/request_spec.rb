@@ -1,0 +1,215 @@
+# == Schema Information
+#
+# Table name: requests
+#
+#  id              :bigint           not null, primary key
+#  comments        :text
+#  discard_reason  :text
+#  discarded_at    :datetime
+#  request_items   :jsonb
+#  request_type    :string
+#  status          :integer          default("pending")
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  distribution_id :integer
+#  organization_id :bigint
+#  partner_id      :bigint
+#  partner_user_id :integer
+#
+
+RSpec.describe Request, type: :model do
+  describe "Enums >" do
+    describe "#status" do
+      let!(:request_pending) { create(:request) }
+      let!(:request_started) { create(:request, :started) }
+      let!(:request_fulfilled) { create(:request, :fulfilled) }
+
+      it "scopes" do
+        expect(Request.status_pending).to eq([request_pending])
+        expect(Request.status_started).to eq([request_started])
+        expect(Request.status_fulfilled).to eq([request_fulfilled])
+      end
+
+      it "does not regress from fulfilled to started" do
+        expect { request_fulfilled.status_started! }
+          .to raise_error(ActiveRecord::RecordInvalid, /cannot be changed once fulfilled/)
+      end
+
+      it "does not regress from fulfilled to pending" do
+        expect { request_fulfilled.status_pending! }
+          .to raise_error(ActiveRecord::RecordInvalid, /cannot be changed once fulfilled/)
+      end
+
+      it "does not regress from fulfilled to cancelled" do
+        expect { request_fulfilled.status_cancelled! }
+          .to raise_error(ActiveRecord::RecordInvalid, /cannot be changed once fulfilled/)
+      end
+
+      it "does not regress from cancelled to started" do
+        cancelled_request = create(:request, :cancelled)
+
+        expect { cancelled_request.status_started! }
+          .to raise_error(ActiveRecord::RecordInvalid, /cannot be changed once cancelled/)
+      end
+
+      it "does not regress from cancelled to pending" do
+        cancelled_request = create(:request, :cancelled)
+
+        expect { cancelled_request.status_pending! }
+          .to raise_error(ActiveRecord::RecordInvalid, /cannot be changed once cancelled/)
+      end
+
+      it "does not regress from cancelled to fulfilled" do
+        cancelled_request = create(:request, :cancelled)
+
+        expect { cancelled_request.status_fulfilled! }
+          .to raise_error(ActiveRecord::RecordInvalid, /cannot be changed once cancelled/)
+      end
+
+      it "allows normal transitions" do
+        expect { request_pending.status_started! }.not_to raise_error
+        expect { request_started.status_fulfilled! }.not_to raise_error
+      end
+    end
+  end
+
+  describe "item data" do
+    it "coerces item quantity and id to always be an integer before saving" do
+      request = create(:request,
+                       partner_user: ::User.partner_users.first,
+                       request_items: [
+                         { item_id: "25", quantity: "15" },
+                         { item_id: "35", quantity: 18 }
+                       ])
+      expect(request.request_items.first["item_id"]).to be 25
+      expect(request.request_items.first["quantity"]).to be 15
+      expect(request.request_items.last["item_id"]).to be 35
+      expect(request.request_items.last["quantity"]).to be 18
+    end
+  end
+
+  describe "total_items" do
+    let(:id_one) { create(:item).id }
+    let(:id_two) { create(:item).id }
+    let(:request) { create(:request, request_items: [{ item_id: id_one, quantity: 15 }, { item_id: id_two, quantity: 18 }]) }
+    let(:request_with_strings) { create(:request, request_items: [{ item_id: id_one, quantity: "15" }, { item_id: id_two, quantity: "18" }]) }
+
+    it "adds the quantity of all items in the request" do
+      expect(request.total_items).to eq(33)
+    end
+
+    it "adds the quantity of all items in the request when they are strings" do
+      expect(request_with_strings.total_items).to eq(33)
+    end
+  end
+
+  describe "validations" do
+    let(:item_one) { create(:item) }
+    let(:item_two) { create(:item) }
+    subject { build(:request, item_requests: item_requests) }
+
+    context "when item_requests have unique item_ids" do
+      let(:item_requests) do
+        [
+          create(:item_request, item: item_one, quantity: 5),
+          create(:item_request, item: item_two, quantity: 3)
+        ]
+      end
+
+      it "is valid" do
+        expect(subject).to be_valid
+      end
+    end
+
+    context "when item_requests do not have unique item_ids" do
+      let(:item_requests) do
+        [
+          create(:item_request, item: item_one, quantity: 5),
+          create(:item_request, item: item_one, quantity: 3)
+        ]
+      end
+
+      it "is not valid" do
+        expect(subject).to_not be_valid
+        expect(subject.errors[:base]).to include("Please ensure a single unit is selected for each item that supports it")
+      end
+    end
+
+    context "when request is completely empty" do
+      let(:empty_request) { build(:request, comments: "", item_requests: []) }
+
+      it "is not valid" do
+        expect(empty_request).to_not be_valid
+        expect(empty_request.errors[:base]).to include("completely empty request")
+      end
+    end
+
+    context "when request has comments" do
+      let(:request_with_comments) { build(:request, comments: "Some comments", item_requests: []) }
+
+      it "is valid" do
+        expect(request_with_comments).to be_valid
+      end
+    end
+
+    context "when request has item_requests" do
+      let(:request_with_item_requests) { build(:request, comments: "", item_requests: [build(:item_request, item: item_one, quantity: 5)]) }
+
+      it "is valid" do
+        expect(request_with_item_requests).to be_valid
+      end
+    end
+
+    context "when request has both comments and item_requests" do
+      let(:request_with_both) { build(:request, comments: "Some comments", item_requests: [build(:item_request, item: item_two, quantity: 3)]) }
+
+      it "is valid" do
+        expect(request_with_both).to be_valid
+      end
+    end
+  end
+
+  describe "request_type_label" do
+    let(:request) { build(:request, request_type: "individual") }
+
+    it "returns the the first letter of the request_type capitalized" do
+      expect(request.request_type_label).to eq("I")
+    end
+  end
+
+  describe "requester" do
+    let(:partner) { create(:partner) }
+
+    context "when a partner user submitted the request" do
+      let(:partner_user) { create(:partner_user, partner: partner) }
+
+      it "returns the partner user" do
+        request = create(:request, partner: partner, partner_user: partner_user)
+        expect(request.requester).to eq(partner_user)
+      end
+    end
+
+    context "when no partner user is recorded" do
+      it "returns the partner" do
+        request = create(:request, partner: partner, partner_user: nil)
+        expect(request.requester).to eq(partner)
+      end
+    end
+
+    context "when the partner user has since been discarded" do
+      let(:partner_user) { create(:partner_user, partner: partner) }
+
+      it "falls back to the partner" do
+        request = create(:request, partner: partner, partner_user: partner_user)
+        partner_user.discard
+
+        expect(request.reload.partner_user_id).to eq(partner_user.id)
+        expect(request.requester).to eq(partner)
+      end
+    end
+  end
+
+  describe "versioning" do
+    it { is_expected.to be_versioned }
+  end
+end

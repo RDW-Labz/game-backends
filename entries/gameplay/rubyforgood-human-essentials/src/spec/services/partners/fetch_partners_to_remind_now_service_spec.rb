@@ -1,0 +1,205 @@
+RSpec.describe Partners::FetchPartnersToRemindNowService do
+  describe ".fetch" do
+    subject { described_class.new.fetch }
+    let(:current_day) { 14 }
+    before { travel_to(Time.zone.local(2022, 6, current_day)) }
+
+    context "when there is a partner" do
+      let!(:partner) { create(:partner) }
+      # New organizations have reminders disabled by default; these specs exercise
+      # the scheduling logic, so opt the partner's organization in.
+      before { partner.organization.update(deadline_reminders_enabled: true) }
+      context "that has an organization with a global reminder & deadline" do
+        context "that is for today" do
+          before do
+            partner.organization.update(deadline_day: current_day + 2)
+            partner.organization.reminder_schedule.assign_attributes({
+              by_month_or_week: "day_of_month",
+              day_of_month: current_day
+            })
+            partner.organization.save
+          end
+
+          it "should include that partner" do
+            expect(partner.organization.reminder_schedule.occurs_on?(Time.current)).to be_truthy
+            expect(subject).to include(partner)
+          end
+
+          context "as matched by day of the week" do
+            before do
+              partner.organization.update(deadline_day: current_day + 2)
+              partner.organization.reminder_schedule.assign_attributes({
+                by_month_or_week: "day_of_week",
+                day_of_week: 2,
+                every_nth_day: 2
+              })
+              partner.organization.save
+            end
+            it "should include that partner" do
+              expect(partner.organization.reminder_schedule.occurs_on?(Time.current)).to be_truthy
+              expect(subject).to include(partner)
+            end
+          end
+
+          context "but the partner is deactivated" do
+            before do
+              partner.deactivated!
+            end
+
+            it "should NOT include that partner" do
+              expect(subject).not_to include(partner)
+            end
+          end
+
+          context "and has send_reminder=false" do
+            before do
+              partner.update(send_reminders: false)
+            end
+
+            it "should NOT include that partner" do
+              expect(subject).not_to include(partner)
+            end
+          end
+
+          context "but the organization has disabled deadline reminders" do
+            before do
+              partner.update!(send_reminders: true)
+              partner.organization.update(deadline_reminders_enabled: false)
+            end
+
+            it "should NOT include that partner even though the partner has send_reminders enabled" do
+              expect(subject).not_to include(partner)
+            end
+          end
+        end
+
+        context "that is not for today" do
+          before do
+            partner.organization.update(deadline_day: current_day + 2)
+            partner.organization.reminder_schedule.assign_attributes({
+              by_month_or_week: "day_of_month",
+              day_of_month: current_day - 1
+            })
+            partner.organization.save
+          end
+
+          it "should NOT include that partner" do
+            expect(subject).not_to include(partner)
+          end
+        end
+
+        context "AND a partner group that does have them defined" do
+          before do
+            partner_group = create(
+              :partner_group,
+              deadline_day: current_day + 2
+            )
+            partner_group.reminder_schedule.assign_attributes({
+              by_month_or_week: "day_of_month",
+              day_of_month: current_day
+            })
+            partner_group.save
+            partner_group.partners << partner
+
+            partner.organization.update(deadline_day: current_day + 2)
+            partner.organization.reminder_schedule.assign_attributes({
+              by_month_or_week: "day_of_month",
+              day_of_month: current_day - 1
+            })
+            partner.organization.save
+          end
+
+          it "should remind based on the partner group instead of the organization level reminder" do
+            expect(subject).to include(partner)
+          end
+
+          context "but the partner is deactivated" do
+            before do
+              partner.deactivated!
+            end
+
+            it "should NOT include that partner" do
+              expect(subject).not_to include(partner)
+            end
+          end
+        end
+      end
+
+      context "that does NOT have a organization with a global reminder & deadline" do
+        before do
+          partner.organization.update(reminder_schedule_definition: nil, deadline_day: nil)
+        end
+
+        context "and is a part of a partner group that does have them defined" do
+          context "that is for today" do
+            before do
+              partner_group = create(
+                :partner_group,
+                deadline_day: current_day + 2
+              )
+              partner_group.reminder_schedule.assign_attributes({
+                by_month_or_week: "day_of_month",
+                day_of_month: current_day
+              })
+              partner_group.save
+              partner_group.partners << partner
+            end
+
+            it "should include that partner" do
+              expect(subject).to include(partner)
+            end
+
+            context "but the partner is deactivated" do
+              before do
+                partner.deactivated!
+              end
+
+              it "should NOT include that partner" do
+                expect(subject).not_to include(partner)
+              end
+            end
+
+            context "and has send_reminder=false" do
+              before do
+                partner.update(send_reminders: false)
+              end
+
+              it "should include that partner" do
+                expect(subject).to include(partner)
+              end
+            end
+
+            context "but the organization has disabled deadline reminders" do
+              before do
+                partner.organization.update(deadline_reminders_enabled: false)
+              end
+
+              it "should NOT include that partner" do
+                expect(subject).not_to include(partner)
+              end
+            end
+          end
+
+          context "that is not for today" do
+            before do
+              partner_group = create(
+                :partner_group,
+                deadline_day: current_day + 2
+              )
+              partner_group.reminder_schedule.assign_attributes({
+                by_month_or_week: "day_of_month",
+                day_of_month: current_day - 1
+              })
+              partner_group.save
+              partner_group.partners << partner
+            end
+
+            it "should NOT include that partner" do
+              expect(subject).not_to include(partner)
+            end
+          end
+        end
+      end
+    end
+  end
+end

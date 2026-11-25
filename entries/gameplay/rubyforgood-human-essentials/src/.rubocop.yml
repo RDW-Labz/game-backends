@@ -1,0 +1,86 @@
+inherit_mode:
+  merge:
+    - Exclude
+
+inherit_gem:
+  standard: config/base.yml
+  standard-rails: config/base.yml
+  standard-performance: config/base.yml
+
+inherit_from:
+  .rubocop_todo.yml
+
+plugins:
+  - rubocop-performance
+  - standard-rails
+  - standard-performance
+
+require:
+  - rubocop-rails
+  - standard
+
+AllCops:
+  Exclude:
+    - "vendor/**/*"
+    - "db/schema.rb"
+    - "db/partners_schema.rb"
+    - "db/seeds.rb"
+    - "db/migrate/*"
+    - "db/partners_migrate/*"
+    - "bin/*"
+    - "lib/files/cucumber.rake"
+    - "lib/tasks/*"
+    - "config/initializers/*"
+    - "Vagrantfile"
+    - "Rakefile"
+    - "tmp/*"
+    - "node_modules/**/*"
+
+Rails:
+  Enabled: true
+Rails/FilePath:
+  Enabled: false
+Rails/PluralizationGrammar:
+  Enabled: true
+Rails/UnknownEnv:
+  Environments:
+    - production
+    - development
+    - test
+Rails/UniqueValidationWithoutIndex: # We use multiple unique validations where the uniqueness is scoped
+  Enabled: false
+Rails/ActiveRecordCallbacksOrder:
+  Enabled: false
+Rails/AfterCommitOverride:
+  Enabled: false
+Rails/FindById:
+  Enabled: false
+Rails/MailerName:
+  Enabled: false
+Rails/MatchRoute:
+  Enabled: false
+Rails/Pluck:
+  Enabled: false
+Rails/PluckInWhere:
+  Enabled: false
+Rails/RenderPlainText:
+  Enabled: false
+Rails/ShortI18n:
+  Enabled: false
+Rails/SquishedSQLHeredocs:
+  Enabled: false
+Rails/HasAndBelongsToMany:
+  Enabled: false
+Rails/ThreeStateBooleanColumn:
+  Enabled: true
+# FIXME: Fix our ENV variable access and remove the following config.
+Rails/EnvironmentVariableAccess:
+  AllowReads: true
+
+Rails/BulkChangeTable:
+  Exclude:
+    - db/partners_migrate/20180811225530_add_devise_to_partners.rb
+    - db/partners_migrate/20180811230421_devise_invitable_add_to_partners.rb
+    - db/partners_migrate/20190331165342_rename_item_to_item_request.rb
+    - db/partners_migrate/20190527220231_change_item_needed_column_to_integer_type.rb
+    - db/partners_migrate/20190726131533_devise_invitable_add_to_users_for_partnerbase.rb

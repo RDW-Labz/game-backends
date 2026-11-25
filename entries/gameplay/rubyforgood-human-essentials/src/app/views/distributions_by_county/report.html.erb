@@ -1,0 +1,88 @@
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <% content_for :title, "Estimated Distributions by County - #{current_organization.name}" %>
+        <h1>
+          Estimated Distributions by County for <%= current_organization.name %>
+        </h1>
+        <i>
+        Please note that these estimates include any items that are within kits,  but do not include the kits themselves. These are estimates only -- the totals may differ slightly from other distribution reports due to rounding when dividing them between the counties.
+        </i>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><%= link_to(dashboard_path) do %>
+              <i class="fa fa-dashboard"></i> Home
+            <% end %>
+          </li>
+          <li class="breadcrumb-item"><a href="#">Distributions</a></li>
+        </ol>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <!-- Default box -->
+        <div class="card card-primary">
+          <div class="card-body">
+
+              <div class="description-block border-right">
+                <%= form_tag(distributions_by_county_report_path(current_organization), method: :get) do |f| %>
+                  <div class="row">
+                  <% if @dbc_info.items.present? %>
+                    <div class="form-group col-lg-2 col-md-2 col-sm-6 col-xs-12">
+                      <%= filter_select(label: "Item", scope: :by_item_id, collection: @dbc_info.items, selected: @dbc_info.selected_item) %>
+                    </div>
+                  <% end %>
+                  <div class="form-group col-lg-2 col-md-2 col-sm-6 col-xs-12">
+                    <%= filter_select(label: "Reporting Category", scope: :by_reporting_category, collection: @dbc_info.reporting_categories, selected: @dbc_info.selected_reporting_category) %>
+                  </div>
+
+                 <div class="form-group col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                    <%= label_tag "Date Range", "Date Range" %>
+                    <%= render partial: "shared/date_range_picker", locals: {css_class: "form-control"} %>
+                  </div>
+                  </div>
+                    <div class="card-footer">
+                      <%= filter_button %>
+                      <%= clear_filter_button %>
+                    </div>
+                <% end %>
+              <!-- /.description-block -->
+
+          </div>
+
+          <div class="card-body table-responsive p-0">
+            <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>County</th>
+                <th class="numeric">Estimated total items</th>
+                <th class="numeric">Estimated total market value</th>
+              </tr>
+              </thead>
+              <tbody>
+              <% @dbc_info.breakdown.each do |bd| %>
+                <tr>
+                  <td><%= bd.name %></td>
+                  <td class="numeric"><%= number_with_delimiter(bd.quantity) %></td>
+                  <td class="numeric"><%= dollar_presentation(bd.value) %></td>
+                </tr>
+              <% end %>
+
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+        <!-- /.card -->
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
