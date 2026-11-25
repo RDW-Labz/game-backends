@@ -1,0 +1,87 @@
+from conan import ConanFile
+from conan.errors import ConanInvalidConfiguration
+from conan.tools.scm import Version
+from conan.tools.build import check_min_cppstd
+from conan.tools.files import copy, download, rm, unzip
+from conan.tools.layout import basic_layout
+import os
+
+required_conan_version = ">=1.52.0"
+
+class GaiaConan(ConanFile):
+    name = "gaia-ecs"
+    version = "1.0.0"
+    license = "MIT"
+    package_type = "header-library"
+    description = "A simple and powerful entity component system (ECS) written in C++17"
+    homepage = "https://github.com/richardbiely/gaia-ecs"
+    url = "https://github.com/conan-io/conan-center-index"
+    topics = ("gamedev", "performance", "entity", "ecs", "dod", "data-oriented-design", "data-oriented", "entity-framework", "entity-component-system", "cpp17")
+    no_copy_source = True
+    settings = "os", "arch", "compiler", "build_type"
+
+    @property
+    def _min_cppstd(self):
+        return 17
+
+    @property
+    def _compilers_minimum_version(self):
+        return {
+            "Visual Studio": "16",
+            "msvc": "192",
+            "gcc": "10",
+            "clang": "7.0",
+            "apple-clang": "10.0"
+        }
+    
+    def layout(self):
+        basic_layout(self, src_folder="src")
+    
+    def package_id(self):
+        self.info.clear()
+
+    def validate(self):
+        if self.settings.get_safe("compiler.cppstd"):
+            check_min_cppstd(self, self._min_cppstd)
+
+        compiler = self.settings.get_safe("compiler")
+        compiler_version = self.settings.get_safe("compiler.version")
+        minimum_version = self._compilers_minimum_version.get(str(compiler), False)
+        if minimum_version and compiler_version and Version(compiler_version) < minimum_version:
+            raise ConanInvalidConfiguration(
+                f"{self.ref} requires C++{self._min_cppstd}, which your compiler does not support."
+            )
+    
+    def source(self):
+        source = self.conan_data["sources"][self.version]
+        filename = os.path.basename(source["url"])
+        download(self, url=source["url"], filename=filename, sha256=source["sha256"])
+
+        # Conan recommends explicit tar extract filters for Python 3.14+.
+        # We only need packageable sources here, so skip GitHub metadata folders.
+        unzip(
+            self,
+            filename,
+            strip_root=True,
+            extract_filter="data",
+            excludes=(".github/*", ".vscode/*")
+        )
+        rm(self, filename, self.source_folder)
+
+    def build(self):
+        pass
+
+    def package(self):
+        copy(self, "LICENSE", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
+        copy(self, "*", src=os.path.join(self.source_folder, "single_include"), dst=os.path.join(self.package_folder, "include"))
+
+    def package_info(self):
+        if self.settings.os in ["FreeBSD", "Linux"]:
+            self.cpp_info.system_libs = ["pthread"]
+
+        self.cpp_info.bindirs = []
+        self.cpp_info.libdirs = []
+        self.cpp_info.includedirs = ["include"]
+        self.cpp_info.set_property("cmake_file_name", "gaia")
+        self.cpp_info.set_property("cmake_target_name", "gaia::gaia")
+        

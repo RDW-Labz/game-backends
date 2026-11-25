@@ -1,0 +1,92 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "inputs": [
+    {
+      "id": "buildType",
+      "description": "Build configuration to pick",
+      "type": "pickString",
+      "options": [
+        "Debug",
+        "RelWithDebInfo"
+      ],
+      "default": "Debug"
+    }
+  ],
+  "configurations": [
+    {
+      "name": "(lldb) example - dll",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${input:buildType}/src/examples/example_app/gaia_example_app",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+    },
+    {
+      "name": "(lldb) example - example1",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${input:buildType}/src/examples/example1/gaia_example1",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+    },
+    {
+      "name": "(lldb) example - example2",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${input:buildType}/src/examples/example2/gaia_example2",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+    },
+    {
+      "name": "(lldb) example - example3",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${input:buildType}/src/examples/example3/gaia_example3",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+    },
+    {
+      "name": "(lldb) example - roguelike",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${input:buildType}/src/examples/example_roguelike/gaia_example_roguelike",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+    },
+    {
+      "name": "(lldb) perf - duel",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${input:buildType}/src/perf/duel/gaia_duel",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+    },
+    {
+      "name": "(lldb) perf - mt",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${input:buildType}/src/perf/mt/gaia_mt",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+    },
+    {
+      "name": "(lldb) perf - app",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${input:buildType}/src/perf/app/gaia_app",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+    },
+    {
+      "name": "(lldb) perf - perf",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/${input:buildType}/src/perf/perf/gaia_perf",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+    }
+  ]
+}

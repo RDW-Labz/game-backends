@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T20:34:38Z",
+ "category": "engines",
+ "commit": "9aac9f1e1e82",
+ "delivery": "vendored",
+ "description": "dustinlacewell/react-ecs \u2014 An entity-component-system for React",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "react-ecs",
+ "size_bytes": 58575,
+ "slug": "dustinlacewell-react-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 132,
+ "system": "An entity-component-system for React",
+ "upstream": "https://github.com/dustinlacewell/react-ecs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

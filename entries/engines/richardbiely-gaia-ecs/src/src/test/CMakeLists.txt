@@ -1,0 +1,177 @@
+set(GAIA_TEST_SOURCES
+	src/main.cpp
+	src/test_core.cpp
+	src/test_array_lifetime.cpp
+	src/test_ecs_entity.cpp
+	src/test_query_core.cpp
+	src/test_query_prefab_lifecycle.cpp
+	src/test_query_prefab_usage.cpp
+	src/test_query_prefab_inherit.cpp
+	src/test_query_prefab_cache.cpp
+	src/test_mutation_runtime.cpp
+	src/test_system.cpp
+	src/test_observer_basic.cpp
+	src/test_observer_trav.cpp
+	src/test_observer_prefab.cpp
+	src/test_misc.cpp
+	src/test_mt.cpp
+	src/test_serialization.cpp
+	src/test_parent.cpp
+	src/test_storage.cpp
+)
+if(WIN32)
+	# Checks Gaia's own Win32 declarations against the Windows SDK.
+	list(APPEND GAIA_TEST_SOURCES src/test_win32.cpp)
+endif()
+
+function(gaia_configure_test_target target_name)
+	add_executable(${target_name} ${GAIA_TEST_SOURCES})
+
+	# System-specific threading library
+	set(THREADS_PREFER_PTHREAD_FLAG ON)
+	find_package(Threads REQUIRED)
+	target_link_libraries(${target_name} PRIVATE Threads::Threads)
+
+	# Unit test framework
+	target_link_libraries(${target_name} PRIVATE doctest::doctest)
+
+	# Project files
+	target_include_directories(${target_name} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+	target_compile_definitions(${target_name} PRIVATE GAIA_ECS_TEST_HOOKS=1)
+
+	# Compiler-specific options
+	if(MSVC)
+		target_compile_options(${target_name} PRIVATE /bigobj)
+	endif()
+	if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+		# doctest::Approx takes double. Clang 18 -Wdouble-promotion errors on
+		# Approx(float) at test call sites. Apple Clang 21 does not.
+		target_compile_options(${target_name} PRIVATE -Wno-double-promotion)
+	endif()
+endfunction()
+
+set(PROJ_NAME "gaia_test")
+gaia_configure_test_target(${PROJ_NAME})
+
+set(PROJ_NAME_NO_AUTOREG "gaia_test_no_autoreg")
+gaia_configure_test_target(${PROJ_NAME_NO_AUTOREG})
+target_compile_definitions(${PROJ_NAME_NO_AUTOREG} PRIVATE GAIA_ECS_AUTO_COMPONENT_REGISTRATION=0)
+
+set(PROJ_NAME_NO_OBSERVERS "gaia_test_no_observers")
+add_executable(${PROJ_NAME_NO_OBSERVERS} src/test_no_observers.cpp)
+target_link_libraries(${PROJ_NAME_NO_OBSERVERS} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_NO_OBSERVERS} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_definitions(${PROJ_NAME_NO_OBSERVERS} PRIVATE GAIA_OBSERVERS_ENABLED=0 GAIA_USE_SAFE_ENTITY=1)
+
+set(PROJ_NAME_NO_OBSERVERS_SINGLE_HEADER "gaia_test_no_observers_single_header")
+add_executable(${PROJ_NAME_NO_OBSERVERS_SINGLE_HEADER} src/test_no_observers.cpp)
+target_link_libraries(${PROJ_NAME_NO_OBSERVERS_SINGLE_HEADER} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_NO_OBSERVERS_SINGLE_HEADER} PRIVATE ${PROJECT_SOURCE_DIR}/single_include)
+target_compile_definitions(
+	${PROJ_NAME_NO_OBSERVERS_SINGLE_HEADER} PRIVATE GAIA_OBSERVERS_ENABLED=0 GAIA_USE_SAFE_ENTITY=1)
+if(TARGET single_header)
+	add_dependencies(${PROJ_NAME_NO_OBSERVERS_SINGLE_HEADER} single_header)
+endif()
+
+set(PROJ_NAME_NO_SYSTEMS "gaia_test_no_systems")
+add_executable(${PROJ_NAME_NO_SYSTEMS} src/test_no_systems.cpp)
+target_link_libraries(${PROJ_NAME_NO_SYSTEMS} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_NO_SYSTEMS} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_definitions(${PROJ_NAME_NO_SYSTEMS} PRIVATE GAIA_SYSTEMS_ENABLED=0 GAIA_USE_SAFE_ENTITY=1)
+
+set(PROJ_NAME_NO_SYSTEMS_SINGLE_HEADER "gaia_test_no_systems_single_header")
+add_executable(${PROJ_NAME_NO_SYSTEMS_SINGLE_HEADER} src/test_no_systems.cpp)
+target_link_libraries(${PROJ_NAME_NO_SYSTEMS_SINGLE_HEADER} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_NO_SYSTEMS_SINGLE_HEADER} PRIVATE ${PROJECT_SOURCE_DIR}/single_include)
+target_compile_definitions(
+	${PROJ_NAME_NO_SYSTEMS_SINGLE_HEADER} PRIVATE GAIA_SYSTEMS_ENABLED=0 GAIA_USE_SAFE_ENTITY=1)
+if(TARGET single_header)
+	add_dependencies(${PROJ_NAME_NO_SYSTEMS_SINGLE_HEADER} single_header)
+endif()
+
+set(PROJ_NAME_NO_HOOKS "gaia_test_no_hooks")
+add_executable(${PROJ_NAME_NO_HOOKS} src/test_no_hooks.cpp)
+target_link_libraries(${PROJ_NAME_NO_HOOKS} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_NO_HOOKS} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_definitions(${PROJ_NAME_NO_HOOKS} PRIVATE GAIA_ENABLE_HOOKS=0)
+
+set(PROJ_NAME_NO_HOOKS_SINGLE_HEADER "gaia_test_no_hooks_single_header")
+add_executable(${PROJ_NAME_NO_HOOKS_SINGLE_HEADER} src/test_no_hooks.cpp)
+target_link_libraries(${PROJ_NAME_NO_HOOKS_SINGLE_HEADER} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_NO_HOOKS_SINGLE_HEADER} PRIVATE ${PROJECT_SOURCE_DIR}/single_include)
+target_compile_definitions(${PROJ_NAME_NO_HOOKS_SINGLE_HEADER} PRIVATE GAIA_ENABLE_HOOKS=0)
+if(TARGET single_header)
+	add_dependencies(${PROJ_NAME_NO_HOOKS_SINGLE_HEADER} single_header)
+endif()
+
+set(PROJ_NAME_NO_JSON "gaia_test_no_json")
+add_executable(${PROJ_NAME_NO_JSON} src/test_no_json.cpp)
+target_link_libraries(${PROJ_NAME_NO_JSON} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_NO_JSON} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_definitions(${PROJ_NAME_NO_JSON} PRIVATE GAIA_JSON_ENABLED=0 GAIA_TEST_SINGLE_HEADER=0)
+
+set(PROJ_NAME_NO_JSON_SINGLE_HEADER "gaia_test_no_json_single_header")
+add_executable(${PROJ_NAME_NO_JSON_SINGLE_HEADER} src/test_no_json.cpp)
+target_link_libraries(${PROJ_NAME_NO_JSON_SINGLE_HEADER} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_NO_JSON_SINGLE_HEADER} PRIVATE ${PROJECT_SOURCE_DIR}/single_include)
+target_compile_definitions(
+	${PROJ_NAME_NO_JSON_SINGLE_HEADER} PRIVATE GAIA_JSON_ENABLED=0 GAIA_TEST_SINGLE_HEADER=1)
+if(TARGET single_header)
+	add_dependencies(${PROJ_NAME_NO_JSON_SINGLE_HEADER} single_header)
+endif()
+
+set(PROJ_NAME_FNV1A "gaia_test_fnv1a")
+add_executable(${PROJ_NAME_FNV1A} src/test_fnv1a.cpp)
+target_link_libraries(${PROJ_NAME_FNV1A} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_FNV1A} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_definitions(${PROJ_NAME_FNV1A} PRIVATE GAIA_ECS_HASH=GAIA_ECS_HASH_FNV1A)
+
+set(PROJ_NAME_FNV1A_SINGLE_HEADER "gaia_test_fnv1a_single_header")
+add_executable(${PROJ_NAME_FNV1A_SINGLE_HEADER} src/test_fnv1a.cpp)
+target_link_libraries(${PROJ_NAME_FNV1A_SINGLE_HEADER} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_FNV1A_SINGLE_HEADER} PRIVATE ${PROJECT_SOURCE_DIR}/single_include)
+target_compile_definitions(${PROJ_NAME_FNV1A_SINGLE_HEADER} PRIVATE GAIA_ECS_HASH=GAIA_ECS_HASH_FNV1A)
+if(TARGET single_header)
+	add_dependencies(${PROJ_NAME_FNV1A_SINGLE_HEADER} single_header)
+endif()
+
+add_test(NAME ${PROJ_NAME} COMMAND $<TARGET_FILE:${PROJ_NAME}>)
+add_test(
+	NAME ${PROJ_NAME_NO_AUTOREG}
+	COMMAND $<TARGET_FILE:${PROJ_NAME_NO_AUTOREG}> "--test-case=*component registration*")
+add_test(NAME ${PROJ_NAME_NO_OBSERVERS} COMMAND $<TARGET_FILE:${PROJ_NAME_NO_OBSERVERS}>)
+add_test(
+	NAME ${PROJ_NAME_NO_OBSERVERS_SINGLE_HEADER} COMMAND $<TARGET_FILE:${PROJ_NAME_NO_OBSERVERS_SINGLE_HEADER}>)
+add_test(NAME ${PROJ_NAME_NO_SYSTEMS} COMMAND $<TARGET_FILE:${PROJ_NAME_NO_SYSTEMS}>)
+add_test(NAME ${PROJ_NAME_NO_SYSTEMS_SINGLE_HEADER} COMMAND $<TARGET_FILE:${PROJ_NAME_NO_SYSTEMS_SINGLE_HEADER}>)
+add_test(NAME ${PROJ_NAME_NO_HOOKS} COMMAND $<TARGET_FILE:${PROJ_NAME_NO_HOOKS}>)
+add_test(NAME ${PROJ_NAME_NO_HOOKS_SINGLE_HEADER} COMMAND $<TARGET_FILE:${PROJ_NAME_NO_HOOKS_SINGLE_HEADER}>)
+add_test(NAME ${PROJ_NAME_NO_JSON} COMMAND $<TARGET_FILE:${PROJ_NAME_NO_JSON}>)
+add_test(NAME ${PROJ_NAME_NO_JSON_SINGLE_HEADER} COMMAND $<TARGET_FILE:${PROJ_NAME_NO_JSON_SINGLE_HEADER}>)
+add_test(NAME ${PROJ_NAME_FNV1A} COMMAND $<TARGET_FILE:${PROJ_NAME_FNV1A}>)
+add_test(NAME ${PROJ_NAME_FNV1A_SINGLE_HEADER} COMMAND $<TARGET_FILE:${PROJ_NAME_FNV1A_SINGLE_HEADER}>)
+
+set(PROJ_NAME_ARENA_LOCK "gaia_test_arena_lock")
+add_executable(${PROJ_NAME_ARENA_LOCK} src/test_arena_lock.cpp)
+target_link_libraries(${PROJ_NAME_ARENA_LOCK} PRIVATE Threads::Threads)
+target_include_directories(${PROJ_NAME_ARENA_LOCK} PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_compile_definitions(${PROJ_NAME_ARENA_LOCK} PRIVATE GAIA_ALLOC_ARENA_LOCK=1)
+add_test(NAME ${PROJ_NAME_ARENA_LOCK} COMMAND $<TARGET_FILE:${PROJ_NAME_ARENA_LOCK}>)
+
+add_executable(gaia_test_query_access_assert src/test_query_access_assert.cpp)
+target_link_libraries(gaia_test_query_access_assert PRIVATE Threads::Threads)
+target_include_directories(gaia_test_query_access_assert PRIVATE ${PROJECT_SOURCE_DIR}/include)
+add_test(NAME gaia_test_query_access_assert_valid COMMAND gaia_test_query_access_assert valid)
+foreach(scenario IN ITEMS
+	modifier-missing modifier-metadata modifier-not modifier-after-fetch
+	auto-tag-indexed auto-tag-raw auto-entity-raw auto-pair-indexed auto-pair-raw
+	not-term typed-read typed-write empty-typed empty-parallel each-iter array empty-array
+	optional-typed optional-view optional-indexed optional-raw
+	view-read view-write view-indexed view-auto sview raw-indexed raw-entity raw-mutable
+	sparse sparse-indexed soa-field pair wildcard-pair inherited-index source-typed sort system-typed explicit-read explicit-write modify)
+	add_test(
+		NAME gaia_test_query_access_assert_${scenario}
+		COMMAND ${CMAKE_COMMAND}
+			"-DEXECUTABLE=$<TARGET_FILE:gaia_test_query_access_assert>" "-DSCENARIO=${scenario}"
+			-P "${CMAKE_CURRENT_SOURCE_DIR}/expect_query_access_assert.cmake")
+endforeach()

@@ -1,0 +1,2794 @@
+#pragma once
+#include "gaia/config/config.h"
+
+#include "gaia/cnt/darray.h"
+#include "gaia/cnt/darray_ext.h"
+#include "gaia/cnt/ilist.h"
+#include "gaia/config/profiler.h"
+#include "gaia/core/hashing_policy.h"
+#include "gaia/core/utility.h"
+#include "gaia/ecs/api.h"
+#include "gaia/ecs/archetype.h"
+#include "gaia/ecs/archetype_common.h"
+#include "gaia/ecs/chunk_iterator.h"
+#include "gaia/ecs/component.h"
+#include "gaia/ecs/component_cache.h"
+#include "gaia/ecs/id.h"
+#include "gaia/ecs/query_common.h"
+#include "gaia/ecs/query_match_stamps.h"
+#include "gaia/ecs/vm.h"
+#include "gaia/mem/mem_utils.h"
+#include "gaia/mem/smallblock_allocator.h"
+
+namespace gaia {
+	namespace ecs {
+		struct Entity;
+		class World;
+
+		uint32_t world_version(const World& world);
+		uint32_t world_archetype_delete_version(const World& world);
+		Entity world_query_first_inherited_owner(const World& world, const Archetype& archetype, Entity term);
+		const void* world_query_inherited_arg_data_const_ptr(const World& world, Entity owner, Entity id);
+
+		//! Reverse index from entity or pair lookup keys to matching archetype records.
+		using EntityToArchetypeMap = cnt::map<EntityLookupKey, ComponentIndexEntryArray>;
+		//! Query-field to archetype-component column mapping for one matched archetype.
+		struct ArchetypeCompIndices {
+			//! Component column per query field, with invalid entries encoded by the mapping builder.
+			uint8_t indices[ChunkHeader::MAX_COMPONENTS];
+		};
+
+		//! Cached inherited component data pointers for one matched archetype.
+		struct ArchetypeInheritedData {
+			//! Component data pointer per query field, or null when the field is not inherited.
+			const void* data[ChunkHeader::MAX_COMPONENTS];
+		};
+
+		//! Cached archetype/chunk pair used by repeated direct-dense scans over highly fragmented result caches.
+		struct DirectChunkEntry {
+			//! Archetype owning the chunk.
+			const Archetype* pArchetype = nullptr;
+			//! Chunk supplying entity and component rows.
+			Chunk* pChunk = nullptr;
+			//! Prepared query-field to chunk-column mapping for pArchetype, or null when not available.
+			const uint8_t* pCompIndices = nullptr;
+			//! Cached base data pointer for the common single selected field, or null when unavailable/not single-field.
+			const void* pData = nullptr;
+			//! Offset into ExecPayload::directChunkData for this entry, or UINT32_MAX when no pointers are cached.
+			uint32_t dataOffset = UINT32_MAX;
+			//! First enabled row in pChunk processed by direct-dense iteration.
+			uint16_t rowFrom = 0;
+			//! One-past-the-end enabled row in pChunk processed by direct-dense iteration.
+			uint16_t rowTo = 0;
+		};
+
+		//! Temporary VM matching buffer meant to be owned by an ECS World.
+		//! QueryInfo only acquires a frame while executing the VM.
+		struct QueryMatchScratch {
+			GAIA_USE_SMALLBLOCK(QueryMatchScratch)
+
+			//! Ordered list of matched archetypes emitted by the VM for the current run.
+			cnt::darr<const Archetype*> matchesArr;
+			//! Paged O(1) dedup table keyed by world-local archetype ids.
+			//! Pages stay allocated on the scratch frame so repeated matches do not keep
+			//! reallocating heap memory when archetype ids revisit the same ranges.
+			ArchetypeMatchStamps matchStamps;
+			//! Previous result membership used when a dynamic rebuild compares reverse-index changes.
+			cnt::darray<const Archetype*> matchesArrDynPrev;
+			//! Monotonic dedup stamp used when the same scratch frame is reused by later
+			//! full match() calls without clearing stamp pages.
+			uint32_t matchVersion = 0;
+
+			//! Clears all temporary match data, including dedup stamps.
+			void clear_temporary_matches() {
+				matchesArr.clear();
+				matchesArrDynPrev.clear();
+				matchStamps.clear();
+				matchVersion = 0;
+			}
+
+			//! Clears temporary match arrays while preserving allocated dedup stamp pages.
+			//! Full match() can reuse prior stamp pages and advance matchVersion instead
+			//! of zeroing the whole table again.
+			void clear_temporary_matches_keep_stamps() {
+				matchesArr.clear();
+				matchesArrDynPrev.clear();
+			}
+
+			//! Clears dedup stamps and resets the match-version counter.
+			void reset_stamps() {
+				matchStamps.clear();
+				matchVersion = 0;
+			}
+
+			//! Advances and returns the dedup stamp for the next VM match pass.
+			//! \return Non-zero match version reserved for the current pass.
+			GAIA_NODISCARD uint32_t next_match_version() {
+				++matchVersion;
+				if (matchVersion != 0)
+					return matchVersion;
+
+				reset_stamps();
+				matchVersion = 1;
+				return matchVersion;
+			}
+		};
+
+		GAIA_NODISCARD QueryMatchScratch& query_match_scratch_acquire(World& world);
+		void query_match_scratch_release(World& world, bool keepStamps);
+
+		//! Inputs passed through query-slot allocation to construct a QueryInfo instance.
+		struct QueryInfoCreationCtx {
+			//! Authored query context transferred into the allocated slot.
+			QueryCtx* pQueryCtx;
+			//! World reverse index used to compile initial archetype matching operations.
+			const EntityToArchetypeMap* pEntityToArchetypeMap;
+			//! Archetypes present in the world when the query is compiled.
+			std::span<const Archetype*> allArchetypes;
+		};
+
+		//! Compiled query plan and its incrementally maintained result caches.
+		class QueryInfo {
+		public:
+			//! Allocated items: index in the query slot list.
+			//! Deleted items: index of the next deleted item in the slot list.
+			uint32_t idx = 0;
+			//! Generation ID of the query slot.
+			uint32_t gen = 0;
+
+			//! Result of evaluating one archetype for cache insertion.
+			enum class MatchArchetypeQueryRet : uint8_t {
+				//! Archetype does not satisfy the query.
+				Fail,
+				//! Archetype satisfies the query and should be cached.
+				Ok,
+				//! Archetype requires no cache action for this evaluation path.
+				Skip
+			};
+
+		private:
+			struct Instruction {
+				Entity id;
+				QueryOpKind op;
+			};
+
+			struct SortData {
+				Chunk* pChunk;
+				uint32_t archetypeIdx;
+				uint16_t startRow;
+				uint16_t count;
+			};
+
+			struct GroupData {
+				GroupId groupId;
+				uint32_t idxFirst;
+				uint32_t idxLast;
+				bool needsSorting;
+			};
+
+			struct SrcTravSnapshotItem {
+				Entity entity = EntityBad;
+				//! Version of the source entity's archetype membership captured in the snapshot.
+				uint32_t sourceVersion = 0;
+
+				GAIA_NODISCARD bool operator==(const SrcTravSnapshotItem& other) const {
+					return entity == other.entity && sourceVersion == other.sourceVersion;
+				}
+
+				GAIA_NODISCARD bool operator!=(const SrcTravSnapshotItem& other) const {
+					return !operator==(other);
+				}
+			};
+
+		public:
+			//! Cache layer invalidated after query inputs or world state change.
+			enum class InvalidationKind : uint8_t {
+				//! Only the final result cache is stale. Structural seed matches remain valid and can be reused.
+				Result,
+				//! Structural seed matches are stale. This also implies the final result cache must be rebuilt.
+				Seed,
+				//! Full invalidation of all query cache state.
+				All
+			};
+
+		private:
+			struct QueryPlan {
+				QueryCtx ctx;
+				vm::VirtualMachine vm;
+			};
+
+			struct QueryState {
+				enum DirtyFlags : uint8_t { Clean = 0x00, Seed = 0x01, Result = 0x02, AllDirty = Seed | Result };
+
+				//! Structural seed cache built without source/variable refinement.
+				cnt::set<const Archetype*> seedArchetypeSet;
+				CArchetypeDArray seedArchetypeCache;
+
+				//! Used to make sure only unique archetypes are inserted into the cache.
+				//! TODO: Get rid of the set by changing the way the caching works.
+				cnt::set<const Archetype*> archetypeSet;
+				//! Cached array of archetypes matching the query
+				CArchetypeDArray archetypeCache;
+
+				//! Storage used only by grouped query result caches.
+				struct GroupedPayload {
+					//! Group ids for grouped queries, aligned with archetypeCache.
+					cnt::darray<GroupId> archetypeGroupIds;
+					//! Group data used by cache.
+					cnt::darray<GroupData> archetypeGroupData;
+					//! Cached range for the currently selected group id.
+					mutable GroupData selectedGroupData{};
+					//! True when selectedGroupData matches the active group filter.
+					mutable bool selectedGroupDataValid = false;
+					//! True when grouped archetype order/ranges need to be rebuilt.
+					bool dataPending = false;
+
+					//! Releases grouped payload storage and resets cached group selection state.
+					void clear() {
+						archetypeGroupIds = {};
+						archetypeGroupData = {};
+						selectedGroupData = {};
+						selectedGroupDataValid = false;
+						dataPending = false;
+					}
+
+					//! Clears grouped payload contents while preserving allocated storage.
+					void clear_transient() {
+						archetypeGroupIds.clear();
+						archetypeGroupData.clear();
+						selectedGroupData = {};
+						selectedGroupDataValid = false;
+						dataPending = false;
+					}
+				};
+
+				//! Component mappings and flattened chunks prepared for query iteration.
+				struct ExecPayload {
+					//! Cached component-index mapping for each matched archetype.
+					cnt::darray<ArchetypeCompIndices> archetypeCompIndices;
+					//! Cached inherited component data pointer per query field for exact self-source semantic terms.
+					cnt::darray<ArchetypeInheritedData> archetypeInheritedData;
+					//! Flattened chunk cache for read-only direct dense iteration over highly fragmented result caches.
+					cnt::darray<DirectChunkEntry> directChunks;
+					//! Contiguous cached component data pointers for DirectChunkEntry pointer blocks.
+					cnt::darray<const void*> directChunkData;
+					//! World version captured when directChunks was built.
+					uint32_t directChunksWorldVersion = UINT32_MAX;
+					//! Enabled hierarchy version captured when directChunks was built.
+					uint32_t directChunksEnabledVersion = UINT32_MAX;
+					//! Archetype deletion-request version captured when directChunks was built.
+					uint32_t directChunksDeleteVersion = UINT32_MAX;
+					//! Result membership revision captured when directChunks was built.
+					uint32_t directChunksResultRevision = 0;
+					//! First result-cache archetype index captured when directChunks was built.
+					uint32_t directChunksIdxFrom = UINT32_MAX;
+					//! One-past-the-end result-cache archetype index captured when directChunks was built.
+					uint32_t directChunksIdxTo = UINT32_MAX;
+					//! Query fields whose component data pointers were captured in DirectChunkEntry pointer blocks.
+					uint32_t directChunksDataFields[MAX_ITEMS_IN_QUERY]{};
+					//! Number of valid entries in directChunksDataFields.
+					uint32_t directChunksDataFieldCount = 0;
+					//! Component-index mapping storage captured by DirectChunkEntry::pCompIndices pointers.
+					const void* directChunksCompIndicesData = nullptr;
+					//! True when archetype membership is populated but component-index metadata
+					//! still needs to be built on demand.
+					bool compIndicesPending = false;
+					//! True when archetype membership is populated but inherited-term data
+					//! still needs to be built on demand.
+					bool inheritedDataPending = false;
+
+					//! Releases execution payload storage and clears pending rebuild flags.
+					void clear() {
+						archetypeCompIndices = {};
+						archetypeInheritedData = {};
+						directChunks = {};
+						directChunkData = {};
+						directChunksWorldVersion = UINT32_MAX;
+						directChunksEnabledVersion = UINT32_MAX;
+						directChunksDeleteVersion = UINT32_MAX;
+						directChunksResultRevision = 0;
+						directChunksIdxFrom = UINT32_MAX;
+						directChunksIdxTo = UINT32_MAX;
+						directChunksDataFieldCount = 0;
+						directChunksCompIndicesData = nullptr;
+						compIndicesPending = false;
+						inheritedDataPending = false;
+					}
+
+					//! Clears execution payload contents while preserving allocated storage.
+					void clear_transient() {
+						archetypeCompIndices.clear();
+						archetypeInheritedData.clear();
+						directChunks.clear();
+						directChunkData.clear();
+						directChunksWorldVersion = UINT32_MAX;
+						directChunksEnabledVersion = UINT32_MAX;
+						directChunksDeleteVersion = UINT32_MAX;
+						directChunksResultRevision = 0;
+						directChunksIdxFrom = UINT32_MAX;
+						directChunksIdxTo = UINT32_MAX;
+						directChunksDataFieldCount = 0;
+						directChunksCompIndicesData = nullptr;
+						compIndicesPending = false;
+						inheritedDataPending = false;
+					}
+				};
+
+				//! Sorting and hierarchy-barrier state for nontrivial iteration paths.
+				struct NonTrivialPayload {
+					//! Cached depth-order hierarchy barrier result for each archetype.
+					cnt::darray<uint8_t> archetypeBarrierPasses;
+					//! Sort data used by cache.
+					cnt::darray<SortData> archetypeSortData;
+					//! World version at which the sorted cache slices were last rebuilt.
+					//! Unlike worldVersion, this is only updated after a real sort refresh.
+					uint32_t sortVersion{};
+					//! Relation topology version at which the cached depth-order hierarchy barrier state was last rebuilt.
+					uint32_t barrierRelVersion = UINT32_MAX;
+					//! Entity enable-state version at which the cached depth-order hierarchy barrier state was last rebuilt.
+					uint32_t barrierEnabledVersion = UINT32_MAX;
+					//! True when at least one cached archetype fails the depth-order hierarchy barrier.
+					uint8_t barrierMayPrune = 0;
+
+					//! Releases nontrivial execution payload storage and resets version stamps.
+					void clear() {
+						archetypeSortData = {};
+						archetypeBarrierPasses = {};
+						sortVersion = 0;
+						barrierRelVersion = UINT32_MAX;
+						barrierEnabledVersion = UINT32_MAX;
+						barrierMayPrune = 0;
+					}
+
+					//! Clears nontrivial payload contents while preserving allocated storage.
+					void clear_transient() {
+						archetypeSortData.clear();
+						archetypeBarrierPasses.clear();
+						sortVersion = 0;
+						barrierRelVersion = UINT32_MAX;
+						barrierEnabledVersion = UINT32_MAX;
+						barrierMayPrune = 0;
+					}
+				};
+
+				//! Execution metadata shared by plain and grouped iteration paths on demand.
+				ExecPayload exec;
+				//! Grouped-query-only payload.
+				GroupedPayload grouped;
+				//! Sort/remap/barrier payload used by nontrivial execution paths on demand.
+				NonTrivialPayload nonTrivial;
+
+				//! Runtime dependency snapshots used to validate reusable dynamic results.
+				struct DynamicCacheState {
+					//! Relation-version payload for reusable dynamic caches with relation dependencies.
+					struct RelationPayload {
+						//! Last seen versions for tracked dynamic relation dependencies.
+						cnt::sarray<uint32_t, MAX_ITEMS_IN_QUERY> versions;
+
+						//! Returns true when any tracked relation version changed.
+						//! \param world World providing current relation topology versions.
+						//! \param relations Relations aligned with versions.
+						//! \return True when any current version differs from its snapshot.
+						GAIA_NODISCARD bool changed(const World& world, std::span<const Entity> relations) const {
+							const auto cnt = (uint32_t)relations.size();
+							GAIA_FOR(cnt) {
+								if (versions[i] != world_rel_version(world, relations[i]))
+									return true;
+							}
+
+							return false;
+						}
+
+						//! Captures current relation versions.
+						//! \param world World providing current relation topology versions.
+						//! \param relations Relations whose versions are captured in order.
+						void snapshot(const World& world, std::span<const Entity> relations) {
+							const auto cnt = (uint32_t)relations.size();
+							GAIA_FOR(cnt)
+							versions[i] = world_rel_version(world, relations[i]);
+						}
+					};
+
+					//! Direct concrete-source payload for reusable dynamic caches.
+					struct DirectSourcePayload {
+						//! Last seen archetype versions for tracked direct concrete source entities.
+						cnt::sarray<uint32_t, MAX_ITEMS_IN_QUERY> entityVersions;
+
+						//! Returns true when any tracked source entity changed archetype.
+						//! \param world World providing current entity archetype versions.
+						//! \param sourceEntities Source entities aligned with entityVersions.
+						//! \return True when any source archetype version differs from its snapshot.
+						GAIA_NODISCARD bool changed(const World& world, std::span<const Entity> sourceEntities) const {
+							const auto cnt = (uint32_t)sourceEntities.size();
+							GAIA_FOR(cnt) {
+								if (entityVersions[i] != world_entity_archetype_version(world, sourceEntities[i]))
+									return true;
+							}
+
+							return false;
+						}
+
+						//! Captures current source entity archetype versions.
+						//! \param world World providing current entity archetype versions.
+						//! \param sourceEntities Source entities whose versions are captured in order.
+						void snapshot(const World& world, std::span<const Entity> sourceEntities) {
+							const auto cnt = (uint32_t)sourceEntities.size();
+							GAIA_FOR(cnt)
+							entityVersions[i] = world_entity_archetype_version(world, sourceEntities[i]);
+						}
+					};
+
+					//! Traversed-source payload for reusable dynamic caches with source traversal.
+					struct TraversedSourcePayload {
+						//! Last seen traversed-source closure for reusable source queries.
+						cnt::darray<SrcTravSnapshotItem> snapshot;
+						//! Entity enable-state version captured with the traversed-source closure.
+						uint32_t enabledVersion = UINT32_MAX;
+						//! True when the traversed source closure exceeded the configured snapshot cap.
+						bool overflowed = false;
+
+						//! Clears traversed-source snapshot state.
+						void clear() {
+							snapshot.clear();
+							enabledVersion = UINT32_MAX;
+							overflowed = false;
+						}
+
+						//! Returns true when the traversed-source snapshot is unusable for reuse.
+						//! \return True when capture exceeded the configured snapshot limit.
+						GAIA_NODISCARD bool is_overflowed() const {
+							return overflowed;
+						}
+
+						//! Returns true when any tracked traversed source entity changed archetype.
+						//! \param world World providing current hierarchy and archetype versions.
+						//! \return True when enabled hierarchy state or any captured entity version changed.
+						GAIA_NODISCARD bool versions_changed(const World& world) const {
+							if (enabledVersion != world_enabled_hierarchy_version(world))
+								return true;
+
+							const auto cnt = (uint32_t)snapshot.size();
+							GAIA_FOR(cnt) {
+								const auto& item = snapshot[i];
+								if (item.sourceVersion != world_entity_archetype_version(world, item.entity))
+									return true;
+							}
+
+							return false;
+						}
+
+						//! Returns true when a rebuilt traversed-source closure differs from the captured snapshot.
+						//! \param world World providing the current enabled hierarchy version.
+						//! \param items Newly built ordered source closure.
+						//! \return True when hierarchy version, closure size, or any closure item differs.
+						GAIA_NODISCARD bool changed(const World& world, const cnt::darray<SrcTravSnapshotItem>& items) const {
+							if (enabledVersion != world_enabled_hierarchy_version(world))
+								return true;
+
+							if (items.size() != snapshot.size())
+								return true;
+
+							const auto cnt = (uint32_t)snapshot.size();
+							GAIA_FOR(cnt) {
+								if (items[i] != snapshot[i])
+									return true;
+							}
+
+							return false;
+						}
+
+						//! Captures a newly built traversed-source closure snapshot.
+						//! \param world World providing the enabled hierarchy version to capture.
+						//! \param items Ordered source closure and entity archetype versions.
+						void capture(const World& world, const cnt::darray<SrcTravSnapshotItem>& items) {
+							snapshot = items;
+							enabledVersion = world_enabled_hierarchy_version(world);
+							overflowed = false;
+						}
+
+						//! Marks the traversed-source snapshot as overflowed and unusable for reuse.
+						void mark_overflowed() {
+							snapshot.clear();
+							enabledVersion = UINT32_MAX;
+							overflowed = true;
+						}
+					};
+
+					//! Variable-binding payload for reusable dynamic caches with runtime variables.
+					struct VariablePayload {
+						//! Snapshot of runtime variable bindings used to build the current dynamic cache.
+						cnt::sarray<Entity, MaxVarCnt> bindings;
+						//! Bitmask of the variable bindings captured in bindings.
+						uint8_t bindingMask = 0;
+
+						//! Clears runtime variable binding snapshot state.
+						void clear() {
+							bindingMask = 0;
+						}
+
+						//! Returns true when runtime variable bindings differ from the captured snapshot.
+						//! \param runtimeBindings Current values for all query variable slots.
+						//! \param runtimeBindingMask Bitmask selecting bound slots in \a runtimeBindings.
+						//! \return True when the bound-slot mask or any selected value differs.
+						GAIA_NODISCARD bool
+						changed(const cnt::sarray<Entity, MaxVarCnt>& runtimeBindings, uint8_t runtimeBindingMask) const {
+							if (bindingMask != runtimeBindingMask)
+								return true;
+							if (runtimeBindingMask == 0)
+								return false;
+
+							GAIA_FOR(MaxVarCnt) {
+								const auto bit = (uint8_t(1) << i);
+								if ((runtimeBindingMask & bit) == 0)
+									continue;
+
+								if (bindings[i] != runtimeBindings[i])
+									return true;
+							}
+
+							return false;
+						}
+
+						//! Captures runtime variable bindings.
+						//! \param runtimeBindings Current values for all query variable slots.
+						//! \param runtimeBindingMask Bitmask selecting bound slots to capture.
+						void snapshot(const cnt::sarray<Entity, MaxVarCnt>& runtimeBindings, uint8_t runtimeBindingMask) {
+							bindings = runtimeBindings;
+							bindingMask = runtimeBindingMask;
+						}
+					};
+
+					//! Relation-version payload.
+					RelationPayload relation;
+					//! Direct concrete-source payload.
+					DirectSourcePayload directSource;
+					//! Traversed-source closure payload.
+					TraversedSourcePayload traversedSource;
+					//! Runtime variable-binding payload.
+					VariablePayload variable;
+
+					//! Clears transient dynamic input snapshot state while preserving fixed-size version snapshots.
+					void clear_input_snapshots() {
+						traversedSource.clear();
+						variable.clear();
+					}
+				};
+
+				//! Runtime snapshots used to validate reusable dynamic caches.
+				DynamicCacheState dynamic;
+
+				//! Id of the last archetype in the world we checked
+				ArchetypeId lastArchetypeId{};
+				//! Bumped when the result archetype membership changes.
+				//! QueryCache uses this to skip reverse-index resync on warm cached reads.
+				uint32_t resultCacheRevision = 1;
+				//! True when cached result archetypes may be rejected by the default prefab filter.
+				uint8_t resultCacheMayNeedPrefabFilter = 0;
+				//! Dirty flags
+				uint8_t dirtyFlags = DirtyFlags::AllDirty;
+
+				//! Clears structural seed matches without touching dynamic input snapshots.
+				void clear_seed_cache() {
+					seedArchetypeSet = {};
+					seedArchetypeCache = {};
+				}
+
+				//! Clears final result matches and all payloads derived from result-cache order.
+				void clear_result_cache() {
+					archetypeSet = {};
+					archetypeCache = {};
+					resultCacheMayNeedPrefabFilter = 0;
+					exec.clear();
+					grouped.clear();
+					nonTrivial.clear();
+				}
+
+				//! Clears transient final result matches while preserving reusable payload allocation.
+				void clear_transient_result_cache() {
+					archetypeCache.clear();
+					resultCacheMayNeedPrefabFilter = 0;
+					exec.clear_transient();
+					grouped.clear_transient();
+					nonTrivial.clear_transient();
+				}
+
+				//! Clears both structural seed matches and final result matches.
+				void clear_cache() {
+					clear_seed_cache();
+					clear_result_cache();
+				}
+
+				//! Resets all query cache state, dynamic snapshots, cursors, and dirty flags.
+				void reset() {
+					clear_cache();
+					dynamic.clear_input_snapshots();
+					lastArchetypeId = 0;
+					dirtyFlags = DirtyFlags::AllDirty;
+				}
+
+				//! Marks structural seed matches stale, which also invalidates final results.
+				void invalidate_seed() {
+					dirtyFlags = (uint8_t)(dirtyFlags | DirtyFlags::Seed | DirtyFlags::Result);
+				}
+
+				//! Marks final result matches stale while keeping structural seed matches reusable.
+				void invalidate_result() {
+					dirtyFlags = (uint8_t)(dirtyFlags | DirtyFlags::Result);
+				}
+
+				//! Marks every cache layer stale.
+				void invalidate_all() {
+					dirtyFlags = DirtyFlags::AllDirty;
+				}
+
+				//! Returns true when structural seed matches must be rebuilt.
+				GAIA_NODISCARD bool seed_dirty() const {
+					return (dirtyFlags & DirtyFlags::Seed) != 0;
+				}
+
+				//! Returns true when final result matches must be rebuilt from the seed cache or VM.
+				GAIA_NODISCARD bool result_dirty() const {
+					return (dirtyFlags & DirtyFlags::Result) != 0;
+				}
+
+				//! Returns true when any cache layer is marked dirty.
+				GAIA_NODISCARD bool needs_refresh() const {
+					return seed_dirty() || result_dirty();
+				}
+
+				//! Marks all cache layers clean after a successful refresh.
+				void clear_dirty() {
+					dirtyFlags = DirtyFlags::Clean;
+				}
+			};
+
+			uint32_t m_refs = 0;
+#if GAIA_ECS_TEST_HOOKS
+			//! Persistent VM match-pass count used only by query-cache reuse tests.
+			uint32_t m_testMatchPassCount = 0;
+#endif
+
+			QueryPlan m_plan;
+			QueryState m_state;
+
+			enum QueryCmdType : uint8_t { ALL, OR, NOT };
+
+			//! Clears all cached match state and resets incremental lookup cursors.
+			//! \param trackMembershipChange True to bump the result membership revision when non-empty results are discarded.
+			void reset_matching_cache(bool trackMembershipChange) {
+				if (trackMembershipChange && !m_state.archetypeCache.empty())
+					mark_result_cache_membership_changed();
+
+				m_state.reset();
+
+				auto& ctxData = m_plan.ctx.data;
+				ctxData.lastMatchedArchetypeIdx_All = {};
+				ctxData.lastMatchedArchetypeIdx_Or = {};
+				ctxData.lastMatchedArchetypeIdx_Not = {};
+			}
+
+			//! Clears only the final result cache while keeping structural seed matches intact.
+			void clear_result_cache() {
+				m_state.clear_result_cache();
+			}
+
+			//! Invalidates hierarchy barrier payloads derived from the current result cache.
+			//! This does not bump resultCacheRevision because reverse-index membership may be unchanged.
+			void invalidate_result_barriers() {
+				m_state.nonTrivial.barrierRelVersion = UINT32_MAX;
+				m_state.nonTrivial.barrierEnabledVersion = UINT32_MAX;
+			}
+
+			//! Marks final result membership as changed for reverse-index users.
+			//! Also invalidates hierarchy barrier payloads because they are indexed by result-cache membership.
+			void mark_result_cache_membership_changed() {
+				invalidate_result_barriers();
+				++m_state.resultCacheRevision;
+				if (m_state.resultCacheRevision != 0)
+					return;
+
+				// Reserve 0 as the "never synced" value in QueryCache.
+				m_state.resultCacheRevision = 1;
+			}
+
+			//! Returns true when the query uses the dynamic cache layer.
+			GAIA_NODISCARD bool has_dyn_terms() const {
+				return m_plan.ctx.data.cachePolicy == QueryCtx::CachePolicy::Dynamic;
+			}
+
+			//! Returns true when the dynamic cache can be reused by checking tracked runtime inputs.
+			GAIA_NODISCARD bool can_reuse_dyn_cache() const {
+				return m_plan.ctx.data.canReuseDynamicCache;
+			}
+
+			//! Direct concrete-source queries reuse per-source archetype versions without rebuilding a traversal closure.
+			GAIA_NODISCARD bool uses_direct_src_version_tracking() const {
+				return m_plan.ctx.data.uses_direct_src_version_tracking();
+			}
+
+			//! Traversed-source queries reuse an explicit source-closure snapshot when opted in.
+			GAIA_NODISCARD bool uses_src_trav_snapshot() const {
+				return m_plan.ctx.data.uses_src_trav_snapshot();
+			}
+
+			//! Checks tracked relation versions used by the dynamic cache.
+			GAIA_NODISCARD bool dyn_rel_versions_changed() const {
+				return m_state.dynamic.relation.changed(*world(), m_plan.ctx.data.deps.relations_view());
+			}
+
+			//! Checks runtime variable bindings used by the dynamic cache.
+			GAIA_NODISCARD bool dyn_var_bindings_changed(
+					const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) const {
+				return m_state.dynamic.variable.changed(runtimeVarBindings, runtimeVarBindingMask);
+			}
+
+			//! Checks direct concrete source entities tracked through per-entity archetype versions.
+			GAIA_NODISCARD bool direct_src_versions_changed() const {
+				return m_state.dynamic.directSource.changed(*world(), m_plan.ctx.data.deps.src_entities_view());
+			}
+
+			//! Iterates reusable source entities that participate in direct-source or traversed-source reuse.
+			//! \tparam Func Callback type invoked for each reusable source entity.
+			//! \param func Callback returning true to continue iteration, false to stop the current lookup.
+			template <typename Func>
+			void each_reusable_src_entity(Func&& func) const {
+				const auto terms = m_plan.ctx.data.terms_view();
+				const auto cnt = (uint32_t)terms.size();
+				GAIA_FOR(cnt) {
+					const auto& term = terms[i];
+					if (term.src == EntityBad || is_variable(term.src))
+						continue;
+
+					(void)vm::detail::each_lookup_src(*world(), term, term.src, [&](Entity source) {
+						return func(source);
+					});
+				}
+			}
+
+			//! Builds the traversed-source closure snapshot.
+			//! Returns false if the configured snapshot cap was exceeded.
+			GAIA_NODISCARD bool build_src_trav_snapshot(cnt::darray<SrcTravSnapshotItem>& items) const {
+				const auto maxItems = (uint32_t)m_plan.ctx.data.cacheSrcTrav;
+				items.clear();
+				if (maxItems == 0)
+					return false;
+
+				bool overflowed = false;
+				each_reusable_src_entity([&](Entity source) {
+					if (items.size() >= maxItems) {
+						overflowed = true;
+						return true;
+					}
+					items.push_back({source, world_entity_archetype_version(*world(), source)});
+					return false;
+				});
+
+				return !overflowed;
+			}
+
+			//! Checks whether the previously snapshotted traversed source entities changed archetype membership.
+			//! This avoids rebuilding the full traversal closure while relation topology is unchanged.
+			GAIA_NODISCARD bool traversed_src_versions_changed() const {
+				return m_state.dynamic.traversedSource.versions_changed(*world());
+			}
+
+			//! Checks traversed-source dynamic inputs, rebuilding the source snapshot only after relation topology changes.
+			GAIA_NODISCARD bool traversed_src_inputs_changed(bool relationVersionsChanged) {
+				if (m_state.dynamic.traversedSource.is_overflowed())
+					return true;
+
+				if (!relationVersionsChanged)
+					return traversed_src_versions_changed();
+
+				cnt::darray<SrcTravSnapshotItem> scratch;
+				if (!build_src_trav_snapshot(scratch))
+					return true;
+
+				return m_state.dynamic.traversedSource.changed(*world(), scratch);
+			}
+
+			//! Checks mixed-shape dynamic inputs with the pre-existing dependency-flag path.
+			GAIA_NODISCARD bool mixed_dyn_inputs_changed(
+					const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				const auto& deps = m_plan.ctx.data.deps;
+				if (deps.has_dep_flag(QueryCtx::DependencyHasVariableTerms) &&
+						dyn_var_bindings_changed(runtimeVarBindings, runtimeVarBindingMask))
+					return true;
+
+				const bool relationVersionsChanged = dyn_rel_versions_changed();
+				const bool hasSourceTerms = deps.has_dep_flag(QueryCtx::DependencyHasSourceTerms);
+				const bool hasTraversalTerms = deps.has_dep_flag(QueryCtx::DependencyHasTraversalTerms);
+				if (relationVersionsChanged && !(hasSourceTerms && hasTraversalTerms))
+					return true;
+
+				if (!hasSourceTerms)
+					return relationVersionsChanged;
+
+				if (m_state.dynamic.traversedSource.is_overflowed())
+					return true;
+
+				if (!hasTraversalTerms)
+					return direct_src_versions_changed();
+
+				return traversed_src_inputs_changed(relationVersionsChanged);
+			}
+
+			//! Checks whether any tracked runtime input invalidates the reusable dynamic cache.
+			GAIA_NODISCARD bool
+			dyn_inputs_changed(const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				if (!can_reuse_dyn_cache())
+					return false;
+
+				switch (m_plan.ctx.data.dynamicCacheKind) {
+					case QueryCtx::DynamicCacheKind::None:
+						return false;
+					case QueryCtx::DynamicCacheKind::RelationOnly:
+						return dyn_rel_versions_changed();
+					case QueryCtx::DynamicCacheKind::DirectSource:
+						return direct_src_versions_changed();
+					case QueryCtx::DynamicCacheKind::TraversedSource:
+						return traversed_src_inputs_changed(dyn_rel_versions_changed());
+					case QueryCtx::DynamicCacheKind::Variable:
+						return dyn_var_bindings_changed(runtimeVarBindings, runtimeVarBindingMask);
+					case QueryCtx::DynamicCacheKind::Mixed:
+						return mixed_dyn_inputs_changed(runtimeVarBindings, runtimeVarBindingMask);
+				}
+
+				GAIA_ASSERT(false);
+				return true;
+			}
+
+			//! Captures tracked relation versions for reusable dynamic caches.
+			void snapshot_dyn_rel_inputs() {
+				m_state.dynamic.relation.snapshot(*world(), m_plan.ctx.data.deps.relations_view());
+			}
+
+			//! Captures tracked direct concrete source entity archetype versions.
+			void snapshot_dyn_direct_src_inputs() {
+				m_state.dynamic.directSource.snapshot(*world(), m_plan.ctx.data.deps.src_entities_view());
+			}
+
+			//! Captures the traversed-source closure snapshot used by reusable dynamic caches.
+			void snapshot_dyn_traversed_src_inputs() {
+				cnt::darray<SrcTravSnapshotItem> scratch;
+				if (build_src_trav_snapshot(scratch))
+					m_state.dynamic.traversedSource.capture(*world(), scratch);
+				else
+					m_state.dynamic.traversedSource.mark_overflowed();
+			}
+
+			//! Captures runtime variable bindings for reusable dynamic caches.
+			void
+			snapshot_dyn_var_inputs(const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				m_state.dynamic.variable.snapshot(runtimeVarBindings, runtimeVarBindingMask);
+			}
+
+			//! Captures the tracked runtime inputs used by the reusable dynamic cache.
+			void
+			snapshot_dyn_inputs(const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				if (!can_reuse_dyn_cache())
+					return;
+
+				m_state.dynamic.clear_input_snapshots();
+
+				switch (m_plan.ctx.data.dynamicCacheKind) {
+					case QueryCtx::DynamicCacheKind::None:
+						return;
+					case QueryCtx::DynamicCacheKind::RelationOnly:
+						snapshot_dyn_rel_inputs();
+						return;
+					case QueryCtx::DynamicCacheKind::DirectSource:
+						snapshot_dyn_direct_src_inputs();
+						return;
+					case QueryCtx::DynamicCacheKind::TraversedSource:
+						snapshot_dyn_rel_inputs();
+						snapshot_dyn_traversed_src_inputs();
+						return;
+					case QueryCtx::DynamicCacheKind::Variable:
+						snapshot_dyn_var_inputs(runtimeVarBindings, runtimeVarBindingMask);
+						return;
+					case QueryCtx::DynamicCacheKind::Mixed: {
+						const auto& deps = m_plan.ctx.data.deps;
+						snapshot_dyn_rel_inputs();
+						if (deps.has_dep_flag(QueryCtx::DependencyHasSourceTerms)) {
+							if (deps.has_dep_flag(QueryCtx::DependencyHasTraversalTerms))
+								snapshot_dyn_traversed_src_inputs();
+							else
+								snapshot_dyn_direct_src_inputs();
+						}
+						if (deps.has_dep_flag(QueryCtx::DependencyHasVariableTerms))
+							snapshot_dyn_var_inputs(runtimeVarBindings, runtimeVarBindingMask);
+						return;
+					}
+				}
+
+				GAIA_ASSERT(false);
+			}
+			//! Returns whether a compiled query contains a term with the requested access mode.
+			//! \tparam TType Component or Entity argument type to check.
+			//! \param op Query operation kind to match.
+			//! \param isReadWrite True when the query argument is mutable.
+			template <typename TType>
+			GAIA_NODISCARD bool has_inter([[maybe_unused]] QueryOpKind op, bool isReadWrite) const {
+				using T = core::raw_t<TType>;
+
+				if constexpr (std::is_same_v<T, Entity>) {
+					// Entities are read-only.
+					GAIA_ASSERT(!isReadWrite);
+					// Skip Entity input args. Entities are always there.
+					return true;
+				} else {
+					Entity id;
+
+					if constexpr (is_pair<T>::value) {
+						const auto rel = m_plan.ctx.cc->get<typename T::rel>().entity;
+						const auto tgt = m_plan.ctx.cc->get<typename T::tgt>().entity;
+						id = (Entity)Pair(rel, tgt);
+					} else {
+						id = m_plan.ctx.cc->get<T>().entity;
+					}
+
+					const auto& ctxData = m_plan.ctx.data;
+					const auto compIdx = comp_idx<MAX_ITEMS_IN_QUERY>(ctxData.terms.data(), id, EntityBad);
+
+					if (op != ctxData.terms[compIdx].op)
+						return false;
+
+					// Read-write mask must match
+					const uint32_t maskRW = (uint32_t)ctxData.readWriteMask & (1U << compIdx);
+					const uint32_t maskXX = (uint32_t)isReadWrite << compIdx;
+					return maskRW == maskXX;
+				}
+			}
+
+			//! Returns whether a compiled query contains a term with the requested operation kind.
+			//! \tparam T Component or Entity argument type to check.
+			//! \param op Query operation kind to match.
+			template <typename T>
+			GAIA_NODISCARD bool has_inter(QueryOpKind op) const {
+				// static_assert(is_raw_v<<T>, "has() must be used with raw types");
+				constexpr bool isReadWrite = core::is_mut_v<T>;
+				return has_inter<T>(op, isReadWrite);
+			}
+
+		public:
+			//! Adds one external reference to this query slot.
+			void add_ref() {
+				++m_refs;
+				GAIA_ASSERT(m_refs != 0);
+			}
+
+			//! Releases one external reference to this query slot.
+			void dec_ref() {
+				GAIA_ASSERT(m_refs > 0);
+				--m_refs;
+			}
+
+			//! Returns the current external reference count.
+			//! \return Number of live query objects referencing this slot.
+			uint32_t refs() const {
+				return m_refs;
+			}
+
+			//! Binds this query info to a world after slot allocation.
+			//! \param world World owning the query.
+			void init(World* world) {
+				m_plan.ctx.w = world;
+			}
+
+			//! Resets cached query state for slot reuse while keeping the compiled context object.
+			void reset() {
+				reset_matching_cache(true);
+			}
+
+			//! Marks cached query results stale.
+			//! \param kind Cache layer to invalidate.
+			void invalidate(InvalidationKind kind = InvalidationKind::All) {
+				switch (kind) {
+					case InvalidationKind::Result:
+						m_state.invalidate_result();
+						invalidate_result_barriers();
+						break;
+					case InvalidationKind::Seed:
+						m_state.invalidate_seed();
+						break;
+					case InvalidationKind::All:
+						m_state.invalidate_all();
+						break;
+				}
+			}
+
+			//! Marks structural seed matches stale.
+			void invalidate_seed() {
+				invalidate(InvalidationKind::Seed);
+			}
+
+			//! Marks final result matches stale while preserving structural seed matches.
+			void invalidate_result() {
+				invalidate(InvalidationKind::Result);
+			}
+
+			//! Marks the cached sorted slices dirty without invalidating query membership.
+			void invalidate_sort() {
+				if (m_plan.ctx.data.sortByFunc != nullptr)
+					m_plan.ctx.data.flags |= QueryCtx::QueryFlags::SortEntities;
+			}
+
+			//! Creates and compiles a query info object from a moved query context.
+			//! \param id Query slot id.
+			//! \param ctx Query context to take ownership of.
+			//! \param entityToArchetypeMap World archetype lookup used during compilation.
+			//! \param allArchetypes Current world archetype list.
+			//! \return Compiled query info owning \a ctx in slot \a id.
+			GAIA_NODISCARD static QueryInfo create(
+					QueryId id, QueryCtx&& ctx, const EntityToArchetypeMap& entityToArchetypeMap,
+					std::span<const Archetype*> allArchetypes) {
+				// Make sure query items are sorted
+				sort(ctx);
+
+				QueryInfo info;
+				info.idx = id;
+				info.gen = 0;
+
+				info.m_plan.ctx = GAIA_MOV(ctx);
+				info.m_plan.ctx.q.handle = {id, 0};
+
+				// Compile the query
+				info.compile(entityToArchetypeMap, allArchetypes);
+
+				return info;
+			}
+
+			//! Creates and compiles a query info object from slot creation context.
+			//! \param idx Query slot index.
+			//! \param gen Query slot generation.
+			//! \param pCtx Pointer to QueryInfoCreationCtx.
+			//! \return Compiled query info initialized for the allocated slot.
+			GAIA_NODISCARD static QueryInfo create(uint32_t idx, uint32_t gen, void* pCtx) {
+				auto* pCreationCtx = (QueryInfoCreationCtx*)pCtx;
+				auto& queryCtx = *pCreationCtx->pQueryCtx;
+				auto& entityToArchetypeMap = (EntityToArchetypeMap&)*pCreationCtx->pEntityToArchetypeMap;
+
+				// Make sure query items are sorted
+				sort(queryCtx);
+
+				QueryInfo info;
+				info.idx = idx;
+				info.gen = gen;
+
+				info.m_plan.ctx = GAIA_MOV(queryCtx);
+				info.m_plan.ctx.q.handle = {idx, gen};
+
+				// Compile the query
+				info.compile(entityToArchetypeMap, pCreationCtx->allArchetypes);
+
+				return info;
+			}
+
+			//! Builds a stable query handle from query slot metadata.
+			//! \param info Query info providing slot index and generation.
+			//! \return Handle identifying \a info's current slot generation.
+			GAIA_NODISCARD static QueryHandle handle(const QueryInfo& info) {
+				return QueryHandle(info.idx, info.gen);
+			}
+
+			//! Compile the query terms into a form we can easily process
+			//! \param entityToArchetypeMap World reverse index used by VM compilation.
+			//! \param allArchetypes Archetypes present while the plan is compiled.
+			void compile(const EntityToArchetypeMap& entityToArchetypeMap, std::span<const Archetype*> allArchetypes) {
+				GAIA_PROF_SCOPE(queryinfo::compile);
+
+				// Compile the opcodes
+				m_plan.vm.compile(entityToArchetypeMap, allArchetypes, m_plan.ctx);
+			}
+
+			//! Recompile the query
+			void recompile() {
+				GAIA_PROF_SCOPE(queryinfo::recompile);
+
+				// Compile the opcodes
+				m_plan.vm.create_opcodes(m_plan.ctx);
+			}
+
+			//! Returns the query cache policy selected during compilation.
+			//! \return Immediate, lazy, or dynamic maintenance policy.
+			GAIA_NODISCARD QueryCtx::CachePolicy cache_policy() const {
+				return m_plan.ctx.data.cachePolicy;
+			}
+
+			//! Returns true when grouped-query payloads are active for this query.
+			//! \return True when a group-by entity is configured.
+			GAIA_NODISCARD bool has_grouped_payload() const {
+				return m_plan.ctx.data.groupBy != EntityBad;
+			}
+
+			//! Collects the query's active non-zero group ids.
+			//! \tparam Container Container with GroupId elements.
+			//! \param out Output array overwritten with unique group ids.
+			//! \param sortGroups True to sort grouped cache ranges by group id before collecting ids.
+			template <typename Container>
+			void group_ids(Container& out, bool sortGroups) {
+				out.clear();
+				ensure_group_data(sortGroups);
+
+				const auto cnt = (uint32_t)m_state.grouped.archetypeGroupData.size();
+				out.reserve(cnt);
+				GAIA_FOR(cnt) {
+					const auto groupId = m_state.grouped.archetypeGroupData[i].groupId;
+					if (groupId != 0)
+						out.push_back(groupId);
+				}
+			}
+
+			//! Returns true when sorted-query payloads are active for this query.
+			//! \return True when an entity sorting callback is configured.
+			GAIA_NODISCARD bool has_sorted_payload() const {
+				return m_plan.ctx.data.sortByFunc != nullptr;
+			}
+
+			//! Returns the result membership revision used by reverse-index cache users.
+			//! \return Revision incremented whenever result archetype membership changes.
+			GAIA_NODISCARD uint32_t result_cache_rev() const {
+				return m_state.resultCacheRevision;
+			}
+
+			//! Returns true when the result cache contains archetypes that need default prefab filtering.
+			//! \return True when cached membership may include prefab-tagged archetypes to reject during iteration.
+			GAIA_NODISCARD bool result_cache_may_need_prefab_filter() const {
+				return m_state.resultCacheMayNeedPrefabFilter != 0;
+			}
+
+			//! Returns true when a new archetype can be propagated into the current cache incrementally.
+			//! \return True for a compiled, clean, immediate structural query.
+			GAIA_NODISCARD bool can_update_with_new_archetype() const {
+				// Only immediate structural queries participate in archetype-create propagation.
+				return m_plan.vm.is_compiled() && cache_policy() == QueryCtx::CachePolicy::Immediate &&
+							 !m_state.needs_refresh();
+			}
+
+			//! Returns whether create-time matching should bypass the temporary one-archetype VM path.
+			//! \return True when direct structural matching was selected during compilation.
+			GAIA_NODISCARD bool can_use_direct_create_archetype_match() const {
+				return m_plan.ctx.data.createArchetypeMatchKind == QueryCtx::CreateArchetypeMatchKind::DirectStructuralTerms;
+			}
+
+			//! Returns whether direct create-time matching needs Is-aware id checks.
+			//! \return True when at least one compiled term has semantic Is matching bits.
+			GAIA_NODISCARD bool direct_create_archetype_match_uses_is() const {
+				const auto& ctxData = m_plan.ctx.data;
+				return (ctxData.as_mask_0 + ctxData.as_mask_1) != 0;
+			}
+
+			//! Compares this compiled plan with an authored query context.
+			//! \param other Query context to compare.
+			//! \return True when shared query identity matches.
+			GAIA_NODISCARD bool operator==(const QueryCtx& other) const {
+				return m_plan.ctx == other;
+			}
+
+			//! Compares this compiled plan with an authored query context for inequality.
+			//! \param other Query context to compare.
+			//! \return True when shared query identity differs.
+			GAIA_NODISCARD bool operator!=(const QueryCtx& other) const {
+				return m_plan.ctx != other;
+			}
+
+			//! Scope guard that releases the world-owned temporary VM matching frame.
+			struct CleanUpTmpArchetypeMatches {
+				//! World owning the acquired scratch frame.
+				World& world;
+				//! True to retain allocated dedup-stamp pages while releasing the frame.
+				bool keepStamps;
+
+				//! Creates a guard for an already acquired matching frame.
+				//! \param w World owning the frame.
+				//! \param keep Whether allocated dedup-stamp pages remain reusable.
+				explicit CleanUpTmpArchetypeMatches(World& w, bool keep): world(w), keepStamps(keep) {}
+				CleanUpTmpArchetypeMatches(const CleanUpTmpArchetypeMatches&) = delete;
+				CleanUpTmpArchetypeMatches(CleanUpTmpArchetypeMatches&&) = delete;
+				CleanUpTmpArchetypeMatches& operator=(const CleanUpTmpArchetypeMatches&) = delete;
+				CleanUpTmpArchetypeMatches& operator=(CleanUpTmpArchetypeMatches&&) = delete;
+
+				~CleanUpTmpArchetypeMatches() {
+					query_match_scratch_release(world, keepStamps);
+				}
+			};
+
+			//! Tries to match the query against archetypes in \a entityToArchetypeMap.
+			//! This is necessary so we do not iterate all chunks over and over again when running queries.
+			//! \param entityToArchetypeMap Lookup of archetypes by entity
+			//! \param allArchetypes List of all archetypes
+			//! \param pEntityToArchetypeMapVersions Optional version map for archetype lookup validation
+			//! \param archetypeLastId Last recorded archetype id
+			//! \param runtimeVarBindings Runtime variable bindings for dynamic queries
+			//! \param runtimeVarBindingMask Mask indicating which runtime variables are bound
+			//! \tparam ArchetypeLookup Archetype lookup container/view type used by the query cache.
+			//! \warning Not thread safe. No two threads can call this at the same time.
+			template <typename ArchetypeLookup>
+			void match(
+					const ArchetypeLookup& entityToArchetypeMap, std::span<const Archetype*> allArchetypes,
+					const EntityToArchetypeVersionMap* pEntityToArchetypeMapVersions, ArchetypeId archetypeLastId,
+					const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				auto& ctxData = m_plan.ctx.data;
+
+				// Recompile if necessary
+				if ((ctxData.flags & QueryCtx::QueryFlags::Recompile) != 0)
+					recompile();
+
+				// Skip if nothing has been compiled.
+				if (!m_plan.vm.is_compiled())
+					return;
+
+				const bool hasDynamicTerms = has_dyn_terms();
+				const bool canReuseDynamicCache = can_reuse_dyn_cache();
+				const bool refreshDynamicCache =
+						hasDynamicTerms && (!canReuseDynamicCache || m_state.needs_refresh() ||
+																dyn_inputs_changed(runtimeVarBindings, runtimeVarBindingMask));
+				bool compareDynamicMembership = false;
+				QueryMatchScratch* pMatchScratch = nullptr;
+
+				if (refreshDynamicCache) {
+					compareDynamicMembership = !m_state.archetypeCache.empty();
+					if (compareDynamicMembership) {
+						auto& w = *world();
+						pMatchScratch = &query_match_scratch_acquire(w);
+						pMatchScratch->matchesArrDynPrev = m_state.archetypeCache;
+					}
+					// Dynamic queries keep their cached result as long as tracked runtime inputs stay stable.
+					reset_matching_cache(!compareDynamicMembership);
+				} else if (m_state.seed_dirty()) {
+					reset_matching_cache(true);
+				} else if (m_state.result_dirty()) {
+					sync_result_cache_from_seed_cache();
+					if (m_state.lastArchetypeId == archetypeLastId) {
+						sort_entities();
+						sort_cache_groups();
+						m_state.clear_dirty();
+						return;
+					}
+				}
+
+				// Skip if no new archetype appeared and the cached match set is still valid.
+				GAIA_ASSERT(archetypeLastId >= m_state.lastArchetypeId);
+				if (!m_state.needs_refresh() && m_state.lastArchetypeId == archetypeLastId &&
+						(!hasDynamicTerms || canReuseDynamicCache)) {
+					// Sort entities if necessary
+					sort_entities();
+					return;
+				}
+
+				m_state.lastArchetypeId = archetypeLastId;
+
+				GAIA_PROF_SCOPE(queryinfo::match);
+
+				auto& w = *world();
+				auto& matchScratch = pMatchScratch != nullptr ? *pMatchScratch : query_match_scratch_acquire(w);
+				CleanUpTmpArchetypeMatches autoCleanup(w, true);
+
+				// Prepare the context
+				vm::MatchingCtx ctx{};
+				ctx.pWorld = &w;
+				// ctx.targetEntities = {};
+				ctx.allArchetypes = allArchetypes;
+				if constexpr (std::is_same_v<ArchetypeLookup, EntityToArchetypeMap>) {
+					GAIA_ASSERT(pEntityToArchetypeMapVersions != nullptr);
+					ctx.archetypeLookup = vm::make_archetype_lookup_view(entityToArchetypeMap, *pEntityToArchetypeMapVersions);
+				} else {
+					(void)pEntityToArchetypeMapVersions;
+					ctx.archetypeLookup = vm::make_archetype_lookup_view(entityToArchetypeMap);
+				}
+
+				ctx.pMatchesArr = &matchScratch.matchesArr;
+				ctx.pMatchesStampByArchetypeId = &matchScratch.matchStamps;
+				ctx.matchesVersion = matchScratch.next_match_version();
+				ctx.pLastMatchedArchetypeIdx_All = &ctxData.lastMatchedArchetypeIdx_All;
+				ctx.pLastMatchedArchetypeIdx_Or = &ctxData.lastMatchedArchetypeIdx_Or;
+				ctx.pLastMatchedArchetypeIdx_Not = &ctxData.lastMatchedArchetypeIdx_Not;
+				ctx.queryMask = ctxData.queryMask;
+				ctx.as_mask_0 = ctxData.as_mask_0;
+				ctx.as_mask_1 = ctxData.as_mask_1;
+				ctx.flags = ctxData.flags;
+				ctx.varBindings = runtimeVarBindings;
+				ctx.varBindingMask = runtimeVarBindingMask;
+
+				// Run the virtual machine
+#if GAIA_ECS_TEST_HOOKS
+				++m_testMatchPassCount;
+#endif
+				m_plan.vm.exec(ctx);
+
+				// Write found matches to cache
+				const bool trackMembershipChangeOnAdd = !compareDynamicMembership;
+				for (const auto* pArchetype: *ctx.pMatchesArr) {
+					if (hasDynamicTerms) {
+						add_archetype_to_cache(pArchetype, trackMembershipChangeOnAdd, false);
+					} else {
+						add_archetype_to_seed_cache(pArchetype);
+						add_archetype_to_cache(pArchetype, true, false);
+					}
+				}
+
+				if (compareDynamicMembership) {
+					if (!has_same_result_membership_as(matchScratch.matchesArrDynPrev))
+						mark_result_cache_membership_changed();
+				}
+
+				// Sort entities if necessary
+				sort_entities();
+				// Sort cache groups if necessary
+				sort_cache_groups();
+				snapshot_dyn_inputs(runtimeVarBindings, runtimeVarBindingMask);
+				m_state.clear_dirty();
+			}
+
+			//! Tries to match the query against the provided archetype.
+			//! This is necessary so we do not iterate all chunks over and over again when running queries.
+			//! \param archetype Archtype to match
+			//! \param targetEntities Entities related to the matched archetype
+			//! \param runtimeVarBindings Runtime bindings for query variables.
+			//! \param runtimeVarBindingMask Bitmask of variables already bound in \a runtimeVarBindings.
+			//! \return True when the archetype satisfies the query.
+			//! \warning Not thread safe. No two threads can call this at the same time.
+			bool match_one(
+					const Archetype& archetype, EntitySpan targetEntities,
+					const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				auto& ctxData = m_plan.ctx.data;
+
+				// Recompile if necessary
+				if ((ctxData.flags & QueryCtx::QueryFlags::Recompile) != 0)
+					recompile();
+
+				// Skip if nothing has been compiled.
+				if (!m_plan.vm.is_compiled())
+					return false;
+
+				const bool hasDynamicTerms = has_dyn_terms();
+				const bool canReuseDynamicCache = can_reuse_dyn_cache();
+				if ((hasDynamicTerms && (!canReuseDynamicCache || m_state.needs_refresh() ||
+																 dyn_inputs_changed(runtimeVarBindings, runtimeVarBindingMask))) ||
+						m_state.seed_dirty()) {
+					// Dynamic queries keep their cached result as long as tracked runtime inputs stay stable.
+					reset_matching_cache(true);
+				} else if (m_state.result_dirty()) {
+					sync_result_cache_from_seed_cache();
+				}
+
+				GAIA_PROF_SCOPE(queryinfo::match1);
+
+				auto& w = *world();
+				auto& matchScratch = query_match_scratch_acquire(w);
+				CleanUpTmpArchetypeMatches autoCleanup(w, true);
+
+				// Prepare the context
+				vm::MatchingCtx ctx{};
+				ctx.pWorld = &w;
+				ctx.targetEntities = targetEntities;
+				const auto* pArchetype = &archetype;
+				ctx.allArchetypes = std::span((const Archetype**)&pArchetype, 1);
+				ctx.archetypeLookup = {};
+				ctx.pMatchesArr = &matchScratch.matchesArr;
+				ctx.pMatchesStampByArchetypeId = &matchScratch.matchStamps;
+				ctx.matchesVersion = matchScratch.next_match_version();
+				ctx.pLastMatchedArchetypeIdx_All = nullptr;
+				ctx.pLastMatchedArchetypeIdx_Or = nullptr;
+				ctx.pLastMatchedArchetypeIdx_Not = nullptr;
+				ctx.queryMask = ctxData.queryMask;
+				ctx.as_mask_0 = ctxData.as_mask_0;
+				ctx.as_mask_1 = ctxData.as_mask_1;
+				ctx.flags = ctxData.flags;
+				ctx.varBindings = runtimeVarBindings;
+				ctx.varBindingMask = runtimeVarBindingMask;
+
+				// Run the virtual machine
+#if GAIA_ECS_TEST_HOOKS
+				++m_testMatchPassCount;
+#endif
+				m_plan.vm.exec(ctx);
+				const bool matched = !ctx.pMatchesArr->empty();
+
+				// Write found matches to cache
+				for (const auto* pArch: *ctx.pMatchesArr) {
+					if (hasDynamicTerms) {
+						add_archetype_to_cache(pArch, true, false);
+					} else {
+						add_archetype_to_seed_cache(pArch);
+						add_archetype_to_cache(pArch, true, false);
+					}
+				}
+				snapshot_dyn_inputs(runtimeVarBindings, runtimeVarBindingMask);
+				m_state.clear_dirty();
+				return matched;
+			}
+
+			//! Refreshes persistent query matches when cache state or world archetypes changed.
+			//! \param entityToArchetypeMap World reverse index used to seed matching.
+			//! \param allArchetypes Current world archetypes.
+			//! \param entityToArchetypeMapVersions Revisions for reverse-index buckets.
+			//! \param archetypeLastId Greatest world-local archetype id currently allocated.
+			//! \param runtimeVarBindings Runtime values for query variable slots.
+			//! \param runtimeVarBindingMask Bitmask selecting bound slots in \a runtimeVarBindings.
+			void ensure_matches(
+					const EntityToArchetypeMap& entityToArchetypeMap, std::span<const Archetype*> allArchetypes,
+					const EntityToArchetypeVersionMap& entityToArchetypeMapVersions, ArchetypeId archetypeLastId,
+					const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				match(
+						entityToArchetypeMap, allArchetypes, &entityToArchetypeMapVersions, archetypeLastId, runtimeVarBindings,
+						runtimeVarBindingMask);
+			}
+
+			//! Rebuilds transient result membership without retaining persistent seed-cache state.
+			//! \param entityToArchetypeMap World reverse index used to seed matching.
+			//! \param allArchetypes Current world archetypes.
+			//! \param entityToArchetypeMapVersions Revisions for reverse-index buckets.
+			//! \param runtimeVarBindings Runtime values for query variable slots.
+			//! \param runtimeVarBindingMask Bitmask selecting bound slots in \a runtimeVarBindings.
+			void ensure_matches_transient(
+					const EntityToArchetypeMap& entityToArchetypeMap, std::span<const Archetype*> allArchetypes,
+					const EntityToArchetypeVersionMap& entityToArchetypeMapVersions,
+					const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				auto& ctxData = m_plan.ctx.data;
+
+				if ((ctxData.flags & QueryCtx::QueryFlags::Recompile) != 0)
+					recompile();
+
+				if (!m_plan.vm.is_compiled())
+					return;
+
+				m_state.clear_transient_result_cache();
+
+				auto& w = *world();
+				auto& matchScratch = query_match_scratch_acquire(w);
+				CleanUpTmpArchetypeMatches autoCleanup(w, true);
+
+				vm::MatchingCtx ctx{};
+				ctx.pWorld = &w;
+				ctx.allArchetypes = allArchetypes;
+				ctx.archetypeLookup = vm::make_archetype_lookup_view(entityToArchetypeMap, entityToArchetypeMapVersions);
+				ctx.pMatchesArr = &matchScratch.matchesArr;
+				ctx.pMatchesStampByArchetypeId = &matchScratch.matchStamps;
+				ctx.matchesVersion = matchScratch.next_match_version();
+				ctx.pLastMatchedArchetypeIdx_All = nullptr;
+				ctx.pLastMatchedArchetypeIdx_Or = nullptr;
+				ctx.pLastMatchedArchetypeIdx_Not = nullptr;
+				ctx.queryMask = ctxData.queryMask;
+				ctx.as_mask_0 = ctxData.as_mask_0;
+				ctx.as_mask_1 = ctxData.as_mask_1;
+				ctx.flags = ctxData.flags;
+				ctx.varBindings = runtimeVarBindings;
+				ctx.varBindingMask = runtimeVarBindingMask;
+
+				m_plan.vm.exec(ctx);
+
+				m_state.archetypeCache.reserve(ctx.pMatchesArr->size());
+				if (ctxData.groupBy != EntityBad)
+					m_state.grouped.archetypeGroupIds.reserve(ctx.pMatchesArr->size());
+				for (const auto* pArchetype: *ctx.pMatchesArr)
+					add_archetype_to_transient_cache(pArchetype);
+
+				sort_entities();
+				ensure_group_data(false);
+			}
+
+			//! Ensures persistent result membership for one target archetype.
+			//! \param archetype Archetype to evaluate.
+			//! \param targetEntities Entities supplying target bindings for the evaluation.
+			//! \param runtimeVarBindings Runtime values for query variable slots.
+			//! \param runtimeVarBindingMask Bitmask selecting bound slots in \a runtimeVarBindings.
+			//! \return True when \a archetype satisfies the query.
+			bool ensure_matches_one(
+					const Archetype& archetype, EntitySpan targetEntities,
+					const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				return match_one(archetype, targetEntities, runtimeVarBindings, runtimeVarBindingMask);
+			}
+
+			//! Rebuilds transient result membership by evaluating one target archetype.
+			//! \param archetype Archetype to evaluate.
+			//! \param targetEntities Entities supplying target bindings for the evaluation.
+			//! \param runtimeVarBindings Runtime values for query variable slots.
+			//! \param runtimeVarBindingMask Bitmask selecting bound slots in \a runtimeVarBindings.
+			//! \return True when \a archetype satisfies the query.
+			bool ensure_matches_one_transient(
+					const Archetype& archetype, EntitySpan targetEntities,
+					const cnt::sarray<Entity, MaxVarCnt>& runtimeVarBindings, uint8_t runtimeVarBindingMask) {
+				auto& ctxData = m_plan.ctx.data;
+
+				if ((ctxData.flags & QueryCtx::QueryFlags::Recompile) != 0)
+					recompile();
+
+				if (!m_plan.vm.is_compiled())
+					return false;
+
+				m_state.clear_transient_result_cache();
+
+				auto& w = *world();
+				auto& matchScratch = query_match_scratch_acquire(w);
+				CleanUpTmpArchetypeMatches autoCleanup(w, true);
+
+				vm::MatchingCtx ctx{};
+				ctx.pWorld = &w;
+				ctx.targetEntities = targetEntities;
+				const auto* pArchetype = &archetype;
+				ctx.allArchetypes = std::span((const Archetype**)&pArchetype, 1);
+				ctx.archetypeLookup = {};
+				ctx.pMatchesArr = &matchScratch.matchesArr;
+				ctx.pMatchesStampByArchetypeId = &matchScratch.matchStamps;
+				ctx.matchesVersion = matchScratch.next_match_version();
+				ctx.pLastMatchedArchetypeIdx_All = nullptr;
+				ctx.pLastMatchedArchetypeIdx_Or = nullptr;
+				ctx.pLastMatchedArchetypeIdx_Not = nullptr;
+				ctx.queryMask = ctxData.queryMask;
+				ctx.as_mask_0 = ctxData.as_mask_0;
+				ctx.as_mask_1 = ctxData.as_mask_1;
+				ctx.flags = ctxData.flags;
+				ctx.varBindings = runtimeVarBindings;
+				ctx.varBindingMask = runtimeVarBindingMask;
+
+				m_plan.vm.exec(ctx);
+				const bool matched = !ctx.pMatchesArr->empty();
+
+				m_state.archetypeCache.reserve(ctx.pMatchesArr->size());
+				if (ctxData.groupBy != EntityBad)
+					m_state.grouped.archetypeGroupIds.reserve(ctx.pMatchesArr->size());
+				for (const auto* pArch: *ctx.pMatchesArr)
+					add_archetype_to_transient_cache(pArch);
+
+				ensure_group_data(false);
+				return matched;
+			}
+
+			//! Registers a new or updated archetype with query caches when it matches this query.
+			//! \param archetype Archetype to evaluate.
+			//! \param matchedSelector Optional selector that already matched the archetype.
+			//! \param assumeNew True when the caller knows the archetype is not present in the caches.
+			//! \return True when the archetype was added to a cache.
+			bool register_archetype(const Archetype& archetype, Entity matchedSelector = EntityBad, bool assumeNew = false) {
+				auto& ctxData = m_plan.ctx.data;
+
+				// Recompile if necessary.
+				if ((ctxData.flags & QueryCtx::QueryFlags::Recompile) != 0)
+					recompile();
+
+				if (!can_update_with_new_archetype())
+					return false;
+
+				const bool hadMatchBefore = !assumeNew && m_state.archetypeSet.contains(&archetype);
+				if (can_use_direct_create_archetype_match()) {
+					const bool usesIs = direct_create_archetype_match_uses_is();
+					bool hasOrTerms = false;
+					bool matchedOrTerm = false;
+					for (const auto& term: ctxData.terms_view()) {
+						if (term.id == matchedSelector) {
+							if (term.op == QueryOpKind::Or)
+								matchedOrTerm = true;
+							continue;
+						}
+
+						const bool present = usesIs ? vm::detail::match_single_id_on_archetype(*world(), archetype, term.id)
+																				: world_component_index_match_count(*world(), archetype, term.id) != 0;
+						if (term.op == QueryOpKind::Or) {
+							hasOrTerms = true;
+							matchedOrTerm |= present;
+							continue;
+						}
+						if (term.op == QueryOpKind::Any)
+							continue;
+
+						const bool matched = term.op == QueryOpKind::Not ? !present : present;
+						if (!matched)
+							return false;
+					}
+					if (hasOrTerms && !matchedOrTerm)
+						return false;
+					if (hadMatchBefore)
+						return false;
+
+					if (assumeNew)
+						add_new_archetype_to_immediate_caches(&archetype, true);
+					else {
+						add_archetype_to_seed_cache(&archetype, false);
+						add_archetype_to_cache(&archetype, true, false);
+					}
+					return true;
+				}
+
+				SingleArchetypeLookup singleArchetypeLookup;
+				auto addLookupUnique = [&](Entity key, uint16_t compIdx, uint16_t matchCount) {
+					const auto keyLookup = EntityLookupKey(key);
+					const auto itLookup =
+							core::find_if(singleArchetypeLookup.begin(), singleArchetypeLookup.end(), [&](const auto& item) {
+								return item.matches(keyLookup);
+							});
+					if (itLookup != singleArchetypeLookup.end()) {
+						auto& entry = itLookup->entry;
+						entry.matchCount = (uint16_t)(entry.matchCount + matchCount);
+						if (compIdx != ComponentIndexBad)
+							entry.compIdx = compIdx;
+						return;
+					}
+					singleArchetypeLookup.push_back(
+							SingleArchetypeLookupItem{
+									keyLookup, ComponentIndexEntry{const_cast<Archetype*>(&archetype), compIdx, matchCount}});
+				};
+				auto archetypeIds = archetype.ids_view();
+				const auto cntIds = (uint32_t)archetypeIds.size();
+				GAIA_FOR(cntIds) {
+					const auto entity = archetypeIds[i];
+					singleArchetypeLookup.push_back(
+							SingleArchetypeLookupItem{
+									EntityLookupKey(entity), ComponentIndexEntry{const_cast<Archetype*>(&archetype), (uint16_t)i, 1}});
+
+					if (!entity.pair())
+						continue;
+
+					// Wildcard pair lookups use the same special records as the world-level
+					// entity-to-archetype map, so incremental matching can reuse the normal VM path.
+					const auto rel = Entity((EntityId)entity.id(), 0, false, false);
+					const auto tgt = Entity((EntityId)entity.gen(), 0, false, false);
+					addLookupUnique(Pair(All, tgt), ComponentIndexBad, 1);
+					addLookupUnique(Pair(rel, All), ComponentIndexBad, 1);
+					addLookupUnique(Pair(All, All), ComponentIndexBad, 1);
+				}
+
+				auto lastMatchedArchetypeIdx_All = GAIA_MOV(ctxData.lastMatchedArchetypeIdx_All);
+				auto lastMatchedArchetypeIdx_Or = GAIA_MOV(ctxData.lastMatchedArchetypeIdx_Or);
+				auto lastMatchedArchetypeIdx_Not = GAIA_MOV(ctxData.lastMatchedArchetypeIdx_Not);
+				GAIA_ASSERT(ctxData.lastMatchedArchetypeIdx_All.empty());
+				GAIA_ASSERT(ctxData.lastMatchedArchetypeIdx_Or.empty());
+				GAIA_ASSERT(ctxData.lastMatchedArchetypeIdx_Not.empty());
+
+				const auto* pArchetype = &archetype;
+				const cnt::sarray<Entity, MaxVarCnt> noRuntimeVarBindings{};
+				match(
+						singleArchetypeLookup, std::span((const Archetype**)&pArchetype, 1), nullptr, archetype.id(),
+						noRuntimeVarBindings, 0);
+				ctxData.lastMatchedArchetypeIdx_All = GAIA_MOV(lastMatchedArchetypeIdx_All);
+				ctxData.lastMatchedArchetypeIdx_Or = GAIA_MOV(lastMatchedArchetypeIdx_Or);
+				ctxData.lastMatchedArchetypeIdx_Not = GAIA_MOV(lastMatchedArchetypeIdx_Not);
+				const bool matched = assumeNew ? m_state.archetypeSet.contains(&archetype)
+																			 : !hadMatchBefore && m_state.archetypeSet.contains(&archetype);
+
+				if (!matched)
+					return false;
+
+				sort_entities();
+				sort_cache_groups();
+				return true;
+			}
+
+			//! Calculates the sort data for the archetypes in the cache.
+			//! This allows us to iterate entites in the order they are sorted across all archetypes.
+			void calculate_sort_data() {
+				GAIA_PROF_SCOPE(queryinfo::calc_sort_data);
+
+				m_state.nonTrivial.archetypeSortData.clear();
+
+				// The function doesn't do any moves and expects that all chunks have their data sorted already.
+				// We use a min-heap / priority queue - like structure during query iteration to merge sorted tables:
+				// - we hold a cursor into each sorted chunk
+				// - we compare the next entity from each chunk using your sorting function
+				// - we then pick the smallest one (like k-way merge sort), and advance that cursor
+				// This is esentially what this function does:
+				// while (any_chunk_has_entities) {
+				// 	find_chunk_with_smallest_next_element();
+				// 	yield(entity_from_that_chunk);
+				// 	adv_cursor_for_that_chunk();
+				// }
+				// This produces a globally sorted view without modifying actual data. It's a balance between
+				// performance and memory usage. We could also sort the data in-place across all chunks, but that
+				// would generated too many data moves (entities + all of their components).
+
+				struct Cursor {
+					uint32_t chunkIdx = 0;
+					uint16_t row = 0;
+				};
+
+				auto& archetypes = m_state.archetypeCache;
+
+				// Initialize cursors. We will need as many as there are archetypes.
+				cnt::sarray_ext<Cursor, 128> cursors(archetypes.size());
+
+				uint32_t currArchetypeIdx = (uint32_t)-1;
+				Chunk* pCurrentChunk = nullptr;
+				uint16_t currentStartRow = 0;
+				uint16_t currentRow = 0;
+
+				const void* pDataMin = nullptr;
+				const void* pDataCurr = nullptr;
+
+				while (true) {
+					uint32_t minArchetypeIdx = (uint32_t)-1;
+					Entity minEntity = EntityBad;
+
+					// Find the next entity across all tables/chunks
+					for (uint32_t t = 0; t < archetypes.size(); ++t) {
+						const auto* pArchetype = archetypes[t];
+						const auto& chunks = pArchetype->chunks();
+						auto& cur = cursors[t];
+
+						while (cur.chunkIdx < chunks.size() && cur.row >= chunks[cur.chunkIdx]->size()) {
+							++cur.chunkIdx;
+							cur.row = 0;
+						}
+
+						if (cur.chunkIdx >= chunks.size())
+							continue;
+
+						const auto* pChunk = pArchetype->chunks()[cur.chunkIdx];
+						auto entity = pChunk->entity_view()[cur.row];
+
+						if (m_plan.ctx.data.sortBy != ecs::EntityBad) {
+							auto compIdx = world_component_index_comp_idx(*m_plan.ctx.w, *pArchetype, m_plan.ctx.data.sortBy);
+							if (compIdx == BadIndex)
+								compIdx = pChunk->comp_idx(m_plan.ctx.data.sortBy);
+							pDataCurr = pChunk->comp_ptr(compIdx, cur.row);
+						} else
+							pDataCurr = &pChunk->entity_view()[cur.row];
+
+						if (minEntity == EntityBad) {
+							minEntity = entity;
+							minArchetypeIdx = t;
+							pDataMin = pDataCurr;
+							continue;
+						}
+
+						if (m_plan.ctx.data.sortByFunc(*m_plan.ctx.w, pDataCurr, pDataMin) < 0) {
+							minEntity = entity;
+							minArchetypeIdx = t;
+						}
+					}
+
+					// No more results found, we can stop
+					if (minArchetypeIdx == (uint32_t)-1)
+						break;
+
+					auto& cur = cursors[minArchetypeIdx];
+					const auto& chunks = archetypes[minArchetypeIdx]->chunks();
+					Chunk* pChunk = chunks[cur.chunkIdx];
+
+					if (minArchetypeIdx == currArchetypeIdx && pChunk == pCurrentChunk) {
+						// Current slice
+					} else {
+						// End previous slice
+						if (pCurrentChunk != nullptr) {
+							m_state.nonTrivial.archetypeSortData.push_back(
+									{pCurrentChunk, currArchetypeIdx, currentStartRow, (uint16_t)(currentRow - currentStartRow)});
+						}
+
+						// Start a new slice
+						currArchetypeIdx = minArchetypeIdx;
+						pCurrentChunk = pChunk;
+						currentStartRow = cur.row;
+					}
+
+					++cur.row;
+					currentRow = cur.row;
+				}
+
+				if (pCurrentChunk != nullptr) {
+					m_state.nonTrivial.archetypeSortData.push_back(
+							{pCurrentChunk, currArchetypeIdx, currentStartRow, (uint16_t)(currentRow - currentStartRow)});
+				}
+			}
+
+			//! Applies query entity sorting and rebuilds sorted chunk slices when needed.
+			void sort_entities() {
+				if (m_plan.ctx.data.sortByFunc == nullptr)
+					return;
+
+				if ((m_plan.ctx.data.flags & QueryCtx::QueryFlags::SortEntities) == 0 && m_state.nonTrivial.sortVersion != 0)
+					return;
+				m_plan.ctx.data.flags &= (QueryCtx::QueryFlags)(~(uint16_t)QueryCtx::QueryFlags::SortEntities);
+
+				// First, sort entities in archetypes
+				for (const auto* pArchetype: m_state.archetypeCache)
+					const_cast<Archetype*>(pArchetype)->sort_entities(m_plan.ctx.data.sortBy, m_plan.ctx.data.sortByFunc);
+
+				// Now that entites are sorted, we can start creating slices
+				calculate_sort_data();
+				m_state.nonTrivial.sortVersion = ::gaia::ecs::world_version(*world());
+			}
+
+			//! Sorts cached archetypes by group id when grouped iteration requested ordering.
+			void sort_cache_groups() {
+				if ((m_plan.ctx.data.flags & QueryCtx::QueryFlags::SortGroups) == 0)
+					return;
+				m_plan.ctx.data.flags &= (QueryCtx::QueryFlags)(~(uint16_t)QueryCtx::QueryFlags::SortGroups);
+
+				if ((m_plan.ctx.data.flags & QueryCtx::QueryFlags::OrderGroups) != 0)
+					ensure_group_data(true);
+			}
+
+			//! Swaps two result-cache entries and every parallel payload array that mirrors cache order.
+			//! \param left Index of the first cache entry.
+			//! \param right Index of the second cache entry.
+			void swap_archetype_cache_entry(uint32_t left, uint32_t right) {
+				auto* pTmpArchetype = m_state.archetypeCache[left];
+				m_state.archetypeCache[left] = m_state.archetypeCache[right];
+				m_state.archetypeCache[right] = pTmpArchetype;
+
+				if (left < m_state.grouped.archetypeGroupIds.size() && right < m_state.grouped.archetypeGroupIds.size()) {
+					const auto tmp = m_state.grouped.archetypeGroupIds[left];
+					m_state.grouped.archetypeGroupIds[left] = m_state.grouped.archetypeGroupIds[right];
+					m_state.grouped.archetypeGroupIds[right] = tmp;
+				}
+
+				if (left < m_state.exec.archetypeCompIndices.size() && right < m_state.exec.archetypeCompIndices.size()) {
+					auto tmp = m_state.exec.archetypeCompIndices[left];
+					m_state.exec.archetypeCompIndices[left] = m_state.exec.archetypeCompIndices[right];
+					m_state.exec.archetypeCompIndices[right] = tmp;
+				}
+
+				if (left < m_state.exec.archetypeInheritedData.size() && right < m_state.exec.archetypeInheritedData.size()) {
+					auto tmp = m_state.exec.archetypeInheritedData[left];
+					m_state.exec.archetypeInheritedData[left] = m_state.exec.archetypeInheritedData[right];
+					m_state.exec.archetypeInheritedData[right] = tmp;
+				}
+
+				if (left < m_state.nonTrivial.archetypeBarrierPasses.size() &&
+						right < m_state.nonTrivial.archetypeBarrierPasses.size()) {
+					const auto tmp = m_state.nonTrivial.archetypeBarrierPasses[left];
+					m_state.nonTrivial.archetypeBarrierPasses[left] = m_state.nonTrivial.archetypeBarrierPasses[right];
+					m_state.nonTrivial.archetypeBarrierPasses[right] = tmp;
+				}
+			}
+
+			//! Rebuilds cached component-index payloads for matched archetypes when marked pending.
+			void ensure_comp_indices() {
+				if (!m_state.exec.compIndicesPending)
+					return;
+
+				m_state.exec.archetypeCompIndices.clear();
+				m_state.exec.archetypeCompIndices.reserve(m_state.archetypeCache.size());
+				for (const auto* pArchetype: m_state.archetypeCache)
+					m_state.exec.archetypeCompIndices.push_back(create_comp_indices(pArchetype));
+
+				m_state.exec.compIndicesPending = false;
+			}
+
+			//! Rebuilds flattened direct chunk cache when result membership, world structure, selected rows,
+			//! component-index mapping storage, or cached callback fields changed.
+			//!
+			//! The flattened cache is used by read-only direct typed execution over highly fragmented
+			//! result caches. It stores the chunks and enabled row ranges once, then lets iteration skip
+			//! per-archetype/per-chunk traversal setup on repeated runs.
+			//!
+			//! When callback component fields are supplied, the cache also captures component data pointers
+			//! in callback-argument order. A single selected field is stored directly in DirectChunkEntry::pData
+			//! because that is the hot hierarchy-query path. Multiple selected fields are stored as a stable
+			//! pointer block in ExecPayload::directChunkData and referenced by DirectChunkEntry::dataOffset.
+			//!
+			//! The cache key includes the selected field list because the same query may be iterated later with
+			//! a different typed callback argument order. In that case, the pointer block must be rebuilt even
+			//! if the result archetype range itself is unchanged.
+			//! \param idxFrom First result-cache archetype index to include.
+			//! \param idxTo One-past-the-end result-cache archetype index to include.
+			//! \param pDataFields Query term indices to cache component data pointers for, in callback-argument order.
+			//! \param dataFieldCount Number of valid entries in \a pDataFields. Pass zero to cache only chunks/ranges.
+			void
+			ensure_direct_chunks(uint32_t idxFrom, uint32_t idxTo, const uint32_t* pDataFields, uint32_t dataFieldCount) {
+				ensure_comp_indices();
+				const auto* pCompIndicesData = m_state.exec.archetypeCompIndices.data();
+				const auto dataFieldsMatch = [&]() {
+					if (m_state.exec.directChunksDataFieldCount != dataFieldCount)
+						return false;
+					GAIA_FOR(dataFieldCount) {
+						if (m_state.exec.directChunksDataFields[i] != pDataFields[i])
+							return false;
+					}
+					return true;
+				};
+
+				const auto currWorldVersion = ::gaia::ecs::world_version(*world());
+				const auto currEnabledVersion = world_enabled_hierarchy_version(*world());
+				const auto currDeleteVersion = world_archetype_delete_version(*world());
+				if (m_state.exec.directChunksWorldVersion == currWorldVersion &&
+						m_state.exec.directChunksEnabledVersion == currEnabledVersion &&
+						m_state.exec.directChunksDeleteVersion == currDeleteVersion &&
+						m_state.exec.directChunksResultRevision == m_state.resultCacheRevision &&
+						m_state.exec.directChunksIdxFrom == idxFrom && m_state.exec.directChunksIdxTo == idxTo &&
+						dataFieldsMatch() && m_state.exec.directChunksCompIndicesData == pCompIndicesData)
+					return;
+
+				m_state.exec.directChunks.clear();
+				m_state.exec.directChunkData.clear();
+				m_state.exec.directChunksIdxFrom = idxFrom;
+				m_state.exec.directChunksIdxTo = idxTo;
+				m_state.exec.directChunksDataFieldCount = dataFieldCount;
+				GAIA_FOR(dataFieldCount) {
+					m_state.exec.directChunksDataFields[i] = pDataFields[i];
+				}
+				m_state.exec.directChunksResultRevision = m_state.resultCacheRevision;
+				m_state.exec.directChunksWorldVersion = currWorldVersion;
+				m_state.exec.directChunksEnabledVersion = currEnabledVersion;
+				m_state.exec.directChunksDeleteVersion = currDeleteVersion;
+				m_state.exec.directChunksCompIndicesData = pCompIndicesData;
+
+				uint32_t chunkCnt = 0;
+				for (uint32_t i = idxFrom; i < idxTo; ++i)
+					chunkCnt += (uint32_t)m_state.archetypeCache[i]->chunks().size();
+				m_state.exec.directChunks.reserve(chunkCnt);
+				m_state.exec.directChunkData.reserve(chunkCnt * dataFieldCount);
+
+				for (uint32_t i = idxFrom; i < idxTo; ++i) {
+					const auto* pArchetype = m_state.archetypeCache[i];
+					if (pArchetype->is_req_del())
+						continue;
+					const auto* pCompIndices = m_state.exec.archetypeCompIndices[i].indices;
+					for (auto* pChunk: pArchetype->chunks()) {
+						const auto from = detail::ChunkIterImpl::start_index(pChunk, Constraints::EnabledOnly);
+						const auto to = detail::ChunkIterImpl::end_index(pChunk, Constraints::EnabledOnly);
+						if (from != to) {
+							const void* pData = nullptr;
+							uint32_t dataOffset = UINT32_MAX;
+							if (dataFieldCount == 1) {
+								//! Single-argument callbacks are the hot hierarchy path. Store their pointer directly
+								//! in DirectChunkEntry so iteration avoids the sidecar pointer block and its extra
+								//! lookup. Multi-argument callbacks use directChunkData below because they need a
+								//! stable per-entry block of pointers in callback-argument order.
+								const auto dataFieldIdx = pDataFields[0];
+								const auto compIdx =
+										dataFieldIdx < ChunkHeader::MAX_COMPONENTS ? pCompIndices[dataFieldIdx] : uint8_t(0xFF);
+								if (compIdx != 0xFF)
+									pData = pChunk->comp_rec_view()[compIdx].pData;
+							} else if (dataFieldCount > 1) {
+								dataOffset = (uint32_t)m_state.exec.directChunkData.size();
+								const auto recs = pChunk->comp_rec_view();
+								GAIA_FOR_(dataFieldCount, fieldIdx) {
+									const auto dataFieldIdx = pDataFields[fieldIdx];
+									const auto compIdx =
+											dataFieldIdx < ChunkHeader::MAX_COMPONENTS ? pCompIndices[dataFieldIdx] : uint8_t(0xFF);
+									m_state.exec.directChunkData.push_back(compIdx != 0xFF ? recs[compIdx].pData : nullptr);
+								}
+							}
+							m_state.exec.directChunks.push_back({pArchetype, pChunk, pCompIndices, pData, dataOffset, from, to});
+						}
+					}
+				}
+			}
+
+			//! Returns true when query iteration needs cached inherited data payloads.
+			//! \return True when compiled terms require inherited component pointers.
+			GAIA_NODISCARD bool has_inherited_data_payload() const {
+				return ctx().data.deps.has_dep_flag(QueryCtx::DependencyHasInheritedDataTerms);
+			}
+
+			//! Rebuilds inherited-data payloads for matched archetypes when query terms require them.
+			void ensure_inherited_data() {
+				if (!m_state.exec.inheritedDataPending)
+					return;
+
+				if (!has_inherited_data_payload()) {
+					m_state.exec.archetypeInheritedData.clear();
+					m_state.exec.inheritedDataPending = false;
+					return;
+				}
+
+				m_state.exec.archetypeInheritedData.clear();
+				m_state.exec.archetypeInheritedData.reserve(m_state.archetypeCache.size());
+				for (const auto* pArchetype: m_state.archetypeCache)
+					create_inherited_data(pArchetype);
+
+				m_state.exec.inheritedDataPending = false;
+			}
+
+			//! Reorders the archetype cache so position i holds the entry whose initial cache index is stored in the low
+			//! 32 bits of \a sortedKeys[i]. Moves every entry at most once, with one swap_archetype_cache_entry() each.
+			//! \param sortedKeys Sorted keys. Their low 32 bits are distinct initial cache indices.
+			void apply_archetype_cache_order(std::span<const uint64_t> sortedKeys) {
+				const auto cnt = (uint32_t)sortedKeys.size();
+				// pos[e] is where the entry with initial index e is now. at[p] is the initial index of the entry at p.
+				cnt::darray_ext<uint32_t, 32> pos;
+				cnt::darray_ext<uint32_t, 32> at;
+				pos.resize(cnt);
+				at.resize(cnt);
+				GAIA_FOR(cnt) {
+					pos[i] = i;
+					at[i] = i;
+				}
+
+				GAIA_FOR(cnt) {
+					const auto want = (uint32_t)sortedKeys[i];
+					const auto cur = pos[want];
+					if (cur == i)
+						continue;
+
+					swap_archetype_cache_entry(i, cur);
+					const auto displaced = at[i];
+					at[cur] = displaced;
+					pos[displaced] = cur;
+					at[i] = want;
+					pos[want] = i;
+				}
+			}
+
+			//! Rebuilds grouped archetype ranges when a caller needs ordered group data.
+			//! \param orderGroups True to order archetypes by group id even when the query was not explicitly ordered.
+			//! \note Plain grouped iteration passes false so group_by(...) does not sort the cache by itself.
+			void ensure_group_data(bool orderGroups) {
+				if (m_plan.ctx.data.groupBy == EntityBad || !m_state.grouped.dataPending)
+					return;
+
+				if (!orderGroups && (m_plan.ctx.data.flags & QueryCtx::QueryFlags::OrderGroups) == 0)
+					return;
+
+				const auto groupCnt = (uint32_t)m_state.grouped.archetypeGroupIds.size();
+				// Include the initial cache index so equal groups keep deterministic order under a strict comparator.
+				cnt::darray_ext<uint64_t, 32> sortKeys;
+				sortKeys.resize(groupCnt);
+				GAIA_FOR(groupCnt) {
+					sortKeys[i] = ((uint64_t)m_state.grouped.archetypeGroupIds[i] << 32U) | i;
+				}
+
+				// The keys are unique, so sort them alone and then move each cache entry once. Dragging the cache entries
+				// through every swap of the sort would cost more swaps and inline the heavy swap into the sorting networks.
+				core::sort(sortKeys, core::is_smaller<uint64_t>{});
+				apply_archetype_cache_order(sortKeys);
+
+				m_state.grouped.archetypeGroupData.clear();
+				m_state.grouped.selectedGroupDataValid = false;
+
+				if (m_state.grouped.archetypeGroupIds.empty()) {
+					m_state.grouped.dataPending = false;
+					return;
+				}
+
+				GroupId groupId = m_state.grouped.archetypeGroupIds[0];
+				uint32_t idxFirst = 0;
+				const auto cnt = (uint32_t)m_state.grouped.archetypeGroupIds.size();
+				for (uint32_t i = 1; i < cnt; ++i) {
+					if (m_state.grouped.archetypeGroupIds[i] == groupId)
+						continue;
+
+					m_state.grouped.archetypeGroupData.push_back({groupId, idxFirst, i - 1, false});
+					groupId = m_state.grouped.archetypeGroupIds[i];
+					idxFirst = i;
+				}
+
+				m_state.grouped.archetypeGroupData.push_back({groupId, idxFirst, cnt - 1, false});
+				m_state.grouped.dataPending = false;
+			}
+
+			//! Rebuilds cached depth-order hierarchy barrier results when relation or enabled-state versions changed.
+			void ensure_depth_order_hierarchy_barrier_cache_inter() {
+				if (!world_relation_depth_order_prunes_disabled_subtrees(*world(), m_plan.ctx.data.groupBy))
+					return;
+
+				ensure_group_data(true);
+
+				const auto currRelationVersion = world_rel_version(*world(), m_plan.ctx.data.groupBy);
+				const auto currEnabledVersion = world_enabled_hierarchy_version(*world());
+				if (m_state.nonTrivial.barrierRelVersion == currRelationVersion &&
+						m_state.nonTrivial.barrierEnabledVersion == currEnabledVersion)
+					return;
+
+				m_state.nonTrivial.archetypeBarrierPasses.resize(m_state.archetypeCache.size(), 1);
+				m_state.nonTrivial.barrierMayPrune = 0;
+
+				const auto relation = m_plan.ctx.data.groupBy;
+				for (uint32_t i = 0; i < m_state.archetypeCache.size(); ++i) {
+					const auto* pArchetype = m_state.archetypeCache[i];
+					auto& barrierPasses = m_state.nonTrivial.archetypeBarrierPasses[i];
+					barrierPasses = 1;
+
+					auto ids = pArchetype->ids_view();
+					for (auto idsIdx: pArchetype->pair_rel_indices(relation)) {
+						const auto pair = ids[idsIdx];
+						const auto parent = world_pair_target_if_alive(*world(), pair);
+						if (parent == EntityBad || !world_entity_enabled_hierarchy(*world(), parent, relation)) {
+							barrierPasses = 0;
+							m_state.nonTrivial.barrierMayPrune = 1;
+							break;
+						}
+					}
+				}
+
+				m_state.nonTrivial.barrierRelVersion = currRelationVersion;
+				m_state.nonTrivial.barrierEnabledVersion = currEnabledVersion;
+			}
+
+			//! Builds field-to-archetype component indices for one matched archetype.
+			//! \param pArchetype Matched archetype whose layout is mapped to query fields.
+			//! \return Component-index mapping consumed by query iteration.
+			ArchetypeCompIndices create_comp_indices(const Archetype* pArchetype) {
+				ArchetypeCompIndices cacheData{};
+				core::fill(cacheData.indices, cacheData.indices + ChunkHeader::MAX_COMPONENTS, (uint8_t)0xFF);
+				const auto terms = ctx().data.terms_view();
+				const auto cnt = (uint32_t)terms.size();
+				GAIA_FOR(cnt) {
+					const auto& term = terms[i];
+					const auto fieldIdx = term.fieldIndex;
+					const auto queryId = term.id;
+					//! Component-index mappings describe columns owned by the currently iterated rows.
+					//! Terms resolved from another source must use entity-resolved accessors even when
+					//! the current archetype happens to contain the same component id.
+					if (!query_term_maps_to_current_archetype(term))
+						continue;
+
+					if (world_component_uses_sparse_storage(*world(), queryId)) {
+						cacheData.indices[fieldIdx] = 0xFF;
+						continue;
+					}
+
+					auto compIdx = world_component_index_comp_idx(*world(), *pArchetype, queryId);
+					if (compIdx == BadIndex || compIdx == ComponentIndexBad) {
+						// Wildcard/semantic terms are not represented by an exact component index entry.
+						// OR terms may also be absent from this matching archetype. Use a safe lookup so
+						// absent terms stay unmapped instead of becoming a past-the-end chunk column.
+						compIdx = core::get_index(pArchetype->ids_view(), queryId);
+					}
+
+					cacheData.indices[fieldIdx] =
+							(compIdx != BadIndex && compIdx != ComponentIndexBad && compIdx < pArchetype->ids_view().size())
+									? (uint8_t)compIdx
+									: (uint8_t)0xFF;
+				}
+				return cacheData;
+			}
+
+			//! Builds inherited component data pointers for semantic self-source terms on one archetype.
+			//! \param pArchetype Matched archetype whose inherited term data is cached.
+			void create_inherited_data(const Archetype* pArchetype) {
+				ArchetypeInheritedData inheritedData{};
+				core::fill(inheritedData.data, inheritedData.data + ChunkHeader::MAX_COMPONENTS, nullptr);
+
+				const auto terms = ctx().data.terms_view();
+				const auto cnt = (uint32_t)terms.size();
+				GAIA_FOR(cnt) {
+					const auto& term = terms[i];
+					if (term.src != EntityBad || term.entTrav != EntityBad || term_has_variables(term))
+						continue;
+					if (term.matchKind != QueryMatchKind::Semantic)
+						continue;
+					const auto queryId = term.id;
+					if (queryId == EntityBad || is_wildcard(queryId) || is_variable((EntityId)queryId.id()))
+						continue;
+					if (world_component_uses_sparse_storage(*world(), queryId))
+						continue;
+					if (!world_term_uses_inherit_policy(*world(), queryId))
+						continue;
+					if (pArchetype->has(queryId))
+						continue;
+
+					const auto owner = world_query_first_inherited_owner(*world(), *pArchetype, queryId);
+					GAIA_ASSERT(owner != EntityBad);
+					inheritedData.data[term.fieldIndex] = world_query_inherited_arg_data_const_ptr(*world(), owner, queryId);
+				}
+
+				m_state.exec.archetypeInheritedData.push_back(inheritedData);
+			}
+
+			//! Records whether \a pArchetype requires the default prefab filter during result-cache iteration.
+			//! \param pArchetype Matched archetype added to the result cache.
+			void update_result_cache_prefab_filter_state(const Archetype* pArchetype) {
+				if (!matches_prefab_entities() && pArchetype->has(Prefab))
+					m_state.resultCacheMayNeedPrefabFilter = 1;
+			}
+
+			//! Adds an archetype to the final result cache for ungrouped queries.
+			//! \param pArchetype Matched archetype to cache.
+			//! \param trackMembershipChange True to bump result membership revision after insertion.
+			//! \param assumeAbsent True when the caller already proved the archetype is not cached.
+			void add_archetype_to_cache_no_grouping(
+					const Archetype* pArchetype, bool trackMembershipChange, bool assumeAbsent = false) {
+				GAIA_PROF_SCOPE(queryinfo::add_cache_ng);
+
+				if (!assumeAbsent && m_state.archetypeSet.contains(pArchetype))
+					return;
+				GAIA_ASSERT(assumeAbsent || !m_state.archetypeSet.contains(pArchetype));
+
+				m_state.archetypeSet.emplace(pArchetype);
+				m_state.archetypeCache.push_back(pArchetype);
+				update_result_cache_prefab_filter_state(pArchetype);
+				m_state.exec.compIndicesPending = true;
+				m_state.exec.inheritedDataPending = true;
+				m_state.nonTrivial.barrierRelVersion = UINT32_MAX;
+				m_state.nonTrivial.barrierEnabledVersion = UINT32_MAX;
+				if (trackMembershipChange)
+					mark_result_cache_membership_changed();
+			}
+
+			//! Adds an archetype to the structural seed cache.
+			//! \param pArchetype Structurally matched archetype to cache.
+			//! \param assumeAbsent True when the caller already proved the archetype is not cached.
+			void add_archetype_to_seed_cache(const Archetype* pArchetype, bool assumeAbsent = false) {
+				if (!assumeAbsent && m_state.seedArchetypeSet.contains(pArchetype))
+					return;
+				GAIA_ASSERT(assumeAbsent || !m_state.seedArchetypeSet.contains(pArchetype));
+
+				m_state.seedArchetypeSet.emplace(pArchetype);
+				m_state.seedArchetypeCache.push_back(pArchetype);
+			}
+
+			//! Adds a newly matched archetype to both immediate caches while reusing one computed index mapping.
+			//! \param pArchetype Newly matched archetype to cache.
+			//! \param trackMembershipChange True to bump result membership revision after insertion.
+			void add_new_archetype_to_immediate_caches(const Archetype* pArchetype, bool trackMembershipChange) {
+				GAIA_ASSERT(m_plan.ctx.data.groupBy == EntityBad);
+				GAIA_ASSERT(m_plan.ctx.data.sortByFunc == nullptr);
+				GAIA_ASSERT(!m_state.seedArchetypeSet.contains(pArchetype));
+				GAIA_ASSERT(!m_state.archetypeSet.contains(pArchetype));
+
+				m_state.seedArchetypeSet.emplace(pArchetype);
+				m_state.seedArchetypeCache.push_back(pArchetype);
+
+				m_state.archetypeSet.emplace(pArchetype);
+				m_state.archetypeCache.push_back(pArchetype);
+				update_result_cache_prefab_filter_state(pArchetype);
+				m_state.exec.compIndicesPending = true;
+				m_state.exec.inheritedDataPending = true;
+				if (trackMembershipChange)
+					mark_result_cache_membership_changed();
+			}
+
+			//! Adds an archetype to the final result cache and records its group id.
+			//! \param pArchetype Matched archetype to cache.
+			//! \param trackMembershipChange True to bump result membership revision after insertion.
+			//! \param assumeAbsent True when the caller already proved the archetype is not cached.
+			void add_archetype_to_cache_w_grouping(
+					const Archetype* pArchetype, bool trackMembershipChange, bool assumeAbsent = false) {
+				GAIA_PROF_SCOPE(queryinfo::add_cache_wg);
+
+				if (!assumeAbsent && m_state.archetypeSet.contains(pArchetype))
+					return;
+				GAIA_ASSERT(assumeAbsent || !m_state.archetypeSet.contains(pArchetype));
+
+				m_state.grouped.selectedGroupDataValid = false;
+
+				const GroupId groupId = m_plan.ctx.data.groupByFunc(*m_plan.ctx.w, *pArchetype, m_plan.ctx.data.groupBy);
+
+				m_state.archetypeSet.emplace(pArchetype);
+				m_state.archetypeCache.push_back(pArchetype);
+				update_result_cache_prefab_filter_state(pArchetype);
+				m_state.grouped.archetypeGroupIds.push_back(groupId);
+				m_state.grouped.dataPending = true;
+				m_state.exec.compIndicesPending = true;
+				m_state.exec.inheritedDataPending = true;
+				m_state.nonTrivial.barrierRelVersion = UINT32_MAX;
+				m_state.nonTrivial.barrierEnabledVersion = UINT32_MAX;
+				m_plan.ctx.data.flags |= QueryCtx::QueryFlags::SortGroups;
+				if (trackMembershipChange)
+					mark_result_cache_membership_changed();
+			}
+
+			//! Adds an archetype to the final result cache and updates derived-payload dirty flags.
+			//! \param pArchetype Matched archetype to cache.
+			//! \param trackMembershipChange True to bump result membership revision after insertion.
+			//! \param assumeAbsent True when the caller already proved the archetype is not cached.
+			void add_archetype_to_cache(const Archetype* pArchetype, bool trackMembershipChange, bool assumeAbsent) {
+				if (m_plan.ctx.data.sortByFunc != nullptr)
+					m_plan.ctx.data.flags |= QueryCtx::QueryFlags::SortEntities;
+
+				if (m_plan.ctx.data.groupBy != EntityBad)
+					add_archetype_to_cache_w_grouping(pArchetype, trackMembershipChange, assumeAbsent);
+				else
+					add_archetype_to_cache_no_grouping(pArchetype, trackMembershipChange, assumeAbsent);
+			}
+
+			//! Adds an archetype to the transient result cache used by non-persistent matching paths.
+			//! \param pArchetype Matched archetype to cache for this transient result.
+			void add_archetype_to_transient_cache(const Archetype* pArchetype) {
+				m_state.archetypeCache.push_back(pArchetype);
+				update_result_cache_prefab_filter_state(pArchetype);
+				m_state.exec.compIndicesPending = true;
+				m_state.exec.inheritedDataPending = true;
+				if (m_plan.ctx.data.groupBy != EntityBad) {
+					const auto groupId = m_plan.ctx.data.groupByFunc(*m_plan.ctx.w, *pArchetype, m_plan.ctx.data.groupBy);
+					m_state.grouped.archetypeGroupIds.push_back(groupId);
+					m_state.grouped.dataPending = true;
+				}
+			}
+
+			//! Returns cached group bounds for the currently selected group filter.
+			//! The cached range is invalidated whenever group layout changes or the selected group id changes.
+			//! \param runtimeGroupId Group id to look up.
+			//! \return Group range for the requested group, or nullptr if the group does not exist.
+			GAIA_NODISCARD const GroupData* selected_group_data(GroupId runtimeGroupId) const {
+				const_cast<QueryInfo*>(this)->ensure_group_data(true);
+				if (m_plan.ctx.data.groupBy == EntityBad || runtimeGroupId == 0)
+					return nullptr;
+
+				if (!m_state.grouped.selectedGroupDataValid || m_state.grouped.selectedGroupData.groupId != runtimeGroupId) {
+					uint32_t left = 0;
+					uint32_t right = (uint32_t)m_state.grouped.archetypeGroupData.size();
+					while (left < right) {
+						const uint32_t mid = left + ((right - left) >> 1);
+						const auto midGroupId = m_state.grouped.archetypeGroupData[mid].groupId;
+						if (midGroupId < runtimeGroupId)
+							left = mid + 1;
+						else
+							right = mid;
+					}
+
+					if (left < m_state.grouped.archetypeGroupData.size() &&
+							m_state.grouped.archetypeGroupData[left].groupId == runtimeGroupId) {
+						m_state.grouped.selectedGroupData = m_state.grouped.archetypeGroupData[left];
+						m_state.grouped.selectedGroupDataValid = true;
+						return &m_state.grouped.selectedGroupData;
+					}
+
+					m_state.grouped.selectedGroupData = {};
+					m_state.grouped.selectedGroupDataValid = false;
+					return nullptr;
+				}
+
+				return &m_state.grouped.selectedGroupData;
+			}
+
+			//! Compares final result-cache membership with the structural seed cache.
+			//! \return True when both caches contain the same archetypes.
+			GAIA_NODISCARD bool has_same_result_membership_as_seed_cache() const {
+				if (m_state.archetypeSet.size() != m_state.seedArchetypeSet.size())
+					return false;
+
+				for (const auto* pArchetype: m_state.seedArchetypeCache) {
+					if (!m_state.archetypeSet.contains(pArchetype))
+						return false;
+				}
+
+				return true;
+			}
+
+			//! Compares final result-cache membership with another archetype array.
+			//! \param archetypeCache Archetype membership to compare against the final result cache.
+			//! \return True when both collections contain the same archetypes.
+			GAIA_NODISCARD bool has_same_result_membership_as(const CArchetypeDArray& archetypeCache) const {
+				if (m_state.archetypeSet.size() != archetypeCache.size())
+					return false;
+
+				for (const auto* pArchetype: archetypeCache) {
+					if (!m_state.archetypeSet.contains(pArchetype))
+						return false;
+				}
+
+				return true;
+			}
+
+			//! Rebuilds the final result cache from structural seed matches.
+			//! Bumps result membership revision only when the final membership actually changes.
+			void sync_result_cache_from_seed_cache() {
+				const bool membershipChanged = !has_same_result_membership_as_seed_cache();
+				clear_result_cache();
+				const auto cnt = (uint32_t)m_state.seedArchetypeCache.size();
+				GAIA_FOR(cnt) {
+					add_archetype_to_cache(m_state.seedArchetypeCache[i], false, false);
+				}
+				if (membershipChanged)
+					mark_result_cache_membership_changed();
+			}
+
+			//! Removes an archetype from the final result cache and mirrored payload arrays.
+			//! \param pArchetype Archetype to remove.
+			//! \return True if the archetype was present or its set entry was removed.
+			bool del_archetype_from_cache(const Archetype* pArchetype) {
+				const auto it = m_state.archetypeSet.find(pArchetype);
+				if (it == m_state.archetypeSet.end())
+					return false;
+
+				m_state.archetypeSet.erase(it);
+
+				const auto archetypeIdx = core::get_index(m_state.archetypeCache, pArchetype);
+				GAIA_ASSERT(archetypeIdx != BadIndex);
+				if (archetypeIdx == BadIndex)
+					return true;
+
+				if (m_plan.ctx.data.sortByFunc != nullptr)
+					m_plan.ctx.data.flags |= QueryCtx::QueryFlags::SortEntities;
+
+				core::swap_erase(m_state.archetypeCache, archetypeIdx);
+				if (archetypeIdx < m_state.exec.archetypeCompIndices.size())
+					core::swap_erase(m_state.exec.archetypeCompIndices, archetypeIdx);
+				if (archetypeIdx < m_state.exec.archetypeInheritedData.size())
+					core::swap_erase(m_state.exec.archetypeInheritedData, archetypeIdx);
+				if (archetypeIdx < m_state.grouped.archetypeGroupIds.size())
+					core::swap_erase(m_state.grouped.archetypeGroupIds, archetypeIdx);
+				if (archetypeIdx < m_state.nonTrivial.archetypeBarrierPasses.size())
+					core::swap_erase(m_state.nonTrivial.archetypeBarrierPasses, archetypeIdx);
+
+				if (m_plan.ctx.data.groupBy != EntityBad) {
+					m_state.grouped.selectedGroupDataValid = false;
+					m_state.grouped.archetypeGroupData.clear();
+					m_state.grouped.dataPending = true;
+					m_plan.ctx.data.flags |= QueryCtx::QueryFlags::SortGroups;
+				}
+				m_state.nonTrivial.barrierRelVersion = UINT32_MAX;
+				m_state.nonTrivial.barrierEnabledVersion = UINT32_MAX;
+
+				mark_result_cache_membership_changed();
+				return true;
+			}
+
+			//! Removes an archetype from the structural seed cache.
+			//! \param pArchetype Archetype to remove.
+			//! \return True if the archetype was present or its set entry was removed.
+			bool del_archetype_from_seed_cache(const Archetype* pArchetype) {
+				const auto it = m_state.seedArchetypeSet.find(pArchetype);
+				if (it == m_state.seedArchetypeSet.end())
+					return false;
+
+				m_state.seedArchetypeSet.erase(it);
+
+				const auto archetypeIdx = core::get_index(m_state.seedArchetypeCache, pArchetype);
+				GAIA_ASSERT(archetypeIdx != BadIndex);
+				if (archetypeIdx == BadIndex)
+					return true;
+
+				core::swap_erase(m_state.seedArchetypeCache, archetypeIdx);
+				return true;
+			}
+
+			//! Returns the mutable world owning this query.
+			//! \return Owning world.
+			GAIA_NODISCARD World* world() {
+				GAIA_ASSERT(m_plan.ctx.w != nullptr);
+				return const_cast<World*>(m_plan.ctx.w);
+			}
+			//! Returns the world owning this query.
+			//! \return Owning world.
+			GAIA_NODISCARD const World* world() const {
+				GAIA_ASSERT(m_plan.ctx.w != nullptr);
+				return m_plan.ctx.w;
+			}
+
+			//! Returns the query serialization buffer associated with the owning world.
+			//! \return Query serialization buffer.
+			GAIA_NODISCARD QuerySerBuffer& ser_buffer() {
+				return m_plan.ctx.q.ser_buffer(world());
+			}
+			//! Resets the query serialization buffer associated with the owning world.
+			void ser_buffer_reset() {
+				m_plan.ctx.q.ser_buffer_reset(world());
+			}
+
+			//! Returns the mutable compiled query context.
+			//! \return Mutable compiled query context.
+			GAIA_NODISCARD QueryCtx& ctx() {
+				return m_plan.ctx;
+			}
+			//! Returns the compiled query context.
+			//! \return Compiled query context.
+			GAIA_NODISCARD const QueryCtx& ctx() const {
+				return m_plan.ctx;
+			}
+
+			//! Returns a textual dump of the compiled VM bytecode.
+			//! \return Textual VM bytecode dump.
+			GAIA_NODISCARD util::str bytecode() const {
+				return m_plan.vm.bytecode(*world());
+			}
+
+			//! Returns the number of VM operations in the compiled query.
+			//! \return Number of VM operations.
+			GAIA_NODISCARD uint32_t op_count() const {
+				return m_plan.vm.op_count();
+			}
+
+			//! Returns a stable signature for the compiled VM operation stream.
+			//! \return Stable opcode-stream signature.
+			GAIA_NODISCARD uint64_t op_signature() const {
+				return m_plan.vm.op_signature();
+			}
+
+			//! Returns true when the query has per-entity changed/filter terms.
+			//! \return True when the query has per-entity changed/filter terms.
+			GAIA_NODISCARD bool has_filters() const {
+				const auto& ctxData = m_plan.ctx.data;
+				return ctxData.changedCnt > 0;
+			}
+
+			//! Returns true when direct non-fragmenting terms must be rechecked per entity.
+			//! \return True when direct non-fragmenting terms must be rechecked per entity.
+			GAIA_NODISCARD bool has_entity_filter_terms() const {
+				const auto& ctxData = m_plan.ctx.data;
+				return ctxData.deps.has_dep_flag(QueryCtx::DependencyHasEntityFilterTerms);
+			}
+
+			//! Returns true when the query shape can resolve through inherited-id matching.
+			//! \return True when the query shape can resolve through inherited-id matching.
+			GAIA_NODISCARD bool has_potential_inherited_id_terms() const {
+				const auto& ctxData = m_plan.ctx.data;
+				return ctxData.deps.has_dep_flag(QueryCtx::DependencyHasPotentialInheritedIdTerms);
+			}
+
+			//! Returns the direct target evaluation mode selected during compilation.
+			//! \return Direct target evaluation mode.
+			GAIA_NODISCARD QueryCtx::DirectTargetEvalKind direct_target_eval_kind() const {
+				return m_plan.ctx.data.directTargetEvalKind;
+			}
+
+			//! Returns the concrete direct target id used by direct target evaluation.
+			//! \return Concrete direct target id.
+			GAIA_NODISCARD Entity direct_target_eval_id() const {
+				return m_plan.ctx.data.directTargetEvalId;
+			}
+
+			//! Returns true when the query can evaluate concrete target entities directly.
+			//! \return True when the query can evaluate concrete target entities directly.
+			GAIA_NODISCARD bool can_direct_target_eval() const {
+				return m_plan.ctx.data.canDirectTargetEval;
+			}
+
+			//! Returns true when the query shape is eligible for direct entity seed evaluation.
+			//! \return True when the query shape is eligible for direct entity seed evaluation.
+			GAIA_NODISCARD bool can_direct_entity_seed_eval_shape() const {
+				return m_plan.ctx.data.canDirectEntitySeedEvalShape;
+			}
+
+			//! Returns true when the query contains only direct OR/NOT terms and at least one OR term.
+			//! \return True when the query contains only direct OR/NOT terms and at least one OR term.
+			GAIA_NODISCARD bool has_only_direct_or_terms() const {
+				return m_plan.ctx.data.hasOnlyDirectOrTerms;
+			}
+
+			//! Returns true when prefab-tagged entities should participate in query results.
+			//! \return True when prefab-tagged entities should participate in query results.
+			GAIA_NODISCARD bool matches_prefab_entities() const {
+				const auto& ctxData = m_plan.ctx.data;
+				return (ctxData.flags & QueryCtx::QueryFlags::MatchPrefab) != 0 ||
+							 (ctxData.flags & QueryCtx::QueryFlags::HasPrefabTerms) != 0;
+			}
+
+			//! Returns true when any of the requested types is present as an Any term.
+			//! \tparam T Query term types to test.
+			//! \return True when any of the requested types is present as an Any term.
+			template <typename... T>
+			GAIA_NODISCARD bool has_any() const {
+				return (has_inter<T>(QueryOpKind::Any) || ...);
+			}
+
+			//! Returns true when any of the requested types is present as an Or term.
+			//! \tparam T Query term types to test.
+			//! \return True when any of the requested types is present as an Or term.
+			template <typename... T>
+			GAIA_NODISCARD bool has_or() const {
+				return (has_inter<T>(QueryOpKind::Or) || ...);
+			}
+
+			//! Returns true when all requested types are present as All terms.
+			//! \tparam T Query term types to test.
+			//! \return True when all requested types are present as All terms.
+			template <typename... T>
+			GAIA_NODISCARD bool has_all() const {
+				return (has_inter<T>(QueryOpKind::All) && ...);
+			}
+
+			//! Returns true when none of the requested types is present as a Not term.
+			//! \tparam T Query term types to test.
+			//! \return True when none of the requested types is present as a Not term.
+			template <typename... T>
+			GAIA_NODISCARD bool has_no() const {
+				return (!has_inter<T>(QueryOpKind::Not) && ...);
+			}
+
+			//! Removes an archetype from cache
+			//! \param pArchetype Archetype to remove
+			void remove(Archetype* pArchetype) {
+				GAIA_PROF_SCOPE(queryinfo::remove);
+
+				(void)del_archetype_from_seed_cache(pArchetype);
+				(void)del_archetype_from_cache(pArchetype);
+			}
+
+			//! Returns a view of indices mapping for component entities in a given archetype
+			//! \return View of indices mapping for component entities in the archetype.
+			std::span<const uint8_t> indices_mapping_view(uint32_t archetypeIdx) const {
+				const_cast<QueryInfo*>(this)->ensure_comp_indices();
+				const auto& ctxData = m_state.exec.archetypeCompIndices[archetypeIdx];
+				return {ctxData.indices, ChunkHeader::MAX_COMPONENTS};
+			}
+
+			//! Returns a flattened chunk view for a direct-dense result-cache range.
+			//! \param idxFrom First result-cache archetype index to include.
+			//! \param idxTo One-past-the-end result-cache archetype index to include.
+			//! \param pDataFields Query term indices to cache component data pointers for, in callback-argument order.
+			//! \param dataFieldCount Number of valid entries in \a pDataFields. Pass zero to cache only chunks/ranges.
+			//! \return Flattened chunk entries for the requested result-cache archetype range.
+			std::span<const DirectChunkEntry>
+			direct_chunk_view(uint32_t idxFrom, uint32_t idxTo, const uint32_t* pDataFields, uint32_t dataFieldCount) const {
+				const_cast<QueryInfo*>(this)->ensure_direct_chunks(idxFrom, idxTo, pDataFields, dataFieldCount);
+				return {m_state.exec.directChunks.data(), m_state.exec.directChunks.size()};
+			}
+
+			//! Returns cached flattened direct chunk data pointers.
+			//! \return Cached flattened direct chunk data pointers.
+			std::span<const void* const> direct_chunk_data_view() const {
+				return {m_state.exec.directChunkData.data(), m_state.exec.directChunkData.size()};
+			}
+
+			//! Returns cached inherited-term data for a matched archetype index.
+			//! \return Cached inherited-term data for the archetype index.
+			//! \param archetypeIdx Result-cache archetype index.
+			InheritedTermDataView inherited_data_view(uint32_t archetypeIdx) const {
+				const_cast<QueryInfo*>(this)->ensure_inherited_data();
+				if (archetypeIdx >= m_state.exec.archetypeInheritedData.size())
+					return {};
+				const auto& ctxData = m_state.exec.archetypeInheritedData[archetypeIdx];
+				return {ctxData.data, ChunkHeader::MAX_COMPONENTS};
+			}
+
+			//! Returns cached inherited-term data for a matched archetype pointer.
+			//! \return Cached inherited-term data for the matched archetype.
+			//! \param pArchetype Matched archetype to look up.
+			InheritedTermDataView inherited_data_view(const Archetype* pArchetype) const {
+				if (!has_inherited_data_payload())
+					return {};
+				const auto archetypeIdx = core::get_index(m_state.archetypeCache, pArchetype);
+				if (archetypeIdx == BadIndex)
+					return {};
+				return inherited_data_view((uint32_t)archetypeIdx);
+			}
+
+			//! Ensures depth-order hierarchy barrier results are current before public reads.
+			void ensure_depth_order_hierarchy_barrier_cache() {
+				ensure_depth_order_hierarchy_barrier_cache_inter();
+			}
+
+			//! Returns a cached indices mapping view for an exact archetype match, or an empty span when absent.
+			//! \return Cached indices mapping view, or an empty span when absent.
+			std::span<const uint8_t> try_indices_mapping_view(const Archetype* pArchetype) const {
+				if (m_state.exec.compIndicesPending)
+					return {};
+				const auto archetypeIdx = core::get_index(m_state.archetypeCache, pArchetype);
+				if (archetypeIdx == BadIndex)
+					return {};
+				return indices_mapping_view(archetypeIdx);
+			}
+
+			//! Returns cached inherited-term data if it is already available for a matched archetype.
+			//! \return Cached inherited-term data, or an empty view when unavailable.
+			//! \param pArchetype Matched archetype to look up.
+			InheritedTermDataView try_inherited_data_view(const Archetype* pArchetype) const {
+				if (!has_inherited_data_payload() || m_state.exec.inheritedDataPending)
+					return {};
+				const auto archetypeIdx = core::get_index(m_state.archetypeCache, pArchetype);
+				if (archetypeIdx == BadIndex)
+					return {};
+				return inherited_data_view((uint32_t)archetypeIdx);
+			}
+
+			//! Returns the cached group id for a matched archetype index.
+			//! \return Cached group id for the archetype index.
+			//! \param archetypeIdx Result-cache archetype index.
+			GAIA_NODISCARD GroupId group_id(uint32_t archetypeIdx) const {
+				const_cast<QueryInfo*>(this)->ensure_group_data(true);
+				GAIA_ASSERT(archetypeIdx < m_state.grouped.archetypeGroupIds.size());
+				return m_state.grouped.archetypeGroupIds[archetypeIdx];
+			}
+
+			//! Returns true when the matched archetype passes the depth-order hierarchy barrier.
+			//! \return True when the matched archetype passes the depth-order hierarchy barrier.
+			//! \param archetypeIdx Result-cache archetype index.
+			GAIA_NODISCARD bool barrier_passes(uint32_t archetypeIdx) const {
+				const_cast<QueryInfo*>(this)->ensure_depth_order_hierarchy_barrier_cache();
+				if (m_state.nonTrivial.archetypeBarrierPasses.empty())
+					return true;
+				GAIA_ASSERT(archetypeIdx < m_state.nonTrivial.archetypeBarrierPasses.size());
+				return m_state.nonTrivial.archetypeBarrierPasses[archetypeIdx] != 0;
+			}
+
+			//! Returns true when any cached archetype can be pruned by the hierarchy barrier.
+			//! \return True when any cached archetype can be pruned by the hierarchy barrier.
+			GAIA_NODISCARD bool barrier_may_prune() const {
+				const_cast<QueryInfo*>(this)->ensure_depth_order_hierarchy_barrier_cache();
+				return m_state.nonTrivial.barrierMayPrune != 0;
+			}
+
+			//! Returns a mutable iterator to the first cached result archetype.
+			//! \return Mutable iterator to the first cached result archetype.
+			GAIA_NODISCARD CArchetypeDArray::iterator begin() {
+				return m_state.archetypeCache.begin();
+			}
+
+			//! Returns an iterator to the first cached result archetype.
+			//! \return Iterator to the first cached result archetype.
+			GAIA_NODISCARD CArchetypeDArray::const_iterator begin() const {
+				return m_state.archetypeCache.begin();
+			}
+
+			//! Returns a const iterator to the first cached result archetype.
+			//! \return Const iterator to the first cached result archetype.
+			GAIA_NODISCARD CArchetypeDArray::const_iterator cbegin() const {
+				return m_state.archetypeCache.begin();
+			}
+
+			//! Returns a mutable iterator past the last cached result archetype.
+			//! \return Mutable iterator past the last cached result archetype.
+			GAIA_NODISCARD CArchetypeDArray::iterator end() {
+				return m_state.archetypeCache.end();
+			}
+
+			//! Returns an iterator past the last cached result archetype.
+			//! \return Iterator past the last cached result archetype.
+			GAIA_NODISCARD CArchetypeDArray::const_iterator end() const {
+				return m_state.archetypeCache.end();
+			}
+
+			//! Returns a const iterator past the last cached result archetype.
+			//! \return Const iterator past the last cached result archetype.
+			GAIA_NODISCARD CArchetypeDArray::const_iterator cend() const {
+				return m_state.archetypeCache.end();
+			}
+
+			//! Returns the cached result archetypes as a span.
+			//! \return Cached result archetypes as a span.
+			GAIA_NODISCARD std::span<const Archetype*> cache_archetype_view() const {
+				return std::span{(const Archetype**)m_state.archetypeCache.data(), m_state.archetypeCache.size()};
+			}
+
+			//! Returns cached sorted chunk slices.
+			//! \return Cached sorted chunk slices.
+			GAIA_NODISCARD std::span<const SortData> cache_sort_view() const {
+				return std::span{m_state.nonTrivial.archetypeSortData.data(), m_state.nonTrivial.archetypeSortData.size()};
+			}
+
+			//! Returns cached group ranges, rebuilding grouped data when needed.
+			//! \return Cached group ranges.
+			GAIA_NODISCARD std::span<const GroupData> group_data_view() const {
+				const_cast<QueryInfo*>(this)->ensure_group_data(true);
+				return std::span{m_state.grouped.archetypeGroupData.data(), m_state.grouped.archetypeGroupData.size()};
+			}
+
+#if GAIA_ECS_TEST_HOOKS
+			//! Dynamic-cache dependency shape exposed only to tests.
+			using TestDynamicCacheKind = QueryCtx::DynamicCacheKind;
+
+			//! Returns the dynamic-cache dependency shape derived from compiled query metadata.
+			//! Returns compact dynamic-cache classification for architecture/layout tests.
+			GAIA_NODISCARD TestDynamicCacheKind test_dynamic_cache_kind() const {
+				return m_plan.ctx.data.dynamicCacheKind;
+			}
+
+			//! Returns whether the compiled dynamic-cache shape tracks direct source entity versions.
+			GAIA_NODISCARD bool test_uses_direct_src_version_tracking() const {
+				return m_plan.ctx.data.uses_direct_src_version_tracking();
+			}
+
+			//! Returns whether the compiled dynamic-cache shape tracks a traversed-source snapshot.
+			GAIA_NODISCARD bool test_uses_src_trav_snapshot() const {
+				return m_plan.ctx.data.uses_src_trav_snapshot();
+			}
+
+			//! Returns the number of persistent VM match passes executed by this query info.
+			//! Returns persistent VM match-pass count for test diagnostics.
+			GAIA_NODISCARD uint32_t test_match_pass_count() const {
+				return m_testMatchPassCount;
+			}
+
+			//! Returns the current QueryInfo footprint for layout baseline tests.
+			GAIA_NODISCARD static constexpr uint32_t test_query_info_size() {
+				return (uint32_t)sizeof(QueryInfo);
+			}
+
+			//! Returns the current compiled query plan footprint for layout baseline tests.
+			GAIA_NODISCARD static constexpr uint32_t test_query_plan_size() {
+				return (uint32_t)sizeof(QueryPlan);
+			}
+
+			//! Returns the current runtime query-state footprint for layout baseline tests.
+			GAIA_NODISCARD static constexpr uint32_t test_query_state_size() {
+				return (uint32_t)sizeof(QueryState);
+			}
+
+			//! Returns the current dynamic-cache state footprint for layout baseline tests.
+			GAIA_NODISCARD static constexpr uint32_t test_dynamic_cache_state_size() {
+				return (uint32_t)sizeof(QueryState::DynamicCacheState);
+			}
+
+			//! Returns the offset of dynamic-cache state within QueryState for layout baseline tests.
+			GAIA_NODISCARD static constexpr uint32_t test_query_state_dynamic_offset() {
+				return (uint32_t)offsetof(QueryState, dynamic);
+			}
+
+			//! Test-only helper that seeds the transient cache with one archetype so unit tests can
+			//! inspect derived execution payloads deterministically without relying on runtime query paths.
+			void test_add_transient_archetype(const Archetype* pArchetype) {
+				GAIA_ASSERT(pArchetype != nullptr);
+				if (pArchetype == nullptr)
+					return;
+
+				m_state.clear_transient_result_cache();
+				add_archetype_to_transient_cache(pArchetype);
+			}
+#endif
+		};
+	} // namespace ecs
+} // namespace gaia

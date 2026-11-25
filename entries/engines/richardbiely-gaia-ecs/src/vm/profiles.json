@@ -1,0 +1,39 @@
+{
+  "profiles": {
+    "smoke": {
+      "label": "Environment smoke test",
+      "description": "Checks the container toolchain and mounted Gaia-ECS source without creating build output.",
+      "command": ["bash", "vm/smoke.sh"]
+    },
+    "full": {
+      "label": "Clang and GCC matrix",
+      "description": "Runs C++17/20/23 unit coverage plus debug and optimized sanitizer unit/performance coverage with both compilers.",
+      "command": ["bash", "vm/build.sh", "-c"]
+    },
+    "clang": {
+      "label": "Clang and sanitizers",
+      "description": "Runs the Clang build, unit and performance tests, Address/Undefined sanitizers, and MemorySanitizer where supported.",
+      "command": ["bash", "vm/build_clang.sh", "-c"]
+    },
+    "clang-sanitizers": {
+      "label": "Clang sanitizer matrix",
+      "description": "Builds and runs only Clang Address/Undefined and supported MemorySanitizer unit and performance coverage.",
+      "command": ["bash", "vm/build_clang.sh", "-cs"]
+    },
+    "gcc": {
+      "label": "GCC and sanitizers",
+      "description": "Runs the GCC build, unit and performance tests, and Address/Undefined sanitizers.",
+      "command": ["bash", "vm/build_gcc.sh", "-c"]
+    },
+    "gcc-sanitizers": {
+      "label": "GCC sanitizer matrix",
+      "description": "Builds and runs only GCC Address/Undefined sanitizer unit and performance coverage.",
+      "command": ["bash", "vm/build_gcc.sh", "-cs"]
+    },
+    "cachegrind": {
+      "label": "Cachegrind duel",
+      "description": "Builds the optimized duel benchmark and records Cachegrind read, write, and branch reports.",
+      "command": ["bash", "vm/build_clang_cachegrind.sh", "-c"]
+    }
+  }
+}

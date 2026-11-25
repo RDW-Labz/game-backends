@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:34:40Z",
+ "category": "engines",
+ "commit": "2018-08-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "arvidsson/Mix \u2014 C++ minimal entity-component system single header library",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Mix",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "arvidsson-mix",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 126,
+ "system": "C++ minimal entity-component system single header library ",
+ "upstream": "https://github.com/arvidsson/Mix",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -3405,3 +3405,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/log2n-io-typhon
   - reference engines/pex-gl-pex-renderer
   - reference engines/nidorx-ecs-lua
+
+- **2026-11-25 20:34 UTC** — tick 892: +2 screened, +4 reference, 29 skipped, catalogue=1784
+  - added engines/richardbiely-gaia-ecs (MIT, vendored)
+  - added engines/dustinlacewell-react-ecs (MIT, vendored)
+  - reference engines/arvidsson-mix
+  - reference engines/gornhoth-unity-smoothed-particle-hydrodynamics
+  - reference engines/ark-ecs-ark-jl
+  - reference engines/jaimegensler-thyseus

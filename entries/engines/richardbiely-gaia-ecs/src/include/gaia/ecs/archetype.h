@@ -1,0 +1,1466 @@
+#pragma once
+#include "gaia/config/config.h"
+
+#include <cinttypes>
+#include <cstdint>
+
+#include "gaia/cnt/darray.h"
+// #include "gaia/cnt/dbitset.h"
+#include "gaia/core/hashing_policy.h"
+#include "gaia/core/utility.h"
+#include "gaia/ecs/api.h"
+#include "gaia/ecs/archetype_common.h"
+#include "gaia/ecs/archetype_graph.h"
+#include "gaia/ecs/chunk.h"
+#include "gaia/ecs/chunk_allocator.h"
+#include "gaia/ecs/chunk_header.h"
+#include "gaia/ecs/component.h"
+#include "gaia/ecs/component_cache.h"
+#include "gaia/ecs/id.h"
+#include "gaia/ecs/query_mask.h"
+#include "gaia/mem/mem_alloc.h"
+#include "gaia/ser/ser_binary.h"
+
+namespace gaia {
+	namespace ecs {
+		class World;
+		class Archetype;
+		struct EntityContainer;
+
+		//! \cond INTERNAL
+		namespace detail {
+			GAIA_NODISCARD inline bool cmp_comps(EntitySpan comps, EntitySpan compsOther) {
+				const auto s0 = comps.size();
+				const auto s1 = compsOther.size();
+
+				// Size has to match
+				if (s0 != s1)
+					return false;
+
+				// Elements have to match
+				GAIA_FOR(s0) {
+					if (comps[i] != compsOther[i])
+						return false;
+				}
+
+				return true;
+			}
+		} // namespace detail
+		//! \endcond
+
+		//! Pairs an archetype with one of its chunks.
+		struct ArchetypeChunkPair {
+			//! Archetype the chunk belongs to.
+			Archetype* pArchetype;
+			//! Chunk owned by the paired archetype.
+			Chunk* pChunk;
+
+			GAIA_NODISCARD bool operator==(const ArchetypeChunkPair& other) const {
+				return pArchetype == other.pArchetype && pChunk == other.pChunk;
+			}
+		};
+
+		//! Base shared by archetype lookups and concrete archetypes, carrying the archetype id.
+		class ArchetypeBase {
+		protected:
+			//! Archetype ID - used to address the archetype directly in the world's list or archetypes
+			ArchetypeId m_archetypeId = ArchetypeIdBad;
+
+		public:
+			//! Archetype id used to address the archetype in the world list.
+			//! \return Archetype id.
+			GAIA_NODISCARD ArchetypeId id() const {
+				return m_archetypeId;
+			}
+		};
+
+		//! Archetype lookup key that compares against a component term span instead of a full archetype id.
+		class ArchetypeLookupChecker: public ArchetypeBase {
+			friend class Archetype;
+
+			//! Span of component indices
+			EntitySpan m_comps;
+
+		public:
+			ArchetypeLookupChecker(EntitySpan comps): m_comps(comps) {}
+
+			//! Compares the lookup checker component spans in archetype order.
+			//! \param other Other checker to compare against.
+			//! \return True when both spans match element-wise.
+			GAIA_NODISCARD bool cmp_comps(const ArchetypeLookupChecker& other) const {
+				return detail::cmp_comps(m_comps, other.m_comps);
+			}
+		};
+
+		//! Fixed-shape group of chunks storing entities that share the same component layout.
+		//! Owns chunk storage, component hashes, relation-pair indexing and inter-archetype graph edges.
+		class GAIA_API Archetype final: public ArchetypeBase {
+		public:
+			//! Direct hash type used for archetype lookups.
+			using LookupHash = core::direct_hash_key<uint64_t>;
+
+			//! Number of bits representing archetype lifespan
+			static constexpr uint16_t ARCHETYPE_LIFESPAN_BITS = 7;
+			//! Archetype lifespan must be at least as long as chunk lifespan
+			static_assert(ARCHETYPE_LIFESPAN_BITS >= ChunkHeader::CHUNK_LIFESPAN_BITS);
+			//! Number of ticks before empty chunks are removed
+			static constexpr uint16_t MAX_ARCHETYPE_LIFESPAN = (1 << ARCHETYPE_LIFESPAN_BITS) - 1;
+
+			//! Shape properties of this archetype.
+			struct Properties {
+				//! The number of data entities this archetype can take (e.g 5 = 5 entities with all their components)
+				uint16_t capacity;
+				//! How many bytes of data is needed for a fully utilized chunk
+				ChunkDataOffset chunkDataBytes;
+				//! Total number of entities/components
+				uint8_t cntEntities;
+			};
+
+		private:
+			GAIA_NODISCARD static Component empty_comp() noexcept {
+				return Component(IdentifierIdBad, 0, 0, 0, DataStorageType::Table);
+			}
+
+			GAIA_NODISCARD static Component comp_from_item(Entity term, const ComponentCacheItem* pItem) noexcept {
+				return pItem == nullptr ? empty_comp() : archetype_component(term, pItem->comp);
+			}
+
+			struct ShapeData {
+				ArchetypeIdLookupKey::LookupHash archetypeIdHash;
+				//! Hash of components within this archetype - used for lookups
+				LookupHash hashLookup = {0};
+				//! Query mask used to make lookups of simple queries faster
+				QueryMask queryMask{};
+				Properties properties{};
+				//! Offsets to various parts of data inside chunk
+				ChunkDataOffsets dataOffsets{};
+				//! Array of entities used to identify the archetype
+				Entity ids[ChunkHeader::MAX_COMPONENTS];
+				//! Array of resolved storage items for each archetype term.
+				const ComponentCacheItem* compItems[ChunkHeader::MAX_COMPONENTS]{};
+				//! Array of components offset indices
+				ChunkDataOffset compOffs[ChunkHeader::MAX_COMPONENTS];
+			};
+
+			struct StorageData {
+				//! Array of chunks allocated by this archetype
+				cnt::darray<Chunk*> chunks;
+				//! Index of the first chunk with enough space to add at least one entity
+				uint32_t firstFreeChunkIdx = 0;
+			};
+
+			struct RuntimeData {
+				//! Archetype list index
+				uint32_t listIdx = BadIndex;
+				//! Number of terms in this archetype that are currently observed.
+				uint8_t observedTermCnt = 0;
+
+				//! Delete requested
+				uint32_t deleteReq : 1;
+				//! If set the archetype is to be deleted
+				uint32_t dead : 1;
+				//! Max lifespan of the archetype
+				uint32_t lifespanCountdownMax : ARCHETYPE_LIFESPAN_BITS;
+				//! Remaining lifespan of the archetype
+				uint32_t lifespanCountdown : ARCHETYPE_LIFESPAN_BITS;
+
+				RuntimeData(): deleteReq(0), dead(0), lifespanCountdownMax(1), lifespanCountdown(0) {}
+			};
+
+			struct EdgeData {
+				//! Graph of archetypes linked with this one
+				ArchetypeGraph graph;
+			};
+
+			struct PairIndexData {
+				//! Counts how many pair indices of one relation or target occupy a contiguous range.
+				struct PairCountBucket {
+					//! Relation or target entity id the bucket counts.
+					EntityId id;
+					//! First pair index within the archetype ids array.
+					uint8_t start;
+					//! Number of pair indices belonging to this relation or target.
+					uint8_t count;
+				};
+
+				PairIndexData() noexcept {}
+
+				//! Array of indices to all relationship pairs in ids, preserving archetype id order.
+				uint8_t pairIndexBuffer[ChunkHeader::MAX_COMPONENTS];
+				//! Array of indices to Is relationship pairs in ids
+				uint8_t pairsAsIndexBuffer[ChunkHeader::MAX_COMPONENTS];
+				uint8_t pairRelIndexBuffer[ChunkHeader::MAX_COMPONENTS];
+				uint8_t pairTgtIndexBuffer[ChunkHeader::MAX_COMPONENTS];
+				//! Compact per-relation pair cardinalities used by wildcard pair matching.
+				PairCountBucket pairRelCountBuffer[ChunkHeader::MAX_COMPONENTS];
+				PairCountBucket pairTgtCountBuffer[ChunkHeader::MAX_COMPONENTS];
+				//! Number of relationship pairs on the archetype
+				uint8_t pairCnt = 0;
+				//! Number of Is relationship pairs on the archetype
+				uint8_t pairCntIs = 0;
+				//! Number of occupied buckets in pairRelCountBuffer
+				uint8_t pairRelCountCnt = 0;
+				//! Number of occupied buckets in pairTgtCountBuffer
+				uint8_t pairTgtCountCnt = 0;
+
+				static PairIndexData* create(EntitySpan ids) {
+					auto* pPairIndex = mem::AllocHelper::alloc<PairIndexData>("ArchetypePairIndex");
+					(void)new (pPairIndex) PairIndexData();
+
+					uint8_t pairRelIndexCnt = 0;
+					uint8_t pairTgtIndexCnt = 0;
+
+					GAIA_FOR(ids.size()) {
+						if (!ids[i].pair())
+							continue;
+
+						pPairIndex->pairIndexBuffer[pPairIndex->pairCnt] = (uint8_t)i;
+						++pPairIndex->pairCnt;
+						add_pair_index_bucket(
+								pPairIndex->pairRelCountBuffer, pPairIndex->pairRelCountCnt, pPairIndex->pairRelIndexBuffer,
+								pairRelIndexCnt, (EntityId)ids[i].id(), (uint8_t)i);
+						add_pair_index_bucket(
+								pPairIndex->pairTgtCountBuffer, pPairIndex->pairTgtCountCnt, pPairIndex->pairTgtIndexBuffer,
+								pairTgtIndexCnt, (EntityId)ids[i].gen(), (uint8_t)i);
+
+						if (ids[i].id() == Is.id())
+							pPairIndex->pairsAsIndexBuffer[pPairIndex->pairCntIs++] = (uint8_t)i;
+					}
+
+					if (pPairIndex->pairCnt == 0) {
+						destroy(pPairIndex);
+						return nullptr;
+					}
+
+					return pPairIndex;
+				}
+
+				static void destroy(PairIndexData* pPairIndex) {
+					if (pPairIndex == nullptr)
+						return;
+
+					pPairIndex->~PairIndexData();
+					mem::AllocHelper::free("ArchetypePairIndex", pPairIndex);
+				}
+
+				static PairCountBucket&
+				ensure_pair_index_bucket(PairCountBucket* pBuckets, uint8_t& bucketCnt, EntityId id, uint8_t start) {
+					GAIA_FOR(bucketCnt) {
+						if (pBuckets[i].id == id)
+							return pBuckets[i];
+					}
+
+					GAIA_ASSERT(bucketCnt < ChunkHeader::MAX_COMPONENTS);
+					auto& bucket = pBuckets[bucketCnt++];
+					bucket.id = id;
+					bucket.start = start;
+					bucket.count = 0;
+					return bucket;
+				}
+
+				static void add_pair_index_bucket(
+						PairCountBucket* pBuckets, uint8_t& bucketCnt, uint8_t* pIndexBuffer, uint8_t& indexCnt, EntityId id,
+						uint8_t idsIdx) {
+					auto& bucket = ensure_pair_index_bucket(pBuckets, bucketCnt, id, indexCnt);
+					GAIA_ASSERT(indexCnt < ChunkHeader::MAX_COMPONENTS);
+					pIndexBuffer[indexCnt++] = idsIdx;
+					++bucket.count;
+				}
+
+				static uint32_t pair_count_from_buckets(const PairCountBucket* pBuckets, uint8_t bucketCnt, EntityId id) {
+					GAIA_FOR(bucketCnt) {
+						if (pBuckets[i].id == id)
+							return pBuckets[i].count;
+					}
+
+					return 0;
+				}
+
+				GAIA_NODISCARD static std::span<const uint8_t> pair_indices_from_buckets(
+						const PairCountBucket* pBuckets, uint8_t bucketCnt, const uint8_t* pIndexBuffer, EntityId id) {
+					GAIA_FOR(bucketCnt) {
+						if (pBuckets[i].id != id)
+							continue;
+
+						return {pIndexBuffer + pBuckets[i].start, pBuckets[i].count};
+					}
+
+					return {};
+				}
+
+				GAIA_NODISCARD uint32_t pair_matches(EntitySpan ids, Entity pair) const {
+					GAIA_ASSERT(pair.pair());
+
+					if (pair == Pair(All, All))
+						return pairCnt;
+
+					if (pair.id() == All.id())
+						return pair_count_from_buckets(pairTgtCountBuffer, pairTgtCountCnt, (EntityId)pair.gen());
+
+					if (pair.gen() == All.id())
+						return pair_count_from_buckets(pairRelCountBuffer, pairRelCountCnt, (EntityId)pair.id());
+
+					return core::has_if(
+										 ids,
+										 [pair](Entity entity) {
+											 return entity == pair;
+										 })
+										 ? 1u
+										 : 0u;
+				}
+
+				GAIA_NODISCARD Entity entity_from_pairs_as_idx(EntitySpan ids, uint32_t idx) const {
+					const auto idsIdx = pairsAsIndexBuffer[idx];
+					return ids[idsIdx];
+				}
+
+				GAIA_NODISCARD std::span<const uint8_t> pair_indices() const {
+					return {&pairIndexBuffer[0], pairCnt};
+				}
+
+				GAIA_NODISCARD std::span<const uint8_t> pair_rel_indices(Entity relation) const {
+					return pair_indices_from_buckets(
+							pairRelCountBuffer, pairRelCountCnt, pairRelIndexBuffer, (EntityId)relation.id());
+				}
+
+				GAIA_NODISCARD std::span<const uint8_t> pair_tgt_indices(Entity target) const {
+					return pair_indices_from_buckets(
+							pairTgtCountBuffer, pairTgtCountCnt, pairTgtIndexBuffer, (EntityId)target.id());
+				}
+			};
+
+			//! Pointer to the parent world
+			const World& m_world;
+			//! Component cache reference
+			const ComponentCache& m_cc;
+			//! Stable reference to parent world's world version
+			uint32_t& m_worldVersion;
+
+			ShapeData m_shape{};
+			StorageData m_storage{};
+			//! Mask of chunks with disabled entities
+			// cnt::dbitset m_disabledMask;
+			EdgeData m_edges{};
+			RuntimeData m_runtime{};
+			PairIndexData* m_pPairIndex = nullptr;
+
+			//! Constructor is hidden. Create archetypes via Archetype::Create
+			Archetype(const World& world, const ComponentCache& cc, uint32_t& worldVersion):
+					m_world(world), m_cc(cc), m_worldVersion(worldVersion) //
+			{}
+
+			~Archetype() {
+				// Delete all archetype chunks
+				for (auto* pChunk: m_storage.chunks)
+					Chunk::free(pChunk);
+				PairIndexData::destroy(m_pPairIndex);
+			}
+
+			//! Calculates offsets in memory at which important chunk data is going to be stored.
+			//! These offsets are use to setup the chunk data area layout. They are relative to the chunk data area
+			//! which is MemoryBlockAlignment-aligned.
+			void update_data_offsets() {
+				uintptr_t offset = 0;
+
+				// Versions
+				// We expect versions to fit in the first 256 bytes.
+				// With 32 components per archetype this gives us some headroom.
+				{
+					const auto cnt = (uint32_t)m_shape.properties.cntEntities + 1U; // + 1 for entities
+					GAIA_ASSERT(offset < 256);
+					m_shape.dataOffsets.firstByte_Versions = (ChunkDataVersionOffset)offset;
+					offset += sizeof(ComponentVersion) * cnt;
+				}
+
+				// Entity ids
+				{
+					offset += mem::padding<alignof(Entity)>(offset);
+
+					const auto cnt = m_shape.properties.cntEntities;
+					if (cnt != 0) {
+						m_shape.dataOffsets.firstByte_CompEntities = (ChunkDataOffset)offset;
+
+						// Storage-wise, treat the component array as it it were MAX_COMPONENTS long.
+						offset += sizeof(Entity) * ChunkHeader::MAX_COMPONENTS;
+					}
+				}
+
+				// Component records
+				{
+					offset += mem::padding<alignof(ComponentRecord)>(offset);
+
+					const auto cnt = m_shape.properties.cntEntities;
+					if (cnt != 0) {
+
+						m_shape.dataOffsets.firstByte_Records = (ChunkDataOffset)offset;
+
+						// Storage-wise, treat the component array as it it were MAX_COMPONENTS long.
+						offset += sizeof(ComponentRecord) * cnt;
+					}
+				}
+
+				// First entity offset
+				{
+					offset += mem::padding<alignof(Entity)>(offset);
+					m_shape.dataOffsets.firstByte_EntityData = (ChunkDataOffset)offset;
+				}
+			}
+
+			//! Estimates whether another entity still fits in the chunk described by \a comps.
+			//! \param cc Component metadata cache.
+			//! \param offs Current byte offset inside the chunk payload.
+			//! \param ids Entitiies laid out in the chunk.
+			//! \param comps Components laid out in the chunk.
+			//! \param cap Candidate entity count used for the estimate.
+			//! \param maxDataOffset Maximum byte offset available for component payloads.
+			//! \return True if the chunk can still fit the candidate entity count. False otherwise.
+			static bool est_max_entities_per_chunk(
+					uint32_t offs, const Entity* ids, const ComponentCacheItem* const* pItems, uint32_t cnt, uint32_t cap,
+					uint32_t maxDataOffset) {
+				GAIA_FOR(cnt) {
+					const auto comp = comp_from_item(ids[i], pItems[i]);
+					if (!component_uses_table_storage(comp))
+						continue;
+
+					const auto* pItem = pItems[i];
+					GAIA_ASSERT(pItem != nullptr);
+
+					// If we're beyond what the chunk could take, subtract one entity
+					offs = pItem->calc_new_mem_offset(offs, cap);
+					if (offs >= maxDataOffset)
+						return false;
+				}
+
+				return true;
+			}
+
+			static void reg_components(
+					Archetype& arch, EntitySpan ids, const ComponentCacheItem* const* pItems, uint8_t from, uint8_t to,
+					uint32_t& currOff, uint32_t count) {
+				auto& ofs = arch.m_shape.compOffs;
+
+				// Set component ids
+				GAIA_FOR2(from, to) arch.m_shape.ids[i] = ids[i];
+
+				// Calculate offsets and assign them indices according to our mappings
+				GAIA_FOR2(from, to) {
+					const auto comp = comp_from_item(ids[i], pItems[i]);
+					const auto compIdx = i;
+
+					if (!component_uses_table_storage(comp)) {
+						ofs[compIdx] = {};
+					} else {
+						const auto alig = comp.alig();
+						// Offsets are relative to the chunk data area which is only MemoryBlockAlignment-aligned
+						GAIA_ASSERT(alig <= MemoryBlockAlignment);
+						currOff = mem::align(currOff, alig);
+						ofs[compIdx] = (ChunkDataOffset)currOff;
+
+						currOff = pItems[i]->calc_new_mem_offset(currOff, count);
+					}
+				}
+			}
+
+		public:
+			Archetype(Archetype&&) = delete;
+			Archetype(const Archetype&) = delete;
+			Archetype& operator=(Archetype&&) = delete;
+			Archetype& operator=(const Archetype&) = delete;
+
+			//! Serializes the archetype: free-chunk index, list index, and each chunk.
+			//! \param s serializer to write to.
+			void save(ser::serializer& s) {
+				s.save(m_storage.firstFreeChunkIdx);
+				s.save(m_runtime.listIdx);
+
+				s.save((uint32_t)m_storage.chunks.size());
+				for (auto* pChunk: m_storage.chunks) {
+					s.save(pChunk->idx());
+					pChunk->save(s);
+				}
+			}
+
+			//! Deserializes the archetype, recreating missing chunks from the shape description.
+			//! \param s serializer to read from.
+			void load(ser::serializer& s) {
+				s.load(m_storage.firstFreeChunkIdx);
+				s.load(m_runtime.listIdx);
+
+				uint32_t chunkCnt = 0;
+				s.load(chunkCnt);
+				m_storage.chunks.resize(chunkCnt, nullptr);
+
+				GAIA_FOR(chunkCnt) {
+					uint32_t chunkIdx = 0;
+					s.load(chunkIdx);
+
+					auto* pChunk = m_storage.chunks[chunkIdx];
+					// If the chunk doesn't exist it means it's not a part of the initial setup.
+					if (pChunk == nullptr) {
+						pChunk = Chunk::create(
+								m_world, m_cc, chunkIdx, //
+								m_shape.properties.capacity, m_shape.properties.cntEntities, //
+								m_shape.properties.chunkDataBytes, //
+								m_worldVersion, m_shape.dataOffsets, m_shape.ids, m_shape.compItems, m_shape.compOffs);
+						m_storage.chunks[chunkIdx] = pChunk;
+					}
+
+					pChunk->set_idx(chunkIdx);
+					pChunk->load(s);
+				}
+			}
+
+			//! Sets the archetype index in the world list of active archetypes.
+			//! \param idx List index to store.
+			void list_idx(uint32_t idx) {
+				m_runtime.listIdx = idx;
+			}
+
+			//! Archetype index in the world list of active archetypes.
+			//! \return Archetype list index.
+			uint32_t list_idx() const {
+				return m_runtime.listIdx;
+			}
+
+			//! Compares the lookup checker component spans in archetype order.
+			//! \param other Other checker to compare against.
+			//! \return True when both spans match element-wise.
+			GAIA_NODISCARD bool cmp_comps(const ArchetypeLookupChecker& other) const {
+				return detail::cmp_comps(ids_view(), other.m_comps);
+			}
+
+			//! Creates a new archetype from a component term span.
+			//! \param world World owning the component cache.
+			//! \param archetypeId Archetype id to register.
+			//! \param worldVersion World version reference for chunk versioning.
+			//! \param ids Component and entity identifiers defining the shape.
+			//! \return Newly created archetype.
+			GAIA_NODISCARD static Archetype*
+			create(const World& world, ArchetypeId archetypeId, uint32_t& worldVersion, EntitySpan ids) {
+				const auto& cc = comp_cache(world);
+
+				auto* newArch = mem::AllocHelper::alloc<Archetype>("Archetype");
+				(void)new (newArch) Archetype(world, cc, worldVersion);
+
+				newArch->m_archetypeId = archetypeId;
+				newArch->m_shape.archetypeIdHash = ArchetypeIdLookupKey::calc(archetypeId);
+
+				// Calculate component mask. This will be used to early exit matching archetypes in simple queries.
+				// TODO: Performance could be improved if we're an archetype comming from one already known.
+				//       We could simply take the predecessor's mask and update it with the new ids.
+				newArch->m_shape.queryMask = build_entity_mask({ids.data(), ids.size()});
+
+				const auto cnt = (uint32_t)ids.size();
+				newArch->m_shape.properties.cntEntities = (uint8_t)ids.size();
+
+				auto compItems = std::span(&newArch->m_shape.compItems[0], cnt);
+				GAIA_FOR(cnt) compItems[i] = ids[i].pair() ? cc.find_pair_payload(ids[i]) : cc.find(ids[i]);
+
+				// Calculate offsets
+				newArch->update_data_offsets();
+				const auto& offs = newArch->m_shape.dataOffsets;
+				newArch->m_pPairIndex = PairIndexData::create(ids);
+
+				uint32_t compsSize = 0;
+				GAIA_FOR(cnt)
+				compsSize += comp_from_item(ids[i], newArch->m_shape.compItems[i]).size();
+
+				auto compute_max_entities_for_chunk = [&](uint32_t maxEntities, uint32_t dataLimit) -> uint32_t {
+					uint32_t low = 1;
+					uint32_t high = maxEntities;
+					uint32_t best = 1;
+
+					// Helper to test if a given entity count fits in the chunk
+					auto try_fit = [&](uint32_t count) -> bool {
+						const uint32_t currOff = offs.firstByte_EntityData + (count * sizeof(Entity));
+						return est_max_entities_per_chunk(currOff, ids.data(), newArch->m_shape.compItems, cnt, count, dataLimit);
+					};
+
+					// Binary search for the lookup
+					while (low <= high) {
+						uint32_t mid = (low + high) / 2;
+						if (try_fit(mid)) {
+							best = mid;
+							low = mid + 1;
+						} else {
+							high = mid - 1;
+						}
+					}
+
+					return best;
+				};
+
+				// Calculate the number of entities per chunk precisely so we can fit as many of them into a
+				// chunk as possible. Start at the smallest size class and only upsize when the archetype is
+				// wide enough that a smaller chunk can't hold the target row count.
+				constexpr uint32_t MinEntitiesPerChunk = 1536;
+				uint32_t maxItemsInArchetype = 0;
+
+				auto compute_max_entities_for_size_type = [&](uint32_t sizeType) -> uint32_t {
+					const uint32_t dataLimit = Chunk::chunk_data_bytes(mem_block_size(sizeType));
+					const uint32_t fixedSize = offs.firstByte_EntityData + 1;
+					GAIA_ASSERT(dataLimit > fixedSize);
+
+					// Theoretical maximum number of component rows we can fit into one chunk.
+					// This can be further reduced due to alignment and padding.
+					const uint32_t itemSize = compsSize + (uint32_t)sizeof(Entity);
+					const uint32_t maxEntities = (dataLimit - fixedSize) / itemSize;
+					return compute_max_entities_for_chunk(maxEntities > 0 ? maxEntities : 1, dataLimit);
+				};
+
+				if (archetypeId == 0) {
+					// Keep the root archetype compact enough to avoid growing the maximum row snapshot used by iterators.
+					maxItemsInArchetype = compute_max_entities_for_size_type(2);
+				} else {
+					for (uint32_t sizeType = 0; sizeType < MemoryBlockSizeClasses; ++sizeType) {
+						maxItemsInArchetype = compute_max_entities_for_size_type(sizeType);
+						if (maxItemsInArchetype >= MinEntitiesPerChunk)
+							break;
+					}
+				}
+
+				// MAX_CHUNK_ENTITIES is intentionally based on the 32 KiB class to keep iterator snapshots bounded.
+				// Wide archetypes can still use the 64 KiB-class blocks because their row count stays below this cap.
+				if (maxItemsInArchetype > ChunkHeader::MAX_CHUNK_ENTITIES)
+					maxItemsInArchetype = ChunkHeader::MAX_CHUNK_ENTITIES;
+
+				// Update the offsets according to the recalculated maxItemsInArchetype
+				auto currOff = offs.firstByte_EntityData + ((uint32_t)sizeof(Entity) * maxItemsInArchetype);
+				reg_components(
+						*newArch, ids, newArch->m_shape.compItems, (uint8_t)0, (uint8_t)ids.size(), currOff, maxItemsInArchetype);
+
+				newArch->m_shape.properties.capacity = (uint16_t)maxItemsInArchetype;
+				newArch->m_shape.properties.chunkDataBytes = (ChunkDataOffset)currOff;
+
+				return newArch;
+			}
+
+			//! Destroys the archetype and frees its memory.
+			//! \param pArchetype Archetype to destroy.
+			void static destroy(Archetype* pArchetype) {
+				GAIA_ASSERT(pArchetype != nullptr);
+				pArchetype->~Archetype();
+				mem::AllocHelper::free("Archetype", pArchetype);
+			}
+
+			//! Query mask describing which simple queries may match this archetype.
+			//! \return Query mask of the archetype shape.
+			QueryMask queryMask() const {
+				return m_shape.queryMask;
+			}
+
+			//! Archetype id hash used for graph edge storage.
+			//! \return Hash of the archetype id.
+			ArchetypeIdLookupKey::LookupHash id_hash() const {
+				return m_shape.archetypeIdHash;
+			}
+
+			//! Sets hashes for each component type and lookup.
+			//! \param hashLookup Hash used for archetype lookup purposes
+			void set_hashes(LookupHash hashLookup) {
+				m_shape.hashLookup = hashLookup;
+			}
+
+			//! Enables or disables the entity on a given row in the chunk.
+			//! \param pChunk Chunk the entity belongs to
+			//! \param row Row of the entity
+			//! \param enableEntity Enables the entity
+			//! \param recs Entity containers
+			void enable_entity(Chunk* pChunk, uint16_t row, bool enableEntity, EntityContainers& recs) {
+				pChunk->enable_entity(row, enableEntity, recs);
+				// m_disabledMask.set(pChunk->idx(), enableEntity ? true : pChunk->has_disabled_entities());
+			}
+
+			//! Removes a chunk from the list of chunks managed by their archetype and deletes its memory.
+			//! \param pChunk Chunk to remove from the list of managed archetypes
+			void del(Chunk* pChunk) {
+				// Make sure there are any chunks to delete
+				GAIA_ASSERT(!m_storage.chunks.empty());
+
+				const auto chunkIndex = pChunk->idx();
+
+				// Make sure the chunk is a part of the chunk array
+				GAIA_ASSERT(chunkIndex == core::get_index(m_storage.chunks, pChunk));
+
+				// Remove the chunk from the chunk array. We are swapping this chunk's entry
+				// with the last one in the array. Therefore, we first update the last item's
+				// index with the current chunk's index and then do the swapping.
+				m_storage.chunks.back()->set_idx(chunkIndex);
+				core::swap_erase(m_storage.chunks, chunkIndex);
+
+				// Delete the chunk now. Otherwise, if the chunk happened to be the last
+				// one we would end up overriding released memory.
+				Chunk::free(pChunk);
+			}
+
+			//! Tries to locate a chunk that has some space left for a new entity.
+			//! If not found a new chunk is created.
+			//! \warning Always used in tandem with try_update_free_chunk_idx() or remove_entity()
+			//! \return Chunk with free space, or a newly created chunk.
+			GAIA_NODISCARD Chunk* foc_free_chunk() {
+				const auto chunkCnt = m_storage.chunks.size();
+
+				if (chunkCnt > 0) {
+					for (uint32_t i = m_storage.firstFreeChunkIdx; i < m_storage.chunks.size(); ++i) {
+						auto* pChunk = m_storage.chunks[i];
+						GAIA_ASSERT(pChunk != nullptr);
+						const auto entityCnt = pChunk->size();
+						if (entityCnt < pChunk->capacity()) {
+							m_storage.firstFreeChunkIdx = i;
+							return pChunk;
+						}
+					}
+				}
+
+				// Make sure not too many chunks are allocated
+				GAIA_ASSERT(chunkCnt < UINT32_MAX);
+
+				// No free space found anywhere. Let's create a new chunk.
+				auto* pChunk = Chunk::create(
+						m_world, m_cc, chunkCnt, //
+						m_shape.properties.capacity, m_shape.properties.cntEntities, //
+						m_shape.properties.chunkDataBytes, //
+						m_worldVersion, m_shape.dataOffsets, m_shape.ids, m_shape.compItems, m_shape.compOffs);
+
+				m_storage.firstFreeChunkIdx = m_storage.chunks.size();
+				m_storage.chunks.push_back(pChunk);
+				return pChunk;
+			}
+
+			//! Tries to update the index of the first chunk that has space left
+			//! for at least one entity.
+			//! \warning Always use in tandem with foc_free_chunk()
+			void try_update_free_chunk_idx() {
+				// This is expected to be called only if there are any chunks
+				GAIA_ASSERT(!m_storage.chunks.empty());
+
+				auto* pChunk = m_storage.chunks[m_storage.firstFreeChunkIdx];
+				if (pChunk->size() >= pChunk->capacity())
+					++m_storage.firstFreeChunkIdx;
+			}
+
+			//! Tries to update the index of the first chunk that has space left
+			//! for at least one entity.
+			//! \warning Always use in tandem with foc_free_chunk() and remove_entity()
+			void try_update_free_chunk_idx(Chunk& chunkThatRemovedEntity) {
+				// This is expected to be called only if there are any chunks
+				GAIA_ASSERT(!m_storage.chunks.empty());
+
+				if (chunkThatRemovedEntity.idx() == m_storage.firstFreeChunkIdx)
+					return;
+
+				if (chunkThatRemovedEntity.idx() < m_storage.firstFreeChunkIdx) {
+					m_storage.firstFreeChunkIdx = chunkThatRemovedEntity.idx();
+					return;
+				}
+
+				auto* pChunk = m_storage.chunks[m_storage.firstFreeChunkIdx];
+				if (pChunk->size() >= pChunk->capacity())
+					++m_storage.firstFreeChunkIdx;
+			}
+
+			//! Removes an entity from the chunk.
+			//! \param chunk Chunk to remove the entity from
+			//! \param row Row of the entity
+			//! \param recs Entity containers
+			void remove_entity_raw(Chunk& chunk, uint16_t row, EntityContainers& recs) {
+				chunk.remove_entity(row, recs);
+				try_update_free_chunk_idx(chunk);
+			}
+
+			//! Removes an entity from the chunk and updates the chunk versions.
+			//! \param chunk Chunk to remove the entity from
+			//! \param row Row of the entity
+			//! \param recs Entity containers
+			void remove_entity(Chunk& chunk, uint16_t row, EntityContainers& recs) {
+				remove_entity_raw(chunk, row, recs);
+				chunk.update_versions();
+			}
+
+			//! Shape properties of this archetype.
+			//! \return Archetype properties.
+			GAIA_NODISCARD const Properties& props() const {
+				return m_shape.properties;
+			}
+
+			//! Chunks managed by this archetype.
+			//! \return Array of chunk pointers.
+			GAIA_NODISCARD const cnt::darray<Chunk*>& chunks() const {
+				return m_storage.chunks;
+			}
+
+			//! Hash of the component terms used for archetype lookup.
+			//! \return Component-term lookup hash.
+			GAIA_NODISCARD LookupHash lookup_hash() const {
+				return m_shape.hashLookup;
+			}
+
+			//! Span over the component and entity identifiers defining the archetype shape.
+			//! \return Identifier span.
+			GAIA_NODISCARD EntitySpan ids_view() const {
+				return {&m_shape.ids[0], m_shape.properties.cntEntities};
+			}
+
+			//! Span over the per-term component data offsets.
+			//! \return Component offset span.
+			GAIA_NODISCARD ChunkDataOffsetSpan comp_offs_view() const {
+				return {&m_shape.compOffs[0], m_shape.properties.cntEntities};
+			}
+
+			//! Returns the number of pairs registered in the archetype.
+			//! \return Number of pairs
+			GAIA_NODISCARD uint32_t pairs() const {
+				return m_pPairIndex != nullptr ? m_pPairIndex->pairCnt : 0;
+			}
+
+			//! Returns the number of Is pairs registered in the archetype.
+			//! \return Number of Is pairs
+			GAIA_NODISCARD uint32_t pairs_is() const {
+				return m_pPairIndex != nullptr ? m_pPairIndex->pairCntIs : 0;
+			}
+
+			//! Returns how many pair ids in this archetype match the provided wildcard-capable pair query.
+			//! This stays archetype-local because variable matching repeatedly probes a single candidate archetype.
+			//! \param pair Wildcard-capable pair query.
+			//! \return Number of matching pair ids in this archetype.
+			GAIA_NODISCARD uint32_t pair_matches(Entity pair) const {
+				return m_pPairIndex != nullptr ? m_pPairIndex->pair_matches(ids_view(), pair) : 0;
+			}
+
+			//! Resolves a relation-pair index to its pair entity.
+			//! \param idx Index within the archetype pair array.
+			//! \return Pair entity at \a idx.
+			GAIA_NODISCARD Entity entity_from_pairs_as_idx(uint32_t idx) const {
+				GAIA_ASSERT(m_pPairIndex != nullptr);
+				return m_pPairIndex->entity_from_pairs_as_idx(ids_view(), idx);
+			}
+
+			//! Indices of all relation pairs within the ids array.
+			//! \return Pair index span.
+			GAIA_NODISCARD std::span<const uint8_t> pair_indices() const {
+				return m_pPairIndex != nullptr ? m_pPairIndex->pair_indices() : std::span<const uint8_t>{};
+			}
+
+			//! Indices of pairs whose relation matches the given relation.
+			//! \param relation Relation entity to match.
+			//! \return Matching pair index span.
+			GAIA_NODISCARD std::span<const uint8_t> pair_rel_indices(Entity relation) const {
+				return m_pPairIndex != nullptr ? m_pPairIndex->pair_rel_indices(relation) : std::span<const uint8_t>{};
+			}
+
+			//! Indices of pairs whose target matches the given target.
+			//! \param target Target entity to match.
+			//! \return Matching pair index span.
+			GAIA_NODISCARD std::span<const uint8_t> pair_tgt_indices(Entity target) const {
+				return m_pPairIndex != nullptr ? m_pPairIndex->pair_tgt_indices(target) : std::span<const uint8_t>{};
+			}
+
+			//! Checks if an entity is a part of the archetype.
+			//! \param entity Entity
+			//! \return True if found. False otherwise.
+			GAIA_NODISCARD bool has(Entity entity) const {
+				return core::has_if(ids_view(), [&](Entity e) {
+					return e == entity;
+				});
+			}
+
+			//! Increments the number of terms observing this archetype.
+			void observed_terms_inc() {
+				GAIA_ASSERT(m_runtime.observedTermCnt < m_shape.properties.cntEntities);
+				++m_runtime.observedTermCnt;
+			}
+
+			//! Decrements the number of terms observing this archetype.
+			void observed_terms_dec() {
+				GAIA_ASSERT(m_runtime.observedTermCnt > 0);
+				--m_runtime.observedTermCnt;
+			}
+
+			//! Whether any observer term currently observes this archetype.
+			//! \return True when the observed-term counter is non-zero.
+			GAIA_NODISCARD bool has_observed_terms() const {
+				return m_runtime.observedTermCnt != 0;
+			}
+
+			//! Checks if component \a T is present in the chunk.
+			//! \tparam T Component or pair
+			//! \return True if the component is present. False otherwise.
+			template <typename T>
+			GAIA_NODISCARD bool has() const {
+				if constexpr (is_pair<T>::value) {
+					const auto rel = m_cc.get<typename T::rel>().entity;
+					const auto tgt = m_cc.get<typename T::tgt>().entity;
+					return has((Entity)Pair(rel, tgt));
+				} else {
+					const auto* pComp = m_cc.find<T>();
+					return pComp != nullptr && has(pComp->entity);
+				}
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Given a flat index, returns an entity at that index.
+			//! E.g., if there are 2 chunks, the first one with 10 entities and the second one with 5,
+			//! flat index of 12 means the second entity inside the second chunk.
+			//! \param flatIdx Flat index of entity inside the archetype
+			//! \return Entity at given flat index
+			template <bool Enabled>
+			Entity get_flat_entity(size_t flatIdx) const {
+				size_t offset = 0;
+				for (const auto* pChunk: chunks()) {
+					if (pChunk->empty())
+						continue;
+
+					uint32_t cnt = 0;
+					if constexpr (Enabled) {
+						cnt = pChunk->size_enabled();
+					} else {
+						cnt = pChunk->size_disabled();
+					}
+
+					if (flatIdx < offset + cnt) {
+						if constexpr (Enabled) {
+							const auto idx = (uint32_t)(flatIdx - offset) + pChunk->size_disabled();
+							return pChunk->entity_view()[idx];
+						} else {
+							const auto idx = (uint32_t)(flatIdx - offset);
+							return pChunk->entity_view()[idx];
+						}
+					}
+
+					offset += cnt;
+				}
+
+				GAIA_ASSERT(false);
+				return EntityBad;
+			}
+
+			//! Given a flat index, returns pointer to component data at that index.
+			//! E.g., if there are 2 chunks, the first one with 10 entities and the second one with 5,
+			//! flat index of 12 means component data for the second entity inside the second chunk.
+			//! \param compIdx Component index we are searching for
+			//! \param flatIdx Flat index of entity inside the archetype
+			//! \param[out] outEntity Entity belonging to the flatIdx
+			//! \return Pointer to component data at given flat index
+			template <bool Enabled>
+			const void* get_flat_comp_ptr(uint32_t compIdx, size_t flatIdx, Entity& outEntity) const {
+				size_t offset = 0;
+				for (const auto* pChunk: chunks()) {
+					if (pChunk->empty())
+						continue;
+
+					uint32_t cnt = 0;
+					if constexpr (Enabled) {
+						cnt = pChunk->size_enabled();
+					} else {
+						cnt = pChunk->size_disabled();
+					}
+
+					if (flatIdx < offset + cnt) {
+						if constexpr (Enabled) {
+							const auto idx = (uint32_t)(flatIdx - offset) + pChunk->size_disabled();
+							const auto* pData = pChunk->comp_ptr(compIdx, idx);
+							outEntity = pChunk->entity_view()[idx];
+							return pData;
+						} else {
+							const auto idx = (uint32_t)(flatIdx - offset);
+							const auto* pData = pChunk->comp_ptr(compIdx, idx);
+							outEntity = pChunk->entity_view()[idx];
+							return pData;
+						}
+					}
+
+					offset += cnt;
+				}
+
+				GAIA_ASSERT(false);
+				return nullptr;
+			}
+
+			//! Generic in-place quicksort across chunks
+			template <bool Enabled>
+			void sort_entities_inter(size_t low, size_t high, TSortByFunc func) {
+				while (low < high) {
+					const auto pivotIdx = low + (high - low) / 2;
+					Entity pivotEntity = get_flat_entity<Enabled>(pivotIdx);
+					if (pivotIdx != high) {
+						const Entity highEntity = get_flat_entity<Enabled>(high);
+						Chunk::swap_chunk_entities(const_cast<World&>(m_world), pivotEntity, highEntity);
+					}
+
+					size_t i = low;
+					for (size_t j = low; j < high; ++j) {
+						Entity jEntity = get_flat_entity<Enabled>(j);
+						if (func(m_world, &jEntity, &pivotEntity) < 0) {
+							if (i != j) {
+								Entity iEntity = get_flat_entity<Enabled>(i);
+								Chunk::swap_chunk_entities(const_cast<World&>(m_world), iEntity, jEntity);
+							}
+							++i;
+						}
+					}
+
+					{
+						Entity iEntity = get_flat_entity<Enabled>(i);
+						Chunk::swap_chunk_entities(const_cast<World&>(m_world), iEntity, pivotEntity);
+					}
+
+					//! Recurse into the smaller partition and iterate over the larger one so
+					//! ordered inputs cannot make recursion depth linear in the entity count.
+					if (i - low < high - i) {
+						if (low < i)
+							sort_entities_inter<Enabled>(low, i - 1, func);
+						low = i + 1;
+					} else {
+						if (i < high)
+							sort_entities_inter<Enabled>(i + 1, high, func);
+						if (i == 0)
+							return;
+						high = i - 1;
+					}
+				}
+			}
+
+			//! Generic in-place quicksort across chunks
+			template <bool Enabled>
+			void sort_entities_inter(
+					const ComponentCacheItem* pItem, uint32_t compIdx, size_t low, size_t high, TSortByFunc func) {
+				while (low < high) {
+					const auto pivotIdx = low + (high - low) / 2;
+					Entity pivotEntity;
+					(void)get_flat_comp_ptr<Enabled>(compIdx, pivotIdx, pivotEntity);
+					if (pivotIdx != high) {
+						Entity highEntity;
+						(void)get_flat_comp_ptr<Enabled>(compIdx, high, highEntity);
+						Chunk::swap_chunk_entities(const_cast<World&>(m_world), pivotEntity, highEntity);
+					}
+					const void* pPivotData = get_flat_comp_ptr<Enabled>(compIdx, high, pivotEntity);
+
+					size_t i = low;
+					for (size_t j = low; j < high; ++j) {
+						Entity jEntity;
+						const void* jData = get_flat_comp_ptr<Enabled>(compIdx, j, jEntity);
+						if (func(m_world, jData, pPivotData) < 0) {
+							if (i != j) {
+								Entity iEntity;
+								(void)get_flat_comp_ptr<Enabled>(compIdx, i, iEntity);
+								Chunk::swap_chunk_entities(const_cast<World&>(m_world), iEntity, jEntity);
+							}
+							++i;
+						}
+					}
+
+					{
+						Entity iEntity;
+						(void)get_flat_comp_ptr<Enabled>(compIdx, i, iEntity);
+						Chunk::swap_chunk_entities(const_cast<World&>(m_world), iEntity, pivotEntity);
+					}
+
+					if (i - low < high - i) {
+						if (low < i)
+							sort_entities_inter<Enabled>(pItem, compIdx, low, i - 1, func);
+						low = i + 1;
+					} else {
+						if (i < high)
+							sort_entities_inter<Enabled>(pItem, compIdx, i + 1, high, func);
+						if (i == 0)
+							return;
+						high = i - 1;
+					}
+				}
+			}
+
+			//! Sorts all entities in the archetypes according to the given function.
+			//! \param entity Entity to sort by
+			//! \param func Function to sort by
+			void sort_entities(Entity entity, TSortByFunc func) {
+				// TODO: We currently have to calculate the number of entities in the archetype from chunks.
+				//       Additionally, to get the right index we need to loop through chunks again because
+				//       the entities are not spread evenly among chunks (we can't just divide the index by
+				//       the number of chunks and module with the same number to get the index inside a chunk).
+				//       This is not optimal, and makes sorting more expensive.
+
+				if (entity == EntityBad) {
+					{
+						uint32_t entities = 0;
+						for (const auto* pChunk: m_storage.chunks)
+							entities += pChunk->size_enabled();
+						if (entities != 0)
+							sort_entities_inter<true>(0, entities - 1, func);
+					}
+					{
+						uint32_t entities = 0;
+						for (const auto* pChunk: m_storage.chunks)
+							entities += pChunk->size_disabled();
+						if (entities != 0)
+							sort_entities_inter<false>(0, entities - 1, func);
+					}
+				} else {
+					const auto* pItem = m_cc.find(entity);
+					GAIA_ASSERT(pItem != nullptr && "Trying to sort by a component that has not been registered");
+					if (pItem == nullptr)
+						return;
+
+					const auto compIdx = chunks()[0]->comp_idx(entity);
+					{
+						uint32_t entities = 0;
+						for (const auto* pChunk: m_storage.chunks)
+							entities += pChunk->size_enabled();
+						if (entities != 0)
+							sort_entities_inter<true>(pItem, compIdx, 0, entities - 1, func);
+					}
+					{
+						uint32_t entities = 0;
+						for (const auto* pChunk: m_storage.chunks)
+							entities += pChunk->size_disabled();
+						if (entities != 0)
+							sort_entities_inter<false>(pItem, compIdx, 0, entities - 1, func);
+					}
+				}
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Builds a graph edge from this archetype to the right archetype.
+			//! \param pArchetypeRight Target archetype
+			//! \param entity Entity to link
+			void build_graph_edges(Archetype* pArchetypeRight, Entity entity) {
+				// Loops can't happen
+				GAIA_ASSERT(pArchetypeRight != this);
+
+				m_edges.graph.add_edge_right(entity, pArchetypeRight->id(), pArchetypeRight->id_hash());
+				pArchetypeRight->build_graph_edges_left(this, entity);
+			}
+
+			//! Records a cached "del" graph edge from entity \a entity to this archetype.
+			//! \param pArchetypeLeft Owning archetype of \a entity.
+			//! \param entity Entity forming the left edge.
+			void build_graph_edges_left(Archetype* pArchetypeLeft, Entity entity) {
+				// Loops can't happen
+				GAIA_ASSERT(pArchetypeLeft != this);
+
+				m_edges.graph.add_edge_left(entity, pArchetypeLeft->id(), pArchetypeLeft->id_hash());
+			}
+
+			//! Removes the cached "add" edge for \a entity and propagates the delete to the right archetype.
+			//! \param pArchetypeRight Target archetype of the edge.
+			//! \param entity Entity whose edge is removed.
+			void del_graph_edges(Archetype* pArchetypeRight, Entity entity) {
+				// Loops can't happen
+				GAIA_ASSERT(pArchetypeRight != this);
+
+				m_edges.graph.del_edge_right(entity);
+				pArchetypeRight->del_graph_edges_left(this, entity);
+			}
+
+			//! Removes the cached "del" edge for \a entity after the matching "add" edge is removed.
+			//! \param pArchetypeLeft Owning archetype of \a entity.
+			//! \param entity Entity whose left edge is removed.
+			void del_graph_edges_left([[maybe_unused]] Archetype* pArchetypeLeft, Entity entity) {
+				// Loops can't happen
+				GAIA_ASSERT(pArchetypeLeft != this);
+
+				m_edges.graph.del_edge_left(entity);
+			}
+
+			//! Deletes a cached local "add" edge formed by \a entity.
+			//! Intended for stale edge cache recovery when the opposite archetype no longer exists.
+			//! \param entity Entity to remove
+			void del_graph_edge_right_local(Entity entity) {
+				m_edges.graph.del_edge_right(entity);
+			}
+
+			//! Deletes a cached local "del" edge formed by \a entity.
+			//! Intended for stale edge cache recovery when the opposite archetype no longer exists.
+			//! \param entity Entity to remove
+			void del_graph_edge_left_local(Entity entity) {
+				m_edges.graph.del_edge_left(entity);
+			}
+
+			//! Checks if an archetype graph "add" edge with entity \a entity exists.
+			//! \return Archetype id of the target archetype if the edge is found. ArchetypeIdBad otherwise.
+			//! \param entity Entity to find
+			GAIA_NODISCARD ArchetypeGraphEdge find_edge_right(Entity entity) const {
+				return m_edges.graph.find_edge_right(entity);
+			}
+
+			//! Checks if an archetype graph "del" edge with entity \a entity exists.
+			//! \return Archetype id of the target archetype if the edge is found. ArchetypeIdBad otherwise.
+			//! \param entity Entity to find
+			GAIA_NODISCARD ArchetypeGraphEdge find_edge_left(Entity entity) const {
+				return m_edges.graph.find_edge_left(entity);
+			}
+
+			//! Mutable view over the archetype "add" graph edges.
+			//! \return Right-edge container reference.
+			GAIA_NODISCARD auto& right_edges() {
+				return m_edges.graph.right_edges();
+			}
+
+			//! Const view over the archetype "add" graph edges.
+			//! \return Right-edge container reference.
+			GAIA_NODISCARD const auto& right_edges() const {
+				return m_edges.graph.right_edges();
+			}
+
+			//! Mutable view over the archetype "del" graph edges.
+			//! \return Left-edge container reference.
+			GAIA_NODISCARD auto& left_edges() {
+				return m_edges.graph.left_edges();
+			}
+
+			//! Const view over the archetype "del" graph edges.
+			//! \return Left-edge container reference.
+			GAIA_NODISCARD const auto& left_edges() const {
+				return m_edges.graph.left_edges();
+			}
+
+			//! Checks is there are no chunk in the archetype.
+			//! \return True when the archetype holds no chunks.
+			GAIA_NODISCARD bool empty() const {
+				return m_storage.chunks.empty();
+			}
+
+			//! Request deleting the archetype.
+			void req_del() {
+				m_runtime.deleteReq = 1;
+			}
+
+			//! Returns true if this archetype is requested to be deleted.
+			//! \return True when the archetype is requested to be deleted.
+			GAIA_NODISCARD bool is_req_del() const {
+				return m_runtime.deleteReq;
+			}
+
+			//! Sets maximal lifespan of an archetype.
+			//! A dying archetype keeps no more of its countdown than the new lifespan allows.
+			//! \param lifespan How many world updates an empty archetype is kept.
+			//!                 If zero, the archetype is kept indefinitely.
+			void set_max_lifespan(uint32_t lifespan) {
+				GAIA_ASSERT(lifespan <= MAX_ARCHETYPE_LIFESPAN);
+
+				m_runtime.lifespanCountdownMax = lifespan;
+				if (lifespan != 0 && m_runtime.lifespanCountdown > lifespan)
+					m_runtime.lifespanCountdown = lifespan;
+			}
+
+			//! Returns the maximal lifespan of the archetype.
+			//! If zero, the archetype it kept indefinitely.
+			//! \return Lifespan in world updates kept after the archetype empties, zero when indefinite.
+			GAIA_NODISCARD uint32_t max_lifespan() const {
+				return m_runtime.lifespanCountdownMax;
+			}
+
+			//! Checks is this chunk is dying
+			//! \return True when the archetype is in its dying lifespan countdown.
+			GAIA_NODISCARD bool dying() const {
+				return m_runtime.lifespanCountdown > 0;
+			}
+
+			//! Marks the chunk as dead
+			void die() {
+				m_runtime.dead = 1;
+			}
+
+			//! Checks is this chunk is dying
+			//! \return True when the archetype is dead and ready to be deleted.
+			GAIA_NODISCARD bool dead() const {
+				return m_runtime.dead == 1;
+			}
+
+			//! Starts the process of dying
+			void start_dying() {
+				GAIA_ASSERT(!dead());
+				m_runtime.lifespanCountdown = m_runtime.lifespanCountdownMax;
+			}
+
+			//! Makes the archetype alive again
+			void revive() {
+				GAIA_ASSERT(!dead());
+				m_runtime.lifespanCountdown = 0;
+				m_runtime.deleteReq = 0;
+			}
+
+			//! Updates internal lifespan
+			//! \return True if there is some lifespan left, false otherwise.
+			GAIA_NODISCARD bool progress_death() {
+				GAIA_ASSERT(dying());
+				GAIA_ASSERT(m_runtime.lifespanCountdownMax > 0);
+				--m_runtime.lifespanCountdown;
+				return dying();
+			}
+
+			//! Tells whether archetype is ready to be deleted
+			//! \return True when the archetype is empty, lifespan-bounded, and no longer dying.
+			GAIA_NODISCARD bool ready_to_die() const {
+				return m_runtime.lifespanCountdownMax > 0 && !dying() && empty();
+			}
+
+			//! Logs a diagnostic line for one entity, pair, or component of the archetype.
+			//! \param world World owning the entity types.
+			//! \param entity Entity to describe.
+			static void diag_entity(const World& world, Entity entity) {
+				if (entity.entity()) {
+					const auto name = entity_name(world, entity);
+					GAIA_LOG_N(
+							"    ent [%u:%u] %.*s", entity.id(), entity.gen(), (int)name.size(), name.empty() ? "" : name.data());
+				} else if (entity.pair()) {
+					const auto rel = entity_name(world, entity.id());
+					const auto tgt = entity_name(world, entity.gen());
+					GAIA_LOG_N(
+							"    pair [%u:%u] %.*s -> %.*s", entity.id(), entity.gen(), (int)rel.size(),
+							rel.empty() ? "" : rel.data(), (int)tgt.size(), tgt.empty() ? "" : tgt.data());
+				} else {
+					const auto& cc = comp_cache(world);
+					const auto& desc = cc.get(entity);
+					const auto symbol = desc.symbol_name();
+					GAIA_LOG_N(
+							"    hash:%016" PRIx64 ", size:%3u B, align:%3u B, [%u:%u] %.*s", desc.hashLookup.hash, desc.comp.size(),
+							desc.comp.alig(), desc.entity.id(), desc.entity.gen(), (int)symbol.size(), symbol.data());
+				}
+			}
+
+			//! Logs basic archetype diagnostics: sizes, chunk count, entity counts, and component ids.
+			//! \param world World owning the archetype.
+			//! \param archetype Archetype to describe.
+			static void diag_basic_info(const World& world, const Archetype& archetype) {
+				auto ids = archetype.ids_view();
+
+				// Calculate the number of entities in archetype
+				uint32_t entCnt = 0;
+				uint32_t entCntDisabled = 0;
+				for (const auto* chunk: archetype.m_storage.chunks) {
+					entCnt += chunk->size();
+					entCntDisabled += chunk->size_disabled();
+				}
+
+				// Calculate the number of components
+				uint32_t compsSize = 0;
+				{
+					const auto& p = archetype.props();
+					GAIA_FOR(p.cntEntities)
+					compsSize += comp_from_item(ids[i], archetype.m_shape.compItems[i]).size();
+				}
+
+				const auto chunkBytes = Chunk::chunk_total_bytes(archetype.props().chunkDataBytes);
+				const auto sizeType = mem_block_size_type(chunkBytes);
+				const auto allocSize = mem_block_size(sizeType) / 1024;
+
+				GAIA_LOG_N(
+						"aid:%u, "
+						"hash:%016" PRIx64 ", "
+						"chunks:%u (%uK), data:%u/%u B, "
+						"entities:%u/%u/%u",
+						archetype.id(), archetype.lookup_hash().hash, (uint32_t)archetype.chunks().size(), allocSize, compsSize,
+						archetype.props().chunkDataBytes, entCnt, entCntDisabled, archetype.props().capacity);
+
+				if (!ids.empty()) {
+					GAIA_LOG_N("  Components - count:%u", (uint32_t)ids.size());
+					for (const auto ent: ids)
+						diag_entity(world, ent);
+				}
+			}
+
+			//! Logs the archetype graph edge diagnostics.
+			//! \param world World owning the archetype.
+			//! \param archetype Archetype whose graph is described.
+			static void diag_graph_info(const World& world, const Archetype& archetype) {
+				archetype.m_edges.graph.diag(world);
+			}
+
+			//! Logs per-chunk diagnostics for all chunks of the archetype.
+			//! \param archetype Archetype whose chunks are described.
+			static void diag_chunk_info(const Archetype& archetype) {
+				const auto& chunks = archetype.m_storage.chunks;
+				if (chunks.empty())
+					return;
+
+				GAIA_LOG_N("  Chunks");
+				for (const auto* pChunk: chunks)
+					pChunk->diag();
+			}
+
+			//! Logs entity diagnostics for each entity of the archetype.
+			//! \param world World owning the archetype.
+			//! \param archetype Archetype whose entities are described.
+			static void diag_entity_info(const World& world, const Archetype& archetype) {
+				const auto& chunks = archetype.m_storage.chunks;
+				if (chunks.empty())
+					return;
+
+				GAIA_LOG_N("  Entities");
+				bool noEntities = true;
+				for (const auto* pChunk: chunks) {
+					if (pChunk->empty())
+						continue;
+					noEntities = false;
+
+					auto ev = pChunk->entity_view();
+					for (auto entity: ev)
+						diag_entity(world, entity);
+				}
+				if (noEntities)
+					GAIA_LOG_N("    N/A");
+			}
+
+			//! Performs diagnostics on a specific archetype. Prints basic info about it and the chunks it contains.
+			//! \param world Parent world
+			//! \param archetype Archetype to run diagnostics on
+			static void diag(const World& world, const Archetype& archetype) {
+				diag_basic_info(world, archetype);
+				diag_graph_info(world, archetype);
+				diag_chunk_info(archetype);
+				diag_entity_info(world, archetype);
+			}
+		};
+
+		//! Hashmap key for archetype lookup, combining a hash with the archetype base pointer.
+		//! Hash collisions fall back to component-span comparison when no archetype id is set.
+		class GAIA_API ArchetypeLookupKey final {
+			Archetype::LookupHash m_hash;
+			const ArchetypeBase* m_pArchetypeBase;
+
+		public:
+			//! Marks this key as a direct hash key.
+			static constexpr bool IsDirectHashKey = true;
+
+			ArchetypeLookupKey(): m_hash({0}), m_pArchetypeBase(nullptr) {}
+			explicit ArchetypeLookupKey(Archetype::LookupHash hash, const ArchetypeBase* pArchetypeBase):
+					m_hash(hash), m_pArchetypeBase(pArchetypeBase) {}
+
+			//! Hash of the archetype lookup value.
+			//! \return Archetype hash.
+			GAIA_NODISCARD size_t hash() const {
+				return (size_t)m_hash.hash;
+			}
+
+			//! Resolves the lookup key to its concrete archetype.
+			//! \return Archetype pointer, or null when the key holds no archetype.
+			GAIA_NODISCARD Archetype* archetype() const {
+				return (Archetype*)m_pArchetypeBase;
+			}
+
+			GAIA_NODISCARD bool operator==(const ArchetypeLookupKey& other) const {
+				// Hash doesn't match we don't have a match.
+				// Hash collisions are expected to be very unlikely so optimize for this case.
+				if GAIA_LIKELY (m_hash != other.m_hash)
+					return false;
+
+				const auto id = m_pArchetypeBase->id();
+				if (id == ArchetypeIdBad) {
+					const auto* pArchetype = (const Archetype*)other.m_pArchetypeBase;
+					const auto* pArchetypeLookupChecker = (const ArchetypeLookupChecker*)m_pArchetypeBase;
+					return pArchetype->cmp_comps(*pArchetypeLookupChecker);
+				}
+
+				// Real ArchetypeID is given. Compare the pointers.
+				// Normally we'd compare archetype IDs but because we do not allow archetype copies and all archetypes are
+				// unique it's guaranteed that if pointers are the same we have a match.
+				// This also saves a pointer indirection because we do not access the memory the pointer points to.
+				return m_pArchetypeBase == other.m_pArchetypeBase;
+			}
+		};
+
+		using ArchetypeMapByHash = cnt::map<ArchetypeLookupKey, Archetype*>;
+	} // namespace ecs
+} // namespace gaia

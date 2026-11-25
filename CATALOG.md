@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 20:18 UTC · 1778 entries · 446 vendored, 1332 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 20:34 UTC · 1784 entries · 448 vendored, 1336 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 732 | 173 | 559 |
+| [engines](#engines) — Game engines and engine subsystems | 738 | 175 | 563 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 20:18 UTC · 1778 entries · 446 vendored, 1332 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 732 entries
+**Game engines and engine subsystems** — 738 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -48,6 +48,7 @@ _Generated 2026-11-25 20:18 UTC · 1778 entries · 446 vendored, 1332 reference-
 | [arche](entries/engines/mlange-42-arche/README.md) | Arche -- Archetype-based Entity Component System (ECS) for Go. | go | MIT | reference | [mlange-42/arche](https://github.com/mlange-42/arche) @ `2025-04-01 (branch tip at catalogue time)` |
 | [Arduino-JoyCon-Library-for-Nintendo-Switch](entries/engines/squirelo-arduino-joycon-library-for-nintendo-switch/README.md) | Transform your ATmega32u4 based Arduino boards into Nintendo Switch-compatible gamepads! This library enables the Arduino Leonardo, Micro, or compatible clones  | c++ | LGPL-3.0 | reference | [squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch](https://github.com/squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch) @ `459b332cf47e` |
 | [ark](entries/engines/mlange-42-ark/README.md) | Ark -- Archetype-based Entity Component System (ECS) for Go. | go | Apache-2.0 | reference | [mlange-42/ark](https://github.com/mlange-42/ark) @ `2026-11-17 (branch tip at catalogue time)` |
+| [Ark.jl](entries/engines/ark-ecs-ark-jl/README.md) | Archetype-based Entity Component System (ECS) for Julia | julia | Apache-2.0 | reference | [ark-ecs/Ark.jl](https://github.com/ark-ecs/Ark.jl) @ `2026-11-13 (branch tip at catalogue time)` |
 | [armory](entries/engines/armory3d-armory/README.md) | 3D Engine with Blender Integration | c++ | Zlib | reference | [armory3d/armory](https://github.com/armory3d/armory) @ `7f7f588b5a50` |
 | [arsenal](entries/engines/katharostech-arsenal/README.md) | Blender game engine prototype written in Rust. | rust | unknown | reference | [katharostech/arsenal](https://github.com/katharostech/arsenal) @ `2023-01-18 (branch tip at catalogue time)` |
 | [awesome-decomp-games](entries/engines/submitgame-awesome-decomp-games/README.md) | Rated, auto-refreshed list of decompiled, recompiled & reverse-engineered games: decomps, static recomps, source ports, engine remakes, browser ports. | python | CC0-1.0 | vendored | [SubmitGame/awesome-decomp-games](https://github.com/SubmitGame/awesome-decomp-games) @ `c3d938df47b2` |
@@ -275,6 +276,7 @@ _Generated 2026-11-25 20:18 UTC · 1778 entries · 446 vendored, 1332 reference-
 | [FXGL](entries/engines/almasb-fxgl/README.md) | Java / JavaFX / Kotlin Game Library (Engine) | kotlin | MIT | reference | [AlmasB/FXGL](https://github.com/AlmasB/FXGL) @ `2026-10-16 (branch tip at catalogue time)` |
 | [Fyrox](entries/engines/fyroxengine-fyrox/README.md) | 3D and 2D game engine written in Rust | rust | MIT | vendored | [FyroxEngine/Fyrox](https://github.com/FyroxEngine/Fyrox) @ `e47bf0f35c9e` |
 | [g3nd](entries/engines/g3n-g3nd/README.md) | G3N Game Engine Demo | go | BSD-2-Clause | reference | [g3n/g3nd](https://github.com/g3n/g3nd) @ `2026-03-30 (branch tip at catalogue time)` |
+| [gaia-ecs](entries/engines/richardbiely-gaia-ecs/README.md) | A simple and powerful entity component system (ECS) written in C++17 | c++ | MIT | vendored | [richardbiely/gaia-ecs](https://github.com/richardbiely/gaia-ecs) @ `5fca8a09692b` |
 | [game-mixer](entries/engines/auburnsounds-game-mixer/README.md) | Audio mixer and playback library like SDL_mixer but without dependencies. | d | MIT | vendored | [AuburnSounds/game-mixer](https://github.com/AuburnSounds/game-mixer) @ `f64c464ab025` |
 | [game_inspector](entries/engines/andrey1994-game-inspector/README.md) | Tool to measure FPS, take screenshots, record video and draw overlay | python | MIT | reference | [Andrey1994/game_inspector](https://github.com/Andrey1994/game_inspector) @ `2019-06-30 (branch tip at catalogue time)` |
 | [GameDevMind](entries/engines/gonglei007-gamedevmind/README.md) | 最全面的游戏开发技术图谱(Game Development Map)。帮助游戏开发者们在已知问题上节省时间，省出更多的精力投入到更有创造性的工作中去。 | python | MIT | vendored | [gonglei007/GameDevMind](https://github.com/gonglei007/GameDevMind) @ `652be106e9df` |
@@ -432,6 +434,7 @@ _Generated 2026-11-25 20:18 UTC · 1778 entries · 446 vendored, 1332 reference-
 | [miniscript](entries/engines/mini2dx-miniscript/README.md) | A scripting library for Java-based games | java | MIT | reference | [mini2Dx/miniscript](https://github.com/mini2Dx/miniscript) @ `2022-08-28 (branch tip at catalogue time)` |
 | [mirage](entries/engines/natecurtiss-mirage/README.md) | A small 2D C# game engine I made in about 24 hours. | c# | MIT | reference | [natecurtiss/mirage](https://github.com/natecurtiss/mirage) @ `2022-06-21 (branch tip at catalogue time)` |
 | [miu2d](entries/engines/luckyyyyy-miu2d/README.md) | Miu2D is a 2D RPG game engine built with Rust + TypeScript + React + Canvas, designed for the Web platform. 剑侠情缘2/月影传说/新剑侠情缘网页复刻版 | typescript | MIT | reference | [luckyyyyy/miu2d](https://github.com/luckyyyyy/miu2d) @ `2026-09-06 (branch tip at catalogue time)` |
+| [Mix](entries/engines/arvidsson-mix/README.md) | C++ minimal entity-component system single header library  | c++ | MIT | reference | [arvidsson/Mix](https://github.com/arvidsson/Mix) @ `2018-08-23 (branch tip at catalogue time)` |
 | [mizu](entries/engines/sedyh-mizu/README.md) | Entity Component System framework for Ebitengine | go | MIT | vendored | [sedyh/mizu](https://github.com/sedyh/mizu) @ `f4fbe1877056` |
 | [MLEM](entries/engines/ellpeck-mlem/README.md) | Libraries for MonoGame and FNA that provide abstractions, quality of life improvements and additional features like a ui system and easy input handling. | c# | MIT | reference | [Ellpeck/MLEM](https://github.com/Ellpeck/MLEM) @ `2026-11-17 (branch tip at catalogue time)` |
 | [MonoGame](entries/engines/monogame/README.md) | XNA-compatible framework: content pipeline, gfx, input | c# | MS-PL | reference | [MonoGame/MonoGame](https://github.com/MonoGame/MonoGame) @ `76ed1c24f7db` |
@@ -568,6 +571,7 @@ _Generated 2026-11-25 20:18 UTC · 1778 entries · 446 vendored, 1332 reference-
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [raytilemap](entries/engines/raylib-extras-raytilemap/README.md) | A simple library to read and draw tilemaps from common tile editors, such as Tiled | c++ | Zlib | vendored | [raylib-extras/raytilemap](https://github.com/raylib-extras/raytilemap) @ `2ffb6480c955` |
 | [rbfx](entries/engines/rbfx-rbfx/README.md) | Lightweight Game Engine/Framework in C++17 with WYSIWYG Editor. Experimental C# bindings. | c++ | MIT | reference | [rbfx/rbfx](https://github.com/rbfx/rbfx) @ `2026-11-22 (branch tip at catalogue time)` |
+| [react-ecs](entries/engines/dustinlacewell-react-ecs/README.md) | An entity-component-system for React | typescript | MIT | vendored | [dustinlacewell/react-ecs](https://github.com/dustinlacewell/react-ecs) @ `9aac9f1e1e82` |
 | [react-native-game-engine](entries/engines/bberak-react-native-game-engine/README.md) | A lightweight Game Engine for React Native 🕹⚡🎮 | javascript | MIT | reference | [bberak/react-native-game-engine](https://github.com/bberak/react-native-game-engine) @ `2024-12-31 (branch tip at catalogue time)` |
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redalert2-recomp](entries/engines/sp00nznet-redalert2-recomp/README.md) | Static recompilation of Command & Conquer: Red Alert 2 / Yuri's Revenge (Westwood, 2000-01) to native C, with the remaster the engine never got: a D3D11 present | c | MIT | reference | [sp00nznet/redalert2-recomp](https://github.com/sp00nznet/redalert2-recomp) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -652,6 +656,7 @@ _Generated 2026-11-25 20:18 UTC · 1778 entries · 446 vendored, 1332 reference-
 | [TheXTech — core](entries/engines/thextech-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-3.0 | reference | [Wohlstand/TheXTech](https://github.com/Wohlstand/TheXTech) @ `32ac864` |
 | [ThreeRT](entries/engines/meshy-dev-threert/README.md) | Hardware ray-traced three.js: a real-time path tracer behind a three.js-style API. Rust + wgpu engine, TypeScript scene and gameplay packages. | rust | MIT | reference | [meshy-dev/ThreeRT](https://github.com/meshy-dev/ThreeRT) @ `167a374744d6` |
 | [thrive — engine](entries/engines/thrive-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
+| [thyseus](entries/engines/jaimegensler-thyseus/README.md) | An archetypal Entity Component System, built entirely in Typescript | typescript | MIT | reference | [JaimeGensler/thyseus](https://github.com/JaimeGensler/thyseus) @ `2024-05-06 (branch tip at catalogue time)` |
 | [tick-knock](entries/engines/mayakwd-tick-knock/README.md) | Small and powerful, type-safe and easy-to-use Entity-Component-System (ECS) library written in TypeScript | typescript | MIT | reference | [mayakwd/tick-knock](https://github.com/mayakwd/tick-knock) @ `2026-10-01 (branch tip at catalogue time)` |
 | [TiledCS](entries/engines/thebonejarmer-tiledcs/README.md) | TiledCS is a dotnet library for loading Tiled tilesets and maps | c# | MIT | reference | [TheBoneJarmer/TiledCS](https://github.com/TheBoneJarmer/TiledCS) @ `2024-08-31 (branch tip at catalogue time)` |
 | [tocenter](entries/engines/silentsokolov-tocenter/README.md) | ToCenter is a video game written in Rust using the ggez engine and the ECS library. | rust | unknown | reference | [silentsokolov/tocenter](https://github.com/silentsokolov/tocenter) @ `2022-11-14 (branch tip at catalogue time)` |
@@ -674,6 +679,7 @@ _Generated 2026-11-25 20:18 UTC · 1778 entries · 446 vendored, 1332 reference-
 | [unity-google-drive](entries/engines/elringus-unity-google-drive/README.md) | Google Drive SDK for the Unity game engine | c# | MIT | vendored | [elringus/unity-google-drive](https://github.com/elringus/unity-google-drive) @ `ac3f7da2013c` |
 | [unity-raw-input](entries/engines/elringus-unity-raw-input/README.md) | Windows Raw Input wrapper for Unity game engine | c# | MIT | reference | [elringus/unity-raw-input](https://github.com/elringus/unity-raw-input) @ `2025-10-15 (branch tip at catalogue time)` |
 | [Unity-SharedSpatialAnchors](entries/engines/oculus-samples-unity-sharedspatialanchors/README.md) | Unity-SharedSpatialAnchors was built to demonstrate how to use the Shared Spatial Anchors API, available in the Meta XR Core SDK for the Unity game engine.  | c# | MIT | vendored | [oculus-samples/Unity-SharedSpatialAnchors](https://github.com/oculus-samples/Unity-SharedSpatialAnchors) @ `9e57e76279cb` |
+| [Unity-Smoothed-Particle-Hydrodynamics](entries/engines/gornhoth-unity-smoothed-particle-hydrodynamics/README.md) | SPH in the Unity engine implemented in three different ways using MonoBehaviour, Entity-Component-System, and ComputeShader | c# | MIT | reference | [Gornhoth/Unity-Smoothed-Particle-Hydrodynamics](https://github.com/Gornhoth/Unity-Smoothed-Particle-Hydrodynamics) @ `2022-07-05 (branch tip at catalogue time)` |
 | [Unity3D-Mario-Kart-Racing-Game](entries/engines/ishaan35-unity3d-mario-kart-racing-game/README.md) | https://www.youtube.com/watch?v=s_nEniWLLgo. This is a 3D Mario kart game created with the unity game engine with C#. Kart racer supports items, anti-gravity mo | c# | unknown | reference | [Ishaan35/Unity3D-Mario-Kart-Racing-Game](https://github.com/Ishaan35/Unity3D-Mario-Kart-Racing-Game) @ `2026-03-23 (branch tip at catalogue time)` |
 | [UnityGameFramework](entries/engines/ellanjiang-unitygameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | reference | [EllanJiang/UnityGameFramework](https://github.com/EllanJiang/UnityGameFramework) @ `2023-05-21 (branch tip at catalogue time)` |
 | [UnityHexagonLibrary2d](entries/engines/ycarowr-unityhexagonlibrary2d/README.md) | A library to manage 2D hexagonal tiles in Unity. | c# | MIT | reference | [ycarowr/UnityHexagonLibrary2d](https://github.com/ycarowr/UnityHexagonLibrary2d) @ `2021-04-17 (branch tip at catalogue time)` |

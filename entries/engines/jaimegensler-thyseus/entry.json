@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:34:40Z",
+ "category": "engines",
+ "commit": "2024-05-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JaimeGensler/thyseus \u2014 An archetypal Entity Component System, built entirely in Typescript",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "thyseus",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "jaimegensler-thyseus",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 85,
+ "system": "An archetypal Entity Component System, built entirely in Typescript",
+ "upstream": "https://github.com/JaimeGensler/thyseus",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,6141 @@
+#include "test_common.h"
+
+namespace {
+	//! Marker type used by tests to request World::uquery().
+	struct QueryUncached {};
+
+	struct DirectTypedPositionSoA {
+		GAIA_LAYOUT(SoA);
+		float x, y, z;
+	};
+
+	struct ReductionVelocity {
+		float x, y, z;
+	};
+} // namespace
+
+TEST_CASE("Query - empty storage is copyable") {
+	ecs::detail::QueryImplStorage source;
+	ecs::detail::QueryImplStorage copy(source);
+	ecs::detail::QueryImplStorage assigned;
+	assigned = source;
+}
+
+TEST_CASE("Query - maximum term capacity is usable") {
+	TestWorld twld;
+
+	ecs::Entity terms[ecs::MAX_ITEMS_IN_QUERY]{};
+	const auto entity = wld.add();
+	auto query = wld.uquery();
+	GAIA_FOR(ecs::MAX_ITEMS_IN_QUERY) {
+		terms[i] = wld.add();
+		wld.add(entity, terms[i]);
+		query.all(terms[i]);
+	}
+
+	CHECK(query.count() == 1);
+	expect_exact_entities(query, {entity});
+}
+
+TEST_CASE("Query Filter - maximum changed term capacity is usable") {
+	TestWorld twld;
+
+	ecs::Entity terms[ecs::MAX_ITEMS_IN_QUERY]{};
+	const auto entity = wld.add();
+	auto query = wld.uquery();
+	GAIA_FOR(ecs::MAX_ITEMS_IN_QUERY) {
+		terms[i] = wld.add();
+		wld.add(entity, terms[i]);
+		query.all(terms[i]);
+	}
+	GAIA_FOR(ecs::MAX_ITEMS_IN_QUERY) query.changed(terms[i]);
+
+	CHECK(query.count() == 1);
+	expect_exact_entities(query, {entity});
+}
+
+TEST_CASE("Query - assignment releases overwritten cached query") {
+	TestWorld twld;
+
+	const auto entity = wld.add();
+	wld.add<Position>(entity, {1.0f, 2.0f, 3.0f});
+	wld.add<Acceleration>(entity, {4.0f, 5.0f, 6.0f});
+
+	CHECK(wld.test_query_cache_count() == 0);
+
+	{
+		auto retained = wld.query().all<Position>();
+		CHECK(retained.count() == 1);
+		CHECK(wld.test_query_cache_count() == 1);
+
+		retained = wld.query().all<Acceleration>();
+		CHECK(retained.count() == 1);
+		CHECK(wld.test_query_cache_count() == 1);
+
+		auto source = wld.query().all<Position>().all<Acceleration>();
+		CHECK(source.count() == 1);
+		CHECK(wld.test_query_cache_count() == 2);
+
+		retained = source;
+		CHECK(retained.count() == 1);
+		CHECK(wld.test_query_cache_count() == 1);
+	}
+
+	CHECK(wld.test_query_cache_count() == 0);
+}
+
+TEST_CASE("Query - cleanup invalidates retained query state") {
+	TestWorld twld;
+	bool cached = true;
+	bool shared = false;
+	SUBCASE("Cached") {}
+	SUBCASE("Shared") {
+		shared = true;
+	}
+	SUBCASE("Uncached") {
+		cached = false;
+	}
+
+	auto retained = wld.query();
+	if (!cached)
+		retained = wld.uquery();
+	if (shared)
+		retained.scope(ecs::QueryCacheScope::Shared);
+	retained.all<Position>();
+	const auto oldEntity = wld.add();
+	wld.add<Position>(oldEntity, {1, 2, 3});
+	CHECK(retained.count() == 1);
+	auto beforeCleanupCopy = retained;
+
+	wld.cleanup();
+	// Reuse both query slots and component ids for unrelated state.
+	const auto newEntity = wld.add();
+	wld.add<Acceleration>(newEntity, {4, 5, 6});
+	auto replacement = wld.query().all(ecs::Core);
+	const auto replacementCount = replacement.count();
+	CHECK(replacementCount > 0);
+	CHECK_FALSE(retained.is_cached());
+	CHECK_FALSE(beforeCleanupCopy.is_cached());
+
+	retained.reset();
+	auto afterCleanupCopy = beforeCleanupCopy;
+	auto moved = GAIA_MOV(beforeCleanupCopy);
+	for (auto* query: {&retained, &afterCleanupCopy, &moved}) {
+		CHECK(query->count() == 0);
+		CHECK(query->empty());
+		uint32_t count = 0;
+		query->each([&](ecs::Entity) {
+			++count;
+		});
+		CHECK(count == 0);
+		query->each([&](ecs::Iter&) {
+			++count;
+		});
+		CHECK(count == 0);
+		cnt::darray<ecs::Entity> entities;
+		query->arr(entities);
+		CHECK(entities.empty());
+	}
+	CHECK(replacement.is_cached());
+	CHECK(replacement.count() == replacementCount);
+
+	// Reauthoring starts with the new world's ids, not the previous filter.
+	retained.all<Acceleration>();
+	expect_exact_entities(retained, {newEntity});
+	uint32_t typedCount = 0;
+	retained.each([&](const Acceleration& value) {
+		CHECK(value.x == 4);
+		++typedCount;
+	});
+	CHECK(typedCount == 1);
+	CHECK(retained.scope() == (shared ? ecs::QueryCacheScope::Shared : ecs::QueryCacheScope::Local));
+}
+
+TEST_CASE("Query - stale query lifetime cannot release replacement state") {
+	TestWorld twld;
+	auto replacement = wld.query();
+	{
+		auto stale = wld.query().all<Position>();
+		(void)stale.count();
+		wld.cleanup();
+		replacement = wld.query().all(ecs::Core);
+		(void)replacement.count();
+		CHECK(wld.test_query_cache_count() == 1);
+
+		SUBCASE("Destruction") {}
+		SUBCASE("Explicit destroy") {
+			stale.destroy();
+		}
+		SUBCASE("Copy and assignment") {
+			auto copy = stale;
+			auto assigned = wld.query();
+			assigned = stale;
+			stale = wld.query();
+		}
+	}
+	CHECK(replacement.is_cached());
+	CHECK(wld.test_query_cache_count() == 1);
+	CHECK(replacement.count() > 0);
+}
+
+TEST_CASE("Query - cleanup invalidates pending builder commands") {
+	TestWorld twld;
+	for (uint32_t cycle = 0; cycle < 3; ++cycle) {
+		auto pending = wld.query().all<Position>();
+		auto pendingCopy = pending;
+		auto uncached = wld.uquery().all<Position>();
+		wld.cleanup();
+		auto replacement = wld.query().all(ecs::Core);
+		CHECK(pending.count() == 0);
+		CHECK(pendingCopy.count() == 0);
+		CHECK(uncached.count() == 0);
+		CHECK(replacement.count() > 0);
+		uint32_t count = 0;
+		replacement.each([&](ecs::Entity entity) {
+			CHECK(wld.has(entity, ecs::Core));
+			++count;
+		});
+		CHECK(count > 0);
+	}
+}
+
+TEST_CASE("Query - cleanup allows authoring with new world state") {
+	TestWorld twld;
+	auto query = wld.query().all<Position>().reads<Position>();
+	(void)query.count();
+	wld.cleanup();
+	CHECK(query.id() == ecs::QueryIdBad);
+	CHECK(query.gen() == ecs::QueryIdBad);
+	CHECK(query.custom_reads().empty());
+
+	const auto entity = wld.add();
+	wld.add<Acceleration>(entity, {4, 5, 6});
+	const auto relation = wld.add();
+	wld.add(entity, ecs::Pair(relation, entity));
+	int context = 0;
+	query.ctx(&context).main_thread().cache_src_trav(8);
+	SUBCASE("Access before terms") {
+		query.reads<Acceleration>().all<Acceleration>();
+		CHECK(query.custom_reads().size() == 1);
+	}
+	SUBCASE("Variable before terms") {
+		query.var_name(ecs::Var0, "source").set_var("source", entity);
+		query.all(ecs::Pair(relation, ecs::Var0)).all<Acceleration>();
+		query.set_var("source", entity);
+	}
+	SUBCASE("Expression variables") {
+		query.add("(%e,$source), Acceleration", relation.value()).set_var("source", entity);
+	}
+	SUBCASE("Pending builder after cleanup") {
+		query.all<Acceleration&>().no_access();
+		CHECK(query.access(wld.add<Acceleration>().entity) == ecs::QueryAccess::None);
+	}
+	expect_exact_entities(query, {entity});
+	CHECK(query.ctx() == &context);
+	CHECK(query.main_thread_required());
+	CHECK(query.cache_src_trav() == 8);
+}
+
+TEST_CASE("Query - QueryResult") {
+	SUBCASE("Cached query") {
+		Test_Query_QueryResult<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_QueryResult<QueryUncached>();
+	}
+	SUBCASE("Caching") {
+		struct Player {};
+		struct Health {
+			uint32_t value;
+		};
+
+		TestWorld twld;
+
+		const auto player = wld.add();
+		wld.build(player).add<Player>().add<Health>();
+
+		uint32_t matches = 0;
+		auto qp = wld.query().all<Health>().all<Player>();
+		qp.each([&matches]() {
+			++matches;
+		});
+		CHECK(matches == 1);
+
+		// Add new entity with some new component. Creates a new archetype.
+		const auto something = wld.add();
+		wld.add<Something>(something);
+
+		// We still need to match the player entity once
+		matches = 0;
+		qp.each([&matches]() {
+			++matches;
+		});
+		CHECK(matches == 1);
+
+		// New the new item also has the health component
+		wld.add<Health>(something);
+
+		// We still need to match the player entity once
+		matches = 0;
+		qp.each([&matches]() {
+			++matches;
+		});
+		CHECK(matches == 1);
+	}
+}
+
+TEST_CASE("Query - iterator local reduction updates visible rows") {
+	TestWorld twld;
+
+	const auto e0 = wld.add();
+	wld.add<Position>(e0, {1.0f, 2.0f, 3.0f});
+	wld.add<ReductionVelocity>(e0, {10.0f, 20.0f, 30.0f});
+
+	const auto e1 = wld.add();
+	wld.add<Position>(e1, {4.0f, 5.0f, 6.0f});
+	wld.add<ReductionVelocity>(e1, {1.0f, 2.0f, 3.0f});
+	wld.enable(e1, false);
+
+	auto q = wld.query().all<Position&>().all<ReductionVelocity>();
+	constexpr float dt = 0.5f;
+
+	auto update = [&](ecs::Constraints constraints) {
+		float total = 0.0f;
+		q.each(
+				[&](ecs::Iter& it) {
+					auto p = it.view_mut<Position>(0);
+					auto v = it.view<ReductionVelocity>(1);
+
+					float localTotal = 0.0f;
+					GAIA_EACH(it) {
+						p[i].x += v[i].x * dt;
+						p[i].y += v[i].y * dt;
+						p[i].z += v[i].z * dt;
+						localTotal += p[i].x + p[i].y + p[i].z;
+					}
+					total += localTotal;
+				},
+				constraints);
+		return total;
+	};
+
+	CHECK(update(ecs::Constraints::EnabledOnly) == doctest::Approx(36.0f));
+	const auto p0 = wld.get<Position>(e0);
+	CHECK(p0.x == doctest::Approx(6.0f));
+	CHECK(p0.y == doctest::Approx(12.0f));
+	CHECK(p0.z == doctest::Approx(18.0f));
+
+	const auto p1Before = wld.get<Position>(e1);
+	CHECK(p1Before.x == doctest::Approx(4.0f));
+	CHECK(p1Before.y == doctest::Approx(5.0f));
+	CHECK(p1Before.z == doctest::Approx(6.0f));
+
+	CHECK(update(ecs::Constraints::DisabledOnly) == doctest::Approx(18.0f));
+	const auto p1 = wld.get<Position>(e1);
+	CHECK(p1.x == doctest::Approx(4.5f));
+	CHECK(p1.y == doctest::Approx(6.0f));
+	CHECK(p1.z == doctest::Approx(7.5f));
+}
+
+TEST_CASE("Query - query plan classification") {
+	using PlanMode = ecs::detail::QueryImpl::QueryPlanMode;
+	using PayloadKind = ecs::detail::QueryImpl::ExecPayloadKind;
+	auto expect_materialized_entities = [](auto& query, std::initializer_list<ecs::Entity> expected) {
+		const bool expectedEmpty = expected.size() == 0;
+		CHECK(query.empty() == expectedEmpty);
+		CHECK(query.count() == expected.size());
+		expect_exact_entities(query, expected);
+
+		cnt::darr<ecs::Entity> actual;
+		query.arr(actual);
+		CHECK(actual.size() == expected.size());
+		for (const auto exp: expected) {
+			bool found = false;
+			for (const auto got: actual) {
+				if (got != exp)
+					continue;
+				found = true;
+				break;
+			}
+			CHECK(found);
+		}
+	};
+
+	TestWorld twld;
+	const auto e = wld.add();
+	wld.add<Position>(e, {1.0f, 2.0f, 3.0f});
+	const auto eDisabled = wld.add();
+	wld.add<Position>(eDisabled, {4.0f, 5.0f, 6.0f});
+	wld.enable(eDisabled, false);
+
+	auto q = wld.query().all<Position>();
+	const auto directPlan = q.test_typed_plan([](const Position&) {});
+	CHECK(directPlan.mode == PlanMode::DirectDense);
+	CHECK(directPlan.flags == ecs::detail::QueryImpl::QueryPlanFlag_None);
+	CHECK(directPlan.idxFrom < directPlan.idxTo);
+
+	auto qMissing = wld.query().all<Scale>();
+	const auto emptyTypedPlan = qMissing.test_typed_plan([](const Scale&) {});
+	CHECK(emptyTypedPlan.mode == PlanMode::Empty);
+	CHECK(emptyTypedPlan.idxFrom == emptyTypedPlan.idxTo);
+
+	const auto emptyIterPlan = qMissing.test_iter_plan();
+	CHECK(emptyIterPlan.mode == PlanMode::Empty);
+	CHECK(emptyIterPlan.idxFrom == emptyIterPlan.idxTo);
+
+	const auto iterPlan = q.test_iter_plan();
+	CHECK(iterPlan.mode == PlanMode::DirectDense);
+	CHECK(iterPlan.flags == ecs::detail::QueryImpl::QueryPlanFlag_None);
+	CHECK(iterPlan.idxFrom < iterPlan.idxTo);
+
+	const auto iterAcceptAllPlan = q.test_iter_plan(ecs::Constraints::AcceptAll);
+	CHECK(iterAcceptAllPlan.mode == PlanMode::DirectDense);
+	CHECK(iterAcceptAllPlan.flags == ecs::detail::QueryImpl::QueryPlanFlag_None);
+	CHECK(iterAcceptAllPlan.idxFrom < iterAcceptAllPlan.idxTo);
+
+	const auto iterDisabledPlan = q.test_iter_plan(ecs::Constraints::DisabledOnly);
+	CHECK(iterDisabledPlan.mode == PlanMode::DirectDense);
+	CHECK(iterDisabledPlan.flags == ecs::detail::QueryImpl::QueryPlanFlag_None);
+	CHECK(iterDisabledPlan.idxFrom < iterDisabledPlan.idxTo);
+
+	const auto animal = wld.add();
+	const auto mammal = wld.add();
+	const auto wolf = wld.add();
+	wld.add(mammal, ecs::Pair(ecs::Is, animal));
+	wld.add(wolf, ecs::Pair(ecs::Is, mammal));
+
+	auto qEntitySeed = wld.query().is(animal);
+	const auto entitySeedTypedPlan = qEntitySeed.test_typed_plan([](ecs::Entity) {});
+	CHECK(entitySeedTypedPlan.mode == PlanMode::EntitySeed);
+	CHECK(entitySeedTypedPlan.payloadKind == PayloadKind::Plain);
+	CHECK(entitySeedTypedPlan.idxFrom == 0);
+	CHECK(entitySeedTypedPlan.idxTo == 0);
+	const auto entitySeedIterPlan = qEntitySeed.test_iter_plan();
+	CHECK(entitySeedIterPlan.mode == PlanMode::EntitySeed);
+	CHECK(entitySeedIterPlan.payloadKind == PayloadKind::Plain);
+	expect_materialized_entities(qEntitySeed, {animal, mammal, wolf});
+
+	auto qDirectDense = wld.query().is(animal, ecs::QueryTermOptions{}.direct());
+	const auto directDenseTypedPlan = qDirectDense.test_typed_plan([](ecs::Entity) {});
+	CHECK(directDenseTypedPlan.mode == PlanMode::DirectDense);
+	const auto directDenseIterPlan = qDirectDense.test_iter_plan();
+	CHECK(directDenseIterPlan.mode == PlanMode::DirectDense);
+	expect_materialized_entities(qDirectDense, {mammal});
+
+	auto qInEntitySeed = wld.query().in(animal);
+	const auto inEntitySeedPlan = qInEntitySeed.test_typed_plan([](ecs::Entity) {});
+	CHECK(inEntitySeedPlan.mode == PlanMode::EntitySeed);
+	const auto inEntitySeedIterPlan = qInEntitySeed.test_iter_plan();
+	CHECK(inEntitySeedIterPlan.mode == PlanMode::EntitySeed);
+	expect_materialized_entities(qInEntitySeed, {mammal, wolf});
+
+	uint32_t enabledRows = 0;
+	q.each([&](ecs::Iter& it) {
+		enabledRows += it.size();
+	});
+	CHECK(enabledRows == 1);
+
+	uint32_t acceptAllRows = 0;
+	q.each(
+			[&](ecs::Iter& it) {
+				acceptAllRows += it.size();
+			},
+			ecs::Constraints::AcceptAll);
+	CHECK(acceptAllRows == 2);
+
+	uint32_t disabledRows = 0;
+	q.each(
+			[&](ecs::Iter& it) {
+				disabledRows += it.size();
+			},
+			ecs::Constraints::DisabledOnly);
+	CHECK(disabledRows == 1);
+
+	auto qChanged = wld.query().all<Position>().changed<Position>();
+	const auto filteredPlan = qChanged.test_typed_plan([](const Position&) {});
+	CHECK(filteredPlan.mode == PlanMode::DirectDense);
+	CHECK((filteredPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Filtered) != 0);
+	CHECK(filteredPlan.idxFrom < filteredPlan.idxTo);
+
+	const auto filteredIterPlan = qChanged.test_iter_plan();
+	CHECK(filteredIterPlan.mode == PlanMode::DirectDense);
+	CHECK((filteredIterPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Filtered) != 0);
+	CHECK(filteredIterPlan.idxFrom < filteredIterPlan.idxTo);
+
+	{
+		SparseTestWorld sparseTwld;
+		const auto sparse = sparseTwld.m_w.add();
+		sparseTwld.m_w.add<PositionSparse>(sparse, {10.0f, 11.0f, 12.0f});
+		const auto sparseTypedPlan =
+				sparseTwld.m_w.query().all<PositionSparse>().test_typed_plan([](const PositionSparse&) {});
+		CHECK(sparseTypedPlan.mode == PlanMode::SparseDense);
+		CHECK(sparseTypedPlan.payloadKind == PayloadKind::Plain);
+		CHECK(sparseTypedPlan.idxFrom < sparseTypedPlan.idxTo);
+	}
+	const auto eats = wld.add();
+	const auto missingGroup = wld.add();
+	auto qGrouped = wld.query().all<Position>().group_by(eats).group_id(missingGroup);
+	const auto emptyPlan = qGrouped.test_typed_plan([](const Position&) {});
+	CHECK(emptyPlan.mode == PlanMode::Empty);
+	CHECK(emptyPlan.payloadKind == PayloadKind::Grouped);
+	CHECK((emptyPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Grouped) != 0);
+	CHECK(emptyPlan.idxFrom == emptyPlan.idxTo);
+
+	const auto groupedIterPlan = qGrouped.test_iter_plan();
+	CHECK(groupedIterPlan.mode == PlanMode::Empty);
+	CHECK(groupedIterPlan.payloadKind == PayloadKind::Grouped);
+	CHECK((groupedIterPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Grouped) != 0);
+	CHECK(groupedIterPlan.idxFrom == groupedIterPlan.idxTo);
+
+	auto qSortedMissing = wld.query().all<Scale>().sort_by(
+			wld.get<Position>(), []([[maybe_unused]] const ecs::World& world, const void* pData0, const void* pData1) {
+				const auto& p0 = *static_cast<const Position*>(pData0);
+				const auto& p1 = *static_cast<const Position*>(pData1);
+				if (p0.x < p1.x)
+					return -1;
+				if (p0.x > p1.x)
+					return 1;
+				return 0;
+			});
+	const auto emptySortedTypedPlan = qSortedMissing.test_typed_plan([](const Scale&) {});
+	CHECK(emptySortedTypedPlan.mode == PlanMode::Empty);
+	CHECK(emptySortedTypedPlan.idxFrom == emptySortedTypedPlan.idxTo);
+
+	const auto emptySortedIterPlan = qSortedMissing.test_iter_plan();
+	CHECK(emptySortedIterPlan.mode == PlanMode::Empty);
+	CHECK(emptySortedIterPlan.idxFrom == emptySortedIterPlan.idxTo);
+
+	const auto child = wld.add();
+	wld.add<Position>(child, {7.0f, 8.0f, 9.0f});
+	wld.add(child, ecs::Pair(ecs::ChildOf, e));
+	auto qDepthOrder = wld.query().all<Position>().depth_order(ecs::ChildOf);
+	const auto depthTypedPlan = qDepthOrder.test_typed_plan([](const Position&) {});
+	CHECK(depthTypedPlan.mode == PlanMode::DirectDense);
+	CHECK(depthTypedPlan.payloadKind == PayloadKind::Grouped);
+	CHECK((depthTypedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Grouped) != 0);
+	CHECK((depthTypedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Sorted) != 0);
+	CHECK((depthTypedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_BarrierCache) == 0);
+	CHECK(depthTypedPlan.idxFrom < depthTypedPlan.idxTo);
+
+	const auto depthIterPlan = qDepthOrder.test_iter_plan();
+	CHECK(depthIterPlan.mode == PlanMode::DirectDense);
+	CHECK(depthIterPlan.payloadKind == PayloadKind::Grouped);
+	CHECK((depthIterPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Sorted) != 0);
+	CHECK((depthIterPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_BarrierCache) == 0);
+	CHECK(depthIterPlan.idxFrom < depthIterPlan.idxTo);
+
+	const auto depthAcceptAllPlan = qDepthOrder.test_iter_plan(ecs::Constraints::AcceptAll);
+	CHECK(depthAcceptAllPlan.mode == PlanMode::DirectDense);
+	CHECK(depthAcceptAllPlan.payloadKind == PayloadKind::Grouped);
+	CHECK((depthAcceptAllPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Grouped) != 0);
+	CHECK((depthAcceptAllPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Sorted) != 0);
+	CHECK((depthAcceptAllPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_BarrierCache) == 0);
+	CHECK(depthAcceptAllPlan.idxFrom < depthAcceptAllPlan.idxTo);
+
+	const auto depthDisabledOnlyPlan = qDepthOrder.test_iter_plan(ecs::Constraints::DisabledOnly);
+	CHECK(depthDisabledOnlyPlan.mode == PlanMode::DirectDense);
+	CHECK(depthDisabledOnlyPlan.payloadKind == PayloadKind::Grouped);
+	CHECK((depthDisabledOnlyPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Grouped) != 0);
+	CHECK((depthDisabledOnlyPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Sorted) != 0);
+	CHECK((depthDisabledOnlyPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_BarrierCache) == 0);
+	CHECK(depthDisabledOnlyPlan.idxFrom < depthDisabledOnlyPlan.idxTo);
+
+	wld.enable(e, false);
+	const auto depthTypedPrunedPlan = qDepthOrder.test_typed_plan([](const Position&) {});
+	CHECK(depthTypedPrunedPlan.mode == PlanMode::Traversal);
+	CHECK(depthTypedPrunedPlan.payloadKind == PayloadKind::NonTrivial);
+	CHECK((depthTypedPrunedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Grouped) != 0);
+	CHECK((depthTypedPrunedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Sorted) != 0);
+	CHECK((depthTypedPrunedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_BarrierCache) != 0);
+	CHECK(depthTypedPrunedPlan.idxFrom < depthTypedPrunedPlan.idxTo);
+
+	const auto depthEnabledPrunedPlan = qDepthOrder.test_iter_plan();
+	CHECK(depthEnabledPrunedPlan.mode == PlanMode::Traversal);
+	CHECK(depthEnabledPrunedPlan.payloadKind == PayloadKind::NonTrivial);
+	CHECK((depthEnabledPrunedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Grouped) != 0);
+	CHECK((depthEnabledPrunedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Sorted) != 0);
+	CHECK((depthEnabledPrunedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_BarrierCache) != 0);
+	CHECK(depthEnabledPrunedPlan.idxFrom < depthEnabledPrunedPlan.idxTo);
+
+	const auto depthDisabledPrunedPlan = qDepthOrder.test_iter_plan(ecs::Constraints::DisabledOnly);
+	CHECK(depthDisabledPrunedPlan.mode == PlanMode::Traversal);
+	CHECK(depthDisabledPrunedPlan.payloadKind == PayloadKind::NonTrivial);
+	CHECK((depthDisabledPrunedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Grouped) != 0);
+	CHECK((depthDisabledPrunedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_Sorted) != 0);
+	CHECK((depthDisabledPrunedPlan.flags & ecs::detail::QueryImpl::QueryPlanFlag_BarrierCache) != 0);
+	CHECK(depthDisabledPrunedPlan.idxFrom < depthDisabledPrunedPlan.idxTo);
+}
+
+TEST_CASE("Query - direct typed chunk rows") {
+	constexpr uint32_t N = 1'800;
+	constexpr uint32_t Disabled = 17;
+
+	SUBCASE("AoS") {
+		TestWorld twld;
+		cnt::darr<ecs::Entity> ents;
+		ents.reserve(N);
+
+		GAIA_FOR(N) {
+			const auto f = (float)i;
+			const auto e = wld.add();
+			ents.push_back(e);
+			wld.add<Position>(e, {f, f * 2.0f, f * 3.0f});
+		}
+
+		GAIA_FOR(Disabled)
+		wld.enable(ents[i], false);
+
+		auto q = wld.query().all<Position&>();
+		CHECK(q.count() == N - Disabled);
+
+		uint32_t cnt = 0;
+		q.each([&](Position& p) {
+			p.x += 1.0f;
+			p.y += 2.0f;
+			p.z += 3.0f;
+			++cnt;
+		});
+		CHECK(cnt == N - Disabled);
+
+		cnt = 0;
+		auto qRead = wld.query().all<Position>();
+		qRead.each([&](const Position& p) {
+			CHECK(p.x == p.y * 0.5f);
+			CHECK(p.z == p.y * 1.5f);
+			++cnt;
+		});
+		CHECK(cnt == N - Disabled);
+	}
+
+	SUBCASE("SoA") {
+		TestWorld twld;
+		cnt::darr<ecs::Entity> ents;
+		ents.reserve(N);
+
+		GAIA_FOR(N) {
+			const auto f = (float)i;
+			const auto e = wld.add();
+			ents.push_back(e);
+			wld.add<DirectTypedPositionSoA>(e, {f, f * 2.0f, f * 3.0f});
+		}
+
+		GAIA_FOR(Disabled)
+		wld.enable(ents[i], false);
+
+		auto q = wld.query().all<DirectTypedPositionSoA>();
+		CHECK(q.count() == N - Disabled);
+
+		uint32_t cnt = 0;
+		float sumX = 0.0f;
+		q.each([&](const DirectTypedPositionSoA& p) {
+			CHECK(p.x >= (float)Disabled);
+			CHECK(p.x == p.y * 0.5f);
+			CHECK(p.z == p.y * 1.5f);
+			sumX += p.x;
+			++cnt;
+		});
+		float expectedSumX = 0.0f;
+		for (uint32_t i = Disabled; i < N; ++i)
+			expectedSumX += (float)i;
+		CHECK(sumX == expectedSumX);
+		CHECK(cnt == N - Disabled);
+	}
+}
+
+template <typename TQuery>
+void Test_Query_SourceLookup() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+
+	struct Level {
+		uint32_t value;
+	};
+	struct Mode {};
+
+	constexpr uint32_t N = 64;
+	cnt::darr<ecs::Entity> positionEntities;
+	positionEntities.reserve(N);
+	GAIA_FOR(N) {
+		auto e = wld.add();
+		wld.add<Position>(e, {(float)i, (float)i, (float)i});
+		positionEntities.push_back(e);
+	}
+	auto expect_positions = [&](auto& query, bool expectMatch) {
+		cnt::darr<ecs::Entity> actual;
+		query.each([&](ecs::Entity entity) {
+			actual.push_back(entity);
+		});
+
+		if (!expectMatch) {
+			CHECK(actual.empty());
+			return;
+		}
+
+		CHECK(actual.size() == positionEntities.size());
+		for (const auto exp: positionEntities) {
+			bool found = false;
+			for (const auto got: actual) {
+				if (got != exp)
+					continue;
+				found = true;
+				break;
+			}
+			CHECK(found);
+		}
+	};
+	auto expect_entity_materialization = [&](auto& query, uint32_t expectedCount) {
+		CHECK(query.empty() == (expectedCount == 0));
+		CHECK(query.count() == expectedCount);
+
+		uint32_t eachCount = 0;
+		query.each([&](ecs::Entity) {
+			++eachCount;
+		});
+		CHECK(eachCount == expectedCount);
+
+		cnt::darr<ecs::Entity> actual;
+		query.arr(actual);
+		CHECK(actual.size() == expectedCount);
+	};
+
+	(void)wld.add<Level>();
+	const auto game = wld.add();
+
+	(void)wld.add<Level>(game, {1});
+	auto qSrc = make_query<UseCachedQuery>(wld) //
+									.template all<Position>()
+									.template all<Level>(ecs::QueryTermOptions{}.src(game));
+	CHECK(qSrc.count() == N);
+	expect_positions(qSrc, true);
+
+	auto qSrcOnly = make_query<UseCachedQuery>(wld).template all<Level>(ecs::QueryTermOptions{}.src(game));
+	const auto srcOnlyBytecode = qSrcOnly.bytecode();
+	CHECK(srcOnlyBytecode.find("src_all: 1") != BadIndex);
+	CHECK(srcOnlyBytecode.find("ids_all:") == BadIndex);
+	const auto srcOnlyInitialCount = qSrcOnly.count();
+	CHECK(srcOnlyInitialCount > N);
+	expect_entity_materialization(qSrcOnly, srcOnlyInitialCount);
+	const auto srcOnlyOpSignature = qSrcOnly.fetch().op_signature();
+	const auto srcOnlyOpCount = qSrcOnly.fetch().op_count();
+	auto expect_src_only_shape_stable = [&]() {
+		CHECK(qSrcOnly.bytecode() == srcOnlyBytecode);
+		CHECK(qSrcOnly.fetch().op_signature() == srcOnlyOpSignature);
+		CHECK(qSrcOnly.fetch().op_count() == srcOnlyOpCount);
+	};
+
+	auto qSrcOnlyOr = make_query<UseCachedQuery>(wld)
+												.template or_<Level>(ecs::QueryTermOptions{}.src(game))
+												.template or_<Mode>(ecs::QueryTermOptions{}.src(game));
+	const auto srcOnlyOrBytecode = qSrcOnlyOr.bytecode();
+	CHECK(srcOnlyOrBytecode.find("src_or: 2") != BadIndex);
+	CHECK(srcOnlyOrBytecode.find("ids_all:") == BadIndex);
+	CHECK(srcOnlyOrBytecode.find("ids_or:") == BadIndex);
+	const auto srcOnlyOrInitialCount = qSrcOnlyOr.count();
+	CHECK(srcOnlyOrInitialCount == qSrcOnly.count());
+	expect_entity_materialization(qSrcOnlyOr, srcOnlyOrInitialCount);
+	const auto srcOnlyOrOpSignature = qSrcOnlyOr.fetch().op_signature();
+	const auto srcOnlyOrOpCount = qSrcOnlyOr.fetch().op_count();
+	auto expect_src_only_or_shape_stable = [&]() {
+		CHECK(qSrcOnlyOr.bytecode() == srcOnlyOrBytecode);
+		CHECK(qSrcOnlyOr.fetch().op_signature() == srcOnlyOrOpSignature);
+		CHECK(qSrcOnlyOr.fetch().op_count() == srcOnlyOrOpCount);
+	};
+
+	auto qSrcOnlyNot = make_query<UseCachedQuery>(wld).template no<Mode>(ecs::QueryTermOptions{}.src(game));
+	const auto srcOnlyNotBytecode = qSrcOnlyNot.bytecode();
+	CHECK(srcOnlyNotBytecode.find("src_not: 1") != BadIndex);
+	CHECK(srcOnlyNotBytecode.find("ids_all:") == BadIndex);
+	const auto srcOnlyNotInitialCount = qSrcOnlyNot.count();
+	CHECK(srcOnlyNotInitialCount == qSrcOnly.count());
+	expect_entity_materialization(qSrcOnlyNot, srcOnlyNotInitialCount);
+	const auto srcOnlyNotOpSignature = qSrcOnlyNot.fetch().op_signature();
+	const auto srcOnlyNotOpCount = qSrcOnlyNot.fetch().op_count();
+	auto expect_src_only_not_shape_stable = [&]() {
+		CHECK(qSrcOnlyNot.bytecode() == srcOnlyNotBytecode);
+		CHECK(qSrcOnlyNot.fetch().op_signature() == srcOnlyNotOpSignature);
+		CHECK(qSrcOnlyNot.fetch().op_count() == srcOnlyNotOpCount);
+	};
+
+	wld.add<Mode>(game);
+	CHECK(qSrcOnly.count() > N);
+	expect_src_only_shape_stable();
+	CHECK(qSrcOnlyOr.count() == qSrcOnly.count());
+	expect_src_only_or_shape_stable();
+	CHECK(qSrcOnlyNot.count() == 0);
+	expect_entity_materialization(qSrcOnlyNot, 0);
+	expect_src_only_not_shape_stable();
+	wld.del<Mode>(game);
+	CHECK(qSrcOnlyNot.count() == qSrcOnly.count());
+	expect_src_only_shape_stable();
+	expect_src_only_or_shape_stable();
+	expect_src_only_not_shape_stable();
+
+	wld.del<Level>(game);
+	CHECK(qSrc.count() == 0);
+	expect_positions(qSrc, false);
+	CHECK(qSrcOnly.count() == 0);
+	expect_entity_materialization(qSrcOnly, 0);
+	expect_src_only_shape_stable();
+	CHECK(qSrcOnlyOr.count() == 0);
+	expect_entity_materialization(qSrcOnlyOr, 0);
+	expect_src_only_or_shape_stable();
+	const auto srcOnlyNotWithoutLevelCount = qSrcOnlyNot.count();
+	CHECK(srcOnlyNotWithoutLevelCount > N);
+	expect_entity_materialization(qSrcOnlyNot, srcOnlyNotWithoutLevelCount);
+	expect_src_only_not_shape_stable();
+
+	wld.add<Level>(game, {2});
+	CHECK(qSrc.count() == N);
+	expect_positions(qSrc, true);
+	CHECK(qSrcOnly.count() > N);
+	expect_src_only_shape_stable();
+	CHECK(qSrcOnlyOr.count() == qSrcOnly.count());
+	expect_src_only_or_shape_stable();
+	expect_src_only_not_shape_stable();
+
+	const auto root = wld.add();
+	const auto parent = wld.add();
+	const auto scene = wld.add();
+	wld.child(scene, parent);
+	wld.child(parent, root);
+
+	auto qSourceTravOnly = make_query<UseCachedQuery>(wld).template all<Level>(ecs::QueryTermOptions{}.src(scene).trav());
+	const auto sourceTravOnlyBytecode = qSourceTravOnly.bytecode();
+	CHECK(sourceTravOnlyBytecode.find("src_all: 1") != BadIndex);
+	CHECK(sourceTravOnlyBytecode.find("ids_all:") == BadIndex);
+	CHECK(qSourceTravOnly.count() == 0);
+	expect_entity_materialization(qSourceTravOnly, 0);
+	const auto sourceTravOnlyOpSignature = qSourceTravOnly.fetch().op_signature();
+	const auto sourceTravOnlyOpCount = qSourceTravOnly.fetch().op_count();
+	auto expect_source_trav_only_shape_stable = [&]() {
+		CHECK(qSourceTravOnly.bytecode() == sourceTravOnlyBytecode);
+		CHECK(qSourceTravOnly.fetch().op_signature() == sourceTravOnlyOpSignature);
+		CHECK(qSourceTravOnly.fetch().op_count() == sourceTravOnlyOpCount);
+	};
+
+	auto qSelfUp = make_query<UseCachedQuery>(wld) //
+										 .template all<Position>()
+										 .template all<Level>(ecs::QueryTermOptions{}.src(scene).trav());
+	auto qUpOnly = make_query<UseCachedQuery>(wld) //
+										 .template all<Position>()
+										 .template all<Level>(ecs::QueryTermOptions{}.src(scene).trav_up());
+	auto qUpDepth0 = make_query<UseCachedQuery>(wld) //
+											 .template all<Position>()
+											 .template all<Level>(ecs::QueryTermOptions{}.src(scene).trav_up().trav_depth(0));
+	auto qParentOnly = make_query<UseCachedQuery>(wld) //
+												 .template all<Position>()
+												 .template all<Level>(ecs::QueryTermOptions{}.src(scene).trav_parent());
+	auto qSelfParent = make_query<UseCachedQuery>(wld) //
+												 .template all<Position>()
+												 .template all<Level>(ecs::QueryTermOptions{}.src(scene).trav_self_parent());
+	auto qSelfDepth1 = make_query<UseCachedQuery>(wld) //
+												 .template all<Position>()
+												 .template all<Level>(ecs::QueryTermOptions{}.src(scene).trav().trav_depth(1));
+	auto qDownOnly = make_query<UseCachedQuery>(wld) //
+											 .template all<Position>()
+											 .template all<Level>(ecs::QueryTermOptions{}.src(root).trav_down());
+	auto qDownDepth0 = make_query<UseCachedQuery>(wld) //
+												 .template all<Position>()
+												 .template all<Level>(ecs::QueryTermOptions{}.src(root).trav_down().trav_depth(0));
+	auto qSelfDown = make_query<UseCachedQuery>(wld) //
+											 .template all<Position>()
+											 .template all<Level>(ecs::QueryTermOptions{}.src(root).trav_self_down());
+	auto qChildOnly = make_query<UseCachedQuery>(wld) //
+												.template all<Position>()
+												.template all<Level>(ecs::QueryTermOptions{}.src(root).trav_child());
+	auto qSelfChild = make_query<UseCachedQuery>(wld) //
+												.template all<Position>()
+												.template all<Level>(ecs::QueryTermOptions{}.src(root).trav_self_child());
+	auto qSelfDownDepth1 = make_query<UseCachedQuery>(wld) //
+														 .template all<Position>()
+														 .template all<Level>(ecs::QueryTermOptions{}.src(root).trav_self_down().trav_depth(1));
+
+	CHECK(qSourceTravOnly.count() == 0);
+	expect_source_trav_only_shape_stable();
+	CHECK(qSelfUp.count() == 0);
+	expect_positions(qSelfUp, false);
+	CHECK(qUpOnly.count() == 0);
+	expect_positions(qUpOnly, false);
+	CHECK(qUpDepth0.count() == qUpOnly.count());
+	CHECK(qParentOnly.count() == 0);
+	expect_positions(qParentOnly, false);
+	CHECK(qSelfParent.count() == 0);
+	expect_positions(qSelfParent, false);
+	CHECK(qSelfDepth1.count() == 0);
+	expect_positions(qSelfDepth1, false);
+	CHECK(qDownOnly.count() == 0);
+	expect_positions(qDownOnly, false);
+	CHECK(qDownDepth0.count() == qDownOnly.count());
+	CHECK(qSelfDown.count() == 0);
+	expect_positions(qSelfDown, false);
+	CHECK(qChildOnly.count() == 0);
+	expect_positions(qChildOnly, false);
+	CHECK(qSelfChild.count() == 0);
+	expect_positions(qSelfChild, false);
+	CHECK(qSelfDownDepth1.count() == 0);
+	expect_positions(qSelfDownDepth1, false);
+
+	wld.add<Level>(scene, {3});
+	const auto sourceTravOnlySceneCount = qSourceTravOnly.count();
+	CHECK(sourceTravOnlySceneCount > N);
+	expect_entity_materialization(qSourceTravOnly, sourceTravOnlySceneCount);
+	expect_source_trav_only_shape_stable();
+	CHECK(qSelfUp.count() == N);
+	expect_positions(qSelfUp, true);
+	CHECK(qUpOnly.count() == 0);
+	expect_positions(qUpOnly, false);
+	CHECK(qUpDepth0.count() == qUpOnly.count());
+	CHECK(qParentOnly.count() == 0);
+	expect_positions(qParentOnly, false);
+	CHECK(qSelfParent.count() == N);
+	expect_positions(qSelfParent, true);
+	CHECK(qSelfDepth1.count() == N);
+	expect_positions(qSelfDepth1, true);
+	CHECK(qDownOnly.count() == N);
+	expect_positions(qDownOnly, true);
+	CHECK(qDownDepth0.count() == qDownOnly.count());
+	CHECK(qSelfDown.count() == N);
+	expect_positions(qSelfDown, true);
+	CHECK(qChildOnly.count() == 0);
+	expect_positions(qChildOnly, false);
+	CHECK(qSelfChild.count() == 0);
+	expect_positions(qSelfChild, false);
+	CHECK(qSelfDownDepth1.count() == 0);
+	expect_positions(qSelfDownDepth1, false);
+
+	wld.del<Level>(scene);
+	wld.add<Level>(parent, {4});
+	CHECK(qSourceTravOnly.count() > N);
+	expect_source_trav_only_shape_stable();
+	CHECK(qSelfUp.count() == N);
+	expect_positions(qSelfUp, true);
+	CHECK(qUpOnly.count() == N);
+	expect_positions(qUpOnly, true);
+	CHECK(qUpDepth0.count() == qUpOnly.count());
+	CHECK(qParentOnly.count() == N);
+	expect_positions(qParentOnly, true);
+	CHECK(qSelfParent.count() == N);
+	expect_positions(qSelfParent, true);
+	CHECK(qSelfDepth1.count() == N);
+	expect_positions(qSelfDepth1, true);
+	CHECK(qDownOnly.count() == N);
+	expect_positions(qDownOnly, true);
+	CHECK(qDownDepth0.count() == qDownOnly.count());
+	CHECK(qSelfDown.count() == N);
+	expect_positions(qSelfDown, true);
+	CHECK(qChildOnly.count() == N);
+	expect_positions(qChildOnly, true);
+	CHECK(qSelfChild.count() == N);
+	expect_positions(qSelfChild, true);
+	CHECK(qSelfDownDepth1.count() == N);
+	expect_positions(qSelfDownDepth1, true);
+
+	wld.del<Level>(parent);
+	wld.add<Level>(root, {5});
+	CHECK(qSourceTravOnly.count() > N);
+	expect_source_trav_only_shape_stable();
+	CHECK(qSelfUp.count() == N);
+	expect_positions(qSelfUp, true);
+	CHECK(qUpOnly.count() == N);
+	expect_positions(qUpOnly, true);
+	CHECK(qUpDepth0.count() == qUpOnly.count());
+	CHECK(qParentOnly.count() == 0);
+	expect_positions(qParentOnly, false);
+	CHECK(qSelfParent.count() == 0);
+	expect_positions(qSelfParent, false);
+	CHECK(qSelfDepth1.count() == 0);
+	expect_positions(qSelfDepth1, false);
+	CHECK(qDownOnly.count() == 0);
+	expect_positions(qDownOnly, false);
+	CHECK(qDownDepth0.count() == qDownOnly.count());
+	CHECK(qSelfDown.count() == N);
+	expect_positions(qSelfDown, true);
+	CHECK(qChildOnly.count() == 0);
+	expect_positions(qChildOnly, false);
+	CHECK(qSelfChild.count() == N);
+	expect_positions(qSelfChild, true);
+	CHECK(qSelfDownDepth1.count() == N);
+	expect_positions(qSelfDownDepth1, true);
+}
+
+TEST_CASE("Query - source lookup") {
+	SUBCASE("Cached query") {
+		Test_Query_SourceLookup<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_SourceLookup<QueryUncached>();
+	}
+}
+
+TEST_CASE("Query - dynamic direct source cache reuses warm matches") {
+	struct DynamicSourceLevel {};
+	struct DynamicSourcePosition {};
+	struct DynamicSourceOther {};
+
+	TestWorld twld;
+	const auto source = wld.add();
+	wld.add<DynamicSourceLevel>(source);
+
+	constexpr uint32_t N = 8;
+	GAIA_FOR(N) {
+		const auto entity = wld.add();
+		wld.add<DynamicSourcePosition>(entity);
+	}
+
+	auto q = wld.query() //
+							 .all<DynamicSourcePosition>()
+							 .all<DynamicSourceLevel>(ecs::QueryTermOptions{}.src(source));
+	auto& info = q.fetch();
+
+	CHECK(q.count() == N);
+	const auto firstMatchPassCount = info.test_match_pass_count();
+	CHECK(firstMatchPassCount == 1);
+
+	CHECK(q.count() == N);
+	CHECK(info.test_match_pass_count() == firstMatchPassCount);
+
+	const auto unusedVarSource = wld.add();
+	q.set_var(ecs::Var0, unusedVarSource);
+	CHECK(q.count() == N);
+	CHECK(info.test_match_pass_count() == firstMatchPassCount);
+
+	wld.del<DynamicSourceLevel>(source);
+	CHECK(q.count() == 0);
+	const auto sourceRemovedMatchPassCount = info.test_match_pass_count();
+	CHECK(sourceRemovedMatchPassCount == firstMatchPassCount + 1);
+
+	CHECK(q.count() == 0);
+	CHECK(info.test_match_pass_count() == sourceRemovedMatchPassCount);
+
+	wld.add<DynamicSourceLevel>(source);
+	CHECK(q.count() == N);
+	const auto sourceRestoredMatchPassCount = info.test_match_pass_count();
+	CHECK(sourceRestoredMatchPassCount == sourceRemovedMatchPassCount + 1);
+
+	const auto sourceRestoredResultRev = info.result_cache_rev();
+	wld.add<DynamicSourceOther>(source);
+	CHECK(q.count() == N);
+	const auto sourceMovedMatchPassCount = info.test_match_pass_count();
+	CHECK(sourceMovedMatchPassCount == sourceRestoredMatchPassCount + 1);
+	CHECK(info.result_cache_rev() == sourceRestoredResultRev);
+
+	const auto unrelated = wld.add();
+	wld.add<DynamicSourceOther>(unrelated);
+	CHECK(q.count() == N);
+	CHECK(info.test_match_pass_count() == sourceMovedMatchPassCount + 1);
+}
+
+TEST_CASE("Query - dynamic cache kind classification") {
+	using DynamicKind = ecs::QueryInfo::TestDynamicCacheKind;
+
+	struct DynamicKindPosition {};
+	struct DynamicKindLevel {};
+	struct DynamicKindLinkedTo {};
+
+	TestWorld twld;
+	const auto rel = wld.add<DynamicKindLinkedTo>().entity;
+	const auto source = wld.add();
+	const auto target = wld.add();
+	const auto entity = wld.add();
+	wld.add<DynamicKindLevel>(source);
+	wld.add<DynamicKindLevel>(target);
+	wld.add<DynamicKindPosition>(entity);
+	wld.add(entity, ecs::Pair(rel, target));
+
+	{
+		ecs::QueryCtx::Data data;
+		data.cachePolicy = ecs::QueryCtx::CachePolicy::Dynamic;
+		data.deps.set_dep_flag(ecs::QueryCtx::DependencyHasVariableTerms);
+		data.dynamicCacheKind = data.calc_dynamic_cache_kind();
+		data.canReuseDynamicCache = data.calc_can_reuse_dynamic_cache();
+		CHECK(data.dynamicCacheKind == DynamicKind::Variable);
+		CHECK(data.canReuseDynamicCache);
+		CHECK_FALSE(data.uses_direct_src_version_tracking());
+		CHECK_FALSE(data.uses_src_trav_snapshot());
+
+		data.deps.clear();
+		data.deps.add_rel(rel);
+		data.dynamicCacheKind = data.calc_dynamic_cache_kind();
+		data.canReuseDynamicCache = data.calc_can_reuse_dynamic_cache();
+		CHECK(data.dynamicCacheKind == DynamicKind::RelationOnly);
+		CHECK(data.canReuseDynamicCache);
+		CHECK_FALSE(data.uses_direct_src_version_tracking());
+		CHECK_FALSE(data.uses_src_trav_snapshot());
+	}
+
+	auto qStatic = wld.query().all<DynamicKindPosition>();
+	CHECK(qStatic.fetch().test_dynamic_cache_kind() == DynamicKind::None);
+	CHECK_FALSE(qStatic.fetch().test_uses_direct_src_version_tracking());
+	CHECK_FALSE(qStatic.fetch().test_uses_src_trav_snapshot());
+
+	auto qDirectSource = wld.query() //
+													 .all<DynamicKindPosition>()
+													 .all<DynamicKindLevel>(ecs::QueryTermOptions{}.src(source));
+	CHECK(qDirectSource.count() == 1);
+	CHECK(qDirectSource.fetch().test_dynamic_cache_kind() == DynamicKind::DirectSource);
+	CHECK(qDirectSource.fetch().test_uses_direct_src_version_tracking());
+	CHECK_FALSE(qDirectSource.fetch().test_uses_src_trav_snapshot());
+
+	auto qTraversedSource = wld.query() //
+															.cache_src_trav(ecs::MaxCacheSrcTrav)
+															.all<DynamicKindPosition>()
+															.all<DynamicKindLevel>(ecs::QueryTermOptions{}.src(source).trav(rel));
+	CHECK(qTraversedSource.count() == 1);
+	CHECK(qTraversedSource.fetch().test_dynamic_cache_kind() == DynamicKind::TraversedSource);
+	CHECK_FALSE(qTraversedSource.fetch().test_uses_direct_src_version_tracking());
+	CHECK(qTraversedSource.fetch().test_uses_src_trav_snapshot());
+
+	auto qVariableSource = wld.query().all<DynamicKindPosition>(ecs::QueryTermOptions{}.src(ecs::Var0));
+	qVariableSource.set_var(ecs::Var0, entity);
+	CHECK(qVariableSource.count() > 0);
+	CHECK(qVariableSource.fetch().test_dynamic_cache_kind() == DynamicKind::Mixed);
+	CHECK_FALSE(qVariableSource.fetch().test_uses_direct_src_version_tracking());
+	CHECK_FALSE(qVariableSource.fetch().test_uses_src_trav_snapshot());
+
+	auto qRelationVariable = wld.query().all<DynamicKindPosition>().all(ecs::Pair(rel, ecs::Var0));
+	qRelationVariable.set_var(ecs::Var0, target);
+	CHECK(qRelationVariable.count() == 1);
+	CHECK(qRelationVariable.fetch().test_dynamic_cache_kind() == DynamicKind::Mixed);
+	CHECK_FALSE(qRelationVariable.fetch().test_uses_direct_src_version_tracking());
+	CHECK_FALSE(qRelationVariable.fetch().test_uses_src_trav_snapshot());
+}
+
+TEST_CASE("Query - mixed dynamic direct source cache tracks source versions") {
+	using DynamicKind = ecs::QueryInfo::TestDynamicCacheKind;
+
+	struct MixedDynamicPosition {};
+	struct MixedDynamicLevel {};
+	struct MixedDynamicLinkedTo {};
+	struct MixedDynamicOther {};
+
+	TestWorld twld;
+	const auto rel = wld.add<MixedDynamicLinkedTo>().entity;
+	const auto source = wld.add();
+	const auto target = wld.add();
+	const auto entity = wld.add();
+	const auto existingSourceArchetype = wld.add();
+	wld.add<MixedDynamicLevel>(source);
+	wld.add<MixedDynamicLevel>(existingSourceArchetype);
+	wld.add<MixedDynamicOther>(existingSourceArchetype);
+	wld.add<MixedDynamicPosition>(entity);
+	wld.add(entity, ecs::Pair(rel, target));
+
+	auto q = wld.query() //
+							 .all<MixedDynamicPosition>()
+							 .all<MixedDynamicLevel>(ecs::QueryTermOptions{}.src(source))
+							 .all(ecs::Pair(rel, ecs::Var0));
+	q.set_var(ecs::Var0, target);
+	auto& info = q.fetch();
+
+	CHECK(q.count() == 1);
+	CHECK(info.test_dynamic_cache_kind() == DynamicKind::Mixed);
+	const auto warmMatchPassCount = info.test_match_pass_count();
+
+	CHECK(q.count() == 1);
+	CHECK(info.test_match_pass_count() == warmMatchPassCount);
+
+	wld.add<MixedDynamicOther>(source);
+	CHECK(q.count() == 1);
+	CHECK(info.test_match_pass_count() == warmMatchPassCount + 1);
+}
+
+TEST_CASE("Query - mixed dynamic traversal cache tracks source closure") {
+	using DynamicKind = ecs::QueryInfo::TestDynamicCacheKind;
+
+	struct MixedTraversalPosition {};
+	struct MixedTraversalLevel {};
+	struct MixedTraversalLinkedTo {};
+	struct MixedTraversalTaggedBy {};
+
+	TestWorld twld;
+	const auto rel = wld.add<MixedTraversalLinkedTo>().entity;
+	const auto tagRel = wld.add<MixedTraversalTaggedBy>().entity;
+	const auto rootA = wld.add();
+	const auto rootB = wld.add();
+	const auto rootEmpty = wld.add();
+	const auto source = wld.add();
+	const auto tag = wld.add();
+	wld.add<MixedTraversalLevel>(rootA);
+	wld.add<MixedTraversalLevel>(rootB);
+	wld.add(source, ecs::Pair(rel, rootA));
+
+	constexpr uint32_t N = 8;
+	GAIA_FOR(N) {
+		const auto entity = wld.add();
+		wld.add<MixedTraversalPosition>(entity);
+		wld.add(entity, ecs::Pair(tagRel, tag));
+	}
+
+	auto q = wld.query() //
+							 .cache_src_trav(ecs::MaxCacheSrcTrav)
+							 .all<MixedTraversalPosition>()
+							 .all<MixedTraversalLevel>(ecs::QueryTermOptions{}.src(source).trav(rel))
+							 .all(ecs::Pair(tagRel, ecs::Var0));
+	q.set_var(ecs::Var0, tag);
+	auto& info = q.fetch();
+
+	CHECK(q.count() == N);
+	CHECK(info.test_dynamic_cache_kind() == DynamicKind::Mixed);
+	const auto firstRevision = info.result_cache_rev();
+	const auto firstMatchPassCount = info.test_match_pass_count();
+	CHECK(firstMatchPassCount == 1);
+
+	CHECK(q.count() == N);
+	CHECK(info.test_match_pass_count() == firstMatchPassCount);
+
+	wld.del(source, ecs::Pair(rel, rootA));
+	wld.add(source, ecs::Pair(rel, rootB));
+	CHECK(q.count() == N);
+	CHECK(info.test_match_pass_count() == firstMatchPassCount + 1);
+	CHECK(info.result_cache_rev() == firstRevision);
+
+	wld.del(source, ecs::Pair(rel, rootB));
+	wld.add(source, ecs::Pair(rel, rootEmpty));
+	CHECK(q.count() == 0);
+	CHECK(info.test_match_pass_count() == firstMatchPassCount + 2);
+	CHECK(info.result_cache_rev() != firstRevision);
+}
+
+TEST_CASE("Query - dynamic traversal refresh preserves reverse index revision for same membership") {
+	struct DynamicTraversalPosition {};
+	struct DynamicTraversalLevel {};
+	struct DynamicTraversalLinkedTo {};
+
+	TestWorld twld;
+	const auto rel = wld.add<DynamicTraversalLinkedTo>().entity;
+	const auto rootA = wld.add();
+	const auto rootB = wld.add();
+	const auto rootEmpty = wld.add();
+	const auto source = wld.add();
+	wld.add<DynamicTraversalLevel>(rootA);
+	wld.add<DynamicTraversalLevel>(rootB);
+	wld.add(source, ecs::Pair(rel, rootA));
+
+	constexpr uint32_t N = 8;
+	GAIA_FOR(N) {
+		const auto entity = wld.add();
+		wld.add<DynamicTraversalPosition>(entity);
+	}
+
+	auto q = wld.query() //
+							 .cache_src_trav(ecs::MaxCacheSrcTrav)
+							 .all<DynamicTraversalPosition>()
+							 .all<DynamicTraversalLevel>(ecs::QueryTermOptions{}.src(source).trav(rel));
+	auto& info = q.fetch();
+
+	CHECK(q.count() == N);
+	CHECK(info.test_uses_src_trav_snapshot());
+	const auto firstRevision = info.result_cache_rev();
+	const auto firstMatchPassCount = info.test_match_pass_count();
+	CHECK(firstMatchPassCount == 1);
+
+	wld.del(source, ecs::Pair(rel, rootA));
+	wld.add(source, ecs::Pair(rel, rootB));
+	CHECK(q.count() == N);
+	CHECK(info.test_match_pass_count() == firstMatchPassCount + 1);
+	CHECK(info.result_cache_rev() == firstRevision);
+
+	wld.del(source, ecs::Pair(rel, rootB));
+	wld.add(source, ecs::Pair(rel, rootEmpty));
+	CHECK(q.count() == 0);
+	CHECK(info.test_match_pass_count() == firstMatchPassCount + 2);
+	CHECK(info.result_cache_rev() != firstRevision);
+}
+
+template <typename TQuery>
+void Test_Query_All_Any_Or_Semantics() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+	struct Cable {};
+	struct Device {};
+	struct Powered {};
+	struct ConnectedTo {};
+
+	const auto connectedTo = wld.add<ConnectedTo>().entity;
+
+	const auto devA = wld.add();
+	const auto devB = wld.add();
+	wld.add<Device>(devA);
+
+	const auto cablePlain = wld.add();
+	wld.add<Cable>(cablePlain);
+
+	const auto cableDevice = wld.add();
+	wld.add<Cable>(cableDevice);
+	wld.add<Device>(cableDevice);
+
+	const auto cablePowered = wld.add();
+	wld.add<Cable>(cablePowered);
+	wld.add<Powered>(cablePowered);
+	wld.add(cablePowered, {connectedTo, devB});
+
+	const auto cableBoth = wld.add();
+	wld.add<Cable>(cableBoth);
+	wld.add<Device>(cableBoth);
+	wld.add<Powered>(cableBoth);
+	wld.add(cableBoth, {connectedTo, devA});
+
+	// Not a cable - should never match queries that require Cable.
+	const auto deviceOnly = wld.add();
+	wld.add<Device>(deviceOnly);
+	(void)deviceOnly;
+
+	auto qAll = make_query<UseCachedQuery>(wld).template all<Cable>().template all<Device>();
+	CHECK(qAll.count() == 2);
+	expect_exact_entities(qAll, {cableDevice, cableBoth});
+
+	// `any<Device>()` is optional: it does not filter out cables without Device.
+	auto qAny = make_query<UseCachedQuery>(wld).template all<Cable>().template any<Device>();
+	CHECK(qAny.count() == 4);
+	expect_exact_entities(qAny, {cablePlain, cableDevice, cablePowered, cableBoth});
+
+	// OR-chain: cable must satisfy at least one OR term.
+	auto qOr = make_query<UseCachedQuery>(wld).template all<Cable>().template or_<Device>().template or_<Powered>();
+	CHECK(qOr.count() == 3);
+	expect_exact_entities(qOr, {cableDevice, cablePowered, cableBoth});
+
+	auto qAnyExpr = make_query<UseCachedQuery>(wld).add("Cable, ?Device");
+	CHECK(qAnyExpr.count() == 4);
+	expect_exact_entities(qAnyExpr, {cablePlain, cableDevice, cablePowered, cableBoth});
+
+	auto qOrExpr = make_query<UseCachedQuery>(wld).add("Cable, Device || Powered");
+	CHECK(qOrExpr.count() == 3);
+	expect_exact_entities(qOrExpr, {cableDevice, cablePowered, cableBoth});
+
+	// Optional dependent term: if ConnectedTo exists, the target must be a Device.
+	auto qOptionalDependent = make_query<UseCachedQuery>(wld).add("Cable, ?(ConnectedTo, $device), Device($device)");
+	CHECK(qOptionalDependent.count() == 3);
+	expect_exact_entities(qOptionalDependent, {cablePlain, cableDevice, cableBoth});
+}
+
+TEST_CASE("Query - all/any/or semantics") {
+	SUBCASE("Cached query") {
+		Test_Query_All_Any_Or_Semantics<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_All_Any_Or_Semantics<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_Local_Short_Name_Ambiguity() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+
+	struct Rack {
+		struct Device {};
+	};
+	struct Bus {
+		struct Device {};
+	};
+
+	const auto rackEntity = wld.add();
+	const auto busEntity = wld.add();
+	wld.add<typename Rack::Device>(rackEntity);
+	wld.add<typename Bus::Device>(busEntity);
+
+	CHECK(wld.get("Device") == ecs::EntityBad);
+
+	auto qRack = make_query<UseCachedQuery>(wld).template all<typename Rack::Device>();
+	CHECK(qRack.count() == 1);
+	expect_exact_entities(qRack, {rackEntity});
+
+	auto qBus = make_query<UseCachedQuery>(wld).template all<typename Bus::Device>();
+	CHECK(qBus.count() == 1);
+	expect_exact_entities(qBus, {busEntity});
+}
+
+TEST_CASE("Query - local short-name ambiguity") {
+	SUBCASE("Cached query") {
+		Test_Query_Local_Short_Name_Ambiguity<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Local_Short_Name_Ambiguity<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_Variables() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+
+	struct Cable {};
+	struct Device {};
+	struct ConnectedTo {};
+
+	const auto connectedTo = wld.add<ConnectedTo>().entity;
+	const auto deviceA = wld.add();
+	const auto deviceB = wld.add();
+	wld.add<Device>(deviceA);
+
+	const auto cableA = wld.add();
+	wld.add<Cable>(cableA);
+	wld.add(cableA, {connectedTo, deviceA});
+
+	const auto cableB = wld.add();
+	wld.add<Cable>(cableB);
+	wld.add(cableB, {connectedTo, deviceB});
+
+	const auto cableC = wld.add();
+	wld.add<Cable>(cableC);
+
+	auto qApi = make_query<UseCachedQuery>(wld) //
+									.template all<Cable>()
+									.all(ecs::Pair(connectedTo, ecs::Var0))
+									.template all<Device>(ecs::QueryTermOptions{}.src(ecs::Var0));
+	CHECK(qApi.count() == 1);
+	expect_exact_entities(qApi, {cableA});
+
+	auto qExpr = make_query<UseCachedQuery>(wld).add("Cable, (ConnectedTo, $device), Device($device)");
+	CHECK(qExpr.count() == 1);
+	expect_exact_entities(qExpr, {cableA});
+}
+
+TEST_CASE("Query - variables") {
+	SUBCASE("Cached query") {
+		Test_Query_Variables<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Variables<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_SourceOr_VariableOr_Interaction() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	struct Cable {};
+	struct Device {};
+	struct ConnectedTo {};
+
+	// Unmatched source OR must not bypass variable OR terms.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+
+		const auto source = wld.add();
+		const auto deviceA = wld.add();
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add(cableA, {connectedTo, deviceA});
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+
+		auto q = make_query<UseCachedQuery>(wld)
+								 .template all<Cable>()
+								 .template or_<Device>(ecs::QueryTermOptions{}.src(source))
+								 .or_(ecs::Pair(connectedTo, ecs::Var0));
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableA});
+	}
+
+	// Matched source OR can satisfy OR-group globally, so variable OR may be skipped.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+
+		const auto source = wld.add();
+		wld.add<Device>(source);
+		const auto deviceA = wld.add();
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add(cableA, {connectedTo, deviceA});
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+
+		auto q = make_query<UseCachedQuery>(wld)
+								 .template all<Cable>()
+								 .template or_<Device>(ecs::QueryTermOptions{}.src(source))
+								 .or_(ecs::Pair(connectedTo, ecs::Var0));
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableB});
+	}
+}
+
+TEST_CASE("Query - source or and variable or interaction") {
+	SUBCASE("Cached query") {
+		Test_Query_SourceOr_VariableOr_Interaction<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_SourceOr_VariableOr_Interaction<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_VariableOr_Backtracking_SkipBranch() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+	struct Cable {};
+	struct Device {};
+	struct ConnectedTo {};
+	struct LinkedTo {};
+
+	const auto connectedTo = wld.add<ConnectedTo>().entity;
+	const auto linkedTo = wld.add<LinkedTo>().entity;
+
+	const auto deviceA = wld.add();
+	const auto deviceB = wld.add();
+	wld.add<Device>(deviceB);
+
+	const auto cable = wld.add();
+	wld.add<Cable>(cable);
+	wld.add(cable, {connectedTo, deviceA});
+	wld.add(cable, {linkedTo, deviceB});
+
+	// First OR term can bind $d to a non-device. The solver must be able to skip it
+	// and backtrack into the second OR term.
+	auto qApi = make_query<UseCachedQuery>(wld)
+									.template all<Cable>()
+									.template all<Device>(ecs::QueryTermOptions{}.src(ecs::Var0))
+									.or_(ecs::Pair(connectedTo, ecs::Var0))
+									.or_(ecs::Pair(linkedTo, ecs::Var0));
+	CHECK(qApi.count() == 1);
+	expect_exact_entities(qApi, {cable});
+
+	auto qExpr = make_query<UseCachedQuery>(wld).add("Cable, Device($d), (ConnectedTo, $d) || (LinkedTo, $d)");
+	CHECK(qExpr.count() == 1);
+	expect_exact_entities(qExpr, {cable});
+}
+
+TEST_CASE("Query - variable or backtracking skip branch") {
+	SUBCASE("Cached query") {
+		Test_Query_VariableOr_Backtracking_SkipBranch<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_VariableOr_Backtracking_SkipBranch<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_Variables_Advanced() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	// Variable target reused by multiple terms + source lookup.
+	{
+		TestWorld twld;
+		struct Cable {};
+		struct ActiveDevice {};
+		struct ConnectedTo {};
+		struct PoweredBy {};
+
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto poweredBy = wld.add<PoweredBy>().entity;
+		const auto deviceA = wld.add();
+		const auto deviceB = wld.add();
+		wld.add<ActiveDevice>(deviceA);
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add(cableA, {connectedTo, deviceA});
+		wld.add(cableA, {poweredBy, deviceA});
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+		wld.add(cableB, {connectedTo, deviceA});
+		wld.add(cableB, {poweredBy, deviceB});
+
+		auto qApi = make_query<UseCachedQuery>(wld) //
+										.template all<Cable>()
+										.all(ecs::Pair(connectedTo, ecs::Var0))
+										.all(ecs::Pair(poweredBy, ecs::Var0))
+										.template all<ActiveDevice>(ecs::QueryTermOptions{}.src(ecs::Var0));
+		CHECK(qApi.count() == 1);
+		expect_exact_entities(qApi, {cableA});
+
+		auto qExpr = make_query<UseCachedQuery>(wld).add("Cable, (ConnectedTo, $d), (PoweredBy, $d), ActiveDevice($d)");
+		CHECK(qExpr.count() == 1);
+		expect_exact_entities(qExpr, {cableA});
+	}
+
+	// NOT term with variable source.
+	{
+		TestWorld twld;
+		struct Cable {};
+		struct ConnectedTo {};
+		struct Blocked {};
+
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto deviceA = wld.add();
+		const auto deviceB = wld.add();
+		wld.add<Blocked>(deviceA);
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add(cableA, {connectedTo, deviceA});
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+		wld.add(cableB, {connectedTo, deviceB});
+
+		auto qApi = make_query<UseCachedQuery>(wld) //
+										.template all<Cable>()
+										.all(ecs::Pair(connectedTo, ecs::Var0))
+										.template no<Blocked>(ecs::QueryTermOptions{}.src(ecs::Var0));
+		CHECK(qApi.count() == 1);
+		expect_exact_entities(qApi, {cableB});
+
+		auto qExpr = make_query<UseCachedQuery>(wld).add("Cable, (ConnectedTo, $d), !Blocked($d)");
+		CHECK(qExpr.count() == 1);
+		expect_exact_entities(qExpr, {cableB});
+	}
+
+	// Variable in the relation side of a pair.
+	{
+		TestWorld twld;
+		struct Cable {};
+		struct ConnectedTo {};
+		struct LinkedTo {};
+
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+		const auto nodeA = wld.add();
+		const auto nodeB = wld.add();
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add(cableA, {connectedTo, nodeA});
+		wld.add(cableA, {connectedTo, nodeB});
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+		wld.add(cableB, {connectedTo, nodeA});
+		wld.add(cableB, {linkedTo, nodeB});
+
+		auto qApi = make_query<UseCachedQuery>(wld)
+										.template all<Cable>()
+										.all(ecs::Pair(ecs::Var0, nodeA))
+										.all(ecs::Pair(ecs::Var0, nodeB));
+		CHECK(qApi.count() == 1);
+		expect_exact_entities(qApi, {cableA});
+
+		auto qExpr = make_query<UseCachedQuery>(wld).add("Cable, ($rel, %e), ($rel, %e)", nodeA.value(), nodeB.value());
+		CHECK(qExpr.count() == 1);
+		expect_exact_entities(qExpr, {cableA});
+	}
+
+	// Multiple independent variables in the same query.
+	{
+		TestWorld twld;
+		struct Cable {};
+		struct Device {};
+		struct PowerNode {};
+		struct ConnectedTo {};
+		struct PoweredBy {};
+
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto poweredBy = wld.add<PoweredBy>().entity;
+		const auto deviceA = wld.add();
+		const auto deviceB = wld.add();
+		wld.add<Device>(deviceA);
+		wld.add<PowerNode>(deviceB);
+
+		const auto cableAB = wld.add();
+		wld.add<Cable>(cableAB);
+		wld.add(cableAB, {connectedTo, deviceA});
+		wld.add(cableAB, {poweredBy, deviceB});
+
+		const auto cableAA = wld.add();
+		wld.add<Cable>(cableAA);
+		wld.add(cableAA, {connectedTo, deviceA});
+		wld.add(cableAA, {poweredBy, deviceA});
+
+		auto qApi = make_query<UseCachedQuery>(wld) //
+										.template all<Cable>()
+										.all(ecs::Pair(connectedTo, ecs::Var0))
+										.all(ecs::Pair(poweredBy, ecs::Var1))
+										.template all<Device>(ecs::QueryTermOptions{}.src(ecs::Var0))
+										.template all<PowerNode>(ecs::QueryTermOptions{}.src(ecs::Var1));
+		CHECK(qApi.count() == 1);
+		expect_exact_entities(qApi, {cableAB});
+
+		auto qExpr = make_query<UseCachedQuery>(wld).add(
+				"Cable, (ConnectedTo, $src), (PoweredBy, $dst), Device($src), PowerNode($dst)");
+		CHECK(qExpr.count() == 1);
+		expect_exact_entities(qExpr, {cableAB});
+	}
+
+	// Variable source lookup with traversal filters and depth limits.
+	{
+		TestWorld twld;
+		struct Cable {};
+		struct ConnectedTo {};
+		struct Level {
+			uint32_t value;
+		};
+
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto root = wld.add();
+		const auto planet = wld.add();
+		const auto dock = wld.add();
+		wld.child(planet, root);
+		wld.child(dock, planet);
+
+		const auto cableDock = wld.add();
+		wld.add<Cable>(cableDock);
+		wld.add(cableDock, {connectedTo, dock});
+
+		const auto cablePlanet = wld.add();
+		wld.add<Cable>(cablePlanet);
+		wld.add(cablePlanet, {connectedTo, planet});
+
+		const auto cableRoot = wld.add();
+		wld.add<Cable>(cableRoot);
+		wld.add(cableRoot, {connectedTo, root});
+
+		auto qSelfUp = make_query<UseCachedQuery>(wld)
+											 .template all<Cable>()
+											 .all(ecs::Pair(connectedTo, ecs::Var0))
+											 .template all<Level>(ecs::QueryTermOptions{}.src(ecs::Var0).trav());
+		auto qUpOnly = make_query<UseCachedQuery>(wld)
+											 .template all<Cable>()
+											 .all(ecs::Pair(connectedTo, ecs::Var0))
+											 .template all<Level>(ecs::QueryTermOptions{}.src(ecs::Var0).trav_up());
+		auto qParentOnly = make_query<UseCachedQuery>(wld)
+													 .template all<Cable>()
+													 .all(ecs::Pair(connectedTo, ecs::Var0))
+													 .template all<Level>(ecs::QueryTermOptions{}.src(ecs::Var0).trav_parent());
+		auto qSelfDepth1 = make_query<UseCachedQuery>(wld)
+													 .template all<Cable>()
+													 .all(ecs::Pair(connectedTo, ecs::Var0))
+													 .template all<Level>(ecs::QueryTermOptions{}.src(ecs::Var0).trav().trav_depth(1));
+
+		CHECK(qSelfUp.count() == 0);
+		CHECK(qUpOnly.count() == 0);
+		CHECK(qParentOnly.count() == 0);
+		CHECK(qSelfDepth1.count() == 0);
+		expect_exact_entities(qSelfUp, {});
+		expect_exact_entities(qUpOnly, {});
+		expect_exact_entities(qParentOnly, {});
+		expect_exact_entities(qSelfDepth1, {});
+
+		wld.add<Level>(dock, {1});
+		CHECK(qSelfUp.count() == 1);
+		CHECK(qUpOnly.count() == 0);
+		CHECK(qParentOnly.count() == 0);
+		CHECK(qSelfDepth1.count() == 1);
+		expect_exact_entities(qSelfUp, {cableDock});
+		expect_exact_entities(qUpOnly, {});
+		expect_exact_entities(qParentOnly, {});
+		expect_exact_entities(qSelfDepth1, {cableDock});
+
+		wld.del<Level>(dock);
+		wld.add<Level>(planet, {2});
+		CHECK(qSelfUp.count() == 2);
+		CHECK(qUpOnly.count() == 1);
+		CHECK(qParentOnly.count() == 1);
+		CHECK(qSelfDepth1.count() == 2);
+		expect_exact_entities(qSelfUp, {cableDock, cablePlanet});
+		expect_exact_entities(qUpOnly, {cableDock});
+		expect_exact_entities(qParentOnly, {cableDock});
+		expect_exact_entities(qSelfDepth1, {cableDock, cablePlanet});
+
+		wld.del<Level>(planet);
+		wld.add<Level>(root, {3});
+		CHECK(qSelfUp.count() == 3);
+		CHECK(qUpOnly.count() == 2);
+		CHECK(qParentOnly.count() == 1);
+		CHECK(qSelfDepth1.count() == 2);
+		expect_exact_entities(qSelfUp, {cableDock, cablePlanet, cableRoot});
+		expect_exact_entities(qUpOnly, {cableDock, cablePlanet});
+		expect_exact_entities(qParentOnly, {cablePlanet});
+		expect_exact_entities(qSelfDepth1, {cablePlanet, cableRoot});
+	}
+
+	// `$this` explicitly targets the default source.
+	{
+		TestWorld twld;
+		struct Cable {};
+		struct Device {};
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add<Device>(cableA);
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+
+		auto qImplicit = make_query<UseCachedQuery>(wld).add("Cable, Device");
+		auto qExplicit = make_query<UseCachedQuery>(wld).add("Cable, Device($this)");
+
+		CHECK(qImplicit.count() == 1);
+		CHECK(qExplicit.count() == 1);
+		expect_exact_entities(qImplicit, {cableA});
+		expect_exact_entities(qExplicit, {cableA});
+	}
+}
+
+TEST_CASE("Query - variables advanced") {
+	SUBCASE("Cached query") {
+		Test_Query_Variables_Advanced<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Variables_Advanced<QueryUncached>();
+	}
+}
+
+TEST_CASE("Query - variable source ignores stale recycled handles") {
+	TestWorld twld;
+
+	struct Ship {};
+	struct PlanetTag {};
+
+	const auto earth = wld.add();
+	wld.add<PlanetTag>(earth);
+
+	const auto ship = wld.add();
+	wld.add<Ship>(ship);
+
+	auto q = wld.query().all<Ship>().all<PlanetTag>(ecs::QueryTermOptions{}.src(ecs::Var0));
+
+	q.set_var(ecs::Var0, earth);
+	CHECK(q.count() == 1);
+	expect_exact_entities(q, {ship});
+
+	wld.del(earth);
+	wld.update();
+
+	ecs::Entity recycled = ecs::EntityBad;
+	cnt::darr<ecs::Entity> extras;
+	for (uint32_t i = 0; i < 64 && recycled == ecs::EntityBad; ++i) {
+		const auto candidate = wld.add();
+		if (candidate.id() == earth.id())
+			recycled = candidate;
+		else
+			extras.push_back(candidate);
+	}
+
+	CHECK(recycled != ecs::EntityBad);
+	CHECK(recycled.gen() != earth.gen());
+
+	q.set_var(ecs::Var0, earth);
+	CHECK(q.count() == 0);
+	expect_exact_entities(q, {});
+
+	wld.add<PlanetTag>(recycled);
+	q.set_var(ecs::Var0, recycled);
+	CHECK(q.count() == 1);
+	expect_exact_entities(q, {ship});
+}
+
+TEST_CASE("Query - variable pair target ignores stale recycled handles") {
+	TestWorld twld;
+
+	struct Ship {};
+	struct LocatedIn {};
+
+	const auto locatedIn = wld.add<LocatedIn>().entity;
+	const auto earth = wld.add();
+	const auto ship = wld.add();
+	wld.add<Ship>(ship);
+	wld.add(ship, ecs::Pair(locatedIn, earth));
+
+	auto q = wld.query().all<Ship>().all(ecs::Pair(locatedIn, ecs::Var0));
+
+	q.set_var(ecs::Var0, earth);
+	CHECK(q.count() == 1);
+	expect_exact_entities(q, {ship});
+
+	wld.del(earth);
+	wld.update();
+
+	ecs::Entity recycled = ecs::EntityBad;
+	for (uint32_t i = 0; i < 64 && recycled == ecs::EntityBad; ++i) {
+		const auto candidate = wld.add();
+		if (candidate.id() == earth.id())
+			recycled = candidate;
+	}
+
+	CHECK(recycled != ecs::EntityBad);
+	CHECK(recycled.gen() != earth.gen());
+
+	q.set_var(ecs::Var0, earth);
+	CHECK(q.count() == 0);
+	expect_exact_entities(q, {});
+
+	wld.add(ship, ecs::Pair(locatedIn, recycled));
+	q.set_var(ecs::Var0, recycled);
+	CHECK(q.count() == 1);
+	expect_exact_entities(q, {ship});
+}
+
+template <typename TQuery>
+void Test_Query_Variables_MultiVar() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	// 3 independent vars with type checks on all variable sources.
+	{
+		TestWorld twld;
+		struct Cable {};
+		struct Device {};
+		struct PowerNode {};
+		struct Planet {};
+		struct ConnectedTo {};
+		struct PoweredBy {};
+		struct DockedTo {};
+
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto poweredBy = wld.add<PoweredBy>().entity;
+		const auto dockedTo = wld.add<DockedTo>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		const auto powerA = wld.add();
+		const auto powerB = wld.add();
+		const auto planetA = wld.add();
+		const auto asteroid = wld.add();
+
+		wld.add<Device>(devA);
+		wld.add<PowerNode>(powerA);
+		wld.add<Planet>(planetA);
+
+		const auto cableGood = wld.add();
+		wld.add<Cable>(cableGood);
+		wld.add(cableGood, {connectedTo, devA});
+		wld.add(cableGood, {poweredBy, powerA});
+		wld.add(cableGood, {dockedTo, planetA});
+
+		const auto cableWrongPower = wld.add();
+		wld.add<Cable>(cableWrongPower);
+		wld.add(cableWrongPower, {connectedTo, devA});
+		wld.add(cableWrongPower, {poweredBy, powerB});
+		wld.add(cableWrongPower, {dockedTo, planetA});
+
+		const auto cableWrongDevice = wld.add();
+		wld.add<Cable>(cableWrongDevice);
+		wld.add(cableWrongDevice, {connectedTo, devB});
+		wld.add(cableWrongDevice, {poweredBy, powerA});
+		wld.add(cableWrongDevice, {dockedTo, planetA});
+
+		const auto cableWrongDock = wld.add();
+		wld.add<Cable>(cableWrongDock);
+		wld.add(cableWrongDock, {connectedTo, devA});
+		wld.add(cableWrongDock, {poweredBy, powerA});
+		wld.add(cableWrongDock, {dockedTo, asteroid});
+
+		const auto cableMulti = wld.add();
+		wld.add<Cable>(cableMulti);
+		wld.add(cableMulti, {connectedTo, devA});
+		wld.add(cableMulti, {connectedTo, devB});
+		wld.add(cableMulti, {poweredBy, powerA});
+		wld.add(cableMulti, {poweredBy, powerB});
+		wld.add(cableMulti, {dockedTo, planetA});
+
+		auto qApi = make_query<UseCachedQuery>(wld) //
+										.template all<Cable>()
+										.all(ecs::Pair(connectedTo, ecs::Var0))
+										.all(ecs::Pair(poweredBy, ecs::Var1))
+										.all(ecs::Pair(dockedTo, ecs::Var2))
+										.template all<Device>(ecs::QueryTermOptions{}.src(ecs::Var0))
+										.template all<PowerNode>(ecs::QueryTermOptions{}.src(ecs::Var1))
+										.template all<Planet>(ecs::QueryTermOptions{}.src(ecs::Var2));
+		CHECK(qApi.count() == 2);
+		expect_exact_entities(qApi, {cableGood, cableMulti});
+
+		auto qExpr = make_query<UseCachedQuery>(wld).add(
+				"Cable, (ConnectedTo, $dev), (PoweredBy, $pwr), (DockedTo, $pl), Device($dev), PowerNode($pwr), Planet($pl)");
+		CHECK(qExpr.count() == 2);
+		expect_exact_entities(qExpr, {cableGood, cableMulti});
+
+		// Same query semantics with shuffled term order.
+		auto qExprShuffled = make_query<UseCachedQuery>(wld).add(
+				"Cable, Device($dev), Planet($pl), PowerNode($pwr), (DockedTo, $pl), (PoweredBy, $pwr), (ConnectedTo, $dev)");
+		CHECK(qExprShuffled.count() == 2);
+		expect_exact_entities(qExprShuffled, {cableGood, cableMulti});
+	}
+
+	// Source-dependent variable binding: bind Var2 from a term sourced by Var0.
+	{
+		TestWorld twld;
+		struct Relay {};
+		struct PrimaryOnline {};
+		struct SecondaryOnline {};
+		struct RegionTag {};
+		struct Primary {};
+		struct Secondary {};
+		struct LocatedIn {};
+
+		const auto primary = wld.add<Primary>().entity;
+		const auto secondary = wld.add<Secondary>().entity;
+		const auto locatedIn = wld.add<LocatedIn>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		const auto backupA = wld.add();
+		const auto backupB = wld.add();
+		const auto regionA = wld.add();
+		const auto regionB = wld.add();
+
+		wld.add<PrimaryOnline>(devA);
+		wld.add<PrimaryOnline>(devB);
+		wld.add<SecondaryOnline>(backupA);
+		wld.add<RegionTag>(regionA);
+
+		wld.add(devA, {locatedIn, regionA});
+		wld.add(devB, {locatedIn, regionB});
+
+		const auto relayGood = wld.add();
+		wld.add<Relay>(relayGood);
+		wld.add(relayGood, {primary, devA});
+		wld.add(relayGood, {secondary, backupA});
+
+		const auto relayBadRegion = wld.add();
+		wld.add<Relay>(relayBadRegion);
+		wld.add(relayBadRegion, {primary, devB});
+		wld.add(relayBadRegion, {secondary, backupA});
+
+		const auto relayBadSecondary = wld.add();
+		wld.add<Relay>(relayBadSecondary);
+		wld.add(relayBadSecondary, {primary, devA});
+		wld.add(relayBadSecondary, {secondary, backupB});
+
+		auto qApi = make_query<UseCachedQuery>(wld) //
+										.template all<Relay>()
+										.all(ecs::Pair(primary, ecs::Var0))
+										.all(ecs::Pair(secondary, ecs::Var1))
+										.all(ecs::Pair(locatedIn, ecs::Var2), ecs::QueryTermOptions{}.src(ecs::Var0))
+										.template all<PrimaryOnline>(ecs::QueryTermOptions{}.src(ecs::Var0))
+										.template all<SecondaryOnline>(ecs::QueryTermOptions{}.src(ecs::Var1))
+										.template all<RegionTag>(ecs::QueryTermOptions{}.src(ecs::Var2));
+		CHECK(qApi.count() == 1);
+		expect_exact_entities(qApi, {relayGood});
+	}
+}
+
+TEST_CASE("Query - variables multivar") {
+	SUBCASE("Cached query") {
+		Test_Query_Variables_MultiVar<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Variables_MultiVar<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_RuntimeParams() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+	struct SpaceShip {};
+	struct Planet {};
+	struct DockedTo {};
+	struct Military {};
+	struct Civilian {};
+
+	const auto dockedTo = wld.add<DockedTo>().entity;
+
+	const auto earth = wld.add();
+	const auto mars = wld.add();
+	const auto moon = wld.add();
+	wld.add<Planet>(earth);
+	wld.add<Planet>(mars);
+
+	const auto shipEarth = wld.add();
+	wld.add<SpaceShip>(shipEarth);
+	wld.add<Military>(shipEarth);
+	wld.add(shipEarth, {dockedTo, earth});
+
+	const auto shipMars = wld.add();
+	wld.add<SpaceShip>(shipMars);
+	wld.add(shipMars, {dockedTo, mars});
+
+	const auto shipMoon = wld.add();
+	wld.add<SpaceShip>(shipMoon);
+	wld.add(shipMoon, {dockedTo, moon});
+
+	const auto shipFree = wld.add();
+	wld.add<SpaceShip>(shipFree);
+	wld.add<Civilian>(shipFree);
+
+	// Baseline expression parsing sanity checks.
+	auto qSpaceShip = make_query<UseCachedQuery>(wld).add("SpaceShip");
+	CHECK(qSpaceShip.count() == 4);
+	expect_exact_entities(qSpaceShip, {shipEarth, shipMars, shipMoon, shipFree});
+
+	auto qOrBaseline = make_query<UseCachedQuery>(wld).add("Military || Civilian");
+	CHECK(qOrBaseline.count() == 2);
+	expect_exact_entities(qOrBaseline, {shipEarth, shipFree});
+
+	// Optional term + dependent term:
+	// match all spaceships, and when DockedTo exists require that target to be a Planet.
+	auto qOptional = make_query<UseCachedQuery>(wld).add("SpaceShip, ?(DockedTo, $planet), Planet($planet)");
+	CHECK(qOptional.count() == 3);
+	expect_exact_entities(qOptional, {shipEarth, shipMars, shipFree});
+
+	// OR-chain syntax maps to query::or_.
+	auto qOr = make_query<UseCachedQuery>(wld).add("SpaceShip, Military || Civilian");
+	CHECK(qOr.count() == 2);
+	expect_exact_entities(qOr, {shipEarth, shipFree});
+
+	// Non-string OR API alias.
+	auto qOrApi =
+			make_query<UseCachedQuery>(wld).template all<SpaceShip>().template or_<Military>().template or_<Civilian>();
+	CHECK(qOrApi.count() == 2);
+	expect_exact_entities(qOrApi, {shipEarth, shipFree});
+
+	auto qApi = make_query<UseCachedQuery>(wld) //
+									.template all<SpaceShip>()
+									.all(ecs::Pair(dockedTo, ecs::Var0))
+									.template all<Planet>(ecs::QueryTermOptions{}.src(ecs::Var0))
+									.var_name(ecs::Var0, "planet");
+
+	CHECK(qApi.count() == 2);
+	expect_exact_entities(qApi, {shipEarth, shipMars});
+
+	qApi.set_var("planet", earth);
+	CHECK(qApi.count() == 1);
+	expect_exact_entities(qApi, {shipEarth});
+
+	qApi.set_var(ecs::Var0, mars);
+	CHECK(qApi.count() == 1);
+	expect_exact_entities(qApi, {shipMars});
+
+	qApi.clear_vars();
+	CHECK(qApi.count() == 2);
+	expect_exact_entities(qApi, {shipEarth, shipMars});
+
+	if constexpr (UseCachedQuery) {
+		auto qInterleavedA = wld.query()
+														 .template all<SpaceShip>()
+														 .all(ecs::Pair(dockedTo, ecs::Var0))
+														 .template all<Planet>(ecs::QueryTermOptions{}.src(ecs::Var0));
+		auto qInterleavedB = wld.query()
+														 .template all<SpaceShip>()
+														 .all(ecs::Pair(dockedTo, ecs::Var0))
+														 .template all<Planet>(ecs::QueryTermOptions{}.src(ecs::Var0));
+
+		qInterleavedA.set_var(ecs::Var0, earth);
+		qInterleavedB.set_var(ecs::Var0, mars);
+		CHECK(qInterleavedA.count() == 1);
+		expect_exact_entities(qInterleavedA, {shipEarth});
+		CHECK(qInterleavedB.count() == 1);
+		expect_exact_entities(qInterleavedB, {shipMars});
+		CHECK(qInterleavedA.count() == 1);
+		expect_exact_entities(qInterleavedA, {shipEarth});
+	}
+
+	// Named var provided explicitly before parsing the expression.
+	auto qExprNamed = make_query<UseCachedQuery>(wld)
+												.var_name(ecs::Var0, "planet")
+												.add("SpaceShip, (DockedTo, $planet), Planet($planet)");
+	qExprNamed.set_var("planet", mars);
+	CHECK(qExprNamed.count() == 1);
+	expect_exact_entities(qExprNamed, {shipMars});
+
+	// Expression-created variable names can be bound at runtime too.
+	auto qExprAuto = make_query<UseCachedQuery>(wld).add("SpaceShip, (DockedTo, $p), Planet($p)");
+	qExprAuto.set_var("p", earth);
+	CHECK(qExprAuto.count() == 1);
+	expect_exact_entities(qExprAuto, {shipEarth});
+}
+
+TEST_CASE("Query - runtime params") {
+	SUBCASE("Cached query") {
+		Test_Query_RuntimeParams<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_RuntimeParams<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_Bytecode_Dump() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+
+	struct Level {
+		uint32_t value;
+	};
+	struct ConnectedTo {};
+	struct PlanetTag {};
+
+	const auto level = wld.add<Level>().entity;
+	const auto connectedTo = wld.add<ConnectedTo>().entity;
+
+	const auto root = wld.add();
+	const auto scene = wld.add();
+	wld.child(scene, root);
+
+	const auto entity = wld.add();
+	wld.add<Position>(entity, {1.0f, 2.0f, 3.0f});
+	wld.add(entity, {connectedTo, root});
+	wld.add<PlanetTag>(root);
+
+	auto q = make_query<UseCachedQuery>(wld) //
+							 .template all<Position>()
+							 .all(level, ecs::QueryTermOptions{}.src(scene).trav())
+							 .all(ecs::Pair(connectedTo, ecs::Var0))
+							 .template all<PlanetTag>(ecs::QueryTermOptions{}.src(ecs::Var0).trav_parent());
+
+	const auto bytecode = q.bytecode();
+	CHECK(!bytecode.empty());
+	CHECK(bytecode.find("main_ops:") != BadIndex);
+	CHECK(bytecode.find("ids_all: 1") != BadIndex);
+	CHECK(bytecode.find("src_all: 1") != BadIndex);
+	CHECK(bytecode.find("var_all: 2") != BadIndex);
+	CHECK(bytecode.find("] up id=") != BadIndex);
+	CHECK(bytecode.find("depth=1") != BadIndex);
+
+	auto qDown = make_query<UseCachedQuery>(wld) //
+									 .template all<Position>()
+									 .all(level, ecs::QueryTermOptions{}.src(root).trav_self_down());
+	const auto bytecodeDown = qDown.bytecode();
+	CHECK(bytecodeDown.find("] down id=") != BadIndex);
+
+	// Single OR term is canonicalized to AND.
+	auto qOrOnlySingle = make_query<UseCachedQuery>(wld).template or_<PlanetTag>();
+	const auto bytecodeOrOnlySingle = qOrOnlySingle.bytecode();
+	CHECK(bytecodeOrOnlySingle.find("ids_all: 1") != BadIndex);
+	CHECK(bytecodeOrOnlySingle.find("ids_or:") == BadIndex);
+
+	auto qOrWithAllSingle = make_query<UseCachedQuery>(wld).template all<Position>().template or_<PlanetTag>();
+	const auto bytecodeOrWithAllSingle = qOrWithAllSingle.bytecode();
+	CHECK(bytecodeOrWithAllSingle.find("ids_all: 2") != BadIndex);
+	CHECK(bytecodeOrWithAllSingle.find("ids_or:") == BadIndex);
+
+	auto qOrOnlyMulti = make_query<UseCachedQuery>(wld).template or_<PlanetTag>().template or_<Position>();
+	const auto bytecodeOrOnlyMulti = qOrOnlyMulti.bytecode();
+	CHECK(bytecodeOrOnlyMulti.find("] or ") != BadIndex);
+
+	auto qOrWithAllMulti =
+			make_query<UseCachedQuery>(wld).template all<Position>().template or_<PlanetTag>().template or_<ConnectedTo>();
+	const auto bytecodeOrWithAllMulti = qOrWithAllMulti.bytecode();
+	CHECK(bytecodeOrWithAllMulti.find("] ora ") != BadIndex);
+
+	// We do this just for code coverage.
+	// Hide logging so it does not spam the results of unit testing.
+	const auto logLevelBackup = util::g_logLevelMask;
+	util::g_logLevelMask = 0;
+	q.diag_bytecode();
+	util::g_logLevelMask = logLevelBackup;
+}
+
+TEST_CASE("Query - bytecode dump") {
+	SUBCASE("Cached query") {
+		Test_Query_Bytecode_Dump<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Bytecode_Dump<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_Variable_Opcode_Paths() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	struct Cable {};
+	struct Device {};
+	struct PowerNode {};
+	struct ConnectedTo {};
+	struct PoweredBy {};
+	struct LinkedTo {};
+	struct RoutedVia {};
+	struct BlockedBy {};
+	struct Marker {};
+
+	// Single-variable ALL-only source-gated query should use the grouped ALL-only opcode.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto poweredBy = wld.add<PoweredBy>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		wld.add<Device>(devA);
+
+		const auto cableGood = wld.add();
+		wld.add<Cable>(cableGood);
+		wld.add(cableGood, {connectedTo, devA});
+		wld.add(cableGood, {poweredBy, devA});
+
+		const auto cableBad = wld.add();
+		wld.add<Cable>(cableBad);
+		wld.add(cableBad, {connectedTo, devA});
+		wld.add(cableBad, {poweredBy, devB});
+
+		auto q = make_query<TQuery>(wld) //
+								 .template all<Cable>()
+								 .all(ecs::Pair(connectedTo, ecs::Var0))
+								 .all(ecs::Pair(poweredBy, ecs::Var0))
+								 .template all<Device>(ecs::QueryTermOptions{}.src(ecs::Var0));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_bind") != BadIndex);
+		CHECK(bytecode.find("search_begin_any") != BadIndex);
+		CHECK(bytecode.find("search_maybe_finalize") != BadIndex);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var0, devA);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var0, devB);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.clear_vars();
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+	}
+
+	// Single-variable ALL pair-intersection query should use the shared variable program opcode.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+		const auto routedVia = wld.add<RoutedVia>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		const auto devC = wld.add();
+
+		const auto cableGood = wld.add();
+		wld.add<Cable>(cableGood);
+		wld.add(cableGood, {connectedTo, devA});
+		wld.add(cableGood, {linkedTo, devA});
+		wld.add(cableGood, {routedVia, devA});
+
+		const auto cableWrongA = wld.add();
+		wld.add<Cable>(cableWrongA);
+		wld.add(cableWrongA, {connectedTo, devA});
+		wld.add(cableWrongA, {linkedTo, devB});
+		wld.add(cableWrongA, {routedVia, devA});
+
+		const auto cableWrongB = wld.add();
+		wld.add<Cable>(cableWrongB);
+		wld.add(cableWrongB, {connectedTo, devA});
+		wld.add(cableWrongB, {linkedTo, devA});
+		wld.add(cableWrongB, {routedVia, devC});
+
+		auto q = make_query<TQuery>(wld) //
+								 .template all<Cable>()
+								 .all(ecs::Pair(connectedTo, ecs::Var0))
+								 .all(ecs::Pair(linkedTo, ecs::Var0))
+								 .all(ecs::Pair(routedVia, ecs::Var0));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_bind") != BadIndex);
+		CHECK(bytecode.find("search_begin_any") != BadIndex);
+		CHECK(bytecode.find("search_maybe_finalize") != BadIndex);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var0, devA);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var0, devB);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.clear_vars();
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+	}
+
+	// Two-variable ALL pair-intersection query should use the shared variable program opcode.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto poweredBy = wld.add<PoweredBy>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+		const auto routedVia = wld.add<RoutedVia>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		const auto pwrA = wld.add();
+		const auto pwrB = wld.add();
+
+		const auto cableGood = wld.add();
+		wld.add<Cable>(cableGood);
+		wld.add(cableGood, {connectedTo, devA});
+		wld.add(cableGood, {linkedTo, devA});
+		wld.add(cableGood, {poweredBy, pwrA});
+		wld.add(cableGood, {routedVia, pwrA});
+
+		const auto cableWrongVar0 = wld.add();
+		wld.add<Cable>(cableWrongVar0);
+		wld.add(cableWrongVar0, {connectedTo, devA});
+		wld.add(cableWrongVar0, {linkedTo, devB});
+		wld.add(cableWrongVar0, {poweredBy, pwrA});
+		wld.add(cableWrongVar0, {routedVia, pwrA});
+
+		const auto cableWrongVar1 = wld.add();
+		wld.add<Cable>(cableWrongVar1);
+		wld.add(cableWrongVar1, {connectedTo, devA});
+		wld.add(cableWrongVar1, {linkedTo, devA});
+		wld.add(cableWrongVar1, {poweredBy, pwrA});
+		wld.add(cableWrongVar1, {routedVia, pwrB});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .all(ecs::Pair(connectedTo, ecs::Var0))
+								 .all(ecs::Pair(poweredBy, ecs::Var1))
+								 .all(ecs::Pair(linkedTo, ecs::Var0))
+								 .all(ecs::Pair(routedVia, ecs::Var1));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_bind") != BadIndex);
+		CHECK(bytecode.find("search_begin_any") != BadIndex);
+		CHECK(bytecode.find("search_maybe_finalize") != BadIndex);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var0, devA);
+		q.set_var(ecs::Var1, pwrA);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var1, pwrB);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.clear_vars();
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+	}
+
+	// Two-variable ALL-only source-gated groups should use the shared grouped program opcode.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto poweredBy = wld.add<PoweredBy>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		const auto pwrA = wld.add();
+		const auto pwrB = wld.add();
+		wld.add<Device>(devA);
+		wld.add<PowerNode>(pwrA);
+
+		const auto cableGood = wld.add();
+		wld.add<Cable>(cableGood);
+		wld.add(cableGood, {connectedTo, devA});
+		wld.add(cableGood, {linkedTo, devA});
+		wld.add(cableGood, {poweredBy, pwrA});
+
+		const auto cableWrongVar0 = wld.add();
+		wld.add<Cable>(cableWrongVar0);
+		wld.add(cableWrongVar0, {connectedTo, devA});
+		wld.add(cableWrongVar0, {linkedTo, devB});
+		wld.add(cableWrongVar0, {poweredBy, pwrA});
+
+		const auto cableWrongVar1 = wld.add();
+		wld.add<Cable>(cableWrongVar1);
+		wld.add(cableWrongVar1, {connectedTo, devA});
+		wld.add(cableWrongVar1, {linkedTo, devA});
+		wld.add(cableWrongVar1, {poweredBy, pwrB});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .all(ecs::Pair(connectedTo, ecs::Var0))
+								 .all(ecs::Pair(linkedTo, ecs::Var0))
+								 .all(ecs::Pair(poweredBy, ecs::Var1))
+								 .template all<Device>(ecs::QueryTermOptions{}.src(ecs::Var0))
+								 .template all<PowerNode>(ecs::QueryTermOptions{}.src(ecs::Var1));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_bind") != BadIndex);
+		CHECK(bytecode.find("search_begin_any") != BadIndex);
+		CHECK(bytecode.find("search_maybe_finalize") != BadIndex);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var0, devA);
+		q.set_var(ecs::Var1, pwrA);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var1, pwrB);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.clear_vars();
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+	}
+
+	// Coupled ALL-only multi-variable query should use the shared search program path.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto poweredBy = wld.add<PoweredBy>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		const auto pwrA = wld.add();
+		const auto pwrB = wld.add();
+
+		const auto cableGood = wld.add();
+		wld.add<Cable>(cableGood);
+		wld.add(cableGood, {connectedTo, devA});
+		wld.add(cableGood, {poweredBy, pwrA});
+		wld.add(cableGood, {devA, pwrA});
+
+		const auto cableWrongCoupling = wld.add();
+		wld.add<Cable>(cableWrongCoupling);
+		wld.add(cableWrongCoupling, {connectedTo, devA});
+		wld.add(cableWrongCoupling, {poweredBy, pwrA});
+		wld.add(cableWrongCoupling, {devB, pwrA});
+
+		const auto cableWrongTarget = wld.add();
+		wld.add<Cable>(cableWrongTarget);
+		wld.add(cableWrongTarget, {connectedTo, devA});
+		wld.add(cableWrongTarget, {poweredBy, pwrB});
+		wld.add(cableWrongTarget, {devA, pwrA});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .all(ecs::Pair(connectedTo, ecs::Var0))
+								 .all(ecs::Pair(poweredBy, ecs::Var1))
+								 .all(ecs::Pair(ecs::Var0, ecs::Var1));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_bind") != BadIndex);
+		CHECK(bytecode.find("search_begin_any") != BadIndex);
+		CHECK(bytecode.find("search_maybe_finalize") != BadIndex);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var0, devA);
+		q.set_var(ecs::Var1, pwrA);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var1, pwrB);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.clear_vars();
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+	}
+
+	// Mixed multi-variable query with source traversal should use the shared search program path.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+		const auto routedVia = wld.add<RoutedVia>().entity;
+
+		const auto parentMarked = wld.add();
+		const auto parentPlain = wld.add();
+		wld.add<Marker>(parentMarked);
+
+		const auto devMarked = wld.add();
+		const auto devPlain = wld.add();
+		wld.add(devMarked, ecs::Pair(ecs::ChildOf, parentMarked));
+		wld.add(devPlain, ecs::Pair(ecs::ChildOf, parentPlain));
+
+		const auto routeA = wld.add();
+		const auto routeB = wld.add();
+
+		const auto cableGood = wld.add();
+		wld.add<Cable>(cableGood);
+		wld.add(cableGood, {connectedTo, devMarked});
+		wld.add(cableGood, {routedVia, routeA});
+		wld.add(cableGood, {routeA, devMarked});
+
+		const auto cableBadSource = wld.add();
+		wld.add<Cable>(cableBadSource);
+		wld.add(cableBadSource, {connectedTo, devPlain});
+		wld.add(cableBadSource, {linkedTo, routeA});
+		wld.add(cableBadSource, {routeA, devPlain});
+
+		const auto cableBadCoupling = wld.add();
+		wld.add<Cable>(cableBadCoupling);
+		wld.add(cableBadCoupling, {connectedTo, devMarked});
+		wld.add(cableBadCoupling, {linkedTo, routeB});
+		wld.add(cableBadCoupling, {routeA, devMarked});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .all(ecs::Pair(connectedTo, ecs::Var0))
+								 .all(ecs::Pair(ecs::Var1, ecs::Var0))
+								 .template all<Marker>(ecs::QueryTermOptions{}.src(ecs::Var0).trav_parent())
+								 .or_(ecs::Pair(routedVia, ecs::Var1))
+								 .or_(ecs::Pair(linkedTo, ecs::Var1));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_src_bind") != BadIndex);
+		CHECK(bytecode.find("term_all_bind") != BadIndex);
+		CHECK(bytecode.find("term_or_check") != BadIndex);
+		CHECK(bytecode.find("term_or_bind") != BadIndex);
+		CHECK(bytecode.find("search_begin_any") != BadIndex);
+		CHECK(bytecode.find("search_all") != BadIndex);
+		CHECK(bytecode.find("search_or") != BadIndex);
+		CHECK(bytecode.find("search_other_or_bind") != BadIndex);
+		CHECK(bytecode.find("search_maybe_finalize") != BadIndex);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var0, devMarked);
+		q.set_var(ecs::Var1, routeA);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+
+		q.set_var(ecs::Var0, devPlain);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.clear_vars();
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableGood});
+	}
+
+	// Single-variable ALL query with a down-only source anchor should use explicit down source binding.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+
+		const auto root = wld.add();
+		const auto parent = wld.add();
+		const auto leaf = wld.add();
+		wld.child(parent, root);
+		wld.child(leaf, parent);
+		wld.add<Marker>(parent);
+
+		const auto cableRoot = wld.add();
+		wld.add<Cable>(cableRoot);
+		wld.add(cableRoot, {connectedTo, root});
+
+		const auto cableParent = wld.add();
+		wld.add<Cable>(cableParent);
+		wld.add(cableParent, {connectedTo, parent});
+
+		const auto cableLeaf = wld.add();
+		wld.add<Cable>(cableLeaf);
+		wld.add(cableLeaf, {connectedTo, leaf});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .all(ecs::Pair(connectedTo, ecs::Var0))
+								 .template all<Marker>(ecs::QueryTermOptions{}.src(ecs::Var0).trav_down());
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_src_bind") != BadIndex);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableRoot});
+
+		q.set_var(ecs::Var0, root);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableRoot});
+
+		q.set_var(ecs::Var0, parent);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.set_var(ecs::Var0, leaf);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.clear_vars();
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableRoot});
+	}
+
+	// Single-variable ALL query with an up+down source anchor should use explicit updown source binding.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+
+		const auto root = wld.add();
+		const auto parent = wld.add();
+		const auto leaf = wld.add();
+		wld.child(parent, root);
+		wld.child(leaf, parent);
+		wld.add<Marker>(parent);
+
+		const auto cableRoot = wld.add();
+		wld.add<Cable>(cableRoot);
+		wld.add(cableRoot, {connectedTo, root});
+
+		const auto cableParent = wld.add();
+		wld.add<Cable>(cableParent);
+		wld.add(cableParent, {connectedTo, parent});
+
+		const auto cableLeaf = wld.add();
+		wld.add<Cable>(cableLeaf);
+		wld.add(cableLeaf, {connectedTo, leaf});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .all(ecs::Pair(connectedTo, ecs::Var0))
+								 .template all<Marker>(ecs::QueryTermOptions{}.src(ecs::Var0).trav_down().trav_kind(
+										 ecs::QueryTravKind::Up | ecs::QueryTravKind::Down));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_src_bind") != BadIndex);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableRoot, cableLeaf});
+
+		q.set_var(ecs::Var0, root);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableRoot});
+
+		q.set_var(ecs::Var0, parent);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.set_var(ecs::Var0, leaf);
+		CHECK(q.count() == 1);
+		expect_exact_entities(q, {cableLeaf});
+
+		q.clear_vars();
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableRoot, cableLeaf});
+	}
+
+	// Single-variable OR query with a source-gated ALL anchor should use the shared variable program opcode.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+		const auto routedVia = wld.add<RoutedVia>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		wld.add<Marker>(devA);
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add(cableA, {connectedTo, devA});
+		wld.add(cableA, {linkedTo, devB});
+		wld.add(cableA, {routedVia, devB});
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+		wld.add(cableB, {connectedTo, devB});
+		wld.add(cableB, {linkedTo, devA});
+		wld.add(cableB, {routedVia, devB});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .template all<Marker>(ecs::QueryTermOptions{}.src(ecs::Var0))
+								 .or_(ecs::Pair(connectedTo, ecs::Var0))
+								 .or_(ecs::Pair(linkedTo, ecs::Var0))
+								 .or_(ecs::Pair(routedVia, ecs::Var0));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_src_bind") != BadIndex);
+		CHECK(bytecode.find("term_all_bind") == BadIndex);
+		CHECK(bytecode.find("term_or_check") != BadIndex);
+		CHECK(bytecode.find("term_or_bind") != BadIndex);
+		CHECK(bytecode.find("search_begin_any") != BadIndex);
+		CHECK(bytecode.find("search_maybe_finalize") != BadIndex);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableB});
+
+		q.set_var(ecs::Var0, devA);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableB});
+
+		q.set_var(ecs::Var0, devB);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.clear_vars();
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableB});
+	}
+
+	// Single-variable OR query without a source-gated ALL anchor should stay on the shared single-variable program
+	// path.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add(cableA, {connectedTo, devA});
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+		wld.add(cableB, {linkedTo, devB});
+
+		const auto cableBoth = wld.add();
+		wld.add<Cable>(cableBoth);
+		wld.add(cableBoth, {connectedTo, devA});
+		wld.add(cableBoth, {linkedTo, devA});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .or_(ecs::Pair(connectedTo, ecs::Var0))
+								 .or_(ecs::Pair(linkedTo, ecs::Var0));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_or_check") != BadIndex);
+		CHECK(bytecode.find("term_or_bind") != BadIndex);
+		CHECK(bytecode.find("search_or") != BadIndex);
+		CHECK(bytecode.find("search_other_or_bind") != BadIndex);
+		CHECK(bytecode.find("term_all_check") == BadIndex);
+		CHECK(bytecode.find("term_all_bind") == BadIndex);
+		CHECK(bytecode.find("final_require_or") != BadIndex);
+		CHECK(bytecode.find("final_or_check") != BadIndex);
+		CHECK(q.count() == 3);
+		expect_exact_entities(q, {cableA, cableB, cableBoth});
+
+		q.set_var(ecs::Var0, devA);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableBoth});
+
+		q.clear_vars();
+		CHECK(q.count() == 3);
+		expect_exact_entities(q, {cableA, cableB, cableBoth});
+	}
+
+	// Single-variable pair mixed ALL/OR/NOT query should use the shared variable program opcode.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+		const auto routedVia = wld.add<RoutedVia>().entity;
+		const auto blockedBy = wld.add<BlockedBy>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+
+		const auto cableGoodA = wld.add();
+		wld.add<Cable>(cableGoodA);
+		wld.add(cableGoodA, {connectedTo, devA});
+		wld.add(cableGoodA, {linkedTo, devA});
+
+		const auto cableGoodB = wld.add();
+		wld.add<Cable>(cableGoodB);
+		wld.add(cableGoodB, {connectedTo, devA});
+		wld.add(cableGoodB, {routedVia, devA});
+
+		const auto cableBadOr = wld.add();
+		wld.add<Cable>(cableBadOr);
+		wld.add(cableBadOr, {connectedTo, devA});
+		wld.add(cableBadOr, {linkedTo, devB});
+		wld.add(cableBadOr, {routedVia, devB});
+
+		const auto cableBadNot = wld.add();
+		wld.add<Cable>(cableBadNot);
+		wld.add(cableBadNot, {connectedTo, devA});
+		wld.add(cableBadNot, {linkedTo, devA});
+		wld.add(cableBadNot, {blockedBy, devA});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .all(ecs::Pair(connectedTo, ecs::Var0))
+								 .or_(ecs::Pair(linkedTo, ecs::Var0))
+								 .or_(ecs::Pair(routedVia, ecs::Var0))
+								 .no(ecs::Pair(blockedBy, ecs::Var0));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_bind") != BadIndex);
+		CHECK(bytecode.find("term_or_check") != BadIndex);
+		CHECK(bytecode.find("term_or_bind") != BadIndex);
+		CHECK(bytecode.find("final_not_check") != BadIndex);
+		CHECK(bytecode.find("final_require_or") != BadIndex);
+		CHECK(bytecode.find("final_or_check") != BadIndex);
+		CHECK(bytecode.find("search_begin_any") != BadIndex);
+		CHECK(bytecode.find("search_all") != BadIndex);
+		CHECK(bytecode.find("search_or") != BadIndex);
+		CHECK(bytecode.find("search_other_or_bind") != BadIndex);
+		CHECK(bytecode.find("search_maybe_finalize") != BadIndex);
+		CHECK(bytecode.find("final_success") != BadIndex);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableGoodA, cableGoodB});
+
+		q.set_var(ecs::Var0, devA);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableGoodA, cableGoodB});
+
+		q.set_var(ecs::Var0, devB);
+		CHECK(q.count() == 0);
+		expect_exact_entities(q, {});
+
+		q.clear_vars();
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableGoodA, cableGoodB});
+	}
+
+	// Single-variable ANY query should emit split any-check / any-bind micro-ops.
+	{
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		const auto devC = wld.add();
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add(cableA, {connectedTo, devA});
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+		wld.add(cableB, {linkedTo, devB});
+
+		auto q = make_query<UseCachedQuery>(wld) //
+								 .template all<Cable>()
+								 .any(ecs::Pair(connectedTo, ecs::Var0))
+								 .any(ecs::Pair(linkedTo, ecs::Var0));
+
+		const auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("var_exec: 1") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("varp0:") != BadIndex);
+		CHECK(bytecode.find("term_any_check") != BadIndex);
+		CHECK(bytecode.find("term_any_bind") != BadIndex);
+		CHECK(bytecode.find("term_all_check") == BadIndex);
+		CHECK(bytecode.find("term_all_bind") == BadIndex);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableB});
+
+		//! Runtime bindings must not turn optional ANY terms into row filters.
+		q.set_var(ecs::Var0, devA);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableB});
+
+		q.set_var(ecs::Var0, devB);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableB});
+
+		q.set_var(ecs::Var0, devC);
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableB});
+
+		q.clear_vars();
+		CHECK(q.count() == 2);
+		expect_exact_entities(q, {cableA, cableB});
+	}
+}
+
+TEST_CASE("Query - variable opcode paths") {
+	SUBCASE("Cached query") {
+		Test_Query_Variable_Opcode_Paths<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Variable_Opcode_Paths<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_Variable_Opcode_Selection_IsStructural() {
+	struct Cable {};
+	struct ConnectedTo {};
+	struct LinkedTo {};
+	struct RoutedVia {};
+	struct Marker {};
+
+	struct CompileShape {
+		util::str bytecode;
+		uint64_t opSignature;
+		uint32_t opCount;
+	};
+
+	auto build_shape = [&](uint32_t extraMarkerCnt) {
+		TestWorld twld;
+		const auto connectedTo = wld.add<ConnectedTo>().entity;
+		const auto linkedTo = wld.add<LinkedTo>().entity;
+		const auto routedVia = wld.add<RoutedVia>().entity;
+
+		const auto devA = wld.add();
+		const auto devB = wld.add();
+		wld.add<Marker>(devA);
+		for (uint32_t i = 0; i < extraMarkerCnt; ++i) {
+			const auto extra = wld.add();
+			wld.add<Marker>(extra);
+		}
+
+		const auto cableA = wld.add();
+		wld.add<Cable>(cableA);
+		wld.add(cableA, {connectedTo, devA});
+		wld.add(cableA, {linkedTo, devB});
+		wld.add(cableA, {routedVia, devB});
+
+		const auto cableB = wld.add();
+		wld.add<Cable>(cableB);
+		wld.add(cableB, {connectedTo, devB});
+		wld.add(cableB, {linkedTo, devA});
+		wld.add(cableB, {routedVia, devB});
+
+		auto q = make_query<TQuery>(wld) //
+								 .template all<Cable>()
+								 .template all<Marker>(ecs::QueryTermOptions{}.src(ecs::Var0))
+								 .or_(ecs::Pair(connectedTo, ecs::Var0))
+								 .or_(ecs::Pair(linkedTo, ecs::Var0))
+								 .or_(ecs::Pair(routedVia, ecs::Var0));
+
+		auto bytecode = q.bytecode();
+		CHECK(bytecode.find("] varf ") != BadIndex);
+		CHECK(bytecode.find("] search") != BadIndex);
+		CHECK(bytecode.find("term_all_check") != BadIndex);
+		CHECK(bytecode.find("term_all_src_bind") != BadIndex);
+		CHECK(bytecode.find("term_all_bind") == BadIndex);
+		CHECK(bytecode.find("term_or_check") != BadIndex);
+		CHECK(bytecode.find("term_or_bind") != BadIndex);
+		CHECK(q.count() == 2);
+		auto& queryInfo = q.fetch();
+		return CompileShape{bytecode, queryInfo.op_signature(), queryInfo.op_count()};
+	};
+
+	const auto shapeFew = build_shape(0);
+	const auto shapeMany = build_shape(1024);
+
+	CHECK(shapeFew.bytecode == shapeMany.bytecode);
+	CHECK(shapeFew.opSignature == shapeMany.opSignature);
+	CHECK(shapeFew.opCount == shapeMany.opCount);
+}
+
+TEST_CASE("Query - variable opcode selection is structural") {
+	SUBCASE("Cached query") {
+		Test_Query_Variable_Opcode_Selection_IsStructural<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Variable_Opcode_Selection_IsStructural<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_Variable_Program_Recompile() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	struct Cable {};
+	struct ConnectedTo {};
+	struct LinkedTo {};
+	struct RoutedVia {};
+	struct Marker {};
+
+	TestWorld twld;
+	const auto connectedTo = wld.add<ConnectedTo>().entity;
+	const auto linkedTo = wld.add<LinkedTo>().entity;
+	const auto routedVia = wld.add<RoutedVia>().entity;
+
+	const auto parentMarked = wld.add();
+	const auto parentPlain = wld.add();
+	wld.add<Marker>(parentMarked);
+
+	const auto devMarked = wld.add();
+	const auto devPlain = wld.add();
+	wld.add(devMarked, ecs::Pair(ecs::ChildOf, parentMarked));
+	wld.add(devPlain, ecs::Pair(ecs::ChildOf, parentPlain));
+
+	const auto routeA = wld.add();
+	const auto routeB = wld.add();
+
+	const auto cableGood = wld.add();
+	wld.add<Cable>(cableGood);
+	wld.add(cableGood, {connectedTo, devMarked});
+	wld.add(cableGood, {routedVia, routeA});
+	wld.add(cableGood, {routeA, devMarked});
+
+	const auto cableBadSource = wld.add();
+	wld.add<Cable>(cableBadSource);
+	wld.add(cableBadSource, {connectedTo, devPlain});
+	wld.add(cableBadSource, {linkedTo, routeA});
+	wld.add(cableBadSource, {routeA, devPlain});
+
+	const auto cableBadCoupling = wld.add();
+	wld.add<Cable>(cableBadCoupling);
+	wld.add(cableBadCoupling, {connectedTo, devMarked});
+	wld.add(cableBadCoupling, {linkedTo, routeB});
+	wld.add(cableBadCoupling, {routeA, devMarked});
+
+	auto q = make_query<UseCachedQuery>(wld) //
+							 .template all<Cable>()
+							 .all(ecs::Pair(connectedTo, ecs::Var0))
+							 .all(ecs::Pair(ecs::Var1, ecs::Var0))
+							 .template all<Marker>(ecs::QueryTermOptions{}.src(ecs::Var0).trav_parent())
+							 .or_(ecs::Pair(routedVia, ecs::Var1))
+							 .or_(ecs::Pair(linkedTo, ecs::Var1));
+
+	const auto bytecodeBefore = q.bytecode();
+	CHECK(bytecodeBefore.find("var_exec: 1") != BadIndex);
+	CHECK(bytecodeBefore.find("term_all_src_bind") != BadIndex);
+	CHECK(bytecodeBefore.find("search_begin_any") != BadIndex);
+	CHECK(bytecodeBefore.find("search_other_or_bind") != BadIndex);
+	CHECK(bytecodeBefore.find("search_maybe_finalize") != BadIndex);
+	CHECK(q.count() == 1);
+	expect_exact_entities(q, {cableGood});
+
+	q.fetch().ctx().data.flags |= ecs::QueryCtx::QueryFlags::Recompile;
+	CHECK(q.count() == 1);
+	expect_exact_entities(q, {cableGood});
+	const auto bytecodeAfter = q.bytecode();
+	CHECK(bytecodeAfter == bytecodeBefore);
+
+	q.set_var(ecs::Var0, devMarked);
+	q.set_var(ecs::Var1, routeA);
+	q.fetch().ctx().data.flags |= ecs::QueryCtx::QueryFlags::Recompile;
+	CHECK(q.count() == 1);
+	expect_exact_entities(q, {cableGood});
+
+	q.set_var(ecs::Var0, devPlain);
+	q.fetch().ctx().data.flags |= ecs::QueryCtx::QueryFlags::Recompile;
+	CHECK(q.count() == 0);
+	expect_exact_entities(q, {});
+}
+
+TEST_CASE("Query - variable program recompile") {
+	SUBCASE("Cached query") {
+		Test_Query_Variable_Program_Recompile<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Variable_Program_Recompile<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_SingleOr_CanonicalizedToAll() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	auto collect_sorted = [](auto& query) {
+		cnt::darr<ecs::Entity> out;
+		query.each([&](ecs::Entity entity) {
+			out.push_back(entity);
+		});
+		core::sort(out, [](ecs::Entity left, ecs::Entity right) {
+			return left.id() < right.id();
+		});
+		return out;
+	};
+
+	TestWorld twld;
+	struct A {};
+	struct B {};
+
+	const auto source = wld.add();
+	wld.add<A>(source);
+
+	const auto eA = wld.add();
+	wld.add<A>(eA);
+
+	const auto eB = wld.add();
+	wld.add<B>(eB);
+	(void)eB;
+
+	// Single OR has required semantics and matches ALL.
+	auto qOr = make_query<UseCachedQuery>(wld).template or_<A>();
+	auto qAll = make_query<UseCachedQuery>(wld).template all<A>();
+	CHECK(qOr.count() == qAll.count());
+	const auto qOrEntities = collect_sorted(qOr);
+	const auto qAllEntities = collect_sorted(qAll);
+	CHECK(qOrEntities.size() == qAllEntities.size());
+	GAIA_FOR((uint32_t)qOrEntities.size()) {
+		CHECK(qOrEntities[i] == qAllEntities[i]);
+	}
+
+	// Source-based single OR is canonicalized in the same way.
+	auto qOrSrc = make_query<UseCachedQuery>(wld).template or_<A>(ecs::QueryTermOptions{}.src(source));
+	auto qAllSrc = make_query<UseCachedQuery>(wld).template all<A>(ecs::QueryTermOptions{}.src(source));
+	CHECK(qOrSrc.count() == qAllSrc.count());
+	const auto qOrSrcEntities = collect_sorted(qOrSrc);
+	const auto qAllSrcEntities = collect_sorted(qAllSrc);
+	CHECK(qOrSrcEntities.size() == qAllSrcEntities.size());
+	GAIA_FOR((uint32_t)qOrSrcEntities.size()) {
+		CHECK(qOrSrcEntities[i] == qAllSrcEntities[i]);
+	}
+}
+
+TEST_CASE("Query - single or canonicalized to all") {
+	SUBCASE("Cached query") {
+		Test_Query_SingleOr_CanonicalizedToAll<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_SingleOr_CanonicalizedToAll<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_String_Optional_Regression() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+	struct Fuel {};
+	struct Velocity {};
+	struct RigidBody {};
+
+	const auto fuel = wld.add<Fuel>().entity;
+	const auto player = wld.add();
+	const auto other = wld.add();
+	const auto noBody = wld.add();
+
+	wld.add<Position>(player, {1.0f, 2.0f, 3.0f});
+	wld.add<RigidBody>(player);
+	wld.add(player, {fuel, player});
+
+	wld.add<Position>(other, {4.0f, 5.0f, 6.0f});
+	wld.add<RigidBody>(other);
+	wld.add<Velocity>(other);
+	wld.add(other, {fuel, player});
+
+	wld.add<Position>(noBody, {7.0f, 8.0f, 9.0f});
+	wld.add(noBody, {fuel, player});
+
+	auto qExpr = make_query<UseCachedQuery>(wld).add("&Position, !Velocity, ?RigidBody, (Fuel,*)");
+	auto qApi =
+			make_query<UseCachedQuery>(wld).template all<Position&>().template no<Velocity>().template any<RigidBody>().all(
+					ecs::Pair(fuel, ecs::All));
+
+	CHECK(qExpr.count() == 2);
+	CHECK(qApi.count() == 2);
+	expect_exact_entities(qExpr, {player, noBody});
+	expect_exact_entities(qApi, {player, noBody});
+
+	// "?RigidBody" in string syntax must remain optional.
+	const auto bytecode = qExpr.bytecode();
+	CHECK(bytecode.find("ids_or:") == BadIndex);
+	CHECK(bytecode.find("ids_all: 2") != BadIndex);
+	CHECK(bytecode.find("ids_not: 1") != BadIndex);
+}
+
+TEST_CASE("Query - string optional regression") {
+	SUBCASE("Cached query") {
+		Test_Query_String_Optional_Regression<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_String_Optional_Regression<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_Or_Dedup() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+	struct Marker {};
+	struct A {};
+	struct B {};
+
+	const auto eBoth = wld.add();
+	wld.add<Marker>(eBoth);
+	wld.add<A>(eBoth);
+	wld.add<B>(eBoth);
+
+	auto qOrOnly = make_query<UseCachedQuery>(wld).template or_<A>().template or_<B>(); //
+	CHECK(qOrOnly.count() == 1);
+	expect_exact_entities(qOrOnly, {eBoth});
+
+	auto qAllOr = make_query<UseCachedQuery>(wld).template all<Marker>().template or_<A>().template or_<B>();
+	CHECK(qAllOr.count() == 1);
+	expect_exact_entities(qAllOr, {eBoth});
+}
+
+TEST_CASE("Query - or dedup") {
+	SUBCASE("Cached query") {
+		Test_Query_Or_Dedup<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Or_Dedup<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_QueryResult_Complex() {
+	const uint32_t N = 1'500;
+
+	TestWorld twld;
+	struct Data {
+		Position p;
+		Scale s;
+	};
+	cnt::map<ecs::Entity, Data> cmp;
+	cnt::darr<ecs::Entity> ents;
+	ents.reserve(N);
+
+	auto create = [&](uint32_t i) {
+		auto e = wld.add();
+
+		auto b = wld.build(e);
+		b.add<Position>().add<Scale>();
+		if (i % 2 == 0)
+			b.add<Something>();
+		b.commit();
+
+		auto p1 = Position{(float)i, (float)i, (float)i};
+		auto s1 = Scale{(float)i * 2, (float)i * 2, (float)i * 2};
+
+		auto s = wld.acc_mut(e);
+		s.set<Position>(p1).set<Scale>(s1);
+		if (i % 2 == 0)
+			s.set<Something>({true});
+
+		auto p0 = wld.get<Position>(e);
+		CHECK(memcmp((void*)&p0, (void*)&p1, sizeof(p0)) == 0);
+		cmp.try_emplace(e, Data{p1, s1});
+	};
+
+	GAIA_FOR(N) create(i);
+
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+	auto q1 = make_query<UseCachedQuery>(wld).template all<Position>();
+	auto q2 = make_query<UseCachedQuery>(wld).template all<Rotation>();
+	auto q3 = make_query<UseCachedQuery>(wld).template all<Position>().template all<Rotation>();
+	auto q4 = make_query<UseCachedQuery>(wld).template all<Position>().template all<Scale>();
+	auto q5 = make_query<UseCachedQuery>(wld).template all<Position>().template all<Scale>().template all<Something>();
+
+	{
+		ents.clear();
+		q1.arr(ents);
+		CHECK(ents.size() == N);
+	}
+	{
+		cnt::darr<Position> arr;
+		q1.arr(arr);
+		CHECK(arr.size() == N);
+		GAIA_EACH(arr) {
+			const auto e = ents[i];
+			const auto& v0 = arr[i];
+			const auto& v1 = wld.get<Position>(e);
+			CHECK(memcmp((const void*)&v0, (const void*)&v1, sizeof(v0)) == 0);
+			CHECK(memcmp((const void*)&v0, (const void*)&cmp[e].p, sizeof(v0)) == 0);
+		}
+	}
+	{
+		const auto cnt = q1.count();
+		CHECK(cnt > 0);
+
+		const auto empty = q1.empty();
+		CHECK(empty == false);
+
+		uint32_t cnt2 = 0;
+		q1.each([&]() {
+			++cnt2;
+		});
+		CHECK(cnt2 == cnt);
+	}
+
+	{
+		const auto cnt = q2.count();
+		CHECK(cnt == 0);
+
+		const auto empty = q2.empty();
+		CHECK(empty == true);
+
+		uint32_t cnt2 = 0;
+		q2.each([&]() {
+			++cnt2;
+		});
+		CHECK(cnt2 == cnt);
+	}
+
+	{
+		const auto cnt = q3.count();
+		CHECK(cnt == 0);
+
+		const auto empty = q3.empty();
+		CHECK(empty == true);
+
+		uint32_t cnt3 = 0;
+		q3.each([&]() {
+			++cnt3;
+		});
+		CHECK(cnt3 == cnt);
+	}
+
+	{
+		ents.clear();
+		q4.arr(ents);
+		CHECK(ents.size() == N);
+	}
+	{
+		cnt::darr<Position> arr;
+		q4.arr(arr);
+		CHECK(arr.size() == N);
+		GAIA_EACH(arr) {
+			const auto e = ents[i];
+			const auto& v0 = arr[i];
+			const auto& v1 = wld.get<Position>(e);
+			CHECK(memcmp((const void*)&v0, (const void*)&v1, sizeof(v0)) == 0);
+			CHECK(memcmp((const void*)&v0, (const void*)&cmp[e].p, sizeof(v0)) == 0);
+		}
+	}
+	{
+		cnt::darr<Scale> arr;
+		q4.arr(arr);
+		CHECK(arr.size() == N);
+		GAIA_EACH(arr) {
+			const auto e = ents[i];
+			const auto& v0 = arr[i];
+			const auto& v1 = wld.get<Scale>(e);
+			CHECK(memcmp((const void*)&v0, (const void*)&v1, sizeof(v0)) == 0);
+			CHECK(memcmp((const void*)&v0, (const void*)&cmp[e].s, sizeof(v0)) == 0);
+		}
+	}
+	{
+		const auto cnt = q4.count();
+		CHECK(cnt > 0);
+
+		const auto empty = q4.empty();
+		CHECK(empty == false);
+
+		uint32_t cnt4 = 0;
+		q4.each([&]() {
+			++cnt4;
+		});
+		CHECK(cnt4 == cnt);
+	}
+
+	{
+		ents.clear();
+		q5.arr(ents);
+		CHECK(ents.size() == N / 2);
+	}
+	{
+		cnt::darr<Position> arr;
+		q5.arr(arr);
+		CHECK(arr.size() == ents.size());
+		CHECK(arr.size() == N / 2);
+
+		GAIA_EACH(arr) {
+			const auto e = ents[i];
+			const auto& v0 = arr[i];
+			const auto& v1 = wld.get<Position>(e);
+			CHECK(memcmp((const void*)&v0, (const void*)&v1, sizeof(v0)) == 0);
+			CHECK(memcmp((const void*)&v0, (const void*)&cmp[e].p, sizeof(v0)) == 0);
+		}
+	}
+	{
+		cnt::darr<Scale> arr;
+		q5.arr(arr);
+		CHECK(arr.size() == N / 2);
+		GAIA_EACH(arr) {
+			const auto e = ents[i];
+			const auto& v0 = arr[i];
+			const auto& v1 = wld.get<Scale>(e);
+			CHECK(memcmp((const void*)&v0, (const void*)&v1, sizeof(v0)) == 0);
+			CHECK(memcmp((const void*)&v0, (const void*)&cmp[e].s, sizeof(v0)) == 0);
+		}
+	}
+	{
+		const auto cnt = q5.count();
+		CHECK(cnt > 0);
+
+		const auto empty = q5.empty();
+		CHECK(empty == false);
+
+		uint32_t cnt5 = 0;
+		q5.each([&]() {
+			++cnt5;
+		});
+		CHECK(cnt5 == cnt);
+	}
+}
+
+TEST_CASE("Query - QueryResult complex") {
+	SUBCASE("Cached query") {
+		Test_Query_QueryResult_Complex<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_QueryResult_Complex<QueryUncached>();
+	}
+}
+
+TEST_CASE("Relationship") {
+	SUBCASE("Simple") {
+		TestWorld twld;
+		auto wolf = wld.add();
+		auto rabbit = wld.add();
+		auto carrot = wld.add();
+		auto eats = wld.add();
+
+		wld.add(rabbit, {eats, carrot});
+		wld.add(wolf, {eats, rabbit});
+
+		CHECK(wld.has(rabbit, {eats, carrot}));
+		CHECK(wld.has(wolf, {eats, rabbit}));
+		CHECK_FALSE(wld.has(wolf, {eats, carrot}));
+		CHECK_FALSE(wld.has(rabbit, {eats, wolf}));
+
+		{
+			auto q = wld.query().add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(eats, carrot)});
+			// auto q = wld.query().all<ecs::Pair(eats, carrot)>();
+			const auto cnt = q.count();
+			CHECK(cnt == 1);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				CHECK(entity == rabbit);
+				++i;
+			});
+			CHECK(i == cnt);
+		}
+		{
+			auto q = wld.query().add("(%e, %e)", eats.value(), carrot.value());
+			const auto cnt = q.count();
+			CHECK(cnt == 1);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				CHECK(entity == rabbit);
+				++i;
+			});
+			CHECK(i == cnt);
+		}
+
+		{
+			auto q = wld.query().add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(eats, rabbit)});
+			// auto q = wld.query().all<ecs::Pair(eats, rabbit)>();
+			const auto cnt = q.count();
+			CHECK(cnt == 1);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				CHECK(entity == wolf);
+				++i;
+			});
+			CHECK(i == cnt);
+		}
+	}
+
+	SUBCASE("Simple - bulk") {
+		TestWorld twld;
+		auto wolf = wld.add();
+		auto rabbit = wld.add();
+		auto carrot = wld.add();
+		auto eats = wld.add();
+
+		wld.build(rabbit).add({eats, carrot});
+		wld.build(wolf).add({eats, rabbit});
+
+		CHECK(wld.has(rabbit, {eats, carrot}));
+		CHECK(wld.has(wolf, {eats, rabbit}));
+		CHECK_FALSE(wld.has(wolf, {eats, carrot}));
+		CHECK_FALSE(wld.has(rabbit, {eats, wolf}));
+
+		{
+			auto q = wld.query().add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(eats, carrot)});
+			// auto q = wld.query().all<ecs::Pair(eats, carrot)>();
+			const auto cnt = q.count();
+			CHECK(cnt == 1);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				CHECK(entity == rabbit);
+				++i;
+			});
+			CHECK(i == cnt);
+		}
+
+		{
+			auto q = wld.query().add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(eats, rabbit)});
+			// auto q = wld.query().all<ecs::Pair(eats, rabbit)>();
+			const auto cnt = q.count();
+			CHECK(cnt == 1);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				CHECK(entity == wolf);
+				++i;
+			});
+			CHECK(i == cnt);
+		}
+	}
+
+	SUBCASE("Intermediate") {
+		TestWorld twld;
+		auto wolf = wld.add();
+		auto hare = wld.add();
+		auto rabbit = wld.add();
+		auto carrot = wld.add();
+		auto eats = wld.add();
+
+		wld.add(rabbit, {eats, carrot});
+		wld.add(hare, {eats, carrot});
+		wld.add(wolf, {eats, rabbit});
+
+		{
+			auto q = wld.query().add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(eats, carrot)});
+			const auto cnt = q.count();
+			CHECK(cnt == 2);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				const bool isRabbit = entity == rabbit;
+				const bool isHare = entity == hare;
+				const bool is = isRabbit || isHare;
+				CHECK(is);
+				++i;
+			});
+			CHECK(i == cnt);
+		}
+
+		{
+			auto q = wld.query().add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(eats, rabbit)});
+			const auto cnt = q.count();
+			CHECK(cnt == 1);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				CHECK(entity == wolf);
+				++i;
+			});
+			CHECK(i == cnt);
+		}
+
+		{
+			auto q = wld.query().add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(eats, ecs::All)});
+			const auto cnt = q.count();
+			CHECK(cnt == 3);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				const bool isRabbit = entity == rabbit;
+				const bool isHare = entity == hare;
+				const bool isWolf = entity == wolf;
+				const bool is = isRabbit || isHare || isWolf;
+				CHECK(is);
+				++i;
+			});
+			CHECK(i == cnt);
+		}
+
+		{
+			auto q = wld.query().add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(ecs::All, carrot)});
+			const auto cnt = q.count();
+			CHECK(cnt == 2);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				const bool isRabbit = entity == rabbit;
+				const bool isHare = entity == hare;
+				const bool is = isRabbit || isHare;
+				CHECK(is);
+				++i;
+			});
+			CHECK(i == cnt);
+		}
+
+		{
+			auto q = wld.query()
+									 .add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(ecs::All, ecs::All)})
+									 .no<ecs::Core_>()
+									 .no<ecs::System_>();
+			const auto cnt = q.count();
+			CHECK(cnt == 3);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Entity entity) {
+				if (entity <= ecs::GAIA_ID(LastCoreComponent))
+					return;
+				const bool isRabbit = entity == rabbit;
+				const bool isHare = entity == hare;
+				const bool isWolf = entity == wolf;
+				const bool is = isRabbit || isHare || isWolf;
+				CHECK(is);
+				++i;
+			});
+			CHECK(i == 3);
+		}
+	}
+
+	SUBCASE("Exclusive") {
+		TestWorld twld;
+
+		auto on = wld.add();
+		auto off = wld.add();
+
+		auto toggled = wld.add();
+		wld.add(toggled, ecs::Exclusive);
+
+		auto wallSwitch = wld.add();
+		wld.add(wallSwitch, {toggled, on});
+		CHECK(wld.has(wallSwitch, {toggled, on}));
+		CHECK_FALSE(wld.has(wallSwitch, {toggled, off}));
+		wld.add(wallSwitch, {toggled, off});
+		CHECK_FALSE(wld.has(wallSwitch, {toggled, on}));
+		CHECK(wld.has(wallSwitch, {toggled, off}));
+
+		{
+			auto q = wld.query().all(ecs::Pair(toggled, on));
+			const auto cnt = q.count();
+			CHECK(cnt == 0);
+
+			uint32_t i = 0;
+			q.each([&]([[maybe_unused]] ecs::Iter& it) {
+				++i;
+			});
+			CHECK(i == 0);
+		}
+		{
+			auto q = wld.query().all(ecs::Pair(toggled, off));
+			const auto cnt = q.count();
+			CHECK(cnt == 1);
+
+			uint32_t i = 0;
+			q.each([&]([[maybe_unused]] ecs::Iter& it) {
+				++i;
+			});
+			CHECK(i == 1);
+		}
+		{
+			auto q = wld.query().all(ecs::Pair(toggled, ecs::All));
+			const auto cnt = q.count();
+			CHECK(cnt == 1);
+
+			uint32_t i = 0;
+			q.each([&](ecs::Iter& it) {
+				const bool hasOn = it.has({toggled, on});
+				const bool hasOff = it.has({toggled, off});
+				CHECK_FALSE(hasOn);
+				CHECK(hasOff);
+				++i;
+			});
+			CHECK(i == 1);
+		}
+	}
+}
+
+TEST_CASE("Relationship target/relation") {
+	TestWorld twld;
+
+	auto wolf = wld.add();
+	auto hates = wld.add();
+	auto rabbit = wld.add();
+	auto carrot = wld.add();
+	auto salad = wld.add();
+	auto eats = wld.add();
+
+	wld.add(rabbit, {eats, carrot});
+	wld.add(rabbit, {eats, salad});
+	wld.add(rabbit, {hates, wolf});
+
+	auto e = wld.target(rabbit, eats);
+	const bool ret_e = e == carrot || e == salad;
+	CHECK(ret_e);
+
+	cnt::sarr_ext<ecs::Entity, 32> out;
+	wld.targets(rabbit, eats, [&out](ecs::Entity target) {
+		out.push_back(target);
+	});
+	CHECK(out.size() == 2);
+	CHECK(core::has(out, carrot));
+	CHECK(core::has(out, salad));
+	CHECK(wld.target(rabbit, eats) == carrot);
+
+	out.clear();
+	wld.relations(rabbit, salad, [&out](ecs::Entity relation) {
+		out.push_back(relation);
+	});
+	CHECK(out.size() == 1);
+	CHECK(core::has(out, eats));
+	CHECK(wld.relation(rabbit, salad) == eats);
+}
+
+TEST_CASE("Relationship source traversal") {
+	TestWorld twld;
+
+	auto rel = wld.add();
+
+	auto root = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+	auto d = wld.add();
+	auto e = wld.add();
+
+	wld.add(a, {rel, root});
+	wld.add(b, {rel, root});
+	wld.add(c, {rel, a});
+	wld.add(d, {rel, b});
+	wld.add(e, {rel, b});
+	wld.add(e, {rel, c});
+
+	{
+		cnt::darr<ecs::Entity> direct;
+		wld.sources(rel, root, [&direct](ecs::Entity source) {
+			direct.push_back(source);
+		});
+
+		CHECK(direct.size() == 2);
+		CHECK(core::has(direct, a));
+		CHECK(core::has(direct, b));
+	}
+
+	{
+		cnt::darr<ecs::Entity> bfs;
+		wld.sources_bfs(rel, root, [&bfs](ecs::Entity source) {
+			bfs.push_back(source);
+		});
+
+		CHECK(bfs.size() == 5);
+		CHECK(bfs[0] == a);
+		CHECK(bfs[1] == b);
+		CHECK(bfs[2] == c);
+		CHECK(bfs[3] == d);
+		CHECK(bfs[4] == e);
+	}
+
+	{
+		uint32_t visited = 0;
+		const bool stopped = wld.sources_bfs_if(rel, root, [&](ecs::Entity source) {
+			++visited;
+			return source == d;
+		});
+
+		CHECK(stopped);
+		CHECK(visited == 4);
+	}
+
+	{
+		auto f = wld.add();
+		wld.add(f, {rel, c});
+
+		cnt::darr<ecs::Entity> bfs;
+		wld.sources_bfs(rel, root, [&bfs](ecs::Entity source) {
+			bfs.push_back(source);
+		});
+
+		CHECK(bfs.size() == 6);
+		CHECK(bfs[0] == a);
+		CHECK(bfs[1] == b);
+		CHECK(bfs[2] == c);
+		CHECK(bfs[3] == d);
+		CHECK(bfs[4] == e);
+		CHECK(bfs[5] == f);
+	}
+}
+
+TEST_CASE("Relationship traversal APIs ignore stale recycled targets") {
+	TestWorld twld;
+
+	const auto rel = wld.add();
+	const auto root = wld.add();
+	const auto child = wld.add();
+	wld.add(child, {rel, root});
+
+	wld.del(root);
+	wld.update();
+
+	ecs::Entity recycled = ecs::EntityBad;
+	for (uint32_t i = 0; i < 64 && recycled == ecs::EntityBad; ++i) {
+		const auto candidate = wld.add();
+		if (candidate.id() == root.id())
+			recycled = candidate;
+	}
+	if (recycled != ecs::EntityBad)
+		CHECK(recycled.gen() != root.gen());
+
+	cnt::darr<ecs::Entity> direct;
+	wld.sources(rel, root, [&](ecs::Entity source) {
+		direct.push_back(source);
+	});
+	CHECK(direct.empty());
+
+	uint32_t directIfHits = 0;
+	wld.sources_if(rel, root, [&](ecs::Entity) {
+		++directIfHits;
+		return false;
+	});
+	CHECK(directIfHits == 0);
+
+	cnt::darr<ecs::Entity> bfs;
+	wld.sources_bfs(rel, root, [&](ecs::Entity source) {
+		bfs.push_back(source);
+	});
+	CHECK(bfs.empty());
+
+	uint32_t bfsIfHits = 0;
+	const bool stopped = wld.sources_bfs_if(rel, root, [&](ecs::Entity) {
+		++bfsIfHits;
+		return true;
+	});
+	CHECK_FALSE(stopped);
+	CHECK(bfsIfHits == 0);
+}
+
+TEST_CASE("Relationship traversal APIs ignore stale recycled relations") {
+	TestWorld twld;
+
+	const auto rel = wld.add();
+	const auto root = wld.add();
+	const auto child = wld.add();
+	wld.add(child, {rel, root});
+
+	wld.del(rel);
+	wld.update();
+
+	ecs::Entity recycled = ecs::EntityBad;
+	for (uint32_t i = 0; i < 64 && recycled == ecs::EntityBad; ++i) {
+		const auto candidate = wld.add();
+		if (candidate.id() == rel.id())
+			recycled = candidate;
+	}
+	if (recycled != ecs::EntityBad)
+		CHECK(recycled.gen() != rel.gen());
+
+	CHECK(wld.target(child, rel) == ecs::EntityBad);
+
+	cnt::darr<ecs::Entity> targets;
+	wld.targets(child, rel, [&](ecs::Entity target) {
+		targets.push_back(target);
+	});
+	CHECK(targets.empty());
+
+	cnt::darr<ecs::Entity> direct;
+	wld.sources(rel, root, [&](ecs::Entity source) {
+		direct.push_back(source);
+	});
+	CHECK(direct.empty());
+
+	cnt::darr<ecs::Entity> trav;
+	wld.targets_trav(rel, child, [&](ecs::Entity target) {
+		trav.push_back(target);
+	});
+	CHECK(trav.empty());
+
+	uint32_t travIfHits = 0;
+	const bool stopped = wld.targets_trav_if(rel, child, [&](ecs::Entity) {
+		++travIfHits;
+		return false;
+	});
+	CHECK_FALSE(stopped);
+	CHECK(travIfHits == 0);
+}
+
+TEST_CASE("Relationship wildcard source traversal") {
+	TestWorld twld;
+
+	auto rel0 = wld.add();
+	auto rel1 = wld.add();
+
+	auto root = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+	auto d = wld.add();
+
+	wld.add(a, {rel0, root});
+	wld.add(b, {rel1, root});
+	wld.add(c, {rel0, root});
+	wld.parent(d, root);
+
+	cnt::darr<ecs::Entity> direct;
+	wld.sources(ecs::All, root, [&direct](ecs::Entity source) {
+		direct.push_back(source);
+	});
+
+	CHECK(direct.size() == 4);
+	CHECK(core::has(direct, a));
+	CHECK(core::has(direct, b));
+	CHECK(core::has(direct, c));
+	CHECK(core::has(direct, d));
+
+	uint32_t visited = 0;
+	wld.sources_if(ecs::All, root, [&](ecs::Entity) {
+		++visited;
+		return false;
+	});
+	CHECK(visited == 1);
+}
+
+TEST_CASE("Relationship wildcard source traversal after change") {
+	TestWorld twld;
+
+	auto rel0 = wld.add();
+	auto rel1 = wld.add();
+
+	auto target = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+
+	wld.add(a, {rel0, target});
+	wld.add(b, {rel1, target});
+
+	cnt::darr<ecs::Entity> sources;
+	wld.sources(ecs::All, target, [&sources](ecs::Entity source) {
+		sources.push_back(source);
+	});
+
+	CHECK(sources.size() == 2);
+	CHECK(core::has(sources, a));
+	CHECK(core::has(sources, b));
+
+	wld.add(c, {rel1, target});
+
+	sources.clear();
+	wld.sources(ecs::All, target, [&sources](ecs::Entity source) {
+		sources.push_back(source);
+	});
+
+	CHECK(sources.size() == 3);
+	CHECK(core::has(sources, a));
+	CHECK(core::has(sources, b));
+	CHECK(core::has(sources, c));
+}
+
+TEST_CASE("Relationship wildcard source traversal while new sources keep appearing") {
+	TestWorld twld;
+
+	auto rel0 = wld.add();
+	auto rel1 = wld.add();
+	auto target = wld.add();
+
+	constexpr uint32_t SourceCnt = 300;
+	cnt::darr<ecs::Entity> sources;
+	GAIA_FOR(SourceCnt) {
+		// Each new source has an id the visit stamp table has not covered yet
+		auto source = wld.add();
+		wld.add(source, {rel0, target});
+		// A source linked through two relations must still be reported once
+		if (i % 3 == 0)
+			wld.add(source, {rel1, target});
+
+		sources.clear();
+		wld.sources(ecs::All, target, [&sources](ecs::Entity entity) {
+			sources.push_back(entity);
+		});
+		CHECK(sources.size() == i + 1);
+		CHECK(core::has(sources, source));
+	}
+}
+
+TEST_CASE("Query - new archetypes reach many cached queries") {
+	TestWorld twld;
+
+	// Distinct query shapes get distinct handles. The no() queries all select Position, so every new
+	// archetype with Position is routed to each of them in a single pass.
+	constexpr uint32_t QueryCnt = 300;
+	cnt::darr<ecs::Entity> tags;
+	cnt::darr<ecs::Query> queriesAll;
+	cnt::darr<ecs::Query> queriesNo;
+	GAIA_FOR(QueryCnt) {
+		tags.push_back(wld.add());
+		queriesAll.push_back(wld.query().all<Position>().all(tags[i]));
+		queriesNo.push_back(wld.query().all<Position>().no(tags[i]));
+	}
+
+	// Build each query cache before the archetypes it has to pick up exist
+	GAIA_FOR(QueryCnt) {
+		CHECK(queriesAll[i].count() == 0);
+		CHECK(queriesNo[i].count() == 0);
+	}
+
+	uint32_t entityCnt = 0;
+	for (uint32_t i = 0; i < QueryCnt; i += 7) {
+		auto e = wld.add();
+		wld.add<Position>(e);
+		wld.add(e, tags[i]);
+		++entityCnt;
+	}
+
+	GAIA_FOR(QueryCnt) {
+		const uint32_t withTag = i % 7 == 0 ? 1U : 0U;
+		CHECK(queriesAll[i].count() == withTag);
+		CHECK(queriesNo[i].count() == entityCnt - withTag);
+	}
+}
+
+TEST_CASE("Query - entity collection appends across many chunks") {
+	TestWorld twld;
+
+	// Enough entities to fill several chunks, every tenth one disabled
+	constexpr uint32_t EntityCnt = 10000;
+	cnt::darr<ecs::Entity> entities;
+	GAIA_FOR(EntityCnt) {
+		auto e = wld.add();
+		wld.add<Position>(e, {(float)i, 0, 0});
+		entities.push_back(e);
+	}
+	for (uint32_t i = 0; i < EntityCnt; i += 10)
+		wld.enable(entities[i], false);
+
+	auto q = wld.query().all<Position>();
+	uint32_t chunkCnt = 0;
+	q.each([&chunkCnt](ecs::Iter&) {
+		++chunkCnt;
+	});
+	CHECK(chunkCnt > 2);
+
+	const auto sentinel = wld.add();
+
+	SUBCASE("enabled query matches") {
+		cnt::darr<ecs::Entity> out;
+		out.push_back(sentinel);
+		q.collect_entities_enabled(out);
+
+		CHECK(out.size() == 1 + EntityCnt - EntityCnt / 10);
+		CHECK(out[0] == sentinel);
+		cnt::darr<ecs::Entity> sorted;
+		for (uint32_t i = 1; i < out.size(); ++i)
+			sorted.push_back(out[i]);
+		core::sort(sorted, core::is_smaller<ecs::Entity>{});
+		uint32_t idx = 0;
+		GAIA_FOR(EntityCnt) {
+			if (i % 10 == 0)
+				continue;
+			CHECK(sorted[idx] == entities[i]);
+			++idx;
+		}
+	}
+
+	SUBCASE("direct term entities") {
+		cnt::darr<ecs::Entity> out;
+		out.push_back(sentinel);
+		wld.collect_direct_term_entities(wld.add<Position>().entity, out);
+
+		CHECK(out.size() == 1 + EntityCnt);
+		CHECK(out[0] == sentinel);
+		cnt::darr<ecs::Entity> sorted;
+		for (uint32_t i = 1; i < out.size(); ++i)
+			sorted.push_back(out[i]);
+		core::sort(sorted, core::is_smaller<ecs::Entity>{});
+		GAIA_FOR(EntityCnt) CHECK(sorted[i] == entities[i]);
+	}
+}
+
+TEST_CASE("Relationship wildcard target traversal") {
+	TestWorld twld;
+
+	auto rel0 = wld.add();
+	auto rel1 = wld.add();
+
+	auto root = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+
+	wld.add(a, {rel0, root});
+	wld.add(a, {rel1, b});
+	wld.add(a, {rel0, c});
+	wld.parent(a, root);
+
+	cnt::darr<ecs::Entity> direct;
+	wld.targets(a, ecs::All, [&direct](ecs::Entity target) {
+		direct.push_back(target);
+	});
+
+	CHECK(direct.size() == 3);
+	CHECK(core::has(direct, root));
+	CHECK(core::has(direct, b));
+	CHECK(core::has(direct, c));
+
+	const auto first = wld.target(a, ecs::All);
+	CHECK((first == root || first == b || first == c));
+
+	uint32_t visited = 0;
+	wld.targets_if(a, ecs::All, [&](ecs::Entity) {
+		++visited;
+		return false;
+	});
+	CHECK(visited == 1);
+}
+
+TEST_CASE("Relationship wildcard target traversal after change") {
+	TestWorld twld;
+
+	auto rel0 = wld.add();
+	auto rel1 = wld.add();
+
+	auto source = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+
+	wld.add(source, {rel0, a});
+	wld.add(source, {rel1, b});
+
+	cnt::darr<ecs::Entity> targets;
+	wld.targets(source, ecs::All, [&targets](ecs::Entity target) {
+		targets.push_back(target);
+	});
+
+	CHECK(targets.size() == 2);
+	CHECK(core::has(targets, a));
+	CHECK(core::has(targets, b));
+
+	wld.add(source, {rel1, c});
+
+	targets.clear();
+	wld.targets(source, ecs::All, [&targets](ecs::Entity target) {
+		targets.push_back(target);
+	});
+
+	CHECK(targets.size() == 3);
+	CHECK(core::has(targets, a));
+	CHECK(core::has(targets, b));
+	CHECK(core::has(targets, c));
+}
+
+TEST_CASE("Relationship wildcard target traversal with many exclusive dontfragment relations") {
+	TestWorld twld;
+
+	constexpr uint32_t N = 128;
+	auto source = wld.add();
+
+	cnt::darr<ecs::Entity> expected;
+	expected.reserve(N);
+
+	GAIA_FOR(N) {
+		auto rel = wld.add();
+		wld.add(rel, ecs::Exclusive);
+		wld.add(rel, ecs::DontFragment);
+
+		auto target = wld.add();
+		expected.push_back(target);
+		wld.add(source, {rel, target});
+	}
+
+	cnt::darr<ecs::Entity> targets;
+	wld.targets(source, ecs::All, [&targets](ecs::Entity target) {
+		targets.push_back(target);
+	});
+
+	CHECK(targets.size() == N);
+	for (auto target: expected)
+		CHECK(core::has(targets, target));
+	CHECK(wld.target(source, ecs::All) != ecs::EntityBad);
+}
+
+TEST_CASE("Exclusive dontfragment relation rebinding updates wildcard membership and traversal") {
+	TestWorld twld;
+
+	const auto rel = wld.add();
+	wld.add(rel, ecs::Exclusive);
+	wld.add(rel, ecs::DontFragment);
+
+	const auto targetA = wld.add();
+	const auto targetB = wld.add();
+	const auto sourceA = wld.add();
+	const auto sourceB = wld.add();
+
+	wld.add(sourceA, {rel, targetA});
+	wld.add(sourceB, {rel, targetA});
+
+	CHECK(wld.has(sourceA, ecs::Pair(rel, targetA)));
+	CHECK(wld.has(sourceA, ecs::Pair(ecs::All, targetA)));
+	CHECK(wld.has(sourceA, ecs::Pair(ecs::All, ecs::All)));
+
+	wld.add(sourceA, {rel, targetA});
+
+	cnt::darr<ecs::Entity> sourcesA;
+	wld.sources(rel, targetA, [&sourcesA](ecs::Entity source) {
+		sourcesA.push_back(source);
+	});
+	CHECK(sourcesA.size() == 2);
+	CHECK(core::has(sourcesA, sourceA));
+	CHECK(core::has(sourcesA, sourceB));
+
+	wld.add(sourceA, {rel, targetB});
+
+	CHECK_FALSE(wld.has(sourceA, ecs::Pair(rel, targetA)));
+	CHECK(wld.has(sourceA, ecs::Pair(rel, targetB)));
+	CHECK_FALSE(wld.has(sourceA, ecs::Pair(ecs::All, targetA)));
+	CHECK(wld.has(sourceA, ecs::Pair(ecs::All, targetB)));
+	CHECK(wld.has(sourceA, ecs::Pair(ecs::All, ecs::All)));
+	CHECK(wld.target(sourceA, rel) == targetB);
+
+	sourcesA.clear();
+	wld.sources(rel, targetA, [&sourcesA](ecs::Entity source) {
+		sourcesA.push_back(source);
+	});
+	CHECK(sourcesA.size() == 1);
+	CHECK(sourcesA[0] == sourceB);
+
+	cnt::darr<ecs::Entity> sourcesB;
+	wld.sources(rel, targetB, [&sourcesB](ecs::Entity source) {
+		sourcesB.push_back(source);
+	});
+	CHECK(sourcesB.size() == 1);
+	CHECK(sourcesB[0] == sourceA);
+
+	uint32_t visited = 0;
+	wld.sources_if(rel, targetB, [&](ecs::Entity source) {
+		++visited;
+		CHECK(source == sourceA);
+		return false;
+	});
+	CHECK(visited == 1);
+}
+
+TEST_CASE("Pair wildcard relation maps preserve shared entries after relation deletion") {
+	TestWorld twld;
+
+	const auto relA = wld.add();
+	const auto relB = wld.add();
+	const auto targetA = wld.add();
+	const auto targetB = wld.add();
+	const auto sourceA = wld.add();
+	const auto sourceB = wld.add();
+	const auto sourceC = wld.add();
+
+	wld.add(sourceA, ecs::Pair(relA, targetA));
+	wld.add(sourceB, ecs::Pair(relA, targetB));
+	wld.add(sourceC, ecs::Pair(relB, targetA));
+
+	auto contains = [](const cnt::set<ecs::EntityLookupKey>* set, ecs::Entity entity) {
+		return set != nullptr && set->find(ecs::EntityLookupKey(entity)) != set->end();
+	};
+
+	CHECK(contains(wld.targets(relA), targetA));
+	CHECK(contains(wld.targets(relA), targetB));
+	CHECK(contains(wld.targets(ecs::All), targetA));
+	CHECK(contains(wld.targets(ecs::All), targetB));
+	CHECK(contains(wld.relations(targetA), relA));
+	CHECK(contains(wld.relations(targetA), relB));
+	CHECK(contains(wld.relations(ecs::All), relA));
+	CHECK(contains(wld.relations(ecs::All), relB));
+
+	wld.del(relA);
+	wld.update();
+
+	CHECK(contains(wld.targets(ecs::All), targetA));
+	CHECK(contains(wld.relations(targetA), relB));
+	CHECK(contains(wld.relations(ecs::All), relB));
+}
+
+TEST_CASE("Pair wildcard relation maps remove deleted target entries only") {
+	TestWorld twld;
+
+	const auto relA = wld.add();
+	const auto relB = wld.add();
+	const auto targetA = wld.add();
+	const auto targetB = wld.add();
+	const auto sourceA = wld.add();
+	const auto sourceB = wld.add();
+	const auto sourceC = wld.add();
+
+	wld.add(sourceA, ecs::Pair(relA, targetA));
+	wld.add(sourceB, ecs::Pair(relB, targetA));
+	wld.add(sourceC, ecs::Pair(relA, targetB));
+
+	auto contains = [](const cnt::set<ecs::EntityLookupKey>* set, ecs::Entity entity) {
+		return set != nullptr && set->find(ecs::EntityLookupKey(entity)) != set->end();
+	};
+
+	CHECK(contains(wld.targets(relA), targetA));
+	CHECK(contains(wld.targets(relA), targetB));
+	CHECK(contains(wld.targets(relB), targetA));
+	CHECK(contains(wld.targets(ecs::All), targetA));
+	CHECK(contains(wld.targets(ecs::All), targetB));
+	CHECK(contains(wld.relations(targetA), relA));
+	CHECK(contains(wld.relations(targetA), relB));
+	CHECK(contains(wld.relations(targetB), relA));
+	CHECK(contains(wld.relations(ecs::All), relA));
+	CHECK(contains(wld.relations(ecs::All), relB));
+
+	wld.del(targetA);
+	wld.update();
+
+	CHECK_FALSE(contains(wld.targets(relA), targetA));
+	CHECK(contains(wld.targets(relA), targetB));
+	CHECK_FALSE(contains(wld.targets(relB), targetA));
+	CHECK_FALSE(contains(wld.targets(ecs::All), targetA));
+	CHECK(contains(wld.targets(ecs::All), targetB));
+	CHECK(contains(wld.relations(targetB), relA));
+	CHECK(contains(wld.relations(ecs::All), relA));
+	CHECK_FALSE(contains(wld.relations(ecs::All), relB));
+}
+
+TEST_CASE("Deleting exclusive dontfragment relation entity clears non-fragmenting bindings") {
+	TestWorld twld;
+
+	const auto rel = wld.add();
+	wld.add(rel, ecs::Exclusive);
+	wld.add(rel, ecs::DontFragment);
+
+	const auto targetA = wld.add();
+	const auto targetB = wld.add();
+	const auto sourceA = wld.add();
+	const auto sourceB = wld.add();
+
+	wld.add(sourceA, {rel, targetA});
+	wld.add(sourceB, {rel, targetB});
+
+	CHECK(wld.has(sourceA, ecs::Pair(rel, targetA)));
+	CHECK(wld.has(sourceB, ecs::Pair(rel, targetB)));
+	CHECK(wld.has(sourceA, ecs::Pair(ecs::All, ecs::All)));
+	CHECK(wld.has(sourceB, ecs::Pair(ecs::All, ecs::All)));
+
+	wld.del(rel);
+	wld.update();
+
+	CHECK_FALSE(wld.has(rel));
+	CHECK(wld.has(sourceA));
+	CHECK(wld.has(sourceB));
+	CHECK_FALSE(wld.has(sourceA, ecs::Pair(rel, targetA)));
+	CHECK_FALSE(wld.has(sourceB, ecs::Pair(rel, targetB)));
+	CHECK_FALSE(wld.has(sourceA, ecs::Pair(ecs::All, ecs::All)));
+	CHECK_FALSE(wld.has(sourceB, ecs::Pair(ecs::All, ecs::All)));
+	CHECK(wld.target(sourceA, ecs::All) == ecs::EntityBad);
+	CHECK(wld.target(sourceB, ecs::All) == ecs::EntityBad);
+
+	cnt::darr<ecs::Entity> targetsA;
+	wld.targets(sourceA, ecs::All, [&targetsA](ecs::Entity target) {
+		targetsA.push_back(target);
+	});
+	CHECK(targetsA.empty());
+
+	cnt::darr<ecs::Entity> targetsB;
+	wld.targets(sourceB, ecs::All, [&targetsB](ecs::Entity target) {
+		targetsB.push_back(target);
+	});
+	CHECK(targetsB.empty());
+}
+
+TEST_CASE("ChildOf source hierarchy traversal") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto c0 = wld.add();
+	auto c1 = wld.add();
+	auto c00 = wld.add();
+	auto c10 = wld.add();
+
+	wld.child(c0, root);
+	wld.child(c1, root);
+	wld.child(c00, c0);
+	wld.child(c10, c1);
+
+	{
+		cnt::darr<ecs::Entity> direct;
+		wld.sources(ecs::ChildOf, root, [&direct](ecs::Entity child) {
+			direct.push_back(child);
+		});
+
+		CHECK(direct.size() == 2);
+		CHECK(core::has(direct, c0));
+		CHECK(core::has(direct, c1));
+	}
+
+	{
+		cnt::darr<ecs::Entity> bfs;
+		wld.sources_bfs(ecs::ChildOf, root, [&bfs](ecs::Entity child) {
+			bfs.push_back(child);
+		});
+
+		CHECK(bfs.size() == 4);
+		CHECK(bfs[0] == c0);
+		CHECK(bfs[1] == c1);
+		CHECK(bfs[2] == c00);
+		CHECK(bfs[3] == c10);
+	}
+
+	{
+		wld.enable(c0, false);
+
+		cnt::darr<ecs::Entity> bfs;
+		wld.sources_bfs(ecs::ChildOf, root, [&bfs](ecs::Entity child) {
+			bfs.push_back(child);
+		});
+
+		CHECK(bfs.size() == 2);
+		CHECK(bfs[0] == c1);
+		CHECK(bfs[1] == c10);
+	}
+}
+
+TEST_CASE("Query - repeated order_by traversal reuses cache without dropping rows") {
+	TestWorld twld;
+
+	struct OrderByCachedPosition {};
+
+	const auto root = wld.add();
+	const auto childA = wld.add();
+	const auto childB = wld.add();
+	wld.add<OrderByCachedPosition>(root);
+	wld.add<OrderByCachedPosition>(childA);
+	wld.add<OrderByCachedPosition>(childB);
+	wld.add(childA, ecs::Pair(ecs::ChildOf, root));
+	wld.add(childB, ecs::Pair(ecs::ChildOf, root));
+
+	auto q = wld.query().all<OrderByCachedPosition>();
+	auto count_ordered = [&]() {
+		uint32_t visited = 0;
+		q.order_by(ecs::ChildOf, ecs::TravOrder::Down).each([&](ecs::Entity) {
+			++visited;
+		});
+		return visited;
+	};
+
+	CHECK(count_ordered() == 3);
+	CHECK(count_ordered() == 3);
+}
+
+TEST_CASE("Upward traversal with disabled ancestors") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto parent = wld.add();
+	auto child = wld.add();
+
+	wld.child(parent, root);
+	wld.child(child, parent);
+
+	{
+		cnt::darr<ecs::Entity> up;
+		wld.targets_trav(ecs::ChildOf, child, [&up](ecs::Entity entity) {
+			up.push_back(entity);
+		});
+
+		CHECK(up.size() == 2);
+		CHECK(up[0] == parent);
+		CHECK(up[1] == root);
+	}
+
+	wld.enable(parent, false);
+
+	{
+		cnt::darr<ecs::Entity> up;
+		wld.targets_trav(ecs::ChildOf, child, [&up](ecs::Entity entity) {
+			up.push_back(entity);
+		});
+
+		CHECK(up.empty());
+	}
+}
+
+TEST_CASE("Query entity each traversal order") {
+	TestWorld twld;
+
+	auto rel = wld.add();
+
+	auto root = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(a, {0, 0, 0});
+	wld.add<Position>(b, {0, 0, 0});
+	wld.add<Position>(c, {0, 0, 0});
+
+	// Dependency graph:
+	//   root -> a -> c
+	//   root -> b
+	wld.add(a, {rel, root});
+	wld.add(b, {rel, root});
+	wld.add(c, {rel, a});
+
+	auto q = wld.query().all<Position>();
+	cnt::darray<ecs::Entity> ents;
+	q.order_by(rel, ecs::TravOrder::Down).each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == a);
+	CHECK(ents[2] == c);
+	CHECK(ents[3] == b);
+
+	// Re-run without changes (cache hit expected).
+	ents.clear();
+	q.order_by(rel, ecs::TravOrder::Down).each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+	CHECK(ents.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == a);
+	CHECK(ents[2] == c);
+	CHECK(ents[3] == b);
+
+	// Change dependency topology but keep the same entity set.
+	wld.del(b, {rel, root});
+	wld.add(b, {rel, c});
+
+	ents.clear();
+	q.order_by(rel, ecs::TravOrder::Down).each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+	CHECK(ents.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == a);
+	CHECK(ents[2] == c);
+	CHECK(ents[3] == b);
+}
+
+TEST_CASE("Query traversal order variants") {
+	static_assert(ecs::TravOrder::Preorder == ecs::TravOrder::Down);
+	static_assert(ecs::TravOrder::Postorder == ecs::TravOrder::Up);
+	static_assert(ecs::TravOrder::ReversePreorder == ecs::TravOrder::ReverseDown);
+	static_assert(ecs::TravOrder::ReversePostorder == ecs::TravOrder::ReverseUp);
+
+	TestWorld twld;
+
+	auto rel = wld.add();
+	auto root = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+	auto root2 = wld.add();
+	auto d = wld.add();
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(a, {0, 0, 0});
+	wld.add<Position>(b, {0, 0, 0});
+	wld.add<Position>(c, {0, 0, 0});
+	wld.add<Position>(root2, {0, 0, 0});
+	wld.add<Position>(d, {0, 0, 0});
+
+	wld.add(a, {rel, root});
+	wld.add(b, {rel, root});
+	wld.add(c, {rel, a});
+	wld.add(d, {rel, root2});
+
+	auto q = wld.query().all<Position>();
+	auto collect = [&](ecs::TravOrder order) {
+		cnt::darray<ecs::Entity> ents;
+		q.order_by(rel, order).each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+		return ents;
+	};
+
+	{
+		auto ents = collect(ecs::TravOrder::Up);
+		CHECK(ents.size() == 6);
+		CHECK(ents[0] == c);
+		CHECK(ents[1] == a);
+		CHECK(ents[2] == b);
+		CHECK(ents[3] == root);
+		CHECK(ents[4] == d);
+		CHECK(ents[5] == root2);
+	}
+	{
+		auto ents = collect(ecs::TravOrder::Down);
+		CHECK(ents.size() == 6);
+		CHECK(ents[0] == root);
+		CHECK(ents[1] == a);
+		CHECK(ents[2] == c);
+		CHECK(ents[3] == b);
+		CHECK(ents[4] == root2);
+		CHECK(ents[5] == d);
+	}
+	{
+		auto ents = collect(ecs::TravOrder::ReverseUp);
+		CHECK(ents.size() == 6);
+		CHECK(ents[0] == root2);
+		CHECK(ents[1] == d);
+		CHECK(ents[2] == root);
+		CHECK(ents[3] == b);
+		CHECK(ents[4] == a);
+		CHECK(ents[5] == c);
+	}
+	{
+		auto ents = collect(ecs::TravOrder::ReverseDown);
+		CHECK(ents.size() == 6);
+		CHECK(ents[0] == d);
+		CHECK(ents[1] == root2);
+		CHECK(ents[2] == b);
+		CHECK(ents[3] == c);
+		CHECK(ents[4] == a);
+		CHECK(ents[5] == root);
+	}
+}
+
+TEST_CASE("Query typed each traversal order") {
+	TestWorld twld;
+
+	auto rel = wld.add();
+
+	auto root = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(a, {1, 0, 0});
+	wld.add<Position>(b, {2, 0, 0});
+	wld.add<Position>(c, {3, 0, 0});
+
+	wld.add(a, {rel, root});
+	wld.add(b, {rel, root});
+	wld.add(c, {rel, a});
+
+	auto q = wld.query().all<Position>();
+	cnt::darray<ecs::Entity> ents;
+	cnt::darray<float> xs;
+	q.order_by(rel, ecs::TravOrder::Down).each([&](ecs::Entity e, const Position& pos) {
+		ents.push_back(e);
+		xs.push_back(pos.x);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(xs.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == a);
+	CHECK(ents[2] == c);
+	CHECK(ents[3] == b);
+	CHECK(xs[0] == doctest::Approx(0.0f));
+	CHECK(xs[1] == doctest::Approx(1.0f));
+	CHECK(xs[2] == doctest::Approx(3.0f));
+	CHECK(xs[3] == doctest::Approx(2.0f));
+}
+
+TEST_CASE("Query iterator each traversal order") {
+	TestWorld twld;
+
+	auto rel = wld.add();
+
+	auto root = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(a, {1, 0, 0});
+	wld.add<Position>(b, {2, 0, 0});
+	wld.add<Position>(c, {3, 0, 0});
+
+	wld.add(a, {rel, root});
+	wld.add(b, {rel, root});
+	wld.add(c, {rel, a});
+
+	auto q = wld.query().all<Position>();
+	cnt::darray<ecs::Entity> ents;
+	cnt::darray<float> xs;
+	q.order_by(rel, ecs::TravOrder::Down).each([&](ecs::Iter& it) {
+		auto entView = it.view<ecs::Entity>();
+		auto posView = it.view<Position>();
+		GAIA_EACH(it) {
+			ents.push_back(entView[i]);
+			xs.push_back(posView[i].x);
+		}
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(xs.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == a);
+	CHECK(ents[2] == c);
+	CHECK(ents[3] == b);
+	CHECK(xs[0] == doctest::Approx(0.0f));
+	CHECK(xs[1] == doctest::Approx(1.0f));
+	CHECK(xs[2] == doctest::Approx(3.0f));
+	CHECK(xs[3] == doctest::Approx(2.0f));
+
+	wld.del(b, {rel, root});
+	wld.add(b, {rel, c});
+
+	ents.clear();
+	xs.clear();
+	q.order_by(rel, ecs::TravOrder::Down).each([&](ecs::Iter& it) {
+		auto entView = it.view<ecs::Entity>();
+		auto posView = it.view<Position>();
+		GAIA_EACH(it) {
+			ents.push_back(entView[i]);
+			xs.push_back(posView[i].x);
+		}
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(xs.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == a);
+	CHECK(ents[2] == c);
+	CHECK(ents[3] == b);
+	CHECK(xs[0] == doctest::Approx(0.0f));
+	CHECK(xs[1] == doctest::Approx(1.0f));
+	CHECK(xs[2] == doctest::Approx(3.0f));
+	CHECK(xs[3] == doctest::Approx(2.0f));
+}
+
+TEST_CASE("Query typed each traversal order multiple components") {
+	TestWorld twld;
+
+	auto rel = wld.add();
+
+	auto root = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(a, {1, 0, 0});
+	wld.add<Position>(b, {2, 0, 0});
+	wld.add<Position>(c, {3, 0, 0});
+
+	wld.add<Scale>(root, {10, 0, 0});
+	wld.add<Scale>(a, {11, 0, 0});
+	wld.add<Scale>(b, {12, 0, 0});
+	wld.add<Scale>(c, {13, 0, 0});
+
+	wld.add(a, {rel, root});
+	wld.add(b, {rel, root});
+	wld.add(c, {rel, a});
+
+	auto q = wld.query().all<Position>().all<Scale>();
+	cnt::darray<ecs::Entity> ents;
+	cnt::darray<float> px;
+	cnt::darray<float> sx;
+	q.order_by(rel, ecs::TravOrder::Down).each([&](ecs::Entity e, const Position& pos, const Scale& scale) {
+		ents.push_back(e);
+		px.push_back(pos.x);
+		sx.push_back(scale.x);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(px.size() == 4);
+	CHECK(sx.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == a);
+	CHECK(ents[2] == c);
+	CHECK(ents[3] == b);
+	CHECK(px[0] == doctest::Approx(0.0f));
+	CHECK(px[1] == doctest::Approx(1.0f));
+	CHECK(px[2] == doctest::Approx(3.0f));
+	CHECK(px[3] == doctest::Approx(2.0f));
+	CHECK(sx[0] == doctest::Approx(10.0f));
+	CHECK(sx[1] == doctest::Approx(11.0f));
+	CHECK(sx[2] == doctest::Approx(13.0f));
+	CHECK(sx[3] == doctest::Approx(12.0f));
+}
+
+TEST_CASE("Query typed each traversal order mutable components") {
+	TestWorld twld;
+
+	auto rel = wld.add();
+
+	auto root = wld.add();
+	auto a = wld.add();
+	auto b = wld.add();
+	auto c = wld.add();
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(a, {1, 0, 0});
+	wld.add<Position>(b, {2, 0, 0});
+	wld.add<Position>(c, {3, 0, 0});
+
+	wld.add<Scale>(root, {10, 0, 0});
+	wld.add<Scale>(a, {11, 0, 0});
+	wld.add<Scale>(b, {12, 0, 0});
+	wld.add<Scale>(c, {13, 0, 0});
+
+	wld.add(a, {rel, root});
+	wld.add(b, {rel, root});
+	wld.add(c, {rel, a});
+
+	auto q = wld.query().all<Position&>().all<Scale>();
+	cnt::darray<ecs::Entity> ents;
+	q.order_by(rel, ecs::TravOrder::Down).each([&](ecs::Entity e, Position& pos, const Scale& scale) {
+		ents.push_back(e);
+		pos.x += scale.x;
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == a);
+	CHECK(ents[2] == c);
+	CHECK(ents[3] == b);
+
+	CHECK(wld.get<Position>(root).x == doctest::Approx(10.0f));
+	CHECK(wld.get<Position>(a).x == doctest::Approx(12.0f));
+	CHECK(wld.get<Position>(b).x == doctest::Approx(14.0f));
+	CHECK(wld.get<Position>(c).x == doctest::Approx(16.0f));
+}
+
+TEST_CASE("Query entity each traversal order with disabled ancestor barriers") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto child = wld.add();
+	auto grandChild = wld.add();
+
+	wld.child(child, root);
+	wld.child(grandChild, child);
+
+	wld.add<Position>(child, {0, 0, 0});
+	wld.add<Position>(grandChild, {0, 0, 0});
+
+	auto q = wld.query().all<Position>();
+
+	{
+		cnt::darr<ecs::Entity> ents;
+		q.order_by(ecs::ChildOf, ecs::TravOrder::Down).each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+
+		CHECK(ents.size() == 2);
+		CHECK(ents[0] == child);
+		CHECK(ents[1] == grandChild);
+	}
+
+	// Disable a non-matching parent/root. The subtree should be pruned even though the
+	// query input set of Position entities would otherwise stay the same.
+	wld.enable(root, false);
+	{
+		cnt::darr<ecs::Entity> ents;
+		q.order_by(ecs::ChildOf, ecs::TravOrder::Down).each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+
+		CHECK(ents.empty());
+	}
+
+	wld.enable(root, true);
+	wld.enable(child, false);
+	{
+		cnt::darr<ecs::Entity> ents;
+		q.order_by(ecs::ChildOf, ecs::TravOrder::Down).each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+
+		CHECK(ents.empty());
+	}
+}
+
+TEST_CASE("Query entity traversal order Parent prunes disabled subtree") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto child = wld.add();
+	auto grandChild = wld.add();
+
+	wld.add(child, ecs::Pair(ecs::Parent, root));
+	wld.add(grandChild, ecs::Pair(ecs::Parent, child));
+
+	wld.add<Position>(child, {0, 0, 0});
+	wld.add<Position>(grandChild, {0, 0, 0});
+
+	auto q = wld.query().all<Position>();
+
+	{
+		cnt::darr<ecs::Entity> ents;
+		q.order_by<ecs::Parent_>(ecs::TravOrder::Down).each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+
+		CHECK(ents.size() == 2);
+		CHECK(ents[0] == child);
+		CHECK(ents[1] == grandChild);
+	}
+
+	wld.enable(root, false);
+	{
+		cnt::darr<ecs::Entity> ents;
+		q.order_by<ecs::Parent_>(ecs::TravOrder::Down).each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+
+		CHECK(ents.empty());
+	}
+
+	wld.enable(root, true);
+	wld.enable(child, false);
+	{
+		cnt::darr<ecs::Entity> ents;
+		q.order_by<ecs::Parent_>(ecs::TravOrder::Down).each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+
+		CHECK(ents.empty());
+	}
+}
+
+TEST_CASE("Query depth_order ChildOf orders entities by depth") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto childA = wld.add();
+	auto childB = wld.add();
+	auto grandChild = wld.add();
+
+	wld.child(childA, root);
+	wld.child(childB, root);
+	wld.child(grandChild, childA);
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(childA, {0, 0, 0});
+	wld.add<Position>(childB, {0, 0, 0});
+	wld.add<Position>(grandChild, {0, 0, 0});
+
+	auto depth_of = [&](ecs::Entity entity) {
+		uint32_t depth = 0;
+		auto curr = entity;
+		while (true) {
+			const auto parent = wld.target(curr, ecs::ChildOf);
+			if (parent == ecs::EntityBad || parent == curr)
+				break;
+			++depth;
+			curr = parent;
+		}
+		return depth;
+	};
+
+	auto q = wld.query().all<Position>().depth_order(ecs::ChildOf);
+	cnt::darr<ecs::Entity> ents;
+	q.each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(depth_of(ents[0]) == 0);
+	CHECK(depth_of(ents[1]) == 1);
+	CHECK(depth_of(ents[2]) == 1);
+	CHECK(depth_of(ents[3]) == 2);
+	CHECK(ents[0] == root);
+	CHECK(ents[3] == grandChild);
+}
+
+TEST_CASE("Query depth_order ChildOf handles many archetypes at the same depth") {
+	TestWorld twld;
+
+	constexpr uint32_t EntityCount = 10000;
+	cnt::darray<ecs::Entity> entities;
+	entities.reserve(EntityCount);
+	GAIA_FOR(EntityCount) {
+		const auto entity = wld.add();
+		entities.push_back(entity);
+		if (i != 0)
+			wld.child(entity, entities[(i - 1U) / 4U]);
+		wld.add<Position>(entity, {0, 0, 0});
+	}
+
+	auto q = wld.query().all<Position>().depth_order(ecs::ChildOf);
+	uint32_t visited = 0;
+	q.each([&](ecs::Entity) {
+		++visited;
+	});
+
+	CHECK(visited == EntityCount);
+}
+
+TEST_CASE("Query depth_order ChildOf prunes disabled subtree") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto child = wld.add();
+	auto grandChild = wld.add();
+
+	wld.child(child, root);
+	wld.child(grandChild, child);
+
+	wld.add<Position>(child, {0, 0, 0});
+	wld.add<Position>(grandChild, {0, 0, 0});
+
+	auto q = wld.query().all<Position>().depth_order(ecs::ChildOf);
+
+	{
+		cnt::darr<ecs::Entity> ents;
+		q.each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+
+		CHECK(ents.size() == 2);
+		CHECK(ents[0] == child);
+		CHECK(ents[1] == grandChild);
+		CHECK(q.count() == 2);
+
+		cnt::darr<ecs::Entity> arr;
+		q.arr(arr);
+		CHECK(arr.size() == 2);
+		CHECK(arr[0] == child);
+		CHECK(arr[1] == grandChild);
+	}
+
+	wld.enable(root, false);
+	{
+		cnt::darr<ecs::Entity> ents;
+		q.each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+
+		CHECK(ents.empty());
+		CHECK(q.count() == 0);
+
+		cnt::darr<ecs::Entity> arr;
+		q.arr(arr);
+		CHECK(arr.empty());
+
+		cnt::darr<ecs::Entity> disabledEnts;
+		q.each(
+				[&](ecs::Iter& it) {
+					auto rows = it.view<ecs::Entity>();
+					GAIA_FOR(it.size()) disabledEnts.push_back(rows[i]);
+				},
+				ecs::Constraints::DisabledOnly);
+		CHECK(disabledEnts.size() == 2);
+		if (disabledEnts.size() == 2) {
+			CHECK(disabledEnts[0] == child);
+			CHECK(disabledEnts[1] == grandChild);
+		}
+		CHECK(q.count(ecs::Constraints::DisabledOnly) == 2);
+
+		cnt::darr<ecs::Entity> disabledArr;
+		q.arr(disabledArr, ecs::Constraints::DisabledOnly);
+		CHECK(disabledArr.size() == 2);
+		if (disabledArr.size() == 2) {
+			CHECK(disabledArr[0] == child);
+			CHECK(disabledArr[1] == grandChild);
+		}
+	}
+
+	wld.enable(root, true);
+	wld.enable(child, false);
+	{
+		cnt::darr<ecs::Entity> ents;
+		q.each([&](ecs::Entity e) {
+			ents.push_back(e);
+		});
+
+		CHECK(ents.empty());
+		CHECK(q.count() == 0);
+
+		cnt::darr<ecs::Entity> arr;
+		q.arr(arr);
+		CHECK(arr.empty());
+
+		cnt::darr<ecs::Entity> disabledEnts;
+		q.each(
+				[&](ecs::Iter& it) {
+					auto rows = it.view<ecs::Entity>();
+					GAIA_FOR(it.size()) disabledEnts.push_back(rows[i]);
+				},
+				ecs::Constraints::DisabledOnly);
+		CHECK(disabledEnts.size() == 2);
+		if (disabledEnts.size() == 2) {
+			CHECK(disabledEnts[0] == child);
+			CHECK(disabledEnts[1] == grandChild);
+		}
+		CHECK(q.count(ecs::Constraints::DisabledOnly) == 2);
+
+		cnt::darr<ecs::Entity> disabledArr;
+		q.arr(disabledArr, ecs::Constraints::DisabledOnly);
+		CHECK(disabledArr.size() == 2);
+		if (disabledArr.size() == 2) {
+			CHECK(disabledArr[0] == child);
+			CHECK(disabledArr[1] == grandChild);
+		}
+	}
+}
+
+TEST_CASE("Query depth_order ChildOf updates after reparent") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto child = wld.add();
+	auto grandChild = wld.add();
+	auto leaf = wld.add();
+
+	wld.child(child, root);
+	wld.child(grandChild, child);
+	wld.child(leaf, root);
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(child, {0, 0, 0});
+	wld.add<Position>(grandChild, {0, 0, 0});
+	wld.add<Position>(leaf, {0, 0, 0});
+
+	auto q = wld.query().all<Position>().depth_order(ecs::ChildOf);
+	cnt::darr<ecs::Entity> ents;
+	q.each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[3] == grandChild);
+
+	wld.del(grandChild, ecs::Pair(ecs::ChildOf, child));
+	wld.add(grandChild, ecs::Pair(ecs::ChildOf, leaf));
+
+	ents.clear();
+	q.each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == child);
+	CHECK(ents[2] == leaf);
+	CHECK(ents[3] == grandChild);
+}
+
+TEST_CASE("Query depth_order ChildOf updates when ancestor depth changes") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto parent = wld.add();
+	auto sibling = wld.add();
+	auto leaf = wld.add();
+	auto cousinGrandChild = wld.add();
+
+	wld.child(parent, root);
+	wld.child(sibling, root);
+	wld.child(leaf, parent);
+	wld.child(cousinGrandChild, sibling);
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(parent, {0, 0, 0});
+	wld.add<Position>(sibling, {0, 0, 0});
+	wld.add<Position>(leaf, {0, 0, 0});
+	wld.add<Position>(cousinGrandChild, {0, 0, 0});
+
+	auto q = wld.query().all<Position>().depth_order(ecs::ChildOf);
+	cnt::darr<ecs::Entity> ents;
+	q.each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 5);
+	const bool lastIsDeepDescendant = ents[4] == leaf || ents[4] == cousinGrandChild;
+	CHECK(lastIsDeepDescendant);
+
+	wld.del(parent, ecs::Pair(ecs::ChildOf, root));
+
+	ents.clear();
+	q.each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 5);
+	const bool firstIsRootLevel = ents[0] == root || ents[0] == parent;
+	CHECK(firstIsRootLevel);
+	CHECK(core::has(ents, leaf));
+	CHECK(core::has(ents, cousinGrandChild));
+
+	const auto leafIdx = core::get_index(ents, leaf);
+	const auto cousinIdx = core::get_index(ents, cousinGrandChild);
+	CHECK(leafIdx != BadIndex);
+	CHECK(cousinIdx != BadIndex);
+	CHECK(leafIdx < cousinIdx);
+}
+
+TEST_CASE("Query depth_order custom relation orders entities by depth") {
+	TestWorld twld;
+
+	auto rel = wld.add();
+
+	auto root = wld.add();
+	auto childA = wld.add();
+	auto childB = wld.add();
+	auto grandChild = wld.add();
+
+	wld.add(childA, ecs::Pair(rel, root));
+	wld.add(childB, ecs::Pair(rel, root));
+	wld.add(grandChild, ecs::Pair(rel, childA));
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(childA, {0, 0, 0});
+	wld.add<Position>(childB, {0, 0, 0});
+	wld.add<Position>(grandChild, {0, 0, 0});
+
+	auto depth_of = [&](ecs::Entity entity) {
+		uint32_t depth = 0;
+		auto curr = entity;
+		while (true) {
+			const auto parent = wld.target(curr, rel);
+			if (parent == ecs::EntityBad || parent == curr)
+				break;
+			++depth;
+			curr = parent;
+		}
+		return depth;
+	};
+
+	auto q = wld.query().all<Position>().depth_order(rel);
+	cnt::darr<ecs::Entity> ents;
+	q.each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(depth_of(ents[0]) == 0);
+	CHECK(depth_of(ents[1]) == 1);
+	CHECK(depth_of(ents[2]) == 1);
+	CHECK(depth_of(ents[3]) == 2);
+	CHECK(ents[0] == root);
+	CHECK(ents[3] == grandChild);
+}
+
+TEST_CASE("Query depth_order DependsOn respects deepest dependency chain") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto depA = wld.add();
+	auto depB = wld.add();
+	auto node = wld.add();
+
+	wld.add(depA, ecs::Pair(ecs::DependsOn, root));
+	wld.add(depB, ecs::Pair(ecs::DependsOn, depA));
+	wld.add(node, ecs::Pair(ecs::DependsOn, root));
+	wld.add(node, ecs::Pair(ecs::DependsOn, depB));
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(depA, {0, 0, 0});
+	wld.add<Position>(depB, {0, 0, 0});
+	wld.add<Position>(node, {0, 0, 0});
+
+	cnt::darr<ecs::Entity> ents;
+	wld.query().all<Position>().depth_order(ecs::DependsOn).each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == depA);
+	CHECK(ents[2] == depB);
+	CHECK(ents[3] == node);
+}
+
+TEST_CASE("Query depth_order DependsOn updates after dependency rewiring") {
+	TestWorld twld;
+
+	auto root = wld.add();
+	auto depA = wld.add();
+	auto depB = wld.add();
+	auto node = wld.add();
+
+	wld.add(depA, ecs::Pair(ecs::DependsOn, root));
+	wld.add(depB, ecs::Pair(ecs::DependsOn, depA));
+	wld.add(node, ecs::Pair(ecs::DependsOn, root));
+	wld.add(node, ecs::Pair(ecs::DependsOn, depB));
+
+	wld.add<Position>(root, {0, 0, 0});
+	wld.add<Position>(depA, {0, 0, 0});
+	wld.add<Position>(depB, {0, 0, 0});
+	wld.add<Position>(node, {0, 0, 0});
+
+	auto q = wld.query().all<Position>().depth_order(ecs::DependsOn);
+	cnt::darr<ecs::Entity> ents;
+	q.each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == depA);
+	CHECK(ents[2] == depB);
+	CHECK(ents[3] == node);
+
+	wld.del(node, ecs::Pair(ecs::DependsOn, depB));
+
+	ents.clear();
+	q.each([&](ecs::Entity e) {
+		ents.push_back(e);
+	});
+
+	CHECK(ents.size() == 4);
+	CHECK(ents[0] == root);
+	CHECK(ents[1] == depA);
+	CHECK(ents[2] == node);
+	CHECK(ents[3] == depB);
+}
+
+TEST_CASE("Traversal relation semantics are explicit") {
+	TestWorld twld;
+
+	CHECK(wld.relation_is_hierarchy(ecs::ChildOf));
+	CHECK(wld.relation_is_fragmenting(ecs::ChildOf));
+	CHECK(wld.relation_is_fragmenting_hierarchy(ecs::ChildOf));
+	CHECK(wld.relation_supports_depth_order(ecs::ChildOf));
+	CHECK(wld.relation_depth_order_prunes_disabled_subtrees(ecs::ChildOf));
+
+	CHECK(wld.relation_is_hierarchy(ecs::Parent));
+	CHECK(!wld.relation_is_fragmenting(ecs::Parent));
+	CHECK(!wld.relation_is_fragmenting_hierarchy(ecs::Parent));
+	CHECK(!wld.relation_supports_depth_order(ecs::Parent));
+	CHECK(!wld.relation_depth_order_prunes_disabled_subtrees(ecs::Parent));
+
+	CHECK(!wld.relation_is_hierarchy(ecs::DependsOn));
+	CHECK(wld.relation_is_fragmenting(ecs::DependsOn));
+	CHECK(!wld.relation_is_fragmenting_hierarchy(ecs::DependsOn));
+	CHECK(wld.relation_supports_depth_order(ecs::DependsOn));
+	CHECK(!wld.relation_depth_order_prunes_disabled_subtrees(ecs::DependsOn));
+}
+
+template <typename TQuery>
+void Test_Query_Equality() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+	constexpr uint32_t N = 100;
+
+	auto verify = [&](auto& q1, auto& q2, auto& q3, auto& q4) {
+		CHECK(q1.count() == q2.count());
+		CHECK(q1.count() == q3.count());
+		CHECK(q1.count() == q4.count());
+
+		cnt::darr<ecs::Entity> ents1, ents2, ents3, ents4;
+		q1.arr(ents1);
+		q2.arr(ents2);
+		q3.arr(ents3);
+		q4.arr(ents4);
+		CHECK(ents1.size() == ents2.size());
+		CHECK(ents1.size() == ents3.size());
+		CHECK(ents1.size() == ents4.size());
+
+		uint32_t i = 0;
+		for (auto e: ents1) {
+			CHECK(e == ents2[i]);
+			++i;
+		}
+		i = 0;
+		for (auto e: ents1) {
+			CHECK(e == ents3[i]);
+			++i;
+		}
+		i = 0;
+		for (auto e: ents1) {
+			CHECK(e == ents4[i]);
+			++i;
+		}
+	};
+
+	SUBCASE("2 components") {
+		TestWorld twld;
+		GAIA_FOR(N) {
+			auto e = wld.add();
+			wld.add<Position>(e);
+			wld.add<Rotation>(e);
+		}
+
+		auto p = wld.add<Position>().entity;
+		auto r = wld.add<Rotation>().entity;
+
+		auto qq1 = make_query<UseCachedQuery>(wld).template all<Position>().template all<Rotation>();
+		auto qq2 = make_query<UseCachedQuery>(wld).template all<Rotation>().template all<Position>();
+		auto qq3 = make_query<UseCachedQuery>(wld).all(p).all(r);
+		auto qq4 = make_query<UseCachedQuery>(wld).all(r).all(p);
+		verify(qq1, qq2, qq3, qq4);
+
+		auto qq1_ = make_query<UseCachedQuery>(wld).add("Position, Rotation");
+		auto qq2_ = make_query<UseCachedQuery>(wld).add("Rotation, Position");
+		auto qq3_ = make_query<UseCachedQuery>(wld).add("Position").add("Rotation");
+		auto qq4_ = make_query<UseCachedQuery>(wld).add("Rotation").add("Position");
+		verify(qq1_, qq2_, qq3_, qq4_);
+	}
+	SUBCASE("4 components") {
+		TestWorld twld;
+		GAIA_FOR(N) {
+			auto e = wld.add();
+			wld.add<Position>(e);
+			wld.add<Rotation>(e);
+			wld.add<Acceleration>(e);
+			wld.add<Something>(e);
+		}
+
+		auto p = wld.add<Position>().entity;
+		auto r = wld.add<Rotation>().entity;
+		auto a = wld.add<Acceleration>().entity;
+		auto s = wld.add<Something>().entity;
+
+		auto qq1 = make_query<UseCachedQuery>(wld)
+									 .template all<Position>()
+									 .template all<Rotation>()
+									 .template all<Acceleration>()
+									 .template all<Something>();
+		auto qq2 = make_query<UseCachedQuery>(wld)
+									 .template all<Rotation>()
+									 .template all<Something>()
+									 .template all<Position>()
+									 .template all<Acceleration>();
+		auto qq3 = make_query<UseCachedQuery>(wld).all(p).all(r).all(a).all(s);
+		auto qq4 = make_query<UseCachedQuery>(wld).all(r).all(p).all(s).all(a);
+		verify(qq1, qq2, qq3, qq4);
+
+		auto qq1_ = make_query<UseCachedQuery>(wld).add("Position, Rotation, Acceleration, Something");
+		auto qq2_ = make_query<UseCachedQuery>(wld).add("Rotation, Something, Position, Acceleration");
+		auto qq3_ = make_query<UseCachedQuery>(wld).add("Position").add("Rotation").add("Acceleration").add("Something");
+		auto qq4_ = make_query<UseCachedQuery>(wld).add("Rotation").add("Position").add("Something").add("Acceleration");
+		verify(qq1_, qq2_, qq3_, qq4_);
+	}
+}
+
+TEST_CASE("Query - equality") {
+	SUBCASE("Cached query") {
+		Test_Query_Equality<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_Equality<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_Reset() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+	auto wolf = wld.add();
+	auto rabbit = wld.add();
+	auto carrot = wld.add();
+	auto eats = wld.add();
+
+	wld.add(rabbit, {eats, carrot});
+	wld.add(wolf, {eats, rabbit});
+
+	auto q1 =
+			make_query<UseCachedQuery>(wld).add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(eats, carrot)});
+	auto q2 = make_query<UseCachedQuery>(wld).add("(%e, %e)", eats.value(), carrot.value());
+
+	auto check_queries = [&]() {
+		const auto cnt1 = q1.count();
+		CHECK(cnt1 == 1);
+		const auto cnt2 = q2.count();
+		CHECK(cnt2 == 1);
+	};
+
+	check_queries();
+
+	q1.reset();
+	check_queries();
+
+	q2.reset();
+	check_queries();
+
+	q1.reset();
+	q2.reset();
+	check_queries();
+}
+
+TEST_CASE("Query - delete") {
+	SUBCASE("Cached query") {
+		Test_Query_Reset<ecs::Query>();
+	}
+	SUBCASE("Cached query") {
+		Test_Query_Reset<QueryUncached>();
+	}
+}
+
+TEST_CASE("Query - delete from cache") {
+	TestWorld twld;
+	auto wolf = wld.add();
+	auto rabbit = wld.add();
+	auto carrot = wld.add();
+	auto eats = wld.add();
+
+	wld.add(rabbit, {eats, carrot});
+	wld.add(wolf, {eats, rabbit});
+
+	auto q1 = wld.query()
+								.scope(ecs::QueryCacheScope::Shared)
+								.add({ecs::QueryOpKind::All, ecs::QueryAccess::None, ecs::Pair(eats, carrot)});
+	auto q2 = wld.query().scope(ecs::QueryCacheScope::Shared).add("(%e, %e)", eats.value(), carrot.value());
+
+	{
+		const auto cnt1 = q1.count();
+		CHECK(cnt1 == 1);
+		const auto cnt2 = q2.count();
+		CHECK(cnt2 == 1);
+	};
+
+	q1.destroy();
+	{
+		const auto cnt1 = q1.count();
+		CHECK(cnt1 == 1);
+		const auto cnt2 = q2.count();
+		CHECK(cnt2 == 1);
+	}
+	q2.destroy();
+	{
+		const auto cnt1 = q1.count();
+		CHECK(cnt1 == 0);
+		const auto cnt2 = q2.count();
+		CHECK(cnt2 == 0);
+	}
+}
+
+template <typename TQuery>
+void Test_Query_CopyMoveLifecycle() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+
+	const auto e0 = wld.add();
+	const auto e1 = wld.add();
+	const auto e2 = wld.add();
+
+	wld.add<Position>(e0, {1.0f, 0.0f, 0.0f});
+	wld.add<Position>(e1, {2.0f, 0.0f, 0.0f});
+	wld.add<Rotation>(e2, {3.0f, 0.0f, 0.0f, 1.0f});
+
+	auto q = make_query<UseCachedQuery>(wld).template all<Position>();
+	CHECK(q.count() == 2);
+	CHECK(q.is_cached() == UseCachedQuery);
+
+	auto qCopy(q);
+	CHECK(qCopy.count() == 2);
+	CHECK(qCopy.is_cached() == UseCachedQuery);
+
+	q.destroy();
+	CHECK(qCopy.count() == 2);
+	CHECK(qCopy.is_cached() == UseCachedQuery);
+
+	auto qMoved(GAIA_MOV(qCopy));
+	CHECK(qMoved.count() == 2);
+	CHECK(qMoved.is_cached() == UseCachedQuery);
+
+	auto qAssigned = make_query<UseCachedQuery>(wld).template all<Rotation>();
+	CHECK(qAssigned.count() == 1);
+	qAssigned = qMoved;
+	CHECK(qAssigned.count() == 2);
+	CHECK(qAssigned.is_cached() == UseCachedQuery);
+
+	auto qMoveAssigned = make_query<UseCachedQuery>(wld).template all<Acceleration>();
+	CHECK(qMoveAssigned.count() == 0);
+	qMoveAssigned = GAIA_MOV(qAssigned);
+	CHECK(qMoveAssigned.count() == 2);
+	CHECK(qMoveAssigned.is_cached() == UseCachedQuery);
+
+	qMoveAssigned.destroy();
+	CHECK(qMoveAssigned.count() == 2);
+	CHECK(qMoveAssigned.is_cached() == UseCachedQuery);
+}
+
+TEST_CASE("Query - copy and move lifecycle") {
+	SUBCASE("Cached query") {
+		Test_Query_CopyMoveLifecycle<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_CopyMoveLifecycle<QueryUncached>();
+	}
+}
+
+template <typename TQuery>
+void Test_Query_CopyMovePreservesRuntimeCaches() {
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+
+	TestWorld twld;
+
+	const auto root = wld.add();
+	const auto child = wld.add();
+	const auto leaf = wld.add();
+
+	wld.child(child, root);
+	wld.child(leaf, child);
+	wld.add<Position>(root, {0.0f, 0.0f, 0.0f});
+	wld.add<Position>(child, {1.0f, 0.0f, 0.0f});
+	wld.add<Position>(leaf, {2.0f, 0.0f, 0.0f});
+
+	auto check_traversal = [&](auto& query) {
+		cnt::darr<ecs::Entity> ents;
+		query.order_by(ecs::ChildOf, ecs::TravOrder::Down).each([&](ecs::Entity entity) {
+			ents.push_back(entity);
+		});
+
+		CHECK(ents.size() == 3);
+		if (ents.size() == 3) {
+			CHECK(ents[0] == root);
+			CHECK(ents[1] == child);
+			CHECK(ents[2] == leaf);
+		}
+		CHECK(query.is_cached() == UseCachedQuery);
+	};
+
+	auto qTraversal = make_query<UseCachedQuery>(wld).template all<Position>();
+	check_traversal(qTraversal);
+	check_traversal(qTraversal);
+
+	auto qTraversalCopy(qTraversal);
+	check_traversal(qTraversalCopy);
+
+	auto qTraversalMoved(GAIA_MOV(qTraversalCopy));
+	check_traversal(qTraversalMoved);
+
+	auto qTraversalAssigned = make_query<UseCachedQuery>(wld).template all<Rotation>();
+	qTraversalAssigned = qTraversal;
+	check_traversal(qTraversalAssigned);
+
+	auto qTraversalMoveAssigned = make_query<UseCachedQuery>(wld).template all<Acceleration>();
+	qTraversalMoveAssigned = GAIA_MOV(qTraversalAssigned);
+	check_traversal(qTraversalMoveAssigned);
+
+	const auto base = wld.add();
+	const auto derived = wld.add();
+	const auto grandchild = wld.add();
+
+	wld.as(derived, base);
+	wld.as(grandchild, derived);
+	wld.add<Position>(derived, {10.0f, 0.0f, 0.0f});
+	wld.add<Position>(grandchild, {20.0f, 0.0f, 0.0f});
+
+	auto check_is = [&](auto& query) {
+		cnt::darr<ecs::Entity> ents;
+		query.each([&](ecs::Entity entity) {
+			ents.push_back(entity);
+		});
+
+		CHECK(ents.size() == 2);
+		CHECK(core::has(ents, derived));
+		CHECK(core::has(ents, grandchild));
+		CHECK(query.is_cached() == UseCachedQuery);
+	};
+
+	auto qIs = make_query<UseCachedQuery>(wld).template all<Position>().is(base);
+	check_is(qIs);
+	check_is(qIs);
+
+	auto qIsCopy(qIs);
+	check_is(qIsCopy);
+
+	auto qIsMoved(GAIA_MOV(qIsCopy));
+	check_is(qIsMoved);
+
+	auto qIsAssigned = make_query<UseCachedQuery>(wld).template all<Rotation>();
+	qIsAssigned = qIs;
+	check_is(qIsAssigned);
+
+	auto qIsMoveAssigned = make_query<UseCachedQuery>(wld).template all<Acceleration>();
+	qIsMoveAssigned = GAIA_MOV(qIsAssigned);
+	check_is(qIsMoveAssigned);
+}
+
+TEST_CASE("Query - copy and move preserve runtime caches") {
+	SUBCASE("Cached query") {
+		Test_Query_CopyMovePreservesRuntimeCaches<ecs::Query>();
+	}
+	SUBCASE("Non-cached query") {
+		Test_Query_CopyMovePreservesRuntimeCaches<QueryUncached>();
+	}
+}
+
+TEST_CASE("Query - semantic Is cached runs refresh after descendant changes") {
+	TestWorld twld;
+
+	const auto root = wld.add();
+	const auto child = wld.add();
+	wld.as(child, root);
+	wld.add<Position>(child, {1.0f, 0.0f, 0.0f});
+
+	auto q = wld.query().all<Position>().is(root);
+	auto sum_query = [&]() {
+		uint32_t hits = 0;
+		float sum = 0.0f;
+		q.each([&](ecs::Iter& it) {
+			auto posView = it.view<Position>();
+			GAIA_EACH(it) {
+				++hits;
+				sum += posView[i].x;
+			}
+		});
+		return std::pair{hits, sum};
+	};
+
+	auto [hitsInitial, sumInitial] = sum_query();
+	CHECK(hitsInitial == 1);
+	CHECK(sumInitial == doctest::Approx(1.0f));
+
+	auto [hitsCached, sumCached] = sum_query();
+	CHECK(hitsCached == 1);
+	CHECK(sumCached == doctest::Approx(1.0f));
+
+	const auto grandchild = wld.add();
+	wld.as(grandchild, child);
+	wld.add<Position>(grandchild, {2.0f, 0.0f, 0.0f});
+
+	auto [hitsAdded, sumAdded] = sum_query();
+	CHECK(hitsAdded == 2);
+	CHECK(sumAdded == doctest::Approx(3.0f));
+
+	wld.del<Position>(child);
+
+	auto [hitsRemoved, sumRemoved] = sum_query();
+	CHECK(hitsRemoved == 1);
+	CHECK(sumRemoved == doctest::Approx(2.0f));
+}
+
+TEST_CASE("Query - Iter direct chunk-backed AoS accessors") {
+	TestWorld twld;
+
+	auto e0 = wld.add();
+	auto e1 = wld.add();
+	wld.add<Position>(e0, {1, 2, 3});
+	wld.add<Acceleration>(e0, {10, 20, 30});
+	wld.add<Position>(e1, {4, 5, 6});
+	wld.add<Acceleration>(e1, {40, 50, 60});
+
+	float readX = 0.0f;
+	float readAx = 0.0f;
+	auto qRead = wld.query().all<Position>().all<Acceleration>();
+	qRead.each([&](ecs::Iter& it) {
+		auto posView = it.view<Position>();
+		auto accView = it.view<Acceleration>(1);
+		GAIA_EACH(it) {
+			readX += posView[i].x;
+			readAx += accView[i].x;
+		}
+	});
+
+	auto qWrite = wld.query().all<Position&>().all<Acceleration>();
+	qWrite.each([&](ecs::Iter& it) {
+		auto posView = it.view_mut<Position>();
+		auto posViewByTerm = it.view_mut<Position>(0);
+		auto accView = it.view<Acceleration>(1);
+		GAIA_EACH(it) {
+			posView[i].x += accView[i].x;
+			posViewByTerm[i].y += accView[i].y;
+		}
+	});
+
+	auto qScratch = wld.query().all<Position&>();
+	qScratch.each([&](ecs::Iter& it) {
+		auto posView = it.sview_mut<Position>();
+		auto posViewByTerm = it.sview_mut<Position>(0);
+		GAIA_EACH(it) {
+			posView[i].z += 1.0f;
+			posViewByTerm[i].z += 1.0f;
+		}
+	});
+
+	CHECK(readX == doctest::Approx(5.0f));
+	CHECK(readAx == doctest::Approx(50.0f));
+
+	const auto p0 = wld.get<Position>(e0);
+	CHECK(p0.x == doctest::Approx(11.0f));
+	CHECK(p0.y == doctest::Approx(22.0f));
+	CHECK(p0.z == doctest::Approx(5.0f));
+
+	const auto p1 = wld.get<Position>(e1);
+	CHECK(p1.x == doctest::Approx(44.0f));
+	CHECK(p1.y == doctest::Approx(55.0f));
+	CHECK(p1.z == doctest::Approx(8.0f));
+}
+
+TEST_CASE("Query - Iter direct chunk-backed SoA accessors") {
+	TestWorld twld;
+
+	auto e0 = wld.add();
+	auto e1 = wld.add();
+	wld.add<PositionSoA>(e0, {1, 2, 3});
+	wld.add<RotationSoA>(e0, {10, 20, 30, 40});
+	wld.add<PositionSoA>(e1, {4, 5, 6});
+	wld.add<RotationSoA>(e1, {50, 60, 70, 80});
+
+	float readX = 0.0f;
+	float readW = 0.0f;
+	auto qRead = wld.query().all<PositionSoA>().all<RotationSoA>();
+	qRead.each([&](ecs::Iter& it) {
+		auto posView = it.view<PositionSoA>();
+		auto rotView = it.view<RotationSoA>(1);
+		auto xs = posView.template get<0>();
+		auto ws = rotView.template get<3>();
+		GAIA_EACH(it) {
+			readX += xs[i];
+			readW += ws[i];
+		}
+	});
+
+	auto qWriteRows = wld.query().all<PositionSoA&>().all<RotationSoA>();
+	qWriteRows.each([&](ecs::Iter& it) {
+		auto posView = it.view_mut<PositionSoA>();
+		auto rotView = it.view<RotationSoA>(1);
+		auto ws = rotView.template get<3>();
+		GAIA_EACH(it) {
+			auto row = (PositionSoA)posView[i];
+			row.x += ws[i];
+			row.z += 1.0f;
+			posView[i] = row;
+		}
+	});
+
+	auto qWriteFields = wld.query().all<PositionSoA&>();
+	qWriteFields.each([&](ecs::Iter& it) {
+		auto posView = it.view_mut<PositionSoA>(0);
+		auto ys = posView.template set<1>();
+		GAIA_EACH(it) {
+			ys[i] += 10.0f;
+		}
+	});
+
+	auto qScratch = wld.query().all<PositionSoA&>();
+	qScratch.each([&](ecs::Iter& it) {
+		auto posView = it.sview_mut<PositionSoA>(0);
+		auto zs = posView.template set<2>();
+		GAIA_EACH(it) {
+			zs[i] += 2.0f;
+		}
+	});
+
+	CHECK(readX == doctest::Approx(5.0f));
+	CHECK(readW == doctest::Approx(120.0f));
+
+	const auto p0 = wld.get<PositionSoA>(e0);
+	CHECK(p0.x == doctest::Approx(41.0f));
+	CHECK(p0.y == doctest::Approx(12.0f));
+	CHECK(p0.z == doctest::Approx(6.0f));
+
+	const auto p1 = wld.get<PositionSoA>(e1);
+	CHECK(p1.x == doctest::Approx(84.0f));
+	CHECK(p1.y == doctest::Approx(15.0f));
+	CHECK(p1.z == doctest::Approx(9.0f));
+}
+
+TEST_CASE("Query - Iter direct chunk-backed any accessors") {
+	SUBCASE("AoS") {
+		TestWorld twld;
+
+		auto e0 = wld.add();
+		auto e1 = wld.add();
+		wld.add<Position>(e0, {1, 2, 3});
+		wld.add<Acceleration>(e0, {10, 20, 30});
+		wld.add<Position>(e1, {4, 5, 6});
+		wld.add<Acceleration>(e1, {40, 50, 60});
+
+		float readX = 0.0f;
+		float readAx = 0.0f;
+		auto qRead = wld.query().all<Position>().all<Acceleration>();
+		qRead.each([&](ecs::Iter& it) {
+			auto posView = it.view_any<Position>();
+			auto accView = it.view_any<Acceleration>(1);
+			CHECK(posView.data() != nullptr);
+			CHECK(accView.data() != nullptr);
+			GAIA_EACH(it) {
+				readX += posView[i].x;
+				readAx += accView[i].x;
+			}
+		});
+
+		auto qWrite = wld.query().all<Position&>().all<Acceleration>();
+		qWrite.each([&](ecs::Iter& it) {
+			auto posAny = it.view_any_mut<Position>();
+			auto posAnyByTerm = it.view_any_mut<Position>(0);
+			auto accView = it.view_any<Acceleration>(1);
+			CHECK(posAny.data() != nullptr);
+			CHECK(posAnyByTerm.data() != nullptr);
+			GAIA_EACH(it) {
+				posAny[i].x += accView[i].x;
+				posAnyByTerm[i].y += accView[i].y;
+			}
+		});
+
+		CHECK(readX == doctest::Approx(5.0f));
+		CHECK(readAx == doctest::Approx(50.0f));
+
+		const auto p0 = wld.get<Position>(e0);
+		CHECK(p0.x == doctest::Approx(11.0f));
+		CHECK(p0.y == doctest::Approx(22.0f));
+		CHECK(p0.z == doctest::Approx(3.0f));
+
+		const auto p1 = wld.get<Position>(e1);
+		CHECK(p1.x == doctest::Approx(44.0f));
+		CHECK(p1.y == doctest::Approx(55.0f));
+		CHECK(p1.z == doctest::Approx(6.0f));
+	}
+
+	SUBCASE("SoA") {
+		TestWorld twld;
+
+		auto e0 = wld.add();
+		auto e1 = wld.add();
+		wld.add<PositionSoA>(e0, {1, 2, 3});
+		wld.add<RotationSoA>(e0, {10, 20, 30, 40});
+		wld.add<PositionSoA>(e1, {4, 5, 6});
+		wld.add<RotationSoA>(e1, {50, 60, 70, 80});
+
+		float readX = 0.0f;
+		float readW = 0.0f;
+		auto qRead = wld.query().all<PositionSoA>().all<RotationSoA>();
+		qRead.each([&](ecs::Iter& it) {
+			auto posView = it.view_any<PositionSoA>(0);
+			auto rotView = it.view_any<RotationSoA>(1);
+			auto xs = posView.template get<0>();
+			auto ws = rotView.template get<3>();
+			GAIA_EACH(it) {
+				readX += xs[i];
+				readW += ws[i];
+			}
+		});
+
+		auto qWriteRows = wld.query().all<PositionSoA&>().all<RotationSoA>();
+		qWriteRows.each([&](ecs::Iter& it) {
+			auto posView = it.view_any_mut<PositionSoA>();
+			auto rotView = it.view_any<RotationSoA>(1);
+			auto xs = posView.template set<0>();
+			auto zs = posView.template set<2>();
+			auto ws = rotView.template get<3>();
+			GAIA_EACH(it) {
+				xs[i] += ws[i];
+				zs[i] += 1.0f;
+			}
+		});
+
+		auto qWriteFields = wld.query().all<PositionSoA&>();
+		qWriteFields.each([&](ecs::Iter& it) {
+			auto posView = it.view_any_mut<PositionSoA>(0);
+			auto ys = posView.template set<1>();
+			GAIA_EACH(it) {
+				ys[i] += 10.0f;
+			}
+		});
+
+		CHECK(readX == doctest::Approx(5.0f));
+		CHECK(readW == doctest::Approx(120.0f));
+
+		const auto p0 = wld.get<PositionSoA>(e0);
+		CHECK(p0.x == doctest::Approx(41.0f));
+		CHECK(p0.y == doctest::Approx(12.0f));
+		CHECK(p0.z == doctest::Approx(4.0f));
+
+		const auto p1 = wld.get<PositionSoA>(e1);
+		CHECK(p1.x == doctest::Approx(84.0f));
+		CHECK(p1.y == doctest::Approx(15.0f));
+		CHECK(p1.z == doctest::Approx(7.0f));
+	}
+}
+
+TEST_CASE("Query - Iter auto view accessors") {
+	SUBCASE("AoS") {
+		TestWorld twld;
+
+		auto e0 = wld.add();
+		auto e1 = wld.add();
+		wld.add<Position>(e0, {1, 2, 3});
+		wld.add<Acceleration>(e0, {10, 20, 30});
+		wld.add<Position>(e1, {4, 5, 6});
+		wld.add<Acceleration>(e1, {40, 50, 60});
+
+		float readX = 0.0f;
+		float readAx = 0.0f;
+		auto qRead = wld.query().all<Position>().all<Acceleration>();
+		qRead.each([&](ecs::Iter& it) {
+			auto posView = it.view_auto<Position>();
+			auto accView = it.view_auto<Acceleration>();
+			GAIA_EACH(it) {
+				readX += posView[i].x;
+				readAx += accView[i].x;
+			}
+		});
+
+		auto qWrite = wld.query().all<Position&>().all<Acceleration>();
+		qWrite.each([&](ecs::Iter& it) {
+			auto posView = it.view_auto_any<Position&>();
+			auto posViewDirect = it.view_auto<Position&>();
+			auto posScratch = it.sview_auto_any<Position&>();
+			auto posScratchDirect = it.sview_auto<Position&>();
+			auto accView = it.view_auto<Acceleration>();
+			GAIA_EACH(it) {
+				posView[i].x += accView[i].x;
+				posViewDirect[i].y += accView[i].y;
+				posScratch[i].z += 1.0f;
+				posScratchDirect[i].z += 1.0f;
+			}
+		});
+
+		CHECK(readX == doctest::Approx(5.0f));
+		CHECK(readAx == doctest::Approx(50.0f));
+
+		const auto p0 = wld.get<Position>(e0);
+		CHECK(p0.x == doctest::Approx(11.0f));
+		CHECK(p0.y == doctest::Approx(22.0f));
+		CHECK(p0.z == doctest::Approx(5.0f));
+
+		const auto p1 = wld.get<Position>(e1);
+		CHECK(p1.x == doctest::Approx(44.0f));
+		CHECK(p1.y == doctest::Approx(55.0f));
+		CHECK(p1.z == doctest::Approx(8.0f));
+	}
+
+	SUBCASE("SoA") {
+		TestWorld twld;
+
+		auto e0 = wld.add();
+		auto e1 = wld.add();
+		wld.add<PositionSoA>(e0, {1, 2, 3});
+		wld.add<RotationSoA>(e0, {10, 20, 30, 40});
+		wld.add<PositionSoA>(e1, {4, 5, 6});
+		wld.add<RotationSoA>(e1, {50, 60, 70, 80});
+
+		float readX = 0.0f;
+		float readW = 0.0f;
+		auto qRead = wld.query().all<PositionSoA>().all<RotationSoA>();
+		qRead.each([&](ecs::Iter& it) {
+			auto posView = it.view_auto_any<PositionSoA>();
+			auto rotView = it.view_auto<RotationSoA>();
+			auto xs = posView.template get<0>();
+			auto ws = rotView.template get<3>();
+			GAIA_EACH(it) {
+				readX += xs[i];
+				readW += ws[i];
+			}
+		});
+
+		auto qWrite = wld.query().all<PositionSoA&>().all<RotationSoA>();
+		qWrite.each([&](ecs::Iter& it) {
+			auto posView = it.view_auto_any<PositionSoA&>();
+			auto posViewDirect = it.view_auto<PositionSoA&>();
+			auto posScratch = it.sview_auto_any<PositionSoA&>();
+			auto posScratchDirect = it.sview_auto<PositionSoA&>();
+			auto rotView = it.view_auto_any<RotationSoA>();
+			auto ws = rotView.template get<3>();
+			auto xs = posView.template set<0>();
+			auto ys = posViewDirect.template set<1>();
+			auto zs = posScratch.template set<2>();
+			auto xsDirect = posScratchDirect.template set<0>();
+			GAIA_EACH(it) {
+				xs[i] += ws[i];
+				ys[i] += 10.0f;
+				zs[i] += 1.0f;
+				xsDirect[i] += 2.0f;
+			}
+		});
+
+		CHECK(readX == doctest::Approx(5.0f));
+		CHECK(readW == doctest::Approx(120.0f));
+
+		const auto p0 = wld.get<PositionSoA>(e0);
+		CHECK(p0.x == doctest::Approx(43.0f));
+		CHECK(p0.y == doctest::Approx(12.0f));
+		CHECK(p0.z == doctest::Approx(4.0f));
+
+		const auto p1 = wld.get<PositionSoA>(e1);
+		CHECK(p1.x == doctest::Approx(86.0f));
+		CHECK(p1.y == doctest::Approx(15.0f));
+		CHECK(p1.z == doctest::Approx(7.0f));
+	}
+}

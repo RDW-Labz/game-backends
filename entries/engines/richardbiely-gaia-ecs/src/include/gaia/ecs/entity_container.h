@@ -1,0 +1,655 @@
+#pragma once
+#include "gaia/config/config.h"
+
+#include <cstdint>
+#include <type_traits>
+
+#include "gaia/cnt/ilist.h"
+#include "gaia/cnt/map.h"
+#include "gaia/cnt/paged_storage.h"
+#include "gaia/ecs/api.h"
+#include "gaia/ecs/id.h"
+#include "gaia/mem/smallblock_allocator.h"
+
+//! \cond INTERNAL
+namespace gaia {
+	namespace ecs {
+		struct EntityContainer;
+	}
+
+	namespace cnt {
+		template <>
+		struct to_page_storage_id<ecs::EntityContainer> {
+			static page_storage_id get(const ecs::EntityContainer& item) noexcept;
+		};
+	} // namespace cnt
+
+	namespace ecs {
+		class Chunk;
+		class Archetype;
+		class World;
+#if GAIA_USE_WEAK_ENTITY
+		struct WeakEntityTracker;
+#endif
+
+		struct EntityContainerCtx {
+			bool isEntity;
+			bool isPair;
+		};
+
+		using EntityContainerFlagsType = uint16_t;
+		enum EntityContainerFlags : EntityContainerFlagsType {
+			OnDelete_Remove = 1 << 0,
+			OnDelete_Delete = 1 << 1,
+			OnDelete_Error = 1 << 2,
+			OnDeleteTarget_Remove = 1 << 3,
+			OnDeleteTarget_Delete = 1 << 4,
+			OnDeleteTarget_Error = 1 << 5,
+			HasAcyclic = 1 << 6,
+			HasCantCombine = 1 << 7,
+			IsExclusive = 1 << 8,
+			HasAliasOf = 1 << 9,
+			IsSingleton = 1 << 10,
+			DeleteRequested = 1 << 11,
+			RefDecreased = 1 << 12, // GAIA_USE_SAFE_ENTITY
+			Load = 1 << 13, // EntityContainer is being loaded from a file
+			IsObserved = 1 << 14, // At least one observer is registered for this term.
+			IsDontFragment = 1 << 15,
+		};
+
+		struct EntityContainer {
+			//! Allocated items: Index in the list.
+			//! Deleted items: Index of the next deleted item in the list.
+			uint32_t idx;
+
+			///////////////////////////////////////////////////////////////////
+			// Bits in this section need to be 1:1 with Entity internal data
+			///////////////////////////////////////////////////////////////////
+
+			struct EntityData {
+				//! Generation ID of the record
+				uint32_t gen : 28;
+				//! 0-component, 1-entity
+				uint32_t ent : 1;
+				//! 0-ordinary, 1-pair
+				uint32_t pair : 1;
+				//! Reserved for future use. Always 0.
+				uint32_t reserved : 1;
+				//! Disabled
+				//! Entity does not use this bit (always zero) so we steal it
+				//! for special purposes.
+				//! Temporary entities inside command buffer use it for special purposes,
+				//! but these entities never make it to EntityContainer.
+				uint32_t dis : 1;
+			};
+
+			union {
+				EntityData data;
+				uint32_t dataRaw;
+			};
+
+			///////////////////////////////////////////////////////////////////
+
+			//! Row at which the entity is stored in the chunk
+			uint16_t row;
+			//! Flags
+			uint16_t flags = 0;
+
+#if GAIA_USE_SAFE_ENTITY
+			//! Number of references held to this entity.
+			//! The entity won't be deleted unless the reference count is zero.
+			uint32_t refCnt = 1;
+#else
+			//! Currently unused area
+			uint32_t unused = 0;
+#endif
+
+#if GAIA_USE_WEAK_ENTITY
+			WeakEntityTracker* pWeakTracker = nullptr;
+#endif
+
+			//! Archetype (stable address)
+			Archetype* pArchetype = nullptr;
+			//! Chunk the entity currently resides in (stable address)
+			Chunk* pChunk = nullptr;
+			//! Cached pointer to the entity's current slot inside the owning chunk.
+			const Entity* pEntity = nullptr;
+			// uint8_t depthDependsOn = 0;
+
+			EntityContainer() = default;
+
+			GAIA_NODISCARD static EntityContainer create(uint32_t index, uint32_t generation, void* pCtx) {
+				auto* ctx = (EntityContainerCtx*)pCtx;
+
+				EntityContainer ec{};
+				ec.idx = index;
+				ec.data.gen = generation;
+				ec.data.ent = (uint32_t)ctx->isEntity;
+				ec.data.pair = (uint32_t)ctx->isPair;
+				return ec;
+			}
+
+			GAIA_NODISCARD static Entity handle(const EntityContainer& ec) {
+				return Entity(ec.idx, ec.data.gen, (bool)ec.data.ent, (bool)ec.data.pair);
+			}
+
+			void req_del() {
+				flags |= DeleteRequested;
+			}
+		};
+
+		struct PairRecords {
+		private:
+			//! Exact pair records keyed by the pair entity.
+			cnt::map<EntityLookupKey, EntityContainer> m_records;
+
+		public:
+			//! Clears all pair records.
+			void clear() {
+				m_records = {};
+			}
+
+			//! Checks whether \a entity has a pair record.
+			//! \param entity Pair entity.
+			//! \return True when a pair record exists.
+			GAIA_NODISCARD bool contains(Entity entity) const {
+				GAIA_ASSERT(entity.pair());
+				return m_records.contains(EntityLookupKey(entity));
+			}
+
+			//! Finds a mutable pair record.
+			//! \param entity Pair entity.
+			//! \return Mutable pair record or nullptr when missing.
+			GAIA_NODISCARD EntityContainer* find(Entity entity) {
+				GAIA_ASSERT(entity.pair());
+
+				const auto it = m_records.find(EntityLookupKey(entity));
+				if (it == m_records.end())
+					return nullptr;
+
+				return &it->second;
+			}
+
+			//! Finds a const pair record.
+			//! \param entity Pair entity.
+			//! \return Const pair record or nullptr when missing.
+			GAIA_NODISCARD const EntityContainer* find(Entity entity) const {
+				GAIA_ASSERT(entity.pair());
+
+				const auto it = m_records.find(EntityLookupKey(entity));
+				if (it == m_records.end())
+					return nullptr;
+
+				return &it->second;
+			}
+
+			//! Adds a pair record.
+			//! \param entity Pair entity.
+			//! \param ec Pair record to store.
+			void add(Entity entity, EntityContainer&& ec) {
+				GAIA_ASSERT(entity.pair());
+				m_records.emplace(EntityLookupKey(entity), GAIA_MOV(ec));
+			}
+
+			//! Adds a pair record if it does not exist yet.
+			//! \param entity Pair entity.
+			//! \param ec Pair record to store.
+			//! \return True when the record was added. False when it already existed.
+			GAIA_NODISCARD bool try_add(Entity entity, EntityContainer&& ec) {
+				GAIA_ASSERT(entity.pair());
+
+				if (contains(entity))
+					return false;
+
+				add(entity, GAIA_MOV(ec));
+				return true;
+			}
+
+			//! Removes a pair record.
+			//! \param entity Pair entity.
+			void remove(Entity entity) {
+				GAIA_ASSERT(entity.pair());
+				m_records.erase(EntityLookupKey(entity));
+			}
+
+			//! Removes a pair record and returns its previous value.
+			//! \param entity Pair entity.
+			//! \param ec Removed pair record.
+			//! \return True when a pair record was removed.
+			GAIA_NODISCARD bool remove(Entity entity, EntityContainer& ec) {
+				GAIA_ASSERT(entity.pair());
+
+				const auto it = m_records.find(EntityLookupKey(entity));
+				if (it == m_records.end())
+					return false;
+
+				ec = GAIA_MOV(it->second);
+				m_records.erase(it);
+				return true;
+			}
+
+			//! Returns the first pair record.
+			//! \return Iterator to the first pair record.
+			GAIA_NODISCARD auto begin() {
+				return m_records.begin();
+			}
+
+			//! Returns the first pair record.
+			//! \return Const iterator to the first pair record.
+			GAIA_NODISCARD auto begin() const {
+				return m_records.begin();
+			}
+
+			//! Returns past the last pair record.
+			//! \return Iterator past the last pair record.
+			GAIA_NODISCARD auto end() {
+				return m_records.end();
+			}
+
+			//! Returns past the last pair record.
+			//! \return Const iterator past the last pair record.
+			GAIA_NODISCARD auto end() const {
+				return m_records.end();
+			}
+		};
+
+		struct EntityContainers {
+		private:
+			//! Exact pair records. Needs to be a map because pair ids are huge numbers.
+			PairRecords m_pairRecords;
+
+		public:
+			//! Implicit list of entities. Used for look-ups only when searching for
+			//! entities in chunks + data validation. Entities only.
+			cnt::paged_ilist<EntityContainer, Entity> entities;
+
+			//! Clears all pair records.
+			void pair_records_clear() {
+				m_pairRecords.clear();
+			}
+
+			//! Checks whether \a entity has a pair record.
+			//! \param entity Pair entity.
+			//! \return True when a pair record exists.
+			GAIA_NODISCARD bool pair_record_contains(Entity entity) const {
+				return m_pairRecords.contains(entity);
+			}
+
+			//! Finds a mutable pair record.
+			//! \param entity Pair entity.
+			//! \return Mutable pair record or nullptr when missing.
+			GAIA_NODISCARD EntityContainer* pair_record_find(Entity entity) {
+				return m_pairRecords.find(entity);
+			}
+
+			//! Finds a const pair record.
+			//! \param entity Pair entity.
+			//! \return Const pair record or nullptr when missing.
+			GAIA_NODISCARD const EntityContainer* pair_record_find(Entity entity) const {
+				return m_pairRecords.find(entity);
+			}
+
+			//! Adds a pair record known to be absent.
+			//! \param entity Pair entity.
+			//! \param ec Pair record to store.
+			void pair_record_add(Entity entity, EntityContainer&& ec) {
+				m_pairRecords.add(entity, GAIA_MOV(ec));
+			}
+
+			//! Adds a pair record if it does not exist yet.
+			//! \param entity Pair entity.
+			//! \param ec Pair record to store.
+			//! \return True when the record was added. False when it already existed.
+			GAIA_NODISCARD bool pair_record_try_add(Entity entity, EntityContainer&& ec) {
+				return m_pairRecords.try_add(entity, GAIA_MOV(ec));
+			}
+
+			//! Removes a pair record.
+			//! \param entity Pair entity.
+			void pair_record_remove(Entity entity) {
+				m_pairRecords.remove(entity);
+			}
+
+			//! Removes a pair record and returns its previous value.
+			//! \param entity Pair entity.
+			//! \param ec Removed pair record.
+			//! \return True when a pair record was removed.
+			GAIA_NODISCARD bool pair_record_remove(Entity entity, EntityContainer& ec) {
+				return m_pairRecords.remove(entity, ec);
+			}
+
+			//! Returns the first pair record.
+			//! \return Iterator to the first pair record.
+			GAIA_NODISCARD auto pair_record_begin() {
+				return m_pairRecords.begin();
+			}
+
+			//! Returns the first pair record.
+			//! \return Const iterator to the first pair record.
+			GAIA_NODISCARD auto pair_record_begin() const {
+				return m_pairRecords.begin();
+			}
+
+			//! Returns past the last pair record.
+			//! \return Iterator past the last pair record.
+			GAIA_NODISCARD auto pair_record_end() {
+				return m_pairRecords.end();
+			}
+
+			//! Returns past the last pair record.
+			//! \return Const iterator past the last pair record.
+			GAIA_NODISCARD auto pair_record_end() const {
+				return m_pairRecords.end();
+			}
+
+			EntityContainer& operator[](Entity entity) {
+				if (!entity.pair())
+					return entities[entity.id()];
+
+				auto* pPair = m_pairRecords.find(entity);
+				GAIA_ASSERT(pPair != nullptr);
+				return *pPair;
+			}
+
+			const EntityContainer& operator[](Entity entity) const {
+				if (!entity.pair())
+					return entities[entity.id()];
+
+				const auto* pPair = m_pairRecords.find(entity);
+				GAIA_ASSERT(pPair != nullptr);
+				return *pPair;
+			}
+		};
+
+	} // namespace ecs
+
+	namespace cnt {
+		template <>
+		struct ilist_handle_traits<ecs::Entity> {
+			static ecs::Entity make(uint32_t id, uint32_t gen, const ecs::Entity& prev) {
+				return ecs::Entity((ecs::EntityId)id, gen, prev.entity(), prev.pair());
+			}
+		};
+	} // namespace cnt
+
+	namespace ecs {
+
+#if GAIA_USE_SAFE_ENTITY
+		//! SafeEntity is a wrapper over Entity that makes sure that so long it is around
+		//! a given entity will not be deleted. When the last SafeEntity referencing this
+		//! entity goes out of scope, only then can the entity be deleted.
+		class SafeEntity {
+			World* m_w = nullptr;
+			Entity m_entity;
+
+		public:
+			SafeEntity() = default;
+			SafeEntity(World& w, Entity entity): m_w(&w), m_entity(entity) {
+				acquire();
+			}
+
+			~SafeEntity() {
+				release();
+			}
+
+			SafeEntity(const SafeEntity& other): m_w(other.m_w), m_entity(other.m_entity) {
+				acquire();
+			}
+			SafeEntity& operator=(const SafeEntity& other) {
+				GAIA_ASSERT(core::addressof(other) != this);
+
+				release();
+				m_w = other.m_w;
+				m_entity = other.m_entity;
+				acquire();
+				return *this;
+			}
+
+			SafeEntity(SafeEntity&& other) noexcept: m_w(other.m_w), m_entity(other.m_entity) {
+				other.m_w = nullptr;
+				other.m_entity = EntityBad;
+			}
+			SafeEntity& operator=(SafeEntity&& other) noexcept {
+				GAIA_ASSERT(core::addressof(other) != this);
+
+				release();
+				m_w = other.m_w;
+				m_entity = other.m_entity;
+
+				other.m_w = nullptr;
+				other.m_entity = EntityBad;
+				return *this;
+			}
+
+		private:
+			//! Adds this handle's reference. Empty and moved-from handles hold none.
+			void acquire() {
+				if GAIA_UNLIKELY (m_w == nullptr)
+					return;
+
+				safe_entity_acquire(*m_w, m_entity);
+			}
+
+			//! Drops this handle's reference and deletes the entity when it was the last one.
+			//! Empty and moved-from handles hold none.
+			void release() {
+				if GAIA_UNLIKELY (m_w == nullptr)
+					return;
+
+				// World cleanup and destruction clear every record before they destroy components,
+				// so a SafeEntity stored in a component finds no record there and has nothing to release.
+				safe_entity_release(*m_w, m_entity);
+			}
+
+		public:
+			template <typename Serializer>
+			void save(Serializer& s) const {
+				s.save(m_entity);
+			}
+			template <typename Serializer>
+			void load(Serializer& s) {
+				s.load(m_entity);
+			}
+
+			GAIA_NODISCARD Entity entity() const noexcept {
+				return m_entity;
+			}
+			GAIA_NODISCARD operator Entity() const noexcept {
+				return m_entity;
+			}
+
+			bool operator==(const SafeEntity& other) const noexcept {
+				return m_entity == other.entity();
+			}
+		};
+
+		inline bool operator==(const SafeEntity& e1, Entity e2) noexcept {
+			return e1.entity() == e2;
+		}
+		inline bool operator==(Entity e1, const SafeEntity& e2) noexcept {
+			return e1 == e2.entity();
+		}
+
+		inline bool operator!=(const SafeEntity& e1, Entity e2) noexcept {
+			return e1.entity() != e2;
+		}
+		inline bool operator!=(Entity e1, const SafeEntity& e2) noexcept {
+			return e1 != e2.entity();
+		}
+#endif
+
+#if GAIA_USE_WEAK_ENTITY
+		class WeakEntity;
+
+		struct WeakEntityTracker {
+			GAIA_USE_SMALLBLOCK(WeakEntityTracker)
+
+			WeakEntityTracker* next = nullptr;
+			WeakEntityTracker* prev = nullptr;
+			WeakEntity* pWeakEntity = nullptr;
+		};
+
+		//! WeakEntity is a wrapper over Entity that makes sure that when the entity is deleted,
+		//! this wrapper will start acting as EntityBad. Use when you are afraid that the linked
+		//! entity might be recycled multiple times. In that case, the linked entity would suddenly
+		//! become something different from would you would expect.
+		//! The chance of this happening is rather slim. However, e.g. if you decided to tweak
+		//! the value of Entity::gen to a lower number (28 bits for generation by default), WeakEntity
+		//! could come handy.
+		//! A more useful use case, however, would be if you need an entity identifier that gets automatically
+		//! reset when the entity gets deleted without any setup necessary from your end. Certain situations
+		//! can be complex and using WeakEntity just might be the one way for you to address them.
+		class WeakEntity {
+			friend class World;
+			friend struct WeakEntityTracker;
+
+			World* m_w = nullptr;
+			WeakEntityTracker* m_pTracker = nullptr;
+			Entity m_entity;
+
+		public:
+			WeakEntity() = default;
+			WeakEntity(World& w, Entity entity): m_w(&w), m_pTracker(new WeakEntityTracker()), m_entity(entity) {
+				set_tracker();
+			}
+			~WeakEntity() {
+				del_tracker();
+			}
+
+			WeakEntity(const WeakEntity& other): m_w(other.m_w), m_entity(other.m_entity) {
+				if (other.m_pTracker == nullptr)
+					return;
+
+				m_pTracker = new WeakEntityTracker();
+				set_tracker();
+			}
+			WeakEntity& operator=(const WeakEntity& other) {
+				GAIA_ASSERT(core::addressof(other) != this);
+
+				del_tracker();
+
+				m_w = other.m_w;
+				m_entity = other.m_entity;
+
+				if (other.m_pTracker != nullptr) {
+					m_pTracker = new WeakEntityTracker();
+					set_tracker();
+				}
+
+				return *this;
+			}
+
+			WeakEntity(WeakEntity&& other) noexcept: m_w(other.m_w), m_pTracker(other.m_pTracker), m_entity(other.m_entity) {
+				other.m_w = nullptr;
+				if (other.m_pTracker != nullptr)
+					other.m_pTracker->pWeakEntity = this;
+				other.m_pTracker = nullptr;
+				other.m_entity = EntityBad;
+			}
+			WeakEntity& operator=(WeakEntity&& other) noexcept {
+				GAIA_ASSERT(core::addressof(other) != this);
+
+				del_tracker();
+
+				m_w = other.m_w;
+				m_pTracker = other.m_pTracker;
+				m_entity = other.m_entity;
+
+				other.m_w = nullptr;
+				if (other.m_pTracker != nullptr)
+					other.m_pTracker->pWeakEntity = this;
+				other.m_pTracker = nullptr;
+				other.m_entity = EntityBad;
+				return *this;
+			}
+
+			void set_tracker() {
+				GAIA_ASSERT(m_pTracker != nullptr);
+				GAIA_ASSERT(m_w != nullptr);
+				GAIA_ASSERT(m_entity != EntityBad);
+
+				m_pTracker->pWeakEntity = this;
+				m_pTracker->prev = nullptr;
+
+				auto& ec = fetch_mut(*m_w, m_entity);
+				m_pTracker->next = ec.pWeakTracker;
+				if (ec.pWeakTracker != nullptr)
+					ec.pWeakTracker->prev = m_pTracker;
+				ec.pWeakTracker = m_pTracker;
+			}
+
+			void del_tracker() {
+				if (m_pTracker == nullptr)
+					return;
+
+				if (m_pTracker->next != nullptr)
+					m_pTracker->next->prev = m_pTracker->prev;
+				if (m_pTracker->prev != nullptr)
+					m_pTracker->prev->next = m_pTracker->next;
+
+				// A linked tracker means the target's record still owns this list. That holds while the target
+				// is being deleted, when valid() already fails: deletion destroys the target's components
+				// (a self reference among them) before it invalidates the list. Only the head needs the
+				// record. World cleanup releases every tracker before it destroys components, so none is
+				// linked there.
+				if (m_pTracker->prev == nullptr && m_w != nullptr) {
+					auto* pEc = try_fetch_mut(*m_w, m_entity);
+					if (pEc != nullptr && pEc->pWeakTracker == m_pTracker)
+						pEc->pWeakTracker = m_pTracker->next;
+				}
+
+				delete m_pTracker;
+				m_pTracker = nullptr;
+			}
+
+			template <typename Serializer>
+			void save(Serializer& s) const {
+				s.save(m_entity.val);
+			}
+			template <typename Serializer>
+			void load(Serializer& s) {
+				del_tracker();
+				Identifier id{};
+				s.load(id);
+				m_entity = Entity(id);
+				if (m_w != nullptr && m_entity != EntityBad) {
+					m_pTracker = new WeakEntityTracker();
+					set_tracker();
+				}
+			}
+
+			GAIA_NODISCARD Entity entity() const noexcept {
+				return m_entity;
+			}
+			GAIA_NODISCARD operator Entity() const noexcept {
+				return entity();
+			}
+
+			bool operator==(const WeakEntity& other) const noexcept {
+				return m_entity == other.entity();
+			}
+		};
+
+		inline bool operator==(const WeakEntity& e1, Entity e2) noexcept {
+			return e1.entity() == e2;
+		}
+		inline bool operator==(Entity e1, const WeakEntity& e2) noexcept {
+			return e1 == e2.entity();
+		}
+
+		inline bool operator!=(const WeakEntity& e1, Entity e2) noexcept {
+			return e1.entity() != e2;
+		}
+		inline bool operator!=(Entity e1, const WeakEntity& e2) noexcept {
+			return e1 != e2.entity();
+		}
+#endif
+	} // namespace ecs
+
+	namespace cnt {
+		inline page_storage_id to_page_storage_id<ecs::EntityContainer>::get(const ecs::EntityContainer& item) noexcept {
+			return item.idx;
+		}
+	} // namespace cnt
+} // namespace gaia
+//! \endcond

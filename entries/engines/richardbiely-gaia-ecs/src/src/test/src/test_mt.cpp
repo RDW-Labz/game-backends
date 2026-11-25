@@ -1,0 +1,2842 @@
+#include "test_common.h"
+
+#include <chrono>
+#include <limits>
+#include <thread>
+
+//------------------------------------------------------------------------------
+// Multithreading
+//------------------------------------------------------------------------------
+
+struct JobParallelRefProbe {
+	std::atomic_uint32_t items = 0;
+	std::atomic_uint32_t batches = 0;
+
+	static void invoke(void* pCtx, const mt::JobArgs& args) {
+		auto& ctx = *(JobParallelRefProbe*)pCtx;
+		ctx.items.fetch_add(args.idxEnd - args.idxStart, std::memory_order_relaxed);
+		ctx.batches.fetch_add(1, std::memory_order_relaxed);
+	}
+};
+
+struct ExternalExecProbeComp {
+	uint32_t value = 0;
+};
+
+struct ExternalSchedProbe {
+	ecs::SchedParDesc addedParallel[8]{};
+	ecs::SchedTaskDesc addedTasks[8]{};
+	uint32_t runParallelCalls = 0;
+	uint32_t addTaskCalls = 0;
+	uint32_t addParallelCalls = 0;
+	uint32_t submitCalls = 0;
+	uint32_t depCalls = 0;
+	uint32_t waitCalls = 0;
+	uint32_t delCalls = 0;
+	uint32_t invokeCalls = 0;
+	uint32_t itemsProcessed = 0;
+	ecs::QueryExecType lastExecType = ecs::QueryExecType::Default;
+	uint32_t lastItemCount = 0;
+	uint32_t lastGroupSize = 0;
+	ecs::SchedToken depFirst[8]{};
+	ecs::SchedToken depSecond[8]{};
+
+	static ecs::SchedToken run_parallel(void* pCtx, const ecs::SchedParDesc* pDesc) {
+		auto& probe = *(ExternalSchedProbe*)pCtx;
+		++probe.runParallelCalls;
+		probe.lastExecType = pDesc->execType;
+		probe.lastItemCount = pDesc->itemCount;
+		probe.lastGroupSize = pDesc->groupSize;
+
+		const auto mid = pDesc->itemCount > 1 ? pDesc->itemCount / 2 : pDesc->itemCount;
+		if (mid != 0) {
+			pDesc->invoke(pDesc->pCtx, 0, mid);
+			++probe.invokeCalls;
+			probe.itemsProcessed += mid;
+		}
+		if (mid < pDesc->itemCount) {
+			pDesc->invoke(pDesc->pCtx, mid, pDesc->itemCount);
+			++probe.invokeCalls;
+			probe.itemsProcessed += pDesc->itemCount - mid;
+		}
+
+		ecs::SchedToken token{};
+		token.value[0] = probe.runParallelCalls;
+		token.value[1] = pDesc->itemCount;
+		return token;
+	}
+
+	static ecs::SchedToken add_task(void* pCtx, const ecs::SchedTaskDesc* pDesc) {
+		auto& probe = *(ExternalSchedProbe*)pCtx;
+		++probe.addTaskCalls;
+		probe.addedTasks[probe.addTaskCalls - 1] = *pDesc;
+
+		ecs::SchedToken token{};
+		token.value[0] = probe.addTaskCalls;
+		token.value[1] = 0;
+		return token;
+	}
+
+	static ecs::SchedToken add_parallel(void* pCtx, const ecs::SchedParDesc* pDesc) {
+		auto& probe = *(ExternalSchedProbe*)pCtx;
+		++probe.addParallelCalls;
+		probe.lastExecType = pDesc->execType;
+		probe.lastItemCount = pDesc->itemCount;
+		probe.lastGroupSize = pDesc->groupSize;
+		probe.addedParallel[probe.addParallelCalls - 1] = *pDesc;
+
+		ecs::SchedToken token{};
+		token.value[0] = probe.addParallelCalls;
+		token.value[1] = pDesc->itemCount;
+		return token;
+	}
+
+	static void submit(void* pCtx, ecs::SchedToken token) {
+		auto& probe = *(ExternalSchedProbe*)pCtx;
+		++probe.submitCalls;
+		if (token.value[1] == 0) {
+			auto& desc = probe.addedTasks[(uint32_t)token.value[0] - 1];
+			desc.invoke(desc.pCtx);
+			++probe.invokeCalls;
+			return;
+		}
+
+		auto& desc = probe.addedParallel[(uint32_t)token.value[0] - 1];
+		const auto mid = desc.itemCount > 1 ? desc.itemCount / 2 : desc.itemCount;
+		if (mid != 0) {
+			desc.invoke(desc.pCtx, 0, mid);
+			++probe.invokeCalls;
+			probe.itemsProcessed += mid;
+		}
+		if (mid < desc.itemCount) {
+			desc.invoke(desc.pCtx, mid, desc.itemCount);
+			++probe.invokeCalls;
+			probe.itemsProcessed += desc.itemCount - mid;
+		}
+	}
+
+	static void dep(void* pCtx, ecs::SchedToken tokenFirst, ecs::SchedToken tokenSecond) {
+		auto& probe = *(ExternalSchedProbe*)pCtx;
+		probe.depFirst[probe.depCalls] = tokenFirst;
+		probe.depSecond[probe.depCalls] = tokenSecond;
+		++probe.depCalls;
+	}
+
+	static void wait(void* pCtx, ecs::SchedToken) {
+		auto& probe = *(ExternalSchedProbe*)pCtx;
+		++probe.waitCalls;
+	}
+
+	static void del(void* pCtx, ecs::SchedToken) {
+		auto& probe = *(ExternalSchedProbe*)pCtx;
+		++probe.delCalls;
+	}
+
+	GAIA_NODISCARD ecs::Sched sched() {
+		ecs::Sched sched{};
+		sched.pCtx = this;
+		sched.sched_par = &ExternalSchedProbe::run_parallel;
+		sched.add = &ExternalSchedProbe::add_task;
+		sched.add_par = &ExternalSchedProbe::add_parallel;
+		sched.submit = &ExternalSchedProbe::submit;
+		sched.dep = &ExternalSchedProbe::dep;
+		sched.wait = &ExternalSchedProbe::wait;
+		sched.del = &ExternalSchedProbe::del;
+		return sched;
+	}
+};
+
+TEST_CASE("ECS - Query jobs use external scheduler wrappers") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 29;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<ExternalExecProbeComp>(e, {1});
+	}
+
+	uint32_t hitsA = 0;
+	uint32_t hitsB = 0;
+	auto queryA = wld.query().all<ExternalExecProbeComp>();
+	auto queryB = wld.query().all<ExternalExecProbeComp>();
+
+	auto jobA = queryA.job(
+			[&](ecs::Iter& it) {
+				hitsA += (uint32_t)it.entity_rows().size();
+			},
+			ecs::QueryExecType::Default);
+	auto jobB = queryB.job(
+			[&](ecs::Iter& it) {
+				hitsB += (uint32_t)it.entity_rows().size();
+			},
+			ecs::QueryExecType::Default);
+
+	CHECK(probe.addTaskCalls == 2);
+	CHECK(probe.addParallelCalls == 0);
+	CHECK(probe.submitCalls == 0);
+	CHECK(probe.waitCalls == 0);
+	CHECK(probe.delCalls == 0);
+	CHECK(hitsA == 0);
+	CHECK(hitsB == 0);
+
+	jobA.submit();
+	jobB.submit();
+	CHECK(probe.submitCalls == 2);
+	CHECK(hitsA == EntityCount);
+	CHECK(hitsB == EntityCount);
+
+	jobA.wait();
+	jobB.wait();
+	jobA.del();
+	jobB.del();
+
+	CHECK(probe.waitCalls == 2);
+	CHECK(probe.delCalls == 2);
+}
+
+TEST_CASE("ECS - Parallel query jobs add scheduler work without running it") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 31;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<ExternalExecProbeComp>(e, {1});
+	}
+
+	uint32_t hitsA = 0;
+	uint32_t hitsB = 0;
+	auto queryA = wld.query().all<ExternalExecProbeComp>();
+	auto queryB = wld.query().all<ExternalExecProbeComp>();
+
+	auto jobA = queryA.job(
+			[&](ecs::Iter& it) {
+				hitsA += (uint32_t)it.entity_rows().size();
+			},
+			ecs::QueryExecType::Parallel);
+	auto jobB = queryB.job(
+			[&](ecs::Iter& it) {
+				hitsB += (uint32_t)it.entity_rows().size();
+			},
+			ecs::QueryExecType::Parallel);
+
+	CHECK(probe.addTaskCalls == 0);
+	CHECK(probe.addParallelCalls == 2);
+	CHECK(probe.submitCalls == 0);
+	CHECK(probe.waitCalls == 0);
+	CHECK(probe.delCalls == 0);
+	CHECK(hitsA == 0);
+	CHECK(hitsB == 0);
+
+	jobB.dep(jobA);
+	CHECK(probe.depCalls == 1);
+
+	jobA.submit();
+	jobB.submit();
+	CHECK(probe.submitCalls == 2);
+	CHECK(hitsA == EntityCount);
+	CHECK(hitsB == EntityCount);
+
+	jobA.wait();
+	jobB.wait();
+	jobA.del();
+	jobB.del();
+
+	CHECK(probe.waitCalls == 2);
+	CHECK(probe.delCalls == 2);
+}
+
+TEST_CASE("ECS - Grouped parallel query jobs use scheduler task path") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	const auto groupRel = wld.add();
+	const auto selectedGroup = wld.add();
+	const auto otherGroup = wld.add();
+
+	constexpr uint32_t SelectedCount = 7;
+	constexpr uint32_t OtherCount = 5;
+	GAIA_FOR(SelectedCount) {
+		auto e = wld.add();
+		wld.add<ExternalExecProbeComp>(e, {1});
+		wld.add(e, ecs::Pair(groupRel, selectedGroup));
+	}
+	GAIA_FOR(OtherCount) {
+		auto e = wld.add();
+		wld.add<ExternalExecProbeComp>(e, {1});
+		wld.add(e, ecs::Pair(groupRel, otherGroup));
+	}
+
+	uint32_t hits = 0;
+	auto query = wld.query().all<ExternalExecProbeComp>().group_by(groupRel);
+	query.group_id(selectedGroup);
+	auto job = query.job(
+			[&](ecs::Iter& it) {
+				hits += (uint32_t)it.entity_rows().size();
+			},
+			ecs::QueryExecType::Parallel);
+
+	CHECK(probe.addTaskCalls == 1);
+	CHECK(probe.addParallelCalls == 0);
+	CHECK(probe.submitCalls == 0);
+	CHECK(hits == 0);
+
+	job.submit();
+	CHECK(probe.submitCalls == 1);
+	CHECK(probe.invokeCalls >= 1);
+	CHECK(hits == SelectedCount);
+
+	job.wait();
+	job.del();
+	CHECK(probe.waitCalls >= 1);
+	CHECK(probe.delCalls >= 1);
+}
+
+TEST_CASE("ECS - Typed query jobs add scheduler parallel work without blocking internally") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 27;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<ExternalExecProbeComp>(e, {1});
+	}
+
+	uint32_t hits = 0;
+	auto query = wld.query().all<ExternalExecProbeComp&>();
+	auto job = query.job(
+			[&](ExternalExecProbeComp& comp) {
+				++hits;
+				++comp.value;
+			},
+			ecs::QueryExecType::Parallel);
+
+	CHECK(probe.addTaskCalls == 0);
+	CHECK(probe.addParallelCalls == 1);
+	CHECK(probe.runParallelCalls == 0);
+	CHECK(probe.submitCalls == 0);
+	CHECK(hits == 0);
+
+	job.submit();
+	CHECK(probe.submitCalls == 1);
+	CHECK(probe.invokeCalls >= 1);
+	CHECK(hits == EntityCount);
+
+	job.wait();
+	uint32_t mutated = 0;
+	wld.query().all<const ExternalExecProbeComp>().each([&](const ExternalExecProbeComp& comp) {
+		CHECK(comp.value == 2);
+		++mutated;
+	});
+	CHECK(mutated == EntityCount);
+
+	job.del();
+	CHECK(probe.waitCalls == 1);
+	CHECK(probe.delCalls == 1);
+}
+
+TEST_CASE("ECS - System jobs use external scheduler wrappers") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 23;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<ExternalExecProbeComp>(e, {1});
+	}
+
+	uint32_t hits = 0;
+	auto sys = wld.system().all<ExternalExecProbeComp>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		hits += (uint32_t)it.entity_rows().size();
+	});
+
+	auto job = sys.job();
+	CHECK(probe.addTaskCalls == 0);
+	CHECK(probe.addParallelCalls == 1);
+	CHECK(probe.submitCalls == 0);
+	CHECK(hits == 0);
+
+	job.submit();
+	CHECK(probe.submitCalls == 1);
+	CHECK(hits == EntityCount);
+
+	job.wait();
+	job.del();
+	CHECK(probe.waitCalls == 1);
+	CHECK(probe.delCalls == 1);
+}
+
+TEST_CASE("ECS - Scheduler descriptors preserve background flags for external schedulers") {
+	ExternalSchedProbe probe;
+	const auto sched = probe.sched();
+
+	std::atomic_bool taskRan = false;
+	ecs::SchedTaskDesc taskDesc{};
+	taskDesc.pCtx = &taskRan;
+	taskDesc.invoke = [](void* pCtx) {
+		((std::atomic_bool*)pCtx)->store(true, std::memory_order_release);
+	};
+	taskDesc.execType = ecs::QueryExecType::Default;
+	taskDesc.flags = ecs::SchedFlags::Background;
+
+	auto taskJob = ecs::sched_add(sched, taskDesc, nullptr, nullptr);
+	CHECK(taskJob.valid());
+	CHECK(probe.addTaskCalls == 1);
+	CHECK(probe.addedTasks[0].flags == ecs::SchedFlags::Background);
+	CHECK(ecs::sched_flags_has(probe.addedTasks[0].flags, ecs::SchedFlags::Background));
+	CHECK_FALSE(taskRan.load(std::memory_order_acquire));
+
+	taskJob.submit();
+	CHECK(taskRan.load(std::memory_order_acquire));
+	taskJob.wait();
+	taskJob.del();
+
+	std::atomic_uint32_t items = 0;
+	ecs::SchedParDesc parDesc{};
+	parDesc.pCtx = &items;
+	parDesc.invoke = [](void* pCtx, uint32_t idxStart, uint32_t idxEnd) {
+		((std::atomic_uint32_t*)pCtx)->fetch_add(idxEnd - idxStart, std::memory_order_release);
+	};
+	parDesc.itemCount = 4;
+	parDesc.groupSize = 2;
+	parDesc.execType = ecs::QueryExecType::Parallel;
+	parDesc.flags = ecs::SchedFlags::Background;
+
+	auto parJob = ecs::sched_add_par(sched, parDesc, nullptr, nullptr);
+	CHECK(parJob.valid());
+	CHECK(probe.addParallelCalls == 1);
+	CHECK(probe.addedParallel[0].flags == ecs::SchedFlags::Background);
+	CHECK(ecs::sched_flags_has(probe.addedParallel[0].flags, ecs::SchedFlags::Background));
+	CHECK(items.load(std::memory_order_acquire) == 0);
+
+	parJob.submit();
+	CHECK(items.load(std::memory_order_acquire) == parDesc.itemCount);
+	parJob.wait();
+	parJob.del();
+
+	CHECK(probe.submitCalls == 2);
+	CHECK(probe.waitCalls == 2);
+	CHECK(probe.delCalls == 2);
+}
+
+TEST_CASE("ECS - Default scheduler routes background flags outside frame update") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+	tp.set_background_workers(1);
+
+	struct BackgroundSchedCtx {
+		std::atomic_bool release = false;
+		std::atomic_bool blockingStarted = false;
+		std::atomic_bool blockingDone = false;
+		std::atomic_bool blockingCtxOk = false;
+		std::atomic_bool queuedRan = false;
+		std::atomic_bool queuedCtxOk = false;
+	};
+
+	BackgroundSchedCtx ctx;
+	ecs::SchedTaskDesc blockingDesc{};
+	blockingDesc.pCtx = &ctx;
+	blockingDesc.invoke = [](void* pCtx) {
+		auto& ctx = *(BackgroundSchedCtx*)pCtx;
+		auto* workerCtx = mt::detail::tl_workerCtx;
+		ctx.blockingCtxOk.store(workerCtx != nullptr && workerCtx->background, std::memory_order_release);
+		ctx.blockingStarted.store(true, std::memory_order_release);
+		while (!ctx.release.load(std::memory_order_acquire))
+			std::this_thread::yield();
+		ctx.blockingDone.store(true, std::memory_order_release);
+	};
+	blockingDesc.flags = ecs::SchedFlags::Background;
+
+	auto blockingJob = ecs::sched_add(ecs::Sched{}, blockingDesc, nullptr, nullptr);
+	blockingJob.submit();
+
+	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+	while (!ctx.blockingStarted.load(std::memory_order_acquire) && std::chrono::steady_clock::now() < deadline)
+		std::this_thread::yield();
+
+	CHECK(ctx.blockingStarted.load(std::memory_order_acquire));
+	CHECK(ctx.blockingCtxOk.load(std::memory_order_acquire));
+
+	ecs::SchedTaskDesc queuedDesc{};
+	queuedDesc.pCtx = &ctx;
+	queuedDesc.invoke = [](void* pCtx) {
+		auto& ctx = *(BackgroundSchedCtx*)pCtx;
+		auto* workerCtx = mt::detail::tl_workerCtx;
+		ctx.queuedCtxOk.store(workerCtx != nullptr && workerCtx->background, std::memory_order_release);
+		ctx.queuedRan.store(true, std::memory_order_release);
+	};
+	queuedDesc.flags = ecs::SchedFlags::Background;
+
+	auto queuedJob = ecs::sched_add(ecs::Sched{}, queuedDesc, nullptr, nullptr);
+	queuedJob.submit();
+
+	std::atomic_bool frameRan = false;
+	mt::Job frameJob;
+	frameJob.flags = mt::JobCreationFlags::ManualDelete;
+	frameJob.func = [&]() {
+		frameRan.store(true, std::memory_order_release);
+	};
+
+	const auto frameHandle = tp.sched(GAIA_MOV(frameJob));
+	tp.wait(frameHandle);
+	tp.del(frameHandle);
+
+	GAIA_FOR(64) {
+		tp.update();
+		std::this_thread::yield();
+	}
+
+	CHECK(frameRan.load(std::memory_order_acquire));
+	CHECK_FALSE(ctx.blockingDone.load(std::memory_order_acquire));
+	CHECK_FALSE(ctx.queuedRan.load(std::memory_order_acquire));
+
+	ctx.release.store(true, std::memory_order_release);
+	blockingJob.wait();
+	queuedJob.wait();
+
+	CHECK(ctx.blockingDone.load(std::memory_order_acquire));
+	CHECK(ctx.queuedRan.load(std::memory_order_acquire));
+	CHECK(ctx.queuedCtxOk.load(std::memory_order_acquire));
+
+	blockingJob.del();
+	queuedJob.del();
+	tp.set_background_workers(0);
+}
+
+TEST_CASE("Multithreading - JobHandle") {
+	const mt::JobHandle defaultHandle;
+	CHECK(defaultHandle.id() == mt::JobHandle::IdMask);
+	CHECK(defaultHandle.gen() == mt::JobHandle::GenMask);
+	CHECK(defaultHandle.prio() == mt::JobHandle::PrioMask);
+	CHECK(defaultHandle == mt::JobNull);
+	CHECK_FALSE(defaultHandle != mt::JobNull);
+
+	const mt::JobHandle handle(123, 45, 1);
+	CHECK(handle.id() == 123);
+	CHECK(handle.gen() == 45);
+	CHECK(handle.prio() == 1);
+	CHECK(handle != defaultHandle);
+	CHECK(handle != mt::JobNull);
+	CHECK_FALSE(handle == mt::JobNull);
+
+	const mt::JobHandle handleFromValue((uint32_t)handle.value());
+	CHECK(handleFromValue == handle);
+	CHECK(handleFromValue.value() == handle.value());
+}
+
+TEST_CASE("Multithreading - Event") {
+	mt::Event event;
+	CHECK_FALSE(event.is_set());
+
+	event.set();
+	CHECK(event.is_set());
+	event.wait();
+	CHECK_FALSE(event.is_set());
+
+	std::atomic<bool> waiterStarted = false;
+	std::atomic<bool> waiterFinished = false;
+
+	std::thread waiter([&]() {
+		waiterStarted.store(true, std::memory_order_release);
+		event.wait();
+		waiterFinished.store(true, std::memory_order_release);
+	});
+
+	while (!waiterStarted.load(std::memory_order_acquire)) {
+	}
+	CHECK_FALSE(waiterFinished.load(std::memory_order_acquire));
+
+	event.set();
+	waiter.join();
+	CHECK(waiterFinished.load(std::memory_order_acquire));
+
+	event.reset();
+	CHECK_FALSE(event.is_set());
+}
+
+TEST_CASE("Multithreading - ScheduleParallelRef") {
+	auto& tp = mt::ThreadPool::get();
+	CHECK(mt::ThreadPool::hw_thread_cnt() >= 1);
+	CHECK(mt::ThreadPool::hw_efficiency_cores_cnt() <= mt::ThreadPool::hw_thread_cnt());
+
+	JobParallelRefProbe ctx;
+	mt::JobParallelRef jobRef{&ctx, &JobParallelRefProbe::invoke, mt::JobPriority::High};
+
+	tp.set_max_workers(0, 0);
+	CHECK(tp.workers() == 0);
+
+	auto handle = tp.sched_par(jobRef, 7, 16);
+	tp.wait(handle);
+	CHECK(ctx.items.load(std::memory_order_relaxed) == 7);
+	CHECK(ctx.batches.load(std::memory_order_relaxed) == 1);
+
+	ctx.items.store(0, std::memory_order_relaxed);
+	ctx.batches.store(0, std::memory_order_relaxed);
+
+	handle = tp.sched_par(jobRef, 25, 4);
+	tp.wait(handle);
+	CHECK(ctx.items.load(std::memory_order_relaxed) == 25);
+	CHECK(ctx.batches.load(std::memory_order_relaxed) > 1);
+
+	tp.set_max_workers(2, 2);
+	CHECK(tp.workers() == 1);
+
+	ctx.items.store(0, std::memory_order_relaxed);
+	ctx.batches.store(0, std::memory_order_relaxed);
+
+	handle = tp.sched_par(jobRef, 32, 0);
+	tp.wait(handle);
+	CHECK(ctx.items.load(std::memory_order_relaxed) == 32);
+	CHECK(ctx.batches.load(std::memory_order_relaxed) >= 1);
+}
+
+TEST_CASE("Multithreading - ScheduleParallel handles full uint32 range") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(0, 0);
+
+	std::atomic_uint32_t calls = 0;
+	std::atomic_uint32_t begin = 0;
+	std::atomic_uint32_t end = 0;
+	mt::JobParallel job;
+	job.func = [&](const mt::JobArgs& args) {
+		calls.fetch_add(1, std::memory_order_relaxed);
+		begin.store(args.idxStart, std::memory_order_relaxed);
+		end.store(args.idxEnd, std::memory_order_relaxed);
+	};
+
+	const auto max = std::numeric_limits<uint32_t>::max();
+	const auto handle = tp.sched_par(GAIA_MOV(job), max, max);
+	tp.wait(handle);
+
+	CHECK(calls.load(std::memory_order_relaxed) == 1);
+	CHECK(begin.load(std::memory_order_relaxed) == 0);
+	CHECK(end.load(std::memory_order_relaxed) == max);
+}
+
+TEST_CASE("Multithreading - ScheduleParallel without matching workers") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(1, 1);
+
+	std::atomic_uint32_t items = 0;
+	mt::JobParallel job;
+	job.priority = mt::JobPriority::Low;
+	job.func = [&](const mt::JobArgs& args) {
+		items.fetch_add(args.idxEnd - args.idxStart, std::memory_order_relaxed);
+	};
+
+	const auto handle = tp.sched_par(GAIA_MOV(job), 64, 0);
+	tp.wait(handle);
+
+	CHECK(items.load(std::memory_order_relaxed) == 64);
+}
+
+TEST_CASE("ECS - Query uses external scheduler") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 37;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<ExternalExecProbeComp>(e, {i});
+	}
+
+	uint32_t sum = 0;
+	auto q = wld.query().all<ExternalExecProbeComp>();
+	q.each(
+			[&](const ExternalExecProbeComp& comp) {
+				sum += comp.value;
+			},
+			ecs::QueryExecType::ParallelEff);
+
+	CHECK(probe.runParallelCalls == 1);
+	CHECK(probe.waitCalls == 1);
+	CHECK(probe.delCalls == 1);
+	CHECK(probe.invokeCalls >= 1);
+	CHECK(probe.itemsProcessed == probe.lastItemCount);
+	CHECK(probe.lastExecType == ecs::QueryExecType::ParallelEff);
+	CHECK(probe.lastItemCount >= 1);
+	CHECK(sum == (EntityCount - 1) * EntityCount / 2);
+}
+
+#if GAIA_OBSERVERS_ENABLED
+TEST_CASE("ECS - Parallel query writes notify OnSet observers on the caller thread") {
+	auto& tp = mt::ThreadPool::get();
+	const auto threads = tp.hw_thread_cnt();
+	tp.set_max_workers(threads, threads);
+
+	TestWorld twld;
+
+	// Enough entities to span many chunks. A small count fits into a single batch,
+	// the work never fans out, and the test would pass vacuously.
+	constexpr uint32_t EntityCount = 20000;
+
+	const auto mainThread = std::this_thread::get_id();
+	std::atomic_uint32_t observerCalls = 0;
+	std::atomic_uint32_t observerForeignThreadCalls = 0;
+
+	(void)wld.observer()
+			.event(ecs::ObserverEvent::OnSet)
+			.all<Position>()
+			.on_each([&](ecs::Entity, const Position&) {
+				observerCalls.fetch_add(1, std::memory_order_relaxed);
+				if (std::this_thread::get_id() != mainThread)
+					observerForeignThreadCalls.fetch_add(1, std::memory_order_relaxed);
+			})
+			.entity();
+
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<Position>(e, {float(i), 0.0F, 0.0F});
+		wld.add<Acceleration>(e, {1.0F, 2.0F, 3.0F});
+	}
+
+	observerCalls.store(0, std::memory_order_relaxed);
+	observerForeignThreadCalls.store(0, std::memory_order_relaxed);
+
+	auto q = wld.query().all<Position&>().all<const Acceleration>();
+	auto job = q.job(
+			[](ecs::Iter& it) {
+				auto pos = it.view_mut<Position>(0);
+				auto acc = it.view<Acceleration>(1);
+				GAIA_FOR_(it.size(), i) {
+					pos[i].x += acc[i].x;
+					pos[i].y += acc[i].y;
+				}
+			},
+			ecs::QueryExecType::Parallel);
+	job.submit();
+	job.wait();
+	job.del();
+
+	// Observers must fire exactly once per written entity and never from a worker thread.
+	CHECK(observerCalls.load(std::memory_order_relaxed) == EntityCount);
+	CHECK(observerForeignThreadCalls.load(std::memory_order_relaxed) == 0);
+
+	// The payload has to match what a serial run would have produced.
+	uint32_t rows = 0;
+	double sum = 0.0;
+	wld.query().all<const Position>().each([&](ecs::Iter& it) {
+		auto pos = it.view<Position>(0);
+		GAIA_FOR_(it.size(), i) {
+			++rows;
+			sum += (double)pos[i].x + (double)pos[i].y;
+		}
+	});
+	CHECK(rows == EntityCount);
+	CHECK(sum == doctest::Approx((double)EntityCount * (EntityCount - 1) / 2.0 + (double)EntityCount * 3.0));
+}
+#endif
+
+// Parallel writes bump component versions on worker threads. When a sorted query on the
+// written component is registered, that reaches QueryInfo::invalidate_sort
+// (Chunk::update_world_version -> world_invalidate_sorted_queries_for_entity) from every
+// worker concurrently - a non-atomic flag write that is a data race under TSan. This keeps
+// the scenario covered and asserts the cached sorted order stays valid after a parallel write.
+TEST_CASE("ECS - Parallel query writes keep sorted-query cache valid") {
+	auto& tp = mt::ThreadPool::get();
+	const auto threads = tp.hw_thread_cnt();
+	tp.set_max_workers(threads, threads);
+
+	TestWorld twld;
+
+	constexpr uint32_t EntityCount = 20000;
+
+	// Register a sorted query keyed by Position so the parallel write below reaches the
+	// sorted-query invalidation path (invalidate_sort) from worker threads.
+	const auto sortByX = []([[maybe_unused]] const ecs::World& world, const void* pData0, const void* pData1) {
+		const auto& p0 = *static_cast<const Position*>(pData0);
+		const auto& p1 = *static_cast<const Position*>(pData1);
+		return (p0.x < p1.x) ? -1 : ((p0.x > p1.x) ? 1 : 0);
+	};
+	auto qSorted = wld.query().all<Position>().sort_by<Position>(sortByX);
+	qSorted.fetch(); // compile and register into the query cache
+
+	// Start Pos.x descending so a correct ascending re-sort is distinguishable.
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<Position>(e, {float(EntityCount - 1 - i), 0.0F, 0.0F});
+		wld.add<Acceleration>(e, {1.0F, 2.0F, 3.0F});
+	}
+
+	// Parallel write that mutates Position across many chunks: worker threads bump component
+	// versions and invalidate the cached sorted slices concurrently with each other.
+	auto q = wld.query().all<Position&>().all<const Acceleration>();
+	auto job = q.job(
+			[](ecs::Iter& it) {
+				auto pos = it.view_mut<Position>(0);
+				auto acc = it.view<Acceleration>(1);
+				GAIA_FOR_(it.size(), i) {
+					pos[i].x += acc[i].x;
+					pos[i].y += acc[i].y;
+				}
+			},
+			ecs::QueryExecType::Parallel);
+	job.submit();
+	job.wait();
+	job.del();
+
+	// The cache must still yield strictly ascending Pos.x after the parallel write.
+	float prev = -std::numeric_limits<float>::max();
+	uint32_t rows = 0;
+	qSorted.each([&](ecs::Iter& it) {
+		auto pos = it.view<Position>(0);
+		GAIA_FOR_(it.size(), i) {
+			CHECK(pos[i].x >= prev);
+			prev = pos[i].x;
+			++rows;
+		}
+	});
+	CHECK(rows == EntityCount);
+}
+
+TEST_CASE("ECS - Systems use external scheduler") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 19;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<ExternalExecProbeComp>(e, {1});
+	}
+
+	uint32_t hits = 0;
+	wld.system()
+			.all<ExternalExecProbeComp>()
+			.mode(ecs::QueryExecType::Parallel)
+			.on_each([&](const ExternalExecProbeComp&) {
+				++hits;
+			});
+
+	wld.update();
+
+	CHECK(probe.runParallelCalls == 0);
+	CHECK(probe.addTaskCalls == 0);
+	CHECK(probe.addParallelCalls == 1);
+	CHECK(probe.submitCalls == 1);
+	CHECK(probe.waitCalls == 1);
+	CHECK(probe.delCalls == 1);
+	CHECK(probe.lastExecType == ecs::QueryExecType::Parallel);
+	CHECK(probe.itemsProcessed == probe.lastItemCount);
+	CHECK(probe.lastItemCount >= 1);
+	CHECK(hits == EntityCount);
+}
+
+TEST_CASE("ECS - System update wires parallel job dependencies from query access") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 17;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<Position>(e, {float(i), 0.0F, 0.0F});
+		wld.add<Acceleration>(e, {1.0F, 0.0F, 0.0F});
+	}
+
+	uint32_t posWritesA = 0;
+	uint32_t posWritesB = 0;
+	uint32_t accelReads = 0;
+	wld.system().all<Position&>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		posWritesA += (uint32_t)it.entity_rows().size();
+	});
+	wld.system().all<Position&>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		posWritesB += (uint32_t)it.entity_rows().size();
+	});
+	wld.system().all<const Acceleration>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		accelReads += (uint32_t)it.entity_rows().size();
+	});
+
+	wld.update();
+
+	CHECK(probe.addParallelCalls == 3);
+	CHECK(probe.submitCalls == 3);
+	CHECK(probe.waitCalls == 3);
+	CHECK(probe.delCalls == 3);
+	CHECK(probe.depCalls == 1);
+	CHECK(probe.depFirst[0].value[0] == 1);
+	CHECK(probe.depSecond[0].value[0] == 2);
+	CHECK(posWritesA == EntityCount);
+	CHECK(posWritesB == EntityCount);
+	CHECK(accelReads == EntityCount);
+}
+
+TEST_CASE("ECS - Presence-only system terms omit payload dependency edges") {
+	for (const bool presenceOnly: {false, true}) {
+		TestWorld twld;
+		ExternalSchedProbe probe;
+		wld.set_sched(probe.sched());
+		const auto entity = wld.add();
+		wld.add<Position>(entity, {1, 0, 0});
+		wld.add<Acceleration>(entity, {2, 0, 0});
+
+		auto reader = wld.system().all<Position&>().all<const Acceleration>().mode(ecs::QueryExecType::Parallel);
+		if (presenceOnly)
+			reader.no_access();
+		reader.on_each([](Position& position) {
+			position.x += 1;
+		});
+
+		wld.system().all<Acceleration&>().mode(ecs::QueryExecType::Parallel).on_each([](Acceleration& acceleration) {
+			acceleration.x += 1;
+		});
+
+		wld.update();
+		CHECK(probe.addParallelCalls == 2);
+		CHECK(probe.submitCalls == 2);
+		CHECK(probe.depCalls == (presenceOnly ? 0 : 1));
+		CHECK(wld.get<Position>(entity).x == 2);
+		CHECK(wld.get<Acceleration>(entity).x == 3);
+	}
+}
+
+TEST_CASE("ECS - Pair payload defaults determine scheduler dependency edges") {
+	for (const uint32_t mode: {0U, 1U, 2U}) {
+		TestWorld twld;
+		ExternalSchedProbe probe;
+		wld.set_sched(probe.sched());
+		const auto relation = mode == 0 ? wld.add<Empty>().entity : wld.add<Position>().entity;
+		const auto target = wld.add();
+		const auto pair = ecs::Pair(relation, target);
+		const auto entity = wld.add();
+		wld.add(entity, pair);
+		uint32_t readRows = 0;
+		uint32_t writeRows = 0;
+		auto read = wld.system().all(pair).mode(ecs::QueryExecType::Parallel);
+		if (mode == 2)
+			read.no_access();
+		read.on_each([&](ecs::Iter& it) {
+			readRows += it.size();
+		});
+		wld.system()
+				.all(pair, ecs::QueryTermOptions{}.write())
+				.mode(ecs::QueryExecType::Parallel)
+				.on_each([&](ecs::Iter& it) {
+					writeRows += it.size();
+				});
+		wld.update();
+		CHECK(probe.addParallelCalls == 2);
+		CHECK(probe.submitCalls == 2);
+		CHECK(probe.waitCalls == 2);
+		CHECK(probe.depCalls == (mode == 1 ? 1 : 0));
+		CHECK(readRows == 1);
+		CHECK(writeRows == 1);
+	}
+}
+
+TEST_CASE("ECS - Optional system payload access determines dependency edges") {
+	for (const auto access: {ecs::QueryAccess::Read, ecs::QueryAccess::Write, ecs::QueryAccess::Match}) {
+		TestWorld twld;
+		ExternalSchedProbe probe;
+		wld.set_sched(probe.sched());
+		const auto present = wld.add();
+		wld.add<Position>(present, {1, 0, 0});
+		wld.add<Acceleration>(present, {2, 0, 0});
+		const auto absent = wld.add();
+		wld.add<Position>(absent, {3, 0, 0});
+
+		uint32_t rows = 0;
+		float readValue = 0;
+		auto optional = wld.system().all<Position&>().mode(ecs::QueryExecType::Parallel);
+		if (access == ecs::QueryAccess::Write)
+			optional.any<Acceleration&>();
+		else
+			optional.any<const Acceleration>();
+		if (access == ecs::QueryAccess::Match)
+			optional.no_access();
+		optional.on_each([&](ecs::Iter& it) {
+			rows += it.size();
+			auto positions = it.view_mut<Position>();
+			GAIA_EACH(it) positions[i].x += 1;
+			if (access == ecs::QueryAccess::Match || !it.has<Acceleration>())
+				return;
+			if (access == ecs::QueryAccess::Write) {
+				auto values = it.view_mut<Acceleration>();
+				GAIA_EACH(it) values[i].x += 2;
+			} else {
+				auto values = it.view<Acceleration>();
+				GAIA_EACH(it) readValue += values[i].x;
+			}
+		});
+		wld.system().all<Acceleration&>().mode(ecs::QueryExecType::Parallel).on_each([](Acceleration& value) {
+			value.x += 1;
+		});
+
+		wld.update();
+		CHECK(probe.addParallelCalls == 2);
+		CHECK(probe.submitCalls == 2);
+		CHECK(probe.waitCalls == 2);
+		CHECK(probe.depCalls == (access == ecs::QueryAccess::Match ? 0 : 1));
+		if (access != ecs::QueryAccess::Match) {
+			CHECK(probe.depFirst[0].value[0] == 1);
+			CHECK(probe.depSecond[0].value[0] == 2);
+		}
+		CHECK(rows == 2);
+		CHECK(readValue == (access == ecs::QueryAccess::Read ? 2 : 0));
+		CHECK(wld.get<Position>(present).x == 2);
+		CHECK(wld.get<Position>(absent).x == 4);
+		CHECK(wld.get<Acceleration>(present).x == (access == ecs::QueryAccess::Write ? 5 : 3));
+		CHECK_FALSE(wld.has<Acceleration>(absent));
+	}
+}
+
+TEST_CASE("ECS - System update wires custom access dependencies") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 13;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<Position>(e, {float(i), 0.0F, 0.0F});
+	}
+
+	uint32_t writerHits = 0;
+	uint32_t readerHits = 0;
+	uint32_t independentHits = 0;
+	wld.system()
+			.all<const Position>()
+			.writes<Acceleration>()
+			.mode(ecs::QueryExecType::Parallel)
+			.on_each([&](ecs::Iter& it) {
+				writerHits += (uint32_t)it.entity_rows().size();
+			});
+	wld.system()
+			.all<const Position>()
+			.reads<Acceleration>()
+			.mode(ecs::QueryExecType::Parallel)
+			.on_each([&](ecs::Iter& it) {
+				readerHits += (uint32_t)it.entity_rows().size();
+			});
+	wld.system().all<const Position>().reads<Scale>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		independentHits += (uint32_t)it.entity_rows().size();
+	});
+
+	wld.update();
+
+	CHECK(probe.addParallelCalls == 3);
+	CHECK(probe.submitCalls == 3);
+	CHECK(probe.depCalls == 1);
+	CHECK(probe.depFirst[0].value[0] == 1);
+	CHECK(probe.depSecond[0].value[0] == 2);
+	CHECK(writerHits == EntityCount);
+	CHECK(readerHits == EntityCount);
+	CHECK(independentHits == EntityCount);
+}
+
+TEST_CASE("ECS - System update wires shared context resource dependencies") {
+	struct SharedContext {
+		uint32_t value = 0;
+	};
+
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 11;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<Position>(e, {float(i), 0.0F, 0.0F});
+	}
+
+	SharedContext context{};
+	const auto contextResource = wld.add();
+	uint32_t observed = 0;
+	wld.system()
+			.ctx(&context)
+			.all<const Position>()
+			.writes(contextResource)
+			.mode(ecs::QueryExecType::Parallel)
+			.on_each([](ecs::Iter& it) {
+				auto& ctx = *static_cast<SharedContext*>(it.ctx());
+				ctx.value += (uint32_t)it.entity_rows().size();
+			});
+	wld.system()
+			.ctx(&context)
+			.all<const Position>()
+			.reads(contextResource)
+			.mode(ecs::QueryExecType::Parallel)
+			.on_each([&](ecs::Iter& it) {
+				const auto& ctx = *static_cast<const SharedContext*>(it.ctx());
+				observed += ctx.value;
+			});
+
+	wld.update();
+
+	CHECK(probe.addParallelCalls == 2);
+	CHECK(probe.submitCalls == 2);
+	CHECK(probe.depCalls == 1);
+	CHECK(probe.depFirst[0].value[0] == 1);
+	CHECK(probe.depSecond[0].value[0] == 2);
+	CHECK(context.value == EntityCount);
+	CHECK(observed == EntityCount);
+}
+
+TEST_CASE("ECS - System update treats phase boundaries as depth-first job barriers") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 7;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<Position>(e, {float(i), 0.0F, 0.0F});
+		wld.add<Acceleration>(e, {1.0F, 0.0F, 0.0F});
+	}
+
+	const auto phaseA = wld.add();
+	const auto phaseB = wld.add();
+	wld.add(phaseB, {ecs::DependsOn, phaseA});
+
+	uint32_t phaseAHits = 0;
+	uint32_t phaseBHits = 0;
+	wld.system().phase(phaseA).all<Position&>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		CHECK(phaseBHits == EntityCount);
+		phaseAHits += (uint32_t)it.entity_rows().size();
+	});
+	wld.system().phase(phaseB).all<const Acceleration>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		CHECK(probe.submitCalls == 1);
+		CHECK(probe.waitCalls == 0);
+		CHECK(probe.delCalls == 0);
+		CHECK(phaseAHits == 0);
+		phaseBHits += (uint32_t)it.entity_rows().size();
+	});
+
+	wld.update();
+
+	CHECK(probe.addParallelCalls == 2);
+	CHECK(probe.submitCalls == 2);
+	CHECK(probe.waitCalls == 2);
+	CHECK(probe.delCalls == 2);
+	CHECK(probe.depCalls == 0);
+	CHECK(phaseAHits == EntityCount);
+	CHECK(phaseBHits == EntityCount);
+}
+
+TEST_CASE("ECS - systems_run(phase) prepares only that phase's scheduler jobs") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 7;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<Position>(e, {float(i), 0.0F, 0.0F});
+		wld.add<Acceleration>(e, {1.0F, 0.0F, 0.0F});
+	}
+
+	const auto phaseA = wld.add();
+	const auto phaseB = wld.add();
+	wld.add(phaseB, {ecs::DependsOn, phaseA});
+
+	uint32_t phaseAHits = 0;
+	uint32_t phaseBHits = 0;
+	wld.system().phase(phaseA).all<Position&>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		CHECK(phaseBHits == EntityCount);
+		phaseAHits += (uint32_t)it.entity_rows().size();
+	});
+	wld.system().phase(phaseB).all<const Acceleration>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		CHECK(phaseAHits == 0);
+		phaseBHits += (uint32_t)it.entity_rows().size();
+	});
+
+	wld.systems_run(phaseB);
+	CHECK(probe.addParallelCalls == 1);
+	CHECK(probe.submitCalls == 1);
+	CHECK(probe.waitCalls == 1);
+	CHECK(probe.delCalls == 1);
+	CHECK(phaseAHits == 0);
+	CHECK(phaseBHits == EntityCount);
+
+	wld.systems_run(phaseA);
+	CHECK(probe.addParallelCalls == 2);
+	CHECK(probe.submitCalls == 2);
+	CHECK(probe.waitCalls == 2);
+	CHECK(probe.delCalls == 2);
+	CHECK(phaseAHits == EntityCount);
+	CHECK(phaseBHits == EntityCount);
+}
+
+TEST_CASE("ECS - System update treats main-thread systems as job barriers") {
+	TestWorld twld;
+	ExternalSchedProbe probe;
+	wld.set_sched(probe.sched());
+
+	constexpr uint32_t EntityCount = 11;
+	GAIA_FOR(EntityCount) {
+		auto e = wld.add();
+		wld.add<Position>(e, {float(i), 0.0F, 0.0F});
+		wld.add<Acceleration>(e, {1.0F, 0.0F, 0.0F});
+	}
+
+	uint32_t beforeHits = 0;
+	uint32_t mainHits = 0;
+	uint32_t afterHits = 0;
+	wld.system().all<Position&>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		beforeHits += (uint32_t)it.entity_rows().size();
+	});
+	wld.system().all<const Position>().main_thread().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		mainHits += (uint32_t)it.entity_rows().size();
+		CHECK(probe.submitCalls == 1);
+		CHECK(probe.waitCalls == 1);
+		CHECK(probe.delCalls == 1);
+	});
+	wld.system().all<const Acceleration>().mode(ecs::QueryExecType::Parallel).on_each([&](ecs::Iter& it) {
+		afterHits += (uint32_t)it.entity_rows().size();
+	});
+
+	wld.update();
+
+	CHECK(probe.addParallelCalls == 2);
+	CHECK(probe.submitCalls == 2);
+	CHECK(probe.waitCalls == 3);
+	CHECK(probe.delCalls == 3);
+	CHECK(probe.depCalls == 0);
+	CHECK(beforeHits == EntityCount);
+	CHECK(mainHits == EntityCount);
+	CHECK(afterHits == EntityCount);
+}
+
+template <typename TQueue>
+void TestJobQueue_PushPopSteal(bool reverse) {
+	mt::JobHandle handle;
+	TQueue q;
+	bool res;
+
+	for (uint32_t i = 0; i < 5; ++i) {
+		CHECK(q.empty());
+		res = q.try_push(mt::JobHandle(1, 0, 0));
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+		res = q.try_push(mt::JobHandle(2, 0, 0));
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+		res = q.try_push(mt::JobHandle(3, 0, 0));
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+
+		res = q.try_pop(handle);
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+		res = q.try_pop(handle);
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+		res = q.try_pop(handle);
+		CHECK(res);
+		CHECK(q.empty());
+		res = q.try_pop(handle);
+		CHECK_FALSE(res);
+		CHECK(q.empty());
+		res = q.try_pop(handle);
+		CHECK_FALSE(res);
+		CHECK(q.empty());
+		res = q.try_pop(handle);
+		CHECK_FALSE(res);
+		CHECK(q.empty());
+	}
+
+	{
+		mt::JobHandle handles[3] = {mt::JobHandle(1, 0, 0), mt::JobHandle(2, 0, 0), mt::JobHandle(3, 0, 0)};
+		res = q.try_push(std::span(handles, 3));
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+
+		res = q.try_pop(handle);
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+		res = q.try_pop(handle);
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+		res = q.try_pop(handle);
+		CHECK(res);
+		CHECK(q.empty());
+		res = q.try_pop(handle);
+		CHECK_FALSE(res);
+		CHECK(q.empty());
+		res = q.try_pop(handle);
+		CHECK_FALSE(res);
+		CHECK(q.empty());
+		res = q.try_pop(handle);
+		CHECK_FALSE(res);
+		CHECK(q.empty());
+	}
+
+	{
+		CHECK(q.empty());
+		(void)q.try_push(mt::JobHandle(1, 0, 0));
+		CHECK_FALSE(q.empty());
+		(void)q.try_push(mt::JobHandle(2, 0, 0));
+		CHECK_FALSE(q.empty());
+
+		res = q.try_pop(handle);
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+		if (reverse)
+			CHECK(handle.id() == 1);
+		else
+			CHECK(handle.id() == 2);
+
+		res = q.try_pop(handle);
+		CHECK(res);
+		CHECK(q.empty());
+		if (reverse)
+			CHECK(handle.id() == 2);
+		else
+			CHECK(handle.id() == 1);
+
+		res = q.try_pop(handle);
+		CHECK_FALSE(res);
+		CHECK(q.empty());
+	}
+
+	{
+		(void)q.try_push(mt::JobHandle(1, 0, 0));
+		CHECK_FALSE(q.empty());
+		(void)q.try_push(mt::JobHandle(2, 0, 0));
+		CHECK_FALSE(q.empty());
+
+		res = q.try_steal(handle);
+		CHECK(res);
+		CHECK_FALSE(q.empty());
+		if (reverse)
+			CHECK(handle.id() == 2);
+		else
+			CHECK(handle.id() == 1);
+
+		res = q.try_steal(handle);
+		CHECK(res);
+		CHECK(q.empty());
+		if (reverse)
+			CHECK(handle.id() == 1);
+		else
+			CHECK(handle.id() == 2);
+
+		res = q.try_steal(handle);
+		CHECK(res);
+		CHECK(handle == (mt::JobHandle)mt::JobNull_t{});
+		CHECK(q.empty());
+	}
+}
+
+template <typename TQueue>
+void TestJobQueue_PushPop(bool reverse) {
+	mt::JobHandle handle;
+	TQueue q;
+
+	{
+		q.try_push(mt::JobHandle(1, 0, 0));
+		q.try_push(mt::JobHandle(2, 0, 0));
+
+		auto res = q.try_pop(handle);
+		CHECK(res);
+		if (reverse)
+			CHECK(handle.id() == 1);
+		else
+			CHECK(handle.id() == 2);
+
+		res = q.try_pop(handle);
+		CHECK(res);
+		if (reverse)
+			CHECK(handle.id() == 2);
+		else
+			CHECK(handle.id() == 1);
+
+		res = q.try_pop(handle);
+		CHECK_FALSE(res);
+	}
+}
+
+constexpr uint32_t JobQueueMTTesterItems = 500;
+
+template <typename TQueue>
+struct JobQueueMTTester_PushPopSteal {
+	using QueueType = TQueue;
+
+	TQueue* q;
+	std::atomic_bool* terminate;
+	uint32_t thread_idx;
+
+	std::thread t;
+	uint32_t processed = 0;
+
+	JobQueueMTTester_PushPopSteal(TQueue* q_, std::atomic_bool* terminate_, uint32_t idx):
+			q(q_), terminate(terminate_), thread_idx(idx) {}
+	JobQueueMTTester_PushPopSteal() = default;
+
+	void init() {
+		processed = 0;
+		t = std::thread([this]() {
+			run();
+		});
+	}
+
+	void fini() {
+		if (t.joinable())
+			t.join();
+	}
+
+	void run() {
+		mt::JobHandle handle;
+
+		if (0 == thread_idx) {
+			rnd::pseudo_random rng{};
+			uint32_t itemsToInsert = JobQueueMTTesterItems;
+
+			// This thread generates 2 items per tick and consumes one
+			while (itemsToInsert > 0) {
+				// Keep inserting items
+				if (!q->try_push(mt::JobHandle(itemsToInsert, 0, 0))) {
+					std::this_thread::yield();
+					continue;
+				}
+
+				--itemsToInsert;
+
+				if (rng.range(0, 1) == 0)
+					std::this_thread::yield();
+
+				if (!q->try_pop(handle))
+					std::this_thread::yield();
+				else
+					++processed;
+			}
+
+			// Make sure all items are consumed
+			while (!q->empty())
+				std::this_thread::yield();
+			terminate->store(true, std::memory_order_release);
+		} else {
+			while (!terminate->load(std::memory_order_acquire)) {
+				// Other threads steal work
+				const bool res = q->try_steal(handle);
+
+				// Failed race, try again
+				if (!res)
+					continue;
+
+				// Empty queue, wait a bit and try again
+				if (res && handle == (mt::JobHandle)mt::JobNull_t{}) {
+					std::this_thread::yield();
+					continue;
+				}
+
+				// Processed
+				++processed;
+			}
+		}
+	}
+};
+
+template <typename TQueue>
+struct JobQueueMTTester_PushPop {
+	using QueueType = TQueue;
+
+	TQueue* q;
+	std::atomic_bool* terminate;
+	uint32_t thread_idx;
+
+	std::thread t;
+	uint32_t processed = 0;
+
+	JobQueueMTTester_PushPop(TQueue* q_, std::atomic_bool* terminate_, uint32_t idx):
+			q(q_), terminate(terminate_), thread_idx(idx) {}
+	JobQueueMTTester_PushPop() = default;
+
+	void init() {
+		processed = 0;
+		t = std::thread([this]() {
+			run();
+		});
+	}
+
+	void fini() {
+		if (t.joinable())
+			t.join();
+	}
+
+	void run() {
+		mt::JobHandle handle;
+
+		if (0 == thread_idx) {
+			rnd::pseudo_random rng{};
+			uint32_t itemsToInsert = JobQueueMTTesterItems;
+
+			// This thread generates 2 items per tick and consumes one
+			while (itemsToInsert > 0) {
+				// Keep inserting items
+				if (!q->try_push(mt::JobHandle(itemsToInsert, 0, 0))) {
+					std::this_thread::yield();
+					continue;
+				}
+
+				--itemsToInsert;
+
+				if (rng.range(0, 1) == 0)
+					std::this_thread::yield();
+
+				if (!q->try_pop(handle))
+					std::this_thread::yield();
+				else
+					++processed;
+			}
+
+			// Make sure all items are consumed
+			while (!q->empty())
+				std::this_thread::yield();
+			terminate->store(true, std::memory_order_release);
+		} else {
+			while (!terminate->load(std::memory_order_acquire)) {
+				// Other threads steal work
+				if (!q->try_pop(handle)) {
+					std::this_thread::yield();
+					continue;
+				}
+
+				++processed;
+			}
+		}
+	}
+};
+
+template <typename TTestType>
+void TestJobQueueMT(uint32_t threadCnt) {
+	CHECK(threadCnt > 1);
+
+	typename TTestType::QueueType q;
+	std::atomic_bool terminate = false;
+	cnt::darray<TTestType> testers;
+	GAIA_FOR(threadCnt) testers.push_back(TTestType(&q, &terminate, i));
+
+	GAIA_FOR_(100, j) {
+		GAIA_FOR(threadCnt) testers[i].init();
+		GAIA_FOR(threadCnt) testers[i].fini();
+		uint32_t total = 0;
+		GAIA_FOR(threadCnt) {
+			total += testers[i].processed;
+		}
+		CHECK(total == JobQueueMTTesterItems);
+		terminate = false;
+	}
+}
+
+TEST_CASE("JobQueue") {
+	using jc = mt::JobQueue<1024>;
+	using mpmc = mt::MpmcQueue<mt::JobHandle, 1024>;
+
+	SUBCASE("Basic") {
+		TestJobQueue_PushPopSteal<jc>(false);
+		TestJobQueue_PushPop<mpmc>(true);
+	}
+
+	using mt_tester_jc = JobQueueMTTester_PushPopSteal<jc>;
+	using mt_tester_mpmc = JobQueueMTTester_PushPop<mpmc>;
+
+	SUBCASE("MT - 2 threads") {
+		TestJobQueueMT<mt_tester_jc>(2);
+		TestJobQueueMT<mt_tester_mpmc>(2);
+	}
+
+	SUBCASE("MT - 4 threads") {
+		TestJobQueueMT<mt_tester_jc>(4);
+		TestJobQueueMT<mt_tester_mpmc>(4);
+	}
+
+	SUBCASE("MT - 16 threads") {
+		TestJobQueueMT<mt_tester_jc>(16);
+		TestJobQueueMT<mt_tester_mpmc>(16);
+	}
+}
+
+static uint32_t JobSystemFunc(std::span<const uint32_t> arr) {
+	uint32_t sum = 0;
+	GAIA_EACH(arr) sum += arr[i];
+	return sum;
+}
+
+template <typename Func>
+void Run_Schedule_Simple(
+		const uint32_t* pArr, uint32_t* pRes, uint32_t jobCnt, uint32_t ItemsPerJob, Func func, uint32_t depCnt) {
+	auto& tp = mt::ThreadPool::get();
+	std::atomic_uint32_t cnt = 0;
+
+	auto* pHandles = (mt::JobHandle*)alloca(sizeof(mt::JobHandle) * jobCnt);
+	GAIA_FOR(jobCnt) {
+		mt::Job job;
+		job.func = [&, i, func]() {
+			const auto idxStart = i * ItemsPerJob;
+			const auto idxEnd = (i + 1) * ItemsPerJob;
+			pRes[i] += func({pArr + idxStart, idxEnd - idxStart});
+			cnt.fetch_add(1, std::memory_order_relaxed);
+		};
+		pHandles[i] = tp.add(GAIA_MOV(job));
+	}
+
+	auto* pDepHandles = (mt::JobHandle*)alloca(sizeof(mt::JobHandle) * depCnt);
+	GAIA_FOR(depCnt) {
+		mt::Job dependencyJob;
+		dependencyJob.func = [&]() {
+			const bool isLast = cnt.load(std::memory_order_acquire) == jobCnt;
+			CHECK(isLast);
+		};
+		pDepHandles[i] = tp.add(GAIA_MOV(dependencyJob));
+		tp.dep(std::span(pHandles, jobCnt), pDepHandles[i]);
+		tp.submit(pDepHandles[i]);
+	}
+
+	tp.submit(std::span(pHandles, jobCnt));
+
+	GAIA_FOR(depCnt) {
+		tp.wait(pDepHandles[i]);
+	}
+
+	GAIA_FOR(jobCnt) CHECK(pRes[i] == ItemsPerJob);
+	CHECK(cnt == jobCnt);
+}
+
+TEST_CASE("Multithreading - Schedule") {
+	auto& tp = mt::ThreadPool::get();
+
+	constexpr uint32_t JobCount = 64;
+	constexpr uint32_t ItemsPerJob = 5000;
+	constexpr uint32_t N = JobCount * ItemsPerJob;
+
+	cnt::sarray<uint32_t, JobCount> res;
+
+	cnt::darr<uint32_t> arr;
+	arr.resize(N);
+	GAIA_EACH(arr) arr[i] = 1;
+
+	SUBCASE("Max workers") {
+		const auto threads = tp.hw_thread_cnt();
+		tp.set_max_workers(threads, threads);
+
+		GAIA_FOR(res.max_size()) res[i] = 0;
+		Run_Schedule_Simple(arr.data(), res.data(), JobCount, ItemsPerJob, JobSystemFunc, 1);
+	}
+	SUBCASE("Max workers Deps2") {
+		const auto threads = tp.hw_thread_cnt();
+		tp.set_max_workers(threads, threads);
+
+		GAIA_FOR(res.max_size()) res[i] = 0;
+		Run_Schedule_Simple(arr.data(), res.data(), JobCount, ItemsPerJob, JobSystemFunc, 2);
+	}
+	SUBCASE("Max workers Deps3") {
+		const auto threads = tp.hw_thread_cnt();
+		tp.set_max_workers(threads, threads);
+
+		GAIA_FOR(res.max_size()) res[i] = 0;
+		Run_Schedule_Simple(arr.data(), res.data(), JobCount, ItemsPerJob, JobSystemFunc, 3);
+	}
+	SUBCASE("Max workers Deps4") {
+		const auto threads = tp.hw_thread_cnt();
+		tp.set_max_workers(threads, threads);
+
+		GAIA_FOR(res.max_size()) res[i] = 0;
+		Run_Schedule_Simple(arr.data(), res.data(), JobCount, ItemsPerJob, JobSystemFunc, 4);
+	}
+	SUBCASE("0 workers") {
+		tp.set_max_workers(0, 0);
+
+		GAIA_FOR(res.max_size()) res[i] = 0;
+		Run_Schedule_Simple(arr.data(), res.data(), JobCount, ItemsPerJob, JobSystemFunc, 1);
+	}
+	SUBCASE("0 workers Deps2") {
+		tp.set_max_workers(0, 0);
+
+		GAIA_FOR(res.max_size()) res[i] = 0;
+		Run_Schedule_Simple(arr.data(), res.data(), JobCount, ItemsPerJob, JobSystemFunc, 2);
+	}
+	SUBCASE("0 workers Deps3") {
+		tp.set_max_workers(0, 0);
+
+		GAIA_FOR(res.max_size()) res[i] = 0;
+		Run_Schedule_Simple(arr.data(), res.data(), JobCount, ItemsPerJob, JobSystemFunc, 3);
+	}
+	SUBCASE("0 workers Deps4") {
+		tp.set_max_workers(0, 0);
+
+		GAIA_FOR(res.max_size()) res[i] = 0;
+		Run_Schedule_Simple(arr.data(), res.data(), JobCount, ItemsPerJob, JobSystemFunc, 4);
+	}
+}
+
+TEST_CASE("Multithreading - Priority dependent jobs keep queue ownership") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(3, 1);
+
+	std::atomic_bool highRanOnHighWorker = false;
+	std::atomic_bool lowRanOnLowWorker = false;
+	std::atomic_bool lowDone = false;
+
+	mt::Job highJob;
+	highJob.flags = mt::JobCreationFlags::ManualDelete;
+	highJob.priority = mt::JobPriority::High;
+	highJob.func = [&]() {
+		auto* ctx = mt::detail::tl_workerCtx;
+		highRanOnHighWorker.store(
+				ctx != nullptr && ctx->workerIdx != 0 && ctx->prio == mt::JobPriority::High, std::memory_order_release);
+	};
+
+	mt::Job lowJob;
+	lowJob.flags = mt::JobCreationFlags::ManualDelete;
+	lowJob.priority = mt::JobPriority::Low;
+	lowJob.func = [&]() {
+		auto* ctx = mt::detail::tl_workerCtx;
+		lowRanOnLowWorker.store(
+				ctx != nullptr && ctx->workerIdx != 0 && ctx->prio == mt::JobPriority::Low, std::memory_order_release);
+		lowDone.store(true, std::memory_order_release);
+	};
+
+	const auto highHandle = tp.add(GAIA_MOV(highJob));
+	const auto lowHandle = tp.add(GAIA_MOV(lowJob));
+	tp.dep(highHandle, lowHandle);
+	tp.submit(lowHandle);
+	tp.submit(highHandle);
+
+	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+	while (!lowDone.load(std::memory_order_acquire) && std::chrono::steady_clock::now() < deadline)
+		std::this_thread::yield();
+
+	CHECK(highRanOnHighWorker.load(std::memory_order_acquire));
+	CHECK(lowDone.load(std::memory_order_acquire));
+	CHECK(lowRanOnLowWorker.load(std::memory_order_acquire));
+
+	tp.wait(lowHandle);
+	tp.del(lowHandle);
+	tp.del(highHandle);
+}
+
+TEST_CASE("Multithreading - Priority overflow does not inline cross-priority work") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(3, 1);
+
+	constexpr uint32_t LowJobs = 1536;
+
+	std::atomic_bool releaseLowJobs = false;
+	std::atomic_bool lowRanOnHighWorker = false;
+	std::atomic_uint32_t lowStarted = 0;
+
+	mt::Job highJob;
+	highJob.flags = mt::JobCreationFlags::ManualDelete;
+	highJob.priority = mt::JobPriority::High;
+	highJob.func = []() {};
+
+	const auto highHandle = tp.add(GAIA_MOV(highJob));
+
+	cnt::darr<mt::JobHandle> lowHandles;
+	lowHandles.resize(LowJobs);
+
+	GAIA_FOR(LowJobs) {
+		mt::Job lowJob;
+		lowJob.flags = mt::JobCreationFlags::ManualDelete;
+		lowJob.priority = mt::JobPriority::Low;
+		lowJob.func = [&]() {
+			auto* ctx = mt::detail::tl_workerCtx;
+			if (ctx != nullptr && ctx->workerIdx != 0 && ctx->prio == mt::JobPriority::High)
+				lowRanOnHighWorker.store(true, std::memory_order_release);
+
+			lowStarted.fetch_add(1, std::memory_order_release);
+			while (!releaseLowJobs.load(std::memory_order_acquire))
+				std::this_thread::yield();
+		};
+
+		lowHandles[i] = tp.add(GAIA_MOV(lowJob));
+		tp.dep(highHandle, lowHandles[i]);
+		tp.submit(lowHandles[i]);
+	}
+
+	tp.submit(highHandle);
+
+	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+	while (lowStarted.load(std::memory_order_acquire) == 0 && std::chrono::steady_clock::now() < deadline)
+		std::this_thread::yield();
+
+	CHECK(lowStarted.load(std::memory_order_acquire) > 0);
+
+	// Give the releasing worker enough time to hit the full low-priority queue path.
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+	CHECK_FALSE(lowRanOnHighWorker.load(std::memory_order_acquire));
+
+	releaseLowJobs.store(true, std::memory_order_release);
+
+	GAIA_EACH(lowHandles) {
+		tp.wait(lowHandles[i]);
+		tp.del(lowHandles[i]);
+	}
+	tp.del(highHandle);
+}
+
+TEST_CASE("Multithreading - Background jobs are isolated from frame update") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+	tp.set_background_workers(1);
+	CHECK(tp.workers() == 1);
+	CHECK(tp.background_workers() == 1);
+
+	std::atomic_bool releaseBackground = false;
+	std::atomic_bool backgroundStarted = false;
+	std::atomic_bool backgroundDone = false;
+	std::atomic_bool backgroundCtxOk = false;
+	std::atomic_bool queuedBackgroundRan = false;
+	std::atomic_bool queuedBackgroundCtxOk = false;
+	std::atomic_bool frameDone = false;
+	std::atomic_bool frameCtxOk = false;
+
+	mt::Job backgroundJob;
+	backgroundJob.flags = mt::JobCreationFlags::ManualDelete;
+	backgroundJob.func = [&]() {
+		auto* ctx = mt::detail::tl_workerCtx;
+		backgroundCtxOk.store(ctx != nullptr && ctx->background, std::memory_order_release);
+		backgroundStarted.store(true, std::memory_order_release);
+		while (!releaseBackground.load(std::memory_order_acquire))
+			std::this_thread::yield();
+		backgroundDone.store(true, std::memory_order_release);
+	};
+
+	const auto backgroundHandle = tp.sched_background(GAIA_MOV(backgroundJob));
+
+	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+	while (!backgroundStarted.load(std::memory_order_acquire) && std::chrono::steady_clock::now() < deadline)
+		std::this_thread::yield();
+
+	CHECK(backgroundStarted.load(std::memory_order_acquire));
+	CHECK(backgroundCtxOk.load(std::memory_order_acquire));
+
+	mt::Job queuedBackgroundJob;
+	queuedBackgroundJob.flags = mt::JobCreationFlags::ManualDelete;
+	queuedBackgroundJob.func = [&]() {
+		auto* ctx = mt::detail::tl_workerCtx;
+		queuedBackgroundCtxOk.store(ctx != nullptr && ctx->background, std::memory_order_release);
+		queuedBackgroundRan.store(true, std::memory_order_release);
+	};
+
+	const auto queuedBackgroundHandle = tp.sched_background(GAIA_MOV(queuedBackgroundJob));
+
+	mt::Job frameJob;
+	frameJob.flags = mt::JobCreationFlags::ManualDelete;
+	frameJob.func = [&]() {
+		auto* ctx = mt::detail::tl_workerCtx;
+		frameCtxOk.store(ctx != nullptr && !ctx->background, std::memory_order_release);
+		frameDone.store(true, std::memory_order_release);
+	};
+
+	const auto frameHandle = tp.sched(GAIA_MOV(frameJob));
+	tp.wait(frameHandle);
+	tp.del(frameHandle);
+
+	GAIA_FOR(64) {
+		tp.update();
+		std::this_thread::yield();
+	}
+
+	CHECK(frameDone.load(std::memory_order_acquire));
+	CHECK(frameCtxOk.load(std::memory_order_acquire));
+	CHECK_FALSE(backgroundDone.load(std::memory_order_acquire));
+	CHECK_FALSE(queuedBackgroundRan.load(std::memory_order_acquire));
+
+	releaseBackground.store(true, std::memory_order_release);
+	tp.wait(backgroundHandle);
+	tp.wait(queuedBackgroundHandle);
+
+	CHECK(backgroundDone.load(std::memory_order_acquire));
+	CHECK(queuedBackgroundRan.load(std::memory_order_acquire));
+	CHECK(queuedBackgroundCtxOk.load(std::memory_order_acquire));
+
+	tp.del(backgroundHandle);
+	tp.del(queuedBackgroundHandle);
+	tp.set_background_workers(0);
+}
+
+TEST_CASE("Multithreading - Background wait runs without background workers") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(1, 1);
+	tp.set_background_workers(0);
+
+	std::atomic_bool backgroundRan = false;
+
+	mt::Job backgroundJob;
+	backgroundJob.flags = mt::JobCreationFlags::ManualDelete;
+	backgroundJob.func = [&]() {
+		backgroundRan.store(true, std::memory_order_release);
+	};
+
+	const auto backgroundHandle = tp.sched_background(GAIA_MOV(backgroundJob));
+	GAIA_FOR(16)
+	tp.update();
+
+	CHECK_FALSE(backgroundRan.load(std::memory_order_acquire));
+
+	tp.wait(backgroundHandle);
+	CHECK(backgroundRan.load(std::memory_order_acquire));
+	tp.del(backgroundHandle);
+}
+
+TEST_CASE("Multithreading - done polls a background job without waiting") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+	tp.set_background_workers(1);
+
+	std::atomic_bool releaseBackground = false;
+	// Plain memory the job writes: done() must make it visible to the main thread.
+	uint32_t result = 0;
+
+	mt::Job backgroundJob;
+	backgroundJob.flags = mt::JobCreationFlags::ManualDelete;
+	backgroundJob.func = [&]() {
+		while (!releaseBackground.load(std::memory_order_acquire))
+			std::this_thread::yield();
+		result = 42;
+	};
+
+	const auto backgroundHandle = tp.sched_background(GAIA_MOV(backgroundJob));
+	GAIA_FOR(16) {
+		CHECK_FALSE(tp.done(backgroundHandle));
+		tp.update();
+	}
+
+	releaseBackground.store(true, std::memory_order_release);
+	const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+	bool finished = false;
+	while (!(finished = tp.done(backgroundHandle)) && std::chrono::steady_clock::now() < deadline)
+		std::this_thread::yield();
+
+	CHECK(finished);
+	CHECK(result == 42);
+	// A finished job stays done until it is deleted.
+	CHECK(tp.done(backgroundHandle));
+
+	tp.wait(backgroundHandle);
+	tp.del(backgroundHandle);
+	tp.set_background_workers(0);
+}
+
+TEST_CASE("Multithreading - ScheduleParallel") {
+	auto& tp = mt::ThreadPool::get();
+
+	constexpr uint32_t JobCount = 64;
+	constexpr uint32_t ItemsPerJob = 5000;
+	constexpr uint32_t N = JobCount * ItemsPerJob;
+
+	cnt::darr<uint32_t> arr;
+	arr.resize(N);
+	GAIA_EACH(arr) arr[i] = 1;
+
+	std::atomic_uint32_t sum1 = 0;
+
+	auto work = [&]() {
+		mt::JobParallel j;
+		j.func = [&arr, &sum1](const mt::JobArgs& args) {
+			sum1 += JobSystemFunc({arr.data() + args.idxStart, args.idxEnd - args.idxStart});
+		};
+
+		auto jobHandle = tp.sched_par(GAIA_MOV(j), N, ItemsPerJob);
+		tp.wait(jobHandle);
+		CHECK(sum1 == N);
+	};
+
+	SUBCASE("Max workers") {
+		const auto threads = tp.hw_thread_cnt();
+		tp.set_max_workers(threads, threads);
+
+		work();
+	}
+	SUBCASE("0 workers") {
+		tp.set_max_workers(0, 0);
+
+		work();
+	}
+}
+
+TEST_CASE("Multithreading - complete") {
+	auto& tp = mt::ThreadPool::get();
+
+	constexpr uint32_t Jobs = 15000;
+
+	cnt::darr<mt::JobHandle> handles;
+	cnt::darr<uint32_t> res;
+
+	handles.resize(Jobs);
+	res.resize(Jobs);
+
+	std::atomic_uint32_t cnt = 0;
+
+	auto work = [&]() {
+		GAIA_EACH(res) res[i] = BadIndex;
+
+		GAIA_FOR(Jobs) {
+			mt::Job job;
+			job.flags = mt::JobCreationFlags::ManualDelete;
+			job.func = [&, i]() {
+				res[i] = i;
+				++cnt;
+			};
+			handles[i] = tp.add(GAIA_MOV(job));
+		}
+
+		tp.submit(std::span(handles.data(), handles.size()));
+
+		GAIA_FOR(Jobs) {
+			tp.wait(handles[i]);
+			CHECK(res[i] == i);
+			tp.del(handles[i]);
+		}
+
+		CHECK(cnt == Jobs);
+	};
+
+	SUBCASE("Max workers") {
+		const auto threads = tp.hw_thread_cnt();
+		tp.set_max_workers(threads, threads);
+
+		work();
+	}
+	SUBCASE("0 workers") {
+		tp.set_max_workers(0, 0);
+
+		work();
+	}
+}
+
+TEST_CASE("Multithreading - CompleteMany") {
+	auto& tp = mt::ThreadPool::get();
+
+	constexpr uint32_t Iters = 15000;
+
+	auto work = [&]() {
+		srand(0);
+		uint32_t res = BadIndex;
+
+		GAIA_FOR(Iters) {
+			mt::Job job0{[&res, i]() {
+				res = (i + 1);
+			}};
+			mt::Job job1{[&res, i]() {
+				res *= (i + 1);
+			}};
+			mt::Job job2{[&res, i]() {
+				res /= (i + 1); // we add +1 everywhere to avoid division by zero at i==0
+			}};
+
+			const mt::JobHandle jobHandle[] = {tp.add(GAIA_MOV(job0)), tp.add(GAIA_MOV(job1)), tp.add(GAIA_MOV(job2))};
+
+			tp.dep(jobHandle[0], jobHandle[1]);
+			tp.dep(jobHandle[1], jobHandle[2]);
+
+			// 2, 0, 1 -> wrong sum
+			// Submit jobs in random order to make sure this doesn't work just by accident
+			const uint32_t startIdx0 = (uint32_t)rand() % 3;
+			const uint32_t startIdx1 = (startIdx0 + 1) % 3;
+			const uint32_t startIdx2 = (startIdx0 + 2) % 3;
+			tp.submit(jobHandle[startIdx0]);
+			tp.submit(jobHandle[startIdx1]);
+			tp.submit(jobHandle[startIdx2]);
+
+			tp.wait(jobHandle[2]);
+
+			CHECK(res == (i + 1));
+		}
+	};
+
+	SUBCASE("Max workers") {
+		const auto threads = tp.hw_thread_cnt();
+		tp.set_max_workers(threads, threads);
+
+		work();
+	}
+	SUBCASE("0 workers") {
+		tp.set_max_workers(0, 0);
+
+		work();
+	}
+}
+
+TEST_CASE("Multithreading - Reset reusable handles") {
+	auto& tp = mt::ThreadPool::get();
+
+	constexpr uint32_t Iters = 1024;
+
+	std::atomic_uint32_t stage = 0;
+	std::atomic_uint32_t firstCnt = 0;
+	std::atomic_uint32_t secondCnt = 0;
+	std::atomic_bool ordered = true;
+
+	mt::Job job1;
+	job1.flags = mt::JobCreationFlags::ManualDelete;
+	job1.func = [&]() {
+		firstCnt.fetch_add(1, std::memory_order_relaxed);
+		stage.store(1, std::memory_order_release);
+	};
+
+	mt::Job job2;
+	job2.flags = mt::JobCreationFlags::ManualDelete;
+	job2.func = [&]() {
+		if (stage.load(std::memory_order_acquire) != 1)
+			ordered.store(false, std::memory_order_relaxed);
+		secondCnt.fetch_add(1, std::memory_order_relaxed);
+	};
+
+	auto handle1 = tp.add(GAIA_MOV(job1));
+	auto handle2 = tp.add(GAIA_MOV(job2));
+	mt::JobHandle handles[] = {handle1, handle2};
+
+	tp.dep(handle1, handle2);
+	GAIA_FOR(Iters) {
+		stage.store(0, std::memory_order_relaxed);
+
+		tp.submit(handle2);
+		tp.submit(handle1);
+		tp.reset(std::span(handles, 2));
+
+		CHECK(ordered.load(std::memory_order_relaxed));
+		tp.dep_refresh(handle1, handle2);
+	}
+
+	// Final run leaves handles in Done state so they can be deleted.
+	stage.store(0, std::memory_order_relaxed);
+	tp.submit(handle2);
+	tp.submit(handle1);
+	tp.wait(handle2);
+
+	CHECK(ordered.load(std::memory_order_relaxed));
+	CHECK(firstCnt.load(std::memory_order_relaxed) == Iters + 1);
+	CHECK(secondCnt.load(std::memory_order_relaxed) == Iters + 1);
+
+	tp.del(handle1);
+	tp.del(handle2);
+}
+
+TEST_CASE("Multithreading - Reset reusable handle with multiple dependents") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+
+	mt::Job firstJob;
+	firstJob.flags = mt::JobCreationFlags::ManualDelete;
+	firstJob.func = [] {};
+
+	mt::Job secondJobA;
+	secondJobA.flags = mt::JobCreationFlags::ManualDelete;
+	secondJobA.func = [] {};
+
+	mt::Job secondJobB;
+	secondJobB.flags = mt::JobCreationFlags::ManualDelete;
+	secondJobB.func = [] {};
+
+	const auto first = tp.add(GAIA_MOV(firstJob));
+	const auto secondA = tp.add(GAIA_MOV(secondJobA));
+	const auto secondB = tp.add(GAIA_MOV(secondJobB));
+	mt::JobHandle handles[] = {first, secondA, secondB};
+
+	tp.dep(first, secondA);
+	tp.dep(first, secondB);
+
+	constexpr uint32_t Iters = 1024;
+	GAIA_FOR(Iters) {
+		tp.submit(secondA);
+		tp.submit(secondB);
+		tp.submit(first);
+		tp.reset(std::span(handles));
+		tp.dep_refresh(first, secondA);
+		tp.dep_refresh(first, secondB);
+	}
+
+	tp.submit(secondA);
+	tp.submit(secondB);
+	tp.submit(first);
+	tp.wait(secondA);
+	tp.wait(secondB);
+	tp.wait(first);
+	tp.del(first);
+	tp.del(secondA);
+	tp.del(secondB);
+}
+
+TEST_CASE("Multithreading - Schedule job with prerequisite") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+
+	std::atomic_uint32_t stage = 0;
+	std::atomic_bool ordered = true;
+
+	mt::Job prerequisite;
+	prerequisite.flags = mt::JobCreationFlags::ManualDelete;
+	prerequisite.func = [&]() {
+		stage.store(1, std::memory_order_release);
+	};
+	const auto prerequisiteHandle = tp.add(GAIA_MOV(prerequisite));
+
+	mt::Job dependent;
+	dependent.flags = mt::JobCreationFlags::ManualDelete;
+	dependent.func = [&]() {
+		if (stage.load(std::memory_order_acquire) != 1)
+			ordered.store(false, std::memory_order_release);
+	};
+	const auto dependentHandle = tp.sched(GAIA_MOV(dependent), prerequisiteHandle);
+
+	tp.submit(prerequisiteHandle);
+	tp.wait(dependentHandle);
+	tp.wait(prerequisiteHandle);
+
+	CHECK(ordered.load(std::memory_order_acquire));
+	tp.del(dependentHandle);
+	tp.del(prerequisiteHandle);
+}
+
+TEST_CASE("Multithreading - Stale handle does not address reused slot") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(0, 0);
+
+	mt::Job oldJob;
+	oldJob.flags = mt::JobCreationFlags::ManualDelete;
+	oldJob.func = [] {};
+	const auto stale = tp.sched(GAIA_MOV(oldJob));
+	tp.wait(stale);
+	tp.del(stale);
+
+	std::atomic_uint32_t calls = 0;
+	mt::Job currentJob;
+	currentJob.flags = mt::JobCreationFlags::ManualDelete;
+	currentJob.func = [&]() {
+		calls.fetch_add(1, std::memory_order_relaxed);
+	};
+	const auto current = tp.add(GAIA_MOV(currentJob));
+
+	CHECK(stale.id() == current.id());
+	CHECK(stale.gen() != current.gen());
+	tp.submit(stale);
+	tp.update();
+	CHECK(calls.load(std::memory_order_relaxed) == 0);
+
+	tp.submit(current);
+	tp.wait(current);
+	CHECK(calls.load(std::memory_order_relaxed) == 1);
+	tp.del(current);
+}
+
+TEST_CASE("Multithreading - Delete clear job") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(0, 0);
+
+	mt::Job job;
+	job.flags = mt::JobCreationFlags::ManualDelete;
+	const auto handle = tp.add(GAIA_MOV(job));
+	tp.del(handle);
+}
+
+TEST_CASE("Multithreading - Transfer main thread") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+
+	std::atomic_bool ran = false;
+	std::thread newMain([&]() {
+		tp.make_main_thread();
+
+		mt::Job job{[&]() {
+			ran.store(true, std::memory_order_release);
+		}};
+		const auto handle = tp.sched(GAIA_MOV(job));
+		tp.wait(handle);
+	});
+	newMain.join();
+
+	CHECK(ran.load(std::memory_order_acquire));
+	tp.make_main_thread();
+}
+
+#if GAIA_SYSTEMS_ENABLED
+
+struct SomeData1 {
+	uint32_t val;
+};
+struct SomeData2 {
+	uint32_t val;
+};
+
+TEST_CASE("Multithreading - Systems") {
+	auto& tp = mt::ThreadPool::get();
+
+	uint32_t data1 = 0;
+	uint32_t data2 = 0;
+	TestWorld twld;
+
+	constexpr uint32_t Iters = 15000;
+
+	{
+		// 10k of SomeData1
+		auto e = wld.add();
+		wld.add<SomeData1>(e, {0});
+		wld.copy_n(e, 9999);
+
+		// 10k of SomeData1, SomeData2
+		auto e2 = wld.add();
+		wld.add<SomeData1>(e2, {0});
+		wld.add<SomeData2>(e2, {0});
+		wld.copy_n(e2, 9999);
+	}
+
+	auto sys1 = wld.system()
+									.name("sys1")
+									.all<SomeData1>()
+									.all<SomeData2>() //
+									.on_each([&](SomeData1, SomeData2) {
+										++data1;
+										++data2;
+									});
+	auto sys2 = wld.system()
+									.name("sys2")
+									.all<SomeData1>() //
+									.on_each([&](SomeData1) {
+										++data1;
+									});
+
+	auto handle1 = sys1.job_handle();
+	auto handle2 = sys2.job_handle();
+
+	tp.dep(handle1, handle2);
+	GAIA_FOR(Iters - 1) {
+		tp.submit(handle2);
+		tp.submit(handle1);
+		tp.wait(handle2);
+		GAIA_ASSERT(data1 == 30000);
+		GAIA_ASSERT(data2 == 10000);
+
+		data1 = 0;
+		data2 = 0;
+		tp.reset_state(handle1);
+		tp.reset_state(handle2);
+		tp.dep_refresh(handle1, handle2);
+	}
+	{
+		tp.submit(handle2);
+		tp.submit(handle1);
+		tp.wait(handle2);
+		GAIA_ASSERT(data1 == 30000);
+		GAIA_ASSERT(data2 == 10000);
+	}
+}
+
+#endif
+
+TEST_CASE("Multithreading - Reset handles missing TLS worker context") {
+	auto& tp = mt::ThreadPool::get();
+
+	// Keep this deterministic regardless of previous tests.
+	tp.set_max_workers(2, 2);
+	CHECK(tp.workers() == 1);
+
+	// Simulate shutdown from a thread that has no TLS worker context bound.
+	mt::detail::tl_workerCtx = nullptr;
+
+	// set_max_workers() calls reset() internally, which used to dereference null TLS context.
+	tp.set_max_workers(2, 2);
+	CHECK(tp.workers() == 1);
+}
+
+TEST_CASE("Multithreading - Update auto-delete job") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(0, 0);
+	CHECK(tp.workers() == 0);
+
+	std::atomic_uint32_t executed = 0;
+
+	// update() drives main_thread_tick() and must not double-delete auto jobs.
+	constexpr uint32_t Iters = 1024;
+	GAIA_FOR(Iters) {
+		mt::Job job;
+		job.func = [&]() {
+			executed.fetch_add(1, std::memory_order_relaxed);
+		};
+
+		const auto handle = tp.add(GAIA_MOV(job));
+		tp.submit(handle);
+		tp.update();
+	}
+
+	CHECK(executed.load(std::memory_order_relaxed) == Iters);
+}
+
+TEST_CASE("Multithreading - Update auto-delete with workers") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+	CHECK(tp.workers() == 1);
+
+	constexpr uint32_t Jobs = 2048;
+	std::atomic_uint32_t executed = 0;
+
+	cnt::darr<mt::JobHandle> handles;
+	handles.resize(Jobs);
+
+	GAIA_FOR(Jobs) {
+		mt::Job job;
+		job.func = [&]() {
+			executed.fetch_add(1, std::memory_order_relaxed);
+		};
+		handles[i] = tp.add(GAIA_MOV(job));
+	}
+
+	mt::Job sync;
+	sync.flags = mt::JobCreationFlags::ManualDelete;
+	const auto syncHandle = tp.add(GAIA_MOV(sync));
+	tp.dep(std::span(handles.data(), handles.size()), syncHandle);
+
+	tp.submit(syncHandle);
+	tp.submit(std::span(handles.data(), handles.size()));
+
+	// Keep ticking from the main thread while worker threads are active.
+	// This exercises the same path that previously double-deleted auto jobs.
+	while (executed.load(std::memory_order_relaxed) < Jobs) {
+		tp.update();
+	}
+
+	tp.wait(syncHandle);
+	tp.del(syncHandle);
+	CHECK(executed.load(std::memory_order_relaxed) == Jobs);
+}
+
+namespace {
+	//! State shared with the ThreadPool test hook used by the job completion ordering test.
+	struct FinalizeStall {
+		inline static mt::JobHandle sync = mt::JobNull;
+		inline static std::thread::id mainThread{};
+		inline static std::atomic_bool claimed{false};
+		inline static std::atomic_bool waitReturned{false};
+		inline static std::atomic_bool sawEarlyReturn{false};
+		inline static std::atomic_bool done{false};
+
+		//! Stalls the first child finishing on a worker thread right before it publishes Done,
+		//! then records whether the main thread already returned from waiting on the sync job.
+		static void hook(mt::JobHandle jobHandle) {
+			if (jobHandle == sync || std::this_thread::get_id() == mainThread)
+				return;
+			if (claimed.exchange(true))
+				return;
+
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+			sawEarlyReturn = waitReturned.load();
+			done = true;
+		}
+	};
+} // namespace
+
+TEST_CASE("Multithreading - A job is done before its dependents can complete") {
+	// Mirrors a parallel ECS system: children feed one sync job, and the caller deletes every child as soon
+	// as the sync job is done. A child used to signal the sync job before publishing its own Done state, so
+	// the sync job could complete while a child was still finishing. The caller then deleted a running job.
+	auto& tp = mt::ThreadPool::get();
+	const auto threads = tp.hw_thread_cnt();
+	tp.set_max_workers(threads, threads);
+	// The stalled child must run on a worker thread
+	CHECK(tp.workers() > 0);
+	if (tp.workers() == 0)
+		return;
+
+	constexpr uint32_t Children = 16;
+	mt::JobHandle handles[Children + 1];
+	for (uint32_t i = 0; i < Children; ++i) {
+		mt::Job job;
+		job.flags = mt::JobCreationFlags::ManualDelete;
+		job.func = []() {};
+		handles[i] = tp.add(GAIA_MOV(job));
+	}
+	mt::Job sync;
+	sync.flags = mt::JobCreationFlags::ManualDelete;
+	handles[Children] = tp.add(GAIA_MOV(sync));
+	tp.dep(std::span(handles, Children), handles[Children]);
+
+	FinalizeStall::sync = handles[Children];
+	FinalizeStall::mainThread = std::this_thread::get_id();
+	mt::ThreadPool::s_testBeforeFinalize = &FinalizeStall::hook;
+
+	tp.submit(std::span(handles, Children + 1));
+	// wait() lets the main thread run children too, and it could run all of them before any worker does.
+	// Only start waiting once a worker is stalled right before publishing a child's Done state.
+	while (!FinalizeStall::claimed)
+		std::this_thread::yield();
+	tp.wait(handles[Children]);
+	FinalizeStall::waitReturned = true;
+	while (!FinalizeStall::done)
+		std::this_thread::yield();
+
+	mt::ThreadPool::s_testBeforeFinalize = nullptr;
+	CHECK(FinalizeStall::claimed);
+	CHECK_FALSE(FinalizeStall::sawEarlyReturn);
+
+	for (auto handle: handles)
+		tp.del(handle);
+}
+
+TEST_CASE("Multithreading - Handle reuse mixed delete modes") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+	CHECK(tp.workers() == 1);
+
+	std::atomic_uint32_t autoCnt = 0;
+	std::atomic_uint32_t manualCnt = 0;
+
+	constexpr uint32_t Iters = 4096;
+	GAIA_FOR(Iters) {
+		mt::Job autoJob;
+		autoJob.func = [&]() {
+			autoCnt.fetch_add(1, std::memory_order_relaxed);
+		};
+
+		mt::Job manualJob;
+		manualJob.flags = mt::JobCreationFlags::ManualDelete;
+		manualJob.func = [&]() {
+			manualCnt.fetch_add(1, std::memory_order_relaxed);
+		};
+
+		const auto autoHandle = tp.add(GAIA_MOV(autoJob));
+		const auto manualHandle = tp.add(GAIA_MOV(manualJob));
+
+		tp.submit(autoHandle);
+		tp.submit(manualHandle);
+		tp.wait(manualHandle);
+		tp.del(manualHandle);
+
+		if ((i & 7) == 0)
+			tp.update();
+	}
+
+	// Drain any remaining auto jobs.
+	while (autoCnt.load(std::memory_order_relaxed) < Iters)
+		tp.update();
+
+	CHECK(autoCnt.load(std::memory_order_relaxed) == Iters);
+	CHECK(manualCnt.load(std::memory_order_relaxed) == Iters);
+}
+
+//! Job capture that counts its own destruction. A moved-from instance does not count, so the counter tells how
+//! many captures were actually destroyed.
+struct JobCaptureProbe {
+	std::atomic_uint32_t* pDtors = nullptr;
+
+	explicit JobCaptureProbe(std::atomic_uint32_t& dtors): pDtors(&dtors) {}
+	JobCaptureProbe(JobCaptureProbe&& other) noexcept: pDtors(other.pDtors) {
+		other.pDtors = nullptr;
+	}
+	JobCaptureProbe(const JobCaptureProbe&) = delete;
+	JobCaptureProbe& operator=(const JobCaptureProbe&) = delete;
+	JobCaptureProbe& operator=(JobCaptureProbe&&) = delete;
+	~JobCaptureProbe() {
+		if (pDtors != nullptr)
+			pDtors->fetch_add(1, std::memory_order_relaxed);
+	}
+};
+
+//! Payload that pushes a job callable past the inline storage.
+struct JobLargeCapture {
+	uint8_t bytes[64]{};
+};
+
+//! Job capture whose destructor deletes another job.
+struct JobDeletingCapture {
+	mt::JobHandle other = mt::JobNull;
+
+	explicit JobDeletingCapture(mt::JobHandle handle): other(handle) {}
+	JobDeletingCapture(JobDeletingCapture&& rhs) noexcept: other(rhs.other) {
+		rhs.other = mt::JobNull;
+	}
+	JobDeletingCapture(const JobDeletingCapture&) = delete;
+	JobDeletingCapture& operator=(const JobDeletingCapture&) = delete;
+	JobDeletingCapture& operator=(JobDeletingCapture&&) = delete;
+	~JobDeletingCapture() {
+		if (other != mt::JobNull)
+			mt::ThreadPool::get().del(other);
+	}
+};
+
+TEST_CASE("Multithreading - Job callables store small callables inline") {
+	std::atomic_uint32_t dtors = 0;
+	uint32_t calls = 0;
+
+	auto small = [&calls]() {
+		++calls;
+	};
+	auto large = [probe = JobCaptureProbe(dtors), payload = JobLargeCapture{}, &calls]() {
+		calls += 1U + (uint32_t)payload.bytes[0];
+	};
+	static_assert(mt::JobFunc::stores_inline<decltype(small)>());
+	static_assert(!mt::JobFunc::stores_inline<decltype(large)>());
+
+	mt::JobFunc smallFunc = small;
+	smallFunc();
+	CHECK(calls == 1);
+
+	{
+		mt::JobFunc largeFunc = GAIA_MOV(large);
+		mt::JobFunc moved = GAIA_MOV(largeFunc);
+		CHECK_FALSE((bool)largeFunc);
+		CHECK((bool)moved);
+		moved();
+		CHECK(calls == 2);
+		CHECK(dtors.load(std::memory_order_relaxed) == 0);
+
+		moved.reset();
+		CHECK_FALSE((bool)moved);
+		CHECK(dtors.load(std::memory_order_relaxed) == 1);
+	}
+	CHECK(dtors.load(std::memory_order_relaxed) == 1);
+
+	mt::JobArgsFunc argsFunc = [&calls](const mt::JobArgs& args) {
+		calls += args.idxEnd - args.idxStart;
+	};
+	argsFunc(mt::JobArgs{3, 8});
+	CHECK(calls == 7);
+
+	// finish() ends the callable's lifetime. Heap storage stays, and can still be moved, until reset() releases it.
+	{
+		std::atomic_uint32_t finished = 0;
+		mt::JobFunc heapFunc = [probe = JobCaptureProbe(finished), payload = JobLargeCapture{}]() {
+			(void)payload;
+		};
+		heapFunc.finish();
+		CHECK(finished.load(std::memory_order_relaxed) == 1);
+		CHECK((bool)heapFunc);
+
+		mt::JobFunc moved = GAIA_MOV(heapFunc);
+		CHECK_FALSE((bool)heapFunc);
+		CHECK((bool)moved);
+		moved.reset();
+		CHECK_FALSE((bool)moved);
+		CHECK(finished.load(std::memory_order_relaxed) == 1);
+
+		mt::JobFunc inlineFunc = [probe = JobCaptureProbe(finished)]() {};
+		inlineFunc.finish();
+		CHECK(finished.load(std::memory_order_relaxed) == 2);
+		CHECK_FALSE((bool)inlineFunc);
+	}
+}
+
+TEST_CASE("Multithreading - Auto-deleted job destroys its captures before it is done") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+
+	for (uint32_t storage = 0; storage < 2; ++storage) {
+		CAPTURE(storage);
+
+		std::atomic_uint32_t dtors = 0;
+		std::atomic_uint32_t ran = 0;
+		std::atomic_uint32_t dtorsSeenByDependent = UINT32_MAX;
+
+		mt::Job job;
+		if (storage == 0) {
+			auto func = [probe = JobCaptureProbe(dtors), &ran]() {
+				ran.fetch_add(1, std::memory_order_relaxed);
+			};
+			static_assert(mt::JobFunc::stores_inline<decltype(func)>());
+			job.func = GAIA_MOV(func);
+		} else {
+			auto func = [probe = JobCaptureProbe(dtors), payload = JobLargeCapture{}, &ran]() {
+				ran.fetch_add(1U + (uint32_t)payload.bytes[0], std::memory_order_relaxed);
+			};
+			static_assert(!mt::JobFunc::stores_inline<decltype(func)>());
+			job.func = GAIA_MOV(func);
+		}
+
+		// The dependent runs only after the auto-deleted job is done, so it must already see the captures destroyed.
+		mt::Job dependent;
+		dependent.flags = mt::JobCreationFlags::ManualDelete;
+		dependent.func = [&]() {
+			dtorsSeenByDependent.store(dtors.load(std::memory_order_relaxed), std::memory_order_relaxed);
+		};
+
+		const auto handle = tp.add(GAIA_MOV(job));
+		const auto dependentHandle = tp.add(GAIA_MOV(dependent));
+		tp.dep(handle, dependentHandle);
+		tp.submit(dependentHandle);
+		tp.submit(handle);
+		tp.wait(dependentHandle);
+
+		CHECK(ran.load(std::memory_order_relaxed) == 1);
+		CHECK(dtorsSeenByDependent.load(std::memory_order_relaxed) == 1);
+		CHECK(dtors.load(std::memory_order_relaxed) == 1);
+		tp.del(dependentHandle);
+	}
+}
+
+TEST_CASE("Multithreading - ManualDelete job keeps its callable until deleted") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+
+	std::atomic_uint32_t dtors = 0;
+	std::atomic_uint32_t runs = 0;
+
+	mt::Job job;
+	job.flags = mt::JobCreationFlags::ManualDelete;
+	job.func = [probe = JobCaptureProbe(dtors), &runs]() {
+		runs.fetch_add(1, std::memory_order_relaxed);
+	};
+
+	const auto handle = tp.add(GAIA_MOV(job));
+	tp.submit(handle);
+	tp.wait(handle);
+	CHECK(runs.load(std::memory_order_relaxed) == 1);
+	CHECK(dtors.load(std::memory_order_relaxed) == 0);
+
+	// A reset job runs its callable again.
+	tp.reset(handle);
+	tp.submit(handle);
+	tp.wait(handle);
+	CHECK(runs.load(std::memory_order_relaxed) == 2);
+	CHECK(dtors.load(std::memory_order_relaxed) == 0);
+
+	tp.del(handle);
+	CHECK(dtors.load(std::memory_order_relaxed) == 1);
+}
+
+TEST_CASE("Multithreading - Deleting a job that never ran destroys its callable") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+
+	for (uint32_t manual = 0; manual < 2; ++manual) {
+		CAPTURE(manual);
+
+		std::atomic_uint32_t dtors = 0;
+		bool ran = false;
+
+		mt::Job job;
+		if (manual != 0)
+			job.flags = mt::JobCreationFlags::ManualDelete;
+		job.func = [probe = JobCaptureProbe(dtors), &ran]() {
+			ran = true;
+		};
+
+		const auto handle = tp.add(GAIA_MOV(job));
+		CHECK(dtors.load(std::memory_order_relaxed) == 0);
+		tp.del(handle);
+		CHECK(dtors.load(std::memory_order_relaxed) == 1);
+		CHECK_FALSE(ran);
+	}
+}
+
+TEST_CASE("Multithreading - Job callable destructor may use the thread pool") {
+	auto& tp = mt::ThreadPool::get();
+	tp.set_max_workers(2, 2);
+
+	std::atomic_uint32_t otherDtors = 0;
+	mt::Job other;
+	other.func = [probe = JobCaptureProbe(otherDtors)]() {};
+	const auto otherHandle = tp.add(GAIA_MOV(other));
+
+	// Deleting the job destroys its callable, whose destructor deletes the other job. That must not deadlock on
+	// the lock that serializes job allocation.
+	mt::Job job;
+	job.flags = mt::JobCreationFlags::ManualDelete;
+	job.func = [capture = JobDeletingCapture(otherHandle)]() {};
+	const auto handle = tp.add(GAIA_MOV(job));
+	tp.submit(handle);
+	tp.wait(handle);
+	CHECK(otherDtors.load(std::memory_order_relaxed) == 0);
+
+	tp.del(handle);
+	CHECK(otherDtors.load(std::memory_order_relaxed) == 1);
+}
+
+TEST_CASE("Multithreading - Parallel job callbacks are destroyed before the job is done") {
+	auto& tp = mt::ThreadPool::get();
+	const auto threads = tp.hw_thread_cnt();
+	tp.set_max_workers(threads, threads);
+
+	struct Case {
+		uint32_t items;
+		uint32_t groupSize;
+	};
+	// One group job, then many.
+	const Case cases[] = {{1, 0}, {4096, 16}};
+	for (const auto& c: cases) {
+		CAPTURE(c.items);
+
+		std::atomic_uint32_t dtors = 0;
+		std::atomic_uint32_t items = 0;
+
+		mt::JobParallel job;
+		job.func = [probe = JobCaptureProbe(dtors), &items](const mt::JobArgs& args) {
+			items.fetch_add(args.idxEnd - args.idxStart, std::memory_order_relaxed);
+		};
+
+		const auto handle = tp.sched_par(GAIA_MOV(job), c.items, c.groupSize);
+		tp.wait(handle);
+
+		CHECK(items.load(std::memory_order_relaxed) == c.items);
+		CHECK(dtors.load(std::memory_order_relaxed) == 1);
+	}
+}
+
+TEST_CASE("Multithreading - Jobs leave no SmallBlockAllocator allocations behind") {
+	auto& tp = mt::ThreadPool::get();
+	const auto threads = tp.hw_thread_cnt();
+	tp.set_max_workers(threads, threads);
+
+	auto& alloc = mem::SmallBlockAllocator::get();
+	alloc.flush(true);
+	const auto before = alloc.stats();
+
+	std::atomic_uint32_t sum = 0;
+	{
+		// Single jobs, inline and heap-stored.
+		mt::Job small;
+		small.func = [&sum]() {
+			sum.fetch_add(1, std::memory_order_relaxed);
+		};
+		mt::Job large;
+		large.func = [payload = JobLargeCapture{}, &sum]() {
+			sum.fetch_add(1U + (uint32_t)payload.bytes[0], std::memory_order_relaxed);
+		};
+		const auto smallHandle = tp.add(GAIA_MOV(small));
+		const auto largeHandle = tp.add(GAIA_MOV(large));
+		tp.submit(smallHandle);
+		tp.submit(largeHandle);
+		tp.wait(smallHandle);
+		tp.wait(largeHandle);
+
+		// Owning and non-owning parallel jobs, with one group job and with many.
+		JobParallelRefProbe refProbe;
+		mt::JobParallelRef jobRef;
+		jobRef.pCtx = &refProbe;
+		jobRef.invoke = &JobParallelRefProbe::invoke;
+		const uint32_t itemCounts[] = {1, 4096};
+		for (const auto items: itemCounts) {
+			mt::JobParallel job;
+			job.func = [payload = JobLargeCapture{}, &sum](const mt::JobArgs& args) {
+				sum.fetch_add(args.idxEnd - args.idxStart + (uint32_t)payload.bytes[0], std::memory_order_relaxed);
+			};
+			tp.wait(tp.sched_par(GAIA_MOV(job), items, items == 1 ? 0 : 16));
+			tp.wait(tp.sched_par(jobRef, items, items == 1 ? 0 : 16));
+		}
+		CHECK(refProbe.items.load(std::memory_order_relaxed) == 1 + 4096);
+
+		// A parallel query job goes through the ECS scheduler.
+		TestWorld twld;
+		GAIA_FOR(1000) {
+			auto e = wld.add();
+			wld.add<Position>(e, {1, 0, 0});
+		}
+		auto q = wld.query().all<Position&>();
+		auto queryJob = q.job(
+				[](ecs::Iter& it) {
+					auto pos = it.view_mut<Position>(0);
+					GAIA_FOR_(it.size(), i) pos[i].x += 1.0f;
+				},
+				ecs::QueryExecType::Parallel);
+		queryJob.submit();
+		queryJob.wait();
+		queryJob.del();
+	}
+	CHECK(sum.load(std::memory_order_relaxed) == 2 + 1 + 4096);
+
+	alloc.flush(true);
+	const auto after = alloc.stats();
+	GAIA_FOR(mem::SmallBlockSizeTypeCount) {
+		CAPTURE(i);
+		CHECK(after.stats[i].num_pages == before.stats[i].num_pages);
+		CHECK(after.stats[i].mem_used == before.stats[i].mem_used);
+	}
+}

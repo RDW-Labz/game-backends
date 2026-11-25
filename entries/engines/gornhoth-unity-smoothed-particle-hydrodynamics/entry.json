@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:34:40Z",
+ "category": "engines",
+ "commit": "2022-07-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Gornhoth/Unity-Smoothed-Particle-Hydrodynamics \u2014 SPH in the Unity engine implemented in three different ways using MonoBehaviour, Entity-Component-System, and ComputeShader",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Unity-Smoothed-Particle-Hydrodynamics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "gornhoth-unity-smoothed-particle-hydrodynamics",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 86,
+ "system": "SPH in the Unity engine implemented in three different ways using MonoBehaviour, Entity-Component-System, and ComputeShader",
+ "upstream": "https://github.com/Gornhoth/Unity-Smoothed-Particle-Hydrodynamics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

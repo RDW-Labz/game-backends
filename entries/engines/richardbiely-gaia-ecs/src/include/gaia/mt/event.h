@@ -1,0 +1,149 @@
+#pragma once
+#include "gaia/config/config.h"
+#include "gaia/config/profiler.h"
+
+#if GAIA_PLATFORM_WINDOWS
+	#define GAIA_USE_MT_STD 1
+#endif
+
+#if GAIA_USE_MT_STD
+	#include <condition_variable>
+	#include <mutex>
+#else
+	#include <pthread.h>
+#endif
+
+namespace gaia {
+	namespace mt {
+		//! Auto-reset synchronization primitive for waking one waiting thread.
+		//! A successful wait consumes the signaled state.
+		class GAIA_API Event final {
+#if GAIA_USE_MT_STD
+			GAIA_PROF_MUTEX(std::mutex, m_mtx);
+			std::condition_variable m_cv;
+			bool m_set = false;
+#else
+			pthread_cond_t m_hCondHandle;
+			pthread_mutex_t m_hMutexHandle;
+			bool m_set = false;
+#endif
+
+		public:
+#if !GAIA_USE_MT_STD
+			//! Creates an unsignaled event and initializes the underlying pthread objects.
+			Event() {
+				[[maybe_unused]] int ret = pthread_mutex_init(&m_hMutexHandle, nullptr);
+				GAIA_ASSERT(ret == 0);
+				if (ret == 0) {
+					ret = pthread_cond_init(&m_hCondHandle, nullptr);
+					GAIA_ASSERT(ret == 0);
+				}
+			}
+
+			//! Destroys the underlying pthread synchronization objects.
+			~Event() {
+				[[maybe_unused]] int ret = pthread_cond_destroy(&m_hCondHandle);
+				GAIA_ASSERT(ret == 0);
+
+				ret = pthread_mutex_destroy(&m_hMutexHandle);
+				GAIA_ASSERT(ret == 0);
+			}
+#endif
+
+			//! Sets the event to the signaled state and wakes one waiting thread.
+			void set() {
+#if GAIA_USE_MT_STD
+				auto& mtx = GAIA_PROF_EXTRACT_MUTEX(m_mtx);
+				std::unique_lock lock(mtx);
+				GAIA_PROF_LOCK_MARK(m_mtx);
+				m_set = true;
+				m_cv.notify_one();
+#else
+				[[maybe_unused]] int ret = pthread_mutex_lock(&m_hMutexHandle);
+				GAIA_ASSERT(ret == 0);
+				m_set = true;
+
+				// Depending on the event type, we either trigger everyone waiting or just one
+				ret = pthread_cond_signal(&m_hCondHandle);
+				GAIA_ASSERT(ret == 0);
+
+				ret = pthread_mutex_unlock(&m_hMutexHandle);
+				GAIA_ASSERT(ret == 0);
+#endif
+			}
+
+			//! Resets the event to the unsignaled state.
+			void reset() {
+#if GAIA_USE_MT_STD
+				auto& mtx = GAIA_PROF_EXTRACT_MUTEX(m_mtx);
+				std::unique_lock lock(mtx);
+				GAIA_PROF_LOCK_MARK(m_mtx);
+				m_set = false;
+#else
+				[[maybe_unused]] int ret = pthread_mutex_lock(&m_hMutexHandle);
+				GAIA_ASSERT(ret == 0);
+				m_set = false;
+				ret = pthread_mutex_unlock(&m_hMutexHandle);
+				GAIA_ASSERT(ret == 0);
+#endif
+			}
+
+			//! Checks whether the event currently is in the signaled state.
+			//! \return True when the event is signaled.
+			GAIA_NODISCARD bool is_set() {
+#if GAIA_USE_MT_STD
+				auto& mtx = GAIA_PROF_EXTRACT_MUTEX(m_mtx);
+				std::unique_lock lock(mtx);
+				GAIA_PROF_LOCK_MARK(m_mtx);
+				return m_set;
+#else
+				bool set{};
+				[[maybe_unused]] int ret = pthread_mutex_lock(&m_hMutexHandle);
+				GAIA_ASSERT(ret == 0);
+				set = m_set;
+				ret = pthread_mutex_unlock(&m_hMutexHandle);
+				GAIA_ASSERT(ret == 0);
+				return set;
+#endif
+			}
+
+			//! Blocks the calling thread until the event becomes signaled.
+			void wait() {
+#if GAIA_USE_MT_STD
+				auto& mtx = GAIA_PROF_EXTRACT_MUTEX(m_mtx);
+				std::unique_lock lock(mtx);
+				GAIA_PROF_LOCK_MARK(m_mtx);
+				m_cv.wait(lock, [&] {
+					return m_set;
+				});
+				m_set = false;
+#else
+				[[maybe_unused]] int ret{};
+				auto wait = [&]() {
+					if (!m_set) {
+						do {
+							ret = pthread_cond_wait(&m_hCondHandle, &m_hMutexHandle);
+						} while (!ret && !m_set);
+
+						GAIA_ASSERT(ret != EINVAL);
+					} else {
+						ret = 0;
+					}
+
+					return ret;
+				};
+
+				ret = pthread_mutex_lock(&m_hMutexHandle);
+				GAIA_ASSERT(ret == 0);
+
+				int res = wait(); // true: signaled, false: timeout or error
+				if (res == 0)
+					m_set = false;
+
+				ret = pthread_mutex_unlock(&m_hMutexHandle);
+				GAIA_ASSERT(ret == 0);
+#endif
+			}
+		}; // namespace mt
+	} // namespace mt
+} // namespace gaia

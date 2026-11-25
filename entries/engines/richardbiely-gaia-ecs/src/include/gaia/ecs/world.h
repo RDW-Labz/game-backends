@@ -1,0 +1,17552 @@
+#pragma once
+#include "gaia/config/config.h"
+
+#include <cctype>
+#include <cstdarg>
+#include <cstddef>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <type_traits>
+
+#include "gaia/cnt/darray.h"
+#include "gaia/cnt/darray_ext.h"
+#include "gaia/cnt/map.h"
+#include "gaia/cnt/sarray_ext.h"
+#include "gaia/cnt/set.h"
+#include "gaia/config/profiler.h"
+#include "gaia/core/hashing_policy.h"
+#include "gaia/core/hashing_string.h"
+#include "gaia/core/span.h"
+#include "gaia/core/utility.h"
+#include "gaia/ecs/api.h"
+#include "gaia/ecs/archetype.h"
+#include "gaia/ecs/archetype_common.h"
+#include "gaia/ecs/archetype_graph.h"
+#include "gaia/ecs/chunk.h"
+#include "gaia/ecs/chunk_allocator.h"
+#include "gaia/ecs/chunk_header.h"
+#include "gaia/ecs/command_buffer_fwd.h"
+#include "gaia/ecs/common.h"
+#include "gaia/ecs/component.h"
+#include "gaia/ecs/component_cache.h"
+#include "gaia/ecs/component_cache_item.h"
+#include "gaia/ecs/component_cursor.h"
+#include "gaia/ecs/component_getter.h"
+#include "gaia/ecs/component_setter.h"
+#include "gaia/ecs/copy_scratch.h"
+#include "gaia/ecs/entity_container.h"
+#include "gaia/ecs/id.h"
+#include "gaia/ecs/nonfragmenting_relation_store.h"
+#include "gaia/ecs/observer.h"
+#include "gaia/ecs/observer_registry.h"
+#include "gaia/ecs/pair_lookup.h"
+#include "gaia/ecs/query.h"
+#include "gaia/ecs/query_cache.h"
+#include "gaia/ecs/query_common.h"
+#include "gaia/ecs/query_info.h"
+#include "gaia/ecs/relation_mutation_path.h"
+#include "gaia/ecs/sparse_component_store.h"
+#include "gaia/ecs/system.h"
+#include "gaia/ecs/system_schedule_scratch.h"
+#include "gaia/mem/mem_alloc.h"
+#include "gaia/ser/ser_binary.h"
+#if GAIA_JSON_ENABLED
+	#include "gaia/ser/ser_json.h"
+#endif
+#include "gaia/ser/ser_rt.h"
+#include "gaia/util/logging.h"
+#include "gaia/util/str.h"
+
+namespace gaia {
+	namespace ecs {
+#if GAIA_SYSTEMS_ENABLED
+		class SystemBuilder;
+#endif
+#if GAIA_OBSERVERS_ENABLED
+		class ObserverBuilder;
+		class ObserverRegistry;
+#endif
+		class World;
+
+		void world_notify_on_set_entity(World& world, Entity term, Entity entity);
+		template <typename T>
+		decltype(auto) world_direct_entity_arg_raw(World& world, Entity entity);
+		template <typename T>
+		decltype(auto) world_query_entity_arg_by_id_raw(World& world, Entity entity, Entity id);
+
+		//! Owns entities, components, archetypes, queries, observers, and systems.
+		class GAIA_API World final {
+		public:
+			//! Allows asserts on duplicate name/alias assignment
+			inline static bool s_enableUniqueNameDuplicateAssert = true;
+
+		private:
+			friend CommandBufferST;
+			friend CommandBufferMT;
+			friend CommandBufferPlainST;
+			friend CommandBufferPlainMT;
+#if GAIA_OBSERVERS_ENABLED
+			friend class ObserverRegistry;
+			friend struct ObserverRuntimeData;
+			friend struct ObserverRegistry::DiffDispatcher;
+			friend struct ObserverRegistry::DirectDispatcher;
+			friend struct ObserverRegistry::SharedDispatch;
+#endif
+			friend struct ComponentGetter;
+			friend struct ComponentSetter;
+			friend void lock(World&);
+			friend void unlock(World&);
+			friend EntityContainer* try_fetch_mut(World&, Entity);
+#if GAIA_USE_SAFE_ENTITY
+			friend void safe_entity_acquire(World&, Entity);
+			friend void safe_entity_release(World&, Entity);
+#endif
+			friend QueryMatchScratch& query_match_scratch_acquire(World&);
+			friend void query_match_scratch_release(World&, bool);
+			friend uint32_t world_component_index_bucket_size(const World&, Entity);
+			friend uint32_t world_component_index_comp_idx(const World&, const Archetype&, Entity);
+			friend uint32_t world_component_index_match_count(const World&, const Archetype&, Entity);
+			template <typename T>
+			friend decltype(auto) world_direct_entity_arg(World& world, Entity entity);
+			template <typename T>
+			friend decltype(auto) world_direct_entity_arg_raw(World& world, Entity entity);
+			template <typename T>
+			friend decltype(auto) world_query_entity_arg_by_id(World& world, Entity entity, Entity id);
+			template <typename T>
+			friend decltype(auto) world_query_entity_arg_by_id_raw(World& world, Entity entity, Entity id);
+			friend void world_finish_write(World& world, Entity term, Entity entity);
+
+			ser::bin_stream m_stream;
+			ser::serializer m_serializer{};
+
+			using TFunc_Void_With_Entity = void(Entity);
+			//! Accepts an entity without performing work.
+			//! \param entity Ignored entity.
+			static void func_void_with_entity([[maybe_unused]] Entity entity) {}
+
+			using EntityNameLookupKey = core::StringLookupKey<256>;
+			using PairMap = cnt::map<EntityLookupKey, cnt::set<EntityLookupKey>>;
+			using EntityArrayMap = cnt::map<EntityLookupKey, cnt::darray<Entity>>;
+
+			using NonFragmentingRelationStore = detail::NonFragmentingRelationStore;
+			using SparseComponentStoreErased = detail::SparseComponentStoreErased;
+			using RuntimeSparseComponentStore = detail::RuntimeSparseComponentStore;
+			template <typename T>
+			using SparseComponentStore = detail::SparseComponentStore<T>;
+			using CopyIterGroupState = detail::CopyIterGroupState;
+			using PrefabChildEdge = detail::PrefabChildEdge;
+			using PrefabInstantiatePlanNode = detail::PrefabInstantiatePlanNode;
+
+			template <
+					typename TApi, typename TValue, bool DeriveFromValue = std::is_class_v<TValue> && !std::is_final_v<TValue>>
+			class SetWriteProxyTyped;
+
+			template <typename TApi, typename TValue>
+			class SetWriteProxyTyped<TApi, TValue, true>: public TValue {
+				World* m_pWorld = nullptr;
+				Entity m_entity = EntityBad;
+				Entity m_term = EntityBad;
+
+				//! Commits the staged value to the world once.
+				void commit() {
+					if (m_pWorld == nullptr)
+						return;
+
+					m_pWorld->template write_back_set_typed<TApi, TValue>(m_entity, m_term, static_cast<const TValue&>(*this));
+					m_pWorld = nullptr;
+				}
+
+			public:
+				//! Creates a write-back proxy initialized by copying a component value.
+				//! \param world World receiving the deferred write.
+				//! \param entity Entity receiving the value.
+				//! \param term Component entity or exact pair.
+				//! \param value Initial value to stage.
+				SetWriteProxyTyped(World& world, Entity entity, Entity term, const TValue& value):
+						TValue(value), m_pWorld(&world), m_entity(entity), m_term(term) {}
+
+				//! Creates a write-back proxy initialized by moving a component value.
+				//! \param world World receiving the deferred write.
+				//! \param entity Entity receiving the value.
+				//! \param term Component entity or exact pair.
+				//! \param value Initial value to stage.
+				SetWriteProxyTyped(World& world, Entity entity, Entity term, TValue&& value):
+						TValue(GAIA_MOV(value)), m_pWorld(&world), m_entity(entity), m_term(term) {}
+
+				SetWriteProxyTyped(const SetWriteProxyTyped&) = delete;
+				SetWriteProxyTyped& operator=(const SetWriteProxyTyped&) = delete;
+
+				SetWriteProxyTyped(SetWriteProxyTyped&& other) noexcept:
+						TValue(static_cast<TValue&&>(other)), m_pWorld(other.m_pWorld), m_entity(other.m_entity),
+						m_term(other.m_term) {
+					other.m_pWorld = nullptr;
+				}
+
+				~SetWriteProxyTyped() {
+					commit();
+				}
+
+				SetWriteProxyTyped& operator=(const TValue& value) {
+					static_cast<TValue&>(*this) = value;
+					return *this;
+				}
+
+				SetWriteProxyTyped& operator=(TValue&& value) {
+					static_cast<TValue&>(*this) = GAIA_MOV(value);
+					return *this;
+				}
+
+				//! Exposes the staged value for mutable access.
+				//! \return Mutable staged value.
+				GAIA_NODISCARD operator TValue&() {
+					return *this;
+				}
+
+				//! Exposes the staged value for read-only access.
+				//! \return Read-only staged value.
+				GAIA_NODISCARD operator const TValue&() const {
+					return *this;
+				}
+			};
+
+			template <typename TApi, typename TValue>
+			class SetWriteProxyTyped<TApi, TValue, false> {
+				World* m_pWorld = nullptr;
+				Entity m_entity = EntityBad;
+				Entity m_term = EntityBad;
+				TValue m_value{};
+
+				//! Commits the staged value to the world once.
+				void commit() {
+					if (m_pWorld == nullptr)
+						return;
+
+					m_pWorld->template write_back_set_typed<TApi, TValue>(m_entity, m_term, m_value);
+					m_pWorld = nullptr;
+				}
+
+			public:
+				//! Creates a write-back proxy initialized by copying a component value.
+				//! \param world World receiving the deferred write.
+				//! \param entity Entity receiving the value.
+				//! \param term Component entity or exact pair.
+				//! \param value Initial value to stage.
+				SetWriteProxyTyped(World& world, Entity entity, Entity term, const TValue& value):
+						m_pWorld(&world), m_entity(entity), m_term(term), m_value(value) {}
+
+				//! Creates a write-back proxy initialized by moving a component value.
+				//! \param world World receiving the deferred write.
+				//! \param entity Entity receiving the value.
+				//! \param term Component entity or exact pair.
+				//! \param value Initial value to stage.
+				SetWriteProxyTyped(World& world, Entity entity, Entity term, TValue&& value):
+						m_pWorld(&world), m_entity(entity), m_term(term), m_value(GAIA_MOV(value)) {}
+
+				SetWriteProxyTyped(const SetWriteProxyTyped&) = delete;
+				SetWriteProxyTyped& operator=(const SetWriteProxyTyped&) = delete;
+
+				SetWriteProxyTyped(SetWriteProxyTyped&& other) noexcept:
+						m_pWorld(other.m_pWorld), m_entity(other.m_entity), m_term(other.m_term), m_value(GAIA_MOV(other.m_value)) {
+					other.m_pWorld = nullptr;
+				}
+
+				~SetWriteProxyTyped() {
+					commit();
+				}
+
+				SetWriteProxyTyped& operator=(const TValue& value) {
+					m_value = value;
+					return *this;
+				}
+
+				SetWriteProxyTyped& operator=(TValue&& value) {
+					m_value = GAIA_MOV(value);
+					return *this;
+				}
+
+				//! Exposes the staged value for mutable access.
+				//! \return Mutable staged value.
+				GAIA_NODISCARD operator TValue&() {
+					return m_value;
+				}
+
+				//! Exposes the staged value for read-only access.
+				//! \return Read-only staged value.
+				GAIA_NODISCARD operator const TValue&() const {
+					return m_value;
+				}
+
+				//! Provides pointer-style mutable access to the staged value.
+				//! \return Pointer to the staged value.
+				GAIA_NODISCARD TValue* operator->() {
+					return &m_value;
+				}
+
+				//! Provides pointer-style read-only access to the staged value.
+				//! \return Pointer to the staged value.
+				GAIA_NODISCARD const TValue* operator->() const {
+					return &m_value;
+				}
+			};
+
+			template <typename TValue, bool DeriveFromValue = std::is_class_v<TValue> && !std::is_final_v<TValue>>
+			class SetWriteProxyObject;
+
+			template <typename TValue>
+			class SetWriteProxyObject<TValue, true>: public TValue {
+				World* m_pWorld = nullptr;
+				Entity m_entity = EntityBad;
+				Entity m_term = EntityBad;
+
+				//! Commits the staged value to the world once.
+				void commit() {
+					if (m_pWorld == nullptr)
+						return;
+
+					m_pWorld->template write_back_set_object<TValue>(m_entity, m_term, static_cast<const TValue&>(*this));
+					m_pWorld = nullptr;
+				}
+
+			public:
+				//! Creates a write-back proxy initialized by copying a component value.
+				//! \param world World receiving the deferred write.
+				//! \param entity Entity receiving the value.
+				//! \param term Component entity or exact pair.
+				//! \param value Initial value to stage.
+				SetWriteProxyObject(World& world, Entity entity, Entity term, const TValue& value):
+						TValue(value), m_pWorld(&world), m_entity(entity), m_term(term) {}
+
+				//! Creates a write-back proxy initialized by moving a component value.
+				//! \param world World receiving the deferred write.
+				//! \param entity Entity receiving the value.
+				//! \param term Component entity or exact pair.
+				//! \param value Initial value to stage.
+				SetWriteProxyObject(World& world, Entity entity, Entity term, TValue&& value):
+						TValue(GAIA_MOV(value)), m_pWorld(&world), m_entity(entity), m_term(term) {}
+
+				SetWriteProxyObject(const SetWriteProxyObject&) = delete;
+				SetWriteProxyObject& operator=(const SetWriteProxyObject&) = delete;
+
+				SetWriteProxyObject(SetWriteProxyObject&& other) noexcept:
+						TValue(static_cast<TValue&&>(other)), m_pWorld(other.m_pWorld), m_entity(other.m_entity),
+						m_term(other.m_term) {
+					other.m_pWorld = nullptr;
+				}
+
+				~SetWriteProxyObject() {
+					commit();
+				}
+
+				SetWriteProxyObject& operator=(const TValue& value) {
+					static_cast<TValue&>(*this) = value;
+					return *this;
+				}
+
+				SetWriteProxyObject& operator=(TValue&& value) {
+					static_cast<TValue&>(*this) = GAIA_MOV(value);
+					return *this;
+				}
+
+				//! Exposes the staged value for mutable access.
+				//! \return Mutable staged value.
+				GAIA_NODISCARD operator TValue&() {
+					return *this;
+				}
+
+				//! Exposes the staged value for read-only access.
+				//! \return Read-only staged value.
+				GAIA_NODISCARD operator const TValue&() const {
+					return *this;
+				}
+			};
+
+			template <typename TValue>
+			class SetWriteProxyObject<TValue, false> {
+				World* m_pWorld = nullptr;
+				Entity m_entity = EntityBad;
+				Entity m_term = EntityBad;
+				TValue m_value{};
+
+				//! Commits the staged value to the world once.
+				void commit() {
+					if (m_pWorld == nullptr)
+						return;
+
+					m_pWorld->template write_back_set_object<TValue>(m_entity, m_term, m_value);
+					m_pWorld = nullptr;
+				}
+
+			public:
+				//! Creates a write-back proxy initialized by copying a component value.
+				//! \param world World receiving the deferred write.
+				//! \param entity Entity receiving the value.
+				//! \param term Component entity or exact pair.
+				//! \param value Initial value to stage.
+				SetWriteProxyObject(World& world, Entity entity, Entity term, const TValue& value):
+						m_pWorld(&world), m_entity(entity), m_term(term), m_value(value) {}
+
+				//! Creates a write-back proxy initialized by moving a component value.
+				//! \param world World receiving the deferred write.
+				//! \param entity Entity receiving the value.
+				//! \param term Component entity or exact pair.
+				//! \param value Initial value to stage.
+				SetWriteProxyObject(World& world, Entity entity, Entity term, TValue&& value):
+						m_pWorld(&world), m_entity(entity), m_term(term), m_value(GAIA_MOV(value)) {}
+
+				SetWriteProxyObject(const SetWriteProxyObject&) = delete;
+				SetWriteProxyObject& operator=(const SetWriteProxyObject&) = delete;
+
+				SetWriteProxyObject(SetWriteProxyObject&& other) noexcept:
+						m_pWorld(other.m_pWorld), m_entity(other.m_entity), m_term(other.m_term), m_value(GAIA_MOV(other.m_value)) {
+					other.m_pWorld = nullptr;
+				}
+
+				~SetWriteProxyObject() {
+					commit();
+				}
+
+				SetWriteProxyObject& operator=(const TValue& value) {
+					m_value = value;
+					return *this;
+				}
+
+				SetWriteProxyObject& operator=(TValue&& value) {
+					m_value = GAIA_MOV(value);
+					return *this;
+				}
+
+				//! Exposes the staged value for mutable access.
+				//! \return Mutable staged value.
+				GAIA_NODISCARD operator TValue&() {
+					return m_value;
+				}
+
+				//! Exposes the staged value for read-only access.
+				//! \return Read-only staged value.
+				GAIA_NODISCARD operator const TValue&() const {
+					return m_value;
+				}
+
+				//! Provides pointer-style mutable access to the staged value.
+				//! \return Pointer to the staged value.
+				GAIA_NODISCARD TValue* operator->() {
+					return &m_value;
+				}
+
+				//! Provides pointer-style read-only access to the staged value.
+				//! \return Pointer to the staged value.
+				GAIA_NODISCARD const TValue* operator->() const {
+					return &m_value;
+				}
+			};
+
+			//! Returns the EntityContainer for an ordinary entity or an exact pair.
+			//! Ordinary entities use the direct entity array. Exact pair records use fetch().
+			//! \param entity Entity or exact pair.
+			//! \return Mutable EntityContainer.
+			GAIA_NODISCARD EntityContainer& cont(Entity entity) {
+				if (entity.pair())
+					return fetch(entity);
+				return m_recs.entities[entity.id()];
+			}
+
+			//! Returns the EntityContainer for an ordinary entity or an exact pair.
+			//! Ordinary entities use the direct entity array. Exact pair records use fetch().
+			//! \param entity Entity or exact pair.
+			//! \return Const EntityContainer.
+			GAIA_NODISCARD const EntityContainer& cont(Entity entity) const {
+				if (entity.pair())
+					return fetch(entity);
+				return m_recs.entities[entity.id()];
+			}
+
+			//! Returns mutable storage for a direct typed component, adding it when absent.
+			//! \tparam T Component API type.
+			//! \param entity Entity owning the component.
+			//! \return Mutable component value.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) mut_im(Entity entity) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto& item = add<FT>();
+				if constexpr (uses_ct_sparse_storage<FT>())
+					return sparse_component_store_mut<FT>(item.entity).mut(entity);
+
+				const auto& ec = cont(entity);
+				return ec.pChunk->template set<T>(ec.row);
+			}
+
+			//! Resolves the metadata backing an exact component or pair column on \a entity.
+			//! Pair columns use their archetype record so compile-time pair storage selection remains unchanged.
+			//! \param entity Entity owning the component.
+			//! \param component Exact component or pair id.
+			//! \return Component metadata, or nullptr when the column is not present.
+			GAIA_NODISCARD const ComponentCacheItem* component_item(Entity entity, Entity component) const {
+				if (!component.pair())
+					return comp_cache().find(component);
+
+				const auto& ec = fetch(entity);
+				const auto compIdx = core::get_index(ec.pChunk->ids_view(), component);
+				return compIdx != BadIndex ? ec.pChunk->comp_rec_view()[compIdx].pItem
+																	 : comp_cache().find_pair_payload(component);
+			}
+
+			//! Checks whether \a item can expose a direct raw byte view.
+			//! \param item Physical component payload metadata.
+			//! \return True when the payload is not stored as SoA fields.
+			GAIA_NODISCARD static bool raw_component_supported(const ComponentCacheItem& item) noexcept {
+				return item.comp.soa() == 0;
+			}
+
+			//! Checks whether \a item can expose direct SoA field views in table storage.
+			//! \param item Physical component payload metadata.
+			//! \return True when the payload uses supported table SoA storage.
+			GAIA_NODISCARD static bool soa_field_supported(const ComponentCacheItem& item) noexcept {
+				return item.comp.soa() != 0 && item.comp.storage_type() == DataStorageType::Table;
+			}
+
+			//! Validates raw payload arguments against the registered component metadata.
+			//! \param item Physical component payload metadata.
+			//! \param data Payload bytes, or nullptr for a zero-sized component.
+			//! \param size Payload size in bytes.
+			//! \return True when direct raw access is supported and the payload matches the registered size.
+			GAIA_NODISCARD static bool
+			raw_component_payload_args_valid(const ComponentCacheItem& item, const void* data, uint32_t size) noexcept {
+				if (!raw_component_supported(item))
+					return false;
+				if (size != item.comp.size())
+					return false;
+				return size == 0 || data != nullptr;
+			}
+
+			//! Returns mutable storage for an exact typed relationship object.
+			//! \tparam T Relationship payload API type.
+			//! \param entity Entity owning the relationship.
+			//! \param object Exact relationship pair.
+			//! \return Mutable relationship payload.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) mut_im(Entity entity, Entity object) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (can_use_sparse_component_storage<FT>(object))
+						return sparse_component_mut_value<FT>(object, entity);
+				}
+
+				const auto& ec = cont(entity);
+				return ec.pChunk->template set<T>(ec.row, object);
+			}
+
+			//! Marks one table-backed typed component as modified.
+			//! \tparam T Component type.
+			//! \tparam TriggerSetEffects Triggers set side effects if true.
+			//! \param entity Entity or exact pair record being modified.
+			//! \param ec Current storage record for \a entity.
+			template <typename T, bool TriggerSetEffects>
+			void modify_table_inter(Entity entity, EntityContainer& ec) {
+				(void)entity;
+
+				ec.pChunk->template modify<T, TriggerSetEffects>();
+
+#if GAIA_OBSERVERS_ENABLED
+				if constexpr (TriggerSetEffects) {
+					Entity term = EntityBad;
+					if constexpr (is_pair<T>::value) {
+						const auto rel = comp_cache().template get<typename T::rel>().entity;
+						const auto tgt = comp_cache().template get<typename T::tgt>().entity;
+						term = (Entity)Pair(rel, tgt);
+					} else
+						term = comp_cache().template get<T>().entity;
+
+					world_notify_on_set(*this, term, *ec.pChunk, ec.row, (uint16_t)(ec.row + 1));
+				}
+#else
+				(void)entity;
+#endif
+			}
+
+			//! Marks one runtime-selected table component as modified.
+			//! \tparam TriggerSetEffects Triggers set side effects if true.
+			//! \param object Component entity selecting the payload.
+			//! \param ec Current storage record for the modified entity.
+			template <bool TriggerSetEffects>
+			void modify_table_inter(Entity object, EntityContainer& ec) {
+				const auto compIdx = ec.pChunk->comp_idx(object);
+				GAIA_ASSERT(compIdx != ComponentIndexBad);
+
+				if constexpr (TriggerSetEffects)
+					ec.pChunk->finish_write(compIdx, ec.row, (uint16_t)(ec.row + 1));
+				else
+					ec.pChunk->update_world_version(compIdx);
+			}
+
+			//! Marks a sparse write in the owning chunk's change-filter state.
+			//! Fragmenting sparse components have an archetype column whose version can be updated directly.
+			//! Non-fragmenting sparse components use the chunk entity-order version as the conservative
+			//! chunk-granular signal because they do not have an archetype column.
+			//! \param entity Entity whose sparse payload changed.
+			//! \param term Sparse component entity.
+			void mark_sparse_component_write(Entity entity, Entity term) {
+				const auto& ec = fetch(entity);
+				const auto compIdx = core::get_index(ec.pChunk->ids_view(), term);
+				if (compIdx != BadIndex)
+					ec.pChunk->update_world_version(compIdx);
+				else
+					ec.pChunk->update_entity_order_version();
+			}
+
+			//! Marks non-fragmenting membership add or delete in the owning chunk's change-filter state.
+			//! Empty DontFragment tags have no payload write path, so add/del must publish the same
+			//! chunk-granular entity-order signal used by non-fragmenting sparse payload writes.
+			//! \param entity Entity whose membership changed.
+			//! \param term Non-fragmenting component entity.
+			void mark_non_fragmenting_membership_changed(Entity entity, Entity term) {
+				if (tearing_down())
+					return;
+
+				::gaia::ecs::update_version(m_worldVersion);
+				mark_sparse_component_write(entity, term);
+			}
+
+			//! Finishes a deferred raw write on \a term attached to \a entity.
+			//! Ensures direct owned storage exists when needed, updates table or sparse version state,
+			//! and emits `OnSet` for the completed write.
+			//! \param entity Entity
+			//! \param term Component entity or pair
+			void finish_write(Entity entity, Entity term) {
+				if (tearing_down() || !valid(entity))
+					return;
+
+				::gaia::ecs::update_version(m_worldVersion);
+
+				if (sparse_storage_mode(term) != SparseStorageMode::None) {
+					mark_sparse_component_write(entity, term);
+					world_notify_on_set_entity(*this, term, entity);
+					return;
+				}
+
+				auto compIdx = uint32_t(BadIndex);
+				{
+					const auto& ec = fetch(entity);
+					compIdx = world_component_index_comp_idx(*this, *ec.pArchetype, term);
+				}
+
+				if (compIdx == BadIndex) {
+					(void) override(entity, term);
+					const auto& ec = fetch(entity);
+					compIdx = world_component_index_comp_idx(*this, *ec.pArchetype, term);
+					if (compIdx == BadIndex)
+						return;
+				}
+
+				const auto& ec = fetch(entity);
+				const auto row = ec.row;
+				(void)ec.pChunk->comp_ptr_mut_gen<true>(compIdx, row);
+				world_notify_on_set_entity(*this, term, entity);
+			}
+
+			//! Commits a typed proxy value through the component's selected storage path.
+			//! \tparam TApi Component API type.
+			//! \tparam TValue Stored value type.
+			//! \param entity Entity receiving the value.
+			//! \param term Component entity or exact pair.
+			//! \param value Value to write.
+			template <typename TApi, typename TValue>
+			void write_back_set_typed(Entity entity, Entity term, const TValue& value) {
+				using FT = typename component_type_t<TApi>::TypeFull;
+
+				if constexpr (uses_ct_sparse_storage<FT>()) {
+					sparse_component_store_mut<FT>(term).add(entity) = value;
+					finish_write(entity, term);
+				} else {
+					const auto& ec = fetch(entity);
+					const auto row = ec.row;
+					ComponentSetter{*this, ec.pChunk, entity, row}.sset<TApi>(value);
+					finish_write(entity, term);
+				}
+			}
+
+			//! Commits a runtime-object proxy value through the component's selected storage path.
+			//! \tparam TValue Stored value type.
+			//! \param entity Entity receiving the value.
+			//! \param term Component entity or exact pair.
+			//! \param value Value to write.
+			template <typename TValue>
+			void write_back_set_object(Entity entity, Entity term, const TValue& value) {
+				using FT = typename component_type_t<TValue>::TypeFull;
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (can_use_sparse_component_storage<FT>(term)) {
+						sparse_component_add_value<FT>(term, entity) = value;
+						finish_write(entity, term);
+						return;
+					}
+				}
+
+				const auto& ec = fetch(entity);
+				const auto row = ec.row;
+				ComponentSetter{*this, ec.pChunk, entity, row}.template smut<TValue>(term) = value;
+				finish_write(entity, term);
+			}
+
+			//----------------------------------------------------------------------
+
+			//----------------------------------------------------------------------
+
+			//! Cache of components
+			ComponentCache m_compCache;
+			//! Cache of queries
+			QueryCache m_queryCache;
+			//! Reentrant per-world scratch frames reused by QueryInfo while matching archetypes.
+			//! Each active match() acquires one frame so nested queries don't clobber outer scratch.
+			cnt::darray<QueryMatchScratch*> m_queryMatchScratchStack;
+			//! Number of currently acquired scratch frames.
+			uint32_t m_queryMatchScratchDepth = 0;
+			//! A map of [Query*, Buffer].
+			//! Contains serialization buffers used by queries during their initialization.
+			//! Kept here because it's only necessary for query initialization and would just
+			//! take space on a query almost 100% of the time with no purpose at all.
+			//! Records removed as soon as the query is compiled.
+			QuerySerMap m_querySerMap;
+			uint32_t m_nextQuerySerId = 0;
+
+#if GAIA_OBSERVERS_ENABLED && GAIA_ASSERT_ENABLED
+			//! Number of active observer callbacks. Deferred cleanup is forbidden while non-zero.
+			uint32_t m_observerCallbackDepth = 0;
+#endif
+
+			//! Map of entity -> archetypes
+			EntityToArchetypeMap m_entityToArchetypeMap;
+			//! Revisions for entity -> archetype lookup buckets whose record order changed after removals.
+			EntityToArchetypeVersionMap m_entityToArchetypeMapVersions;
+			//! Map of [entity, Is relationship targets].
+			//!   w.as(herbivore, animal);
+			//!   w.as(rabbit, herbivore);
+			//!   w.as(hare, herbivore);
+			//! -->
+			//!   herbivore -> {animal}
+			//!   rabbit -> {herbivore}
+			//!   hare -> {herbivore}
+			PairMap m_entityToAsTargets;
+			//! Lazily built transitive closure for m_entityToAsTargets.
+			//! Cleared whenever an `Is` edge changes.
+			mutable cnt::map<EntityLookupKey, cnt::darray<Entity>> m_entityToAsTargetsTravCache;
+			//! Map of [entity, Is relationship relations]
+			//!   w.as(herbivore, animal);
+			//!   w.as(rabbit, herbivore);
+			//!   w.as(hare, herbivore);
+			//!-->
+			//!   animal -> {herbivore}
+			//!   herbivore -> {rabbit, hare}
+			PairMap m_entityToAsRelations;
+			//! Lazily built transitive closure for m_entityToAsRelations.
+			//! Cleared whenever an `Is` edge changes.
+			mutable cnt::map<EntityLookupKey, cnt::darray<Entity>> m_entityToAsRelationsTravCache;
+			//! Lazily built ancestor chains for unlimited source traversal.
+			//! Keyed by `(relation, source)` and cleared whenever a pair edge changes.
+			mutable cnt::map<EntityLookupKey, cnt::darray<Entity>> m_targetsTravCache;
+			//! Lazily built breadth-first descendant closures for unlimited source traversal.
+			//! Keyed by `(relation, source)` and cleared whenever a pair edge changes.
+			mutable cnt::map<EntityLookupKey, cnt::darray<Entity>> m_srcBfsTravCache;
+			//! Lazily built hierarchy levels for cached depth-ordered iteration.
+			//! Keyed by `(relation, target)` and cleared whenever a pair edge changes.
+			mutable cnt::map<EntityLookupKey, uint32_t> m_depthOrderCache;
+			//! Lazily built deduped sources for wildcard source traversal on a target entity.
+			//! Keyed by `target` and cleared whenever a pair edge changes.
+			mutable cnt::map<EntityLookupKey, cnt::darray<Entity>> m_sourcesAllCache;
+			//! Lazily built deduped targets for wildcard target traversal on a source entity.
+			//! Keyed by `source` and cleared whenever a pair edge changes.
+			mutable cnt::map<EntityLookupKey, cnt::darray<Entity>> m_targetsAllCache;
+			//! True when any relation traversal cache above has entries and pair changes must clear them.
+			mutable bool m_relationCachesPopulated = false;
+			//! True once any relation has an OnDeleteTarget policy and pair adds/removes must inspect target flags.
+			bool m_hasOnDeleteTargetPolicy = false;
+			//! True once any entity has a CantCombine relation and add paths must inspect combination constraints.
+			bool m_hasCantCombinePolicy = false;
+			//! True once any entity has a `(Requires, target)` pair and dependency paths must inspect relation targets.
+			bool m_hasRequiresPolicy = false;
+			//! Relation-target lookup for stored pair records.
+			PairLookup m_pairLookup;
+			//! Non-fragmenting exclusive relation stores keyed by the relation entity.
+			cnt::map<EntityLookupKey, NonFragmentingRelationStore> m_nonFragmentingRelationsByRel;
+			//! Non-fragmenting sparse component stores keyed by the component entity.
+			cnt::map<EntityLookupKey, SparseComponentStoreErased> m_sparseComponentsByComp;
+			//! Relation-local structural version used for dependency ordering caches.
+			cnt::map<EntityLookupKey, uint32_t> m_relationVersions;
+			//! Last relation version entry touched by pair add/remove hot paths.
+			Entity m_lastRelationVersionRelation = EntityBad;
+			//! Cached value pointer for m_lastRelationVersionRelation.
+			uint32_t* m_pLastRelationVersion = nullptr;
+			//! Sparse archetype-membership versions tracked only for entities used by source-cached queries.
+			//! Entries are created lazily on first snapshot to avoid any global per-entity tax.
+			mutable cnt::map<EntityLookupKey, uint32_t> m_srcEntityVersions;
+
+			enum class SparseStorageMode : uint8_t { None, Fragmenting, NonFragmenting };
+
+			//! Array of all archetypes
+			ArchetypeDArray m_archetypes;
+			//! Map of archetypes identified by their component hash code
+			ArchetypeMapByHash m_archetypesByHash;
+			//! Map of archetypes identified by their ID
+			ArchetypeMapById m_archetypesById;
+
+			//! Pointer to the root archetype
+			Archetype* m_pRootArchetype = nullptr;
+			//! Entity archetype
+			Archetype* m_pEntityArchetype = nullptr;
+			//! Pointer to the component archetype
+			Archetype* m_pCompArchetype = nullptr;
+			//! Id assigned to the next created archetype
+			ArchetypeId m_nextArchetypeId = 0;
+
+			//! Lifespan a newly created archetype starts with, see set_default_max_lifespan()
+			uint32_t m_defaultMaxLifespan = Archetype::MAX_ARCHETYPE_LIFESPAN;
+
+			//! Entity records
+			EntityContainers m_recs;
+			//! Name to entity mapping
+			cnt::map<EntityNameLookupKey, Entity> m_nameToEntity;
+			//! Alias to entity mapping. Ambiguous aliases are stored with EntityBad and treated as lookup misses.
+			cnt::map<EntityNameLookupKey, Entity> m_aliasToEntity;
+			//! Current scope used for component registration and relative component lookup.
+			Entity m_componentScope = EntityBad;
+			//! Ordered lookup scopes used for unqualified component lookup when component scope is not enough.
+			cnt::darray<Entity> m_componentLookupPath;
+			//! Cached dotted path for the current component scope.
+			mutable util::str m_componentScopePathCache;
+			//! Scope entity associated with the cached dotted path.
+			mutable Entity m_componentScopePathCacheEntity = EntityBad;
+			//! Whether the cached dotted path is up-to-date.
+			mutable bool m_componentScopePathCacheValid = false;
+
+			//! Archetypes requested to be deleted
+			cnt::set<ArchetypeLookupKey> m_reqArchetypesToDel;
+			//! Entities requested to be deleted
+			cnt::set<EntityLookupKey> m_reqEntitiesToDel;
+			//! Rows of delete-requested archetypes waiting for their own deletion rules
+			cnt::darray<Entity> m_archetypeRowsToDel;
+			//! Nesting depth of deletion requests. Queued archetype rows are deleted when it returns to zero.
+			uint32_t m_archetypeRowDelDepth = 0;
+			//! Record of the archetype row whose cleanup rules are running. It stays valid meanwhile.
+			const EntityContainer* m_pArchetypeRowInRules = nullptr;
+
+#if GAIA_OBSERVERS_ENABLED
+			//! Observers
+			ObserverRegistry m_observers;
+
+			//! One deferred `OnSet` notification recorded by a worker thread.
+			struct DeferredOnSet {
+				//! Component or pair id that was written.
+				Entity term;
+				//! Entity the write applied to.
+				Entity entity;
+			};
+
+			//! Notifications recorded while writes run outside the coordinator thread. One queue per
+			//! recording slot so workers never share a container. Drained once the region joins.
+			cnt::darray<cnt::darray<DeferredOnSet>> m_deferredOnSet;
+			//! Greater than zero while writes must record notifications instead of dispatching them.
+			uint32_t m_deferOnSetDepth = 0;
+#endif
+
+			//! One deferred sorted-query invalidation recorded by a worker thread.
+			//!
+			//! Sorted-query invalidation flips the shared `SortEntities` dirty bit on every sorted
+			//! query keyed by the written component. That shared flag is not safe to touch from a
+			//! worker thread, so parallel write regions record which component entities were written
+			//! and the coordinator applies the invalidation once the region joins. Invalidation is
+			//! idempotent, so recording the same entity from several workers is harmless.
+			struct DeferredSortInv {
+				//! Component entity whose version was bumped by a parallel write.
+				Entity entity;
+			};
+
+			//! Sorted-query invalidations recorded while a parallel region is open. One queue per
+			//! recording slot so workers never share a container. Drained once the region joins.
+			cnt::darray<cnt::darray<DeferredSortInv>> m_deferredSortInv;
+			//! Greater than zero while writes must record sorted invalidations instead of applying them.
+			uint32_t m_deferSortInvDepth = 0;
+
+#if GAIA_SYSTEMS_ENABLED
+			//! System runtime payload kept outside ECS component storage.
+			SystemRegistry m_systems;
+#endif
+
+			//! Command buffer for commands executed from a locked world. Not thread-safe
+			CommandBufferST* m_pCmdBufferST;
+			//! Command buffer for commands executed from a locked world. Thread-safe
+			CommandBufferMT* m_pCmdBufferMT;
+			//! Runtime callbacks have been shut down and must not execute anymore.
+			bool m_teardownActive = false;
+			//! Query used to iterate systems
+			Query m_systemsQuery;
+			//! Scratch storage reused by system schedule ordering.
+			detail::SystemScheduleScratch m_systemScheduleScratch;
+			//! Scheduler used by ECS parallel query/system runtime paths.
+			Sched m_sched{};
+			//! Scratch entity-visit stamps reused by wildcard relationship traversal helpers.
+			mutable cnt::darray<uint64_t> m_entityVisitStamps;
+			//! Monotonic stamp used with m_entityVisitStamps for O(1) per-call dedup.
+			mutable uint64_t m_entityVisitStamp = 0;
+
+#if GAIA_USE_SAFE_ENTITY
+			//! Depth of chunk operations that can run component destructors, see CompDtorScope.
+			uint32_t m_compDtorDepth = 0;
+			//! Entities whose last SafeEntity reference was released by a component destructor or while the
+			//! world was locked. A structural change was not possible then, so the next frame_cleanup() deletes them.
+			cnt::darray<Entity> m_safeEntityDels;
+#endif
+			//! Deepest m_entitiesDeleting searched linearly. Deeper stacks are mirrored in m_entitiesDeletingSet.
+			static constexpr uint32_t EntitiesDeletingScanMax = 16;
+			//! Active entity-deletion stack used to suppress duplicate reentrant deletion.
+			cnt::darray_ext<Entity, EntitiesDeletingScanMax> m_entitiesDeleting;
+			//! Mirrors m_entitiesDeleting while it is deeper than EntitiesDeletingScanMax, and is empty otherwise.
+			//! Bulk archetype deletion puts every row on the stack at once, so a linear scan would be quadratic.
+			//! Shallow stacks, the per-entity case, skip the hashing.
+			cnt::set<EntityLookupKey> m_entitiesDeletingSet;
+			//! Array of chunks to delete
+			cnt::darray<ArchetypeChunkPair> m_chunksToDel;
+			//! Array of archetypes to delete
+			ArchetypeDArray m_archetypesToDel;
+			//! Index of the last defragmented archetype in the archetype list
+			uint32_t m_defragLastArchetypeIdx = 0;
+			//! Maximum number of entities to defragment per world tick
+			uint32_t m_defragEntitiesPerTick = 100;
+
+			//! With every structural change world version changes
+			uint32_t m_worldVersion = 0;
+			//! Increments whenever an entity enable bit changes.
+			uint32_t m_enabledHierarchyVersion = 0;
+			//! Increments whenever an archetype enters or leaves the deletion-request set.
+			uint32_t m_archetypeDeleteVersion = 0;
+
+			uint32_t m_structuralChangesLocked = 0;
+
+			//! Returns the entity record for a non-pair id in one lookup.
+			//! Use this instead of `valid()` followed by `fetch()` when only the record is needed.
+			//! \param entity Ordinary entity to inspect.
+			//! \return Record pointer when the id and generation match a live slot. Nullptr otherwise.
+			GAIA_NODISCARD const EntityContainer* try_entity_record(Entity entity) const {
+				if (entity.pair())
+					return nullptr;
+
+				const auto* pEc = m_recs.entities.try_get(entity.id());
+				if (pEc == nullptr || pEc->data.gen != entity.gen())
+					return nullptr;
+
+				return pEc;
+			}
+
+			//! Returns the record for an ordinary entity or an exact pair in one lookup.
+			//! Wildcard pairs have no record and return nullptr.
+			//! \param entity Entity or exact pair.
+			//! \return Record pointer when the id is present. Nullptr otherwise.
+			GAIA_NODISCARD const EntityContainer* try_fetch_record(Entity entity) const {
+				if (entity == EntityBad)
+					return nullptr;
+
+				if (entity.pair()) {
+					if (is_wildcard(entity))
+						return nullptr;
+					return m_recs.pair_record_find(entity);
+				}
+
+				return try_entity_record(entity);
+			}
+
+			//! Returns the record for an ordinary entity or an exact pair in one lookup.
+			//! \param entity Entity or exact pair.
+			//! \return Mutable record pointer when the id is present. Nullptr otherwise.
+			GAIA_NODISCARD EntityContainer* try_fetch_record(Entity entity) {
+				return const_cast<EntityContainer*>(static_cast<const World*>(this)->try_fetch_record(entity));
+			}
+
+			//! Returns whether a relation record uses exclusive DontFragment storage.
+			//! \param ec Relation entity record.
+			//! \return True when both Exclusive and DontFragment flags are set.
+			GAIA_NODISCARD static bool record_uses_non_fragmenting_relation_storage(const EntityContainer& ec) {
+				return (ec.flags & EntityContainerFlags::IsExclusive) != 0 &&
+							 (ec.flags & EntityContainerFlags::IsDontFragment) != 0;
+			}
+
+		public:
+			World():
+					// Command buffer for the main thread
+					m_pCmdBufferST(cmd_buffer_st_create(*this)),
+					// Command buffer safe for concurrent access
+					m_pCmdBufferMT(cmd_buffer_mt_create(*this)) {
+				init();
+			}
+
+			~World() {
+				teardown();
+				done();
+				cmd_buffer_destroy(*m_pCmdBufferST);
+				cmd_buffer_destroy(*m_pCmdBufferMT);
+			}
+
+			World(World&&) = delete;
+			World(const World&) = delete;
+			World& operator=(World&&) = delete;
+			World& operator=(const World&) = delete;
+
+			//----------------------------------------------------------------------
+
+			//! Provides a cached query set up to work with the parent world.
+			//! Cached queries use local scope by default.
+			//! \return Valid query object
+			Query query() {
+				return Query(
+						*const_cast<World*>(this), m_queryCache,
+						//
+						m_nextArchetypeId, m_worldVersion, m_entityToArchetypeMap, m_entityToArchetypeMapVersions, m_archetypes);
+			}
+
+			//! Provides an uncached query set up to work with the parent world.
+			//! Uncached queries keep only a local immutable plan and rebuild transient matches on demand.
+			//! \return Valid query object
+			Query uquery() {
+				auto q = query();
+				q.kind(QueryCacheKind::None);
+				return q;
+			}
+
+#if GAIA_ECS_TEST_HOOKS
+			//! Verifies cached-query reverse-index consistency.
+			GAIA_NODISCARD bool verify_query_cache() const {
+				return m_queryCache.verify_archetype_tracking();
+			}
+
+			//! Returns the live cached-query record count for tests.
+			//! \return Number of live cached-query records.
+			GAIA_NODISCARD uint32_t test_query_cache_count() const {
+				return m_queryCache.test_query_count();
+			}
+#endif
+
+			//----------------------------------------------------------------------
+
+			//! Installs a custom scheduler used by ECS parallel execution paths.
+			//! \param sched Scheduler descriptor to bind to this world.
+			void set_sched(const Sched& sched) {
+				m_sched = sched;
+			}
+
+			//! Resets the world back to the default Gaia scheduler.
+			void reset_sched() {
+				m_sched = {};
+			}
+
+			//! Returns the resolved scheduler used by this world.
+			//! \return Bound scheduler or the default scheduler when none was installed.
+			GAIA_NODISCARD const Sched& sched() const {
+				return sched_resolve(m_sched);
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Returns the internal record for \a entity.
+			//! \param entity Entity or exact pair record.
+			//! \return Mutable entity container record.
+			GAIA_NODISCARD EntityContainer& fetch(Entity entity) {
+#if GAIA_ASSERT_ENABLED
+				// Wildcard pairs are not a real entity so we can't accept them
+				GAIA_ASSERT(!entity.pair() || !is_wildcard(entity));
+				if (!valid(entity)) {
+					// Delete-time cleanup can still reference an exact pair record after one endpoint
+					// has already become invalid. Delete-time observer diffs can also still reference
+					// a delete-requested, queued-for-delete, or stale removed entity record before it
+					// is invalidated. Allow these forms so cleanup and observer dispatch can finish.
+					const bool allowStaleExactPair = entity.pair() && m_recs.pair_record_contains(entity);
+					const bool allowDeleteRequestedEntity =
+							!entity.pair() && entity.id() < m_recs.entities.size() &&
+							m_recs.entities[entity.id()].data.gen == entity.gen() &&
+							(m_recs.entities[entity.id()].flags & EntityContainerFlags::DeleteRequested) != 0;
+					const bool allowQueuedDeleteEntity = !entity.pair() && m_reqEntitiesToDel.contains(EntityLookupKey(entity));
+					const bool allowStaleEntityRecord = !entity.pair() && entity.id() < m_recs.entities.size() &&
+																							m_recs.entities[entity.id()].data.gen == entity.gen() &&
+																							m_recs.entities[entity.id()].pArchetype != nullptr &&
+																							m_recs.entities[entity.id()].pChunk != nullptr;
+					GAIA_ASSERT(
+							allowStaleExactPair || allowDeleteRequestedEntity || allowQueuedDeleteEntity || allowStaleEntityRecord);
+				}
+#endif
+				return m_recs[entity];
+			}
+
+			//! Returns the internal record for \a entity.
+			//! \param entity Entity or exact pair record.
+			//! \return Const entity container record.
+			GAIA_NODISCARD const EntityContainer& fetch(Entity entity) const {
+#if GAIA_ASSERT_ENABLED
+				// Wildcard pairs are not a real entity so we can't accept them
+				GAIA_ASSERT(!entity.pair() || !is_wildcard(entity));
+				if (!valid(entity)) {
+					// Delete-time cleanup can still reference an exact pair record after one endpoint
+					// has already become invalid. Delete-time observer diffs can also still reference
+					// a delete-requested, queued-for-delete, or stale removed entity record before it
+					// is invalidated. Allow these forms so cleanup and observer dispatch can finish.
+					const bool allowStaleExactPair = entity.pair() && m_recs.pair_record_contains(entity);
+					const bool allowDeleteRequestedEntity =
+							!entity.pair() && entity.id() < m_recs.entities.size() &&
+							m_recs.entities[entity.id()].data.gen == entity.gen() &&
+							(m_recs.entities[entity.id()].flags & EntityContainerFlags::DeleteRequested) != 0;
+					const bool allowQueuedDeleteEntity = !entity.pair() && m_reqEntitiesToDel.contains(EntityLookupKey(entity));
+					const bool allowStaleEntityRecord = !entity.pair() && entity.id() < m_recs.entities.size() &&
+																							m_recs.entities[entity.id()].data.gen == entity.gen() &&
+																							m_recs.entities[entity.id()].pArchetype != nullptr &&
+																							m_recs.entities[entity.id()].pChunk != nullptr;
+					GAIA_ASSERT(
+							allowStaleExactPair || allowDeleteRequestedEntity || allowQueuedDeleteEntity || allowStaleEntityRecord);
+				}
+#endif
+				return m_recs[entity];
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Returns whether the record is already in delete-requested state.
+			//! Covers both explicit per-entity deletion and archetype-level forced teardown. The one
+			//! exception is the archetype row whose cleanup rules are running: like an entity deleted on its
+			//! own, it stays valid until they finish.
+			//! \param ec Entity container record
+			//! \return True if the record is marked for deletion. False otherwise.
+			GAIA_NODISCARD bool is_req_del(const EntityContainer& ec) const {
+				if ((ec.flags & EntityContainerFlags::DeleteRequested) != 0)
+					return true;
+				return is_req_del_or_queued(ec) && &ec != m_pArchetypeRowInRules;
+			}
+
+			//! Returns whether the record is delete-requested or waits as a row of a delete-requested
+			//! archetype. Either way, deleting it again must not start another deletion.
+			//! \param ec Entity container record
+			//! \return True if the record is marked or queued for deletion. False otherwise.
+			GAIA_NODISCARD static bool is_req_del_or_queued(const EntityContainer& ec) {
+				if ((ec.flags & EntityContainerFlags::DeleteRequested) != 0)
+					return true;
+				GAIA_ASSERT((ec.flags & EntityContainerFlags::Load) == 0);
+				return ec.pArchetype != nullptr && ec.pArchetype->is_req_del();
+			}
+
+			//! Returns a record that is present and not delete-requested.
+			//! This is the one-lookup replacement for `valid()` followed by `fetch()`.
+			//! \param entity Entity or exact pair.
+			//! \return Record pointer when the id is live. Nullptr otherwise.
+			GAIA_NODISCARD const EntityContainer* try_live_record(Entity entity) const {
+				const auto* pEc = try_fetch_record(entity);
+				if (pEc == nullptr || !valid(*pEc, entity))
+					return nullptr;
+				return pEc;
+			}
+
+			//! Returns a record that is present and not delete-requested.
+			//! \param entity Entity or exact pair.
+			//! \return Mutable record pointer when the id is live. Nullptr otherwise.
+			GAIA_NODISCARD EntityContainer* try_live_record(Entity entity) {
+				return const_cast<EntityContainer*>(static_cast<const World*>(this)->try_live_record(entity));
+			}
+
+#if GAIA_OBSERVERS_ENABLED
+	#if GAIA_ASSERT_ENABLED
+			//! Marks entry into an observer callback.
+			void observer_callback_enter() {
+				++m_observerCallbackDepth;
+			}
+
+			//! Marks exit from an observer callback.
+			void observer_callback_leave() {
+				GAIA_ASSERT(m_observerCallbackDepth != 0);
+				--m_observerCallbackDepth;
+			}
+
+			//! Returns whether an observer callback is currently executing.
+			GAIA_NODISCARD bool observer_callback_active() const {
+				return m_observerCallbackDepth != 0;
+			}
+	#endif
+#endif
+
+			//! Returns whether \a entity is already being processed by the deletion pipeline.
+			//! \param entity Entity to inspect.
+			//! \return True when deletion is active for \a entity.
+			GAIA_NODISCARD bool entity_deletion_active(Entity entity) const {
+				if GAIA_UNLIKELY (m_entitiesDeleting.size() > EntitiesDeletingScanMax)
+					return m_entitiesDeletingSet.contains(EntityLookupKey(entity));
+
+				for (auto deleting: m_entitiesDeleting) {
+					if (deleting == entity)
+						return true;
+				}
+				return false;
+			}
+
+			//! Marks \a entity as active in the deletion pipeline.
+			//! \param entity Entity entering deletion.
+			void entity_deletion_enter(Entity entity) {
+				GAIA_ASSERT(!entity_deletion_active(entity));
+				m_entitiesDeleting.push_back(entity);
+				if GAIA_UNLIKELY (m_entitiesDeleting.size() > EntitiesDeletingScanMax)
+					entity_deletion_set_enter();
+			}
+
+			//! Removes \a entity from the active deletion stack.
+			//! \param entity Entity leaving deletion.
+			void entity_deletion_leave([[maybe_unused]] Entity entity) {
+				GAIA_ASSERT(!m_entitiesDeleting.empty());
+				GAIA_ASSERT(m_entitiesDeleting.back() == entity);
+				if GAIA_UNLIKELY (m_entitiesDeleting.size() > EntitiesDeletingScanMax)
+					entity_deletion_set_leave();
+				m_entitiesDeleting.pop_back();
+			}
+
+			//! Adds the entity just pushed on a deep m_entitiesDeleting to m_entitiesDeletingSet. The push that
+			//! crosses EntitiesDeletingScanMax adds the whole stack. Kept out of line so the shallow path stays small.
+			GAIA_NOINLINE void entity_deletion_set_enter() {
+				if (m_entitiesDeleting.size() == EntitiesDeletingScanMax + 1) {
+					for (auto deleting: m_entitiesDeleting)
+						m_entitiesDeletingSet.insert(EntityLookupKey(deleting));
+				} else
+					m_entitiesDeletingSet.insert(EntityLookupKey(m_entitiesDeleting.back()));
+			}
+
+			//! Removes the top of a deep m_entitiesDeleting from m_entitiesDeletingSet before it is popped. The pop
+			//! that returns to EntitiesDeletingScanMax empties the set entry by entry, as clear() would cost as much
+			//! as the capacity a bulk deletion left behind.
+			GAIA_NOINLINE void entity_deletion_set_leave() {
+				if (m_entitiesDeleting.size() == EntitiesDeletingScanMax + 1) {
+					for (auto deleting: m_entitiesDeleting)
+						m_entitiesDeletingSet.erase(EntityLookupKey(deleting));
+				} else
+					m_entitiesDeletingSet.erase(EntityLookupKey(m_entitiesDeleting.back()));
+			}
+
+			//! Returns whether \a entity is marked DontFragment.
+			//! \param entity Entity
+			//! \return True if \a entity is marked DontFragment. False otherwise.
+			GAIA_NODISCARD bool is_dont_fragment(Entity entity) const {
+				const auto* pEc = try_entity_record(entity);
+				return pEc != nullptr && (pEc->flags & EntityContainerFlags::IsDontFragment) != 0;
+			}
+
+			//! Returns whether \a relation is non-fragmenting.
+			//! \param relation Relation entity
+			//! \return True if \a relation is valid and non-fragmenting. False otherwise.
+			GAIA_NODISCARD bool relation_is_non_fragmenting(Entity relation) const {
+				return is_dont_fragment(relation);
+			}
+
+			//! Returns whether \a relation uses non-fragmenting relation storage.
+			//! Only exclusive non-fragmenting relations use this storage path.
+			//! \param relation Relation entity
+			//! \return True if \a relation uses non-fragmenting relation storage. False otherwise.
+			GAIA_NODISCARD bool relation_uses_non_fragmenting_storage(Entity relation) const {
+				const auto* pEc = try_entity_record(relation);
+				return pEc != nullptr && record_uses_non_fragmenting_relation_storage(*pEc);
+			}
+
+			//! Returns true for hierarchy-like relations whose targets form an exclusive traversable parent chain.
+			//! ChildOf and Parent satisfy this today. DependsOn intentionally does not.
+			//! \param relation Relation entity to inspect.
+			//! \return True when \p relation is exclusive and traversable. False otherwise.
+			GAIA_NODISCARD bool relation_is_hierarchy(Entity relation) const {
+				const auto* pEc = try_entity_record(relation);
+				if (pEc == nullptr || (pEc->flags & EntityContainerFlags::IsExclusive) == 0 || pEc->pArchetype == nullptr)
+					return false;
+
+				return pEc->pArchetype->has(Traversable);
+			}
+
+			//! Returns true when the relation still participates in archetype identity.
+			//! Non-fragmenting relations such as Parent are excluded.
+			//! \param relation Relation entity to inspect.
+			//! \return True when \p relation participates in archetype identity. False otherwise.
+			GAIA_NODISCARD bool relation_is_fragmenting(Entity relation) const {
+				const auto* pEc = try_entity_record(relation);
+				if (pEc == nullptr)
+					return false;
+
+				return (pEc->flags & EntityContainerFlags::IsDontFragment) == 0;
+			}
+
+			//! Returns true for hierarchy relations that still fragment archetypes.
+			//! ChildOf satisfies this today, while Parent intentionally does not.
+			//! \param relation Relation entity to inspect.
+			//! \return True when \p relation is both hierarchical and fragmenting. False otherwise.
+			GAIA_NODISCARD bool relation_is_fragmenting_hierarchy(Entity relation) const {
+				return relation_is_hierarchy(relation) && relation_is_fragmenting(relation);
+			}
+
+			//! Returns true when the relation can drive cached depth-ordered iteration.
+			//! This requires a fragmenting relation whose target participates in archetype identity,
+			//! such as ChildOf, DependsOn, or a custom fragmenting relation. Cycles are still invalid
+			//! and are diagnosed by the depth cache itself.
+			//! \param relation Relation entity to inspect.
+			//! \return True when \p relation can provide archetype-level depth ordering. False otherwise.
+			GAIA_NODISCARD bool relation_supports_depth_order(Entity relation) const {
+				return relation_is_fragmenting(relation);
+			}
+
+			//! Returns true when depth-ordered iteration may safely prune disabled subtrees at archetype level.
+			//! Only fragmenting hierarchy relations qualify because all rows in the archetype then share
+			//! the same direct parent and therefore the same ancestor chain.
+			//! \param relation Relation entity to inspect.
+			//! \return True when disabled subtrees can be pruned at archetype granularity. False otherwise.
+			GAIA_NODISCARD bool relation_depth_order_prunes_disabled_subtrees(Entity relation) const {
+				return relation_is_fragmenting_hierarchy(relation);
+			}
+
+			//! Returns whether \a component stores instance data in sparse storage instead of archetype chunks.
+			//! This is the storage path used for sparse plain AoS components and exact pair AoS payloads.
+			//! \param component Component or exact pair id to inspect.
+			//! \return True when the component uses sparse storage.
+			GAIA_NODISCARD bool component_uses_sparse_storage(Entity component) const {
+				if (!component.pair()) {
+					const auto* pEc = try_entity_record(component);
+					if (pEc == nullptr || pEc->data.ent != 0)
+						return false;
+
+					const auto* pItem = comp_cache().find(component);
+					if (pItem == nullptr || pItem->comp.soa() != 0)
+						return false;
+
+					return gaia::ecs::component_uses_sparse_storage(pItem->comp);
+				}
+
+				const auto* pItem = comp_cache().find_pair_payload(component);
+				return pItem != nullptr && pItem->comp.soa() == 0 && gaia::ecs::component_uses_sparse_storage(pItem->comp);
+			}
+
+			//! Returns whether \a component is non-fragmenting.
+			//! Non-fragmenting component ids do not participate in archetype identity.
+			//! Exclusive+DontFragment is a relation trait, not empty-tag membership.
+			//! \param component Component entity to inspect.
+			//! \return True when the component is non-fragmenting.
+			GAIA_NODISCARD bool component_is_non_fragmenting(Entity component) const {
+				if (component.pair())
+					return sparse_storage_mode(component) == SparseStorageMode::NonFragmenting;
+
+				const auto* pEc = try_entity_record(component);
+				if (pEc == nullptr || pEc->data.ent != 0)
+					return false;
+
+				const auto flags = pEc->flags;
+				return (flags & EntityContainerFlags::IsDontFragment) != 0 && (flags & EntityContainerFlags::IsExclusive) == 0;
+			}
+
+			//! Returns the sparse storage mode used by a component.
+			//! \param component Component entity to inspect.
+			//! \return Sparse storage mode, or SparseStorageMode::None when the component is not sparse.
+			GAIA_NODISCARD SparseStorageMode sparse_storage_mode(Entity component) const {
+				if (!component.pair()) {
+					const auto* pEc = try_entity_record(component);
+					if (pEc == nullptr || pEc->data.ent != 0)
+						return SparseStorageMode::None;
+
+					const auto* pItem = comp_cache().find(component);
+					if (pItem == nullptr || pItem->comp.soa() != 0 || !gaia::ecs::component_uses_sparse_storage(pItem->comp))
+						return SparseStorageMode::None;
+
+					return (pEc->flags & EntityContainerFlags::IsDontFragment) != 0 ? SparseStorageMode::NonFragmenting
+																																					: SparseStorageMode::Fragmenting;
+				}
+
+				const auto* pItem = comp_cache().find_pair_payload(component);
+				if (pItem == nullptr || pItem->comp.soa() != 0 || !gaia::ecs::component_uses_sparse_storage(pItem->comp))
+					return SparseStorageMode::None;
+
+				return is_dont_fragment(pair_rel(*this, component)) ? SparseStorageMode::NonFragmenting
+																														: SparseStorageMode::Fragmenting;
+			}
+
+			//! Checks whether an inter-world copy includes a sparse component payload.
+			//! \param comp Component entity being copied.
+			//! \param srcEntity Source entity in \p store.
+			//! \param store Type-erased sparse store containing the source payload.
+			//! \return True when \p srcEntity owns the sparse payload and \p comp uses sparse storage.
+			GAIA_NODISCARD bool
+			copies_sparse_payload_inter(Entity comp, Entity srcEntity, const SparseComponentStoreErased& store) const {
+				return store.func_has(store.pStore, srcEntity) &&
+							 (component_is_non_fragmenting(comp) || sparse_storage_mode(comp) != SparseStorageMode::None);
+			}
+
+			//! Checks whether an inter-world copy includes a non-fragmenting sparse payload.
+			//! \param comp Component entity being copied.
+			//! \param srcEntity Source entity in \p store.
+			//! \param store Type-erased sparse store containing the source payload.
+			//! \return True when the copied sparse payload does not participate in archetype identity.
+			GAIA_NODISCARD bool copies_non_frag_sparse_payload_inter(
+					Entity comp, Entity srcEntity, const SparseComponentStoreErased& store) const {
+				return store.func_has(store.pStore, srcEntity) && component_is_non_fragmenting(comp);
+			}
+
+			//! Checks whether copying a sparse payload must also add its id to the destination entity.
+			//! \param comp Sparse component entity being copied.
+			//! \return True for non-fragmenting sparse components. False otherwise.
+			GAIA_NODISCARD bool sparse_copy_adds_id_inter(Entity comp) const {
+				return component_is_non_fragmenting(comp);
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Updates the cached component metadata in both the component cache and the core Component storage.
+			//! \param component Component entity.
+			//! \param comp New component descriptor value.
+			void sync_component_record(Entity component, Component comp) {
+				auto& item = comp_cache_mut().get(component);
+				item.comp = comp;
+
+				auto& ec = m_recs.entities[component.id()];
+				if (ec.pArchetype == nullptr || ec.pChunk == nullptr)
+					return;
+
+				const auto compIdx = core::get_index(ec.pArchetype->ids_view(), GAIA_ID(Component));
+				if (compIdx == BadIndex)
+					return;
+
+				auto* pComp = reinterpret_cast<Component*>(ec.pChunk->comp_ptr_mut(compIdx, ec.row));
+				*pComp = comp;
+			}
+
+			//! Validates runtime-reflection state against the live scope graph in debug builds.
+			//! Verifies that every semantic entity referenced by \a runtimeType resolves to a
+			//! reachable scope path. All checks are compiled out when assertions are disabled.
+			//! \param runtimeType Runtime descriptor whose semantic entities are validated.
+			void validate_runtime_semantics(const RuntimeTypeDesc& runtimeType) const {
+#if GAIA_ASSERT_ENABLED
+				auto validate = [&](Entity semantic) {
+					if (semantic == EntityBad)
+						return;
+					util::str path;
+					GAIA_ASSERT(build_scope_path(semantic, path));
+				};
+				validate(runtimeType.semantic);
+				GAIA_FOR(runtimeType.fieldCount)
+				validate(runtimeType.fields[i].semantic);
+#else
+				(void)runtimeType;
+#endif
+			}
+
+#if GAIA_JSON_ENABLED
+			//! Writes the deterministic world-level runtime schema manifest.
+			//! \param writer JSON writer receiving the manifest.
+			//! \param schemaHash Optional precomputed hash text included in the manifest.
+			//! \param includeRuntimeEntities Whether to include world-local entity ids and generations.
+			//! \return True when the manifest was serialized.
+			bool write_runtime_schema_json(ser::ser_json& writer, const char* schemaHash, bool includeRuntimeEntities) const;
+#endif
+
+			//! Finalizes a newly registered component entity after the cache record has been created.
+			//! This synchronizes the core `Component` value stored on the component entity, registers the
+			//! default symbol through the normal naming path, and optionally latches the `Sparse` trait.
+			//! \param item Registered component cache item.
+			//! \param addSparseTrait Whether runtime sparse registration should attach the `Sparse` trait.
+			void finalize_component_registration(const ComponentCacheItem& item, bool addSparseTrait) {
+				sync_component_record(item.entity, item.comp);
+				const auto symbol = item.symbol_name();
+				name_raw(item.entity, symbol.data(), symbol.size());
+				if (addSparseTrait && item.comp.storage_type() == DataStorageType::Sparse)
+					add(item.entity, Sparse);
+			}
+
+			//! Latches DontFragment on a component entity record.
+			//! Payload-bearing components are moved to sparse storage first. Empty tags only latch membership.
+			//! \param component Component entity.
+			//! \param ec Component entity container.
+			void set_component_dont_fragment(Entity component, EntityContainer& ec) {
+				if (component.comp()) {
+					const auto& item = comp_cache().get(component);
+					if (item.comp.size() != 0)
+						set_component_sparse_storage(component);
+				}
+
+				if ((ec.flags & EntityContainerFlags::IsDontFragment) != 0)
+					return;
+
+				ec.flags |= EntityContainerFlags::IsDontFragment;
+				invalidate_queries_for_structural_entity(EntityLookupKey(component));
+			}
+
+			//! Latches Sparse storage on a component entity before any instances exist.
+			//! This moves the payload out of chunks while keeping the id in archetype identity.
+			//! Only plain AoS components are supported.
+			//! \param component Component entity.
+			void set_component_sparse_storage(Entity component) {
+				GAIA_ASSERT(valid(component));
+				GAIA_ASSERT(component.comp());
+				GAIA_ASSERT(!component.pair());
+				GAIA_ASSERT(!component.entity());
+
+				const auto& item = comp_cache().get(component);
+				GAIA_ASSERT(item.entity == component);
+
+				if (item.comp.storage_type() == DataStorageType::Sparse)
+					return;
+
+				GAIA_ASSERT(item.comp.size() != 0);
+				if (item.comp.size() == 0)
+					return;
+
+				GAIA_ASSERT(item.comp.soa() == 0);
+				if (item.comp.soa() != 0)
+					return;
+
+				const auto directTermEntityCnt = count_direct_term_entities_direct(component);
+				GAIA_ASSERT(directTermEntityCnt == 0);
+				if (directTermEntityCnt != 0)
+					return;
+
+				auto comp = item.comp;
+				comp.data.storage = (IdentifierData)DataStorageType::Sparse;
+				sync_component_record(component, comp);
+			}
+
+			//! Returns whether a runtime storage trait can be attached to \a component.
+			//! Compile-time component payload storage is authoritative. Runtime component descriptors remain mutable.
+			//! Empty typed tags can still latch `DontFragment` before any instances exist.
+			//! \param component Component entity.
+			//! \param trait `Sparse` or `DontFragment`.
+			//! \return True when \a trait can be attached.
+			GAIA_NODISCARD bool can_add_component_storage_trait(Entity component, Entity trait) const {
+				if (!component.comp())
+					return true;
+
+				const auto& item = comp_cache().get(component);
+				if (item.func_create_sparse_store == nullptr || item.comp.storage_type() == DataStorageType::Sparse)
+					return true;
+
+				if (trait.id() != DontFragment.id() || item.comp.size() != 0)
+					return false;
+
+				return count_direct_term_entities_direct(component) == 0;
+			}
+
+			//! Sparse storage supports plain components and exact relationship pairs.
+			//! SoA layouts stay on the normal archetype path.
+			//! \tparam T Component type to inspect.
+			//! \return True when \a T can use the sparse storage path.
+			template <typename T>
+			GAIA_NODISCARD static constexpr bool supports_sparse_component_storage() {
+				using U = typename actual_type_t<T>::Type;
+				return !mem::is_soa_layout_v<U>;
+			}
+
+			//! Returns whether \a T has compile-time sparse payload storage.
+			//! \tparam T Component type to inspect.
+			//! \return True when `GAIA_STORAGE(Sparse)` is authoritative for \a T.
+			template <typename T>
+			GAIA_NODISCARD static constexpr bool uses_ct_sparse_storage() {
+				return uses_ct_sparse_storage_v<T>;
+			}
+
+			//! Registers the component or exact pair represented by compile-time type \a T.
+			//! \tparam T Component or pair type to register.
+			//! \return Registered component or exact pair entity.
+			template <typename T>
+			GAIA_NODISCARD Entity register_component_id() {
+				if constexpr (is_pair<T>::value) {
+					const auto relation = reg_comp<typename T::rel>().entity;
+					const auto target = reg_comp<typename T::tgt>().entity;
+					return Pair(relation, target);
+				} else
+					return reg_comp<T>().entity;
+			}
+
+			//! Registers a compile-time sparse component or exact pair and resolves its runtime fragmentation mode.
+			//! Exact pairs use their relationship entity as the owner of the DontFragment policy.
+			//! \tparam T Sparse component or pair type to register.
+			//! \param[out] mode Runtime sparse storage mode.
+			//! \return Registered component or exact pair entity.
+			template <typename T>
+			GAIA_NODISCARD GAIA_FORCEINLINE Entity register_sparse_component_id(SparseStorageMode& mode) {
+				const auto object = register_component_id<T>();
+				auto storageTraitOwner = object;
+				if constexpr (is_pair<T>::value)
+					storageTraitOwner = m_recs.entities.handle(object.id());
+
+				mode = is_dont_fragment(storageTraitOwner) ? SparseStorageMode::NonFragmenting : SparseStorageMode::Fragmenting;
+				return object;
+			}
+
+			//! Returns whether \a object is a usable sparse storage target for component type \a T.
+			//! \tparam T Component type to validate against.
+			//! \param object Component entity to inspect.
+			//! \return True when \a object can back sparse storage for \a T.
+			template <typename T>
+			GAIA_NODISCARD bool can_use_sparse_component_storage(Entity object) const {
+				if constexpr (!supports_sparse_component_storage<T>())
+					return false;
+				else {
+					if (try_live_record(object) == nullptr)
+						return false;
+
+					const auto* pItem = object.pair() ? comp_cache().find_pair_payload(object) : comp_cache().find(object);
+					if (pItem == nullptr || (!object.pair() && pItem->entity != object) ||
+							!gaia::ecs::component_uses_sparse_storage(pItem->comp))
+						return false;
+
+					using U = typename actual_type_t<T>::Type;
+					return pItem->comp.size() == (uint32_t)sizeof(U) && pItem->comp.alig() == (uint32_t)alignof(U) &&
+								 pItem->comp.soa() == 0;
+				}
+			}
+
+			//! Returns the sparse component store for \a component, or nullptr if it does not exist.
+			//! \tparam T Component payload type stored in the sparse store.
+			//! \param component Component entity identifying the store.
+			//! \return Pointer to the sparse store, or nullptr when absent.
+			template <typename T>
+			GAIA_NODISCARD auto* sparse_component_store(Entity component) {
+				using U = typename actual_type_t<T>::Type;
+				const auto it = m_sparseComponentsByComp.find(EntityLookupKey(component));
+				if (it == m_sparseComponentsByComp.end())
+					return (SparseComponentStore<U>*)nullptr;
+
+				return static_cast<SparseComponentStore<U>*>(it->second.pStore);
+			}
+
+			//! Returns the sparse component store for \a component, or nullptr if it does not exist.
+			//! \tparam T Component payload type stored in the sparse store.
+			//! \param component Component entity identifying the store.
+			//! \return Pointer to the sparse store, or nullptr when absent.
+			template <typename T>
+			GAIA_NODISCARD const auto* sparse_component_store(Entity component) const {
+				using U = typename actual_type_t<T>::Type;
+				const auto it = m_sparseComponentsByComp.find(EntityLookupKey(component));
+				if (it == m_sparseComponentsByComp.end())
+					return (const SparseComponentStore<U>*)nullptr;
+
+				return static_cast<const SparseComponentStore<U>*>(it->second.pStore);
+			}
+
+			//! Returns the sparse component store for \a component, creating it if needed.
+			//! \tparam T Component payload type stored in the sparse store.
+			//! \param component Component entity identifying the store.
+			//! \return Mutable sparse store reference.
+			template <typename T>
+			GAIA_NODISCARD auto& sparse_component_store_mut(Entity component) {
+				using U = typename actual_type_t<T>::Type;
+				const auto key = EntityLookupKey(component);
+				const auto it = m_sparseComponentsByComp.find(key);
+				if (it != m_sparseComponentsByComp.end())
+					return *static_cast<SparseComponentStore<U>*>(it->second.pStore);
+
+				auto* pStore = new SparseComponentStore<U>();
+				m_sparseComponentsByComp.emplace(key, make_sparse_component_store_erased(pStore));
+				return *pStore;
+			}
+
+			//! Adds or returns a sparse value through the store's erased payload interface.
+			//! \tparam T Expected payload type.
+			//! \param component Sparse component entity.
+			//! \param entity Entity owning the value.
+			//! \return Mutable typed payload reference.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) sparse_component_add_value(Entity component, Entity entity) {
+				using U = typename actual_type_t<T>::Type;
+				const auto it = m_sparseComponentsByComp.find(EntityLookupKey(component));
+				if (it == m_sparseComponentsByComp.end()) {
+					const auto* pItem =
+							component.pair() ? comp_cache().find_pair_payload(component) : comp_cache().find(component);
+					GAIA_ASSERT(pItem != nullptr);
+					auto& store = sparse_component_store_erased_mut(component, *pItem);
+					return *(U*)store.func_add(store.pStore, entity);
+				}
+				return *(U*)it->second.func_add(it->second.pStore, entity);
+			}
+
+			//! Returns a mutable sparse value through the store's erased payload interface.
+			//! \tparam T Expected payload type.
+			//! \param component Sparse component entity.
+			//! \param entity Entity owning the value.
+			//! \return Mutable typed payload reference.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) sparse_component_mut_value(Entity component, Entity entity) {
+				using U = typename actual_type_t<T>::Type;
+				const auto it = m_sparseComponentsByComp.find(EntityLookupKey(component));
+				GAIA_ASSERT(it != m_sparseComponentsByComp.end());
+				return *(U*)it->second.func_mut(it->second.pStore, entity);
+			}
+
+			//! Returns a read-only sparse value through the store's erased payload interface.
+			//! \tparam T Expected payload type.
+			//! \param component Sparse component entity.
+			//! \param entity Entity owning the value.
+			//! \return Read-only typed payload reference.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) sparse_component_get_value(Entity component, Entity entity) const {
+				using U = typename actual_type_t<T>::Type;
+				const auto it = m_sparseComponentsByComp.find(EntityLookupKey(component));
+				GAIA_ASSERT(it != m_sparseComponentsByComp.end());
+				return *(const U*)it->second.func_get(it->second.pStore, entity);
+			}
+
+			//! Returns a read-only sparse value for an ordinary entity without pair dispatch.
+			//! \tparam T Expected payload type.
+			//! \param component Sparse component entity.
+			//! \param entity Ordinary entity owning the value.
+			//! \return Read-only typed payload reference.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) sparse_component_get_entity_value(Entity component, Entity entity) const {
+				using U = typename actual_type_t<T>::Type;
+				const auto it = m_sparseComponentsByComp.find(EntityLookupKey(component));
+				GAIA_ASSERT(it != m_sparseComponentsByComp.end());
+				return *(const U*)it->second.func_get_entity(it->second.pStore, entity);
+			}
+
+			//! Returns the erased sparse store for \a component, or nullptr when absent.
+			//! \param component Sparse component entity.
+			//! \return Erased sparse store, or nullptr when no values have been stored.
+			GAIA_NODISCARD const SparseComponentStoreErased* sparse_component_store_erased(Entity component) const {
+				const auto it = m_sparseComponentsByComp.find(EntityLookupKey(component));
+				return it != m_sparseComponentsByComp.end() ? &it->second : nullptr;
+			}
+
+			//! Returns the erased sparse store for \a component, creating runtime-sized storage when absent.
+			//! \param component Sparse component entity.
+			//! \param item Runtime component metadata controlling payload size, alignment, and lifecycle.
+			//! \return Mutable erased sparse store.
+			GAIA_NODISCARD SparseComponentStoreErased&
+			sparse_component_store_erased_mut(Entity component, const ComponentCacheItem& item) {
+				const auto key = EntityLookupKey(component);
+				const auto it = m_sparseComponentsByComp.find(key);
+				if (it != m_sparseComponentsByComp.end())
+					return it->second;
+				if (item.func_create_sparse_store != nullptr) {
+					item.func_create_sparse_store(*this, component);
+					return m_sparseComponentsByComp.find(key)->second;
+				}
+
+				auto* pStore = new RuntimeSparseComponentStore(item);
+				return m_sparseComponentsByComp.emplace(key, make_sparse_component_store_erased(pStore)).first->second;
+			}
+
+			//! Finishes adding a sparse component after its payload has been created.
+			//! Fragmenting components also add the id directly to the entity archetype.
+			//! \param entity Entity receiving the component.
+			//! \param object Component entity being added.
+			//! \param mode Sparse storage mode for the component.
+			void finish_sparse_component_add_inter(Entity entity, Entity object, SparseStorageMode mode) {
+				GAIA_ASSERT(mode != SparseStorageMode::None);
+
+#if GAIA_OBSERVERS_ENABLED
+				auto ctx =
+						m_observers.prepare_diff(*this, ObserverEvent::OnAdd, EntitySpan{&object, 1}, EntitySpan{&entity, 1});
+#endif
+				if (object.pair() || mode == SparseStorageMode::Fragmenting) {
+					GAIA_ASSERT(!locked());
+					EntityBuilder eb(*this, entity);
+					eb.add_inter_init(object, false);
+					eb.commit();
+				}
+
+				notify_add_single(entity, object);
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(ctx));
+#endif
+			}
+
+			//! Removes all sparse component instances owned by \a entity.
+			//! \param entity Entity
+			void del_sparse_components(Entity entity) {
+				for (auto& [compKey, store]: m_sparseComponentsByComp) {
+					(void)compKey;
+					store.func_del(store.pStore, entity);
+				}
+			}
+
+			//! Deletes the sparse component store associated with \a component.
+			//! \param component Component entity identifying the store.
+			void del_sparse_component_store(Entity component) {
+				const auto it = m_sparseComponentsByComp.find(EntityLookupKey(component));
+				if (it == m_sparseComponentsByComp.end())
+					return;
+
+				it->second.func_clear_store(it->second.pStore);
+				it->second.func_del_store(it->second.pStore);
+				m_sparseComponentsByComp.erase(it);
+			}
+
+			//! Returns the non-fragmenting relation store for \a relation, or nullptr when absent.
+			//! \param relation Relation entity
+			//! \return Non-fragmenting relation store or nullptr if absent.
+			GAIA_NODISCARD const NonFragmentingRelationStore* nonfragmenting_relation_store(Entity relation) const {
+				const auto it = m_nonFragmentingRelationsByRel.find(EntityLookupKey(relation));
+				if (it == m_nonFragmentingRelationsByRel.end())
+					return nullptr;
+
+				return &it->second;
+			}
+
+			//! Returns the non-fragmenting relation store for \a relation, creating it if needed.
+			//! \param relation Relation entity
+			//! \return Mutable non-fragmenting relation store reference.
+			GAIA_NODISCARD NonFragmentingRelationStore& nonfragmenting_relation_store_mut(Entity relation) {
+				return m_nonFragmentingRelationsByRel[EntityLookupKey(relation)];
+			}
+
+			//! Sets an exclusive non-fragmenting relation target in an existing store.
+			//! \param store Relation store to update.
+			//! \param source Source entity whose target is replaced.
+			//! \param relation Non-fragmenting relation entity represented by \p store.
+			//! \param target New target entity.
+			void
+			nonfragmenting_relation_set(NonFragmentingRelationStore& store, Entity source, Entity relation, Entity target) {
+				GAIA_ASSERT(relation_uses_non_fragmenting_storage(relation));
+				if (store.set(source, target))
+					invalidate_relation_caches(relation);
+			}
+
+			//! Sets an exclusive non-fragmenting relation target, creating its store when necessary.
+			//! \param source Source entity whose target is replaced.
+			//! \param relation Non-fragmenting relation entity.
+			//! \param target New target entity.
+			void nonfragmenting_relation_set(Entity source, Entity relation, Entity target) {
+				auto& store = nonfragmenting_relation_store_mut(relation);
+				nonfragmenting_relation_set(store, source, relation, target);
+			}
+
+			//! Removes an exclusive non-fragmenting relation from a source entity.
+			//! \param source Source entity whose relation is removed.
+			//! \param relation Non-fragmenting relation entity.
+			//! \param target Expected target, or EntityBad to remove the current target unconditionally.
+			//! \return True when a stored relation was removed. False otherwise.
+			bool nonfragmenting_relation_del(Entity source, Entity relation, Entity target) {
+				const auto itStore = m_nonFragmentingRelationsByRel.find(EntityLookupKey(relation));
+				if (itStore == m_nonFragmentingRelationsByRel.end())
+					return false;
+
+				auto& store = itStore->second;
+				if (!store.remove(source, target))
+					return false;
+
+				if (store.empty())
+					m_nonFragmentingRelationsByRel.erase(itStore);
+
+				invalidate_relation_caches(relation);
+
+				return true;
+			}
+
+			//! Checks whether a source matches a possibly wildcarded non-fragmenting relation pair.
+			//! \param source Source entity to inspect.
+			//! \param object Exact or wildcard relation pair to match.
+			//! \return True when a stored non-fragmenting relation matches \p object. False otherwise.
+			GAIA_NODISCARD bool has_nonfragmenting_relation_pair(Entity source, Entity object) const {
+				if (!object.pair())
+					return false;
+
+				const auto relId = object.id();
+				const auto tgtId = object.gen();
+
+				if (relId != All.id()) {
+					const auto relation = get(relId);
+					if (!relation_uses_non_fragmenting_storage(relation))
+						return false;
+
+					const auto* pStore = nonfragmenting_relation_store(relation);
+					if (pStore == nullptr)
+						return false;
+
+					const auto target = pStore->target(source);
+					if (target == EntityBad)
+						return false;
+
+					return tgtId == All.id() || target.id() == tgtId;
+				}
+
+				if (tgtId == All.id()) {
+					for (const auto& it: m_nonFragmentingRelationsByRel) {
+						if (it.second.target(source) != EntityBad)
+							return true;
+					}
+					return false;
+				}
+
+				const auto target = get(tgtId);
+				for (const auto& it: m_nonFragmentingRelationsByRel) {
+					if (it.second.target(source) == target)
+						return true;
+				}
+
+				return false;
+			}
+
+			//! Removes all outgoing non-fragmenting relations from a source entity.
+			//! \param source Source entity whose stored relation targets are removed.
+			void del_nonfragmenting_relation_source(Entity source) {
+				cnt::darray<Entity> relations;
+				for (const auto& it: m_nonFragmentingRelationsByRel) {
+					const auto relation = it.first.entity();
+					if (it.second.target(source) != EntityBad)
+						relations.push_back(relation);
+				}
+				if (relations.empty())
+					return;
+
+				for (auto relation: relations) {
+					touch_rel_version(relation);
+					invalidate_queries_for_rel(relation);
+					(void)nonfragmenting_relation_del(source, relation, EntityBad);
+				}
+				clear_relation_caches();
+			}
+
+#if GAIA_OBSERVERS_ENABLED
+			//! Removes outgoing non-fragmenting relation pairs from \a source and emits OnDel observers.
+			//! \param source Source entity whose outgoing relation pairs are removed.
+			void del_nonfragmenting_relation_source_observed(Entity source) {
+				if (!m_observers.has_on_del_observers())
+					return;
+
+				cnt::darray<Entity> pairs;
+				for (const auto& it: m_nonFragmentingRelationsByRel) {
+					const auto relation = it.first.entity();
+					const auto target = it.second.target(source);
+					if (target != EntityBad)
+						pairs.push_back(Pair(relation, target));
+				}
+				if (pairs.empty())
+					return;
+
+				const auto& ec = fetch(source);
+				for (auto pair: pairs) {
+					const auto relation = try_get(pair.id());
+					const auto target = try_get(pair.gen());
+					if (relation == EntityBad || target == EntityBad)
+						continue;
+
+					const Entity object = Pair(relation, target);
+					auto delDiffCtx =
+							m_observers.prepare_diff(*this, ObserverEvent::OnDel, EntitySpan{&object, 1}, EntitySpan{&source, 1});
+					if (nonfragmenting_relation_del(source, relation, target))
+						m_observers.on_del(*this, *ec.pArchetype, EntitySpan{&object, 1}, EntitySpan{&source, 1});
+					m_observers.finish_diff(*this, GAIA_MOV(delDiffCtx));
+				}
+			}
+#endif
+
+			//! Removes every stored source-target mapping for a non-fragmenting relation.
+			//! \param relation Relation entity whose store is removed.
+			void del_nonfragmenting_relation(Entity relation) {
+				const auto itStore = m_nonFragmentingRelationsByRel.find(EntityLookupKey(relation));
+				if (itStore == m_nonFragmentingRelationsByRel.end())
+					return;
+
+				cnt::darray<EntityId> sourceIds;
+				cnt::darray<Entity> pairSources;
+				itStore->second.collect_source_ids(sourceIds);
+				itStore->second.collect_pair_sources(pairSources);
+
+				touch_rel_version(relation);
+				invalidate_queries_for_rel(relation);
+				for (auto sourceId: sourceIds)
+					(void)nonfragmenting_relation_del(get(sourceId), relation, EntityBad);
+				for (auto source: pairSources)
+					(void)nonfragmenting_relation_del(source, relation, EntityBad);
+				clear_relation_caches();
+			}
+
+			//! Checks whether any non-fragmenting exclusive relation targeting \p target uses an OnDeleteTarget rule.
+			//! \param target Target entity referenced by stored non-fragmenting relations.
+			//! \param cond OnDeleteTarget condition pair to test on each matching relation.
+			//! \return True when a matching relation has \p cond. False otherwise.
+			GAIA_NODISCARD bool has_nonfragmenting_relation_target_cond(Entity target, Pair cond) const {
+				for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+					if (store.sources(target) == nullptr)
+						continue;
+
+					if (has(relKey.entity(), cond))
+						return true;
+				}
+
+				return false;
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Resets runtime serializer binding to the default internal bin_stream backend.
+			void set_serializer(std::nullptr_t) {
+				// Always use the binary serializer as the default.
+				m_serializer = ser::make_serializer(m_stream);
+			}
+
+			//! Binds a pre-built runtime serializer handle.
+			//! \param serializer Serializer handle to store.
+			void set_serializer(ser::serializer serializer) {
+				GAIA_ASSERT(serializer.valid());
+				m_serializer = serializer;
+			}
+
+			//! Binds a concrete serializer object through ser::make_serializer().
+			//! \param serializer Serializer instance to wrap.
+			template <typename TSerializer>
+			void set_serializer(TSerializer& serializer) {
+				set_serializer(ser::make_serializer(serializer));
+			}
+
+			//! Returns the currently bound runtime serializer handle.
+			//! \return Bound serializer handle.
+			ser::serializer get_serializer() const {
+				return m_serializer;
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Applies structural and value changes to one entity.
+			struct EntityBuilder final {
+				friend class World;
+				friend CommandBufferST;
+				friend CommandBufferMT;
+				friend CommandBufferPlainST;
+				friend CommandBufferPlainMT;
+
+				//! World receiving the accumulated entity changes.
+				World& m_world;
+				//! Original archetype m_entity belongs to
+				Archetype* m_pArchetypeSrc = nullptr;
+				//! Original chunk m_entity belonged to
+				Chunk* m_pChunkSrc = nullptr;
+				//! Original row
+				uint32_t m_rowSrc = 0;
+				//! Target archetype we want to move to
+				Archetype* m_pArchetype = nullptr;
+				//! Target name
+				EntityNameLookupKey m_targetNameKey;
+				//! Target alias string pointer.
+				EntityNameLookupKey m_targetAliasKey;
+				//! Source entity
+				Entity m_entity;
+				//! Mutation path selected for fragmenting or non-fragmenting relation updates.
+				using RelationMutationPath = detail::RelationMutationPath;
+
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+				static constexpr uint32_t MAX_TERMS = 32;
+				static_assert(MAX_TERMS <= ChunkHeader::MAX_COMPONENTS);
+
+				//! Pending added ids, with the archetype component limit reserved inline.
+				cnt::darray_ext<Entity, MAX_TERMS> tl_new_comps;
+				//! Pending removed ids, with the archetype component limit reserved inline.
+				cnt::darray_ext<Entity, MAX_TERMS> tl_del_comps;
+#endif
+
+#if GAIA_OBSERVERS_ENABLED
+				//! Pending non-fragmenting relation removals, with the archetype component limit reserved inline.
+				cnt::darray_ext<Entity, MAX_TERMS> tl_del_nonfragmenting_relations;
+				//! Add-event diff contexts captured before relation bookkeeping is updated.
+				cnt::darray_ext<ObserverRegistry::DiffDispatchCtx, 4> tl_add_relation_diff_contexts;
+				//! Delete-event diff contexts captured before relation bookkeeping is updated.
+				cnt::darray_ext<ObserverRegistry::DiffDispatchCtx, 4> tl_del_relation_diff_contexts;
+#endif
+
+				//! Creates a builder from an already fetched entity record.
+				//! \param world World owning \a entity.
+				//! \param entity Entity to mutate.
+				//! \param ec Current storage record for \a entity.
+				EntityBuilder(World& world, Entity entity, EntityContainer& ec):
+						m_world(world), m_pArchetypeSrc(ec.pArchetype), m_pChunkSrc(ec.pChunk), m_rowSrc(ec.row),
+						m_pArchetype(ec.pArchetype), m_entity(entity) {
+					// Make sure entity matches the provided entity container record
+					GAIA_ASSERT(ec.pChunk->entity_view()[ec.row] == entity);
+				}
+
+				//! Creates a builder and fetches the entity's current storage record.
+				//! \param world World owning \a entity.
+				//! \param entity Entity to mutate.
+				EntityBuilder(World& world, Entity entity): m_world(world), m_entity(entity) {
+					const auto& ec = world.fetch(entity);
+					m_pArchetypeSrc = ec.pArchetype;
+					m_pChunkSrc = ec.pChunk;
+					m_rowSrc = ec.row;
+
+					m_pArchetype = ec.pArchetype;
+				}
+
+				//! Entity builders own one pending commit and therefore cannot be copied.
+				EntityBuilder(const EntityBuilder&) = delete;
+
+				//! Transfers ownership of a pending entity mutation.
+				//! \param other Builder whose pending mutation is transferred.
+				EntityBuilder(EntityBuilder&& other) noexcept:
+						m_world(other.m_world), m_pArchetypeSrc(other.m_pArchetypeSrc), m_pChunkSrc(other.m_pChunkSrc),
+						m_rowSrc(other.m_rowSrc), m_pArchetype(other.m_pArchetype), m_targetNameKey(other.m_targetNameKey),
+						m_targetAliasKey(other.m_targetAliasKey), m_entity(other.m_entity)
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+						,
+						tl_new_comps(GAIA_MOV(other.tl_new_comps)), tl_del_comps(GAIA_MOV(other.tl_del_comps))
+#endif
+#if GAIA_OBSERVERS_ENABLED
+						,
+						tl_del_nonfragmenting_relations(GAIA_MOV(other.tl_del_nonfragmenting_relations)),
+						tl_add_relation_diff_contexts(GAIA_MOV(other.tl_add_relation_diff_contexts)),
+						tl_del_relation_diff_contexts(GAIA_MOV(other.tl_del_relation_diff_contexts))
+#endif
+				{
+					other.m_pArchetype = nullptr;
+				}
+
+				EntityBuilder& operator=(const EntityBuilder&) = delete;
+				EntityBuilder& operator=(EntityBuilder&&) = delete;
+
+				~EntityBuilder() {
+					commit();
+				}
+
+				//! Commits all gathered changes and performs an archetype movement.
+				//! \warning Once called, the object is returned to its default state (as if no add/remove was ever called).
+				void commit() {
+					// No requests to change the archetype were made
+					if (m_pArchetype == nullptr) {
+						return;
+					}
+
+					// Change in archetype detected
+					if (m_pArchetypeSrc != m_pArchetype) {
+						auto& ec = m_world.fetch(m_entity);
+						GAIA_ASSERT(ec.pArchetype == m_pArchetypeSrc);
+#if GAIA_OBSERVERS_ENABLED
+						const bool hasOnDelObservers = !tl_del_comps.empty() && m_world.m_observers.has_on_del_observers();
+						const bool hasOnAddObservers = !tl_new_comps.empty() && m_world.m_observers.has_on_add_observers();
+						const bool hasNonfragmentingAdds = hasOnAddObservers && has_nonfragmenting_adds();
+						auto delDiffCtx = !hasOnDelObservers ? ObserverRegistry::DiffDispatchCtx{}
+																								 : m_world.m_observers.prepare_diff(
+																											 m_world, ObserverEvent::OnDel, EntitySpan{tl_del_comps},
+																											 EntitySpan{&m_entity, 1});
+						auto addDiffCtx =
+								!hasOnAddObservers ? ObserverRegistry::DiffDispatchCtx{}
+								: hasNonfragmentingAdds
+										? m_world.m_observers.prepare_diff_add_new(m_world, EntitySpan{tl_new_comps})
+										: m_world.m_observers.prepare_diff(
+													m_world, ObserverEvent::OnAdd, EntitySpan{tl_new_comps}, EntitySpan{&m_entity, 1});
+						if (hasNonfragmentingAdds)
+							m_world.m_observers.add_diff_targets(m_world, addDiffCtx, EntitySpan{&m_entity, 1});
+#endif
+
+#if GAIA_OBSERVERS_ENABLED
+						if (hasOnDelObservers)
+							flush_del_nonfragmenting_relations();
+#endif
+
+						// Trigger remove hooks if there are any
+						trigger_del_hooks(*m_pArchetype);
+
+						// Now that we have the final archetype move the entity to it
+						m_world.move_entity_raw(m_entity, ec, *m_pArchetype);
+
+						if (m_targetNameKey.str() != nullptr || m_targetAliasKey.str() != nullptr) {
+							const auto compIdx = ec.pChunk->comp_idx(GAIA_ID(EntityDesc));
+							// No need to update version, entity move did it already.
+							auto* pDesc = reinterpret_cast<EntityDesc*>(ec.pChunk->comp_ptr_mut_gen<false>(compIdx, ec.row));
+							GAIA_ASSERT(core::check_alignment(pDesc));
+
+							// Update the entity name string pointers if necessary
+							if (m_targetNameKey.str() != nullptr) {
+								pDesc->name = m_targetNameKey.str();
+								pDesc->name_len = m_targetNameKey.len();
+							}
+
+							// Update the entity alias string pointers if necessary
+							if (m_targetAliasKey.str() != nullptr) {
+								pDesc->alias = m_targetAliasKey.str();
+								pDesc->alias_len = m_targetAliasKey.len();
+							}
+						}
+
+						// Trigger add hooks if there are any
+						trigger_add_hooks(*m_pArchetype);
+#if GAIA_OBSERVERS_ENABLED
+						if (hasOnDelObservers)
+							m_world.m_observers.finish_diff(m_world, GAIA_MOV(delDiffCtx));
+						if (hasOnAddObservers)
+							m_world.m_observers.finish_diff(m_world, GAIA_MOV(addDiffCtx));
+#endif
+						cleanup_deleted_sparse_components();
+
+						m_pArchetypeSrc = ec.pArchetype;
+						m_pChunkSrc = ec.pChunk;
+						m_rowSrc = ec.row;
+					}
+					// Archetype is still the same. Make sure no chunk movement has happened.
+					else {
+#if GAIA_ASSERT_ENABLED
+						auto& ec = m_world.fetch(m_entity);
+						GAIA_ASSERT(ec.pChunk == m_pChunkSrc);
+#endif
+
+#if GAIA_OBSERVERS_ENABLED
+						const bool hasOnDelObservers = !tl_del_comps.empty() && m_world.m_observers.has_on_del_observers();
+						const bool hasOnAddObservers = !tl_new_comps.empty() && m_world.m_observers.has_on_add_observers();
+						const bool hasNonfragmentingAdds = hasOnAddObservers && has_nonfragmenting_adds();
+						auto delDiffCtx = !hasOnDelObservers ? ObserverRegistry::DiffDispatchCtx{}
+																								 : m_world.m_observers.prepare_diff(
+																											 m_world, ObserverEvent::OnDel, EntitySpan{tl_del_comps},
+																											 EntitySpan{&m_entity, 1});
+						auto addDiffCtx =
+								!hasOnAddObservers ? ObserverRegistry::DiffDispatchCtx{}
+								: hasNonfragmentingAdds
+										? m_world.m_observers.prepare_diff_add_new(m_world, EntitySpan{tl_new_comps})
+										: m_world.m_observers.prepare_diff(
+													m_world, ObserverEvent::OnAdd, EntitySpan{tl_new_comps}, EntitySpan{&m_entity, 1});
+						if (hasNonfragmentingAdds)
+							m_world.m_observers.add_diff_targets(m_world, addDiffCtx, EntitySpan{&m_entity, 1});
+#endif
+
+#if GAIA_OBSERVERS_ENABLED
+						if (hasOnDelObservers)
+							flush_del_nonfragmenting_relations();
+#endif
+
+						if (m_targetNameKey.str() != nullptr || m_targetAliasKey.str() != nullptr) {
+							const auto compIdx = m_pChunkSrc->comp_idx(GAIA_ID(EntityDesc));
+							auto* pDesc = reinterpret_cast<EntityDesc*>(m_pChunkSrc->comp_ptr_mut_gen<true>(compIdx, m_rowSrc));
+							GAIA_ASSERT(core::check_alignment(pDesc));
+
+							// Update the entity name string pointers if necessary
+							if (m_targetNameKey.str() != nullptr) {
+								pDesc->name = m_targetNameKey.str();
+								pDesc->name_len = m_targetNameKey.len();
+							}
+
+							// Update the entity alias string pointers if necessary
+							if (m_targetAliasKey.str() != nullptr) {
+								pDesc->alias = m_targetAliasKey.str();
+								pDesc->alias_len = m_targetAliasKey.len();
+							}
+						}
+
+#if GAIA_OBSERVERS_ENABLED
+						if (hasOnDelObservers)
+							m_world.m_observers.on_del(m_world, *m_pArchetypeSrc, EntitySpan{tl_del_comps}, EntitySpan{&m_entity, 1});
+						if (hasOnAddObservers)
+							m_world.m_observers.on_add(m_world, *m_pArchetypeSrc, EntitySpan{tl_new_comps}, EntitySpan{&m_entity, 1});
+						if (hasOnDelObservers)
+							m_world.m_observers.finish_diff(m_world, GAIA_MOV(delDiffCtx));
+						if (hasOnAddObservers)
+							m_world.m_observers.finish_diff(m_world, GAIA_MOV(addDiffCtx));
+#endif
+						cleanup_deleted_sparse_components();
+					}
+
+#if GAIA_OBSERVERS_ENABLED
+					finish_relation_diff_contexts();
+#endif
+
+					// Finalize the builder by reseting the archetype pointer
+					m_pArchetype = nullptr;
+					m_targetNameKey = {};
+					m_targetAliasKey = {};
+				}
+
+				//! Assigns a \a name to entity. Ignored if used with pair.
+				//! The string is copied and kept internally.
+				//! \param name A null-terminated string.
+				//! \param len String length. If zero, the length is calculated.
+				//! \warning Name is expected to be unique. If it is not this function does nothing.
+				//! \warning The name can't contain the character '.'. This character is reserved for hierarchical lookups
+				//!          such as "parent.child.subchild".
+				void name(const char* name, uint32_t len = 0) {
+					name_inter<true>(name, len);
+				}
+
+				//! Assigns a \a name to entity. Ignored if used with pair.
+				//! The string is NOT copied. Your are responsible for its lifetime.
+				//! \param name Pointer to a stable null-terminated string.
+				//! \param len String length. If zero, the length is calculated.
+				//! \warning The name is expected to be unique. If it is not this function does nothing.
+				//! \warning The name can't contain the character '.'. This character is reserved for hierarchical lookups
+				//!          such as "parent.child.subchild".
+				//! \warning In this case the string is NOT copied and NOT stored internally. You are responsible for its
+				//!          lifetime. The pointer also needs to be stable. Otherwise, any time your storage tries to move
+				//!          the string to a different place you have to unset the name before it happens and set it anew
+				//!          after the move is done.
+				void name_raw(const char* name, uint32_t len = 0) {
+					name_inter<false>(name, len);
+				}
+
+				//! Assigns an alias to entity. Ignored if used with pair.
+				//! The string is copied and kept internally.
+				//! \param alias A null-terminated string.
+				//! \param len String length. If zero, the length is calculated.
+				void alias(const char* alias, uint32_t len = 0) {
+					alias_inter<true>(alias, len);
+				}
+
+				//! Assigns an alias to entity. Ignored if used with pair.
+				//! The string is NOT copied. You are responsible for its lifetime.
+				//! \param alias Pointer to a stable null-terminated string.
+				//! \param len String length. If zero, the length is calculated.
+				void alias_raw(const char* alias, uint32_t len = 0) {
+					alias_inter<false>(alias, len);
+				}
+
+				//! Removes any name associated with the entity
+				void del_name() {
+					if (m_entity.pair())
+						return;
+
+					// The following block is essentially the same as this but without the archetype pointer access:
+					// const auto compIdx = core::get_index(m_pArchetypeSrc->ids_view(), GAIA_ID(EntityDesc));
+					const auto compIdx = core::get_index(m_pChunkSrc->ids_view(), GAIA_ID(EntityDesc));
+					if (compIdx == BadIndex)
+						return;
+
+					{
+						const auto* pDesc = reinterpret_cast<const EntityDesc*>(m_pChunkSrc->comp_ptr(compIdx, m_rowSrc));
+						GAIA_ASSERT(core::check_alignment(pDesc));
+						if (pDesc->name == nullptr)
+							return;
+					}
+
+					// TODO: Trigger the hooks/observers manually here? I do not like essentially calling comp_ptr twice here.
+					//       The second one could be replaced with const cast + emit.
+					//  No need to update version, commit() will do it
+					auto* pDesc = reinterpret_cast<EntityDesc*>(m_pChunkSrc->comp_ptr_mut_gen<false>(compIdx, m_rowSrc));
+					del_name_inter(EntityNameLookupKey(pDesc->name, pDesc->name_len, 0));
+					m_world.invalidate_scope_path_cache();
+
+					pDesc->name = nullptr;
+					pDesc->name_len = 0;
+					if (pDesc->alias == nullptr)
+						del_inter(GAIA_ID(EntityDesc));
+
+					m_targetNameKey = {};
+				}
+
+				//! Removes any alias associated with the entity
+				void del_alias() {
+					if (m_entity.pair())
+						return;
+
+					// The following block is essentially the same as this but without the archetype pointer access:
+					// const auto compIdx = core::get_index(m_pArchetypeSrc->ids_view(), GAIA_ID(EntityDesc));
+					const auto compIdx = core::get_index(m_pChunkSrc->ids_view(), GAIA_ID(EntityDesc));
+					if (compIdx == BadIndex)
+						return;
+
+					{
+						const auto* pDesc = reinterpret_cast<const EntityDesc*>(m_pChunkSrc->comp_ptr(compIdx, m_rowSrc));
+						GAIA_ASSERT(core::check_alignment(pDesc));
+						if (pDesc->alias == nullptr)
+							return;
+					}
+
+					// TODO: Trigger the hooks/observers manually here? I do not like essentially calling comp_ptr twice here.
+					//       The second one could be replaced with const cast + emit.
+					//  No need to update version, commit() will do it
+					auto* pDesc = reinterpret_cast<EntityDesc*>(m_pChunkSrc->comp_ptr_mut_gen<false>(compIdx, m_rowSrc));
+					del_alias_inter(EntityNameLookupKey(pDesc->alias, pDesc->alias_len, 0));
+
+					pDesc->alias = nullptr;
+					pDesc->alias_len = 0;
+					if (pDesc->name == nullptr)
+						del_inter(GAIA_ID(EntityDesc));
+
+					m_targetAliasKey = {};
+				}
+
+				//! Prepares an archetype movement by following the "add" edge of the current archetype.
+				//! \param entity Added entity
+				//! \return This builder.
+				EntityBuilder& add(Entity entity) {
+					GAIA_PROF_SCOPE(EntityBuilder::add);
+					GAIA_ASSERT(m_world.valid(m_entity));
+					GAIA_ASSERT(m_world.valid(entity));
+
+					add_inter(entity);
+					return *this;
+				}
+
+				//! Prepares an archetype movement by following the "add" edge of the current archetype.
+				//! \param pair Relationship pair
+				//! \return This builder.
+				//! \warning Pair endpoints must be ordinary entities.
+				EntityBuilder& add(Pair pair) {
+					GAIA_PROF_SCOPE(EntityBuilder::add);
+					GAIA_ASSERT(m_world.valid(m_entity));
+					GAIA_ASSERT(m_world.valid(pair.first()));
+					GAIA_ASSERT(m_world.valid(pair.second()));
+					GAIA_ASSERT(!pair.first().pair());
+					GAIA_ASSERT(!pair.second().pair());
+					GAIA_ASSERT(pair.first() != Is || !m_entity.pair());
+
+					add_inter(pair);
+					return *this;
+				}
+
+				//! Shortcut for add(Pair(Is, entityBase)).
+				//! Effectively makes an entity inherit from \p entityBase.
+				//! \param entityBase Entity to inherit from
+				//! \return This builder.
+				EntityBuilder& as(Entity entityBase) {
+					GAIA_ASSERT(!m_entity.pair());
+					GAIA_ASSERT(!entityBase.pair());
+					return add(Pair(Is, entityBase));
+				}
+
+				//! Marks the entity as a prefab.
+				//! \return This builder.
+				EntityBuilder& prefab() {
+					return add(Prefab);
+				}
+
+				//! Check if \p entity inherits from \p entityBase.
+				//! \param entity Source entity
+				//! \param entityBase Base entity
+				//! \return True if entity inherits from entityBase
+				GAIA_NODISCARD bool as(Entity entity, Entity entityBase) const {
+					return static_cast<const World&>(m_world).is(entity, entityBase);
+				}
+
+				//! Shortcut for add(Pair(ChildOf, parent))
+				//! \param parent Parent entity to attach through ChildOf.
+				//! \return This builder.
+				EntityBuilder& child(Entity parent) {
+					return add(Pair(ChildOf, parent));
+				}
+
+				//! Takes care of registering the component type used by \p T.
+				//! \tparam T Component or pair type to register.
+				//! \return Registered component or pair entity.
+				template <typename T>
+				Entity register_component() {
+					return m_world.template register_component_id<T>();
+				}
+
+				//! Adds the registered component or pair type to the pending entity state.
+				//! \tparam T Component or pair type to add.
+				//! \return This builder.
+				template <typename T>
+				EntityBuilder& add() {
+					verify_comp<T>();
+					add(register_component<T>());
+					return *this;
+				}
+
+				//! Prepares an archetype movement by following the "del" edge of the current archetype.
+				//! \param entity Removed entity
+				//! \return This builder.
+				EntityBuilder& del(Entity entity) {
+					GAIA_PROF_SCOPE(EntityBuilder::del);
+					GAIA_ASSERT(m_world.valid(m_entity));
+					GAIA_ASSERT(m_world.valid(entity));
+					del_inter(entity);
+					return *this;
+				}
+
+				//! Prepares an archetype movement by following the "del" edge of the current archetype.
+				//! \param pair Relationship pair
+				//! \return This builder.
+				EntityBuilder& del(Pair pair) {
+					GAIA_PROF_SCOPE(EntityBuilder::add);
+					GAIA_ASSERT(m_world.valid(m_entity));
+					GAIA_ASSERT(m_world.valid(pair.first()));
+					GAIA_ASSERT(m_world.valid(pair.second()));
+					del_inter(pair);
+					return *this;
+				}
+
+				//! Removes the registered component or pair type from the pending entity state.
+				//! \tparam T Component or pair type to remove.
+				//! \return This builder.
+				template <typename T>
+				EntityBuilder& del() {
+					verify_comp<T>();
+					del(register_component<T>());
+					return *this;
+				}
+
+			private:
+				//! Triggers add hooks for the component if there are any.
+				//! \param newArchetype New archetype we belong to
+				void trigger_add_hooks(const Archetype& newArchetype) {
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+					if GAIA_UNLIKELY (m_world.tearing_down()) {
+						tl_new_comps.clear();
+						(void)newArchetype;
+						return;
+					}
+
+					m_world.lock();
+
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+					// if (hookCnt > 0)
+					{
+						// Trigger component hooks first
+						for (auto entity: tl_new_comps) {
+							const auto* pItem = m_world.component_item(m_entity, entity);
+							if (pItem == nullptr)
+								continue;
+							const auto& hooks = pItem->hooks();
+							if (hooks.func_add != nullptr)
+								hooks.func_add(m_world, *pItem, m_entity);
+						}
+					}
+	#endif
+
+	#if GAIA_OBSERVERS_ENABLED
+					// Trigger observers second
+					if (m_world.m_observers.has_on_add_observers())
+						m_world.m_observers.on_add(m_world, newArchetype, std::span<Entity>{tl_new_comps}, {&m_entity, 1});
+	#else
+					(void)newArchetype;
+	#endif
+
+					tl_new_comps.clear();
+
+					m_world.unlock();
+#endif
+				}
+
+				//! Triggers del hooks for the component if there are any.
+				//! \param newArchetype New archetype we belong to
+				void trigger_del_hooks(const Archetype& newArchetype) {
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+					if GAIA_UNLIKELY (m_world.tearing_down()) {
+						tl_del_comps.clear();
+						(void)newArchetype;
+						return;
+					}
+
+					m_world.notify_inherited_del_dependents(m_entity, std::span<Entity>{tl_del_comps});
+					m_world.lock();
+
+	#if GAIA_OBSERVERS_ENABLED
+					// Trigger observers first
+					if (m_world.m_observers.has_on_del_observers())
+						m_world.m_observers.on_del(m_world, newArchetype, std::span<Entity>{tl_del_comps}, {&m_entity, 1});
+	#else
+					(void)newArchetype;
+	#endif
+
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+					// if (hookCnt > 0)
+					{
+						// Trigger component hooks second
+						for (auto entity: tl_del_comps) {
+							const auto* pItem = m_world.component_item(m_entity, entity);
+							if (pItem == nullptr)
+								continue;
+							const auto& hooks = pItem->hooks();
+							if (hooks.func_del != nullptr)
+								hooks.func_del(m_world, *pItem, m_entity);
+						}
+					}
+	#endif
+
+					m_world.unlock();
+#endif
+				}
+
+				//! Removes deferred sparse payloads for ids detached by the builder.
+				void cleanup_deleted_sparse_components() {
+					for (auto entity: tl_del_comps) {
+						if (entity.pair() || m_world.sparse_storage_mode(entity) != SparseStorageMode::Fragmenting)
+							continue;
+
+						const auto it = m_world.m_sparseComponentsByComp.find(EntityLookupKey(entity));
+						if (it != m_world.m_sparseComponentsByComp.end())
+							it->second.func_del(it->second.pStore, m_entity);
+					}
+
+					tl_del_comps.clear();
+				}
+
+#if GAIA_OBSERVERS_ENABLED
+				//! Finishes observer diffs captured before relation bookkeeping mutations.
+				void finish_relation_diff_contexts() {
+					for (auto& ctx: tl_del_relation_diff_contexts)
+						m_world.m_observers.finish_diff(m_world, GAIA_MOV(ctx));
+					tl_del_relation_diff_contexts.clear();
+					for (auto& ctx: tl_add_relation_diff_contexts)
+						m_world.m_observers.finish_diff(m_world, GAIA_MOV(ctx));
+					tl_add_relation_diff_contexts.clear();
+				}
+
+				//! Returns whether the pending additions include relation data stored outside the archetype.
+				//! \return True when at least one pending pair uses the non-fragmenting path.
+				GAIA_NODISCARD bool has_nonfragmenting_adds() const {
+					for (auto entity: tl_new_comps) {
+						if (entity.pair() && relation_mutation_path(entity) == RelationMutationPath::NonFragmentingExclusive)
+							return true;
+					}
+					return false;
+				}
+
+				//! Flushes deferred non-fragmenting relation removals after observer dispatch.
+				void flush_del_nonfragmenting_relations() {
+					for (auto entity: tl_del_nonfragmenting_relations)
+						del_nonfragmenting_relation_id(entity);
+					tl_del_nonfragmenting_relations.clear();
+				}
+#endif
+
+				//! Applies add policies and required ids before attaching an id.
+				//! \param entity Id being attached.
+				//! \param relationPath Storage path selected for a pair id.
+				//! \return True when add processing may continue.
+				bool handle_add_entity(Entity entity, RelationMutationPath relationPath) {
+					cnt::sarray_ext<Entity, ChunkHeader::MAX_COMPONENTS> targets;
+					const bool isPair = entity.pair();
+					GAIA_ASSERT(isPair || relationPath == RelationMutationPath::Fragmenting);
+
+					if (isPair)
+						m_world.invalidate_scope_path_cache();
+
+					// Handle entity combinations that can't be together
+					if (m_world.m_hasCantCombinePolicy) {
+						const auto& ecMain = m_world.fetch(entity);
+						if ((ecMain.flags & EntityContainerFlags::HasCantCombine) != 0) {
+							m_world.targets(entity, CantCombine, [&targets](Entity target) {
+								targets.push_back(target);
+							});
+							for (auto e: targets) {
+								if (m_pArchetype->has(e)) {
+#if GAIA_ASSERT_ENABLED
+									GAIA_ASSERT2(false, "Trying to add an entity which can't be combined with the source");
+									print_archetype_entities(m_world, *m_pArchetype, entity, true);
+#endif
+									return false;
+								}
+							}
+						}
+					}
+
+					// Handle archetype-backed exclusive pairs. Exclusive non-fragmenting relations replace their target in
+					// non-fragmenting relation storage and never need archetype-pair replacement checks.
+					if (isPair && relationPath != RelationMutationPath::NonFragmentingExclusive) {
+						// Check if (rel, tgt)'s rel part is exclusive
+						const auto& ecRel = m_world.m_recs.entities[entity.id()];
+						//! An archetype with no pairs cannot already contain another target for this exclusive relation.
+						if ((ecRel.flags & EntityContainerFlags::IsExclusive) != 0 && m_pArchetype->pairs() != 0) {
+							auto rel = Entity(entity.id(), ecRel.data.gen, (bool)ecRel.data.ent, (bool)ecRel.data.pair);
+							auto tgt = m_world.try_get(entity.gen());
+							if (tgt == EntityBad)
+								return false;
+
+							const auto targetsCntMax = m_pArchetype->pair_matches(Pair(rel, All));
+							if (targetsCntMax > 1) {
+#if GAIA_ASSERT_ENABLED
+								GAIA_ASSERT2(
+										false, "Trying to add a pair with exclusive relationship but there are multiple targets present. "
+													 "Make sure to add the Exclusive property before any relationships with it are created.");
+								print_archetype_entities(m_world, *m_pArchetype, entity, true);
+#endif
+								return false;
+							}
+
+							if (targetsCntMax == 1) {
+								// Make sure to remove the (rel, tgt0) so only the new (rel, tgt1) remains.
+								targets.clear();
+								m_world.targets_if(m_entity, rel, [&targets](Entity target) {
+									targets.push_back(target);
+									return false;
+								});
+
+								GAIA_ASSERT(targets.size() <= 1);
+								if (!targets.empty() && tgt != targets[0]) {
+									// Exclusive relationship replaces the previous one.
+									// We need to check if the old one can be removed.
+									// This is what del_inter does on the inside.
+									// It first checks if entity can be deleted and calls handle_del afterwards.
+									if (!can_del(entity)) {
+#if GAIA_ASSERT_ENABLED
+										GAIA_ASSERT2(
+												false,
+												"Trying to replace an exclusive relationship but the entity which is getting removed has "
+												"dependencies.");
+										print_archetype_entities(m_world, *m_pArchetype, entity, true);
+#endif
+										return false;
+									}
+
+									handle_del(ecs::Pair(rel, targets[0]));
+								}
+							}
+						}
+					}
+
+					// Handle requirements
+					if (m_world.m_hasRequiresPolicy) {
+						targets.clear();
+						m_world.targets(entity, Requires, [&targets](Entity target) {
+							targets.push_back(target);
+						});
+
+						for (auto e: targets) {
+							auto* pArchetype = m_pArchetype;
+							handle_add<false>(e);
+							if (m_pArchetype != pArchetype) {
+								const auto requiredPath = e.pair() ? relation_mutation_path_add(e) : RelationMutationPath::Fragmenting;
+								handle_add_entity(e, requiredPath);
+							}
+						}
+					}
+
+					return true;
+				}
+
+				//! Checks whether an id in the pending archetype requires \a entity.
+				//! \param entity Candidate dependency target.
+				//! \return True when removing \a entity would violate a Requires edge.
+				GAIA_NODISCARD bool has_Requires_tgt(Entity entity) const {
+					if (!m_world.m_hasRequiresPolicy)
+						return false;
+
+					// Don't allow to delete entity if something in the archetype requires it
+					auto ids = m_pArchetype->ids_view();
+					for (auto e: ids) {
+						if (m_world.has(e, Pair(Requires, entity)))
+							return true;
+					}
+
+					return false;
+				}
+
+				//! Sets or clears one entity-container flag.
+				//! \param flags Flag set to modify.
+				//! \param flag Flag bit to update.
+				//! \param enable True to set the bit, false to clear it.
+				static void set_flag(EntityContainerFlagsType& flags, EntityContainerFlags flag, bool enable) {
+					if (enable)
+						flags |= flag;
+					else
+						flags &= ~flag;
+				}
+
+				//! Sets or clears one flag on an entity record.
+				//! \param entity Entity whose record is modified.
+				//! \param flag Flag bit to update.
+				//! \param enable True to set the bit, false to clear it.
+				void set_flag(Entity entity, EntityContainerFlags flag, bool enable) {
+					auto& ec = m_world.fetch(entity);
+					set_flag(ec.flags, flag, enable);
+				}
+
+				//! Updates policy flags affected by attaching or detaching an id.
+				//! \param entity Id whose policy effects are evaluated.
+				//! \param enable True for attachment, false for detachment.
+				void try_set_flags(Entity entity, bool enable) {
+					if (entity.pair()) {
+						if (entity.id() == Is.id()) {
+							auto& ec = m_world.fetch(entity);
+							try_set_Is(ec, entity, enable);
+						}
+
+						if (entity.id() == CantCombine.id() || entity.id() == OnDelete.id() || entity.id() == OnDeleteTarget.id()) {
+							auto& ecMain = m_world.fetch(m_entity);
+							try_set_CantCombine(ecMain, entity, enable);
+							try_set_OnDelete(ecMain, entity, enable);
+							try_set_OnDeleteTargetPolicy(ecMain, entity, enable);
+						}
+						if (enable && entity.id() == Requires.id())
+							m_world.m_hasRequiresPolicy = true;
+
+						if (m_world.m_hasOnDeleteTargetPolicy)
+							try_set_OnDeleteTarget(entity, enable);
+						return;
+					}
+
+					auto& ecMain = m_world.fetch(m_entity);
+					try_set_CantCombine(ecMain, entity, enable);
+
+					auto& ec = m_world.fetch(entity);
+					try_set_Is(ec, entity, enable);
+					try_set_IsExclusive(ecMain, entity, enable);
+					if (enable)
+						try_set_sticky_component_traits(ecMain, entity);
+					try_set_IsSingleton(ecMain, entity, enable);
+					try_set_OnDelete(ecMain, entity, enable);
+					try_set_OnDeleteTargetPolicy(ecMain, entity, enable);
+				}
+
+				//! Updates inheritance bookkeeping flags for an Is pair.
+				//! \param ec Record receiving the derived flag.
+				//! \param entity Candidate Is pair.
+				//! \param enable True for attachment, false for detachment.
+				void try_set_Is(EntityContainer& ec, Entity entity, bool enable) {
+					if (!entity.pair() || entity.id() != Is.id())
+						return;
+
+					set_flag(ec.flags, EntityContainerFlags::HasAliasOf, enable);
+				}
+
+				//! Updates CantCombine policy state for an id mutation.
+				//! \param ec Source entity record.
+				//! \param entity Candidate CantCombine pair.
+				//! \param enable True for attachment, false for detachment.
+				void try_set_CantCombine(EntityContainer& ec, Entity entity, bool enable) {
+					if (!entity.pair() || entity.id() != CantCombine.id())
+						return;
+
+					GAIA_ASSERT(entity != m_entity);
+
+					// Setting the flag can be done right away.
+					// One bit can only contain information about one pair but there
+					// can be any amount of CanCombine pairs formed with an entity.
+					// Therefore, when resetting the flag, we first need to check if there
+					// are any other targets with this flag set and only reset the flag
+					// if there is only one present.
+					if (enable) {
+						m_world.m_hasCantCombinePolicy = true;
+						set_flag(ec.flags, EntityContainerFlags::HasCantCombine, true);
+					} else if ((ec.flags & EntityContainerFlags::HasCantCombine) != 0) {
+						uint32_t targets = 0;
+						m_world.targets(m_entity, CantCombine, [&targets]([[maybe_unused]] Entity entity) {
+							++targets;
+						});
+						if (targets == 1)
+							set_flag(ec.flags, EntityContainerFlags::HasCantCombine, false);
+					}
+				}
+
+				//! Updates the Exclusive relation trait flag.
+				//! \param ec Relation entity record.
+				//! \param entity Candidate Exclusive trait.
+				//! \param enable True for attachment, false for detachment.
+				void try_set_IsExclusive(EntityContainer& ec, Entity entity, bool enable) {
+					if (entity.pair() || entity.id() != Exclusive.id())
+						return;
+
+					set_flag(ec.flags, EntityContainerFlags::IsExclusive, enable);
+				}
+
+				//! Applies storage traits that remain fixed after component registration.
+				//! \param ecMain Component entity record.
+				//! \param entity Candidate storage trait.
+				void try_set_sticky_component_traits(EntityContainer& ecMain, Entity entity) {
+					if (entity.pair())
+						return;
+
+					if (entity.id() == DontFragment.id()) {
+						m_world.set_component_dont_fragment(m_entity, ecMain);
+						return;
+					}
+
+					if (entity.id() == Sparse.id())
+						m_world.set_component_sparse_storage(m_entity);
+				}
+
+				//! Classifies pair relation mutation for existing pair endpoints.
+				//! \param entity Pair id being added or removed.
+				//! \return Pair mutation storage path.
+				GAIA_NODISCARD RelationMutationPath relation_mutation_path(Entity entity) const noexcept {
+					GAIA_ASSERT(entity.pair());
+
+					return relation_mutation_path_from_flags(m_world.fetch(m_world.get(entity.id())).flags);
+				}
+
+				//! Classifies pair relation mutation where endpoints are already valid.
+				//! \param entity Pair id being added.
+				//! \return Pair mutation storage path.
+				GAIA_NODISCARD RelationMutationPath relation_mutation_path_add(Entity entity) const noexcept {
+					GAIA_ASSERT(entity.pair());
+
+					const auto& ecRel = m_world.m_recs.entities[entity.id()];
+					return relation_mutation_path_from_flags(ecRel.flags);
+				}
+
+				//! Classifies pair relation mutation from relation flags.
+				//! \param flags Relation entity flags.
+				//! \return Pair mutation storage path.
+				GAIA_NODISCARD static RelationMutationPath
+				relation_mutation_path_from_flags(EntityContainerFlagsType flags) noexcept {
+					const auto nonFragmentingExclusiveFlags =
+							EntityContainerFlags::IsExclusive | EntityContainerFlags::IsDontFragment;
+					if ((flags & nonFragmentingExclusiveFlags) == nonFragmentingExclusiveFlags)
+						return RelationMutationPath::NonFragmentingExclusive;
+
+					if ((flags & EntityContainerFlags::IsDontFragment) == 0)
+						return RelationMutationPath::Fragmenting;
+
+					return RelationMutationPath::NonFragmentingArchetypePair;
+				}
+
+				//! Checks whether \a entity is already present in archetype storage.
+				//! \param entity Id being queried.
+				//! \return True if the id is already attached to the source entity through archetype storage.
+				GAIA_NODISCARD bool has_archetype_id(Entity entity) const {
+					return m_pArchetype->has(entity);
+				}
+
+				//! Checks whether \a entity is already present on the exclusive non-fragmenting relation path.
+				//! \param entity Pair id being queried.
+				//! \return True if the pair is attached to the source entity.
+				GAIA_NODISCARD bool has_nonfragmenting_relation_id(Entity entity) const {
+					GAIA_ASSERT(entity.pair());
+					return m_world.has_nonfragmenting_relation_pair(m_entity, entity);
+				}
+
+				//! Checks whether \a entity is already present on the non-fragmenting archetype-backed pair path.
+				//! \param entity Pair id being queried.
+				//! \return True if the pair is attached to the source entity.
+				GAIA_NODISCARD bool has_nonfragmenting_archetype_pair_id(Entity entity) const {
+					GAIA_ASSERT(entity.pair());
+					return has_archetype_id(entity);
+				}
+
+				//! Adds an archetype-stored id to the pending target archetype.
+				//! \param entity Id to attach.
+				void add_archetype_id(Entity entity) {
+					m_pArchetype = m_world.foc_archetype_add_no_graph(m_pArchetype, entity);
+				}
+
+				//! Adds \a entity to the pending target archetype.
+				//! \param entity Id to attach.
+				//! \return True when the add succeeded.
+				GAIA_NODISCARD bool add_id(Entity entity) {
+					add_archetype_id(entity);
+					return true;
+				}
+
+				//! Removes a non-fragmenting exclusive relation from non-fragmenting relation storage.
+				//! \param entity Pair id to detach.
+				void del_nonfragmenting_relation_id(Entity entity) {
+					GAIA_ASSERT(entity.pair());
+
+					const auto relation = m_world.try_get(entity.id());
+					const auto target = m_world.try_get(entity.gen());
+					if (relation != EntityBad && target != EntityBad)
+						(void)m_world.nonfragmenting_relation_del(m_entity, relation, target);
+				}
+
+				//! Removes an archetype-stored id from the pending target archetype.
+				//! \param entity Id to detach.
+				void del_archetype_id(Entity entity) {
+					m_pArchetype = m_world.foc_archetype_del_no_graph(m_pArchetype, entity);
+				}
+
+				//! Removes \a entity from the pending target archetype.
+				//! \param entity Id to remove.
+				void del_id(Entity entity) {
+					del_archetype_id(entity);
+				}
+
+				//! Updates OnDeleteTarget policy flags.
+				//! \param ec Relation entity record.
+				//! \param entity Candidate OnDeleteTarget policy pair.
+				//! \param enable True for attachment, false for detachment.
+				void try_set_OnDeleteTargetPolicy(EntityContainer& ec, Entity entity, bool enable) {
+					if (entity == Pair(OnDeleteTarget, Delete))
+						set_flag(ec.flags, EntityContainerFlags::OnDeleteTarget_Delete, enable);
+					else if (entity == Pair(OnDeleteTarget, Remove))
+						set_flag(ec.flags, EntityContainerFlags::OnDeleteTarget_Remove, enable);
+					else if (entity == Pair(OnDeleteTarget, Error))
+						set_flag(ec.flags, EntityContainerFlags::OnDeleteTarget_Error, enable);
+					else
+						return;
+
+					if (enable)
+						m_world.m_hasOnDeleteTargetPolicy = true;
+				}
+
+				//! Propagates a relation OnDeleteTarget policy to a pair target.
+				//! \param entity Pair whose target policy state changes.
+				//! \param enable True for attachment, false for detachment.
+				void try_set_OnDeleteTarget(Entity entity, bool enable) {
+					if (!entity.pair())
+						return;
+
+					if (enable) {
+						GAIA_ASSERT(m_world.valid(m_world.get(entity.id())));
+						GAIA_ASSERT(m_world.valid(m_world.get(entity.gen())));
+
+						const auto& ecRel = m_world.m_recs.entities[entity.id()];
+						const auto policyFlags = ecRel.flags & (EntityContainerFlags::OnDeleteTarget_Delete |
+																										EntityContainerFlags::OnDeleteTarget_Remove |
+																										EntityContainerFlags::OnDeleteTarget_Error);
+						if (policyFlags == 0)
+							return;
+
+						auto& ecTgt = m_world.m_recs.entities[entity.gen()];
+						if ((policyFlags & EntityContainerFlags::OnDeleteTarget_Delete) != 0)
+							set_flag(ecTgt.flags, EntityContainerFlags::OnDeleteTarget_Delete, true);
+						else if ((policyFlags & EntityContainerFlags::OnDeleteTarget_Remove) != 0)
+							set_flag(ecTgt.flags, EntityContainerFlags::OnDeleteTarget_Remove, true);
+						else if ((policyFlags & EntityContainerFlags::OnDeleteTarget_Error) != 0)
+							set_flag(ecTgt.flags, EntityContainerFlags::OnDeleteTarget_Error, true);
+						return;
+					}
+
+					const auto rel = m_world.try_get(entity.id());
+					if (rel == EntityBad)
+						return;
+
+					const auto& ecRel = m_world.fetch(rel);
+					const auto policyFlags =
+							ecRel.flags & (EntityContainerFlags::OnDeleteTarget_Delete | EntityContainerFlags::OnDeleteTarget_Remove |
+														 EntityContainerFlags::OnDeleteTarget_Error);
+					if (policyFlags == 0)
+						return;
+
+					const auto tgt = m_world.try_get(entity.gen());
+					if (tgt == EntityBad)
+						return;
+
+					// Adding a pair to an entity with OnDeleteTarget relationship.
+					// We need to update the target entity's flags.
+					if ((policyFlags & EntityContainerFlags::OnDeleteTarget_Delete) != 0)
+						set_flag(tgt, EntityContainerFlags::OnDeleteTarget_Delete, enable);
+					else if ((policyFlags & EntityContainerFlags::OnDeleteTarget_Remove) != 0)
+						set_flag(tgt, EntityContainerFlags::OnDeleteTarget_Remove, enable);
+					else if ((policyFlags & EntityContainerFlags::OnDeleteTarget_Error) != 0)
+						set_flag(tgt, EntityContainerFlags::OnDeleteTarget_Error, enable);
+				}
+
+				//! Updates OnDelete policy flags.
+				//! \param ec Entity record receiving the policy.
+				//! \param entity Candidate OnDelete policy pair.
+				//! \param enable True for attachment, false for detachment.
+				void try_set_OnDelete(EntityContainer& ec, Entity entity, bool enable) {
+					if (entity == Pair(OnDelete, Delete))
+						set_flag(ec.flags, EntityContainerFlags::OnDelete_Delete, enable);
+					else if (entity == Pair(OnDelete, Remove))
+						set_flag(ec.flags, EntityContainerFlags::OnDelete_Remove, enable);
+					else if (entity == Pair(OnDelete, Error))
+						set_flag(ec.flags, EntityContainerFlags::OnDelete_Error, enable);
+				}
+
+				//! Updates the singleton trait flag.
+				//! \param ec Component entity record.
+				//! \param entity Candidate singleton trait.
+				//! \param enable True for attachment, false for detachment.
+				void try_set_IsSingleton(EntityContainer& ec, Entity entity, bool enable) {
+					const bool isSingleton = enable && m_entity == entity;
+					set_flag(ec.flags, EntityContainerFlags::IsSingleton, isSingleton);
+				}
+
+				//! Handles dependency-depth bookkeeping for a DependsOn mutation.
+				//! \param entity Candidate DependsOn id.
+				//! \param enable True for attachment, false for detachment.
+				void handle_DependsOn(Entity entity, bool enable) {
+					(void)entity;
+					(void)enable;
+					// auto& ec = m_world.fetch(entity);
+					// if (enable) {
+					// 	// Calculate the depth in the dependency tree
+					// 	uint32_t depth = 1;
+
+					// 	auto e = entity;
+					// 	if (m_world.valid(e)) {
+					// 		while (true) {
+					// 			auto tgt = m_world.target(e, DependsOn);
+					// 			if (tgt == EntityBad)
+					// 				break;
+
+					// 			++depth;
+					// 			e = tgt;
+					// 		}
+					// 	}
+					// 	ec.depthDependsOn = (uint8_t)depth;
+
+					// 	// Update depth for all entities depending on this one
+					// 	auto q = m_world.uquery();
+					// 	q.all(ecs::Pair(DependsOn, m_entity)) //
+					// 			.each([&](Entity dependingEntity) {
+					// 				auto& ecDependingEntity = m_world.fetch(dependingEntity);
+					// 				ecDependingEntity.depthDependsOn += (uint8_t)depth;
+					// 			});
+					// } else {
+					// 	// Update depth for all entities depending on this one
+					// 	auto q = m_world.uquery();
+					// 	q.all(ecs::Pair(DependsOn, m_entity)) //
+					// 			.each([&](Entity dependingEntity) {
+					// 				auto& ecDependingEntity = m_world.fetch(dependingEntity);
+					// 				ecDependingEntity.depthDependsOn -= ec.depthDependsOn;
+					// 			});
+
+					// 	// Reset the depth
+					// 	ec.depthDependsOn = 0;
+					// }
+				}
+
+				//! Invalidates caches affected by a relation edge mutation.
+				//! \param entity Pair id being mutated.
+				void invalidate_relation_change(Entity entity) {
+					GAIA_ASSERT(entity.pair());
+
+					auto relation = m_world.m_recs.entities.handle(entity.id());
+					m_world.invalidate_relation_caches(relation);
+				}
+
+				//! Links live Is bookkeeping for an added Is pair.
+				//! \param entity Pair id being added.
+				//! \return True when bookkeeping succeeded. False when the target endpoint is stale.
+				GAIA_NODISCARD bool link_is_relation(Entity entity) {
+					GAIA_ASSERT(entity.pair());
+
+					if (entity.id() != Is.id())
+						return true;
+
+					GAIA_ASSERT(!m_entity.pair());
+
+					auto e = m_world.try_get(entity.gen());
+					if (e == EntityBad)
+						return false;
+
+					EntityLookupKey entityKey(m_entity);
+					EntityLookupKey eKey(e);
+
+					// m_entity -> {..., e}
+					auto& entity_to_e = m_world.m_entityToAsTargets[entityKey];
+					entity_to_e.insert(eKey);
+					m_world.m_entityToAsTargetsTravCache = {};
+					// e -> {..., m_entity}
+					auto& e_to_entity = m_world.m_entityToAsRelations[eKey];
+					e_to_entity.insert(entityKey);
+					m_world.m_entityToAsRelationsTravCache = {};
+
+					// Make sure the relation entity is registered as archetype so queries can find it
+					// auto& ec = m_world.fetch(tgt);
+					// m_world.add_entity_archetype_pair(m_entity, ec.pArchetype);
+
+					// Cached queries might need to be invalidated.
+					m_world.invalidate_queries_for_entity({Is, e});
+					return true;
+				}
+
+				//! Unlinks live Is bookkeeping for a removed Is pair.
+				//! \param entity Pair id being removed.
+				void unlink_is_relation(Entity entity) {
+					GAIA_ASSERT(entity.pair());
+
+					if (entity.id() != Is.id())
+						return;
+
+					auto e = m_world.try_get(entity.gen());
+					if (e != EntityBad)
+						m_world.unlink_live_is_relation(m_entity, e);
+				}
+
+				//! Finalizes bookkeeping for an attached id.
+				//! \tparam IsBootstrap True while bootstrapping core ids.
+				//! \param entity Attached id.
+				template <bool IsBootstrap>
+				void finish_add_id(Entity entity) {
+					if constexpr (!IsBootstrap) {
+						handle_DependsOn(entity, true);
+
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+						tl_new_comps.push_back(entity);
+#endif
+					}
+				}
+
+				//! Queues bookkeeping for a detached id.
+				//! \param entity Detached id.
+				void finish_del_id(Entity entity) {
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+					tl_del_comps.push_back(entity);
+#endif
+				}
+
+				//! Creates the sparse payload instance associated with an attached relationship pair.
+				//! \param pair Exact relationship pair being attached.
+				void add_sparse_pair_payload(Entity pair) {
+					if (!m_world.component_uses_sparse_storage(pair))
+						return;
+
+					const auto* pItem = m_world.comp_cache().find_pair_payload(pair);
+					GAIA_ASSERT(pItem != nullptr);
+					auto& store = m_world.sparse_component_store_erased_mut(pair, *pItem);
+					(void)store.func_add(store.pStore, m_entity);
+				}
+
+				//! Attaches a non-fragmenting component through membership storage rather than archetype identity.
+				//! \param component Component entity being attached.
+				void add_nonfragmenting_component_id(Entity component) {
+					const auto* pItem = m_world.comp_cache().find(component);
+					GAIA_ASSERT(pItem != nullptr);
+					if (pItem == nullptr)
+						return;
+
+					auto& store = m_world.sparse_component_store_erased_mut(component, *pItem);
+					(void)store.func_add(store.pStore, m_entity);
+				}
+
+				//! Removes a non-fragmenting component from membership storage.
+				//! \param component Component entity being detached.
+				void del_nonfragmenting_component_id(Entity component) {
+					const auto it = m_world.m_sparseComponentsByComp.find(EntityLookupKey(component));
+					if (it != m_world.m_sparseComponentsByComp.end())
+						it->second.func_del(it->second.pStore, m_entity);
+				}
+
+				//! Removes the sparse payload instance associated with a detached relationship pair.
+				//! \param pair Exact relationship pair being detached.
+				void del_sparse_pair_payload(Entity pair) {
+					const auto it = m_world.m_sparseComponentsByComp.find(EntityLookupKey(pair));
+					if (it != m_world.m_sparseComponentsByComp.end())
+						it->second.func_del(it->second.pStore, m_entity);
+				}
+
+				//! Attaches an id through its selected storage path.
+				//! \tparam IsBootstrap True while bootstrapping core ids.
+				//! \param entity Id to attach.
+				//! \return True when the id was attached.
+				template <bool IsBootstrap>
+				bool handle_add(Entity entity) {
+					if (entity.pair()) {
+						const auto relationPath = relation_mutation_path_add(entity);
+						if (relationPath == RelationMutationPath::NonFragmentingExclusive)
+							return handle_add_nonfragmenting_relation<IsBootstrap>(entity);
+
+						return handle_add_archetype_relation<IsBootstrap>(entity);
+					}
+
+#if GAIA_ASSERT_ENABLED
+					World::verify_add(m_world, *m_pArchetype, m_entity, entity);
+#endif
+
+					// Don't add the same entity twice
+					if (has_archetype_id(entity))
+						return false;
+
+					if (m_world.component_is_non_fragmenting(entity)) {
+						if (m_world.has_direct_sparse_component_inter(m_entity, entity))
+							return false;
+
+						try_set_flags(entity, true);
+						if constexpr (!IsBootstrap) {
+#if GAIA_OBSERVERS_ENABLED
+							auto addDiffCtx = m_world.m_observers.prepare_diff(
+									m_world, ObserverEvent::OnAdd, EntitySpan{&entity, 1}, EntitySpan{&m_entity, 1});
+#endif
+							add_nonfragmenting_component_id(entity);
+							handle_DependsOn(entity, true);
+							m_world.mark_non_fragmenting_membership_changed(m_entity, entity);
+							m_world.notify_add_single(m_entity, entity);
+#if GAIA_OBSERVERS_ENABLED
+							m_world.m_observers.finish_diff(m_world, GAIA_MOV(addDiffCtx));
+#endif
+						} else {
+							add_nonfragmenting_component_id(entity);
+						}
+						return true;
+					}
+
+					if (is_component_storage_trait(entity) && !m_world.can_add_component_storage_trait(m_entity, entity))
+						return false;
+
+					try_set_flags(entity, true);
+
+					if (!add_id(entity))
+						return false;
+
+					finish_add_id<IsBootstrap>(entity);
+
+					return true;
+				}
+
+				//! Attaches an archetype-backed relation pair.
+				//! \tparam IsBootstrap True while bootstrapping core ids.
+				//! \param entity Pair to attach.
+				//! \param addSparsePayload Whether sparse pair payload storage still needs initialization.
+				//! \return True when the pair was attached.
+				template <bool IsBootstrap>
+				bool handle_add_archetype_relation(Entity entity, bool addSparsePayload = true) {
+					GAIA_ASSERT(entity.pair());
+
+#if GAIA_ASSERT_ENABLED
+					World::verify_add(m_world, *m_pArchetype, m_entity, entity);
+#endif
+
+					// Don't add the same pair twice.
+					if (has_archetype_id(entity))
+						return false;
+
+#if GAIA_OBSERVERS_ENABLED
+					ObserverRegistry::DiffDispatchCtx relationDiffCtx{};
+					if constexpr (!IsBootstrap) {
+						if (entity.id() == Is.id())
+							relationDiffCtx = m_world.m_observers.prepare_diff(
+									m_world, ObserverEvent::OnAdd, EntitySpan{&entity, 1}, EntitySpan{&m_entity, 1});
+					}
+#endif
+
+					invalidate_relation_change(entity);
+
+					try_set_flags(entity, true);
+					if (!link_is_relation(entity))
+						return false;
+
+#if GAIA_OBSERVERS_ENABLED
+					if (relationDiffCtx.active)
+						tl_add_relation_diff_contexts.push_back(GAIA_MOV(relationDiffCtx));
+#endif
+
+					add_archetype_id(entity);
+					if (addSparsePayload)
+						add_sparse_pair_payload(entity);
+					finish_add_id<IsBootstrap>(entity);
+					return true;
+				}
+
+				//! Attaches an exclusive non-fragmenting relation pair.
+				//! \tparam IsBootstrap True while bootstrapping core ids.
+				//! \param entity Pair to attach.
+				//! \param addSparsePayload Whether sparse pair payload storage still needs initialization.
+				//! \param pairAlreadyPrepared Whether duplicate detection already ran in prepare_pair_add.
+				//! \return True when the pair was attached.
+				template <bool IsBootstrap>
+				bool handle_add_nonfragmenting_relation(
+						Entity entity, bool addSparsePayload = true, bool pairAlreadyPrepared = false) {
+					GAIA_ASSERT(entity.pair());
+
+					// Don't add the same pair twice.
+					if (!pairAlreadyPrepared && has_nonfragmenting_relation_id(entity))
+						return false;
+
+					const auto relation = m_world.try_get(entity.id());
+					const auto target = m_world.try_get(entity.gen());
+					if (relation == EntityBad || target == EntityBad)
+						return false;
+
+					auto& relationStore = m_world.nonfragmenting_relation_store_mut(relation);
+					const auto oldTarget = relationStore.target(m_entity);
+					if (oldTarget != EntityBad && oldTarget != target) {
+						const Entity oldPair = Pair(relation, oldTarget);
+#if GAIA_OBSERVERS_ENABLED
+						if constexpr (!IsBootstrap) {
+							auto delDiffCtx = m_world.m_observers.prepare_diff(
+									m_world, ObserverEvent::OnDel, EntitySpan{&oldPair, 1}, EntitySpan{&m_entity, 1});
+							if (delDiffCtx.active) {
+								delDiffCtx.targetsRemovedAfterPrepare = true;
+								tl_del_relation_diff_contexts.push_back(GAIA_MOV(delDiffCtx));
+							}
+						}
+#endif
+						try_set_flags(oldPair, false);
+						handle_DependsOn(oldPair, false);
+						unlink_is_relation(oldPair);
+						del_sparse_pair_payload(oldPair);
+						finish_del_id(oldPair);
+					}
+
+					try_set_flags(entity, true);
+					if (!link_is_relation(entity))
+						return false;
+
+#if GAIA_OBSERVERS_ENABLED
+					if constexpr (!IsBootstrap) {
+						auto addDiffCtx = m_world.m_observers.prepare_diff_add_new(m_world, EntitySpan{&entity, 1});
+						m_world.m_observers.add_diff_targets(m_world, addDiffCtx, EntitySpan{&m_entity, 1});
+						if (addDiffCtx.active && !addDiffCtx.targetsAddedAfterPrepare)
+							tl_add_relation_diff_contexts.push_back(GAIA_MOV(addDiffCtx));
+					}
+#endif
+
+					m_world.nonfragmenting_relation_set(relationStore, m_entity, relation, target);
+					if (addSparsePayload)
+						add_sparse_pair_payload(entity);
+
+					finish_add_id<IsBootstrap>(entity);
+
+					return true;
+				}
+
+				//! Detaches an id through its selected storage path.
+				//! \param entity Id to detach.
+				void handle_del(Entity entity) {
+					if (entity.pair() && !m_world.valid(entity)) {
+						del_sparse_pair_payload(entity);
+
+						if (m_pArchetype->has(entity)) {
+							const auto relation = m_world.try_get(entity.id());
+							if (relation != EntityBad) {
+								m_world.invalidate_relation_caches(relation);
+							}
+
+							if (entity.id() == Is.id())
+								m_world.unlink_stale_is_relations_by_target_id(m_entity, entity.gen());
+
+							m_pArchetype = m_world.foc_archetype_del_no_graph(m_pArchetype, entity);
+						}
+						return;
+					}
+
+					if (entity.pair()) {
+						m_world.invalidate_scope_path_cache();
+						if (is_wildcard(entity)) {
+							handle_del_nonfragmenting_wildcard(entity);
+							handle_del_archetype_wildcard(entity);
+							return;
+						}
+
+						const auto relationPath = relation_mutation_path(entity);
+						if (relationPath == RelationMutationPath::NonFragmentingExclusive)
+							handle_del_nonfragmenting_relation(entity);
+						else
+							handle_del_archetype_relation(entity);
+						return;
+					}
+
+#if GAIA_ASSERT_ENABLED
+					World::verify_del(m_world, *m_pArchetype, m_entity, entity);
+#endif
+
+					// Don't delete what has not beed added
+					if (!has_archetype_id(entity)) {
+						if (m_world.component_is_non_fragmenting(entity) &&
+								m_world.has_direct_sparse_component_inter(m_entity, entity)) {
+							try_set_flags(entity, false);
+							handle_DependsOn(entity, false);
+#if GAIA_OBSERVERS_ENABLED
+							auto delDiffCtx = m_world.m_observers.prepare_diff(
+									m_world, ObserverEvent::OnDel, EntitySpan{&entity, 1}, EntitySpan{&m_entity, 1});
+#endif
+							del_nonfragmenting_component_id(entity);
+							m_world.mark_non_fragmenting_membership_changed(m_entity, entity);
+							m_world.notify_del_single(m_entity, entity);
+#if GAIA_OBSERVERS_ENABLED
+							m_world.m_observers.finish_diff(m_world, GAIA_MOV(delDiffCtx));
+#endif
+						}
+						return;
+					}
+
+					try_set_flags(entity, false);
+					handle_DependsOn(entity, false);
+
+					del_id(entity);
+					finish_del_id(entity);
+				}
+
+				//! Detaches an archetype-backed relation pair.
+				//! \param entity Pair to detach.
+				void handle_del_archetype_relation(Entity entity) {
+					GAIA_ASSERT(entity.pair());
+
+#if GAIA_ASSERT_ENABLED
+					World::verify_del(m_world, *m_pArchetype, m_entity, entity);
+#endif
+
+					// Don't delete what has not been added.
+					if (!has_archetype_id(entity))
+						return;
+
+					invalidate_relation_change(entity);
+
+					try_set_flags(entity, false);
+					handle_DependsOn(entity, false);
+					unlink_is_relation(entity);
+
+					del_sparse_pair_payload(entity);
+
+					del_archetype_id(entity);
+					finish_del_id(entity);
+				}
+
+				//! Detaches every archetype-backed relation pair matched by a wildcard pair.
+				//! \param entity Wildcard pair selector.
+				void handle_del_archetype_wildcard(Entity entity) {
+					GAIA_ASSERT(entity.pair());
+					GAIA_ASSERT(is_wildcard(entity));
+
+					const auto relationFilter = entity.id();
+					const auto targetFilter = entity.gen();
+					cnt::darray_ext<Entity, 16> pairs;
+					for (auto pair: m_pArchetype->ids_view()) {
+						if (!pair.pair())
+							continue;
+						if (relationFilter != All.id() && pair.id() != relationFilter)
+							continue;
+						if (targetFilter != All.id() && pair.gen() != targetFilter)
+							continue;
+
+						pairs.push_back(pair);
+					}
+
+					for (auto pair: pairs) {
+						if (can_del(pair))
+							handle_del_archetype_relation(pair);
+					}
+				}
+
+				//! Detaches an exclusive non-fragmenting relation pair.
+				//! \param entity Pair to detach.
+				void handle_del_nonfragmenting_relation(Entity entity) {
+					GAIA_ASSERT(entity.pair());
+
+					// Don't delete what has not been added.
+					if (!has_nonfragmenting_relation_id(entity))
+						return;
+
+					try_set_flags(entity, false);
+					handle_DependsOn(entity, false);
+					unlink_is_relation(entity);
+					del_sparse_pair_payload(entity);
+
+#if GAIA_OBSERVERS_ENABLED
+					if (m_world.m_observers.has_on_del_observers())
+						tl_del_nonfragmenting_relations.push_back(entity);
+					else
+#endif
+						del_nonfragmenting_relation_id(entity);
+					finish_del_id(entity);
+				}
+
+				//! Detaches every stored non-fragmenting relation pair matched by a wildcard pair.
+				//! \param entity Wildcard pair selector.
+				void handle_del_nonfragmenting_wildcard(Entity entity) {
+					GAIA_ASSERT(entity.pair());
+					GAIA_ASSERT(is_wildcard(entity));
+
+					const auto relationFilter = entity.id();
+					const auto targetFilter = entity.gen();
+					cnt::darray_ext<Entity, 16> pairs;
+					for (const auto& item: m_world.m_nonFragmentingRelationsByRel) {
+						const auto relation = item.first.entity();
+						if (relationFilter != All.id() && relation.id() != relationFilter)
+							continue;
+
+						const auto target = item.second.target(m_entity);
+						if (target == EntityBad || (targetFilter != All.id() && target.id() != targetFilter))
+							continue;
+
+						pairs.push_back(Pair(relation, target));
+					}
+
+					core::sort(pairs.begin(), pairs.end(), core::is_smaller<Entity>{});
+					for (auto pair: pairs) {
+						if (can_del(pair))
+							handle_del_nonfragmenting_relation(pair);
+					}
+				}
+
+				//! Prepares a pair id before add validation.
+				//! \param entity Pair id being added.
+				//! \param relationPath Storage path for the pair relation.
+				//! \return True when add processing should continue.
+				GAIA_NODISCARD bool prepare_pair_add(Entity entity, RelationMutationPath relationPath) {
+					GAIA_ASSERT(entity.pair());
+					GAIA_ASSERT(entity.id() != Is.id() || !m_entity.pair());
+
+					if (relationPath == RelationMutationPath::NonFragmentingExclusive) {
+						if (has_nonfragmenting_relation_id(entity))
+							return false;
+					} else if (relationPath == RelationMutationPath::NonFragmentingArchetypePair) {
+						if (has_nonfragmenting_archetype_pair_id(entity))
+							return false;
+					}
+
+					// Make sure the entity container record exists if it is a pair.
+					m_world.assign_pair(entity, *m_world.m_pEntityArchetype);
+					return true;
+				}
+
+				//! Attaches an id without repeating public API validation.
+				//! \param entity Id to attach.
+				void add_inter(Entity entity) {
+					GAIA_ASSERT(!is_wildcard(entity));
+					const bool isPair = entity.pair();
+					const auto relationPath = isPair ? relation_mutation_path_add(entity) : RelationMutationPath::Fragmenting;
+
+					if (isPair && !prepare_pair_add(entity, relationPath))
+						return;
+
+					if (!handle_add_entity(entity, relationPath))
+						return;
+
+					if (isPair) {
+						if (relationPath == RelationMutationPath::NonFragmentingExclusive)
+							handle_add_nonfragmenting_relation<false>(entity, true, true);
+						else
+							handle_add_archetype_relation<false>(entity);
+						return;
+					}
+
+					handle_add<false>(entity);
+				}
+
+				//! Rebuilds a single cached archetype-graph edge after a builder commit.
+				//! The no-graph batch path bypasses stale-edge recovery, so clear both local caches first.
+				//! \param pArchetypeLeft Source archetype before adding \a entity.
+				//! \param pArchetypeRight Target archetype after adding \a entity.
+				//! \param entity Component or pair represented by the edge.
+				static void rebuild_graph_edge(Archetype* pArchetypeLeft, Archetype* pArchetypeRight, Entity entity) {
+					pArchetypeLeft->del_graph_edge_right_local(entity);
+					pArchetypeRight->del_graph_edge_left_local(entity);
+					pArchetypeLeft->build_graph_edges(pArchetypeRight, entity);
+				}
+
+				//! Ensures a single cached archetype-graph edge exists after a one-step builder commit.
+				//! The no-graph resolver reaches existing target archetypes by hash. If a previous entity already
+				//! built the same one-step edge, keep it instead of deleting and rebuilding both edge maps.
+				//! \param pArchetypeLeft Source archetype before adding \a entity.
+				//! \param pArchetypeRight Target archetype after adding \a entity.
+				//! \param entity Component or pair represented by the edge.
+				static void ensure_graph_edge(Archetype* pArchetypeLeft, Archetype* pArchetypeRight, Entity entity) {
+					const auto right = pArchetypeLeft->find_edge_right(entity);
+					const auto left = pArchetypeRight->find_edge_left(entity);
+					if (right.id == pArchetypeRight->id() && left.id == pArchetypeLeft->id())
+						return;
+
+					rebuild_graph_edge(pArchetypeLeft, pArchetypeRight, entity);
+				}
+
+				//! Attaches an id during initialization without dispatching normal add notifications.
+				//! \param entity Id to attach.
+				//! \param addSparsePayload Whether sparse pair payload storage still needs initialization.
+				void add_inter_init(Entity entity, bool addSparsePayload = true) {
+					GAIA_ASSERT(!is_wildcard(entity));
+					const bool isPair = entity.pair();
+					const auto relationPath = isPair ? relation_mutation_path_add(entity) : RelationMutationPath::Fragmenting;
+
+					if (isPair && !prepare_pair_add(entity, relationPath))
+						return;
+
+					if (!handle_add_entity(entity, relationPath))
+						return;
+
+					if (isPair) {
+						if (relationPath == RelationMutationPath::NonFragmentingExclusive)
+							handle_add_nonfragmenting_relation<true>(entity, addSparsePayload, true);
+						else
+							handle_add_archetype_relation<true>(entity, addSparsePayload);
+						return;
+					}
+
+					handle_add<true>(entity);
+				}
+
+				//! Returns whether an id configures component storage or archetype fragmentation.
+				//! \param entity Id to inspect.
+				//! \return True for `Sparse` and `DontFragment`.
+				GAIA_NODISCARD static bool is_component_storage_trait(Entity entity) noexcept {
+					return !entity.pair() && (entity.id() == DontFragment.id() || entity.id() == Sparse.id());
+				}
+
+				//! Returns whether an id can be removed from the entity under construction.
+				//! Bare `Requires` on a non-pair id marks every direct instance as non-removable, while `(Requires, target)`
+				//! protects a target only while another id in the same archetype requires it.
+				//! \param entity Id requested for removal.
+				//! \return True when no direct or dependency requirement protects the id.
+				GAIA_NODISCARD bool can_del(Entity entity) const noexcept {
+					if (!entity.pair() && m_world.has_direct(entity, Requires))
+						return false;
+					if (has_Requires_tgt(entity))
+						return false;
+
+					return true;
+				}
+
+				//! Detaches an id when dependency policy permits it.
+				//! \param entity Id to detach.
+				//! \return True when deletion was accepted.
+				bool del_inter(Entity entity) {
+					if (!can_del(entity))
+						return false;
+
+					handle_del(entity);
+					return true;
+				}
+
+				//! Removes a name lookup entry and releases owned storage.
+				//! \param key Name lookup key to remove.
+				void del_name_inter(EntityNameLookupKey key) {
+					World::del_name_lookup(m_world.m_nameToEntity, key);
+				}
+
+				//! Removes an alias lookup entry and releases owned storage.
+				//! \param key Alias lookup key to remove.
+				void del_alias_inter(EntityNameLookupKey key) {
+					World::del_name_lookup(m_world.m_aliasToEntity, key);
+				}
+
+				//! Assigns or removes an entity name.
+				//! \tparam IsOwned True when the world copies and owns the string.
+				//! \param name Name to assign, or nullptr to remove the current name.
+				//! \param len Name length, or zero to calculate it.
+				template <bool IsOwned>
+				void name_inter(const char* name, uint32_t len) {
+					//! We can't name pairs
+					GAIA_ASSERT(!m_entity.pair());
+					if (m_entity.pair())
+						return;
+
+					// When nullptr is passed for the name it means the user wants to delete the current one
+					if (name == nullptr) {
+						GAIA_ASSERT(len == 0);
+						del_name();
+						return;
+					}
+
+					GAIA_ASSERT(len < ComponentCacheItem::MaxNameLength);
+
+					// Make sure the name does not contain a dot because this character is reserved for
+					// hierarchical lookups, e.g. "parent.child.subchild".
+					GAIA_FOR(len) {
+						const bool hasInvalidCharacter = name[i] == '.';
+						GAIA_ASSERT(!hasInvalidCharacter && "Character '.' can't be used in entity names");
+						if (hasInvalidCharacter)
+							return;
+					}
+
+					EntityNameLookupKey key(
+							name, len == 0 ? (uint32_t)GAIA_STRLEN(name, ComponentCacheItem::MaxNameLength) : len, IsOwned);
+
+					// Make sure the name is unique. Ignore setting the same name twice on the same entity.
+					// If it is not, there is nothing to do.
+					auto it = m_world.m_nameToEntity.find(key);
+					if (it == m_world.m_nameToEntity.end()) {
+						// If we already had some name, remove the pair from the map first.
+						if (m_targetNameKey.str() != nullptr) {
+							del_name_inter(m_targetNameKey);
+						} else {
+							const auto compIdx = core::get_index(m_pArchetypeSrc->ids_view(), GAIA_ID(EntityDesc));
+							if (compIdx != BadIndex) {
+								auto* pDesc = reinterpret_cast<EntityDesc*>(m_pChunkSrc->comp_ptr_mut(compIdx, m_rowSrc));
+								GAIA_ASSERT(core::check_alignment(pDesc));
+								if (pDesc->name != nullptr) {
+									del_name_inter(EntityNameLookupKey(pDesc->name, pDesc->name_len, 0));
+									pDesc->name = nullptr;
+								}
+							} else {
+								// Make sure EntityDesc is added to the entity.
+								add_inter(GAIA_ID(EntityDesc));
+							}
+						}
+
+						// Insert the new pair
+						it = m_world.m_nameToEntity.emplace(key, m_entity).first;
+					} else {
+#if GAIA_ASSERT_ENABLED
+						if (it->second != m_entity && World::s_enableUniqueNameDuplicateAssert)
+							GAIA_ASSERT(false && "Trying to set non-unique name for an entity");
+#endif
+
+						// Attempts to set the same name again, or not a unique name, will be dropped.
+						return;
+					}
+
+					if constexpr (IsOwned) {
+						// Allocate enough storage for the name
+						char* entityStr = (char*)mem::mem_alloc(key.len() + 1);
+						memcpy((void*)entityStr, (const void*)name, key.len());
+						entityStr[key.len()] = 0;
+
+						m_targetNameKey = EntityNameLookupKey(entityStr, key.len(), 1, {key.hash()});
+
+						// Update the map so it points to the newly allocated string.
+						// We replace the pointer we provided in try_emplace with an internally allocated string.
+						auto p = robin_hood::pair(std::make_pair(m_targetNameKey, m_entity));
+						it->swap(p);
+					} else {
+						m_targetNameKey = key;
+
+						// We tell the map the string is non-owned.
+						auto p = robin_hood::pair(std::make_pair(key, m_entity));
+						it->swap(p);
+					}
+
+					m_world.invalidate_scope_path_cache();
+				}
+
+				//! Assigns or removes an entity alias.
+				//! \tparam IsOwned True when the world copies and owns the string.
+				//! \param alias Alias to assign, or nullptr to remove the current alias.
+				//! \param len Alias length, or zero to calculate it.
+				template <bool IsOwned>
+				void alias_inter(const char* alias, uint32_t len) {
+					//! We can't create an alias for pairs
+					GAIA_ASSERT(!m_entity.pair());
+					if (m_entity.pair())
+						return;
+
+					// When nullptr is passed for the alias it means the user wants to delete the current one
+					if (alias == nullptr) {
+						GAIA_ASSERT(len == 0);
+						del_alias();
+						return;
+					}
+
+					GAIA_ASSERT(len < ComponentCacheItem::MaxNameLength);
+
+					// Make sure the name does not contain a dot because this character is reserved for
+					// hierarchical lookups, e.g. "parent.child.subchild".
+					GAIA_FOR(len) {
+						const bool hasInvalidCharacter = alias[i] == '.';
+						GAIA_ASSERT(!hasInvalidCharacter && "Character '.' can't be used in entity aliases");
+						if (hasInvalidCharacter)
+							return;
+					}
+
+					EntityNameLookupKey key(
+							alias, len == 0 ? (uint32_t)GAIA_STRLEN(alias, ComponentCacheItem::MaxNameLength) : len, IsOwned);
+
+					auto it = m_world.m_aliasToEntity.find(key);
+					if (it == m_world.m_aliasToEntity.end()) {
+						// If we already had some alias, remove the pair from the map first.
+						if (m_targetAliasKey.str() != nullptr) {
+							del_alias_inter(m_targetAliasKey);
+						} else {
+							const auto compIdx = core::get_index(m_pArchetypeSrc->ids_view(), GAIA_ID(EntityDesc));
+							if (compIdx != BadIndex) {
+								auto* pDesc = reinterpret_cast<EntityDesc*>(m_pChunkSrc->comp_ptr_mut(compIdx, m_rowSrc));
+								GAIA_ASSERT(core::check_alignment(pDesc));
+								if (pDesc->alias != nullptr) {
+									del_alias_inter(EntityNameLookupKey(pDesc->alias, pDesc->alias_len, 0));
+									pDesc->alias = nullptr;
+								}
+							} else {
+								// Make sure EntityDesc is added to the entity.
+								add_inter(GAIA_ID(EntityDesc));
+							}
+						}
+
+						it = m_world.m_aliasToEntity.emplace(key, m_entity).first;
+					} else {
+#if GAIA_ASSERT_ENABLED
+						if (it->second != m_entity && World::s_enableUniqueNameDuplicateAssert)
+							GAIA_ASSERT(false && "Trying to set non-unique alias for an entity");
+#endif
+
+						// Attempts to set the same alias again, or not a unique alias, will be dropped.
+						return;
+					}
+
+					if constexpr (IsOwned) {
+						// Allocate enough storage for the alias
+						char* aliasStr = (char*)mem::mem_alloc(key.len() + 1);
+						memcpy((void*)aliasStr, (const void*)alias, key.len());
+						aliasStr[key.len()] = 0;
+
+						m_targetAliasKey = EntityNameLookupKey(aliasStr, key.len(), 1, {key.hash()});
+
+						// Update the map so it points to the newly allocated string.
+						// We replace the pointer we provided in try_emplace with an internally allocated string.
+						auto p = robin_hood::pair(std::make_pair(m_targetAliasKey, m_entity));
+						it->swap(p);
+					} else {
+						m_targetAliasKey = key;
+
+						// We tell the map the string is non-owned.
+						auto p = robin_hood::pair(std::make_pair(key, m_entity));
+						it->swap(p);
+					}
+				}
+			};
+
+			//----------------------------------------------------------------------
+
+			//! Returns mutable access to the world component cache.
+			//! \return Component cache owned by this world.
+			GAIA_NODISCARD ComponentCache& comp_cache_mut() {
+				return m_compCache;
+			}
+
+			//! Returns read-only access to the world component cache.
+			//! \return Component cache owned by this world.
+			GAIA_NODISCARD const ComponentCache& comp_cache() const {
+				return m_compCache;
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Finds a component entity by its exact registered symbol.
+			//! \param symbol Registered component symbol.
+			//! \param len String length. If zero, the length is calculated.
+			//! \return Matching component entity. EntityBad when no exact symbol match exists.
+			GAIA_NODISCARD Entity symbol(const char* symbol, uint32_t len = 0) const {
+				if (symbol == nullptr || symbol[0] == 0)
+					return EntityBad;
+
+				const auto* pItem = comp_cache().symbol(symbol, len);
+				return pItem != nullptr ? pItem->entity : EntityBad;
+			}
+
+			//! Returns the registered symbol name for a component entity.
+			//! \param component Component entity.
+			//! \return Registered component symbol. Empty view when \a component is not a cached component.
+			GAIA_NODISCARD util::str_view symbol(Entity component) const {
+				const auto* pItem = comp_cache().find(component);
+				return pItem != nullptr ? comp_cache().symbol_name(*pItem) : util::str_view{};
+			}
+
+			//! Finds a component entity by its exact scoped path.
+			//! \param path Exact component path.
+			//! \param len String length. If zero, the length is calculated.
+			//! \return Matching component entity. EntityBad when no exact path match exists.
+			GAIA_NODISCARD Entity path(const char* path, uint32_t len = 0) const {
+				if (path == nullptr || path[0] == 0)
+					return EntityBad;
+
+				const auto* pItem = comp_cache().path(path, len);
+				return pItem != nullptr ? pItem->entity : EntityBad;
+			}
+
+			//! Returns the scoped path name for a component entity.
+			//! \param component Component entity.
+			//! \return Scoped component path. Empty view when no path is assigned or \a component is not cached.
+			GAIA_NODISCARD util::str_view path(Entity component) const {
+				const auto* pItem = comp_cache().find(component);
+				return pItem != nullptr ? comp_cache().path_name(*pItem) : util::str_view{};
+			}
+
+			//! Assigns a scoped path name to a component entity.
+			//! \param component Component entity.
+			//! \param path Path to assign. Pass nullptr to clear the current path.
+			//! \param len String length. If zero, the length is calculated.
+			//! \return True when the path metadata changed, false otherwise.
+			bool path(Entity component, const char* path, uint32_t len = 0) {
+				auto* pItem = comp_cache_mut().find(component);
+				return pItem != nullptr ? comp_cache_mut().path(*pItem, path, len) : false;
+			}
+
+			//! Finds an entity by its exact alias.
+			//! \param alias Exact entity alias.
+			//! \param len String length. If zero, the length is calculated.
+			//! \return Matching entity. EntityBad when no exact alias match exists.
+			GAIA_NODISCARD Entity alias(const char* alias, uint32_t len = 0) const {
+				if (alias == nullptr || alias[0] == 0)
+					return EntityBad;
+
+				const auto l = len == 0 ? (uint32_t)GAIA_STRLEN(alias, ComponentCacheItem::MaxNameLength) : len;
+				GAIA_ASSERT(l < ComponentCacheItem::MaxNameLength);
+				const auto it = m_aliasToEntity.find(EntityNameLookupKey(alias, l, 0));
+				return it != m_aliasToEntity.end() ? it->second : EntityBad;
+			}
+
+			//! Returns the alias assigned to an entity.
+			//! \param entity Entity.
+			//! \return Alias. Empty view when no alias is assigned.
+			GAIA_NODISCARD util::str_view alias(Entity entity) const {
+				if (entity.pair())
+					return {};
+
+				const auto& ec = m_recs.entities[entity.id()];
+				const auto compIdx = core::get_index(ec.pChunk->ids_view(), GAIA_ID(EntityDesc));
+				if (compIdx == BadIndex)
+					return {};
+
+				const auto* pDesc = reinterpret_cast<const EntityDesc*>(ec.pChunk->comp_ptr(compIdx, ec.row));
+				GAIA_ASSERT(core::check_alignment(pDesc));
+				return {pDesc->alias, pDesc->alias_len};
+			}
+
+			//! Assigns an alias name to an entity.
+			//! \param entity Entity.
+			//! \param alias Alias to assign. Pass nullptr to clear the current alias.
+			//! \param len String length. If zero, the length is calculated.
+			//! \return True when the alias metadata changed, false otherwise.
+			bool alias(Entity entity, const char* alias, uint32_t len = 0) {
+				if (!valid(entity) || entity.pair())
+					return false;
+
+				const auto before = this->alias(entity);
+				EntityBuilder(*this, entity).alias(alias, len);
+				const auto after = this->alias(entity);
+				if (alias == nullptr)
+					return !before.empty() && after.empty();
+
+				const auto l = len == 0 ? (uint32_t)GAIA_STRLEN(alias, ComponentCacheItem::MaxNameLength) : len;
+				return after == util::str_view(alias, l);
+			}
+
+			//! Assigns an alias name to an entity without copying the string.
+			//! \param entity Entity.
+			//! \param alias Alias to assign. Pass nullptr to clear the current alias.
+			//! \param len String length. If zero, the length is calculated.
+			//! \return True when the alias metadata changed, false otherwise.
+			bool alias_raw(Entity entity, const char* alias, uint32_t len = 0) {
+				if (!valid(entity) || entity.pair())
+					return false;
+
+				const auto before = this->alias(entity);
+				EntityBuilder(*this, entity).alias_raw(alias, len);
+				const auto after = this->alias(entity);
+				if (alias == nullptr)
+					return !before.empty() && after.empty();
+
+				const auto l = len == 0 ? (uint32_t)GAIA_STRLEN(alias, ComponentCacheItem::MaxNameLength) : len;
+				return after == util::str_view(alias, l);
+			}
+
+			//! Returns the preferred display name for a entity.
+			//! This is intended for diagnostics and other pretty output, not as a stable identity key.
+			//! \param entity Entity.
+			//! \return Display name used for user-facing output. Empty view when \a entity is not cached.
+			GAIA_NODISCARD util::str_view display_name(Entity entity) const {
+				const auto* pItem = comp_cache().find(entity);
+				if (pItem == nullptr)
+					return {};
+
+				const auto aliasValue = alias(entity);
+				if (!aliasValue.empty())
+					return aliasValue;
+
+				const auto pathValue = path(entity);
+				if (!pathValue.empty()) {
+					const auto symbolEntity = symbol(pathValue.data(), pathValue.size());
+					if (symbolEntity == EntityBad || symbolEntity == entity)
+						return pathValue;
+				}
+
+				return symbol(entity);
+			}
+
+			//----------------------------------------------------------------------
+
+		private:
+			//! Invalidates the cached dotted path for the active component scope.
+			void invalidate_scope_path_cache() const {
+				m_componentScopePathCache.clear();
+				m_componentScopePathCacheEntity = EntityBad;
+				m_componentScopePathCacheValid = false;
+			}
+
+			//! Builds a dotted scope path for \a scope by walking its ChildOf chain.
+			//! \param scope Scope entity to inspect.
+			//! \param out Receives the dotted path when successful.
+			//! \return True when a full named scope path could be built, false otherwise.
+			GAIA_NODISCARD bool build_scope_path(Entity scope, util::str& out) const {
+				out.clear();
+				if (!valid(scope) || scope.pair())
+					return false;
+
+				cnt::darray_ext<util::str_view, 16> segments;
+				auto curr = scope;
+				while (curr != EntityBad) {
+					const auto currName = name(curr);
+					if (currName.empty()) {
+						out.clear();
+						return false;
+					}
+
+					segments.push_back(currName);
+					curr = target(curr, ChildOf);
+				}
+
+				if (segments.empty())
+					return false;
+
+				uint32_t totalLen = 0;
+				for (auto segment: segments)
+					totalLen += segment.size();
+				totalLen += (uint32_t)segments.size() - 1;
+
+				out.reserve(totalLen);
+				for (uint32_t i = (uint32_t)segments.size(); i > 0; --i) {
+					if (!out.empty())
+						out.append('.');
+					out.append(segments[i - 1]);
+				}
+
+				return true;
+			}
+
+			//! Builds a dotted scope path for the currently active component scope.
+			//! \param out Receives the dotted path when successful.
+			//! \return True when the current component scope is active and fully named, false otherwise.
+			GAIA_NODISCARD bool current_scope_path(util::str& out) const {
+				if (m_componentScope == EntityBad) {
+					invalidate_scope_path_cache();
+					out.clear();
+					return false;
+				}
+
+				if (m_componentScopePathCacheValid && m_componentScopePathCacheEntity == m_componentScope) {
+					out.assign(m_componentScopePathCache.view());
+					return true;
+				}
+
+				if (!build_scope_path(m_componentScope, out)) {
+					invalidate_scope_path_cache();
+					return false;
+				}
+
+				m_componentScopePathCache.assign(out.view());
+				m_componentScopePathCacheEntity = m_componentScope;
+				m_componentScopePathCacheValid = true;
+				return true;
+			}
+
+			//! Searches a component name through one scope and its ancestors.
+			//! \param scopeEntity Scope where lookup starts.
+			//! \param name Unqualified component name.
+			//! \param len Name length.
+			//! \return First matching component cache item, or nullptr.
+			GAIA_NODISCARD const ComponentCacheItem*
+			find_comp_scope_chain_inter(Entity scopeEntity, const char* name, uint32_t len) const {
+				if (scopeEntity == EntityBad)
+					return nullptr;
+
+				util::str scopePath;
+				if (!build_scope_path(scopeEntity, scopePath))
+					return nullptr;
+
+				util::str scopedName;
+				scopedName.reserve(scopePath.size() + 1 + len);
+
+				while (!scopePath.empty()) {
+					scopedName.clear();
+					scopedName.append(scopePath.view());
+					scopedName.append('.');
+					scopedName.append(name, len);
+
+					if (const auto* pItem = m_compCache.path(scopedName.data(), (uint32_t)scopedName.size()); pItem != nullptr)
+						return pItem;
+
+					const auto parentSepIdx = scopePath.view().find_last_of('.');
+					if (parentSepIdx == BadIndex)
+						break;
+
+					scopePath.assign(util::str_view(scopePath.data(), parentSepIdx));
+				}
+
+				return nullptr;
+			}
+
+			//! Collects component matches from one scope and its ancestors.
+			//! \param out Destination entity list.
+			//! \param scopeEntity Scope where lookup starts.
+			//! \param name Unqualified component name.
+			//! \param len Name length.
+			void add_comp_scope_chain_hits_inter(
+					cnt::darray<Entity>& out, Entity scopeEntity, const char* name, uint32_t len) const {
+				if (scopeEntity == EntityBad)
+					return;
+
+				util::str scopePath;
+				if (!build_scope_path(scopeEntity, scopePath))
+					return;
+
+				util::str scopedName;
+				scopedName.reserve(scopePath.size() + 1 + len);
+
+				while (!scopePath.empty()) {
+					scopedName.clear();
+					scopedName.append(scopePath.view());
+					scopedName.append('.');
+					scopedName.append(name, len);
+
+					if (const auto* pItem = m_compCache.path(scopedName.data(), (uint32_t)scopedName.size()); pItem != nullptr)
+						ComponentCache::push_unique_entity(out, pItem->entity);
+
+					const auto parentSepIdx = scopePath.view().find_last_of('.');
+					if (parentSepIdx == BadIndex)
+						break;
+
+					scopePath.assign(util::str_view(scopePath.data(), parentSepIdx));
+				}
+			}
+
+			//! Searches the active component scope and configured lookup paths.
+			//! \param name Unqualified component name.
+			//! \param len Name length.
+			//! \return First matching component cache item, or nullptr.
+			GAIA_NODISCARD const ComponentCacheItem* find_comp_lookup_inter(const char* name, uint32_t len) const {
+				if (const auto* pItem = find_comp_scope_chain_inter(m_componentScope, name, len); pItem != nullptr)
+					return pItem;
+
+				for (const auto scopeEntity: m_componentLookupPath) {
+					if (scopeEntity == m_componentScope)
+						continue;
+
+					if (const auto* pItem = find_comp_scope_chain_inter(scopeEntity, name, len); pItem != nullptr)
+						return pItem;
+				}
+
+				return nullptr;
+			}
+
+			//! Collects matches from the active scope and configured lookup paths.
+			//! \param out Destination entity list.
+			//! \param name Unqualified component name.
+			//! \param len Name length.
+			void add_comp_lookup_hits_inter(cnt::darray<Entity>& out, const char* name, uint32_t len) const {
+				add_comp_scope_chain_hits_inter(out, m_componentScope, name, len);
+				for (const auto scopeEntity: m_componentLookupPath) {
+					if (scopeEntity == m_componentScope)
+						continue;
+
+					add_comp_scope_chain_hits_inter(out, scopeEntity, name, len);
+				}
+			}
+
+			//! Performs exact symbol, path, and short-symbol lookup.
+			//! \param name Component name.
+			//! \param len Name length.
+			//! \param isPath True when the name is a dotted path.
+			//! \param isSymbol True when the name is a full symbol.
+			//! \return Matching component cache item, or nullptr.
+			GAIA_NODISCARD const ComponentCacheItem*
+			find_comp_exact_inter(const char* name, uint32_t len, bool isPath, bool isSymbol) const {
+				if (const auto* pItem = m_compCache.symbol(name, len); pItem != nullptr)
+					return pItem;
+
+				if (!isPath) {
+					if (const auto* pItem = m_compCache.path(name, len); pItem != nullptr)
+						return pItem;
+					if (!isSymbol) {
+						if (const auto* pItem = m_compCache.short_symbol(name, len); pItem != nullptr)
+							return pItem;
+					}
+				}
+
+				return nullptr;
+			}
+
+			//! Collects exact component-name matches.
+			//! \param out Destination entity list.
+			//! \param name Component name.
+			//! \param len Name length.
+			//! \param isPath True when the name is a dotted path.
+			//! \param isSymbol True when the name is a full symbol.
+			void add_comp_exact_hits_inter(
+					cnt::darray<Entity>& out, const char* name, uint32_t len, bool isPath, bool isSymbol) const {
+				if (const auto* pItem = m_compCache.symbol(name, len); pItem != nullptr)
+					ComponentCache::push_unique_entity(out, pItem->entity);
+
+				m_compCache.add_path_matches(out, util::str_view(name, len));
+
+				if (out.empty() && !isPath && !isSymbol) {
+					if (const auto* pItem = m_compCache.short_symbol(name, len); pItem != nullptr)
+						ComponentCache::push_unique_entity(out, pItem->entity);
+				}
+			}
+
+			//! Checks whether scoped component lookup context is active.
+			//! \return True when a component scope or lookup path is configured.
+			GAIA_NODISCARD bool has_comp_lookup_ctx_inter() const noexcept {
+				return m_componentScope != EntityBad || !m_componentLookupPath.empty();
+			}
+
+			//! Checks whether a component name is unqualified.
+			//! \param name Component name.
+			//! \param len Name length.
+			//! \return True when the name contains no path or symbol separator.
+			GAIA_NODISCARD static bool is_unqualified_comp_name_inter(const char* name, uint32_t len) noexcept {
+				return memchr(name, '.', len) == nullptr && memchr(name, ':', len) == nullptr;
+			}
+
+			//! Resolves precedence between an entity-name match and a component match.
+			//! \param namedEntity Entity matched by name or alias.
+			//! \param pCompItem Component cache match, or nullptr.
+			//! \return Selected entity, or EntityBad when neither matched.
+			GAIA_NODISCARD Entity pick_name_or_comp_inter(Entity namedEntity, const ComponentCacheItem* pCompItem) const {
+				if (pCompItem == nullptr)
+					return namedEntity;
+
+				if (namedEntity == EntityBad)
+					return pCompItem->entity;
+
+				return m_compCache.find(namedEntity) != nullptr ? pCompItem->entity : namedEntity;
+			}
+
+			//! Resolves a component name using world-aware scope rules.
+			//! Exact path lookup is used for dotted names. Unqualified names first search the current
+			//! component scope and its parents, then each configured lookup path scope in order, and
+			//! finally fall back to exact symbol, path, unique short-symbol and alias lookup.
+			//! \param name Component name to resolve.
+			//! \param len Name length. If zero, the length is calculated.
+			//! \return Matching component cache item, or nullptr when no match exists.
+			GAIA_NODISCARD const ComponentCacheItem* resolve_component_name_inter(const char* name, uint32_t len = 0) const {
+				GAIA_ASSERT(name != nullptr);
+
+				const auto l = len == 0 ? (uint32_t)GAIA_STRLEN(name, ComponentCacheItem::MaxNameLength) : len;
+				GAIA_ASSERT(l < ComponentCacheItem::MaxNameLength);
+				const bool isPath = memchr(name, '.', l) != nullptr;
+				const bool isSymbol = memchr(name, ':', l) != nullptr;
+
+				if (isPath) {
+					if (const auto* pItem = m_compCache.path(name, l); pItem != nullptr)
+						return pItem;
+				}
+
+				if (!isPath && !isSymbol) {
+					if (const auto* pItem = find_comp_lookup_inter(name, l); pItem != nullptr)
+						return pItem;
+				}
+
+				if (const auto* pItem = find_comp_exact_inter(name, l, isPath, isSymbol); pItem != nullptr)
+					return pItem;
+
+				const auto aliasEntity = alias(name, l);
+				return aliasEntity != EntityBad ? m_compCache.find(aliasEntity) : nullptr;
+			}
+
+		public:
+			//----------------------------------------------------------------------
+
+			//! Checks if \a entity is valid.
+			//! \param entity Checked entity.
+			//! \return True if the entity is valid. False otherwise.
+			GAIA_NODISCARD bool valid(Entity entity) const {
+				return entity.pair() //
+									 ? valid_pair(entity)
+									 : valid_entity(entity);
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Returns the entity located at the index \a id
+			//! \param id Entity id
+			//! \return Entity
+			GAIA_NODISCARD Entity get(EntityId id) const {
+				// Cleanup, observer propagation, and wildcard expansion can briefly encounter stale ids.
+				// Treat those as absent instead of crashing the world.
+				if (!valid_entity_id(id))
+					return EntityBad;
+
+				const auto& ec = m_recs.entities[id];
+				return Entity(id, ec.data.gen, (bool)ec.data.ent, (bool)ec.data.pair);
+			}
+
+			//! Returns the entity for \p id when it is still live, or EntityBad for stale cleanup-time ids.
+			//! \param id Entity id to resolve.
+			//! \return Live entity for \p id, or EntityBad when the id is stale or absent.
+			GAIA_NODISCARD Entity try_get(EntityId id) const {
+				return valid_entity_id(id) ? get(id) : EntityBad;
+			}
+
+			//! Returns the entity registered for component type \a T.
+			//! \tparam T Component type.
+			//! \return Component entity.
+			template <typename T>
+			GAIA_NODISCARD Entity get() const {
+				return comp_cache().get<T>().entity;
+			}
+
+			//! Returns the registered component cache item for \a T, auto-registering it when enabled.
+			//! \tparam T Component type.
+			//! \return Component cache item for \a T.
+			template <typename T>
+			GAIA_NODISCARD const ComponentCacheItem& reg_comp() {
+#if GAIA_ECS_AUTO_COMPONENT_REGISTRATION
+				return add<T>();
+#else
+				return comp_cache().template get<T>();
+#endif
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Starts a bulk add/remove operation on \a entity.
+			//! \param entity Entity
+			//! \return EntityBuilder
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			EntityBuilder build(Entity entity) {
+				return EntityBuilder(*this, entity);
+			}
+
+			//! Creates a new empty entity.
+			//! \return New entity.
+			GAIA_NODISCARD Entity add() {
+				return add(*m_pEntityArchetype, true, false);
+			}
+
+			//! Creates a new prefab entity.
+			//! \return New prefab entity.
+			GAIA_NODISCARD Entity prefab() {
+				const auto entity = add();
+				add(entity, Prefab);
+				return entity;
+			}
+
+			//! Creates \a count new empty entities.
+			//! \param count Number of entities to create.
+			//! \param func Functor invoked for each new entity.
+			template <typename Func = TFunc_Void_With_Entity>
+			void add_n(uint32_t count, Func func = func_void_with_entity) {
+				add_entity_n(*m_pEntityArchetype, count, func);
+			}
+
+			//! Creates \a count ordinary entities with the same type as \a entity.
+			//! Table component payloads are left uninitialized or default-initialized.
+			//! Non-fragmenting ids are copied onto each destination: DontFragment tags,
+			//! DontFragment sparse payloads, and non-fragmenting relation pairs.
+			//! Fragmenting sparse ids receive a default payload so membership matches the source type.
+			//! EntityDesc is omitted so names stay unique.
+			//! Exact pair records are a valid source. Destinations are always ordinary entities.
+			//! \param entity Source entity or exact pair record whose type is reused.
+			//! \param count Number of entities to create.
+			//! \param func Functor invoked for each new entity.
+			//! \note Similar to copy_n(), but table component payloads are not copied.
+			template <typename Func = TFunc_Void_With_Entity>
+			void add_n(Entity entity, uint32_t count, Func func = func_void_with_entity) {
+				auto& ec = cont(entity);
+
+				GAIA_ASSERT(ec.pArchetype != nullptr);
+				GAIA_ASSERT(ec.pChunk != nullptr);
+
+				auto* pDstArchetype = ec.pArchetype;
+				if (pDstArchetype->has<EntityDesc>())
+					pDstArchetype = foc_archetype_del(pDstArchetype, GAIA_ID(EntityDesc));
+
+				cnt::darray_ext<Entity, 8> nonfragmentingPairs;
+				collect_nonfragmenting_relation_pairs(entity, nonfragmentingPairs);
+				cnt::darray_ext<Entity, 16> nonFragSparseIds;
+				cnt::darray_ext<Entity, 16> fragSparseIds;
+				collect_add_n_sparse_ids(entity, nonFragSparseIds, fragSparseIds);
+
+				if (nonfragmentingPairs.empty() && nonFragSparseIds.empty() && fragSparseIds.empty()) {
+					add_entity_n(*pDstArchetype, count, func);
+					return;
+				}
+
+				add_entity_n(*pDstArchetype, count, [&](Entity dstEntity) {
+					apply_add_n_non_table_type(
+							entity, dstEntity, EntitySpan{nonfragmentingPairs}, EntitySpan{nonFragSparseIds},
+							EntitySpan{fragSparseIds});
+					func(dstEntity);
+				});
+			}
+
+			//! Creates \a count ordinary entities with the same type as an exact pair record.
+			//! Table component payloads are left uninitialized or default-initialized.
+			//! Non-fragmenting ids and default fragmenting sparse membership are applied as in add_n(Entity).
+			//! \param entity Source pair record whose type is reused.
+			//! \param count Number of entities to create.
+			//! \param func Functor invoked for each new entity.
+			//! \see add_n(Entity, uint32_t)
+			template <typename Func = TFunc_Void_With_Entity>
+			void add_n(Pair entity, uint32_t count, Func func = func_void_with_entity) {
+				add_n((Entity)entity, count, func);
+			}
+
+			//! Creates a new component if not found already.
+			//! \tparam T Component
+			//! \return Component cache item of the component
+			template <typename T>
+			GAIA_NODISCARD const ComponentCacheItem& add() {
+				static_assert(!is_pair<T>::value, "Pairs can't be registered as components");
+
+				using CT = component_type_t<T>;
+				using FT = typename CT::TypeFull;
+				const auto* pItem = comp_cache().find<FT>();
+				if (pItem != nullptr)
+					return *pItem;
+
+				const auto entity = add(*m_pCompArchetype, false, false);
+				util::str scopePath;
+				(void)current_scope_path(scopePath);
+
+				const auto& item = comp_cache_mut().add<FT>(entity, scopePath.view());
+				item.func_create_sparse_store = [](World& world, Entity component) {
+					(void)world.sparse_component_store_mut<FT>(component);
+				};
+				finalize_component_registration(item, item.comp.storage_type() == DataStorageType::Sparse);
+				if constexpr (uses_ct_dont_fragment_v<FT>)
+					add(item.entity, DontFragment);
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (item.comp.storage_type() == DataStorageType::Sparse)
+						(void)sparse_component_store_mut<FT>(item.entity);
+				}
+
+				return item;
+			}
+
+			//! Registers a compile-time component with explicit runtime type metadata.
+			//! Metadata is applied only during first registration. Existing component metadata remains immutable.
+			//! Runtime metadata does not change typed storage, lifecycle callbacks, or the component symbol.
+			//! \tparam T Component type to register.
+			//! \param runtimeType Reflection-only metadata attached during first registration.
+			//! \return Registered component cache item.
+			template <typename T>
+			GAIA_NODISCARD const ComponentCacheItem& add(const RuntimeTypeDesc& runtimeType) {
+				static_assert(!is_pair<T>::value, "Pairs can't be registered as components");
+
+				using CT = component_type_t<T>;
+				using FT = typename CT::TypeFull;
+				const auto* pItem = comp_cache().find<FT>();
+				if (pItem != nullptr)
+					return *pItem;
+
+				validate_runtime_semantics(runtimeType);
+				const auto entity = add(*m_pCompArchetype, false, false);
+				util::str scopePath;
+				(void)current_scope_path(scopePath);
+
+				const auto& item = comp_cache_mut().add<FT>(entity, runtimeType, scopePath.view());
+				item.func_create_sparse_store = [](World& world, Entity component) {
+					(void)world.sparse_component_store_mut<FT>(component);
+				};
+				finalize_component_registration(item, item.comp.storage_type() == DataStorageType::Sparse);
+				if constexpr (uses_ct_dont_fragment_v<FT>)
+					add(item.entity, DontFragment);
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (item.comp.storage_type() == DataStorageType::Sparse)
+						(void)sparse_component_store_mut<FT>(item.entity);
+				}
+
+				return item;
+			}
+
+			//! Creates a new runtime component from a plain component descriptor if not found already.
+			//! \param desc Component registration descriptor.
+			//! \return Mutable component cache item of the component.
+			GAIA_NODISCARD ComponentCacheItem& add(const ComponentDesc& desc) {
+				GAIA_ASSERT(!desc.name.empty());
+				GAIA_ASSERT(desc.name.size() < ComponentCacheItem::MaxNameLength);
+
+				if (const auto* pItem = comp_cache().symbol(desc.name); pItem != nullptr)
+					return *comp_cache_mut().find(pItem->entity);
+
+				validate_runtime_semantics(desc.runtimeType);
+				const auto entity = add(*m_pCompArchetype, false, false);
+				util::str scopePath;
+				(void)current_scope_path(scopePath);
+				auto& itemInfo = comp_cache_mut().add(entity, desc, scopePath.view());
+				finalize_component_registration(itemInfo, true);
+				return itemInfo;
+			}
+
+			//! Attaches entity \a object to entity \a entity.
+			//! \param entity Source entity
+			//! \param object Added entity
+			//! \warning It is expected both \a entity and \a object are valid. Undefined behavior otherwise.
+			void add(Entity entity, Entity object) {
+#if GAIA_ASSERT_ENABLED
+				if (!object.pair()) {
+					const auto* pItem = comp_cache().find(object);
+					if (pItem != nullptr && pItem->entity == object && component_uses_sparse_storage(object))
+						GAIA_ASSERT2(false, "Sparse runtime components require an explicit typed value when added by entity id");
+				}
+#endif
+				EntityBuilder(*this, entity).add(object);
+			}
+
+			//! Attaches a relationship pair to \a entity.
+			//! \param entity Source entity.
+			//! \param pair Pair to attach.
+			//! \warning It is expected both \a entity and the entities forming the relationship are valid.
+			//!          Undefined behavior otherwise.
+			//! \warning Pair endpoints must be ordinary entities.
+			void add(Entity entity, Pair pair) {
+				auto& ec = cont(entity);
+				EntityBuilder builder(*this, entity, ec);
+				builder.add(pair);
+				builder.commit();
+			}
+
+			//! Attaches a relationship pair to an exact pair record.
+			//! \param entity Pair record receiving the relationship.
+			//! \param pair Pair to attach.
+			//! \warning It is expected \a entity and the entities forming \a pair are valid.
+			//!          Undefined behavior otherwise.
+			//! \warning Pair endpoints must be ordinary entities.
+			void add(Pair entity, Pair pair) {
+				const auto source = (Entity)entity;
+				auto& ec = fetch(source);
+				EntityBuilder builder(*this, source, ec);
+				builder.add(pair);
+				builder.commit();
+			}
+
+			//! Attaches a new component \a T to \a entity.
+			//! \tparam T Component
+			//! \param entity Entity
+			//! \warning It is expected the component is not present on \a entity yet. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename T>
+			void add(Entity entity) {
+				using FT = typename component_type_t<T>::TypeFull;
+				if constexpr (uses_ct_sparse_storage<FT>()) {
+					SparseStorageMode mode;
+					const auto object = register_sparse_component_id<FT>(mode);
+					(void)sparse_component_store_mut<FT>(object).add(entity);
+					finish_sparse_component_add_inter(entity, object, mode);
+				} else {
+					EntityBuilder(*this, entity).add<T>();
+				}
+			}
+
+			//! Attaches a new component \a T to an exact pair record.
+			//! \tparam T Component.
+			//! \param entity Pair record receiving the component.
+			//! \warning It is expected the component is not present on \a entity yet. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename T>
+			void add(Pair entity) {
+				add<T>((Entity)entity);
+			}
+
+			//! Attaches \a object to \a entity. Also sets its value.
+			//! \param object Object
+			//! \param entity Entity
+			//! \param value Value to set for the object
+			//! \warning It is expected the component is not present on \a entity yet. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning It is expected \a object is valid. Undefined behavior otherwise.
+			template <typename T>
+			void add(Entity entity, Entity object, T&& value) {
+				static_assert(core::is_raw_v<T>);
+
+				if constexpr (supports_sparse_component_storage<typename component_type_t<T>::TypeFull>()) {
+					using FT = typename component_type_t<T>::TypeFull;
+					if (can_use_sparse_component_storage<FT>(object)) {
+						const auto mode = sparse_storage_mode(object);
+						if (mode != SparseStorageMode::None) {
+							auto& data = sparse_component_add_value<FT>(object, entity);
+							data = GAIA_FWD(value);
+							finish_sparse_component_add_inter(entity, object, mode);
+							return;
+						}
+					}
+				}
+
+				EntityBuilder eb(*this, entity);
+#if GAIA_OBSERVERS_ENABLED
+				auto addDiffCtx =
+						m_observers.prepare_diff(*this, ObserverEvent::OnAdd, EntitySpan{&object, 1}, EntitySpan{&entity, 1});
+#endif
+				eb.add_inter_init(object);
+				eb.commit();
+
+				const auto& ec = fetch(entity);
+				const auto idx = ec.row;
+				ComponentSetter{*this, ec.pChunk, entity, idx}.sset(object, GAIA_FWD(value));
+				notify_add_single(entity, object);
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+			}
+
+			//! Attaches a relationship pair to \a entity and initializes its payload.
+			//! \tparam T Payload type stored on \a pair.
+			//! \param entity Source entity or exact pair record.
+			//! \param pair Relationship pair to attach.
+			//! \param value Initial payload value.
+			//! \warning It is expected the pair is not present on \a entity yet. Undefined behavior otherwise.
+			//! \warning It is expected \a entity and the entities forming \a pair are valid. Undefined behavior otherwise.
+			//! \warning Pair endpoints must be ordinary entities.
+			template <typename T>
+			void add(Entity entity, Pair pair, T&& value) {
+				add(entity, (Entity)pair, GAIA_FWD(value));
+			}
+
+			//! Attaches a new component \a T to \a entity. Also sets its value.
+			//! \tparam T Component
+			//! \param entity Entity
+			//! \param value Value to set for the component
+			//! \warning It is expected the component is not present on \a entity yet. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename T, typename U = typename actual_type_t<T>::Type>
+			void add(Entity entity, U&& value) {
+				using FT = typename component_type_t<T>::TypeFull;
+				if constexpr (uses_ct_sparse_storage<FT>()) {
+					SparseStorageMode mode;
+					const auto object = register_sparse_component_id<FT>(mode);
+					auto& data = sparse_component_store_mut<FT>(object).add(entity);
+					data = GAIA_FWD(value);
+					finish_sparse_component_add_inter(entity, object, mode);
+				} else {
+					EntityBuilder builder(*this, entity);
+					auto object = builder.register_component<T>();
+#if GAIA_OBSERVERS_ENABLED
+					auto addDiffCtx =
+							m_observers.prepare_diff(*this, ObserverEvent::OnAdd, EntitySpan{&object, 1}, EntitySpan{&entity, 1});
+#endif
+					// Materialize the component first, write the initial value, and only then dispatch OnAdd.
+					// This keeps observer-visible state aligned with the final stored payload.
+					builder.add_inter_init(object);
+					builder.commit();
+
+					const auto& ec = cont(entity);
+					const auto idx = ec.row;
+					ComponentSetter{*this, ec.pChunk, entity, idx}.sset<T>(GAIA_FWD(value));
+					notify_add_single(entity, object);
+#if GAIA_OBSERVERS_ENABLED
+					m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+				}
+			}
+
+			//! Attaches a new component \a T to an exact pair record and initializes its value.
+			//! \tparam T Component.
+			//! \tparam U Component value type.
+			//! \param entity Pair record receiving the component.
+			//! \param value Initial component value.
+			//! \warning It is expected the component is not present on \a entity yet. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename T, typename U = typename actual_type_t<T>::Type>
+			void add(Pair entity, U&& value) {
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto object = register_component_id<FT>();
+
+				using ValueType = typename actual_type_t<T>::Type;
+				add<ValueType>((Entity)entity, object, GAIA_FWD(value));
+			}
+
+			//! Materializes an inherited id as directly owned storage on \p entity.
+			//! \param entity Entity receiving the local override.
+			//! \param object Inherited component or pair id to materialize.
+			//! \return True when a local override was created. False if nothing changed.
+			GAIA_NODISCARD bool override(Entity entity, Entity object) {
+				return override_inter(entity, object);
+			}
+
+			//! Materializes an inherited pair as directly owned storage on \p entity.
+			//! \param entity Entity receiving the local override.
+			//! \param pair Inherited pair to materialize.
+			//! \return True when a local override was created. False if nothing changed.
+			GAIA_NODISCARD bool override(Entity entity, Pair pair) {
+				return override_inter(entity, (Entity)pair);
+			}
+
+			//! Materializes an inherited typed component as directly owned storage on \p entity.
+			//! \tparam T Component type to materialize.
+			//! \param entity Entity receiving the local override.
+			//! \return True when a local override was created. False if nothing changed.
+			template <typename T>
+			GAIA_NODISCARD bool override(Entity entity) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto& item = add<FT>();
+
+				if constexpr (uses_ct_sparse_storage<FT>())
+					return override_sparse_component_inter(entity, item.entity);
+				else
+					return override_inter(entity, item.entity);
+			}
+
+			//! Materializes an inherited typed component associated with \p object on \p entity.
+			//! \tparam T Component type represented by \p object.
+			//! \param entity Entity receiving the local override.
+			//! \param object Inherited component entity to materialize.
+			//! \return True when a local override was created. False if nothing changed.
+			template <typename T>
+			GAIA_NODISCARD bool override(Entity entity, Entity object) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (can_use_sparse_component_storage<FT>(object))
+						return override_sparse_component_inter(entity, object);
+				}
+
+				return override_inter(entity, object);
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Removes any component or entity attached to \a entity.
+			//! \param entity Entity we want to remove any attached component or entity from
+			//! \warning It is expected \a entity is not a pair. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			void clear(Entity entity) {
+				GAIA_ASSERT(!entity.pair());
+				GAIA_ASSERT(valid(entity));
+
+				EntityBuilder eb(*this, entity);
+
+				// Remove back to front because it's better for the archetype graph
+				auto ids = eb.m_pArchetype->ids_view();
+				for (uint32_t i = (uint32_t)ids.size() - 1; i != (uint32_t)-1; --i)
+					eb.del(ids[i]);
+
+				eb.commit();
+
+				cnt::darray_ext<Entity, 16> sparseIds;
+				for (const auto& [compKey, store]: m_sparseComponentsByComp) {
+					const auto component = compKey.entity();
+					if (component_is_non_fragmenting(component) && store.func_has(store.pStore, entity))
+						sparseIds.push_back(component);
+				}
+				for (const auto component: sparseIds)
+					del(entity, component);
+
+				cnt::darray_ext<Entity, 8> relationIds;
+				for (const auto& [relationKey, store]: m_nonFragmentingRelationsByRel) {
+					if (store.target(entity) != EntityBad)
+						relationIds.push_back(relationKey.entity());
+				}
+				for (const auto relation: relationIds) {
+					const auto targetEntity = target(entity, relation);
+					if (targetEntity != EntityBad)
+						del(entity, Pair(relation, targetEntity));
+				}
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Creates a new ordinary entity by cloning an already existing one. Does not trigger observers.
+			//! Exact pair records are cloned into a new ordinary entity. The pair identity is not duplicated.
+			//! \param srcEntity Entity or exact pair record to clone
+			//! \return New ordinary entity
+			//! \warning It is expected \a srcEntity is valid. Undefined behavior otherwise.
+			//! \warning If EntityDesc is present on \a srcEntity, it is not copied because names are
+			//!          expected to be unique. Instead, the copied entity will be a part of an archetype
+			//!          without EntityDesc and any calls to World::name(copiedEntity) will return an empty view.
+			GAIA_NODISCARD Entity copy(Entity srcEntity) {
+				GAIA_ASSERT(valid(srcEntity));
+
+				auto& ec = cont(srcEntity);
+				GAIA_ASSERT(ec.pArchetype != nullptr);
+				GAIA_ASSERT(ec.pChunk != nullptr);
+
+				cnt::darray_ext<Entity, 8> nonfragmentingPairs;
+				collect_nonfragmenting_relation_pairs(srcEntity, nonfragmentingPairs);
+
+				auto* pSrcChunk = ec.pChunk;
+				const auto srcRow = ec.row;
+				auto* pDstArchetype = ec.pArchetype;
+				Entity dstEntity;
+
+				// Names have to be unique so if we see that EntityDesc is present during copy
+				// we navigate towards a version of the archetype without the EntityDesc.
+				const bool hasEntityDesc = pDstArchetype->has<EntityDesc>();
+				if (hasEntityDesc)
+					pDstArchetype = foc_archetype_del(pDstArchetype, GAIA_ID(EntityDesc));
+
+				cnt::darray_ext<Entity, 16> addHookIds;
+				collect_copy_add_hook_ids(srcEntity, *pDstArchetype, EntitySpan{nonfragmentingPairs}, addHookIds);
+
+				dstEntity = add(*pDstArchetype, true, false);
+				if (hasEntityDesc) {
+					auto& ecDst = m_recs.entities[dstEntity.id()];
+					Chunk::copy_foreign_entity_data(pSrcChunk, srcRow, ecDst.pChunk, ecDst.row);
+				} else
+					Chunk::copy_entity_data(srcEntity, dstEntity, m_recs);
+
+				copy_all_sparse_entity_data(srcEntity, dstEntity);
+				copy_nonfragmenting_relation_pairs(dstEntity, EntitySpan{nonfragmentingPairs});
+				trigger_copy_add_hooks(EntitySpan{&dstEntity, 1}, EntitySpan{addHookIds});
+
+				return dstEntity;
+			}
+
+			//! Creates \a count new ordinary entities by cloning an already existing one.
+			//! Exact pair records are cloned into ordinary entities. The pair identity is not duplicated.
+			//! \param entity Entity or exact pair record to clone
+			//! \param count Number of clones to make
+			//! \param func Functor executed every time a copy is created.
+			//!             It can be either void(ecs::Entity) or void(ecs::CopyIter&).
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning If EntityDesc is present on \a entity, it is not copied because names are
+			//!          expected to be unique. Instead, the copied entity will be a part of an archetype
+			//!          without EntityDesc and any calls to World::name(copiedEntity) will return an empty view.
+			template <typename Func = TFunc_Void_With_Entity>
+			void copy_n(Entity entity, uint32_t count, Func func = func_void_with_entity) {
+				cnt::darray_ext<Entity, 8> nonfragmentingPairs;
+				collect_nonfragmenting_relation_pairs(entity, nonfragmentingPairs);
+				auto* pDstArchetype = cont(entity).pArchetype;
+				if (pDstArchetype->has<EntityDesc>())
+					pDstArchetype = foc_archetype_del(pDstArchetype, GAIA_ID(EntityDesc));
+				cnt::darray_ext<Entity, 16> addHookIds;
+				collect_copy_add_hook_ids(entity, *pDstArchetype, EntitySpan{nonfragmentingPairs}, addHookIds);
+				copy_n_inter(entity, count, func, EntitySpan{}, EntitySpan{nonfragmentingPairs}, EntitySpan{addHookIds});
+			}
+
+#if GAIA_OBSERVERS_ENABLED
+			//! Creates a new ordinary entity by cloning an already existing one. Trigger observers if necessary.
+			//! Exact pair records are cloned into a new ordinary entity. The pair identity is not duplicated.
+			//! \param srcEntity Entity or exact pair record to clone
+			//! \return New ordinary entity
+			//! \warning It is expected \a srcEntity is valid. Undefined behavior otherwise.
+			//! \warning If EntityDesc is present on \a srcEntity, it is not copied because names are
+			//!          expected to be unique. Instead, the copied entity will be a part of an archetype
+			//!          without EntityDesc and any calls to World::name(copiedEntity) will return an empty view.
+			GAIA_NODISCARD Entity copy_ext(Entity srcEntity) {
+				GAIA_ASSERT(valid(srcEntity));
+
+				auto& ec = cont(srcEntity);
+				GAIA_ASSERT(ec.pArchetype != nullptr);
+				GAIA_ASSERT(ec.pChunk != nullptr);
+
+				cnt::darray_ext<Entity, 8> nonfragmentingPairs;
+				collect_nonfragmenting_relation_pairs(srcEntity, nonfragmentingPairs);
+
+				auto* pSrcChunk = ec.pChunk;
+				const auto srcRow = ec.row;
+				auto* pDstArchetype = ec.pArchetype;
+				// Names have to be unique so if we see that EntityDesc is present during copy
+				// we navigate towards a version of the archetype without the EntityDesc.
+				const bool hasEntityDesc = pDstArchetype->has<EntityDesc>();
+				if (hasEntityDesc)
+					pDstArchetype = foc_archetype_del(pDstArchetype, GAIA_ID(EntityDesc));
+
+				const auto archetypeIdCount = (uint32_t)pDstArchetype->ids_view().size();
+				const auto sparseIdCount = copied_non_frag_sparse_id_count(srcEntity);
+				const auto nonfragmentingPairCount = (uint32_t)nonfragmentingPairs.size();
+				const auto addedIdCount = archetypeIdCount + sparseIdCount + nonfragmentingPairCount;
+				auto* pAddedIds = addedIdCount != 0U ? (Entity*)alloca(sizeof(Entity) * addedIdCount) : nullptr;
+				write_archetype_ids(*pDstArchetype, pAddedIds);
+				write_copied_non_frag_sparse_ids(srcEntity, pAddedIds + archetypeIdCount);
+				GAIA_FOR(nonfragmentingPairCount)
+				pAddedIds[archetypeIdCount + sparseIdCount + i] = nonfragmentingPairs[i];
+				cnt::darray_ext<Entity, 16> addHookIds;
+				collect_add_hook_ids(EntitySpan{pAddedIds, addedIdCount}, addHookIds);
+	#if GAIA_OBSERVERS_ENABLED
+				auto addDiffCtx = m_observers.prepare_diff_add_new(*this, EntitySpan{pAddedIds, addedIdCount});
+	#endif
+
+				const auto dstEntity = add(*pDstArchetype, true, false);
+				if (hasEntityDesc) {
+					auto& ecDst = m_recs.entities[dstEntity.id()];
+					Chunk::copy_foreign_entity_data(pSrcChunk, srcRow, ecDst.pChunk, ecDst.row);
+				} else
+					Chunk::copy_entity_data(srcEntity, dstEntity, m_recs);
+
+				(void)copy_all_sparse_entity_data(srcEntity, dstEntity);
+				copy_nonfragmenting_relation_pairs(dstEntity, EntitySpan{nonfragmentingPairs});
+				trigger_copy_add_hooks(EntitySpan{&dstEntity, 1}, EntitySpan{addHookIds});
+				m_observers.add_diff_targets(*this, addDiffCtx, EntitySpan{&dstEntity, 1});
+
+				m_observers.on_add(*this, *pDstArchetype, EntitySpan{pAddedIds, addedIdCount}, EntitySpan{&dstEntity, 1});
+	#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+	#endif
+
+				return dstEntity;
+			}
+
+			//! Creates \a count new ordinary entities by cloning an already existing one. Trigger observers if necessary.
+			//! Exact pair records are cloned into ordinary entities. The pair identity is not duplicated.
+			//! \param entity Entity or exact pair record to clone
+			//! \param count Number of clones to make
+			//! \param func Functor executed every time a copy is created.
+			//!             It can be either void(ecs::Entity) or void(ecs::CopyIter&).
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning If EntityDesc is present on \a entity, it is not copied because names are
+			//!          expected to be unique. Instead, the copied entity will be a part of an archetype
+			//!          without EntityDesc and any calls to World::name(copiedEntity) will return an empty view.
+			template <typename Func = TFunc_Void_With_Entity>
+			void copy_ext_n(Entity entity, uint32_t count, Func func = func_void_with_entity) {
+				cnt::darray_ext<Entity, 8> nonfragmentingPairs;
+				collect_nonfragmenting_relation_pairs(entity, nonfragmentingPairs);
+
+				auto& ec = cont(entity);
+				auto* pDstArchetype = ec.pArchetype;
+				if (pDstArchetype->has<EntityDesc>())
+					pDstArchetype = foc_archetype_del(pDstArchetype, GAIA_ID(EntityDesc));
+
+				const auto archetypeIdCount = (uint32_t)pDstArchetype->ids_view().size();
+				const auto sparseIdCount = copied_non_frag_sparse_id_count(entity);
+				const auto nonfragmentingPairCount = (uint32_t)nonfragmentingPairs.size();
+				const auto addedIdCount = archetypeIdCount + sparseIdCount + nonfragmentingPairCount;
+				auto* pAddedIds = addedIdCount != 0U ? (Entity*)alloca(sizeof(Entity) * addedIdCount) : nullptr;
+				write_archetype_ids(*pDstArchetype, pAddedIds);
+				write_copied_non_frag_sparse_ids(entity, pAddedIds + archetypeIdCount);
+				GAIA_FOR(nonfragmentingPairCount)
+				pAddedIds[archetypeIdCount + sparseIdCount + i] = nonfragmentingPairs[i];
+				cnt::darray_ext<Entity, 16> addHookIds;
+				collect_add_hook_ids(EntitySpan{pAddedIds, addedIdCount}, addHookIds);
+	#if GAIA_OBSERVERS_ENABLED
+				auto addDiffCtx = m_observers.prepare_diff_add_new(*this, EntitySpan{pAddedIds, addedIdCount});
+	#endif
+				copy_n_inter(
+						entity, count, func, EntitySpan{pAddedIds, addedIdCount}, EntitySpan{nonfragmentingPairs},
+						EntitySpan{addHookIds}, EntityBad
+	#if GAIA_OBSERVERS_ENABLED
+						,
+						&addDiffCtx
+	#endif
+				);
+	#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+	#endif
+			}
+#endif
+
+		private:
+			//! Invokes a copy callback for one contiguous destination batch.
+			//! \tparam Func Callback type.
+			//! \param func Callback to invoke.
+			//! \param pDstArchetype Destination archetype.
+			//! \param pDstChunk Destination chunk.
+			//! \param originalChunkSize First copied row.
+			//! \param toCreate Number of copied entities.
+			template <typename Func>
+			void invoke_copy_batch_callback(
+					Func& func, Archetype* pDstArchetype, Chunk* pDstChunk, uint32_t originalChunkSize, uint32_t toCreate) {
+				if constexpr (std::is_invocable_v<Func, CopyIter&>) {
+					CopyIter it;
+					it.set_world(this);
+					it.set_archetype(pDstArchetype);
+					it.set_chunk(pDstChunk);
+					it.set_range((uint16_t)originalChunkSize, (uint16_t)toCreate);
+					func(it);
+				} else {
+					auto entities = pDstChunk->entity_view();
+					GAIA_FOR2(originalChunkSize, pDstChunk->size()) func(entities[i]);
+				}
+			}
+
+			//! Emits and clears one accumulated CopyIter group.
+			//! \tparam Func Callback type.
+			//! \param func Callback to invoke.
+			//! \param group Accumulated contiguous group.
+			template <typename Func>
+			void flush_copy_iter_group(Func& func, CopyIterGroupState& group) {
+				if (group.count == 0)
+					return;
+
+				CopyIter it;
+				it.set_world(this);
+				it.set_archetype(group.pArchetype);
+				it.set_chunk(group.pChunk);
+				it.set_range(group.startRow, group.count);
+				func(it);
+				group.count = 0;
+			}
+
+			//! Adds an instance to a contiguous CopyIter group.
+			//! \tparam Func Callback type.
+			//! \param func Callback used when the current group must flush.
+			//! \param group Group being accumulated.
+			//! \param instance Instance to append.
+			template <typename Func>
+			void push_copy_iter_group(Func& func, CopyIterGroupState& group, Entity instance) {
+				const auto& ec = fetch(instance);
+
+				if (group.count != 0 && ec.pArchetype == group.pArchetype && ec.pChunk == group.pChunk &&
+						ec.row == uint16_t(group.startRow + group.count)) {
+					++group.count;
+					return;
+				}
+
+				flush_copy_iter_group(func, group);
+				group.pArchetype = ec.pArchetype;
+				group.pChunk = ec.pChunk;
+				group.startRow = ec.row;
+				group.count = 1;
+			}
+
+			//! Prepares Parent relation bookkeeping for batch insertion.
+			//! \param parentEntity Parent target.
+			//! \param parentStore Parent relation store.
+			void prepare_parent_batch(Entity parentEntity, const NonFragmentingRelationStore& parentStore) {
+				GAIA_ASSERT(valid(parentEntity));
+				if (parentStore.sources(parentEntity) != nullptr)
+					return;
+
+				const auto parentPair = Pair(Parent, parentEntity);
+				assign_pair(parentPair, *m_pEntityArchetype);
+
+				auto& ecParent = fetch(parentEntity);
+				EntityBuilder::set_flag(ecParent.flags, EntityContainerFlags::OnDeleteTarget_Delete, true);
+			}
+
+			//! Prepares Parent relation bookkeeping for batch insertion.
+			//! \param parentEntity Parent target.
+			void prepare_parent_batch(Entity parentEntity) {
+				const auto* pStore = nonfragmenting_relation_store(Parent);
+				if (pStore != nullptr) {
+					prepare_parent_batch(parentEntity, *pStore);
+					return;
+				}
+
+				GAIA_ASSERT(valid(parentEntity));
+				const auto parentPair = Pair(Parent, parentEntity);
+				assign_pair(parentPair, *m_pEntityArchetype);
+
+				auto& ecParent = fetch(parentEntity);
+				EntityBuilder::set_flag(ecParent.flags, EntityContainerFlags::OnDeleteTarget_Delete, true);
+			}
+
+			//! Assigns one parent to a contiguous batch of newly created entities.
+			//! \param parentEntity Parent target.
+			//! \param archetype Destination archetype.
+			//! \param chunk Destination chunk.
+			//! \param originalChunkSize First new row.
+			//! \param toCreate Number of new entities.
+			void parent_batch(
+					Entity parentEntity, Archetype& archetype, Chunk& chunk, uint32_t originalChunkSize, uint32_t toCreate) {
+				GAIA_ASSERT(valid(parentEntity));
+#if !GAIA_OBSERVERS_ENABLED
+				(void)archetype;
+#endif
+
+				if (toCreate == 0)
+					return;
+
+				auto& parentStore = nonfragmenting_relation_store_mut(Parent);
+				prepare_parent_batch(parentEntity, parentStore);
+
+				auto entities = chunk.entity_view();
+#if GAIA_OBSERVERS_ENABLED
+				if (!m_observers.has_on_add_observers()) {
+					GAIA_FOR2_(originalChunkSize, originalChunkSize + toCreate, rowIdx) {
+						nonfragmenting_relation_set(parentStore, entities[rowIdx], Parent, parentEntity);
+					}
+					return;
+				}
+
+				const Entity parentPair = Pair(Parent, parentEntity);
+				auto addDiffCtx = m_observers.prepare_diff(
+						*this, ObserverEvent::OnAdd, EntitySpan{&parentPair, 1},
+						EntitySpan{entities.data() + originalChunkSize, toCreate});
+#endif
+				GAIA_FOR2_(originalChunkSize, originalChunkSize + toCreate, rowIdx) {
+					nonfragmenting_relation_set(parentStore, entities[rowIdx], Parent, parentEntity);
+				}
+
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.on_add(
+						*this, archetype, EntitySpan{&parentPair, 1}, EntitySpan{entities.data() + originalChunkSize, toCreate});
+				m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+			}
+
+			//! Assigns a direct non-fragmenting Parent relation.
+			//! \param entity Child entity.
+			//! \param parentEntity Parent target.
+			void parent_direct(Entity entity, Entity parentEntity) {
+				GAIA_ASSERT(valid(entity));
+				GAIA_ASSERT(valid(parentEntity));
+				auto& parentStore = nonfragmenting_relation_store_mut(Parent);
+				const auto oldParentEntity = parentStore.target(entity);
+
+				if (oldParentEntity == parentEntity)
+					return;
+
+#if GAIA_OBSERVERS_ENABLED
+				const bool hasOnDelObservers = oldParentEntity != EntityBad && m_observers.has_on_del_observers();
+				const bool hasOnAddObservers = m_observers.has_on_add_observers();
+				if (!hasOnDelObservers && !hasOnAddObservers) {
+					prepare_parent_batch(parentEntity, parentStore);
+					nonfragmenting_relation_set(parentStore, entity, Parent, parentEntity);
+					return;
+				}
+
+				const Entity oldParentPair = hasOnDelObservers ? Pair(Parent, oldParentEntity) : EntityBad;
+				const Entity parentPair = Pair(Parent, parentEntity);
+				auto delDiffCtx = !hasOnDelObservers
+															? ObserverRegistry::DiffDispatchCtx{}
+															: m_observers.prepare_diff(
+																		*this, ObserverEvent::OnDel, EntitySpan{&oldParentPair, 1}, EntitySpan{&entity, 1});
+				auto addDiffCtx = !hasOnAddObservers
+															? ObserverRegistry::DiffDispatchCtx{}
+															: m_observers.prepare_diff(
+																		*this, ObserverEvent::OnAdd, EntitySpan{&parentPair, 1}, EntitySpan{&entity, 1});
+				prepare_parent_batch(parentEntity, parentStore);
+#else
+				prepare_parent_batch(parentEntity, parentStore);
+#endif
+				nonfragmenting_relation_set(parentStore, entity, Parent, parentEntity);
+
+#if GAIA_OBSERVERS_ENABLED
+				const auto& ec = fetch(entity);
+				if (hasOnDelObservers)
+					m_observers.on_del(*this, *ec.pArchetype, EntitySpan{&oldParentPair, 1}, EntitySpan{&entity, 1});
+				if (hasOnAddObservers)
+					m_observers.on_add(*this, *ec.pArchetype, EntitySpan{&parentPair, 1}, EntitySpan{&entity, 1});
+				if (hasOnDelObservers)
+					m_observers.finish_diff(*this, GAIA_MOV(delDiffCtx));
+				if (hasOnAddObservers)
+					m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+			}
+
+			//! Dispatches add hooks and observers for one id.
+			//! \param entity Entity receiving the id.
+			//! \param object Added id.
+			void notify_add_single(Entity entity, Entity object) {
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+				if GAIA_UNLIKELY (tearing_down())
+					return;
+
+	#if GAIA_OBSERVERS_ENABLED
+				const auto& ec = fetch(entity);
+	#endif
+
+				lock();
+
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+				const auto* pItem = component_item(entity, object);
+				if (pItem != nullptr) {
+					const auto& hooks = pItem->hooks();
+					if (hooks.func_add != nullptr)
+						hooks.func_add(*this, *pItem, entity);
+				}
+	#endif
+
+	#if GAIA_OBSERVERS_ENABLED
+				m_observers.on_add(*this, *ec.pArchetype, EntitySpan{&object, 1}, EntitySpan{&entity, 1});
+	#endif
+
+				unlock();
+#else
+				(void)entity;
+				(void)object;
+#endif
+			}
+
+			//! Dispatches delete observers and hooks for one id.
+			//! \param entity Entity losing the id.
+			//! \param object Removed id.
+			void notify_del_single(Entity entity, Entity object) {
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+				if GAIA_UNLIKELY (tearing_down())
+					return;
+
+	#if GAIA_OBSERVERS_ENABLED
+				const auto& ec = fetch(entity);
+	#endif
+
+				lock();
+
+	#if GAIA_OBSERVERS_ENABLED
+				m_observers.on_del(*this, *ec.pArchetype, EntitySpan{&object, 1}, EntitySpan{&entity, 1});
+	#endif
+
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+				const auto* pItem = component_item(entity, object);
+				if (pItem != nullptr) {
+					const auto& hooks = pItem->hooks();
+					if (hooks.func_del != nullptr)
+						hooks.func_del(*this, *pItem, entity);
+				}
+	#endif
+
+				unlock();
+#else
+				(void)entity;
+				(void)object;
+#endif
+			}
+
+			//! Checks whether deleting entities from an archetype can notify component observers or hooks.
+			//! \param archetype Source archetype.
+			//! \return True if component delete notification work may be required.
+			GAIA_NODISCARD bool may_notify_del_entity_components(const Archetype& archetype) const {
+#if GAIA_ENABLE_ADD_DEL_HOOKS
+				if (m_compCache.hooks_accessed())
+					return true;
+#endif
+#if GAIA_OBSERVERS_ENABLED
+				return m_observers.has_on_del_observers() &&
+							 (archetype.has_observed_terms() || !m_sparseComponentsByComp.empty());
+#else
+				(void)archetype;
+				return false;
+#endif
+			}
+
+			//! Dispatches component delete notifications before an entity leaves its storage.
+			//! \param ec Entity container associated with \a entity.
+			//! \param entity Entity whose directly owned components are about to be destroyed.
+			void notify_del_entity_components(const EntityContainer& ec, Entity entity) {
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+				const auto& archetype = *ec.pArchetype;
+				if (!may_notify_del_entity_components(archetype))
+					return;
+				if GAIA_UNLIKELY (tearing_down())
+					return;
+
+	#if GAIA_OBSERVERS_ENABLED
+				const bool inspectObserverTerms =
+						m_observers.has_on_del_observers() && (archetype.has_observed_terms() || !m_sparseComponentsByComp.empty());
+	#endif
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+				const bool inspectHookTerms = m_compCache.hooks_accessed();
+	#endif
+				cnt::darray_ext<Entity, 32> observerTerms;
+				cnt::darray_ext<Entity, 32> hookTerms;
+
+	#if GAIA_OBSERVERS_ENABLED
+				if (inspectObserverTerms && archetype.has_observed_terms()) {
+					for (const auto term: archetype.ids_view())
+						observerTerms.push_back(term);
+				}
+	#endif
+
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+				if (inspectHookTerms) {
+					for (const auto term: archetype.ids_view()) {
+						const auto* pItem = component_item(entity, term);
+						if (pItem != nullptr && pItem->hooks().func_del != nullptr)
+							hookTerms.push_back(term);
+					}
+				}
+	#endif
+
+				for (const auto& [componentKey, store]: m_sparseComponentsByComp) {
+					const auto component = componentKey.entity();
+					if (!component_is_non_fragmenting(component) || !store.func_has(store.pStore, entity))
+						continue;
+
+	#if GAIA_OBSERVERS_ENABLED
+					if ((fetch(component).flags & EntityContainerFlags::IsObserved) != 0)
+						observerTerms.push_back(component);
+	#endif
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+					const auto* pItem = component_item(entity, component);
+					if (inspectHookTerms && pItem != nullptr && pItem->hooks().func_del != nullptr)
+						hookTerms.push_back(component);
+	#endif
+				}
+
+				if (observerTerms.empty() && hookTerms.empty())
+					return;
+
+				lock();
+
+	#if GAIA_OBSERVERS_ENABLED
+				if (!observerTerms.empty())
+					m_observers.on_del(*this, archetype, EntitySpan{observerTerms}, EntitySpan{&entity, 1});
+	#endif
+
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+				for (const auto term: hookTerms) {
+					const auto* pItem = component_item(entity, term);
+					if (pItem == nullptr)
+						continue;
+					const auto& hooks = pItem->hooks();
+					if (hooks.func_del != nullptr)
+						hooks.func_del(*this, *pItem, entity);
+				}
+	#endif
+
+				unlock();
+#else
+				(void)ec;
+				(void)entity;
+#endif
+			}
+
+			//! Checks whether inheritance still supplies an id without one source.
+			//! \param entity Entity whose semantic match is tested.
+			//! \param object Id being resolved.
+			//! \param excludedSource Inheritance source to ignore.
+			//! \param visited Recursion guard.
+			//! \return True when another direct or inherited source supplies the id.
+			GAIA_NODISCARD bool has_semantic_match_without_source(
+					Entity entity, Entity object, Entity excludedSource, cnt::set<EntityLookupKey>& visited) const {
+				const auto inserted = visited.insert(EntityLookupKey(entity));
+				if (!inserted.second)
+					return false;
+
+				if (entity != excludedSource && has_direct(entity, object))
+					return true;
+
+				const auto it = m_entityToAsTargets.find(EntityLookupKey(entity));
+				if (it == m_entityToAsTargets.end())
+					return false;
+
+				for (const auto baseKey: it->second) {
+					if (has_semantic_match_without_source(baseKey.entity(), object, excludedSource, visited))
+						return true;
+				}
+
+				return false;
+			}
+
+			//! Notifies descendants that lose an inherited id.
+			//! \param source Removed inheritance source.
+			//! \param object Id removed from the source.
+			void notify_inherited_del_dependents(Entity source, Entity object) {
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+				const auto& descendants = as_relations_trav_cache(source);
+				for (const auto descendant: descendants) {
+					if (descendant == source)
+						continue;
+					if (has_direct(descendant, object) || !has(descendant, object))
+						continue;
+
+					cnt::set<EntityLookupKey> visited;
+					if (has_semantic_match_without_source(descendant, object, source, visited))
+						continue;
+
+					notify_del_single(descendant, object);
+				}
+#else
+				(void)source;
+				(void)object;
+#endif
+			}
+
+			//! Notifies descendants about multiple inherited ids removed from a source.
+			//! \param source Removed inheritance source.
+			//! \param removedObjects Removed ids.
+			void notify_inherited_del_dependents(Entity source, EntitySpan removedObjects) {
+				for (const auto object: removedObjects)
+					notify_inherited_del_dependents(source, object);
+			}
+
+			//! Copies an entity into one or more destination batches.
+			//! \tparam Func Callback type.
+			//! \param entity Source entity or exact pair record.
+			//! \param count Number of copies.
+			//! \param func Callback for copied entities.
+			//! \param addedIds Ids reported to add observers.
+			//! \param nonfragmentingPairs Exact out-of-archetype relation pairs copied to each destination.
+			//! \param addHookIds Copied ids with configured add hooks.
+			//! \param parentInstance Optional parent for copied entities.
+#if GAIA_OBSERVERS_ENABLED
+			//! \param pAddDiffCtx Optional observer diff context.
+#endif
+			template <typename Func>
+			void copy_n_inter(
+					Entity entity, uint32_t count, Func& func, EntitySpan addedIds, EntitySpan nonfragmentingPairs,
+					EntitySpan addHookIds, Entity parentInstance = EntityBad
+#if GAIA_OBSERVERS_ENABLED
+					,
+					ObserverRegistry::DiffDispatchCtx* pAddDiffCtx = nullptr
+#endif
+			) {
+				GAIA_ASSERT(valid(entity));
+				GAIA_ASSERT(parentInstance == EntityBad || valid(parentInstance));
+#if !GAIA_OBSERVERS_ENABLED
+				(void)addedIds;
+#endif
+
+				if (count == 0U)
+					return;
+
+#if GAIA_OBSERVERS_ENABLED
+				const bool useLocalAddDiff = !addedIds.empty() && pAddDiffCtx == nullptr;
+				ObserverRegistry::DiffDispatchCtx addDiffCtx{};
+				if (useLocalAddDiff)
+					addDiffCtx = m_observers.prepare_diff_add_new(*this, EntitySpan{addedIds});
+#endif
+
+				auto& ec = cont(entity);
+
+				GAIA_ASSERT(ec.pChunk != nullptr);
+				GAIA_ASSERT(ec.pArchetype != nullptr);
+
+				auto* pSrcChunk = ec.pChunk;
+				auto* pDstArchetype = ec.pArchetype;
+				const auto hasEntityDesc = pDstArchetype->has<EntityDesc>();
+				if (hasEntityDesc)
+					pDstArchetype = foc_archetype_del(pDstArchetype, GAIA_ID(EntityDesc));
+
+				if (parentInstance != EntityBad)
+					prepare_parent_batch(parentInstance);
+
+				// Entities array might get reallocated after m_recs.entities.alloc
+				// so instead of fetching the container again we simply cache the row
+				// of our source entity.
+				const auto srcRow = ec.row;
+
+				EntityContainerCtx ctx{true, false};
+
+				uint32_t left = count;
+				do {
+					auto* pDstChunk = pDstArchetype->foc_free_chunk();
+					const uint32_t originalChunkSize = pDstChunk->size();
+					const uint32_t freeSlotsInChunk = pDstChunk->capacity() - originalChunkSize;
+					const uint32_t toCreate = core::get_min(freeSlotsInChunk, left);
+
+					GAIA_FOR(toCreate) {
+						const auto entityNew = m_recs.entities.alloc(&ctx);
+						auto& ecNew = m_recs.entities[entityNew.id()];
+						store_entity(ecNew, entityNew, pDstArchetype, pDstChunk);
+
+#if GAIA_ASSERT_ENABLED
+						GAIA_ASSERT(ecNew.pChunk == pDstChunk);
+						auto entityExpected = pDstChunk->entity_view()[ecNew.row];
+						GAIA_ASSERT(entityExpected == entityNew);
+#endif
+
+						if (hasEntityDesc) {
+							Chunk::copy_foreign_entity_data(pSrcChunk, srcRow, pDstChunk, ecNew.row);
+						}
+
+						copy_all_sparse_entity_data(entity, entityNew);
+						copy_nonfragmenting_relation_pairs(entityNew, nonfragmentingPairs);
+					}
+
+					pDstArchetype->try_update_free_chunk_idx();
+
+					if (!hasEntityDesc) {
+						pDstChunk->call_ctors(originalChunkSize, toCreate);
+
+						{
+							GAIA_PROF_SCOPE(World::copy_n_entity_data);
+							Chunk::copy_entity_data_n_same_chunk(pSrcChunk, srcRow, pDstChunk, originalChunkSize, toCreate);
+						}
+					}
+
+					pDstChunk->update_versions();
+					auto entities = pDstChunk->entity_view();
+					trigger_copy_add_hooks(EntitySpan{entities.data() + originalChunkSize, toCreate}, EntitySpan{addHookIds});
+
+#if GAIA_OBSERVERS_ENABLED
+					if (!addedIds.empty()) {
+						if (pAddDiffCtx != nullptr)
+							m_observers.add_diff_targets(
+									*this, *pAddDiffCtx, EntitySpan{entities.data() + originalChunkSize, toCreate});
+						else if (useLocalAddDiff)
+							m_observers.add_diff_targets(
+									*this, addDiffCtx, EntitySpan{entities.data() + originalChunkSize, toCreate});
+						m_observers.on_add(
+								*this, *pDstArchetype, addedIds, EntitySpan{entities.data() + originalChunkSize, toCreate});
+					}
+#endif
+
+					if (parentInstance != EntityBad)
+						parent_batch(parentInstance, *pDstArchetype, *pDstChunk, originalChunkSize, toCreate);
+
+					invoke_copy_batch_callback(func, pDstArchetype, pDstChunk, originalChunkSize, toCreate);
+
+					left -= toCreate;
+				} while (left > 0);
+#if GAIA_OBSERVERS_ENABLED
+				if (useLocalAddDiff)
+					m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+			}
+
+			//! Checks whether an id uses the Inherit instantiation policy.
+			//! \param id Id to inspect.
+			//! \return True when the id is inherited through Is edges.
+			GAIA_NODISCARD bool id_uses_inherit_policy(Entity id) const {
+				return !is_wildcard(id) && target(id, OnInstantiate) == Inherit;
+			}
+
+			//! Finds the inheritance source that owns an id.
+			//! \param entity Entity resolving the inherited id.
+			//! \param id Id to resolve.
+			//! \return Owning source entity, or EntityBad.
+			GAIA_NODISCARD Entity inherited_id_owner(Entity entity, Entity id) const {
+				if (!id_uses_inherit_policy(id))
+					return EntityBad;
+
+				const auto& targets = as_targets_trav_cache(entity);
+				for (const auto target: targets) {
+					if (has_inter(target, id, false))
+						return target;
+				}
+
+				return EntityBad;
+			}
+
+			//! Returns whether \a entity has a direct sparse payload for \a object.
+			//! \param entity Entity to inspect.
+			//! \param object Sparse component entity.
+			//! \return True when the sparse store contains a direct payload for the entity.
+			GAIA_NODISCARD bool has_direct_sparse_component_inter(Entity entity, Entity object) const {
+				const auto itSparseStore = m_sparseComponentsByComp.find(EntityLookupKey(object));
+				return itSparseStore != m_sparseComponentsByComp.end() &&
+							 itSparseStore->second.func_has(itSparseStore->second.pStore, entity);
+			}
+
+			//! Resolves which entity currently owns \a object for \a entity.
+			//! Direct non-fragmenting relation pairs, direct sparse payloads, and direct archetype membership all resolve to
+			//! \a entity. Otherwise this returns the inherited owner, or EntityBad if the id is absent.
+			//! \param entity Entity being queried.
+			//! \param object Non-wildcard id being queried.
+			//! \return Direct owner, inherited owner, or EntityBad.
+			GAIA_NODISCARD Entity id_owner_inter(Entity entity, Entity object) const {
+				GAIA_ASSERT(object != EntityBad);
+				GAIA_ASSERT(!is_wildcard(object));
+
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr)
+					return EntityBad;
+
+				const auto& ec = *pEc;
+
+				if (object.pair()) {
+					if (has_nonfragmenting_relation_pair(entity, object) || ec.pArchetype->has(object))
+						return entity;
+				} else {
+					if (has_direct_sparse_component_inter(entity, object) || ec.pArchetype->has(object))
+						return entity;
+				}
+
+				return inherited_id_owner(entity, object);
+			}
+
+			//! Checks whether prefab instantiation copies an id.
+			//! \param id Id to inspect.
+			//! \return True when the instantiation policy copies the id.
+			GAIA_NODISCARD bool instantiate_copies_id(Entity id) const {
+				const auto policy = target(id, OnInstantiate);
+				if (policy == EntityBad || policy == Override)
+					return true;
+				if (policy == DontInherit || policy == Inherit)
+					return false;
+				return true;
+			}
+
+			//! Checks whether \a children already contains an edge for \a childPrefab.
+			//! \tparam T Prefab child edge container type.
+			//! \param children Collected child edges to inspect.
+			//! \param childPrefab Child prefab entity to look for.
+			//! \return True when an edge for \a childPrefab is already present.
+			template <typename T>
+			GAIA_NODISCARD bool prefab_child_edge_exists(const T& children, Entity childPrefab) const {
+				for (const auto& child: children) {
+					if (child.prefab == childPrefab)
+						return true;
+				}
+
+				return false;
+			}
+
+			//! Appends direct prefab children connected to \a prefabEntity through \a relation.
+			//! Duplicate child prefabs are ignored so relation precedence stays deterministic.
+			//! \tparam T Prefab child edge container type.
+			//! \param prefabEntity Parent prefab entity whose children are gathered.
+			//! \param relation Hierarchy relation used to discover child prefabs.
+			//! \param outChildren Destination child edge list.
+			template <typename T>
+			void gather_prefab_children_for_relation(Entity prefabEntity, Entity relation, T& outChildren) {
+				sources(relation, prefabEntity, [&](Entity childPrefab) {
+					if (!has_direct(childPrefab, Prefab) || prefab_child_edge_exists(outChildren, childPrefab))
+						return;
+
+					PrefabChildEdge edge{};
+					edge.prefab = childPrefab;
+					edge.relation = relation;
+					outChildren.push_back(edge);
+				});
+			}
+
+			//! Gathers direct prefab children in deterministic order with their hierarchy relation.
+			//! `Parent` edges take precedence over `ChildOf` when a child prefab is linked by both relations.
+			//! \tparam T Prefab child edge container type.
+			//! \param prefabEntity Parent prefab entity whose direct prefab children are gathered.
+			//! \param outChildren Destination child edge list.
+			template <typename T>
+			void gather_sorted_prefab_children(Entity prefabEntity, T& outChildren) {
+				gather_prefab_children_for_relation(prefabEntity, Parent, outChildren);
+				gather_prefab_children_for_relation(prefabEntity, ChildOf, outChildren);
+
+				core::sort(outChildren, [](const PrefabChildEdge& left, const PrefabChildEdge& right) {
+					if (left.prefab.id() != right.prefab.id())
+						return left.prefab.id() < right.prefab.id();
+
+					return left.relation.id() < right.relation.id();
+				});
+			}
+
+			//! Returns whether \a id is a prefab-only ChildOf parent edge that should not be copied directly.
+			//! \param id Component or pair id from a prefab archetype.
+			//! \return True when \a id is Pair(ChildOf, prefab parent).
+			GAIA_NODISCARD bool prefab_hierarchy_parent_id(Entity id) const {
+				if (!id.pair() || id.id() != ChildOf.id())
+					return false;
+
+				const auto parentPrefab = pair_tgt(*this, id);
+				return valid(parentPrefab) && has_direct(parentPrefab, Prefab);
+			}
+
+			//! Attaches \a instance under \a parentInstance using the prefab child hierarchy relation.
+			//! \param instance Spawned child instance.
+			//! \param relation Hierarchy relation copied from the prefab child edge.
+			//! \param parentInstance Spawned parent instance.
+			void attach_prefab_child_instance(Entity instance, Entity relation, Entity parentInstance) {
+				GAIA_ASSERT(valid(instance));
+				GAIA_ASSERT(valid(relation));
+				GAIA_ASSERT(valid(parentInstance));
+
+				if (relation == Parent) {
+					parent_direct(instance, parentInstance);
+					return;
+				}
+
+				add(instance, Pair(relation, parentInstance));
+			}
+
+			//! Collects directly owned non-fragmenting relation pairs in deterministic id order.
+			//! \param srcEntity Source entity whose pairs are collected.
+			//! \param out Destination pair list.
+			void collect_nonfragmenting_relation_pairs(Entity srcEntity, cnt::darray_ext<Entity, 8>& out) const {
+				for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+					const auto target = store.target(srcEntity);
+					if (target != EntityBad)
+						out.push_back(Pair(relKey.entity(), target));
+				}
+
+				core::sort(out.begin(), out.end(), core::is_smaller<Entity>{});
+			}
+
+			//! Copies directly owned non-fragmenting relation pairs without dispatching add notifications.
+			//! \param dstEntity Destination entity.
+			//! \param pairs Exact relation pairs to attach.
+			void copy_nonfragmenting_relation_pairs(Entity dstEntity, EntitySpan pairs) {
+				if (pairs.empty())
+					return;
+
+				EntityBuilder builder(*this, dstEntity);
+				for (const auto pair: pairs)
+					builder.add_inter_init(pair);
+				builder.commit();
+			}
+
+			//! Collects sparse ids owned by \a srcEntity, split by fragmenting vs non-fragmenting storage.
+			//! Non-fragmenting ids are copied by value. Fragmenting ids receive a default payload.
+			//! \tparam TNonFrag Non-fragmenting id container type.
+			//! \tparam TFrag Fragmenting id container type.
+			//! \param srcEntity Source entity or exact pair record.
+			//! \param nonFragOut Destination list for DontFragment sparse ids.
+			//! \param fragOut Destination list for fragmenting sparse ids.
+			template <typename TNonFrag, typename TFrag>
+			void collect_add_n_sparse_ids(Entity srcEntity, TNonFrag& nonFragOut, TFrag& fragOut) const {
+				nonFragOut.clear();
+				fragOut.clear();
+				for (const auto& [compKey, store]: m_sparseComponentsByComp) {
+					const auto comp = compKey.entity();
+					if (!store.func_has(store.pStore, srcEntity))
+						continue;
+
+					if (component_is_non_fragmenting(comp)) {
+						nonFragOut.push_back(comp);
+						continue;
+					}
+
+					if (sparse_storage_mode(comp) != SparseStorageMode::None)
+						fragOut.push_back(comp);
+				}
+			}
+
+			//! Adds default sparse payloads for \a sparseIds without copying source values.
+			//! \param dstEntity Destination entity.
+			//! \param sparseIds Fragmenting sparse ids to insert.
+			void add_default_sparse_ids(Entity dstEntity, EntitySpan sparseIds) {
+				for (const auto comp: sparseIds) {
+					auto it = m_sparseComponentsByComp.find(EntityLookupKey(comp));
+					GAIA_ASSERT(it != m_sparseComponentsByComp.end());
+					GAIA_ASSERT(it->second.func_add != nullptr);
+					(void)it->second.func_add(it->second.pStore, dstEntity);
+				}
+			}
+
+			//! Applies non-table type from an add_n source onto one destination entity.
+			//! \param srcEntity Source entity or exact pair record.
+			//! \param dstEntity Destination ordinary entity.
+			//! \param nonfragmentingPairs Exact out-of-archetype relation pairs.
+			//! \param nonFragSparseIds DontFragment sparse ids whose payloads are copied.
+			//! \param fragSparseIds Fragmenting sparse ids that receive a default payload.
+			void apply_add_n_non_table_type(
+					Entity srcEntity, Entity dstEntity, EntitySpan nonfragmentingPairs, EntitySpan nonFragSparseIds,
+					EntitySpan fragSparseIds) {
+				copy_nonfragmenting_relation_pairs(dstEntity, nonfragmentingPairs);
+				(void)copy_sparse_entity_data(srcEntity, dstEntity, nonFragSparseIds);
+				add_default_sparse_ids(dstEntity, fragSparseIds);
+			}
+
+			//! Copies one sparse payload between entities.
+			//! \param srcEntity Source entity.
+			//! \param dstEntity Destination entity.
+			//! \param comp Sparse component id.
+			//! \param store Type-erased sparse store.
+			//! \return True when a payload was copied.
+			GAIA_NODISCARD bool copy_sparse_store_inter(
+					Entity srcEntity, Entity dstEntity, Entity comp, const SparseComponentStoreErased& store) {
+				if (!copies_sparse_payload_inter(comp, srcEntity, store))
+					return false;
+
+				GAIA_ASSERT(store.func_copy_entity != nullptr);
+				return store.func_copy_entity(store.pStore, dstEntity, srcEntity);
+			}
+
+			//! Copies every eligible sparse payload between entities.
+			//! \param srcEntity Source entity.
+			//! \param dstEntity Destination entity.
+			//! \param pCopiedIds Optional output array for copied component ids.
+			//! \return Number of copied payloads.
+			uint32_t copy_all_sparse_entity_data(Entity srcEntity, Entity dstEntity, Entity* pCopiedIds = nullptr) {
+				uint32_t copiedCnt = 0;
+				for (auto& [compKey, store]: m_sparseComponentsByComp) {
+					const auto comp = compKey.entity();
+					if (!copy_sparse_store_inter(srcEntity, dstEntity, comp, store))
+						continue;
+
+					if (pCopiedIds != nullptr)
+						pCopiedIds[copiedCnt] = comp;
+					++copiedCnt;
+				}
+
+				return copiedCnt;
+			}
+
+			//! Filters copied ids down to components with configured add hooks.
+			//! \tparam T Output container type.
+			//! \param addedIds Candidate copied ids.
+			//! \param outHookIds Destination hook id list.
+			template <typename T>
+			void collect_add_hook_ids(EntitySpan addedIds, T& outHookIds) const {
+				outHookIds.clear();
+#if GAIA_ENABLE_ADD_DEL_HOOKS
+				if (!m_compCache.hooks_accessed())
+					return;
+
+				for (const auto id: addedIds) {
+					const auto* pItem = id.pair() ? comp_cache().find_pair_payload(id) : comp_cache().find(id);
+					if (pItem != nullptr && pItem->hooks().func_add != nullptr)
+						outHookIds.push_back(id);
+				}
+#else
+				(void)addedIds;
+#endif
+			}
+
+			//! Collects copied ids with configured add hooks.
+			//! \tparam T Output container type.
+			//! \param srcEntity Source entity.
+			//! \param dstArchetype Destination archetype.
+			//! \param nonfragmentingPairs Copied out-of-archetype relation pairs.
+			//! \param outHookIds Destination hook id list.
+			template <typename T>
+			void collect_copy_add_hook_ids(
+					Entity srcEntity, const Archetype& dstArchetype, EntitySpan nonfragmentingPairs, T& outHookIds) const {
+				outHookIds.clear();
+#if GAIA_ENABLE_ADD_DEL_HOOKS
+				if (!m_compCache.hooks_accessed())
+					return;
+
+				auto appendHook = [&](Entity id) {
+					const auto* pItem = id.pair() ? comp_cache().find_pair_payload(id) : comp_cache().find(id);
+					if (pItem != nullptr && pItem->hooks().func_add != nullptr)
+						outHookIds.push_back(id);
+				};
+
+				for (const auto id: dstArchetype.ids_view())
+					appendHook(id);
+				for (const auto& [compKey, store]: m_sparseComponentsByComp) {
+					const auto component = compKey.entity();
+					if (copies_non_frag_sparse_payload_inter(component, srcEntity, store))
+						appendHook(component);
+				}
+				for (const auto pair: nonfragmentingPairs)
+					appendHook(pair);
+#else
+				(void)srcEntity;
+				(void)dstArchetype;
+				(void)nonfragmentingPairs;
+#endif
+			}
+
+			//! Runs component add hooks for copied entities after their payloads are initialized.
+			//! \param entities Copied entities.
+			//! \param hookIds Copied ids with configured add hooks.
+			void trigger_copy_add_hooks(EntitySpan entities, EntitySpan hookIds) {
+#if GAIA_ENABLE_ADD_DEL_HOOKS
+				if (hookIds.empty() || tearing_down())
+					return;
+
+				lock();
+				for (const auto id: hookIds) {
+					for (const auto entity: entities) {
+						const auto* pItem = component_item(entity, id);
+						if (pItem == nullptr)
+							continue;
+						const auto& hooks = pItem->hooks();
+						if (hooks.func_add != nullptr)
+							hooks.func_add(*this, *pItem, entity);
+					}
+				}
+				unlock();
+#else
+				(void)entities;
+				(void)hookIds;
+#endif
+			}
+
+			//! Copies selected sparse payloads between entities.
+			//! \param srcEntity Source entity.
+			//! \param dstEntity Destination entity.
+			//! \param copiedSparseIds Sparse component ids to consider.
+			//! \param pCopiedIds Optional output array for copied component ids.
+			//! \return Number of copied payloads.
+			uint32_t copy_sparse_entity_data(
+					Entity srcEntity, Entity dstEntity, EntitySpan copiedSparseIds, Entity* pCopiedIds = nullptr) {
+				uint32_t copiedCnt = 0;
+				for (const auto comp: copiedSparseIds) {
+					auto it = m_sparseComponentsByComp.find(EntityLookupKey(comp));
+					GAIA_ASSERT(it != m_sparseComponentsByComp.end());
+
+					auto& store = it->second;
+					if (!copy_sparse_store_inter(srcEntity, dstEntity, comp, store))
+						continue;
+
+					if (pCopiedIds != nullptr)
+						pCopiedIds[copiedCnt] = comp;
+					++copiedCnt;
+				}
+
+				return copiedCnt;
+			}
+
+			//! Writes archetype ids to a contiguous destination buffer.
+			//! \param dstArchetype Archetype whose ids are written.
+			//! \param pDst Destination buffer.
+			void write_archetype_ids(const Archetype& dstArchetype, Entity* pDst) const {
+				for (const auto id: dstArchetype.ids_view())
+					*pDst++ = id;
+			}
+
+			//! Counts copied non-fragmenting sparse ids for an entity.
+			//! \param srcEntity Source entity.
+			//! \return Number of eligible ids.
+			GAIA_NODISCARD uint32_t copied_non_frag_sparse_id_count(Entity srcEntity) const {
+				uint32_t count = 0;
+				for (const auto& [compKey, store]: m_sparseComponentsByComp) {
+					const auto comp = compKey.entity();
+					if (!copies_non_frag_sparse_payload_inter(comp, srcEntity, store))
+						continue;
+					++count;
+				}
+
+				return count;
+			}
+
+			//! Writes copied non-fragmenting sparse ids to a buffer.
+			//! \param srcEntity Source entity.
+			//! \param pDst Destination buffer.
+			void write_copied_non_frag_sparse_ids(Entity srcEntity, Entity* pDst) const {
+				for (const auto& [compKey, store]: m_sparseComponentsByComp) {
+					const auto comp = compKey.entity();
+					if (!copies_non_frag_sparse_payload_inter(comp, srcEntity, store))
+						continue;
+					*pDst++ = comp;
+				}
+			}
+
+			//! Copies one sparse component payload.
+			//! \param dstEntity Destination entity.
+			//! \param srcEntity Source entity.
+			//! \param object Sparse component id.
+			//! \return True when a payload was copied.
+			GAIA_NODISCARD bool copy_sparse_payload_inter(Entity dstEntity, Entity srcEntity, Entity object) {
+				if (!component_is_non_fragmenting(object) && sparse_storage_mode(object) == SparseStorageMode::None)
+					return false;
+
+				const auto itSparseStore = m_sparseComponentsByComp.find(EntityLookupKey(object));
+				if (itSparseStore == m_sparseComponentsByComp.end())
+					return false;
+
+				return copy_sparse_store_inter(srcEntity, dstEntity, object, itSparseStore->second);
+			}
+
+			//! Copies an inherited sparse payload onto \a entity and makes it direct when needed.
+			//! \param entity Entity receiving the local override.
+			//! \param object Sparse component or exact pair id being overridden.
+			//! \return True when the local override was created. False otherwise.
+			GAIA_NODISCARD bool override_sparse_component_inter(Entity entity, Entity object) {
+				GAIA_ASSERT(valid(entity));
+				GAIA_ASSERT(valid(object));
+				GAIA_ASSERT(sparse_storage_mode(object) != SparseStorageMode::None);
+
+				if (has_direct(entity, object))
+					return false;
+
+				const auto inheritedOwner = inherited_id_owner(entity, object);
+				if (inheritedOwner == EntityBad)
+					return false;
+
+				if (!copy_sparse_payload_inter(entity, inheritedOwner, object))
+					return false;
+
+				if (sparse_storage_mode(object) == SparseStorageMode::Fragmenting)
+					make_sparse_copy_direct_inter(entity, object);
+				return true;
+			}
+
+			//! Copies an owned sparse payload from \a srcEntity to \a dstEntity and reports the add.
+			//! Fragmenting components are also made direct on the destination archetype.
+			//! \param srcEntity Source entity owning the payload.
+			//! \param dstEntity Destination entity receiving the payload.
+			//! \param object Sparse component or exact pair id being copied.
+			//! \return True when the payload was copied. False otherwise.
+			GAIA_NODISCARD bool copy_owned_sparse_component_inter(Entity srcEntity, Entity dstEntity, Entity object) {
+				GAIA_ASSERT(valid(srcEntity));
+				GAIA_ASSERT(valid(dstEntity));
+				GAIA_ASSERT(valid(object));
+				GAIA_ASSERT(sparse_storage_mode(object) != SparseStorageMode::None);
+
+				const auto mode = sparse_storage_mode(object);
+				if (mode == SparseStorageMode::Fragmenting) {
+					if (!copy_sparse_payload_inter(dstEntity, srcEntity, object))
+						return false;
+
+					make_sparse_copy_direct_inter(dstEntity, object);
+					notify_add_single(dstEntity, object);
+					return true;
+				}
+#if GAIA_OBSERVERS_ENABLED
+				auto addDiffCtx =
+						m_observers.prepare_diff(*this, ObserverEvent::OnAdd, EntitySpan{&object, 1}, EntitySpan{&dstEntity, 1});
+#endif
+				if (!copy_sparse_payload_inter(dstEntity, srcEntity, object))
+					return false;
+				notify_add_single(dstEntity, object);
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+				return true;
+			}
+
+			//! Makes a copied fragmenting sparse component directly owned.
+			//! \param entity Destination entity.
+			//! \param object Sparse component id.
+			void make_sparse_copy_direct_inter(Entity entity, Entity object) {
+				GAIA_ASSERT(sparse_storage_mode(object) == SparseStorageMode::Fragmenting);
+				EntityBuilder eb(*this, entity);
+				eb.add_inter_init(object);
+				eb.commit();
+			}
+
+			//! Copies direct component payload data for \a object from \a srcEntity to \a dstEntity.
+			//! \param srcEntity Source entity holding the payload.
+			//! \param dstEntity Destination entity receiving the payload.
+			//! \param object Exact component or pair id identifying the column to copy.
+			//! \param item Component cache item describing the payload copy operation.
+			void copy_direct_component_data_inter(
+					Entity srcEntity, Entity dstEntity, Entity object, const ComponentCacheItem& item) {
+				GAIA_ASSERT(valid(srcEntity));
+				GAIA_ASSERT(valid(dstEntity));
+				GAIA_ASSERT(object.pair() || valid(object));
+				GAIA_ASSERT(object.pair() || item.entity == object);
+				GAIA_ASSERT(item.comp.size() != 0U);
+
+				const auto& ecDst = fetch(dstEntity);
+				const auto& ecSrc = fetch(srcEntity);
+				const auto compIdxDst = ecDst.pChunk->comp_idx(object);
+				const auto compIdxSrc = ecSrc.pChunk->comp_idx(object);
+				GAIA_ASSERT(compIdxDst != BadIndex && compIdxSrc != BadIndex);
+
+				const auto idxDst = ecDst.row;
+				const auto idxSrc = ecSrc.row;
+				void* pDst = ecDst.pChunk->comp_ptr_mut(compIdxDst);
+				const void* pSrc = ecSrc.pChunk->comp_ptr(compIdxSrc);
+				item.copy(pDst, pSrc, idxDst, idxSrc, ecDst.pChunk->capacity(), ecSrc.pChunk->capacity());
+			}
+
+			//! Materializes an inherited id as directly owned storage.
+			//! \param entity Entity receiving the override.
+			//! \param object Inherited id.
+			//! \return True when an override was created.
+			GAIA_NODISCARD bool override_inter(Entity entity, Entity object) {
+				GAIA_ASSERT(valid(entity));
+				GAIA_ASSERT(object.pair() || valid(object));
+
+				if (has_direct(entity, object))
+					return false;
+
+				const auto inheritedOwner = inherited_id_owner(entity, object);
+				if (inheritedOwner == EntityBad)
+					return false;
+
+				const auto* pItem = component_item(inheritedOwner, object);
+				if (pItem != nullptr && sparse_storage_mode(object) != SparseStorageMode::None)
+					return override_sparse_component_inter(entity, object);
+
+				if (pItem != nullptr && pItem->comp.size() != 0U) {
+					EntityBuilder eb(*this, entity);
+					eb.add_inter_init(object);
+					eb.commit();
+					copy_direct_component_data_inter(inheritedOwner, entity, object, *pItem);
+					notify_add_single(entity, object);
+					return true;
+				}
+
+				add(entity, object);
+				return true;
+			}
+
+			//! Copies one directly owned id and payload.
+			//! \param srcEntity Source entity.
+			//! \param dstEntity Destination entity.
+			//! \param object Id to copy.
+			//! \return True when the id was copied.
+			GAIA_NODISCARD bool copy_owned_id_from_entity(Entity srcEntity, Entity dstEntity, Entity object) {
+				GAIA_ASSERT(valid(srcEntity));
+				GAIA_ASSERT(valid(dstEntity));
+				GAIA_ASSERT(object.pair() || valid(object));
+
+				if (has_direct(dstEntity, object))
+					return false;
+
+				const auto* pItem = component_item(srcEntity, object);
+				if (pItem != nullptr && sparse_storage_mode(object) != SparseStorageMode::None)
+					return copy_owned_sparse_component_inter(srcEntity, dstEntity, object);
+
+				if (pItem != nullptr && pItem->comp.size() != 0U) {
+					EntityBuilder eb(*this, dstEntity);
+					eb.add_inter_init(object);
+					eb.commit();
+					copy_direct_component_data_inter(srcEntity, dstEntity, object, *pItem);
+					notify_add_single(dstEntity, object);
+					return true;
+				}
+
+				add(dstEntity, object);
+				return true;
+			}
+
+			//! Builds the destination archetype for a prefab instance.
+			//! \param prefabEntity Prefab source.
+			//! \return Destination archetype.
+			GAIA_NODISCARD Archetype* instantiate_prefab_dst_archetype(Entity prefabEntity) {
+				GAIA_ASSERT(valid(prefabEntity));
+				GAIA_ASSERT(has_direct(prefabEntity, Prefab));
+
+				if GAIA_UNLIKELY (!has_direct(prefabEntity, Prefab))
+					return fetch(prefabEntity).pArchetype;
+
+				auto& ecSrc = cont(prefabEntity);
+				GAIA_ASSERT(ecSrc.pArchetype != nullptr);
+
+				auto* pDstArchetype = ecSrc.pArchetype;
+				if (pDstArchetype->has<EntityDesc>())
+					pDstArchetype = foc_archetype_del(pDstArchetype, GAIA_ID(EntityDesc));
+				if (pDstArchetype->has(Prefab))
+					pDstArchetype = foc_archetype_del(pDstArchetype, Prefab);
+
+				for (const auto id: ecSrc.pArchetype->ids_view()) {
+					if (id.pair() && id.id() == Is.id()) {
+						pDstArchetype = foc_archetype_del(pDstArchetype, id);
+						continue;
+					}
+					if (prefab_hierarchy_parent_id(id)) {
+						pDstArchetype = foc_archetype_del(pDstArchetype, id);
+						continue;
+					}
+
+					if (!instantiate_copies_id(id))
+						pDstArchetype = foc_archetype_del(pDstArchetype, id);
+				}
+
+				// Nested pairs are not representable, so pair prefabs cannot receive Pair(Is, prefab).
+				if (!prefabEntity.pair()) {
+					const auto isPair = Pair(Is, prefabEntity);
+					assign_pair(isPair, *m_pEntityArchetype);
+					pDstArchetype = foc_archetype_add(pDstArchetype, isPair);
+				}
+
+				return pDstArchetype;
+			}
+
+			//! Collects sparse ids copied from a prefab.
+			//! \tparam T Output container type.
+			//! \param prefabEntity Prefab source.
+			//! \param outCopiedSparseIds Destination id list.
+			template <typename T>
+			void collect_prefab_copied_sparse_ids(Entity prefabEntity, T& outCopiedSparseIds) {
+				outCopiedSparseIds.clear();
+				if (m_sparseComponentsByComp.empty())
+					return;
+
+				for (const auto& [compKey, store]: m_sparseComponentsByComp) {
+					const auto comp = compKey.entity();
+					if (!instantiate_copies_id(comp) || !copies_sparse_payload_inter(comp, prefabEntity, store))
+						continue;
+					outCopiedSparseIds.push_back(comp);
+				}
+			}
+
+			//! Collects ids reported as added during prefab instantiation.
+			//! \tparam T Output container type.
+			//! \param pDstArchetype Instance archetype.
+			//! \param copiedSparseIds Sparse ids copied to the instance.
+			//! \param outAddedIds Destination id list.
+			template <typename T>
+			void collect_prefab_added_ids(Archetype* pDstArchetype, EntitySpan copiedSparseIds, T& outAddedIds) {
+				outAddedIds.clear();
+				for (const auto id: pDstArchetype->ids_view())
+					outAddedIds.push_back(id);
+
+				for (const auto comp: copiedSparseIds) {
+					if (sparse_copy_adds_id_inter(comp))
+						outAddedIds.push_back(comp);
+				}
+			}
+
+			//! Instantiates one prepared prefab node.
+			//! \param prefabEntity Prefab source.
+			//! \param pDstArchetype Prepared destination archetype.
+			//! \param parentInstance Optional parent instance.
+			//! \param copiedSparseIds Sparse ids to copy.
+			//! \param addedIds Ids reported to observers.
+			//! \param addHookIds Ids whose add hooks run.
+			//! \return Spawned instance.
+			GAIA_NODISCARD Entity instantiate_prefab_node_inter(
+					Entity prefabEntity, Archetype* pDstArchetype, Entity parentInstance, EntitySpan copiedSparseIds,
+					EntitySpan addedIds, [[maybe_unused]] EntitySpan addHookIds) {
+				GAIA_ASSERT(valid(prefabEntity));
+				GAIA_ASSERT(has_direct(prefabEntity, Prefab));
+				GAIA_ASSERT(pDstArchetype != nullptr);
+#if GAIA_OBSERVERS_ENABLED
+				auto addDiffCtx = m_observers.prepare_diff_add_new(*this, EntitySpan{addedIds});
+#endif
+
+				auto& ecSrc = cont(prefabEntity);
+				GAIA_ASSERT(ecSrc.pArchetype != nullptr);
+				GAIA_ASSERT(ecSrc.pChunk != nullptr);
+
+				EntityContainerCtx ctx{true, false};
+				const auto instance = m_recs.entities.alloc(&ctx);
+				auto& ecDst = m_recs.entities[instance.id()];
+				auto* pDstChunk = pDstArchetype->foc_free_chunk();
+				store_entity(ecDst, instance, pDstArchetype, pDstChunk);
+				pDstArchetype->try_update_free_chunk_idx();
+				Chunk::copy_foreign_entity_data(ecSrc.pChunk, ecSrc.row, pDstChunk, ecDst.row);
+				pDstChunk->update_versions();
+
+				if (!prefabEntity.pair())
+					ecDst.flags |= EntityContainerFlags::HasAliasOf;
+
+				// Keep payload copy and observer/add-id reporting separate:
+				// fragmenting sparse payloads must still be copied here even though their id is
+				// already present in the destination archetype and therefore absent from addedIds tail.
+				(void)copy_sparse_entity_data(prefabEntity, instance, copiedSparseIds);
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.add_diff_targets(*this, addDiffCtx, EntitySpan{&instance, 1});
+#endif
+
+				if (!prefabEntity.pair()) {
+					invalidate_relation_caches(Is);
+
+					const auto instanceKey = EntityLookupKey(instance);
+					const auto prefabKey = EntityLookupKey(prefabEntity);
+					m_entityToAsTargets[instanceKey].insert(prefabKey);
+					m_entityToAsTargetsTravCache = {};
+					m_entityToAsRelations[prefabKey].insert(instanceKey);
+					m_entityToAsRelationsTravCache = {};
+					invalidate_queries_for_entity({Is, prefabEntity});
+				}
+
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+				if GAIA_UNLIKELY (tearing_down()) {
+					(void)pDstArchetype;
+					(void)addedIds;
+				} else {
+					lock();
+
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+					for (const auto id: addHookIds) {
+						const auto* pItem = component_item(instance, id);
+						GAIA_ASSERT(pItem != nullptr);
+						const auto& hooks = pItem->hooks();
+						GAIA_ASSERT(hooks.func_add != nullptr);
+						hooks.func_add(*this, *pItem, instance);
+					}
+	#endif
+
+	#if GAIA_OBSERVERS_ENABLED
+					m_observers.on_add(*this, *pDstArchetype, addedIds, EntitySpan{&instance, 1});
+	#endif
+
+					unlock();
+				}
+#endif
+
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+
+				if (parentInstance != EntityBad)
+					parent_direct(instance, parentInstance);
+
+				return instance;
+			}
+
+			//! Instantiates one prefab node with derived metadata.
+			//! \param prefabEntity Prefab source.
+			//! \param parentInstance Optional parent instance.
+			//! \return Spawned instance.
+			GAIA_NODISCARD Entity instantiate_prefab_node_inter(Entity prefabEntity, Entity parentInstance) {
+				auto* pDstArchetype = instantiate_prefab_dst_archetype(prefabEntity);
+				cnt::darray_ext<Entity, 16> copiedSparseIds;
+				cnt::darray_ext<Entity, 16> addedIds;
+				cnt::darray_ext<Entity, 16> addHookIds;
+				collect_prefab_copied_sparse_ids(prefabEntity, copiedSparseIds);
+				collect_prefab_added_ids(pDstArchetype, EntitySpan{copiedSparseIds}, addedIds);
+				collect_add_hook_ids(EntitySpan{addedIds}, addHookIds);
+				return instantiate_prefab_node_inter(
+						prefabEntity, pDstArchetype, parentInstance, EntitySpan{copiedSparseIds}, EntitySpan{addedIds},
+						EntitySpan{addHookIds});
+			}
+
+			//! Instantiates one prepared prefab node in batches.
+			//! \tparam Func Callback type.
+			//! \param node Prepared prefab node.
+			//! \param parentInstance Optional parent for each instance.
+			//! \param count Number of instances.
+			//! \param func Callback for spawned instances.
+			template <typename Func>
+			void instantiate_prefab_n_inter(
+					const PrefabInstantiatePlanNode& node, Entity parentInstance, uint32_t count, Func& func) {
+				GAIA_ASSERT(node.prefab != EntityBad);
+				GAIA_ASSERT(node.pDstArchetype != nullptr);
+
+				if (count == 0U)
+					return;
+#if GAIA_OBSERVERS_ENABLED
+				auto addDiffCtx = m_observers.prepare_diff_add_new(*this, EntitySpan{node.addedIds});
+#endif
+
+				auto& ecSrc = cont(node.prefab);
+				GAIA_ASSERT(ecSrc.pChunk != nullptr);
+
+				if (parentInstance != EntityBad)
+					prepare_parent_batch(parentInstance);
+
+				const auto srcRow = ecSrc.row;
+				auto* pSrcChunk = ecSrc.pChunk;
+				auto* pDstArchetype = node.pDstArchetype;
+				const bool bindIs = !node.prefab.pair();
+				const auto prefabKey = EntityLookupKey(node.prefab);
+				EntityContainerCtx ctx{true, false};
+				if (bindIs) {
+					auto& asRelations = m_entityToAsRelations[prefabKey];
+					m_entityToAsTargets.reserve(m_entityToAsTargets.size() + count);
+					asRelations.reserve(asRelations.size() + count);
+				}
+
+				uint32_t left = count;
+				do {
+					auto* pDstChunk = pDstArchetype->foc_free_chunk();
+					const uint32_t originalChunkSize = pDstChunk->size();
+					const uint32_t freeSlotsInChunk = pDstChunk->capacity() - originalChunkSize;
+					const uint32_t toCreate = core::get_min(freeSlotsInChunk, left);
+
+					GAIA_FOR_(toCreate, rowOffset) {
+						const auto instance = m_recs.entities.alloc(&ctx);
+						auto& ecDst = m_recs.entities[instance.id()];
+						store_entity(ecDst, instance, pDstArchetype, pDstChunk);
+						if (bindIs)
+							ecDst.flags |= EntityContainerFlags::HasAliasOf;
+
+						(void)copy_sparse_entity_data(node.prefab, instance, EntitySpan{node.copiedSparseIds});
+					}
+
+					pDstArchetype->try_update_free_chunk_idx();
+					Chunk::copy_foreign_entity_data_n(pSrcChunk, srcRow, pDstChunk, originalChunkSize, toCreate);
+					pDstChunk->update_versions();
+
+					auto entities = pDstChunk->entity_view();
+					if (bindIs) {
+						auto& asRelations = m_entityToAsRelations[prefabKey];
+						invalidate_relation_caches(Is);
+
+						GAIA_FOR2_(originalChunkSize, originalChunkSize + toCreate, rowIdx) {
+							const auto instance = entities[rowIdx];
+							m_entityToAsTargets[EntityLookupKey(instance)].insert(prefabKey);
+							asRelations.insert(EntityLookupKey(instance));
+						}
+						m_entityToAsTargetsTravCache = {};
+						m_entityToAsRelationsTravCache = {};
+						invalidate_queries_for_entity({Is, node.prefab});
+					}
+
+#if GAIA_ENABLE_ADD_DEL_HOOKS || GAIA_OBSERVERS_ENABLED
+					if GAIA_UNLIKELY (tearing_down()) {
+						(void)entities;
+						(void)originalChunkSize;
+						(void)toCreate;
+					} else {
+						lock();
+
+	#if GAIA_ENABLE_ADD_DEL_HOOKS
+						for (const auto id: node.addHookIds) {
+							const auto* pItem = component_item(entities[originalChunkSize], id);
+							GAIA_ASSERT(pItem != nullptr);
+							const auto& hooks = pItem->hooks();
+							GAIA_ASSERT(hooks.func_add != nullptr);
+
+							GAIA_FOR2_(originalChunkSize, originalChunkSize + toCreate, rowIdx) {
+								hooks.func_add(*this, *pItem, entities[rowIdx]);
+							}
+						}
+	#endif
+
+	#if GAIA_OBSERVERS_ENABLED
+						m_observers.add_diff_targets(*this, addDiffCtx, EntitySpan{entities.data() + originalChunkSize, toCreate});
+						m_observers.on_add(
+								*this, *pDstArchetype, EntitySpan{node.addedIds},
+								EntitySpan{entities.data() + originalChunkSize, toCreate});
+	#endif
+
+						unlock();
+					}
+#endif
+
+					if (parentInstance != EntityBad)
+						parent_batch(parentInstance, *pDstArchetype, *pDstChunk, originalChunkSize, toCreate);
+
+					invoke_copy_batch_callback(func, pDstArchetype, pDstChunk, originalChunkSize, toCreate);
+
+					left -= toCreate;
+				} while (left > 0);
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+			}
+
+			//! Builds a depth-first prefab instantiation plan from \a prefabEntity.
+			//! \tparam T Prefab instantiation plan container type.
+			//! \param prefabEntity Prefab represented by the next plan node.
+			//! \param parentIdx Parent node index, or BadIndex for the root node.
+			//! \param parentRelation Hierarchy relation connecting this node to its parent node.
+			//! \param plan Destination plan receiving the new node and child nodes.
+			template <typename T>
+			void build_prefab_instantiate_plan(Entity prefabEntity, uint32_t parentIdx, Entity parentRelation, T& plan) {
+				PrefabInstantiatePlanNode node{};
+				node.prefab = prefabEntity;
+				node.parentIdx = parentIdx;
+				node.parentRelation = parentRelation;
+				node.pDstArchetype = instantiate_prefab_dst_archetype(prefabEntity);
+				collect_prefab_copied_sparse_ids(prefabEntity, node.copiedSparseIds);
+				collect_prefab_added_ids(node.pDstArchetype, EntitySpan{node.copiedSparseIds}, node.addedIds);
+				collect_add_hook_ids(EntitySpan{node.addedIds}, node.addHookIds);
+
+				const auto nodeIdx = (uint32_t)plan.size();
+				plan.push_back(GAIA_MOV(node));
+
+				cnt::darray_ext<PrefabChildEdge, 16> prefabChildren;
+				gather_sorted_prefab_children(prefabEntity, prefabChildren);
+
+				for (const auto& child: prefabChildren)
+					build_prefab_instantiate_plan(child.prefab, nodeIdx, child.relation, plan);
+			}
+
+			//! Returns whether \a parentInstance already has a child instance of \a childPrefab through \a relation.
+			//! \param parentInstance Instance subtree parent to inspect.
+			//! \param relation Hierarchy relation used for the child edge.
+			//! \param childPrefab Prefab child entity to find.
+			//! \return True when a matching child instance already exists.
+			GAIA_NODISCARD bool instance_has_prefab_child(Entity parentInstance, Entity relation, Entity childPrefab) const {
+				if (childPrefab.pair())
+					return false;
+
+				bool found = false;
+				sources(relation, parentInstance, [&](Entity child) {
+					if (found)
+						return;
+					if (has_direct(child, Pair(Is, childPrefab)))
+						found = true;
+				});
+				return found;
+			}
+
+			//! Synchronizes one existing instance with additive prefab data and missing child prefabs.
+			//! \tparam T Prefab child edge container type.
+			//! \param prefabEntity Prefab source entity.
+			//! \param instance Existing instance receiving additive prefab changes.
+			//! \param node Cached instantiation data for \a prefabEntity.
+			//! \param prefabChildren Direct child prefab edges of \a prefabEntity.
+			//! \return Number of copied ids or spawned child instances.
+			template <typename T>
+			uint32_t sync_prefab_instance(
+					Entity prefabEntity, Entity instance, const PrefabInstantiatePlanNode& node, const T& prefabChildren) {
+				uint32_t changes = 0;
+
+				const auto isPair = Pair(Is, prefabEntity);
+				for (const auto id: node.pDstArchetype->ids_view()) {
+					if (id == isPair || has_direct(instance, id))
+						continue;
+					if (copy_owned_id_from_entity(prefabEntity, instance, id))
+						++changes;
+				}
+
+				for (const auto comp: node.copiedSparseIds) {
+					if (has_direct(instance, comp))
+						continue;
+					if (copy_owned_id_from_entity(prefabEntity, instance, comp))
+						++changes;
+				}
+
+				for (const auto& child: prefabChildren) {
+					if (instance_has_prefab_child(instance, child.relation, child.prefab))
+						continue;
+					(void)instantiate_inter(child.prefab, instance, child.relation);
+					++changes;
+				}
+
+				return changes;
+			}
+
+			//! Recursively synchronizes prefab instances and their prefab child trees.
+			//! \param prefabEntity Prefab root to synchronize.
+			//! \param visited Prefab recursion guard keyed by prefab entity.
+			//! \return Number of copied ids or spawned child instances.
+			uint32_t sync_prefab_inter(Entity prefabEntity, cnt::set<EntityLookupKey>& visited) {
+				GAIA_ASSERT(valid(prefabEntity));
+
+				if (!has_direct(prefabEntity, Prefab))
+					return 0;
+
+				const auto ins = visited.insert(EntityLookupKey(prefabEntity));
+				if (!ins.second)
+					return 0;
+
+				PrefabInstantiatePlanNode node{};
+				node.prefab = prefabEntity;
+				node.pDstArchetype = instantiate_prefab_dst_archetype(prefabEntity);
+				collect_prefab_copied_sparse_ids(prefabEntity, node.copiedSparseIds);
+				collect_prefab_added_ids(node.pDstArchetype, EntitySpan{node.copiedSparseIds}, node.addedIds);
+				collect_add_hook_ids(EntitySpan{node.addedIds}, node.addHookIds);
+
+				cnt::darray_ext<PrefabChildEdge, 16> prefabChildren;
+				gather_sorted_prefab_children(prefabEntity, prefabChildren);
+
+				uint32_t changes = 0;
+				const auto& descendants = as_relations_trav_cache(prefabEntity);
+				for (const auto entity: descendants) {
+					if (has_direct(entity, Prefab))
+						continue;
+					changes += sync_prefab_instance(prefabEntity, entity, node, prefabChildren);
+				}
+
+				for (const auto& child: prefabChildren)
+					changes += sync_prefab_inter(child.prefab, visited);
+
+				return changes;
+			}
+
+			//! Instantiates a prefab as a normal entity and optionally attaches it under \a parentInstance.
+			//! \param prefabEntity Prefab entity to instantiate.
+			//! \param parentInstance Parent instance, or EntityBad for an unparented root.
+			//! \param parentRelation Hierarchy relation used when \a parentInstance is valid.
+			//! \return Spawned root instance entity.
+			GAIA_NODISCARD Entity
+			instantiate_inter(Entity prefabEntity, Entity parentInstance, Entity parentRelation = Parent) {
+				const auto directParentInstance = parentRelation == Parent ? parentInstance : EntityBad;
+				const auto instance = instantiate_prefab_node_inter(prefabEntity, directParentInstance);
+				if (parentInstance != EntityBad && parentRelation != Parent)
+					attach_prefab_child_instance(instance, parentRelation, parentInstance);
+
+				cnt::darray_ext<PrefabChildEdge, 16> prefabChildren;
+				gather_sorted_prefab_children(prefabEntity, prefabChildren);
+
+				for (const auto& child: prefabChildren)
+					(void)instantiate_inter(child.prefab, instance, child.relation);
+
+				return instance;
+			}
+
+		public:
+			//! Instantiates a prefab as a normal entity.
+			//! The instance copies the prefab's direct data, drops the Prefab tag, does not copy the name,
+			//! removes the prefab's direct Is edges, and adds a direct Pair(Is, prefabEntity) edge instead.
+			//! Exact pair records are a valid source. Nested pairs are not representable, so a Prefab-tagged
+			//! pair record does not receive Pair(Is, prefab).
+			//! Prefab children linked through Parent or ChildOf are instantiated with the same hierarchy relation.
+			//! \param prefabEntity Prefab entity or exact pair record to instantiate.
+			//! \return Spawned root instance, or a plain copy when \p prefabEntity is not marked Prefab.
+			GAIA_NODISCARD Entity instantiate(Entity prefabEntity) {
+				GAIA_ASSERT(valid(prefabEntity));
+
+				if GAIA_UNLIKELY (!has_direct(prefabEntity, Prefab))
+					return copy(prefabEntity);
+
+				return instantiate_inter(prefabEntity, EntityBad);
+			}
+
+			//! Instantiates a prefab as a normal entity parented under \p parentInstance.
+			//! The instance copies the prefab's direct data, drops the Prefab tag, does not copy the name,
+			//! removes the prefab's direct Is edges, adds a direct Pair(Is, prefabEntity) edge instead,
+			//! and attaches Pair(Parent, parentInstance) to the new root instance. Prefab children linked through
+			//! Parent or ChildOf are instantiated with the same hierarchy relation.
+			//! Exact pair records are a valid source. Nested pairs are not representable, so a Prefab-tagged
+			//! pair record does not receive Pair(Is, prefab).
+			//! \param prefabEntity Prefab entity or exact pair record to instantiate.
+			//! \param parentInstance Entity receiving the spawned root through Parent.
+			//! \return Spawned root instance, or a parented plain copy when \p prefabEntity is not marked Prefab.
+			GAIA_NODISCARD Entity instantiate(Entity prefabEntity, Entity parentInstance) {
+				GAIA_ASSERT(valid(prefabEntity));
+				GAIA_ASSERT(valid(parentInstance));
+
+				if GAIA_UNLIKELY (!has_direct(prefabEntity, Prefab)) {
+					const auto instance = copy(prefabEntity);
+					parent_direct(instance, parentInstance);
+					return instance;
+				}
+
+				return instantiate_inter(prefabEntity, parentInstance);
+			}
+
+			//! Instantiates \a count copies of a prefab as normal root entities.
+			//! Each instance copies the prefab's direct data, drops the Prefab tag, does not copy the name,
+			//! removes the prefab's direct Is edges, and adds a direct Pair(Is, prefabEntity) edge instead.
+			//! Exact pair records are a valid source. Nested pairs are not representable, so a Prefab-tagged
+			//! pair record does not receive Pair(Is, prefab).
+			//! Recursively instantiated prefab children keep their Parent or ChildOf hierarchy relation.
+			//! \tparam Func Callback type. It can be either void(ecs::Entity) or void(ecs::CopyIter&).
+			//! \param prefabEntity Prefab entity or exact pair record to clone
+			//! \param count Number of clones to make
+			//! \param func Functor executed for spawned root instances.
+			//!             It can be either void(ecs::Entity) or void(ecs::CopyIter&).
+			//! \warning It is expected \a prefabEntity is valid entity. Undefined behavior otherwise.
+			//! \warning If EntityDesc is present on \a prefabEntity, it is not copied because names are
+			//!          expected to be unique. Instead, the copied entity will be a part of an archetype
+			//!          without EntityDesc and any calls to World::name(copiedEntity) will return an empty view.
+			template <typename Func = TFunc_Void_With_Entity>
+			void instantiate_n(Entity prefabEntity, uint32_t count, Func func = func_void_with_entity) {
+				instantiate_n(prefabEntity, EntityBad, count, func);
+			}
+
+			//! Instantiates \a count copies of a prefab as normal root entities parented under \a parentInstance.
+			//! Each spawned root instance receives a direct Pair(Parent, parentInstance) relationship.
+			//! Recursively instantiated prefab children keep their Parent or ChildOf hierarchy relation.
+			//! \param prefabEntity Prefab entity to clone
+			//! \param parentInstance Parent entity attached to each spawned root instance
+			//! \param count Number of clones to make
+			void instantiate_n(Entity prefabEntity, Entity parentInstance, uint32_t count) {
+				instantiate_n(prefabEntity, parentInstance, count, func_void_with_entity);
+			}
+
+			//! Instantiates \a count copies of a prefab as normal root entities, assigning a direct
+			//! Pair(Parent, parentInstance) relationship when \a parentInstance is not EntityBad.
+			//! The callback is invoked for each spawned root instance after its subtree has been instantiated.
+			//! Recursively instantiated prefab children keep their Parent or ChildOf hierarchy relation.
+			//! \tparam Func Callback type. It can be either void(ecs::Entity) or void(ecs::CopyIter&).
+			//! \param prefabEntity Prefab entity to clone
+			//! \param parentInstance Parent entity attached to each spawned root instance, or EntityBad for unparented roots
+			//! \param count Number of clones to make
+			//! \param func Functor executed for spawned root instances.
+			template <typename Func>
+			void instantiate_n(Entity prefabEntity, Entity parentInstance, uint32_t count, Func func) {
+				GAIA_ASSERT(valid(prefabEntity));
+				GAIA_ASSERT(parentInstance == EntityBad || valid(parentInstance));
+
+				if (count == 0U)
+					return;
+
+				if GAIA_UNLIKELY (!has_direct(prefabEntity, Prefab)) {
+					if (parentInstance == EntityBad) {
+						copy_n(prefabEntity, count, func);
+						return;
+					}
+
+					cnt::darray_ext<Entity, 8> nonfragmentingPairs;
+					collect_nonfragmenting_relation_pairs(prefabEntity, nonfragmentingPairs);
+					auto* pDstArchetype = cont(prefabEntity).pArchetype;
+					if (pDstArchetype->has<EntityDesc>())
+						pDstArchetype = foc_archetype_del(pDstArchetype, GAIA_ID(EntityDesc));
+					cnt::darray_ext<Entity, 16> addHookIds;
+					collect_copy_add_hook_ids(prefabEntity, *pDstArchetype, EntitySpan{nonfragmentingPairs}, addHookIds);
+					copy_n_inter(
+							prefabEntity, count, func, EntitySpan{}, EntitySpan{nonfragmentingPairs}, EntitySpan{addHookIds},
+							parentInstance);
+					return;
+				}
+
+				cnt::darray_ext<PrefabInstantiatePlanNode, 16> plan;
+				build_prefab_instantiate_plan(prefabEntity, BadIndex, EntityBad, plan);
+				if (plan.size() == 1) {
+					instantiate_prefab_n_inter(plan[0], parentInstance, count, func);
+					return;
+				}
+
+				const auto planSize = (uint32_t)plan.size();
+				GAIA_ASSERT(planSize <= uint32_t(-1) / count);
+				cnt::darray<Entity> spawned;
+				spawned.resize(planSize * count);
+
+				uint32_t rootIdx = 0;
+				auto collectRoot = [&](Entity instance) {
+					spawned[rootIdx++] = instance;
+				};
+				instantiate_prefab_n_inter(plan[0], parentInstance, count, collectRoot);
+
+				GAIA_FOR2_(1, planSize, planIdx) {
+					uint32_t nodeIdx = 0;
+					const auto nodeOffset = planIdx * count;
+					auto collectNode = [&](Entity instance) {
+						spawned[nodeOffset + nodeIdx++] = instance;
+					};
+					instantiate_prefab_n_inter(plan[planIdx], EntityBad, count, collectNode);
+
+					const auto parentOffset = plan[planIdx].parentIdx * count;
+					GAIA_FOR_(count, instanceIdx) {
+						attach_prefab_child_instance(
+								spawned[nodeOffset + instanceIdx], plan[planIdx].parentRelation, spawned[parentOffset + instanceIdx]);
+					}
+				}
+
+				if constexpr (std::is_invocable_v<Func, CopyIter&>) {
+					CopyIterGroupState group;
+					GAIA_FOR_(count, idx) {
+						push_copy_iter_group(func, group, spawned[idx]);
+					}
+					flush_copy_iter_group(func, group);
+				} else {
+					GAIA_FOR_(count, idx) {
+						func(spawned[idx]);
+					}
+				}
+			}
+
+			//! Propagates additive prefab changes to existing non-prefab instances.
+			//! Missing copied ids are added to existing instances and missing prefab children are spawned with
+			//! their Parent or ChildOf hierarchy relation.
+			//! Existing owned instance data is left intact.
+			//! \param prefabEntity Prefab root whose instances are synchronized.
+			//! \return Number of copied ids and spawned child instances.
+			GAIA_NODISCARD uint32_t sync(Entity prefabEntity) {
+				GAIA_ASSERT(valid(prefabEntity));
+
+				cnt::set<EntityLookupKey> visited;
+				return sync_prefab_inter(prefabEntity, visited);
+			}
+
+			//! Finds the entity inside \a instanceRoot that was instantiated from \a prefabEntity.
+			//! The lookup checks \a instanceRoot first, then walks direct `Parent` and `ChildOf` descendants breadth-first.
+			//! It matches the direct `Pair(Is, prefabEntity)` edge created by prefab instantiation and does not use names.
+			//! \param instanceRoot Root instance entity to search from.
+			//! \param prefabEntity Prefab entity to map into the instance subtree.
+			//! \return Matching instance entity, or EntityBad when the prefab is not present in the instance subtree.
+			GAIA_NODISCARD Entity find_prefab_instance(Entity instanceRoot, Entity prefabEntity) const {
+				if (!valid(instanceRoot) || !valid(prefabEntity) || prefabEntity.pair())
+					return EntityBad;
+
+				const auto isPair = Pair(Is, prefabEntity);
+				if (has_direct(instanceRoot, isPair))
+					return instanceRoot;
+
+				Entity found = EntityBad;
+				cnt::darray_ext<Entity, 64> children;
+				cnt::darray_ext<Entity, 32> queue;
+				cnt::set<EntityLookupKey> visited;
+				queue.push_back(instanceRoot);
+				visited.insert(EntityLookupKey(instanceRoot));
+
+				for (uint32_t i = 0; i < queue.size() && found == EntityBad; ++i) {
+					children.clear();
+					auto collectChild = [&](Entity child) {
+						const auto key = EntityLookupKey(child);
+						const auto ins = visited.insert(key);
+						if (!ins.second)
+							return;
+
+						children.push_back(child);
+					};
+					sources(Parent, queue[i], collectChild);
+					sources(ChildOf, queue[i], collectChild);
+
+					core::sort(children, SortEntityIdCond{});
+
+					for (const auto child: children) {
+						if (has_direct(child, isPair)) {
+							found = child;
+							break;
+						}
+
+						queue.push_back(child);
+					}
+				}
+
+				return found;
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Removes an entity along with all data associated with it.
+			//! \param entity Entity to delete
+			void del(Entity entity) {
+				if (entity_deletion_active(entity))
+					return;
+
+				if (!entity.pair()) {
+					cnt::darray_ext<Entity, 64> pairEntities;
+					collect_entity_pairs(entity, pairEntities);
+
+					auto& ec = fetch(entity);
+					handle_del_entity(ec, entity, EntitySpan{pairEntities.data(), pairEntities.size()});
+				} else
+					del_inter(entity);
+
+#if GAIA_USE_SAFE_ENTITY
+				// Destroying the entity's components may have released the last SafeEntity reference to others.
+				// Once the outermost deletion is done, nothing is in use anymore and they can go right away.
+				if (!m_safeEntityDels.empty() && m_entitiesDeleting.empty() && m_archetypeRowDelDepth == 0 &&
+						m_compDtorDepth == 0 && !locked())
+					del_released_safe_entities();
+#endif
+			}
+
+			//! Removes an \a object from \a entity if possible.
+			//! \param entity Entity to delete from
+			//! \param object Entity to delete
+			//! \warning It is expected both \a entity and \a object are valid. Undefined behavior otherwise.
+			void del(Entity entity, Entity object) {
+				if (!object.pair()) {
+					const auto itSparseStore = m_sparseComponentsByComp.find(EntityLookupKey(object));
+					if (itSparseStore != m_sparseComponentsByComp.end()) {
+						if (!component_is_non_fragmenting(object)) {
+							{
+								EntityBuilder eb(*this, entity);
+								eb.del(object);
+							}
+							itSparseStore->second.func_del(itSparseStore->second.pStore, entity);
+							return;
+						}
+#if GAIA_OBSERVERS_ENABLED
+						auto delDiffCtx =
+								m_observers.prepare_diff(*this, ObserverEvent::OnDel, EntitySpan{&object, 1}, EntitySpan{&entity, 1});
+#endif
+						notify_inherited_del_dependents(entity, object);
+						notify_del_single(entity, object);
+						itSparseStore->second.func_del(itSparseStore->second.pStore, entity);
+#if GAIA_OBSERVERS_ENABLED
+						m_observers.finish_diff(*this, GAIA_MOV(delDiffCtx));
+#endif
+						return;
+					}
+				}
+				EntityBuilder(*this, entity).del(object);
+			}
+
+			//! Removes an existing entity relationship pair
+			//! \param entity Source entity
+			//! \param pair Pair
+			//! \warning It is expected both \a entity and the entities forming the relationship are valid.
+			//!          Undefined behavior otherwise.
+			void del(Entity entity, Pair pair) {
+				EntityBuilder(*this, entity).del(pair);
+			}
+
+			//! Removes a component \a T from \a entity.
+			//! \tparam T Component
+			//! \param entity Entity
+			//! \warning It is expected the component is present on \a entity. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename T>
+			void del(Entity entity) {
+				using CT = component_type_t<T>;
+				using FT = typename CT::TypeFull;
+
+				if constexpr (uses_ct_sparse_storage<FT>()) {
+					if constexpr (is_pair<FT>::value)
+						del(entity, register_component_id<FT>());
+					else {
+						const auto* pItem = comp_cache().template find<FT>();
+						if (pItem != nullptr)
+							del(entity, pItem->entity);
+					}
+				} else {
+					if constexpr (!is_pair<FT>::value) {
+						const auto* pItem = comp_cache().template find<FT>();
+						if (pItem != nullptr && component_is_non_fragmenting(pItem->entity)) {
+							del(entity, pItem->entity);
+							return;
+						}
+					}
+
+					EntityBuilder(*this, entity).del<FT>();
+				}
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Shortcut for add(entity, Pair(Is, entityBase)).
+			//! \param entity Entity receiving the inheritance pair.
+			//! \param entityBase Base entity to inherit from.
+			void as(Entity entity, Entity entityBase) {
+				GAIA_ASSERT(!entity.pair());
+				GAIA_ASSERT(!entityBase.pair());
+
+				// Form the relationship
+				add(entity, Pair(Is, entityBase));
+			}
+
+			//! Checks if \a entity inherits from \a entityBase.
+			//! \param entity Entity
+			//! \param entityBase Base entity
+			//! \return True if entity inherits from entityBase. False otherwise.
+			GAIA_NODISCARD bool is(Entity entity, Entity entityBase) const {
+				return is_inter<false>(entity, entityBase);
+			}
+
+			//! Checks if \a entity is located in \a entityBase.
+			//! This is almost the same as "is" with the exception that false is returned
+			//! if \a entity matches \a entityBase.
+			//! \param entity Entity
+			//! \param entityBase Base entity
+			//! \return True if entity is located in entityBase. False otherwise.
+			GAIA_NODISCARD bool in(Entity entity, Entity entityBase) const {
+				return is_inter<true>(entity, entityBase);
+			}
+
+			//! Checks whether an entity is the target of at least one direct Is relation.
+			//! \param target Candidate base entity.
+			//! \return True when \p target has a derived entity. False otherwise.
+			GAIA_NODISCARD bool is_base(Entity target) const {
+				if GAIA_UNLIKELY (target.pair())
+					return false;
+
+				GAIA_ASSERT(valid_entity(target));
+
+				const auto it = m_entityToAsRelations.find(EntityLookupKey(target));
+				return it != m_entityToAsRelations.end();
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Shortcut for add(entity, Pair(ChildOf, parent)).
+			//! \param entity Entity receiving the ChildOf pair.
+			//! \param parent Parent target of the ChildOf pair.
+			void child(Entity entity, Entity parent) {
+				add(entity, Pair(ChildOf, parent));
+			}
+
+			//! Adds a `ChildOf` relationship from an exact pair record to \a parent.
+			//! \param entity Pair record receiving the ChildOf pair.
+			//! \param parent Parent target of the ChildOf pair.
+			void child(Pair entity, Entity parent) {
+				add(entity, Pair(ChildOf, parent));
+			}
+
+			//! Checks whether \a entity has a `ChildOf` relationship to \a parent.
+			//! \param entity Entity to inspect.
+			//! \param parent Candidate parent entity.
+			//! \return True if \a entity is a child of \a parent. False otherwise.
+			GAIA_NODISCARD bool is_child(Entity entity, Entity parent) const {
+				return has(entity, Pair(ChildOf, parent));
+			}
+
+			//! Adds a direct non-fragmenting `Parent` relationship to \a parentEntity.
+			//! The relationship is non-fragmenting and does not participate in archetype identity.
+			//! \param entity Entity to inspect.
+			//! \param parentEntity Candidate parent entity.
+			void parent(Entity entity, Entity parentEntity) {
+				parent_direct(entity, parentEntity);
+			}
+
+			//! Checks whether \a entity has a direct non-fragmenting `Parent` relationship to \a parentEntity.
+			//! \param entity Entity to inspect.
+			//! \param parentEntity Candidate parent entity.
+			//! \return True if \a entity references \a parentEntity through `Parent`. False otherwise.
+			GAIA_NODISCARD bool is_parent(Entity entity, Entity parentEntity) const {
+				return has_direct(entity, Pair(Parent, parentEntity));
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Marks the component type `T` as modified. Best used with acc_mut().sset() or set()
+			//! to manually trigger an update at user's whim.
+			//! If `TriggerSetEffects` is true, also triggers the component's set side effects:
+			//! set hooks and `OnSet` observers.
+			//! \tparam T Component type
+			//! \tparam TriggerSetEffects Triggers set side effects if true
+			//! \param entity Entity or exact pair record whose component version is updated.
+			template <typename T, bool TriggerSetEffects>
+			void modify(Entity entity) {
+				GAIA_ASSERT(valid(entity));
+
+				if constexpr (uses_ct_sparse_storage<T>()) {
+					const auto* pItem = comp_cache().template find<T>();
+					if (pItem != nullptr) {
+#if GAIA_ASSERT_ENABLED
+						auto* pStore = sparse_component_store_erased(pItem->entity);
+						GAIA_ASSERT(pStore != nullptr);
+						GAIA_ASSERT(has_direct_sparse_component_inter(entity, pItem->entity));
+#endif
+
+						if constexpr (TriggerSetEffects)
+							finish_write(entity, pItem->entity);
+						else {
+							::gaia::ecs::update_version(m_worldVersion);
+							mark_sparse_component_write(entity, pItem->entity);
+						}
+						return;
+					}
+				}
+
+				auto& ec = cont(entity);
+				modify_table_inter<T, TriggerSetEffects>(entity, ec);
+			}
+
+			//! Marks component type `T` as modified on an exact pair record.
+			//! If `TriggerSetEffects` is true, also triggers set hooks and `OnSet` observers.
+			//! \tparam T Component type.
+			//! \tparam TriggerSetEffects Triggers set side effects if true.
+			//! \param entity Pair record whose component version is updated.
+			template <typename T, bool TriggerSetEffects>
+			void modify(Pair entity) {
+				const auto source = (Entity)entity;
+				GAIA_ASSERT(valid(source));
+
+				if constexpr (uses_ct_sparse_storage<T>()) {
+					modify<T, TriggerSetEffects>(source);
+				} else {
+					auto& ec = fetch(source);
+					modify_table_inter<T, TriggerSetEffects>(source, ec);
+				}
+			}
+
+			//! Marks the component associated with \p object as modified on \p entity.
+			//! Best used with `mut<T>(entity, object)` or `sset<T>(entity, object)` to manually trigger an update
+			//! at user's whim.
+			//! If `TriggerSetEffects` is true, also triggers the component's set side effects:
+			//! set hooks and `OnSet` observers.
+			//! \tparam T Component type
+			//! \tparam TriggerSetEffects Triggers set side effects if true
+			//! \param entity Entity or exact pair record whose component version is updated.
+			//! \param object Component entity associated with \p T.
+			template <typename T, bool TriggerSetEffects>
+			void modify(Entity entity, Entity object) {
+				GAIA_ASSERT(valid(entity));
+				GAIA_ASSERT(valid(object));
+
+				using FT = typename component_type_t<T>::TypeFull;
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (can_use_sparse_component_storage<FT>(object)) {
+#if GAIA_ASSERT_ENABLED
+						auto* pStore = sparse_component_store_erased(object);
+						GAIA_ASSERT(pStore != nullptr);
+						GAIA_ASSERT(has_direct_sparse_component_inter(entity, object));
+#endif
+
+						if constexpr (TriggerSetEffects)
+							finish_write(entity, object);
+						else {
+							::gaia::ecs::update_version(m_worldVersion);
+							mark_sparse_component_write(entity, object);
+						}
+						return;
+					}
+				}
+
+				auto& ec = cont(entity);
+				modify_table_inter<TriggerSetEffects>(object, ec);
+			}
+
+			//! Marks a component selected by \p object as modified on an exact pair record.
+			//! If `TriggerSetEffects` is true, also triggers set hooks and `OnSet` observers.
+			//! \tparam T Component type represented by \p object.
+			//! \tparam TriggerSetEffects Triggers set side effects if true.
+			//! \param entity Pair record whose component version is updated.
+			//! \param object Component entity associated with \p T.
+			template <typename T, bool TriggerSetEffects>
+			void modify(Pair entity, Entity object) {
+				const auto source = (Entity)entity;
+				GAIA_ASSERT(valid(source));
+				GAIA_ASSERT(valid(object));
+
+				using FT = typename component_type_t<T>::TypeFull;
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (can_use_sparse_component_storage<FT>(object)) {
+						modify<T, TriggerSetEffects>(source, object);
+						return;
+					}
+				}
+
+				auto& ec = fetch(source);
+				modify_table_inter<TriggerSetEffects>(object, ec);
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Starts a bulk set operation on \a entity.
+			//! \param entity Entity
+			//! \return Entity-scoped ComponentSetter bound to this world and entity's current storage
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if \a entity changes archetype after ComponentSetter is created.
+			GAIA_NODISCARD ComponentSetter acc_mut(Entity entity) {
+				GAIA_ASSERT(valid(entity));
+
+				const auto& ec = cont(entity);
+				return ComponentSetter{*this, ec.pChunk, entity, ec.row};
+			}
+
+			//! Starts a bulk set operation on an exact pair record.
+			//! \param entity Pair record.
+			//! \return Pair-record-scoped ComponentSetter bound to current storage.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if \a entity changes archetype after ComponentSetter is created.
+			GAIA_NODISCARD ComponentSetter acc_mut(Pair entity) {
+				const auto source = (Entity)entity;
+				GAIA_ASSERT(valid(source));
+
+				const auto& ec = fetch(source);
+				return ComponentSetter{*this, ec.pChunk, source, ec.row};
+			}
+
+			//! Returns a write-back proxy for the component \a T on \a entity.
+			//! The proxy copies the current value, lets the caller mutate it, then writes it back at the end of the
+			//! full expression or scope. `OnSet` observers and chunk-backed set hooks are triggered only after the
+			//! write-back completes.
+			//! \tparam T Component
+			//! \param entity Entity
+			//! \return Write-back proxy
+			//! \warning It is expected the component is present on \a entity. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if \a entity changes archetype before the proxy writes the value back.
+			template <typename T>
+			GAIA_NODISCARD auto set(Entity entity) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+				using ValueType = typename actual_type_t<T>::Type;
+				const auto& item = add<FT>();
+				return SetWriteProxyTyped<T, ValueType>{*this, entity, item.entity, get<T>(entity)};
+			}
+
+			//! Returns a write-back proxy for component \a T on an exact pair record.
+			//! \tparam T Component.
+			//! \param entity Pair record.
+			//! \return Write-back proxy.
+			//! \warning It is expected the component is present on \a entity. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename T>
+			GAIA_NODISCARD auto set(Pair entity) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+				using ValueType = typename actual_type_t<T>::Type;
+				const auto& item = add<FT>();
+				const auto source = (Entity)entity;
+				return SetWriteProxyTyped<T, ValueType>{*this, source, item.entity, get<T>(entity)};
+			}
+
+			//! Returns a write-back proxy for the component associated with \a object on \a entity.
+			//! The proxy copies the current value, lets the caller mutate it, then writes it back at the end of the
+			//! full expression or scope. `OnSet` observers and chunk-backed set hooks are triggered only after the
+			//! write-back completes.
+			//! \tparam T Component
+			//! \param entity Entity
+			//! \param object Component entity
+			//! \return Write-back proxy
+			//! \warning It is expected the component is present on \a entity. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if \a entity changes archetype before the proxy writes the value back.
+			template <typename T>
+			GAIA_NODISCARD auto set(Entity entity, Entity object) {
+				static_assert(!is_pair<T>::value);
+				return SetWriteProxyObject<typename actual_type_t<T>::Type>{*this, entity, object, get<T>(entity, object)};
+			}
+
+			//! Returns a write-back proxy for a runtime-selected component on an exact pair record.
+			//! \tparam T Component type represented by \a object.
+			//! \param entity Pair record.
+			//! \param object Component entity.
+			//! \return Write-back proxy.
+			//! \warning It is expected the component is present on \a entity. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename T>
+			GAIA_NODISCARD auto set(Pair entity, Entity object) {
+				static_assert(!is_pair<T>::value);
+				const auto source = (Entity)entity;
+				return SetWriteProxyObject<typename actual_type_t<T>::Type>{*this, source, object, get<T>(entity, object)};
+			}
+
+			//! Returns silent mutable access to component type `T` on \p entity.
+			//! This is a silent write and does not trigger set hooks or `OnSet` observers.
+			//! \tparam T Component
+			//! \param entity Entity
+			//! \return Mutable reference or proxy to the component payload.
+			//! \warning It is expected the component is present on \p entity. Undefined behavior otherwise.
+			//! \warning It is expected \p entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if \p entity changes archetype after ComponentSetter is created.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) sset(Entity entity) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto& item = add<FT>();
+				if constexpr (uses_ct_sparse_storage<FT>())
+					return sparse_component_store_mut<FT>(item.entity).mut(entity);
+				else
+					return acc_mut(entity).smut<T>();
+			}
+
+			//! Returns silent mutable access to component type `T` on an exact pair record.
+			//! \tparam T Component.
+			//! \param entity Pair record.
+			//! \return Mutable reference or proxy to the component payload.
+			//! \warning It is expected the component is present on \a entity. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) sset(Pair entity) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto& item = add<FT>();
+				if constexpr (uses_ct_sparse_storage<FT>())
+					return sparse_component_store_mut<FT>(item.entity).mut((Entity)entity);
+				else
+					return acc_mut(entity).smut<T>();
+			}
+
+			//! Sets the value of the component associated with \p object on \p entity without updating world version.
+			//! This is a silent write and does not trigger set hooks or `OnSet` observers.
+			//! \tparam T Component type represented by \p object.
+			//! \param entity Entity owning the component.
+			//! \param object Component entity selecting the payload.
+			//! \return Mutable reference or proxy to the component payload.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) sset(Entity entity, Entity object) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (can_use_sparse_component_storage<FT>(object))
+						return sparse_component_mut_value<FT>(object, entity);
+				}
+				return acc_mut(entity).smut<T>(object);
+			}
+
+			//! Silently accesses a runtime-selected component on an exact pair record.
+			//! \tparam T Component type represented by \a object.
+			//! \param entity Pair record.
+			//! \param object Component entity selecting the payload.
+			//! \return Mutable reference or proxy to the component payload.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) sset(Pair entity, Entity object) {
+				static_assert(!is_pair<T>::value);
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto source = (Entity)entity;
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (can_use_sparse_component_storage<FT>(object))
+						return sparse_component_mut_value<FT>(object, source);
+				}
+				return acc_mut(entity).smut<T>(object);
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Returns a mutable reference or proxy to the component on \a entity without triggering a world version update.
+			//! This is a silent raw write path. Call `modify<T, true>(entity)` when you need hooks or `OnSet`.
+			//! \tparam T Component
+			//! \param entity Entity
+			//! \return Mutable reference or proxy to the component payload.
+			//! \warning It is expected the component is present on entity. Undefined behavior otherwise.
+			//! \warning It is expected entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if entity changes archetype after ComponentSetter is created.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) mut(Entity entity) {
+				static_assert(!is_pair<T>::value);
+				return sset<T>(entity);
+			}
+
+			//! Returns silent mutable access to a component on an exact pair record.
+			//! \tparam T Component.
+			//! \param entity Pair record.
+			//! \return Mutable reference or proxy to the component payload.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) mut(Pair entity) {
+				static_assert(!is_pair<T>::value);
+				return sset<T>(entity);
+			}
+
+			//! Returns a mutable reference or proxy to the component associated with \p object on \p entity.
+			//! This is a silent raw write path. Call `modify<T, true>(entity, object)` when you need hooks or `OnSet`.
+			//! \tparam T Component type represented by \p object.
+			//! \param entity Entity owning the component.
+			//! \param object Component entity selecting the payload.
+			//! \return Mutable reference or proxy to the component payload.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) mut(Entity entity, Entity object) {
+				static_assert(!is_pair<T>::value);
+				return sset<T>(entity, object);
+			}
+
+			//! Returns silent mutable access to a runtime-selected component on an exact pair record.
+			//! \tparam T Component type represented by \a object.
+			//! \param entity Pair record.
+			//! \param object Component entity selecting the payload.
+			//! \return Mutable reference or proxy to the component payload.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) mut(Pair entity, Entity object) {
+				static_assert(!is_pair<T>::value);
+				return sset<T>(entity, object);
+			}
+
+			//! Returns raw read-only bytes for an AoS component or exact pair payload on \a entity.
+			//! Inherited ids resolve to the owning entity. SoA and unsupported components return an invalid view.
+			//! \param entity Entity being read.
+			//! \param component Component entity or exact relationship pair being read.
+			//! \return Raw payload view, or invalid view when the component cannot be resolved.
+			GAIA_NODISCARD ComponentRawView get_raw(Entity entity, Entity component) const {
+				if (component == EntityBad)
+					return {};
+
+				const auto owner = id_owner_inter(entity, component);
+				if (owner == EntityBad)
+					return {};
+
+				const auto* pItem = component_item(owner, component);
+				if (pItem == nullptr || !raw_component_supported(*pItem))
+					return {};
+				if (component_uses_sparse_storage(component)) {
+					const auto* pStore = sparse_component_store_erased(component);
+					if (pStore == nullptr || !pStore->func_has(pStore->pStore, owner))
+						return {};
+					return {pStore->func_get(pStore->pStore, owner), pItem->comp.size(), ComponentRawViewFlag_Valid};
+				}
+
+				const auto& ec = fetch(owner);
+				const auto compIdx = ec.pChunk->comp_idx(component);
+				if (compIdx == ComponentIndexBad)
+					return {};
+
+				const auto size = pItem->comp.size();
+				if (size == 0)
+					return {nullptr, 0, ComponentRawViewFlag_Valid};
+
+				const auto row = uint32_t(ec.row);
+				return {ec.pChunk->comp_ptr(compIdx, row), size, ComponentRawViewFlag_Valid};
+			}
+
+			//! Returns raw mutable bytes for a directly owned AoS component or exact pair payload.
+			//! This is a silent write path. Pair with modify_raw() to emit set hooks and `OnSet` observers.
+			//! \param entity Entity being mutated.
+			//! \param component Component entity or exact relationship pair being mutated.
+			//! \return Raw mutable payload view, or invalid view when the component is absent or unsupported.
+			GAIA_NODISCARD ComponentRawMutView mut_raw(Entity entity, Entity component) {
+				if (component == EntityBad)
+					return {};
+
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr)
+					return {};
+
+				const auto& ec = *pEc;
+
+				const auto* pItem = component_item(entity, component);
+				if (pItem == nullptr || !raw_component_supported(*pItem))
+					return {};
+				if (component_uses_sparse_storage(component)) {
+					const auto* pStore = sparse_component_store_erased(component);
+					if (pStore == nullptr || !pStore->func_has(pStore->pStore, entity))
+						return {};
+					return {pStore->func_mut(pStore->pStore, entity), pItem->comp.size(), ComponentRawViewFlag_Valid};
+				}
+
+				const auto compIdx = core::get_index(ec.pChunk->ids_view(), component);
+				if (compIdx == BadIndex)
+					return {};
+
+				const auto size = pItem->comp.size();
+				if (size == 0)
+					return {nullptr, 0, ComponentRawViewFlag_Valid};
+
+				const auto row = uint32_t(ec.row);
+				return {ec.pChunk->comp_ptr_mut(compIdx, row), size, ComponentRawViewFlag_Valid};
+			}
+
+			//! Returns one read-only field value from a directly addressed SoA field array.
+			//! The field index follows the registered SoA field order. Inherited ids resolve to the owning entity.
+			//! \param entity Entity being read.
+			//! \param component Runtime component entity being read.
+			//! \param fieldIdx SoA field array index.
+			//! \return Raw field value view, or an invalid view when unavailable.
+			GAIA_NODISCARD ComponentRawView get_raw_field(Entity entity, Entity component, uint32_t fieldIdx) const {
+				if (component == EntityBad)
+					return {};
+
+				const auto owner = id_owner_inter(entity, component);
+				if (owner == EntityBad)
+					return {};
+
+				const auto* pItem = component_item(owner, component);
+				if (pItem == nullptr || !soa_field_supported(*pItem) || fieldIdx >= pItem->comp.soa() ||
+						pItem->soaSizes[fieldIdx] == 0)
+					return {};
+
+				const auto& ec = fetch(owner);
+				const auto compIdx = ec.pChunk->comp_idx(component);
+				if (compIdx == ComponentIndexBad)
+					return {};
+
+				const auto row = uint32_t(ec.row);
+				const auto capacity = ec.pChunk->capacity();
+				const std::span<const uint8_t> fieldSizes{pItem->soaSizes, pItem->comp.soa()};
+				const auto* pData = mem::data_view_policy_soa_erased::get(
+						ec.pChunk->comp_ptr(compIdx), pItem->comp.alig(), fieldSizes, fieldIdx, row, capacity);
+				return {pData, pItem->soaSizes[fieldIdx], ComponentRawViewFlag_Valid};
+			}
+
+			//! Returns one mutable field value from a directly owned SoA field array.
+			//! This is a silent write path. Pair with modify_raw() to emit set hooks and `OnSet` observers.
+			//! \param entity Entity being mutated.
+			//! \param component Runtime component entity being mutated.
+			//! \param fieldIdx SoA field array index.
+			//! \return Mutable raw field value view, or an invalid view when unavailable.
+			GAIA_NODISCARD ComponentRawMutView mut_raw_field(Entity entity, Entity component, uint32_t fieldIdx) {
+				if (component == EntityBad)
+					return {};
+
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr)
+					return {};
+
+				const auto& ec = *pEc;
+
+				const auto* pItem = component_item(entity, component);
+				if (pItem == nullptr || !soa_field_supported(*pItem) || fieldIdx >= pItem->comp.soa() ||
+						pItem->soaSizes[fieldIdx] == 0)
+					return {};
+
+				const auto compIdx = core::get_index(ec.pChunk->ids_view(), component);
+				if (compIdx == BadIndex)
+					return {};
+
+				const auto row = uint32_t(ec.row);
+				const auto capacity = ec.pChunk->capacity();
+				const std::span<const uint8_t> fieldSizes{pItem->soaSizes, pItem->comp.soa()};
+				auto* pData = mem::data_view_policy_soa_erased::set(
+						ec.pChunk->comp_ptr_mut(compIdx), pItem->comp.alig(), fieldSizes, fieldIdx, row, capacity);
+				return {pData, pItem->soaSizes[fieldIdx], ComponentRawViewFlag_Valid};
+			}
+
+			//! Creates a read-only cursor over a runtime component on \a entity.
+			//! Inherited ids resolve like get_raw(). SoA roots expose fields without pretending the root is contiguous.
+			//! \param entity Entity being read.
+			//! \param component Component entity or exact relationship pair being read.
+			//! \return Cursor positioned at the root component payload, or invalid cursor when unavailable.
+			GAIA_NODISCARD ComponentCursor cursor(Entity entity, Entity component) const;
+
+			//! Creates a mutable cursor over a directly owned runtime component on \a entity.
+			//! Direct writes through mut_ptr() are silent and must be paired with modify_raw(). Writes through
+			//! ComponentCursor::set_raw() finishes the root component write automatically.
+			//! \param entity Entity being mutated.
+			//! \param component Component entity or exact relationship pair being mutated.
+			//! \return Cursor positioned at the root component payload, or invalid cursor when unavailable.
+			GAIA_NODISCARD ComponentCursor cursor_mut(Entity entity, Entity component);
+
+			//! Adds an AoS component and initializes its raw payload before `OnAdd` observers run.
+			//! \param entity Entity receiving the component.
+			//! \param component Runtime component entity or exact relationship pair.
+			//! \param data Payload bytes. Must be non-null when the component size is non-zero.
+			//! \param size Payload byte count. Must match the registered component size.
+			//! \return True when the component was added and initialized.
+			bool add_raw(Entity entity, Entity component, const void* data, uint32_t size) {
+				if (component == EntityBad || try_live_record(entity) == nullptr)
+					return false;
+
+				const auto* pItem = component.pair() ? comp_cache().find_pair_payload(component) : comp_cache().find(component);
+				if (pItem == nullptr || !raw_component_payload_args_valid(*pItem, data, size))
+					return false;
+
+				if (has_direct(entity, component))
+					return false;
+				if (component_uses_sparse_storage(component)) {
+					const auto mode = sparse_storage_mode(component);
+					if (mode == SparseStorageMode::None)
+						return false;
+
+					auto& store = sparse_component_store_erased_mut(component, *pItem);
+					auto* pPayload = store.func_add(store.pStore, entity);
+					if (size != 0)
+						memcpy(pPayload, data, size);
+					finish_sparse_component_add_inter(entity, component, mode);
+					return true;
+				}
+
+				EntityBuilder eb(*this, entity);
+#if GAIA_OBSERVERS_ENABLED
+				auto addDiffCtx =
+						m_observers.prepare_diff(*this, ObserverEvent::OnAdd, EntitySpan{&component, 1}, EntitySpan{&entity, 1});
+#endif
+				eb.add_inter_init(component);
+				eb.commit();
+
+				const auto payload = mut_raw(entity, component);
+				GAIA_ASSERT(payload.valid());
+				if (payload.valid() && size != 0)
+					memcpy(payload.data, data, size);
+
+				notify_add_single(entity, component);
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+				return payload.valid();
+			}
+
+			//! Replaces raw bytes for a directly owned AoS component and finishes the write.
+			//! \param entity Entity whose component is being replaced.
+			//! \param component Runtime component entity or exact relationship pair.
+			//! \param data Payload bytes. Must be non-null when the component size is non-zero.
+			//! \param size Payload byte count. Must match the registered component size.
+			//! \return True when the component was updated.
+			bool set_raw(Entity entity, Entity component, const void* data, uint32_t size) {
+				if (component == EntityBad)
+					return false;
+
+				const auto payload = mut_raw(entity, component);
+				if (!payload.valid() || payload.size != size || (size != 0 && data == nullptr))
+					return false;
+				if (size != 0)
+					memcpy(payload.data, data, size);
+
+				finish_write(entity, component);
+				return true;
+			}
+
+			//! Marks a raw payload or SoA field returned by a mutable raw view as modified and emits normal set side effects.
+			//! \param entity Entity whose raw component payload was mutated.
+			//! \param component Runtime component entity previously passed to mut_raw().
+			void modify_raw(Entity entity, Entity component) {
+				if (!mut_raw(entity, component).valid()) {
+					if (component == EntityBad)
+						return;
+
+					const auto* pEc = try_live_record(entity);
+					if (pEc == nullptr)
+						return;
+
+					const auto& ec = *pEc;
+					const auto* pItem = component_item(entity, component);
+					if (pItem == nullptr || !soa_field_supported(*pItem) ||
+							core::get_index(ec.pChunk->ids_view(), component) == BadIndex)
+						return;
+				}
+				finish_write(entity, component);
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Starts a bulk get operation on an entity.
+			//! \param entity Entity
+			//! \return Entity-scoped ComponentGetter bound to this world and entity's current storage
+			//! \warning It is expected that entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if entity changes archetype after ComponentGetter is created.
+			ComponentGetter acc(Entity entity) const {
+				GAIA_ASSERT(valid(entity));
+
+				const auto& ec = cont(entity);
+				return ComponentGetter{*this, ec.pChunk, entity, ec.row};
+			}
+
+			//! Starts a bulk get operation on an exact pair record.
+			//! \param entity Pair record.
+			//! \return Pair-record-scoped ComponentGetter bound to current storage.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if \a entity changes archetype after ComponentGetter is created.
+			ComponentGetter acc(Pair entity) const {
+				const auto source = (Entity)entity;
+				GAIA_ASSERT(valid(source));
+
+				const auto& ec = fetch(source);
+				return ComponentGetter{*this, ec.pChunk, source, ec.row};
+			}
+
+			//! Returns the value stored in the component T on entity.
+			//! \tparam T Component
+			//! \param entity Entity
+			//! \return Value stored in the component.
+			//! \warning It is expected the component is present on entity. Undefined behavior otherwise.
+			//! \warning It is expected entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if entity changes archetype after ComponentGetter is created.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) get(Entity entity) const {
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto compEntity = [&]() {
+					if constexpr (is_pair<FT>::value) {
+						const auto rel = comp_cache().template get<typename FT::rel>().entity;
+						const auto tgt = comp_cache().template get<typename FT::tgt>().entity;
+						return (Entity)Pair(rel, tgt);
+					} else {
+						return comp_cache().template get<FT>().entity;
+					}
+				}();
+				if constexpr (uses_ct_sparse_storage<FT>()) {
+					const auto owner = id_owner_inter(entity, compEntity);
+					GAIA_ASSERT(owner != EntityBad);
+					const auto* pStore = sparse_component_store<FT>(compEntity);
+					GAIA_ASSERT(pStore != nullptr);
+					if (owner.pair())
+						return pStore->get(owner);
+					return pStore->get_entity(owner);
+				} else {
+					const auto owner = id_owner_inter(entity, compEntity);
+					GAIA_ASSERT(owner != EntityBad);
+					const auto& ec = cont(owner);
+					return ComponentGetter{*this, ec.pChunk, owner, ec.row}.template get<T>();
+				}
+			}
+
+			//! Returns the value stored in component `T` on an exact pair record.
+			//! \tparam T Component.
+			//! \param entity Pair record.
+			//! \return Value stored in the component.
+			//! \warning It is expected the component is present on \a entity. Undefined behavior otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) get(Pair entity) const {
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto compEntity = [&]() {
+					if constexpr (is_pair<FT>::value) {
+						const auto rel = comp_cache().template get<typename FT::rel>().entity;
+						const auto tgt = comp_cache().template get<typename FT::tgt>().entity;
+						return (Entity)Pair(rel, tgt);
+					} else {
+						return comp_cache().template get<FT>().entity;
+					}
+				}();
+				const auto source = (Entity)entity;
+				if constexpr (uses_ct_sparse_storage<FT>()) {
+					const auto owner = id_owner_inter(source, compEntity);
+					GAIA_ASSERT(owner != EntityBad);
+					const auto* pStore = sparse_component_store<FT>(compEntity);
+					GAIA_ASSERT(pStore != nullptr);
+					return pStore->get(owner);
+				} else {
+					const auto owner = id_owner_inter(source, compEntity);
+					GAIA_ASSERT(owner != EntityBad);
+					const auto& ec = fetch(owner);
+					return ComponentGetter{*this, ec.pChunk, owner, ec.row}.template get<T>();
+				}
+			}
+
+			//! Returns the value stored in the component associated with \p object on \p entity.
+			//! \tparam T Component type represented by \p object.
+			//! \param entity Entity to read, resolving inherited ownership when necessary.
+			//! \param object Component entity selecting the payload.
+			//! \return Read-only component value or proxy.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) get(Entity entity, Entity object) const {
+				using FT = typename component_type_t<T>::TypeFull;
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (can_use_sparse_component_storage<FT>(object)) {
+						const auto owner = id_owner_inter(entity, object);
+						GAIA_ASSERT(owner != EntityBad);
+						if (owner.pair())
+							return sparse_component_get_value<FT>(object, owner);
+						return sparse_component_get_entity_value<FT>(object, owner);
+					}
+				}
+
+				const auto owner = id_owner_inter(entity, object);
+				GAIA_ASSERT(owner != EntityBad);
+				const auto& ec = cont(owner);
+				return ComponentGetter{*this, ec.pChunk, owner, ec.row}.template get<T>(object);
+			}
+
+			//! Returns a runtime-selected component value from an exact pair record.
+			//! \tparam T Component type represented by \a object.
+			//! \param entity Pair record to read, resolving inherited ownership when necessary.
+			//! \param object Component entity selecting the payload.
+			//! \return Read-only component value or proxy.
+			template <typename T>
+			GAIA_NODISCARD decltype(auto) get(Pair entity, Entity object) const {
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto source = (Entity)entity;
+				if constexpr (supports_sparse_component_storage<FT>()) {
+					if (can_use_sparse_component_storage<FT>(object)) {
+						const auto owner = id_owner_inter(source, object);
+						GAIA_ASSERT(owner != EntityBad);
+						return sparse_component_get_value<FT>(object, owner);
+					}
+				}
+
+				const auto owner = id_owner_inter(source, object);
+				GAIA_ASSERT(owner != EntityBad);
+				const auto& ec = fetch(owner);
+				return ComponentGetter{*this, ec.pChunk, owner, ec.row}.template get<T>(object);
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Checks if entity is currently used by the world.
+			//! \param entity Entity.
+			//! \return True if the entity is used. False otherwise.
+			GAIA_NODISCARD bool has(Entity entity) const {
+				// Pair
+				if (entity.pair()) {
+					if (entity == Pair(All, All))
+						return true;
+
+					if (is_wildcard(entity)) {
+						if (!m_entityToArchetypeMap.contains(EntityLookupKey(entity)))
+							return false;
+
+						// If the pair is found, both entities forming it need to be found as well
+						GAIA_ASSERT(has(get(entity.id())) && has(get(entity.gen())));
+
+						return true;
+					}
+
+					const auto* pPair = m_recs.pair_record_find(entity);
+					if (pPair == nullptr)
+						return false;
+
+					const auto& ec = *pPair;
+					if (is_req_del(ec))
+						return false;
+
+#if GAIA_ASSERT_ENABLED
+					// If the pair is found, both entities forming it need to be found as well
+					GAIA_ASSERT(has(get(entity.id())) && has(get(entity.gen())));
+
+					// Index of the entity must fit inside the chunk
+					auto* pChunk = ec.pChunk;
+					GAIA_ASSERT(pChunk != nullptr && ec.row < pChunk->size());
+#endif
+
+					return true;
+				}
+
+				// Regular entity
+				{
+					// Entity ID has to fit inside the entity array
+					if (entity.id() >= m_recs.entities.size() || !m_recs.entities.has(entity.id()))
+						return false;
+
+					// Index of the entity must fit inside the chunk
+					const auto& ec = m_recs.entities[entity.id()];
+					if (is_req_del(ec))
+						return false;
+
+					auto* pChunk = ec.pChunk;
+					return pChunk != nullptr && ec.row < pChunk->size();
+				}
+			}
+
+			//! Checks if \a pair is currently used by the world.
+			//! \param pair Pair
+			//! \return True if the entity is used. False otherwise.
+			GAIA_NODISCARD bool has(Pair pair) const {
+				return has((Entity)pair);
+			}
+
+			//! Checks if \a entity contains the entity \a object.
+			//! \param entity Entity
+			//! \param object Tested entity
+			//! \return True if object is present on entity. False otherwise or if any of the entities is not valid.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if \a entity changes archetype after ComponentSetter is created.
+			GAIA_NODISCARD bool has(Entity entity, Entity object) const {
+				return has_inter(entity, object, true);
+			}
+
+			//! Checks if \a entity directly contains the entity \a object, without semantic inheritance expansion.
+			//! \param entity Entity
+			//! \param object Tested entity
+			//! \return True if object is directly present on entity. False otherwise or if any of the entities is not valid.
+			GAIA_NODISCARD bool has_direct(Entity entity, Entity object) const {
+				return has_inter(entity, object, false);
+			}
+
+			//! Checks if \p entity directly contains \p pair, without semantic inheritance expansion.
+			//! \param entity Entity to inspect.
+			//! \param pair Exact or wildcard pair to test.
+			//! \return True when \p pair is directly present. False otherwise.
+			GAIA_NODISCARD bool has_direct(Entity entity, Pair pair) const {
+				return has_inter(entity, (Entity)pair, false);
+			}
+
+		private:
+			//! Checks direct or inherited membership for one entity id.
+			//! \param entity Entity to inspect.
+			//! \param object Component or relationship id to test.
+			//! \param allowSemanticIs True to include semantic inheritance.
+			//! \return True when the requested id is present under the selected semantics.
+			GAIA_NODISCARD bool has_inter(Entity entity, Entity object, bool allowSemanticIs) const {
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr)
+					return false;
+
+				const auto& ec = *pEc;
+
+				if (object.pair() && has_nonfragmenting_relation_pair(entity, object))
+					return true;
+				if (!object.pair()) {
+					const auto itSparseStore = m_sparseComponentsByComp.find(EntityLookupKey(object));
+					if (itSparseStore != m_sparseComponentsByComp.end())
+						return has_direct_sparse_component_inter(entity, object) ||
+									 (allowSemanticIs && inherited_id_owner(entity, object) != EntityBad);
+				}
+
+				const auto* pArchetype = ec.pArchetype;
+
+				if (object.pair()) {
+					if (allowSemanticIs && object.id() == Is.id() && !is_wildcard(object.gen())) {
+						const auto target = get(object.gen());
+						return valid(target) && is(entity, target);
+					}
+
+					// Early exit if there are no pairs on the archetype
+					if (pArchetype->pairs() == 0)
+						return false;
+
+					EntityId rel = object.id();
+					EntityId tgt = object.gen();
+
+					// (*,*)
+					if (rel == All.id() && tgt == All.id())
+						return true;
+
+					// (X,*)
+					if (rel != All.id() && tgt == All.id()) {
+						auto ids = pArchetype->ids_view();
+						for (auto id: ids) {
+							if (!id.pair())
+								continue;
+							if (id.id() == rel)
+								return true;
+						}
+
+						return false;
+					}
+
+					// (*,X)
+					if (rel == All.id() && tgt != All.id()) {
+						auto ids = pArchetype->ids_view();
+						for (auto id: ids) {
+							if (!id.pair())
+								continue;
+							if (id.gen() == tgt)
+								return true;
+						}
+
+						return false;
+					}
+				}
+
+				if (pArchetype->has(object))
+					return true;
+
+				return allowSemanticIs && inherited_id_owner(entity, object) != EntityBad;
+			}
+
+			//! Visits ids assigned to \a entity according to \a options.
+			//! Direct archetype-resident ids are visited first, in the same order as `Archetype::ids_view()`.
+			//! Matching DontFragment components and exclusive non-fragmenting pairs follow, sorted by `Entity::value()`.
+			//! When `QueryMatchKind::In` is set, inherited ids follow that list, also sorted by `Entity::value()`.
+			//! Pair sparse payloads are not listed separately from their pair id.
+			//! \tparam Func Callable `bool(Entity)`. Return false to stop.
+			//! \param entity Entity or exact pair record to inspect.
+			//! \param options Storage, kind, and match filters.
+			//! \param func Visitor invoked for each selected id.
+			//! \return False when \a func stopped iteration. True otherwise.
+			template <typename Func>
+			bool each_id_inter(Entity entity, const EntityIdOptions& options, Func&& func) const {
+				auto accepts_kind = [&](Entity id) {
+					return id.pair() ? entity_id_kind_has(options.kind, EntityIdKind::Pair)
+													 : entity_id_kind_has(options.kind, EntityIdKind::Component);
+				};
+
+				auto visit_direct = [&](Entity source, auto&& onId) {
+					const auto* pEc = try_live_record(source);
+					if (pEc == nullptr || pEc->pArchetype == nullptr)
+						return true;
+
+					if (entity_id_storage_has(options.storage, EntityIdStorage::Archetype)) {
+						for (const auto id: pEc->pArchetype->ids_view()) {
+							if (!accepts_kind(id))
+								continue;
+							if (!onId(id))
+								return false;
+						}
+					}
+
+					const bool wantDontFragment = entity_id_storage_has(options.storage, EntityIdStorage::DontFragment) &&
+																				entity_id_kind_has(options.kind, EntityIdKind::Component);
+					const bool wantRelation = entity_id_storage_has(options.storage, EntityIdStorage::Relation) &&
+																		entity_id_kind_has(options.kind, EntityIdKind::Pair);
+					if (!wantDontFragment && !wantRelation)
+						return true;
+
+					cnt::darray_ext<Entity, 16> extra;
+					if (wantDontFragment) {
+						for (const auto& [compKey, store]: m_sparseComponentsByComp) {
+							const auto component = compKey.entity();
+							if (component.pair() || !component_is_non_fragmenting(component))
+								continue;
+							if (store.func_has(store.pStore, source))
+								extra.push_back(component);
+						}
+					}
+					if (wantRelation) {
+						for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+							const auto target = store.target(source);
+							if (target != EntityBad)
+								extra.push_back(Pair(relKey.entity(), target));
+						}
+					}
+					core::sort(extra.begin(), extra.end(), core::is_smaller<Entity>{});
+					for (const auto id: extra) {
+						if (!onId(id))
+							return false;
+					}
+
+					return true;
+				};
+
+				if (!visit_direct(entity, [&](Entity id) {
+							return func(id);
+						}))
+					return false;
+
+				if (options.matchKind == QueryMatchKind::Direct)
+					return true;
+
+				cnt::darray_ext<Entity, 16> inheritedIds;
+				for (const auto base: as_targets_trav_cache(entity)) {
+					(void)visit_direct(base, [&](Entity id) {
+						if (!id_uses_inherit_policy(id) || has_direct(entity, id))
+							return true;
+						if (core::get_index(inheritedIds, id) != BadIndex)
+							return true;
+						inheritedIds.push_back(id);
+						return true;
+					});
+				}
+				core::sort(inheritedIds.begin(), inheritedIds.end(), core::is_smaller<Entity>{});
+				for (const auto id: inheritedIds) {
+					if (!func(id))
+						return false;
+				}
+
+				return true;
+			}
+
+		public:
+			//! Returns the ordered component lookup path used for unqualified component lookup.
+			//! Each scope is searched like a temporary component scope: the scope first, then its parents.
+			//! \return View of the configured lookup scopes.
+			GAIA_NODISCARD std::span<const Entity> lookup_path() const {
+				return {m_componentLookupPath.data(), m_componentLookupPath.size()};
+			}
+
+			//! Replaces the ordered component lookup path used for unqualified component lookup.
+			//! Each scope is searched in the order provided, and each scope walk includes its parents.
+			//! \param scopes Ordered lookup scopes. Pass an empty span to clear the lookup path.
+			void lookup_path(std::span<const Entity> scopes) {
+				m_componentLookupPath.clear();
+				m_componentLookupPath.reserve((uint32_t)scopes.size());
+				for (const auto scopeEntity: scopes) {
+					GAIA_ASSERT(scopeEntity != EntityBad && valid(scopeEntity) && !scopeEntity.pair());
+					if (scopeEntity == EntityBad || !valid(scopeEntity) || scopeEntity.pair())
+						continue;
+
+					m_componentLookupPath.push_back(scopeEntity);
+				}
+			}
+
+			//! Returns the current component scope used for component registration and relative component lookup.
+			//! \return Scoped entity or EntityBad when component scope is disabled.
+			GAIA_NODISCARD Entity scope() const {
+				return m_componentScope;
+			}
+
+			//! Sets the current component scope used for component registration and relative component lookup.
+			//! The scope entity and its ChildOf ancestors are expected to have names so we can build a path from them.
+			//! \param scope Scope entity. Pass EntityBad to clear the current component scope.
+			//! \return Previous component scope.
+			Entity scope(Entity scope) {
+				GAIA_ASSERT(scope == EntityBad || (valid(scope) && !scope.pair()));
+				const auto prev = m_componentScope;
+				if (scope == EntityBad || (valid(scope) && !scope.pair())) {
+					m_componentScope = scope;
+					invalidate_scope_path_cache();
+				}
+				return prev;
+			}
+
+			//! Executes \a func with a temporary component scope and restores the previous scope afterwards.
+			//! Relative component lookup walks up the ChildOf hierarchy of the active scope.
+			//! The scope entity and its ChildOf ancestors are expected to have names so we can build a path from them.
+			//! \param scopeEntity Scope entity. Pass EntityBad to temporarily disable component scope.
+			//! \param func Callable executed while the scope is active.
+			template <typename Func>
+			void scope(Entity scopeEntity, Func&& func) {
+				struct ComponentScopeRestore final {
+					World& world;
+					Entity prevScope;
+					~ComponentScopeRestore() {
+						world.scope(prevScope);
+					}
+				};
+
+				ComponentScopeRestore restore{*this, scope(scopeEntity)};
+				func();
+			}
+
+			//! Finds or builds a named module hierarchy and returns the deepest scope entity.
+			//! Each path segment is mapped to an entity name and connected with ChildOf relationships.
+			//! \param path Dotted module path such as "gameplay.render".
+			//! \param len String length. If zero, the length is calculated.
+			//! \return Deepest module entity, or EntityBad when the path is invalid.
+			//! \warning This only builds the scope hierarchy. Use scope(...) to activate it.
+			Entity module(const char* path, uint32_t len = 0) {
+				if (path == nullptr || path[0] == 0)
+					return EntityBad;
+
+				const auto l = len == 0 ? (uint32_t)GAIA_STRLEN(path, ComponentCacheItem::MaxNameLength) : len;
+				if (l == 0 || l >= ComponentCacheItem::MaxNameLength)
+					return EntityBad;
+				if (path[l - 1] == '.')
+					return EntityBad;
+
+				Entity parent = EntityBad;
+				uint32_t partBeg = 0;
+				while (partBeg < l) {
+					uint32_t partEnd = partBeg;
+					while (partEnd < l && path[partEnd] != '.')
+						++partEnd;
+					if (partEnd == partBeg)
+						return EntityBad;
+
+					const auto partLen = partEnd - partBeg;
+					const auto key = EntityNameLookupKey(path + partBeg, partLen, 0);
+					const auto it = m_nameToEntity.find(key);
+					Entity curr = EntityBad;
+
+					if (it != m_nameToEntity.end()) {
+						curr = it->second;
+						if (parent != EntityBad && !is_child(curr, parent)) {
+							GAIA_ASSERT2(false, "Module path collides with an existing entity name outside the requested scope");
+							return EntityBad;
+						}
+					} else {
+						curr = add();
+						name(curr, path + partBeg, partLen);
+						if (parent != EntityBad)
+							child(curr, parent);
+					}
+
+					parent = curr;
+					partBeg = partEnd + 1;
+				}
+
+				return parent;
+			}
+
+			//! Checks if \a entity contains \a pair.
+			//! \param entity Entity
+			//! \param pair Tested pair
+			//! \return True if object is present on entity. False otherwise or if any of the entities is not valid.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if \a entity changes archetype after ComponentSetter is created.
+			GAIA_NODISCARD bool has(Entity entity, Pair pair) const {
+				return has(entity, (Entity)pair);
+			}
+
+			//! Checks if \a entity contains the component \a T.
+			//! \tparam T Component
+			//! \param entity Entity
+			//! \return True if the component is present on entity.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning Undefined behavior if \a entity changes archetype after ComponentSetter is created.
+			template <typename T>
+			GAIA_NODISCARD bool has(Entity entity) const {
+				GAIA_ASSERT(valid(entity));
+
+				using FT = typename component_type_t<T>::TypeFull;
+				const auto compEntity = [&]() {
+					if constexpr (is_pair<FT>::value) {
+						const auto* pRel = comp_cache().template find<typename FT::rel>();
+						const auto* pTgt = comp_cache().template find<typename FT::tgt>();
+						if (pRel == nullptr || pTgt == nullptr)
+							return EntityBad;
+
+						const auto rel = pRel->entity;
+						const auto tgt = pTgt->entity;
+						return (Entity)Pair(rel, tgt);
+					} else {
+						const auto* pItem = comp_cache().template find<FT>();
+						return pItem != nullptr ? pItem->entity : EntityBad;
+					}
+				}();
+				if (compEntity == EntityBad)
+					return false;
+
+				return id_owner_inter(entity, compEntity) != EntityBad;
+			}
+
+			//! Invokes \a func for each id assigned to \a entity.
+			//! By default this is the complete direct type: archetype-resident ids, DontFragment
+			//! components, and exclusive non-fragmenting pairs such as `Parent`.
+			//! `Archetype::ids_view()` is only the archetype-resident subset of that list.
+			//! Pass `EntityIdOptions` to select storage or kind, or `.in()` for inherited ids.
+			//! Scans matching non-fragmenting stores in addition to the archetype id list.
+			//! Not a per-frame hot path.
+			//! \param entity Entity or exact pair record to inspect.
+			//! \param func Callable `void(Entity)` invoked for each selected id.
+			//! \param options Storage, kind, and match filters. Defaults visit the complete direct type.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename Func>
+			void ids(Entity entity, Func&& func, EntityIdOptions options = {}) const {
+				(void)each_id_inter(entity, options, [&](Entity id) {
+					func(id);
+					return true;
+				});
+			}
+
+			//! Invokes \a func for each id assigned to \a entity until \a func returns false.
+			//! Membership and visit order match `ids()`.
+			//! \param entity Entity or exact pair record to inspect.
+			//! \param func Callable `bool(Entity)`. Return false to stop.
+			//! \param options Storage, kind, and match filters. Defaults visit the complete direct type.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename Func>
+			void ids_if(Entity entity, Func&& func, EntityIdOptions options = {}) const {
+				(void)each_id_inter(entity, options, [&](Entity id) {
+					return func(id);
+				});
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Assigns a \a name to \a entity. Ignored if used with pair.
+			//! The string is copied and kept internally.
+			//! \param entity Entity
+			//! \param name A null-terminated string
+			//! \param len String length. If zero, the length is calculated
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning Name is expected to be unique. If it is not this function does nothing.
+			//! \warning The name can't contain the character '.'. This character is reserved for hierarchical lookups
+			//!          such as "parent.child.subchild".
+			void name(Entity entity, const char* name, uint32_t len = 0) {
+				EntityBuilder(*this, entity).name(name, len);
+			}
+
+			//! Assigns a \a name to \a entity. Ignored if used with pair.
+			//! The string is NOT copied. Your are responsible for its lifetime.
+			//! \param entity Entity
+			//! \param name Pointer to a stable null-terminated string
+			//! \param len String length. If zero, the length is calculated
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			//! \warning The name is expected to be unique. If it is not this function does nothing.
+			//! \warning The name can't contain the character '.'. This character is reserved for hierarchical lookups
+			//!          such as "parent.child.subchild".
+			//! \warning In this case the string is NOT copied and NOT stored internally. You are responsible for its
+			//!          lifetime. The pointer, contents, and length need to stay stable. Otherwise, any time your
+			//!          storage tries to move or rewrite the string you have to unset the name before it happens
+			//!          and set it anew after the change is done.
+			void name_raw(Entity entity, const char* name, uint32_t len = 0) {
+				EntityBuilder(*this, entity).name_raw(name, len);
+			}
+
+			//! Returns the name assigned to \a entity.
+			//! \param entity Entity
+			//! \return Name assigned to entity. Empty view when there is no name.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			GAIA_NODISCARD util::str_view name(Entity entity) const {
+				if (entity.pair())
+					return {};
+
+				const auto& ec = m_recs.entities[entity.id()];
+				const auto compIdx = core::get_index(ec.pChunk->ids_view(), GAIA_ID(EntityDesc));
+				if (compIdx == BadIndex)
+					return {};
+
+				const auto* pDesc = reinterpret_cast<const EntityDesc*>(ec.pChunk->comp_ptr(compIdx, ec.row));
+				GAIA_ASSERT(core::check_alignment(pDesc));
+				return {pDesc->name, pDesc->name_len};
+			}
+
+			//! Returns the entity name assigned to \a entityId.
+			//! \param entityId EntityId
+			//! \return Name assigned through the entity naming API. Empty view when there is no entity name.
+			//! \warning It is expected \a entityId is valid. Undefined behavior otherwise.
+			GAIA_NODISCARD util::str_view name(EntityId entityId) const {
+				auto entity = get(entityId);
+				return name(entity);
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Resolves \a name in the world naming system.
+			//! Entity names and hierarchical entity paths are attempted first. If they do not match,
+			//! component lookup uses the current scope, then the lookup path, then global component
+			//! symbol, path and alias lookup.
+			//! \param name Pointer to a stable null-terminated string
+			//! \param len String length. If zero, the length is calculated
+			//! \return Matching entity. EntityBad when no entity or component matches.
+			GAIA_NODISCARD Entity resolve(const char* name, uint32_t len = 0) const {
+				if (name == nullptr || name[0] == 0)
+					return EntityBad;
+
+				const auto l = len == 0 ? (uint32_t)GAIA_STRLEN(name, ComponentCacheItem::MaxNameLength) : len;
+				GAIA_ASSERT(l < ComponentCacheItem::MaxNameLength);
+
+				if (memchr(name, '.', l) != nullptr) {
+					const auto entity = get_entity_inter(name, l);
+					if (entity != EntityBad)
+						return entity;
+				}
+
+				return get_inter(name, l);
+			}
+
+			//! Collects every entity and component entity that matches \a name.
+			//! This is useful for diagnostics when a short lookup could refer to multiple scoped components.
+			//! \param[out] out Output array cleared and then filled with unique matching entities.
+			//! \param name Pointer to a stable null-terminated string.
+			//! \param len String length. If zero, the length is calculated.
+			void resolve(cnt::darray<Entity>& out, const char* name, uint32_t len = 0) const {
+				out.clear();
+				if (name == nullptr || name[0] == 0)
+					return;
+
+				const auto l = len == 0 ? (uint32_t)GAIA_STRLEN(name, ComponentCacheItem::MaxNameLength) : len;
+				GAIA_ASSERT(l < ComponentCacheItem::MaxNameLength);
+
+				auto push_unique = [&](Entity entity) {
+					if (entity == EntityBad)
+						return;
+					for (const auto existing: out) {
+						if (existing == entity)
+							return;
+					}
+					out.push_back(entity);
+				};
+
+				push_unique(get_entity_inter(name, l));
+
+				if (memchr(name, '.', l) == nullptr && memchr(name, ':', l) == nullptr)
+					add_comp_lookup_hits_inter(out, name, l);
+
+				const bool isPath = memchr(name, '.', l) != nullptr;
+				const bool isSymbol = memchr(name, ':', l) != nullptr;
+				add_comp_exact_hits_inter(out, name, l, isPath, isSymbol);
+
+				push_unique(alias(name, l));
+			}
+
+			//! Returns the entity assigned a name \a name.
+			//! This is a convenience alias for resolve(name).
+			//! \param name Pointer to a stable null-terminated string
+			//! \param len String length. If zero, the length is calculated
+			//! \return Matching entity. EntityBad if there is nothing to return.
+			GAIA_NODISCARD Entity get(const char* name, uint32_t len = 0) const {
+				return resolve(name, len);
+			}
+
+		private:
+			//! Resolves only direct entity names and aliases.
+			//! \param name Name to resolve.
+			//! \param len Name length, or zero to measure the string.
+			//! \return Matching entity, or EntityBad when absent.
+			GAIA_NODISCARD Entity find_named_entity_inter(const char* name, uint32_t len = 0) const {
+				if (name == nullptr || name[0] == 0)
+					return EntityBad;
+
+				const auto key = EntityNameLookupKey(name, len, 0);
+				const auto it = m_nameToEntity.find(key);
+				return it != m_nameToEntity.end() ? it->second : EntityBad;
+			}
+
+			//! Checks whether \a child is directly nested under \a parent through a Gaia hierarchy relation.
+			//! \param child Candidate child entity.
+			//! \param parent Candidate parent entity.
+			//! \return True when `ChildOf` or non-fragmenting `Parent` links \a child to \a parent.
+			GAIA_NODISCARD bool hierarchy_child_matches_parent(Entity child, Entity parent) const {
+				return is_child(child, parent) || is_parent(child, parent);
+			}
+
+			//! Resolves a direct or hierarchical entity name.
+			//! \param name Name or dotted path to resolve.
+			//! \param len Name length, or zero to measure the string.
+			//! \return Matching entity, or EntityBad when absent.
+			GAIA_NODISCARD Entity get_entity_inter(const char* name, uint32_t len = 0) const {
+				if (name == nullptr || name[0] == 0)
+					return EntityBad;
+
+				if (len == 0) {
+					while (name[len] != '\0')
+						++len;
+				}
+
+				Entity parent = EntityBad;
+				Entity child = EntityBad;
+				uint32_t posDot = 0;
+				std::span<const char> str(name, len);
+
+				posDot = core::get_index(str, '.');
+				if (posDot == BadIndex)
+					return find_named_entity_inter(str.data(), (uint32_t)str.size());
+
+				if (posDot == 0)
+					return EntityBad;
+
+				parent = find_named_entity_inter(str.data(), posDot);
+				if (parent == EntityBad)
+					return EntityBad;
+
+				str = str.subspan(posDot + 1);
+				while (!str.empty()) {
+					posDot = core::get_index(str, '.');
+
+					if (posDot == BadIndex) {
+						child = find_named_entity_inter(str.data(), (uint32_t)str.size());
+						if (child == EntityBad || !hierarchy_child_matches_parent(child, parent))
+							return EntityBad;
+
+						return child;
+					}
+
+					if (posDot == 0)
+						return EntityBad;
+
+					child = find_named_entity_inter(str.data(), posDot);
+					if (child == EntityBad || !hierarchy_child_matches_parent(child, parent))
+						return EntityBad;
+
+					parent = child;
+					str = str.subspan(posDot + 1);
+				}
+
+				return parent;
+			}
+
+			//! Resolves an entity, component symbol, path, or alias using the active lookup context.
+			//! \param name Lookup text.
+			//! \param len Text length, or zero to measure the string.
+			//! \return Matching entity, or EntityBad when absent or ambiguous.
+			GAIA_NODISCARD Entity get_inter(const char* name, uint32_t len = 0) const {
+				if (name == nullptr || name[0] == 0)
+					return EntityBad;
+
+				auto key = EntityNameLookupKey(name, len, 0);
+				const auto l = key.len();
+				const bool isUnqualifiedCompName = is_unqualified_comp_name_inter(name, l);
+				const auto namedEntity = find_named_entity_inter(name, l);
+
+				if (has_comp_lookup_ctx_inter() && isUnqualifiedCompName) {
+					if (const auto* pScopedItem = resolve_component_name_inter(name, l); pScopedItem != nullptr)
+						return pick_name_or_comp_inter(namedEntity, pScopedItem);
+				}
+
+				if (namedEntity != EntityBad)
+					return namedEntity;
+
+				if (const auto* pItem = resolve_component_name_inter(name, l); pItem != nullptr)
+					return pItem->entity;
+
+				const auto aliasEntity = alias(name, l);
+				if (aliasEntity != EntityBad)
+					return aliasEntity;
+
+				// No entity with the given name exists. Return a bad entity
+				return EntityBad;
+			}
+
+		public:
+			//----------------------------------------------------------------------
+
+			//! Returns relations for \p target.
+			//! \param target Target entity
+			//! \return Set of relations that reference \p target, or nullptr when none do.
+			//! \warning It is expected \p target is valid. Undefined behavior otherwise.
+			GAIA_NODISCARD const cnt::set<EntityLookupKey>* relations(Entity target) const {
+				return m_pairLookup.relations(target);
+			}
+
+			//! Returns the first relationship relation for the \a target entity on \a entity.
+			//! \param entity Source entity
+			//! \param target Target entity
+			//! \return Relationship target. EntityBad if there is nothing to return.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			GAIA_NODISCARD Entity relation(Entity entity, Entity target) const {
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr || try_live_record(target) == nullptr)
+					return EntityBad;
+
+				for (const auto& it: m_nonFragmentingRelationsByRel) {
+					if (it.second.target(entity) == target)
+						return it.first.entity();
+				}
+
+				const auto* pArchetype = pEc->pArchetype;
+
+				// Early exit if there are no pairs on the archetype
+				if (pArchetype->pairs() == 0)
+					return EntityBad;
+
+				const auto indices = pArchetype->pair_tgt_indices(target);
+				if (indices.empty())
+					return EntityBad;
+
+				const auto ids = pArchetype->ids_view();
+				const auto e = ids[indices[0]];
+				const auto& ecRel = m_recs.entities[e.id()];
+				return *ecRel.pEntity;
+			}
+
+			//! Returns the relationship relations for the \a target entity on \a entity.
+			//! \param entity Source entity
+			//! \param target Target entity
+			//! \param func void(Entity relation) functor executed for relationship relation found.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename Func>
+			void relations(Entity entity, Entity target, Func func) const {
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr || try_live_record(target) == nullptr)
+					return;
+
+				for (const auto& it: m_nonFragmentingRelationsByRel) {
+					if (it.second.target(entity) == target)
+						func(it.first.entity());
+				}
+
+				const auto* pArchetype = pEc->pArchetype;
+
+				// Early exit if there are no pairs on the archetype
+				if (pArchetype->pairs() == 0)
+					return;
+
+				const auto ids = pArchetype->ids_view();
+				for (auto idsIdx: pArchetype->pair_tgt_indices(target)) {
+					const auto e = ids[idsIdx];
+
+					const auto& ecRel = m_recs.entities[e.id()];
+					auto relation = *ecRel.pEntity;
+					func(relation);
+				}
+			}
+
+			//! Returns the relationship relations for the \a target entity on \a entity.
+			//! \param entity Source entity
+			//! \param target Target entity
+			//! \param func bool(Entity relation) functor executed for relationship relation found.
+			//!             Stops if false is returned.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename Func>
+			void relations_if(Entity entity, Entity target, Func func) const {
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr || try_live_record(target) == nullptr)
+					return;
+
+				for (const auto& it: m_nonFragmentingRelationsByRel) {
+					if (it.second.target(entity) == target && !func(it.first.entity()))
+						return;
+				}
+
+				const auto* pArchetype = pEc->pArchetype;
+
+				// Early exit if there are no pairs on the archetype
+				if (pArchetype->pairs() == 0)
+					return;
+
+				const auto ids = pArchetype->ids_view();
+				for (auto idsIdx: pArchetype->pair_tgt_indices(target)) {
+					const auto e = ids[idsIdx];
+
+					const auto& ecRel = m_recs.entities[e.id()];
+					auto relation = *ecRel.pEntity;
+					if (!func(relation))
+						return;
+				}
+			}
+
+			//! Returns the cached transitive `Is` descendants for a target entity.
+			//! The cache is rebuilt lazily and cleared whenever an `Is` edge changes.
+			//! \param target Base entity whose derived entities are requested.
+			//! \return Cached transitive descendants of \p target.
+			GAIA_NODISCARD const cnt::darray<Entity>& as_relations_trav_cache(Entity target) const {
+				const auto key = EntityLookupKey(target);
+				const auto itCache = m_entityToAsRelationsTravCache.find(key);
+				if (itCache != m_entityToAsRelationsTravCache.end())
+					return itCache->second;
+
+				auto& cache = m_entityToAsRelationsTravCache[key];
+				const auto it = m_entityToAsRelations.find(key);
+				if (it == m_entityToAsRelations.end())
+					return cache;
+
+				//! Small inline traversal stack for the common shallow inheritance case.
+				cnt::darray_ext<EntityLookupKey, 32> stack;
+				stack.reserve((uint32_t)it->second.size());
+				for (auto relation: it->second)
+					stack.push_back(relation);
+
+				while (!stack.empty()) {
+					const auto relationKey = stack.back();
+					stack.pop_back();
+
+					const auto relation = relationKey.entity();
+					cache.push_back(relation);
+
+					const auto itChild = m_entityToAsRelations.find(relationKey);
+					if (itChild == m_entityToAsRelations.end())
+						continue;
+
+					for (auto childRelation: itChild->second)
+						stack.push_back(childRelation);
+				}
+
+				return cache;
+			}
+
+			//! Returns the cached transitive `Is` targets for a relation entity.
+			//! The cache is rebuilt lazily and cleared whenever an `Is` edge changes.
+			//! \param relation Derived entity whose transitive bases are requested.
+			//! \return Cached transitive base targets of \p relation.
+			GAIA_NODISCARD const cnt::darray<Entity>& as_targets_trav_cache(Entity relation) const {
+				const auto key = EntityLookupKey(relation);
+				const auto itCache = m_entityToAsTargetsTravCache.find(key);
+				if (itCache != m_entityToAsTargetsTravCache.end())
+					return itCache->second;
+
+				auto& cache = m_entityToAsTargetsTravCache[key];
+				const auto it = m_entityToAsTargets.find(key);
+				if (it == m_entityToAsTargets.end())
+					return cache;
+
+				//! Small inline traversal stack for the common shallow inheritance case.
+				cnt::darray_ext<EntityLookupKey, 16> stack;
+				stack.reserve((uint32_t)it->second.size());
+				for (auto target: it->second)
+					stack.push_back(target);
+
+				while (!stack.empty()) {
+					const auto targetKey = stack.back();
+					stack.pop_back();
+
+					const auto target = targetKey.entity();
+					cache.push_back(target);
+
+					const auto itChild = m_entityToAsTargets.find(targetKey);
+					if (itChild == m_entityToAsTargets.end())
+						continue;
+
+					for (auto childTarget: itChild->second)
+						stack.push_back(childTarget);
+				}
+
+				return cache;
+			}
+
+			//! Returns the cached unlimited upward traversal chain for `(relation, source)`.
+			//! The cache excludes the source entity itself and is cleared whenever a pair edge changes.
+			//! \param relation Relation defining each upward edge.
+			//! \param source Entity where traversal starts.
+			//! \return Cached targets above \p source in traversal order.
+			GAIA_NODISCARD const cnt::darray<Entity>& targets_trav_cache(Entity relation, Entity source) const {
+				const auto key = EntityLookupKey(Pair(relation, source));
+				const auto itCache = m_targetsTravCache.find(key);
+				if (itCache != m_targetsTravCache.end())
+					return itCache->second;
+
+				auto& cache = m_targetsTravCache[key];
+				m_relationCachesPopulated = true;
+				if (try_live_record(relation) == nullptr || try_live_record(source) == nullptr)
+					return cache;
+
+				auto curr = source;
+				GAIA_FOR(MAX_TRAV_DEPTH) {
+					const auto next = target(curr, relation);
+					if (next == EntityBad || next == curr)
+						break;
+
+					cache.push_back(next);
+					curr = next;
+				}
+
+				return cache;
+			}
+
+			//! Returns the cached deduped direct targets for wildcard target traversal on \p source.
+			//! The cache is keyed by `source` and cleared whenever a pair edge changes.
+			//! \param source Entity whose direct pair targets are requested.
+			//! \return Cached unique direct targets of \p source.
+			GAIA_NODISCARD const cnt::darray<Entity>& targets_all_cache(Entity source) const {
+				const auto key = EntityLookupKey(source);
+				const auto itCache = m_targetsAllCache.find(key);
+				if (itCache != m_targetsAllCache.end())
+					return itCache->second;
+
+				auto& cache = m_targetsAllCache[key];
+				m_relationCachesPopulated = true;
+				const auto* pEc = try_live_record(source);
+				if (pEc == nullptr)
+					return cache;
+
+				const auto visitStamp = next_entity_visit_stamp();
+
+				for (const auto& it: m_nonFragmentingRelationsByRel) {
+					const auto target = it.second.target(source);
+					if (target != EntityBad && try_mark_entity_visited(target, visitStamp))
+						cache.push_back(target);
+				}
+
+				const auto* pArchetype = pEc->pArchetype;
+				if (pArchetype->pairs() == 0)
+					return cache;
+
+				const auto ids = pArchetype->ids_view();
+				for (auto idsIdx: pArchetype->pair_indices()) {
+					const auto id = ids[idsIdx];
+					const auto target = pair_target_if_alive(id);
+					if (target == EntityBad)
+						continue;
+					if (try_mark_entity_visited(target, visitStamp))
+						cache.push_back(target);
+				}
+
+				return cache;
+			}
+
+			//! Returns the cached deduped direct sources for wildcard source traversal on \p target.
+			//! The cache is keyed by `target` and cleared whenever a pair edge changes.
+			//! \param target Entity whose direct pair sources are requested.
+			//! \return Cached unique direct sources referencing \p target.
+			GAIA_NODISCARD const cnt::darray<Entity>& sources_all_cache(Entity target) const {
+				const auto key = EntityLookupKey(target);
+				const auto itCache = m_sourcesAllCache.find(key);
+				if (itCache != m_sourcesAllCache.end())
+					return itCache->second;
+
+				auto& cache = m_sourcesAllCache[key];
+				m_relationCachesPopulated = true;
+				if (try_live_record(target) == nullptr)
+					return cache;
+
+				const auto visitStamp = next_entity_visit_stamp();
+
+				for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+					(void)relKey;
+					const auto* pSources = store.sources(target);
+					if (pSources == nullptr)
+						continue;
+
+					for (auto source: *pSources) {
+						if (valid(source) && try_mark_entity_visited(source, visitStamp))
+							cache.push_back(source);
+					}
+				}
+
+				const auto pair = Pair(All, target);
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(pair));
+				if (it == m_entityToArchetypeMap.end())
+					return cache;
+
+				for (const auto& record: it->second) {
+					const auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del())
+						continue;
+
+					for (const auto* pChunk: pArchetype->chunks()) {
+						const auto entities = pChunk->entity_view();
+						GAIA_EACH(entities) {
+							const auto source = entities[i];
+							if (!valid(source))
+								continue;
+							if (try_mark_entity_visited(source, visitStamp))
+								cache.push_back(source);
+						}
+					}
+				}
+
+				return cache;
+			}
+
+			//! Traverses relationship targets upwards starting from \p source.
+			//! Disabled entities act as traversal barriers and are not yielded.
+			//! \tparam Func Callable type accepting each target entity.
+			//! \param relation Relation defining each upward edge.
+			//! \param source Entity where traversal starts.
+			//! \param func Callable invoked for each enabled target.
+			template <typename Func>
+			void targets_trav(Entity relation, Entity source, Func func) const {
+				if (try_live_record(relation) == nullptr || try_live_record(source) == nullptr)
+					return;
+
+				auto curr = source;
+				GAIA_FOR(MAX_TRAV_DEPTH) {
+					const auto next = target(curr, relation);
+					if (next == EntityBad || next == curr)
+						break;
+					if (!enabled(next))
+						break;
+
+					func(next);
+					curr = next;
+				}
+			}
+
+			//! Traverses relationship targets upwards starting from \p source.
+			//! Disabled entities act as traversal barriers and are not yielded.
+			//! \tparam Func Callable type returning whether traversal should continue.
+			//! \param relation Relation defining each upward edge.
+			//! \param source Entity where traversal starts.
+			//! \param func Callable invoked for each enabled target. Returning false stops traversal.
+			//! \return True if traversal was stopped by \p func, false otherwise.
+			template <typename Func>
+			GAIA_NODISCARD bool targets_trav_if(Entity relation, Entity source, Func func) const {
+				if (try_live_record(relation) == nullptr || try_live_record(source) == nullptr)
+					return false;
+
+				auto curr = source;
+				GAIA_FOR(MAX_TRAV_DEPTH) {
+					const auto next = target(curr, relation);
+					if (next == EntityBad || next == curr)
+						break;
+					if (!enabled(next))
+						break;
+
+					if (!func(next))
+						return true;
+					curr = next;
+				}
+
+				return false;
+			}
+
+			//! Returns the cached unlimited breadth-first descendant traversal for `(relation, rootTarget)`.
+			//! The cache excludes the root target itself and is cleared whenever a pair edge changes.
+			//! \param relation Relation defining descendant edges.
+			//! \param rootTarget Target entity where traversal starts.
+			//! \return Cached descendants in deterministic breadth-first order.
+			GAIA_NODISCARD const cnt::darray<Entity>& sources_bfs_trav_cache(Entity relation, Entity rootTarget) const {
+				const auto key = EntityLookupKey(Pair(relation, rootTarget));
+				const auto itCache = m_srcBfsTravCache.find(key);
+				if (itCache != m_srcBfsTravCache.end())
+					return itCache->second;
+
+				auto& cache = m_srcBfsTravCache[key];
+				m_relationCachesPopulated = true;
+				if (!valid(relation) || !valid(rootTarget))
+					return cache;
+
+				cnt::darray_ext<Entity, 64> children;
+				cnt::darray_ext<Entity, 32> queue;
+				queue.push_back(rootTarget);
+
+				cnt::set<EntityLookupKey> visited;
+				visited.insert(EntityLookupKey(rootTarget));
+
+				for (uint32_t i = 0; i < queue.size(); ++i) {
+					const auto currTarget = queue[i];
+
+					children.clear();
+					sources(relation, currTarget, [&](Entity source) {
+						const auto keySource = EntityLookupKey(source);
+						const auto& ins = visited.insert(keySource);
+						if (!ins.second)
+							return;
+
+						children.push_back(source);
+					});
+
+					core::sort(children, SortEntityIdCond{});
+
+					for (auto child: children) {
+						cache.push_back(child);
+						queue.push_back(child);
+					}
+				}
+
+				return cache;
+			}
+
+			//! Returns the cached fragmenting relation depth used by depth-ordered iteration for `(relation, target)`.
+			//! The returned value is `1` for direct dependents of a root/source with no further relation targets and grows
+			//! by one per level. For multi-target relations, the deepest target chain determines the result.
+			//! \param relation Fragmenting relation defining depth edges.
+			//! \param sourceTarget Target entity whose depth is requested.
+			//! \return Cached one-based depth, or zero when either entity is invalid.
+			GAIA_NODISCARD uint32_t depth_order_cache(Entity relation, Entity sourceTarget) const {
+				const auto key = EntityLookupKey(Pair(relation, sourceTarget));
+				const auto itCache = m_depthOrderCache.find(key);
+				if (itCache != m_depthOrderCache.end()) {
+					GAIA_ASSERT(itCache->second != GroupIdMax && "depth_order requires an acyclic relation graph");
+					return itCache->second;
+				}
+
+				if (!valid(relation) || !valid(sourceTarget))
+					return 0;
+
+				// Mark this node as in-flight so cycles trip a debug assert instead of recursing forever.
+				m_relationCachesPopulated = true;
+				m_depthOrderCache[key] = GroupIdMax;
+
+				uint32_t depth = 1;
+				targets(sourceTarget, relation, [&](Entity next) {
+					const auto nextDepth = depth_order_cache(relation, next);
+					if (nextDepth == 0)
+						return;
+					const auto candidate = nextDepth + 1;
+					if (candidate > depth)
+						depth = candidate;
+				});
+
+				m_depthOrderCache[key] = depth;
+				return depth;
+			}
+
+			//! Traverses transitive `Is` descendants of \a target.
+			//! The traversal uses the cached closure built by as_relations_trav_cache().
+			//! \param target Target entity
+			//! \param func void(Entity relation) functor executed for each descendant relation.
+			template <typename Func>
+			void as_relations_trav(Entity target, Func func) const {
+				if (!valid(target))
+					return;
+
+				const auto& relations = as_relations_trav_cache(target);
+				for (auto relation: relations)
+					func(relation);
+			}
+
+			//! Traverses transitive `Is` descendants of \a target until \a func returns true.
+			//! \param target Target entity
+			//! \param func bool(Entity relation) functor executed for each descendant relation.
+			//!             Stops if true is returned.
+			//! \return True when traversal stopped early. False otherwise.
+			template <typename Func>
+			GAIA_NODISCARD bool as_relations_trav_if(Entity target, Func func) const {
+				if (!valid(target))
+					return false;
+
+				const auto& relations = as_relations_trav_cache(target);
+				for (auto relation: relations) {
+					if (func(relation))
+						return true;
+				}
+
+				return false;
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Returns targets for \p relation.
+			//! \param relation Relation entity
+			//! \return Set of targets referenced by \p relation, or nullptr when none exist.
+			//! \warning It is expected \p relation is valid. Undefined behavior otherwise.
+			GAIA_NODISCARD const cnt::set<EntityLookupKey>* targets(Entity relation) const {
+				return m_pairLookup.targets(relation);
+			}
+
+			//! Returns the first relationship target for the \a relation entity on \a entity.
+			//! \param entity Source entity
+			//! \param relation Relation entity
+			//! \return Relationship target. EntityBad if there is nothing to return.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			GAIA_NODISCARD Entity target(Entity entity, Entity relation) const {
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr)
+					return EntityBad;
+
+				if (relation == All) {
+					const auto& targets = targets_all_cache(entity);
+					return targets.empty() ? EntityBad : targets[0];
+				}
+
+				const auto* pRel = try_entity_record(relation);
+				if (pRel == nullptr)
+					return EntityBad;
+
+				if (record_uses_non_fragmenting_relation_storage(*pRel)) {
+					const auto* pStore = nonfragmenting_relation_store(relation);
+					if (pStore == nullptr)
+						return EntityBad;
+
+					return pStore->target(entity);
+				}
+
+				const auto* pArchetype = pEc->pArchetype;
+
+				// Early exit if there are no pairs on the archetype
+				if (pArchetype->pairs() == 0)
+					return EntityBad;
+
+				const auto ids = pArchetype->ids_view();
+				for (auto idsIdx: pArchetype->pair_rel_indices(relation)) {
+					const auto e = ids[idsIdx];
+					const auto target = pair_target_if_alive(e);
+					if (target == EntityBad)
+						continue;
+					return target;
+				}
+
+				return EntityBad;
+			}
+
+			//! Returns the relationship targets for the \a relation entity on \a entity.
+			//! \param entity Source entity
+			//! \param relation Relation entity
+			//! \param func void(Entity target) functor executed for relationship target found.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename Func>
+			void targets(Entity entity, Entity relation, Func func) const {
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr)
+					return;
+
+				if (relation == All) {
+					for (auto target: targets_all_cache(entity))
+						func(target);
+					return;
+				}
+
+				const auto* pRel = try_entity_record(relation);
+				if (pRel == nullptr)
+					return;
+
+				if (record_uses_non_fragmenting_relation_storage(*pRel)) {
+					const auto* pStore = nonfragmenting_relation_store(relation);
+					if (pStore == nullptr)
+						return;
+
+					const auto target = pStore->target(entity);
+					if (target != EntityBad)
+						func(target);
+					return;
+				}
+
+				const auto* pArchetype = pEc->pArchetype;
+
+				// Early exit if there are no pairs on the archetype
+				if (pArchetype->pairs() == 0)
+					return;
+
+				const auto ids = pArchetype->ids_view();
+				for (auto idsIdx: pArchetype->pair_rel_indices(relation)) {
+					const auto e = ids[idsIdx];
+					const auto target = pair_target_if_alive(e);
+					if (target == EntityBad)
+						continue;
+					func(target);
+				}
+			}
+
+			//! Returns the relationship targets for the \a relation entity on \a entity.
+			//! \param entity Source entity
+			//! \param relation Relation entity
+			//! \param func bool(Entity target) functor executed for relationship target found.
+			//!             Stops if false is returned.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			template <typename Func>
+			void targets_if(Entity entity, Entity relation, Func func) const {
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr)
+					return;
+
+				if (relation == All) {
+					for (auto target: targets_all_cache(entity)) {
+						if (!func(target))
+							return;
+					}
+					return;
+				}
+
+				const auto* pRel = try_entity_record(relation);
+				if (pRel == nullptr)
+					return;
+
+				if (record_uses_non_fragmenting_relation_storage(*pRel)) {
+					const auto* pStore = nonfragmenting_relation_store(relation);
+					if (pStore == nullptr)
+						return;
+
+					const auto target = pStore->target(entity);
+					if (target != EntityBad)
+						(void)func(target);
+					return;
+				}
+
+				const auto* pArchetype = pEc->pArchetype;
+
+				// Early exit if there are no pairs on the archetype
+				if (pArchetype->pairs() == 0)
+					return;
+
+				const auto ids = pArchetype->ids_view();
+				for (auto idsIdx: pArchetype->pair_rel_indices(relation)) {
+					const auto e = ids[idsIdx];
+					const auto target = pair_target_if_alive(e);
+					if (target == EntityBad)
+						continue;
+					if (!func(target))
+						return;
+				}
+			}
+
+			//! Resolves the target of an archetype-stored exact pair id, skipping stale cleanup-time targets.
+			//! \param pair Exact relationship pair whose target is resolved.
+			//! \return Live target entity, or EntityBad when its id is stale or absent.
+			GAIA_NODISCARD Entity pair_target_if_alive(Entity pair) const {
+				GAIA_ASSERT(pair.pair());
+				if (!valid_entity_id((EntityId)pair.gen()))
+					return EntityBad;
+
+				const auto& ecTarget = m_recs.entities[pair.gen()];
+				if (ecTarget.pEntity == nullptr)
+					return EntityBad;
+
+				const auto target = *ecTarget.pEntity;
+				return valid(target) ? target : EntityBad;
+			}
+
+			//! Returns relationship sources for the \a relation and \a target.
+			//! \param relation Relation entity
+			//! \param target Target entity
+			//! \param func void(Entity source) functor executed for each source entity found.
+			//! \warning It is expected \a relation and \a target are valid. Undefined behavior otherwise.
+			template <typename Func>
+			void sources(Entity relation, Entity target, Func func) const {
+				if (try_live_record(target) == nullptr)
+					return;
+
+				if (relation == All) {
+					for (auto source: sources_all_cache(target))
+						func(source);
+					return;
+				}
+
+				const auto* pRel = try_entity_record(relation);
+				if (pRel == nullptr)
+					return;
+
+				if (record_uses_non_fragmenting_relation_storage(*pRel)) {
+					const auto* pStore = nonfragmenting_relation_store(relation);
+					if (pStore == nullptr)
+						return;
+
+					const auto* pSources = pStore->sources(target);
+					if (pSources == nullptr)
+						return;
+
+					for (auto source: *pSources) {
+						if (!valid(source))
+							continue;
+
+						func(source);
+					}
+					return;
+				}
+
+				const auto pair = Pair(relation, target);
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(pair));
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				for (const auto& record: it->second) {
+					const auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del())
+						continue;
+
+					for (const auto* pChunk: pArchetype->chunks()) {
+						auto entities = pChunk->entity_view();
+						GAIA_EACH(entities) {
+							const auto source = entities[i];
+							if (!valid(source))
+								continue;
+							func(source);
+						}
+					}
+				}
+			}
+
+			//! Returns relationship sources for the \a relation and \a target.
+			//! \param relation Relation entity
+			//! \param target Target entity
+			//! \param func bool(Entity source) functor executed for each source entity found.
+			//!             Stops if false is returned.
+			//! \warning It is expected \a relation and \a target are valid. Undefined behavior otherwise.
+			template <typename Func>
+			void sources_if(Entity relation, Entity target, Func func) const {
+				if (try_live_record(target) == nullptr)
+					return;
+
+				if (relation == All) {
+					for (auto source: sources_all_cache(target)) {
+						if (!func(source))
+							return;
+					}
+					return;
+				}
+
+				const auto* pRel = try_entity_record(relation);
+				if (pRel == nullptr)
+					return;
+
+				if (record_uses_non_fragmenting_relation_storage(*pRel)) {
+					const auto* pStore = nonfragmenting_relation_store(relation);
+					if (pStore == nullptr)
+						return;
+
+					const auto* pSources = pStore->sources(target);
+					if (pSources == nullptr)
+						return;
+
+					for (auto source: *pSources) {
+						if (!valid(source))
+							continue;
+
+						if (!func(source))
+							return;
+					}
+					return;
+				}
+
+				const auto pair = Pair(relation, target);
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(pair));
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				for (const auto& record: it->second) {
+					const auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del())
+						continue;
+
+					for (const auto* pChunk: pArchetype->chunks()) {
+						auto entities = pChunk->entity_view();
+						GAIA_EACH(entities) {
+							const auto source = entities[i];
+							if (!valid(source))
+								continue;
+							if (!func(source))
+								return;
+						}
+					}
+				}
+			}
+
+		private:
+			//! Allocates a nonzero stamp for deduplicating one traversal.
+			//! \return Fresh traversal stamp.
+			GAIA_NODISCARD uint64_t next_entity_visit_stamp() const {
+				++m_entityVisitStamp;
+				if (m_entityVisitStamp != 0)
+					return m_entityVisitStamp;
+
+				const auto cnt = (uint32_t)m_entityVisitStamps.size();
+				GAIA_FOR(cnt) {
+					m_entityVisitStamps[i] = 0;
+				}
+
+				m_entityVisitStamp = 1;
+				return m_entityVisitStamp;
+			}
+
+			//! Marks an entity for the current traversal unless it was already visited.
+			//! \param entity Entity to mark.
+			//! \param stamp Current traversal stamp.
+			//! \return True when this call marked the entity for the first time.
+			GAIA_NODISCARD bool try_mark_entity_visited(Entity entity, uint64_t stamp) const {
+				GAIA_ASSERT(!entity.pair());
+				if (entity.id() >= m_entityVisitStamps.size())
+					m_entityVisitStamps.resize(m_recs.entities.size(), 0, cnt::ResizePolicy::Scale);
+
+				auto& slot = m_entityVisitStamps[entity.id()];
+				if (slot == stamp)
+					return false;
+
+				slot = stamp;
+				return true;
+			}
+
+			//! Visits each live entity inheriting a term without duplicate callbacks.
+			//! \tparam Func Callback type returning whether traversal should continue.
+			//! \param term Inheritable term whose instances are visited.
+			//! \param func Callback invoked for each matching entity.
+			//! \return False when the callback stopped traversal. True otherwise.
+			template <typename Func>
+			GAIA_NODISCARD bool each_inherited_term_entity(Entity term, Func&& func) const {
+				cnt::set<EntityLookupKey> seen;
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(term));
+				if (it == m_entityToArchetypeMap.end())
+					return true;
+
+				for (const auto& record: it->second) {
+					const auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del())
+						continue;
+
+					for (const auto* pChunk: pArchetype->chunks()) {
+						const auto entities = pChunk->entity_view();
+						GAIA_EACH(entities) {
+							const auto entity = entities[i];
+							GAIA_ASSERT(valid(entity));
+							const auto entityKey = EntityLookupKey(entity);
+							if (seen.contains(entityKey))
+								continue;
+							seen.insert(entityKey);
+
+							if (!func(entity))
+								return false;
+
+							const auto& descendants = as_relations_trav_cache(entity);
+							for (const auto descendant: descendants) {
+								GAIA_ASSERT(valid(descendant));
+								const auto descendantKey = EntityLookupKey(descendant);
+								if (seen.contains(descendantKey))
+									continue;
+								seen.insert(descendantKey);
+
+								if (!func(descendant))
+									return false;
+							}
+						}
+					}
+				}
+
+				return true;
+			}
+
+			//! Counts entities matching a direct term using the narrowest available store/index.
+			//! This is used by direct non-fragmenting query fast paths to avoid world-wide row filtering.
+			//! \param term Direct component or pair query term.
+			//! \param allowSemanticIs Include inheritance semantics when true.
+			//! \return Number of matching entities.
+			GAIA_NODISCARD uint32_t count_direct_term_entities_inter(Entity term, bool allowSemanticIs) const {
+				if (term == EntityBad)
+					return 0;
+
+				if (allowSemanticIs && term.pair() && term.id() == Is.id() && !is_wildcard(term.gen())) {
+					const auto target = get(term.gen());
+					if (!valid(target))
+						return 0;
+
+					return (uint32_t)as_relations_trav_cache(target).size() + 1;
+				}
+
+				if (allowSemanticIs && !is_wildcard(term) && valid(term) && target(term, OnInstantiate) == Inherit) {
+					uint32_t cnt = 0;
+					(void)each_inherited_term_entity(term, [&](Entity) {
+						++cnt;
+						return true;
+					});
+					return cnt;
+				}
+
+				if (term.pair() && relation_uses_non_fragmenting_storage(pair_rel(*this, term))) {
+					const auto relation = pair_rel(*this, term);
+					const auto* pStore = nonfragmenting_relation_store(relation);
+					if (pStore == nullptr)
+						return 0;
+
+					if (is_wildcard(term.gen()))
+						return pStore->source_count();
+
+					const auto* pSources = pStore->sources(pair_tgt(*this, term));
+					return pSources != nullptr ? (uint32_t)pSources->size() : 0;
+				}
+
+				if (!term.pair() && component_is_non_fragmenting(term)) {
+					const auto it = m_sparseComponentsByComp.find(EntityLookupKey(term));
+					return it != m_sparseComponentsByComp.end() ? it->second.func_count(it->second.pStore) : 0;
+				}
+
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(term));
+				if (it == m_entityToArchetypeMap.end())
+					return 0;
+
+				uint32_t cnt = 0;
+				for (const auto& record: it->second) {
+					const auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del())
+						continue;
+					for (const auto* pChunk: pArchetype->chunks())
+						cnt += pChunk->size();
+				}
+
+				return cnt;
+			}
+
+			//! Appends entities matching a direct term using the narrowest available store/index.
+			//! \param term Direct component or pair query term.
+			//! \param out Destination receiving matching entities.
+			//! \param allowSemanticIs Include inheritance semantics when true.
+			void collect_direct_term_entities_inter(Entity term, cnt::darray<Entity>& out, bool allowSemanticIs) const {
+				if (term == EntityBad)
+					return;
+
+				if (allowSemanticIs && term.pair() && term.id() == Is.id() && !is_wildcard(term.gen())) {
+					const auto target = get(term.gen());
+					if (!valid(target))
+						return;
+
+					out.push_back(target);
+					const auto& relations = as_relations_trav_cache(target);
+					out.reserve(out.size() + (uint32_t)relations.size());
+					for (auto relation: relations)
+						out.push_back(relation);
+					return;
+				}
+
+				if (allowSemanticIs && !is_wildcard(term) && valid(term) && target(term, OnInstantiate) == Inherit) {
+					(void)each_inherited_term_entity(term, [&](Entity entity) {
+						out.push_back(entity);
+						return true;
+					});
+					return;
+				}
+
+				if (term.pair() && relation_uses_non_fragmenting_storage(pair_rel(*this, term))) {
+					const auto relation = pair_rel(*this, term);
+					const auto* pStore = nonfragmenting_relation_store(relation);
+					if (pStore == nullptr)
+						return;
+
+					if (is_wildcard(term.gen())) {
+						cnt::darray<EntityId> sourceIds;
+						pStore->collect_source_ids(sourceIds);
+						out.reserve(out.size() + pStore->source_count());
+						for (auto sourceId: sourceIds) {
+							if (!m_recs.entities.has(sourceId))
+								continue;
+							out.push_back(EntityContainer::handle(m_recs.entities[sourceId]));
+						}
+						pStore->collect_pair_sources(out);
+						return;
+					}
+
+					const auto* pSources = pStore->sources(pair_tgt(*this, term));
+					if (pSources == nullptr)
+						return;
+
+					out.reserve(out.size() + (uint32_t)pSources->size());
+					for (auto source: *pSources)
+						out.push_back(source);
+					return;
+				}
+
+				if (!term.pair() && component_is_non_fragmenting(term)) {
+					const auto it = m_sparseComponentsByComp.find(EntityLookupKey(term));
+					if (it != m_sparseComponentsByComp.end())
+						it->second.func_collect_entities(it->second.pStore, out);
+					return;
+				}
+
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(term));
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				for (const auto& record: it->second) {
+					const auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del())
+						continue;
+
+					for (const auto* pChunk: pArchetype->chunks()) {
+						const auto entities = pChunk->entity_view();
+						GAIA_EACH(entities)
+						out.push_back(entities[i]);
+					}
+				}
+			}
+
+			//! Visits entities matching a direct term without materializing a temporary entity array first.
+			//! \param term Direct component or pair query term.
+			//! \param ctx Opaque callback context.
+			//! \param func Callback invoked for each matching entity.
+			//! \param allowSemanticIs Include inheritance semantics when true.
+			//! \return False when the callback requests early termination, true otherwise.
+			GAIA_NODISCARD bool
+			each_direct_term_entity_inter(Entity term, void* ctx, bool (*func)(void*, Entity), bool allowSemanticIs) const {
+				if (term == EntityBad)
+					return true;
+
+				if (allowSemanticIs && term.pair() && term.id() == Is.id() && !is_wildcard(term.gen())) {
+					const auto target = get(term.gen());
+					if (!valid(target))
+						return true;
+
+					if (!func(ctx, target))
+						return false;
+
+					const auto& relations = as_relations_trav_cache(target);
+					for (auto relation: relations) {
+						if (!func(ctx, relation))
+							return false;
+					}
+					return true;
+				}
+
+				if (allowSemanticIs && !is_wildcard(term) && valid(term) && target(term, OnInstantiate) == Inherit) {
+					return each_inherited_term_entity(term, [&](Entity entity) {
+						return func(ctx, entity);
+					});
+				}
+
+				if (term.pair() && relation_uses_non_fragmenting_storage(pair_rel(*this, term))) {
+					const auto relation = pair_rel(*this, term);
+					const auto* pStore = nonfragmenting_relation_store(relation);
+					if (pStore == nullptr)
+						return true;
+
+					if (is_wildcard(term.gen())) {
+						cnt::darray<EntityId> sourceIds;
+						cnt::darray<Entity> pairSources;
+						pStore->collect_source_ids(sourceIds);
+						pStore->collect_pair_sources(pairSources);
+						for (auto sourceId: sourceIds) {
+							if (!m_recs.entities.has(sourceId))
+								continue;
+							if (!func(ctx, EntityContainer::handle(m_recs.entities[sourceId])))
+								return false;
+						}
+						for (auto source: pairSources) {
+							if (!func(ctx, source))
+								return false;
+						}
+						return true;
+					}
+
+					const auto* pSources = pStore->sources(pair_tgt(*this, term));
+					if (pSources == nullptr)
+						return true;
+
+					for (auto source: *pSources) {
+						if (!func(ctx, source))
+							return false;
+					}
+					return true;
+				}
+
+				if (!term.pair() && component_is_non_fragmenting(term)) {
+					const auto it = m_sparseComponentsByComp.find(EntityLookupKey(term));
+					if (it == m_sparseComponentsByComp.end())
+						return true;
+					return it->second.func_each_entity(it->second.pStore, ctx, func);
+				}
+
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(term));
+				if (it == m_entityToArchetypeMap.end())
+					return true;
+
+				for (const auto& record: it->second) {
+					const auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del())
+						continue;
+
+					for (const auto* pChunk: pArchetype->chunks()) {
+						const auto entities = pChunk->entity_view();
+						GAIA_EACH(entities) {
+							if (!func(ctx, entities[i]))
+								return false;
+						}
+					}
+				}
+
+				return true;
+			}
+
+		public:
+			//! Counts entities directly matching \a term, including semantic `Is` inheritance expansion.
+			//! \param term Query term
+			//! \return Number of directly matching entities.
+			GAIA_NODISCARD uint32_t count_direct_term_entities(Entity term) const {
+				return count_direct_term_entities_inter(term, true);
+			}
+
+			//! Counts entities directly matching \a term without semantic `Is` expansion.
+			//! \param term Query term
+			//! \return Number of directly matching entities.
+			GAIA_NODISCARD uint32_t count_direct_term_entities_direct(Entity term) const {
+				return count_direct_term_entities_inter(term, false);
+			}
+
+			//! Appends entities directly matching \a term to \a out, including semantic `Is` expansion.
+			//! \param term Query term
+			//! \param out Output array
+			void collect_direct_term_entities(Entity term, cnt::darray<Entity>& out) const {
+				collect_direct_term_entities_inter(term, out, true);
+			}
+
+			//! Appends entities directly matching \a term to \a out without semantic `Is` expansion.
+			//! \param term Query term
+			//! \param out Output array
+			void collect_direct_term_entities_direct(Entity term, cnt::darray<Entity>& out) const {
+				collect_direct_term_entities_inter(term, out, false);
+			}
+
+			//! Visits entities directly matching \a term, including semantic `Is` expansion.
+			//! \param term Query term
+			//! \param ctx User context passed to \a func
+			//! \param func bool(void*, Entity) callback executed for each matching entity.
+			//! \return False when \a func requested early stop. True otherwise.
+			GAIA_NODISCARD bool each_direct_term_entity(Entity term, void* ctx, bool (*func)(void*, Entity)) const {
+				return each_direct_term_entity_inter(term, ctx, func, true);
+			}
+
+			//! Visits entities directly matching \a term without semantic `Is` expansion.
+			//! \param term Query term
+			//! \param ctx User context passed to \a func
+			//! \param func bool(void*, Entity) callback executed for each matching entity.
+			//! \return False when \a func requested early stop. True otherwise.
+			GAIA_NODISCARD bool each_direct_term_entity_direct(Entity term, void* ctx, bool (*func)(void*, Entity)) const {
+				return each_direct_term_entity_inter(term, ctx, func, false);
+			}
+
+			//! Traverses relationship sources in breadth-first order.
+			//! Starting at \a rootTarget, this visits all direct sources first and then deeper levels.
+			//! \param relation Relation entity
+			//! \param rootTarget Root target entity
+			//! \param func void(Entity source) functor executed for each traversed source.
+			template <typename Func>
+			void sources_bfs(Entity relation, Entity rootTarget, Func func) const {
+				if (!valid(relation) || !valid(rootTarget))
+					return;
+
+				if (m_enabledHierarchyVersion == 0) {
+					const auto& cachedSources = sources_bfs_trav_cache(relation, rootTarget);
+					for (auto source: cachedSources)
+						func(source);
+					return;
+				}
+
+				cnt::darray_ext<Entity, 64> children;
+				cnt::darray_ext<Entity, 32> queue;
+				queue.push_back(rootTarget);
+
+				cnt::set<EntityLookupKey> visited;
+				visited.insert(EntityLookupKey(rootTarget));
+
+				for (uint32_t i = 0; i < queue.size(); ++i) {
+					const auto currTarget = queue[i];
+
+					children.clear();
+					sources(relation, currTarget, [&](Entity source) {
+						const auto key = EntityLookupKey(source);
+						const auto ins = visited.insert(key);
+						if (!ins.second)
+							return;
+
+						children.push_back(source);
+					});
+
+					core::sort(children, SortEntityIdCond{});
+
+					for (auto child: children) {
+						if (!enabled(child))
+							continue;
+						func(child);
+						queue.push_back(child);
+					}
+				}
+			}
+
+			//! Traverses relationship sources in breadth-first order.
+			//! Starting at \a rootTarget, this visits all direct sources first and then deeper levels.
+			//! \param relation Relation entity
+			//! \param rootTarget Root target entity
+			//! \param func bool(Entity source) functor executed for each traversed source.
+			//!             Stops if true is returned.
+			//! \return True if traversal was stopped by \a func, false otherwise.
+			template <typename Func>
+			GAIA_NODISCARD bool sources_bfs_if(Entity relation, Entity rootTarget, Func func) const {
+				if (!valid(relation) || !valid(rootTarget))
+					return false;
+
+				if (m_enabledHierarchyVersion == 0) {
+					const auto& cachedSources = sources_bfs_trav_cache(relation, rootTarget);
+					for (auto source: cachedSources) {
+						if (func(source))
+							return true;
+					}
+
+					return false;
+				}
+
+				cnt::darray_ext<Entity, 64> children;
+				cnt::darray_ext<Entity, 32> queue;
+				queue.push_back(rootTarget);
+
+				cnt::set<EntityLookupKey> visited;
+				visited.insert(EntityLookupKey(rootTarget));
+
+				for (uint32_t i = 0; i < queue.size(); ++i) {
+					const auto currTarget = queue[i];
+
+					children.clear();
+					sources(relation, currTarget, [&](Entity source) {
+						const auto key = EntityLookupKey(source);
+						const auto ins = visited.insert(key);
+						if (!ins.second)
+							return;
+
+						children.push_back(source);
+					});
+
+					core::sort(children, SortEntityIdCond{});
+
+					for (auto child: children) {
+						if (!enabled(child))
+							continue;
+						if (func(child))
+							return true;
+
+						queue.push_back(child);
+					}
+				}
+
+				return false;
+			}
+
+			//! Traverses transitive `Is` targets of \a relation.
+			//! The traversal uses the cached closure built by as_targets_trav_cache().
+			//! \param relation Relation entity
+			//! \param func void(Entity target) functor executed for each inherited target.
+			template <typename Func>
+			void as_targets_trav(Entity relation, Func func) const {
+				GAIA_ASSERT(valid(relation));
+				if (!valid(relation))
+					return;
+
+				const auto& targets = as_targets_trav_cache(relation);
+				for (auto target: targets)
+					func(target);
+			}
+
+			//! Traverses transitive `Is` targets of \a relation until \a func returns true.
+			//! \param relation Relation entity
+			//! \param func bool(Entity target) functor executed for each inherited target.
+			//!             Stops if true is returned.
+			//! \return True when traversal stopped early. False otherwise.
+			template <typename Func>
+			bool as_targets_trav_if(Entity relation, Func func) const {
+				GAIA_ASSERT(valid(relation));
+				if (!valid(relation))
+					return false;
+
+				const auto& targets = as_targets_trav_cache(relation);
+				for (auto target: targets)
+					if (func(target))
+						return true;
+
+				return false;
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Returns the single-threaded deferred command buffer owned by the world.
+			//! \return Single-threaded command buffer reference.
+			CommandBufferST& cmd_buffer_st() const {
+				return *m_pCmdBufferST;
+			}
+
+			//! Returns the multi-thread-safe deferred command buffer owned by the world.
+			//! \return Multi-thread-safe command buffer reference.
+			CommandBufferMT& cmd_buffer_mt() const {
+				return *m_pCmdBufferMT;
+			}
+
+			//----------------------------------------------------------------------
+
+#if GAIA_SYSTEMS_ENABLED
+
+			//! Makes sure the world can work with systems.
+			void systems_init();
+
+			//! Executes all registered systems once.
+			//!
+			//! Phased systems are traversed phase-by-phase in deterministic depth-first postorder over phase DependsOn
+			//! paths. A deeper phase subtree runs before its target phase, and each phase is a scheduler batch boundary.
+			//! Systems can join a phase with SystemBuilder::phase(Entity), which uses `(ChildOf, phase)` for
+			//! grouping/enabled-state inheritance and `(DependsOn, phase)` to assign the system to that phase path. Inside
+			//! one phase, explicit system DependsOn relationships use the same depth-first postorder. Unphased systems use
+			//! that same postorder directly. Systems without relationships are tie-broken by entity id for determinism.
+			//! Serial systems and systems marked with QueryImpl::main_thread(bool) run on the caller thread. Parallel systems
+			//! are prepared as scheduler jobs when the active scheduler supports deferred add/dep/submit/wait/del operations.
+			//! jobs in the same phase/dependency batch receive dependency edges when their query access metadata conflicts.
+			//!
+			//! \warning Parallel systems must not structurally mutate the world while other scheduler jobs are pending unless
+			//! they synchronize externally or opt into main_thread().
+			//! \see systems_run(Entity)
+			//! \see SystemBuilder::mode(QueryExecType)
+			//! \see QueryImpl::can_run_parallel(const QueryImpl&) const
+			//! \see Sched
+			void systems_run();
+
+			//! Runs enabled systems assigned to \a phase.
+			//!
+			//! Only systems attached with SystemBuilder::phase(phase) run. Other phases, descendant
+			//! phases, and unphased systems are not executed. Intra-phase DependsOn order matches
+			//! that phase's slice of systems_run(). Disabled systems and a disabled phase are skipped.
+			//!
+			//! \param phase Phase entity assigned with SystemBuilder::phase(Entity).
+			//! \warning Parallel systems must not structurally mutate the world while other scheduler jobs are pending unless
+			//! they synchronize externally or opt into main_thread().
+			//! \see systems_run()
+			//! \see SystemBuilder::phase(Entity)
+			//! \see SystemBuilder::exec()
+			void systems_run(Entity phase);
+
+			//! Creates a system entity with a default local cached query.
+			//! \return System builder bound to the new system entity.
+			SystemBuilder system();
+
+			//! Returns the system runtime registry owned by the world.
+			SystemRegistry& systems() {
+				return m_systems;
+			}
+
+			//! Returns the system runtime registry owned by the world.
+			const SystemRegistry& systems() const {
+				return m_systems;
+			}
+
+#endif
+
+#if GAIA_OBSERVERS_ENABLED
+
+			//! Creates an observer entity with a default local cached query.
+			//! \return Observer builder bound to the new observer entity.
+			ObserverBuilder observer();
+
+			//! Returns the observer registry owned by the world.
+			ObserverRegistry& observers() {
+				return m_observers;
+			}
+
+			//! Returns the observer registry owned by the world.
+			const ObserverRegistry& observers() const {
+				return m_observers;
+			}
+
+			//! Starts recording `OnSet` notifications instead of dispatching them right away.
+			//! Called by the coordinator before a region whose writes may run on worker threads.
+			//! \param slotCount Number of work items that can record concurrently.
+			void defer_on_set_begin(uint32_t slotCount) {
+				GAIA_ASSERT(m_deferOnSetDepth != (uint32_t)-1);
+				if (m_deferOnSetDepth++ != 0)
+					return;
+
+				// One queue per work item. Items are distributed to threads in disjoint ranges, so a
+				// queue is only ever touched by the single thread processing that item and no
+				// synchronization is needed while the region is open.
+				m_deferredOnSet.resize(slotCount);
+				for (auto& queue: m_deferredOnSet)
+					queue.clear();
+			}
+
+			//! Stops recording `OnSet` notifications and dispatches everything recorded since the
+			//! matching defer_on_set_begin(). Notifications run on the calling thread in work-item
+			//! order, so observers see the same sequence no matter how work was distributed.
+			void defer_on_set_end() {
+				GAIA_ASSERT(m_deferOnSetDepth > 0);
+				if (--m_deferOnSetDepth != 0)
+					return;
+
+				// Observer callbacks may trigger writes of their own. Those are dispatched directly
+				// because the recording region already ended, so move the queues aside before
+				// walking them.
+				auto pending = GAIA_MOV(m_deferredOnSet);
+				m_deferredOnSet = {};
+				for (const auto& queue: pending) {
+					for (const auto& item: queue)
+						world_notify_on_set_entity(*this, item.term, item.entity);
+				}
+			}
+
+			//! Returns whether `OnSet` notifications are currently being recorded.
+			GAIA_NODISCARD bool defer_on_set_active() const {
+				return m_deferOnSetDepth != 0;
+			}
+
+			//! Records an `OnSet` notification for later dispatch.
+			//! \param slot Work-item slot owned exclusively by the calling thread.
+			//! \param term Component or pair id that was written.
+			//! \param entity Entity the write applied to.
+			void defer_on_set_record(uint32_t slot, Entity term, Entity entity) {
+				GAIA_ASSERT(slot < m_deferredOnSet.size());
+				m_deferredOnSet[slot].push_back({term, entity});
+			}
+
+#endif
+
+			//! Starts recording sorted-query invalidations instead of applying them right away.
+			//! Called by the coordinator before a region whose writes may run on worker threads.
+			//! \param slotCount Number of work items that can record concurrently.
+			void defer_sort_inv_begin(uint32_t slotCount) {
+				GAIA_ASSERT(m_deferSortInvDepth != (uint32_t)-1);
+				if (m_deferSortInvDepth++ != 0)
+					return;
+
+				// One queue per work item. Items are distributed to threads in disjoint ranges, so a
+				// queue is only ever touched by the single thread processing that item and no
+				// synchronization is needed while the region is open.
+				m_deferredSortInv.resize(slotCount);
+				for (auto& queue: m_deferredSortInv)
+					queue.clear();
+			}
+
+			//! Stops recording sorted-query invalidations and applies everything recorded since the
+			//! matching defer_sort_inv_begin(). Invalidation runs on the calling thread, which is the
+			//! coordinator once the parallel region joins.
+			void defer_sort_inv_end() {
+				GAIA_ASSERT(m_deferSortInvDepth > 0);
+				if (--m_deferSortInvDepth != 0)
+					return;
+
+				// The coordinator may itself write during apply (e.g. through nested queries), so move
+				// the queue aside before walking it, matching the observer path.
+				auto pending = GAIA_MOV(m_deferredSortInv);
+				m_deferredSortInv = {};
+				for (const auto& queue: pending) {
+					for (const auto& item: queue)
+						invalidate_sorted_queries_for_entity(item.entity);
+				}
+			}
+
+			//! Returns whether sorted-query invalidations are currently being recorded.
+			//! \return True while deferred sorted-query invalidation is active.
+			GAIA_NODISCARD bool defer_sort_inv_active() const {
+				return m_deferSortInvDepth != 0;
+			}
+
+			//! Records a sorted-query invalidation for later application.
+			//! \param slot Work-item slot owned exclusively by the calling thread.
+			//! \param entity Component entity whose version was bumped by a write.
+			void defer_sort_inv_record(uint32_t slot, Entity entity) {
+				GAIA_ASSERT(slot < m_deferredSortInv.size());
+				m_deferredSortInv[slot].push_back({entity});
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Enables or disables an entire entity.
+			//! \param entity Entity or exact pair record
+			//! \param enable Enable or disable the entity
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			void enable(Entity entity, bool enable) {
+				GAIA_ASSERT(valid(entity));
+
+				auto& ec = cont(entity);
+				auto& archetype = *ec.pArchetype;
+				auto* pChunk = ec.pChunk;
+				const bool wasEnabled = !ec.data.dis;
+#if GAIA_ASSERT_ENABLED
+				verify_enable(*this, archetype, entity);
+#endif
+				archetype.enable_entity(ec.pChunk, ec.row, enable, m_recs);
+
+				if (wasEnabled != enable) {
+					pChunk->update_world_version();
+					pChunk->update_entity_order_version();
+					update_version(m_enabledHierarchyVersion);
+					update_version(m_worldVersion);
+				}
+			}
+
+			//! Enables or disables an exact pair record.
+			//! \param entity Pair record.
+			//! \param enable Enable or disable the pair record.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			void enable(Pair entity, bool enable) {
+				const auto source = (Entity)entity;
+				GAIA_ASSERT(valid(source));
+
+				auto& ec = fetch(source);
+				auto& archetype = *ec.pArchetype;
+				auto* pChunk = ec.pChunk;
+				const bool wasEnabled = !ec.data.dis;
+#if GAIA_ASSERT_ENABLED
+				verify_enable(*this, archetype, source);
+#endif
+				archetype.enable_entity(ec.pChunk, ec.row, enable, m_recs);
+
+				if (wasEnabled != enable) {
+					pChunk->update_world_version();
+					pChunk->update_entity_order_version();
+					update_version(m_enabledHierarchyVersion);
+					update_version(m_worldVersion);
+				}
+			}
+
+			//! Checks if an entity is enabled.
+			//! \param ec Entity container of the entity
+			//! \return True if the entity is enabled. False otherwise.
+			GAIA_NODISCARD bool enabled(const EntityContainer& ec) const {
+				const bool entityStateInContainer = !ec.data.dis;
+#if GAIA_ASSERT_ENABLED
+				const bool entityStateInChunk = ec.pChunk->enabled(ec.row);
+				GAIA_ASSERT(entityStateInChunk == entityStateInContainer);
+#endif
+				return entityStateInContainer;
+			}
+
+			//! Checks if an entity is enabled.
+			//! \param entity Entity or exact pair record
+			//! \return True it the entity is enabled. False otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			GAIA_NODISCARD bool enabled(Entity entity) const {
+				GAIA_ASSERT(valid(entity));
+
+				return enabled(cont(entity));
+			}
+
+			//! Checks whether an exact pair record is enabled.
+			//! \param entity Pair record.
+			//! \return True if the pair record is enabled. False otherwise.
+			//! \warning It is expected \a entity is valid. Undefined behavior otherwise.
+			GAIA_NODISCARD bool enabled(Pair entity) const {
+				const auto source = (Entity)entity;
+				GAIA_ASSERT(valid(source));
+
+				return enabled(fetch(source));
+			}
+
+			//! Checks whether an entity is enabled together with all of its ancestors reachable through \p relation.
+			//! This keeps direct enabled state separate from hierarchy-aware gating.
+			//! \param entity Entity whose effective enabled state is requested.
+			//! \param relation Relation defining the ancestor chain.
+			//! \return True when \p entity and every reachable ancestor are enabled. False otherwise.
+			GAIA_NODISCARD bool enabled_hierarchy(Entity entity, Entity relation) const {
+				const auto* pEc = try_live_record(entity);
+				if (pEc == nullptr || try_live_record(relation) == nullptr || !enabled(*pEc))
+					return false;
+
+				auto curr = entity;
+				GAIA_FOR(MAX_TRAV_DEPTH) {
+					const auto next = target(curr, relation);
+					if (next == EntityBad || next == curr)
+						break;
+					if (!enabled(next))
+						return false;
+					curr = next;
+				}
+
+				return true;
+			}
+
+			//! Checks whether an exact pair record is enabled together with all of its ancestors reachable through
+			//! \p relation.
+			//! \param entity Pair record whose effective enabled state is requested.
+			//! \param relation Relation defining the ancestor chain.
+			//! \return True when \p entity and every reachable ancestor are enabled. False otherwise.
+			GAIA_NODISCARD bool enabled_hierarchy(Pair entity, Entity relation) const {
+				const auto source = (Entity)entity;
+				const auto* pEc = try_live_record(source);
+				if (pEc == nullptr || try_live_record(relation) == nullptr || !enabled(*pEc))
+					return false;
+
+				auto curr = source;
+				GAIA_FOR(MAX_TRAV_DEPTH) {
+					const auto next = target(curr, relation);
+					if (next == EntityBad || next == curr)
+						break;
+					if (!enabled(next))
+						return false;
+					curr = next;
+				}
+
+				return true;
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Returns a chunk containing the \a entity.
+			//! \param entity Entity or exact pair record
+			//! \return Chunk or nullptr if not found.
+			GAIA_NODISCARD Chunk* get_chunk(Entity entity) const {
+				return cont(entity).pChunk;
+			}
+
+			//! Returns the chunk containing an exact pair record.
+			//! \param entity Pair record.
+			//! \return Chunk containing \a entity.
+			GAIA_NODISCARD Chunk* get_chunk(Pair entity) const {
+				return fetch((Entity)entity).pChunk;
+			}
+
+			//! Returns a chunk containing the \a entity.
+			//! Index of the entity is stored in \a row
+			//! \param entity Entity or exact pair record
+			//! \param[out] row Row of \a entity within chunk
+			//! \return Chunk or nullptr if not found
+			GAIA_NODISCARD Chunk* get_chunk(Entity entity, uint32_t& row) const {
+				const auto& ec = cont(entity);
+				row = ec.row;
+				return ec.pChunk;
+			}
+
+			//! Returns the chunk and row containing an exact pair record.
+			//! \param entity Pair record.
+			//! \param[out] row Row of \a entity within its chunk.
+			//! \return Chunk containing \a entity.
+			GAIA_NODISCARD Chunk* get_chunk(Pair entity, uint32_t& row) const {
+				const auto& ec = fetch((Entity)entity);
+				row = ec.row;
+				return ec.pChunk;
+			}
+
+			//! Returns the number of active entities
+			//! \return Entity
+			GAIA_NODISCARD uint32_t size() const {
+				return m_recs.entities.item_count();
+			}
+
+			//! Returns high-level runtime counters useful for diagnostics/telemetry.
+			//! \param[out] outArchetypes Number of allocated archetypes, including deletion-pending archetypes.
+			//! \param[out] outChunks Number of chunks owned by those archetypes.
+			//! \param[out] outEntitiesTotal Total rows across those chunks.
+			//! \param[out] outEntitiesActive Enabled rows across those chunks.
+			void runtime_counters(
+					uint32_t& outArchetypes, uint32_t& outChunks, uint32_t& outEntitiesTotal, uint32_t& outEntitiesActive) const {
+				outArchetypes = (uint32_t)m_archetypes.size();
+				outChunks = 0;
+				outEntitiesTotal = 0;
+				outEntitiesActive = 0;
+
+				for (const auto* pArchetype: m_archetypes) {
+					if (pArchetype == nullptr)
+						continue;
+					const auto& chunks = pArchetype->chunks();
+					outChunks += (uint32_t)chunks.size();
+					for (const auto* pChunk: chunks) {
+						if (pChunk == nullptr)
+							continue;
+						outEntitiesTotal += pChunk->size();
+						outEntitiesActive += pChunk->size_enabled();
+					}
+				}
+			}
+
+			//! Returns the current version of the world.
+			//! \return World version number.
+			GAIA_NODISCARD uint32_t& world_version() {
+				return m_worldVersion;
+			}
+
+			//! Returns structural version for a given relation.
+			//! Increments whenever any Pair(relation, *) is added or removed on any entity.
+			//! \param relation Relation whose structural version is requested.
+			//! \return Current relation version, or zero when the relation has not changed.
+			GAIA_NODISCARD uint32_t rel_version(Entity relation) const {
+				const auto it = m_relationVersions.find(EntityLookupKey(relation));
+				return it != m_relationVersions.end() ? it->second : 0;
+			}
+
+			//! Returns the version that changes when entity enabled state changes.
+			//! Hierarchy-aware cached traversals use this to invalidate ancestor gating state.
+			//! \return Enabled-hierarchy version.
+			GAIA_NODISCARD uint32_t enabled_hierarchy_version() const {
+				return m_enabledHierarchyVersion;
+			}
+
+			//! Returns the version that changes when archetype deletion visibility changes.
+			//! \return Archetype deletion-request version.
+			GAIA_NODISCARD uint32_t archetype_delete_version() const {
+				return m_archetypeDeleteVersion;
+			}
+
+			friend uint32_t world_rel_version(const World& world, Entity relation);
+			friend uint32_t world_version(const World& world);
+			friend uint32_t world_archetype_delete_version(const World& world);
+			friend uint32_t world_entity_archetype_version(const World& world, Entity entity);
+
+			//! Updates a tracked source-entity version after the entity changes archetype membership.
+			//! \param entity Source entity whose existing tracked version is incremented.
+			void update_src_entity_version(Entity entity) {
+				const auto key = EntityLookupKey(entity);
+				const auto it = m_srcEntityVersions.find(key);
+				if (it == m_srcEntityVersions.end())
+					return;
+
+				update_version(it->second);
+			}
+
+			//! Removes sparse source-version state for an entity that is being destroyed.
+			//! \param entity Source entity whose tracked version entry is removed.
+			void remove_src_entity_version(Entity entity) {
+				m_srcEntityVersions.erase(EntityLookupKey(entity));
+			}
+
+			//! Resets maximal lifespan of an archetype \a entity belongs to to the world's default.
+			//! \param entity Entity
+			//! \see set_default_max_lifespan()
+			void set_max_lifespan(Entity entity) {
+				set_max_lifespan(entity, m_defaultMaxLifespan);
+			}
+
+			//! Sets maximal lifespan of an archetype \a entity belongs to.
+			//! \param entity Entity
+			//! \param lifespan How many world updates an empty archetype is kept.
+			//!                 If zero, the archetype is kept indefinitely.
+			void set_max_lifespan(Entity entity, uint32_t lifespan) {
+				auto* pEc = try_live_record(entity);
+				if (pEc == nullptr)
+					return;
+
+				auto& ec = *pEc;
+				const auto prevLifespan = ec.pArchetype->max_lifespan();
+				ec.pArchetype->set_max_lifespan(lifespan);
+
+				if (prevLifespan == 0) {
+					// The archetype used to be immortal but not anymore
+					try_enqueue_archetype_for_deletion(*ec.pArchetype);
+				}
+			}
+
+			//! Sets the lifespan archetypes created from now on start with.
+			//! \param lifespan How many world updates an empty archetype is kept.
+			//!                 If zero, such archetypes are kept indefinitely.
+			void set_default_max_lifespan(uint32_t lifespan) {
+				GAIA_ASSERT(lifespan <= Archetype::MAX_ARCHETYPE_LIFESPAN);
+				m_defaultMaxLifespan = lifespan;
+			}
+
+			//! Returns the lifespan archetypes created from now on start with.
+			//! \return How many world updates an empty archetype is kept, zero when kept indefinitely.
+			GAIA_NODISCARD uint32_t default_max_lifespan() const {
+				return m_defaultMaxLifespan;
+			}
+
+			//----------------------------------------------------------------------
+
+			//! Performs deferred cleanup for the current frame.
+			//!
+			//! This finalizes deferred entity deletion and runs Gaia-ECS garbage collection. Use this after an
+			//! external loop calls systems_run() itself, or when a frame has no system pass but still needs world cleanup.
+			//!
+			//! \warning This does not execute registered systems. Call systems_run() first when the frame should run systems.
+			//! \warning Do not call this from an observer callback. Debug builds assert this contract.
+			//! \see systems_run()
+			//! \see frame_end()
+			//! \see update()
+			void frame_cleanup() {
+#if GAIA_OBSERVERS_ENABLED && GAIA_ASSERT_ENABLED
+				GAIA_ASSERT(!observer_callback_active());
+#endif
+
+#if GAIA_USE_SAFE_ENTITY
+				del_released_safe_entities();
+#endif
+
+				// Finish deleting entities
+				del_finalize();
+
+				// Run garbage collector
+				gc();
+			}
+
+			//! Marks the end of the current frame.
+			//!
+			//! This flushes pending log output and emits the profiler frame marker. External loops that call
+			//! systems_run() directly should usually call frame_cleanup() and then frame_end() once per frame.
+			//!
+			//! \warning This does not execute registered systems or finalize deferred deletion.
+			//! \see systems_run()
+			//! \see frame_cleanup()
+			//! \see update()
+			void frame_end() {
+				util::log_flush();
+
+				// Signal the end of the frame
+				GAIA_PROF_FRAME();
+			}
+
+			//! Runs systems and then finishes the current frame.
+			//!
+			//! This is the normal frame step. When systems are enabled, it executes registered systems through systems_run().
+			//! It then calls frame_cleanup() and frame_end(). With systems disabled, only the frame maintenance steps run.
+			//!
+			//! \warning Do not call this from an observer callback. Debug builds assert this contract.
+			//! \see systems_run()
+			//! \see frame_cleanup()
+			//! \see frame_end()
+			void update() {
+#if GAIA_OBSERVERS_ENABLED && GAIA_ASSERT_ENABLED
+				GAIA_ASSERT(!observer_callback_active());
+#endif
+
+#if GAIA_SYSTEMS_ENABLED
+				systems_run();
+#endif
+				frame_cleanup();
+				frame_end();
+			}
+
+			//! Performs world shutdown maintenance without running systems or observers.
+			//! Runtime callbacks are shut down in-place first, then deferred entity/chunk/archetype
+			//! cleanup is drained until no more pending teardown work remains.
+			void teardown() {
+				if GAIA_UNLIKELY (m_teardownActive)
+					return;
+				m_teardownActive = true;
+
+				GAIA_PROF_SCOPE(World::teardown);
+
+#if GAIA_SYSTEMS_ENABLED
+				systems_done();
+				m_systems.teardown();
+#endif
+
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.teardown();
+#endif
+
+				for (;;) {
+					const auto prevReqArchetypes = m_reqArchetypesToDel.size();
+					const auto prevReqEntities = m_reqEntitiesToDel.size();
+					const auto prevChunks = m_chunksToDel.size();
+					const auto prevArchetypes = m_archetypesToDel.size();
+
+					del_finalize();
+					gc();
+
+					if (m_reqArchetypesToDel.empty() && m_reqEntitiesToDel.empty() && m_chunksToDel.empty() &&
+							m_archetypesToDel.empty())
+						break;
+
+					const bool madeProgress = m_reqArchetypesToDel.size() != prevReqArchetypes ||
+																		m_reqEntitiesToDel.size() != prevReqEntities ||
+																		m_chunksToDel.size() != prevChunks || m_archetypesToDel.size() != prevArchetypes;
+					if (!madeProgress)
+						break;
+				}
+
+				util::log_flush();
+			}
+
+			//! Clears the world so that all its entities and components are released.
+			//! Invalidates retained queries, including uncached plans and pending builder commands.
+			//! Retained queries become empty builders. Reauthor their terms using the new world's ids.
+			//! Cache settings, user context and main-thread requirements are preserved.
+			void cleanup() {
+				cleanup_inter();
+
+				// Reinit
+				m_pRootArchetype = nullptr;
+				m_pEntityArchetype = nullptr;
+				m_pCompArchetype = nullptr;
+				m_nextArchetypeId = 0;
+				m_defragLastArchetypeIdx = 0;
+				m_worldVersion = 0;
+				m_enabledHierarchyVersion = 0;
+				m_archetypeDeleteVersion = 0;
+				init();
+			}
+
+			//! Sets the maximum number of entities defragmented per world tick
+			//! \param value Number of entities to defragment
+			void defrag_entities_per_tick(uint32_t value) {
+				m_defragEntitiesPerTick = value;
+			}
+
+			//--------------------------------------------------------------------------------
+
+			//! Performs diagnostics on archetypes. Prints basic info about them and the chunks they contain.
+			void diag_archetypes() const {
+				GAIA_LOG_N("Archetypes:%u", (uint32_t)m_archetypes.size());
+				for (auto* pArchetype: m_archetypes)
+					Archetype::diag(*this, *pArchetype);
+			}
+
+			//! Performs diagnostics on registered components.
+			//! Prints basic info about them and reports and detected issues.
+			void diag_components() const {
+				comp_cache().diag();
+			}
+
+			//! Performs diagnostics on entities of the world.
+			//! Also performs validation of internal structures which hold the entities.
+			void diag_entities() const {
+				validate_entities();
+
+				GAIA_LOG_N("Deleted entities: %u", (uint32_t)m_recs.entities.get_free_items());
+				if (m_recs.entities.get_free_items() != 0U) {
+					GAIA_LOG_N("  --> %u", (uint32_t)m_recs.entities.get_next_free_item());
+
+					uint32_t iters = 0;
+					auto fe = m_recs.entities.next_free(m_recs.entities.get_next_free_item());
+					while (fe != IdentifierIdBad) {
+						GAIA_LOG_N("  --> %u", m_recs.entities.next_free(fe));
+						fe = m_recs.entities.next_free(fe);
+						++iters;
+						if (iters > m_recs.entities.get_free_items())
+							break;
+					}
+
+					if ((iters == 0U) || iters > m_recs.entities.get_free_items())
+						GAIA_LOG_E("  Entities recycle list contains inconsistent data!");
+				}
+			}
+
+			//! Performs all diagnostics.
+			void diag() const {
+				diag_archetypes();
+				diag_components();
+				diag_entities();
+			}
+
+		private:
+			//! Clears the world so that all its entities and components are released
+			void cleanup_inter() {
+				GAIA_PROF_SCOPE(World::cleanup_inter);
+
+				// Shutdown bypasses the regular GC path, so clear raw-pointer tracking first.
+				// Chunk/component dtors that run while archetypes are freed can still drop cached queries,
+				// but after this point they must not touch stale archetype/chunk reverse indices.
+				{
+					m_queryCache.clear_archetype_tracking();
+					m_reqArchetypesToDel = {};
+					m_reqEntitiesToDel = {};
+					m_archetypeRowsToDel = {};
+					m_entitiesDeleting = {};
+					m_entitiesDeletingSet = {};
+#if GAIA_USE_SAFE_ENTITY
+					m_safeEntityDels = {};
+#endif
+					m_chunksToDel = {};
+					m_archetypesToDel = {};
+				}
+
+				// Reset every WeakEntity before its record goes. Cleanup restarts ids, so a surviving one
+				// could name a new entity, and one held outside a destroyed world would point into it.
+				// Components destroyed below then find no tracker to release.
+#if GAIA_USE_WEAK_ENTITY
+				for (auto& ec: m_recs.entities)
+					invalidate_weak_entities(ec);
+				for (auto it = m_recs.pair_record_begin(); it != m_recs.pair_record_end(); ++it)
+					invalidate_weak_entities(it->second);
+#endif
+
+				// Clear entities
+				m_recs.entities = {};
+				m_recs.pair_records_clear();
+
+				// Clear archetypes
+				{
+					// Delete all allocated chunks and their parent archetypes
+					for (auto* pArchetype: m_archetypes)
+						Archetype::destroy(pArchetype);
+
+					m_entityToAsRelations = {};
+					m_entityToAsRelationsTravCache = {};
+					m_entityToAsTargets = {};
+					m_entityToAsTargetsTravCache = {};
+					m_targetsTravCache = {};
+					m_srcBfsTravCache = {};
+					m_depthOrderCache = {};
+					m_sourcesAllCache = {};
+					m_targetsAllCache = {};
+					m_relationCachesPopulated = false;
+					m_hasOnDeleteTargetPolicy = false;
+					m_hasCantCombinePolicy = false;
+					m_pairLookup.clear();
+					m_nonFragmentingRelationsByRel = {};
+					for (auto& [compKey, store]: m_sparseComponentsByComp) {
+						(void)compKey;
+						store.func_clear_store(store.pStore);
+						store.func_del_store(store.pStore);
+					}
+					m_sparseComponentsByComp = {};
+					m_relationVersions = {};
+					m_lastRelationVersionRelation = EntityBad;
+					m_pLastRelationVersion = nullptr;
+					m_srcEntityVersions = {};
+
+					m_archetypes = {};
+					m_archetypesById = {};
+					m_archetypesByHash = {};
+				}
+
+				// Clear caches
+				{
+					m_entityToArchetypeMap = {};
+					m_entityToArchetypeMapVersions = {};
+					m_queryCache.clear();
+					for (auto* pScratch: m_queryMatchScratchStack)
+						delete pScratch;
+					m_queryMatchScratchStack = {};
+					m_queryMatchScratchDepth = 0;
+					m_querySerMap = {};
+					m_nextQuerySerId = 0;
+				}
+
+				// Clear entity aliases
+				{
+					for (auto& pair: m_aliasToEntity) {
+						if (!pair.first.owned())
+							continue;
+						// Release any memory allocated for owned names
+						mem::mem_free((void*)pair.first.str());
+					}
+					m_aliasToEntity = {};
+				}
+
+				// Clear entity names
+				{
+					for (auto& pair: m_nameToEntity) {
+						if (!pair.first.owned())
+							continue;
+						// Release any memory allocated for owned names
+						mem::mem_free((void*)pair.first.str());
+					}
+					m_nameToEntity = {};
+				}
+
+				// Clear component cache
+				m_compCache.clear();
+			}
+
+			//! Checks a record against the complete entity expected in its slot.
+			//! \param ec Entity record to validate.
+			//! \param entityExpected Complete entity expected at the record location.
+			//! \return True when the record still represents the expected entity.
+			GAIA_NODISCARD bool valid(const EntityContainer& ec, [[maybe_unused]] Entity entityExpected) const {
+				if ((ec.flags & EntityContainerFlags::Load) != 0) {
+					return entityExpected.id() == ec.idx && entityExpected.gen() == ec.data.gen &&
+								 entityExpected.entity() == (bool)ec.data.ent && entityExpected.pair() == (bool)ec.data.pair;
+				}
+
+				if (is_req_del(ec))
+					return false;
+
+				// The entity in the chunk must match the index in the entity container
+				const auto* pChunk = ec.pChunk;
+				if (pChunk == nullptr || ec.row >= pChunk->size())
+					return false;
+
+				const auto entityPresent = pChunk->entity_view()[ec.row];
+				// Public validity checks can legitimately observe a recycled slot with a different generation.
+				// Treat that as stale instead of aborting.
+				return entityExpected == entityPresent;
+			}
+
+			//! Checks whether the pair entity is valid.
+			//! \param entity Pair entity to inspect.
+			//! \return True if \a entity is valid. False otherwise.
+			GAIA_NODISCARD bool valid_pair(Entity entity) const {
+				if (entity == EntityBad)
+					return false;
+
+				GAIA_ASSERT(entity.pair());
+				if (!entity.pair())
+					return false;
+
+				// Ignore wildcards because they can't be attached to entities
+				if (is_wildcard(entity))
+					return true;
+
+				const auto* pPair = m_recs.pair_record_find(entity);
+				if (pPair == nullptr)
+					return false;
+
+				const auto& ec = *pPair;
+				return valid(ec, entity);
+			}
+
+			//! Checks whether the entity is valid.
+			//! \param entity Entity to inspect.
+			//! \return True if \a entity is valid. False otherwise.
+			GAIA_NODISCARD bool valid_entity(Entity entity) const {
+				if (entity == EntityBad)
+					return false;
+
+				GAIA_ASSERT(!entity.pair());
+				if (entity.pair())
+					return false;
+
+				// Entity ID has to fit inside the entity array
+				if (entity.id() >= m_recs.entities.size())
+					return false;
+
+				const auto* pEc = m_recs.entities.try_get(entity.id());
+				if (pEc == nullptr)
+					return false;
+
+				return valid(*pEc, entity);
+			}
+
+			//! Checks whether the entity identified by \a entityId is valid.
+			//! Pairs are considered invalid.
+			//! \param entityId Entity id to inspect.
+			//! \return True if \a entityId is valid. False otherwise.
+			GAIA_NODISCARD bool valid_entity_id(EntityId entityId) const {
+				if (entityId == EntityBad.id())
+					return false;
+
+				// Entity ID has to fit inside the entity array
+				if (entityId >= m_recs.entities.size())
+					return false;
+
+				const auto* pEc = m_recs.entities.try_get(entityId);
+				if (pEc == nullptr)
+					return false;
+
+				const auto& ec = *pEc;
+				if (ec.data.pair != 0)
+					return false;
+
+				return valid(ec, Entity(entityId, ec.data.gen, (bool)ec.data.ent, (bool)ec.data.pair));
+			}
+
+			//! Locks the chunk for structural changes.
+			//! While locked, no new entities or components can be added or removed.
+			//! While locked, no entities can be enabled or disabled.
+			void lock() {
+				GAIA_ASSERT(m_structuralChangesLocked != (uint32_t)-1);
+				++m_structuralChangesLocked;
+			}
+
+			//! Unlocks the chunk for structural changes.
+			//! While locked, no new entities or components can be added or removed.
+			//! While locked, no entities can be enabled or disabled.
+			void unlock() {
+				GAIA_ASSERT(m_structuralChangesLocked > 0);
+				--m_structuralChangesLocked;
+			}
+
+#if GAIA_SYSTEMS_ENABLED
+			//! Releases system-query state before the world tears down.
+			void systems_done();
+#endif
+
+		public:
+			//! Checks if the chunk is locked for structural changes.
+			//! \return True while at least one structural-change lock is held. False otherwise.
+			GAIA_NODISCARD bool locked() const {
+				return m_structuralChangesLocked != 0;
+			}
+
+			//! Returns true while the world is draining teardown work and normal runtime callbacks
+			//! must not execute.
+			//! \return True during world teardown. False otherwise.
+			GAIA_NODISCARD bool tearing_down() const {
+				return m_teardownActive;
+			}
+
+		private:
+			static constexpr uint32_t WorldSerializerVersion = 6;
+#if GAIA_JSON_ENABLED
+			static constexpr uint32_t WorldSerializerJSONVersion = 1;
+#endif
+
+			//! Serializes the non-core component layout required to interpret chunk payloads.
+			//! \param s Destination serializer.
+			//! \param lastCoreComponentId Last core component id stored in the snapshot header.
+			void save_component_layout(ser::serializer& s, uint32_t lastCoreComponentId) const {
+				cnt::darray<const ComponentCacheItem*> components;
+				components.reserve((uint32_t)m_compCache.m_compByEntityId.size());
+				for (const auto& [entityId, pItem]: m_compCache.m_compByEntityId) {
+					if (entityId > lastCoreComponentId) {
+						GAIA_ASSERT(pItem != nullptr);
+						components.push_back(pItem);
+					}
+				}
+				core::sort(components, [](const ComponentCacheItem* pLeft, const ComponentCacheItem* pRight) {
+					return pLeft->entity.id() < pRight->entity.id();
+				});
+
+				s.save((uint32_t)components.size());
+				for (const auto* pItem: components) {
+					const auto symbol = pItem->symbol_name();
+					s.save(pItem->entity.val);
+					s.save(pItem->comp.val);
+					s.save(symbol.size());
+					s.save_raw(symbol.data(), symbol.size(), ser::serialization_type_id::c8);
+				}
+			}
+
+			//! Validates that the target world's component ids and layouts match the snapshot.
+			//! \param s Source serializer.
+			//! \param savedLastCoreComponentId Last core component id stored in the snapshot.
+			//! \param currLastCoreComponentId Last core component id used by this runtime.
+			//! \return True when chunk payloads can be loaded without changing their component meaning.
+			bool validate_component_layout(
+					ser::serializer& s, uint32_t savedLastCoreComponentId, uint32_t currLastCoreComponentId) const {
+				uint32_t savedComponentCnt = 0;
+				s.load(savedComponentCnt);
+
+				uint32_t currentComponentCnt = 0;
+				for (const auto& [entityId, pItem]: m_compCache.m_compByEntityId) {
+					(void)pItem;
+					if (entityId > currLastCoreComponentId)
+						++currentComponentCnt;
+				}
+				if (savedComponentCnt != currentComponentCnt) {
+					GAIA_LOG_E(
+							"World snapshot component count mismatch. Snapshot has %u, target world has %u.", savedComponentCnt,
+							currentComponentCnt);
+					return false;
+				}
+
+				GAIA_FOR(savedComponentCnt) {
+					Identifier savedEntityValue = IdentifierBad;
+					Identifier savedComponentValue = IdentifierBad;
+					uint32_t symbolLen = 0;
+					s.load(savedEntityValue);
+					s.load(savedComponentValue);
+					s.load(symbolLen);
+
+					const auto* pSymbol = (const char*)(s.data() + s.tell());
+					s.seek(s.tell() + symbolLen);
+					const util::str_view symbol(pSymbol, symbolLen);
+					const auto* pItem = comp_cache().symbol(symbol);
+					if (pItem == nullptr) {
+						GAIA_LOG_E("World snapshot component '%.*s' is not registered.", (int)symbolLen, pSymbol);
+						return false;
+					}
+
+					const auto savedEntity = Entity(savedEntityValue);
+					const auto expectedEntity =
+							detail::remap_loaded_entity(savedEntity, savedLastCoreComponentId, currLastCoreComponentId);
+					Component expectedComponent;
+					expectedComponent.val = savedComponentValue;
+					expectedComponent.data.id =
+							detail::remap_loaded_entity_id(expectedComponent.id(), savedLastCoreComponentId, currLastCoreComponentId);
+					if (pItem->entity != expectedEntity || pItem->comp != expectedComponent) {
+						GAIA_LOG_E(
+								"World snapshot component layout mismatch for '%.*s'. Register components in the same order and "
+								"with the same storage layout before loading.",
+								(int)symbolLen, pSymbol);
+						return false;
+					}
+				}
+
+				return true;
+			}
+
+			//! Serializes every populated sparse component store in deterministic component and owner order.
+			//! \param s Destination serializer.
+			void save_sparse_component_stores(ser::serializer& s) const {
+				if (m_sparseComponentsByComp.empty()) {
+					s.save((uint32_t)0);
+					return;
+				}
+
+				cnt::darray<Entity> components;
+				components.reserve((uint32_t)m_sparseComponentsByComp.size());
+				for (const auto& [compKey, store]: m_sparseComponentsByComp) {
+					if (store.func_count(store.pStore) != 0)
+						components.push_back(compKey.entity());
+				}
+				core::sort(components, core::is_smaller<Entity>{});
+
+				s.save((uint32_t)components.size());
+				for (auto component: components) {
+					const auto storeIt = m_sparseComponentsByComp.find(EntityLookupKey(component));
+					GAIA_ASSERT(storeIt != m_sparseComponentsByComp.end());
+					const auto& store = storeIt->second;
+					const auto* pItem =
+							component.pair() ? comp_cache().find_pair_payload(component) : comp_cache().find(component);
+					GAIA_ASSERT(pItem != nullptr);
+
+					cnt::darray<Entity> owners;
+					store.func_collect_entities(store.pStore, owners);
+					core::sort(owners, core::is_smaller<Entity>{});
+
+					s.save(component);
+					s.save((uint32_t)owners.size());
+					for (auto owner: owners) {
+						GAIA_ASSERT(valid(owner));
+						s.save(owner);
+						if (pItem->comp.size() == 0)
+							continue;
+
+						const auto* pData = store.func_get(store.pStore, owner);
+						GAIA_ASSERT(pData != nullptr);
+						pItem->save(s, pData, 0, 1, 1);
+					}
+				}
+			}
+
+			//! Restores sparse component stores serialized by save_sparse_component_stores().
+			//! \param s Source serializer.
+			//! \return True when every serialized sparse component has registered metadata.
+			bool load_sparse_component_stores(ser::serializer& s) {
+				uint32_t componentCnt = 0;
+				s.load(componentCnt);
+				GAIA_FOR(componentCnt) {
+					Entity component;
+					uint32_t ownerCnt = 0;
+					s.load(component);
+					s.load(ownerCnt);
+
+					const auto* pItem =
+							component.pair() ? comp_cache().find_pair_payload(component) : comp_cache().find(component);
+					// Empty DontFragment tags keep a table-sized descriptor and still serialize through
+					// the membership store. Non-empty payloads must be Sparse.
+					if (pItem == nullptr || (pItem->comp.size() != 0 && pItem->comp.storage_type() != DataStorageType::Sparse)) {
+						GAIA_LOG_E("Missing sparse component metadata for entity %u", component.id());
+						return false;
+					}
+					auto& store = sparse_component_store_erased_mut(component, *pItem);
+					GAIA_FOR_(ownerCnt, ownerIdx) {
+						Entity owner;
+						s.load(owner);
+						auto* pData = store.func_add(store.pStore, owner);
+						if (pItem->comp.size() == 0)
+							continue;
+
+						GAIA_ASSERT(pData != nullptr);
+						pItem->load(s, pData, 0, 1, 1);
+					}
+				}
+				return true;
+			}
+
+			//! Resolves the archetype and chunk indices load() stored in a loaded record's pointers.
+			//! A record saved without a location belongs to a deleted entity, whose deletion is queued again.
+			//! \param ec Loaded record.
+			//! \param entity Entity or pair the record belongs to.
+			void load_record_location(EntityContainer& ec, Entity entity) {
+				const auto archetypeIdx = (uint32_t)((uintptr_t)ec.pArchetype); // Decode the archetype idx
+				const auto chunkIdx = (uint32_t)((uintptr_t)ec.pChunk); // Decode the chunk idx
+				if (archetypeIdx == (uint32_t)BadIndex) {
+					ec.pArchetype = nullptr;
+					ec.pChunk = nullptr;
+					ec.pEntity = nullptr;
+					m_reqEntitiesToDel.insert(EntityLookupKey(entity));
+					return;
+				}
+
+				ec.pArchetype = m_archetypes[archetypeIdx];
+				ec.pChunk = ec.pArchetype->chunks()[chunkIdx];
+				ec.pEntity = &ec.pChunk->entity_view()[ec.row];
+			}
+
+			//! Serializes the complete world into an initialized serializer.
+			//! \param s Destination serializer.
+			void save_to(ser::serializer s) const {
+				GAIA_ASSERT(s.valid());
+
+				// Snapshot format version.
+				s.save((uint32_t)WorldSerializerVersion);
+
+				// Store the index of the last core component.
+				// TODO: As this changes, we will have to modify entity ids accordingly.
+				const auto lastCoreComponentId = GAIA_ID(LastCoreComponent).id();
+				s.save(lastCoreComponentId);
+				save_component_layout(s, lastCoreComponentId);
+
+				// Entities
+				{
+					auto saveEntityContainer = [&](const EntityContainer& ec) {
+						s.save(ec.idx);
+						s.save(ec.dataRaw);
+						s.save(ec.row);
+						GAIA_ASSERT((ec.flags & EntityContainerFlags::Load) == 0);
+
+						// A deleted entity whose record is not freed yet, because archetypes still use its id or a
+						// SafeEntity references it, has no storage left. It is saved without a location and loads
+						// as a pending deletion, which the next frame_cleanup() finishes.
+						const bool deleted = (ec.flags & EntityContainerFlags::DeleteRequested) != 0;
+						auto flags = ec.flags;
+#if GAIA_USE_SAFE_ENTITY
+						// SafeEntity handles do not survive a load, so only the world's own reference is saved.
+						// A deletion that waited for handles is dropped along with them.
+						if (!deleted)
+							flags &= (EntityContainerFlagsType)(~(EntityContainerFlagsType)EntityContainerFlags::RefDecreased);
+						s.save(flags); // ignore Load
+						s.save((uint32_t)(deleted ? 0 : 1));
+#else
+						s.save(flags); // ignore Load
+						s.save((uint32_t)0);
+#endif
+
+						const uint32_t archetypeIdx = deleted ? (uint32_t)BadIndex : ec.pArchetype->list_idx();
+						s.save(archetypeIdx);
+						const uint32_t chunkIdx = deleted ? (uint32_t)BadIndex : ec.pChunk->idx();
+						s.save(chunkIdx);
+					};
+
+					const auto recEntities = (uint32_t)m_recs.entities.size();
+					const auto newEntities = recEntities - lastCoreComponentId;
+					s.save(newEntities);
+					GAIA_FOR2(lastCoreComponentId, recEntities) {
+						const bool isAlive = m_recs.entities.has(i);
+						s.save(isAlive);
+						if (isAlive)
+							saveEntityContainer(m_recs.entities[i]);
+						else {
+							s.save(m_recs.entities.handle(i).val);
+							s.save(m_recs.entities.next_free(i));
+						}
+					}
+
+					{
+						uint32_t pairsCnt = 0;
+						for (auto it = m_recs.pair_record_begin(); it != m_recs.pair_record_end(); ++it) {
+							const auto& pair = *it;
+							// Skip core pairs
+							if (pair.first.entity().id() < lastCoreComponentId && pair.first.entity().gen() < lastCoreComponentId)
+								continue;
+
+							++pairsCnt;
+						}
+						s.save(pairsCnt);
+					}
+					{
+						for (auto it = m_recs.pair_record_begin(); it != m_recs.pair_record_end(); ++it) {
+							const auto& pair = *it;
+							// Skip core pairs
+							if (pair.first.entity().id() < lastCoreComponentId && pair.first.entity().gen() < lastCoreComponentId)
+								continue;
+
+							saveEntityContainer(pair.second);
+						}
+					}
+
+					s.save(m_recs.entities.m_nextFreeIdx);
+					s.save(m_recs.entities.m_freeItems);
+				}
+
+				// World
+				{
+					s.save((uint32_t)m_archetypes.size());
+					for (auto* pArchetype: m_archetypes) {
+						s.save((uint32_t)pArchetype->ids_view().size());
+						for (auto e: pArchetype->ids_view())
+							s.save(e);
+
+						pArchetype->save(s);
+					}
+
+					s.save(m_worldVersion);
+				}
+
+				// Sparse payloads live outside chunk columns and need their own snapshot section.
+				save_sparse_component_stores(s);
+
+				// Non-fragmenting exclusive relation edges.
+				{
+					uint32_t edgeCnt = 0;
+					for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+						(void)relKey;
+						edgeCnt += store.source_count();
+					}
+					s.save(edgeCnt);
+
+					for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+						const auto relation = relKey.entity();
+						cnt::darray<EntityId> sourceIds;
+						cnt::darray<Entity> pairSources;
+						store.collect_source_ids(sourceIds);
+						store.collect_pair_sources(pairSources);
+						for (auto sourceId: sourceIds) {
+							const auto source = get(sourceId);
+							GAIA_ASSERT(valid(source));
+							const auto target = store.target(source);
+							GAIA_ASSERT(target != EntityBad);
+							s.save(source);
+							s.save(relation);
+							s.save(target);
+						}
+						for (auto source: pairSources) {
+							GAIA_ASSERT(valid(source));
+							const auto target = store.target(source);
+							GAIA_ASSERT(target != EntityBad);
+							s.save(source);
+							s.save(relation);
+							s.save(target);
+						}
+					}
+				}
+
+				// Entity names
+				{
+					s.save((uint32_t)m_nameToEntity.size());
+					for (const auto& pair: m_nameToEntity) {
+						s.save(pair.second);
+						const bool isOwnedStr = pair.first.owned();
+						s.save(isOwnedStr);
+
+						// For owner string we copy the entire string into the buffer
+						if (isOwnedStr) {
+							const auto* str = pair.first.str();
+							const uint32_t len = pair.first.len();
+							s.save(len);
+							s.save_raw(str, len, ser::serialization_type_id::c8);
+						}
+						// Non-owned strings will only store the pointer.
+						// However, if it is a component, we do not store anything at all because we can reconstruct
+						// the name from our component cache.
+						else if (!pair.second.comp()) {
+							const auto* str = pair.first.str();
+							const uint32_t len = pair.first.len();
+							s.save(len);
+							const auto ptr_val = (uint64_t)str;
+							s.save_raw(&ptr_val, sizeof(ptr_val), ser::serialization_type_id::u64);
+						}
+					}
+				}
+
+				// Entity aliases
+				{
+					uint32_t aliasCnt = 0;
+					GAIA_FOR((uint32_t)m_recs.entities.size()) {
+						const auto entity = get((EntityId)i);
+						if (!valid(entity) || entity.pair())
+							continue;
+
+						const auto& ec = m_recs.entities[i];
+						const auto compIdx = core::get_index(ec.pChunk->ids_view(), GAIA_ID(EntityDesc));
+						if (compIdx == BadIndex)
+							continue;
+
+						const auto* pDesc = reinterpret_cast<const EntityDesc*>(ec.pChunk->comp_ptr(compIdx, ec.row));
+						if (pDesc->alias != nullptr)
+							++aliasCnt;
+					}
+
+					s.save(aliasCnt);
+					GAIA_FOR((uint32_t)m_recs.entities.size()) {
+						const auto entity = get((EntityId)i);
+						if (!valid(entity) || entity.pair())
+							continue;
+
+						const auto& ec = m_recs.entities[i];
+						const auto compIdx = core::get_index(ec.pChunk->ids_view(), GAIA_ID(EntityDesc));
+						if (compIdx == BadIndex)
+							continue;
+
+						const auto* pDesc = reinterpret_cast<const EntityDesc*>(ec.pChunk->comp_ptr(compIdx, ec.row));
+						if (pDesc->alias == nullptr)
+							continue;
+
+						s.save(entity);
+						s.save(pDesc->alias_len);
+						s.save_raw(pDesc->alias, pDesc->alias_len, ser::serialization_type_id::c8);
+					}
+				}
+			}
+
+		public:
+			//! Saves contents of the world to a buffer. The buffer is reset, not appended.
+			//! NOTE: In order for custom version of save to be used for a given component, it needs to have either
+			//!       of the following functions defined:
+			//!       1) member function: "void save(bin_stream& s)"
+			//!       2) free function in gaia::ser namespace: "void tag_invoke(gaia::ser::save_v, bin_stream& s,
+			//!       const YourType& data)"
+			void save() {
+				auto s = m_serializer;
+				GAIA_ASSERT(s.valid());
+
+				s.reset();
+				save_to(s);
+			}
+
+#if GAIA_JSON_ENABLED
+			//! Serializes world state into a JSON document.
+			//! Components with runtime fields are emitted as structured JSON objects.
+			//! Components with no runtime fields fallback to raw serialized bytes.
+			//! \param writer Destination JSON writer.
+			//! \param flags World JSON sections and fallback behavior.
+			//! \param policy Symbolic enum and bitmask presentation policy.
+			//! \return False when some runtime field types are unsupported.
+			bool save_json(
+					ser::ser_json& writer, ser::JsonSaveFlags flags = ser::JsonSaveFlags::Default,
+					const ser::RuntimeJsonPolicy& policy = {}) const;
+
+			//! Convenience overload returning JSON as a string.
+			//! \param ok Receives whether all requested component values were serialized.
+			//! \param flags World JSON sections and fallback behavior.
+			//! \return The serialized JSON document.
+			ser::json_str save_json(bool& ok, ser::JsonSaveFlags flags = ser::JsonSaveFlags::Default) const;
+
+			//! Calculates a deterministic hash of the world-level runtime schema manifest.
+			//! \return Hash of the current runtime schema manifest.
+			uint64_t runtime_schema_hash() const;
+
+			//! Serializes registered runtime component/type metadata into a self-describing schema manifest.
+			//! \param writer JSON writer receiving the manifest.
+			//! \return True when the manifest was serialized.
+			bool save_runtime_schema_json(ser::ser_json& writer) const;
+
+			//! Convenience overload returning the runtime schema manifest as JSON text.
+			//! \return Serialized runtime schema manifest.
+			ser::json_str save_runtime_schema_json() const;
+
+			//! Applies one validated JSON value to a reflected component leaf selected by JSON Pointer.
+			//! \param entity Entity owning the component value.
+			//! \param component Component entity or exact relationship pair.
+			//! \param pointer RFC 6901 pointer selecting a reflected leaf.
+			//! \param value Complete JSON value for the selected leaf.
+			//! \param diagnostics Structured validation errors.
+			//! \param policy Runtime enum and bitmask JSON policy.
+			//! \param expectedRuntimeSchemaHash Optional non-zero runtime schema hash required to match the current manifest.
+			//! \return True when the selected leaf was updated.
+			bool patch_comp_json(
+					Entity entity, Entity component, ser::json_str_view pointer, ser::json_str_view value,
+					ser::JsonDiagnostics& diagnostics, const ser::RuntimeJsonPolicy& policy = {},
+					uint64_t expectedRuntimeSchemaHash = 0);
+
+			//! Loads world state from JSON previously emitted by save_json().
+			//! \param json JSON buffer.
+			//! \param len JSON buffer length.
+			//! \param diagnostics Receives non-fatal semantic issues.
+			//! \param policy Symbolic enum and bitmask import policy.
+			//! \return True when JSON shape is valid and parsing succeeds.
+			bool load_json(
+					const char* json, uint32_t len, ser::JsonDiagnostics& diagnostics, const ser::RuntimeJsonPolicy& policy = {});
+			//! Loads world state from a raw JSON buffer and discards non-fatal diagnostics.
+			//! \param json JSON buffer
+			//! \param len JSON buffer length
+			//! \return True when loading succeeds. False otherwise.
+			bool load_json(const char* json, uint32_t len);
+
+			//! Loads world state from a JSON view with an explicit runtime value import policy.
+			//! \param json JSON view.
+			//! \param diagnostics Output diagnostics.
+			//! \param policy Symbolic enum and bitmask import policy.
+			//! \return True when loading succeeds. False otherwise.
+			bool
+			load_json(ser::json_str_view json, ser::JsonDiagnostics& diagnostics, const ser::RuntimeJsonPolicy& policy = {});
+
+			//! Loads world state from a JSON string view and discards non-fatal diagnostics.
+			//! \param json JSON view
+			//! \return True when loading succeeds. False otherwise.
+			bool load_json(ser::json_str_view json);
+#endif
+
+			//! Loads a world state from a buffer. The buffer is sought to 0 before any loading happens.
+			//! NOTE: In order for custom version of load to be used for a given component, it needs to have either
+			//!       of the following functions defined:
+			//!       1) member function: "void load(bin_stream& s)"
+			//!       2) free function in gaia::ser namespace: "void tag_invoke(gaia::ser::load_v, bin_stream& s,
+			//!       YourType& data)"
+			//! \note Register the same user components in the target world, in the same order, with the same
+			//!       names and storage. If that does not match, load() returns false and leaves the target world
+			//!       unchanged. Gaia's built-in component ids are remapped.
+			//! \param inputSerializer Serializer to read from, or an invalid handle to use the world's bound serializer.
+			//! \return True when the snapshot version is supported and all world data loads successfully. False otherwise.
+			bool load(ser::serializer inputSerializer = {}) {
+				auto s = inputSerializer.valid() ? inputSerializer : m_serializer;
+				GAIA_ASSERT(s.valid());
+
+				// Move back to the beginning of the stream
+				s.seek(0);
+
+				// Snapshot format version.
+				uint32_t version = 0;
+				s.load(version);
+				if (version < 2 || version > WorldSerializerVersion) {
+					GAIA_LOG_E("Unsupported world version %u. Expected 2..%u.", version, WorldSerializerVersion);
+					return false;
+				}
+
+				// Store the index of the last core component. As they change, we will have to modify entity ids accordingly.
+				uint32_t lastCoreComponentId = 0;
+				s.load(lastCoreComponentId);
+
+				// Append-only core ids are handled via load-time entity remapping.
+				// Snapshots from a runtime with a larger core-id boundary are not supported.
+				const auto currLastCoreComponentId = GAIA_ID(LastCoreComponent).id();
+				if (lastCoreComponentId > currLastCoreComponentId) {
+					GAIA_LOG_E(
+							"Unsupported world core boundary %u. Current runtime supports up to %u.", lastCoreComponentId,
+							currLastCoreComponentId);
+					return false;
+				}
+				if (version >= 6 && !validate_component_layout(s, lastCoreComponentId, currLastCoreComponentId))
+					return false;
+				// Install the append-only core-id remap for nested Entity::load() calls.
+				// This keeps the serializer API unchanged, at the cost of relying on
+				// scoped thread-local state instead of explicit serializer-local context.
+				const detail::EntityLoadRemapGuard entityLoadRemapGuard(
+						lastCoreComponentId, currLastCoreComponentId, version >= 5);
+				auto remapLoadedEntityId = [&](uint32_t id) {
+					return detail::remap_loaded_entity_id(id, lastCoreComponentId, currLastCoreComponentId);
+				};
+
+				// Entities
+				{
+					auto loadEntityContainer = [&](EntityContainer& ec) {
+						s.load(ec.idx);
+						s.load(ec.dataRaw);
+						s.load(ec.row);
+						s.load(ec.flags);
+						if ((ec.flags & EntityContainerFlags::HasCantCombine) != 0)
+							m_hasCantCombinePolicy = true;
+						if ((ec.flags & (EntityContainerFlags::OnDeleteTarget_Delete | EntityContainerFlags::OnDeleteTarget_Remove |
+														 EntityContainerFlags::OnDeleteTarget_Error)) != 0) {
+							m_hasOnDeleteTargetPolicy = true;
+						}
+						ec.flags |= EntityContainerFlags::Load;
+
+						ec.idx = remapLoadedEntityId(ec.idx);
+						if (ec.data.pair != 0)
+							ec.data.gen = remapLoadedEntityId(ec.data.gen);
+
+#if GAIA_USE_SAFE_ENTITY
+						s.load(ec.refCnt);
+#else
+						s.load(ec.unused);
+						// if this value is different from zero, it means we are trying to load data
+						// that was previously saved with GAIA_USE_SAFE_ENTITY. It's probably not a good idea
+						// because if your program used reference counting it probably won't work correctly.
+						GAIA_ASSERT(ec.unused == 0);
+#endif
+						// Store the archetype idx inside the pointer. We will decode this once archetypes are created.
+						uint32_t archetypeIdx = 0;
+						s.load(archetypeIdx);
+						ec.pArchetype = (Archetype*)((uintptr_t)archetypeIdx);
+						// Store the chunk idx inside the pointer. We will decode this once chunks are created.
+						uint32_t chunkIdx = 0;
+						s.load(chunkIdx);
+						ec.pChunk = (Chunk*)((uintptr_t)chunkIdx);
+					};
+
+					uint32_t newEntities = 0;
+					s.load(newEntities);
+					GAIA_FOR(newEntities) {
+						bool isAlive = false;
+						s.load(isAlive);
+						if (isAlive) {
+							EntityContainer ec{};
+							loadEntityContainer(ec);
+							m_recs.entities.add_live(GAIA_MOV(ec));
+						} else {
+							Identifier id = IdentifierBad;
+							uint32_t nextFreeIdx = Entity::IdMask;
+							s.load(id);
+							s.load(nextFreeIdx);
+							auto entity = Entity(id);
+							entity = detail::remap_loaded_entity(entity, lastCoreComponentId, currLastCoreComponentId);
+							nextFreeIdx = remapLoadedEntityId(nextFreeIdx);
+							GAIA_ASSERT(entity.id() == remapLoadedEntityId(lastCoreComponentId + i));
+							m_recs.entities.add_free(entity, nextFreeIdx);
+						}
+					}
+
+					uint32_t pairsCnt = 0;
+					s.load(pairsCnt);
+					GAIA_FOR(pairsCnt) {
+						EntityContainer ec{};
+						loadEntityContainer(ec);
+						// Pair record containers identify their chunk row as an entity. Rebuild the canonical
+						// pair key from its live endpoints so the lookup key keeps the entity bit clear.
+						const Entity pair = Pair(m_recs.entities.handle(ec.idx), m_recs.entities.handle(ec.data.gen));
+						[[maybe_unused]] const bool added = m_recs.pair_record_try_add(pair, GAIA_MOV(ec));
+						GAIA_ASSERT(added);
+					}
+
+					s.load(m_recs.entities.m_nextFreeIdx);
+					m_recs.entities.m_nextFreeIdx = remapLoadedEntityId(m_recs.entities.m_nextFreeIdx);
+					s.load(m_recs.entities.m_freeItems);
+				}
+
+				// World
+				{
+					uint32_t archetypesSize = 0;
+					s.load(archetypesSize);
+					m_archetypes.reserve(archetypesSize);
+					GAIA_FOR(archetypesSize) {
+						uint32_t idsSize = 0;
+						s.load(idsSize);
+						Entity ids[ChunkHeader::MAX_COMPONENTS];
+						GAIA_FOR_(idsSize, j) {
+							s.load(ids[j]);
+						}
+
+						// Calculate the lookup hash
+						const auto hashLookup = calc_lookup_hash({&ids[0], idsSize}).hash;
+
+						auto* pArchetype = find_archetype({hashLookup}, {&ids[0], idsSize});
+						if (pArchetype == nullptr) {
+							// Create the archetype
+							pArchetype = create_archetype({&ids[0], idsSize});
+							pArchetype->set_hashes({hashLookup});
+
+							// No need to do anything with the archetype graph. It will build itself naturally.
+							// pArchetype->build_graph_edges(pArchetypeRight, entity);
+
+							// Register the archetype in the world
+							reg_archetype(pArchetype);
+						}
+
+						// Load archetype data
+						pArchetype->load(s);
+					}
+
+					s.load(m_worldVersion);
+				}
+
+				if (version >= 5 && !load_sparse_component_stores(s))
+					return false;
+
+				// Update entity records.
+				// We previously encoded the archetype id into refCnt.
+				// Now we need to convert it back to the pointer.
+				{
+					for (auto& ec: m_recs.entities) {
+						if ((ec.flags & EntityContainerFlags::Load) == 0)
+							continue;
+						ec.flags &= (EntityContainerFlagsType)(~(
+								EntityContainerFlagsType)EntityContainerFlags::Load); // Clear the load flag
+
+						load_record_location(ec, EntityContainer::handle(ec));
+					}
+
+					for (auto it = m_recs.pair_record_begin(); it != m_recs.pair_record_end(); ++it) {
+						auto& pair = *it;
+						auto& ec = pair.second;
+
+						// Core pairs remain in-world during load and were not serialized into the stream.
+						if ((ec.flags & EntityContainerFlags::Load) == 0)
+							continue;
+
+						GAIA_ASSERT((ec.flags & EntityContainerFlags::Load) != 0);
+						ec.flags &= (EntityContainerFlagsType)(~(
+								EntityContainerFlagsType)EntityContainerFlags::Load); // Clear the load flag
+
+						load_record_location(ec, pair.first.entity());
+					}
+				}
+
+				if (version < WorldSerializerVersion) {
+					for (const auto& [entityId, pItem]: m_compCache.m_compByEntityId) {
+						(void)entityId;
+						GAIA_ASSERT(pItem != nullptr);
+						auto comp = pItem->comp;
+						comp.data.id = pItem->entity.id();
+						sync_component_record(pItem->entity, comp);
+					}
+				}
+
+				if (version >= 4) {
+					uint32_t edgeCnt = 0;
+					s.load(edgeCnt);
+					GAIA_FOR(edgeCnt) {
+						Entity source;
+						Entity relation;
+						Entity target;
+						s.load(source);
+						s.load(relation);
+						s.load(target);
+
+						if (!valid(source) || !valid(relation) || !valid(target) ||
+								!relation_uses_non_fragmenting_storage(relation))
+							continue;
+
+						assign_pair(Pair(relation, target), *m_pEntityArchetype);
+						nonfragmenting_relation_set(source, relation, target);
+					}
+				}
+
+#if GAIA_ASSERT_ENABLED
+				for (const auto& ec: m_recs.entities) {
+					GAIA_ASSERT(ec.idx < m_recs.entities.size());
+					GAIA_ASSERT(m_recs.entities.handle(ec.idx) == EntityContainer::handle(ec));
+					// Deleted entities waiting for their record to be freed have no storage
+					if ((ec.flags & EntityContainerFlags::DeleteRequested) != 0)
+						continue;
+					GAIA_ASSERT(ec.pArchetype != nullptr);
+					GAIA_ASSERT(ec.pChunk != nullptr);
+					GAIA_ASSERT(ec.pEntity != nullptr);
+				}
+#endif
+				// Entity names
+				{
+					m_nameToEntity = {};
+					uint32_t cnt = 0;
+					s.load(cnt);
+					GAIA_FOR(cnt) {
+						Entity entity;
+						s.load(entity);
+						// entity.data.gen = 0; // Reset generation to zero
+
+						const auto& ec = fetch(entity);
+						const auto compIdx = core::get_index(ec.pChunk->ids_view(), GAIA_ID(EntityDesc));
+						auto* pDesc = reinterpret_cast<EntityDesc*>(ec.pChunk->comp_ptr_mut(compIdx, ec.row));
+						GAIA_ASSERT(core::check_alignment(pDesc));
+
+						bool isOwned = false;
+						s.load(isOwned);
+						if (!isOwned) {
+							if (entity.comp()) {
+								// Make components point back to their component cache record because if we save the world and load
+								// it back in runtime, EntityDesc would still point to the old pointers to component names.
+								const auto& ci = comp_cache().get(entity);
+								const auto symbol = ci.symbol_name();
+								pDesc->name = symbol.data();
+								// Length should still be the same. Only the pointer has changed.
+								GAIA_ASSERT(pDesc->name_len == symbol.size());
+								m_nameToEntity.try_emplace(EntityNameLookupKey(pDesc->name, pDesc->name_len, 0), entity);
+							} else {
+								uint32_t len = 0;
+								s.load(len);
+								uint64_t ptr_val = 0;
+								s.load_raw(&ptr_val, sizeof(ptr_val), ser::serialization_type_id::u64);
+
+								// Simply point to whereever the original pointer pointed to
+								pDesc->name = (const char*)ptr_val;
+								pDesc->name_len = len;
+								m_nameToEntity.try_emplace(EntityNameLookupKey(pDesc->name, pDesc->name_len, 0), entity);
+							}
+
+							continue;
+						}
+
+						uint32_t len = 0;
+						s.load(len);
+
+						// Get a pointer to where the string begins and seek to the end of the string
+						const char* entityStr = (const char*)(s.data() + s.tell());
+						s.seek(s.tell() + len);
+
+						// Make sure EntityDesc does not point anywhere right now.
+						{
+							pDesc->name = nullptr;
+							pDesc->name_len = 0;
+						}
+
+						// Name the entity using an owned string
+						name(entity, entityStr, len);
+					}
+				}
+
+				// Entity aliases
+				{
+					m_aliasToEntity = {};
+					for (auto& ec: m_recs.entities) {
+						const auto entity = EntityContainer::handle(ec);
+						// Deleted entities waiting for their record to be freed have no storage
+						if (entity.pair() || ec.pChunk == nullptr)
+							continue;
+
+						const auto compIdx = core::get_index(ec.pChunk->ids_view(), GAIA_ID(EntityDesc));
+						if (compIdx == BadIndex)
+							continue;
+
+						auto* pDesc = reinterpret_cast<EntityDesc*>(ec.pChunk->comp_ptr_mut(compIdx, ec.row));
+						GAIA_ASSERT(core::check_alignment(pDesc));
+						pDesc->alias = nullptr;
+						pDesc->alias_len = 0;
+					}
+
+					uint32_t cnt = 0;
+					s.load(cnt);
+					GAIA_FOR(cnt) {
+						Entity entity;
+						s.load(entity);
+
+						const auto& ec = fetch(entity);
+						const auto compIdx = core::get_index(ec.pChunk->ids_view(), GAIA_ID(EntityDesc));
+						auto* pDesc = reinterpret_cast<EntityDesc*>(ec.pChunk->comp_ptr_mut(compIdx, ec.row));
+						GAIA_ASSERT(core::check_alignment(pDesc));
+
+						uint32_t len = 0;
+						s.load(len);
+
+						// Get a pointer to where the string begins and seek to the end of the string
+						const char* aliasStr = (const char*)(s.data() + s.tell());
+						s.seek(s.tell() + len);
+
+						pDesc->alias = nullptr;
+						pDesc->alias_len = 0;
+						alias(entity, aliasStr, len);
+					}
+				}
+
+				return true;
+			}
+
+			//! Loads a world state from a serializer-compatible stream wrapper.
+			//! \param inputSerializer Input serializer
+			//! \return True when loading succeeds. False otherwise.
+			template <typename TSerializer>
+			bool load(TSerializer& inputSerializer) {
+				return load(ser::make_serializer(inputSerializer));
+			}
+
+		private:
+			//! Sorts archetypes in the archetype list with their ids in ascending order
+			void sort_archetypes() {
+				struct sort_cond {
+					bool operator()(const Archetype* a, const Archetype* b) const {
+						return a->id() < b->id();
+					}
+				};
+
+				core::sort(m_archetypes, sort_cond{}, [&](uint32_t left, uint32_t right) {
+					Archetype* tmp = m_archetypes[left];
+
+					m_archetypes[right]->list_idx(left);
+					m_archetypes[left]->list_idx(right);
+
+					m_archetypes.data()[left] = (Archetype*)m_archetypes[right];
+					m_archetypes.data()[right] = tmp;
+				});
+			}
+
+#if GAIA_USE_SAFE_ENTITY
+			//! Marks a chunk operation that can run component destructors. A SafeEntity released by one of them
+			//! must not delete its entity right away, as that would change structures the operation is using.
+			class CompDtorScope {
+				World& m_world;
+
+			public:
+				explicit CompDtorScope(World& world): m_world(world) {
+					++m_world.m_compDtorDepth;
+				}
+				~CompDtorScope() {
+					--m_world.m_compDtorDepth;
+				}
+				CompDtorScope(const CompDtorScope&) = delete;
+				CompDtorScope& operator=(const CompDtorScope&) = delete;
+			};
+#endif
+
+			//! Remove a chunk from its archetype.
+			//! \param archetype Archetype we remove the chunk from
+			//! \param chunk Chunk we are removing
+			void remove_chunk(Archetype& archetype, Chunk& chunk) {
+#if GAIA_USE_SAFE_ENTITY
+				CompDtorScope dtorScope(*this);
+#endif
+				archetype.del(&chunk);
+				try_enqueue_archetype_for_deletion(archetype);
+			}
+
+			//! Removes a chunk from the deferred delete queue and keeps the moved entry's queue index in sync.
+			//! \param idx Queue index of the chunk to remove.
+			void remove_chunk_from_delete_queue(uint32_t idx) {
+				GAIA_ASSERT(idx < m_chunksToDel.size());
+
+				auto* pChunk = m_chunksToDel[idx].pChunk;
+				pChunk->clear_delete_queue_index();
+
+				const auto lastIdx = (uint32_t)m_chunksToDel.size() - 1;
+				if (idx != lastIdx) {
+					auto* pMovedChunk = m_chunksToDel[lastIdx].pChunk;
+					pMovedChunk->delete_queue_index(idx);
+				}
+
+				core::swap_erase(m_chunksToDel, idx);
+			}
+
+			//! Remove an entity from its chunk.
+			//! \param archetype Archetype we remove the entity from
+			//! \param chunk Chunk we remove the entity from
+			//! \param row Index of entity within its chunk
+			void remove_entity(Archetype& archetype, Chunk& chunk, uint16_t row) {
+#if GAIA_USE_SAFE_ENTITY
+				CompDtorScope dtorScope(*this);
+#endif
+				archetype.remove_entity(chunk, row, m_recs);
+				try_enqueue_chunk_for_deletion(archetype, chunk);
+			}
+
+			//! Delete all chunks which are empty (have no entities) and have not been used in a while
+			void del_empty_chunks() {
+				GAIA_PROF_SCOPE(World::del_empty_chunks);
+
+				for (uint32_t i = 0; i < m_chunksToDel.size();) {
+					auto* pArchetype = m_chunksToDel[i].pArchetype;
+					auto* pChunk = m_chunksToDel[i].pChunk;
+
+					// Revive reclaimed chunks
+					if (!pChunk->empty()) {
+						pChunk->revive();
+						revive_archetype(*pArchetype);
+						remove_chunk_from_delete_queue(i);
+						continue;
+					}
+
+					// Skip chunks which still have some lifespan left
+					if (pChunk->progress_death()) {
+						++i;
+						continue;
+					}
+
+					// Delete unused chunks that are past their lifespan
+					remove_chunk_from_delete_queue(i);
+					remove_chunk(*pArchetype, *pChunk);
+				}
+			}
+
+			//! Delete an archetype from the world.
+			//! \param pArchetype Empty or deletion-requested archetype to destroy.
+			void del_empty_archetype(Archetype* pArchetype) {
+				GAIA_PROF_SCOPE(World::del_empty_archetype);
+
+				GAIA_ASSERT(pArchetype != nullptr);
+				GAIA_ASSERT(pArchetype->empty() || pArchetype->is_req_del());
+				GAIA_ASSERT(!pArchetype->dying() || pArchetype->is_req_del());
+
+				unreg_archetype(pArchetype);
+				for (auto& ec: m_recs.entities) {
+					if (ec.pArchetype != pArchetype)
+						continue;
+
+					ec.pArchetype = nullptr;
+					ec.pChunk = nullptr;
+					ec.pEntity = nullptr;
+				}
+				for (auto it = m_recs.pair_record_begin(); it != m_recs.pair_record_end(); ++it) {
+					auto& ec = it->second;
+					if (ec.pArchetype != pArchetype)
+						continue;
+
+					ec.pArchetype = nullptr;
+					ec.pChunk = nullptr;
+					ec.pEntity = nullptr;
+				}
+				Archetype::destroy(pArchetype);
+			}
+
+			//! Delete all archetypes which are empty (have no used chunks) and have not been used in a while
+			void del_empty_archetypes() {
+				GAIA_PROF_SCOPE(World::del_empty_archetypes);
+
+				cnt::sarray_ext<Archetype*, 512> tmp;
+
+				// Remove all dead archetypes from query caches.
+				// Because the number of cached queries is way higher than the number of archetypes
+				// we want to remove, we flip the logic around and iterate over all query caches
+				// and match against our lists.
+				// Note, all archetype pointers in the tmp array are invalid at this point and can
+				// be used only for comparison. They can't be dereferenced.
+				auto remove_from_queries = [&]() {
+					if (tmp.empty())
+						return;
+
+					for (auto* pArchetype: tmp) {
+						m_queryCache.remove_archetype_from_queries(pArchetype);
+						del_empty_archetype(pArchetype);
+					}
+					tmp.clear();
+				};
+
+				for (uint32_t i = 0; i < m_archetypesToDel.size();) {
+					auto* pArchetype = m_archetypesToDel[i];
+
+					// Skip reclaimed archetypes or archetypes that became immortal
+					if (!pArchetype->empty() || pArchetype->max_lifespan() == 0) {
+						revive_archetype(*pArchetype);
+						core::swap_erase(m_archetypesToDel, i);
+						continue;
+					}
+
+					// Skip archetypes which still have some lifespan left unless
+					// they are force-deleted.
+					if (!pArchetype->is_req_del() && pArchetype->progress_death()) {
+						++i;
+						continue;
+					}
+
+					tmp.push_back(pArchetype);
+
+					// Remove the unused archetypes
+					core::swap_erase(m_archetypesToDel, i);
+
+					// Clear what we have once the capacity is reached
+					if (tmp.size() == tmp.max_size())
+						remove_from_queries();
+				}
+
+				remove_from_queries();
+			}
+
+			//! Cancels pending deletion for an archetype that became live again.
+			//! \param archetype Archetype to remove from the deletion queue.
+			void revive_archetype(Archetype& archetype) {
+				const bool wasReqDel = archetype.is_req_del();
+				archetype.revive();
+				if (wasReqDel)
+					update_version(m_archetypeDeleteVersion);
+				m_reqArchetypesToDel.erase(ArchetypeLookupKey(archetype.lookup_hash(), &archetype));
+			}
+
+			//! Queues an empty mortal chunk and updates its owning archetype.
+			//! \param archetype Archetype owning the chunk.
+			//! \param chunk Candidate chunk.
+			void try_enqueue_chunk_for_deletion(Archetype& archetype, Chunk& chunk) {
+				if (chunk.dying() || !chunk.empty())
+					return;
+
+				// When the chunk is emptied we want it to be removed. We can't do it
+				// rowB away and need to wait for world::gc() to be called.
+				//
+				// However, we need to prevent the following:
+				//    1) chunk is emptied, add it to some removal list
+				//    2) chunk is reclaimed
+				//    3) chunk is emptied, add it to some removal list again
+				//
+				// Therefore, we have a flag telling us the chunk is already waiting to
+				// be removed. The chunk might be reclaimed before garbage collection happens
+				// but it simply ignores such requests. This way we always have at most one
+				// record for removal for any given chunk.
+				chunk.start_dying();
+
+				m_chunksToDel.push_back({&archetype, &chunk});
+				chunk.delete_queue_index((uint32_t)m_chunksToDel.size() - 1);
+			}
+
+			//! Queues an empty mortal archetype for deferred destruction.
+			//! \param archetype Candidate archetype.
+			void try_enqueue_archetype_for_deletion(Archetype& archetype) {
+				if (!archetype.ready_to_die())
+					return;
+
+				// When the chunk is emptied we want it to be removed. We can't do it
+				// rowB away and need to wait for world::gc() to be called.
+				//
+				// However, we need to prevent the following:
+				//    1) archetype is emptied, add it to some removal list
+				//    2) archetype is reclaimed
+				//    3) archetype is emptied, add it to some removal list again
+				//
+				// Therefore, we have a flag telling us the chunk is already waiting to
+				// be removed. The archetype might be reclaimed before garbage collection happens
+				// but it simply ignores such requests. This way we always have at most one
+				// record for removal for any given chunk.
+				archetype.start_dying();
+
+				m_archetypesToDel.push_back(&archetype);
+			}
+
+			//! Defragments chunks.
+			//! \param maxEntities Maximum number of entities moved per call
+			void defrag_chunks(uint32_t maxEntities) {
+				GAIA_PROF_SCOPE(World::defrag_chunks);
+
+				const auto maxIters = m_archetypes.size();
+				// There has to be at least the root archetype present
+				GAIA_ASSERT(maxIters > 0);
+
+				GAIA_FOR(maxIters) {
+					const auto idx = (m_defragLastArchetypeIdx + 1) % maxIters;
+					auto* pArchetype = m_archetypes[idx];
+					defrag_archetype(*pArchetype, maxEntities);
+					if (maxEntities == 0)
+						return;
+
+					m_defragLastArchetypeIdx = idx;
+				}
+			}
+
+			//! Defragments the archetype by moving entities out of sparse chunks.
+			//! \param archetype Archetype to defragment.
+			//! \param maxEntities Maximum number of entities moved per call
+			void defrag_archetype(Archetype& archetype, uint32_t& maxEntities) {
+				// Assuming the following chunk layout:
+				//   Chunk_1: 10/10
+				//   Chunk_2:  1/10
+				//   Chunk_3:  7/10
+				//   Chunk_4: 10/10
+				//   Chunk_5:  9/10
+				// After full defragmentation we end up with:
+				//   Chunk_1: 10/10
+				//   Chunk_2: 10/10 (7 entities from Chunk_3 + 2 entities from Chunk_5)
+				//   Chunk_3:  0/10 (empty, ready for removal)
+				//   Chunk_4: 10/10
+				//   Chunk_5:  7/10
+				// TODO: Implement mask of semi-full chunks so we can pick one easily when searching
+				//       for a chunk to fill with a new entity and when defragmenting.
+				// NOTE 1:
+				// Even though entity movement might be present during defragmentation, we do
+				// not update the world version here because no real structural changes happen.
+				// All entities and components remain intact, they just move to a different place.
+
+				if (maxEntities == 0)
+					return;
+
+				const auto& chunks = archetype.chunks();
+				if (chunks.size() < 2)
+					return;
+
+				uint32_t front = 0;
+				uint32_t back = chunks.size() - 1;
+
+				auto* pDstChunk = chunks[front];
+				auto* pSrcChunk = chunks[back];
+
+				// Find the first semi-full chunk in the front
+				while (front < back && (pDstChunk->full() || !pDstChunk->is_semi()))
+					pDstChunk = chunks[++front];
+				// Find the last semi-full chunk in the back
+				while (front < back && (pSrcChunk->empty() || !pSrcChunk->is_semi()))
+					pSrcChunk = chunks[--back];
+
+				// Find the first semi-empty chunk in the back
+				while (front < back) {
+					pDstChunk = chunks[front];
+					pSrcChunk = chunks[back];
+
+					const uint32_t entitiesInSrcChunk = pSrcChunk->size();
+					const uint32_t spaceInDstChunk = pDstChunk->capacity() - pDstChunk->size();
+					const uint32_t entitiesToMoveSrc = core::get_min(entitiesInSrcChunk, maxEntities);
+					const uint32_t entitiesToMove = core::get_min(entitiesToMoveSrc, spaceInDstChunk);
+
+					GAIA_FOR(entitiesToMove) {
+						const auto lastSrcEntityIdx = entitiesInSrcChunk - i - 1;
+						const auto entity = pSrcChunk->entity_view()[lastSrcEntityIdx];
+
+						auto& ec = m_recs[entity];
+
+						const auto srcRow = ec.row;
+						const auto dstRow = pDstChunk->add_entity(entity);
+						const bool wasEnabled = !ec.data.dis;
+
+						// Make sure the old entity becomes enabled now
+						archetype.enable_entity(pSrcChunk, srcRow, true, m_recs);
+						// We go back-to-front in the chunk so enabling the entity is not expected to change its row
+						GAIA_ASSERT(srcRow == ec.row);
+
+						// Move data from the old chunk to the new one
+						pDstChunk->move_entity_data(entity, dstRow, m_recs);
+
+						// Remove the entity record from the old chunk.
+						// Normally we'd call remove_entity but we don't want to trigger world
+						// version updated all the time. It's enough to do it just once at the
+						// end of defragmentation.
+						// remove_entity(archetype, *pSrcChunk, srcRow);
+						archetype.remove_entity_raw(*pSrcChunk, srcRow, m_recs);
+						try_enqueue_chunk_for_deletion(archetype, *pSrcChunk);
+
+						// Bring the entity container record up-to-date
+						ec.pChunk = pDstChunk;
+						ec.row = (uint16_t)dstRow;
+						ec.pEntity = &pDstChunk->entity_view()[dstRow];
+
+						// Transfer the original enabled state to the new chunk
+						archetype.enable_entity(pDstChunk, dstRow, wasEnabled, m_recs);
+					}
+
+					// Update world versions
+					if (entitiesToMove > 0) {
+						pSrcChunk->update_world_version();
+						pDstChunk->update_world_version();
+						pSrcChunk->update_entity_order_version();
+						pDstChunk->update_entity_order_version();
+						update_version(m_worldVersion);
+					}
+
+					maxEntities -= entitiesToMove;
+					if (maxEntities == 0)
+						return;
+
+					// The source is empty, find another semi-empty source
+					if (pSrcChunk->empty()) {
+						while (front < back) {
+							if (chunks[--back]->is_semi())
+								break;
+						}
+					}
+
+					// The destination chunk is full, we need to move to the next one.
+					// The idea is to fill the destination as much as possible.
+					while (front < back && pDstChunk->full())
+						pDstChunk = chunks[++front];
+				}
+			}
+
+			//! Searches for archetype with a given set of components
+			//! \param hashLookup Archetype lookup hash
+			//! \param ids Archetype entities/components
+			//! \return Pointer to archetype or nullptr.
+			GAIA_NODISCARD Archetype* find_archetype(Archetype::LookupHash hashLookup, EntitySpan ids) {
+				auto tmpArchetype = ArchetypeLookupChecker(ids);
+				ArchetypeLookupKey key(hashLookup, &tmpArchetype);
+
+				// Search for the archetype in the map
+				const auto it = m_archetypesByHash.find(key);
+				if (it == m_archetypesByHash.end())
+					return nullptr;
+
+				auto* pArchetype = it->second;
+				return pArchetype;
+			}
+
+			GAIA_NODISCARD static auto
+			//! Finds the mutable component-index record for an archetype.
+			//! \param records Component-index bucket to search.
+			//! \param pArchetype Archetype key.
+			//! \return Record index, or BadIndex when absent.
+			find_component_index_record(ComponentIndexEntryArray& records, const Archetype* pArchetype) {
+				return core::get_index_if(records, [&](const auto& record) {
+					return record.matches(pArchetype);
+				});
+			}
+
+			GAIA_NODISCARD static auto
+			//! Finds the read-only component-index record for an archetype.
+			//! \param records Component-index bucket to search.
+			//! \param pArchetype Archetype key.
+			//! \return Record index, or BadIndex when absent.
+			find_component_index_record(const ComponentIndexEntryArray& records, const Archetype* pArchetype) {
+				return core::get_index_if(records, [&](const auto& record) {
+					return record.matches(pArchetype);
+				});
+			}
+
+			//! Bumps the revision for a lookup bucket whose record order or membership changed.
+			//! EntityBadLookupKey is reserved for the full archetype list.
+			//! \param entityKey Lookup bucket whose revision changed.
+			void update_entity_archetype_lookup_revision(EntityLookupKey entityKey) {
+				auto [it, _] = m_entityToArchetypeMapVersions.try_emplace(entityKey, 0);
+				(void)_;
+				++it->second;
+				if (it->second == 0)
+					it->second = 1;
+			}
+
+			//! Adds the archetype to <entity, archetype> map for quick lookups of archetypes by comp/tag/pair.
+			//! Exact ids store the owning column index, wildcard pair ids store an aggregated match count.
+			//! \param entity Component, tag, or pair lookup key.
+			//! \param pArchetype Archetype to index.
+			//! \param compIdx Exact component column index, or ComponentIndexBad for wildcard keys.
+			//! \param matchCount Number of matching columns represented by the record.
+			void add_entity_archetype_pair(
+					Entity entity, Archetype* pArchetype, uint16_t compIdx = ComponentIndexBad, uint16_t matchCount = 1) {
+				GAIA_ASSERT(pArchetype != nullptr);
+				GAIA_ASSERT(matchCount > 0);
+
+				EntityLookupKey entityKey(entity);
+				auto prepared = m_entityToArchetypeMap.prepare_insert(entityKey);
+				if (!prepared.found()) {
+					ComponentIndexEntryArray records;
+					records.push_back(ComponentIndexEntry{pArchetype, compIdx, matchCount});
+					m_entityToArchetypeMap.emplace_prepared(prepared, entityKey, GAIA_MOV(records));
+					return;
+				}
+
+				auto it = m_entityToArchetypeMap.prepared_iterator(prepared);
+				auto& records = it->second;
+				const auto idx = find_component_index_record(records, pArchetype);
+				if (idx == BadIndex) {
+					records.push_back(ComponentIndexEntry{pArchetype, compIdx, matchCount});
+					return;
+				}
+
+				auto& record = records[idx];
+				record.matchCount = (uint16_t)(record.matchCount + matchCount);
+				if (compIdx != ComponentIndexBad)
+					record.compIdx = compIdx;
+			}
+
+			//! Adds a newly-created archetype to the reverse lookup without scanning the whole bucket.
+			//! The archetype cannot already be present globally. Wildcard pair keys can still hit the same
+			//! bucket multiple times while creating one archetype, so only the tail record needs merging.
+			//! \param entity Component, tag, or pair lookup key.
+			//! \param pArchetype Newly created archetype to index.
+			//! \param compIdx Exact component column index, or ComponentIndexBad for wildcard keys.
+			//! \param matchCount Number of matching columns represented by the record.
+			void add_new_entity_archetype_pair(
+					Entity entity, Archetype* pArchetype, uint16_t compIdx = ComponentIndexBad, uint16_t matchCount = 1) {
+				GAIA_ASSERT(pArchetype != nullptr);
+				GAIA_ASSERT(matchCount > 0);
+
+				EntityLookupKey entityKey(entity);
+				auto prepared = m_entityToArchetypeMap.prepare_insert(entityKey);
+				if (!prepared.found()) {
+					ComponentIndexEntryArray records;
+					records.push_back(ComponentIndexEntry{pArchetype, compIdx, matchCount});
+					m_entityToArchetypeMap.emplace_prepared(prepared, entityKey, GAIA_MOV(records));
+					return;
+				}
+
+				auto it = m_entityToArchetypeMap.prepared_iterator(prepared);
+				auto& records = it->second;
+				if (!records.empty()) {
+					auto& record = records.back();
+					if (record.matches(pArchetype)) {
+						record.matchCount = (uint16_t)(record.matchCount + matchCount);
+						if (compIdx != ComponentIndexBad)
+							record.compIdx = compIdx;
+						return;
+					}
+				}
+
+				records.push_back(ComponentIndexEntry{pArchetype, compIdx, matchCount});
+			}
+
+			//! Adds an archetype match to every wildcard index derived from a pair.
+			//! \param pair Exact pair represented by the archetype.
+			//! \param pArchetype Archetype to index.
+			//! \param matchCount Number of matching columns represented by the record.
+			void add_pair_archetype_query_pairs(Entity pair, Archetype* pArchetype, uint16_t matchCount = 1) {
+				GAIA_ASSERT(pair.pair());
+				GAIA_ASSERT(pArchetype != nullptr);
+				GAIA_ASSERT(matchCount > 0);
+
+				const auto first = get(pair.id());
+				const auto second = get(pair.gen());
+
+				add_entity_archetype_pair(Pair(All, second), pArchetype, ComponentIndexBad, matchCount);
+				add_entity_archetype_pair(Pair(first, All), pArchetype, ComponentIndexBad, matchCount);
+				add_entity_archetype_pair(Pair(All, All), pArchetype, ComponentIndexBad, matchCount);
+			}
+
+			//! Creates wildcard-pair index entries for a newly observed exact pair.
+			//! \param pair Newly observed exact pair.
+			//! \param pArchetype Archetype to index.
+			//! \param matchCount Number of matching columns represented by the record.
+			void add_new_pair_archetype_query_pairs(Entity pair, Archetype* pArchetype, uint16_t matchCount = 1) {
+				GAIA_ASSERT(pair.pair());
+				GAIA_ASSERT(pArchetype != nullptr);
+				GAIA_ASSERT(matchCount > 0);
+
+				const auto first = get(pair.id());
+				const auto second = get(pair.gen());
+
+				add_new_entity_archetype_pair(Pair(All, second), pArchetype, ComponentIndexBad, matchCount);
+				add_new_entity_archetype_pair(Pair(first, All), pArchetype, ComponentIndexBad, matchCount);
+				add_new_entity_archetype_pair(Pair(All, All), pArchetype, ComponentIndexBad, matchCount);
+			}
+
+			//! Deletes an archetype from the <pairEntity, archetype> map
+			//! \param pair Pair entity used as a key in the map
+			//! \param entityToRemove Entity used to identify archetypes we are removing from the archetype array
+			void del_entity_query_pair(Pair pair, Entity entityToRemove) {
+				const auto entityKey = EntityLookupKey(pair);
+				auto it = m_entityToArchetypeMap.find(entityKey);
+				if (it == m_entityToArchetypeMap.end())
+					return;
+				auto& records = it->second;
+				bool changed = false;
+
+				// Remove any reference to the found archetype from the array.
+				// We don't know the archetype so we remove/decrement any archetype record that contains our entity.
+				for (uint32_t i = records.size() - 1; i != (uint32_t)-1; --i) {
+					auto& record = records[i];
+					const auto* pArchetype = record.pArchetype;
+					if (!pArchetype->has(entityToRemove))
+						continue;
+
+					if ((!is_wildcard(pair.first()) && !is_wildcard(pair.second())) || record.matchCount <= 1)
+						core::swap_erase_unsafe(records, i);
+					else
+						--record.matchCount;
+					changed = true;
+				}
+
+				if (changed)
+					update_entity_archetype_lookup_revision(entityKey);
+
+				if (records.empty())
+					m_entityToArchetypeMap.erase(it);
+			}
+
+			//! Deletes a known archetype from the <pairEntity, archetype> map.
+			//! Used when deleting pair entities, where the owning archetype is already known.
+			//! \param pair Pair lookup key.
+			//! \param pArchetypeToRemove Archetype to remove from the lookup bucket.
+			void del_entity_query_pair(Pair pair, Archetype* pArchetypeToRemove) {
+				GAIA_ASSERT(pArchetypeToRemove != nullptr);
+
+				const auto entityKey = EntityLookupKey(pair);
+				auto it = m_entityToArchetypeMap.find(entityKey);
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				auto& records = it->second;
+				const auto idx = find_component_index_record(records, pArchetypeToRemove);
+				if (idx != BadIndex) {
+					core::swap_erase_unsafe(records, idx);
+					update_entity_archetype_lookup_revision(entityKey);
+				}
+
+				if (records.empty())
+					m_entityToArchetypeMap.erase(it);
+			}
+
+			//! Removes one archetype from every wildcard index derived from a pair.
+			//! \param pair Exact pair whose wildcard entries are updated.
+			//! \param pArchetypeToRemove Archetype to remove.
+			void del_pair_archetype_query_pairs(Entity pair, Archetype* pArchetypeToRemove) {
+				GAIA_ASSERT(pair.pair());
+				GAIA_ASSERT(pArchetypeToRemove != nullptr);
+
+				GAIA_ASSERT(pair.id() < m_recs.entities.size());
+				GAIA_ASSERT(pair.gen() < m_recs.entities.size());
+				const auto first = m_recs.entities.handle(pair.id());
+				const auto second = m_recs.entities.handle(pair.gen());
+
+				del_entity_query_pair(Pair(All, second), pArchetypeToRemove);
+				del_entity_query_pair(Pair(first, All), pArchetypeToRemove);
+				del_entity_query_pair(Pair(All, All), pArchetypeToRemove);
+			}
+
+			//! Removes wildcard-index records containing a deleted pair entity.
+			//! \param pair Exact pair whose wildcard entries are updated.
+			//! \param entityToRemove Pair endpoint being deleted.
+			void del_pair_archetype_query_pairs(Entity pair, Entity entityToRemove) {
+				GAIA_ASSERT(pair.pair());
+
+				GAIA_ASSERT(pair.id() < m_recs.entities.size());
+				GAIA_ASSERT(pair.gen() < m_recs.entities.size());
+				const auto first = m_recs.entities.handle(pair.id());
+				const auto second = m_recs.entities.handle(pair.gen());
+
+				del_entity_query_pair(Pair(All, second), entityToRemove);
+				del_entity_query_pair(Pair(first, All), entityToRemove);
+				del_entity_query_pair(Pair(All, All), entityToRemove);
+			}
+
+			//! Deletes a known archetype from the <entity, archetype> map.
+			//! Used when unregistering an archetype from the world.
+			//! \param entity Component, tag, or pair lookup key.
+			//! \param pArchetypeToRemove Archetype to remove from the lookup bucket.
+			void del_entity_archetype_pair(Entity entity, Archetype* pArchetypeToRemove) {
+				GAIA_ASSERT(entity != Pair(All, All));
+				GAIA_ASSERT(pArchetypeToRemove != nullptr);
+
+				const auto entityKey = EntityLookupKey(entity);
+				auto it = m_entityToArchetypeMap.find(entityKey);
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				auto& records = it->second;
+				const auto idx = find_component_index_record(records, pArchetypeToRemove);
+				if (idx != BadIndex) {
+					core::swap_erase_unsafe(records, idx);
+					update_entity_archetype_lookup_revision(entityKey);
+				}
+
+				if (records.empty())
+					m_entityToArchetypeMap.erase(it);
+			}
+
+			//! Deletes a known archetype from all of its entity and wildcard-pair lookup buckets.
+			//! \param pArchetype Archetype to remove from every reverse-lookup bucket.
+			void del_archetype_entity_pairs(Archetype* pArchetype) {
+				GAIA_ASSERT(pArchetype != nullptr);
+
+				for (const auto entity: pArchetype->ids_view()) {
+					del_entity_archetype_pair(entity, pArchetype);
+
+					if (!entity.pair())
+						continue;
+
+					// Archetype unregistration can run while the pair's relation or target entity is already
+					// invalid. Rebuild wildcard pair lookup keys from the stored entity records instead of
+					// calling get(), which asserts on invalidated ids.
+					GAIA_ASSERT(entity.id() < m_recs.entities.size());
+					GAIA_ASSERT(entity.gen() < m_recs.entities.size());
+					del_pair_archetype_query_pairs(entity, pArchetype);
+				}
+			}
+
+			//! Deletes an archetype from the <entity, archetype> map
+			//! \param entity Entity getting deleted
+			//! \param pArchetype Archetype currently associated with \a entity, or nullptr when unavailable.
+			void del_entity_archetype_pairs(Entity entity, Archetype* pArchetype) {
+				GAIA_ASSERT(entity != Pair(All, All));
+
+				const auto entityKey = EntityLookupKey(entity);
+				if (m_entityToArchetypeMap.erase(entityKey) != 0)
+					update_entity_archetype_lookup_revision(entityKey);
+
+				if (entity.pair()) {
+					if (pArchetype != nullptr) {
+						del_pair_archetype_query_pairs(entity, pArchetype);
+					} else {
+						del_pair_archetype_query_pairs(entity, entity);
+					}
+				}
+			}
+
+			//! Creates a new archetype from a given set of entities
+			//! \param entities Archetype entities/components
+			//! \return Pointer to the new archetype.
+			GAIA_NODISCARD Archetype* create_archetype(EntitySpan entities) {
+				GAIA_ASSERT(m_nextArchetypeId < (decltype(m_nextArchetypeId))-1);
+				auto* pArchetype = Archetype::create(*this, m_nextArchetypeId++, m_worldVersion, entities);
+				pArchetype->set_max_lifespan(m_defaultMaxLifespan);
+
+				const auto entityCnt = (uint32_t)entities.size();
+				GAIA_FOR(entityCnt) {
+					auto entity = entities[i];
+					add_new_entity_archetype_pair(entity, pArchetype, (uint16_t)i);
+
+#if GAIA_OBSERVERS_ENABLED
+					auto& ec = fetch(entity);
+					if ((ec.flags & EntityContainerFlags::IsObserved) != 0 || m_observers.has_observers(entity)) {
+						ec.flags |= EntityContainerFlags::IsObserved;
+						pArchetype->observed_terms_inc();
+					}
+#endif
+
+					// If the entity is a pair, make sure to create special wildcard records for it
+					// as well so wildcard queries can find the archetype.
+					if (entity.pair()) {
+						add_new_pair_archetype_query_pairs(entity, pArchetype);
+					}
+				}
+
+				return pArchetype;
+			}
+
+			//! Registers the archetype in the world.
+			//! \param pArchetype Archetype to register.
+			void reg_archetype(Archetype* pArchetype) {
+				GAIA_ASSERT(pArchetype != nullptr);
+
+				// // Make sure hashes were set already
+				// GAIA_ASSERT(
+				// 		(m_archetypesById.empty() || pArchetype == m_pRootArchetype) || (pArchetype->lookup_hash().hash != 0));
+
+				// Make sure the archetype is not registered yet
+				GAIA_ASSERT(pArchetype->list_idx() == BadIndex);
+
+				// Register the archetype
+				[[maybe_unused]] const auto it0 =
+						m_archetypesById.emplace(ArchetypeIdLookupKey(pArchetype->id(), pArchetype->id_hash()), pArchetype);
+				[[maybe_unused]] const auto it1 =
+						m_archetypesByHash.emplace(ArchetypeLookupKey(pArchetype->lookup_hash(), pArchetype), pArchetype);
+
+				GAIA_ASSERT(it0.second);
+				GAIA_ASSERT(it1.second);
+
+				pArchetype->list_idx(m_archetypes.size());
+				m_archetypes.emplace_back(pArchetype);
+
+				m_queryCache.register_archetype_with_queries(pArchetype);
+			}
+
+			//! Unregisters the archetype from the world.
+			//! \param pArchetype Archetype to unregister.
+			void unreg_archetype(Archetype* pArchetype) {
+				GAIA_ASSERT(pArchetype != nullptr);
+
+				// Make sure hashes were set already
+				GAIA_ASSERT(
+						(m_archetypesById.empty() || pArchetype == m_pRootArchetype) || (pArchetype->lookup_hash().hash != 0));
+
+				// Make sure the archetype was registered already
+				GAIA_ASSERT(pArchetype->list_idx() != BadIndex);
+
+				// Query rematching uses the entity -> archetype lookup map as an input. Remove this
+				// archetype from all of its lookup buckets before destroying it so dead archetype
+				// pointers cannot be reintroduced into cached query state during the next rematch.
+				del_archetype_entity_pairs(pArchetype);
+
+				// Break graph connections
+				{
+					auto& edgeLefts = pArchetype->left_edges();
+					for (auto& itLeft: edgeLefts)
+						remove_edge_from_archetype(pArchetype, itLeft.second, itLeft.first.entity());
+				}
+
+				auto tmpArchetype = ArchetypeLookupChecker(pArchetype->ids_view());
+				[[maybe_unused]] const auto res0 =
+						m_archetypesById.erase(ArchetypeIdLookupKey(pArchetype->id(), pArchetype->id_hash()));
+				[[maybe_unused]] const auto res1 =
+						m_archetypesByHash.erase(ArchetypeLookupKey(pArchetype->lookup_hash(), &tmpArchetype));
+				GAIA_ASSERT(res0 != 0);
+				GAIA_ASSERT(res1 != 0);
+
+				const auto idx = pArchetype->list_idx();
+				GAIA_ASSERT(idx == core::get_index(m_archetypes, pArchetype));
+				core::swap_erase(m_archetypes, idx);
+				update_entity_archetype_lookup_revision(EntityBadLookupKey);
+				if (!m_archetypes.empty() && idx != m_archetypes.size())
+					m_archetypes[idx]->list_idx(idx);
+			}
+
+#if GAIA_ASSERT_ENABLED
+			//! Logs archetype ids while diagnosing an invalid mutation.
+			//! \param world World used to resolve id names.
+			//! \param archetype Archetype being inspected.
+			//! \param entity Id being added or removed.
+			//! \param adding True for an add diagnostic, false for a remove diagnostic.
+			static void print_archetype_entities(const World& world, const Archetype& archetype, Entity entity, bool adding) {
+				auto ids = archetype.ids_view();
+
+				GAIA_LOG_W("Currently present:");
+				GAIA_EACH(ids) {
+					const auto name = entity_name(world, ids[i]);
+					GAIA_LOG_W("> [%u] %.*s", i, (int)name.size(), name.empty() ? "" : name.data());
+				}
+
+				GAIA_LOG_W("Trying to %s:", adding ? "add" : "del");
+				const auto name = entity_name(world, entity);
+				GAIA_LOG_W("> %.*s", (int)name.size(), name.empty() ? "" : name.data());
+			}
+
+			//! Validates an archetype add in assertion-enabled builds.
+			//! \param world World being mutated.
+			//! \param archetype Current archetype.
+			//! \param entity Entity being mutated.
+			//! \param addEntity Id being added.
+			static void verify_add(const World& world, Archetype& archetype, Entity entity, Entity addEntity) {
+				// Make sure the world is not locked
+				if (world.locked()) {
+					GAIA_ASSERT2(false, "Trying to add an entity while the world is locked");
+					GAIA_LOG_W("Trying to add an entity [%u:%u] while the world is locked", entity.id(), entity.gen());
+					print_archetype_entities(world, archetype, entity, false);
+					return;
+				}
+
+				// Makes sure no wildcard entities are added
+				if (is_wildcard(addEntity)) {
+					GAIA_ASSERT2(false, "Adding wildcard pairs is not supported");
+					print_archetype_entities(world, archetype, addEntity, true);
+					return;
+				}
+
+				// Make sure not to add too many entities/components.
+				// Non-fragmenting ids live outside archetype identity, so they do not consume a column.
+				if (!world.component_is_non_fragmenting(addEntity)) {
+					auto ids = archetype.ids_view();
+					if GAIA_UNLIKELY (ids.size() + 1 > ChunkHeader::MAX_COMPONENTS) {
+						GAIA_ASSERT2(false, "Trying to add too many entities to entity!");
+						GAIA_LOG_W(
+								"Trying to add an entity to entity [%u:%u] but there's no space left!", entity.id(), entity.gen());
+						print_archetype_entities(world, archetype, addEntity, true);
+						return;
+					}
+				}
+			}
+
+			//! Validates an archetype remove in assertion-enabled builds.
+			//! \param world World being mutated.
+			//! \param archetype Current archetype.
+			//! \param entity Entity being mutated.
+			//! \param func_del Id being removed.
+			static void verify_del(const World& world, Archetype& archetype, Entity entity, Entity func_del) {
+				// Make sure the world is not locked
+				if (world.locked()) {
+					GAIA_ASSERT2(false, "Trying to delete an entity while the world is locked");
+					GAIA_LOG_W("Trying to delete an entity [%u:%u] while the world is locked", entity.id(), entity.gen());
+					print_archetype_entities(world, archetype, entity, false);
+					return;
+				}
+
+				// Make sure the id is present on the archetype or in non-fragmenting membership storage.
+				if GAIA_UNLIKELY (
+						!archetype.has(func_del) &&
+						(func_del.pair() || !world.has_direct_sparse_component_inter(entity, func_del))) {
+					GAIA_ASSERT2(false, "Trying to remove an entity which wasn't added");
+					GAIA_LOG_W("Trying to del an entity from entity [%u:%u] but it was never added", entity.id(), entity.gen());
+					print_archetype_entities(world, archetype, func_del, false);
+					return;
+				}
+			}
+
+			//! Validates an enable-state mutation in assertion-enabled builds.
+			//! \param world World being mutated.
+			//! \param archetype Current archetype.
+			//! \param entity Entity being enabled or disabled.
+			static void verify_enable(const World& world, Archetype& archetype, Entity entity) {
+				if (world.locked()) {
+					GAIA_ASSERT2(false, "Trying to enable/disable an entity while the world is locked");
+					GAIA_LOG_W("Trying to enable/disable an entity [%u:%u] while the world is locked", entity.id(), entity.gen());
+					print_archetype_entities(world, archetype, entity, false);
+				}
+			}
+
+			//! Validates an archetype move in assertion-enabled builds.
+			//! \param world World being mutated.
+			//! \param archetype Source archetype.
+			//! \param entity Entity being moved.
+			static void verify_move(const World& world, Archetype& archetype, Entity entity) {
+				if (world.locked()) {
+					GAIA_ASSERT2(false, "Trying to move an entity while the world is locked");
+					GAIA_LOG_W("Trying to move an entity [%u:%u] while the world is locked", entity.id(), entity.gen());
+					print_archetype_entities(world, archetype, entity, false);
+				}
+			}
+#endif
+
+			//! Searches for an archetype formed by adding \a entity to \a pArchetypeLeft.
+			//! If no such archetype is found a new one is created.
+			//! \param pArchetypeLeft Archetype we originate from.
+			//! \param entity Entity we want to add.
+			//! \return Archetype pointer.
+			GAIA_NODISCARD Archetype* foc_archetype_add(Archetype* pArchetypeLeft, Entity entity) {
+				// Check if the component is found when following the "add" edges
+				bool edgeNeedsRebuild = false;
+				{
+					const auto edge = pArchetypeLeft->find_edge_right(entity);
+					if (edge != ArchetypeIdHashPairBad) {
+						auto it = m_archetypesById.find(ArchetypeIdLookupKey(edge.id, edge.hash));
+						if (it != m_archetypesById.end() && it->second != nullptr)
+							return it->second;
+
+						// Drop stale local cache edge and rebuild it below.
+						pArchetypeLeft->del_graph_edge_right_local(entity);
+						edgeNeedsRebuild = true;
+					}
+				}
+
+				// Prepare a joint array of components of old + the newly added component
+				cnt::sarray_ext<Entity, ChunkHeader::MAX_COMPONENTS> entsNew;
+				{
+					auto entsOld = pArchetypeLeft->ids_view();
+					const auto entsOldCnt = entsOld.size();
+					entsNew.resize((uint32_t)entsOld.size() + 1);
+					GAIA_FOR(entsOldCnt) entsNew[i] = entsOld[i];
+					entsNew[(uint32_t)entsOld.size()] = entity;
+				}
+
+				// Make sure to sort the components so we receive the same hash no matter the order in which components
+				// are provided Bubble sort is okay. We're dealing with at most ChunkHeader::MAX_COMPONENTS items.
+				sort(entsNew, SortComponentCond{});
+
+				// Once sorted we can calculate the hashes
+				const auto hashLookup = calc_lookup_hash({entsNew.data(), entsNew.size()}).hash;
+				auto* pArchetypeRight = find_archetype({hashLookup}, {entsNew.data(), entsNew.size()});
+				if (pArchetypeRight == nullptr) {
+					pArchetypeRight = create_archetype({entsNew.data(), entsNew.size()});
+					pArchetypeRight->set_hashes({hashLookup});
+					reg_archetype(pArchetypeRight);
+					edgeNeedsRebuild = true;
+				}
+
+				if (edgeNeedsRebuild)
+					pArchetypeLeft->build_graph_edges(pArchetypeRight, entity);
+
+				return pArchetypeRight;
+			}
+
+			//! Batched builder variant of foc_archetype_add() that resolves the target archetype without
+			//! consulting or mutating the archetype graph. This avoids graph churn on intermediate batch steps.
+			//! \param pArchetypeLeft Source archetype.
+			//! \param entity Component or pair to add.
+			//! \return Existing or newly created target archetype.
+			GAIA_NODISCARD Archetype* foc_archetype_add_no_graph(Archetype* pArchetypeLeft, Entity entity) {
+				cnt::sarray_ext<Entity, ChunkHeader::MAX_COMPONENTS> entsNew;
+				{
+					auto entsOld = pArchetypeLeft->ids_view();
+					const auto entsOldCnt = entsOld.size();
+					entsNew.resize((uint32_t)entsOld.size() + 1);
+					GAIA_FOR(entsOldCnt) entsNew[i] = entsOld[i];
+					entsNew[(uint32_t)entsOld.size()] = entity;
+				}
+
+				sort(entsNew, SortComponentCond{});
+
+				const auto hashLookup = calc_lookup_hash({entsNew.data(), entsNew.size()}).hash;
+				auto* pArchetypeRight = find_archetype({hashLookup}, {entsNew.data(), entsNew.size()});
+				if (pArchetypeRight != nullptr)
+					return pArchetypeRight;
+
+				pArchetypeRight = create_archetype({entsNew.data(), entsNew.size()});
+				pArchetypeRight->set_hashes({hashLookup});
+				reg_archetype(pArchetypeRight);
+				return pArchetypeRight;
+			}
+
+			//! Searches for an archetype formed by removing \a entity from \a pArchetypeRight.
+			//! If no such archetype is found a new one is created.
+			//! \param pArchetypeRight Archetype we originate from.
+			//! \param entity Component we want to remove.
+			//! \return Pointer to archetype.
+			GAIA_NODISCARD Archetype* foc_archetype_del(Archetype* pArchetypeRight, Entity entity) {
+				// Check if the component is found when following the "del" edges
+				bool edgeNeedsRebuild = false;
+				{
+					const auto edge = pArchetypeRight->find_edge_left(entity);
+					if (edge != ArchetypeIdHashPairBad) {
+						const auto it = m_archetypesById.find(ArchetypeIdLookupKey(edge.id, edge.hash));
+						if (it != m_archetypesById.end()) {
+							auto* pArchetypeLeft = it->second;
+							if (pArchetypeLeft != nullptr)
+								return pArchetypeLeft;
+						}
+
+						// Drop stale local cache edge and rebuild it below.
+						pArchetypeRight->del_graph_edge_left_local(entity);
+						edgeNeedsRebuild = true;
+					}
+				}
+
+				cnt::sarray_ext<Entity, ChunkHeader::MAX_COMPONENTS> entsNew;
+				auto entsOld = pArchetypeRight->ids_view();
+
+				// Find the intersection
+				for (const auto e: entsOld) {
+					if (e == entity)
+						continue;
+
+					entsNew.push_back(e);
+				}
+
+				// Verify there was a change
+				GAIA_ASSERT(entsNew.size() != entsOld.size());
+
+				// Calculate the hashes
+				const auto hashLookup = calc_lookup_hash({entsNew.data(), entsNew.size()}).hash;
+				auto* pArchetype = find_archetype({hashLookup}, {entsNew.data(), entsNew.size()});
+				if (pArchetype == nullptr) {
+					pArchetype = create_archetype({entsNew.data(), entsNew.size()});
+					pArchetype->set_hashes({hashLookup});
+					reg_archetype(pArchetype);
+					edgeNeedsRebuild = true;
+				}
+
+				if (edgeNeedsRebuild)
+					pArchetype->build_graph_edges(pArchetypeRight, entity);
+
+				return pArchetype;
+			}
+
+			//! Batched builder variant of foc_archetype_del() that resolves the target archetype without
+			//! consulting or mutating the archetype graph. This avoids graph churn on intermediate batch steps.
+			//! \param pArchetypeRight Source archetype.
+			//! \param entity Component or pair to remove.
+			//! \return Existing or newly created target archetype.
+			GAIA_NODISCARD Archetype* foc_archetype_del_no_graph(Archetype* pArchetypeRight, Entity entity) {
+				cnt::sarray_ext<Entity, ChunkHeader::MAX_COMPONENTS> entsNew;
+				auto entsOld = pArchetypeRight->ids_view();
+
+				for (const auto e: entsOld) {
+					if (e == entity)
+						continue;
+
+					entsNew.push_back(e);
+				}
+
+				GAIA_ASSERT(entsNew.size() != entsOld.size());
+
+				const auto hashLookup = calc_lookup_hash({entsNew.data(), entsNew.size()}).hash;
+				auto* pArchetype = find_archetype({hashLookup}, {entsNew.data(), entsNew.size()});
+				if (pArchetype != nullptr)
+					return pArchetype;
+
+				pArchetype = create_archetype({entsNew.data(), entsNew.size()});
+				pArchetype->set_hashes({hashLookup});
+				reg_archetype(pArchetype);
+				return pArchetype;
+			}
+
+			//! Returns an array of archetypes registered in the world
+			//! \return Array or archetypes.
+			GAIA_NODISCARD const auto& archetypes() const {
+				return m_archetypes;
+			}
+
+			//! Returns the archetype the entity belongs to.
+			//! \param entity Entity
+			//! \return Reference to the archetype.
+			GAIA_NODISCARD Archetype& archetype(Entity entity) {
+				const auto& ec = fetch(entity);
+				return *ec.pArchetype;
+			}
+
+			//! Removes any name associated with the entity
+			//! \param ec Entity container associated with \a entity.
+			//! \param entity Entity the name of which we want to delete
+			void del_name(EntityContainer& ec, Entity entity) {
+				EntityBuilder(*this, entity, ec).del_name();
+			}
+
+			//! Removes any name associated with the entity
+			//! \param entity Entity the name of which we want to delete
+			void del_name(Entity entity) {
+				EntityBuilder(*this, entity).del_name();
+			}
+
+			//! Removes a name or alias lookup entry and releases owned storage.
+			//! \param lookup Name or alias lookup map.
+			//! \param key Lookup key to remove.
+			static void del_name_lookup(cnt::map<EntityNameLookupKey, Entity>& lookup, EntityNameLookupKey key) {
+				const auto it = lookup.find(key);
+				// If the assert is hit it means the pointer to the name string was invalidated or became dangling.
+				// That should not be possible for strings managed internally so the only other option is user-managed
+				// strings are broken.
+				GAIA_ASSERT(it != lookup.end());
+				if (it != lookup.end()) {
+					// Release memory allocated for the string if we own it
+					if (it->first.owned())
+						mem::mem_free((void*)key.str());
+
+					lookup.erase(it);
+				}
+			}
+
+			//! Releases the name and alias of an entity whose row is about to be destroyed.
+			//! The row keeps its EntityDesc, so unlike del_name() no archetype move happens.
+			//! \param ec Entity container associated with \a entity.
+			//! \param entity Entity being deleted.
+			void del_entity_names(EntityContainer& ec, Entity entity) {
+				if (entity.pair())
+					return;
+
+				const auto compIdx = core::get_index(ec.pChunk->ids_view(), GAIA_ID(EntityDesc));
+				if (compIdx == BadIndex)
+					return;
+
+				auto* pDesc = reinterpret_cast<EntityDesc*>(ec.pChunk->comp_ptr_mut_gen<false>(compIdx, ec.row));
+				GAIA_ASSERT(core::check_alignment(pDesc));
+				if (pDesc->name != nullptr) {
+					del_name_lookup(m_nameToEntity, EntityNameLookupKey(pDesc->name, pDesc->name_len, 0));
+					invalidate_scope_path_cache();
+					pDesc->name = nullptr;
+					pDesc->name_len = 0;
+				}
+				if (pDesc->alias != nullptr) {
+					del_name_lookup(m_aliasToEntity, EntityNameLookupKey(pDesc->alias, pDesc->alias_len, 0));
+					pDesc->alias = nullptr;
+					pDesc->alias_len = 0;
+				}
+			}
+
+			//! Deletes an entity along with all data associated with it.
+			//! Ignored for invalid entities or pairs.
+			//! \param entity Entity to delete
+			//! \param invalidate If true all entity records are invalidated
+			void del_entity(Entity entity, bool invalidate) {
+				if (entity.pair() || entity == EntityBad)
+					return;
+
+				auto& ec = fetch(entity);
+				del_entity_inter(ec, entity, invalidate);
+			}
+
+			//! Deletes an entity along with all data associated with it.
+			//! Ignored for invalid entities or pairs.
+			//! \param ec Entity container records
+			//! \param entity Entity to delete
+			//! \param invalidate If true all entity records are invalidated
+			void del_entity(EntityContainer& ec, Entity entity, bool invalidate) {
+				if (entity == EntityBad)
+					return;
+
+				del_entity_inter(ec, entity, invalidate);
+			}
+
+			//! Deletes an entity along with all data associated with it.
+			//! \param ec Entity container record
+			//! \param entity Entity to delete
+			//! \param invalidate If true, all entity records are deleted
+			void del_entity_inter(EntityContainer& ec, Entity entity, bool invalidate) {
+				GAIA_ASSERT(entity.pair() || entity.id() > GAIA_ID(LastCoreComponent).id());
+
+				// if (!is_req_del(ec))
+				{
+					if (m_recs.entities.item_count() == 0)
+						return;
+
+#if GAIA_ASSERT_ENABLED
+					auto* pChunk = ec.pChunk;
+					GAIA_ASSERT(pChunk != nullptr);
+#endif
+
+					// Remove the entity from its chunk.
+					// We release the names first because remove_entity calls component destructors.
+					// If the call was made inside invalidate_entity we would access a memory location
+					// which has already been destructed which is not nice.
+					del_entity_names(ec, entity);
+					remove_entity(*ec.pArchetype, *ec.pChunk, ec.row);
+					remove_src_entity_version(entity);
+				}
+
+				// Invalidate on-demand.
+				// We delete as a separate step in the delayed deletion.
+				if (invalidate)
+					invalidate_entity(entity);
+			}
+
+			//! Destroys the chunks of the delete-requested \a archetype along with their rows.
+			//! Every row was requested for deletion on its own, so del_finalize_entities frees the records.
+			//! \param archetype Archetype whose entities should be deleted.
+			void del_entities(Archetype& archetype) {
+				// Rows that joined after the request still need their own deletion.
+				for (;;) {
+					cnt::darray<Entity> rows;
+					collect_unrequested_rows(archetype, rows);
+					if (rows.empty())
+						break;
+
+					ArchetypeRowDelScope scope(*this);
+					prepare_del_archetype_rows(archetype, rows);
+					for (const auto entity: rows)
+						m_archetypeRowsToDel.push_back(entity);
+				}
+
+				for (auto* pChunk: archetype.chunks()) {
+					validate_chunk(pChunk);
+
+					// The rows go with the chunk. Their records wait in m_reqEntitiesToDel.
+					for (auto e: pChunk->entity_view()) {
+						auto* pEc = try_fetch_record(e);
+						if (pEc == nullptr)
+							continue;
+
+						GAIA_ASSERT((pEc->flags & EntityContainerFlags::DeleteRequested) != 0);
+						pEc->pArchetype = nullptr;
+						pEc->pChunk = nullptr;
+						pEc->pEntity = nullptr;
+					}
+
+					// If the chunk was already dying we need to remove it from the delete list
+					// because we can delete it right away.
+					if (pChunk->queued_for_deletion())
+						remove_chunk_from_delete_queue(pChunk->delete_queue_index());
+
+					remove_chunk(archetype, *pChunk);
+				}
+
+				validate_entities();
+			}
+
+			//! Deletes the entity
+			//! \param entity Entity to delete
+			void del_inter(Entity entity) {
+				auto on_delete = [this](Entity entityToDel) {
+					auto& ec = fetch(entityToDel);
+					handle_del_entity(ec, entityToDel, EntitySpan{});
+				};
+
+				if (is_wildcard(entity)) {
+					const auto rel = get(entity.id());
+					const auto tgt = get(entity.gen());
+
+					// (*,*)
+					if (rel == All && tgt == All) {
+						GAIA_ASSERT2(false, "Not supported yet");
+					}
+					// (*,X)
+					else if (rel == All) {
+						if (const auto* pTargets = relations(tgt)) {
+							// handle_del might invalidate the targets map so we need to make a copy
+							// TODO: this is suboptimal at best, needs to be optimized
+							cnt::darray_ext<Entity, 64> tmp;
+							for (auto key: *pTargets)
+								tmp.push_back(key.entity());
+							for (auto e: tmp)
+								on_delete(Pair(e, tgt));
+						}
+					}
+					// (X,*)
+					else if (tgt == All) {
+						if (const auto* pRelations = targets(rel)) {
+							// handle_del might invalidate the targets map so we need to make a copy
+							// TODO: this is suboptimal at best, needs to be optimized
+							cnt::darray_ext<Entity, 64> tmp;
+							for (auto key: *pRelations)
+								tmp.push_back(key.entity());
+							for (auto e: tmp)
+								on_delete(Pair(rel, e));
+						}
+					}
+				} else {
+					on_delete(entity);
+				}
+			}
+
+			//! Force-deletes entities in requested archetypes and schedules the emptied archetypes for deletion.
+			void del_finalize_archetypes() {
+				GAIA_PROF_SCOPE(World::del_finalize_archetypes);
+
+				// Deleting rows that joined late can request more archetypes, so take them one at a time.
+				while (!m_reqArchetypesToDel.empty()) {
+					const auto it = m_reqArchetypesToDel.begin();
+					auto* pArchetype = it->archetype();
+					m_reqArchetypesToDel.erase(it);
+					if (pArchetype == nullptr)
+						continue;
+
+					del_entities(*pArchetype);
+
+					// Now that all entities are deleted, all their chunks are requested to get deleted
+					// and in turn the archetype itself as well. Therefore, it is added to the archetype
+					// delete list and picked up by del_empty_archetypes. No need to call deletion from here.
+					// > del_empty_archetype(pArchetype);
+				}
+			}
+
+			//! Try to delete all requested entities
+			void del_finalize_entities() {
+				GAIA_PROF_SCOPE(World::del_finalize_entities);
+
+				for (auto it = m_reqEntitiesToDel.begin(); it != m_reqEntitiesToDel.end();) {
+					const auto e = it->entity();
+
+					// Entities that form archetypes need to stay until the archetype itself is gone
+					if (m_entityToArchetypeMap.contains(*it)) {
+						++it;
+						continue;
+					}
+
+#if GAIA_USE_SAFE_ENTITY
+					// A cascade deletes the entity's data even while a SafeEntity references it. Keep the record
+					// until the last SafeEntity releases it, so the handle never touches a freed record.
+					if (const auto* pEc = try_fetch_record(e); pEc != nullptr && pEc->refCnt != 0) {
+						++it;
+						continue;
+					}
+#endif
+
+					// Requested entities are partially deleted. We only need to invalidate them.
+					invalidate_entity(e);
+
+					it = m_reqEntitiesToDel.erase(it);
+				}
+			}
+
+			//! Finalize all queued delete operations
+			void del_finalize() {
+				GAIA_PROF_SCOPE(World::del_finalize);
+
+				del_finalize_archetypes();
+				del_finalize_entities();
+			}
+
+			//! Checks whether an archetype satisfies a deletion policy condition.
+			//! \param archetype Archetype to inspect.
+			//! \param cond Required policy pair.
+			//! \param target Entity or wildcard target being processed.
+			//! \return True when a matching id carries the condition.
+			GAIA_NODISCARD bool archetype_cond_match(Archetype& archetype, Pair cond, Entity target) const {
+				// E.g.:
+				//   target = (All, entity)
+				//   cond = (OnDeleteTarget, delete)
+				// Delete the entity if it matches the cond
+				auto ids = archetype.ids_view();
+
+				if (target.pair()) {
+					for (auto e: ids) {
+						// Find the pair which matches (All, entity)
+						if (!e.pair())
+							continue;
+						if (e.gen() != target.gen())
+							continue;
+
+						const auto& ec = m_recs.entities[e.id()];
+						const auto entity = ec.pChunk->entity_view()[ec.row];
+						if (!has(entity, cond))
+							continue;
+
+						return true;
+					}
+				} else {
+					for (auto e: ids) {
+						if (e.pair())
+							continue;
+						if (!has(e, cond))
+							continue;
+
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			//! Updates all chunks and entities of archetype \a srcArchetype so they are a part of \a dstArchetype
+			//! \param srcArchetype Source archetype
+			//! \param dstArchetype Destination archeytpe
+			void move_to_archetype(Archetype& srcArchetype, Archetype& dstArchetype) {
+				GAIA_ASSERT(&srcArchetype != &dstArchetype);
+
+				bool updated = false;
+
+				for (auto* pSrcChunk: srcArchetype.chunks()) {
+					auto srcEnts = pSrcChunk->entity_view();
+					if (srcEnts.empty())
+						continue;
+
+					// Copy entities back-to-front to avoid unnecessary data movements.
+					// TODO: Handle disabled entities efficiently.
+					//       If there are disabled entities, we still do data movements if there already
+					//       are enabled entities in the chunk.
+					// TODO: If the header was of some fixed size, e.g. if we always acted as if we had
+					//       ChunkHeader::MAX_COMPONENTS, certain data movements could be done pretty much instantly.
+					//       E.g. when removing tags or pairs, we would simply replace the chunk pointer
+					//       with a pointer to another one. The same goes for archetypes. Component data
+					//       would not have to move at all internal chunk header pointers would remain unchanged.
+
+					uint32_t i = (uint32_t)srcEnts.size();
+					while (i != 0) {
+						auto* pDstChunk = dstArchetype.foc_free_chunk();
+						const uint32_t dstSpaceLeft = pDstChunk->capacity() - pDstChunk->size();
+						const uint32_t cnt = core::get_min(dstSpaceLeft, i);
+						for (uint32_t j = 0; j < cnt; ++j) {
+							auto e = srcEnts[i - j - 1];
+							move_entity(e, fetch(e), dstArchetype, *pDstChunk);
+						}
+
+						pDstChunk->update_world_version();
+						pDstChunk->update_entity_order_version();
+
+						GAIA_ASSERT(cnt <= i);
+						i -= cnt;
+					}
+
+					pSrcChunk->update_world_version();
+					pSrcChunk->update_entity_order_version();
+					updated = true;
+				}
+
+				if (updated)
+					update_version(m_worldVersion);
+			}
+
+			//! Finds the destination archetype produced by removing \a entity from \a pArchetype.
+			//! \param pArchetype Source archetype.
+			//! \param entity Entity or component to remove.
+			//! \return Destination archetype or nullptr if no match is found.
+			GAIA_NODISCARD Archetype* calc_dst_archetype_ent(Archetype* pArchetype, Entity entity) {
+				GAIA_ASSERT(!is_wildcard(entity));
+
+				auto ids = pArchetype->ids_view();
+				for (auto id: ids) {
+					if (id != entity)
+						continue;
+
+					return foc_archetype_del(pArchetype, id);
+				}
+
+				return nullptr;
+			}
+
+			//! Finds the destination archetype for removing every pair matching `(All, entity)` from \a pArchetype.
+			//! \param pArchetype Source archetype.
+			//! \param entity Wildcard target to remove.
+			//! \return Destination archetype or nullptr if no match is found.
+			GAIA_NODISCARD Archetype* calc_dst_archetype_all_ent(Archetype* pArchetype, Entity entity) {
+				GAIA_ASSERT(is_wildcard(entity));
+
+				Archetype* pDstArchetype = pArchetype;
+
+				auto ids = pArchetype->ids_view();
+				for (auto id: ids) {
+					if (!id.pair() || id.gen() != entity.gen())
+						continue;
+
+					pDstArchetype = foc_archetype_del(pDstArchetype, id);
+				}
+
+				return pArchetype != pDstArchetype ? pDstArchetype : nullptr;
+			}
+
+			//! Finds the destination archetype for removing every pair matching `(entity, All)` from \a pArchetype.
+			//! \param pArchetype Source archetype.
+			//! \param entity Wildcard relation to remove.
+			//! \return Destination archetype or nullptr if no match is found.
+			GAIA_NODISCARD Archetype* calc_dst_archetype_ent_all(Archetype* pArchetype, Entity entity) {
+				GAIA_ASSERT(is_wildcard(entity));
+
+				Archetype* pDstArchetype = pArchetype;
+
+				auto ids = pArchetype->ids_view();
+				for (auto id: ids) {
+					if (!id.pair() || id.id() != entity.id())
+						continue;
+
+					pDstArchetype = foc_archetype_del(pDstArchetype, id);
+				}
+
+				return pArchetype != pDstArchetype ? pDstArchetype : nullptr;
+			}
+
+			//! Finds the destination archetype for removing every wildcard pair from \a pArchetype.
+			//! \param pArchetype Source archetype.
+			//! \param entity Wildcard pair selector.
+			//! \return Destination archetype or nullptr if no match is found.
+			GAIA_NODISCARD Archetype* calc_dst_archetype_all_all(Archetype* pArchetype, [[maybe_unused]] Entity entity) {
+				GAIA_ASSERT(is_wildcard(entity));
+
+				Archetype* pDstArchetype = pArchetype;
+				bool found = false;
+
+				auto ids = pArchetype->ids_view();
+				for (auto id: ids) {
+					if (!id.pair())
+						continue;
+
+					pDstArchetype = foc_archetype_del(pDstArchetype, id);
+					found = true;
+				}
+
+				return found ? pDstArchetype : nullptr;
+			}
+
+			//! Finds the destination archetype produced by removing \a entity from \a pArchetype.
+			//! Wildcard pair entities are supported as well.
+			//! \param pArchetype Source archetype.
+			//! \param entity Entity, pair, or wildcard pair selector to remove.
+			//! \return Destination archetype or nullptr if no match is found.
+			GAIA_NODISCARD Archetype* calc_dst_archetype(Archetype* pArchetype, Entity entity) {
+				if (entity.pair()) {
+					auto rel = entity.id();
+					auto tgt = entity.gen();
+
+					// Removing a wildcard pair. We need to find all pairs matching it.
+					if (rel == All.id() || tgt == All.id()) {
+						// (first, All) means we need to match (first, A), (first, B), ...
+						if (rel != All.id() && tgt == All.id())
+							return calc_dst_archetype_ent_all(pArchetype, entity);
+
+						// (All, second) means we need to match (A, second), (B, second), ...
+						if (rel == All.id() && tgt != All.id())
+							return calc_dst_archetype_all_ent(pArchetype, entity);
+
+						// (All, All) means we need to match all relationships
+						return calc_dst_archetype_all_all(pArchetype, EntityBad);
+					}
+				}
+
+				// Non-wildcard pair or entity
+				return calc_dst_archetype_ent(pArchetype, entity);
+			}
+
+			//! Queues an archetype for deferred deletion.
+			//! \param archetype Archetype to queue.
+			void req_del(Archetype& archetype) {
+				if (archetype.is_req_del())
+					return;
+
+				cnt::darray<Entity> rows;
+				collect_unrequested_rows(archetype, rows);
+				prepare_del_archetype_rows(archetype, rows);
+
+				archetype.req_del();
+				update_version(m_archetypeDeleteVersion);
+				m_reqArchetypesToDel.insert(ArchetypeLookupKey(archetype.lookup_hash(), &archetype));
+
+				// A requested deletion outweighs the lifespan. An archetype kept indefinitely is never queued for
+				// deletion, so it becomes mortal: its last chunk queues it when it goes, or it is queued here when
+				// it holds no chunk.
+				if (archetype.max_lifespan() == 0) {
+					archetype.set_max_lifespan(1);
+					try_enqueue_archetype_for_deletion(archetype);
+				}
+
+				// The rows' own deletion rules move entities between archetypes. They run once the outermost
+				// request has marked every archetype it deletes, so no entity moves out of or into one.
+				GAIA_ASSERT(m_archetypeRowDelDepth != 0);
+				for (const auto entity: rows)
+					m_archetypeRowsToDel.push_back(entity);
+			}
+
+			//! Defers deleting queued archetype rows until the outermost deletion request finishes.
+			class ArchetypeRowDelScope {
+				World& m_world;
+
+			public:
+				explicit ArchetypeRowDelScope(World& world): m_world(world) {
+					++m_world.m_archetypeRowDelDepth;
+				}
+				~ArchetypeRowDelScope() {
+					if (--m_world.m_archetypeRowDelDepth == 0)
+						m_world.req_del_archetype_rows();
+				}
+				ArchetypeRowDelScope(const ArchetypeRowDelScope&) = delete;
+				ArchetypeRowDelScope& operator=(const ArchetypeRowDelScope&) = delete;
+			};
+
+			//! Collects the rows of \a archetype that have not been requested for deletion yet.
+			//! \param archetype Archetype to inspect.
+			//! \param[out] rows Receives the rows.
+			void collect_unrequested_rows(const Archetype& archetype, cnt::darray<Entity>& rows) {
+				for (const auto* pChunk: archetype.chunks()) {
+					for (const auto entity: pChunk->entity_view()) {
+						const auto* pEc = try_fetch_record(entity);
+						if (pEc != nullptr && (pEc->flags & EntityContainerFlags::DeleteRequested) == 0)
+							rows.push_back(entity);
+					}
+				}
+			}
+
+			//! Unlinks the Is relations of archetype rows about to be deleted, unregisters the rows that are
+			//! observers or systems, and notifies their component deletion while they are still readable.
+			//! \param archetype Archetype holding the rows.
+			//! \param rows Rows to prepare.
+			void prepare_del_archetype_rows(const Archetype& archetype, const cnt::darray<Entity>& rows) {
+				if (archetype.pairs_is() != 0) {
+					for (const auto entity: rows)
+						unlink_live_is_relations(entity);
+				}
+
+				// Unregister before notifying, as the per-entity path does. An entity already being deleted on
+				// its own unregisters there.
+				for (const auto entity: rows) {
+					if (!entity_deletion_active(entity))
+						del_entity_registrations(entity);
+				}
+
+				if (!may_notify_del_entity_components(archetype) || tearing_down())
+					return;
+
+				cnt::darray_ext<Entity, 32> entitiesToNotify;
+				for (const auto entity: rows) {
+					if (!entity_deletion_active(entity)) {
+						entity_deletion_enter(entity);
+						entitiesToNotify.push_back(entity);
+					}
+				}
+
+				// Mark every entity active before callbacks run. A callback can then request
+				// deletion of any entity in this archetype without recursively notifying it.
+				for (const auto entity: entitiesToNotify)
+					notify_del_entity_components(fetch(entity), entity);
+				for (uint32_t i = entitiesToNotify.size(); i > 0; --i)
+					entity_deletion_leave(entitiesToNotify[i - 1]);
+			}
+
+			//! Requests deletion of the queued rows of delete-requested archetypes. Their chunks are destroyed
+			//! in bulk, so each row gets everything else deleting it on its own would do: its deletion rules for
+			//! the entities referencing it, name, sparse and non-fragmenting data release, and a queued record
+			//! for del_finalize_entities.
+			void req_del_archetype_rows() {
+				// Requests made by the rows' rules queue more rows for this loop
+				++m_archetypeRowDelDepth;
+				while (!m_archetypeRowsToDel.empty()) {
+					auto rows = GAIA_MOV(m_archetypeRowsToDel);
+					m_archetypeRowsToDel = {};
+					// Grow the queue once rather than rehash it repeatedly while whole archetypes go in
+					m_reqEntitiesToDel.reserve(m_reqEntitiesToDel.size() + rows.size());
+					for (const auto entity: rows)
+						req_del_archetype_row(entity);
+				}
+				--m_archetypeRowDelDepth;
+			}
+
+			//! Requests deletion of one row of a delete-requested archetype. See req_del_archetype_rows.
+			//! \param entity Row prepared by prepare_del_archetype_rows.
+			void req_del_archetype_row(Entity entity) {
+				auto* pEc = try_fetch_record(entity);
+				// A callback or an earlier row's rules may have requested it already. A row that left its
+				// archetype keeps its chunk row, so it is not deleted here.
+				if (pEc == nullptr || (pEc->flags & EntityContainerFlags::DeleteRequested) != 0 || pEc->pArchetype == nullptr ||
+						!pEc->pArchetype->is_req_del())
+					return;
+
+				auto& ec = *pEc;
+				if ((ec.flags & (EntityContainerFlags::OnDelete_Error | EntityContainerFlags::OnDeleteTarget_Error)) != 0) {
+					GAIA_ASSERT2(false, "Trying to delete an entity that is forbidden from being deleted");
+					GAIA_LOG_E(
+							"Trying to delete an entity [%u.%u] that is forbidden from being deleted", entity.id(), entity.gen());
+					// Its chunk goes regardless. Keep the record and everything referencing it untouched.
+					ec.req_del();
+					invalidate_weak_entities(ec);
+					return;
+				}
+
+#if GAIA_USE_SAFE_ENTITY
+				release_world_ref(ec);
+#endif
+
+				// An entity already being deleted on its own applies its rules and deletes its pairs there,
+				// once everything its rules delete is marked. Deleting a pair earlier would remove it from
+				// entities that are about to be deleted, letting them survive.
+				{
+					// The rules resolve the row the way they resolve an entity deleted on its own
+					GAIA_ASSERT(m_pArchetypeRowInRules == nullptr);
+					m_pArchetypeRowInRules = &ec;
+
+					// Also covers an entity whose own target rules deleted its archetype, which returns before
+					// unregistering. Unregistering twice is harmless.
+					del_entity_registrations(entity);
+
+					if (!entity_deletion_active(entity)) {
+						cnt::darray_ext<Entity, 64> pairEntities;
+						if (!entity.pair())
+							collect_entity_pairs(entity, pairEntities);
+
+						entity_deletion_enter(entity);
+						// A pair row does not apply its target's OnDeleteTarget rules. Deleting the target does.
+						if (!entity.pair())
+							del_entity_target_rules(ec, entity);
+						del_entity_id_rules(ec, entity);
+						del_pair_entities(EntitySpan{pairEntities.data(), pairEntities.size()});
+						entity_deletion_leave(entity);
+					}
+
+					m_pArchetypeRowInRules = nullptr;
+				}
+
+				// A structural change made from a callback while the rules ran may have moved the row out. It then
+				// keeps its new chunk row and must not be deleted here.
+				if (ec.pArchetype == nullptr || !ec.pArchetype->is_req_del())
+					return;
+
+#if GAIA_OBSERVERS_ENABLED
+				del_nonfragmenting_relation_source_observed(entity);
+#endif
+				del_nonfragmenting_relation_source(entity);
+				del_entity_names(ec, entity);
+				remove_src_entity_version(entity);
+				del_sparse_components(entity);
+
+				ec.req_del();
+				invalidate_weak_entities(ec);
+				m_reqEntitiesToDel.insert(EntityLookupKey(entity));
+			}
+
+#if GAIA_USE_SAFE_ENTITY
+			//! Drops the reference the world holds on an entity since its creation.
+			//! Afterwards only SafeEntity handles keep its refCnt above zero.
+			//! \param ec Entity container of the entity being deleted.
+			static void release_world_ref(EntityContainer& ec) {
+				if ((ec.flags & EntityContainerFlags::RefDecreased) != 0)
+					return;
+
+				--ec.refCnt;
+				ec.flags |= EntityContainerFlags::RefDecreased;
+			}
+
+			//! Adds a SafeEntity reference to \a entity. A pair also references its relation and target,
+			//! because a pair id names its endpoints by id only. While their ids stay in use, no recycled
+			//! entity can alias the pair.
+			//! \param entity Entity or exact pair.
+			void safe_ref_add(Entity entity) {
+				++fetch(entity).refCnt;
+				if (!entity.pair())
+					return;
+
+				++m_recs.entities[entity.id()].refCnt;
+				++m_recs.entities[entity.gen()].refCnt;
+			}
+
+			//! Drops a SafeEntity reference from \a entity, then from a pair's relation and target. Each one
+			//! whose last reference goes is deleted, as a deletion requested earlier was deferred until now.
+			//! Does nothing once world cleanup or destruction cleared the records.
+			//! \param entity Entity or exact pair.
+			void safe_ref_del(Entity entity) {
+				auto* pEc = try_fetch_record(entity);
+				if GAIA_UNLIKELY (pEc == nullptr)
+					return;
+
+				safe_ref_del(*pEc, entity);
+				if (!entity.pair())
+					return;
+
+				// The references keep both endpoint records, so their ids still name the same entities
+				const EntityId endpoints[] = {(EntityId)entity.id(), (EntityId)entity.gen()};
+				for (const auto id: endpoints) {
+					auto* pEndpoint = m_recs.entities.try_get(id);
+					GAIA_ASSERT(pEndpoint != nullptr);
+					if (pEndpoint != nullptr)
+						safe_ref_del(*pEndpoint, EntityContainer::handle(*pEndpoint));
+				}
+			}
+
+			//! Drops one SafeEntity reference from a record and deletes its entity when it was the last one.
+			//! \param ec Record of \a entity.
+			//! \param entity Entity or exact pair.
+			void safe_ref_del(EntityContainer& ec, Entity entity) {
+				GAIA_ASSERT(ec.refCnt > 0);
+				if (--ec.refCnt != 0)
+					return;
+
+				// Inside a component destructor or while iteration locks the world, deleting now would change
+				// structures in use. The next frame_cleanup() deletes the entity instead.
+				if (m_compDtorDepth != 0 || locked())
+					m_safeEntityDels.push_back(entity);
+				else
+					del(entity);
+			}
+
+			//! Deletes the entities whose last SafeEntity reference was released while their deletion had to wait.
+			//! One that gained a new reference since then is left to it.
+			void del_released_safe_entities() {
+				// Deleting them can release more references from destructors, which queue again
+				while (!m_safeEntityDels.empty()) {
+					auto dels = GAIA_MOV(m_safeEntityDels);
+					m_safeEntityDels = {};
+					for (const auto entity: dels) {
+						const auto* pEc = try_fetch_record(entity);
+						if (pEc != nullptr && pEc->refCnt == 0)
+							del(entity);
+					}
+				}
+			}
+#endif
+
+			//! Collects the exact pairs \a entity takes part in as a relation or target.
+			//! \tparam Container Entity container with push_back.
+			//! \param entity Entity being deleted.
+			//! \param[out] pairEntities Receives the pairs.
+			template <typename Container>
+			void collect_entity_pairs(Entity entity, Container& pairEntities) const {
+				if (const auto* pTargets = targets(entity)) {
+					for (auto targetKey: *pTargets)
+						pairEntities.push_back(Pair(entity, targetKey.entity()));
+				}
+				if (const auto* pRelations = relations(entity)) {
+					for (auto relationKey: *pRelations) {
+						const auto relation = relationKey.entity();
+						if (relation != entity)
+							pairEntities.push_back(Pair(relation, entity));
+					}
+				}
+			}
+
+			//! Applies the OnDeleteTarget rule of \a entity to every entity with a pair targeting it.
+			//! \param ec Entity container of the entity being deleted.
+			//! \param entity Entity being deleted.
+			void del_entity_target_rules(const EntityContainer& ec, Entity entity) {
+				const bool deleteTargets = (ec.flags & EntityContainerFlags::OnDeleteTarget_Delete) != 0 ||
+																	 has_nonfragmenting_relation_target_cond(entity, Pair(OnDeleteTarget, Delete));
+#if GAIA_OBSERVERS_ENABLED
+				cnt::darray<Entity> cascadeTargets;
+				if (deleteTargets)
+					collect_delete_cascade_sources(entity, Pair(OnDeleteTarget, Delete), cascadeTargets);
+				auto cascadeDelDiffCtx = ObserverRegistry::DiffDispatchCtx{};
+				if (!cascadeTargets.empty()) {
+					cascadeDelDiffCtx = m_observers.prepare_diff(
+							*this, ObserverEvent::OnDel, EntitySpan{cascadeTargets.data(), cascadeTargets.size()},
+							EntitySpan{cascadeTargets.data(), cascadeTargets.size()});
+				}
+#endif
+
+				if (deleteTargets) {
+					// Delete all entities referencing this one as a relationship pair's target
+					req_del_entities_with(Pair(All, entity), Pair(OnDeleteTarget, Delete));
+				} else {
+					// Remove from all entities referencing this one as a relationship pair's target
+					rem_from_entities(Pair(All, entity));
+				}
+
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(cascadeDelDiffCtx));
+#endif
+			}
+
+			//! Unregisters \a entity as an observer or system.
+			//! \param entity Entity being deleted.
+			void del_entity_registrations([[maybe_unused]] Entity entity) {
+#if GAIA_OBSERVERS_ENABLED
+				observers().del(*this, entity);
+#endif
+#if GAIA_SYSTEMS_ENABLED
+				systems().del(entity);
+#endif
+			}
+
+			//! Applies the OnDelete rule of \a entity to every entity holding it as an id.
+			//! \param ec Entity container of the entity being deleted.
+			//! \param entity Entity being deleted.
+			void del_entity_id_rules(const EntityContainer& ec, Entity entity) {
+				if ((ec.flags & EntityContainerFlags::OnDelete_Delete) != 0) {
+					// Delete all references to the entity
+					req_del_entities_with(entity);
+				} else {
+					// Entities are only removed by default
+					rem_from_entities(entity);
+				}
+			}
+
+			//! Requests deletion without acquiring observer reentrancy state.
+			//! The caller already owns the active deletion transaction when observers are enabled.
+			//! \param ec Entity container associated with \a entity.
+			//! \param entity Entity to request for deletion.
+			void req_del_inter(EntityContainer& ec, Entity entity) {
+				// req_del_archetype_rows deletes the rows of delete-requested archetypes
+				if (is_req_del_or_queued(ec))
+					return;
+
+#if GAIA_USE_SAFE_ENTITY
+				// Cascades request deletion directly. del_finalize_entities keeps the record while
+				// a SafeEntity still references it.
+				release_world_ref(ec);
+#endif
+				unlink_live_is_relations(entity);
+#if GAIA_OBSERVERS_ENABLED
+				del_nonfragmenting_relation_source_observed(entity);
+				del_nonfragmenting_relation_source(entity);
+				auto delDiffCtx =
+						m_observers.prepare_diff(*this, ObserverEvent::OnDel, EntitySpan{&entity, 1}, EntitySpan{&entity, 1});
+#else
+				del_nonfragmenting_relation_source(entity);
+#endif
+				notify_del_entity_components(ec, entity);
+				del_entity(ec, entity, false);
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(delDiffCtx));
+#endif
+				del_sparse_components(entity);
+
+				ec.req_del();
+				// Every per-entity deletion request passes here, including cascades that bypass
+				// handle_del_entity, so WeakEntities reset at the request.
+				invalidate_weak_entities(ec);
+				m_reqEntitiesToDel.insert(EntityLookupKey(entity));
+			}
+
+			//! Requests deletion and owns the active deletion transaction for the request.
+			//! \param ec Entity container associated with \a entity.
+			//! \param entity Entity to request for deletion.
+			void req_del(EntityContainer& ec, Entity entity) {
+				if (entity_deletion_active(entity))
+					return;
+
+				entity_deletion_enter(entity);
+				req_del_inter(ec, entity);
+				entity_deletion_leave(entity);
+			}
+
+			//! Invalidates relation and query caches affected by pair removal.
+			//! \param entity Pair or wildcard pair selector being removed.
+			void invalidate_pair_removal_caches(Entity entity) {
+				if (!entity.pair())
+					return;
+
+				auto invalidate_relation = [this](Entity relation) {
+					if (relation == EntityBad)
+						return;
+					touch_rel_version(relation);
+					invalidate_queries_for_rel(relation);
+				};
+
+				if (entity.id() != All.id()) {
+					invalidate_relation(try_get(entity.id()));
+				} else if (entity.gen() != All.id()) {
+					const auto target = try_get(entity.gen());
+					if (target != EntityBad) {
+						if (const auto* pRelations = relations(target)) {
+							for (auto relationKey: *pRelations)
+								invalidate_relation(relationKey.entity());
+						}
+					}
+				} else {
+					for (auto it = m_pairLookup.relation_begin(); it != m_pairLookup.relation_end(); ++it)
+						invalidate_relation(it->first.entity());
+				}
+
+				clear_relation_caches();
+			}
+
+			//! Unlinks one live semantic Is edge.
+			//! \param source Entity that owns the Is edge.
+			//! \param target Inheritance target.
+			void unlink_live_is_relation(Entity source, Entity target) {
+				const auto sourceKey = EntityLookupKey(source);
+				const auto targetKey = EntityLookupKey(target);
+
+				invalidate_queries_for_entity({Is, target});
+
+				if (const auto itTargets = m_entityToAsTargets.find(sourceKey); itTargets != m_entityToAsTargets.end()) {
+					itTargets->second.erase(targetKey);
+					if (itTargets->second.empty())
+						m_entityToAsTargets.erase(itTargets);
+				}
+				m_entityToAsTargetsTravCache = {};
+
+				if (const auto itRelations = m_entityToAsRelations.find(targetKey);
+						itRelations != m_entityToAsRelations.end()) {
+					itRelations->second.erase(sourceKey);
+					if (itRelations->second.empty())
+						m_entityToAsRelations.erase(itRelations);
+				}
+				m_entityToAsRelationsTravCache = {};
+			}
+
+			//! Unlinks every live semantic `Is` target owned by \a source.
+			//! \param source Source entity whose semantic inheritance edges are removed.
+			void unlink_live_is_relations(Entity source) {
+				const auto itTargets = m_entityToAsTargets.find(EntityLookupKey(source));
+				if (itTargets == m_entityToAsTargets.end())
+					return;
+
+				cnt::darray_ext<Entity, 4> targets;
+				for (auto targetKey: itTargets->second)
+					targets.push_back(targetKey.entity());
+
+				for (auto target: targets)
+					unlink_live_is_relation(source, target);
+			}
+
+			//! Unlinks stale semantic Is edges by target id.
+			//! \param source Entity that owns the stale edges.
+			//! \param targetId Target id whose generation is no longer valid.
+			void unlink_stale_is_relations_by_target_id(Entity source, EntityId targetId) {
+				const auto sourceKey = EntityLookupKey(source);
+				const auto itTargets = m_entityToAsTargets.find(sourceKey);
+				if (itTargets == m_entityToAsTargets.end())
+					return;
+
+				cnt::darray_ext<EntityLookupKey, 4> removedTargets;
+				for (auto targetKey: itTargets->second) {
+					if (targetKey.entity().id() == targetId)
+						removedTargets.push_back(targetKey);
+				}
+
+				for (auto targetKey: removedTargets) {
+					invalidate_queries_for_structural_entity(EntityLookupKey(Pair{Is, targetKey.entity()}));
+					itTargets->second.erase(targetKey);
+
+					const auto itRelations = m_entityToAsRelations.find(targetKey);
+					if (itRelations != m_entityToAsRelations.end()) {
+						itRelations->second.erase(sourceKey);
+						if (itRelations->second.empty())
+							m_entityToAsRelations.erase(itRelations);
+					}
+				}
+
+				if (itTargets->second.empty())
+					m_entityToAsTargets.erase(itTargets);
+
+				m_entityToAsTargetsTravCache = {};
+				m_entityToAsRelationsTravCache = {};
+			}
+
+			//! Visits direct sources participating in a deletion cascade.
+			//! \tparam Func Callback type.
+			//! \param target Target whose direct sources are visited.
+			//! \param cond Required OnDeleteTarget condition.
+			//! \param func Callback invoked for each source.
+			template <typename Func>
+			void each_delete_cascade_direct_source(Entity target, Pair cond, Func&& func) {
+				GAIA_ASSERT(!target.pair());
+
+				for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+					const auto relation = relKey.entity();
+					if (!has(relation, cond))
+						continue;
+
+					const auto* pSources = store.sources(target);
+					if (pSources == nullptr)
+						continue;
+
+					for (auto source: *pSources)
+						func(source);
+				}
+
+				const auto pairEntity = Pair(All, target);
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(pairEntity));
+				if (it != m_entityToArchetypeMap.end()) {
+					for (const auto& record: it->second) {
+						auto* pArchetype = record.pArchetype;
+						if (pArchetype == nullptr || pArchetype->is_req_del())
+							continue;
+						if (!archetype_cond_match(*pArchetype, cond, pairEntity))
+							continue;
+
+						for (const auto* pChunk: pArchetype->chunks()) {
+							const auto entities = pChunk->entity_view();
+							GAIA_EACH(entities)
+							func(entities[i]);
+						}
+					}
+				}
+			}
+
+			//! Checks whether deleting \a target must recurse into at least one live direct source.
+			//! \param target Target entity whose direct sources are checked.
+			//! \param cond OnDeleteTarget condition required on the source relation.
+			//! \return True when a matching direct source exists and can have descendants.
+			GAIA_NODISCARD bool has_delete_cascade_direct_sources(Entity target, Pair cond) const {
+				GAIA_ASSERT(!target.pair());
+
+				for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+					if (store.sources(target) != nullptr && has(relKey.entity(), cond))
+						return true;
+				}
+
+				const auto pairEntity = Pair(All, target);
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(pairEntity));
+				if (it == m_entityToArchetypeMap.end())
+					return false;
+
+				for (const auto& record: it->second) {
+					auto* pArchetype = record.pArchetype;
+					if (pArchetype == nullptr || pArchetype->is_req_del())
+						continue;
+					if (!archetype_cond_match(*pArchetype, cond, pairEntity))
+						continue;
+
+					for (const auto* pChunk: pArchetype->chunks()) {
+						if (!pChunk->empty())
+							return true;
+					}
+				}
+
+				return false;
+			}
+
+			//! Collects unique direct sources for a deletion cascade.
+			//! \param target Target whose sources are collected.
+			//! \param cond Required OnDeleteTarget condition.
+			//! \param out Destination source list.
+			void collect_delete_cascade_direct_sources(Entity target, Pair cond, cnt::darray<Entity>& out) {
+				GAIA_ASSERT(!target.pair());
+				const auto visitStamp = next_entity_visit_stamp();
+				each_delete_cascade_direct_source(target, cond, [&](Entity source) {
+					if (!valid(source))
+						return;
+					if (!try_mark_entity_visited(source, visitStamp))
+						return;
+					out.push_back(source);
+				});
+			}
+
+			//! Collects transitive sources for a deletion cascade.
+			//! \param target Root target.
+			//! \param cond Required OnDeleteTarget condition.
+			//! \param out Destination source list.
+			void collect_delete_cascade_sources(Entity target, Pair cond, cnt::darray<Entity>& out) {
+				GAIA_ASSERT(!target.pair());
+				const auto visitStamp = next_entity_visit_stamp();
+				cnt::darray_ext<Entity, 32> targetsToVisit;
+				(void)try_mark_entity_visited(target, visitStamp);
+				targetsToVisit.push_back(target);
+
+				for (uint32_t i = 0; i < targetsToVisit.size(); ++i) {
+					const auto currTarget = targetsToVisit[i];
+					each_delete_cascade_direct_source(currTarget, cond, [&](Entity source) {
+						if (!valid(source))
+							return;
+						if (!try_mark_entity_visited(source, visitStamp))
+							return;
+
+						out.push_back(source);
+						targetsToVisit.push_back(source);
+					});
+				}
+			}
+
+			//! Requests deleting anything that references \a entity.
+			//! \param entity Entity whose referrers should be deleted.
+			void req_del_entities_with(Entity entity) {
+				GAIA_PROF_SCOPE(World::req_del_entities_with);
+				ArchetypeRowDelScope scope(*this);
+
+				GAIA_ASSERT(entity != Pair(All, All));
+
+				auto req_del_nonfragmenting_pair = [&](Entity relation, Entity target) {
+					cnt::darray<Entity> sourcesToDel;
+					sources(relation, target, [&](Entity source) {
+						sourcesToDel.push_back(source);
+					});
+
+					for (auto source: sourcesToDel)
+						del_cascade_entity(source);
+				};
+
+				if (entity.pair()) {
+					if (entity.id() != All.id()) {
+						const auto relation = try_get(entity.id());
+						const auto target = try_get(entity.gen());
+						if (relation != EntityBad && target != EntityBad && relation_uses_non_fragmenting_storage(relation))
+							req_del_nonfragmenting_pair(relation, target);
+					} else {
+						const auto target = try_get(entity.gen());
+						if (target == EntityBad)
+							goto skip_req_del_all_target;
+						for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+							if (store.sources(target) == nullptr)
+								continue;
+
+							req_del_nonfragmenting_pair(relKey.entity(), target);
+						}
+					skip_req_del_all_target:;
+					}
+				} else if (relation_uses_non_fragmenting_storage(entity)) {
+					if (const auto* pTargets = targets(entity)) {
+						for (auto targetKey: *pTargets)
+							req_del_nonfragmenting_pair(entity, targetKey.entity());
+					}
+				}
+
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(entity));
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				for (const auto& record: it->second)
+					req_del(*record.pArchetype);
+			}
+
+			//! Requests deleting anything that references \a entity.
+			//! Takes \a cond into account.
+			//! \param entity Entity whose referrers should be deleted.
+			//! \param cond Additional pair condition applied to matching referrers.
+			void req_del_entities_with(Entity entity, Pair cond) {
+				cnt::set<EntityLookupKey> visited;
+				req_del_entities_with(entity, cond, visited);
+			}
+
+			//! Recursively requests deletion of matching referrers.
+			//! \param entity Referenced entity or pair selector.
+			//! \param cond Required deletion-policy condition.
+			//! \param visited Recursion guard.
+			void req_del_entities_with(Entity entity, Pair cond, cnt::set<EntityLookupKey>& visited) {
+				GAIA_PROF_SCOPE(World::req_del_entities_with);
+				ArchetypeRowDelScope scope(*this);
+
+				GAIA_ASSERT(entity != Pair(All, All));
+				if (!visited.insert(EntityLookupKey(entity)).second)
+					return;
+
+				cnt::darray<Entity> cascadeTargets;
+				if (entity.pair() && entity.id() == All.id()) {
+					const auto target = try_get(entity.gen());
+					if (target != EntityBad)
+						collect_delete_cascade_direct_sources(target, cond, cascadeTargets);
+				}
+
+				auto req_del_nonfragmenting_pair = [&](Entity relation, Entity target) {
+					if (!has(relation, cond))
+						return;
+
+					cnt::darray<Entity> sourcesToDel;
+					sources(relation, target, [&](Entity source) {
+						sourcesToDel.push_back(source);
+					});
+
+					for (auto source: sourcesToDel)
+						del_cascade_entity(source);
+				};
+
+				for (auto source: cascadeTargets) {
+					if (has_delete_cascade_direct_sources(source, cond))
+						req_del_entities_with(Pair(All, source), cond, visited);
+				}
+
+				if (entity.pair()) {
+					if (entity.id() != All.id()) {
+						const auto relation = try_get(entity.id());
+						const auto target = try_get(entity.gen());
+						if (relation != EntityBad && target != EntityBad && relation_uses_non_fragmenting_storage(relation))
+							req_del_nonfragmenting_pair(relation, target);
+					} else {
+						const auto target = try_get(entity.gen());
+						if (target == EntityBad)
+							goto skip_req_del_all_target_cond;
+						for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+							if (store.sources(target) == nullptr)
+								continue;
+
+							req_del_nonfragmenting_pair(relKey.entity(), target);
+						}
+					skip_req_del_all_target_cond:;
+					}
+				} else if (relation_uses_non_fragmenting_storage(entity)) {
+					if (const auto* pTargets = targets(entity)) {
+						for (auto targetKey: *pTargets)
+							req_del_nonfragmenting_pair(entity, targetKey.entity());
+					}
+				}
+
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(entity));
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				for (const auto& record: it->second) {
+					auto* pArchetype = record.pArchetype;
+					// Evaluate the condition if a valid pair is given
+					if (!archetype_cond_match(*pArchetype, cond, entity))
+						continue;
+
+					req_del(*pArchetype);
+				}
+			}
+
+			//! Returns whether an exact pair id matches a pair removal selector.
+			//! Pair is the exact pair id from an archetype; selector is the exact or wildcard pair requested for removal.
+			GAIA_NODISCARD static bool pair_matches_removal_selector(Entity pair, Entity selector) {
+				GAIA_ASSERT(pair.pair());
+				GAIA_ASSERT(selector.pair());
+
+				if (selector.id() != All.id() && pair.id() != selector.id())
+					return false;
+				return selector.gen() == All.id() || pair.gen() == selector.gen();
+			}
+
+			//! Removes sparse payloads selected for removal from every row in an archetype.
+			void del_sparse_pair_payloads(Archetype& archetype, Entity selector) {
+				GAIA_ASSERT(selector.pair());
+
+				for (const auto pair: archetype.ids_view()) {
+					if (!pair.pair() || !pair_matches_removal_selector(pair, selector))
+						continue;
+
+					const auto it = m_sparseComponentsByComp.find(EntityLookupKey(pair));
+					if (it == m_sparseComponentsByComp.end())
+						continue;
+
+					for (const auto* pChunk: archetype.chunks()) {
+						const auto entities = pChunk->entity_view();
+						GAIA_EACH(entities)
+						it->second.func_del(it->second.pStore, entities[i]);
+					}
+				}
+			}
+
+			//! Returns whether any chunk of \a archetype holds an entity. A chunk emptied recently still exists.
+			//! Removal skips archetypes without rows: nothing moves out of them, and computing their destination
+			//! would create an archetype no chunk ever enters. It would never be collected, and would keep the
+			//! removed entity's record, and so its id, from being freed.
+			//! \param archetype Archetype to inspect.
+			//! \return True when the archetype has at least one row.
+			GAIA_NODISCARD static bool archetype_has_rows(const Archetype& archetype) {
+				for (const auto* pChunk: archetype.chunks()) {
+					if (pChunk->size() != 0)
+						return true;
+				}
+				return false;
+			}
+
+			//! Removes \a entity from anything referencing it.
+			//! \param entity Entity to remove from referring records.
+			void rem_from_entities(Entity entity) {
+				GAIA_PROF_SCOPE(World::rem_from_entities);
+
+				invalidate_pair_removal_caches(entity);
+
+				auto rem_nonfragmenting_pair = [&](Entity relation, Entity target) {
+					cnt::darray<Entity> sourcesToRem;
+					sources(relation, target, [&](Entity source) {
+						sourcesToRem.push_back(source);
+					});
+
+					for (auto source: sourcesToRem)
+						del(source, Pair(relation, target));
+				};
+
+				if (entity.pair()) {
+					if (entity.id() != All.id()) {
+						const auto relation = try_get(entity.id());
+						const auto target = try_get(entity.gen());
+						if (relation != EntityBad && target != EntityBad && relation_uses_non_fragmenting_storage(relation))
+							rem_nonfragmenting_pair(relation, target);
+					} else {
+						const auto target = try_get(entity.gen());
+						if (target == EntityBad)
+							goto skip_rem_all_target;
+						for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+							if (store.sources(target) == nullptr)
+								continue;
+
+							rem_nonfragmenting_pair(relKey.entity(), target);
+						}
+					skip_rem_all_target:;
+					}
+				} else if (relation_uses_non_fragmenting_storage(entity)) {
+					if (const auto* pTargets = targets(entity)) {
+						for (auto targetKey: *pTargets)
+							rem_nonfragmenting_pair(entity, targetKey.entity());
+					}
+				}
+
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(entity));
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				// Copy the reverse-index records. calc_dst_archetype can insert into
+				// m_entityToArchetypeMap and rehash, which invalidates "it".
+				const auto srcRecords = it->second;
+
+				// Invalidate the singleton status if necessary
+				if (!entity.pair()) {
+					auto& ec = fetch(entity);
+					if ((ec.flags & EntityContainerFlags::IsSingleton) != 0) {
+						auto ids = ec.pArchetype->ids_view();
+						const auto idx = core::get_index(ids, entity);
+						if (idx != BadIndex)
+							EntityBuilder::set_flag(ec.flags, EntityContainerFlags::IsSingleton, false);
+					}
+				}
+
+#if GAIA_OBSERVERS_ENABLED
+				cnt::set<EntityLookupKey> diffTermSet;
+				cnt::darray<Entity> diffTerms;
+				cnt::darray<Entity> diffTargets;
+				for (const auto& record: srcRecords) {
+					auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del() || !archetype_has_rows(*pArchetype))
+						continue;
+
+					auto* pDstArchetype = calc_dst_archetype(pArchetype, entity);
+					if (pDstArchetype == nullptr)
+						continue;
+
+					for (auto id: pArchetype->ids_view()) {
+						bool matches = false;
+						if (entity.pair()) {
+							if (entity.id() == All.id() && entity.gen() == All.id())
+								matches = id.pair();
+							else if (entity.id() == All.id())
+								matches = id.pair() && id.gen() == entity.gen();
+							else if (entity.gen() == All.id())
+								matches = id.pair() && id.id() == entity.id();
+							else
+								matches = id == entity;
+						} else
+							matches = id == entity;
+
+						if (!matches)
+							continue;
+
+						if (diffTermSet.insert(EntityLookupKey(id)).second)
+							diffTerms.push_back(id);
+					}
+
+					for (const auto* pChunk: pArchetype->chunks()) {
+						const auto entities = pChunk->entity_view();
+						GAIA_EACH(entities)
+						diffTargets.push_back(entities[i]);
+					}
+				}
+				auto delDiffCtx = diffTargets.empty() || diffTerms.empty()
+															? ObserverRegistry::DiffDispatchCtx{}
+															: m_observers.prepare_diff(
+																		*this, ObserverEvent::OnDel, EntitySpan{diffTerms.data(), diffTerms.size()},
+																		EntitySpan{diffTargets.data(), diffTargets.size()});
+#endif
+
+				// Update archetypes of all affected entities
+				for (const auto& record: srcRecords) {
+					auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del() || !archetype_has_rows(*pArchetype))
+						continue;
+
+					if (entity.pair()) {
+						cnt::darray_ext<Entity, 16> removedIsTargets;
+						for (auto id: pArchetype->ids_view()) {
+							bool matches = false;
+							if (entity.id() == All.id() && entity.gen() == All.id())
+								matches = id.pair();
+							else if (entity.id() == All.id())
+								matches = id.pair() && id.gen() == entity.gen();
+							else if (entity.gen() == All.id())
+								matches = id.pair() && id.id() == entity.id();
+							else
+								matches = id == entity;
+
+							if (!matches || !id.pair() || id.id() != Is.id())
+								continue;
+
+							const auto target = try_get(id.gen());
+							if (target != EntityBad)
+								removedIsTargets.push_back(target);
+						}
+
+						if (!removedIsTargets.empty()) {
+							for (const auto* pChunk: pArchetype->chunks()) {
+								auto entities = pChunk->entity_view();
+								GAIA_EACH(entities) {
+									for (const auto target: removedIsTargets)
+										unlink_live_is_relation(entities[i], target);
+								}
+							}
+						}
+					}
+
+					auto* pDstArchetype = calc_dst_archetype(pArchetype, entity);
+					if (pDstArchetype != nullptr) {
+						if (entity.pair())
+							del_sparse_pair_payloads(*pArchetype, entity);
+						move_to_archetype(*pArchetype, *pDstArchetype);
+					}
+				}
+
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(delDiffCtx));
+#endif
+				expire_emptied_archetypes(srcRecords);
+			}
+
+			//! Gives each archetype a deleted entity's removal left without rows a lifespan of one update.
+			//! Its ids name the deleted entity, so keeping it longer would only keep that dead id. It goes one
+			//! update after its last empty chunk does, unless re-adding a pair moves an entity back into it first.
+			//! \param records Reverse-index records of the archetypes the entity was removed from.
+			void expire_emptied_archetypes(const ComponentIndexEntryArray& records) {
+				for (const auto& record: records) {
+					auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del() || archetype_has_rows(*pArchetype))
+						continue;
+
+					pArchetype->set_max_lifespan(1);
+					try_enqueue_archetype_for_deletion(*pArchetype);
+				}
+			}
+
+			//! Removes \a entity from anything referencing it.
+			//! Takes \a cond into account.
+			//! \param entity Entity to remove from referring records.
+			//! \param cond Additional pair condition applied to matching referrers.
+			void rem_from_entities(Entity entity, Pair cond) {
+				GAIA_PROF_SCOPE(World::rem_from_entities);
+
+				invalidate_pair_removal_caches(entity);
+
+				auto rem_nonfragmenting_pair = [&](Entity relation, Entity target) {
+					if (!has(relation, cond))
+						return;
+
+					cnt::darray<Entity> sourcesToRem;
+					sources(relation, target, [&](Entity source) {
+						sourcesToRem.push_back(source);
+					});
+
+					for (auto source: sourcesToRem)
+						del(source, Pair(relation, target));
+				};
+
+				if (entity.pair()) {
+					if (entity.id() != All.id()) {
+						const auto relation = try_get(entity.id());
+						const auto target = try_get(entity.gen());
+						if (relation != EntityBad && target != EntityBad && relation_uses_non_fragmenting_storage(relation))
+							rem_nonfragmenting_pair(relation, target);
+					} else {
+						const auto target = try_get(entity.gen());
+						if (target == EntityBad)
+							goto skip_rem_all_target_cond;
+						for (const auto& [relKey, store]: m_nonFragmentingRelationsByRel) {
+							if (store.sources(target) == nullptr)
+								continue;
+
+							rem_nonfragmenting_pair(relKey.entity(), target);
+						}
+					skip_rem_all_target_cond:;
+					}
+				} else if (relation_uses_non_fragmenting_storage(entity)) {
+					if (const auto* pTargets = targets(entity)) {
+						for (auto targetKey: *pTargets)
+							rem_nonfragmenting_pair(entity, targetKey.entity());
+					}
+				}
+
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(entity));
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				// Copy the reverse-index records. calc_dst_archetype can insert into
+				// m_entityToArchetypeMap and rehash, which invalidates `it`.
+				const auto srcRecords = it->second;
+
+				// Invalidate the singleton status if necessary
+				if (!entity.pair()) {
+					auto& ec = fetch(entity);
+					if ((ec.flags & EntityContainerFlags::IsSingleton) != 0) {
+						auto ids = ec.pArchetype->ids_view();
+						const auto idx = core::get_index(ids, entity);
+						if (idx != BadIndex)
+							EntityBuilder::set_flag(ec.flags, EntityContainerFlags::IsSingleton, false);
+					}
+				}
+
+#if GAIA_OBSERVERS_ENABLED
+				cnt::set<EntityLookupKey> diffTermSet;
+				cnt::darray<Entity> diffTerms;
+				cnt::darray<Entity> diffTargets;
+				for (const auto& record: srcRecords) {
+					auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del() || !archetype_has_rows(*pArchetype))
+						continue;
+
+					if (!archetype_cond_match(*pArchetype, cond, entity))
+						continue;
+
+					auto* pDstArchetype = calc_dst_archetype(pArchetype, entity);
+					if (pDstArchetype == nullptr)
+						continue;
+
+					for (auto id: pArchetype->ids_view()) {
+						bool matches = false;
+						if (entity.pair()) {
+							if (entity.id() == All.id() && entity.gen() == All.id())
+								matches = id.pair();
+							else if (entity.id() == All.id())
+								matches = id.pair() && id.gen() == entity.gen();
+							else if (entity.gen() == All.id())
+								matches = id.pair() && id.id() == entity.id();
+							else
+								matches = id == entity;
+						} else
+							matches = id == entity;
+
+						if (!matches)
+							continue;
+
+						if (diffTermSet.insert(EntityLookupKey(id)).second)
+							diffTerms.push_back(id);
+					}
+
+					for (const auto* pChunk: pArchetype->chunks()) {
+						const auto entities = pChunk->entity_view();
+						GAIA_EACH(entities)
+						diffTargets.push_back(entities[i]);
+					}
+				}
+				auto delDiffCtx = diffTargets.empty() || diffTerms.empty()
+															? ObserverRegistry::DiffDispatchCtx{}
+															: m_observers.prepare_diff(
+																		*this, ObserverEvent::OnDel, EntitySpan{diffTerms.data(), diffTerms.size()},
+																		EntitySpan{diffTargets.data(), diffTargets.size()});
+#endif
+
+				for (const auto& record: srcRecords) {
+					auto* pArchetype = record.pArchetype;
+					if (pArchetype->is_req_del() || !archetype_has_rows(*pArchetype))
+						continue;
+
+					// Evaluate the condition if a valid pair is given
+					if (!archetype_cond_match(*pArchetype, cond, entity))
+						continue;
+
+					auto* pDstArchetype = calc_dst_archetype(pArchetype, entity);
+					if (pDstArchetype != nullptr) {
+						if (entity.pair())
+							del_sparse_pair_payloads(*pArchetype, entity);
+						move_to_archetype(*pArchetype, *pDstArchetype);
+					}
+				}
+
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.finish_diff(*this, GAIA_MOV(delDiffCtx));
+#endif
+				expire_emptied_archetypes(srcRecords);
+			}
+
+			//! Deletes \a entity for a cleanup rule the way deleting it on its own would, with its rules and its pairs,
+			//! but even while a SafeEntity references it. Entities already deleted or queued are skipped.
+			//! \param entity Entity to delete.
+			void del_cascade_entity(Entity entity) {
+				if (!valid(entity))
+					return;
+
+				cnt::darray_ext<Entity, 64> pairEntities;
+				collect_entity_pairs(entity, pairEntities);
+				handle_del_entity(fetch(entity), entity, EntitySpan{pairEntities.data(), pairEntities.size()}, true);
+			}
+
+			//! Deletes pair entities that are still valid.
+			//! Callers delete an endpoint of every pair for good, so each pair goes even while a SafeEntity
+			//! references it. Its record then stays reserved until the last reference is released.
+			//! \param pairEntities Pair entities to delete.
+			void del_pair_entities(EntitySpan pairEntities) {
+				for (auto pair: pairEntities) {
+					if (valid(pair))
+						handle_del_entity(fetch(pair), pair, EntitySpan{}, true);
+				}
+			}
+
+			//! Handles specific conditions that might arise from deleting \a entity.
+			//! Conditions are:
+			//!   OnDelete - deleting an entity/pair
+			//!   OnDeleteTarget - deleting a pair's target
+			//! Reactions are:
+			//!   Remove - removes the entity/pair from anything referencing it
+			//!   Delete - delete everything referencing the entity
+			//!   Error - error out when deleted
+			//! These rules can be set up as:
+			//!   e.add(Pair(OnDelete, Remove));
+			//! \param ec Entity container associated with \a entity.
+			//! \param entity Entity being deleted.
+			//! \param pairEntities Pair entities to delete after the entity passes deletion checks.
+			//! \param cascade True when a cleanup rule deletes \a entity for good, including a pair whose relation or
+			//!                target is deleted. It is then deleted even while a SafeEntity references it, and its record
+			//!                stays reserved until the last reference is released.
+			void handle_del_entity(
+					EntityContainer& ec, Entity entity, EntitySpan pairEntities, [[maybe_unused]] bool cascade = false) {
+				GAIA_PROF_SCOPE(World::handle_del_entity);
+				ArchetypeRowDelScope scope(*this);
+
+				GAIA_ASSERT(!is_wildcard(entity));
+				if (entity_deletion_active(entity))
+					return;
+
+				if (entity.pair()) {
+					if ((ec.flags & EntityContainerFlags::OnDelete_Error) != 0) {
+						GAIA_ASSERT2(false, "Trying to delete an entity that is forbidden from being deleted");
+						GAIA_LOG_E(
+								"Trying to delete a pair [%u.%u] %s that is forbidden from being deleted", entity.id(), entity.gen(),
+								name(entity));
+						return;
+					}
+
+					const auto tgt = try_get(entity.gen());
+					const bool hasLiveTarget = tgt != EntityBad;
+					if (hasLiveTarget) {
+						const auto& ecTgt = fetch(tgt);
+						if ((ecTgt.flags & EntityContainerFlags::OnDeleteTarget_Error) != 0 ||
+								has_nonfragmenting_relation_target_cond(tgt, Pair(OnDeleteTarget, Error))) {
+							GAIA_ASSERT2(
+									false, "Trying to delete an entity that is forbidden from being deleted (target restriction)");
+							GAIA_LOG_E(
+									"Trying to delete a pair [%u.%u] %s that is forbidden from being deleted (target restriction)",
+									entity.id(), entity.gen(), name(entity));
+							return;
+						}
+					}
+
+#if GAIA_USE_SAFE_ENTITY
+					// Decrement the ref count at this point.
+					release_world_ref(ec);
+
+					// Don't delete so long something still references us. A pair cannot outlive its endpoints,
+					// so one losing an endpoint goes anyway, and its record stays reserved until released.
+					if (ec.refCnt != 0 && !cascade)
+						return;
+#endif
+
+					entity_deletion_enter(entity);
+
+					// The target's OnDeleteTarget rules are not applied here. They cover every (*, target) pair,
+					// such as ChildOf children, and belong to deleting the target, which applies them itself.
+
+					// This entity has been requested to be deleted already. Nothing more for us to do here
+					if (is_req_del_or_queued(ec)) {
+						entity_deletion_leave(entity);
+						return;
+					}
+
+					del_entity_registrations(entity);
+					del_entity_id_rules(ec, entity);
+				} else {
+					if ((ec.flags & EntityContainerFlags::OnDelete_Error) != 0) {
+						GAIA_ASSERT2(false, "Trying to delete an entity that is forbidden from being deleted");
+						GAIA_LOG_E(
+								"Trying to delete an entity [%u.%u] %s that is forbidden from being deleted", entity.id(), entity.gen(),
+								name(entity));
+						return;
+					}
+
+					if ((ec.flags & EntityContainerFlags::OnDeleteTarget_Error) != 0 ||
+							has_nonfragmenting_relation_target_cond(entity, Pair(OnDeleteTarget, Error))) {
+						GAIA_ASSERT2(false, "Trying to delete an entity that is forbidden from being deleted (a pair's target)");
+						GAIA_LOG_E(
+								"Trying to delete an entity [%u.%u] %s that is forbidden from being deleted (a pair's target)",
+								entity.id(), entity.gen(), name(entity));
+						return;
+					}
+
+#if GAIA_USE_SAFE_ENTITY
+					// Decrement the ref count at this point.
+					release_world_ref(ec);
+
+					// Don't delete so long something still references us, unless a cleanup rule deletes us
+					if (ec.refCnt != 0 && !cascade)
+						return;
+#endif
+
+					entity_deletion_enter(entity);
+
+					del_entity_target_rules(ec, entity);
+
+					// This entity is has been requested to be deleted already. Nothing more for us to do here
+					if (is_req_del_or_queued(ec)) {
+						del_pair_entities(pairEntities);
+						entity_deletion_leave(entity);
+						return;
+					}
+
+					del_entity_registrations(entity);
+					del_entity_id_rules(ec, entity);
+				}
+
+				del_pair_entities(pairEntities);
+
+				// Mark the entity with the "delete requested" flag
+				req_del_inter(ec, entity);
+
+				entity_deletion_leave(entity);
+			}
+
+			//! Resets every WeakEntity that tracks the record's entity to EntityBad and releases the
+			//! trackers. Must run before the record is freed or cleared; afterwards a WeakEntity could
+			//! still name the dead entity, or a later entity that reuses its id and generation.
+			//! \param ec Record whose WeakEntity trackers are released.
+			static void invalidate_weak_entities([[maybe_unused]] EntityContainer& ec) {
+#if GAIA_USE_WEAK_ENTITY
+				while (ec.pWeakTracker != nullptr) {
+					auto* pTracker = ec.pWeakTracker;
+					ec.pWeakTracker = pTracker->next;
+					if (ec.pWeakTracker != nullptr)
+						ec.pWeakTracker->prev = nullptr;
+
+					auto* pWeakEntity = pTracker->pWeakEntity;
+					GAIA_ASSERT(pWeakEntity != nullptr);
+					GAIA_ASSERT(pWeakEntity->m_pTracker == pTracker);
+					pWeakEntity->m_pTracker = nullptr;
+					pWeakEntity->m_entity = EntityBad;
+					delete pTracker;
+				}
+#endif
+			}
+
+			//! Removes a graph connection with the surrounding archetypes.
+			//! \param pArchetype Archetype we are removing an edge from
+			//! \param edgeLeft An edge pointing towards the archetype on the left
+			//! \param edgeEntity An entity which when followed from the left edge we reach the archetype
+			void remove_edge_from_archetype(Archetype* pArchetype, ArchetypeGraphEdge edgeLeft, Entity edgeEntity) {
+				GAIA_ASSERT(pArchetype != nullptr);
+
+				const auto edgeLeftIt = m_archetypesById.find(ArchetypeIdLookupKey(edgeLeft.id, edgeLeft.hash));
+				if (edgeLeftIt == m_archetypesById.end())
+					return;
+
+				auto* pArchetypeLeft = edgeLeftIt->second;
+				GAIA_ASSERT(pArchetypeLeft != nullptr);
+
+				// Remove the connection with the current archetype
+				pArchetypeLeft->del_graph_edges(pArchetype, edgeEntity);
+
+				// Traverse all archetypes on the right
+				auto& archetypesRight = pArchetype->right_edges();
+				for (auto& it: archetypesRight) {
+					const auto& edgeRight = it.second;
+					const auto edgeRightIt = m_archetypesById.find(ArchetypeIdLookupKey(edgeRight.id, edgeRight.hash));
+					if (edgeRightIt == m_archetypesById.end())
+						continue;
+
+					auto* pArchetypeRight = edgeRightIt->second;
+
+					// Remove the connection with the current archetype
+					pArchetype->del_graph_edges(pArchetypeRight, it.first.entity());
+				}
+			}
+
+			//! Removes archetype graph edges indexed by an id.
+			//! \param entityToRemove Id whose graph edges are removed.
+			void remove_edges(Entity entityToRemove) {
+				const auto it = m_entityToArchetypeMap.find(EntityLookupKey(entityToRemove));
+				if (it == m_entityToArchetypeMap.end())
+					return;
+
+				for (const auto& record: it->second) {
+					auto* pArchetype = record.pArchetype;
+					remove_edge_from_archetype(pArchetype, pArchetype->find_edge_left(entityToRemove), entityToRemove);
+				}
+			}
+
+			//! Removes archetype graph edges for pairs containing an entity.
+			//! \param entity Relation or target entity.
+			void remove_edges_from_pairs(Entity entity) {
+				if (entity.pair())
+					return;
+
+				// Make sure to remove all pairs containing the entity
+				// (X, something)
+				const auto* tgts = targets(entity);
+				if (tgts != nullptr) {
+					for (auto target: *tgts)
+						remove_edges(Pair(entity, target.entity()));
+				}
+				// (something, X)
+				const auto* rels = relations(entity);
+				if (rels != nullptr) {
+					for (auto relation: *rels)
+						remove_edges(Pair(relation.entity(), entity));
+				}
+			}
+
+			//! Deletes any edges containing the entity from the archetype graph.
+			//! \param entity Entity to delete
+			void del_graph_edges(Entity entity) {
+				remove_edges(entity);
+				remove_edges_from_pairs(entity);
+			}
+
+			//! Advances the structural version of a relation.
+			//! \param relation Relation whose version changes.
+			void touch_rel_version(Entity relation) {
+				if (m_pLastRelationVersion != nullptr && m_lastRelationVersionRelation == relation) {
+					++*m_pLastRelationVersion;
+					if (*m_pLastRelationVersion == 0)
+						*m_pLastRelationVersion = 1;
+					return;
+				}
+
+				const EntityLookupKey key(relation);
+				const auto ret = m_relationVersions.try_emplace(key, 1);
+				auto it = ret.first;
+				if (!ret.second) {
+					++it->second;
+					if (it->second == 0)
+						it->second = 1;
+				}
+
+				m_lastRelationVersionRelation = relation;
+				m_pLastRelationVersion = &it->second;
+			}
+
+			//! Clears populated relation traversal caches.
+			void clear_relation_caches() {
+				if (!m_relationCachesPopulated)
+					return;
+				m_relationCachesPopulated = false;
+
+				m_targetsTravCache = {};
+				m_srcBfsTravCache = {};
+				m_depthOrderCache = {};
+				m_sourcesAllCache = {};
+				m_targetsAllCache = {};
+			}
+
+			//! Invalidates relation versions, queries, and traversal caches.
+			//! \param relation Relation affected by a structural change.
+			void invalidate_relation_caches(Entity relation) {
+				touch_rel_version(relation);
+				invalidate_queries_for_rel(relation);
+				clear_relation_caches();
+			}
+
+			//! Deletes the stored record for \a entity.
+			//! \param entity Pair entity to delete.
+			//! \param pArchetype Archetype owning the pair record.
+			//! \param rel Pair relation entity.
+			//! \param tgt Pair target entity.
+			//! \return True when a stored pair record was found and deleted.
+			bool del_pair_record(Entity entity, Archetype*& pArchetype, Entity& rel, Entity& tgt) {
+				GAIA_ASSERT(entity.pair());
+
+				EntityContainer ec{};
+				if (!m_recs.pair_record_remove(entity, ec))
+					return false;
+
+				pArchetype = ec.pArchetype;
+
+				// The relation or target entity may already be invalid at this point. Rebuild the
+				// lookup keys from the stored entity records instead of calling get().
+				GAIA_ASSERT(entity.id() < m_recs.entities.size());
+				GAIA_ASSERT(entity.gen() < m_recs.entities.size());
+				rel = m_recs.entities.handle(entity.id());
+				tgt = m_recs.entities.handle(entity.gen());
+				return true;
+			}
+
+			//! Removes one relation-target pair from the pair lookup index.
+			//! \param rel Pair relation entity.
+			//! \param tgt Pair target entity.
+			void del_pair_lookup(Entity rel, Entity tgt) {
+				m_pairLookup.del_pair(rel, tgt);
+			}
+
+			//! Removes all pair lookup entries that mention \a entity.
+			//! \param entity Entity being deleted.
+			void del_entity_pair_lookup(Entity entity) {
+				m_pairLookup.del_entity_pairs(entity);
+			}
+
+			//! Removes stored pair data that points to or is represented by \a entity.
+			//! \param entity Entity being deleted.
+			void del_pair_data_for_entity(Entity entity) {
+				Archetype* pArchetype = nullptr;
+				// Exact pair records are valid Gaia entities and can own out-of-archetype state.
+				del_sparse_components(entity);
+				del_nonfragmenting_relation_source(entity);
+
+				if (entity.pair()) {
+					// The pair entity identifies the store for sparse relationship payloads.
+					del_sparse_component_store(entity);
+					// A WeakEntity created after the deletion request must not outlive the record.
+					if (auto* pEc = m_recs.pair_record_find(entity))
+						invalidate_weak_entities(*pEc);
+					Entity rel;
+					Entity tgt;
+					if (del_pair_record(entity, pArchetype, rel, tgt))
+						del_pair_lookup(rel, tgt);
+				} else {
+					auto& rec = m_recs.entities[entity.id()];
+					// A WeakEntity created after the deletion request must not outlive the record.
+					invalidate_weak_entities(rec);
+
+					// Update the container record
+					auto ec = rec;
+					m_recs.entities.free(entity);
+
+					// If the deleted entity is itself a non-fragmenting exclusive relation, drop its store.
+					del_nonfragmenting_relation(entity);
+					// If the deleted entity is itself a sparse-storage component, drop its store.
+					del_sparse_component_store(entity);
+
+					// If this is a singleton entity its archetype needs to be deleted,
+					// unless the archetype went first
+					if ((ec.flags & EntityContainerFlags::IsSingleton) != 0 && ec.pArchetype != nullptr) {
+						ArchetypeRowDelScope scope(*this);
+						req_del(*ec.pArchetype);
+					}
+
+					ec.pArchetype = nullptr;
+					ec.pChunk = nullptr;
+					ec.pEntity = nullptr;
+					EntityBuilder::set_flag(ec.flags, EntityContainerFlags::DeleteRequested, false);
+
+					// Update pair lookup entries.
+					del_entity_pair_lookup(entity);
+				}
+
+				del_entity_archetype_pairs(entity, pArchetype);
+			}
+
+			//! Invalidates the entity record, effectively deleting it.
+			//! \param entity Entity to delete
+			void invalidate_entity(Entity entity) {
+				del_graph_edges(entity);
+				del_pair_data_for_entity(entity);
+			}
+
+			//! Associates an entity with a chunk.
+			//! \param ec Entity container updated to point at the new storage.
+			//! \param entity Entity to associate with a chunk
+			//! \param pArchetype Target archetype
+			//! \param pChunk Target chunk belonging to \a pArchetype
+			void store_entity(EntityContainer& ec, Entity entity, Archetype* pArchetype, Chunk* pChunk) {
+				GAIA_ASSERT(pArchetype != nullptr);
+				GAIA_ASSERT(pChunk != nullptr);
+				GAIA_ASSERT(
+						!locked() && "Entities can't be stored while the world is locked "
+												 "(structural changes are forbidden during this time!)");
+
+				ec.pArchetype = pArchetype;
+				ec.pChunk = pChunk;
+				ec.row = pChunk->add_entity(entity);
+				ec.pEntity = &pChunk->entity_view()[ec.row];
+				GAIA_ASSERT(entity.pair() || ec.data.gen == entity.gen());
+				ec.data.dis = 0;
+			}
+
+			//! Moves an entity along with all its components from its current chunk to another one.
+			//! \param entity Entity to move
+			//! \param ec Container containing the entity
+			//! \param dstArchetype Destination archetype
+			//! \param dstChunk Destination chunk
+			void move_entity(Entity entity, EntityContainer& ec, Archetype& dstArchetype, Chunk& dstChunk) {
+				GAIA_PROF_SCOPE(World::move_entity);
+
+				auto* pDstChunk = &dstChunk;
+				auto* pSrcChunk = ec.pChunk;
+
+				GAIA_ASSERT(pDstChunk != pSrcChunk);
+
+				const auto srcRow0 = ec.row;
+				const auto dstRow = pDstChunk->add_entity(entity);
+				const bool wasEnabled = !ec.data.dis;
+
+				auto& srcArchetype = *ec.pArchetype;
+				const bool archetypeChanged = srcArchetype.id() != dstArchetype.id();
+#if GAIA_ASSERT_ENABLED
+				verify_move(*this, srcArchetype, entity);
+#endif
+
+				// Make sure the old entity becomes enabled now
+				srcArchetype.enable_entity(pSrcChunk, srcRow0, true, m_recs);
+				// Enabling the entity might have changed its chunk index so fetch it again
+				const auto srcRow = ec.row;
+
+				// Move data from the old chunk to the new one
+				if (dstArchetype.id() == srcArchetype.id()) {
+					pDstChunk->move_entity_data(entity, dstRow, m_recs);
+				} else {
+					pDstChunk->move_foreign_entity_data(pSrcChunk, srcRow, pDstChunk, dstRow);
+				}
+
+				// Remove the entity record from the old chunk
+				remove_entity(srcArchetype, *pSrcChunk, srcRow);
+
+				// An entity might have moved, try updating the free chunk index
+				dstArchetype.try_update_free_chunk_idx();
+
+				// Bring the entity container record up-to-date
+				ec.pArchetype = &dstArchetype;
+				ec.pChunk = pDstChunk;
+				ec.row = (uint16_t)dstRow;
+				ec.pEntity = &pDstChunk->entity_view()[dstRow];
+				if (archetypeChanged)
+					update_src_entity_version(entity);
+
+				// Make the enabled state in the new chunk match the original state
+				dstArchetype.enable_entity(pDstChunk, dstRow, wasEnabled, m_recs);
+
+				// End-state validation
+				GAIA_ASSERT(valid(entity));
+				validate_chunk(pSrcChunk);
+				validate_chunk(pDstChunk);
+				validate_entities();
+			}
+
+			//! Moves an entity along with all its components from its current chunk to another archetype.
+			//! \param entity Entity to move
+			//! \param ec Entity container describing the current entity storage.
+			//! \param dstArchetype Target archetype
+			void move_entity_raw(Entity entity, EntityContainer& ec, Archetype& dstArchetype) {
+				// Update the old chunk's world version first
+				ec.pChunk->update_world_version();
+				ec.pChunk->update_entity_order_version();
+
+				auto* pDstChunk = dstArchetype.foc_free_chunk();
+				move_entity(entity, ec, dstArchetype, *pDstChunk);
+
+				// Update world versions
+				pDstChunk->update_world_version();
+				pDstChunk->update_entity_order_version();
+				update_version(m_worldVersion);
+			}
+
+			//! Moves an entity along with all its components from its current chunk to another archetype.
+			//! \param entity Entity to move.
+			//! \param dstArchetype Target archetype.
+			//! \return Destination chunk, or nullptr when the entity already belongs to \a dstArchetype.
+			Chunk* move_entity(Entity entity, Archetype& dstArchetype) {
+				// Archetypes need to be different
+				auto& ec = fetch(entity);
+				if (ec.pArchetype == &dstArchetype)
+					return nullptr;
+
+				// Update the old chunk's world version first
+				ec.pChunk->update_world_version();
+				ec.pChunk->update_entity_order_version();
+
+				auto* pDstChunk = dstArchetype.foc_free_chunk();
+				move_entity(entity, ec, dstArchetype, *pDstChunk);
+
+				// Update world versions
+				pDstChunk->update_world_version();
+				pDstChunk->update_entity_order_version();
+				update_version(m_worldVersion);
+
+				return pDstChunk;
+			}
+
+			//! Validates bidirectional archetype graph edges when enabled.
+			//! \param pArchetype Archetype to validate.
+			void validate_archetype_edges([[maybe_unused]] const Archetype* pArchetype) const {
+#if GAIA_ECS_VALIDATE_ARCHETYPE_GRAPH && GAIA_ASSERT_ENABLED
+				GAIA_ASSERT(pArchetype != nullptr);
+
+				// Validate left edges
+				const auto& archetypesLeft = pArchetype->left_edges();
+				for (const auto& it: archetypesLeft) {
+					const auto& edge = it.second;
+					const auto edgeIt = m_archetypesById.find(ArchetypeIdLookupKey(edge.id, edge.hash));
+					if (edgeIt == m_archetypesById.end())
+						continue;
+
+					const auto entity = it.first.entity();
+					const auto* pArchetypeRight = edgeIt->second;
+
+					// Edge must be found
+					const auto edgeRight = pArchetypeRight->find_edge_right(entity);
+					GAIA_ASSERT(edgeRight != ArchetypeIdHashPairBad);
+
+					// The edge must point to pArchetype
+					const auto it2 = m_archetypesById.find(ArchetypeIdLookupKey(edgeRight.id, edgeRight.hash));
+					GAIA_ASSERT(it2 != m_archetypesById.end());
+					const auto* pArchetype2 = it2->second;
+					GAIA_ASSERT(pArchetype2 == pArchetype);
+				}
+
+				// Validate right edges
+				const auto& archetypesRight = pArchetype->right_edges();
+				for (const auto& it: archetypesRight) {
+					const auto& edge = it.second;
+					const auto edgeIt = m_archetypesById.find(ArchetypeIdLookupKey(edge.id, edge.hash));
+					if (edgeIt == m_archetypesById.end())
+						continue;
+
+					const auto entity = it.first.entity();
+					const auto* pArchetypeRight = edgeIt->second;
+
+					// Edge must be found
+					const auto edgeLeft = pArchetypeRight->find_edge_left(entity);
+					GAIA_ASSERT(edgeLeft != ArchetypeIdHashPairBad);
+
+					// The edge must point to pArchetype
+					const auto it2 = m_archetypesById.find(ArchetypeIdLookupKey(edgeLeft.id, edgeLeft.hash));
+					GAIA_ASSERT(it2 != m_archetypesById.end());
+					const auto* pArchetype2 = it2->second;
+					GAIA_ASSERT(pArchetype2 == pArchetype);
+				}
+#endif
+			}
+
+			//! Verifies than the implicit linked list of entities is valid
+			void validate_entities() const {
+#if GAIA_ECS_VALIDATE_ENTITY_LIST
+				m_recs.entities.validate();
+#endif
+			}
+
+			//! Verifies that the chunk is valid.
+			//! \param pChunk Chunk to validate.
+			void validate_chunk([[maybe_unused]] Chunk* pChunk) const {
+#if GAIA_ECS_VALIDATE_CHUNKS && GAIA_ASSERT_ENABLED
+				GAIA_ASSERT(pChunk != nullptr);
+
+				const auto entities = pChunk->entity_view();
+				for (uint16_t row = 0; row < entities.size(); ++row) {
+					const auto entity = entities[row];
+					const EntityContainer* pEc = nullptr;
+					if (entity.pair()) {
+						pEc = m_recs.pair_record_find(entity);
+					} else if (entity.id() < m_recs.entities.size()) {
+						pEc = &m_recs.entities[entity.id()];
+					}
+
+					if (pEc == nullptr) {
+						GAIA_ASSERT(!valid(entity));
+						continue;
+					}
+					if (!valid(entity)) {
+						GAIA_ASSERT(is_req_del_or_queued(*pEc));
+						continue;
+					}
+					GAIA_ASSERT(pEc->pChunk == pChunk);
+					GAIA_ASSERT(pEc->row == row);
+					GAIA_ASSERT(pEc->pEntity == &entities[row]);
+				}
+
+				for (const auto& ec: m_recs.entities) {
+					if (ec.pChunk != pChunk)
+						continue;
+					const Entity entity(ec.idx, ec.data.gen, ec.data.ent != 0, false);
+					if (!valid(entity)) {
+						GAIA_ASSERT(is_req_del_or_queued(ec));
+						continue;
+					}
+					GAIA_ASSERT(ec.row < entities.size());
+					GAIA_ASSERT(entities[ec.row] == entity);
+					GAIA_ASSERT(ec.pEntity == &entities[ec.row]);
+				}
+
+				for (auto it = m_recs.pair_record_begin(); it != m_recs.pair_record_end(); ++it) {
+					const auto& pair = *it;
+					const auto& ec = pair.second;
+					if (ec.pChunk != pChunk)
+						continue;
+					const auto entity = pair.first.entity();
+					if (!valid(entity)) {
+						GAIA_ASSERT(is_req_del_or_queued(ec));
+						continue;
+					}
+					GAIA_ASSERT(ec.row < entities.size());
+					GAIA_ASSERT(entities[ec.row] == entity);
+					GAIA_ASSERT(ec.pEntity == &entities[ec.row]);
+				}
+#endif
+			}
+
+			//! Checks relationship membership against \a entityBase.
+			//! \tparam CheckIn If true, checks whether \a entity is located in \a entityBase.
+			//!                 If false, checks whether \a entity inherits from \a entityBase.
+			//! \param entity Entity to inspect.
+			//! \param entityBase Base entity used for the membership test.
+			//! \return True if \a entity inherits from or is located in \a entityBase. False otherwise.
+			template <bool CheckIn>
+			GAIA_NODISCARD bool is_inter(Entity entity, Entity entityBase) const {
+				if GAIA_UNLIKELY (entity.pair() || entityBase.pair())
+					return false;
+
+				GAIA_ASSERT(valid_entity(entity));
+				GAIA_ASSERT(valid_entity(entityBase));
+
+				if constexpr (!CheckIn) {
+					if (entity == entityBase)
+						return true;
+				}
+
+				const auto& targets = as_targets_trav_cache(entity);
+				for (auto target: targets) {
+					if (target == entityBase)
+						return true;
+				}
+
+				return false;
+			}
+
+			//! Traverses `(Is, X)` relationships recursively to their sources.
+			//! \tparam CheckIn Exclude the starting entity when true.
+			//! \tparam Func Callback type accepting each traversed entity.
+			//! \param entity Entity from which traversal starts.
+			//! \param func Callback invoked for each visited entity.
+			template <bool CheckIn, typename Func>
+			void as_up_trav(Entity entity, Func func) {
+				if GAIA_UNLIKELY (entity.pair())
+					return;
+
+				// A delete-requested base is not valid() but keeps its record and archetype until finalization.
+				// Bulk deletion unlinks an instance's Is edge after marking its prefab's archetype.
+				GAIA_ASSERT(try_entity_record(entity) != nullptr);
+
+				if constexpr (!CheckIn) {
+					func(entity);
+				}
+
+				const auto& ec = m_recs.entities[entity.id()];
+				const auto* pArchetype = ec.pArchetype;
+
+				// Early exit if there are no Is relationship pairs on the archetype
+				if (pArchetype->pairs_is() == 0)
+					return;
+
+				for (uint32_t i = 0; i < pArchetype->pairs_is(); ++i) {
+					auto e = pArchetype->entity_from_pairs_as_idx(i);
+					const auto& ecTarget = m_recs.entities[e.gen()];
+					auto target = *ecTarget.pEntity;
+					func(target);
+
+					as_up_trav<CheckIn>(target, func);
+				}
+			}
+
+			//! Registers a core entity and its compile-time component type.
+			//! \tparam T Core component type.
+			//! \param id Reserved core entity id.
+			//! \param pArchetype Initial archetype.
+			//! \return Registered component cache item.
+			template <typename T>
+			const ComponentCacheItem& reg_core_entity(Entity id, Archetype* pArchetype) {
+				auto comp = add(*pArchetype, id.entity(), id.pair());
+				const auto& ci = comp_cache_mut().add<T>(id);
+				GAIA_ASSERT(ci.entity == id);
+				GAIA_ASSERT(comp == id);
+				(void)comp;
+				return ci;
+			}
+
+			//! Registers a core entity in the root archetype.
+			//! \tparam T Core component type.
+			//! \param id Reserved core entity id.
+			//! \return Registered component cache item.
+			template <typename T>
+			const ComponentCacheItem& reg_core_entity(Entity id) {
+				return reg_core_entity<T>(id, m_pRootArchetype);
+			}
+
+			//! Builds runtime metadata for a primitive core type.
+			//! \param name Primitive type name.
+			//! \param nameLen Name length.
+			//! \param size Type size and alignment.
+			//! \return Primitive component descriptor.
+			static ComponentDesc primitive_type_desc(const char* name, uint32_t nameLen, uint32_t size) {
+				ComponentDesc desc{};
+				desc.name = util::str_view(name, nameLen);
+				desc.size = size;
+				desc.alig = size;
+				desc.storageType = DataStorageType::Table;
+				desc.runtimeType.typeKind = RuntimeTypeKind::Primitive;
+				return desc;
+			}
+
+			//! Registers a primitive core runtime type.
+			//! \param id Reserved core entity id.
+			//! \param name Primitive type name.
+			//! \param nameLen Name length.
+			//! \param size Type size and alignment.
+			//! \return Registered component cache item.
+			const ComponentCacheItem& reg_core_primitive_type(Entity id, const char* name, uint32_t nameLen, uint32_t size) {
+				auto comp = add(*m_pCompArchetype, id.entity(), id.pair());
+				const auto desc = primitive_type_desc(name, nameLen, size);
+				const auto& ci = comp_cache_mut().add(id, desc);
+				GAIA_ASSERT(ci.entity == id);
+				GAIA_ASSERT(comp == id);
+				(void)comp;
+				finalize_component_registration(ci, false);
+				return ci;
+			}
+
+			//! Initializes core world entities, archetypes, and caches.
+			void init();
+
+			//! Releases world-owned resources.
+			void done() {
+				cleanup_inter();
+
+#if GAIA_ECS_CHUNK_ALLOCATOR
+				ChunkAllocator::get().flush();
+#endif
+			}
+
+			//! Assigns an entity to a given archetype.
+			//! \param archetype Archetype the entity should inherit
+			//! \param entity Entity
+			void assign_entity(Entity entity, Archetype& archetype) {
+				GAIA_ASSERT(!entity.pair());
+
+				auto* pChunk = archetype.foc_free_chunk();
+				store_entity(m_recs.entities[entity.id()], entity, &archetype, pChunk);
+				pChunk->update_versions();
+				archetype.try_update_free_chunk_idx();
+
+				// Call constructors for components on the newly added entity if necessary
+				pChunk->call_ctors(pChunk->size() - 1, 1);
+
+#if GAIA_ASSERT_ENABLED
+				const auto& ec = m_recs.entities[entity.id()];
+				GAIA_ASSERT(ec.pChunk == pChunk);
+				auto entityExpected = pChunk->entity_view()[ec.row];
+				GAIA_ASSERT(entityExpected == entity);
+#endif
+			}
+
+			//! Creates or revives the entity container record for \a entity.
+			//! \param entity Pair entity.
+			//! \param archetype Archetype the pair record should use.
+			//! \return True when a pair record was created or revived. False when it is already live.
+			bool assign_pair_record(Entity entity, Archetype& archetype) {
+				GAIA_ASSERT(entity.pair());
+
+				// Pairs are always added to m_pEntityArchetype initially and this can't change.
+				GAIA_ASSERT(&archetype == m_pEntityArchetype);
+
+				auto init_record = [&](EntityContainer& ec) {
+					ec = {};
+					ec.idx = entity.id();
+					ec.data.gen = entity.gen();
+					ec.data.pair = 1;
+					ec.data.ent = 1;
+
+					auto* pChunk = archetype.foc_free_chunk();
+					store_entity(ec, entity, &archetype, pChunk);
+					pChunk->update_versions();
+					archetype.try_update_free_chunk_idx();
+				};
+
+				auto* pRecord = m_recs.pair_record_find(entity);
+				if (pRecord != nullptr) {
+					if ((pRecord->flags & EntityContainerFlags::DeleteRequested) == 0)
+						return false;
+
+					m_reqEntitiesToDel.erase(EntityLookupKey(entity));
+					// Pair ids carry no generation, so the revived pair is a new incarnation. Reset the
+					// WeakEntities created since the deletion request before the reset drops their trackers.
+					invalidate_weak_entities(*pRecord);
+					init_record(*pRecord);
+					return true;
+				}
+
+				EntityContainer ec{};
+				init_record(ec);
+				m_recs.pair_record_add(entity, GAIA_MOV(ec));
+				return true;
+			}
+
+			//! Adds \a entity to the pair lookup index.
+			//! \param entity Pair entity.
+			void add_pair_lookup(Entity entity) {
+				GAIA_ASSERT(entity.pair());
+
+				const auto rel = get(entity.id());
+				const auto tgt = get(entity.gen());
+				m_pairLookup.add_pair(rel, tgt);
+			}
+
+			//! Assigns a pair entity to a given archetype and indexes its relation-target pair.
+			//! \param archetype Archetype the pair should inherit.
+			//! \param entity Pair entity.
+			void assign_pair(Entity entity, Archetype& archetype) {
+				if (!assign_pair_record(entity, archetype))
+					return;
+
+				add_pair_lookup(entity);
+
+#if GAIA_OBSERVERS_ENABLED
+				m_observers.try_mark_term_observed(*this, entity);
+#endif
+			}
+
+			//! Creates a new entity of a given archetype.
+			//! \param archetype Archetype the entity should inherit.
+			//! \param isEntity True if entity, false otherwise.
+			//! \param isPair True if pair, false otherwise.
+			//! \return New entity.
+			GAIA_NODISCARD Entity add(Archetype& archetype, bool isEntity, bool isPair) {
+				EntityContainerCtx ctx{isEntity, isPair};
+				const auto entity = m_recs.entities.alloc(&ctx);
+				assign_entity(entity, archetype);
+				return entity;
+			}
+
+			//! Creates multiple entity of a given archetype at once.
+			//! More efficient than creating entities individually.
+			//! \param archetype Archetype the entity should inherit.
+			//! \param count Number of entities to create.
+			//! \param func void(Entity) functor executed for each added entity.
+			template <typename Func>
+			void add_entity_n(Archetype& archetype, uint32_t count, Func func) {
+				EntityContainerCtx ctx{true, false};
+#if GAIA_OBSERVERS_ENABLED
+				const auto addedIds = EntitySpan{archetype.ids_view()};
+				ObserverRegistry::DiffDispatchCtx addDiffCtx{};
+				if (!addedIds.empty())
+					addDiffCtx = m_observers.prepare_diff_add_new(*this, addedIds);
+#endif
+
+				uint32_t left = count;
+				do {
+					auto* pChunk = archetype.foc_free_chunk();
+					const uint32_t originalChunkSize = pChunk->size();
+					const uint32_t freeSlotsInChunk = pChunk->capacity() - originalChunkSize;
+					const uint32_t toCreate = core::get_min(freeSlotsInChunk, left);
+
+					GAIA_FOR(toCreate) {
+						const auto entityNew = m_recs.entities.alloc(&ctx);
+						auto& ecNew = m_recs.entities[entityNew.id()];
+						store_entity(ecNew, entityNew, &archetype, pChunk);
+
+#if GAIA_ASSERT_ENABLED
+						GAIA_ASSERT(ecNew.pChunk == pChunk);
+						auto entityExpected = pChunk->entity_view()[ecNew.row];
+						GAIA_ASSERT(entityExpected == entityNew);
+#endif
+					}
+
+					// New entities were added, try updating the free chunk index
+					archetype.try_update_free_chunk_idx();
+
+					// Call constructors for components on the newly added entity if necessary
+					pChunk->call_ctors(originalChunkSize, toCreate);
+
+					// Call functors
+					{
+						auto entities = pChunk->entity_view();
+						GAIA_FOR2(originalChunkSize, pChunk->size()) func(entities[i]);
+					}
+
+					pChunk->update_versions();
+
+#if GAIA_OBSERVERS_ENABLED
+					if (!addedIds.empty()) {
+						auto entities = pChunk->entity_view();
+						const auto targets = EntitySpan{entities.data() + originalChunkSize, toCreate};
+						m_observers.add_diff_targets(*this, addDiffCtx, targets);
+						m_observers.on_add(*this, archetype, addedIds, targets);
+					}
+#endif
+
+					left -= toCreate;
+				} while (left > 0);
+
+#if GAIA_OBSERVERS_ENABLED
+				if (!addedIds.empty())
+					m_observers.finish_diff(*this, GAIA_MOV(addDiffCtx));
+#endif
+			}
+
+			//! Garbage collection
+			void gc() {
+				GAIA_PROF_SCOPE(World::gc);
+
+				del_empty_chunks();
+				defrag_chunks(m_defragEntitiesPerTick);
+				del_empty_archetypes();
+			}
+
+		public:
+			//! Returns the temporary serialization buffer used while building a query.
+			//! A fresh query id is allocated lazily when \a serId is QueryIdBad.
+			//! \param serId Query serialization id
+			//! \return Serialization buffer associated with \a serId.
+			QuerySerBuffer& query_buffer(QueryId& serId) {
+				// No serialization id set on the query, try creating a new record
+				if GAIA_UNLIKELY (serId == QueryIdBad) {
+#if GAIA_ASSERT_ENABLED
+					uint32_t safetyCounter = 0;
+#endif
+
+					while (true) {
+#if GAIA_ASSERT_ENABLED
+						// Make sure we don't cross some safety threshold
+						++safetyCounter;
+						GAIA_ASSERT(safetyCounter < 100000);
+#endif
+
+						serId = ++m_nextQuerySerId;
+						// Make sure we do not overflow
+						GAIA_ASSERT(serId != 0);
+
+						// If the id is already found, try again.
+						// Note, this is essentially never going to repeat. We would have to prepare millions if
+						// not billions of queries for which we only added inputs but never queried them.
+						auto ret = m_querySerMap.try_emplace(serId);
+						if (!ret.second)
+							continue;
+
+						return ret.first->second;
+					};
+				}
+
+				return m_querySerMap[serId];
+			}
+
+			//! Releases the temporary serialization buffer associated with \a serId.
+			//! \param serId Query serialization id reset to QueryIdBad on return.
+			void query_buffer_reset(QueryId& serId) {
+				auto it = m_querySerMap.find(serId);
+				if (it == m_querySerMap.end())
+					return;
+
+				m_querySerMap.erase(it);
+				serId = QueryIdBad;
+			}
+
+			//! Invalidates cached queries structurally affected by \a entityKey.
+			//! \param entityKey Structural entity lookup key
+			void invalidate_queries_for_structural_entity(EntityLookupKey entityKey) {
+				m_queryCache.invalidate_queries_for_entity(entityKey, QueryCache::ChangeKind::Structural);
+			}
+
+			//! Invalidates cached queries whose dynamic result depends on \a relation.
+			//! \param relation Relation whose dependent query results are invalidated.
+			void invalidate_queries_for_rel(Entity relation) {
+				if (!m_queryCache.has_relation_query_dependencies())
+					return;
+
+				m_queryCache.invalidate_queries_for_rel(relation, QueryCache::ChangeKind::DynamicResult);
+			}
+
+			//! Checks whether any cached sorted query is registered in this world.
+			//! \return True when at least one sorted query is cached.
+			GAIA_NODISCARD bool has_sorted_queries() const {
+				return m_queryCache.has_sorted_queries();
+			}
+
+			//! Checks whether any cached sorted query depends on \a entity being written.
+			//! \param entity Entity.
+			//! \return True when at least one cached sorted query reads a component of \a entity.
+			GAIA_NODISCARD bool has_sorted_queries_for_entity(Entity entity) const {
+				return m_queryCache.has_sorted_queries_for_entity(entity);
+			}
+
+			//! Invalidates cached sorted queries whose row ordering depends on \a entity.
+			//! \param entity Entity.
+			void invalidate_sorted_queries_for_entity(Entity entity) {
+				m_queryCache.invalidate_sorted_queries_for_entity(entity);
+			}
+
+			//! Invalidates all cached sorted queries after row-order changes.
+			void invalidate_sorted_queries() {
+				m_queryCache.invalidate_sorted_queries();
+			}
+
+			//! Invalidates semantic `Is` queries affected by removing or changing \a is_pair.
+			//! \param is_pair `Is` pair
+			void invalidate_queries_for_entity(Pair is_pair) {
+				GAIA_ASSERT(is_pair.first() == Is);
+
+				// We still need to handle invalidation "down-the-tree".
+				// E.g. following setup:
+				// q = w.query().all({Is,animal});
+				// w.as(wolf, carnivore);
+				// w.as(carnivore, animal);
+				// q.each() ...; // animal, carnivore, wolf
+				// w.del(wolf, {Is,carnivore}) // wolf is no longer a carnivore and thus no longer an animal
+				// After this deletion, we need to invalidate "q" because wolf is no longer an animal
+				// and we don't want q to include it.
+				// q.each() ...; // animal
+
+				auto e = is_pair.second();
+				as_up_trav<false>(e, [&](Entity target) {
+					// Invalidate all queries that contain  everything in our path.
+					invalidate_queries_for_structural_entity(EntityLookupKey(Pair{Is, target}));
+				});
+			}
+
+			//! Resolves a textual id expression to an entity.
+			//! Supports names, aliases, wildcard `*`, and pair expressions like `(Rel, Target)`.
+			//! \param exprRaw Expression text
+			//! \return Resolved entity or EntityBad on failure.
+			Entity name_to_entity(std::span<const char> exprRaw) const {
+				auto expr = util::trim(exprRaw);
+				if (expr.empty())
+					return EntityBad;
+
+				if (expr[0] == '(') {
+					if (expr.size() < 5 || expr.back() != ')')
+						return EntityBad;
+
+					const auto idStr = expr.subspan(1, expr.size() - 2);
+					const auto commaIdx = core::get_index(idStr, ',');
+					if (commaIdx == BadIndex)
+						return EntityBad;
+
+					const auto first = name_to_entity(idStr.subspan(0, commaIdx));
+					if (first == EntityBad || first.pair())
+						return EntityBad;
+					const auto second = name_to_entity(idStr.subspan(commaIdx + 1));
+					if (second == EntityBad || second.pair())
+						return EntityBad;
+
+					return ecs::Pair(first, second);
+				}
+
+				// Wildcard character
+				if (expr.size() == 1 && expr[0] == '*')
+					return All;
+
+				return get_inter(expr.data(), (uint32_t)expr.size());
+			}
+
+			//! Resolves a textual id expression with `%e` placeholders to an entity.
+			//! Supports the same pair and wildcard syntax as name_to_entity().
+			//! \param args Vararg list consumed by `%e` placeholders
+			//! \param exprRaw Expression text
+			//! \return Resolved entity or EntityBad on failure.
+			Entity expr_to_entity(va_list& args, std::span<const char> exprRaw) const {
+				auto expr = util::trim(exprRaw);
+
+				if (expr[0] == '%') {
+					if (expr[1] != 'e') {
+						GAIA_ASSERT2(false, "Expression '%' not terminated");
+						return EntityBad;
+					}
+
+					auto id = (Identifier)va_arg(args, unsigned long long);
+					return Entity(id);
+				}
+
+				if (expr[0] == '(') {
+					if (expr.back() != ')') {
+						GAIA_ASSERT2(false, "Expression '(' not terminated");
+						return EntityBad;
+					}
+
+					const auto idStr = expr.subspan(1, expr.size() - 2);
+					const auto commaIdx = core::get_index(idStr, ',');
+
+					const auto first = expr_to_entity(args, idStr.subspan(0, commaIdx));
+					if (first == EntityBad)
+						return EntityBad;
+					const auto second = expr_to_entity(args, idStr.subspan(commaIdx + 1));
+					if (second == EntityBad)
+						return EntityBad;
+
+					return ecs::Pair(first, second);
+				}
+
+				{
+					auto idStr = util::trim(expr);
+
+					// Wildcard character
+					if (idStr.size() == 1 && idStr[0] == '*')
+						return All;
+
+					// Anything else is a component name
+					const auto* pItem = resolve_component_name_inter(idStr.data(), (uint32_t)idStr.size());
+					if (pItem == nullptr) {
+						GAIA_ASSERT2(false, "Component not found");
+						GAIA_LOG_W("Component '%.*s' not found", (uint32_t)idStr.size(), idStr.data());
+						return EntityBad;
+					}
+
+					return pItem->entity;
+				}
+			}
+		};
+
+		//! Forwards raw read-only component lookup to the owning world.
+		inline ComponentRawView world_get_raw(const World& world, Entity entity, Entity component) {
+			return world.get_raw(entity, component);
+		}
+
+		//! Binds one runtime sparse component store for repeated iterator-row access.
+		//! \param world World owning the sparse store.
+		//! \param component Runtime component entity.
+		//! \param[out] ops Bound sparse-store operations.
+		//! \return True when \a component has a sparse store.
+		inline bool world_bind_raw_sparse_store(const World& world, Entity component, RawSparseStoreOps& ops) {
+			const auto* pStore = world.sparse_component_store_erased(component);
+			if (pStore == nullptr)
+				return false;
+
+			const auto* pItem =
+					component.pair() ? world.comp_cache().find_pair_payload(component) : world.comp_cache().find(component);
+			GAIA_ASSERT(pItem != nullptr);
+			ops = {pStore->pStore, pStore->func_get, pStore->func_mut, pStore->func_has, pItem->comp.size()};
+			return true;
+		}
+
+		//! Forwards raw mutable component lookup to the owning world.
+		inline ComponentRawMutView world_mut_raw(World& world, Entity entity, Entity component) {
+			return world.mut_raw(entity, component);
+		}
+
+		//! Forwards read-only SoA field lookup to the owning world.
+		inline ComponentRawView
+		world_get_raw_field(const World& world, Entity entity, Entity component, uint32_t fieldIdx) {
+			return world.get_raw_field(entity, component, fieldIdx);
+		}
+
+		//! Forwards mutable SoA field lookup to the owning world.
+		inline ComponentRawMutView world_mut_raw_field(World& world, Entity entity, Entity component, uint32_t fieldIdx) {
+			return world.mut_raw_field(entity, component, fieldIdx);
+		}
+
+		inline ComponentCursor World::cursor(Entity entity, Entity component) const {
+			if (component != EntityBad && valid(entity)) {
+				const auto owner = id_owner_inter(entity, component);
+				if (owner != EntityBad) {
+					const auto* pItem = component_item(owner, component);
+					if (pItem != nullptr && soa_field_supported(*pItem)) {
+						const auto& ec = fetch(owner);
+						if (ec.pChunk->comp_idx(component) != ComponentIndexBad)
+							return ComponentCursor::from_soa(*this, comp_cache(), owner, component, pItem->comp.size());
+					}
+				}
+			}
+
+			return ComponentCursor::from_raw(comp_cache(), component, get_raw(entity, component));
+		}
+
+		inline ComponentCursor World::cursor_mut(Entity entity, Entity component) {
+			if (component != EntityBad && valid(entity)) {
+				const auto& ec = fetch(entity);
+				const auto* pItem = !is_req_del(ec) ? component_item(entity, component) : nullptr;
+				if (pItem != nullptr && soa_field_supported(*pItem) &&
+						core::get_index(ec.pChunk->ids_view(), component) != BadIndex)
+					return ComponentCursor::from_soa(*this, comp_cache(), entity, component, pItem->comp.size());
+			}
+
+			return ComponentCursor::from_raw(*this, comp_cache(), entity, component, mut_raw(entity, component));
+		}
+
+		//! Entity mutation builder returned by World entity operations.
+		using EntityBuilder = World::EntityBuilder;
+	} // namespace ecs
+} // namespace gaia
+
+#include "api.inl"
+#if GAIA_OBSERVERS_ENABLED
+	#include "observer_registry.inl"
+#endif
+
+#include "observer.inl"
+#include "system.inl"
+
+namespace gaia {
+	namespace ecs {
+		inline void World::init() {
+			// Use the default serializer
+			set_serializer(nullptr);
+
+			// Register the root archetype
+			{
+				m_pRootArchetype = create_archetype({});
+				m_pRootArchetype->set_hashes({calc_lookup_hash({})});
+				reg_archetype(m_pRootArchetype);
+			}
+
+			(void)reg_core_entity<Core_>(Core);
+
+			// Entity archetype matches the root archetype for now
+			m_pEntityArchetype = m_pRootArchetype;
+
+			// Register the component archetype (entity + EntityDesc + Component)
+			{
+				Archetype* pCompArchetype{};
+				{
+					const auto id = GAIA_ID(EntityDesc);
+					const auto& ci = reg_core_entity<EntityDesc>(id);
+					EntityBuilder(*this, id).add_inter_init(ci.entity);
+					const auto symbol = ci.symbol_name();
+					sset<EntityDesc>(id) = {symbol.data(), symbol.size(), nullptr, 0};
+					pCompArchetype = m_recs.entities[id.id()].pArchetype;
+				}
+				{
+					const auto id = GAIA_ID(Component);
+					const auto& ci = reg_core_entity<Component>(id, pCompArchetype);
+					EntityBuilder(*this, id).add_inter_init(ci.entity);
+					const auto symbol = ci.symbol_name();
+					acc_mut(id)
+							// Entity descriptor
+							.sset<EntityDesc>({symbol.data(), symbol.size(), nullptr, 0})
+							// Component
+							.sset<Component>(ci.comp);
+					m_pCompArchetype = m_recs.entities[id.id()].pArchetype;
+				}
+			}
+
+			// Core components.
+			// Their order must correspond to the value sequence in id.h.
+			{
+				(void)reg_core_entity<OnDelete_>(OnDelete);
+				(void)reg_core_entity<OnDeleteTarget_>(OnDeleteTarget);
+				(void)reg_core_entity<Remove_>(Remove);
+				(void)reg_core_entity<Delete_>(Delete);
+				(void)reg_core_entity<Error_>(Error);
+				(void)reg_core_entity<Requires_>(Requires);
+				(void)reg_core_entity<CantCombine_>(CantCombine);
+				(void)reg_core_entity<Exclusive_>(Exclusive);
+				(void)reg_core_entity<DontFragment_>(DontFragment);
+				(void)reg_core_entity<Sparse_>(Sparse);
+				(void)reg_core_entity<Acyclic_>(Acyclic);
+				(void)reg_core_entity<Traversable_>(Traversable);
+				(void)reg_core_entity<All_>(All);
+				(void)reg_core_entity<ChildOf_>(ChildOf);
+				(void)reg_core_entity<Parent_>(Parent);
+				(void)reg_core_entity<Is_>(Is);
+				(void)reg_core_entity<Prefab_>(Prefab);
+				(void)reg_core_entity<OnInstantiate_>(OnInstantiate);
+				(void)reg_core_entity<Override_>(Override);
+				(void)reg_core_entity<Inherit_>(Inherit);
+				(void)reg_core_entity<DontInherit_>(DontInherit);
+				(void)reg_core_entity<System_>(System);
+				(void)reg_core_entity<DependsOn_>(DependsOn);
+				(void)reg_core_entity<Observer_>(Observer);
+
+				(void)reg_core_entity<_Var0>(Var0);
+				(void)reg_core_entity<_Var1>(Var1);
+				(void)reg_core_entity<_Var2>(Var2);
+				(void)reg_core_entity<_Var3>(Var3);
+				(void)reg_core_entity<_Var4>(Var4);
+				(void)reg_core_entity<_Var5>(Var5);
+				(void)reg_core_entity<_Var6>(Var6);
+				(void)reg_core_entity<_Var7>(Var7);
+
+				(void)reg_core_primitive_type(S8, "gaia::ecs::S8", 13, 1);
+				(void)reg_core_primitive_type(U8, "gaia::ecs::U8", 13, 1);
+				(void)reg_core_primitive_type(S16, "gaia::ecs::S16", 14, 2);
+				(void)reg_core_primitive_type(U16, "gaia::ecs::U16", 14, 2);
+				(void)reg_core_primitive_type(S32, "gaia::ecs::S32", 14, 4);
+				(void)reg_core_primitive_type(U32, "gaia::ecs::U32", 14, 4);
+				(void)reg_core_primitive_type(S64, "gaia::ecs::S64", 14, 8);
+				(void)reg_core_primitive_type(U64, "gaia::ecs::U64", 14, 8);
+				(void)reg_core_primitive_type(Bool, "gaia::ecs::Bool", 15, 1);
+				(void)reg_core_primitive_type(Char8, "gaia::ecs::Char8", 16, 1);
+				(void)reg_core_primitive_type(Char16, "gaia::ecs::Char16", 17, 2);
+				(void)reg_core_primitive_type(Char32, "gaia::ecs::Char32", 17, 4);
+				(void)reg_core_primitive_type(F8, "gaia::ecs::F8", 13, 1);
+				(void)reg_core_primitive_type(F16, "gaia::ecs::F16", 14, 2);
+				(void)reg_core_primitive_type(F32, "gaia::ecs::F32", 14, 4);
+				(void)reg_core_primitive_type(F64, "gaia::ecs::F64", 14, 8);
+			}
+
+			// Add special properties for core components.
+			// Their order must correspond to the value sequence in id.h.
+			{
+				EntityBuilder(*this, Core) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, GAIA_ID(EntityDesc)) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, GAIA_ID(Component)) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, OnDelete) //
+						.add(Core)
+						.add(Exclusive)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, OnDeleteTarget) //
+						.add(Core)
+						.add(Exclusive)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Remove) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Delete) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Error) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, All) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Requires) //
+						.add(Core)
+						.add(Acyclic)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, CantCombine) //
+						.add(Core)
+						.add(Acyclic)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Exclusive) //
+						.add(Core)
+						.add(Pair(OnDelete, Error))
+						.add(Acyclic);
+				EntityBuilder(*this, DontFragment) //
+						.add(Core)
+						.add(Requires)
+						.add(Pair(OnDelete, Error))
+						.add(Acyclic);
+				EntityBuilder(*this, Sparse) //
+						.add(Core)
+						.add(Requires)
+						.add(Pair(OnDelete, Error))
+						.add(Acyclic);
+				EntityBuilder(*this, Acyclic) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Traversable) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+
+				EntityBuilder(*this, ChildOf) //
+						.add(Core)
+						.add(Acyclic)
+						.add(Exclusive)
+						.add(Traversable)
+						.add(Pair(OnDelete, Error))
+						.add(Pair(OnDeleteTarget, Delete));
+				EntityBuilder(*this, Parent) //
+						.add(Core)
+						.add(Acyclic)
+						.add(Exclusive)
+						.add(DontFragment)
+						.add(Traversable)
+						.add(Pair(OnDelete, Error))
+						.add(Pair(OnDeleteTarget, Delete));
+				EntityBuilder(*this, Is) //
+						.add(Core)
+						.add(Acyclic)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Prefab) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, OnInstantiate) //
+						.add(Core)
+						.add(Acyclic)
+						.add(Exclusive)
+						.add(DontFragment)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Override) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Inherit) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, DontInherit) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+
+				EntityBuilder(*this, System) //
+						.add(Core)
+						.add(Acyclic)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, DependsOn) //
+						.add(Core)
+						.add(Acyclic)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Observer) //
+						.add(Core)
+						.add(Acyclic)
+						.add(Pair(OnDelete, Error));
+
+				EntityBuilder(*this, Var0) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Var1) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Var2) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Var3) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Var4) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Var5) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Var6) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Var7) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+
+				EntityBuilder(*this, S8) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, U8) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, S16) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, U16) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, S32) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, U32) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, S64) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, U64) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Bool) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Char8) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Char16) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, Char32) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, F8) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, F16) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, F32) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+				EntityBuilder(*this, F64) //
+						.add(Core)
+						.add(Pair(OnDelete, Error));
+			}
+
+			// Remove all archetypes with no chunks. We don't want any leftovers after
+			// archetype movements.
+			{
+				ArchetypeRowDelScope scope(*this);
+				for (uint32_t i = 1; i < m_archetypes.size(); ++i) {
+					auto* pArchetype = m_archetypes[i];
+					if (!pArchetype->chunks().empty())
+						continue;
+
+					// Request deletion the standard way.
+					// We could simply add archetypes into m_archetypesToDel but this way
+					// we can actually replicate what the system really does on the inside
+					// and it will require more work at the cost of easier maintenance.
+					// The amount of archetypes cleanup is very small after init and the code
+					// only runs after the world is created so this is not a big deal.
+					req_del(*pArchetype);
+				}
+
+				// Cleanup
+				{
+					del_finalize();
+					while (!m_chunksToDel.empty() || !m_archetypesToDel.empty())
+						gc();
+
+					// Make sure everything has been cleared
+					GAIA_ASSERT(m_reqArchetypesToDel.empty());
+					GAIA_ASSERT(m_chunksToDel.empty());
+					GAIA_ASSERT(m_archetypesToDel.empty());
+				}
+
+				sort_archetypes();
+
+				// Make sure archetypes have valid graphs after the cleanup
+				for (const auto* pArchetype: m_archetypes)
+					validate_archetype_edges(pArchetype);
+			}
+
+			// Make sure archetype pointers are up-to-date
+			m_pCompArchetype = m_recs.entities[GAIA_ID(Component).id()].pArchetype;
+
+#if GAIA_SYSTEMS_ENABLED
+			// Initialize the systems query
+			systems_init();
+#endif
+		}
+
+		//! Groups an archetype by the target of its first pair using a requested relation.
+		//! \param world World associated with \p archetype. Unused by the default grouping policy.
+		//! \param archetype Archetype whose ids are inspected.
+		//! \param groupBy Relation entity selecting the pair target used as the group id.
+		//! \return Matching pair target id, or zero when the archetype has no such pair.
+		inline GroupId
+		group_by_func_default([[maybe_unused]] const World& world, const Archetype& archetype, Entity groupBy) {
+			if (archetype.pairs() > 0) {
+				auto ids = archetype.ids_view();
+				for (auto id: ids) {
+					if (!id.pair() || id.id() != groupBy.id())
+						continue;
+
+					// Consider the pair's target the groupId
+					return id.gen();
+				}
+			}
+
+			// No group
+			return 0;
+		}
+
+		//! Computes the deepest live hierarchy target represented by an archetype.
+		inline GroupId group_by_func_depth_order(const World& world, const Archetype& archetype, Entity relation) {
+			GAIA_ASSERT(!relation.pair());
+
+			// Depth ordering only makes sense for fragmenting relations whose target participates in archetype identity.
+			// Non-fragmenting relations such as Parent must stay on per-entity traversal, because their targets vary per
+			// entity and cannot be represented by one cached archetype depth. The level is derived from the cached upward
+			// traversal chain so normal query iteration can stay cheap.
+			if (!world.relation_supports_depth_order(relation) || archetype.pairs() == 0)
+				return 0;
+
+			auto ids = archetype.ids_view();
+			GroupId maxDepth = 0;
+			bool found = false;
+
+			for (auto idsIdx: archetype.pair_rel_indices(relation)) {
+				const auto pair = ids[idsIdx];
+				const auto target = world.pair_target_if_alive(pair);
+				if (target == EntityBad)
+					continue;
+
+				const GroupId depth = GroupId(world.depth_order_cache(relation, target));
+
+				if (!found || depth > maxDepth) {
+					maxDepth = depth;
+					found = true;
+				}
+			}
+
+			return found ? maxDepth : 0;
+		}
+	} // namespace ecs
+} // namespace gaia
+
+#if GAIA_JSON_ENABLED
+	#include "gaia/ecs/impl/world_json.h"
+	#include "gaia/ecs/impl/world_json_patch.h"
+	#include "gaia/ecs/impl/world_schema_json.h"
+#endif
+
+#if GAIA_SYSTEMS_ENABLED
+namespace gaia {
+	namespace ecs {
+		namespace detail {
+			//! Returns whether \a lhs entity id sorts before \a rhs entity id.
+			//! \param lhs First entity.
+			//! \param rhs Second entity.
+			//! \return True when \a lhs has a smaller id/generation tuple.
+			GAIA_NODISCARD inline bool entity_schedule_less(Entity lhs, Entity rhs) {
+				if (lhs.id() != rhs.id())
+					return lhs.id() < rhs.id();
+				return lhs.gen() < rhs.gen();
+			}
+
+			//! Returns whether \a stack already contains \a entity.
+			//! \param stack Current dependency traversal stack.
+			//! \param entity Entity to find.
+			//! \return True when \a entity is already being visited.
+			GAIA_NODISCARD inline bool system_schedule_stack_contains(const cnt::darray<Entity>& stack, Entity entity) {
+				for (auto item: stack) {
+					if (item == entity)
+						return true;
+				}
+				return false;
+			}
+
+			//! Computes a cycle-safe DependsOn depth for one scheduling key.
+			//! \param world World containing \a entity.
+			//! \param entity Entity whose DependsOn targets are inspected.
+			//! \param skipTarget Target to ignore, usually the phase marker added by SystemBuilder::phase().
+			//! \param stack Current dependency traversal stack.
+			//! \return Longest target chain reachable from \a entity, or zero when a cycle is hit.
+			GAIA_NODISCARD inline uint32_t
+			system_schedule_dep_depth(World& world, Entity entity, Entity skipTarget, cnt::darray<Entity>& stack) {
+				if (entity == EntityBad || system_schedule_stack_contains(stack, entity))
+					return 0;
+
+				stack.push_back(entity);
+				uint32_t depth = 0;
+				world.targets(entity, DependsOn, [&](Entity target) {
+					if (target == skipTarget)
+						return;
+					const auto targetDepth = system_schedule_dep_depth(world, target, EntityBad, stack) + 1;
+					if (targetDepth > depth)
+						depth = targetDepth;
+				});
+				stack.pop_back();
+				return depth;
+			}
+
+			//! Returns the phase assigned to \a systemEntity, if any.
+			//! \param world World containing \a systemEntity.
+			//! \param systemEntity System entity to inspect.
+			//! \return Phase entity or EntityBad when the system has no phase assignment.
+			GAIA_NODISCARD inline Entity system_phase(World& world, Entity systemEntity) {
+				const auto phase = world.target(systemEntity, ChildOf);
+				if (phase == EntityBad)
+					return EntityBad;
+				if (!world.has(systemEntity, Pair(DependsOn, phase)))
+					return EntityBad;
+				return phase;
+			}
+
+			//! Builds the scheduling key for \a systemEntity.
+			//! \param world World containing \a systemEntity.
+			//! \param systemEntity System entity to inspect.
+			//! \return Scheduling key used by World::systems_run().
+			GAIA_NODISCARD inline SystemScheduleItem system_schedule_item(World& world, Entity systemEntity) {
+				SystemScheduleItem item{};
+				item.entity = systemEntity;
+				item.phase = system_phase(world, systemEntity);
+				item.hasPhase = item.phase != EntityBad;
+				return item;
+			}
+
+			//! Submits all pending system jobs.
+			//! \param pending Pending jobs to submit.
+			inline void submit_pending_system_jobs(cnt::darray<PendingSystemJob>& pending) {
+				for (auto& item: pending)
+					item.job.submit();
+			}
+
+			//! Waits for, deletes, and clears all pending system jobs.
+			//! \param pending Pending jobs to finish.
+			inline void finish_pending_system_jobs(cnt::darray<PendingSystemJob>& pending) {
+				for (auto& item: pending)
+					item.job.wait();
+				for (auto& item: pending)
+					item.job.del();
+				pending.clear();
+			}
+
+			//! Submits and finishes all pending system jobs.
+			//! \param pending Pending jobs to flush.
+			inline void flush_pending_system_jobs(cnt::darray<PendingSystemJob>& pending) {
+				submit_pending_system_jobs(pending);
+				finish_pending_system_jobs(pending);
+			}
+
+			//! Returns whether \a sched supports deferred system jobs and dependency edges.
+			//! \param sched Scheduler descriptor to inspect after default-resolution.
+			//! \return True when system_update can add, depend, submit, wait, and delete jobs safely.
+			GAIA_NODISCARD inline bool sched_supports_deferred_system_jobs(const Sched& sched) {
+				const auto& resolved = sched_resolve(sched);
+				return resolved.add != nullptr && resolved.add_par != nullptr && resolved.submit != nullptr &&
+							 resolved.dep != nullptr && resolved.wait != nullptr && resolved.del != nullptr;
+			}
+
+			//! Builds item indices sorted by system entity id.
+			//! \param items All collected scheduling keys.
+			//! \param outIndices Output item indices sorted by entity id.
+			inline void
+			system_schedule_entity_indices(const cnt::darray<SystemScheduleItem>& items, cnt::darray<uint32_t>& outIndices) {
+				outIndices.clear();
+				outIndices.reserve(items.size());
+				for (uint32_t i = 0; i < items.size(); ++i)
+					outIndices.push_back(i);
+				core::sort(outIndices, [&](uint32_t lhs, uint32_t rhs) {
+					return entity_schedule_less(items[lhs].entity, items[rhs].entity);
+				});
+			}
+
+			//! Returns the index of \a entity in \a items using sorted entity indices.
+			//! \param items All collected scheduling keys.
+			//! \param entityIndices Item indices sorted by system entity id.
+			//! \param entity Entity to find.
+			//! \return Item index in \a items or UINT32_MAX when not found.
+			GAIA_NODISCARD inline uint32_t system_schedule_find_item_by_entity(
+					const cnt::darray<SystemScheduleItem>& items, const cnt::darray<uint32_t>& entityIndices, Entity entity) {
+				uint32_t lo = 0;
+				uint32_t hi = entityIndices.size();
+				while (lo < hi) {
+					const uint32_t mid = lo + (hi - lo) / 2;
+					const auto midEntity = items[entityIndices[mid]].entity;
+					if (midEntity == entity)
+						return entityIndices[mid];
+					if (entity_schedule_less(midEntity, entity))
+						lo = mid + 1;
+					else
+						hi = mid;
+				}
+				return UINT32_MAX;
+			}
+
+			//! Returns whether two schedule items belong to the same explicit system-dependency group.
+			//! \param lhs First schedule item.
+			//! \param rhs Second schedule item.
+			//! \return True when explicit system DependsOn edges may order \a lhs and \a rhs.
+			GAIA_NODISCARD inline bool
+			system_schedule_same_group(const SystemScheduleItem& lhs, const SystemScheduleItem& rhs) {
+				if (lhs.hasPhase != rhs.hasPhase)
+					return false;
+				if (!lhs.hasPhase)
+					return true;
+				return lhs.phase == rhs.phase;
+			}
+
+			//! Selects the primary DependsOn target inside one scheduling group.
+			//! \param world World containing the system entities.
+			//! \param items All collected scheduling keys.
+			//! \param entityIndices Item indices sorted by system entity id.
+			//! \param itemIdx Child item whose primary target is requested.
+			//! \return Item index in \a items or UINT32_MAX when no collected target matches.
+			GAIA_NODISCARD inline uint32_t system_schedule_primary_target_idx(
+					World& world, const cnt::darray<SystemScheduleItem>& items, const cnt::darray<uint32_t>& entityIndices,
+					uint32_t itemIdx) {
+				uint32_t bestIdx = UINT32_MAX;
+				uint32_t bestDepth = 0;
+				const auto& item = items[itemIdx];
+				world.targets(item.entity, DependsOn, [&](Entity target) {
+					if (target == item.phase)
+						return;
+
+					const auto targetIdx = system_schedule_find_item_by_entity(items, entityIndices, target);
+					if (targetIdx == UINT32_MAX)
+						return;
+					if (!system_schedule_same_group(item, items[targetIdx]))
+						return;
+
+					const auto targetDepth = items[targetIdx].systemDepth;
+					if (bestIdx == UINT32_MAX || targetDepth > bestDepth ||
+							(targetDepth == bestDepth && entity_schedule_less(items[targetIdx].entity, items[bestIdx].entity))) {
+						bestIdx = targetIdx;
+						bestDepth = targetDepth;
+					}
+				});
+				return bestIdx;
+			}
+
+			//! Assigns deterministic postorder keys inside one system scheduling group.
+			//! \param items All collected scheduling keys.
+			//! \param firstChildren First child item per target item.
+			//! \param nextSiblings Next sibling item per child item.
+			//! \param states Per-item visit state, zero-initialized by the caller.
+			//! \param itemIdx Item index to visit.
+			//! \param order Next order value to assign.
+			inline void system_schedule_visit_primary_children(
+					cnt::darray<SystemScheduleItem>& items, const cnt::darray<uint32_t>& firstChildren,
+					const cnt::darray<uint32_t>& nextSiblings, cnt::darray<uint8_t>& states, uint32_t itemIdx, uint32_t& order) {
+				if (states[itemIdx] != 0)
+					return;
+
+				states[itemIdx] = 1;
+				for (uint32_t childIdx = firstChildren[itemIdx]; childIdx != UINT32_MAX; childIdx = nextSiblings[childIdx])
+					system_schedule_visit_primary_children(items, firstChildren, nextSiblings, states, childIdx, order);
+				items[itemIdx].systemOrder = order++;
+				states[itemIdx] = 2;
+			}
+
+			//! Assigns compact order keys to systems inside one phase/system group.
+			//! \param world World containing the system entities.
+			//! \param items All collected scheduling keys.
+			//! \param groupIndices Item indices that form one phase/system group.
+			//! \param entityIndices Item indices sorted by system entity id.
+			inline void system_schedule_assign_group_orders(
+					World& world, cnt::darray<SystemScheduleItem>& items, const cnt::darray<uint32_t>& groupIndices,
+					const cnt::darray<uint32_t>& entityIndices, SystemScheduleScratch& scratch) {
+				auto& sortedGroupIndices = scratch.sortedGroupIndices;
+				auto& primaryTargets = scratch.primaryTargets;
+				auto& firstChildren = scratch.firstChildren;
+				auto& nextSiblings = scratch.nextSiblings;
+				auto& states = scratch.states;
+
+				sortedGroupIndices = groupIndices;
+				core::sort(sortedGroupIndices, [&](uint32_t lhs, uint32_t rhs) {
+					return entity_schedule_less(items[lhs].entity, items[rhs].entity);
+				});
+
+				primaryTargets.clear();
+				primaryTargets.resize(items.size(), UINT32_MAX);
+				for (auto itemIdx: groupIndices)
+					primaryTargets[itemIdx] = system_schedule_primary_target_idx(world, items, entityIndices, itemIdx);
+
+				firstChildren.clear();
+				nextSiblings.clear();
+				firstChildren.resize(items.size(), UINT32_MAX);
+				nextSiblings.resize(items.size(), UINT32_MAX);
+				for (uint32_t i = sortedGroupIndices.size(); i > 0; --i) {
+					const auto itemIdx = sortedGroupIndices[i - 1];
+					const auto targetIdx = primaryTargets[itemIdx];
+					if (targetIdx == UINT32_MAX)
+						continue;
+					nextSiblings[itemIdx] = firstChildren[targetIdx];
+					firstChildren[targetIdx] = itemIdx;
+				}
+
+				states.clear();
+				states.resize(items.size(), 0);
+
+				uint32_t order = 0;
+				for (auto itemIdx: sortedGroupIndices) {
+					if (states[itemIdx] == 0 && primaryTargets[itemIdx] == UINT32_MAX) {
+						system_schedule_visit_primary_children(items, firstChildren, nextSiblings, states, itemIdx, order);
+					}
+				}
+
+				// Remaining items are in a DependsOn cycle. The cycle is invalid, but the update stays deterministic.
+				for (auto itemIdx: sortedGroupIndices) {
+					if (states[itemIdx] == 0) {
+						items[itemIdx].systemOrder = order++;
+						states[itemIdx] = 2;
+					}
+				}
+			}
+
+			//! Returns the index of \a phase in \a phases.
+			//! \param phases Collected phase keys.
+			//! \param phase Phase entity to find.
+			//! \return Phase index or UINT32_MAX when not found.
+			GAIA_NODISCARD inline uint32_t
+			system_schedule_find_phase(const cnt::darray<SystemPhaseScheduleItem>& phases, Entity phase) {
+				for (uint32_t i = 0; i < phases.size(); ++i) {
+					if (phases[i].phase == phase)
+						return i;
+				}
+				return UINT32_MAX;
+			}
+
+			//! Selects the primary DependsOn target among collected phases.
+			//! \param world World containing the phase entities.
+			//! \param phases Collected phase keys.
+			//! \param phaseIdx Phase index whose primary target is requested.
+			//! \return Phase index or UINT32_MAX when no collected target matches.
+			GAIA_NODISCARD inline uint32_t system_schedule_primary_phase_idx(
+					World& world, const cnt::darray<SystemPhaseScheduleItem>& phases, uint32_t phaseIdx) {
+				uint32_t bestIdx = UINT32_MAX;
+				uint32_t bestDepth = 0;
+				world.targets(phases[phaseIdx].phase, DependsOn, [&](Entity target) {
+					const auto targetIdx = system_schedule_find_phase(phases, target);
+					if (targetIdx == UINT32_MAX)
+						return;
+
+					const auto targetDepth = phases[targetIdx].depth;
+					if (bestIdx == UINT32_MAX || targetDepth > bestDepth ||
+							(targetDepth == bestDepth && entity_schedule_less(phases[targetIdx].phase, phases[bestIdx].phase))) {
+						bestIdx = targetIdx;
+						bestDepth = targetDepth;
+					}
+				});
+				return bestIdx;
+			}
+
+			//! Assigns deterministic postorder keys below one collected phase.
+			//! \param phases Phase keys to update.
+			//! \param firstChildren First child phase per target phase.
+			//! \param nextSiblings Next sibling phase per child phase.
+			//! \param states Per-phase visit state, zero-initialized by the caller.
+			//! \param phaseIdx Phase index to visit.
+			//! \param order Next order value to assign.
+			inline void system_schedule_visit_phase_children(
+					cnt::darray<SystemPhaseScheduleItem>& phases, const cnt::darray<uint32_t>& firstChildren,
+					const cnt::darray<uint32_t>& nextSiblings, cnt::darray<uint8_t>& states, uint32_t phaseIdx, uint32_t& order) {
+				if (states[phaseIdx] != 0)
+					return;
+
+				states[phaseIdx] = 1;
+				for (uint32_t childIdx = firstChildren[phaseIdx]; childIdx != UINT32_MAX; childIdx = nextSiblings[childIdx])
+					system_schedule_visit_phase_children(phases, firstChildren, nextSiblings, states, childIdx, order);
+				phases[phaseIdx].order = order++;
+				states[phaseIdx] = 2;
+			}
+
+			//! Assigns deterministic order keys to collected phases.
+			//! \param world World containing the phase entities.
+			//! \param phases Phase keys to update.
+			//! \param scratch Reusable scheduler scratch storage owned by the world.
+			inline void system_schedule_assign_phase_orders(
+					World& world, cnt::darray<SystemPhaseScheduleItem>& phases, SystemScheduleScratch& scratch) {
+				// Phase ordering has two layers:
+				// 1. A cheap DFS postorder over each phase's primary DependsOn target. This gives stable depth/path
+				//    keys and a deterministic fallback for cycles.
+				// 2. A direct DependsOn topological pass. This preserves all explicit phase targets, including
+				//    multi-target dependencies that the primary-target path cannot represent by itself.
+				auto& sortedPhases = scratch.sortedPhases;
+				auto& primaryPhases = scratch.primaryPhases;
+				auto& firstChildren = scratch.firstChildren;
+				auto& nextSiblings = scratch.nextSiblings;
+				auto& states = scratch.states;
+
+				// Work in entity-id order whenever the graph does not force a different order. That keeps
+				// independent phases deterministic and makes cycle fallback stable.
+				sortedPhases.clear();
+				sortedPhases.reserve(phases.size());
+				for (uint32_t i = 0; i < phases.size(); ++i)
+					sortedPhases.push_back(i);
+				core::sort(sortedPhases, [&](uint32_t lhs, uint32_t rhs) {
+					return entity_schedule_less(phases[lhs].phase, phases[rhs].phase);
+				});
+
+				// Collapse each phase's dependency path to one primary target for the DFS ordering key. Direct
+				// multi-target dependencies are handled later by the topological pass.
+				primaryPhases.clear();
+				primaryPhases.resize(phases.size(), UINT32_MAX);
+				for (uint32_t i = 0; i < phases.size(); ++i)
+					primaryPhases[i] = system_schedule_primary_phase_idx(world, phases, i);
+
+				// Build primary-target adjacency once, then walk it instead of repeatedly scanning all phases for
+				// children. Reverse insertion preserves sorted child traversal.
+				firstChildren.clear();
+				nextSiblings.clear();
+				firstChildren.resize(phases.size(), UINT32_MAX);
+				nextSiblings.resize(phases.size(), UINT32_MAX);
+				for (uint32_t i = sortedPhases.size(); i > 0; --i) {
+					const auto phaseIdx = sortedPhases[i - 1];
+					const auto targetIdx = primaryPhases[phaseIdx];
+					if (targetIdx == UINT32_MAX)
+						continue;
+					nextSiblings[phaseIdx] = firstChildren[targetIdx];
+					firstChildren[targetIdx] = phaseIdx;
+				}
+
+				states.clear();
+				states.resize(phases.size(), 0);
+
+				// Assign the primary DFS order from roots first. Any phase left unvisited participates in a
+				// primary-target cycle, so it receives a deterministic entity-order fallback below.
+				uint32_t order = 0;
+				for (auto phaseIdx: sortedPhases) {
+					if (states[phaseIdx] == 0 && primaryPhases[phaseIdx] == UINT32_MAX) {
+						system_schedule_visit_phase_children(phases, firstChildren, nextSiblings, states, phaseIdx, order);
+					}
+				}
+
+				// Remaining phases are in a DependsOn cycle. The cycle is invalid, but the update stays deterministic.
+				for (auto phaseIdx: sortedPhases) {
+					if (states[phaseIdx] == 0) {
+						phases[phaseIdx].order = order++;
+						states[phaseIdx] = 2;
+					}
+				}
+
+				auto& edges = scratch.edges;
+				auto& childCounts = scratch.childCounts;
+				auto& firstEdges = scratch.firstEdges;
+				auto& readyNext = scratch.readyNext;
+				auto& ordered = scratch.sortedIndices;
+				auto& visited = scratch.visited;
+
+				edges.clear();
+				childCounts.clear();
+				childCounts.resize(phases.size(), 0);
+
+				// Build explicit phase edges from the actual DependsOn pairs. We count incoming children per
+				// target so a phase becomes ready only after all phases depending on it have been emitted.
+				for (uint32_t phaseIdx = 0; phaseIdx < phases.size(); ++phaseIdx) {
+					world.targets(phases[phaseIdx].phase, DependsOn, [&](Entity target) {
+						const auto targetIdx = system_schedule_find_phase(phases, target);
+						if (targetIdx == UINT32_MAX || targetIdx == phaseIdx)
+							return;
+
+						SystemScheduleEdge edge{};
+						edge.child = phaseIdx;
+						edge.target = targetIdx;
+						edges.push_back(edge);
+						++childCounts[targetIdx];
+					});
+				}
+				if (edges.empty())
+					return;
+
+				// Link outgoing edges per child phase. This lets the ready-list pass touch only edges affected by
+				// the phase it just emitted.
+				firstEdges.clear();
+				firstEdges.resize(phases.size(), UINT32_MAX);
+				for (uint32_t edgeIdx = edges.size(); edgeIdx > 0; --edgeIdx) {
+					auto& edge = edges[edgeIdx - 1];
+					edge.next = firstEdges[edge.child];
+					firstEdges[edge.child] = edgeIdx - 1;
+				}
+
+				auto phase_less = [&](uint32_t lhs, uint32_t rhs) {
+					const auto& lhsPhase = phases[lhs];
+					const auto& rhsPhase = phases[rhs];
+					if (lhsPhase.order != rhsPhase.order)
+						return lhsPhase.order < rhsPhase.order;
+					if (lhsPhase.depth != rhsPhase.depth)
+						return lhsPhase.depth > rhsPhase.depth;
+					return entity_schedule_less(lhsPhase.phase, rhsPhase.phase);
+				};
+				auto ready_insert = [&](uint32_t& readyHead, uint32_t phaseIdx) {
+					uint32_t* ppCurr = &readyHead;
+					while (*ppCurr != UINT32_MAX && phase_less(*ppCurr, phaseIdx))
+						ppCurr = &readyNext[*ppCurr];
+					readyNext[phaseIdx] = *ppCurr;
+					*ppCurr = phaseIdx;
+				};
+
+				readyNext.clear();
+				readyNext.resize(phases.size(), UINT32_MAX);
+
+				// Kahn pass in Gaia's scheduler direction: children run before their DependsOn targets. The
+				// ordered ready list preserves the primary DFS order whenever several phases are unblocked.
+				uint32_t readyHead = UINT32_MAX;
+				for (auto phaseIdx: sortedPhases) {
+					if (childCounts[phaseIdx] == 0)
+						ready_insert(readyHead, phaseIdx);
+				}
+
+				ordered.clear();
+				ordered.reserve(phases.size());
+				while (readyHead != UINT32_MAX) {
+					const auto phaseIdx = readyHead;
+					readyHead = readyNext[readyHead];
+					ordered.push_back(phaseIdx);
+
+					for (uint32_t edgeIdx = firstEdges[phaseIdx]; edgeIdx != UINT32_MAX; edgeIdx = edges[edgeIdx].next) {
+						const auto targetIdx = edges[edgeIdx].target;
+						GAIA_ASSERT(childCounts[targetIdx] > 0);
+						--childCounts[targetIdx];
+						if (childCounts[targetIdx] == 0)
+							ready_insert(readyHead, targetIdx);
+					}
+				}
+
+				if (ordered.size() != phases.size()) {
+					// A direct phase dependency cycle cannot be topologically sorted. Keep the acyclic prefix and
+					// append the remaining phases in entity order so execution is still deterministic.
+					visited.clear();
+					visited.resize(phases.size(), 0);
+					for (auto phaseIdx: ordered)
+						visited[phaseIdx] = 1;
+					for (auto phaseIdx: sortedPhases) {
+						if (visited[phaseIdx] == 0)
+							ordered.push_back(phaseIdx);
+					}
+				}
+
+				for (uint32_t i = 0; i < ordered.size(); ++i)
+					phases[ordered[i]].order = i;
+			}
+
+			//! Assigns compact deterministic order keys to all collected schedule items.
+			//! \param world World containing the system entities.
+			//! \param items Scheduling keys to update.
+			//! \param entityIndices Item indices sorted by system entity id.
+			inline void system_schedule_assign_order_keys(
+					World& world, cnt::darray<SystemScheduleItem>& items, const cnt::darray<uint32_t>& entityIndices,
+					SystemScheduleScratch& scratch) {
+				auto& stack = scratch.entityStack;
+				auto& phases = scratch.phases;
+				auto& groupIndices = scratch.groupIndices;
+
+				for (auto& item: items) {
+					stack.clear();
+					item.systemDepth = system_schedule_dep_depth(world, item.entity, item.phase, stack);
+				}
+
+				phases.clear();
+				for (auto& item: items) {
+					if (!item.hasPhase || system_schedule_find_phase(phases, item.phase) != UINT32_MAX)
+						continue;
+					SystemPhaseScheduleItem phaseItem{};
+					phaseItem.phase = item.phase;
+					stack.clear();
+					phaseItem.depth = system_schedule_dep_depth(world, phaseItem.phase, EntityBad, stack);
+					phases.push_back(phaseItem);
+				}
+
+				system_schedule_assign_phase_orders(world, phases, scratch);
+				for (auto& item: items) {
+					if (!item.hasPhase)
+						continue;
+					const auto phaseIdx = system_schedule_find_phase(phases, item.phase);
+					if (phaseIdx == UINT32_MAX)
+						continue;
+					item.phaseOrder = phases[phaseIdx].order;
+					item.phaseDepth = phases[phaseIdx].depth;
+				}
+
+				groupIndices.clear();
+				groupIndices.reserve(items.size());
+				for (uint32_t i = 0; i < items.size(); ++i) {
+					if (!items[i].hasPhase)
+						groupIndices.push_back(i);
+				}
+				if (!groupIndices.empty())
+					system_schedule_assign_group_orders(world, items, groupIndices, entityIndices, scratch);
+
+				for (auto& phase: phases) {
+					groupIndices.clear();
+					for (uint32_t i = 0; i < items.size(); ++i) {
+						if (items[i].phase == phase.phase)
+							groupIndices.push_back(i);
+					}
+					if (!groupIndices.empty())
+						system_schedule_assign_group_orders(world, items, groupIndices, entityIndices, scratch);
+				}
+			}
+
+			//! Compares two system scheduling keys.
+			//!
+			//! Phased systems are ordered phase-by-phase using the same child-before-target rule as unphased systems.
+			//! Systems inside one phase are then ordered by explicit system DependsOn keys. Systems without a
+			//! dependency relation are tie-broken by entity id so the order is deterministic, not random.
+			//!
+			//! \param lhs First scheduling key.
+			//! \param rhs Second scheduling key.
+			//! \return True when \a lhs must be visited before \a rhs.
+			GAIA_NODISCARD inline bool system_schedule_less(const SystemScheduleItem& lhs, const SystemScheduleItem& rhs) {
+				if (lhs.hasPhase != rhs.hasPhase)
+					return lhs.hasPhase;
+
+				if (lhs.hasPhase && lhs.phase != rhs.phase) {
+					if (lhs.phaseOrder != rhs.phaseOrder)
+						return lhs.phaseOrder < rhs.phaseOrder;
+					if (lhs.phaseDepth != rhs.phaseDepth)
+						return lhs.phaseDepth > rhs.phaseDepth;
+					return entity_schedule_less(lhs.phase, rhs.phase);
+				}
+
+				if (lhs.systemOrder != rhs.systemOrder)
+					return lhs.systemOrder < rhs.systemOrder;
+				if (lhs.systemDepth != rhs.systemDepth)
+					return lhs.systemDepth > rhs.systemDepth;
+				return entity_schedule_less(lhs.entity, rhs.entity);
+			}
+
+			//! Adds one explicit direct dependency edge.
+			//! \param edges Output edge list.
+			//! \param childCounts Direct child count per target item.
+			//! \param childIdx Item index that must run first.
+			//! \param targetIdx Item index that must run after \a childIdx.
+			inline void system_schedule_add_edge(
+					cnt::darray<SystemScheduleEdge>& edges, cnt::darray<uint32_t>& childCounts, uint32_t childIdx,
+					uint32_t targetIdx) {
+				SystemScheduleEdge edge{};
+				edge.child = childIdx;
+				edge.target = targetIdx;
+				edges.push_back(edge);
+				++childCounts[targetIdx];
+			}
+
+			//! Builds explicit direct dependency edges between collected scheduling items.
+			//! \param world World containing the system entities.
+			//! \param items Scheduling keys to inspect.
+			//! \param entityIndices Item indices sorted by system entity id.
+			//! \param edges Output edge list.
+			//! \param childCounts Output direct child count per target item.
+			inline void system_schedule_build_edges(
+					World& world, const cnt::darray<SystemScheduleItem>& items, const cnt::darray<uint32_t>& entityIndices,
+					cnt::darray<SystemScheduleEdge>& edges, cnt::darray<uint32_t>& childCounts) {
+				childCounts.resize(items.size(), 0);
+				for (uint32_t childIdx = 0; childIdx < items.size(); ++childIdx) {
+					const auto& child = items[childIdx];
+					world.targets(child.entity, DependsOn, [&](Entity target) {
+						if (target == child.phase)
+							return;
+						const auto targetIdx = system_schedule_find_item_by_entity(items, entityIndices, target);
+						if (targetIdx == UINT32_MAX || targetIdx == childIdx)
+							return;
+						if (!system_schedule_same_group(child, items[targetIdx]))
+							return;
+
+						system_schedule_add_edge(edges, childCounts, childIdx, targetIdx);
+					});
+				}
+			}
+
+			//! Inserts an item into the ready list sorted by deterministic schedule order.
+			//! \param items Scheduling keys used for order comparison.
+			//! \param readyNext Next-item links for the ready list.
+			//! \param readyHead Current ready-list head.
+			//! \param itemIdx Item to insert.
+			inline void system_schedule_ready_insert(
+					const cnt::darray<SystemScheduleItem>& items, cnt::darray<uint32_t>& readyNext, uint32_t& readyHead,
+					uint32_t itemIdx) {
+				uint32_t* ppCurr = &readyHead;
+				while (*ppCurr != UINT32_MAX && system_schedule_less(items[*ppCurr], items[itemIdx]))
+					ppCurr = &readyNext[*ppCurr];
+				readyNext[itemIdx] = *ppCurr;
+				*ppCurr = itemIdx;
+			}
+
+			//! Orders system scheduling keys with a deterministic child-before-target pass.
+			//!
+			//! Direct DependsOn edges are respected first. The compact order keys provide deterministic subtree-like
+			//! tie-breaking. Invalid cycles fall back to the same deterministic order so release updates keep running.
+			//!
+			//! \param world World containing the system entities.
+			//! \param items Scheduling keys to reorder.
+			inline void order_system_schedule_items(
+					World& world, cnt::darray<SystemScheduleItem>& items, SystemScheduleScratch& scratch) {
+				auto& entityIndices = scratch.entityIndices;
+				auto& edges = scratch.edges;
+				auto& childCounts = scratch.childCounts;
+				auto& sortedIndices = scratch.sortedIndices;
+				auto& firstEdges = scratch.firstEdges;
+				auto& ordered = scratch.ordered;
+				auto& visited = scratch.visited;
+				auto& readyNext = scratch.readyNext;
+
+				system_schedule_entity_indices(items, entityIndices);
+				system_schedule_assign_order_keys(world, items, entityIndices, scratch);
+
+				edges.clear();
+				childCounts.clear();
+				edges.reserve(items.size());
+				system_schedule_build_edges(world, items, entityIndices, edges, childCounts);
+				if (edges.empty()) {
+					core::sort(items, [](const SystemScheduleItem& lhs, const SystemScheduleItem& rhs) {
+						return system_schedule_less(lhs, rhs);
+					});
+					return;
+				}
+
+				sortedIndices.clear();
+				sortedIndices.reserve(items.size());
+				for (uint32_t i = 0; i < items.size(); ++i)
+					sortedIndices.push_back(i);
+				core::sort(sortedIndices, [&](uint32_t lhs, uint32_t rhs) {
+					return system_schedule_less(items[lhs], items[rhs]);
+				});
+
+				firstEdges.clear();
+				firstEdges.resize(items.size(), UINT32_MAX);
+				for (uint32_t i = edges.size(); i > 0; --i) {
+					auto& edge = edges[i - 1];
+					edge.next = firstEdges[edge.child];
+					firstEdges[edge.child] = i - 1;
+				}
+
+				ordered.clear();
+				ordered.reserve(items.size());
+
+				visited.clear();
+				visited.resize(items.size(), 0);
+				readyNext.clear();
+				readyNext.resize(items.size(), UINT32_MAX);
+
+				uint32_t readyHead = UINT32_MAX;
+				for (uint32_t i = sortedIndices.size(); i > 0; --i) {
+					const auto itemIdx = sortedIndices[i - 1];
+					if (childCounts[itemIdx] == 0) {
+						readyNext[itemIdx] = readyHead;
+						readyHead = itemIdx;
+					}
+				}
+
+				while (ordered.size() < items.size()) {
+					uint32_t bestIdx = readyHead;
+					if (bestIdx != UINT32_MAX)
+						readyHead = readyNext[bestIdx];
+					if (bestIdx == UINT32_MAX) {
+						for (auto itemIdx: sortedIndices) {
+							if (visited[itemIdx] == 0) {
+								bestIdx = itemIdx;
+								break;
+							}
+						}
+					}
+
+					GAIA_ASSERT(bestIdx != UINT32_MAX);
+					if (bestIdx == UINT32_MAX)
+						break;
+
+					visited[bestIdx] = 1;
+					ordered.push_back(items[bestIdx]);
+
+					for (uint32_t edgeIdx = firstEdges[bestIdx]; edgeIdx != UINT32_MAX; edgeIdx = edges[edgeIdx].next) {
+						const auto targetIdx = edges[edgeIdx].target;
+						if (visited[targetIdx] != 0)
+							continue;
+						GAIA_ASSERT(childCounts[targetIdx] > 0);
+						if (childCounts[targetIdx] > 0) {
+							--childCounts[targetIdx];
+							if (childCounts[targetIdx] == 0)
+								system_schedule_ready_insert(items, readyNext, readyHead, targetIdx);
+						}
+					}
+				}
+
+				items = ordered;
+			}
+
+			//! Returns whether \a lhs and \a rhs belong to different scheduler batches.
+			//! \param lhs Current batch key.
+			//! \param rhs Candidate system key.
+			//! \return True when pending jobs must be flushed before \a rhs runs.
+			GAIA_NODISCARD inline bool
+			system_schedule_batch_changed(const SystemScheduleItem& lhs, const SystemScheduleItem& rhs) {
+				if (lhs.hasPhase != rhs.hasPhase)
+					return true;
+				if (lhs.hasPhase)
+					return lhs.phase != rhs.phase || lhs.systemDepth != rhs.systemDepth;
+				return lhs.systemDepth != rhs.systemDepth;
+			}
+
+			//! Returns whether \a type asks Gaia-ECS to prepare scheduler work for a system.
+			//! \param type System query execution type.
+			//! \return True for parallel execution modes.
+			GAIA_NODISCARD inline bool system_exec_uses_scheduler(QueryExecType type) {
+				return type == QueryExecType::Parallel || type == QueryExecType::ParallelPerf ||
+							 type == QueryExecType::ParallelEff;
+			}
+
+			//! Runs or prepares a system entity from the erased system-query callback path.
+			//! \param pCtx Pointer to SystemRunCtx.
+			//! \param item Precomputed scheduling key for the system entity to run or prepare.
+			inline void run_system_entity_erased(void* pCtx, const SystemScheduleItem& item) {
+				auto& ctx = *static_cast<SystemRunCtx*>(pCtx);
+				GAIA_ASSERT(ctx.pWorld != nullptr);
+				GAIA_ASSERT(ctx.pPending != nullptr);
+				if (ctx.pWorld == nullptr || ctx.pPending == nullptr)
+					return;
+
+				auto& world = *ctx.pWorld;
+				auto& pending = *ctx.pPending;
+				const auto systemEntity = item.entity;
+				if (!world.valid(systemEntity) || !world.has(systemEntity, System))
+					return;
+				if (!world.enabled_hierarchy(systemEntity, ChildOf))
+					return;
+
+				if (!ctx.hasCurrent) {
+					ctx.current = item;
+					ctx.hasCurrent = true;
+				} else if (system_schedule_batch_changed(ctx.current, item)) {
+					flush_pending_system_jobs(pending);
+					ctx.current = item;
+				}
+
+				auto ss = world.acc_mut(systemEntity);
+				auto& sys = ss.smut<ecs::System_>();
+				if (!ctx.canScheduleSystems || !system_exec_uses_scheduler(sys.execType) || sys.query.main_thread_required()) {
+					flush_pending_system_jobs(pending);
+					sys.exec(world);
+					return;
+				}
+
+				auto job = sys.job(world);
+				if (!job.valid())
+					return;
+
+				for (auto& pendingJob: pending) {
+					if (!world.valid(pendingJob.entity) || !world.has(pendingJob.entity, System))
+						continue;
+
+					auto prevSs = world.acc_mut(pendingJob.entity);
+					auto& prevSys = prevSs.smut<ecs::System_>();
+					if (!prevSys.query.can_run_parallel(sys.query))
+						job.dep(pendingJob.job);
+				}
+
+				pending.emplace_back(systemEntity, GAIA_MOV(job));
+			}
+
+			//! Collects one system scheduling key from the erased system-query callback path.
+			//! \param pCtx Pointer to SystemCollectCtx.
+			//! \param systemEntity System entity to collect.
+			inline void collect_system_schedule_item_erased(void* pCtx, Entity systemEntity) {
+				auto& ctx = *static_cast<SystemCollectCtx*>(pCtx);
+				GAIA_ASSERT(ctx.pWorld != nullptr);
+				GAIA_ASSERT(ctx.pItems != nullptr);
+				if (ctx.pWorld == nullptr || ctx.pItems == nullptr)
+					return;
+				ctx.pItems->push_back(system_schedule_item(*ctx.pWorld, systemEntity));
+			}
+
+			//! Collects a system entity from the erased system-query callback path.
+			inline void collect_system_entity_erased(void* pCtx, Entity systemEntity) {
+				auto& out = *static_cast<cnt::darray<Entity>*>(pCtx);
+				out.push_back(systemEntity);
+			}
+
+			//! Collects enabled systems assigned to \a phase.
+			//! Direct `(ChildOf, phase)` + `(DependsOn, phase)` matches only. Descendant phases are not included.
+			//! \param world World containing the phase and system entities.
+			//! \param phase Phase entity assigned with SystemBuilder::phase().
+			//! \param items Output array receiving scheduling keys for that phase only.
+			inline void
+			collect_phase_system_schedule_items(World& world, Entity phase, cnt::darray<SystemScheduleItem>& items) {
+				world.sources(ChildOf, phase, [&](Entity source) {
+					if (!world.has(source, System))
+						return;
+					if (!world.has(source, Pair(DependsOn, phase)))
+						return;
+					if (!world.enabled(source))
+						return;
+					items.push_back(system_schedule_item(world, source));
+				});
+			}
+
+			//! Runs already-collected system scheduling keys with the systems_run() scheduler path.
+			//! \param world World that owns the systems.
+			//! \param items Ordered scheduling keys to run.
+			inline void run_system_schedule(World& world, const cnt::darray<SystemScheduleItem>& items) {
+				cnt::darray<PendingSystemJob> pending;
+				SystemRunCtx ctx{};
+				ctx.pWorld = &world;
+				ctx.pPending = &pending;
+				ctx.canScheduleSystems = sched_supports_deferred_system_jobs(world_sched(world));
+
+				for (const auto& item: items)
+					run_system_entity_erased(&ctx, item);
+				flush_pending_system_jobs(pending);
+			}
+
+			//! Orders collected scheduling keys and runs them.
+			//! \param world World that owns the systems and scheduler scratch.
+			//! \param scratch Reusable scheduler scratch containing the collected items.
+			inline void order_and_run_system_schedule(World& world, SystemScheduleScratch& scratch) {
+				order_system_schedule_items(world, scratch.items, scratch);
+				run_system_schedule(world, scratch.items);
+			}
+		} // namespace detail
+
+		inline void World::systems_init() {
+			m_systemsQuery = query().all(System);
+		}
+
+		inline void World::systems_run() {
+			if GAIA_UNLIKELY (tearing_down())
+				return;
+
+			auto& items = m_systemScheduleScratch.items;
+			items.clear();
+
+			detail::SystemCollectCtx collectCtx{};
+			collectCtx.pWorld = this;
+			collectCtx.pItems = &items;
+			m_systemsQuery.each_entity_enabled(&collectCtx, detail::collect_system_schedule_item_erased);
+			detail::order_and_run_system_schedule(*this, m_systemScheduleScratch);
+		}
+
+		inline void World::systems_run(Entity phase) {
+			if GAIA_UNLIKELY (tearing_down())
+				return;
+
+			GAIA_ASSERT(valid(phase));
+			GAIA_ASSERT(!phase.pair());
+			if (!valid(phase) || phase.pair())
+				return;
+			if (!enabled_hierarchy(phase, ChildOf))
+				return;
+
+			auto& items = m_systemScheduleScratch.items;
+			items.clear();
+			detail::collect_phase_system_schedule_items(*this, phase, items);
+			detail::order_and_run_system_schedule(*this, m_systemScheduleScratch);
+		}
+
+		inline void World::systems_done() {
+			cnt::darray<Entity> tmpEntities;
+			m_systemsQuery.each_entity_enabled(&tmpEntities, detail::collect_system_entity_erased);
+
+			// Wait for every outstanding system job before mutating any system runtime state.
+			// This keeps dependency chains intact while jobs are still live.
+			for (auto entity: tmpEntities) {
+				if (!valid(entity) || !has(entity, System))
+					continue;
+
+				auto ss = acc_mut(entity);
+				auto& sys = ss.smut<ecs::System_>();
+				if (sys.jobHandle != (mt::JobHandle)mt::JobNull_t{}) {
+					auto& tp = mt::ThreadPool::get();
+					tp.wait(sys.jobHandle);
+				}
+			}
+
+			// With all system jobs complete we can release their runtime state safely.
+			for (auto entity: tmpEntities) {
+				if (!valid(entity) || !has(entity, System))
+					continue;
+
+				auto ss = acc_mut(entity);
+				auto& sys = ss.smut<ecs::System_>();
+				if (sys.jobHandle != (mt::JobHandle)mt::JobNull_t{}) {
+					auto& tp = mt::ThreadPool::get();
+					tp.del(sys.jobHandle);
+					sys.jobHandle = mt::JobNull;
+				}
+				sys.query = {};
+			}
+
+			m_systemsQuery = {};
+			tmpEntities.clear();
+		}
+
+		inline SystemBuilder World::system() {
+			// Create the system
+			auto e = add();
+			EntityBuilder(*this, e) //
+					.add<System_>();
+
+			auto ss = acc_mut(e);
+			auto& sys = ss.smut<System_>();
+			auto& sysRuntime = systems().data_add(e);
+			{
+				sys.entity = e;
+				sys.query = query();
+				sysRuntime.on_each_func = {};
+			}
+			return SystemBuilder(*this, e);
+		}
+	} // namespace ecs
+} // namespace gaia
+#endif
+
+namespace gaia {
+	namespace ecs {
+		//! Returns the world's current structural version.
+		inline uint32_t world_version(const World& world) {
+			return world.m_worldVersion;
+		}
+
+		//! Returns the version of the world's pending archetype-deletion set.
+		inline uint32_t world_archetype_delete_version(const World& world) {
+			return world.m_archetypeDeleteVersion;
+		}
+
+		//! Returns the resolved scheduler bound to \a world.
+		//! \param world World instance.
+		//! \return Bound scheduler or the default scheduler when none was installed.
+		inline const Sched& world_sched(const World& world) {
+			return world.sched();
+		}
+
+		//! Iterates direct targets of \a entity for the given relation.
+		//! \param world World to query.
+		//! \param entity Source entity.
+		//! \param relation Relation to traverse.
+		//! \param ctx Opaque callback context.
+		//! \param func Callback invoked for each target.
+		inline void
+		world_each_target(const World& world, Entity entity, Entity relation, void* ctx, void (*func)(void*, Entity)) {
+			world.targets(entity, relation, [ctx, func](Entity target) {
+				func(ctx, target);
+			});
+		}
+
+		//! Acquires temporary scratch storage used during query matching.
+		//! \param world World providing the scratch stack.
+		//! \return Scratch storage reference.
+		inline QueryMatchScratch& query_match_scratch_acquire(World& world) {
+			if (world.m_queryMatchScratchDepth == world.m_queryMatchScratchStack.size())
+				world.m_queryMatchScratchStack.push_back(new QueryMatchScratch());
+
+			auto& scratch = *world.m_queryMatchScratchStack[world.m_queryMatchScratchDepth++];
+			scratch.clear_temporary_matches();
+			return scratch;
+		}
+
+		//! Releases previously acquired query-match scratch storage.
+		//! \param world World providing the scratch stack.
+		//! \param keepStamps Whether stamp buffers should be preserved.
+		inline void query_match_scratch_release(World& world, bool keepStamps) {
+			GAIA_ASSERT(world.m_queryMatchScratchDepth > 0);
+			auto& scratch = *world.m_queryMatchScratchStack[--world.m_queryMatchScratchDepth];
+			if (keepStamps)
+				scratch.clear_temporary_matches_keep_stamps();
+			else
+				scratch.clear_temporary_matches();
+		}
+
+		//! Invalidates sorted queries affected by \a entity.
+		//! \param world World owning the queries.
+		//! \param entity Changed entity.
+		GAIA_FORCEINLINE void world_invalidate_sorted_queries_for_entity(World& world, Entity entity) {
+			// Sorting is rarely used; one predictable branch keeps the hot write path free of the
+			// invalidation machinery for both serial and parallel writes.
+			if GAIA_LIKELY (!world.has_sorted_queries())
+				return;
+
+			if (world.defer_sort_inv_active()) {
+				// Only record entities a sorted query actually depends on, so the defer queue stays
+				// empty for the common case where no component carried a sorted query.
+				if (!world.has_sorted_queries_for_entity(entity))
+					return;
+				const auto slot = defer_slot();
+				GAIA_ASSERT(slot != BadDeferSlot);
+				world.defer_sort_inv_record(slot, entity);
+				return;
+			}
+			world.invalidate_sorted_queries_for_entity(entity);
+		}
+
+		//! Invalidates all sorted queries in \a world.
+		//! \param world World owning the queries.
+		inline void world_invalidate_sorted_queries(World& world) {
+			world.invalidate_sorted_queries();
+		}
+
+		//! Starts recording sorted-query invalidations in \a world instead of applying them.
+		//! \param world World owning the query cache.
+		//! \param slotCount Number of work items that can record concurrently.
+		inline void world_defer_sort_inv_begin(World& world, uint32_t slotCount) {
+			world.defer_sort_inv_begin(slotCount);
+		}
+
+		//! Applies the sorted-query invalidations recorded in \a world since the matching
+		//! world_defer_sort_inv_begin().
+		//! \param world World owning the query cache.
+		inline void world_defer_sort_inv_end(World& world) {
+			world.defer_sort_inv_end();
+		}
+
+		//! Starts recording both `OnSet` notifications and sorted-query invalidations produced
+		//! by a parallel region instead of applying them right away. The observer channel is
+		//! active only when GAIA_OBSERVERS_ENABLED; sorted-query invalidation always defers.
+		//! \param world World owning the query cache and observers.
+		//! \param itemCount Number of work items that can record concurrently.
+		inline void world_defer_parallel_begin(World& world, uint32_t itemCount) {
+#if GAIA_OBSERVERS_ENABLED
+			world_defer_on_set_begin(world, itemCount);
+#endif
+			world_defer_sort_inv_begin(world, itemCount);
+		}
+
+		//! Applies the `OnSet` notifications and sorted-query invalidations recorded since the
+		//! matching world_defer_parallel_begin().
+		//! \param world World owning the query cache and observers.
+		inline void world_defer_parallel_end(World& world) {
+			world_defer_sort_inv_end(world);
+#if GAIA_OBSERVERS_ENABLED
+			world_defer_on_set_end(world);
+#endif
+		}
+
+#if GAIA_OBSERVERS_ENABLED
+		//! Starts recording `OnSet` notifications in \a world instead of dispatching them.
+		//! \param world World owning the observers.
+		//! \param slotCount Number of work items that can record concurrently.
+		inline void world_defer_on_set_begin(World& world, uint32_t slotCount) {
+			world.defer_on_set_begin(slotCount);
+		}
+
+		//! Dispatches the `OnSet` notifications recorded in \a world since the matching
+		//! world_defer_on_set_begin().
+		//! \param world World owning the observers.
+		inline void world_defer_on_set_end(World& world) {
+			world.defer_on_set_end();
+		}
+#endif
+
+		//! Checks whether \a entity satisfies \a term using normal semantic matching.
+		//! \param world World to query.
+		//! \param entity Entity to test.
+		//! \param term Term to match.
+		//! \return True if \a entity satisfies \a term.
+		inline bool world_has_entity_term(const World& world, Entity entity, Entity term) {
+			if (term.pair() && term.id() == Is.id() && !is_wildcard(term.gen())) {
+				const auto target = world.get(term.gen());
+				return world.valid(target) && world.is(entity, target);
+			}
+
+			return world.has(entity, term);
+		}
+
+		//! Checks whether \a entity satisfies an inherited `in(...)` semantic term.
+		//! \param world World to query.
+		//! \param entity Entity to test.
+		//! \param term Term to match.
+		//! \return True if \a entity matches \a term through inherited Is traversal.
+		inline bool world_has_entity_term_in(const World& world, Entity entity, Entity term) {
+			if (term.pair() && term.id() == Is.id() && !is_wildcard(term.gen())) {
+				const auto target = world.get(term.gen());
+				return world.valid(target) && world.in(entity, target);
+			}
+
+			return false;
+		}
+
+		//! Returns whether \a term inherits by OnInstantiate(Inherit) policy.
+		//! \param world World to query.
+		//! \param term Term to inspect.
+		//! \return True if \a term uses inherit policy.
+		inline bool world_term_uses_inherit_policy(const World& world, Entity term) {
+			return !is_wildcard(term) && world.target(term, OnInstantiate) == Inherit;
+		}
+
+		//! Checks whether \a entity directly owns \a term without inheritance.
+		//! \param world World to query.
+		//! \param entity Entity to test.
+		//! \param term Term to match.
+		//! \return True if \a entity directly owns \a term.
+		inline bool world_has_entity_term_direct(const World& world, Entity entity, Entity term) {
+			return world.has_direct(entity, term);
+		}
+
+		//! Returns whether \a relation uses the dedicated non-fragmenting relation store.
+		//! \param world World to query.
+		//! \param relation Relation to inspect.
+		//! \return True if \a relation is exclusive, non-fragmenting, and uses relation storage.
+		inline bool world_relation_uses_non_fragmenting_storage(const World& world, Entity relation) {
+			return world.relation_uses_non_fragmenting_storage(relation);
+		}
+
+		//! Returns whether \a relation is non-fragmenting.
+		//! \param world World to query.
+		//! \param relation Relation to inspect.
+		//! \return True if \a relation is non-fragmenting.
+		inline bool world_relation_is_non_fragmenting(const World& world, Entity relation) {
+			return world.relation_is_non_fragmenting(relation);
+		}
+
+		//! Returns whether \a component uses sparse instance storage.
+		//! \param world World to query.
+		//! \param component Component entity to inspect.
+		//! \return True if \a component stores payload in sparse storage.
+		inline bool world_component_uses_sparse_storage(const World& world, Entity component) {
+			return world.component_uses_sparse_storage(component);
+		}
+
+		//! Returns whether \a component is non-fragmenting.
+		//! \param world World to query.
+		//! \param component Component entity to inspect.
+		//! \return True if \a component is non-fragmenting.
+		inline bool world_component_is_non_fragmenting(const World& world, Entity component) {
+			return world.component_is_non_fragmenting(component);
+		}
+
+		//! Counts direct entities addressable by \a term.
+		//! \param world World to query.
+		//! \param term Term to inspect.
+		//! \return Number of direct entities.
+		inline uint32_t world_count_direct_term_entities(const World& world, Entity term) {
+			return world.count_direct_term_entities(term);
+		}
+
+		//! Counts direct relations reachable by an inherited `in(...)` term.
+		//! \param world World to query.
+		//! \param term Inherited semantic term.
+		//! \return Number of matching direct relations.
+		inline uint32_t world_count_in_term_entities(const World& world, Entity term) {
+			if (!term.pair() || term.id() != Is.id() || is_wildcard(term.gen()))
+				return 0;
+
+			const auto target = world.get(term.gen());
+			return world.valid(target) ? (uint32_t)world.as_relations_trav_cache(target).size() : 0U;
+		}
+
+		//! Counts direct entities addressable by \a term without semantic expansion.
+		//! \param world World to query.
+		//! \param term Term to inspect.
+		//! \return Number of direct entities.
+		inline uint32_t world_count_direct_term_entities_direct(const World& world, Entity term) {
+			return world.count_direct_term_entities_direct(term);
+		}
+
+		//! Collects direct entities addressable by \a term.
+		//! \param world World to query.
+		//! \param term Term to inspect.
+		//! \param out Output array.
+		inline void world_collect_direct_term_entities(const World& world, Entity term, cnt::darray<Entity>& out) {
+			world.collect_direct_term_entities(term, out);
+		}
+
+		//! Collects relations reachable by an inherited `in(...)` term.
+		//! \param world World to query.
+		//! \param term Inherited semantic term.
+		//! \param out Output array.
+		inline void world_collect_in_term_entities(const World& world, Entity term, cnt::darray<Entity>& out) {
+			if (!term.pair() || term.id() != Is.id() || is_wildcard(term.gen()))
+				return;
+
+			const auto target = world.get(term.gen());
+			if (!world.valid(target))
+				return;
+
+			const auto& relations = world.as_relations_trav_cache(target);
+			out.reserve(out.size() + (uint32_t)relations.size());
+			for (auto relation: relations)
+				out.push_back(relation);
+		}
+
+		//! Collects direct entities addressable by \a term without semantic expansion.
+		//! \param world World to query.
+		//! \param term Term to inspect.
+		//! \param out Output array.
+		inline void world_collect_direct_term_entities_direct(const World& world, Entity term, cnt::darray<Entity>& out) {
+			world.collect_direct_term_entities_direct(term, out);
+		}
+
+		//! Iterates direct entities addressable by \a term.
+		//! \param world World to query.
+		//! \param term Term to inspect.
+		//! \param ctx Opaque callback context.
+		//! \param func Callback invoked for each entity.
+		//! \return False if iteration was stopped by \a func.
+		inline bool world_each_direct_term_entity(const World& world, Entity term, void* ctx, bool (*func)(void*, Entity)) {
+			return world.each_direct_term_entity(term, ctx, func);
+		}
+
+		//! Iterates relations reachable by an inherited `in(...)` term.
+		//! \param world World to query.
+		//! \param term Inherited semantic term.
+		//! \param ctx Opaque callback context.
+		//! \param func Callback invoked for each entity.
+		//! \return False if iteration was stopped by \a func.
+		inline bool world_each_in_term_entity(const World& world, Entity term, void* ctx, bool (*func)(void*, Entity)) {
+			if (!term.pair() || term.id() != Is.id() || is_wildcard(term.gen()))
+				return true;
+
+			const auto target = world.get(term.gen());
+			if (!world.valid(target))
+				return true;
+
+			for (auto relation: world.as_relations_trav_cache(target)) {
+				if (!func(ctx, relation))
+					return false;
+			}
+
+			return true;
+		}
+
+		//! Iterates direct entities addressable by \a term without semantic expansion.
+		//! \param world World to query.
+		//! \param term Term to inspect.
+		//! \param ctx Opaque callback context.
+		//! \param func Callback invoked for each entity.
+		//! \return False if iteration was stopped by \a func.
+		inline bool
+		world_each_direct_term_entity_direct(const World& world, Entity term, void* ctx, bool (*func)(void*, Entity)) {
+			return world.each_direct_term_entity_direct(term, ctx, func);
+		}
+
+		//! Returns whether \a entity is enabled.
+		//! \param world World to query.
+		//! \param entity Entity to inspect.
+		//! \return True if \a entity is enabled.
+		inline bool world_entity_enabled(const World& world, Entity entity) {
+			return world.enabled(entity);
+		}
+
+		//! Returns the live target of \a pair, or EntityBad if unavailable.
+		//! \param world World to query.
+		//! \param pair Pair entity.
+		//! \return Live pair target or EntityBad.
+		inline Entity world_pair_target_if_alive(const World& world, Entity pair) {
+			return world.pair_target_if_alive(pair);
+		}
+
+		//! Returns whether \a entity is enabled through the given hierarchy relation.
+		//! \param world World to query.
+		//! \param entity Entity to inspect.
+		//! \param relation Hierarchy relation.
+		//! \return True if \a entity is enabled in the hierarchy.
+		inline bool world_entity_enabled_hierarchy(const World& world, Entity entity, Entity relation) {
+			return world.enabled_hierarchy(entity, relation);
+		}
+
+		//! Returns the version counter for hierarchy-enabled state.
+		//! \param world World to query.
+		//! \return Hierarchy-enabled version.
+		inline uint32_t world_enabled_hierarchy_version(const World& world) {
+			return world.enabled_hierarchy_version();
+		}
+
+		//! Returns whether \a relation is treated as a hierarchy relation.
+		//! \param world World to query.
+		//! \param relation Relation to inspect.
+		//! \return True if \a relation is a hierarchy relation.
+		inline bool world_relation_is_hierarchy(const World& world, Entity relation) {
+			return world.relation_is_hierarchy(relation);
+		}
+
+		//! Returns whether \a relation fragments archetypes.
+		//! \param world World to query.
+		//! \param relation Relation to inspect.
+		//! \return True if \a relation is fragmenting.
+		inline bool world_relation_is_fragmenting(const World& world, Entity relation) {
+			return world.relation_is_fragmenting(relation);
+		}
+
+		//! Returns whether \a relation is both hierarchy-forming and fragmenting.
+		//! \param world World to query.
+		//! \param relation Relation to inspect.
+		//! \return True if \a relation is a fragmenting hierarchy relation.
+		inline bool world_relation_is_fragmenting_hierarchy(const World& world, Entity relation) {
+			return world.relation_is_fragmenting_hierarchy(relation);
+		}
+
+		//! Returns whether \a relation supports cached depth-ordered iteration.
+		//! \param world World to query.
+		//! \param relation Relation to inspect.
+		//! \return True if \a relation supports depth ordering.
+		inline bool world_relation_supports_depth_order(const World& world, Entity relation) {
+			return world.relation_supports_depth_order(relation);
+		}
+
+		//! Returns whether disabled subtrees may be pruned for depth-ordered iteration.
+		//! \param world World to query.
+		//! \param relation Relation to inspect.
+		//! \return True if disabled subtree pruning is valid.
+		inline bool world_relation_depth_order_prunes_disabled_subtrees(const World& world, Entity relation) {
+			return world.relation_depth_order_prunes_disabled_subtrees(relation);
+		}
+
+		//! Returns whether \a entity currently belongs to a prefab archetype.
+		//! \param world World to query.
+		//! \param entity Entity to inspect.
+		//! \return True if \a entity is stored in a prefab archetype.
+		inline bool world_entity_prefab(const World& world, Entity entity) {
+			const auto& ec = world.fetch(entity);
+			return ec.pArchetype != nullptr && ec.pArchetype->has(Prefab);
+		}
+
+		//! Finds the first inherited owner providing \a term for \a archetype.
+		//! \param world World to query.
+		//! \param archetype Archetype to inspect.
+		//! \param term Term to resolve.
+		//! \return First inherited owner providing \a term, or EntityBad.
+		inline Entity world_query_first_inherited_owner(const World& world, const Archetype& archetype, Entity term) {
+			const auto& chunks = archetype.chunks();
+			const Chunk* pFirstChunk = nullptr;
+			for (const auto* pChunk: chunks) {
+				if (pChunk == nullptr || pChunk->size() == 0)
+					continue;
+				pFirstChunk = pChunk;
+				break;
+			}
+
+			if (pFirstChunk == nullptr)
+				return EntityBad;
+
+			const auto firstEntity = pFirstChunk->entity_view()[0];
+			for (const auto target: world.as_targets_trav_cache(firstEntity)) {
+				if (!world.has_direct(target, term))
+					continue;
+				return target;
+			}
+
+			return EntityBad;
+		}
+
+		//! Returns the current archetype of \a entity.
+		//! \param world World to query.
+		//! \param entity Entity to inspect.
+		//! \return Archetype pointer, or nullptr when absent.
+		inline const Archetype* world_entity_archetype(const World& world, Entity entity) {
+			return world.fetch(entity).pArchetype;
+		}
+
+		//! Returns the size of the component-to-archetype bucket for \a term.
+		//! \param world World to query.
+		//! \param term Term to inspect.
+		//! \return Number of indexed archetype entries.
+		inline uint32_t world_component_index_bucket_size(const World& world, Entity term) {
+			const auto it = world.m_entityToArchetypeMap.find(EntityLookupKey(term));
+			if (it == world.m_entityToArchetypeMap.end())
+				return 0;
+
+			return (uint32_t)it->second.size();
+		}
+
+		//! Returns the cached component index of \a term inside \a archetype.
+		//! \param world World to query.
+		//! \param archetype Archetype to inspect.
+		//! \param term Term to inspect.
+		//! \return Component index, or BadIndex if unavailable.
+		inline uint32_t world_component_index_comp_idx(const World& world, const Archetype& archetype, Entity term) {
+			if (is_wildcard(term))
+				return BadIndex;
+
+			const auto it = world.m_entityToArchetypeMap.find(EntityLookupKey(term));
+			if (it == world.m_entityToArchetypeMap.end())
+				return BadIndex;
+
+			const auto idx = core::get_index_if(it->second, [&](const auto& entry) {
+				return entry.matches(&archetype);
+			});
+			if (idx == BadIndex)
+				return BadIndex;
+
+			return it->second[idx].compIdx;
+		}
+
+		//! Returns the cached match count of \a term inside \a archetype.
+		//! \param world World to query.
+		//! \param archetype Archetype to inspect.
+		//! \param term Term to inspect.
+		//! \return Match count, or 0 if unavailable.
+		inline uint32_t world_component_index_match_count(const World& world, const Archetype& archetype, Entity term) {
+			const auto it = world.m_entityToArchetypeMap.find(EntityLookupKey(term));
+			if (it == world.m_entityToArchetypeMap.end())
+				return 0;
+
+			const auto idx = core::get_index_if(it->second, [&](const auto& entry) {
+				return entry.matches(&archetype);
+			});
+			if (idx == BadIndex)
+				return 0;
+
+			return it->second[idx].matchCount;
+		}
+
+		//! Reconstructs the typed pair wrapper for an exact pair entity.
+		//! \param world World containing the pair endpoints.
+		//! \param entity Exact pair entity.
+		//! \return Pair wrapper containing the current endpoint handles.
+		inline Pair world_pair_record(const World& world, Entity entity) {
+			GAIA_ASSERT(entity.pair());
+			return Pair(world.get(entity.id()), world.get(entity.gen()));
+		}
+
+		//! Returns a typed query argument from the cold exact-pair record path.
+		//! \tparam T Component type represented by \a term.
+		//! \param world World containing the pair record.
+		//! \param entity Exact pair entity.
+		//! \param term Component or relationship id selecting the payload.
+		//! \return Read-only component value or proxy.
+		template <typename T>
+		GAIA_NOINLINE decltype(auto) world_query_pair_record_arg_by_id_const(World& world, Entity entity, Entity term) {
+			return world.template get<T>(world_pair_record(world, entity), term);
+		}
+
+		//! Returns typed inherited component data for a resolved owner entity.
+		//! \tparam T Component type.
+		//! \param world World to query.
+		//! \param owner Entity providing the inherited value.
+		//! \param id Component or pair id to fetch.
+		//! \return Pointer to inherited component data.
+		template <typename T>
+		inline const std::remove_cv_t<std::remove_reference_t<T>>*
+		world_query_inherited_arg_data_const(World& world, Entity owner, Entity id) {
+			using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
+			return &world.template get<Arg>(owner, id);
+		}
+
+		//! Returns raw inherited component data for a resolved owner entity.
+		//! \param world World to query.
+		//! \param owner Entity providing the inherited value.
+		//! \param id Component or pair id to fetch.
+		//! \return Pointer to inherited component data.
+		inline const void* world_query_inherited_arg_data_const_ptr(const World& world, Entity owner, Entity id) {
+			const auto& ec = world.fetch(owner);
+			const auto row = ec.row;
+			return ec.pChunk->comp_ptr(ec.pChunk->comp_idx(id), row);
+		}
+
+		//! Returns a direct query argument for \a entity using immediate-write access for mutable references.
+		//! \tparam T Query argument type.
+		//! \param world World to query.
+		//! \param entity Entity or exact pair record to read or mutate.
+		//! \return Query argument bound to \a entity.
+		template <typename T>
+		inline decltype(auto) world_direct_entity_arg(World& world, Entity entity) {
+			using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
+			if constexpr (std::is_same_v<Arg, Entity>)
+				return entity;
+			else if constexpr (std::is_lvalue_reference_v<T> && !std::is_const_v<std::remove_reference_t<T>>) {
+				if GAIA_UNLIKELY (entity.pair())
+					return world.template mut<Arg>(world_pair_record(world, entity));
+				return world.template mut_im<Arg>(entity);
+			} else {
+				if GAIA_UNLIKELY (entity.pair())
+					return world.template get<Arg>(world_pair_record(world, entity));
+				return world.template get<Arg>(entity);
+			}
+		}
+
+		//! Returns a direct query argument for \a entity using raw mutable access.
+		//! \tparam T Query argument type.
+		//! \param world World to query.
+		//! \param entity Entity or exact pair record to read or mutate.
+		//! \return Query argument bound to \a entity.
+		template <typename T>
+		inline decltype(auto) world_direct_entity_arg_raw(World& world, Entity entity) {
+			using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
+			if constexpr (std::is_same_v<Arg, Entity>)
+				return entity;
+			else if constexpr (std::is_lvalue_reference_v<T> && !std::is_const_v<std::remove_reference_t<T>>) {
+				if GAIA_UNLIKELY (entity.pair())
+					return world.template mut<Arg>(world_pair_record(world, entity));
+				return world.template mut<Arg>(entity);
+			} else {
+				if GAIA_UNLIKELY (entity.pair())
+					return world.template get<Arg>(world_pair_record(world, entity));
+				return world.template get<Arg>(entity);
+			}
+		}
+
+		//! Returns a prebound typed sparse store for prepared query execution.
+		//! \tparam T Sparse component type.
+		//! \param world World owning the sparse store.
+		//! \param component Sparse component entity.
+		//! \return Mutable type-erased sparse-store pointer.
+		template <typename T>
+		inline void* world_typed_sparse_store_ptr(World& world, Entity component) {
+			return &world.template sparse_component_store_mut<T>(component);
+		}
+
+		//! Reads a typed sparse value from a prebound store.
+		//! \tparam T Sparse component type.
+		//! \param pStore Prebound sparse store.
+		//! \param entity Entity whose value is read.
+		//! \return Immutable sparse component value.
+		template <typename T>
+		inline const T& world_typed_sparse_store_get(const void* pStore, Entity entity) {
+			return static_cast<const detail::SparseComponentStore<T>*>(pStore)->get(entity);
+		}
+
+		//! Mutates a typed sparse value in a prebound store.
+		//! \tparam T Sparse component type.
+		//! \param pStore Prebound sparse store.
+		//! \param entity Entity whose value is mutated.
+		//! \return Mutable sparse component value.
+		template <typename T>
+		inline T& world_typed_sparse_store_mut(void* pStore, Entity entity) {
+			return static_cast<detail::SparseComponentStore<T>*>(pStore)->mut(entity);
+		}
+
+		//! Returns whether a prebound typed sparse store contains an entity.
+		//! \tparam T Sparse component type.
+		//! \param pStore Prebound sparse store.
+		//! \param entity Entity to find.
+		//! \return True when the store contains \a entity.
+		template <typename T>
+		inline bool world_typed_sparse_store_has(const void* pStore, Entity entity) {
+			return static_cast<const detail::SparseComponentStore<T>*>(pStore)->has(entity);
+		}
+
+		//! Finds a mutable typed sparse value with a single identity dispatch and lookup.
+		//! \tparam T Sparse component type.
+		//! \param pStore Prebound sparse store.
+		//! \param entity Entity whose value is requested.
+		//! \return Payload pointer, or nullptr when absent.
+		template <typename T>
+		inline T* world_typed_sparse_store_try_mut(void* pStore, Entity entity) {
+			return static_cast<detail::SparseComponentStore<T>*>(pStore)->try_mut(entity);
+		}
+
+		//! Finds a read-only typed sparse value with a single identity dispatch and lookup.
+		//! \tparam T Sparse component type.
+		//! \param pStore Prebound sparse store.
+		//! \param entity Entity whose value is requested.
+		//! \return Payload pointer, or nullptr when absent.
+		template <typename T>
+		inline const T* world_typed_sparse_store_try_get(const void* pStore, Entity entity) {
+			return static_cast<const detail::SparseComponentStore<T>*>(pStore)->try_get(entity);
+		}
+
+		//! Returns the component or pair id represented by query argument type \a T.
+		//! \tparam T Query argument type.
+		//! \param world World providing component metadata.
+		//! \return Component or pair entity id.
+		template <typename T>
+		inline Entity world_query_arg_id(World& world) {
+			using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
+			using FT = typename component_type_t<Arg>::TypeFull;
+			if constexpr (is_pair<FT>::value) {
+				const auto rel = comp_cache(world).template get<typename FT::rel>().entity;
+				const auto tgt = comp_cache(world).template get<typename FT::tgt>().entity;
+				return (Entity)Pair(rel, tgt);
+			} else
+				return comp_cache(world).template get<FT>().entity;
+		}
+
+		//! Returns the query argument for \a entity using the id implied by \a T.
+		//! \tparam T Query argument type.
+		//! \param world World to query.
+		//! \param entity Entity to read or mutate.
+		//! \return Query argument bound to \a entity.
+		template <typename T>
+		inline decltype(auto) world_query_entity_arg(World& world, Entity entity) {
+			using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
+			if constexpr (std::is_same_v<Arg, Entity>)
+				return entity;
+			else {
+				const auto id = world_query_arg_id<Arg>(world);
+				return world_query_entity_arg_by_id<T>(world, entity, id);
+			}
+		}
+
+		//! Returns the query argument for \a entity using explicit term id \a id.
+		//! Mutable references materialize an override when inherited data must become direct.
+		//! \tparam T Query argument type.
+		//! \param world World to query.
+		//! \param entity Entity to read or mutate.
+		//! \param id Explicit component or pair id, or EntityBad to derive it from \a T.
+		//! \return Query argument bound to \a entity.
+		template <typename T>
+		inline decltype(auto) world_query_entity_arg_by_id(World& world, Entity entity, Entity id) {
+			using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
+			if constexpr (std::is_same_v<Arg, Entity>)
+				return entity;
+			else {
+				const auto termId = id != EntityBad ? id : world_query_arg_id<Arg>(world);
+				if constexpr (std::is_lvalue_reference_v<T> && !std::is_const_v<std::remove_reference_t<T>>) {
+					if (!world.has_direct(entity, termId)) {
+						if constexpr (is_pair<Arg>::value)
+							(void)world.override(entity, termId);
+						else
+							(void)world.template override<Arg>(entity, termId);
+					}
+
+					return world.template mut_im<Arg>(entity, termId);
+				} else {
+					if GAIA_UNLIKELY (entity.pair())
+						return world_query_pair_record_arg_by_id_const<Arg>(world, entity, termId);
+					return world.template get<Arg>(entity, termId);
+				}
+			}
+		}
+
+		//! Returns the query argument for \a entity using explicit term id \a id and raw mutable access.
+		//! Mutable references materialize an override when inherited data must become direct.
+		//! \tparam T Query argument type.
+		//! \param world World to query.
+		//! \param entity Entity to read or mutate.
+		//! \param id Explicit component or pair id, or EntityBad to derive it from \a T.
+		//! \return Query argument bound to \a entity.
+		template <typename T>
+		inline decltype(auto) world_query_entity_arg_by_id_raw(World& world, Entity entity, Entity id) {
+			using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
+			if constexpr (std::is_same_v<Arg, Entity>)
+				return entity;
+			else {
+				const auto termId = id != EntityBad ? id : world_query_arg_id<Arg>(world);
+				if constexpr (std::is_lvalue_reference_v<T> && !std::is_const_v<std::remove_reference_t<T>>) {
+					if (!world.has_direct(entity, termId)) {
+						if constexpr (is_pair<Arg>::value)
+							(void)world.override(entity, termId);
+						else
+							(void)world.template override<Arg>(entity, termId);
+					}
+
+					return world.template mut<Arg>(entity, termId);
+				} else {
+					return world.template get<Arg>(entity, termId);
+				}
+			}
+		}
+
+		//! Initializes chunk-stable cached lookup state for inherited const query arguments.
+		//! \tparam T Query argument type.
+		//! \param world World to query.
+		//! \param chunk Chunk currently being iterated.
+		//! \param pEntities Entities belonging to \a chunk.
+		//! \param id Explicit component or pair id, or EntityBad to derive it from \a T.
+		//! \param[out] direct True when the argument is stored directly on the chunk archetype.
+		//! \param[out] compIdx Component index inside \a chunk when \a direct is true.
+		//! \param[out] pDataInherited Pointer to inherited data when \a direct is false.
+		template <typename T>
+		inline void world_init_query_entity_arg_by_id_chunk_stable_const(
+				World& world, const Chunk& chunk, const Entity* pEntities, Entity id, bool& direct, uint32_t& compIdx,
+				const std::remove_cv_t<std::remove_reference_t<T>>*& pDataInherited) {
+			using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
+			if constexpr (std::is_same_v<Arg, Entity>) {
+				direct = false;
+				compIdx = BadIndex;
+				pDataInherited = nullptr;
+				return;
+			}
+
+			const auto termId = id != EntityBad ? id : world_query_arg_id<Arg>(world);
+			direct = chunk.has(termId);
+			compIdx = BadIndex;
+			pDataInherited = nullptr;
+
+			if (direct) {
+				compIdx = chunk.comp_idx(termId);
+				GAIA_ASSERT(compIdx != BadIndex);
+				return;
+			}
+
+			auto owner = EntityBad;
+			const auto firstEntity = pEntities[0];
+			for (const auto target: world.as_targets_trav_cache(firstEntity)) {
+				if (!world.has_direct(target, termId))
+					continue;
+
+				owner = target;
+				break;
+			}
+
+			GAIA_ASSERT(owner != EntityBad);
+			pDataInherited = &world.template get<Arg>(owner, termId);
+		}
+
+		//! Returns a cached const query argument while reusing per-archetype direct/inherited state.
+		//! \tparam T Query argument type.
+		//! \param world World to query.
+		//! \param entity Entity to read.
+		//! \param id Explicit component or pair id, or EntityBad to derive it from \a T.
+		//! \param[in,out] pLastArchetype Last archetype used by the caller cache.
+		//! \param[in,out] cachedOwner Cached inherited owner entity.
+		//! \param[in,out] cachedDirect Cached flag telling whether the value is direct.
+		//! \return Query argument bound to \a entity.
+		template <typename T>
+		inline decltype(auto) world_query_entity_arg_by_id_cached_const(
+				World& world, Entity entity, Entity id, const Archetype*& pLastArchetype, Entity& cachedOwner,
+				bool& cachedDirect) {
+			using Arg = std::remove_cv_t<std::remove_reference_t<T>>;
+			if constexpr (std::is_same_v<Arg, Entity>)
+				return entity;
+
+			const auto termId = id != EntityBad ? id : world_query_arg_id<Arg>(world);
+			const auto& ec = world.fetch(entity);
+			if (ec.pArchetype != pLastArchetype) {
+				pLastArchetype = ec.pArchetype;
+				cachedDirect = ec.pArchetype->has(termId);
+				cachedOwner = EntityBad;
+
+				if (!cachedDirect) {
+					for (const auto target: world.as_targets_trav_cache(entity)) {
+						if (!world.has_direct(target, termId))
+							continue;
+
+						cachedOwner = target;
+						break;
+					}
+
+					GAIA_ASSERT(cachedOwner != EntityBad);
+				}
+			}
+
+			if (cachedDirect)
+				return ComponentGetter{world, ec.pChunk, entity, ec.row}.template get<Arg>(termId);
+
+			return world.template get<Arg>(cachedOwner, termId);
+		}
+
+		//! Dispatches OnSet observers for a contiguous row range in \a chunk.
+		//! \param world World owning the chunk.
+		//! \param term Component or pair id that was written.
+		//! \param chunk Chunk containing the written rows.
+		//! \param from First row index, inclusive.
+		//! \param to Last row index, exclusive.
+		inline void world_notify_on_set(World& world, Entity term, Chunk& chunk, uint16_t from, uint16_t to) {
+#if GAIA_OBSERVERS_ENABLED
+			if (world.tearing_down())
+				return;
+			if (!world.observers().has_on_set_observers(term))
+				return;
+
+			auto entities = chunk.entity_view();
+			if (from >= entities.size())
+				return;
+			if (to > entities.size())
+				to = (uint16_t)entities.size();
+			if (from >= to)
+				return;
+
+			// Observer dispatch mutates world-owned state and runs user code. Neither is safe from a
+			// worker thread, so inside a deferring region the notification is only recorded here and
+			// the coordinator dispatches it after the region joins.
+			if (world.defer_on_set_active()) {
+				const auto slot = defer_slot();
+				GAIA_ASSERT(slot != BadDeferSlot);
+				for (uint32_t row = from; row < to; ++row)
+					world.defer_on_set_record(slot, term, entities[row]);
+				return;
+			}
+
+			world.observers().on_set(world, term, EntitySpan{entities.data() + from, uint32_t(to - from)});
+#else
+			(void)world;
+			(void)term;
+			(void)chunk;
+			(void)from;
+			(void)to;
+#endif
+		}
+
+		//----------------------------------------------------------------------
+
+		inline ComponentRawView ComponentGetter::get_raw(Entity component) const {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+			return m_pWorld->get_raw(m_entity, component);
+		}
+
+		inline ComponentRawView ComponentGetter::get_raw_field(Entity component, uint32_t fieldIdx) const {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+			return m_pWorld->get_raw_field(m_entity, component, fieldIdx);
+		}
+
+		inline ComponentRawMutView ComponentSetter::mut_raw(Entity component) {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+			return const_cast<World*>(m_pWorld)->mut_raw(m_entity, component);
+		}
+
+		inline ComponentRawMutView ComponentSetter::mut_raw_field(Entity component, uint32_t fieldIdx) {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+			return const_cast<World*>(m_pWorld)->mut_raw_field(m_entity, component, fieldIdx);
+		}
+
+		inline ComponentSetter& ComponentSetter::set_raw(Entity component, const void* data, uint32_t size) {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+			const auto ok = const_cast<World*>(m_pWorld)->set_raw(m_entity, component, data, size);
+			GAIA_ASSERT(ok);
+			(void)ok;
+			return *this;
+		}
+
+		inline ComponentSetter& ComponentSetter::modify_raw(Entity component) {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+			const_cast<World*>(m_pWorld)->modify_raw(m_entity, component);
+			return *this;
+		}
+
+		//! Returns a typed component value selected by a runtime component entity.
+		//! \tparam T Component type represented by \p type.
+		//! \param type Component entity selecting the payload.
+		//! \return Read-only component value or proxy for the getter's entity.
+		template <typename T>
+		GAIA_NODISCARD decltype(auto) ComponentGetter::get(Entity type) const {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+
+			using FT = typename component_type_t<T>::TypeFull;
+			if constexpr (World::template supports_sparse_component_storage<FT>()) {
+				if (m_pWorld->template can_use_sparse_component_storage<FT>(type)) {
+					return m_pWorld->template sparse_component_get_value<FT>(type, m_entity);
+				}
+			}
+
+			const auto row = m_row;
+			return m_pChunk->template get<T>(row, type);
+		}
+
+		template <typename T>
+		decltype(auto) ComponentSetter::mut(Entity type) {
+			return smut<T>(type);
+		}
+
+		template <typename T>
+		decltype(auto) ComponentSetter::smut(Entity type) {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+
+			using FT = typename component_type_t<T>::TypeFull;
+			if constexpr (World::template supports_sparse_component_storage<FT>()) {
+				auto& world = *const_cast<World*>(m_pWorld);
+				if (world.template can_use_sparse_component_storage<FT>(type))
+					return world.template sparse_component_mut_value<FT>(type, m_entity);
+			}
+
+			const auto row = m_row;
+			return const_cast<Chunk*>(m_pChunk)->template sset<T>(row, type);
+		}
+
+		template <typename T>
+		ComponentSetter& ComponentSetter::sset(Entity type, T&& value) {
+			smut<T>(type) = GAIA_FWD(value);
+			return *this;
+		}
+
+		template <typename T, typename U>
+		ComponentSetter& ComponentSetter::set(U&& value) {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+			GAIA_ASSERT(m_pChunk != nullptr);
+			smut<T>() = GAIA_FWD(value);
+			if constexpr (uses_ct_sparse_storage_v<T>) {
+				auto& world = *const_cast<World*>(m_pWorld);
+				world.finish_write(m_entity, m_pChunk->template comp_entity<T>());
+			} else {
+				auto& chunk = *const_cast<Chunk*>(m_pChunk);
+				chunk.template modify<T, true>();
+				world_notify_on_set(chunk.world(), chunk.template comp_entity<T>(), chunk, m_row, (uint16_t)(m_row + 1));
+			}
+			return *this;
+		}
+
+		template <typename T>
+		ComponentSetter& ComponentSetter::set(Entity type, T&& value) {
+			GAIA_ASSERT(m_pWorld != nullptr);
+			GAIA_ASSERT(m_entity != EntityBad);
+
+			smut<T>(type) = GAIA_FWD(value);
+			auto& world = *const_cast<World*>(m_pWorld);
+
+			world.finish_write(m_entity, type);
+			return *this;
+		}
+
+		//----------------------------------------------------------------------
+
+		//! Dispatches OnSet observers for a single entity write.
+		//! \param world World owning the entity.
+		//! \param term Component or pair id that was written.
+		//! \param entity Entity that was written.
+		inline void world_notify_on_set_entity(World& world, Entity term, Entity entity) {
+#if GAIA_OBSERVERS_ENABLED
+			if (world.tearing_down())
+				return;
+			if (world.try_live_record(entity) == nullptr)
+				return;
+			if (!world.observers().has_on_set_observers(term))
+				return;
+
+			// See world_notify_on_set(): inside a deferring region the notification is recorded and
+			// dispatched by the coordinator once the region joins.
+			if (world.defer_on_set_active()) {
+				const auto slot = defer_slot();
+				GAIA_ASSERT(slot != BadDeferSlot);
+				world.defer_on_set_record(slot, term, entity);
+				return;
+			}
+
+			world.observers().on_set(world, term, EntitySpan{&entity, 1});
+#else
+			(void)world;
+			(void)term;
+			(void)entity;
+#endif
+		}
+
+		//! Finalizes one cursor-backed component write.
+		inline void world_finish_write(World& world, Entity term, Entity entity) {
+			world.finish_write(entity, term);
+		}
+
+	} // namespace ecs
+} // namespace gaia
+
+namespace gaia {
+	namespace ecs {
+		//! Returns the current traversal-metadata version for a relation.
+		inline uint32_t world_rel_version(const World& world, Entity relation) {
+			return world.rel_version(relation);
+		}
+
+		//! Returns the sparse archetype-membership version tracked for a source entity.
+		//! Invalid source entities report version 0 so cached queries see deletions immediately.
+		//! Valid entries are created on first use so non-source entities do not pay any extra storage.
+		//! \param world World containing the sparse source-version state.
+		//! \param entity Source entity whose archetype-membership version is requested.
+		//! \return Tracked version, one for a newly tracked live entity, or zero for an invalid entity.
+		inline uint32_t world_entity_archetype_version(const World& world, Entity entity) {
+			if (world.try_live_record(entity) == nullptr)
+				return 0;
+
+			const auto key = EntityLookupKey(entity);
+			auto it = world.m_srcEntityVersions.find(key);
+			if (it != world.m_srcEntityVersions.end())
+				return it->second;
+
+			it = world.m_srcEntityVersions.try_emplace(key, 1).first;
+			return it->second;
+		}
+	} // namespace ecs
+} // namespace gaia
+
+#if GAIA_OBSERVERS_ENABLED
+namespace gaia {
+	namespace ecs {
+		inline ObserverBuilder World::observer() {
+			// Create the observer
+			auto e = add();
+			EntityBuilder(*this, e) //
+					.add<Observer_>();
+
+			auto ss = acc_mut(e);
+			auto& hdr = ss.smut<Observer_>();
+			auto& obs = observers().data_add(e);
+			{
+				hdr.entity = e;
+				obs.entity = e;
+				obs.query = query();
+			}
+			return ObserverBuilder(*this, e);
+		}
+	} // namespace ecs
+} // namespace gaia
+#endif

@@ -1,0 +1,254 @@
+﻿# Build
+cmake_minimum_required(VERSION 3.14)
+
+# Prevent building in-tree
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+    message(FATAL_ERROR "Prevented in-tree built in ${CMAKE_SOURCE_DIR}. Create a 'build' directory outside of the source code and call cmake from there.")
+endif()
+
+set(GAIA_VERSION_REGEX "#define GAIA_VERSION_.*[ \t]+(.+)")
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/include/gaia/config/version.h" GAIA_VERSION REGEX ${GAIA_VERSION_REGEX})
+list(TRANSFORM GAIA_VERSION REPLACE ${GAIA_VERSION_REGEX} "\\1")
+string(JOIN "." GAIA_VERSION ${GAIA_VERSION})
+
+project(
+    gaia
+    VERSION ${GAIA_VERSION}
+    DESCRIPTION "ECS framework"
+    LANGUAGES CXX
+)
+
+message(STATUS "*************************************************************")
+message(STATUS "${PROJECT_NAME}-ecs v${PROJECT_VERSION} (${CMAKE_BUILD_TYPE})")
+message(STATUS "Copyright (c) 2021-2026 Richard Biely <richardbiely@gmail.com>")
+message(STATUS "*************************************************************")
+message(STATUS "Compiler: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "CompPath: ${CMAKE_CXX_COMPILER}")
+message(STATUS "CompSim: ${CMAKE_CXX_SIMULATE_ID}")
+message(STATUS "CPU: ${CMAKE_SYSTEM_PROCESSOR}")
+message(STATUS "*************************************************************")
+
+include("${CMAKE_CURRENT_LIST_DIR}/pkg/cmake/sanitizers.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/pkg/cmake/single_header.cmake")
+
+# CPU
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" lower_processor)
+
+set(IsARM false)
+
+if("${lower_processor}" MATCHES "arm" OR "${lower_processor}" MATCHES "aarch")
+    set(IsARM true)
+endif()
+
+# Compiler
+set(IsClangCompiler FALSE)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set(IsClangCompiler TRUE)
+endif()
+
+# libc++ usage:
+# - on Apple Clang with libc++ found: GAIA_USE_LIBCPP auto-defaults to ON
+# - on non-Apple Clang: it auto-defaults to ON only if the -stdlib=libc++ probe succeeds
+# - if someone sets -DGAIA_USE_LIBCPP=ON and the toolchain can’t use it, it warns and falls back to OFF
+set(GAIA_HAS_LIBCPP OFF)
+set(GAIA_USE_LIBCPP_USER_DEFINED FALSE)
+
+if(DEFINED GAIA_USE_LIBCPP)
+    set(GAIA_USE_LIBCPP_USER_DEFINED TRUE)
+endif()
+
+if(NOT WIN32 AND IsClangCompiler)
+    find_library(LIBCXX_LIBRARY c++)
+
+    if(LIBCXX_LIBRARY)
+        if(APPLE)
+            set(GAIA_HAS_LIBCPP ON)
+        else()
+            include(CheckCXXSourceCompiles)
+            include(CMakePushCheckState)
+
+            cmake_push_check_state()
+            set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -stdlib=libc++")
+
+            check_cxx_source_compiles(
+                "#include <type_traits>
+                int main() { return std::is_same_v<int, char>; }"
+                GAIA_HAS_LIBCPP)
+
+            cmake_pop_check_state()
+        endif()
+    endif()
+endif()
+
+set(GAIA_USE_LIBCPP_DEFAULT OFF)
+
+if(GAIA_HAS_LIBCPP)
+    set(GAIA_USE_LIBCPP_DEFAULT ON)
+endif()
+
+# Configuration
+option(GAIA_USE_LIBCPP "Use libc++." ${GAIA_USE_LIBCPP_DEFAULT})
+
+option(GAIA_BUILD_UNITTEST "Build unit test." OFF)
+option(GAIA_BUILD_BENCHMARK "Build benchmark." OFF)
+option(GAIA_BUILD_EXAMPLES "Build examples." OFF)
+option(GAIA_GENERATE_CC "Use ninja to generate compile_commands.json as a post-build step." OFF)
+option(GAIA_GENERATE_PACKAGES "Generate packages" OFF)
+option(GAIA_GENERATE_DOCS "Build documentation" OFF)
+
+if(GAIA_GENERATE_CC)
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Export compile_commands.json for tooling." FORCE)
+endif()
+
+# Profiling settings
+option(GAIA_PROFILER_CPU "Enable CPU profiling." OFF)
+option(GAIA_PROFILER_MEM "Enable memory profiling." OFF)
+option(GAIA_PROFILER_BUILD "Build profiler if possible." OFF)
+
+# Library configuration
+option(GAIA_DEVMODE "Enables various verification checks. Only useful for library maintainers." OFF)
+option(GAIA_ECS_CHUNK_ALLOCATOR "If enabled, custom allocator is used for allocating archetype chunks." ON)
+option(GAIA_FORCE_DEBUG "If enabled, GAIA_DEBUG will be defined despite using the optimized build configuration." OFF)
+option(GAIA_DISABLE_ASSERTS "If enabled, no asserts will be thrown even in debug builds." OFF)
+
+# Special
+option(GAIA_MACOS_BUILD_HACK "If enabled, a special way to link executables is used to address linker issues. MacOS-specific. Ignored on other platform." OFF)
+
+if(GAIA_BUILD_UNITTEST)
+    set(GAIA_BUILD_SRC ON)
+elseif(GAIA_BUILD_BENCHMARK)
+    set(GAIA_BUILD_SRC ON)
+elseif(GAIA_BUILD_EXAMPLES)
+    set(GAIA_BUILD_SRC ON)
+else()
+    set(GAIA_BUILD_SRC OFF)
+endif()
+
+# Validate explicit libc++ opt-in
+if(NOT WIN32 AND GAIA_USE_LIBCPP AND NOT GAIA_HAS_LIBCPP)
+    set(GAIA_USE_LIBCPP OFF CACHE BOOL "Use libc++." FORCE)
+
+    if(GAIA_USE_LIBCPP_USER_DEFINED)
+        message(WARNING "GAIA_USE_LIBCPP is ON but libc++ is not available. The flag will be ignored.")
+    endif()
+endif()
+
+# Documentation
+if(GAIA_GENERATE_DOCS)
+    add_subdirectory(docs)
+endif()
+
+if(GAIA_BUILD_UNITTEST OR GAIA_BUILD_EXAMPLES)
+    include(CTest)
+endif()
+
+# GAIA_BUILD_UNITTEST continues to register its test targets independently of BUILD_TESTING.
+if(GAIA_BUILD_UNITTEST)
+    enable_testing()
+endif()
+
+# Gaia target
+include(GNUInstallDirs)
+
+add_library(${PROJECT_NAME} INTERFACE)
+
+# Interface library
+target_include_directories(
+    ${PROJECT_NAME}
+    INTERFACE
+    $<BUILD_INTERFACE:${${PROJECT_NAME}_SOURCE_DIR}/single_include>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+if(GAIA_USE_LIBCPP)
+    target_compile_options(${PROJECT_NAME} BEFORE INTERFACE -stdlib=libc++)
+    target_link_options(${PROJECT_NAME} BEFORE INTERFACE -stdlib=libc++)
+endif()
+
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+
+# Install
+install(TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}-targets
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+install(
+    DIRECTORY single_include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING PATTERN "*.h"
+)
+
+# Export targets
+install(EXPORT ${PROJECT_NAME}-targets
+    FILE ${PROJECT_NAME}-targets.cmake
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+# Config & version files
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file("${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+    pkg/cmake/${PROJECT_NAME}Config.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    PATH_VARS CMAKE_INSTALL_INCLUDEDIR
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+)
+
+if(NOT GAIA_USE_SANITIZER STREQUAL "")
+    add_definitions(-DGAIA_USE_SANITIZER=1)
+else()
+    add_definitions(-DGAIA_USE_SANITIZER=0)
+endif()
+
+if(GAIA_GENERATE_PACKAGES)
+    add_custom_target(
+        conan_run
+        COMMAND conan create ${PROJECT_SOURCE_DIR}/pkg/conan
+        COMMENT "Conan: building + running test_package"
+        USES_TERMINAL
+    )
+
+    add_custom_target(default ALL DEPENDS conan_run)
+endif()
+
+if(GAIA_BUILD_SRC)
+    add_subdirectory(src)
+endif()
+
+if(GAIA_GENERATE_CC)
+    if(CMAKE_GENERATOR MATCHES "Ninja|Makefiles")
+        add_custom_target(
+            generate_compile_commands ALL
+            COMMAND "${CMAKE_COMMAND}" -E make_directory "${PROJECT_SOURCE_DIR}/ninja"
+            COMMAND "${CMAKE_COMMAND}" -E copy_if_different
+                    "${CMAKE_BINARY_DIR}/compile_commands.json"
+                    "${PROJECT_SOURCE_DIR}/ninja/compile_commands.json"
+            BYPRODUCTS "${PROJECT_SOURCE_DIR}/ninja/compile_commands.json"
+            COMMENT "Copying compile_commands.json to ${PROJECT_SOURCE_DIR}/ninja"
+            VERBATIM
+        )
+    else()
+        message(WARNING "GAIA_GENERATE_CC is ON but ${CMAKE_GENERATOR} does not export compile_commands.json")
+    endif()
+endif()
+
+# # Print project variables
+# get_cmake_property(all_vars VARIABLES)
+
+# foreach(var ${all_vars})
+# if(var MATCHES "^GAIA_")
+# message(STATUS "${var} = ${${var}}")
+# endif()
+# endforeach()

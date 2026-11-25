@@ -1,0 +1,131 @@
+#pragma once
+#include "gaia/config/config_core.h"
+#include "gaia/config/version.h"
+
+//------------------------------------------------------------------------------
+// General settings.
+// You are free to modify these.
+//------------------------------------------------------------------------------
+
+//! If enabled, GAIA_DEBUG is defined despite using a "Release" build configuration for example
+#if !defined(GAIA_FORCE_DEBUG)
+	#define GAIA_FORCE_DEBUG 0
+#endif
+//! If enabled, no asserts are thrown even in debug builds
+#if !defined(GAIA_DISABLE_ASSERTS)
+	#define GAIA_DISABLE_ASSERTS 0
+#endif
+
+//------------------------------------------------------------------------------
+// Internal features.
+// You are free to modify these but you probably should not.
+// It is expected to only use them when something doesn't work as expected
+// or as some sort of workaround.
+//------------------------------------------------------------------------------
+
+//! If enabled, custom allocator is used for allocating archetype chunks.
+#ifndef GAIA_ECS_CHUNK_ALLOCATOR
+	#define GAIA_ECS_CHUNK_ALLOCATOR 1
+#endif
+
+//! Hashing algorithm. GAIA_ECS_HASH_FNV1A or GAIA_ECS_HASH_MURMUR2A
+#ifndef GAIA_ECS_HASH
+	#define GAIA_ECS_HASH GAIA_ECS_HASH_MURMUR2A
+#endif
+
+//! If enabled, memory prefetching is used when querying chunks, possibly improving performance in edge-cases
+#ifndef GAIA_USE_PREFETCH
+	#define GAIA_USE_PREFETCH 1
+#endif
+
+//! If enabled, util::SmallFunc and util::MoveFunc use SmallBlockAllocator for callables too large for their inline
+//! buffer. Disable this to allocate those larger callables with the platform heap.
+#ifndef GAIA_FUNC_WRAPPER_SMALLBLOCK
+	#define GAIA_FUNC_WRAPPER_SMALLBLOCK 1
+#endif
+
+//! If enabled, process-wide allocation arenas take a spinlock on alloc/free/flush so independent
+//! Worlds may mutate concurrently. Default is 0. When disabled, assert builds abort if two threads
+//! enter an arena at once.
+#ifndef GAIA_ALLOC_ARENA_LOCK
+	#define GAIA_ALLOC_ARENA_LOCK 0
+#endif
+
+//! If enabled, systems as entities are enabled
+#ifndef GAIA_SYSTEMS_ENABLED
+	#define GAIA_SYSTEMS_ENABLED 1
+#endif
+
+//! If enabled, JSON serialization, runtime schema manifests, and JSON component patches are available.
+#ifndef GAIA_JSON_ENABLED
+	#define GAIA_JSON_ENABLED 1
+#endif
+
+//! If enabled, observers are enabled
+#ifndef GAIA_OBSERVERS_ENABLED
+	#define GAIA_OBSERVERS_ENABLED 1
+#endif
+
+//! If enabled, hooks are enabled for components. Any time a new component is added to, or removed from
+//! an entity, they can be triggered. Set hooks for when component value is changed are possible, too.
+#ifndef GAIA_ENABLE_HOOKS
+	#define GAIA_ENABLE_HOOKS 1
+#endif
+#ifndef GAIA_ENABLE_ADD_DEL_HOOKS
+	#define GAIA_ENABLE_ADD_DEL_HOOKS (GAIA_ENABLE_HOOKS && 1)
+#else
+// If GAIA_ENABLE_ADD_DEL_HOOKS is defined and GAIA_ENABLE_HOOKS is not, unset it
+	#if !GAIA_ENABLE_HOOKS
+		#undef GAIA_ENABLE_ADD_DEL_HOOKS
+		#define GAIA_ENABLE_ADD_DEL_HOOKS 0
+	#endif
+#endif
+#ifndef GAIA_ENABLE_SET_HOOKS
+	#define GAIA_ENABLE_SET_HOOKS (GAIA_ENABLE_HOOKS && 1)
+#else
+// If GAIA_ENABLE_SET_HOOKS is defined and GAIA_ENABLE_HOOKS is not, unset it
+	#if !GAIA_ENABLE_HOOKS
+		#undef GAIA_ENABLE_SET_HOOKS
+		#define GAIA_ENABLE_SET_HOOKS 0
+	#endif
+#endif
+
+//! If enabled, reference counting of entities is enabled. This gives you access to ecs::SafeEntity
+//! and similar features.
+#ifndef GAIA_USE_SAFE_ENTITY
+	#define GAIA_USE_SAFE_ENTITY 1
+#endif
+
+//! If enabled, reference counting of entities is enabled. This gives you access to ecs::SafeEntity
+//! and similar features.
+#ifndef GAIA_USE_WEAK_ENTITY
+	#define GAIA_USE_WEAK_ENTITY 1
+#endif
+
+//! If enabled, a bloom filter is used for speed up matching of archetypes in queries.
+//! If disabled, no filter is applied.
+//! Possible values:
+//! 	-1 - No filter
+//! 	 0 - Bloom filter (calculates a 8 byte hash for each archetype)
+//! 	 1 - Partitioned bloom filter (calculates 4x8 byte hash for each archetype)
+//! Partitioned bloom filter is slightly more computationaly expensive but gives less false postives.
+//! Therefore, it will be more useful when there is a lot of archetypes with very different components.
+#ifndef GAIA_USE_PARTITIONED_BLOOM_FILTER
+	#define GAIA_USE_PARTITIONED_BLOOM_FILTER 0
+#endif
+
+//! If enabled, every registered compile-time component will have runtime fields registered automatically.
+#ifndef GAIA_ECS_AUTO_COMPONENT_FIELDS
+	#define GAIA_ECS_AUTO_COMPONENT_FIELDS 0
+#endif
+
+//! If enabled, typed APIs may implicitly register missing components using the default component form.
+//! When disabled, such APIs require explicit `w.add<T>()` registration up front.
+//! Non-default traits such as `ecs::Sparse` and `ecs::DontFragment` always require explicit registration.
+#ifndef GAIA_ECS_AUTO_COMPONENT_REGISTRATION
+	#define GAIA_ECS_AUTO_COMPONENT_REGISTRATION 1
+#endif
+
+//------------------------------------------------------------------------------
+
+#include "gaia/config/config_core_end.h"

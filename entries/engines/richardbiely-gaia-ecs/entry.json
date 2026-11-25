@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T20:34:36Z",
+ "category": "engines",
+ "commit": "5fca8a09692b",
+ "delivery": "vendored",
+ "description": "richardbiely/gaia-ecs \u2014 A simple and powerful entity component system (ECS) written in C++17",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "gaia-ecs",
+ "size_bytes": 8872509,
+ "slug": "richardbiely-gaia-ecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 138,
+ "system": "A simple and powerful entity component system (ECS) written in C++17",
+ "upstream": "https://github.com/richardbiely/gaia-ecs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

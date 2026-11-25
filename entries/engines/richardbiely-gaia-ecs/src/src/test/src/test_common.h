@@ -1,0 +1,615 @@
+#pragma once
+
+#define NOMINMAX
+
+#include <atomic>
+#include <cstdint>
+#include <mutex>
+#include <type_traits>
+
+#define GAIA_ENABLE_HOOKS 1
+#define GAIA_ENABLE_SET_HOOKS 1
+#define GAIA_ENABLE_ADD_DEL_HOOKS 1
+#define GAIA_SYSTEMS_ENABLED 1
+#define GAIA_OBSERVERS_ENABLED 1
+#define GAIA_USE_SAFE_ENTITY 1
+#include <gaia.h>
+
+#if GAIA_COMPILER_MSVC
+	#if _MSC_VER <= 1916
+// warning C4100: 'XYZ': unreferenced formal parameter
+GAIA_MSVC_WARNING_DISABLE(4100)
+	#endif
+#endif
+
+#define DOCTEST_CONFIG_SUPER_FAST_ASSERTS
+#include <doctest/doctest.h>
+
+#include <cstdio>
+#include <cstring>
+#include <memory>
+
+namespace rnd {
+	struct pseudo_random {
+		uint32_t state = 0;
+
+		constexpr pseudo_random() {}
+		constexpr pseudo_random(uint32_t seed): state(seed) {}
+
+		constexpr uint32_t next() {
+			state = state * 1664525 + 1013904223;
+			return state;
+		}
+
+		constexpr uint32_t operator()() noexcept {
+			return next();
+		}
+
+		constexpr uint32_t range(uint32_t low, uint32_t high) noexcept {
+			const uint32_t r = high - low + 1;
+			return (operator()() % r) + low;
+		}
+	};
+} // namespace rnd
+
+using namespace gaia;
+
+#define wld twld.m_w
+
+template <typename TQuery>
+inline constexpr bool use_cached_query_v = std::is_same_v<TQuery, ecs::Query>;
+
+template <bool UseCachedQuery>
+ecs::Query make_query(ecs::World& world) {
+	if constexpr (UseCachedQuery)
+		return world.query();
+	else
+		return world.uquery();
+}
+
+template <typename TQuery>
+ecs::Query make_query(ecs::World& world) {
+	return make_query<use_cached_query_v<TQuery>>(world);
+}
+
+inline util::str_view runtime_component_name_view(const char* name) {
+	GAIA_ASSERT(name != nullptr);
+	return util::str_view(name, (uint32_t)GAIA_STRLEN(name, ecs::ComponentCacheItem::MaxNameLength));
+}
+
+inline ecs::ComponentDesc runtime_component_desc(
+		const char* name, uint32_t size, ecs::DataStorageType storageType, uint32_t alig = 1, uint32_t soa = 0,
+		const uint8_t* pSoaSizes = nullptr, ecs::ComponentLookupHash hashLookup = {},
+		const ecs::RuntimeFieldInit* fields = nullptr, uint32_t fieldCount = 0) {
+	auto desc = ecs::ComponentDesc{};
+	desc.name = runtime_component_name_view(name);
+	desc.size = size;
+	desc.alig = alig;
+	desc.storageType = storageType;
+	desc.soa = soa;
+	desc.pSoaSizes = pSoaSizes;
+	desc.hashLookup = hashLookup;
+	desc.runtimeType.fields = fields;
+	desc.runtimeType.fieldCount = fieldCount;
+	return desc;
+}
+
+inline ecs::ComponentCacheItem& add_runtime_component(
+		ecs::World& world, const char* name, uint32_t size, ecs::DataStorageType storageType, uint32_t alig = 1,
+		uint32_t soa = 0, const uint8_t* pSoaSizes = nullptr, ecs::ComponentLookupHash hashLookup = {},
+		const ecs::RuntimeFieldInit* fields = nullptr, uint32_t fieldCount = 0) {
+	return world.add(
+			runtime_component_desc(name, size, storageType, alig, soa, pSoaSizes, hashLookup, fields, fieldCount));
+}
+
+inline ecs::ComponentCacheItem& add_runtime_component(
+		ecs::ComponentCache& cc, ecs::Entity entity, const char* name, uint32_t size, ecs::DataStorageType storageType,
+		uint32_t alig = 1, uint32_t soa = 0, const uint8_t* pSoaSizes = nullptr, ecs::ComponentLookupHash hashLookup = {},
+		util::str_view scopePath = {}, const ecs::RuntimeFieldInit* fields = nullptr, uint32_t fieldCount = 0) {
+	return const_cast<ecs::ComponentCacheItem&>(cc.add(
+			entity, runtime_component_desc(name, size, storageType, alig, soa, pSoaSizes, hashLookup, fields, fieldCount),
+			scopePath));
+}
+
+inline ecs::ComponentCacheItem& add_runtime_component_with_fields(
+		ecs::World& world, const char* name, uint32_t size, ecs::DataStorageType storageType, uint32_t alig,
+		const ecs::RuntimeFieldInit* fields, uint32_t fieldCount) {
+	return add_runtime_component(
+			world, name, size, storageType, alig, 0, nullptr, ecs::ComponentLookupHash{}, fields, fieldCount);
+}
+
+inline ecs::ComponentCacheItem& add_runtime_component_with_fields(
+		ecs::ComponentCache& cc, ecs::Entity entity, const char* name, uint32_t size, ecs::DataStorageType storageType,
+		uint32_t alig, const ecs::RuntimeFieldInit* fields, uint32_t fieldCount) {
+	return add_runtime_component(
+			cc, entity, name, size, storageType, alig, 0, nullptr, ecs::ComponentLookupHash{}, {}, fields, fieldCount);
+}
+
+inline ecs::Entity runtime_field_type_from_json_type(ser::serialization_type_id type) {
+	return ecs::runtime_primitive_type_entity(type);
+}
+
+struct RuntimeFieldSet {
+	ecs::RuntimeFieldInit fields[32]{};
+	uint32_t count = 0;
+};
+
+inline bool make_runtime_field(
+		ecs::RuntimeFieldInit& field, const char* fieldName, uint32_t len, ser::serialization_type_id type,
+		uint32_t fieldOffset, uint32_t fieldSize) {
+	if (fieldName == nullptr || fieldName[0] == 0)
+		return false;
+
+	const auto fieldLen = len == 0 ? (uint32_t)GAIA_STRLEN(fieldName, ecs::ComponentCacheItem::MaxNameLength) : len;
+	if (fieldLen == 0 || fieldLen >= ecs::ComponentCacheItem::MaxNameLength)
+		return false;
+
+	const auto fieldType = runtime_field_type_from_json_type(type);
+	if (fieldType == ecs::EntityBad)
+		return false;
+
+	field.name = util::str_view(fieldName, fieldLen);
+	field.type = fieldType;
+	field.offset = fieldOffset;
+	field.count = fieldType == ecs::Char8 ? fieldSize : 0U;
+	return true;
+}
+
+inline bool add_runtime_field(
+		RuntimeFieldSet& set, const char* fieldName, uint32_t len, ser::serialization_type_id type, uint32_t fieldOffset,
+		uint32_t fieldSize) {
+	if (set.count >= sizeof(set.fields) / sizeof(set.fields[0]))
+		return false;
+	if (!make_runtime_field(set.fields[set.count], fieldName, len, type, fieldOffset, fieldSize))
+		return false;
+	++set.count;
+	return true;
+}
+
+//! World wrapper for test purposes.
+//! The wrapped world handles teardown on destruction. Tests can still call update()
+//! repeatedly when they want to flush regular frame maintenance explicitly.
+struct TestWorld {
+	ecs::World m_w;
+
+	TestWorld() = default;
+	TestWorld(const ecs::World& world) = delete;
+	TestWorld(ecs::World&& world) = delete;
+	TestWorld& operator=(const ecs::World& world) = delete;
+	TestWorld& operator=(ecs::World&& world) = delete;
+
+	void update() {
+		GAIA_FOR(100) m_w.update();
+	}
+};
+
+struct NonUniqueNameOpsGuard {
+	bool prev;
+	NonUniqueNameOpsGuard(): prev(ecs::World::s_enableUniqueNameDuplicateAssert) {
+		ecs::World::s_enableUniqueNameDuplicateAssert = false;
+	}
+	~NonUniqueNameOpsGuard() {
+		ecs::World::s_enableUniqueNameDuplicateAssert = true;
+	}
+};
+
+struct Int3 {
+	uint32_t x, y, z;
+};
+struct Position {
+	float x, y, z;
+};
+struct PositionSparse {
+	GAIA_STORAGE(Sparse);
+	float x, y, z;
+};
+struct SparseTestWorld: TestWorld {
+	SparseTestWorld() {
+		m_w.add<PositionSparse>();
+	}
+};
+struct PositionSoA {
+	GAIA_LAYOUT(SoA);
+	float x, y, z;
+};
+inline bool operator==(const PositionSoA& a, const PositionSoA& b) {
+	return a.x == b.x && a.y == b.y && a.z == b.z;
+}
+
+struct PositionSoA8 {
+	GAIA_LAYOUT(SoA8);
+	float x, y, z;
+};
+struct PositionSoA16 {
+	GAIA_LAYOUT(SoA16);
+	float x, y, z;
+};
+struct Acceleration {
+	float x, y, z;
+};
+struct Rotation {
+	float x, y, z, w;
+};
+
+struct DummySoA {
+	GAIA_LAYOUT(SoA);
+	float x, y;
+	bool b;
+	float w;
+};
+struct RotationSoA {
+	GAIA_LAYOUT(SoA);
+	float x, y, z, w;
+};
+struct RotationSoA8 {
+	GAIA_LAYOUT(SoA8);
+	float x, y, z, w;
+};
+struct RotationSoA16 {
+	GAIA_LAYOUT(SoA16);
+	float x, y, z, w;
+};
+struct Scale {
+	float x, y, z;
+};
+struct Something {
+	bool value;
+};
+struct Else {
+	bool value;
+};
+struct Empty {};
+
+struct PositionNonTrivial {
+	float x, y, z;
+	PositionNonTrivial(): x(1), y(2), z(3) {}
+	PositionNonTrivial(float xx, float yy, float zz): x(xx), y(yy), z(zz) {}
+};
+
+template <typename T>
+struct TypeNonTrivial {
+	T x;
+	TypeNonTrivial(): x(T(1)) {}
+	TypeNonTrivial(T xx): x(xx) {}
+	operator T() const {
+		return x;
+	}
+};
+
+template <typename T>
+struct TypeNonTrivialC {
+	T x;
+	TypeNonTrivialC(): x(T(1)) {}
+	TypeNonTrivialC(T xx): x(xx) {}
+	TypeNonTrivialC(const TypeNonTrivialC& xx): x(xx.x) {}
+	TypeNonTrivialC& operator=(const TypeNonTrivialC& xx) {
+		x = xx.x;
+		return *this;
+	}
+	operator T() const {
+		return x;
+	}
+};
+
+template <typename T>
+struct TypeNonTrivialM {
+	T x;
+	TypeNonTrivialM(): x(T(1)) {}
+	TypeNonTrivialM(T xx): x(xx) {}
+	TypeNonTrivialM(TypeNonTrivialM&& xx): x(xx.x) {}
+	TypeNonTrivialM& operator=(TypeNonTrivialM&& xx) {
+		x = xx.x;
+		return *this;
+	}
+	TypeNonTrivialM& operator=(const TypeNonTrivialM& xx) {
+		x = xx.x;
+		return *this;
+	}
+	operator T() const {
+		return x;
+	}
+};
+
+//------------------------------------------------------------------------------
+// Strings
+//------------------------------------------------------------------------------
+
+static constexpr char StringComponentDefaultValue[] =
+		"StringComponentDefaultValue_ReasonablyLongSoThatItShouldCauseAHeapAllocationOnAllStdStringImplementations";
+static constexpr char StringComponent2DefaultValue[] =
+		"StringComponent2DefaultValue_ReasonablyLongSoThatItShouldCauseAHeapAllocationOnAllStdStringImplementations";
+static constexpr char StringComponent2DefaultValue_2[] =
+		"2_StringComponent2DefaultValue_ReasonablyLongSoThatItShouldCauseAHeapAllocationOnAllStdStringImplementations";
+static constexpr char StringComponentEmptyValue[] =
+		"StringComponentEmptyValue_ReasonablyLongSoThatItShouldCauseAHeapAllocationOnAllStdStringImplementations";
+
+inline util::str_view cstr_view(const char* s) {
+	if (s == nullptr)
+		return {};
+	return util::str_view(s, (uint32_t)strlen(s));
+}
+
+struct StringComponent {
+	util::str value;
+
+	StringComponent() = default;
+
+	template <size_t N>
+	StringComponent(const char (&lit)[N]) {
+		value.assign(lit);
+	}
+
+	template <typename Serializer>
+	void save(Serializer& s) const {
+		const auto len = value.size();
+		s.save(len);
+		s.save_raw(value.data(), len, ser::serialization_type_id::c8);
+	}
+
+	template <typename Serializer>
+	void load(Serializer& s) {
+		uint32_t len{};
+		s.load(len);
+		value.assign(s.data() + s.tell(), len);
+		s.seek(s.tell() + len);
+	}
+};
+struct StringComponent2: public StringComponent {
+	StringComponent2() {
+		value.assign(StringComponent2DefaultValue);
+	}
+	~StringComponent2() {
+		value.assign(StringComponentEmptyValue);
+	}
+
+	StringComponent2(const StringComponent2&) = default;
+	StringComponent2(StringComponent2&&) noexcept = default;
+	StringComponent2& operator=(const StringComponent2&) = default;
+	StringComponent2& operator=(StringComponent2&&) noexcept = default;
+};
+
+GAIA_DEFINE_HAS_MEMBER_FUNC(foo);
+GAIA_DEFINE_HAS_MEMBER_FUNC(food);
+
+template <typename TQuery>
+void Test_Query_QueryResult() {
+	const uint32_t N = 1'500;
+
+	TestWorld twld;
+	cnt::darr<ecs::Entity> ents;
+	ents.reserve(N);
+
+	auto create = [&](uint32_t i) {
+		auto e = wld.add();
+		ents.push_back(e);
+		wld.add<Position>(e, {(float)i, (float)i, (float)i});
+	};
+
+	GAIA_FOR(N) create(i);
+
+	constexpr bool UseCachedQuery = use_cached_query_v<TQuery>;
+	auto q1 = make_query<UseCachedQuery>(wld).template all<Position>();
+	auto q2 = make_query<UseCachedQuery>(wld).template all<Rotation>();
+	auto q3 = make_query<UseCachedQuery>(wld).template all<Position>().template all<Rotation>();
+
+	{
+		const auto cnt = q1.count();
+		CHECK(cnt == N);
+	}
+	{
+		cnt::darr<ecs::Entity> arr;
+		q1.arr(arr);
+
+		CHECK(arr.size() == N);
+		GAIA_EACH(arr) CHECK(arr[i] == ents[i]);
+
+		uint32_t entIdx = 0;
+		q1.each([&](ecs::Entity ent) {
+			CHECK(ent == arr[entIdx++]);
+		});
+		entIdx = 0;
+		q1.each([&](ecs::Iter& it) {
+			auto entView = it.view<ecs::Entity>();
+			GAIA_EACH(it) CHECK(entView[i] == arr[entIdx++]);
+		});
+	}
+	{
+		cnt::darr<Position> arr;
+		q1.arr(arr);
+		CHECK(arr.size() == N);
+		GAIA_EACH(arr) {
+			const auto& pos = arr[i];
+			CHECK(pos.x == (float)i);
+			CHECK(pos.y == (float)i);
+			CHECK(pos.z == (float)i);
+		}
+	}
+	{
+		const auto cnt = q1.count();
+		CHECK(cnt > 0);
+
+		const auto empty = q1.empty();
+		CHECK(empty == false);
+
+		uint32_t cnt2 = 0;
+		q1.each([&]() {
+			++cnt2;
+		});
+		CHECK(cnt == cnt2);
+	}
+	{
+		const auto cnt = q2.count();
+		CHECK(cnt == 0);
+
+		const auto empty = q2.empty();
+		CHECK(empty == true);
+
+		uint32_t cnt2 = 0;
+		q2.each([&]() {
+			++cnt2;
+		});
+		CHECK(cnt == cnt2);
+	}
+	{
+		const auto cnt = q3.count();
+		CHECK(cnt == 0);
+
+		const auto empty = q3.empty();
+		CHECK(empty == true);
+
+		uint32_t cnt3 = 0;
+		q3.each([&]() {
+			++cnt3;
+		});
+		CHECK(cnt == cnt3);
+	}
+
+	auto game = wld.add();
+	struct Level {
+		uint32_t value;
+	};
+	wld.add<Level>(game, {2});
+	auto q4 = make_query<UseCachedQuery>(wld) //
+								.template all<Position>()
+								.template all<Level>(ecs::QueryTermOptions{}.src(game));
+
+	{
+		const auto cnt = q4.count();
+		CHECK(cnt == N);
+	}
+	{
+		cnt::darr<ecs::Entity> arr;
+		q4.arr(arr);
+		CHECK(arr.size() == N);
+		GAIA_EACH(arr) CHECK(arr[i] == ents[i]);
+	}
+	{
+		cnt::darr<Position> arr;
+		q4.arr(arr);
+		CHECK(arr.size() == N);
+		GAIA_EACH(arr) {
+			const auto& pos = arr[i];
+			CHECK(pos.x == (float)i);
+			CHECK(pos.y == (float)i);
+			CHECK(pos.z == (float)i);
+		}
+	}
+	{
+		const auto cnt = q4.count();
+		CHECK(cnt > 0);
+
+		const auto empty = q4.empty();
+		CHECK(empty == false);
+
+		uint32_t cnt2 = 0;
+		q4.each([&]() {
+			++cnt2;
+		});
+		CHECK(cnt == cnt2);
+	}
+	{
+		const auto cnt = q4.count();
+
+		uint32_t cnt2 = 0;
+		q4.each([&](ecs::Iter& it /*, ecs::Src src*/) {
+			GAIA_EACH(it) {
+				++cnt2;
+			}
+		});
+		CHECK(cnt == cnt2);
+	}
+}
+
+template <typename TQuery>
+void expect_exact_entities(TQuery& query, std::initializer_list<ecs::Entity> expected) {
+	cnt::darr<ecs::Entity> actual;
+	query.each([&](ecs::Entity entity) {
+		actual.push_back(entity);
+	});
+
+	CHECK(actual.size() == expected.size());
+	for (const auto exp: expected) {
+		bool found = false;
+		for (const auto got: actual) {
+			if (got != exp)
+				continue;
+			found = true;
+			break;
+		}
+		CHECK(found);
+	}
+}
+
+template <typename TQuery>
+void expect_changed_probe_state(TQuery& query, uint32_t expectedCount) {
+	CHECK(query.count() == expectedCount);
+	CHECK(query.count() == expectedCount);
+	CHECK(query.empty() == (expectedCount == 0));
+	CHECK(query.empty() == (expectedCount == 0));
+}
+
+template <typename TQuery>
+void expect_changed_consume_exact(TQuery& query, std::initializer_list<ecs::Entity> expected) {
+	expect_exact_entities(query, expected);
+	CHECK(query.count() == 0);
+	CHECK(query.empty());
+}
+
+template <typename T>
+void TestDataLayoutSoA_ECS() {
+	const uint32_t N = 1'500;
+
+	TestWorld twld;
+	cnt::darr<ecs::Entity> ents;
+	ents.reserve(N);
+
+	auto create = [&]() {
+		auto e = wld.add();
+		wld.add<T>(e, {});
+		ents.push_back(e);
+	};
+
+	GAIA_FOR(N) create();
+
+	SUBCASE("each - iterator") {
+		ecs::Query q = wld.query().all<T&>();
+
+		{
+			const auto cnt = q.count();
+			CHECK(cnt == N);
+
+			uint32_t j = 0;
+			q.each([&](ecs::Iter& it) {
+				auto t = it.view_mut<T>();
+				auto tx = t.template set<0>();
+				auto ty = t.template set<1>();
+				auto tz = t.template set<2>();
+				GAIA_EACH(it) {
+					auto f = (float)j;
+					tx[i] = f;
+					ty[i] = f;
+					tz[i] = f;
+
+					CHECK(tx[i] == f);
+					CHECK(ty[i] == f);
+					CHECK(tz[i] == f);
+
+					++j;
+				}
+			});
+			CHECK(j == cnt);
+		}
+
+		{
+			auto e = ents[0];
+			wld.enable(e, false);
+			const auto cnt = q.count();
+			CHECK(cnt == N - 1);
+			uint32_t cntCalculated = 0;
+			q.each([&](ecs::Iter& it) {
+				cntCalculated += it.size();
+			});
+			CHECK(cnt == cntCalculated);
+		}
+	}
+}
