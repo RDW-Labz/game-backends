@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T12:26:03Z",
+ "category": "netcode",
+ "commit": "2019-12-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "li9chuan/BaseService \u2014 \u5fae\u4fe1\u5c0f\u6e38\u620f\u670d\u52a1\u5668\uff0cfacebook instant game server,\u623f\u95f4\u53ca\u5361\u724c\u7c7b\u6e38\u620f\u670d\u52a1\u5668\u3002\u652f\u6301websocket,wss\u53catcp\u534f\u8bae\uff0clua\u7f16\u5199\u6e38\u620f\u903b\u8f91\u3002C++\u5e95\u5c42\u5df2\u652f\u6301\u56db\u5341\u4f59\u6b3e\u7ebf\u4e0a\u4ea7\u54c1\uff0c\u8de8\u5e73\u53f0\u3002lua\u51fd\u6570\u652f\u6301\u4e0d\u505c\u673a\u70ed\u66f4\u65b0\u3002\u5305\u542b\u4e00\u4e2a\u6597\u5730\u4e3b\u6e38\u620f\u903b\u8f91\u3002",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "BaseService",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "li9chuan-baseservice",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 144,
+ "system": "\u5fae\u4fe1\u5c0f\u6e38\u620f\u670d\u52a1\u5668\uff0cfacebook instant game server,\u623f\u95f4\u53ca\u5361\u724c\u7c7b\u6e38\u620f\u670d\u52a1\u5668\u3002\u652f\u6301websocket,wss\u53catcp\u534f\u8bae\uff0clua\u7f16\u5199\u6e38\u620f\u903b\u8f91\u3002C++\u5e95\u5c42\u5df2\u652f\u6301\u56db\u5341\u4f59\u6b3e\u7ebf\u4e0a\u4ea7\u54c1\uff0c\u8de8\u5e73\u53f0\u3002lua\u51fd\u6570\u652f\u6301\u4e0d\u505c\u673a\u70ed\u66f4\u65b0\u3002\u5305\u542b\u4e00\u4e2a\u6597\u5730\u4e3b\u6e38\u620f\u903b\u8f91\u3002",
+ "upstream": "https://github.com/li9chuan/BaseService",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

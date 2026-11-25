@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 12:08 UTC · 1643 entries · 419 vendored, 1224 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 12:26 UTC · 1649 entries · 420 vendored, 1229 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -9,7 +9,7 @@ _Generated 2026-11-25 12:08 UTC · 1643 entries · 419 vendored, 1224 reference-
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
-| [netcode](#netcode) — Networking / netcode | 161 | 46 | 115 |
+| [netcode](#netcode) — Networking / netcode | 167 | 47 | 120 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
 
@@ -1319,7 +1319,7 @@ _Generated 2026-11-25 12:08 UTC · 1643 entries · 419 vendored, 1224 reference-
 
 ## netcode
 
-**Networking / netcode** — 161 entries
+**Networking / netcode** — 167 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1336,6 +1336,7 @@ _Generated 2026-11-25 12:08 UTC · 1643 entries · 419 vendored, 1224 reference-
 | [AuthoritativeMovementExample](entries/netcode/relic-authoritativemovementexample/README.md) | An example of authoritative server movement using Forge Networking Remastered for Unity. | c# | MIT | vendored | [Relic/AuthoritativeMovementExample](https://github.com/Relic/AuthoritativeMovementExample) @ `e4922771b2a7` |
 | [Backdash](entries/netcode/delta3-studio-backdash/README.md) | C# Rollback network SDK | c# | MIT | reference | [Delta3-Studio/Backdash](https://github.com/Delta3-Studio/Backdash) @ `2026-11-10 (branch tip at catalogue time)` |
 | [backroll-rs](entries/netcode/houraiteahouse-backroll-rs/README.md) | A (almost) 100% pure safe Rust implementation of GGPO-style rollback netcode. | rust | ISC | reference | [HouraiTeahouse/backroll-rs](https://github.com/HouraiTeahouse/backroll-rs) @ `2023-03-13 (branch tip at catalogue time)` |
+| [BaseService](entries/netcode/li9chuan-baseservice/README.md) | 微信小游戏服务器，facebook instant game server,房间及卡牌类游戏服务器。支持websocket,wss及tcp协议，lua编写游戏逻辑。C++底层已支持四十余款线上产品，跨平台。lua函数支持不停机热更新。包含一个斗地主游戏逻辑。 | c++ | GPL-3.0 | reference | [li9chuan/BaseService](https://github.com/li9chuan/BaseService) @ `2019-12-05 (branch tip at catalogue time)` |
 | [Battlefield-1943-Reborn](entries/netcode/tekrantgaming-battlefield-1943-reborn/README.md) | Battlefield 1943 Reborn: the Xbox 360 game running natively on PC, with its online multiplayer restored. Releases and server packages. | c++ | MIT | reference | [TekRantGaming/Battlefield-1943-Reborn](https://github.com/TekRantGaming/Battlefield-1943-Reborn) @ `2026-11-24 (branch tip at catalogue time)` |
 | [BeamMP-Server](entries/netcode/beammp-beammp-server/README.md) | Server for the multiplayer mod BeamMP for BeamNG.drive | c++ | AGPL-3.0 | reference | [BeamMP/BeamMP-Server](https://github.com/BeamMP/BeamMP-Server) @ `2026-09-23 (branch tip at catalogue time)` |
 | [BestoNet](entries/netcode/bestogames-bestonet/README.md) | BestoNet is a custom rollback networking solution developed for the fighting game Idol Showdown. Built in C# for Unity, it integrates with Facepunch Steamworks  | c# | MIT | reference | [BestoGames/BestoNet](https://github.com/BestoGames/BestoNet) @ `2026-06-02 (branch tip at catalogue time)` |
@@ -1366,12 +1367,14 @@ _Generated 2026-11-25 12:08 UTC · 1643 entries · 419 vendored, 1224 reference-
 | [fifa-api](entries/netcode/sauravhiremath-fifa-api/README.md) | React + Node.js + socket.io -- Multiplayer Game server | javascript | MIT | reference | [sauravhiremath/fifa-api](https://github.com/sauravhiremath/fifa-api) @ `2023-03-05 (branch tip at catalogue time)` |
 | [fMath](entries/netcode/8izips-fmath/README.md) | fixed point math library for deterministic lockstep network game in Unity | c# | MIT | reference | [8izips/fMath](https://github.com/8izips/fMath) @ `2026-11-21 (branch tip at catalogue time)` |
 | [FO4_Wrld](entries/netcode/thepie88-fo4-wrld/README.md) | Fallout 4 1.11.191 multiplayer mod (solo-dev). Sync over authoritative UDP server (SACK-reliable, JSON persistence): movement, full-body skeleton animation, con | c++ | unknown | reference | [ThePie88/FO4_Wrld](https://github.com/ThePie88/FO4_Wrld) @ `2026-10-20 (branch tip at catalogue time)` |
+| [fooking](entries/netcode/scgywx-fooking/README.md) | distributed  gateway server(php game server, tcp server, websocket server) | c++ | unknown | reference | [scgywx/fooking](https://github.com/scgywx/fooking) @ `2018-06-13 (branch tip at catalogue time)` |
 | [FragmentServerWV](entries/netcode/zerokilo-fragmentserverwv/README.md) | private lobby server for the game .hack//frägment | c# | unknown | reference | [zeroKilo/FragmentServerWV](https://github.com/zeroKilo/FragmentServerWV) @ `2017-06-19 (branch tip at catalogue time)` |
 | [Freeciv — networking](entries/netcode/freeciv-common-networking/README.md) | turn-based client/server protocol and packet layer | c | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756d5b07` |
 | [Freeciv — server](entries/netcode/freeciv-server/README.md) | network transport, protocol, replication or server loop | h | GPL-2.0 | reference | [freeciv/freeciv](https://github.com/freeciv/freeciv) @ `af90756` |
 | [freeminer — network](entries/netcode/freeminer-network/README.md) | network transport, protocol, replication or server loop | h | LGPL-2.1 | reference | [freeminer/freeminer](https://github.com/freeminer/freeminer) @ `e31670e` |
 | [Game-NET](entries/netcode/sp4cerat-game-net/README.md) | RPC Network Library for Multiplayer Games | c++ | MIT | reference | [sp4cerat/Game-NET](https://github.com/sp4cerat/Game-NET) @ `2015-11-06 (branch tip at catalogue time)` |
 | [game-server](entries/netcode/descrout-game-server/README.md) | An example websocket game server written in rust. | rust | unknown | reference | [Descrout/game-server](https://github.com/Descrout/game-server) @ `2020-10-22 (branch tip at catalogue time)` |
+| [game_server](entries/netcode/javapretty-game-server/README.md) | 通用游戏服务器框架，支持多进程、多线程部署，支持TCP、WebSocket、Http协议 | c++ | none | reference | [javapretty/game_server](https://github.com/javapretty/game_server) @ `a6f40a1393fd` |
 | [GameFrameX](entries/netcode/gameframex-gameframex/README.md) | An open-source toolbox that takes a game all the way "from idea → built → live" — Unity/Godot/Cocos/Laya clients + one .NET server. / 开源游戏全流程工具箱：Unity/Godot/Coc | c# | AGPL-3.0 | reference | [GameFrameX/GameFrameX](https://github.com/GameFrameX/GameFrameX) @ `9cb0a9d6b711` |
 | [GameFrameX.Server](entries/netcode/gameframex-gameframex-server/README.md) | High-performance game server framework built on C# .NET 10.0 with Actor Model architecture, hot-update support, multi-protocol networking (TCP/WebSocket/HTTP/KC | c# | Apache-2.0 | reference | [GameFrameX/GameFrameX.Server](https://github.com/GameFrameX/GameFrameX.Server) @ `2026-11-20 (branch tip at catalogue time)` |
 | [gamehub.io](entries/netcode/fmbenhassine-gamehub-io/README.md) | Real-time multiplayer game server based on Node + Express + SocketIO + MongoDB + ElasticSearch | javascript | MIT | reference | [fmbenhassine/gamehub.io](https://github.com/fmbenhassine/gamehub.io) @ `2018-12-16 (branch tip at catalogue time)` |
@@ -1384,6 +1387,7 @@ _Generated 2026-11-25 12:08 UTC · 1643 entries · 419 vendored, 1224 reference-
 | [GGRS](entries/netcode/ggrs/README.md) | rollback netcode (GGPO-style) in Rust with WASM support | rust | Apache-2.0 | vendored | [gschup/ggrs](https://github.com/gschup/ggrs) @ `25bd9983dee3` |
 | [Girls-with-swords-GGRS](entries/netcode/trian-gles-girls-with-swords-ggrs/README.md) | A 2D fighting game with rollback netcode | c# | none | reference | [trian-gles/Girls-with-swords-GGRS](https://github.com/trian-gles/Girls-with-swords-GGRS) @ `a6cbc7e5c9cf` |
 | [global-multiplayer-demo](entries/netcode/googleforgames-global-multiplayer-demo/README.md) | This multiplayer demo is a cloud first implementation of a global scale, realtime multiplayer game utilising dedicated game servers, utilising both Google Cloud | c++ | Apache-2.0 | reference | [googleforgames/global-multiplayer-demo](https://github.com/googleforgames/global-multiplayer-demo) @ `2026-04-08 (branch tip at catalogue time)` |
+| [gobot](entries/netcode/pojol-gobot/README.md) | Universal game server testing bot; 通用游戏服务器测试机器人 | go | MIT | reference | [pojol/gobot](https://github.com/pojol/gobot) @ `2025-01-03 (branch tip at catalogue time)` |
 | [godot-mcp-enhanced](entries/netcode/wgt19861219-godot-mcp-enhanced/README.md) | Enhanced MCP server for Godot 4.5-4.7: 33 tools / 199 actions, 3-layer architecture (headless + editor + game bridge), secure sandbox, recording & frame-verify, | typescript | MIT | reference | [wgt19861219/godot-mcp-enhanced](https://github.com/wgt19861219/godot-mcp-enhanced) @ `9cc3b70ec11b` |
 | [godot-multiplayer-starter](entries/netcode/codingquests-godot-multiplayer-starter/README.md) | A server-authoritative co-op multiplayer starter for Godot 4 with a ready-up lobby, client-side prediction, reconciliation and validated RPCs. | gdscript | MIT | vendored | [CodingQuests/godot-multiplayer-starter](https://github.com/CodingQuests/godot-multiplayer-starter) @ `ccde74b9490c` |
 | [godot-rocket-league](entries/netcode/albertok-godot-rocket-league/README.md) | Network physics with rollback test using Godot and netfox | gdscript | MIT | vendored | [albertok/godot-rocket-league](https://github.com/albertok/godot-rocket-league) @ `78b28ce495fa` |
@@ -1417,6 +1421,7 @@ _Generated 2026-11-25 12:08 UTC · 1643 entries · 419 vendored, 1224 reference-
 | [Mindustry — net](entries/netcode/mindustry-net/README.md) | network transport, protocol, replication or server loop | java | GPL-3.0 | reference | [Anuken/Mindustry.git](https://github.com/Anuken/Mindustry.git) @ `b873c01` |
 | [Mirage](entries/netcode/miragenet-mirage/README.md) | Easy to use high performance Network library for Unity 3d | c# | MIT | vendored | [MirageNet/Mirage](https://github.com/MirageNet/Mirage) @ `527d0b0f5d18` |
 | [mmorpg](entries/netcode/kingston-csj-mmorpg/README.md) | springboot编写的高性能分布式mmorpg手游服务端框架，包含中心服，网关服，游戏服，战斗服等。 | kotlin | unknown | reference | [kingston-csj/mmorpg](https://github.com/kingston-csj/mmorpg) @ `2026-07-23 (branch tip at catalogue time)` |
+| [Model-Predictive-Control](entries/netcode/junshengfu-model-predictive-control/README.md) | This project is to use Model Predictive Control (MPC) to drive a car in a game simulator. The server provides reference waypoints (yellow line in the demo video | c++ | MIT | vendored | [JunshengFu/Model-Predictive-Control](https://github.com/JunshengFu/Model-Predictive-Control) @ `d4c79c5829b5` |
 | [multiplayer-babylon-js-game](entries/netcode/johannes-do-multiplayer-babylon-js-game/README.md) | Multiplayer BabylonJS game with Server and Client-Side physics engine synchronization | typescript | MIT | reference | [johannes-do/multiplayer-babylon-js-game](https://github.com/johannes-do/multiplayer-babylon-js-game) @ `2022-12-10 (branch tip at catalogue time)` |
 | [naia](entries/netcode/naia-lib-naia/README.md) | a cross-platform (including Wasm!) networking library built in Rust. Intended to make multiplayer game development dead-simple & lightning-fast  | rust | Apache-2.0 | reference | [naia-lib/naia](https://github.com/naia-lib/naia) @ `2026-11-18 (branch tip at catalogue time)` |
 | [Nakama](entries/netcode/nakama/README.md) | game backend server: matchmaking, realtime, leaderboards, storage | go | Apache-2.0 | reference | [heroiclabs/nakama](https://github.com/heroiclabs/nakama) @ `37618ad4b927` |
@@ -1476,6 +1481,7 @@ _Generated 2026-11-25 12:08 UTC · 1643 entries · 419 vendored, 1224 reference-
 | [voidstrike](entries/netcode/braedonsaunders-voidstrike/README.md) | Multiplayer real-time strategy game running entirely in the browser. WebGPU graphics, serverless P2P networking via WebRTC/Nostr, deterministic lockstep simulat | typescript | MIT | reference | [braedonsaunders/voidstrike](https://github.com/braedonsaunders/voidstrike) @ `4df0235116b7` |
 | [voldorium](entries/netcode/enrique363-voldorium/README.md) | Native Windows and Linux port of SoulCalibur (Dreamcast) by static recompilation: 16:9, online versus with rollback netcode (Windows and Linux play together). R | c | unknown | reference | [enrique363/voldorium](https://github.com/enrique363/voldorium) @ `2026-11-14 (branch tip at catalogue time)` |
 | [warzone2100 — netplay](entries/netcode/warzone2100-lib-netplay/README.md) | RTS netplay: sync, desync detection, rejoin | c++ | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e14614` |
+| [webrcon](entries/netcode/facepunch-webrcon/README.md) | Game server rcon, using websockets | n/a | MIT | reference | [Facepunch/webrcon](https://github.com/Facepunch/webrcon) @ `2021-02-20 (branch tip at catalogue time)` |
 | [websocket](entries/netcode/morozovsk-websocket/README.md) | simple php websocket server + demos + yii/yii2 integration + php 7 support | php | unknown | reference | [morozovsk/websocket](https://github.com/morozovsk/websocket) @ `2019-05-01 (branch tip at catalogue time)` |
 | [widelands — network](entries/netcode/widelands-network/README.md) | network transport, protocol, replication or server loop | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
 | [WLANOptimizer](entries/netcode/catid-wlanoptimizer/README.md) | Single-header C library that fixes WiFi performance issues for online gaming and other low-latency real-time network traffic. | c++ | unknown | reference | [catid/WLANOptimizer](https://github.com/catid/WLANOptimizer) @ `2018-08-25 (branch tip at catalogue time)` |

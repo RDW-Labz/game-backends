@@ -3210,3 +3210,11 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-25 12:08 UTC** — tick 861: +1 screened, +0 reference, 38 skipped, catalogue=1643
   - added netcode/kochol-ariyana (MIT, vendored)
+
+- **2026-11-25 12:26 UTC** — tick 862: +2 screened, +4 reference, 26 skipped, catalogue=1649
+  - added netcode/javapretty-game-server (none, reference)
+  - added netcode/junshengfu-model-predictive-control (MIT, vendored)
+  - reference netcode/pojol-gobot
+  - reference netcode/li9chuan-baseservice
+  - reference netcode/facepunch-webrcon
+  - reference netcode/scgywx-fooking

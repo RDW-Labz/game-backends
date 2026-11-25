@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T12:26:03Z",
+ "category": "netcode",
+ "commit": "2025-01-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "pojol/gobot \u2014 Universal game server testing bot; \u901a\u7528\u6e38\u620f\u670d\u52a1\u5668\u6d4b\u8bd5\u673a\u5668\u4eba",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "gobot",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "pojol-gobot",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 153,
+ "system": "Universal game server testing bot; \u901a\u7528\u6e38\u620f\u670d\u52a1\u5668\u6d4b\u8bd5\u673a\u5668\u4eba",
+ "upstream": "https://github.com/pojol/gobot",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

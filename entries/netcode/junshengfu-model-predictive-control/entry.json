@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T12:26:01Z",
+ "category": "netcode",
+ "commit": "d4c79c5829b5",
+ "delivery": "vendored",
+ "description": "JunshengFu/Model-Predictive-Control \u2014 This project is to use Model Predictive Control (MPC) to drive a car in a game simulator. The server provides reference waypoints (yellow line in the demo video) via websocket, and we use MPC to compute steering and throttle commands to drive the car. The solution must be robust to 100ms latency, since it might encounter in real-world application.",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "Model-Predictive-Control",
+ "size_bytes": 9809799,
+ "slug": "junshengfu-model-predictive-control",
+ "source": "github-search:websocket game server stars:>40",
+ "stars": 192,
+ "system": "This project is to use Model Predictive Control (MPC) to drive a car in a game simulator. The server provides reference waypoints (yellow line in the demo video",
+ "upstream": "https://github.com/JunshengFu/Model-Predictive-Control",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
