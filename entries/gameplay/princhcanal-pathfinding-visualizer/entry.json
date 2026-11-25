@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T09:25:19Z",
+ "category": "gameplay",
+ "commit": "eaf2556eeb8f",
+ "delivery": "reference",
+ "description": "princhcanal/pathfinding-visualizer",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "pathfinding-visualizer",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 709598,
+ "slug": "princhcanal-pathfinding-visualizer",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 13,
+ "system": "see upstream",
+ "upstream": "https://github.com/princhcanal/pathfinding-visualizer",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

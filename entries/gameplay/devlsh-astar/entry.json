@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T09:25:14Z",
+ "category": "gameplay",
+ "commit": "a762ddacd958",
+ "delivery": "vendored",
+ "description": "devlsh/astar \u2014 A* pathfinding for 2D grids with elevation support.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "astar",
+ "size_bytes": 58078,
+ "slug": "devlsh-astar",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 13,
+ "system": "A* pathfinding for 2D grids with elevation support.",
+ "upstream": "https://github.com/devlsh/astar",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,9 @@
+verifyDepsBeforeRun: error
+
+packages:
+  - demo
+
+allowBuilds:
+  esbuild: true
+  lefthook: true
+  workerd: true

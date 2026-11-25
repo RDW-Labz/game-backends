@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:25:21Z",
+ "category": "gameplay",
+ "commit": "2024-09-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "TylerMommsen/pathfinding-visualizer \u2014 Pathfinding and Maze Visualization Tool",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "pathfinding-visualizer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "tylermommsen-pathfinding-visualizer",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 12,
+ "system": "Pathfinding and Maze Visualization Tool",
+ "upstream": "https://github.com/TylerMommsen/pathfinding-visualizer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

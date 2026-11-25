@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@devlsh/astar-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.build.json --noEmit",
+    "wrangler": "wrangler"
+  },
+  "devDependencies": {
+    "@tsconfig/node24": "24.0.6",
+    "@types/node": "24.19.2",
+    "lil-gui": "0.21.0",
+    "pixi.js": "8.23.0",
+    "typescript": "7.1.0-beta",
+    "vite": "8.3.8",
+    "wrangler": "4.162.0"
+  }
+}

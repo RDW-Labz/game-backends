@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 09:07 UTC · 1603 entries · 410 vendored, 1193 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 09:25 UTC · 1609 entries · 411 vendored, 1198 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-25 09:07 UTC · 1603 entries · 410 vendored, 1193 reference-
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 221 | 57 | 164 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 227 | 58 | 169 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
@@ -1055,7 +1055,7 @@ _Generated 2026-11-25 09:07 UTC · 1603 entries · 410 vendored, 1193 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 221 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 227 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1066,11 +1066,13 @@ _Generated 2026-11-25 09:07 UTC · 1603 entries · 410 vendored, 1193 reference-
 | [Aim-IK](entries/gameplay/ehsan-mohammadi-aim-ik/README.md) | A Unity package, to procedurally orientate the character's head (and spine) in a direction without using any animation data. | c# | MIT | reference | [ehsan-mohammadi/Aim-IK](https://github.com/ehsan-mohammadi/Aim-IK) @ `2022-08-16 (branch tip at catalogue time)` |
 | [algorithms-visualizer](entries/gameplay/sonngdev-algorithms-visualizer/README.md) | Visualization of common pathfinding algorithms 🧭 🗺️ | typescript | none | reference | [sonngdev/algorithms-visualizer](https://github.com/sonngdev/algorithms-visualizer) @ `23a20d434f93` |
 | [Algorust](entries/gameplay/jondolf-algorust/README.md) | Various algorithms visualized interactively on the web, entirely with Rust 🦀 | rust | unknown | reference | [Jondolf/Algorust](https://github.com/Jondolf/Algorust) @ `2024-07-17 (branch tip at catalogue time)` |
+| [amazing-pathfinding-visualizer](entries/gameplay/cinatitbr-amazing-pathfinding-visualizer/README.md) | A real-time visualizer for graph algorithms! | typescript | unknown | reference | [CinatitBR/amazing-pathfinding-visualizer](https://github.com/CinatitBR/amazing-pathfinding-visualizer) @ `2023-05-20 (branch tip at catalogue time)` |
 | [ancientbeast — abilities](entries/gameplay/ancientbeast-abilities/README.md) | combat, AI, pathing, quest or inventory logic | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [Any-Angle-Pathfinding](entries/gameplay/ohohcakester-any-angle-pathfinding/README.md) | A collection of algorithms used for any-angle pathfinding with visualisations. | java | Unlicense | reference | [Ohohcakester/Any-Angle-Pathfinding](https://github.com/Ohohcakester/Any-Angle-Pathfinding) @ `2022-12-21 (branch tip at catalogue time)` |
 | [anydesign](entries/gameplay/uxkero-anydesign/README.md) | Claude skill that analyzes images, websites, and Figma files and generates a structured design.md with token system, component inventory, and reconstruction not | python | MIT | reference | [uxKero/anydesign](https://github.com/uxKero/anydesign) @ `2026-09-15 (branch tip at catalogue time)` |
 | [anystore](entries/gameplay/vijaythapa333-anystore/README.md) | Billing and Inventory Management System Build in C# and MS SQL Server 2014 | c# | MIT | vendored | [vijaythapa333/anystore](https://github.com/vijaythapa333/anystore) @ `09ea150f474f` |
 | [AStar](entries/gameplay/bigzaphod-astar/README.md) | C Implementation of the A* Pathfinding Algorithm | c | unknown | reference | [BigZaphod/AStar](https://github.com/BigZaphod/AStar) @ `2017-04-16 (branch tip at catalogue time)` |
+| [astar](entries/gameplay/devlsh-astar/README.md) | A* pathfinding for 2D grids with elevation support. | typescript | MIT | vendored | [devlsh/astar](https://github.com/devlsh/astar) @ `a762ddacd958` |
 | [AStar](entries/gameplay/roy-t-astar/README.md) | A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher.  | c# | MIT | vendored | [roy-t/AStar](https://github.com/roy-t/AStar) @ `3d57efaa83c8` |
 | [astar-typescript](entries/gameplay/digitsensitive-astar-typescript/README.md) | A* search algorithm in TypeScript | typescript | MIT | reference | [digitsensitive/astar-typescript](https://github.com/digitsensitive/astar-typescript) @ `2023-04-26 (branch tip at catalogue time)` |
 | [asw](entries/gameplay/auto-sea-way-asw/README.md) | Open source sea routing between any two coordinates. Global routing graph built from OpenStreetMap coastlines with H3 hexagons. Rust, HTTP API, self-hosted. | rust | Apache-2.0 | vendored | [auto-sea-way/asw](https://github.com/auto-sea-way/asw) @ `72a3e891d1b1` |
@@ -1109,6 +1111,7 @@ _Generated 2026-11-25 09:07 UTC · 1603 entries · 410 vendored, 1193 reference-
 | [gdx-ai](entries/gameplay/libgdx-gdx-ai/README.md) | Artificial Intelligence framework for games based on libGDX or not. Features: Steering Behaviors, Formation Motion, Pathfinding, Behavior Trees and Finite State | java | Apache-2.0 | vendored | [libgdx/gdx-ai](https://github.com/libgdx/gdx-ai) @ `6726e345248d` |
 | [geotic](entries/gameplay/ddmills-geotic/README.md) | Entity Component System library for javascript | javascript | MIT | reference | [ddmills/geotic](https://github.com/ddmills/geotic) @ `2025-03-05 (branch tip at catalogue time)` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
+| [goal-based-vector-field-pathfinding](entries/gameplay/gonuit-goal-based-vector-field-pathfinding/README.md) | Multi-thread TypeScript goal based vector field pathfinding implementation using pixi.js | typescript | unknown | reference | [gonuit/goal-based-vector-field-pathfinding](https://github.com/gonuit/goal-based-vector-field-pathfinding) @ `2024-08-28 (branch tip at catalogue time)` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
 | [godot-behaviour-tree](entries/gameplay/andrew-wilkes-godot-behaviour-tree/README.md) | Behaviour Tree framework for Godot coded in GDScript. | gdscript | MIT | reference | [andrew-wilkes/godot-behaviour-tree](https://github.com/andrew-wilkes/godot-behaviour-tree) @ `2023-12-13 (branch tip at catalogue time)` |
 | [godot-rgmap](entries/gameplay/alex-karev-godot-rgmap/README.md) | A library for managing maps for roguelike games in Godot Engine | c++ | MIT | reference | [alex-karev/godot-rgmap](https://github.com/alex-karev/godot-rgmap) @ `2022-11-28 (branch tip at catalogue time)` |
@@ -1188,7 +1191,9 @@ _Generated 2026-11-25 09:07 UTC · 1603 entries · 410 vendored, 1193 reference-
 | [Pathfinding](entries/gameplay/seblague-pathfinding/README.md) | see upstream | c# | MIT | vendored | [SebLague/Pathfinding](https://github.com/SebLague/Pathfinding) @ `b938872d12bb` |
 | [pathfinding-lab](entries/gameplay/rvhuang-pathfinding-lab/README.md) | Run, test and compare all algorithms and heuristic functions | typescript | MIT | vendored | [rvhuang/pathfinding-lab](https://github.com/rvhuang/pathfinding-lab) @ `3bbe6bc31d66` |
 | [Pathfinding-Visualizer](entries/gameplay/clementmihailescu-pathfinding-visualizer/README.md) | A visualization tool for various pathfinding algorithms. | css | unknown | reference | [clementmihailescu/Pathfinding-Visualizer](https://github.com/clementmihailescu/Pathfinding-Visualizer) @ `2023-09-23 (branch tip at catalogue time)` |
+| [pathfinding-visualizer](entries/gameplay/princhcanal-pathfinding-visualizer/README.md) | see upstream | typescript | none | reference | [princhcanal/pathfinding-visualizer](https://github.com/princhcanal/pathfinding-visualizer) @ `eaf2556eeb8f` |
 | [pathfinding-visualizer](entries/gameplay/techprep-gh-pathfinding-visualizer/README.md) | see upstream | typescript | MIT | reference | [techprep-gh/pathfinding-visualizer](https://github.com/techprep-gh/pathfinding-visualizer) @ `2024-06-18 (branch tip at catalogue time)` |
+| [pathfinding-visualizer](entries/gameplay/tylermommsen-pathfinding-visualizer/README.md) | Pathfinding and Maze Visualization Tool | typescript | unknown | reference | [TylerMommsen/pathfinding-visualizer](https://github.com/TylerMommsen/pathfinding-visualizer) @ `2024-09-18 (branch tip at catalogue time)` |
 | [Pathfinding-Visualizer-ThreeJS](entries/gameplay/dhruvmisra-pathfinding-visualizer-threejs/README.md) | A visualizer for pathfinding algorithms in 3D with maze generation, first-person view and device camera input. | vue | none | reference | [dhruvmisra/Pathfinding-Visualizer-ThreeJS](https://github.com/dhruvmisra/Pathfinding-Visualizer-ThreeJS) @ `7dc1b69df7f4` |
 | [Pathfinding-Visualizer-Tutorial](entries/gameplay/clementmihailescu-pathfinding-visualizer-tutorial/README.md) | Tutorial for my original Pathfinding Visualizer project. | javascript | unknown | reference | [clementmihailescu/Pathfinding-Visualizer-Tutorial](https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial) @ `2023-03-03 (branch tip at catalogue time)` |
 | [pathfinding.cloud](entries/gameplay/datadog-pathfinding-cloud/README.md) | An AWS IAM Privilege Escalation Path Library | python | Apache-2.0 | reference | [DataDog/pathfinding.cloud](https://github.com/DataDog/pathfinding.cloud) @ `2026-11-16 (branch tip at catalogue time)` |
@@ -1224,6 +1229,7 @@ _Generated 2026-11-25 09:07 UTC · 1603 entries · 410 vendored, 1193 reference-
 | [Restaurant-Management-System](entries/gameplay/harismuneer-restaurant-management-system/README.md) | 👨‍🍳  An Android based RMS that aims to digitalize the day to day processes of various restaurant operations including ordering, billing, kitchen, hall and inven | java | MIT | vendored | [harismuneer/Restaurant-Management-System](https://github.com/harismuneer/Restaurant-Management-System) @ `0946070cde2f` |
 | [Restaurant_POS_System](entries/gameplay/amritmaurya1504-restaurant-pos-system/README.md) | A full-featured Restaurant POS System built using the MERN Stack to streamline restaurant operations, enhance customer experience, and manage orders, payments,  | javascript | unknown | reference | [amritmaurya1504/Restaurant_POS_System](https://github.com/amritmaurya1504/Restaurant_POS_System) @ `2025-03-02 (branch tip at catalogue time)` |
 | [Revengate — combat](entries/gameplay/revengate-combat/README.md) | combat, AI, pathing, quest or inventory logic | gd | GPL-3.0 | reference | [https://gitlab.com/ygingras/revengate](https://gitlab.com/ygingras/revengate) @ `ad6b2ee` |
+| [robomaze](entries/gameplay/aghilestma-robomaze/README.md) | An interactive maze pathfinding simulator featuring BFS, DFS, and A* algorithms | typescript | unknown | reference | [AghilesTMA/robomaze](https://github.com/AghilesTMA/robomaze) @ `2025-03-08 (branch tip at catalogue time)` |
 | [robopoker](entries/gameplay/krukah-robopoker/README.md) | Everything you could wish for in a library called RoboPoker. Full suite of data structures, algorithms, solvers, ML models, and more. | rust | MIT | reference | [krukah/robopoker](https://github.com/krukah/robopoker) @ `2026-10-28 (branch tip at catalogue time)` |
 | [rog](entries/gameplay/ajhager-rog/README.md) | A roguelike game library written in go | go | BSD-2-Clause | vendored | [ajhager/rog](https://github.com/ajhager/rog) @ `f64d42ea099f` |
 | [RogueSharp](entries/gameplay/faronbracy-roguesharp/README.md) | A .NET Standard class library providing map generation, path-finding, and field-of-view utilities frequently used in roguelikes or 2D tile based games. Inspired | c# | MIT | reference | [FaronBracy/RogueSharp](https://github.com/FaronBracy/RogueSharp) @ `2024-08-03 (branch tip at catalogue time)` |

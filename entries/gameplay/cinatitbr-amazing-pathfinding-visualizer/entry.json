@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:25:21Z",
+ "category": "gameplay",
+ "commit": "2023-05-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "CinatitBR/amazing-pathfinding-visualizer \u2014 A real-time visualizer for graph algorithms!",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "amazing-pathfinding-visualizer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "cinatitbr-amazing-pathfinding-visualizer",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 11,
+ "system": "A real-time visualizer for graph algorithms!",
+ "upstream": "https://github.com/CinatitBR/amazing-pathfinding-visualizer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:25:21Z",
+ "category": "gameplay",
+ "commit": "2024-08-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gonuit/goal-based-vector-field-pathfinding \u2014 Multi-thread TypeScript goal based vector field pathfinding implementation using pixi.js",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "goal-based-vector-field-pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "gonuit-goal-based-vector-field-pathfinding",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 12,
+ "system": "Multi-thread TypeScript goal based vector field pathfinding implementation using pixi.js",
+ "upstream": "https://github.com/gonuit/goal-based-vector-field-pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

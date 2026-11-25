@@ -3148,3 +3148,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/hasssanezzz-visual-maze-solver
   - reference gameplay/shortestpathlab-posthoc-app
   - reference gameplay/techprep-gh-pathfinding-visualizer
+
+- **2026-11-25 09:25 UTC** — tick 851: +2 screened, +4 reference, 6 skipped, catalogue=1609
+  - added gameplay/devlsh-astar (MIT, vendored)
+  - added gameplay/princhcanal-pathfinding-visualizer (none, reference)
+  - reference gameplay/tylermommsen-pathfinding-visualizer
+  - reference gameplay/aghilestma-robomaze
+  - reference gameplay/gonuit-goal-based-vector-field-pathfinding
+  - reference gameplay/cinatitbr-amazing-pathfinding-visualizer
