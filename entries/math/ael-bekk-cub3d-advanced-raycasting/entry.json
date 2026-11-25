@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T04:22:58Z",
+ "category": "math",
+ "commit": "53371ce9c1ba",
+ "delivery": "vendored",
+ "description": "ael-bekk/Cub3d-Advanced-Raycasting \u2014 #Cub3D: This project is a 3D game created from scratch written in C using an old graphic library mini-libx, presented with an old technology raycasting to make the 3D feeling looks pretty good",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Cub3d-Advanced-Raycasting",
+ "size_bytes": 534178,
+ "slug": "ael-bekk-cub3d-advanced-raycasting",
+ "source": "github-search:game math library stars:>40",
+ "stars": 225,
+ "system": "#Cub3D: This project is a 3D game created from scratch written in C using an old graphic library mini-libx, presented with an old technology raycasting to make ",
+ "upstream": "https://github.com/ael-bekk/Cub3d-Advanced-Raycasting",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

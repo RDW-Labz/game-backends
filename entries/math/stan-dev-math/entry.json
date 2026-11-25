@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:23:23Z",
+ "category": "math",
+ "commit": "2026-11-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "stan-dev/math \u2014 The Stan Math Library is a C++ template library for automatic differentiation of any order using forward, reverse, and mixed modes.  It includes a range of built-in functions for probabilistic modeling, linear algebra, and equation solving.",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_verdict": "clean",
+ "name": "math",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-3-Clause)",
+ "slug": "stan-dev-math",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 848,
+ "system": "The Stan Math Library is a C++ template library for automatic differentiation of any order using forward, reverse, and mixed modes.  It includes a range of buil",
+ "upstream": "https://github.com/stan-dev/math",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

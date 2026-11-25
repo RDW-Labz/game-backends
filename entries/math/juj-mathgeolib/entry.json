@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:23:23Z",
+ "category": "math",
+ "commit": "2026-04-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "juj/MathGeoLib \u2014 A C++ library for linear algebra and geometry manipulation for computer graphics.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "MathGeoLib",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "juj-mathgeolib",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 734,
+ "system": "A C++ library for linear algebra and geometry manipulation for computer graphics.",
+ "upstream": "https://github.com/juj/MathGeoLib",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

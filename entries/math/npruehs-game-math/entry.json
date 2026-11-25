@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T04:23:23Z",
+ "category": "math",
+ "commit": "2016-07-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "npruehs/game-math \u2014 Free open-source math library for games.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "game-math",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "npruehs-game-math",
+ "source": "github-search:game math library stars:>40",
+ "stars": 44,
+ "system": "Free open-source math library for games.",
+ "upstream": "https://github.com/npruehs/game-math",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

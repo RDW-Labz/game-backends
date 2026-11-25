@@ -3025,3 +3025,11 @@ One line per 15-minute extension tick, newest last.
   - added physics/dbriemann-libpartikel (Zlib, vendored)
   - added physics/sq-illuminant (none, reference)
   - reference physics/sunty2016-droidparticle
+
+- **2026-11-25 04:23 UTC** — tick 834: +2 screened, +4 reference, 12 skipped, catalogue=1520
+  - added math/ael-bekk-cub3d-advanced-raycasting (MIT, vendored)
+  - added math/rick2785-javacode (none, reference)
+  - reference math/npruehs-game-math
+  - reference math/stan-dev-math
+  - reference math/juj-mathgeolib
+  - reference math/sparsemat-sprs
