@@ -1,0 +1,30 @@
+[package]
+name = "bevy_fps_controller"
+version = "20.0.0"
+edition = "2021"
+authors = ["bevy_fps_controller"]
+repository = "https://github.com/qhdwight/bevy_fps_controller"
+categories = ["game-engines"]
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+description = "Bevy plugin that adds a Source engine inspired FPS movement controller"
+
+[dependencies]
+bevy = "0.20"
+bevy_rapier3d = { version = "0.37", optional = true }
+avian3d = { version = "0.8", optional = true }
+
+[features]
+default = []
+avian = ["dep:avian3d"]
+rapier = ["dep:bevy_rapier3d"]
+
+[[example]]
+name = "minimal_avian"
+path = "examples/minimal_avian.rs"
+required-features = ["avian"]
+
+[[example]]
+name = "minimal_rapier"
+path = "examples/minimal_rapier.rs"
+required-features = ["rapier"]

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 22:42 UTC · 1823 entries · 457 vendored, 1366 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 22:58 UTC · 1828 entries · 459 vendored, 1369 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 777 | 184 | 593 |
+| [engines](#engines) — Game engines and engine subsystems | 782 | 186 | 596 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 22:42 UTC · 1823 entries · 457 vendored, 1366 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 777 entries
+**Game engines and engine subsystems** — 782 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -77,6 +77,7 @@ _Generated 2026-11-25 22:42 UTC · 1823 entries · 457 vendored, 1366 reference-
 | [bevy-inspector-egui](entries/engines/jakobhellermann-bevy-inspector-egui/README.md) | Inspector plugin for the bevy game engine | rust | Apache-2.0 | vendored | [jakobhellermann/bevy-inspector-egui](https://github.com/jakobhellermann/bevy-inspector-egui) @ `9ac848f7a128` |
 | [bevy-kajiya](entries/engines/sebasjham-bevy-kajiya/README.md) | A plugin to use the kajiya renderer with bevy  | rust | Apache-2.0 | vendored | [sebasjham/bevy-kajiya](https://github.com/sebasjham/bevy-kajiya) @ `fff0f4426a3a` |
 | [bevy-parallax](entries/engines/corrosive-games-bevy-parallax/README.md) | Parallax background plugin for Bevy | rust | MIT | vendored | [Corrosive-Games/bevy-parallax](https://github.com/Corrosive-Games/bevy-parallax) @ `5e09918565e7` |
+| [bevy-rust-gpu](entries/engines/bevy-rust-gpu-bevy-rust-gpu/README.md) | Bevy plugin for hot-building and hot-reloading rust-gpu shaders. | rust | Apache-2.0 | vendored | [Bevy-Rust-GPU/bevy-rust-gpu](https://github.com/Bevy-Rust-GPU/bevy-rust-gpu) @ `2d9b667d769f` |
 | [bevy-sequential-actions](entries/engines/hikikones-bevy-sequential-actions/README.md) | A Bevy library for executing various actions in a sequence. | rust | Apache-2.0 | reference | [hikikones/bevy-sequential-actions](https://github.com/hikikones/bevy-sequential-actions) @ `2026-10-09 (branch tip at catalogue time)` |
 | [bevy-voxel-engine](entries/engines/gituseridk-bevy-voxel-engine/README.md) | see upstream | rust | Apache-2.0 | vendored | [gituseridk/bevy-voxel-engine](https://github.com/gituseridk/bevy-voxel-engine) @ `d5e9312ca2c7` |
 | [bevy-voxel-engine](entries/engines/ria8651-bevy-voxel-engine/README.md) | A voxel renderer for the bevy game engine | rust | Apache-2.0 | reference | [ria8651/bevy-voxel-engine](https://github.com/ria8651/bevy-voxel-engine) @ `2025-03-14 (branch tip at catalogue time)` |
@@ -89,11 +90,13 @@ _Generated 2026-11-25 22:42 UTC · 1823 entries · 457 vendored, 1366 reference-
 | [bevy_copperfield](entries/engines/hexorg-bevy-copperfield/README.md) | Bevy plugin for procedural modelling, inspired by [Blender's geometry nodes] | rust | MIT | vendored | [Hexorg/bevy_copperfield](https://github.com/Hexorg/bevy_copperfield) @ `1fa2d5e87334` |
 | [bevy_crossterm](entries/engines/octotep-bevy-crossterm/README.md) | Crossterm plugin for the bevy game engine | rust | MIT | reference | [octotep/bevy_crossterm](https://github.com/octotep/bevy_crossterm) @ `2021-12-02 (branch tip at catalogue time)` |
 | [bevy_debug_lines](entries/engines/toqozz-bevy-debug-lines/README.md) | A prototype plugin providing a simple line drawing api for bevy. | rust | MIT | reference | [Toqozz/bevy_debug_lines](https://github.com/Toqozz/bevy_debug_lines) @ `2024-06-19 (branch tip at catalogue time)` |
+| [bevy_dev_console](entries/engines/doonv-bevy-dev-console/README.md) | Developer console plugin for the Bevy game engine. | rust | Apache-2.0 | reference | [doonv/bevy_dev_console](https://github.com/doonv/bevy_dev_console) @ `2026-05-08 (branch tip at catalogue time)` |
 | [bevy_ecs_ldtk](entries/engines/trouv-bevy-ecs-ldtk/README.md) | ECS-friendly ldtk plugin for bevy, leveraging bevy_ecs_tilemap | rust | unknown | reference | [Trouv/bevy_ecs_ldtk](https://github.com/Trouv/bevy_ecs_ldtk) @ `2026-10-25 (branch tip at catalogue time)` |
 | [bevy_egui](entries/engines/vladbat00-bevy-egui/README.md) | This crate provides an Egui integration for the Bevy game engine. 🇺🇦 Please support the Ukrainian army: https://savelife.in.ua/en/ | rust | MIT | vendored | [vladbat00/bevy_egui](https://github.com/vladbat00/bevy_egui) @ `dd1f8d8a31db` |
 | [bevy_entitiles](entries/engines/443eb9-bevy-entitiles/README.md) | A 2d tilemap library for bevy. With many useful algorithms/tools built in. | rust | MIT | reference | [443eb9/bevy_entitiles](https://github.com/443eb9/bevy_entitiles) @ `2024-11-07 (branch tip at catalogue time)` |
 | [bevy_fluent](entries/engines/kgv-bevy-fluent/README.md) | Bevy plugin for localization using Fluent. | rust | Apache-2.0 | vendored | [kgv/bevy_fluent](https://github.com/kgv/bevy_fluent) @ `74205eba76df` |
 | [bevy_flycam](entries/engines/sburris0-bevy-flycam/README.md) | Basic first-person fly camera for the Bevy game engine | rust | ISC | vendored | [sburris0/bevy_flycam](https://github.com/sburris0/bevy_flycam) @ `c8a573879011` |
+| [bevy_fps_controller](entries/engines/qhdwight-bevy-fps-controller/README.md) | Source engine inspired Bevy FPS player movement controller plugin | rust | Apache-2.0 | vendored | [qhdwight/bevy_fps_controller](https://github.com/qhdwight/bevy_fps_controller) @ `670d9e7ba8a9` |
 | [bevy_fundsp](entries/engines/harudagondi-bevy-fundsp/README.md) | A Bevy plugin that integrates FunDSP into Bevy. | rust | Apache-2.0 | reference | [harudagondi/bevy_fundsp](https://github.com/harudagondi/bevy_fundsp) @ `2024-08-03 (branch tip at catalogue time)` |
 | [bevy_gaussian_splatting](entries/engines/mosure-bevy-gaussian-splatting/README.md) | bevy gaussian splatting render pipeline plugin 🕊️🌌 | rust | Apache-2.0 | reference | [mosure/bevy_gaussian_splatting](https://github.com/mosure/bevy_gaussian_splatting) @ `2026-10-24 (branch tip at catalogue time)` |
 | [bevy_ggrs](entries/engines/gschup-bevy-ggrs/README.md) | Bevy plugin for the GGRS P2P rollback networking library. | rust | unknown | reference | [gschup/bevy_ggrs](https://github.com/gschup/bevy_ggrs) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -115,6 +118,7 @@ _Generated 2026-11-25 22:42 UTC · 1823 entries · 457 vendored, 1366 reference-
 | [bevy_rts_camera](entries/engines/plonq-bevy-rts-camera/README.md) | RTS-style camera controls plugin for Bevy Engine | rust | Apache-2.0 | vendored | [Plonq/bevy_rts_camera](https://github.com/Plonq/bevy_rts_camera) @ `0256ed415f03` |
 | [bevy_scriptum](entries/engines/jarkonik-bevy-scriptum/README.md) | 📜 A plugin for Bevy that allows you to write some of your game or application logic in a scripting language. | rust | Apache-2.0 | reference | [jarkonik/bevy_scriptum](https://github.com/jarkonik/bevy_scriptum) @ `2026-04-15 (branch tip at catalogue time)` |
 | [bevy_shadertoy_wgsl](entries/engines/eliotbo-bevy-shadertoy-wgsl/README.md) | A Shadertoy clone for the Bevy game engine. The glsl language is replaced by wgsl. | rust | unknown | reference | [eliotbo/bevy_shadertoy_wgsl](https://github.com/eliotbo/bevy_shadertoy_wgsl) @ `2024-12-01 (branch tip at catalogue time)` |
+| [bevy_spine](entries/engines/jabuwu-bevy-spine/README.md) | A Bevy plugin for Spine | rust | unknown | reference | [jabuwu/bevy_spine](https://github.com/jabuwu/bevy_spine) @ `2026-06-29 (branch tip at catalogue time)` |
 | [bevy_steamworks](entries/engines/houraiteahouse-bevy-steamworks/README.md) | A Bevy plugin for integrating with the Steamworks SDK  | rust | Apache-2.0 | reference | [HouraiTeahouse/bevy_steamworks](https://github.com/HouraiTeahouse/bevy_steamworks) @ `2026-10-13 (branch tip at catalogue time)` |
 | [bevy_terrain](entries/engines/kurtkuehnert-bevy-terrain/README.md) | A terrain rendering plugin for the bevy game engine. | rust | Apache-2.0 | vendored | [kurtkuehnert/bevy_terrain](https://github.com/kurtkuehnert/bevy_terrain) @ `5a88daf4a419` |
 | [bevy_tiled](entries/engines/stararawn-bevy-tiled/README.md) | A plugin for rendering tiled maps. | rust | MIT | reference | [StarArawn/bevy_tiled](https://github.com/StarArawn/bevy_tiled) @ `2022-01-25 (branch tip at catalogue time)` |
@@ -769,6 +773,7 @@ _Generated 2026-11-25 22:42 UTC · 1823 entries · 457 vendored, 1366 reference-
 | [vu](entries/engines/gazed-vu/README.md) | Virtual Universe 3D Engine | go | MIT | vendored | [gazed/vu](https://github.com/gazed/vu) @ `d3432398a4ae` |
 | [vulkan-renderer](entries/engines/inexorgame-vulkan-renderer/README.md) | A new, render-graph based 3D game engine for Linux and Windows using C++20 and Vulkan API 1.3 (in early development) | c++ | MIT | reference | [inexorgame/vulkan-renderer](https://github.com/inexorgame/vulkan-renderer) @ `2026-11-07 (branch tip at catalogue time)` |
 | [vx_bevy](entries/engines/game4all-vx-bevy/README.md) | 🧊 Voxel engine prototype made with the bevy game engine. Serves as a playground for experimenting with voxels, terrain generation, and bevy. | rust | MIT | reference | [Game4all/vx_bevy](https://github.com/Game4all/vx_bevy) @ `2024-12-11 (branch tip at catalogue time)` |
+| [warbler_grass](entries/engines/emiongit-warbler-grass/README.md) | A bevy plugin for creating 3d grass in your game | rust | Apache-2.0 | reference | [EmiOnGit/warbler_grass](https://github.com/EmiOnGit/warbler_grass) @ `2024-07-10 (branch tip at catalogue time)` |
 | [warzone2100 — framework](entries/engines/warzone2100-framework/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | GPL-2.0 | reference | [Warzone2100/warzone2100.git](https://github.com/Warzone2100/warzone2100.git) @ `ceda97e` |
 | [wasabi2d](entries/engines/lordmauve-wasabi2d/README.md) | Cutting-edge 2D game framework for Python | python | LGPL-3.0 | reference | [lordmauve/wasabi2d](https://github.com/lordmauve/wasabi2d) @ `2026-10-22 (branch tip at catalogue time)` |
 | [wat](entries/engines/alexdarigan-wat/README.md) | A Testing Plugin for Godot Game Engine | gdscript | MIT | reference | [AlexDarigan/wat](https://github.com/AlexDarigan/wat) @ `2023-07-10 (branch tip at catalogue time)` |

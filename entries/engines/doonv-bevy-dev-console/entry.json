@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T22:58:40Z",
+ "category": "engines",
+ "commit": "2026-05-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "doonv/bevy_dev_console \u2014 Developer console plugin for the Bevy game engine.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "bevy_dev_console",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "doonv-bevy-dev-console",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 140,
+ "system": "Developer console plugin for the Bevy game engine.",
+ "upstream": "https://github.com/doonv/bevy_dev_console",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

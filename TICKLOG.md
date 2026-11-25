@@ -3469,3 +3469,10 @@ One line per 15-minute extension tick, newest last.
   - reference engines/yannlemos-signal-lens
   - reference engines/guilhermegsousa-godot-motion-matching
   - reference engines/zylann-godot-editor-debugger-plugin
+
+- **2026-11-25 22:58 UTC** — tick 901: +2 screened, +3 reference, 51 skipped, catalogue=1828
+  - added engines/qhdwight-bevy-fps-controller (Apache-2.0, vendored)
+  - added engines/bevy-rust-gpu-bevy-rust-gpu (Apache-2.0, vendored)
+  - reference engines/doonv-bevy-dev-console
+  - reference engines/emiongit-warbler-grass
+  - reference engines/jabuwu-bevy-spine

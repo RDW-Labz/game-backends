@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T22:58:38Z",
+ "category": "engines",
+ "commit": "2d9b667d769f",
+ "delivery": "vendored",
+ "description": "Bevy-Rust-GPU/bevy-rust-gpu \u2014 Bevy plugin for hot-building and hot-reloading rust-gpu shaders.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "bevy-rust-gpu",
+ "size_bytes": 42040,
+ "slug": "bevy-rust-gpu-bevy-rust-gpu",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 141,
+ "system": "Bevy plugin for hot-building and hot-reloading rust-gpu shaders.",
+ "upstream": "https://github.com/Bevy-Rust-GPU/bevy-rust-gpu",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

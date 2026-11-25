@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T22:58:40Z",
+ "category": "engines",
+ "commit": "2024-07-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "EmiOnGit/warbler_grass \u2014 A bevy plugin for creating 3d grass in your game",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "warbler_grass",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "emiongit-warbler-grass",
+ "source": "github-search:bevy plugin stars:>80",
+ "stars": 140,
+ "system": "A bevy plugin for creating 3d grass in your game",
+ "upstream": "https://github.com/EmiOnGit/warbler_grass",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
