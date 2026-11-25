@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:03:23Z",
+ "category": "engines",
+ "commit": "2024-09-29 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "IndividualCoder/GamePlus-Editor \u2014 A gui editor for making 3d games in python",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "GamePlus-Editor",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "individualcoder-gameplus-editor",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 16,
+ "system": "A gui editor for making 3d games in python",
+ "upstream": "https://github.com/IndividualCoder/GamePlus-Editor",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

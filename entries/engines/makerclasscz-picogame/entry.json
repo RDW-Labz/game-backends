@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T20:02:36Z",
+ "category": "engines",
+ "commit": "11c4a657f649",
+ "delivery": "vendored",
+ "description": "MakerClassCZ/picogame \u2014 A fast, retained-mode 2D game engine for MCUs",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "picogame",
+ "size_bytes": 2245720,
+ "slug": "makerclasscz-picogame",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 26,
+ "system": "A fast, retained-mode 2D game engine for MCUs",
+ "upstream": "https://github.com/MakerClassCZ/picogame",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:03:23Z",
+ "category": "engines",
+ "commit": "2021-04-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "CarlosMatheus/Pygin \u2014 Simple game engine produced for making easier to build more complex games using Python.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Pygin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "carlosmatheus-pygin",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 24,
+ "system": "Simple game engine produced for making easier to build more complex games using Python.",
+ "upstream": "https://github.com/CarlosMatheus/Pygin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:03:23Z",
+ "category": "engines",
+ "commit": "2023-03-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rubatopy/rubato \u2014 A lightweight, developer-first game engine built for Python",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "rubato",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "rubatopy-rubato",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 24,
+ "system": "A lightweight, developer-first game engine built for Python",
+ "upstream": "https://github.com/rubatopy/rubato",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

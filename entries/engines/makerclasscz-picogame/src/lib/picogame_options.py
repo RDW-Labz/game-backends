@@ -1,0 +1,160 @@
+# picogame_options: a settings/value menu, built ON the core picogame_ui (SceneBox + rows).
+#
+# PROVISIONAL - kept OUT of the core `ui` widgets so it can keep evolving without touching tuned,
+# shipped widgets. The pick-an-index `ui.Menu` can't carry an adjustable value per row; this can
+# (difficulty choice, volume stepper, sound toggle, "Start" action) - the settings / shop pattern.
+#
+#   import picogame_options as opt
+#   m = opt.OptionsMenu(scene, pg, font, 40, 40, 240, [
+#           {"key": "diff", "label": "Difficulty", "kind": "choice", "choices": ["Easy","Normal","Hard"]},
+#           {"key": "vol",  "label": "Volume",     "kind": "stepper", "value": 7, "min": 0, "max": 10},
+#           {"key": "snd",  "label": "Sound",      "kind": "toggle",  "value": True},
+#           {"key": "done", "label": "Start",      "kind": "action"},
+#       ], WHITE, NAVY, title="OPTIONS")
+#   m.show()                              # call once; scene.refresh() paints it
+#   ...each frame:  k = m.tick(btn)       # row key on A, ui.CANCEL on B, None navigating
+#   if k == "done": diff = m.value("diff")
+
+from picogame_ui import SceneBox, CANCEL, _menu_step, _panel_h, _menu_lines, _menu_pick
+
+
+def _normalise(rows):
+    """Fill in and clamp each row's stored value, so a row written by hand (or restored from a save)
+    can omit `i`/`value` and a stale one can't IndexError later in _vtext/_change/value."""
+    for r in rows:
+        if r["kind"] == "choice":
+            if not r.get("choices"):                          # fail fast here, not mid-render
+                raise ValueError("choice row needs a non-empty 'choices' list")
+            r.setdefault("i", 0)
+            r["i"] = max(0, min(r["i"], len(r["choices"]) - 1))   # clamp a stale persisted index
+            #   (choices shrank between versions) so show()/value() can't IndexError
+        elif r["kind"] == "stepper":
+            r.setdefault("value", r.get("min", 0))
+            lo, hi = r.get("min", 0), r.get("max", r["value"])     # clamp a stale persisted value
+            r["value"] = max(lo, min(r["value"], hi))              # into the declared range
+        elif r["kind"] == "toggle":
+            r.setdefault("value", False)
+
+
+class OptionsMenu:
+    """A scene-layer menu whose rows carry an adjustable VALUE - the settings/recruit pattern the
+    plain `ui.Menu` (pick-an-index) can't do. UP/DOWN move the cursor, LEFT/RIGHT change the selected
+    row's value LIVE (auto-repeat), `A` returns the selected row's `key` (use it for `action` rows
+    like "Done"), `B` returns `ui.CANCEL`. Built on `ui.SceneBox`, so use it OVER a live scene
+    (`scene.refresh()` every frame); the value changes show immediately.
+
+    rows = a list of dicts; each row is one of:
+        {"key": "diff", "label": "Difficulty", "kind": "choice", "choices": ["Easy","Normal","Hard"]}
+        {"key": "vol",  "label": "Volume",     "kind": "stepper", "value": 7, "min": 0, "max": 10}
+        {"key": "snd",  "label": "Sound",      "kind": "toggle",  "value": True}
+        {"key": "done", "label": "Start",      "kind": "action"}
+    Read a value any time with `m.value("diff")`. Call `m.show()` once; `scene.refresh()` paints it.
+
+    The row list is not fixed: `set_rows(rows, sel=0)` swaps it wholesale - a sub-level's rows and
+    back (the tree pattern), or a rebuilt list after a recruit/join/delete. Pass `visible=` to fix the
+    window height up front, so a list that grows and shrinks keeps one panel size.
+    """
+
+    def __init__(self, scene, pg, font, x, y, w, rows, fg, bg, title=None, border=None, visible=None):
+        self.rows = rows
+        self.title = title
+        self.sel = 0
+        self.top = 0
+        self._t = 1 if title else 0
+        _normalise(rows)
+        # `visible` caps how many option rows show at once - the rest scroll into view (like ui.Menu's
+        # `rows=`); a long list would otherwise overflow the panel off-screen. Passed explicitly it IS
+        # the window height, so a list that grows (a roster, the connected players) keeps ONE panel
+        # size instead of resizing as rows come and go; omitted, the panel fits the rows it was given.
+        self.vis = max(1, visible if visible else len(rows))
+        n = self.vis + self._t
+        self.panel = SceneBox(scene, pg, font, x, y, w, _panel_h(n), fg, bg, nlines=n, border=border)
+        self.active = False
+
+    def set_rows(self, rows, sel=0):
+        """Replace the rows and repaint - the whole-list rebuild a growing menu does (recruit a unit,
+        a player joins, stock changes), and the way to swap in a sub-level's rows and back. New rows
+        are normalised like the constructor's, so they may omit `i`/`value`."""
+        self.rows = rows
+        _normalise(rows)
+        self.show(sel)
+
+    def value(self, key):
+        """Current value of the row with this key (choice -> the chosen string, stepper -> int,
+        toggle -> bool); None if no such key."""
+        for r in self.rows:
+            if r.get("key") == key:
+                if r["kind"] == "choice":
+                    ch = r.get("choices")
+                    return ch[r.get("i", 0)] if ch else None
+                return r.get("value")
+        return None
+
+    def _vtext(self, r):
+        if r["kind"] == "choice":
+            return r["choices"][r["i"]]
+        if r["kind"] == "stepper":
+            return str(r["value"])
+        if r["kind"] == "toggle":
+            return "On" if r["value"] else "Off"
+        return ""
+
+    def _row_text(self, i):
+        r = self.rows[i]
+        mark = "> " if i == self.sel else "  "
+        if r["kind"] == "action":
+            return mark + r["label"]
+        v = self._vtext(r)
+        return mark + r["label"] + ("  <%s>" % v if i == self.sel else "   %s " % v)
+
+    def _render(self):
+        self.panel.show(_menu_lines(self.title, self._row_text, self.top, self.vis, len(self.rows)))
+
+    def show(self, sel=0):
+        self.active = True
+        # A rebuilt (shorter) list must not leave the cursor or the scroll window past its end - both
+        # clamp here, so set_rows()/show() after a delete is safe.
+        self.sel = max(0, min(sel, len(self.rows) - 1))
+        self.top = max(0, min(self.sel, len(self.rows) - self.vis))   # scroll so the cursor is visible
+        self._render()
+
+    def hide(self):
+        self.active = False
+        self.panel.hide()
+
+    def _change(self, d):
+        r = self.rows[self.sel]
+        k = r["kind"]
+        if k == "choice":
+            r["i"] = (r["i"] + d) % len(r["choices"])
+        elif k == "stepper":
+            r["value"] = max(r.get("min", 0), min(r.get("max", 99), r["value"] + d * r.get("step", 1)))
+        elif k == "toggle":
+            r["value"] = not r["value"]
+        else:
+            return False
+        return True
+
+    def tick(self, btn):
+        """Returns the selected row's `key` on A, `ui.CANCEL` on B, else None. Value edits (L/R) apply
+        live - read them with value()."""
+        if not self.active or not self.rows:
+            return None
+        osel, otop = self.sel, self.top
+        # UP/DOWN cursor + scroll window (shared with ui.Menu; line scroll). L/R below edits the value.
+        self.sel, self.top, a = _menu_step(btn, self.sel, self.top, self.vis, len(self.rows), False)
+        # a toggle flips on a FRESH press only (auto-repeat would oscillate it while held); steppers
+        # and choices use repeat so holding L/R adjusts smoothly.
+        if self.rows[self.sel]["kind"] == "toggle":
+            right, left = btn.just_pressed(btn.RIGHT), btn.just_pressed(btn.LEFT)
+        else:
+            right, left = btn.repeat(btn.RIGHT), btn.repeat(btn.LEFT)
+        changed = self._change(1) if right else (self._change(-1) if left else False)
+        if self.top != otop:                                  # scrolled -> full repaint
+            self._render()
+        elif self.sel != osel:                                # moved in-window -> the two affected rows
+            self.panel.set_line(self._t + (osel - self.top), self._row_text(osel))
+            self.panel.set_line(self._t + (self.sel - self.top), self._row_text(self.sel))
+        elif changed:
+            self.panel.set_line(self._t + (self.sel - self.top), self._row_text(self.sel))
+        return _menu_pick(self.rows[self.sel].get("key", self.sel), a)

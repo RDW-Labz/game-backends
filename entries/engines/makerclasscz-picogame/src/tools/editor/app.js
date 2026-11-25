@@ -1,0 +1,3505 @@
+// picogame editor -- interactive shell over the DOM-free model (core.js). VIEWPORT-FIRST:
+// the canvas is a window onto a world that can be far larger than one screen. All pointer
+// handling goes through vp.screenToWorld / render.js draws through vp.applyTransform, so
+// authoring bigger-than-screen maps is native (pan/zoom/minimap/one-screen guide box).
+//
+// Design for a first-time user: labelled+tooltipped tools, a getting-started overlay, an
+// always-available shortcut cheatsheet, non-blocking toasts (no prompt/alert), undo
+// everywhere, and an obvious "Map size" affordance so making a level scroll is discoverable.
+//
+// Files: core.js (model/exporters/save-load), viewport.js, history.js, render.js,
+// minimap.js. Tools are a dispatch table (onDown/onMove/onUp per tool) so adding one is local.
+"use strict";
+// Wrapped in an IIFE so all top-level const/let are FUNCTION-scoped, not global. The Astro embed
+// (SceneEditor.astro) re-loads app.js on every open to re-init against the freshly-built DOM; without
+// this wrapper the second load re-declares these globals -> "Identifier 'E' has already been declared"
+// SyntaxError, which aborts app.js so the freshly-built buttons never get their handlers.
+(function () {
+const E = PGEditor, VP = PGViewport, HIST = PGHistory, R = PGRender, MM = PGMinimap;
+
+// ---------------------------------------------------------------- DOM handles
+const $ = function (id) { return document.getElementById(id); };
+const canvas = $("canvas");
+const ctx = canvas.getContext("2d");
+const panel = $("panel");
+const minimap = $("minimap");
+const mmCtx = minimap ? minimap.getContext("2d") : null;
+
+// ---------------------------------------------------------------- state
+const FLAGS = R.FLAGS, FLAG_COLOR = R.FLAG_COLOR, flagsOf = R.flagsOf, flagColor = R.flagColor;
+const TOOLS = ["select", "paint", "place", "hud", "zone", "point", "pan", "region"];
+const TOOL_META = {
+  select: { key: "1", icon: "⤡", label: "Select", tip: "Select / move objects (V or 1). Click stacked items again to cycle; Shift-click = multi-select." },
+  paint:  { key: "2", icon: "▦", label: "Paint",  tip: "Paint tiles (B or 2). Drag to paint; Shift-drag = rectangle; Alt-click = flood fill; I or Ctrl-click = pick the tile under the cursor." },
+  place:  { key: "3", icon: "☺", label: "Place",  tip: "Place sprites (P or 3). Click the map to drop the chosen sprite." },
+  hud:    { key: "4", icon: "⊞", label: "HUD",    tip: "Add a camera-fixed text label (4), e.g. a score." },
+  zone:   { key: "5", icon: "▭", label: "Zone",   tip: "Drag a trigger rectangle (5), then tag it." },
+  point:  { key: "6", icon: "✕", label: "Point",  tip: "Drop a named point (6), e.g. a spawn." },
+  pan:    { key: "H", icon: "✋", label: "Pan",    tip: "Pan the view (H or hold Space). Wheel scrolls, Shift+wheel scrolls sideways, Ctrl+wheel zooms." },
+  region: { key: "R", icon: "⬚", label: "Region", tip: "Select a block of tiles (R). Drag a rectangle, then Copy (Ctrl+C) / Cut / Clear — a copied block stamps with every click." },
+};
+
+let project = E.newProject();
+let images = {};              // assetId -> HTMLImageElement
+let artURLs = {};             // assetId -> dataURL (persisted in save)
+const vp = new VP.Viewport();
+const history = new HIST.History(80);
+
+let sel = { asset: null, tileFrame: 1, tool: "select", tm: 0,
+            entity: null, hud: null, zone: null, point: null, particle: null, tile: null,
+            // MULTI-SELECT: shift-click adds/removes placed objects (sprites, HUD labels, zones,
+            // points). Move/delete then apply to all of them; the LAST one clicked stays the
+            // "primary" selection so the panel keeps showing its fields.
+            multi: [] };
+let showFlags = true, showGrid = true;
+let pendingImport = null;     // {kind} while the file picker resolves
+let clipboard = null;         // {kind, data} for copy/paste
+let pickCycle = { x: null, y: null, i: 0, n: 0 };
+let toasts = [];
+
+function L() { return project.levels[project.current]; }
+function curTm() { return L().tilemaps[sel.tm] || null; }
+function gridTileSize() { const tm = curTm() || L().tilemaps[0]; const a = tm && project.assets[tm.asset]; return a ? (a.fw || 16) : 16; }
+
+// ---------------------------------------------------------------- small helpers
+function hexToRgb(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
+function rgbCss(c) { return "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")"; }
+function rgbHex(c) { return "#" + c.map(function (v) { return ("0" + (v | 0).toString(16)).slice(-2); }).join(""); }
+function idFromName(n) { return n.replace(/\.[^.]+$/, "").replace(/[^a-zA-Z0-9_]/g, "_"); }
+function isImg(a) { return E.isImg(a); }
+function isTileset(a) { return !!a && (a.type === "tileset" || a.type === "tileset_color"); }
+function isSprite(a) { return !!a && (a.type === "sprite" || a.type === "bitmap" || a.type === "rect"); }
+function assetIds(pred) { return Object.keys(project.assets).filter(function (id) { return pred(project.assets[id]); }); }
+function mk(tag, cls, txt) { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+function add(p) { for (let i = 1; i < arguments.length; i++) p.appendChild(arguments[i]); return p; }
+function h3(t) { return mk("h3", null, t); }
+function hint(t) { const d = mk("div", "hint"); d.innerHTML = t; return d; }
+
+// undo checkpoint: call BEFORE a mutation
+let dirtySince = 0;            // set by every mutation, cleared by Save / a reload from disk
+let lastSavedText = "";        // the game.json text we last wrote or read (folder watch)
+let docName = "game.json";     // the file Save writes and the folder watch reads (setDocName)
+function snapshot() { history.push(project); dirtySince = Date.now(); invalidateProblems(); scheduleAutosave(); }
+
+// ---------------------------------------------------------------- session autosave
+// Every mutation (snapshot/undo/redo/load) schedules a debounced dump of the full
+// project (same shape as Save, incl. art dataURLs) into localStorage, so a stray
+// Esc, tab close or back-navigation can't erase work. Restored on the next open.
+const AUTOSAVE_KEY = "pg_ed_autosave";
+// The blob is ONE localStorage slot, so two open tabs would take turns overwriting each other and
+// the restore would hand back whichever wrote last - silently, and possibly the wrong project. One
+// tab therefore OWNS the slot: it stamps a heartbeat, and a second tab sees a live owner and stops
+// autosaving instead of clobbering. An owner that dies (crash, closed tab) leaves a stale stamp
+// that the next tab claims after OWNER_TTL, so the slot can never be orphaned for good.
+const OWNER_KEY = "pg_ed_autosave_owner";
+const OWNER_TTL = 15000;                       // a stamp older than this belongs to a dead tab
+const TAB_ID = String(Math.random()).slice(2) + "." + Date.now();
+let autosaveTimer = null, autosaveWarned = false, notOwnerWarned = false;
+let autosavePaused = false;    // a restore failed: keep the old blob until the user opens or starts anew
+
+function ownsAutosave() {
+  try {
+    const raw = localStorage.getItem(OWNER_KEY);
+    const o = raw ? JSON.parse(raw) : null;
+    if (o && o.id !== TAB_ID && Date.now() - o.ts < OWNER_TTL) { return false; }   // a live sibling
+    localStorage.setItem(OWNER_KEY, JSON.stringify({ id: TAB_ID, ts: Date.now() }));   // claim + beat
+    return true;
+  } catch (e) { return true; }   // storage blocked: the write below fails loudly enough on its own
+}
+
+function releaseAutosave() {
+  try {
+    const raw = localStorage.getItem(OWNER_KEY);
+    if (raw && JSON.parse(raw).id === TAB_ID) { localStorage.removeItem(OWNER_KEY); }
+  } catch (e) {}
+}
+
+function autosaveNow() {
+  autosaveTimer = null;
+  if (autosavePaused) return;
+  if (!ownsAutosave()) {
+    if (!notOwnerWarned) {
+      notOwnerWarned = true;
+      toast("Another editor tab is autosaving — this tab will not, so save it with Save", "err");
+    }
+    return;
+  }
+  try {
+    const sv = E.serialize(project); sv.art = artURLs; sv.file = docName;
+    localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(sv));
+  } catch (e) {
+    // storage full/blocked: warn once, keep the session usable (manual Save still works)
+    if (!autosaveWarned) { autosaveWarned = true; toast("Autosave unavailable (storage full or blocked) — use Save", "err"); }
+  }
+}
+function scheduleAutosave() { invalidateProblems(); if (autosaveTimer) clearTimeout(autosaveTimer); autosaveTimer = setTimeout(autosaveNow, 800); }
+function flushAutosave() { if (autosaveTimer) { clearTimeout(autosaveTimer); autosaveNow(); } }
+window.addEventListener("pagehide", function () { flushAutosave(); releaseAutosave(); });
+document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") flushAutosave(); });
+
+// ---------------------------------------------------------------- toasts (no alert)
+function toast(msg, kind) {
+  const box = $("toasts"); if (!box) return;
+  const el = mk("div", "toast " + (kind || "info"), msg);
+  box.appendChild(el);
+  const t = { el: el, until: Date.now() + 3600 };
+  toasts.push(t);
+  setTimeout(function () { el.classList.add("out"); setTimeout(function () { el.remove(); }, 300); }, 3400);
+}
+
+// ---------------------------------------------------------------- thumbnails
+function drawThumb(cv, a, id, frame) {
+  const c = cv.getContext("2d"); c.clearRect(0, 0, cv.width, cv.height); c.imageSmoothingEnabled = false;
+  if (isImg(a) && images[id]) {
+    const img = images[id];
+    if (img.complete && img.naturalWidth) {
+      c.drawImage(img, frame * a.fw, 0, a.fw, a.fh, 0, 0, cv.width, cv.height);
+    } else {
+      // dataURL images decode ASYNC - a panel rendered right after project load would show
+      // placeholder squares forever. Paint a stand-in now, redraw this canvas when the art lands.
+      c.fillStyle = "#334"; c.fillRect(2, 2, cv.width - 4, cv.height - 4);
+      img.addEventListener("load", function () { drawThumb(cv, a, id, frame); }, { once: true });
+    }
+  }
+  else if (a.type === "tileset_color") { c.fillStyle = rgbCss(a.colors[String(frame)] || a.colors["1"] || [255, 0, 255]); c.fillRect(2, 2, cv.width - 4, cv.height - 4); }
+  else if (a.type === "rect") { c.fillStyle = rgbCss(a.color); c.fillRect(2, 2, cv.width - 4, cv.height - 4); }
+  else { c.fillStyle = "#0af"; c.fillRect(2, 2, cv.width - 4, cv.height - 4); }
+}
+
+// A FileReader that errors has NOTHING to do with the file's contents -- the browser could not
+// read the bytes at all. In practice that means the file moved/was rewritten between the picker
+// and the read, or it lives on a mount the browser will not follow (network drives, SSHFS, some
+// virtual filesystems). Say so: a silent no-op here reads as "the editor is broken".
+function unreadable(f, fr) {
+  return "Could not read " + f.name + " — the browser could not open the file" +
+    ((fr && fr.error && fr.error.name) ? " (" + fr.error.name + ")" : "") +
+    ". If it sits on a network or virtual drive (SSHFS, a mounted share), copy it to a local " +
+    "folder first; otherwise it may have been moved or rewritten since you picked it.";
+}
+
+// ================================================================ ASSET IMPORT
+// PNG import uses inline panel fields for frame size (NOT prompt()). We stash the loaded
+// image + dataURL, then the panel shows w/h inputs + a Confirm button.
+function importPNG(kind) { pendingImport = { kind: kind }; $("file").click(); }
+$("file").onchange = function (ev) {
+  const f = ev.target.files[0]; if (!f) { pendingImport = null; return; }
+  const fr = new FileReader();
+  fr.onload = function () {
+    const dataURL = fr.result, img = new Image();
+    img.onload = function () {
+      pendingImport.img = img; pendingImport.dataURL = dataURL; pendingImport.name = f.name;
+      pendingImport.fw = pendingImport.kind === "tileset" ? 16 : img.height;
+      pendingImport.fh = img.height;
+      renderPanel();
+    };
+    img.onerror = function () { pendingImport = null; toast(f.name + " is not a PNG the browser can decode", "err"); };
+    img.src = dataURL;
+  };
+  fr.onerror = function () { pendingImport = null; toast(unreadable(f, fr), "err"); };
+  fr.readAsDataURL(f); ev.target.value = "";
+};
+function confirmImport() {
+  const pi = pendingImport; if (!pi || !pi.img) return;
+  const id = idFromName(pi.name);
+  const fw = Math.max(1, pi.fw | 0), fh = Math.max(1, pi.fh | 0);
+  snapshot();
+  project.assets[id] = { type: pi.kind, src: pi.name, fw: fw, fh: fh,
+    frames: Math.max(1, Math.floor(pi.img.width / fw)), transparent: 0 };
+  images[id] = pi.img; artURLs[id] = pi.dataURL;
+  sel.asset = id;
+  if (pi.kind === "tileset") ensureLayerFor(id);
+  pendingImport = null;
+  renderPanel(); refreshChrome(); toast("Added " + id, "ok");
+}
+function addColorTileset() {
+  snapshot();
+  const id = "tiles" + Object.keys(project.assets).length;
+  project.assets[id] = { type: "tileset_color", fw: 16, fh: 16,
+    colors: { "1": [150, 90, 40], "2": [245, 215, 50], "3": [40, 200, 80] } };
+  sel.asset = id; sel.tileFrame = 1; ensureLayerFor(id); renderPanel(); toast("Added colour tileset " + id, "ok");
+}
+
+// A colour-block placeholder sprite (the `rect` asset the demos use for hero/slime): lets you
+// lay out and play a level before any art exists. Swap in a PNG later by removing it.
+var SPRITE_PLACEHOLDER_COLORS = [[40, 90, 220], [200, 60, 60], [40, 200, 80], [245, 170, 40], [170, 100, 235], [240, 220, 60]];
+function addColorSprite() {
+  snapshot();
+  const n = assetIds(function (a) { return a.type === "rect"; }).length;
+  const id = n === 0 ? "player" : "sprite" + (Object.keys(project.assets).length);
+  project.assets[id] = { type: "rect", fw: 12, fh: 16, color: SPRITE_PLACEHOLDER_COLORS[n % SPRITE_PLACEHOLDER_COLORS.length] };
+  sel.asset = id; renderPanel(); toast("Added colour sprite " + id + " — click the map to place it", "ok");
+}
+
+// ---------------------------------------------------------------- tilemap layers
+function ensureLayerFor(assetId) {
+  for (let i = 0; i < L().tilemaps.length; i++) if (L().tilemaps[i].asset === assetId) { sel.tm = i; return; }
+  addLayer(assetId, false);
+}
+function addLayer(assetId, fg) {
+  const a = project.assets[assetId]; if (!a) return;
+  // new layers default to FILL THE WHOLE WORLD (worldSize / tile size), so painting a
+  // scrolling level "just works" once World size is set. Shrink a layer later if needed.
+  const cr = E.layerSizeForWorld(L(), a);
+  L().tilemaps.push(E.newTilemap(assetId, cr[0], cr[1], fg));
+  sel.tm = L().tilemaps.length - 1; sel.asset = assetId;
+}
+
+// ================================================================ TOOLS
+function setTool(t) {
+  if (t !== "region" && (tileSel || tileClip)) { tileSel = null; tileSelRect = null; tileClip = null; }
+  sel.tool = t;
+  document.querySelectorAll(".tool").forEach(function (b) { b.classList.toggle("on", b.dataset.tool === t); });
+  if (t === "paint") { if (!isTileset(project.assets[sel.asset])) sel.asset = assetIds(isTileset)[0] || null; if (sel.asset) ensureLayerFor(sel.asset); }
+  if (t === "place") { if (!isSprite(project.assets[sel.asset])) sel.asset = assetIds(isSprite)[0] || null; }
+  canvas.style.cursor = t === "pan" ? "grab" : (t === "paint" ? "crosshair" : "default");
+  renderPanel();
+}
+
+function clearSel() { sel.entity = sel.hud = sel.zone = sel.point = sel.particle = sel.tile = null; sel.multi = []; }
+function multiHas(o) { return sel.multi.some(function (m) { return m.obj === o; }); }
+function multiToggle(kind, obj) {
+  const i = sel.multi.findIndex(function (m) { return m.obj === obj; });
+  if (i >= 0) sel.multi.splice(i, 1); else sel.multi.push({ kind: kind, obj: obj });
+}
+function multiArrFor(kind) {
+  return { entity: L().entities, hud: L().hud, zone: L().zones, point: L().points, particle: L().particles }[kind];
+}
+function pick(kind, obj) { clearSel(); sel[kind] = obj; renderPanel(); }
+
+// ---------------------------------------------------------------- render panel router
+function renderPanel() {
+  panel.innerHTML = "";
+  if (pendingImport && pendingImport.img) return panelImport();
+  if (sel.tool === "select") panelSelect();
+  else if (sel.tool === "paint") panelPaint();
+  else if (sel.tool === "place") panelPlace();
+  else if (sel.tool === "pan") panelPan();
+  else if (sel.tool === "region") panelRegion();
+  else panelQuick();
+  updateStatus();
+}
+
+// ---- IMPORT confirm panel (replaces prompt() for frame size) ----
+function panelImport() {
+  const pi = pendingImport;
+  add(panel, h3("Import " + pi.kind));
+  panel.appendChild(hint("File <b>" + pi.name + "</b> (" + pi.img.width + "x" + pi.img.height + "px). Set the frame size; frames = image width / frame width."));
+  fieldNum(panel, "frame w", pi.fw, function (v) { pi.fw = v; });
+  fieldNum(panel, "frame h", pi.fh, function (v) { pi.fh = v; });
+  const row = mk("div", "row wrap");
+  add(row, btn("Import", confirmImport), btn("Cancel", function () { pendingImport = null; renderPanel(); }));
+  panel.appendChild(row);
+}
+
+// ---- SELECT ----
+function panelSelect() {
+  if (sel.multi.length > 1) {
+    add(panel, h3(sel.multi.length + " objects selected"));
+    panel.appendChild(hint("Shift-click to add/remove. Drag or arrow keys move them together; <b>Delete</b> removes all. The fields below edit the last one clicked."));
+    const mrow = mk("div", "row wrap");
+    const md = btn("Delete " + sel.multi.length + " objects", deleteSelection); md.className = "danger";
+    add(mrow, btn("Clear selection", function () { clearSel(); renderPanel(); }), md);
+    panel.appendChild(mrow);
+  }
+  if (sel.entity || sel.hud || sel.zone || sel.point || sel.particle || sel.tile) {
+    panel.appendChild(btn("‹ Back to level", function () { clearSel(); pickCycle.n = 0; renderPanel(); }));
+    if (pickCycle.n > 1) panel.appendChild(hint("Overlapping here — click the same spot again to cycle (" + (pickCycle.i + 1) + "/" + pickCycle.n + ")."));
+    if (sel.tile) tileInspector(panel);
+    else { add(panel, h3("Selected")); inspector(panel); }
+    return;
+  }
+  problemsSection(panel);
+  add(panel, h3("Level"));
+  fieldText(panel, "name", L().name || "", function (v) {
+    if (project.start === L().name) project.start = v;      // renaming the start level keeps it the start
+    L().name = v; refreshChrome();
+  });
+  fieldColor(panel, "background", L().background, function (c) { L().background = c; });
+  if (project.levels.length > 1) {
+    const rm = btn("Remove level " + (L().name || ""), removeCurrentLevel);
+    rm.className = "danger";
+    panel.appendChild(rm);
+  }
+
+  worldSizePanel(panel);
+
+  // Device screen size (the one-screen guide box). Pairs with World size above: World =
+  // the whole scrollable level; Device screen = one handheld view.
+  add(panel, h3("Device screen"));
+  panel.appendChild(hint("The dashed white box on the map = <b>one handheld screen</b>. World size (above) is the whole level; build it bigger than one screen to scroll."));
+  const sr = mk("div", "row");
+  add(sr, mk("label", null, "screen w×h"));
+  const sw = mk("input"); sw.type = "number"; sw.value = project.size[0]; sw.style.width = "56px";
+  const sh = mk("input"); sh.type = "number"; sh.value = project.size[1]; sh.style.width = "56px";
+  sw.onchange = sh.onchange = function () { snapshot(); project.size = [parseInt(sw.value) || 320, parseInt(sh.value) || 240]; renderPanel(); };
+  add(sr, sw, sh); panel.appendChild(sr);
+
+  cameraPanel(panel);
+
+  const fxBox = mk("details", "fold");
+  fxBox.open = !!(L().effects && L().effects.length);      // nothing set: stay out of the way
+  fxBox.appendChild(mk("summary", null, "Story effects" + (L().effects && L().effects.length ? " (" + L().effects.length + ")" : "")));
+  const fx = fxBox;                                        // the section below builds into the fold
+  fx.appendChild(hint('World changes replayed from story flags — on level load and whenever a flag is set. ' +
+    'E.g. <code>[{"if":"gate_open","swap":[3,6],"unsolid":[3]}]</code>: when <code>gate_open</code> is set, ' +
+    'every tile <b>3</b> becomes tile <b>6</b> (the look) and tile 3 stops being solid (the collision). ' +
+    'Also <code>solid</code>, <code>hide</code>/<code>show</code> (sprite names). Flags come from zone ' +
+    '<code>say/ask</code> <b>set</b> or <code>d.ev_set()</code> in scripts (Story \u25be).'));
+  const fxTa = mk("textarea"); fxTa.rows = 2;
+  fxTa.value = L().effects ? JSON.stringify(L().effects) : "";
+  const fxPrev = mk("div");
+  const fxTm = L().tilemaps[0];
+  function fxThumb(v) {
+    const cv = mk("canvas"); cv.width = 22; cv.height = 22; cv.title = "tile " + v;
+    if (fxTm && v > 0) drawThumb(cv, project.assets[fxTm.asset], fxTm.asset, v);
+    return cv;
+  }
+  function fxChip() {
+    const c = mk("span", "fxchip");
+    for (let i = 0; i < arguments.length; i++)
+      c.appendChild(typeof arguments[i] === "string" ? document.createTextNode(arguments[i]) : arguments[i]);
+    return c;
+  }
+  function renderFxPreview() {
+    fxPrev.innerHTML = "";
+    let rules;
+    try { rules = fxTa.value ? JSON.parse(fxTa.value) : []; } catch (e) { return; }
+    if (!Array.isArray(rules)) return;
+    rules.forEach(function (r) {
+      const row = mk("div", "fxrow");
+      row.appendChild(fxChip("when " + (Array.isArray(r.if) ? r.if.join(" and ") : r.if) + ":"));
+      if (r.swap) row.appendChild(fxChip(fxThumb(+r.swap[0]), " \u2192 ", fxThumb(+r.swap[1])));
+      (r.unsolid || []).forEach(function (t) { row.appendChild(fxChip(fxThumb(+t), " walkable")); });
+      (r.solid || []).forEach(function (t) { row.appendChild(fxChip(fxThumb(+t), " solid")); });
+      (r.hide || []).forEach(function (n) { row.appendChild(fxChip("hide " + n)); });
+      (r.show || []).forEach(function (n) { row.appendChild(fxChip("show " + n)); });
+      fxPrev.appendChild(row);
+    });
+  }
+  fxTa.onchange = function () {
+    try {
+      snapshot();
+      const v = fxTa.value ? JSON.parse(fxTa.value) : null;
+      if (v) L().effects = v; else delete L().effects;
+      fxTa.classList.remove("bad"); scheduleAutosave(); renderFxPreview();
+    } catch (e) { fxTa.classList.add("bad"); toast("effects is not valid JSON", "err"); }
+  };
+  fx.appendChild(fxTa);
+  const fxBr = mk("div", "row");
+  add(fxBr, btn("Edit effects\u2026", function () { openEffectsModal(L()); }));
+  fx.appendChild(fxBr);
+  fx.appendChild(fxPrev);
+  renderFxPreview();
+  panel.appendChild(fxBox);
+
+  add(panel, h3("Objects"));
+  const any = L().entities.length + L().hud.length + L().zones.length + L().points.length + L().particles.length;
+  if (!any) {
+    panel.appendChild(hint("Nothing placed yet \u2014 <b>Paint</b> makes ground, <b>Place</b> drops sprites, " +
+                           "<b>Zone</b> marks an area that can talk."));
+    return;
+  }
+  L().entities.forEach(function (en) { objRow((en.name || (en.tag ? "#" + en.tag : en.asset)), "entity", en); });
+  L().hud.forEach(function (hd) { objRow("HUD " + hd.name, "hud", hd); });
+  L().zones.forEach(function (z) { objRow("zone " + z.tag, "zone", z); });
+  L().points.forEach(function (q) { objRow("• " + q.name, "point", q); });
+  L().particles.forEach(function (p) { objRow("fx " + p.name, "particle", p); });
+}
+function objRow(label, kind, obj) {
+  const b = mk("button", "objbtn", label);
+  b.onclick = function () { setTool("select"); pick(kind, obj); centerSelection(); };
+  panel.appendChild(b);
+}
+
+// WORLD SIZE -- the headline "how big is my level" knob (per-level, in pixels). This is
+// the single source of truth for the world extent: camera auto-bounds, Fit, the render
+// extent, the minimap, and new-layer sizing all read level.worldSize.
+function worldSizePanel(box) {
+  const lv = L();
+  add(box, h3("World size"));
+  box.appendChild(hint("How big is the whole level, in pixels. Make it bigger than one screen to scroll. This drives the camera, Fit, and new layers."));
+  const wr = mk("div", "row");
+  add(wr, mk("label", null, "world w×h"));
+  const ww = mk("input"); ww.type = "number"; ww.value = lv.worldSize[0]; ww.style.width = "60px";
+  const wh = mk("input"); wh.type = "number"; wh.value = lv.worldSize[1]; wh.style.width = "60px";
+  add(wr, ww, wh); box.appendChild(wr);
+  // live "≈ N × M screens" readout
+  const sx = (lv.worldSize[0] / project.size[0]), sy = (lv.worldSize[1] / project.size[1]);
+  const fmt = function (n) { return (Math.round(n * 10) / 10).toString().replace(/\.0$/, ""); };
+  box.appendChild(hint("≈ <b>" + fmt(sx) + " × " + fmt(sy) + " screens</b> (one screen = " + project.size[0] + "×" + project.size[1] + ")."));
+  box.appendChild(btn("Apply world size", function () {
+    applyWorldSize(parseInt(ww.value) || project.size[0], parseInt(wh.value) || project.size[1]);
+  }));
+  // presets mirroring the demos
+  const pr = mk("div", "row wrap");
+  add(pr, presetBtn("1 screen", project.size[0], project.size[1]),
+        presetBtn("3× wide", project.size[0] * 3, project.size[1]),
+        presetBtn("2×2 screens", project.size[0] * 2, project.size[1] * 2));
+  box.appendChild(pr);
+}
+function presetBtn(label, w, h) { return btn(label, function () { applyWorldSize(w, h); }); }
+
+// Set the world size; then offer to grow/crop the tilemap layers to fill it (reusing the
+// same confirm-on-lossy-shrink guard as per-layer Map size). Camera auto-bounds re-sync.
+function applyWorldSize(w, h) {
+  const lv = L();
+  w = Math.max(1, w | 0); h = Math.max(1, h | 0);
+  snapshot();
+  lv.worldSize = [w, h];
+  // does filling layers to the new world shrink any of them destructively?
+  const anyLayers = (lv.tilemaps || []).some(function (tm) { return !(tm.pos && (tm.pos[0] || tm.pos[1])); });
+  if (anyLayers) {
+    // preview loss on a clone so the confirm is honest
+    const clone = E.clone(project); const clv = clone.levels[clone.current]; clv.worldSize = [w, h];
+    const wouldLose = E.fillLayersToWorld(clone, clv);
+    const grow = confirm("Resize the tilemap layer(s) to fill the new " + w + "×" + h + " world?" +
+      (wouldLose ? "\n\nWarning: some painted tiles fall outside the smaller area and will be deleted." : "\n\n(Grows layers with empty tiles; existing paint is kept.)"));
+    if (grow) {
+      if (wouldLose && !confirm("This deletes painted tiles outside the new area. Continue?")) { /* keep worldSize, skip resize */ }
+      else E.fillLayersToWorld(project, lv);
+    }
+  }
+  if (lv.camera && lv.camera.autoBounds !== false) lv.camera.bounds = [0, 0, w, h];
+  doFit(); renderPanel();
+  toast("World size " + w + "×" + h + " (≈ " + (Math.round(w / project.size[0] * 10) / 10) + "×" + (Math.round(h / project.size[1] * 10) / 10) + " screens)", "ok");
+}
+
+// camera editor: follow target + axis + bounds (auto = whole world, or explicit frame)
+function cameraPanel(box) {
+  add(box, h3("Camera"));
+  const targets = L().entities.filter(function (e) { return e.name; });
+  const row = mk("div", "row"); add(row, mk("label", null, "follow"));
+  const s = mk("select"); s.appendChild(new Option("(no camera)", ""));
+  targets.forEach(function (e) { s.appendChild(new Option(e.name, e.name)); });
+  s.value = (L().camera && L().camera.target) || "";
+  s.onchange = function () {
+    snapshot();
+    if (!s.value) { L().camera = null; }
+    else {
+      const b = E.levelBounds(project, L());
+      L().camera = L().camera || { mode: "follow", axis: "x", bounds: [0, 0, b[0], b[1]], autoBounds: true };
+      L().camera.target = s.value; L().camera.mode = "follow";
+    }
+    renderPanel();
+  };
+  add(row, s); box.appendChild(row);
+  if (!targets.length) box.appendChild(hint("Name a sprite 'player' (Place a sprite, then Select it) to enable a follow camera."));
+  if (!L().camera) return;
+  const cam = L().camera;
+  const ar = mk("div", "row"); add(ar, mk("label", null, "axis"));
+  const as = mk("select"); ["x", "y", "xy"].forEach(function (v) { as.appendChild(new Option(v, v)); });
+  as.value = cam.axis || "x"; as.onchange = function () { snapshot(); cam.axis = as.value; };
+  add(ar, as); box.appendChild(ar);
+  // bounds mode
+  const bl = mk("label", "row");
+  const cb = mk("input"); cb.type = "checkbox"; cb.checked = cam.autoBounds !== false;
+  cb.onchange = function () { snapshot(); cam.autoBounds = cb.checked; if (cb.checked) { const b = E.levelBounds(project, L()); cam.bounds = [0, 0, b[0], b[1]]; } renderPanel(); };
+  add(bl, cb, document.createTextNode(" bounds = whole world (auto)")); box.appendChild(bl);
+  if (cam.autoBounds === false) {
+    box.appendChild(hint("Explicit camera bounds (orange dashed frame on the map). Drag it with Select."));
+    fieldNum(box, "bx", cam.bounds[0], function (v) { cam.bounds[0] = v; });
+    fieldNum(box, "by", cam.bounds[1], function (v) { cam.bounds[1] = v; });
+    fieldNum(box, "bw", cam.bounds[2], function (v) { cam.bounds[2] = v; });
+    fieldNum(box, "bh", cam.bounds[3], function (v) { cam.bounds[3] = v; });
+  } else {
+    const b = E.levelBounds(project, L()); cam.bounds = [0, 0, b[0], b[1]];
+    box.appendChild(hint("Camera can scroll the whole " + b[0] + "×" + b[1] + " world."));
+  }
+}
+
+function tileInspector(box) {
+  const a = project.assets[sel.tile.asset];
+  add(box, h3("Tile " + sel.tile.value));
+  box.appendChild(hint("Layer " + sel.tile.tm + " (" + sel.tile.asset + "), cell " + sel.tile.cx + "," + sel.tile.cy +
+    ".<br><b>Flags/colour apply to EVERY tile of this value</b>. Want one cell different? Paint it with another tile."));
+  if (a.type === "tileset_color") {
+    const k = String(sel.tile.value);
+    if (a.colors[k]) fieldColor(box, "colour", a.colors[k], function (c) { snapshot(); a.colors[k] = c; });
+  }
+  add(box, h3("Flags")); flagEditor(box, a, sel.tile.value);
+  box.appendChild(btn("Paint with this tile", function () { sel.tileFrame = sel.tile.value; setTool("paint"); }));
+}
+
+function inspector(box) {
+  if (sel.entity) {
+    const en = sel.entity;
+    fieldText(box, "name", en.name || "", function (v) { en.name = v || null; });
+    fieldText(box, "tag", en.tag || "", function (v) { en.tag = v || null; });
+    fieldNum(box, "x", en.x, function (v) { en.x = v; });
+    fieldNum(box, "y", en.y, function (v) { en.y = v; });
+    fieldNum(box, "anchorX", (en.anchor || [0, 0])[0], function (v) { en.anchor[0] = v; }, 0.1);
+    fieldNum(box, "anchorY", (en.anchor || [0, 0])[1], function (v) { en.anchor[1] = v; }, 0.1);
+    const ea = project.assets[en.asset];
+    if (ea && isImg(ea) && ea.frames > 1) fieldNum(box, "frame", en.frame || 0, function (v) { en.frame = v; });
+    if (ea && ea.animations && Object.keys(ea.animations).length) {
+      const row = mk("div", "row"); add(row, mk("label", null, "anim"));
+      const s = mk("select"); s.appendChild(new Option("(none)", ""));
+      for (const nm in ea.animations) s.appendChild(new Option(nm, nm));
+      s.value = en.anim || ""; s.onchange = function () { snapshot(); en.anim = s.value || null; };
+      add(row, s); box.appendChild(row);
+    }
+    fieldData(box, en, "data (JSON, read by the game as sprite.data):");
+    dupDelRow(box, "entity", en, L().entities);
+  } else if (sel.hud) {
+    const hd = sel.hud;
+    fieldText(box, "name", hd.name, function (v) { hd.name = v; });
+    fieldNum(box, "x", hd.x, function (v) { hd.x = v; });
+    fieldNum(box, "y", hd.y, function (v) { hd.y = v; });
+    fieldColor(box, "fg", hd.fg || [255, 255, 255], function (c) { hd.fg = c; });
+    fieldColor(box, "bg", hd.bg || [0, 0, 0], function (c) { hd.bg = c; });
+    box.appendChild(hint("Camera-fixed; the game sets its text by name via view.named[...]."));
+    dupDelRow(box, "hud", hd, L().hud);
+  } else if (sel.zone) {
+    const z = sel.zone;
+    fieldText(box, "tag", z.tag, function (v) { z.tag = v; });
+    fieldNum(box, "x", z.x, function (v) { z.x = v; }); fieldNum(box, "y", z.y, function (v) { z.y = v; });
+    fieldNum(box, "w", z.w, function (v) { z.w = v; }); fieldNum(box, "h", z.h, function (v) { z.h = v; });
+    // What a zone DOES is the reason to draw one, so it leads - and it reads as a sentence, not
+    // as JSON. The data behind it is still here, one fold down, for hand-editing and for agents.
+    box.appendChild(mk("div", "hint", storySummary(z)));
+    const zr = mk("div", "row");
+    add(zr, btn(z.data && (z.data.say || z.data.ask || z.data.goto || z.data.script)
+                ? "Edit story\u2026" : "Add a story\u2026", function () { openStoryModal(z); }));
+    if (z.data && (z.data.say || z.data.ask || z.data.goto))
+      add(zr, btn("Convert to script", function () { ejectZoneScript(z); }));
+    box.appendChild(zr);
+    const dd = mk("details", "fold");
+    dd.appendChild(mk("summary", null, "data (JSON) \u00b7 how the game reads this zone"));
+    dd.appendChild(hint("<code>view.in_zone(x, y, tag)</code> returns this zone when a point is inside."));
+    if (z.data && !z.data.say && !z.data.ask && !z.data.goto && !z.data.script) dd.open = true;  // hand-written keys stay visible
+    fieldData(dd, z, 'Story keys, compiled on Try: {"script": "name"} \u00b7 ' +
+      '{"say": [lines or {"if","lines","set"} variants]} \u00b7 {"ask": {"lines","set","yes","no","done"}} \u00b7 ' +
+      '{"goto": ["level", "point"], "if": flag, "denied": [lines]}. Anything else rides through untouched.');
+    box.appendChild(dd);
+    dupDelRow(box, "zone", z, L().zones);
+  } else if (sel.point) {
+    const q = sel.point;
+    fieldText(box, "name", q.name, function (v) { q.name = v; });
+    fieldNum(box, "x", q.x, function (v) { q.x = v; });
+    fieldNum(box, "y", q.y, function (v) { q.y = v; });
+    box.appendChild(hint("view.point(name) returns (x, y)."));
+    fieldData(box, q, "data (JSON, read by the game as view.pdata[name]):");
+    dupDelRow(box, "point", q, L().points);
+  } else if (sel.particle) {
+    const p = sel.particle;
+    fieldText(box, "name", p.name, function (v) { p.name = v; });
+    fieldNum(box, "capacity", p.capacity, function (v) { p.capacity = v; });
+    fieldNum(box, "size", p.size, function (v) { p.size = v; });
+    fieldNum(box, "gravity", p.gravity, function (v) { p.gravity = v; }, 0.1);
+    const bl = mk("label", "row"); const cb = mk("input"); cb.type = "checkbox"; cb.checked = !!p.fade;
+    cb.onchange = function () { snapshot(); p.fade = cb.checked; }; add(bl, cb, document.createTextNode(" fade")); box.appendChild(bl);
+    box.appendChild(hint("A particle emitter (view.named[name]); the game emits/updates it."));
+    dupDelRow(box, "particle", p, L().particles);
+  }
+}
+
+// copy / paste / duplicate / delete row. The same ops as Ctrl+C/V/D and Delete - as BUTTONS,
+// because the shortcuts alone were undiscoverable (stream feedback: "I don't know how to use that").
+function dupDelRow(box, kind, obj, arr) {
+  const row = mk("div", "row wrap");
+  add(row, btn("Copy", function () { doCopy(); renderPanel(); }));
+  const pasteBtn = btn("Paste", function () { doPaste(); });
+  if (!clipboard) { pasteBtn.disabled = true; pasteBtn.title = "Copy something first (Ctrl+C)"; }
+  else pasteBtn.title = "Paste the copied " + clipboard.kind + " (Ctrl+V)";
+  row.appendChild(pasteBtn);
+  add(row, btn("Duplicate", function () {
+    snapshot();
+    const c = JSON.parse(JSON.stringify(obj));
+    if (c.x != null) { c.x += 12; c.y += 12; }
+    if (c.name) c.name = uniqueName(c.name, kind);
+    arr.push(c); pick(kind, c); renderPanel(); toast(c.name ? "Duplicated as " + c.name : "Duplicated", "ok");
+  }));
+  const d = btn("Delete", function () {
+    snapshot(); arr.splice(arr.indexOf(obj), 1); clearSel(); renderPanel(); refreshChrome();
+    toast("Deleted (Ctrl+Z to undo)", "ok");
+  });
+  d.className = "danger"; row.appendChild(d);
+  box.appendChild(row);
+  box.appendChild(hint("Ctrl+C copy · Ctrl+V paste · Ctrl+D duplicate · Delete removes · Ctrl+Z undoes any of it."));
+}
+
+// ---- PAINT ----
+function panelPaint() {
+  add(panel, h3("Tileset"));
+  const ts = assetIds(isTileset);
+  const strip = mk("div", "strip");
+  ts.forEach(function (id) { strip.appendChild(assetChip(id, function () { sel.asset = id; ensureLayerFor(id); renderPanel(); })); });
+  panel.appendChild(strip);
+  const imp = mk("div", "row wrap");
+  add(imp, btn("+ Tileset PNG", function () { importPNG("tileset"); }), btn("+ Colour tileset", addColorTileset),
+      btn("\u270e Paint tiles", function () { newPaintedAsset("tileset", 16, 16, 8); }));
+  panel.appendChild(imp);
+  if (!ts.length) { panel.appendChild(hint("Import a tileset PNG or add a colour tileset to start painting.")); return; }
+  if (!isTileset(project.assets[sel.asset])) sel.asset = ts[0];
+
+  add(panel, h3("Layers"));
+  L().tilemaps.forEach(function (tm, i) {
+    const row = mk("div", "lrow");
+    const b = mk("button", "pick" + (i === sel.tm ? " on" : ""), tm.asset + (tm.fg ? "  [fg]" : "  [bg]") + "  " + tm.cols + "×" + tm.rows);
+    b.onclick = function () { sel.tm = i; sel.asset = tm.asset; renderPanel(); };
+    const x = mk("button", "del", "×"); x.title = "remove layer";
+    x.onclick = function () {
+      const painted = tm.grid.reduce(function (n, row) { return n + row.filter(Boolean).length; }, 0);
+      if (painted && !confirm("Remove layer " + tm.asset + "? The " + painted + " tiles painted on it go with it."))
+        return;
+      snapshot(); L().tilemaps.splice(i, 1); sel.tm = 0; renderPanel();
+      toast("Layer " + tm.asset + " removed (Ctrl+Z undoes it)", "ok");
+    };
+    add(row, b, x); panel.appendChild(row);
+  });
+  const addrow = mk("div", "row wrap");
+  add(addrow, btn("+ bg layer", function () { snapshot(); addLayer(sel.asset, false); renderPanel(); }),
+             btn("+ fg layer", function () { snapshot(); addLayer(sel.asset, true); renderPanel(); }));
+  panel.appendChild(addrow);
+
+  const tm = curTm();
+  if (tm && tm.asset !== sel.asset) panel.appendChild(hint("Active layer uses <b>" + tm.asset + "</b>. Add a layer for <b>" + sel.asset + "</b> to paint its tiles."));
+
+  // ---- PER-LAYER MAP SIZE (advanced/parallax knob; World size is the headline) ----
+  if (tm) {
+    add(panel, h3("Layer size (this layer only)"));
+    panel.appendChild(hint("This sizes <b>just this tilemap layer</b>. To set how big the level is overall, use <b>World size</b> in the Level panel (Select tool). One screen ≈ <b>" +
+      Math.floor(project.size[0] / (project.assets[tm.asset].fw || 16)) + "×" + Math.floor(project.size[1] / (project.assets[tm.asset].fh || 16)) + "</b> tiles; a layer can be smaller than the world or offset (parallax)."));
+    const gr = mk("div", "row");
+    add(gr, mk("label", null, "cols × rows"));
+    const ci = mk("input"); ci.type = "number"; ci.value = tm.cols; ci.style.width = "52px";
+    const ri = mk("input"); ri.type = "number"; ri.value = tm.rows; ri.style.width = "52px";
+    add(gr, ci, ri); panel.appendChild(gr);
+    const brow = mk("div", "row wrap");
+    add(brow, btn("Apply size", function () { applyMapSize(tm, parseInt(ci.value) || tm.cols, parseInt(ri.value) || tm.rows); }));
+    add(brow, btn("3× wider", function () { applyMapSize(tm, tm.cols * 3, tm.rows); }));
+    panel.appendChild(brow);
+    // pos (world offset) for stacking parallax-ish layers
+    const pr = mk("div", "row"); add(pr, mk("label", null, "pos x,y"));
+    const px = mk("input"); px.type = "number"; px.value = tm.pos[0]; px.style.width = "52px";
+    const py = mk("input"); py.type = "number"; py.value = tm.pos[1]; py.style.width = "52px";
+    px.onchange = py.onchange = function () { snapshot(); tm.pos = [parseInt(px.value) || 0, parseInt(py.value) || 0]; };
+    add(pr, px, py); panel.appendChild(pr);
+  }
+
+  const a = tm ? project.assets[tm.asset] : project.assets[sel.asset];
+  add(panel, h3("Tiles"));
+  panel.appendChild(hint("Tile 0 = erase. Drag to paint • Shift-drag = rectangle • Alt-click = flood fill."));
+  const tilesEl = mk("div", "tiles");
+  for (let v = 0; v < E.tileCount(a); v++) {
+    const cv = mk("canvas"); cv.width = 28; cv.height = 28;
+    if (v === 0) { const c = cv.getContext("2d"); c.strokeStyle = "#889"; c.lineWidth = 2; c.beginPath(); c.moveTo(5, 5); c.lineTo(23, 23); c.moveTo(23, 5); c.lineTo(5, 23); c.stroke(); }
+    else drawThumb(cv, a, tm ? tm.asset : sel.asset, v);
+    if (v === sel.tileFrame) cv.className = "sel";
+    cv.title = v === 0 ? "erase" : "tile " + v;
+    cv.onclick = function () { sel.tileFrame = v; renderPanel(); };
+    tilesEl.appendChild(cv);
+  }
+  panel.appendChild(tilesEl);
+
+  if (a.type === "tileset_color") { add(panel, h3("Colours")); colorEditor(panel, a); }
+
+  add(panel, h3("Tile flags")); flagEditor(panel, a, sel.tileFrame);
+
+  const fl = mk("label", "row"); const cb = mk("input"); cb.type = "checkbox"; cb.checked = showFlags;
+  cb.onchange = function () { showFlags = cb.checked; }; add(fl, cb, document.createTextNode(" Show flag badges on map")); panel.appendChild(fl);
+}
+
+function applyMapSize(tm, cols, rows) {
+  const shrinking = cols < tm.cols || rows < tm.rows;
+  // preview whether shrink would lose painted tiles; if so confirm (only lossy op confirms)
+  const test = { grid: tm.grid.map(function (r) { return r.slice(); }), cols: tm.cols, rows: tm.rows };
+  const lost = E.resizeTilemap(test, cols, rows);
+  if (shrinking && lost && !confirm("Shrinking will delete painted tiles outside the new " + cols + "×" + rows + " area. Continue?")) return;
+  snapshot();
+  E.resizeTilemap(tm, cols, rows);
+  if (L().camera && L().camera.autoBounds !== false) { const b = E.levelBounds(project, L()); L().camera.bounds = [0, 0, b[0], b[1]]; }
+  renderPanel();
+  toast("Layer " + tm.asset + " is now " + cols + "×" + rows + " tiles", "ok");
+}
+
+function colorEditor(box, a) {
+  Object.keys(a.colors).map(Number).sort(function (p, q) { return p - q; }).forEach(function (key) {
+    const k = String(key), row = mk("div", "swatch");
+    const ci = mk("input"); ci.type = "color"; ci.value = rgbHex(a.colors[k]); ci.oninput = function () { a.colors[k] = hexToRgb(ci.value); };
+    const lab = mk("label", null, "tile " + k); lab.onclick = function () { sel.tileFrame = key; renderPanel(); };
+    const del = mk("button", "del", "×"); del.onclick = function () { snapshot(); delete a.colors[k]; if (sel.tileFrame === key) sel.tileFrame = 1; renderPanel(); };
+    add(row, ci, lab, del); box.appendChild(row);
+  });
+  box.appendChild(btn("+ add colour", function () {
+    snapshot();
+    const next = Math.max.apply(null, [0].concat(Object.keys(a.colors).map(Number))) + 1;
+    a.colors[String(next)] = [200, 200, 200]; sel.tileFrame = next; renderPanel();
+  }));
+}
+// Flags a tileset has used this session. Custom names live in asset.props (flagsOf reads them
+// back), but a name you have not ticked onto a tile yet exists nowhere -- park it here so it
+// stays on screen between clicks instead of vanishing the moment you untick it.
+const pendingFlags = {};
+
+function flagEditor(box, a, value) {
+  if (value === 0) { box.appendChild(hint("Tile 0 is the eraser — no flags.")); return; }
+  const id = a.src || a.type || "asset";
+  const names = flagsOf(a).slice();
+  (pendingFlags[id] || []).forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
+
+  const fb = mk("div", "flagbox");
+  fb.appendChild(mk("div", "hint", "tile " + value + ":"));
+  names.forEach(function (p) {
+    const lab = mk("label"); const cb = mk("input"); cb.type = "checkbox";
+    cb.checked = !!(a.props && a.props[String(value)] && a.props[String(value)][p]);
+    cb.onchange = function () { snapshot(); E.setTileProp(a, value, p, cb.checked); frame(); };
+    const sw = mk("span", "flag " + p, "■");
+    if (FLAGS.indexOf(p) < 0) sw.style.color = flagColor(p);   // custom: hashed colour, no CSS class
+    add(lab, cb, sw, document.createTextNode(p)); fb.appendChild(lab);
+  });
+  box.appendChild(fb);
+
+  // Add your own. A flag is just a NAME the game asks for -- nothing here needs to know what it
+  // means, so the editor does not have to ship a list of every property a game might invent.
+  const ar = mk("div", "row");
+  const inp = mk("input"); inp.type = "text"; inp.placeholder = "new flag (e.g. glass)";
+  inp.style.flex = "1"; inp.maxLength = 24;
+  const btn = mk("button", "mini opt", "+ Flag");
+  function addFlag() {
+    const n = (inp.value || "").trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
+    if (!n) { toast("A flag name needs letters, digits or _", "err"); return; }
+    if (names.indexOf(n) >= 0) { toast("This tileset already has a “" + n + "” flag", "err"); return; }
+    pendingFlags[id] = (pendingFlags[id] || []).concat([n]);
+    snapshot(); E.setTileProp(a, value, n, true);
+    inp.value = ""; renderPanel(); frame();
+    toast("Added “" + n + "” to tile " + value + " — read it with view.tile_has(tx, ty, \"" + n + "\")", "ok");
+  }
+  btn.onclick = addFlag;
+  inp.onkeydown = function (ev) { if (ev.key === "Enter") { ev.preventDefault(); addFlag(); } };
+  add(ar, inp, btn); box.appendChild(ar);
+
+  const det = mk("details", "help"); det.appendChild(mk("summary", null, "What do flags do?"));
+  det.appendChild(hint("A flag gives a tile <b>meaning</b> the game reads — it never changes how the " +
+    "tile looks. Every flag, built-in or your own, is read the same way: " +
+    "<code>view.tile_has(tx, ty, \"name\")</code>.<br>" +
+    "<span class='flag solid'>■</span> <b>solid</b> blocks movement — also <code>view.is_solid(tx, ty)</code><br>" +
+    "<span class='flag coin'>■</span> <b>coin</b> collectible<br>" +
+    "<span class='flag goal'>■</span> <b>goal</b> level exit / win<br>" +
+    "<span class='flag hazard'>■</span> <b>hazard</b> hurts the player<br>" +
+    "These four are only a starting set — the helper libs act on them, but your game decides what " +
+    "any flag does. Add your own for anything the four don't cover (a <code>glass</code> tile that " +
+    "blocks the player but lets a shot through, <code>ice</code>, <code>ladder</code>…)."));
+  box.appendChild(det);
+}
+
+// ---- PLACE ----
+function panelPlace() {
+  add(panel, h3("Sprite"));
+  const sp = assetIds(isSprite);
+  const strip = mk("div", "strip");
+  sp.forEach(function (id) { strip.appendChild(assetChip(id, function () { sel.asset = id; renderPanel(); })); });
+  panel.appendChild(strip);
+  const imp = mk("div", "row wrap");
+  add(imp, btn("+ Sprite PNG", function () { importPNG("sprite"); }), btn("+ Colour sprite", addColorSprite),
+      btn("\u270e Paint a sprite", function () { newPaintedAsset("sprite", 16, 16, 1); }));
+  panel.appendChild(imp);
+  if (!sp.length) { panel.appendChild(hint("Import a sprite PNG, or add a <b>colour sprite</b> (a placeholder block — no art needed), then click the map to place it. Name one <code>player</code> with Select.")); return; }
+  if (!isSprite(project.assets[sel.asset])) sel.asset = sp[0];
+  panel.appendChild(hint("Click the map to drop <b>" + sel.asset + "</b>. Set its name/tag/anchor with Select."));
+
+  const a = project.assets[sel.asset];
+  if (a.type === "rect") {
+    add(panel, h3("Placeholder block"));
+    const row = mk("div", "row wrap");
+    const wi = mk("input"); wi.type = "number"; wi.value = a.fw; wi.min = 1; wi.style.width = "56px"; wi.title = "width";
+    const hi = mk("input"); hi.type = "number"; hi.value = a.fh; hi.min = 1; hi.style.width = "56px"; hi.title = "height";
+    const ci = mk("input"); ci.type = "color"; ci.value = rgbHex(a.color);
+    wi.onchange = function () { snapshot(); a.fw = Math.max(1, parseInt(wi.value) || 1); renderPanel(); };
+    hi.onchange = function () { snapshot(); a.fh = Math.max(1, parseInt(hi.value) || 1); renderPanel(); };
+    ci.oninput = function () { a.color = hexToRgb(ci.value); };
+    add(row, mk("span", null, "w"), wi, mk("span", null, "h"), hi, ci);
+    panel.appendChild(row);
+    panel.appendChild(hint("Size in px + colour. Bakes as a solid block on the device; replace it with a PNG sprite of the same size when you have art."));
+  }
+  if (isImg(a)) {
+    add(panel, h3("Animations"));
+    a.animations = a.animations || {};
+    for (const nm in a.animations) {
+      const d = a.animations[nm], row = mk("div", "lrow");
+      add(row, mk("span", "pick", nm + ": [" + d.frames.join(",") + "] @" + d.fps));
+      const x = mk("button", "del", "×"); x.onclick = function () { snapshot(); delete a.animations[nm]; renderPanel(); };
+      row.appendChild(x); panel.appendChild(row);
+    }
+    // inline animation add (NOT prompt) -- name/frames/fps fields
+    const box = mk("div", "addbox");
+    const an = mk("input"); an.type = "text"; an.placeholder = "name (walk)";
+    const af = mk("input"); af.type = "text"; af.placeholder = "frames 0,1";
+    const ap = mk("input"); ap.type = "number"; ap.value = 8; ap.style.width = "48px"; ap.title = "fps";
+    add(box, an, af, ap, btn("+ add animation", function () {
+      const nm = an.value.trim(); if (!nm) { toast("name the animation", "err"); return; }
+      snapshot();
+      a.animations[nm] = { frames: (af.value || "0").split(",").map(function (s) { return parseInt(s) || 0; }), fps: parseInt(ap.value) || 8, loop: true };
+      renderPanel();
+    }));
+    panel.appendChild(box);
+  }
+}
+
+// Placing an object hands you to Select so you can name it - right for one, wrong for a run of
+// them (a tutorial level is eight message zones). Shift keeps the tool armed and skips the trip.
+function afterPlace(kind, obj, ev, msg) {
+  if (ev && ev.shiftKey) { renderPanel(); toast(msg.split(" \u2014 ")[0] + " (Shift held: still in the tool)", "ok"); return; }
+  setTool("select"); pick(kind, obj); toast(msg, "ok");
+}
+
+// The same objects the canvas gestures make, from the panel - placed in the middle of what you
+// are looking at, then selected for naming.
+function addAtViewCentre(kind) {
+  const c = vp.screenToWorld(vp.w / 2, vp.h / 2);
+  const x = Math.round(c.x), y = Math.round(c.y);
+  snapshot();
+  if (kind === "hud") {
+    const hd = { name: "label" + (L().hud.length + 1), x: x, y: y, fg: [255, 255, 255], bg: [0, 0, 0] };
+    L().hud.push(hd); setTool("select"); pick("hud", hd); toast("HUD label added — rename it in the panel", "ok");
+  } else if (kind === "zone") {
+    const z = { tag: "zone" + (L().zones.length + 1), x: x - 32, y: y - 24, w: 64, h: 48 };
+    L().zones.push(z); setTool("select"); pick("zone", z); toast("Zone added — drag its handles, then give it a story", "ok");
+  } else {
+    const q = { name: "point" + (L().points.length + 1), x: x, y: y };
+    L().points.push(q); setTool("select"); pick("point", q); toast("Point added — rename it in the panel", "ok");
+  }
+}
+
+// ---- PAN ----
+function panelPan() {
+  add(panel, h3("Navigate"));
+  panel.appendChild(hint("Drag to pan the view. Or hold <b>Space</b> in any tool, or middle-mouse-drag. Wheel scrolls, <b>Shift+wheel</b> scrolls sideways, Ctrl+wheel zooms to cursor."));
+  navButtons(panel);
+}
+
+// ---- PIXEL EDITOR ----
+// Art without leaving the browser: MakeCode Arcade's real classroom advantage. It edits ONE frame
+// of an image asset at a time and writes the whole strip back as the same dataURL the PNG import
+// produces, so the .pal8 bake, Save and the board path need no changes. Pixels are written into
+// ImageData directly - never a stroked canvas - because PAL8 accepts alpha 0 or 255 and nothing
+// between (core.js bakePal8 throws on soft alpha).
+const PAINT_DEFAULT = [[0, 0, 0], [255, 255, 255], [140, 140, 150], [60, 60, 70],
+                       [200, 60, 60], [245, 170, 40], [245, 215, 80], [90, 190, 70],
+                       [40, 140, 90], [60, 130, 220], [40, 60, 140], [170, 100, 235],
+                       [235, 130, 180], [150, 90, 40], [90, 60, 40], [30, 34, 48]];
+let paintColor = [245, 215, 80];
+
+function stripCanvas(id) {                 // the asset's whole strip as an editable canvas
+  const a = project.assets[id];
+  const fw = a.fw || 16, fh = a.fh || 16, frames = a.frames || 1;
+  const c = mk("canvas"); c.width = fw * frames; c.height = fh;
+  const g = c.getContext("2d", { willReadFrequently: true });
+  if (images[id] && images[id].complete && images[id].naturalWidth) g.drawImage(images[id], 0, 0);
+  return c;
+}
+
+function openPaintModal(id) {
+  const a = project.assets[id];
+  if (!E.isImg(a)) { toast("Only PNG-backed art has pixels to paint (a colour tileset is just colours)", "err"); return; }
+  const fw = a.fw || 16, fh = a.fh || 16, frames = a.frames || 1;
+  const work = stripCanvas(id), wg = work.getContext("2d", { willReadFrequently: true });
+  let frame = 0, tool = "pencil", undo = [];
+
+  const ov = mk("div", "overlay"); ov.id = "paintModal";
+  const card = mk("div", "card paintcard");
+  const title = h3("Paint " + id);
+  const view = mk("canvas", "pxview");
+  const zoom = Math.max(4, Math.min(16, Math.floor(320 / Math.max(fw, fh))));
+  view.width = fw * zoom; view.height = fh * zoom;
+  const vg = view.getContext("2d");
+
+  function draw() {
+    vg.imageSmoothingEnabled = false;
+    vg.fillStyle = "#0d0f17"; vg.fillRect(0, 0, view.width, view.height);
+    for (let y = 0; y < fh; y++) for (let x = 0; x < fw; x++) {   // checkerboard = transparent
+      if ((x + y) & 1) { vg.fillStyle = "#171a26"; vg.fillRect(x * zoom, y * zoom, zoom, zoom); }
+    }
+    vg.drawImage(work, frame * fw, 0, fw, fh, 0, 0, view.width, view.height);
+    if (zoom >= 8) {
+      vg.strokeStyle = "#ffffff14"; vg.lineWidth = 1;
+      for (let x = 1; x < fw; x++) { vg.beginPath(); vg.moveTo(x * zoom + .5, 0); vg.lineTo(x * zoom + .5, view.height); vg.stroke(); }
+      for (let y = 1; y < fh; y++) { vg.beginPath(); vg.moveTo(0, y * zoom + .5); vg.lineTo(view.width, y * zoom + .5); vg.stroke(); }
+    }
+  }
+  function pushUndo() {
+    undo.push(wg.getImageData(frame * fw, 0, fw, fh));
+    if (undo.length > 40) undo.shift();
+  }
+  function put(x, y, rgb) {                 // one pixel, hard alpha, no antialiasing anywhere
+    if (x < 0 || y < 0 || x >= fw || y >= fh) return;
+    const d = wg.createImageData(1, 1);
+    if (rgb) { d.data[0] = rgb[0]; d.data[1] = rgb[1]; d.data[2] = rgb[2]; d.data[3] = 255; }
+    wg.putImageData(d, frame * fw + x, y);
+  }
+  function at(x, y) {
+    const d = wg.getImageData(frame * fw + x, 0 + y, 1, 1).data;
+    return d[3] < 128 ? null : [d[0], d[1], d[2]];
+  }
+  function fill(x, y, rgb) {
+    const target = at(x, y), same = function (p, q) {
+      return (p === null && q === null) || (p && q && p[0] === q[0] && p[1] === q[1] && p[2] === q[2]);
+    };
+    if (same(target, rgb)) return;
+    const img = wg.getImageData(frame * fw, 0, fw, fh), px = img.data;
+    const get = function (i) { return px[i * 4 + 3] < 128 ? null : [px[i * 4], px[i * 4 + 1], px[i * 4 + 2]]; };
+    const stack = [y * fw + x];
+    while (stack.length) {
+      const i = stack.pop();
+      if (i < 0 || i >= fw * fh || !same(get(i), target)) continue;
+      px[i * 4] = rgb ? rgb[0] : 0; px[i * 4 + 1] = rgb ? rgb[1] : 0;
+      px[i * 4 + 2] = rgb ? rgb[2] : 0; px[i * 4 + 3] = rgb ? 255 : 0;
+      const cx = i % fw;
+      if (cx > 0) stack.push(i - 1);
+      if (cx < fw - 1) stack.push(i + 1);
+      stack.push(i - fw); stack.push(i + fw);
+    }
+    wg.putImageData(img, frame * fw, 0);
+  }
+  let painting = false;
+  function cellAtEv(ev) {
+    const r = view.getBoundingClientRect();
+    return { x: Math.floor((ev.clientX - r.left) / (r.width / fw)), y: Math.floor((ev.clientY - r.top) / (r.height / fh)) };
+  }
+  function apply(ev, first) {
+    const c = cellAtEv(ev);
+    if (tool === "pick") { const g0 = at(c.x, c.y); if (g0) { paintColor = g0; renderPalette(); } return; }
+    if (first) pushUndo();
+    if (tool === "fill") fill(c.x, c.y, paintColor);
+    else put(c.x, c.y, tool === "eraser" ? null : paintColor);
+    draw();
+  }
+  view.onmousedown = function (ev) { ev.preventDefault(); painting = true; apply(ev, true); };
+  window.addEventListener("mousemove", onPaintMove);
+  window.addEventListener("mouseup", onPaintUp);
+  function onPaintMove(ev) { if (painting && tool !== "fill" && tool !== "pick") apply(ev, false); }
+  function onPaintUp() { painting = false; }
+
+  // palette: what the art already uses, then the defaults, then any colour you like
+  const pal = mk("div", "pxpal");
+  function usedColors() {
+    const img = wg.getImageData(0, 0, work.width, work.height).data, seen = {}, out = [];
+    for (let i = 0; i < img.length; i += 4) {
+      if (img[i + 3] < 128) continue;
+      const k = (img[i] << 16) | (img[i + 1] << 8) | img[i + 2];
+      if (!seen[k]) { seen[k] = 1; out.push([img[i], img[i + 1], img[i + 2]]); }
+      if (out.length >= 24) break;
+    }
+    return out;
+  }
+  function renderPalette() {
+    pal.innerHTML = "";
+    const used = usedColors();
+    const list = used.concat(PAINT_DEFAULT.filter(function (c) {
+      return !used.some(function (u) { return u[0] === c[0] && u[1] === c[1] && u[2] === c[2]; });
+    }));
+    list.forEach(function (c) {
+      const b = mk("button", "pxswatch");
+      b.style.background = rgbCss(c);
+      b.title = rgbHex(c);
+      if (c[0] === paintColor[0] && c[1] === paintColor[1] && c[2] === paintColor[2]) b.classList.add("on");
+      b.onclick = function () { paintColor = c; tool = "pencil"; renderTools(); renderPalette(); };
+      pal.appendChild(b);
+    });
+    const ci = mk("input"); ci.type = "color"; ci.value = rgbHex(paintColor); ci.className = "pxpick";
+    ci.title = "any other colour";
+    ci.oninput = function () { paintColor = hexToRgb(ci.value); tool = "pencil"; renderTools(); };
+    pal.appendChild(ci);
+  }
+
+  const tools = mk("div", "row wrap");
+  function renderTools() {
+    tools.innerHTML = "";
+    [["pencil", "✎ Pencil"], ["fill", "▨ Fill"], ["eraser", "⌫ Erase"], ["pick", "⬚ Pick"]]
+      .forEach(function (t) {
+        const b = mk("button", "mini" + (tool === t[0] ? " on" : ""), t[1]);
+        b.onclick = function () { tool = t[0]; renderTools(); };
+        tools.appendChild(b);
+      });
+    const u = mk("button", "mini", "↶ Undo");
+    u.onclick = function () { if (undo.length) { wg.putImageData(undo.pop(), frame * fw, 0); draw(); } };
+    tools.appendChild(u);
+  }
+
+  const frow = mk("div", "row wrap");
+  function renderFrames() {
+    frow.innerHTML = "";
+    if (frames < 2) return;
+    frow.appendChild(mk("span", "hint", "frame " + (frame + 1) + " / " + frames + ": "));
+    for (let i = 0; i < frames; i++) {
+      const b = mk("button", "mini" + (i === frame ? " on" : ""), String(i));
+      b.onclick = (function (n) { return function () { frame = n; undo = []; draw(); renderFrames(); }; })(i);
+      frow.appendChild(b);
+    }
+  }
+
+  function close(commit) {
+    window.removeEventListener("mousemove", onPaintMove);
+    window.removeEventListener("mouseup", onPaintUp);
+    document.removeEventListener("keydown", onEsc, true);
+    ov.remove();
+    if (commit) {
+      snapshot();
+      artURLs[id] = work.toDataURL("image/png");
+      loadImageFromDataURL(artURLs[id]).then(function (im) {
+        images[id] = im; renderPanel();
+        toast("Painted " + id + " — Save writes it as " + pal8Name(a) + " for the board", "ok");
+      });
+    } else renderPanel();
+  }
+  function onEsc(e) { if (e.key === "Escape") { e.stopPropagation(); close(false); } }
+  document.addEventListener("keydown", onEsc, true);
+
+  const done = mk("div", "row");
+  add(done, btn("Done", function () { close(true); }), btn("Cancel", function () { close(false); }));
+  add(card, title, view, pal, tools, frow,
+      hint("Pixels only: picogame art is hard-edged, so a pixel is either a colour or fully " +
+           "transparent (the checkerboard). Save bakes this into <code>" + pal8Name(a) + "</code>."),
+      done);
+  ov.appendChild(card);
+  (document.querySelector(".pg-editor") || document.body).appendChild(ov);
+  renderPalette(); renderTools(); renderFrames(); draw();
+}
+
+// a blank image asset to paint on, with the src name Save/board writes it under
+function newPaintedAsset(kind, fw, fh, frames) {
+  snapshot();
+  const base = kind === "tileset" ? "tiles" : "sprite";
+  let id = base, n = 2;
+  while (project.assets[id]) id = base + (n++);
+  const c = mk("canvas"); c.width = fw * frames; c.height = fh;   // fully transparent
+  project.assets[id] = { type: kind === "tileset" ? "tileset" : "sprite", src: id + ".png",
+                         fw: fw, fh: fh, frames: frames, transparent: 0 };
+  artURLs[id] = c.toDataURL("image/png");
+  images[id] = new Image(); images[id].src = artURLs[id];
+  sel.asset = id;
+  if (kind === "tileset") { sel.tileFrame = 1; ensureLayerFor(id); }
+  images[id].onload = function () { renderPanel(); openPaintModal(id); };
+}
+
+// ---- PROBLEMS ----
+// core.js knows every rule scene_build.py checks; running them here means a broken goto or a
+// duplicate name is caught while you are looking at the level, not after you copy it to a board.
+// The list is recomputed on change (a big project takes well under a millisecond), never per frame.
+let problemsCache = null;
+function currentProblems() {
+  if (!problemsCache) { try { problemsCache = E.problems(project); } catch (e) { console.error("problems", e); problemsCache = []; } }
+  return problemsCache;
+}
+function invalidateProblems() { problemsCache = null; }
+
+// Take the user to the thing a problem is about, whichever level it lives in.
+function goToProblem(pr) {
+  if (pr.level != null && pr.level !== project.current) {
+    project.current = pr.level; clearSel(); sel.tm = 0; refreshChrome(); doFit();
+  }
+  const k = pr.sel && pr.sel.kind;
+  if (k === "asset") { setTool(isTileset(project.assets[pr.sel.ref]) ? "paint" : "place"); sel.asset = pr.sel.ref; }
+  else if (k === "tilemap") { setTool("paint"); const i = L().tilemaps.indexOf(pr.sel.ref); if (i >= 0) { sel.tm = i; sel.asset = pr.sel.ref.asset; } }
+  else if (k === "level" || !k) { setTool("select"); clearSel(); }
+  else { setTool("select"); pick(k, pr.sel.ref); centerSelection(); }
+  renderPanel();
+}
+
+function problemsSection(box) {
+  const list = currentProblems();
+  if (!list.length) return;
+  const errs = list.filter(function (x) { return x.severity === "error"; }).length;
+  const d = mk("details", "fold problems");
+  d.open = errs > 0;                       // an error means the game will not load: lead with it
+  d.appendChild(mk("summary", null, (errs ? "\u26a0 " + errs + " error" + (errs === 1 ? "" : "s") : "") +
+                   (errs && list.length > errs ? " \u00b7 " : "") +
+                   (list.length > errs ? (list.length - errs) + " warning" + (list.length - errs === 1 ? "" : "s") : "")));
+  list.slice(0, 40).forEach(function (pr) {
+    const row = mk("button", "prow " + pr.severity,
+                   (pr.severity === "error" ? "\u2716 " : "\u26a0 ") +
+                   (pr.level != null && pr.level !== project.current ? (project.levels[pr.level] || {}).name + " \u00b7 " : "") +
+                   pr.where + " — " + pr.msg);
+    row.onclick = function () { goToProblem(pr); };
+    d.appendChild(row);
+  });
+  if (list.length > 40) d.appendChild(hint("…and " + (list.length - 40) + " more."));
+  box.appendChild(d);
+}
+
+// ---- REGION (a block of tiles) ----
+function panelRegion() {
+  add(panel, h3("Region"));
+  panel.appendChild(hint(TOOL_META.region.tip));
+  const tm = curTm();
+  if (!tm) { panel.appendChild(hint("This level has no tilemap layer yet — add one in the Paint panel.")); return; }
+  panel.appendChild(hint("Layer <b>" + tm.asset + "</b> (" + tm.cols + "×" + tm.rows + " tiles)."));
+  if (tileClip) {
+    const box = mk("div", "addbox");
+    box.appendChild(mk("div", null, "Stamp ready: " + tileClip.w + "×" + tileClip.h + " tiles from " + tileClip.asset));
+    box.appendChild(hint("Click the map to stamp it, again and again. <b>Shift-drag</b> selects a new region instead; <b>Esc</b> drops the stamp."));
+    box.appendChild(btn("Drop the stamp", dropStamp));
+    panel.appendChild(box);
+  }
+  if (!tileSel) { panel.appendChild(hint("Nothing selected — drag a rectangle on the map.")); return; }
+  const [w, h] = selSize();
+  panel.appendChild(hint("Selected <b>" + w + "×" + h + "</b> tiles at " + tileSel.x0 + "," + tileSel.y0 + "."));
+  panel.appendChild(btn("Copy (Ctrl+C)", function () { copyTileRegion(false); }));
+  panel.appendChild(btn("Cut (Ctrl+X)", function () { copyTileRegion(true); }));
+  panel.appendChild(btn("Fill with tile " + sel.tileFrame, function () { fillTileRegion(null); renderPanel(); }));
+  const cl = btn("Clear (Delete)", function () { fillTileRegion(0); renderPanel(); });
+  cl.className = "danger"; panel.appendChild(cl);
+}
+
+// ---- HUD / ZONE / POINT + Particles list ----
+function panelQuick() {
+  const titles = { hud: "HUD labels", zone: "Zones", point: "Points" };
+  add(panel, h3(titles[sel.tool]));
+  panel.appendChild(hint(TOOL_META[sel.tool].tip));
+  const list = sel.tool === "hud" ? L().hud : sel.tool === "zone" ? L().zones : L().points;
+  if (sel.tool === "zone")
+    panel.appendChild(hint("A zone can talk: draw one, then <b>Add a story\u2026</b> in its panel " +
+                           "for a message, a yes/no question or a door to another level."));
+  if (!list.length) panel.appendChild(hint("None in this level yet."));
+  // ...and a way in that does not require knowing you must drag on the map first
+  panel.appendChild(btn("+ " + { hud: "HUD label", zone: "Zone", point: "Point" }[sel.tool] + " (centre of view)",
+    function () { addAtViewCentre(sel.tool); }));
+  list.forEach(function (o) {
+    const label = sel.tool === "hud" ? o.name : sel.tool === "zone" ? o.tag : o.name;
+    const b = mk("button", "objbtn", label);
+    b.onclick = function () { setTool("select"); pick(sel.tool, o); };
+    panel.appendChild(b);
+  });
+  // particles are managed from the HUD tool's panel too (rarely used, keep it discoverable)
+  if (sel.tool === "hud") {
+    add(panel, h3("Particle layers"));
+    L().particles.forEach(function (p) { const b = mk("button", "objbtn", "fx " + p.name); b.onclick = function () { setTool("select"); pick("particle", p); }; panel.appendChild(b); });
+    panel.appendChild(btn("+ particle layer", function () { snapshot(); const p = E.newParticles("fx" + L().particles.length); L().particles.push(p); setTool("select"); pick("particle", p); toast("Added particle layer", "ok"); }));
+  }
+}
+
+// ---------------------------------------------------------------- widget builders
+// The asset as a horizontal-strip PNG (the format the editor imports and the baker bakes):
+// PNG assets = the imported image itself; placeholders (colour tileset / rect) get their strip
+// GENERATED - frame 0 empty, then one flat tile per value - so a user can download the demo's
+// "spritesheet", paint over it in an image editor keeping the same frame order, and re-import.
+function assetStripDataURL(id) {
+  const a = project.assets[id];
+  if (isImg(a)) return artURLs[id] || null;
+  const c = document.createElement("canvas");
+  if (a.type === "tileset_color") {
+    const keys = Object.keys(a.colors || {}).map(Number);
+    const n = keys.length ? Math.max.apply(null, keys) : 0;
+    c.width = a.fw * (n + 1); c.height = a.fh;
+    const ctx = c.getContext("2d");
+    for (let v = 1; v <= n; v++) {
+      const col = a.colors[String(v)]; if (!col) continue;
+      ctx.fillStyle = rgbCss(col); ctx.fillRect(v * a.fw, 0, a.fw, a.fh);
+    }
+    return c.toDataURL("image/png");
+  }
+  if (a.type === "rect") {
+    c.width = a.fw; c.height = a.fh;
+    const ctx = c.getContext("2d");
+    ctx.fillStyle = rgbCss(a.color); ctx.fillRect(0, 0, a.fw, a.fh);
+    return c.toDataURL("image/png");
+  }
+  return null;
+}
+function downloadAssetStrip(id) {
+  const url = assetStripDataURL(id);
+  if (!url) { toast("Nothing to download for " + id, "err"); return; }
+  const a = mk("a"); a.href = url; a.download = id + ".png"; a.click();
+  const asset = project.assets[id];
+  const fw = asset.fw || 16, fh = asset.fh || 16;
+  toast("Downloaded " + id + ".png — " + fw + "x" + fh + " frames in a row" +
+        (isImg(asset) ? "" : " (placeholder art: paint over it, keep the frame order, re-import)"), "ok");
+}
+
+function assetChip(id, onpick) {
+  const a = project.assets[id], wrap = mk("div", "chip" + (id === sel.asset ? " sel" : ""));
+  const cv = mk("canvas"); cv.width = 40; cv.height = 40; drawThumb(cv, a, id, isTileset(a) && a.type === "tileset_color" ? 1 : 0);
+  cv.onclick = onpick;
+  const nm = mk("div", "name", id);
+  const dl = mk("button", "del dl", "\u2b07"); dl.title = "download this asset as a PNG strip (frames left to right)";
+  dl.onclick = function (ev) { ev.stopPropagation(); downloadAssetStrip(id); };
+  const ed = mk("button", "del ed", "\u270e"); ed.title = "paint this art here (no image editor needed)";
+  ed.onclick = function (ev) { ev.stopPropagation(); openPaintModal(id); };
+  const del = mk("button", "del", "×"); del.title = "remove asset";
+  del.onclick = function (ev) {
+    ev.stopPropagation();
+    if (!confirm("Remove '" + id + "'? Layers and sprites using it are removed too.")) return;
+    const hadArt = !!artURLs[id];
+    snapshot(); E.removeAsset(project, id); delete images[id]; delete artURLs[id];
+    if (sel.asset === id) sel.asset = null;
+    sel.tm = 0; clearSel(); renderPanel(); refreshChrome();
+    // history snapshots the project, not the decoded images - be honest about what Ctrl+Z gives back
+    toast(hadArt ? "Removed " + id + " — Ctrl+Z brings it back, but not its pixels (re-open the PNG)"
+                 : "Removed " + id + " (Ctrl+Z to undo)", "ok");
+  };
+  add(wrap, cv, nm, ed, dl, del); return wrap;
+}
+function btn(label, fn) { const b = mk("button", null, label); b.onclick = fn; return b; }
+function fieldText(box, label, val, set) {
+  const row = mk("div", "row"); add(row, mk("label", null, label));
+  const inp = mk("input"); inp.type = "text"; inp.value = val;
+  inp.onfocus = function () { snapshot(); }; inp.oninput = function () { set(inp.value); updateStatus(); };
+  add(row, inp); box.appendChild(row); return inp;
+}
+// A zone's story in one line of plain words - what the panel leads with.
+function storySummary(z) {
+  const d = z.data;
+  if (!d) return "No story yet: this zone is just a named area the game can test for.";
+  if (d.script) return "Runs <b>" + d.script + "(d)</b> from story.py when the player enters.";
+  const parts = [];
+  if (d.say) parts.push("says " + d.say.length + " line" + (d.say.length === 1 ? "" : "s"));
+  if (d.ask) parts.push("asks a yes/no question");
+  if (d.goto) parts.push("travels to <b>" + d.goto[0] + (d.goto[1] ? " \u00b7 " + d.goto[1] : "") + "</b>");
+  if (!parts.length) return "Carries data the game reads (no story keys).";
+  return "On entry it " + parts.join(", then ") + (d.if ? " (only when <b>" + d.if + "</b> is set)" : "") + ".";
+}
+
+function fieldData(box, obj, hintText) {
+  box.appendChild(mk("div", "hint", hintText));
+  const ta = mk("textarea", "json");
+  const compact = obj.data ? JSON.stringify(obj.data) : "";
+  ta.value = compact.length > 48 ? JSON.stringify(obj.data, null, 2) : compact;   // pretty when non-trivial
+  ta.rows = Math.max(2, Math.min(16, ta.value.split("\n").length + 1));
+  ta.onchange = function () {
+    try {
+      snapshot(); obj.data = ta.value ? JSON.parse(ta.value) : null; ta.classList.remove("bad");
+      const c = obj.data ? JSON.stringify(obj.data) : "";
+      ta.value = c.length > 48 ? JSON.stringify(obj.data, null, 2) : c;           // re-format what was typed
+      ta.rows = Math.max(2, Math.min(16, ta.value.split("\n").length + 1));
+    } catch (e) { ta.classList.add("bad"); toast("data is not valid JSON", "err"); }
+  };
+  box.appendChild(ta);
+}
+function fieldNum(box, label, val, set, step) {
+  const row = mk("div", "row"); add(row, mk("label", null, label));
+  const inp = mk("input"); inp.type = "number"; if (step) inp.step = step; inp.value = val;
+  inp.onfocus = function () { snapshot(); };
+  inp.oninput = function () { set(step ? (parseFloat(inp.value) || 0) : (parseInt(inp.value) || 0)); };
+  add(row, inp); box.appendChild(row); return inp;
+}
+function fieldColor(box, label, val, set) {
+  const row = mk("div", "row"); add(row, mk("label", null, label));
+  const inp = mk("input"); inp.type = "color"; inp.value = rgbHex(val);
+  inp.onfocus = function () { snapshot(); }; inp.oninput = function () { set(hexToRgb(inp.value)); };
+  add(row, inp); box.appendChild(row); return inp;
+}
+function navButtons(box) {
+  const row = mk("div", "row wrap");
+  add(row, btn("Fit", doFit), btn("100%", function () { vp.setZoom(1); }),
+    btn("Zoom +", function () { vp.zoomAt(vp.w / 2, vp.h / 2, 1.25); }),
+    btn("Zoom −", function () { vp.zoomAt(vp.w / 2, vp.h / 2, 0.8); }));
+  box.appendChild(row);
+}
+
+// ================================================================ CANVAS SIZING
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(1, Math.round(rect.width * dpr));
+  canvas.height = Math.max(1, Math.round(rect.height * dpr));
+  vp.setSize(rect.width, rect.height, dpr);
+}
+function doFit() { const b = E.levelBounds(project, L()); vp.fit(b[0], b[1]); }
+function centerSelection() {
+  const o = sel.entity || sel.hud || sel.point || sel.zone;
+  if (o) vp.centerOn(o.x + (o.w ? o.w / 2 : 0), o.y + (o.h ? o.h / 2 : 0));
+}
+
+// ================================================================ POINTER -> WORLD
+function evScreen(ev) {
+  const r = canvas.getBoundingClientRect(), t = (ev.touches && ev.touches[0]) || ev;
+  return { sx: t.clientX - r.left, sy: t.clientY - r.top };
+}
+function evWorld(ev) { const s = evScreen(ev); const w = vp.screenToWorld(s.sx, s.sy); return { x: w.x, y: w.y, sx: s.sx, sy: s.sy }; }
+
+// paint one cell of the active layer at world point p (value = sel.tileFrame)
+function paintCell(p, value) {
+  const tm = curTm(); if (!tm) return false;
+  const a = project.assets[tm.asset];
+  const cx = Math.floor((p.x - tm.pos[0]) / a.fw), cy = Math.floor((p.y - tm.pos[1]) / a.fh);
+  if (cy >= 0 && cy < tm.rows && cx >= 0 && cx < tm.cols) { tm.grid[cy][cx] = value; stroke.painted++; return true; }
+  stroke.missed++;
+  return false;
+}
+
+// A stroke can miss because the LAYER is smaller than the world (they are separate sizes on
+// purpose), and silence there reads as a broken editor. Say it once per stroke, with the two
+// numbers that explain it - and drop the undo checkpoint when nothing changed at all.
+let stroke = { painted: 0, missed: 0 };
+function endStroke() {
+  if (!stroke.painted) history.discard();
+  if (stroke.missed && !strokeWarned) {
+    const tm = curTm();
+    if (tm) {
+      strokeWarned = true;
+      const a = project.assets[tm.asset];
+      const wc = Math.ceil(project.size[0] / (a.fw || 16)), wr = Math.ceil(project.size[1] / (a.fh || 16));
+      const smaller = tm.cols < wc || tm.rows < wr || tm.pos[0] || tm.pos[1];
+      toast("Nothing painted there — layer " + tm.asset + " covers " + tm.cols + "\u00d7" + tm.rows +
+            " tiles" + (tm.pos[0] || tm.pos[1] ? " from " + tm.pos[0] + "," + tm.pos[1] : "") +
+            (smaller ? ", the world is " + wc + "\u00d7" + wr + ". Grow it under Layer size, or move it with pos x,y."
+                     : " — the whole world. You painted outside the level."), "info");
+    }
+  }
+  stroke = { painted: 0, missed: 0 };
+}
+let strokeWarned = false;      // once per session: the rule is learned, not re-learned
+function cellAt(p, tm) {
+  const a = project.assets[tm.asset];
+  return { cx: Math.floor((p.x - tm.pos[0]) / a.fw), cy: Math.floor((p.y - tm.pos[1]) / a.fh) };
+}
+function floodFill(p, value) {
+  const tm = curTm(); if (!tm) return;
+  const c = cellAt(p, tm); if (c.cx < 0 || c.cy < 0 || c.cx >= tm.cols || c.cy >= tm.rows) { stroke.missed++; return; }
+  const target = tm.grid[c.cy][c.cx]; if (target === value) return;
+  const stack = [[c.cx, c.cy]];
+  while (stack.length) {
+    const [x, y] = stack.pop();
+    if (x < 0 || y < 0 || x >= tm.cols || y >= tm.rows || tm.grid[y][x] !== target) continue;
+    tm.grid[y][x] = value; stroke.painted++;
+    stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+}
+
+// hit-tests (world coords)
+function entityHit(p, en) {
+  const a = project.assets[en.asset]; if (!a) return false;
+  const fw = a.fw || 16, fh = a.fh || 16;
+  const ax = (en.anchor || [0, 0])[0] * fw, ay = (en.anchor || [0, 0])[1] * fh;
+  return p.x >= en.x - ax && p.x < en.x - ax + fw && p.y >= en.y - ay && p.y < en.y - ay + fh;
+}
+function candidatesAt(p) {
+  const out = [];
+  for (let i = L().entities.length - 1; i >= 0; i--) if (entityHit(p, L().entities[i])) out.push({ kind: "entity", obj: L().entities[i] });
+  for (let i = L().hud.length - 1; i >= 0; i--) { const hd = L().hud[i]; if (p.x >= hd.x - 2 && p.x < hd.x + 60 && p.y >= hd.y - 2 && p.y < hd.y + 12) out.push({ kind: "hud", obj: hd }); }
+  const z = L().zones.find(function (z) { return p.x >= z.x && p.x < z.x + z.w && p.y >= z.y && p.y < z.y + z.h; }); if (z) out.push({ kind: "zone", obj: z });
+  const q = L().points.find(function (q) { return Math.abs(q.x - p.x) < 8 && Math.abs(q.y - p.y) < 8; }); if (q) out.push({ kind: "point", obj: q });
+  const t = tileAt(p); if (t) out.push({ kind: "tile", obj: t });
+  return out;
+}
+function tileAt(p) {
+  for (let i = L().tilemaps.length - 1; i >= 0; i--) {
+    const tm = L().tilemaps[i], a = project.assets[tm.asset]; if (!a) continue;
+    const cx = Math.floor((p.x - tm.pos[0]) / a.fw), cy = Math.floor((p.y - tm.pos[1]) / a.fh);
+    if (cy >= 0 && cy < tm.rows && cx >= 0 && cx < tm.cols && tm.grid[cy][cx])
+      return { tm: i, asset: tm.asset, cx: cx, cy: cy, value: tm.grid[cy][cx] };
+  }
+  return null;
+}
+// is world point p inside the camera-bounds frame edge? (for dragging the bounds)
+function camBoundsHit(p) {
+  const cam = L().camera; if (!cam || cam.autoBounds !== false) return false;
+  const b = cam.bounds, edge = 6 / vp.zoom;
+  const inX = p.x >= b[0] - edge && p.x <= b[0] + b[2] + edge;
+  const inY = p.y >= b[1] - edge && p.y <= b[1] + b[3] + edge;
+  const nearEdge = Math.abs(p.x - b[0]) < edge || Math.abs(p.x - (b[0] + b[2])) < edge || Math.abs(p.y - b[1]) < edge || Math.abs(p.y - (b[1] + b[3])) < edge;
+  return inX && inY && nearEdge;
+}
+
+// ---------------------------------------------------------------- interaction state
+let drag = null;              // active drag descriptor (varies by tool)
+let rubberRect = null;        // world-space rect being dragged (for render preview)
+// A rectangle of CELLS on the active layer, and the block copied out of one. The block remembers
+// which tileset it came from: the same number means a different tile in another tileset.
+let tileSel = null;           // {x0, y0, x1, y1} in cells, inclusive
+let tileClip = null;          // {w, h, asset, cells: [[v,...], ...]}
+let tileSelRect = null;       // world-space tile-region marquee (copy source)
+let spacePan = false;         // space held -> temporary pan
+
+// TOOL DISPATCH TABLE -------------------------------------------------------------
+const tools = {
+  select: {
+    down: function (p, ev) {
+      // drag camera-bounds frame?
+      if (camBoundsHit(p)) { snapshot(); drag = { mode: "cambounds", start: p, orig: L().camera.bounds.slice() }; return; }
+      const cands = candidatesAt(p);
+      if (!cands.length) { clearSel(); pickCycle.x = null; pickCycle.n = 0; renderPanel(); return; }
+      const same = pickCycle.x !== null && Math.abs(p.x - pickCycle.x) <= 3 && Math.abs(p.y - pickCycle.y) <= 3;
+      pickCycle.i = same ? (pickCycle.i + 1) % cands.length : 0;
+      pickCycle.x = p.x; pickCycle.y = p.y; pickCycle.n = cands.length;
+      const c = cands[pickCycle.i];
+      if (ev && ev.shiftKey && c.kind !== "tile") {           // shift-click: build a multi-selection
+        const keep = sel.multi.slice();
+        const prim = selectedObjAndArr();
+        if (prim && !keep.some(function (m) { return m.obj === prim[0]; })) keep.push({ kind: prim[2], obj: prim[0] });
+        clearSel(); sel.multi = keep;
+        multiToggle(c.kind, c.obj);
+        const last = sel.multi[sel.multi.length - 1];
+        if (last) sel[last.kind] = last.obj;                  // primary = last one clicked
+        renderPanel();
+        return;
+      }
+      clearSel();
+      if (c.kind === "tile") { sel.tile = c.obj; sel.asset = c.obj.asset; sel.tileFrame = c.obj.value; }
+      else {
+        sel[c.kind] = c.obj;
+        if (c.obj.x != null) { snapshot(); drag = { mode: "move", obj: c.obj, ox: p.x - c.obj.x, oy: p.y - c.obj.y }; }
+      }
+      renderPanel();
+    },
+    move: function (p) {
+      if (!drag) return;
+      if (drag.mode === "move") {
+        const nx = Math.round(p.x - drag.ox), ny = Math.round(p.y - drag.oy);
+        if (sel.multi.length > 1 && multiHas(drag.obj)) {     // move every selected object by the same delta
+          const dx = nx - drag.obj.x, dy = ny - drag.obj.y;
+          sel.multi.forEach(function (m) { m.obj.x += dx; m.obj.y += dy; });
+        } else { drag.obj.x = nx; drag.obj.y = ny; }
+        pickCycle.x = null; renderPanel();
+      }
+      else if (drag.mode === "cambounds") {
+        const b = L().camera.bounds; b[2] = Math.max(8, Math.round(p.x - drag.orig[0])); b[3] = Math.max(8, Math.round(p.y - drag.orig[1]));
+      }
+    },
+    up: function () { drag = null; }
+  },
+  paint: {
+    down: function (p, ev) {
+      if (!curTm()) { toast("Nothing to paint on yet — add a tileset in the panel (+ Colour tileset needs no art)", "err"); return; }
+      if (ev.ctrlKey || ev.metaKey) { pickTileUnderPointer(p); return; }   // Ctrl-click = pick, no paint
+      snapshot();
+      stroke = { painted: 0, missed: 0 };     // a stroke that paints nothing must say why
+      if (ev.altKey) { floodFill(p, sel.tileFrame); drag = null; endStroke(); renderPanel(); return; }
+      if (ev.shiftKey) { drag = { mode: "rect", start: p }; return; }
+      drag = { mode: "brush" }; paintCell(p, sel.tileFrame);
+    },
+    move: function (p) {
+      if (!drag) return;
+      if (drag.mode === "brush") paintCell(p, sel.tileFrame);
+      else if (drag.mode === "rect") { const tm = curTm(); const s = cellAt(drag.start, tm), c = cellAt(p, tm); rubberRectFromCells(tm, s, c); }
+    },
+    up: function (p) {
+      if (drag && drag.mode === "rect") {
+        const tm = curTm(); const s = cellAt(drag.start, tm), c = cellAt(p, tm);
+        const x0 = Math.min(s.cx, c.cx), x1 = Math.max(s.cx, c.cx), y0 = Math.min(s.cy, c.cy), y1 = Math.max(s.cy, c.cy);
+        for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++)
+          if (y >= 0 && y < tm.rows && x >= 0 && x < tm.cols) { tm.grid[y][x] = sel.tileFrame; stroke.painted++; }
+          else stroke.missed++;
+      }
+      drag = null; rubberRect = null; endStroke();
+    }
+  },
+  place: {
+    down: function (p) {
+      if (!isSprite(project.assets[sel.asset])) { toast("Pick a sprite in the panel first", "err"); return; }
+      snapshot();
+      const en = { asset: sel.asset, name: null, tag: null, x: Math.round(p.x), y: Math.round(p.y), anchor: [0.5, 1.0], frame: 0 };
+      // The first instance of an asset called "player" IS the player: pre-fill the name the
+      // camera/game look for (only if no entity holds it yet - names must stay unique).
+      if (sel.asset === "player" && !L().entities.some(function (e) { return e.name === "player"; })) en.name = "player";
+      L().entities.push(en); setTool("select"); pick("entity", en);
+      drag = { mode: "move", obj: en, ox: 0, oy: 0 };
+    },
+    move: function (p) { if (drag) { drag.obj.x = Math.round(p.x); drag.obj.y = Math.round(p.y); renderPanel(); } },
+    up: function () { drag = null; }
+  },
+  hud: {
+    down: function (p, ev) {
+      snapshot();
+      const hd = { name: "label" + (L().hud.length + 1), x: Math.round(p.x), y: Math.round(p.y), fg: [255, 255, 255], bg: [0, 0, 0] };
+      L().hud.push(hd); afterPlace("hud", hd, ev, "HUD label added — rename it in the panel");
+    }, move: function () {}, up: function () {}
+  },
+  zone: {
+    down: function (p) { snapshot(); drag = { mode: "zone", start: p }; },
+    move: function (p) { if (drag) { const s = drag.start; rubberRect = { x: Math.min(s.x, p.x), y: Math.min(s.y, p.y), w: Math.abs(p.x - s.x), h: Math.abs(p.y - s.y) }; } },
+    up: function (p, ev) {
+      if (drag && rubberRect && rubberRect.w > 4 && rubberRect.h > 4) {
+        const z = { tag: "zone" + (L().zones.length + 1), x: Math.round(rubberRect.x), y: Math.round(rubberRect.y), w: Math.round(rubberRect.w), h: Math.round(rubberRect.h) };
+        L().zones.push(z); afterPlace("zone", z, ev, "Zone added — tag it in the panel");
+      } else { history.discard(); }   // no real drag -> drop the checkpoint (no redo entry)
+      drag = null; rubberRect = null;
+    }
+  },
+  point: {
+    down: function (p, ev) {
+      snapshot();
+      const q = { name: "point" + (L().points.length + 1), x: Math.round(p.x), y: Math.round(p.y) };
+      L().points.push(q); afterPlace("point", q, ev, "Point added — rename it in the panel");
+    }, move: function () {}, up: function () {}
+  },
+  // Region: a marquee on the active layer. Drag to select; with a block copied, every click
+  // stamps it (the reason to have this at all is a platform you build once and repeat).
+  region: {
+    down: function (p, ev) {
+      const tm = curTm();
+      if (!tm) { toast("No tilemap layer here — add one in the Paint panel", "err"); return; }
+      if (tileClip && !ev.shiftKey) { stampClipAt(p); return; }
+      const c = clampCell(cellAt(p, tm), tm);
+      drag = { mode: "region", start: c };
+      tileSel = { x0: c.cx, y0: c.cy, x1: c.cx, y1: c.cy };
+      syncTileSelRect();
+    },
+    move: function (p) {
+      const tm = curTm(); if (!tm) return;
+      if (drag && drag.mode === "region") {
+        const c = clampCell(cellAt(p, tm), tm);
+        tileSel = { x0: Math.min(drag.start.cx, c.cx), y0: Math.min(drag.start.cy, c.cy),
+                    x1: Math.max(drag.start.cx, c.cx), y1: Math.max(drag.start.cy, c.cy) };
+        syncTileSelRect();
+      }
+    },
+    up: function () { if (drag && drag.mode === "region") { drag = null; renderPanel(); } }
+  },
+  pan: {
+    down: function (p, ev) { const s = evScreen(ev); drag = { mode: "pan", lastSx: s.sx, lastSy: s.sy }; canvas.style.cursor = "grabbing"; },
+    move: function (p, ev) { if (drag && drag.mode === "pan") { const s = evScreen(ev); vp.panScreen(s.sx - drag.lastSx, s.sy - drag.lastSy); drag.lastSx = s.sx; drag.lastSy = s.sy; } },
+    up: function () { drag = null; canvas.style.cursor = "grab"; }
+  }
+};
+
+function clampCell(c, tm) {
+  return { cx: Math.max(0, Math.min(tm.cols - 1, c.cx)), cy: Math.max(0, Math.min(tm.rows - 1, c.cy)) };
+}
+function syncTileSelRect() {
+  const tm = curTm();
+  if (!tm || !tileSel) { tileSelRect = null; return; }
+  const a = project.assets[tm.asset];
+  tileSelRect = { x: tm.pos[0] + tileSel.x0 * a.fw, y: tm.pos[1] + tileSel.y0 * a.fh,
+                  w: (tileSel.x1 - tileSel.x0 + 1) * a.fw, h: (tileSel.y1 - tileSel.y0 + 1) * a.fh };
+}
+function selSize() { return tileSel ? [tileSel.x1 - tileSel.x0 + 1, tileSel.y1 - tileSel.y0 + 1] : [0, 0]; }
+
+function copyTileRegion(cut) {
+  const tm = curTm(); if (!tm || !tileSel) { toast("Drag a rectangle on the map first", "err"); return; }
+  const cells = [];
+  for (let y = tileSel.y0; y <= tileSel.y1; y++) cells.push(tm.grid[y].slice(tileSel.x0, tileSel.x1 + 1));
+  const [w, h] = selSize();
+  tileClip = { w: w, h: h, asset: tm.asset, cells: cells };
+  if (cut) { snapshot(); fillTileRegion(0, true); }
+  renderPanel();
+  toast((cut ? "Cut " : "Copied ") + w + "×" + h + " tiles — click the map to stamp them (Esc drops the stamp)", "ok");
+}
+// value === null means "the tile you are painting with"
+function fillTileRegion(value, quiet) {
+  const tm = curTm(); if (!tm || !tileSel) { toast("Drag a rectangle on the map first", "err"); return; }
+  if (!quiet) snapshot();
+  const v = value === null ? sel.tileFrame : value;
+  for (let y = tileSel.y0; y <= tileSel.y1; y++)
+    for (let x = tileSel.x0; x <= tileSel.x1; x++) tm.grid[y][x] = v;
+  const [w, h] = selSize();
+  if (!quiet) toast((v ? "Filled " : "Cleared ") + w + "×" + h + " tiles with tile " + v + " (Ctrl+Z undoes it)", "ok");
+}
+function stampClipAt(p) {
+  const tm = curTm(); if (!tm || !tileClip) return;
+  if (tileClip.asset !== tm.asset) {
+    toast("That block came from tileset " + tileClip.asset + ", this layer uses " + tm.asset +
+          " — the same numbers are different tiles. Copy again from this layer.", "err");
+    return;
+  }
+  const c = cellAt(p, tm);
+  snapshot();
+  let placed = 0;
+  for (let y = 0; y < tileClip.h; y++) for (let x = 0; x < tileClip.w; x++) {
+    const gy = c.cy + y, gx = c.cx + x;
+    if (gy >= 0 && gy < tm.rows && gx >= 0 && gx < tm.cols) { tm.grid[gy][gx] = tileClip.cells[y][x]; placed++; }
+  }
+  if (!placed) { history.discard(); toast("That is off the layer — nothing stamped", "info"); return; }
+  tileSel = { x0: c.cx, y0: c.cy, x1: c.cx + tileClip.w - 1, y1: c.cy + tileClip.h - 1 };
+  syncTileSelRect();
+}
+function dropStamp() { tileClip = null; renderPanel(); }
+
+function rubberRectFromCells(tm, s, c) {
+  const a = project.assets[tm.asset];
+  const x0 = Math.min(s.cx, c.cx), x1 = Math.max(s.cx, c.cx), y0 = Math.min(s.cy, c.cy), y1 = Math.max(s.cy, c.cy);
+  rubberRect = { x: tm.pos[0] + x0 * a.fw, y: tm.pos[1] + y0 * a.fh, w: (x1 - x0 + 1) * a.fw, h: (y1 - y0 + 1) * a.fh };
+}
+
+// ---------------------------------------------------------------- pointer events
+function onDown(ev) {
+  ev.preventDefault(); canvas.focus();
+  const isMiddle = ev.button === 1;
+  const p = evWorld(ev);
+  if (isMiddle || spacePan || ev.button === 2) { tools.pan.down(p, ev); drag && (drag.tempPan = true); return; }
+  (tools[sel.tool] || tools.select).down(p, ev);
+}
+let hoverWorld = null;              // last pointer position in world coords (the eyedropper's target)
+canvas.addEventListener("mousemove", function (ev) { hoverWorld = evWorld(ev); });
+canvas.addEventListener("mouseleave", function () { hoverWorld = null; });
+
+// Take the tile under the pointer as the one to paint with - the move every tile editor has, and
+// the only way to answer "which tile is that?" without hunting the palette.
+function pickTileUnderPointer(p) {
+  const tm = curTm();
+  if (!tm) { toast("No tilemap layer here to pick from", "err"); return; }
+  if (!p) { toast("Point at the map, then press I to pick that tile", "info"); return; }
+  const c = cellAt(p, tm);
+  if (c.cx < 0 || c.cy < 0 || c.cx >= tm.cols || c.cy >= tm.rows) {
+    toast("That is outside layer " + tm.asset, "info"); return;
+  }
+  const v = tm.grid[c.cy][c.cx];
+  sel.tileFrame = v;
+  if (sel.tool !== "paint") setTool("paint"); else renderPanel();
+  toast(v ? "Picked tile " + v + " from " + tm.asset : "Picked the eraser (tile 0)", "ok");
+}
+
+function onMove(ev) {
+  if (!drag) return; ev.preventDefault();
+  const p = evWorld(ev);
+  if (drag.tempPan || drag.mode === "pan") { tools.pan.move(p, ev); return; }
+  (tools[sel.tool] || tools.select).move(p, ev);
+}
+function onUp(ev) {
+  if (!drag) return;
+  const p = evWorld(ev);
+  if (drag.tempPan || drag.mode === "pan") { tools.pan.up(); return; }
+  (tools[sel.tool] || tools.select).up(p, ev);
+}
+canvas.addEventListener("mousedown", onDown);
+window.addEventListener("mousemove", onMove);
+window.addEventListener("mouseup", onUp);
+canvas.addEventListener("touchstart", onDown, { passive: false });
+window.addEventListener("touchmove", onMove, { passive: false });
+window.addEventListener("touchend", onUp);
+canvas.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+
+// wheel: scroll pans, shift+wheel pans horizontally, ctrl/cmd+wheel zooms to cursor.
+// Deltas are normalized to CSS px first -- Firefox reports whole LINES for a real wheel
+// mouse (deltaY ~3), so without this one notch would pan 3 px instead of ~100.
+function wheelPx(ev) {
+  const k = ev.deltaMode === 1 ? 16            // DOM_DELTA_LINE  -> ~one text line
+    : ev.deltaMode === 2 ? vp.h                // DOM_DELTA_PAGE  -> one viewport
+      : 1;                                     // DOM_DELTA_PIXEL
+  return { x: ev.deltaX * k, y: ev.deltaY * k };
+}
+
+canvas.addEventListener("wheel", function (ev) {
+  ev.preventDefault();
+  const s = evScreen(ev);
+  const d = wheelPx(ev);
+  if (ev.ctrlKey || ev.metaKey) { vp.zoomAt(s.sx, s.sy, d.y < 0 ? 1.12 : 0.89); return; }
+  // Shift folds the vertical delta onto X. Summing (not swapping) is deliberate: some
+  // browsers already report shift+wheel as deltaX, and then d.y is 0 -- either way one
+  // notch scrolls horizontally exactly once, never twice.
+  if (ev.shiftKey) { vp.camX += (d.x + d.y) / vp.zoom; return; }
+  vp.camX += d.x / vp.zoom; vp.camY += d.y / vp.zoom;
+}, { passive: false });
+
+// The minimap sits on top of the map's top-right corner, where a wide level has real content:
+// a click there reaches neither. Folding it away is remembered per browser.
+if ($("mmToggle")) {
+  const root = document.querySelector(".pg-editor");
+  const setMM = function (off, save) {
+    root.classList.toggle("mm-off", off);
+    const t = $("mmToggle");
+    t.textContent = off ? "\u25a3" : "\u2013";
+    t.title = off ? "Show the minimap" : "Hide the minimap (it covers this corner of the map)";
+    t.setAttribute("aria-label", t.title);
+    if (save) { try { localStorage.setItem("pg_ed_minimap", off ? "off" : "on"); } catch (e) {} }
+  };
+  let off = false;
+  try { off = localStorage.getItem("pg_ed_minimap") === "off"; } catch (e) {}
+  setMM(off, false);
+  $("mmToggle").onclick = function () { setMM(!root.classList.contains("mm-off"), true); };
+}
+
+// ---------------------------------------------------------------- minimap interaction
+if (minimap) {
+  let mmDrag = false;
+  function mmAt(ev) { const r = minimap.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
+  minimap.addEventListener("mousedown", function (ev) { mmDrag = true; const m = mmAt(ev); MM.jump(m.x, m.y, minimap.clientWidth, minimap.clientHeight, vp, project, L()); });
+  window.addEventListener("mousemove", function (ev) { if (!mmDrag) return; const m = mmAt(ev); MM.jump(m.x, m.y, minimap.clientWidth, minimap.clientHeight, vp, project, L()); });
+  window.addEventListener("mouseup", function () { mmDrag = false; });
+}
+
+// ================================================================ KEYBOARD
+window.addEventListener("keydown", function (ev) {
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement && document.activeElement.tagName)
+    || (document.activeElement && document.activeElement.isContentEditable);   // CodeMirror (Story panel)
+  if (typing) return;
+  // A focused button/menu keeps the keys that belong to IT - Space and Enter press it, Backspace
+  // must not delete the object behind it - but every other shortcut still works, because focus
+  // rests on a toolbar button after every click and the tool hotkeys have to keep working there.
+  const onControl = /^(BUTTON|SUMMARY|A)$/.test(document.activeElement && document.activeElement.tagName);
+  if (onControl && !(ev.ctrlKey || ev.metaKey) && (ev.key === " " || ev.key === "Enter" || ev.key === "Backspace")) return;
+  if (ev.key === " ") { spacePan = true; canvas.style.cursor = "grab"; ev.preventDefault(); return; }
+  const mod = ev.ctrlKey || ev.metaKey;
+  if (mod && ev.key.toLowerCase() === "s") { ev.preventDefault(); saveProject(); return; }
+  if (mod && ev.key.toLowerCase() === "z" && !ev.shiftKey) { ev.preventDefault(); doUndo(); return; }
+  if (mod && (ev.key.toLowerCase() === "y" || (ev.key.toLowerCase() === "z" && ev.shiftKey))) { ev.preventDefault(); doRedo(); return; }
+  if (mod && ev.key.toLowerCase() === "c") {
+    if (sel.tool === "region") { ev.preventDefault(); copyTileRegion(false); return; }
+    doCopy(); return;
+  }
+  if (mod && ev.key.toLowerCase() === "x" && sel.tool === "region") { ev.preventDefault(); copyTileRegion(true); return; }
+  if (mod && ev.key.toLowerCase() === "v") { doPaste(); return; }
+  if (mod && ev.key.toLowerCase() === "d") { ev.preventDefault(); doDuplicate(); return; }
+  if (mod) return;
+  // tool hotkeys
+  const byKey = { v: "select", b: "paint", p: "place", h: "pan", r: "region" };
+  if (byKey[ev.key.toLowerCase()]) { setTool(byKey[ev.key.toLowerCase()]); return; }
+  if (ev.key >= "1" && ev.key <= "6") { setTool(TOOLS[parseInt(ev.key) - 1]); return; }
+  if (ev.key === "Delete" || ev.key === "Backspace") {
+    if (sel.tool === "region" && tileSel) { fillTileRegion(0); renderPanel(); return; }
+    deleteSelection(); return;
+  }
+  if (ev.key === "Escape") {
+    if (tileClip) { dropStamp(); toast("Stamp dropped", "info"); return; }
+    if (tileSel) { tileSel = null; tileSelRect = null; renderPanel(); return; }
+    clearSel(); pendingImport = null; closeOverlays(); renderPanel(); return;
+  }
+  if (ev.key === "f" || ev.key === "F") { doFit(); return; }
+  if (ev.key === "i" || ev.key === "I") { pickTileUnderPointer(hoverWorld); return; }
+  // zoom: + / = / numpad+ in, - / _ / numpad- out, 0 = 100% (the cheatsheet promised these)
+  if (ev.key === "+" || ev.key === "=" || ev.code === "NumpadAdd") { ev.preventDefault(); vp.zoomAt(vp.w / 2, vp.h / 2, 1.25); return; }
+  if (ev.key === "-" || ev.key === "_" || ev.code === "NumpadSubtract") { ev.preventDefault(); vp.zoomAt(vp.w / 2, vp.h / 2, 0.8); return; }
+  if (ev.key === "0" || ev.code === "Numpad0") { ev.preventDefault(); vp.setZoom(1); return; }
+  if (ev.key === "?") { toggleCheatsheet(); return; }
+  // arrows: nudge selection, or pan camera when nothing selected
+  const arrow = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[ev.key];
+  if (arrow) {
+    ev.preventDefault();
+    const step = ev.shiftKey ? 10 : 1;
+    if (sel.multi.length > 1) {
+      snapshot();
+      sel.multi.forEach(function (m) { m.obj.x += arrow[0] * step; m.obj.y += arrow[1] * step; });
+      renderPanel();
+      return;
+    }
+    const o = sel.entity || sel.hud || sel.point || sel.zone;
+    if (o) { snapshot(); o.x += arrow[0] * step; o.y += arrow[1] * step; renderPanel(); }
+    else vp.pan(arrow[0] * 40 / vp.zoom, arrow[1] * 40 / vp.zoom);
+  }
+});
+window.addEventListener("keyup", function (ev) { if (ev.key === " ") { spacePan = false; canvas.style.cursor = sel.tool === "pan" ? "grab" : "default"; } });
+
+// ---------------------------------------------------------------- edit ops
+function selectedObjAndArr() {
+  if (sel.entity) return [sel.entity, L().entities, "entity"];
+  if (sel.hud) return [sel.hud, L().hud, "hud"];
+  if (sel.zone) return [sel.zone, L().zones, "zone"];
+  if (sel.point) return [sel.point, L().points, "point"];
+  if (sel.particle) return [sel.particle, L().particles, "particle"];
+  return null;
+}
+function deleteSelection() {
+  if (sel.multi.length > 1) {
+    snapshot();
+    const n = sel.multi.length;
+    sel.multi.forEach(function (m) { const arr = multiArrFor(m.kind); const i = arr.indexOf(m.obj); if (i >= 0) arr.splice(i, 1); });
+    clearSel(); renderPanel(); refreshChrome(); toast("Deleted " + n + " objects (Ctrl+Z to undo)", "ok");
+    return;
+  }
+  const s = selectedObjAndArr(); if (!s) return;
+  snapshot(); s[1].splice(s[1].indexOf(s[0]), 1); clearSel(); renderPanel(); refreshChrome(); toast("Deleted (Ctrl+Z to undo)", "ok");
+}
+// Names must stay UNIQUE: the loader puts sprites, HUD labels and particle layers into one
+// view.named dict (points have their own), and scene_build.py refuses a scene with duplicates.
+// So a copy gets the first free "<name>_2", "<name>_3", ... - both for Ctrl+D/Ctrl+V and the
+// Duplicate button (which used to append "_copy" once, so a second copy collided again).
+function takenNames(kind) {
+  const lv = L();
+  if (kind === "point") return lv.points.map(function (p) { return p.name; });
+  return [].concat(lv.entities.map(function (e) { return e.name; }),
+                   lv.hud.map(function (h) { return h.name; }),
+                   (lv.particles || []).map(function (p) { return p.name; }));
+}
+function uniqueName(base, kind) {
+  if (!base) return base;
+  const taken = takenNames(kind).filter(Boolean);
+  if (taken.indexOf(base) < 0) return base;
+  const stem = base.replace(/_\d+$/, "");
+  for (let i = 2; i < 999; i++) if (taken.indexOf(stem + "_" + i) < 0) return stem + "_" + i;
+  return base + "_copy";
+}
+
+function doCopy() { const s = selectedObjAndArr(); if (s) { clipboard = { kind: s[2], data: JSON.parse(JSON.stringify(s[0])) }; toast("Copied " + s[2], "ok"); } }
+function doPaste() {
+  if (!clipboard) return;
+  snapshot();
+  const c = JSON.parse(JSON.stringify(clipboard.data));
+  if (c.x != null) { c.x += 12; c.y += 12; }
+  if (c.name) c.name = uniqueName(c.name, clipboard.kind);       // never paste a duplicate name
+  const arr = clipboard.kind === "entity" ? L().entities : clipboard.kind === "hud" ? L().hud : clipboard.kind === "zone" ? L().zones : clipboard.kind === "point" ? L().points : L().particles;
+  arr.push(c); setTool("select"); pick(clipboard.kind, c);
+  toast(c.name ? "Pasted as " + c.name : "Pasted", "ok");
+}
+function doDuplicate() { const s = selectedObjAndArr(); if (!s) return; clipboard = { kind: s[2], data: JSON.parse(JSON.stringify(s[0])) }; doPaste(); }
+function doUndo() { const snap = history.undo(project); if (snap) { installProject(snap, true); toast("Undo", "info"); } else toast("Nothing to undo", "info"); }
+function doRedo() { const snap = history.redo(project); if (snap) { installProject(snap, true); toast("Redo", "info"); } else toast("Nothing to redo", "info"); }
+function installProject(p, keepView) {
+  project = p;
+  if (project.current >= project.levels.length) project.current = 0;
+  clearSel(); sel.tm = Math.min(sel.tm, Math.max(0, L().tilemaps.length - 1));
+  renderPanel(); refreshChrome();
+  scheduleAutosave();
+}
+
+// ---------------------------------------------------------------- status
+function updateStatus() {
+  let what = "—";
+  if (sel.entity) what = "entity " + (sel.entity.name || sel.entity.tag || sel.entity.asset);
+  else if (sel.hud) what = "HUD '" + sel.hud.name + "'";
+  else if (sel.zone) what = "zone '" + sel.zone.tag + "'";
+  else if (sel.point) what = "point '" + sel.point.name + "'";
+  else if (sel.particle) what = "fx '" + sel.particle.name + "'";
+  else if (sel.tile) what = "tile " + sel.tile.value;
+  const b = E.levelBounds(project, L());
+  let extra = "";
+  if (sel.tool === "paint") extra = " · layer <b>" + (curTm() ? (sel.tm + " " + curTm().asset) : "—") + "</b> · tile <b>" + sel.tileFrame + "</b>";
+  else if (sel.tool === "select") extra = " · <b>" + what + "</b>" + (pickCycle.n > 1 ? " (click again: " + (pickCycle.i + 1) + "/" + pickCycle.n + ")" : "");
+  else if (sel.tool === "place") extra = " · sprite <b>" + (sel.asset || "—") + "</b>";
+  const html = "Tool: <b>" + (TOOL_META[sel.tool] ? TOOL_META[sel.tool].label : sel.tool) + "</b>" + extra +
+    " · world <b>" + b[0] + "×" + b[1] + "</b> · zoom <b>" + Math.round(vp.zoom * 100) + "%</b>" +
+    " · file <b>" + docName + "</b>" + (dirtySince ? " (unsaved)" : "") + problemsBadge();
+  // This runs in the frame loop. Rewriting it every frame replaced the nodes 60×/s: the problems
+  // badge inside could not be clicked (mousedown and mouseup landed on different elements), and a
+  // screen reader re-read the whole line. Write only when it actually changed.
+  const st = $("status");
+  if (st && html !== lastStatusHtml) {
+    st.innerHTML = html; lastStatusHtml = html;
+    const pb = $("pbadge");
+    if (pb) pb.onclick = function () { setTool("select"); clearSel(); renderPanel(); };
+  }
+  const tip = TOOL_META[sel.tool] ? TOOL_META[sel.tool].tip : "";
+  const th = $("toolhelp");
+  if (th && tip !== lastToolTip) { th.innerHTML = tip; lastToolTip = tip; }
+}
+let lastStatusHtml = "", lastToolTip = "";
+// The one always-visible sign that the game will not load. Cheap: the list is cached.
+function problemsBadge() {
+  const list = currentProblems();
+  if (!list.length) return "";
+  const errs = list.filter(function (x) { return x.severity === "error"; }).length;
+  return " · <b id=\"pbadge\" class=\"pbadge " + (errs ? "err" : "warn") + "\">" +
+         (errs ? "\u2716 " + errs + " error" + (errs === 1 ? "" : "s") : "\u26a0 " + list.length +
+          " warning" + (list.length === 1 ? "" : "s")) + "</b>";
+}
+
+// ================================================================ TOP BAR / FILES
+function loadProject(p) {
+  autosavePaused = false; invalidateProblems();                      // opening something is the user's answer to a failed restore
+  project = p; images = {}; artURLs = {}; history.clear();
+  // Reset the selection through clearSel() rather than rebuilding `sel` by hand: the hand-built
+  // literal omitted `multi`, so the first renderPanel() after ANY load (demo, Load, import) threw
+  // in panelSelect on sel.multi.length - after the project was already installed, which is why it
+  // looked like a half-drawn panel instead of an error.
+  sel = { asset: null, tileFrame: 1, tool: "select", tm: 0 };
+  clearSel();
+  document.querySelectorAll(".tool").forEach(function (b) { b.classList.toggle("on", b.dataset.tool === "select"); });
+  setTimeout(doFit, 0);
+  scheduleAutosave();
+}
+// The board boots project.start (game.json's "start"); the dropdown only says which level you are
+// EDITING. Without a control for it the two silently disagree - you playtest level2 and the board
+// opens level1 - so the star sets it, and the dropdown marks it.
+function startName() {
+  const has = project.levels.some(function (lv) { return lv.name === project.start; });
+  return has ? project.start : (project.levels[0] && project.levels[0].name);   // same fallback as exportGame
+}
+function refreshChrome() {
+  const sel2 = $("levelSel"); if (!sel2) return; sel2.innerHTML = "";
+  const start = startName();
+  project.levels.forEach(function (lv, i) {
+    const nm = lv.name || ("level" + (i + 1));
+    sel2.appendChild(new Option(nm === start ? "\u2605 " + nm : nm, i));
+  });
+  sel2.value = project.current;
+  const b = $("btnStartLevel");
+  if (b) {
+    const isStart = L().name === start;
+    b.textContent = isStart ? "\u2605" : "\u2606";
+    b.classList.toggle("on", isStart);
+    b.title = isStart ? L().name + " is the level the board boots into"
+                      : "Boot into " + L().name + " (the board opens " + start + " now)";
+  }
+}
+if ($("btnStartLevel")) $("btnStartLevel").onclick = function () {
+  if (L().name === startName()) { toast(L().name + " is already the start level", "info"); return; }
+  snapshot(); project.start = L().name; refreshChrome();
+  toast("The board (and a fresh playground run) now boots into " + L().name, "ok");
+};
+if ($("levelSel")) $("levelSel").onchange = function (e) { project.current = parseInt(e.target.value); clearSel(); sel.tm = 0; renderPanel(); refreshChrome(); doFit(); };
+function removeCurrentLevel() {
+  if (project.levels.length < 2) { toast("A game needs one level — this is the only one", "err"); return; }
+  const lv = L(), name = lv.name;
+  const inside = lv.tilemaps.length + lv.entities.length + lv.zones.length + lv.points.length + lv.hud.length;
+  if (!confirm("Remove level " + name + "? It holds " + inside + " layer/object" + (inside === 1 ? "" : "s") +
+               ", and this is undoable with Ctrl+Z."))
+    return;
+  snapshot();
+  project.levels.splice(project.current, 1);
+  project.current = Math.min(project.current, project.levels.length - 1);
+  // the boot level and any zone that travelled here must not point at a level that is gone
+  if (project.start === name) project.start = project.levels[0].name;
+  const pointedHere = [];
+  project.levels.forEach(function (o) {
+    (o.zones || []).forEach(function (z) {
+      if (z.data && z.data.goto && z.data.goto[0] === name) pointedHere.push(o.name + " · " + z.tag);
+    });
+  });
+  clearSel(); sel.tm = 0; renderPanel(); refreshChrome(); doFit();
+  toast("Removed level " + name + " (Ctrl+Z undoes it)" +
+        (pointedHere.length ? " — but " + pointedHere.join(", ") + " still travels there" : ""),
+        pointedHere.length ? "err" : "ok");
+}
+if ($("btnAddLevel")) $("btnAddLevel").onclick = function () {
+  snapshot(); project.levels.push(E.newLevel("level" + (project.levels.length + 1))); project.current = project.levels.length - 1;
+  clearSel(); sel.tm = 0; renderPanel(); refreshChrome(); doFit(); toast("Added level", "ok");
+};
+if ($("btnNew")) $("btnNew").onclick = function () {
+  if (!confirm("New project? Unsaved work is lost.")) return;
+  autosavePaused = false;                      // the user chose: autosave may write again
+  loadProject(E.newProject()); setDocName("game.json"); renderPanel(); refreshChrome();
+};
+
+function download(name, text) { const b = new Blob([text], { type: "application/json" }); const a = mk("a"); a.href = URL.createObjectURL(b); a.download = name; a.click(); }
+function downloadBytes(name, u8) { const b = new Blob([u8], { type: "application/octet-stream" }); const a = mk("a"); a.href = URL.createObjectURL(b); a.download = name; a.click(); }
+function dataURLBytes(dataURL) {
+  const bin = atob(dataURL.slice(dataURL.indexOf(",") + 1));
+  const u8 = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+  return u8;
+}
+function bytesB64(u8) { let b = ""; for (let i = 0; i < u8.length; i += 0x8000) b += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(b); }
+// bytes of a file in the chosen folder, or null
+async function folderRead(name) {
+  if (!dirHandle) return null;
+  try { return new Uint8Array(await (await (await dirHandle.getFileHandle(name)).getFile()).arrayBuffer()); }
+  catch (e) { return null; }
+}
+async function saveBytes(name, u8) {
+  if (!dirHandle) { downloadBytes(name, u8); return "downloaded"; }
+  try {
+    const fh = await dirHandle.getFileHandle(name, { create: true });
+    const w = await fh.createWritable();
+    await w.write(u8);
+    await w.close();
+    rememberFile(name, await fh.getFile());
+    return dirHandle.name + "/";
+  } catch (e) {
+    downloadBytes(name, u8);
+    toast("Could not write into " + dirHandle.name + "/ (" + e.message + ") — downloaded " + name +
+          " instead. Click 📁 " + dirHandle.name + " to grant access again.", "err");
+    return "downloaded";
+  }
+}
+// The PAL8 strip of a loaded image asset (the same bytes scene_build.py art writes).
+function pal8Of(id) {
+  const img = images[id], a = project.assets[id];
+  if (!img || !img.complete || !img.naturalWidth || !a) return null;
+  const c = document.createElement("canvas");
+  c.width = img.naturalWidth; c.height = img.naturalHeight;
+  const ctx = c.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0);
+  const fw = a.fw || 16, fh = a.fh || 16, frames = a.frames || 1;
+  const sw = fw * frames, sh = fh;
+  if (c.width < sw || c.height < sh)
+    throw new Error(id + ": frame size " + fw + "×" + fh + " × " + frames + " frame" + (frames === 1 ? "" : "s") +
+                    " needs a " + sw + "×" + sh + " image, this PNG is " + c.width + "×" + c.height +
+                    " — fix frame w/h in the panel, or re-export the PNG");
+  const rgba = ctx.getImageData(0, 0, sw, sh).data;
+  const q = E.bakePal8(rgba, sw, sh);
+  return E.encodePal8(q.data, fw, fh, frames, q.palette, 0);
+}
+function pal8Name(a) { return String(a.src || "art.png").replace(/\.[^.\/]*$/, "") + ".pal8"; }
+// Write every PNG asset's .pal8 (and a missing source PNG) into the folder; `force` downloads
+// them when there is no folder (Build > Art). Returns [names written].
+async function writeArt(force) {
+  const done = [];
+  for (const id in project.assets) {
+    const a = project.assets[id];
+    if (!E.isImg(a)) continue;
+    let blob;
+    try { blob = pal8Of(id); } catch (e) { toast("No art written for " + e.message, "err"); continue; }
+    if (!blob) continue;
+    const name = pal8Name(a);
+    if (dirHandle) {
+      const old = await folderRead(name);
+      if (!old || old.length !== blob.length || !old.every(function (b, i) { return b === blob[i]; })) {
+        await saveBytes(name, blob); done.push(name);
+      }
+      if (a.src && artURLs[id] && !(await folderRead(a.src)) && /^data:image\/png/.test(artURLs[id])) {
+        await saveBytes(a.src, dataURLBytes(artURLs[id])); done.push(a.src);
+      }
+    } else if (force) { downloadBytes(name, blob); done.push(name); }
+  }
+  return done;
+}
+// story.py text from the legacy in-editor script bodies (project.scripts)
+function storyText() {
+  const names = Object.keys(project.scripts || {}).filter(function (k) { return (project.scripts[k] || "").trim(); });
+  if (!names.length) return "";
+  let out = "# story.py - picogame story scripts: a zone {\"script\": \"name\"} starts def name(d)\n";
+  names.forEach(function (nm) {
+    const body = String(project.scripts[nm]).replace(/\r/g, "").split("\n");
+    while (body.length && !body[body.length - 1].trim()) body.pop();
+    out += "\n\ndef " + nm.replace(/\W/g, "_") + "(d):\n" + (body.length ? body.map(function (l) { return l.trim() ? "    " + l : ""; }).join("\n") : "    yield") + "\n";
+  });
+  return out;
+}
+// story.py -> {name: body} (best effort: top-level `def name(d):` blocks)
+function parseStory(text) {
+  const out = {};
+  const lines = String(text).replace(/\r/g, "").split("\n");
+  let cur = null, body = [];
+  function flush() { if (cur) out[cur] = body.join("\n").replace(/\n+$/, ""); cur = null; body = []; }
+  lines.forEach(function (l) {
+    const m = /^def\s+(\w+)\s*\(\s*\w+\s*\)\s*:/.exec(l);
+    if (m) { flush(); cur = m[1]; return; }
+    if (cur) {
+      if (/^\S/.test(l)) { flush(); return; }
+      body.push(l.replace(/^    /, ""));
+    }
+  });
+  flush();
+  return out;
+}
+
+// ---------------------------------------------------------------- save straight to the board
+// MakeCode Arcade's one real advantage is that a game reaches the hardware in one click. CIRCUITPY
+// is just a mounted folder, and we already write folders - so this is the same machinery pointed at
+// the board: game.json + the .pal8 art + story.py + a runner code.py, and CircuitPython reloads on
+// its own. The board handle is remembered separately from the project folder.
+let boardHandle = null;
+
+async function pickBoard(silent) {
+  if (boardHandle) {
+    try { if ((await boardHandle.queryPermission({ mode: "readwrite" })) === "granted") return boardHandle; } catch (e) {}
+    try { if ((await boardHandle.requestPermission({ mode: "readwrite" })) === "granted") return boardHandle; } catch (e) {}
+  }
+  if (silent) return null;
+  try {
+    boardHandle = await window.showDirectoryPicker({ mode: "readwrite", id: "pgboard" });
+    // remembering the board is a convenience; blocked storage must not stop the save itself
+    try { await idb(function (st) { return st.put(boardHandle, "board"); }); } catch (e) { console.warn("remember board", e); }
+    return boardHandle;
+  } catch (e) { if (e.name !== "AbortError") toast("Board: " + e.message, "err"); return null; }
+}
+async function boardRead(h, name) {
+  try { return await (await (await h.getFileHandle(name)).getFile()).text(); } catch (e) { return null; }
+}
+async function boardHas(h, name) {
+  try { await h.getFileHandle(name); return true; } catch (e) { return false; }
+}
+async function boardWrite(h, name, data) {
+  const fh = await h.getFileHandle(name, { create: true });
+  const w = await fh.createWritable();
+  await w.write(data);
+  await w.close();
+}
+// the same runner the playground hands your level to, picked by what the level contains
+async function runnerSource(game, startLevel) {
+  const base = (typeof window !== "undefined" && window.PG_PLAYGROUND_URL) || "/play/";
+  let pick = "topdown";
+  try {
+    const m = await import(base + "vendor/runner_stubs.mjs?v=rs5");
+    pick = m.runnerFor({ camera: startLevel.camera, assets: game.assets, layers: startLevel.layers });
+  } catch (e) { /* offline copy: fall back to the top-down runner */ }
+  const r = await fetch(base + "runner/" + pick + ".py?v=g2");
+  if (!r.ok) throw new Error("runner/" + pick + ".py (" + r.status + ")");
+  return [pick, await r.text()];
+}
+
+async function saveToBoard() {
+  const d = $("saveD"); if (d) d.open = false;
+  if (!FS_OK) { toast("Saving to a board needs Chrome or Edge (the File System Access API).", "err"); return; }
+  let game;
+  try { game = E.exportGame(project); }
+  catch (e) { toast("Could not build game.json: " + (e.message || e), "err"); console.error(e); return; }
+  const h = await pickBoard(false);
+  if (!h) return;
+  // boot_out.txt is what CircuitPython writes at every boot: no file, probably not a board
+  const boot = await boardRead(h, "boot_out.txt");
+  if (!boot && !confirm(h.name + " has no boot_out.txt, so it may not be a CircuitPython board.\n\n" +
+                        "Write the game there anyway?")) return;
+  const wrote = [], notes = [];
+  try {
+    await boardWrite(h, "game.json", E.canonicalJson(game));
+    wrote.push("game.json");
+    for (const id in project.assets) {
+      const a = project.assets[id];
+      if (!E.isImg(a)) continue;
+      let blob = null;
+      try { blob = pal8Of(id); } catch (e) { notes.push("no art for " + e.message); continue; }
+      if (!blob) { notes.push("no pixels loaded for " + id + " — open its PNG, then save again"); continue; }
+      await boardWrite(h, pal8Name(a), blob);
+      wrote.push(pal8Name(a));
+    }
+    const st = storyText();
+    if (st) {
+      if (await boardHas(h, "story.py")) notes.push("story.py already on the board — left alone");
+      else { await boardWrite(h, "story.py", st); wrote.push("story.py"); }
+    }
+    // code.py is the board's program: never clobber one without asking
+    const hasCode = await boardHas(h, "code.py");
+    if (!hasCode || confirm("code.py already exists on " + h.name + ".\n\nOK = replace it with a fresh " +
+                            "runner for this game.\nCancel = keep it (game.json and the art are written either way).")) {
+      try {
+        const [pick, src] = await runnerSource(game, project.levels.find(function (l) { return l.name === game.start; }) || project.levels[0]);
+        await boardWrite(h, "code.py", src);
+        wrote.push("code.py (" + pick + " runner)");
+      } catch (e) {
+        notes.push("no code.py written (" + e.message + ") — copy a runner yourself, or press Try in playground and save from there");
+      }
+    }
+  } catch (e) {
+    toast("Writing to " + h.name + " stopped: " + e.message + " — is the board still mounted?", "err");
+    console.error(e); return;
+  }
+  // the helper libs have to be there too, unless the firmware freezes them
+  let libs = false;
+  try { for await (const n of (await h.getDirectoryHandle("lib")).keys()) if (/^picogame_/.test(n)) { libs = true; break; } }
+  catch (e) { /* no lib/ at all */ }
+  if (!libs) notes.push("no picogame_* in lib/ — if this firmware does not carry them frozen, install the bundle with circup");
+  toast("Wrote " + wrote.join(", ") + " to " + h.name + ". CircuitPython reloads by itself." +
+        (notes.length ? " — " + notes.join("; ") : ""), notes.length ? "info" : "ok");
+}
+if ($("btnSaveBoard")) $("btnSaveBoard").onclick = saveToBoard;
+
+// ---------------------------------------------------------------- save in place (a folder)
+// Pick a project folder once (File System Access) and every export WRITES THERE instead of
+// landing in ~/Downloads: the file the editor saves is then the same file the game imports and
+// a coding agent edits, so the two can hand a level back and forth. The handle is kept in
+// IndexedDB because the editor reloads on Run; the browser still re-asks for permission per
+// session. Firefox/Safari have no FSA API - there `saveText` just downloads, as before.
+let dirHandle = null;
+const FS_OK = typeof window.showDirectoryPicker === "function";
+
+function idb(fn) {                      // one tiny store, no library
+  return new Promise(function (res, rej) {
+    const r = indexedDB.open("pgeditor", 1);
+    r.onupgradeneeded = function () { r.result.createObjectStore("kv"); };
+    r.onerror = function () { rej(r.error); };
+    r.onsuccess = function () {
+      // a synchronous throw in here (put() rejects an un-cloneable value) used to leave this
+      // promise pending FOREVER, hanging whatever awaited it - reject instead
+      let q;
+      try { q = fn(r.result.transaction("kv", "readwrite").objectStore("kv")); }
+      catch (e) { rej(e); return; }
+      q.onsuccess = function () { res(q.result); };
+      q.onerror = function () { rej(q.error); };
+    };
+  });
+}
+
+async function pickFolder() {
+  if (!FS_OK) { toast("This browser can't save to a folder (Chrome/Edge only) — exports download instead.", "info"); return; }
+  try {
+    dirHandle = await window.showDirectoryPicker({ mode: "readwrite", id: "pgeditor" });
+    await idb(function (st) { return st.put(dirHandle, "dir"); });
+    refreshFolderChrome();
+    toast("Saving into " + dirHandle.name + "/ — exports write there, no download", "ok");
+  } catch (e) { if (e.name !== "AbortError")
+    toast("Could not use that folder (" + e.message + ") — pick another, or Save keeps downloading.", "err"); }
+}
+
+async function restoreFolder() {        // silent: only reuse a handle we may still write to
+  if (!FS_OK) return;
+  try {
+    const h = await idb(function (st) { return st.get("dir"); });
+    if (h && (await h.queryPermission({ mode: "readwrite" })) === "granted") { dirHandle = h; refreshFolderChrome(); }
+    const b = await idb(function (st) { return st.get("board"); });
+    if (b) boardHandle = b;              // permission is asked for at the next save, not now
+  } catch (e) { /* no handle yet, or the folder is gone */ }
+}
+
+function refreshFolderChrome() {
+  const b = $("btnFolder"); if (!b) return;
+  b.textContent = dirHandle ? "📁 " + dirHandle.name : "📁 Folder…";
+  b.title = dirHandle ? "Exports write into " + dirHandle.name + "/ — click to choose another folder"
+                      : "Choose a folder to save into (Chrome/Edge) instead of downloading";
+}
+
+// What each file looked like when we last read or wrote it, so a save can tell whether someone
+// else (a coding agent, a git merge, another tab) has touched it since. Without this the editor
+// silently overwrites their work: it holds the whole document in memory and rewrites it whole.
+const fileStamps = new Map();
+function stampOf(file) { return file.lastModified + ":" + file.size; }
+function rememberFile(name, file) { fileStamps.set(name, stampOf(file)); }
+
+// null if `name` is unchanged since we last saw it (or we never did); otherwise the current File.
+async function changedSinceWeSawIt(name) {
+  const known = fileStamps.get(name);
+  if (!known || !dirHandle) return null;
+  try {
+    const f = await (await dirHandle.getFileHandle(name)).getFile();
+    return stampOf(f) === known ? null : f;
+  } catch (e) { return null; }             // gone from the folder - a plain write recreates it
+}
+
+// Write `text` into the chosen folder, else fall back to a download. Returns where it went,
+// so callers can say it in the toast (the user must know which of the two happened).
+async function saveText(name, text) {
+  if (!dirHandle) { download(name, text); return "downloaded"; }
+  try {
+    if ((await dirHandle.queryPermission({ mode: "readwrite" })) !== "granted" &&
+        (await dirHandle.requestPermission({ mode: "readwrite" })) !== "granted") {
+      download(name, text); return "downloaded";
+    }
+    // Someone else wrote this file while we had it open. Overwriting is a real choice (it may be
+    // your own earlier export), so ask - and if the answer is no, still write, under a side name,
+    // because the one unacceptable outcome is losing whichever version the user actually wanted.
+    const theirs = await changedSinceWeSawIt(name);
+    if (theirs) {
+      const when = new Date(theirs.lastModified).toLocaleTimeString();
+      if (!confirm(name + " changed on disk at " + when + " — something else wrote it since you " +
+                   "opened it.\n\nOK = overwrite it with the editor's version.\nCancel = keep their " +
+                   "file and save yours next to it.")) {
+        name = name.replace(/(\.[^.]*)?$/, ".mine$&");
+      }
+    }
+    const fh = await dirHandle.getFileHandle(name, { create: true });
+    const w = await fh.createWritable();
+    await w.write(text);
+    await w.close();
+    rememberFile(name, await fh.getFile());
+    return dirHandle.name + "/";
+  } catch (e) {
+    download(name, text);
+    toast("Could not write into " + dirHandle.name + "/ (" + e.message + ") — downloaded " + name +
+          " instead. Click 📁 " + dirHandle.name + " to grant access again.", "err");
+    return "downloaded";
+  }
+}
+
+if ($("btnFolder")) $("btnFolder").onclick = pickFolder;
+restoreFolder();
+// With a folder bound, watch the game file: an agent's edit shows up here within 2 s. Reloaded
+// silently when nothing is unsaved in the editor; otherwise you are told once and Save asks.
+let watchWarned = false;
+async function checkFolder() {
+  if (!dirHandle) return;
+  const name = docName;
+  let f;
+  try { f = await (await dirHandle.getFileHandle(name)).getFile(); } catch (e) { return; }
+  const st = stampOf(f);
+  if (st === fileStamps.get(name)) return;
+  const text = await f.text();
+  if (text === lastSavedText) { rememberFile(name, f); return; }   // our own write
+  if (dirtySince) {
+    if (!watchWarned) { watchWarned = true; toast(name + " changed on disk (an agent or another tool). Save will ask before overwriting; Open reloads it.", "info"); }
+    return;
+  }
+  let obj;
+  try { obj = JSON.parse(text); } catch (e) { return; }       // still being written
+  watchWarned = false;
+  try { await importExportedFiles(obj, f, []); toast("Reloaded " + name + " — it changed on disk", "ok"); }
+  catch (e) { console.warn("reload", e); }
+}
+setInterval(function () { checkFolder().catch(function () {}); }, 2000);
+// The file Save writes - and the folder watch reads - is the one you opened: its name travels
+// with the project (autosave included), so a level opened as tutorial.json goes back out as
+// tutorial.json, not as one more game.json in ~/Downloads. Save as… renames it; New, the demos
+// and the legacy formats (v1 scene/project, .pgproj, Tiled - conversions, not the same file)
+// reset it to game.json. Game(pg, path) and scene_build.py take any name; story.py and the
+// .pal8 sidecars keep theirs, they sit next to whatever the game file is called.
+function cleanDocName(name) {
+  name = (name || "").replace(/^.*[\/\\]/, "").trim();     // a file name, not a path
+  return name && !/\.json$/i.test(name) ? name + ".json" : name;
+}
+function setDocName(name) {
+  docName = cleanDocName(name) || "game.json";
+  const b = $("btnSave");
+  if (b) b.title = "Write " + docName + " (+ .pal8 art; the status bar shows the current file)";
+  updateStatus();
+  scheduleAutosave();
+  return docName;
+}
+async function folderHas(name) {
+  if (!dirHandle) return false;
+  try { await dirHandle.getFileHandle(name); return true; } catch (e) { return false; }
+}
+async function saveProjectAs() {
+  const d = $("saveD"); if (d) d.open = false;
+  const typed = prompt("Save as — the file Save writes from now on (its .pal8 art and story.py sit next to it):", docName);
+  if (typed === null) return;
+  const name = cleanDocName(typed);
+  if (!name) return;
+  // a name we never opened may already be someone's file in the folder: overwriting it is a
+  // choice, not a side effect (a Save to the file you opened asks via changedSinceWeSawIt)
+  if (name !== docName && !fileStamps.has(name) && await folderHas(name) &&
+      !confirm(name + " already exists in " + dirHandle.name + "/ — overwrite it with this game?")) return;
+  setDocName(name);
+  await saveProject();
+}
+// Save writes the ONE source file, game.json (canonical text: what scene_build.py fmt writes,
+// what an agent edits, what the device reads), plus - into a chosen folder - the .pal8 art
+// sidecars and any source PNG the folder lacks. Legacy script bodies (project.scripts, from an
+// old .pgproj) go to story.py once; the editor never rewrites an existing story.py.
+async function saveProject() {
+  let game;
+  try { game = E.exportGame(project); }
+  catch (e) { toast("Could not build game.json: " + (e.message || e), "err"); console.error(e); return; }
+  const text = E.canonicalJson(game);
+  // The board reads the .pal8 sidecars, not the PNGs, so a save without them is a game that does
+  // not run. With a folder they go next to the file; without one they download in this same click
+  // (they used to be left to Build > Art, mentioned only in a toast that faded).
+  const art = await writeArt(!dirHandle);
+  const st = storyText();
+  let storyNote = "", storyProblem = "";
+  if (st) {
+    if (dirHandle && await folderRead("story.py"))
+      storyProblem = " Your Story-panel scripts were NOT written: story.py already exists in " +
+                     dirHandle.name + "/ — rename or delete it, then Save again.";
+    else { await saveText("story.py", st); storyNote = " + story.py"; }
+  }
+  const w = await saveText(docName, text);
+  lastSavedText = text; dirtySince = 0;
+  const errs = currentProblems().filter(function (x) { return x.severity === "error"; }).length;
+  toast("Saved " + (w === "downloaded" ? docName : w + docName) +
+        (art.length ? " + " + art.length + " art file" + (art.length === 1 ? "" : "s") : "") + storyNote +
+        (w === "downloaded" ? " (to your downloads folder)" : "") + storyProblem +
+        (errs ? " — but " + errs + " problem" + (errs === 1 ? "" : "s") + " will stop it loading (see the Level panel)" : ""),
+        storyProblem || errs ? "err" : "ok");
+}
+if ($("btnSave")) $("btnSave").onclick = saveProject;
+if ($("btnSaveAs")) $("btnSaveAs").onclick = saveProjectAs;
+if ($("btnBuildArt")) $("btnBuildArt").onclick = async function () {
+  const d = $("buildD"); if (d) d.open = false;
+  const done = await writeArt(true);
+  toast(done.length ? "Wrote " + done.join(", ") : "No image assets to bake (colour tilesets need no art files)", done.length ? "ok" : "info");
+};
+if ($("btnLoad")) $("btnLoad").onclick = function () { $("projfile").click(); };
+// Open, the demos and a Tiled import all REPLACE the open game and clear its history, so they
+// need the same question New asks. One place, so no path forgets it.
+function confirmReplace(what) {
+  if (!dirtySince) return true;
+  return confirm("Replace the open game with " + what + "? Unsaved changes here are lost " +
+                 "(Save first, or Cancel).");
+}
+
+function loadSave(obj) {
+  loadProject(E.deserialize(obj));
+  setDocName(obj.file);                       // the autosave remembers it; a .pgproj/demo does not
+  const art = obj.art || (obj.project && obj.project.art) || {};
+  for (const id in art) { artURLs[id] = art[id]; const im = new Image(); im.src = art[id]; images[id] = im; }
+  renderPanel(); refreshChrome();
+}
+// ---- Load: picogame project json OR a Tiled map (.tmj/.tmx + its tilesets + PNGs) ----
+function readFile(f, mode) {
+  return new Promise(function (res, rej) {
+    const fr = new FileReader();
+    fr.onload = function () { res(fr.result); };
+    fr.onerror = rej;
+    if (mode === "text") fr.readAsText(f); else fr.readAsDataURL(f);
+  });
+}
+
+// XML -> the Tiled JSON shapes (mirrors tools/tiled2scene.py _tmx_to_dict/_tsx_to_dict)
+function xmlProps(node) {
+  const out = [];
+  node.querySelectorAll(":scope > properties > property").forEach(function (pr) {
+    const typ = pr.getAttribute("type") || "string";
+    let val = pr.getAttribute("value"); if (val == null) val = pr.textContent || "";
+    if (typ === "bool") val = (val === "true");
+    else if (typ === "int" || typ === "object") val = parseInt(val, 10);
+    else if (typ === "float") val = parseFloat(val);
+    out.push({ name: pr.getAttribute("name"), type: typ, value: val });
+  });
+  return out;
+}
+function xmlTiles(root) {
+  const tiles = [];
+  root.querySelectorAll(":scope > tile").forEach(function (t) {
+    const e = { id: parseInt(t.getAttribute("id"), 10) };
+    const pl = xmlProps(t); if (pl.length) e.properties = pl;
+    if (t.querySelector(":scope > animation")) e.animation = true;
+    tiles.push(e);
+  });
+  return tiles;
+}
+function tsxToDict(xmlText) {
+  const root = new DOMParser().parseFromString(xmlText, "text/xml").documentElement;
+  const num = function (k, d) { const v = root.getAttribute(k); return v == null ? d : parseInt(v, 10); };
+  const ts = { name: root.getAttribute("name") || "tiles",
+    tilewidth: num("tilewidth"), tileheight: num("tileheight"),
+    tilecount: num("tilecount", 0), columns: num("columns", 0),
+    spacing: num("spacing", 0), margin: num("margin", 0) };
+  const img = root.querySelector(":scope > image");
+  if (img) {
+    ts.image = img.getAttribute("source");
+    if (img.getAttribute("trans")) ts.transparentcolor = "#" + img.getAttribute("trans").replace("#", "");
+  }
+  const tiles = xmlTiles(root); if (tiles.length) ts.tiles = tiles;
+  return ts;
+}
+function tmxToDict(xmlText) {
+  const root = new DOMParser().parseFromString(xmlText, "text/xml").documentElement;
+  const num = function (el, k, d) { const v = el.getAttribute(k); return v == null ? d : parseFloat(v); };
+  const m = { type: "map", orientation: root.getAttribute("orientation"),
+    infinite: root.getAttribute("infinite") === "1",
+    width: num(root, "width"), height: num(root, "height"),
+    tilewidth: num(root, "tilewidth"), tileheight: num(root, "tileheight") };
+  if (root.getAttribute("backgroundcolor")) m.backgroundcolor = root.getAttribute("backgroundcolor");
+  m.tilesets = [];
+  root.querySelectorAll(":scope > tileset").forEach(function (t) {
+    if (t.getAttribute("source")) {
+      m.tilesets.push({ firstgid: parseInt(t.getAttribute("firstgid"), 10), source: t.getAttribute("source") });
+    } else {
+      const ts = { firstgid: parseInt(t.getAttribute("firstgid"), 10), name: t.getAttribute("name"),
+        tilewidth: num(t, "tilewidth"), tileheight: num(t, "tileheight"),
+        tilecount: num(t, "tilecount", 0), columns: num(t, "columns", 0),
+        spacing: num(t, "spacing", 0), margin: num(t, "margin", 0) };
+      const img = t.querySelector(":scope > image");
+      if (img) {
+        ts.image = img.getAttribute("source");
+        if (img.getAttribute("trans")) ts.transparentcolor = "#" + img.getAttribute("trans").replace("#", "");
+      }
+      const tiles = xmlTiles(t); if (tiles.length) ts.tiles = tiles;
+      m.tilesets.push(ts);
+    }
+  });
+  function layers(parent) {
+    const out = [];
+    parent.querySelectorAll(":scope > layer, :scope > objectgroup, :scope > imagelayer, :scope > group").forEach(function (el) {
+      const vis = el.getAttribute("visible") !== "0";
+      if (el.tagName === "layer") {
+        const L = { type: "tilelayer", name: el.getAttribute("name"), visible: vis,
+          width: num(el, "width"), height: num(el, "height"),
+          opacity: num(el, "opacity", 1), offsetx: num(el, "offsetx", 0), offsety: num(el, "offsety", 0) };
+        const d = el.querySelector(":scope > data");
+        const enc = d.getAttribute("encoding");
+        if (enc === "csv") L.data = d.textContent.split(/[\s,]+/).filter(Boolean).map(Number);
+        else if (enc === "base64") { L.data = d.textContent.trim(); if (d.getAttribute("compression")) L.compression = d.getAttribute("compression"); }
+        else L.data = Array.from(d.querySelectorAll("tile")).map(function (t) { return parseInt(t.getAttribute("gid") || "0", 10); });
+        out.push(L);
+      } else if (el.tagName === "objectgroup") {
+        const objs = [];
+        el.querySelectorAll(":scope > object").forEach(function (o) {
+          const ob = { id: parseInt(o.getAttribute("id") || "0", 10),
+            x: num(o, "x", 0), y: num(o, "y", 0), width: num(o, "width", 0), height: num(o, "height", 0) };
+          if (o.getAttribute("name")) ob.name = o.getAttribute("name");
+          const cls = o.getAttribute("class") || o.getAttribute("type");
+          if (cls) ob.class = cls;
+          if (o.getAttribute("gid")) ob.gid = parseInt(o.getAttribute("gid"), 10) >>> 0;
+          if (o.getAttribute("rotation")) ob.rotation = parseFloat(o.getAttribute("rotation"));
+          ["point", "ellipse", "polygon", "polyline", "text"].forEach(function (sh) {
+            if (o.querySelector(":scope > " + sh)) ob[sh] = true;
+          });
+          const pl = xmlProps(o); if (pl.length) ob.properties = pl;
+          objs.push(ob);
+        });
+        out.push({ type: "objectgroup", name: el.getAttribute("name"), visible: vis, objects: objs });
+      } else if (el.tagName === "imagelayer") {
+        out.push({ type: "imagelayer", name: el.getAttribute("name"), visible: vis });
+      } else {
+        out.push({ type: "group", name: el.getAttribute("name"), visible: vis,
+          offsetx: num(el, "offsetx", 0), offsety: num(el, "offsety", 0), layers: layers(el) });
+      }
+    });
+    return out;
+  }
+  m.layers = layers(root);
+  return m;
+}
+
+// base64(+zlib/gzip) tilelayer data -> int array (DecompressionStream; async)
+async function decodeTiledData(map) {
+  async function fix(L) {
+    if (L.type === "group") { for (const c of L.layers || []) await fix(c); return; }
+    if (L.type !== "tilelayer" || typeof L.data !== "string") return;
+    if (L.compression === "zstd") throw new Error("layer " + L.name + ": zstd compression — re-export with zlib/gzip/CSV");
+    const bin = atob(L.data.trim());
+    let bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    if (L.compression === "zlib" || L.compression === "gzip") {
+      const fmt = L.compression === "zlib" ? "deflate" : "gzip";
+      const ds = new DecompressionStream(fmt);
+      const out = await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer();
+      bytes = new Uint8Array(out);
+    }
+    const n = bytes.length >> 2, arr = new Array(n);
+    const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    for (let i = 0; i < n; i++) arr[i] = dv.getUint32(i * 4, true);
+    L.data = arr;
+    delete L.compression;
+  }
+  for (const L of map.layers || []) await fix(L);
+}
+
+function loadImageFromDataURL(dataURL) {
+  return new Promise(function (res, rej) {
+    const im = new Image();
+    im.onload = function () { res(im); };
+    im.onerror = rej;
+    im.src = dataURL;
+  });
+}
+
+// Execute the repack plan: horizontal strip (empty tile 0 + only the USED tiles,
+// spacing/margin removed, transparentcolor -> alpha). Returns a dataURL.
+function repackStrip(img, plan) {
+  const c = document.createElement("canvas");
+  c.width = plan.tw * (plan.used.length + 1); c.height = plan.th;
+  const ctx = c.getContext("2d");
+  plan.used.forEach(function (tid, slot) {
+    const sx = plan.margin + (tid % plan.columns) * (plan.tw + plan.spacing);
+    const sy = plan.margin + Math.floor(tid / plan.columns) * (plan.th + plan.spacing);
+    ctx.drawImage(img, sx, sy, plan.tw, plan.th, (slot + 1) * plan.tw, 0, plan.tw, plan.th);
+  });
+  if (plan.transparent) {
+    const h = plan.transparent.replace("#", "").slice(-6);
+    const kr = parseInt(h.slice(0, 2), 16), kg = parseInt(h.slice(2, 4), 16), kb = parseInt(h.slice(4, 6), 16);
+    const id = ctx.getImageData(0, 0, c.width, c.height);
+    for (let i = 0; i < id.data.length; i += 4)
+      if (id.data[i] === kr && id.data[i + 1] === kg && id.data[i + 2] === kb) id.data[i + 3] = 0;
+    ctx.putImageData(id, 0, 0);
+  }
+  return c.toDataURL("image/png");
+}
+
+// Open an EXPORTED scene/project (what scene_build.py eats, what an agent or a text editor may
+// have touched) as an editable project. The export references art by filename, so the pixels come
+// from the files picked alongside it or - much nicer - straight out of the chosen folder, where
+// they sit next to the scene anyway. A missing PNG is reported, not fatal: the geometry, tile
+// flags, zones and camera are all still editable, which is usually why you opened it.
+async function importExportedFiles(obj, sceneFile, files) {
+  rememberFile(sceneFile.name, sceneFile);
+  const stem = sceneFile.name.replace(/\.(scene\.)?json$/i, "").replace(/\W+/g, "_") || "level1";
+  const proj = E.importExported(obj, stem);
+  const picked = {};
+  (files || []).forEach(function (f) { if (/\.png$/i.test(f.name)) picked[f.name.toLowerCase()] = f; });
+
+  const pal8s = {};
+  (files || []).forEach(function (f) { if (/\.pal8$/i.test(f.name)) pal8s[f.name.toLowerCase()] = f; });
+  const storyFile = (files || []).find(function (f) { return /^story\.py$/i.test(f.name); });
+  const art = {}, missing = [], recovered = [];
+  for (const id in proj.assets) {
+    const a = proj.assets[id];
+    if (!E.isImg(a) || !a.src) continue;
+    const base = a.src.replace(/^.*[\/\\]/, "");
+    let dataURL = null;
+    if (picked[base.toLowerCase()]) dataURL = await readFile(picked[base.toLowerCase()], "dataurl");
+    else if (dirHandle) {
+      try {
+        const fh = await dirHandle.getFileHandle(base);
+        dataURL = await readFile(await fh.getFile(), "dataurl");
+      } catch (e) { /* not in the folder */ }
+    }
+    if (!dataURL) {
+      // no PNG: a device pack carries only the .pal8 - decode it (lossless for pixel art)
+      const pn = base.replace(/\.[^.]*$/, "") + ".pal8";
+      let bytes = pal8s[pn.toLowerCase()] ? new Uint8Array(await pal8s[pn.toLowerCase()].arrayBuffer()) : await folderRead(pn);
+      if (bytes) {
+        try {
+          const dec = E.pal8ToRGBA(E.decodePal8(bytes));
+          const c = document.createElement("canvas"); c.width = dec.w; c.height = dec.h;
+          c.getContext("2d").putImageData(new ImageData(dec.rgba, dec.w, dec.h), 0, 0);
+          dataURL = c.toDataURL("image/png"); recovered.push(base);
+        } catch (e) { console.warn("pal8 decode", pn, e); }
+      }
+    }
+    if (dataURL) art[id] = dataURL; else missing.push(base);
+  }
+  if (storyFile) proj.scripts = Object.assign(proj.scripts || {}, parseStory(await readFile(storyFile, "text")));
+  else if (dirHandle) {
+    const sb = await folderRead("story.py");
+    if (sb) proj.scripts = Object.assign(proj.scripts || {}, parseStory(new TextDecoder().decode(sb)));
+  }
+
+  loadProject(proj);                              // resets images/artURLs - fill AFTER
+  const sameFile = obj.format === "picogame-project" && obj.version === 2;   // v1 / scene: a conversion
+  setDocName(sameFile ? sceneFile.name : "game.json");
+  for (const id in art) { artURLs[id] = art[id]; images[id] = await loadImageFromDataURL(art[id]); }
+  dirtySince = 0;
+  try { lastSavedText = E.canonicalJson(E.exportGame(project)); } catch (e) { lastSavedText = ""; }
+  renderPanel(); refreshChrome();
+  if (recovered.length) toast("Art for " + recovered.join(", ") + " came from the device files (.pal8), so a few " +
+                                "colours may differ from the original PNG — open the PNG to get the exact pixels.", "info");
+  const n = proj.levels.length;
+  toast("Opened " + sceneFile.name + " (" + n + (n === 1 ? " level" : " levels") + ")" +
+        (sameFile ? "" : " — Save will write it as game.json"), "ok");
+  if (missing.length)
+    toast("No pixels for: " + missing.slice(0, 4).join(", ") + (missing.length > 4 ? " +" + (missing.length - 4) : "") +
+          " — pick those PNGs too, or keep them in the chosen folder", "info");
+}
+
+// PNG / .pal8 / story.py picked on their own join the project that is open: the art goes to the
+// asset whose src has that name (the pixels of a game.json opened without its PNGs), story.py
+// fills the script bodies. Nothing else about the project changes.
+async function attachFiles(files) {
+  const done = [], unknown = [];
+  for (const f of files) {
+    const base = f.name.toLowerCase();
+    if (/\.png$/i.test(base)) {
+      const id = Object.keys(project.assets).find(function (k) {
+        const a = project.assets[k]; return E.isImg(a) && a.src && a.src.toLowerCase().replace(/^.*[\/\\]/, "") === base;
+      });
+      if (!id) { unknown.push(f.name); continue; }
+      const url = await readFile(f, "dataurl");
+      artURLs[id] = url; images[id] = await loadImageFromDataURL(url); done.push(f.name + " -> " + id);
+    } else if (/\.pal8$/i.test(base)) {
+      const stem = base.replace(/\.pal8$/, "");
+      const id = Object.keys(project.assets).find(function (k) {
+        const a = project.assets[k]; return E.isImg(a) && a.src && a.src.toLowerCase().replace(/^.*[\/\\]/, "").replace(/\.[^.]*$/, "") === stem;
+      });
+      if (!id) { unknown.push(f.name); continue; }
+      if (images[id] && images[id].complete && images[id].naturalWidth) continue;   // a PNG is better
+      const dec = E.pal8ToRGBA(E.decodePal8(new Uint8Array(await f.arrayBuffer())));
+      const c = document.createElement("canvas"); c.width = dec.w; c.height = dec.h;
+      c.getContext("2d").putImageData(new ImageData(dec.rgba, dec.w, dec.h), 0, 0);
+      const url = c.toDataURL("image/png");
+      artURLs[id] = url; images[id] = await loadImageFromDataURL(url); done.push(f.name + " -> " + id + " (recovered)");
+    } else if (/\.py$/i.test(base)) {
+      const scripts = parseStory(await readFile(f, "text"));
+      project.scripts = Object.assign(project.scripts || {}, scripts);
+      done.push(f.name + " (" + Object.keys(scripts).length + " script" + (Object.keys(scripts).length === 1 ? "" : "s") + ")");
+      if ($("storySel")) refreshStory();
+    } else unknown.push(f.name);
+  }
+  renderPanel(); scheduleAutosave();
+  if (done.length) toast("Added " + done.join(", ") + " to the open game", "ok");
+  if (unknown.length) toast("Nothing in this game is called " + unknown.join(", ") + " — the Paint panel's " +
+                            "+ Tileset PNG (or Place's + Sprite PNG) adds new art under a new name.", "info");
+}
+
+async function importTiledFiles(files) {
+  const byName = {};
+  files.forEach(function (f) { byName[f.name.toLowerCase()] = f; });
+  const mapFile = files.find(function (f) { return /\.(tmj|tmx)$/i.test(f.name); });
+  let map;
+  if (/\.tmx$/i.test(mapFile.name)) map = tmxToDict(await readFile(mapFile, "text"));
+  else map = JSON.parse(await readFile(mapFile, "text"));
+  await decodeTiledData(map);
+
+  // external tilesets: must be among the picked files (browsers can't follow paths)
+  const external = {}, missing = [];
+  for (const e of map.tilesets || []) {
+    if (!e.source) continue;
+    const base = e.source.replace(/^.*[\/\\]/, "").toLowerCase();
+    const f = byName[base];
+    if (!f) { missing.push(base); continue; }
+    external[e.source.replace(/^.*[\/\\]/, "")] =
+      /\.tsx$/i.test(base) ? tsxToDict(await readFile(f, "text")) : JSON.parse(await readFile(f, "text"));
+  }
+  if (missing.length) throw new Error("select these tileset files too: " + missing.join(", "));
+
+  const res = E.importTiled(map, external);
+
+  // tileset images: also picked by the user; repack each to a strip dataURL
+  const missingImg = res.repack.filter(function (p) { return !byName[p.image.toLowerCase()]; })
+    .map(function (p) { return p.image; });
+  if (missingImg.length) throw new Error("select these tileset image(s) too: " + missingImg.join(", "));
+  const strips = {};
+  for (const plan of res.repack) {
+    const img = await loadImageFromDataURL(await readFile(byName[plan.image.toLowerCase()], "dataurl"));
+    const dataURL = repackStrip(img, plan);
+    strips[plan.asset] = { dataURL: dataURL, img: await loadImageFromDataURL(dataURL) };
+    res.project.assets[plan.asset].src = plan.asset + ".png";
+  }
+
+  loadProject(res.project);                      // NOTE: resets images/artURLs - fill AFTER
+  for (const id in strips) { artURLs[id] = strips[id].dataURL; images[id] = strips[id].img; }
+  renderPanel(); refreshChrome();
+  toast("Opened " + mapFile.name, "ok");
+  res.warnings.slice(0, 6).forEach(function (w) { toast(w, "info"); });
+  if (res.warnings.length > 6) toast("…and " + (res.warnings.length - 6) + " more warnings (see console)", "info");
+  if (res.warnings.length) console.log("Tiled import warnings:", res.warnings);
+}
+
+// Files reach the editor two ways - the Open picker and a drop on the window - so the handling
+// lives here once. Pick or drop game.json together with its PNGs / .pal8 / story.py and they all
+// land in the same project.
+function openFiles(files) {
+  if (!files.length) return;
+  // art / story picked on their own only ADD to the open game - those never need the question
+  const replaces = files.some(function (f) { return /\.(json|pgproj|tmj|tmx)$/i.test(f.name); });
+  if (replaces && !confirmReplace(files[0].name)) return;
+  if (files.some(function (f) { return /\.(tmj|tmx)$/i.test(f.name); })) {
+    importTiledFiles(files).catch(function (e) {
+      toast("Could not open the Tiled map (" + e.message + ") — pick its .tsx/.tsj tilesets and PNGs along with it.", "err");
+      console.error(e);
+    });
+    return;
+  }
+  const f = files.find(function (x) { return /\.json$/i.test(x.name); });
+  if (!f) {                                  // no JSON picked: attach art / story to the OPEN game
+    attachFiles(files).catch(function (e) {
+      toast("Could not add those files (" + e.message + ") — open the PNG, .pal8 or story.py one at a time to see which.", "err");
+      console.error(e);
+    });
+    return;
+  }
+  const fr = new FileReader();
+  fr.onload = function () {
+    let obj;
+    const marks = E.findConflictMarkers(fr.result);
+    if (marks.length) {
+      toast(f.name + " still has git conflict markers (line " + marks[0] +
+            (marks.length > 1 ? " and " + (marks.length - 1) + " more" : "") +
+            ") — two edits of the same rows. Resolve them (in an ASCII map you can see both " +
+            "versions) and load it again.", "err");
+      return;
+    }
+    try { obj = JSON.parse(fr.result); } catch (e) { toast(f.name + " is not valid JSON (" + e.message + ")", "err"); return; }
+    rememberFile(f.name, f);          // so a later Save can tell if something else rewrote it
+    // An EXPORTED scene/project (layers[], the bake input) is not the editor's project shape,
+    // so it goes through the importer rather than deserialize() - which would keep only the
+    // assets and hand back an empty level.
+    const fmt = obj && obj.format;
+    if (fmt === "picogame-scene" || fmt === "picogame-project") {
+      importExportedFiles(obj, f, files).catch(function (e) {
+        toast("Could not open " + f.name + " (" + e.message + ")", "err"); console.error(e);
+      });
+      return;
+    }
+    try { loadSave(obj); toast("Opened " + f.name, "ok"); }
+    catch (e) { toast(f.name + " is JSON, but not a project this editor understands (" + e.message + ")", "err"); console.error(e); }
+  };
+  fr.onerror = function () { toast(unreadable(f, fr), "err"); };
+  fr.readAsText(f);
+}
+if ($("projfile")) $("projfile").onchange = function (ev) {
+  const files = Array.from(ev.target.files || []);
+  ev.target.value = "";
+  openFiles(files);
+};
+
+// --- 13. drop files anywhere on the editor: the same path as Open, with a target to aim at
+if (typeof window !== "undefined") {
+  const root = document.querySelector(".pg-editor") || document.body;
+  let depth = 0;                                   // dragenter/leave fire per child element
+  const show = function (on) { root.classList.toggle("dropping", on); };
+  window.addEventListener("dragover", function (ev) {
+    if (!ev.dataTransfer || Array.prototype.indexOf.call(ev.dataTransfer.types || [], "Files") < 0) return;
+    ev.preventDefault(); ev.dataTransfer.dropEffect = "copy";
+  });
+  window.addEventListener("dragenter", function (ev) {
+    if (!ev.dataTransfer || Array.prototype.indexOf.call(ev.dataTransfer.types || [], "Files") < 0) return;
+    depth++; show(true);
+  });
+  window.addEventListener("dragleave", function () { if (--depth <= 0) { depth = 0; show(false); } });
+  window.addEventListener("drop", function (ev) {
+    if (!ev.dataTransfer || !ev.dataTransfer.files || !ev.dataTransfer.files.length) return;
+    ev.preventDefault(); depth = 0; show(false);
+    openFiles(Array.from(ev.dataTransfer.files));
+  });
+}
+
+// The loadable demos. Each is a .pgproj.json in this folder (served same-origin). The
+// two scrolling demos teach the big-map workflow: load one, inspect its World size + camera.
+const DEMOS = {
+  sample:     { file: "sample.pgproj.json",       msg: "Opened the sample (one screen)" },
+  platformer: { file: "demo_platformer.pgproj.json", msg: "Opened the scrolling platformer — 960×240, follow-camera axis x (clamps at both ends)" },
+  openworld:  { file: "demo_openworld.pgproj.json",  msg: "Opened the open world — 640×480, follow-camera axis xy (free roam both ways)" },
+};
+function loadDemo(name) {
+  const d = DEMOS[name]; if (!d) return;
+  if (!confirmReplace("the " + name + " demo")) { const dd0 = $("demosD"); if (dd0) dd0.open = false; return; }
+  const EDBASE = (typeof window !== "undefined" && window.PG_EDITOR_BASE) || "";
+  const dd = $("demosD"); if (dd) dd.open = false;
+  fetch(EDBASE + d.file).then(function (r) { if (!r.ok) throw new Error("missing " + d.file); return r.json(); })
+    .then(function (o) { loadSave(o); toast(d.msg, "ok"); })     // loadProject() fits the whole world to view
+    .catch(function () { toast("Could not load demo (serve over http, not file://)", "err"); });
+}
+if ($("btnSample")) $("btnSample").onclick = function () { loadDemo("sample"); };
+if ($("btnDemoPlatformer")) $("btnDemoPlatformer").onclick = function () { loadDemo("platformer"); };
+if ($("btnDemoOpen")) $("btnDemoOpen").onclick = function () { loadDemo("openworld"); };
+// Baked export: the SAME module scene_build.py writes (SCENE = {...}), produced in the browser -
+// PNG assets get baked to PAL8 on the spot (inlinePngAssets), so no Python step is needed:
+// drop <name>_scene.py next to your code and picogame_scene.load(pg, module.SCENE).
+if ($("btnExportBaked")) $("btnExportBaked").onclick = async function () {
+  var d = $("exportD"); if (d) d.open = false;
+  var scene;
+  try { scene = E.exportScene(project); }
+  catch (e) { toast("Baked module not written — " + (e.message || e), "err"); console.error(e); return; }
+  var pngIds = Object.keys(scene.assets || {}).filter(function (id) {
+    var t = scene.assets[id].type; return t === "sprite" || t === "tileset" || t === "bitmap";
+  });
+  try {
+    var res = inlinePngAssets(scene, pngIds);
+    if (res.missing.length) { toast("No image data for: " + res.missing.join(", ") + " — re-import those PNGs first", "err"); return; }
+    var text = E.sceneModule(scene);
+    var stem = (L().name || "scene").replace(/\W+/g, "_");
+    var where = await saveText(stem + "_scene.py", text);
+    toast("Exported " + (where === "downloaded" ? "" : where) + stem + "_scene.py (" +
+          (text.length / 1024).toFixed(1) + " KB) — picogame_scene.load(pg, " + stem + "_scene.SCENE)", "ok");
+  } catch (e) { toast("Baked module not written — " + (e.message || e), "err"); console.error(e); }
+};
+// Try in playground: hand THIS level to the browser playground and run it live. The playground bakes
+// colour assets in-browser (no PIL/files), so colour tilesets + rect sprites run natively. PNG-backed
+// assets (sprite/bitmap/tileset) can't be baked in-browser -- but rather than decline, we OFFER to
+// substitute them with coloured placeholder BLOCKS (after a warning) so the level still runs: a PNG
+// sprite becomes a rect of the same size (distinct colour per asset), a PNG tileset becomes a
+// tileset_color (a distinct colour per used tile index). Cancel keeps the clean decline. This is a pure
+// editor-side transform on the handed-over COPY -- the real project is never touched, and the baker /
+// the runner / the playground need no changes (rect + tileset_color are already supported).
+// Transport: stash the (colour-only) scene JSON in localStorage (same-origin, no URL-size limit) and
+// open the playground with ?from=editor; editor.js reads the key, wraps it in a short runner, Runs.
+
+// Distinct, readable placeholder colours cycled across substituted assets so blocks are tell-apart.
+var PLACEHOLDER_COLORS = [
+  [80, 220, 90],    // bright green (often the player)
+  [235, 80, 80],    // red
+  [245, 170, 40],   // orange
+  [170, 100, 235],  // purple
+  [70, 170, 240],   // blue
+  [240, 220, 60],   // yellow
+  [240, 120, 200],  // pink
+];
+
+// Replace PNG-backed assets in an EXPORTED scene copy with colour placeholders. Returns the list of
+// substituted asset ids (for the toast), or throws with a clear message if an asset can't be handled.
+function substitutePngAssets(scene, pngIds) {
+  var ci = 0;
+  var nextColor = function () { return PLACEHOLDER_COLORS[ci++ % PLACEHOLDER_COLORS.length]; };
+  var subbed = [];
+  pngIds.forEach(function (id) {
+    var a = scene.assets[id];
+    if (a.type === "sprite" || a.type === "bitmap") {
+      var fr = a.frame || a.size || [8, 8];               // sprite exports frame=[fw,fh]
+      scene.assets[id] = { type: "rect", size: [fr[0], fr[1]], color: nextColor() };
+      subbed.push(id);
+    } else if (a.type === "tileset") {
+      // PNG image tilemap -> tileset_color. Give each tile index actually used in any tilemap layer a
+      // distinct placeholder colour so the map still renders as coloured tiles. Preserve props (solid
+      // etc.) so collision keeps working. frames come from the asset; used indices from the grids.
+      var tile = a.tile || a.frame || [16, 16];
+      var used = {};
+      (scene.layers || []).forEach(function (L) {
+        if (L.kind === "tilemap" && L.asset === id && L.grid) {
+          L.grid.forEach(function (row) { row.forEach(function (v) { if (v & 0xFF) used[v & 0xFF] = 1; }); });   // strip orientation bits 8-10
+        } else if ((L.kind === "sprite" || L.kind === "group") && L.asset === id) {
+          used[L.frame || 0] = 1;                            // tile objects placed as sprites of this tileset
+        }
+      });
+      var colors = {};
+      Object.keys(used).map(Number).sort(function (x, y) { return x - y; })
+        .forEach(function (v) { colors[String(v)] = nextColor(); });
+      if (!Object.keys(colors).length) colors["1"] = nextColor();   // never emit an empty colour map
+      var repl = { type: "tileset_color", tile: [tile[0], tile[1]], colors: colors };
+      if (a.props) repl.props = a.props;                   // keep solid/coin/goal flags
+      scene.assets[id] = repl;
+      subbed.push(id);
+    } else {
+      throw new Error("can't substitute asset '" + id + "' (type " + a.type + ")");
+    }
+  });
+  // rect + tileset_color are 1-frame per value: reset any sprite-instance frame index on substituted
+  // assets so a >0 frame doesn't overflow the placeholder bitmap.
+  (scene.layers || []).forEach(function (L) {
+    if ((L.kind === "sprite" || L.kind === "group") && subbed.indexOf(L.asset) >= 0) {
+      if (scene.assets[L.asset].type === "rect" && L.frame) L.frame = 0;   // tileset_color keeps its per-value frame
+      if (L.anim) delete L.anim;                           // no animation on placeholders
+    }
+  });
+  return subbed;
+}
+
+function handoffScene(payload) {
+  // the hand-off travels through this browser's storage, so both halves can fail: the write
+  // (full or blocked storage) and the tab (a popup blocker). Neither may be reported as success.
+  try { localStorage.setItem("pg_editor_level", JSON.stringify(payload)); }
+  catch (e) {
+    toast("Could not hand the game to the playground — this browser's storage is full or blocked " +
+          "for the site. Save the game.json and open it in the playground instead.", "err");
+    console.error("handoff", e); return;
+  }
+  var url = (typeof window !== "undefined" && window.PG_PLAYGROUND_URL) || "/play/";  // set in config.js
+  const tab = window.open(url + (url.indexOf("?") < 0 ? "?" : "&") + "from=editor", "_blank");
+  if (tab) toast("Opening in the playground…", "ok");
+  else toast("The playground tab was blocked — allow pop-ups for this site, then press " +
+             "\u25b6 Try in playground again.", "err");
+}
+
+// Bake the editor's loaded PNG assets into inline PAL8 atlases (Canvas -> quantize -> base64) so the
+// playground renders the REAL art. Same rules as the device bake (transparent = alpha<128 -> index 0,
+// <=255 colours kept exactly, else median-cut). Assets whose image isn't loaded fall back to the
+// colour-placeholder substitution below. Returns {inlined: [...ids], missing: [...ids]}.
+function inlinePngAssets(scene, pngIds) {
+  var inlined = [], missing = [];
+  pngIds.forEach(function (id) {
+    var img = images[id];
+    if (!img || !img.complete || !img.naturalWidth) { missing.push(id); return; }
+    var c = document.createElement("canvas");
+    c.width = img.naturalWidth; c.height = img.naturalHeight;
+    var ctx = c.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    var rgba = ctx.getImageData(0, 0, c.width, c.height).data;
+    scene.assets[id] = E.inlinePal8Asset(scene.assets[id], rgba, c.width, c.height);
+    inlined.push(id);
+  });
+  return { inlined: inlined, missing: missing };
+}
+
+// ---- Story: script bodies (project.scripts) + level effects ----------------
+// Zone data {"script": "name"} names a story; the body edited here is the
+// inside of `def name(d):` and rides along on Try in playground. Declarative
+// zones (say/ask/goto) need no body - "Convert to script" ejects one when the
+// story outgrows data. The compiler lives with the playground (one source).
+function storyCompiler() {
+  var base = (typeof window !== "undefined" && window.PG_PLAYGROUND_URL) || "/play/";
+  return import(base + "vendor/runner_stubs.mjs?v=rs5");
+}
+// ---- Zone story form (opens in a MODAL - room the side panel lacks) --------
+// say / ask / goto edit as FIELDS (flags autocomplete, level+point dropdowns);
+// the JSON in the side panel stays the storage format and the quick view.
+// Compiled to picogame_script code at Try in playground.
+function storyKindOf(data) {
+  if (!data) return "none";
+  if (data.script != null) return "script";
+  if (data.say) return "say";
+  if (data.ask) return "ask";
+  if (data.goto) return "goto";
+  return Object.keys(data).length ? "json" : "none";
+}
+function knownFlags() {
+  var flags = {};
+  function addCond(c) { if (c == null) return; (Array.isArray(c) ? c : [c]).forEach(function (x) { flags[String(x).replace(/^!/, "")] = 1; }); }
+  (project.levels || []).forEach(function (lv) {
+    (lv.zones || []).forEach(function (z) {
+      var d = z.data || {};
+      (Array.isArray(d.say) ? d.say : []).forEach(function (e) { if (e && typeof e === "object") { addCond(e.if); if (e.set) flags[e.set] = 1; } });
+      if (d.ask) { if (d.ask.set) flags[d.ask.set] = 1; }
+      addCond(d.if);
+    });
+    (lv.effects || []).forEach(function (r) { addCond(r.if); });
+  });
+  Object.keys(project.scripts || {}).forEach(function (n) {
+    var re = /d\.ev(?:_set)?\(\s*["']([^"']+)["']/g, m;
+    while ((m = re.exec(project.scripts[n]))) flags[m[1]] = 1;
+  });
+  return Object.keys(flags).sort();
+}
+function flagsDatalist() {
+  var dl = document.getElementById("flagsDL");
+  if (!dl) { dl = document.createElement("datalist"); dl.id = "flagsDL"; document.body.appendChild(dl); }
+  dl.innerHTML = "";
+  knownFlags().forEach(function (f) { dl.appendChild(new Option("", f)); });
+}
+function condToText(c) { return c == null ? "" : (Array.isArray(c) ? c.join(", ") : String(c)); }
+function textToCond(t) {
+  t = (t || "").trim();
+  if (!t) return null;
+  if (t.indexOf(",") >= 0) return t.split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+  return t;
+}
+function flagInput(val, set, placeholder) {
+  var inp = mk("input"); inp.type = "text"; inp.setAttribute("list", "flagsDL");
+  inp.value = val || ""; inp.placeholder = placeholder || "";
+  inp.onfocus = function () { snapshot(); };
+  inp.onchange = function () { set(inp.value.trim()); };
+  return inp;
+}
+function linesArea(box, label, lines, set, rows) {
+  box.appendChild(mk("div", "hint", label));
+  var ta = mk("textarea"); ta.rows = rows || 2; ta.value = (lines || []).join("\n");
+  ta.onfocus = function () { snapshot(); };
+  ta.onchange = function () {
+    var v = ta.value.split("\n").filter(function (l) { return l.length; });
+    set(v.length ? v : null);
+  };
+  box.appendChild(ta);
+  return ta;
+}
+function storySkeleton(kind, old) {
+  var keep = {};
+  for (var k in (old || {})) if (!/^(script|say|ask|goto|if|denied)$/.test(k)) keep[k] = old[k];
+  if (kind === "none") return Object.keys(keep).length ? keep : null;
+  if (kind === "json") return old && Object.keys(old).length ? old : {};
+  if (kind === "script") keep.script = (old && old.script) || "";
+  if (kind === "say") keep.say = (old && old.say) || ["..."];
+  if (kind === "ask") keep.ask = (old && old.ask) || { lines: ["..."], set: "" };
+  if (kind === "goto") keep.goto = (old && old.goto) ||
+    [((project.levels[0] || {}).name) || "level1", "spawn"];
+  return keep;
+}
+function storyForm(box, z, rerender) {
+  flagsDatalist();
+  var kind = storyKindOf(z.data);
+  var kr = mk("div", "row"); add(kr, mk("label", null, "story"));
+  var ks = mk("select");
+  [["none", "(none)"], ["say", "say — show text"], ["ask", "ask — A/B question"],
+   ["goto", "goto — travel to a level"], ["script", "script — named code"],
+   ["json", "custom JSON"]].forEach(function (o) { ks.appendChild(new Option(o[1], o[0])); });
+  ks.value = kind;
+  ks.onchange = function () { snapshot(); z.data = storySkeleton(ks.value, z.data); rerender(); };
+  add(kr, ks); box.appendChild(kr);
+
+  if (kind === "say") {
+    var entries = z.data.say;
+    if (entries.length && entries.every(function (e) { return typeof e === "string"; }))
+      entries = [{ lines: entries.slice() }];
+    entries = entries.map(function (e) { return typeof e === "string" ? { lines: [e] } : e; });
+    var write = function () {
+      var out = (entries.length === 1 && entries[0].if == null && !entries[0].set)
+        ? entries[0].lines.slice() : entries;
+      z.data.say = out;
+    };
+    box.appendChild(hint(entries.length > 1
+      ? "Variants top-down, the FIRST whose condition matches wins; a variant with no condition is the default."
+      : "Text the box shows (one screen line per row). Add a variant to branch on story flags."));
+    entries.forEach(function (e, i) {
+      var row = mk("div", "row");
+      add(row, mk("label", null, "if"));
+      var fi = flagInput(condToText(e.if), function (v) {
+        var c = textToCond(v); if (c == null) delete e.if; else e.if = c; write();
+      }, "always");
+      fi.title = "flag, !flag, or comma list (AND)";
+      add(row, fi, mk("label", null, "set"));
+      add(row, flagInput(e.set || "", function (v) { if (v) e.set = v; else delete e.set; write(); }, "-"));
+      if (entries.length > 1 || e.if != null) {
+        var xb = mk("button", "del", "×"); xb.title = "remove this variant";
+        xb.onclick = function () { snapshot(); entries.splice(i, 1); write(); rerender(); };
+        add(row, xb);
+      }
+      box.appendChild(row);
+      linesArea(box, "", e.lines, function (v) { e.lines = v || [""]; write(); });
+    });
+    var ar = mk("div", "row");
+    add(ar, btn("+ variant", function () { snapshot(); entries.push({ if: "", lines: [""] }); z.data.say = entries; rerender(); }));
+    box.appendChild(ar);
+  } else if (kind === "ask") {
+    var a = z.data.ask;
+    linesArea(box, "Question (one screen line per row):", a.lines, function (v) { a.lines = v || [""]; });
+    var sr = mk("div", "row");
+    add(sr, mk("label", null, "A sets flag"));
+    add(sr, flagInput(a.set || "", function (v) { if (v) a.set = v; else delete a.set; }, "e.g. gate_open"));
+    box.appendChild(sr);
+    linesArea(box, "After A (optional):", a.yes, function (v) { if (v) a.yes = v; else delete a.yes; });
+    linesArea(box, "After B (optional):", a.no, function (v) { if (v) a.no = v; else delete a.no; });
+    linesArea(box, "When the flag is ALREADY set (one-shot switch, optional):", a.done,
+      function (v) { if (v) a.done = v; else delete a.done; });
+  } else if (kind === "goto") {
+    var t = Array.isArray(z.data.goto) ? z.data.goto : [z.data.goto];
+    var lr = mk("div", "row"); add(lr, mk("label", null, "level"));
+    var ls = mk("select");
+    (project.levels || []).forEach(function (lv) { ls.appendChild(new Option(lv.name, lv.name)); });
+    if (t[0] && !Array.prototype.some.call(ls.options, function (o) { return o.value === t[0]; }))
+      ls.appendChild(new Option(t[0] + " (?)", t[0]));
+    ls.value = t[0] || "";
+    add(lr, ls, mk("label", null, "at point"));
+    var ps = mk("select");
+    function fillPoints() {
+      ps.innerHTML = "";
+      var lv = (project.levels || []).filter(function (l) { return l.name === ls.value; })[0];
+      ((lv && lv.points) || []).forEach(function (p) { ps.appendChild(new Option(p.name, p.name)); });
+      if (!ps.options.length) ps.appendChild(new Option("(no points — lands on the player sprite)", ""));
+      if (t[1]) {
+        if (!Array.prototype.some.call(ps.options, function (o) { return o.value === t[1]; }))
+          ps.appendChild(new Option(t[1] + " (?)", t[1]));
+        ps.value = t[1];
+      }
+    }
+    fillPoints();
+    var writeGoto = function () {
+      snapshot();
+      z.data.goto = ps.value ? [ls.value, ps.value] : [ls.value];
+    };
+    ls.onchange = function () { fillPoints(); writeGoto(); };
+    ps.onchange = writeGoto;
+    add(lr, ps); box.appendChild(lr);
+    box.appendChild(hint("Put the arrival point OUTSIDE this level's exit zones, or the story bounces straight back."));
+    var gr = mk("div", "row");
+    add(gr, mk("label", null, "only if"));
+    add(gr, flagInput(condToText(z.data.if), function (v) {
+      snapshot(); var c = textToCond(v); if (c == null) delete z.data.if; else z.data.if = c;
+    }, "always"));
+    box.appendChild(gr);
+    linesArea(box, "Refusal text when the condition fails (optional):", z.data.denied,
+      function (v) { snapshot(); if (v) z.data.denied = v; else delete z.data.denied; });
+  } else if (kind === "script") {
+    var nr = mk("div", "row"); add(nr, mk("label", null, "name"));
+    var ni = mk("input"); ni.type = "text"; ni.value = z.data.script || "";
+    ni.onfocus = function () { snapshot(); };
+    ni.onchange = function () { z.data.script = ni.value.trim(); };
+    add(nr, ni); box.appendChild(nr);
+    box.appendChild(hint("Runs <code>def name(d)</code> from <b>story.py</b> next to game.json (a Python file you own); the Story panel holds legacy bodies until they are saved there."));
+  } else if (kind === "json") {
+    fieldData(box, z, "data (JSON) — free-form; script keys: script / say / ask / goto / if / denied:");
+  }
+}
+
+function openStoryModal(z) {
+  var ov = document.getElementById("storyModal");
+  if (ov) ov.remove();
+  ov = mk("div", "overlay"); ov.id = "storyModal";
+  var card = mk("div", "card storycard");
+  var body = mk("div");
+  function rerender() { body.innerHTML = ""; storyForm(body, z, rerender); }
+  function close() {
+    ov.remove();
+    document.removeEventListener("keydown", onEsc, true);
+    renderPanel();                                       // the JSON quick view catches up
+  }
+  function onEsc(e) { if (e.key === "Escape") { e.stopPropagation(); close(); } }
+  document.addEventListener("keydown", onEsc, true);
+  ov.onclick = function (e) { if (e.target === ov) close(); };
+  rerender();
+  add(card, h3("Zone story \u2014 " + (z.tag || "zone")), body);
+  var br = mk("div", "row");
+  add(br, btn("Done", close));
+  card.appendChild(br);
+  ov.appendChild(card);
+  (document.querySelector(".pg-editor") || document.body).appendChild(ov);
+}
+
+// ---- Story effects form (modal): rules edited with real tile thumbnails ----
+// Compact layout: label + picker share a row, swap from/to sit on one line,
+// sprites are small toggle chips - a rule reads like a sentence.
+function frow(box, label) {
+  var r = mk("div", "frow");
+  if (label != null) add(r, mk("label", null, label));
+  box.appendChild(r);
+  return r;
+}
+function tilePickStrip(row, a, aid, isSel, onPick, withNone) {
+  var el = mk("span", "tiles");
+  if (withNone) {
+    var w0 = mk("span", "tcell");
+    var c0 = mk("canvas"); c0.width = 30; c0.height = 30; c0.title = "none";
+    var g = c0.getContext("2d"); g.strokeStyle = "#889"; g.lineWidth = 2; g.beginPath(); g.moveTo(7, 7); g.lineTo(23, 23); g.moveTo(23, 7); g.lineTo(7, 23); g.stroke();
+    if (isSel(null)) c0.className = "sel";
+    c0.onclick = function () { onPick(null); };
+    add(w0, c0, mk("div", "tnum", "\u2205"));
+    el.appendChild(w0);
+  }
+  for (var v = 1; v < E.tileCount(a); v++) (function (v) {
+    var wrap = mk("span", "tcell");
+    var cv = mk("canvas"); cv.width = 30; cv.height = 30; cv.title = "tile " + v;
+    drawThumb(cv, a, aid, v);
+    if (isSel(v)) cv.className = "sel";
+    cv.onclick = function () { onPick(v); };
+    add(wrap, cv, mk("div", "tnum", String(v)));
+    el.appendChild(wrap);
+  })(v);
+  row.appendChild(el);
+}
+function tileToggleRow(box, label, r, key, a, aid, write, rerender) {
+  var row = frow(box, label);
+  tilePickStrip(row, a, aid,
+    function (v) { return (r[key] || []).indexOf(v) >= 0; },
+    function (v) {
+      snapshot();
+      var list = r[key] || [];
+      var i = list.indexOf(v);
+      if (i >= 0) list.splice(i, 1); else list.push(v);
+      if (list.length) r[key] = list; else delete r[key];
+      write(); rerender();
+    });
+}
+function spriteChips(row, r, key, names, write, rerender) {
+  names.forEach(function (n) {
+    var b = mk("button", "chipbtn" + ((r[key] || []).indexOf(n) >= 0 ? " on" : ""), n);
+    b.onclick = function () {
+      snapshot();
+      var list = r[key] || [];
+      var i = list.indexOf(n);
+      if (i >= 0) list.splice(i, 1); else list.push(n);
+      if (list.length) r[key] = list; else delete r[key];
+      write(); rerender();
+    };
+    row.appendChild(b);
+  });
+}
+function effectsForm(box, lv, rerender) {
+  flagsDatalist();
+  var rules = lv.effects || [];
+  var write = function () { if (rules.length) lv.effects = rules; else delete lv.effects; };
+  var tmA = lv.tilemaps[0];
+  var aid = tmA && tmA.asset, a = aid && project.assets[aid];
+  var names = [];
+  (lv.entities || []).forEach(function (en) { if (en.name && names.indexOf(en.name) < 0) names.push(en.name); });
+  box.appendChild(hint("Rules replayed on level load and whenever a story flag is set — " +
+    "the world catches up with the story (a pulled lever keeps the gate open after map travel)."));
+  rules.forEach(function (r, i) {
+    var head = frow(box, "when");
+    add(head, flagInput(condToText(r.if), function (v) {
+      var c = textToCond(v); if (c == null) delete r.if; else r.if = c; write();
+    }, "e.g. gate_open"));
+    var xb = mk("button", "del", "\u00d7"); xb.title = "remove this rule";
+    xb.onclick = function () { snapshot(); rules.splice(i, 1); write(); rerender(); };
+    add(head, xb);
+    if (a) {
+      var sw = frow(box, "swap");
+      tilePickStrip(sw, a, aid,
+        function (v) { return r.swap ? r.swap[0] === v : v === null; },
+        function (v) {
+          snapshot();
+          if (v === null) delete r.swap;
+          else r.swap = [v, (r.swap && r.swap[1]) || v];
+          write(); rerender();
+        }, true);
+      if (r.swap) {
+        add(sw, mk("span", "fxarrow", "\u2192"));
+        tilePickStrip(sw, a, aid,
+          function (v) { return r.swap[1] === v; },
+          function (v) { snapshot(); r.swap[1] = v; write(); rerender(); });
+      }
+      tileToggleRow(box, "walkable", r, "unsolid", a, aid, write, rerender);
+      tileToggleRow(box, "solid", r, "solid", a, aid, write, rerender);
+    }
+    if (names.length) {
+      var sp = frow(box, "hide");
+      spriteChips(sp, r, "hide", names, write, rerender);
+      var sp2 = frow(box, "show");
+      spriteChips(sp2, r, "show", names, write, rerender);
+    }
+    box.appendChild(mk("div", "ddsep"));
+  });
+  var ar = frow(box, null);
+  add(ar, btn("+ rule", function () { snapshot(); rules.push({ if: "" }); lv.effects = rules; rerender(); }));
+}
+function openEffectsModal(lv) {
+  var ov = document.getElementById("storyModal");
+  if (ov) ov.remove();
+  ov = mk("div", "overlay"); ov.id = "storyModal";
+  var card = mk("div", "card storycard");
+  var body = mk("div");
+  function rerender() { body.innerHTML = ""; effectsForm(body, lv, rerender); }
+  function close() {
+    ov.remove();
+    document.removeEventListener("keydown", onEsc, true);
+    renderPanel();
+  }
+  function onEsc(e) { if (e.key === "Escape") { e.stopPropagation(); close(); } }
+  document.addEventListener("keydown", onEsc, true);
+  ov.onclick = function (e) { if (e.target === ov) close(); };
+  rerender();
+  add(card, h3("Story effects \u2014 " + (lv.name || "level")), body);
+  var br = mk("div", "row");
+  add(br, btn("Done", close));
+  card.appendChild(br);
+  ov.appendChild(card);
+  (document.querySelector(".pg-editor") || document.body).appendChild(ov);
+}
+
+function storyScriptNames() {
+  var names = {};
+  Object.keys(project.scripts || {}).forEach(function (n) { names[n] = 1; });
+  (project.levels || []).forEach(function (lv) {
+    (lv.zones || []).forEach(function (z) { if (z.data && z.data.script) names[z.data.script] = 1; });
+  });
+  return Object.keys(names).sort();
+}
+var storyEd = null;    // CodeMirror instance once mounted; textarea until then / offline
+var storyCur = "";     // script name whose body is in the pane
+function storyGet() { return storyEd ? storyEd.getValue() : $("storyBody").value; }
+function storySet(v) { if (storyEd) storyEd.setValue(v); else $("storyBody").value = v; }
+function storyPersist() {
+  if (!storyCur) return;
+  var v = storyGet();
+  project.scripts = project.scripts || {};
+  if (project.scripts[storyCur] !== v) {
+    snapshot(); project.scripts[storyCur] = v; scheduleAutosave();
+  }
+}
+function mountStoryEditor() {
+  // Reuse the playground's CodeMirror bundle (same origin on the site; the hosted URL for the
+  // standalone clone) for highlighting + indentation. Offline: the plain textarea stays.
+  var cmEl = $("storyCM");
+  if (storyEd || !cmEl || cmEl.dataset.tried) return;
+  cmEl.dataset.tried = "1";
+  var base = (typeof window !== "undefined" && window.PG_PLAYGROUND_URL) || "/play/";
+  import(base + "vendor/codemirror.js?v=lh7").then(function (cm) {
+    storyEd = cm.mountEditor(cmEl, $("storyBody").value);
+    cmEl.style.display = "block";
+    $("storyBody").style.display = "none";
+  }).catch(function () { /* offline standalone: textarea fallback */ });
+}
+function refreshStory() {
+  var selEl = $("storySel"); if (!selEl) return;
+  var cur = storyCur || selEl.value;
+  selEl.innerHTML = "";
+  selEl.appendChild(new Option("(pick a script)", ""));
+  storyScriptNames().forEach(function (n) {
+    var mark = project.scripts && project.scripts[n] && project.scripts[n].trim() ? "" : " (placeholder)";
+    selEl.appendChild(new Option(n + mark, n));
+  });
+  if (cur) selEl.value = cur;
+  storyCur = selEl.value;
+  storySet((project.scripts && project.scripts[storyCur]) || "");
+}
+if ($("storyD")) {
+  $("storyD").addEventListener("toggle", function () {
+    if ($("storyD").open) { refreshStory(); mountStoryEditor(); }
+    else storyPersist();                                     // closing the panel saves
+  });
+  $("storySel").onchange = function () {
+    storyPersist();                                          // keep edits when switching
+    storyCur = $("storySel").value;
+    storySet((project.scripts && project.scripts[storyCur]) || "");
+  };
+  $("storyApply").onclick = function () { storyPersist(); refreshStory(); toast("Script saved", "ok"); };
+  $("storyNew").onclick = function () {
+    var n = window.prompt('Script name (a zone starts it via {"script": "name"}):', "");
+    if (!n) return;
+    storyPersist();
+    snapshot();
+    project.scripts = project.scripts || {};
+    if (!(n in project.scripts)) project.scripts[n] = "";
+    storyCur = n;
+    refreshStory();
+  };
+  $("storyBody").onkeydown = function (ev) {               // textarea fallback: Tab indents
+    if (ev.key === "Tab") {
+      ev.preventDefault();
+      var t = ev.target, a = t.selectionStart;
+      t.value = t.value.slice(0, a) + "    " + t.value.slice(t.selectionEnd);
+      t.selectionStart = t.selectionEnd = a + 4;
+    }
+  };
+}
+function ejectZoneScript(z) {
+  storyCompiler().then(function (mod) {
+    var body = mod.compileZoneBody(z.data, { tests: [], sets: [] });
+    if (!body) { toast("Nothing declarative in this zone (needs say / ask / goto data)", "err"); return; }
+    var goto_ = z.data.goto;
+    var def = goto_ ? "to_" + (Array.isArray(goto_) ? goto_[0] : goto_)
+                    : (z.data.say ? "say_" : "ask_") + (z.tag || "zone");
+    var name = window.prompt("Script name:", def);
+    if (!name) return;
+    snapshot();
+    project.scripts = project.scripts || {};
+    project.scripts[name] = body.join("\n");
+    z.data = { script: name };
+    toast('Converted — the body now lives under Story ▾ as "' + name + '"', "ok");
+    storyCur = name;
+    if ($("storyD")) $("storyD").open = true;
+    renderPanel(); refreshStory(); mountStoryEditor(); scheduleAutosave();
+  }).catch(function () {
+    toast("Convert needs the playground reachable (the compiler lives there)", "err");
+  });
+}
+
+if ($("btnTryPlay")) $("btnTryPlay").onclick = function () {
+  // Hand over the WHOLE game the way the device gets it: game.json (start = the level you are
+  // looking at), the .pal8 art baked from the loaded PNGs, and story.py. The playground stages
+  // them next to the runner, which opens game.json through picogame_scene.Game.
+  var game;
+  try { game = E.exportGame(project); }
+  catch (e) { toast("Could not build game.json: " + (e.message || e), "err"); console.error(e); return; }
+  game.start = L().name;          // playtest what you are looking at...
+  if (L().name !== startName())   // ...but never let that quietly stand in for the board's boot level
+    toast("Playing " + L().name + " — the board boots into " + startName() + " (\u2605 sets it)", "info");
+  var files = {}, missing = [];
+  for (var id in game.assets) {
+    if (!E.isImg(project.assets[id])) continue;
+    var blob = null;
+    try { blob = pal8Of(id); } catch (e) { toast("Cannot hand this game over — " + e.message, "err"); return; }
+    if (blob) files[pal8Name(project.assets[id])] = bytesB64(blob);
+    else missing.push(id);
+  }
+  if (missing.length) {
+    var ok = window.confirm(
+      "No image data for: " + missing.join(", ") + ".\n\n" +
+      "Open the playground with coloured placeholder blocks for those assets?\n\n" +
+      "OK = run with placeholders   \u00b7   Cancel = don't open");
+    if (!ok) { toast("Cancelled", "info"); return; }
+    try { substitutePngAssetsGame(game, missing); }
+    catch (e) { toast("Couldn't substitute an image asset: " + (e.message || e), "err"); return; }
+  }
+  handoffScene({ format: "picogame-game-handoff", start: game.start, game: game, files: files, story: storyText() });
+  if (missing.length) toast("Playing with coloured blocks for " + missing.length + " PNG asset" +
+                            (missing.length === 1 ? "" : "s") + " — the playground cannot bake PNGs.", "info");
+};
+
+// Placeholder blocks for PNG assets the editor has no pixels for, on a game.json copy: a sprite
+// becomes a rect of its frame size, a tileset a tileset_color with one colour per used tile.
+function substitutePngAssetsGame(game, ids) {
+  var ci = 0;
+  var nextColor = function () { return PLACEHOLDER_COLORS[ci++ % PLACEHOLDER_COLORS.length]; };
+  ids.forEach(function (id) {
+    var a = game.assets[id];
+    if (a.type === "sprite" || a.type === "bitmap") {
+      var fr = a.frame || a.size || [8, 8];
+      game.assets[id] = { type: "rect", size: [fr[0], fr[1]], color: nextColor() };
+    } else if (a.type === "tileset") {
+      var used = {};
+      (game.levels || []).forEach(function (lv) {
+        (lv.layers || []).forEach(function (Ly) {
+          if (Ly.kind === "tilemap" && Ly.asset === id) {
+            E.layerGrid(Ly, game.assets).forEach(function (row) { row.forEach(function (v) { if (v & 0xFF) used[v & 0xFF] = 1; }); });
+          } else if ((Ly.kind === "sprite" || Ly.kind === "group") && Ly.asset === id) used[Ly.frame || 0] = 1;
+        });
+      });
+      var colors = {};
+      Object.keys(used).map(Number).sort(function (x, y) { return x - y; }).forEach(function (v) { colors[String(v)] = nextColor(); });
+      if (!Object.keys(colors).length) colors["1"] = nextColor();
+      var repl = { type: "tileset_color", tile: [(a.tile || a.frame || [16, 16])[0], (a.tile || a.frame || [16, 16])[1]], colors: colors };
+      if (a.props) repl.props = a.props;
+      if (a.legend) repl.legend = a.legend;
+      game.assets[id] = repl;
+    } else throw new Error("can't substitute asset '" + id + "' (type " + a.type + ")");
+  });
+  (game.levels || []).forEach(function (lv) {
+    (lv.layers || []).forEach(function (Ly) {
+      if ((Ly.kind === "sprite" || Ly.kind === "group") && ids.indexOf(Ly.asset) >= 0) {
+        if (game.assets[Ly.asset].type === "rect" && Ly.frame) Ly.frame = 0;
+        if (Ly.anim) delete Ly.anim;
+      }
+    });
+  });
+}
+
+// nav buttons in top bar (if present)
+["btnFit", "btnZoom100", "btnZoomIn", "btnZoomOut"].forEach(function (id) { /* wired below if present */ });
+if ($("btnUndo")) $("btnUndo").onclick = doUndo;
+if ($("btnRedo")) $("btnRedo").onclick = doRedo;
+if ($("btnFit")) $("btnFit").onclick = doFit;
+if ($("btnZoom100")) $("btnZoom100").onclick = function () { vp.setZoom(1); };
+if ($("btnZoomIn")) $("btnZoomIn").onclick = function () { vp.zoomAt(vp.w / 2, vp.h / 2, 1.25); };
+if ($("btnZoomOut")) $("btnZoomOut").onclick = function () { vp.zoomAt(vp.w / 2, vp.h / 2, 0.8); };
+
+// ---------------------------------------------------------------- overlays (help)
+function closeOverlays() { const c = $("cheatsheet"); if (c) c.hidden = true; const g = $("gettingStarted"); if (g) g.hidden = true; }
+function toggleCheatsheet() { const c = $("cheatsheet"); if (c) c.hidden = !c.hidden; }
+// The getting-started card used to be one-shot (dismissed once, gone for good) while ? Help held
+// only the key table. They are two halves of the same help, so each opens the other.
+function showGuide() {
+  const g = $("gettingStarted"), c = $("cheatsheet");
+  if (c) c.hidden = true;
+  if (g) g.hidden = false;
+  // Reopened from Help with a level already open, "Start from scratch" reads as "throw mine
+  // away" - it only ever closed the card, but nobody dares press it. Say what it does.
+  const b = $("gsClose");
+  if (b) { b.textContent = "Close"; b.title = "Close this card and carry on with the open level"; }
+}
+if ($("csGuide")) $("csGuide").onclick = showGuide;
+if ($("gsKeys")) $("gsKeys").onclick = function () { dismissGS(); toggleCheatsheet(); };
+if ($("btnHelp")) $("btnHelp").onclick = toggleCheatsheet;
+if ($("cheatsheetClose")) $("cheatsheetClose").onclick = function () { $("cheatsheet").hidden = true; };
+function dismissGS() { const g = $("gettingStarted"); if (g) g.hidden = true; try { localStorage.setItem("pg_ed_seen", "1"); } catch (e) {} }
+if ($("gsClose")) $("gsClose").onclick = dismissGS;
+if ($("gsCloseX")) $("gsCloseX").onclick = dismissGS;
+if ($("gsSample")) $("gsSample").onclick = function () { dismissGS(); loadDemo("sample"); };
+if ($("gsPlatformer")) $("gsPlatformer").onclick = function () { dismissGS(); loadDemo("platformer"); };
+if ($("gsOpen")) $("gsOpen").onclick = function () { dismissGS(); loadDemo("openworld"); };
+
+// tool buttons
+document.querySelectorAll(".tool").forEach(function (b) {
+  b.onclick = function () { setTool(b.dataset.tool); };
+  const m = TOOL_META[b.dataset.tool]; if (m) b.title = m.tip;
+});
+
+// ================================================================ RENDER LOOP
+function frame() {
+  if (canvas.width !== Math.round(canvas.getBoundingClientRect().width * (window.devicePixelRatio || 1))) resizeCanvas();
+  const guide = guidePos();
+  R.draw(ctx, vp, project, L(), images, sel, {
+    showFlags: showFlags, showGrid: showGrid, gridTile: gridTileSize(),
+    rubberRect: rubberRect, tileSel: tileSelRect, guideX: guide.x, guideY: guide.y
+  });
+  if (mmCtx) MM.draw(mmCtx, minimap.clientWidth, minimap.clientHeight, vp, project, L());
+  updateStatus();
+  requestAnimationFrame(frame);
+}
+// one-screen guide box sits at the camera's current focus if following, else at 0,0
+function guidePos() { return { x: 0, y: 0 }; }
+
+window.addEventListener("resize", function () { resizeCanvas(); });
+
+// expose a direct sample-load hook (used by file:// contexts where fetch is blocked)
+window.__pgEdLoadSample = function (obj) { loadSave(obj); };
+
+// ---------------------------------------------------------------- init
+function init() {
+  resizeCanvas();
+  // resume the autosaved session, if any (see scheduleAutosave)
+  let restored = false;
+  try {
+    const raw = localStorage.getItem(AUTOSAVE_KEY);
+    if (raw) { loadSave(JSON.parse(raw)); restored = true; }
+  } catch (e) {
+    // the only safety net in the editor: never let it fail in silence, and never overwrite the
+    // blob that failed to open - it may still be recoverable by hand from this browser's storage
+    autosavePaused = true;
+    console.error("autosave restore", e);
+    toast("Your last session could not be reopened. It is still in this browser's storage, so " +
+          "nothing was overwritten — Open a saved game.json to carry on, or New to start clean.", "err");
+  }
+  // first-run getting-started overlay (dismissible; remembered; skipped when resuming)
+  let seen = false; try { seen = localStorage.getItem("pg_ed_seen") === "1"; } catch (e) {}
+  const gs = $("gettingStarted"); if (gs && (seen || restored)) gs.hidden = true;
+  refreshChrome(); renderPanel(); doFit(); frame();
+  if (restored) toast("Restored your last session — New starts a fresh project", "ok");
+}
+init();
+})();   // end IIFE (keeps app.js re-loadable per open without redeclaring globals)

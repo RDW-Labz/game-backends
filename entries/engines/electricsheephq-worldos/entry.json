@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T20:03:21Z",
+ "category": "engines",
+ "commit": "4373633c9222",
+ "delivery": "reference",
+ "description": "electricsheephq/WorldOS \u2014 WorldOS - Simulate worlds. Evolve games. Free for personal/non-commercial use.",
+ "language": "python",
+ "license": "none",
+ "license_file": "COMMERCIAL-LICENSE.md",
+ "license_verdict": "unlicensed-reference",
+ "name": "WorldOS",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 30205564,
+ "slug": "electricsheephq-worldos",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 25,
+ "system": "WorldOS - Simulate worlds. Evolve games. Free for personal/non-commercial use.",
+ "upstream": "https://github.com/electricsheephq/WorldOS",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

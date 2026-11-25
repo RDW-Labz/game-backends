@@ -1,0 +1,136 @@
+# Simulator stand-in for CircuitPython's device-only `synthio`. Just enough of the API that
+# picogame_synth uses, backed by _simaudio (renders notes -> pygame.mixer). On hardware the REAL
+# synthio is used; this file is only found under CPython (the sim dir is on sys.path).
+
+import _simaudio
+
+midi_to_hz = _simaudio.midi_to_hz
+
+
+class Envelope:
+    def __init__(self, attack_time=0.005, decay_time=0.06, sustain_level=0.0, release_time=0.08):
+        self.attack_time = attack_time
+        self.decay_time = decay_time
+        self.sustain_level = sustain_level
+        self.release_time = release_time
+
+
+class LFO:
+    def __init__(self, waveform=None, rate=1.0, scale=1.0, offset=0.0, once=False):
+        self.waveform = waveform
+        self.rate = rate
+        self.scale = scale
+        self.offset = offset
+        self.once = once
+
+    def retrigger(self):
+        pass                                   # the sim bakes the sweep into the rendered clip
+
+
+class FilterMode:
+    LOW_PASS = "low_pass"
+    HIGH_PASS = "high_pass"
+
+
+class Biquad:
+    def __init__(self, mode, frequency, Q=0.7071):
+        self.mode = mode
+        self.frequency = frequency          # device: BlockInput (an LFO sweeps the cutoff)
+        self.Q = Q
+
+
+class Note:
+    def __init__(self, frequency=440.0, waveform=None, envelope=None, amplitude=1.0,
+                 bend=None, filter=None, ring_frequency=0.0, ring_waveform=None,
+                 ring_bend=None, panning=0.0):
+        self.frequency = frequency
+        self.waveform = waveform
+        self.envelope = envelope or Envelope()
+        self.amplitude = amplitude
+        self.bend = bend
+        self.filter = filter
+        self.ring_frequency = ring_frequency   # device: ring modulation (bell/metal timbres)
+        self.ring_waveform = ring_waveform
+        self.ring_bend = ring_bend
+        self.panning = panning
+
+
+def _parse_events(data):
+    """Parse raw MTrk event bytes (as load_midi/our in-code builder emit) -> [(midi, on_tick, dur_tick)]."""
+    notes, active = [], {}
+    i, tick, ln = 0, 0, len(data)
+    while i < ln:
+        delta = 0                              # variable-length delta time
+        while i < ln:
+            b = data[i]
+            i += 1
+            delta = (delta << 7) | (b & 0x7F)
+            if not (b & 0x80):
+                break
+        tick += delta
+        if i >= ln:
+            break
+        st = data[i]
+        i += 1
+        if st == 0xFF:                         # meta event: <type> <len> <bytes>
+            if i + 1 >= ln:
+                break
+            i += 1
+            mlen = data[i]
+            i += 1 + mlen
+            continue
+        if i + 1 >= ln:
+            break
+        note = data[i]
+        vel = data[i + 1]
+        i += 2
+        if (st & 0xF0) == 0x90 and vel > 0:
+            active[note] = tick
+        else:                                  # note-off (0x80, or 0x90 with velocity 0)
+            on = active.pop(note, None)
+            if on is not None:
+                notes.append((note, on, max(1, tick - on)))
+    return notes
+
+
+class MidiTrack:
+    def __init__(self, events, tempo=960, sample_rate=22050, waveform=None, envelope=None):
+        self._tempo = tempo                    # ticks per second
+        self._wave = waveform
+        self._env = envelope or Envelope()
+        try:
+            self._notes = _parse_events(bytes(events))
+        except Exception:
+            self._notes = []
+
+
+def _warn_if_held(note):
+    """Real synthio SUSTAINS a pressed note for as long as it is held, re-reading its live
+    .frequency/.amplitude every audio buffer - that is how picogame_synth.Drone drives an engine
+    or siren from per-frame set(). The sim renders ONE fixed-length clip at press() and never
+    re-renders, so a Drone is inaudible here (a picoracer engine built with amplitude=0.0 is
+    literally silence). Say that once rather than misrepresenting the sound."""
+    env = getattr(note, "envelope", None)
+    if env is None or float(getattr(env, "sustain_level", 0.0)) <= 0.0:
+        return                                 # a one-shot SFX: the clip model is faithful enough
+    import _host                               # lazy: keeps this shim importable on its own
+    _host.note("HELD note (sustain_level > 0, e.g. picogame_synth.Drone): the sim plays one "
+               "fixed-length clip at press() and never re-renders, so per-frame set() is "
+               "inaudible here - judge engine/siren/drone sounds on device.")
+
+
+class Synthesizer:
+    def __init__(self, sample_rate=22050, channel_count=1):
+        self._voice = None                     # set by the Mixer voice that plays this synth
+
+    def press(self, note):
+        lvl = self._voice.level if self._voice is not None else 0.7
+        for n in note if isinstance(note, (tuple, list)) else (note,):
+            _warn_if_held(n)
+            _simaudio.play_note(n, lvl)        # a drum() voice is a tuple of notes
+
+    def release(self, note):
+        pass                                   # one-shot clips self-terminate
+
+    def deinit(self):
+        pass                                   # parity with CP's Synthesizer.deinit()

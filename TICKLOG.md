@@ -3389,3 +3389,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/nguyennp-24-root-motion-batch-transfer-blender
   - reference engines/andrey1994-game-inspector
   - reference engines/ryanawalters-powerof2imageresizer
+
+- **2026-11-25 20:03 UTC** — tick 890: +2 screened, +4 reference, 28 skipped, catalogue=1772
+  - added engines/makerclasscz-picogame (MIT, vendored)
+  - added engines/electricsheephq-worldos (none, reference)
+  - reference engines/carlosmatheus-pygin
+  - reference engines/rubatopy-rubato
+  - reference engines/ossls-blendyard
+  - reference engines/individualcoder-gameplus-editor

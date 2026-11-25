@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 19:46 UTC · 1766 entries · 444 vendored, 1322 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 20:03 UTC · 1772 entries · 445 vendored, 1327 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 720 | 171 | 549 |
+| [engines](#engines) — Game engines and engine subsystems | 726 | 172 | 554 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 19:46 UTC · 1766 entries · 444 vendored, 1322 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 720 entries
+**Game engines and engine subsystems** — 726 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -124,6 +124,7 @@ _Generated 2026-11-25 19:46 UTC · 1766 entries · 444 vendored, 1322 reference-
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blah](entries/engines/noelfb-blah/README.md) | A small 2d c++ game framework | c++ | MIT | reference | [NoelFB/blah](https://github.com/NoelFB/blah) @ `2023-04-27 (branch tip at catalogue time)` |
 | [blender_bevy_toolkit](entries/engines/sdfgeoff-blender-bevy-toolkit/README.md) | A blender addon and bevy plugin to use Blender as an editor for Bevy | python | unknown | reference | [sdfgeoff/blender_bevy_toolkit](https://github.com/sdfgeoff/blender_bevy_toolkit) @ `2022-05-18 (branch tip at catalogue time)` |
+| [blendyard](entries/engines/ossls-blendyard/README.md) | A collection of tools for working with Blender and O3DE | python | MIT | reference | [ossls/blendyard](https://github.com/ossls/blendyard) @ `2021-08-20 (branch tip at catalogue time)` |
 | [blip](entries/engines/bliporg-blip/README.md) | Blip is a cross-platform fully scriptable game engine and distribution platform. | go | Apache-2.0 | reference | [bliporg/blip](https://github.com/bliporg/blip) @ `905aacdb0344` |
 | [boardgame.io](entries/engines/boardgameio-boardgame-io/README.md) | State Management and Multiplayer Networking for Turn-Based Games | typescript | MIT | vendored | [boardgameio/boardgame.io](https://github.com/boardgameio/boardgame.io) @ `47adef2b46e3` |
 | [bones](entries/engines/fishfolk-bones/README.md) | An easy-to-use game engine for making real games. | rust | Apache-2.0 | vendored | [fishfolk/bones](https://github.com/fishfolk/bones) @ `cd62a2f1ccdb` |
@@ -280,6 +281,7 @@ _Generated 2026-11-25 19:46 UTC · 1766 entries · 444 vendored, 1322 reference-
 | [Gamepad](entries/engines/piborg-gamepad/README.md) | A simple library for getting game controller and joystick inputs into Python in Linux. | python | MIT | vendored | [piborg/Gamepad](https://github.com/piborg/Gamepad) @ `016628623078` |
 | [GamepadMotionHelpers](entries/engines/jibbsmart-gamepadmotionhelpers/README.md) | Lightweight header-only library for sensor fusion, gyro calibration, etc. BYO input library (eg SDL2). | c++ | MIT | reference | [JibbSmart/GamepadMotionHelpers](https://github.com/JibbSmart/GamepadMotionHelpers) @ `2026-07-13 (branch tip at catalogue time)` |
 | [gameplay](entries/engines/gameplay3d-gameplay/README.md) | Open-source, cross-platform, C++ game engine for creating 2D/3D games. | c++ | unknown | reference | [gameplay3d/gameplay](https://github.com/gameplay3d/gameplay) @ `2025-02-25 (branch tip at catalogue time)` |
+| [GamePlus-Editor](entries/engines/individualcoder-gameplus-editor/README.md) | A gui editor for making 3d games in python | python | MIT | reference | [IndividualCoder/GamePlus-Editor](https://github.com/IndividualCoder/GamePlus-Editor) @ `2024-09-29 (branch tip at catalogue time)` |
 | [GameStringer](entries/engines/rouges78-gamestringer/README.md) | Desktop app that auto-detects a game's engine, extracts the text, translates it with local or cloud AI, and re-applies the patch. 20+ engines, 20+ AI providers, | typescript | unknown | reference | [rouges78/GameStringer](https://github.com/rouges78/GameStringer) @ `2026-11-23 (branch tip at catalogue time)` |
 | [gamezone — core](entries/engines/gamezone-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | Apache-2.0 | vendored | [kunjgit/GameZone](https://github.com/kunjgit/GameZone) @ `ac4ce20` |
 | [GBM2K-Framework](entries/engines/oplexitie-gbm2k-framework/README.md) | A 2D Grid Based Movement framework made for the Godot game engine. | gdscript | MIT | reference | [Oplexitie/GBM2K-Framework](https://github.com/Oplexitie/GBM2K-Framework) @ `2026-10-09 (branch tip at catalogue time)` |
@@ -511,6 +513,7 @@ _Generated 2026-11-25 19:46 UTC · 1766 entries · 444 vendored, 1322 reference-
 | [php-game-framework](entries/engines/mario-deluna-php-game-framework/README.md) | A 3D / 2D PHP Game Engine, a collection of helpers and wrappers around Glfw. | php | none | reference | [mario-deluna/php-game-framework](https://github.com/mario-deluna/php-game-framework) @ `4017e7578d21` |
 | [pi](entries/engines/elgopher-pi/README.md) | Game engine for creating retro games for modern computers. Inspired by Pico-8 and powered by Ebitengine. | go | MIT | vendored | [elgopher/pi](https://github.com/elgopher/pi) @ `3a3b7de5a3ed` |
 | [Piccolo](entries/engines/boomingtech-piccolo/README.md) | Piccolo (formerly Pilot) – mini game engine for games104 | c++ | MIT | reference | [BoomingTech/Piccolo](https://github.com/BoomingTech/Piccolo) @ `2024-09-30 (branch tip at catalogue time)` |
+| [picogame](entries/engines/makerclasscz-picogame/README.md) | A fast, retained-mode 2D game engine for MCUs | python | MIT | vendored | [MakerClassCZ/picogame](https://github.com/MakerClassCZ/picogame) @ `11c4a657f649` |
 | [PieMenu](entries/engines/payne911-piemenu/README.md) | A library for easy integration of a flexible circular WidgetGroup within libGDX | java | MIT | reference | [payne911/PieMenu](https://github.com/payne911/PieMenu) @ `2022-12-01 (branch tip at catalogue time)` |
 | [piston](entries/engines/pistondevelopers-piston/README.md) | A modular game engine written in Rust | rust | MIT | vendored | [PistonDevelopers/piston](https://github.com/PistonDevelopers/piston) @ `21b8719a0606` |
 | [piston_window](entries/engines/pistondevelopers-piston-window/README.md) | The official Piston Window for the Piston game engine | rust | MIT | reference | [PistonDevelopers/piston_window](https://github.com/PistonDevelopers/piston_window) @ `2026-10-11 (branch tip at catalogue time)` |
@@ -541,6 +544,7 @@ _Generated 2026-11-25 19:46 UTC · 1766 entries · 444 vendored, 1322 reference-
 | [PyDark](entries/engines/sirfroweey-pydark/README.md) | PyDark is a 2D and Online Multiplayer video game framework written on-top of Python and PyGame. | python | unknown | reference | [SirFroweey/PyDark](https://github.com/SirFroweey/PyDark) @ `2021-08-27 (branch tip at catalogue time)` |
 | [pydk](entries/engines/pmp-p-pydk/README.md) | An universal Python/pip+Panda3d build framework for Pythons Everywhere ( and Everyone ) | python | MIT | vendored | [pmp-p/pydk](https://github.com/pmp-p/pydk) @ `9aeec40679e2` |
 | [pyera](entries/engines/qsjl11-pyera/README.md) | Era-like game engine by python | python | unknown | reference | [qsjl11/pyera](https://github.com/qsjl11/pyera) @ `2017-08-31 (branch tip at catalogue time)` |
+| [Pygin](entries/engines/carlosmatheus-pygin/README.md) | Simple game engine produced for making easier to build more complex games using Python. | python | MIT | reference | [CarlosMatheus/Pygin](https://github.com/CarlosMatheus/Pygin) @ `2021-04-20 (branch tip at catalogue time)` |
 | [pylash_engine](entries/engines/yuehaowang-pylash-engine/README.md) | A lightweight and relaxed game engine for Python. | python | MIT | reference | [yuehaowang/pylash_engine](https://github.com/yuehaowang/pylash_engine) @ `2021-03-12 (branch tip at catalogue time)` |
 | [pyrite64](entries/engines/hailtododongo-pyrite64/README.md) | N64 Game-Engine and Editor using libdragon & tiny3d | c++ | MIT | reference | [HailToDodongo/pyrite64](https://github.com/HailToDodongo/pyrite64) @ `2026-11-22 (branch tip at catalogue time)` |
 | [PyRPG_Mini](entries/engines/crawsome-pyrpg-mini/README.md) | A small Python RPG, focused on RPG elements like battle and grinding | python | MIT | reference | [crawsome/PyRPG_Mini](https://github.com/crawsome/PyRPG_Mini) @ `2026-11-09 (branch tip at catalogue time)` |
@@ -577,6 +581,7 @@ _Generated 2026-11-25 19:46 UTC · 1766 entries · 444 vendored, 1322 reference-
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
 | [Root-Motion-Batch-Transfer-Blender](entries/engines/nguyennp-24-root-motion-batch-transfer-blender/README.md) | A easy-to-use Blender addon for batch transferring root motion from any rig controller. Supports multiple actions, with root motion either staying static at wor | python | GPL-3.0 | reference | [NguyenNP-24/Root-Motion-Batch-Transfer-Blender](https://github.com/NguyenNP-24/Root-Motion-Batch-Transfer-Blender) @ `2026-04-02 (branch tip at catalogue time)` |
 | [RPG-Core](entries/engines/delmarle-rpg-core/README.md) | UNITY engine RPG framework | c# | unknown | reference | [delmarle/RPG-Core](https://github.com/delmarle/RPG-Core) @ `2026-04-14 (branch tip at catalogue time)` |
+| [rubato](entries/engines/rubatopy-rubato/README.md) | A lightweight, developer-first game engine built for Python | python | GPL-3.0 | reference | [rubatopy/rubato](https://github.com/rubatopy/rubato) @ `2023-03-22 (branch tip at catalogue time)` |
 | [ruby2d-games](entries/engines/mariovisic-ruby2d-games/README.md) | A collection of games and demos written in ruby using the Ruby 2D framework, complete with free video tutorials | ruby | unknown | reference | [mariovisic/ruby2d-games](https://github.com/mariovisic/ruby2d-games) @ `2023-02-22 (branch tip at catalogue time)` |
 | [RuntimeUnityEditor](entries/engines/manlymarco-runtimeunityeditor/README.md) | In-game inspector and debugging tools for applications made with Unity3D game engine | c# | GPL-3.0 | reference | [ManlyMarco/RuntimeUnityEditor](https://github.com/ManlyMarco/RuntimeUnityEditor) @ `1ce168c7acfd` |
 | [rust-2048](entries/engines/coeuvre-rust-2048/README.md) | A 2048 clone with Piston game engine | rust | MIT | reference | [coeuvre/rust-2048](https://github.com/coeuvre/rust-2048) @ `2024-07-19 (branch tip at catalogue time)` |
@@ -726,6 +731,7 @@ _Generated 2026-11-25 19:46 UTC · 1766 entries · 444 vendored, 1322 reference-
 | [world-engine](entries/engines/argus-labs-world-engine/README.md) | Seed of a new world. An onchain game engine, built for devs with ambition. (world/acc) | go | LGPL-3.0 | reference | [Argus-Labs/world-engine](https://github.com/Argus-Labs/world-engine) @ `25506662a5f3` |
 | [world-walker](entries/engines/badhope-world-walker/README.md) | A single-player AI tabletop RPG engine: deterministic rules own the numbers, saves and replay; any OpenAI-compatible model writes the scene. | python | MIT | reference | [badhope/world-walker](https://github.com/badhope/world-walker) @ `2026-11-22 (branch tip at catalogue time)` |
 | [WorldLines](entries/engines/ludicdynamics-worldlines/README.md) | Agents for Role Play. Agents for Game. Agents as a Game. An orchestrator-agents engine for living worlds — file-backed, event-sourced. | python | unknown | reference | [LudicDynamics/WorldLines](https://github.com/LudicDynamics/WorldLines) @ `2026-10-26 (branch tip at catalogue time)` |
+| [WorldOS](entries/engines/electricsheephq-worldos/README.md) | WorldOS - Simulate worlds. Evolve games. Free for personal/non-commercial use. | python | none | reference | [electricsheephq/WorldOS](https://github.com/electricsheephq/WorldOS) @ `4373633c9222` |
 | [xash3d-fwgs](entries/engines/fwgs-xash3d-fwgs/README.md) | Xash3D FWGS engine | c | GPL-3.0 | reference | [FWGS/xash3d-fwgs](https://github.com/FWGS/xash3d-fwgs) @ `bc1b4515e1f6` |
 | [Xelmish](entries/engines/chrispritchard-xelmish/README.md) | XNA + Elmish - 2D game development framework with F# | f# | MIT | vendored | [ChrisPritchard/Xelmish](https://github.com/ChrisPritchard/Xelmish) @ `ada01cf32ad4` |
 | [XNAGameStudio](entries/engines/simondarksidej-xnagamestudio/README.md) | The Education library from the Xbox Live Indie games repository, valuable for MonoGame Developers for advanced samples | n/a | MIT | reference | [SimonDarksideJ/XNAGameStudio](https://github.com/SimonDarksideJ/XNAGameStudio) @ `2025-11-14 (branch tip at catalogue time)` |
