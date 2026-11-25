@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T06:40:11Z",
+ "category": "math",
+ "commit": "b0f508159176",
+ "delivery": "vendored",
+ "description": "lincollincol/AudioTool \u2014 Android library that provides audio manipulation functions like increase/decrease speed, pitch, volume, bass, etc. Library also provides cut, noise remover, and other interesting and helpfull functions",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "AudioTool",
+ "size_bytes": 34407,
+ "slug": "lincollincol-audiotool",
+ "source": "github-search:noise function library stars:>40",
+ "stars": 77,
+ "system": "Android library that provides audio manipulation functions like increase/decrease speed, pitch, volume, bass, etc. Library also provides cut, noise remover, and",
+ "upstream": "https://github.com/lincollincol/AudioTool",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

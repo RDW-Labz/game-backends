@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T06:40:14Z",
+ "category": "math",
+ "commit": "2025-08-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "covexp/cuda-noise \u2014 Library of common noise functions for CUDA kernels",
+ "language": "cuda",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "cuda-noise",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "covexp-cuda-noise",
+ "source": "github-search:noise function library stars:>40",
+ "stars": 43,
+ "system": "Library of common noise functions for CUDA kernels",
+ "upstream": "https://github.com/covexp/cuda-noise",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

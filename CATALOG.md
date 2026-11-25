@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 06:23 UTC · 1561 entries · 398 vendored, 1163 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 06:40 UTC · 1565 entries · 400 vendored, 1165 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
-| [math](#math) — Math libraries | 131 | 41 | 90 |
+| [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
@@ -868,12 +868,13 @@ _Generated 2026-11-25 06:23 UTC · 1561 entries · 398 vendored, 1163 reference-
 
 ## math
 
-**Math libraries** — 131 entries
+**Math libraries** — 135 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [abacus](entries/math/sungiant-abacus/README.md) | :triangular_ruler: C# cross precision 3D maths library. | c# | MIT | reference | [sungiant/abacus](https://github.com/sungiant/abacus) @ `2026-02-06 (branch tip at catalogue time)` |
 | [amgcl](entries/math/ddemidov-amgcl/README.md) | C++ library for solving large sparse linear systems with algebraic multigrid method | c++ | MIT | reference | [ddemidov/amgcl](https://github.com/ddemidov/amgcl) @ `2026-11-18 (branch tip at catalogue time)` |
+| [AudioTool](entries/math/lincollincol-audiotool/README.md) | Android library that provides audio manipulation functions like increase/decrease speed, pitch, volume, bass, etc. Library also provides cut, noise remover, and | java | Apache-2.0 | vendored | [lincollincol/AudioTool](https://github.com/lincollincol/AudioTool) @ `b0f508159176` |
 | [biomes-game — math](entries/math/biomes-game-math/README.md) | vector/matrix/quaternion math substrate | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [brine-fp](entries/math/zfedoran-brine-fp/README.md) | Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications. | rust | Apache-2.0 | vendored | [zfedoran/brine-fp](https://github.com/zfedoran/brine-fp) @ `377beff01dfe` |
 | [C-Linear-Algebra](entries/math/jcchurch-c-linear-algebra/README.md) | My personal set of C libraries for linear algebra computation based on The Matrix Cookbook and Numerical Recipes in C. | c | unknown | reference | [jcchurch/C-Linear-Algebra](https://github.com/jcchurch/C-Linear-Algebra) @ `2019-10-31 (branch tip at catalogue time)` |
@@ -886,6 +887,7 @@ _Generated 2026-11-25 06:23 UTC · 1561 entries · 398 vendored, 1163 reference-
 | [CombBLAS](entries/math/passionlab-combblas/README.md) | The Combinatorial BLAS (CombBLAS) is an extensible distributed-memory parallel graph library offering a small but powerful set of linear algebra primitives spec | c++ | BSD-3-Clause | vendored | [PASSIONLab/CombBLAS](https://github.com/PASSIONLab/CombBLAS) @ `2381a1f7a028` |
 | [crystaledge](entries/math/unn4m3d-crystaledge/README.md) | A pure Crystal Vector Math library | crystal | MIT | vendored | [unn4m3d/crystaledge](https://github.com/unn4m3d/crystaledge) @ `0f5e82952b95` |
 | [Cub3d-Advanced-Raycasting](entries/math/ael-bekk-cub3d-advanced-raycasting/README.md) | #Cub3D: This project is a 3D game created from scratch written in C using an old graphic library mini-libx, presented with an old technology raycasting to make  | c | MIT | vendored | [ael-bekk/Cub3d-Advanced-Raycasting](https://github.com/ael-bekk/Cub3d-Advanced-Raycasting) @ `53371ce9c1ba` |
+| [cuda-noise](entries/math/covexp-cuda-noise/README.md) | Library of common noise functions for CUDA kernels | cuda | MIT | reference | [covexp/cuda-noise](https://github.com/covexp/cuda-noise) @ `2025-08-17 (branch tip at catalogue time)` |
 | [cute_headers](entries/math/randygaul-cute-headers/README.md) | Collection of cross-platform one-file C/C++ libraries with no dependencies, primarily used for games | c | unknown | reference | [RandyGaul/cute_headers](https://github.com/RandyGaul/cute_headers) @ `2026-11-03 (branch tip at catalogue time)` |
 | [DecimalMath](entries/math/alcueca-decimalmath/README.md) | Smart contract implementing fixed point math operations using structs for type checking. | solidity | GPL-3.0 | reference | [alcueca/DecimalMath](https://github.com/alcueca/DecimalMath) @ `2020-09-17 (branch tip at catalogue time)` |
 | [DirectXMath](entries/math/directxmath/README.md) | SIMD math library (SSE/AVX/NEON) for games | c++ | MIT | vendored | [microsoft/DirectXMath](https://github.com/microsoft/DirectXMath) @ `fef99048e3da` |
@@ -922,6 +924,7 @@ _Generated 2026-11-25 06:23 UTC · 1561 entries · 398 vendored, 1163 reference-
 | [hVHDL_example_project](entries/math/hvhdl-hvhdl-example-project/README.md) | An example project which uses many of the ideas and features of the hVHDL libraries like fixed and floating point math modules and has build scripts for most co | vhdl | MIT | reference | [hVHDL/hVHDL_example_project](https://github.com/hVHDL/hVHDL_example_project) @ `2025-01-13 (branch tip at catalogue time)` |
 | [hypercomplex](entries/math/discretegames-hypercomplex/README.md) | A Python library for working with arbitrary-dimension hypercomplex numbers following the Cayley-Dickson construction of algebras. | python | MIT | reference | [discretegames/hypercomplex](https://github.com/discretegames/hypercomplex) @ `2022-08-14 (branch tip at catalogue time)` |
 | [hypersomnia — math](entries/math/hypersomnia-math/README.md) | vector/matrix/quaternion math substrate | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
+| [Icaria-Noise](entries/math/krubbles-icaria-noise/README.md) | A highly-optimized C# noise-function library.  | c# | MIT | vendored | [krubbles/Icaria-Noise](https://github.com/krubbles/Icaria-Noise) @ `28112e32671f` |
 | [imuFilter](entries/math/rcmags-imufilter/README.md) | Arduino library for an IMU filter based on a quaternion  | c++ | MIT | reference | [RCmags/imuFilter](https://github.com/RCmags/imuFilter) @ `2024-01-04 (branch tip at catalogue time)` |
 | [InterpolatePy](entries/math/giorgiomedico-interpolatepy/README.md) | 🚀 InterpolatePy: A fast and precise Python library for production-ready trajectory planning, offering 20+ algorithms for C² continuous splines, jerk-limited S-c | python | MIT | reference | [GiorgioMedico/InterpolatePy](https://github.com/GiorgioMedico/InterpolatePy) @ `2026-11-19 (branch tip at catalogue time)` |
 | [JavaCode](entries/math/rick2785-javacode/README.md) | I specifically cover the following topics: Java primitive data types, declaration statements, expression statements, importing class libraries, excepting user i | java | none | reference | [rick2785/JavaCode](https://github.com/rick2785/JavaCode) @ `746587dd0dd1` |
@@ -947,6 +950,7 @@ _Generated 2026-11-25 06:23 UTC · 1561 entries · 398 vendored, 1163 reference-
 | [MeshLib](entries/math/meshinspector-meshlib/README.md) | 3D geometry processing SDK: fast mesh boolean, mesh repair, decimation, remeshing, offset, point cloud triangulation and ICP registration. C++ with Python, C#,  | c++ | unknown | reference | [MeshInspector/MeshLib](https://github.com/MeshInspector/MeshLib) @ `2026-11-25 (branch tip at catalogue time)` |
 | [miniply](entries/math/vilya-miniply/README.md) | A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file | c++ | MIT | reference | [vilya/miniply](https://github.com/vilya/miniply) @ `2023-03-14 (branch tip at catalogue time)` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
+| [NoiseTools](entries/math/keijiro-noisetools/README.md) | A small library of noise functions | c# | unknown | reference | [keijiro/NoiseTools](https://github.com/keijiro/NoiseTools) @ `2016-05-13 (branch tip at catalogue time)` |
 | [NTSC-CRT](entries/math/lmp88959-ntsc-crt/README.md) | NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time application | c | unknown | reference | [LMP88959/NTSC-CRT](https://github.com/LMP88959/NTSC-CRT) @ `2026-07-19 (branch tip at catalogue time)` |
 | [NURBS-Python](entries/math/orbingol-nurbs-python/README.md) | Object-oriented pure Python B-Spline and NURBS library | python | MIT | vendored | [orbingol/NURBS-Python](https://github.com/orbingol/NURBS-Python) @ `2d19713a5e09` |
 | [nurbspy](entries/math/turbo-sim-nurbspy/README.md) | Python library for B-Spline and NURBS curves and surfaces, with analytical derivatives, geometric analysis and support for shape optimization. | python | MIT | reference | [turbo-sim/nurbspy](https://github.com/turbo-sim/nurbspy) @ `2026-11-12 (branch tip at catalogue time)` |

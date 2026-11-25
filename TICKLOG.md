@@ -3088,3 +3088,9 @@ One line per 15-minute extension tick, newest last.
   - reference math/soufianekhiat-qaws
   - reference math/turbo-sim-nurbspy
   - reference math/dorianprill-stroke
+
+- **2026-11-25 06:40 UTC** — tick 842: +2 screened, +2 reference, 11 skipped, catalogue=1565
+  - added math/lincollincol-audiotool (Apache-2.0, vendored)
+  - added math/krubbles-icaria-noise (MIT, vendored)
+  - reference math/covexp-cuda-noise
+  - reference math/keijiro-noisetools

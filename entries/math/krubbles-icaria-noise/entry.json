@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T06:40:13Z",
+ "category": "math",
+ "commit": "28112e32671f",
+ "delivery": "vendored",
+ "description": "krubbles/Icaria-Noise \u2014 A highly-optimized C# noise-function library.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Icaria-Noise",
+ "size_bytes": 30430,
+ "slug": "krubbles-icaria-noise",
+ "source": "github-search:noise function library stars:>40",
+ "stars": 59,
+ "system": "A highly-optimized C# noise-function library. ",
+ "upstream": "https://github.com/krubbles/Icaria-Noise",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
