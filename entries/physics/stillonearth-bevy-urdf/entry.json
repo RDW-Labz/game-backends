@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:53:11Z",
+ "category": "physics",
+ "commit": "2025-12-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "stillonearth/bevy_urdf \u2014 Import robots from URDF descriptors to bevy and simulate them with Rapier physics",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "bevy_urdf",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "stillonearth-bevy-urdf",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 27,
+ "system": "Import robots from URDF descriptors to bevy and simulate them with Rapier physics",
+ "upstream": "https://github.com/stillonearth/bevy_urdf",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

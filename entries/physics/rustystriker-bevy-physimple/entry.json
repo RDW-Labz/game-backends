@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:53:11Z",
+ "category": "physics",
+ "commit": "2022-08-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RustyStriker/bevy_physimple \u2014 A physics lib for the bevy game engine based on physme",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "bevy_physimple",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rustystriker-bevy-physimple",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 29,
+ "system": "A physics lib for the bevy game engine based on physme ",
+ "upstream": "https://github.com/RustyStriker/bevy_physimple",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

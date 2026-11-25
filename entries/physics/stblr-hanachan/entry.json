@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T02:53:09Z",
+ "category": "physics",
+ "commit": "bd57482be685",
+ "delivery": "reference",
+ "description": "stblr/Hanachan \u2014 Mario Kart Wii physics reimplementation",
+ "language": "rust",
+ "license": "GPL-2.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "copyleft-reference",
+ "name": "Hanachan",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 207284,
+ "slug": "stblr-hanachan",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 29,
+ "system": "Mario Kart Wii physics reimplementation",
+ "upstream": "https://github.com/stblr/Hanachan",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 02:35 UTC · 1487 entries · 382 vendored, 1105 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 02:53 UTC · 1493 entries · 383 vendored, 1110 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
-| [physics](#physics) — Physics | 168 | 39 | 129 |
+| [physics](#physics) — Physics | 174 | 40 | 134 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
@@ -666,11 +666,12 @@ _Generated 2026-11-25 02:35 UTC · 1487 entries · 382 vendored, 1105 reference-
 
 ## physics
 
-**Physics** — 168 entries
+**Physics** — 174 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [ActiveRagdoll](entries/physics/ashleve-activeragdoll/README.md) | From-scratch implementation of physically simulated character animation with proportional-integral-derivative controllers (PID) | c# | MIT | reference | [ashleve/ActiveRagdoll](https://github.com/ashleve/ActiveRagdoll) @ `2023-03-05 (branch tip at catalogue time)` |
+| [amethyst_physics](entries/physics/andreacatania-amethyst-physics/README.md) | Amethyst physics engine abstraction layer | rust | MIT | reference | [AndreaCatania/amethyst_physics](https://github.com/AndreaCatania/amethyst_physics) @ `2020-12-21 (branch tip at catalogue time)` |
 | [ammo.js](entries/physics/kripken-ammo-js/README.md) | Direct port of the Bullet physics engine to JavaScript using Emscripten | c++ | unknown | reference | [kripken/ammo.js](https://github.com/kripken/ammo.js) @ `2026-09-22 (branch tip at catalogue time)` |
 | [AnimVerlet](entries/physics/chonjay21-animverlet/README.md) | Yet another anim dynamics plugin for cloth, string, hair, blob, fluids simulation in UE4, UE5 | c++ | MIT | reference | [chonjay21/AnimVerlet](https://github.com/chonjay21/AnimVerlet) @ `2026-08-03 (branch tip at catalogue time)` |
 | [anki-3d-engine](entries/physics/godlikepanos-anki-3d-engine/README.md) | AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more | c++ | unknown | reference | [godlikepanos/anki-3d-engine](https://github.com/godlikepanos/anki-3d-engine) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -682,7 +683,10 @@ _Generated 2026-11-25 02:35 UTC · 1487 entries · 382 vendored, 1105 reference-
 | [awesome-collision-detection](entries/physics/jslee02-awesome-collision-detection/README.md) | :sunglasses: A curated list of awesome collision detection libraries and resources | python | CC0-1.0 | reference | [jslee02/awesome-collision-detection](https://github.com/jslee02/awesome-collision-detection) @ `2026-11-23 (branch tip at catalogue time)` |
 | [ballin](entries/physics/minimaxir-ballin/README.md) | A colorful interactive physics simulator with thousands of balls, but in your terminal! | rust | MIT | reference | [minimaxir/ballin](https://github.com/minimaxir/ballin) @ `2026-01-19 (branch tip at catalogue time)` |
 | [ballistics-engine](entries/physics/ajokela-ballistics-engine/README.md) | High-performance ballistics trajectory engine | rust | MIT | reference | [ajokela/ballistics-engine](https://github.com/ajokela/ballistics-engine) @ `2026-11-23 (branch tip at catalogue time)` |
+| [bevy_heavy](entries/physics/avianphysics-bevy-heavy/README.md) | Mass properties for Bevy's geometric primitives. | rust | Apache-2.0 | vendored | [avianphysics/bevy_heavy](https://github.com/avianphysics/bevy_heavy) @ `d379081ef273` |
+| [bevy_physimple](entries/physics/rustystriker-bevy-physimple/README.md) | A physics lib for the bevy game engine based on physme  | rust | MIT | reference | [RustyStriker/bevy_physimple](https://github.com/RustyStriker/bevy_physimple) @ `2022-08-31 (branch tip at catalogue time)` |
 | [bevy_prototype_character_controller](entries/physics/superdump-bevy-prototype-character-controller/README.md) | Character controllers for use with Bevy and any physics engine you like | rust | MIT | vendored | [superdump/bevy_prototype_character_controller](https://github.com/superdump/bevy_prototype_character_controller) @ `a7a87b3c2c4e` |
+| [bevy_urdf](entries/physics/stillonearth-bevy-urdf/README.md) | Import robots from URDF descriptors to bevy and simulate them with Rapier physics | rust | unknown | reference | [stillonearth/bevy_urdf](https://github.com/stillonearth/bevy_urdf) @ `2025-12-02 (branch tip at catalogue time)` |
 | [bevy_verlet](entries/physics/manevillef-bevy-verlet/README.md) | Verlet physics plugin for bevy. | rust | MIT | reference | [ManevilleF/bevy_verlet](https://github.com/ManevilleF/bevy_verlet) @ `2026-05-04 (branch tip at catalogue time)` |
 | [Blinc](entries/physics/project-blinc-blinc/README.md) | A declarative, reactive UI system with first-class state machines, spring physics animations, and GPU-accelerated rendering | rust | Apache-2.0 | reference | [project-blinc/Blinc](https://github.com/project-blinc/Blinc) @ `2026-11-23 (branch tip at catalogue time)` |
 | [boks2d](entries/physics/joaomcl-boks2d/README.md) | Kotlin Multiplatform bindings for the Box2D physics engine. | kotlin | MIT | reference | [joaomcl/boks2d](https://github.com/joaomcl/boks2d) @ `2026-03-23 (branch tip at catalogue time)` |
@@ -737,6 +741,7 @@ _Generated 2026-11-25 02:35 UTC · 1487 entries · 382 vendored, 1105 reference-
 | [godot-vehicle](entries/physics/seerban-godot-vehicle/README.md) | WIP Racing Game and 3d vehicle physics implementation in Godot Engine. | gdscript | MIT | reference | [Seerban/godot-vehicle](https://github.com/Seerban/godot-vehicle) @ `2026-08-03 (branch tip at catalogue time)` |
 | [godot_rapier3d](entries/physics/demindiro-godot-rapier3d/README.md) | Godot bindings for the Rapier3D physics engine | rust | MIT | reference | [Demindiro/godot_rapier3d](https://github.com/Demindiro/godot_rapier3d) @ `2021-07-23 (branch tip at catalogue time)` |
 | [gpu-physics-engine](entries/physics/marcvivas-gpu-physics-engine/README.md) | Experimenting with a gpu physics engine from scratch | rust | Apache-2.0 | vendored | [MarcVivas/gpu-physics-engine](https://github.com/MarcVivas/gpu-physics-engine) @ `d1131288b34f` |
+| [Hanachan](entries/physics/stblr-hanachan/README.md) | Mario Kart Wii physics reimplementation | rust | GPL-2.0 | reference | [stblr/Hanachan](https://github.com/stblr/Hanachan) @ `bd57482be685` |
 | [hypersomnia — physics](entries/physics/hypersomnia-physics/README.md) | rigid-body collision and dynamics | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [ImpulseEngine](entries/physics/randygaul-impulseengine/README.md) | Simple, open source, 2D impulse based physics engine for educational use. | c++ | Zlib | reference | [RandyGaul/ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) @ `2019-10-28 (branch tip at catalogue time)` |
 | [inertia](entries/physics/aclfe-inertia/README.md) | A physics sandbox that runs in your terminal: rigid bodies, n-body gravity, cloth, and fluid, projected in 3D onto braille with no GPU. | rust | Apache-2.0 | reference | [aclfe/inertia](https://github.com/aclfe/inertia) @ `2026-07-19 (branch tip at catalogue time)` |
@@ -781,6 +786,7 @@ _Generated 2026-11-25 02:35 UTC · 1487 entries · 382 vendored, 1105 reference-
 | [pendulum](entries/physics/christophmark-pendulum/README.md) | A physics-inspired 2D browser game for both mobile and desktop that involves an alien swinging from a rope to avoid obstacles in randomly generated, fully destr | javascript | unknown | reference | [christophmark/pendulum](https://github.com/christophmark/pendulum) @ `2017-05-25 (branch tip at catalogue time)` |
 | [phaser-box2d](entries/physics/phaserjs-phaser-box2d/README.md) | A high-performance, industry-standard 2D physics engine built on Box2D v3, delivering incredibly realistic and engaging web game experiences. | javascript | MIT | reference | [phaserjs/phaser-box2d](https://github.com/phaserjs/phaser-box2d) @ `2025-04-03 (branch tip at catalogue time)` |
 | [phy](entries/physics/lo-th-phy/README.md) | Physics for three. Game engine  | javascript | MIT | reference | [lo-th/phy](https://github.com/lo-th/phy) @ `7fe6ca802f58` |
+| [Physics-based_Animation_2025S](entries/physics/nobuyuki83-physics-based-animation-2025s/README.md) | Physics Based Animation 2025S | rust | MIT | reference | [nobuyuki83/Physics-based_Animation_2025S](https://github.com/nobuyuki83/Physics-based_Animation_2025S) @ `2025-07-14 (branch tip at catalogue time)` |
 | [physicsRus](entries/physics/juhl-physicsrus/README.md) | 2D rigid body physics engine & integrated WYSIWYG editor written in Javascript. | javascript | MIT | vendored | [juhl/physicsRus](https://github.com/juhl/physicsRus) @ `6481e59931c4` |
 | [Physix-go](entries/physics/rudransh61-physix-go/README.md) | A simple Physics engine in GoLang | go | MIT | vendored | [rudransh61/Physix-go](https://github.com/rudransh61/Physix-go) @ `345e56f833a5` |
 | [phyz](entries/physics/muni-works-phyz/README.md) | differentiable physics engine for rust | rust | MIT | reference | [muni-works/phyz](https://github.com/muni-works/phyz) @ `2026-11-10 (branch tip at catalogue time)` |

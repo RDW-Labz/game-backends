@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:53:11Z",
+ "category": "physics",
+ "commit": "2020-12-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AndreaCatania/amethyst_physics \u2014 Amethyst physics engine abstraction layer",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "amethyst_physics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "andreacatania-amethyst-physics",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 28,
+ "system": "Amethyst physics engine abstraction layer",
+ "upstream": "https://github.com/AndreaCatania/amethyst_physics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

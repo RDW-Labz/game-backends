@@ -2988,3 +2988,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/lavashikk-vmf-to-pbr
   - reference physics/demindiro-godot-rapier3d
   - reference physics/alexcri5an-optics-lab
+
+- **2026-11-25 02:53 UTC** — tick 829: +2 screened, +4 reference, 9 skipped, catalogue=1493
+  - added physics/avianphysics-bevy-heavy (Apache-2.0, vendored)
+  - added physics/stblr-hanachan (GPL-2.0, reference)
+  - reference physics/rustystriker-bevy-physimple
+  - reference physics/andreacatania-amethyst-physics
+  - reference physics/nobuyuki83-physics-based-animation-2025s
+  - reference physics/stillonearth-bevy-urdf
