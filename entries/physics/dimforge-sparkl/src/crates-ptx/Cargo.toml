@@ -1,0 +1,6 @@
+[workspace]
+members = [ "./gen-ptx", "./sparkl3d-kernels-ptx", "./sparkl2d-kernels-ptx" ]
+resolver = "2"
+
+[profile.release]
+#codegen-units = 1

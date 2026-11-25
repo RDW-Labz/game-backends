@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:35:45Z",
+ "category": "physics",
+ "commit": "2021-07-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Demindiro/godot_rapier3d \u2014 Godot bindings for the Rapier3D physics engine",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot_rapier3d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "demindiro-godot-rapier3d",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 44,
+ "system": "Godot bindings for the Rapier3D physics engine",
+ "upstream": "https://github.com/Demindiro/godot_rapier3d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

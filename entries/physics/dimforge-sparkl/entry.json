@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T02:35:36Z",
+ "category": "physics",
+ "commit": "29cebe6e29ba",
+ "delivery": "vendored",
+ "description": "dimforge/sparkl \u2014 MPM physics simulation in Rust",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "sparkl",
+ "size_bytes": 462329,
+ "slug": "dimforge-sparkl",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 46,
+ "system": "MPM physics simulation in Rust",
+ "upstream": "https://github.com/dimforge/sparkl",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

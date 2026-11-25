@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:35:45Z",
+ "category": "physics",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "viccuad/avian_fdm \u2014 6-DoF Flight Dynamics Model plugin for Bevy and Avian",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "avian_fdm",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "viccuad-avian-fdm",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 45,
+ "system": "6-DoF Flight Dynamics Model plugin for Bevy and Avian",
+ "upstream": "https://github.com/viccuad/avian_fdm",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

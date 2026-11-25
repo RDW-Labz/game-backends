@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T02:35:43Z",
+ "category": "physics",
+ "commit": "a0c4a9a14ac9",
+ "delivery": "reference",
+ "description": "mkhan45/SIMple-Gravity \u2014 Gravity simulator using Newton's Law of Universal Gravitation, made to help teach physics",
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "SIMple-Gravity",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 89756,
+ "slug": "mkhan45-simple-gravity",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 45,
+ "system": "Gravity simulator using Newton's Law of Universal Gravitation, made to help teach physics",
+ "upstream": "https://github.com/mkhan45/SIMple-Gravity",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

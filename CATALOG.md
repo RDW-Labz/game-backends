@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 02:19 UTC · 1481 entries · 381 vendored, 1100 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 02:35 UTC · 1487 entries · 382 vendored, 1105 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
-| [physics](#physics) — Physics | 162 | 38 | 124 |
+| [physics](#physics) — Physics | 168 | 39 | 129 |
 | [math](#math) — Math libraries | 84 | 30 | 54 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
@@ -666,7 +666,7 @@ _Generated 2026-11-25 02:19 UTC · 1481 entries · 381 vendored, 1100 reference-
 
 ## physics
 
-**Physics** — 162 entries
+**Physics** — 168 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -677,6 +677,7 @@ _Generated 2026-11-25 02:19 UTC · 1481 entries · 381 vendored, 1100 reference-
 | [apollonia](entries/physics/wgtdkp-apollonia/README.md) | Tiny 2D physics engine | c++ | MIT | reference | [wgtdkp/apollonia](https://github.com/wgtdkp/apollonia) @ `2022-01-28 (branch tip at catalogue time)` |
 | [arduino-particle-sys](entries/physics/giladaya-arduino-particle-sys/README.md) | A particle system library for arduino | c++ | unknown | reference | [giladaya/arduino-particle-sys](https://github.com/giladaya/arduino-particle-sys) @ `2013-05-18 (branch tip at catalogue time)` |
 | [avian](entries/physics/avianphysics-avian/README.md) | ECS-driven 2D and 3D physics engine for the Bevy game engine. | rust | Apache-2.0 | reference | [avianphysics/avian](https://github.com/avianphysics/avian) @ `2026-11-04 (branch tip at catalogue time)` |
+| [avian_fdm](entries/physics/viccuad-avian-fdm/README.md) | 6-DoF Flight Dynamics Model plugin for Bevy and Avian | rust | unknown | reference | [viccuad/avian_fdm](https://github.com/viccuad/avian_fdm) @ `2026-11-23 (branch tip at catalogue time)` |
 | [avian_pickup](entries/physics/janhohenheim-avian-pickup/README.md) | A plugin for implementing picking up dynamic rigid bodies in Avian physics for the Bevy engine. Modeled after Half Life 2's gravity gun. | rust | Apache-2.0 | vendored | [janhohenheim/avian_pickup](https://github.com/janhohenheim/avian_pickup) @ `4fbfdaa751de` |
 | [awesome-collision-detection](entries/physics/jslee02-awesome-collision-detection/README.md) | :sunglasses: A curated list of awesome collision detection libraries and resources | python | CC0-1.0 | reference | [jslee02/awesome-collision-detection](https://github.com/jslee02/awesome-collision-detection) @ `2026-11-23 (branch tip at catalogue time)` |
 | [ballin](entries/physics/minimaxir-ballin/README.md) | A colorful interactive physics simulator with thousands of balls, but in your terminal! | rust | MIT | reference | [minimaxir/ballin](https://github.com/minimaxir/ballin) @ `2026-01-19 (branch tip at catalogue time)` |
@@ -734,6 +735,7 @@ _Generated 2026-11-25 02:19 UTC · 1481 entries · 381 vendored, 1100 reference-
 | [godot-jolt](entries/physics/godot-jolt-godot-jolt/README.md) | Godot Jolt is a Godot extension that integrates the Jolt physics engine | c++ | MIT | vendored | [godot-jolt/godot-jolt](https://github.com/godot-jolt/godot-jolt) @ `7f225894706b` |
 | [godot-rapier-physics](entries/physics/appsinacup-godot-rapier-physics/README.md) | Godot Rapier Physics – 2D and 3D physics engine for the Godot game engine. with better stability, performance, liquids, determinism, state serialization and no  | rust | MIT | reference | [appsinacup/godot-rapier-physics](https://github.com/appsinacup/godot-rapier-physics) @ `2026-11-08 (branch tip at catalogue time)` |
 | [godot-vehicle](entries/physics/seerban-godot-vehicle/README.md) | WIP Racing Game and 3d vehicle physics implementation in Godot Engine. | gdscript | MIT | reference | [Seerban/godot-vehicle](https://github.com/Seerban/godot-vehicle) @ `2026-08-03 (branch tip at catalogue time)` |
+| [godot_rapier3d](entries/physics/demindiro-godot-rapier3d/README.md) | Godot bindings for the Rapier3D physics engine | rust | MIT | reference | [Demindiro/godot_rapier3d](https://github.com/Demindiro/godot_rapier3d) @ `2021-07-23 (branch tip at catalogue time)` |
 | [gpu-physics-engine](entries/physics/marcvivas-gpu-physics-engine/README.md) | Experimenting with a gpu physics engine from scratch | rust | Apache-2.0 | vendored | [MarcVivas/gpu-physics-engine](https://github.com/MarcVivas/gpu-physics-engine) @ `d1131288b34f` |
 | [hypersomnia — physics](entries/physics/hypersomnia-physics/README.md) | rigid-body collision and dynamics | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [ImpulseEngine](entries/physics/randygaul-impulseengine/README.md) | Simple, open source, 2D impulse based physics engine for educational use. | c++ | Zlib | reference | [RandyGaul/ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) @ `2019-10-28 (branch tip at catalogue time)` |
@@ -768,6 +770,7 @@ _Generated 2026-11-25 02:19 UTC · 1481 entries · 381 vendored, 1100 reference-
 | [OimoPhysics](entries/physics/saharan-oimophysics/README.md) | A cross-platform 3D physics engine | javascript | MIT | reference | [saharan/OimoPhysics](https://github.com/saharan/OimoPhysics) @ `2025-05-18 (branch tip at catalogue time)` |
 | [OpenBSE](entries/physics/bbrannon4-openbse/README.md) | Open-source building energy simulation engine — modern architecture, validated physics, built for programmatic and AI-assisted workflows. | rust | AGPL-3.0 | reference | [bbrannon4/OpenBSE](https://github.com/bbrannon4/OpenBSE) @ `2026-11-20 (branch tip at catalogue time)` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
+| [optics-lab](entries/physics/alexcri5an-optics-lab/README.md) | Modern, open-source optical design & ray-tracing workstation built in Rust and WebGPU. | rust | Apache-2.0 | reference | [AlexCri5an/optics-lab](https://github.com/AlexCri5an/optics-lab) @ `2026-10-28 (branch tip at catalogue time)` |
 | [p5play](entries/physics/quinton-ashley-p5play/README.md) | JavaScript game engine that uses q5.js/p5.js for graphics and Box2D for physics. | javascript | none | reference | [quinton-ashley/p5play](https://github.com/quinton-ashley/p5play) @ `f904d169af3d` |
 | [panda-gym](entries/physics/qgallouedec-panda-gym/README.md) | Set of robotic environments based on PyBullet physics engine and gymnasium. | python | MIT | reference | [qgallouedec/panda-gym](https://github.com/qgallouedec/panda-gym) @ `2024-07-23 (branch tip at catalogue time)` |
 | [PARC](entries/physics/mshoe-parc/README.md) | PARC: Physics-based Augmentation with Reinforcement Learning for Character Controllers | python | unknown | reference | [mshoe/PARC](https://github.com/mshoe/PARC) @ `2026-02-04 (branch tip at catalogue time)` |
@@ -804,10 +807,12 @@ _Generated 2026-11-25 02:19 UTC · 1481 entries · 381 vendored, 1100 reference-
 | [salva](entries/physics/dimforge-salva/README.md) | 2 and 3-dimensional fluid simulation library in Rust. | rust | Apache-2.0 | reference | [dimforge/salva](https://github.com/dimforge/salva) @ `2026-11-01 (branch tip at catalogue time)` |
 | [sandbox](entries/physics/hakolao-sandbox/README.md) | 2D Pixel Physics Simulator | rust | Apache-2.0 | reference | [hakolao/sandbox](https://github.com/hakolao/sandbox) @ `2023-05-10 (branch tip at catalogue time)` |
 | [sat-js](entries/physics/jriecken-sat-js/README.md) | A simple JavaScript library for performing 2D collision detection | javascript | MIT | reference | [jriecken/sat-js](https://github.com/jriecken/sat-js) @ `2021-04-05 (branch tip at catalogue time)` |
+| [SIMple-Gravity](entries/physics/mkhan45-simple-gravity/README.md) | Gravity simulator using Newton's Law of Universal Gravitation, made to help teach physics | rust | GPL-3.0 | reference | [mkhan45/SIMple-Gravity](https://github.com/mkhan45/SIMple-Gravity) @ `a0c4a9a14ac9` |
 | [SIMple-Mechanics](entries/physics/mkhan45-simple-mechanics/README.md) | An educational physics sim for high school physics, part of the SIMple Physics project | rust | GPL-3.0 | reference | [mkhan45/SIMple-Mechanics](https://github.com/mkhan45/SIMple-Mechanics) @ `b5b2b8ed6ba1` |
 | [slice-4d-shooter](entries/physics/maffi44-slice-4d-shooter/README.md) | Slice: 4D Shooter - the first multiplayer action shooter set in four-dimensional space | rust | MIT | reference | [maffi44/slice-4d-shooter](https://github.com/maffi44/slice-4d-shooter) @ `2026-11-23 (branch tip at catalogue time)` |
 | [sofa](entries/physics/sofa-framework-sofa/README.md) | Real-time multi-physics simulation with an emphasis on medical simulation. | c++ | LGPL-2.1 | reference | [sofa-framework/sofa](https://github.com/sofa-framework/sofa) @ `7b976d788ad7` |
 | [SpaceHuggers](entries/physics/killedbyapixel-spacehuggers/README.md) | A roguelike platformer with destructible environments in 13KB of JavaScript | javascript | GPL-3.0 | reference | [KilledByAPixel/SpaceHuggers](https://github.com/KilledByAPixel/SpaceHuggers) @ `c31a5aaa1168` |
+| [sparkl](entries/physics/dimforge-sparkl/README.md) | MPM physics simulation in Rust | rust | Apache-2.0 | vendored | [dimforge/sparkl](https://github.com/dimforge/sparkl) @ `29cebe6e29ba` |
 | [SPHinXsys](entries/physics/xiangyu-hu-sphinxsys/README.md) | SPHinXsys provides C++ APIs for engineering simulation and optimization. It aims at complex systems driven by fluid, structure, multi-body dynamics and beyond.  | c++ | Apache-2.0 | reference | [Xiangyu-Hu/SPHinXsys](https://github.com/Xiangyu-Hu/SPHinXsys) @ `2026-11-23 (branch tip at catalogue time)` |
 | [spintronics](entries/physics/cool-japan-spintronics/README.md) | A pure Rust library for simulating spin dynamics, spin current generation, and conversion phenomena in magnetic and topological materials. | rust | Apache-2.0 | reference | [cool-japan/spintronics](https://github.com/cool-japan/spintronics) @ `2026-11-12 (branch tip at catalogue time)` |
 | [SPlisHSPlasH](entries/physics/interactivecomputergraphics-splishsplash/README.md) | SPlisHSPlasH is an open-source library for the physically-based simulation of fluids. | c++ | MIT | reference | [InteractiveComputerGraphics/SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -829,6 +834,7 @@ _Generated 2026-11-25 02:19 UTC · 1481 entries · 381 vendored, 1100 reference-
 | [verlet-js](entries/physics/subprotocol-verlet-js/README.md) | A simple Verlet physics engine written in javascript | javascript | unknown | reference | [subprotocol/verlet-js](https://github.com/subprotocol/verlet-js) @ `2019-10-18 (branch tip at catalogue time)` |
 | [VerletClothMeshComponent](entries/physics/niallhornfx-verletclothmeshcomponent/README.md) | Cloth Simulation using Position Based Dynamics (PBD) with Verlet integration in Unreal Engine 4 | c++ | MIT | reference | [NiallHornFX/VerletClothMeshComponent](https://github.com/NiallHornFX/VerletClothMeshComponent) @ `2023-11-26 (branch tip at catalogue time)` |
 | [Verly.js](entries/physics/anuraghazra-verly-js/README.md) | :red_circle::wavy_dash::large_blue_circle::wavy_dash::black_circle: Easy to integrate Verlet physics engine. :link:  | javascript | MIT | reference | [anuraghazra/Verly.js](https://github.com/anuraghazra/Verly.js) @ `2025-02-19 (branch tip at catalogue time)` |
+| [VMF-to-PBR](entries/physics/lavashikk-vmf-to-pbr/README.md) | A custom VMF pre-processor and raytraced light baker for Source Engine. Bridges legacy lighting with modern Physically Based Shading (PBS) by generating cluster | rust | unknown | reference | [LaVashikk/VMF-to-PBR](https://github.com/LaVashikk/VMF-to-PBR) @ `2026-05-17 (branch tip at catalogue time)` |
 | [VPhysics-Jolt](entries/physics/misyltoad-vphysics-jolt/README.md) | Volt (VPhysics Jolt) is a replacement physics module for the Source Engine. | c++ | MIT | reference | [misyltoad/VPhysics-Jolt](https://github.com/misyltoad/VPhysics-Jolt) @ `2025-05-18 (branch tip at catalogue time)` |
 | [webphysics](entries/physics/jure-webphysics/README.md) | WebGPU physics engine based on the AVBD solver | typescript | MIT | vendored | [jure/webphysics](https://github.com/jure/webphysics) @ `96b043c88dc2` |
 | [Woxi](entries/physics/ad-si-woxi/README.md) | Wolfram Language / Mathematica reimplementation in Rust (Wolfram oxidized) | rust | AGPL-3.0 | reference | [ad-si/Woxi](https://github.com/ad-si/Woxi) @ `2026-11-23 (branch tip at catalogue time)` |

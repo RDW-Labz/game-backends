@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:35:45Z",
+ "category": "physics",
+ "commit": "2026-10-28 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "AlexCri5an/optics-lab \u2014 Modern, open-source optical design & ray-tracing workstation built in Rust and WebGPU.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "optics-lab",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "alexcri5an-optics-lab",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 44,
+ "system": "Modern, open-source optical design & ray-tracing workstation built in Rust and WebGPU.",
+ "upstream": "https://github.com/AlexCri5an/optics-lab",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

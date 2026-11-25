@@ -2980,3 +2980,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/feos-org-feos
   - reference physics/canleskis-particular
   - reference physics/pvcpc-delirium-physics
+
+- **2026-11-25 02:35 UTC** — tick 828: +2 screened, +4 reference, 6 skipped, catalogue=1487
+  - added physics/dimforge-sparkl (Apache-2.0, vendored)
+  - added physics/mkhan45-simple-gravity (GPL-3.0, reference)
+  - reference physics/viccuad-avian-fdm
+  - reference physics/lavashikk-vmf-to-pbr
+  - reference physics/demindiro-godot-rapier3d
+  - reference physics/alexcri5an-optics-lab

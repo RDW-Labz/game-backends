@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:35:45Z",
+ "category": "physics",
+ "commit": "2026-05-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LaVashikk/VMF-to-PBR \u2014 A custom VMF pre-processor and raytraced light baker for Source Engine. Bridges legacy lighting with modern Physically Based Shading (PBS) by generating clustered LUTs and physics-based attenuation data",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "VMF-to-PBR",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "lavashikk-vmf-to-pbr",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 45,
+ "system": "A custom VMF pre-processor and raytraced light baker for Source Engine. Bridges legacy lighting with modern Physically Based Shading (PBS) by generating cluster",
+ "upstream": "https://github.com/LaVashikk/VMF-to-PBR",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
