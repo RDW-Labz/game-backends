@@ -1,0 +1,77 @@
+/*
+
+  This file is a part of the Nova Physics Engine
+  project and distributed under the MIT license.
+
+  Copyright © Kadir Aksoy
+  https://github.com/kadir014/nova-physics
+
+*/
+
+#include "novaphysics/contact.h"
+#include "novaphysics/space.h"
+
+
+/**
+ * @file contact.c
+ * 
+ * @brief Collision and contact information.
+ */
+
+
+nv_bool nvPersistentContactPair_penetrating(nvPersistentContactPair *pcp) {
+    nv_bool penetrating = false;
+
+    for (size_t c = 0; c < pcp->contact_count; c++) {
+        nvContact contact = pcp->contacts[c];
+       
+        if (contact.separation < 0.0f) {
+            penetrating = true;
+            break;
+       }
+    }
+
+    return penetrating;
+}
+
+void nvPersistentContactPair_remove(
+    nvSpace *space,
+    nvPersistentContactPair *pcp
+) {
+    for (size_t c = 0; c < pcp->contact_count; c++) {
+        nvContact *contact = &pcp->contacts[c];
+
+        nvVector2 normal_impulse = nvVector2_mul(
+            pcp->normal, contact->solver_info.normal_impulse
+        );
+        nvVector2 friction_impulse = nvVector2_mul(
+            nvVector2_perpr(pcp->normal), contact->solver_info.tangent_impulse
+        );
+
+        nvContactEvent event = {
+            .body_a = pcp->body_a,
+            .body_b = pcp->body_b,
+            .shape_a = pcp->shape_a,
+            .shape_b = pcp->shape_b,
+            .normal = pcp->normal,
+            .penetration = contact->separation,
+            .position = nvVector2_add(pcp->body_a->position, contact->anchor_a),
+            .normal_impulse = normal_impulse,
+            .friction_impulse = friction_impulse,
+            .id = contact->id
+        };
+
+        if (space->listener && !contact->remove_invoked) {
+            if (space->listener->on_contact_removed) {
+                nvSpaceQueuedContactEvent queued_event = {
+                    .callback = space->listener->on_contact_removed,
+                    .event = event
+                };
+                nvArray_add(space->queued_contact_events, &queued_event);
+            }
+            contact->remove_invoked = true;
+        };
+    }
+
+    nvHashMap_remove(space->contacts, pcp);
+}

@@ -1,0 +1,424 @@
+/*
+
+  This file is a part of the Nova Physics Engine
+  project and distributed under the MIT license.
+
+  Copyright © Kadir Aksoy
+  https://github.com/kadir014/nova-physics
+
+*/
+
+#ifndef NOVAPHYSICS_SPACE_H
+#define NOVAPHYSICS_SPACE_H
+
+#include "novaphysics/internal.h"
+#include "novaphysics/core/refarray.h"
+#include "novaphysics/core/array.h"
+#include "novaphysics/core/hashmap.h"
+#include "novaphysics/body.h"
+#include "novaphysics/bvh.h"
+#include "novaphysics/broadphase.h"
+#include "novaphysics/contact.h"
+#include "novaphysics/constraints/constraint.h"
+#include "novaphysics/constraints/contact_constraint.h"
+#include "novaphysics/profiler.h"
+#include "novaphysics/space_settings.h"
+
+
+/**
+ * @file space.h
+ * 
+ * @brief Space struct and its methods.
+ */
+
+
+typedef void (*nvSpacePolygonVisitorCallback)(
+    nvVector2 vertices[NV_POLYGON_MAX_VERTICES],
+    size_t num_vertices,
+    struct nvSpace *space,
+    nvRigidBody *body,
+    nvShape *shape,
+    void *user_arg
+);
+
+typedef void (*nvSpaceCircleVisitorCallback)(
+    nvVector2 center,
+    nv_float radius,
+    struct nvSpace *space,
+    nvRigidBody *body,
+    nvShape *shape,
+    void *user_arg
+);
+
+typedef struct {
+    nvContactListenerCallback callback;
+    nvContactEvent event;
+} nvSpaceQueuedContactEvent;
+
+typedef struct {
+    nv_uint64 id;
+    nvPersistentContactPair *pcp;
+} nvSortedContactPair;
+
+/**
+ * @brief Space struct.
+ * 
+ * A space is the core of the physics simulation.
+ * It manages and simulates all bodies, constraints and collisions.
+ */
+struct nvSpace {
+    /*
+        Private members
+    */
+    nvRefArray *bodies;
+    nvRefArray *constraints;
+    nvArray *proxies;
+    
+    nvHashMap *ignored_pairs;
+
+    nvHashMap *contacts;
+    nvHashMap *removed_contacts;
+    nvArray *sorted_contacts;
+
+    nvArray *broadphase_pairs;
+
+    nvBVHNode *bvh;
+    nvRefArray *bvh_traversed;
+    nvBVHContext bvh_context;
+
+    nvArray *queued_contact_events;
+
+    nv_uint32 id_counter;
+
+    /*
+        Public members (setters & getters)
+    */
+    nvVector2 gravity;
+    nvSpaceSettings settings;
+
+    nvContactListener *listener;
+    void *listener_arg;
+
+    nvSpacePolygonVisitorCallback visitor_poly_cb;
+    nvSpaceCircleVisitorCallback visitor_circle_cb;
+
+    nvProfiler profiler;
+};
+typedef struct nvSpace nvSpace;
+
+/**
+ * @brief Create new space instance.
+ * 
+ * Returns `NULL` on error. Use @ref nv_get_error to get more information.
+ * 
+ * @return nvSpace * 
+ */
+nvSpace *nvSpace_new();
+
+/**
+ * @brief Free space.
+ * 
+ * It's safe to pass `NULL` to this function.
+ * 
+ * @param space Space to free
+ */
+void nvSpace_free(nvSpace *space);
+
+/**
+ * @brief Set global gravity vector.
+ * 
+ * @param space Space
+ * @param gravity Gravity vector
+ */
+void nvSpace_set_gravity(nvSpace *space, nvVector2 gravity);
+
+/**
+ * @brief Get global gravity vector.
+ * 
+ * @param space Space
+ * @return nvVector2 Gravity vector
+ */
+nvVector2 nvSpace_get_gravity(const nvSpace *space);
+
+/**
+ * @brief Get the current simulation settings struct.
+ * 
+ * This returns a pointer to the current settings. So you can directly modify it.
+ * 
+ * @param space Space
+ * @return nvSpaceSettings *
+ */
+nvSpaceSettings *nvSpace_get_settings(nvSpace *space);
+
+/**
+ * @brief Get profiler of space.
+ * 
+ * @param space Space
+ * @return nvProfiler 
+ */
+nvProfiler nvSpace_get_profiler(const nvSpace *space);
+
+/**
+ * @brief Set the current contact event listener.
+ * 
+ * Space allocates using the functions provided by listener param.
+ * 
+ * Returns non-zero on error. Use @ref nv_get_error to get more information.
+ * 
+ * @param space Space
+ * @param listener Contact event listener
+ * @param user_arg User argument
+ */
+int nvSpace_set_contact_listener(
+    nvSpace *space,
+    nvContactListener listener,
+    void *user_arg
+);
+
+/**
+ * @brief Get the current contact event listener.
+ * 
+ * @param space Space
+ * @return nvContactListener * 
+ */
+nvContactListener *nvSpace_get_contact_listener(const nvSpace *space);
+
+/**
+ * @brief Set the geometry visitor callback.
+ * 
+ * Instead of iterating over bodies, shapes and transforming them manually
+ * yourself, you can use the geometry visitor callbacks and visualize the
+ * simulation from within the callbacks that hands you transformed shape data.
+ * 
+ * @param space Space
+ * @param polygon_visitor_callback Polygon geometry visitor callback
+ * @param cicle_visitor_callback Circle geometry visitor callback
+ */
+void nvSpace_set_geometry_visitor_callbacks(
+    nvSpace *space,
+    nvSpacePolygonVisitorCallback polygon_visitor_callback,
+    nvSpaceCircleVisitorCallback circle_visitor_callback
+);
+
+/**
+ * @brief Emit geometry visitor callbacks.
+ * 
+ * See @ref nvSpace_set_geometry_visitor_callbacks to read about the usage of
+ * geometry visitor callbacks.
+ * 
+ * @param space Space
+ * @param user_arg User argument
+ */
+void nvSpace_visit_geometry(nvSpace *space, void *user_arg);
+
+/**
+ * @brief Clear bodies and constraints in space.
+ * 
+ * Returns non-zero on error. Use @ref nv_get_error to get more information.
+ * 
+ * @param space Space.
+ * @param free_all Whether to free objects after removing them from space.
+ * @param shrink Whether to shrink internal data structures after cleaning (this
+ *               can help if you had huge worlds with thousands of bodies and
+ *               contacts).
+ * @return int Status
+ */
+int nvSpace_clear(nvSpace *space, nv_bool free_all, nv_bool shrink);
+
+int nvSpace_resize_bvh(nvSpace *space);
+
+/**
+ * @brief Add body to space.
+ * 
+ * A body must only be added to one space.
+ * 
+ * @param space Space.
+ * @param body Body to add.
+ * @return Non-zero on error. Use @ref nv_get_error to get more information.
+ */
+int nvSpace_add_rigidbody(nvSpace *space, nvRigidBody *body);
+
+/**
+ * @brief Add body to space, then immediately rebuild the collision tree.
+ * 
+ * This is a SLOW process, you generally don't want this
+ * if you're only initializing a scene.
+ * 
+ * You can consider using this if you're adding a new body from an
+ * event callback and you want changes to reflect immediately
+ * without waiting for the next simulation step, or if the simulation is paused.
+ * 
+ * @param space Space.
+ * @param body Body to add. 
+ * @return Non-zero on error. Use @ref nv_get_error to get more information. 
+ */
+int nvSpace_add_rigidbody_rebuild(nvSpace *space, nvRigidBody *body);
+
+/**
+ * @brief Remove body from the space.
+ * 
+ * Removing a body from space also removes linked resources like any constraints
+ * the body was attached to.
+ * 
+ * After removing the body, managing the memory belongs to user. Such as the body
+ * itself and the constraints it was attached to.
+ * 
+ * However, if you're not going to add this body to space again, you can set
+ * the `free_resources` parameter to true for space to free all resources linked
+ * to this body instance.
+ * 
+ * @param space Space.
+ * @param body Body to remove.
+ * @param free_resources Remove all resources linked to the removed body.
+ * @return Non-zero on error. Use @ref nv_get_error to get more information.
+ */
+int nvSpace_remove_rigidbody(
+    nvSpace *space,
+    nvRigidBody *body,
+    nv_bool free_resources
+);
+
+/**
+ * @brief Add constraint to space.
+ * 
+ * A constraint must only be added to one space.
+ * 
+ * @param space Space
+ * @param cons Constraint to add
+ * @return Non-zero on error. Use @ref nv_get_error to get more information.
+ */
+int nvSpace_add_constraint(nvSpace *space, nvConstraint *cons);
+
+/**
+ * @brief Remove constraint from the space.
+ * 
+ * After removing the constraint, managing it's memory belongs to user. You should
+ * use @ref nvConstraint_free if you are not going to add it to the space again.
+ * 
+ * @param space Space
+ * @param cons Constraint to remove
+ * @return Non-zero on error. Use @ref nv_get_error to get more information.
+ */
+int nvSpace_remove_constraint(nvSpace *space, nvConstraint *cons);
+
+/**
+ * @brief Iterate over the rigid bodies in this space.
+ * 
+ * Make sure to reset the index if you alter the space in any way while iterating.
+ * 
+ * @param space Space
+ * @param body Pointer to rigid body
+ * @param index Pointer to iteration index
+ * @return nv_bool 
+ */
+nv_bool nvSpace_iter_bodies(nvSpace *space, nvRigidBody **body, size_t *index);
+
+/**
+ * @brief Iterate over the constraints in this space.
+ * 
+ * Make sure to reset the index if you alter the space in any way while iterating.
+ * 
+ * @param space Space
+ * @param cons Pointer to constraint
+ * @param index Pointer to iteration index
+ * @return nv_bool 
+ */
+nv_bool nvSpace_iter_constraints(nvSpace *space, nvConstraint **cons, size_t *index);
+
+/**
+ * @brief Advance the simulation.
+ * 
+ * @param space Space instance
+ * @param dt Time step size (delta time)
+ */
+void nvSpace_step(nvSpace *space, nv_float dt);
+
+/**
+ * @brief Cast a ray in space and collect intersections.
+ * 
+ * It is caller's responsibility to free the returned array.
+ * 
+ * Use @ref nvArray_valid to see if cast was sucessful. If failed,
+ * use @ref nv_get_error to get more information.
+ * 
+ * @param space Space
+ * @param from Starting position of ray in world space
+ * @param to End position of ray in world space
+ * @param capacity Maximum number of cast results
+ * @param filter Collision filter.
+ * @return Array of @ref nvRayCastResult objects
+ */
+nvArray *nvSpace_cast_ray(
+    nvSpace *space,
+    nvVector2 from,
+    nvVector2 to,
+    size_t capacity,
+    nvCollisionFilter filter
+);
+
+/**
+ * @brief Query a point in space and collect overlapping bodies.
+ * 
+ * It is caller's responsibility to free the returned array (not the contents).
+ * 
+ * Use @ref nvRefArray_valid to see if query was sucessful. If failed,
+ * use @ref nv_get_error to get more information.
+ * 
+ * @param space Space.
+ * @param point Point in space to query.
+ * @param filter Collision filter.
+ * @param cheap Whether to stop testing for overlaps at coarse scale, or continue
+ *              with more expensive narrowphase geometry tests.
+ *              (Cheap query doesn't care about shapes itself, only tests for
+ *              their AABBs.)
+ * @return nvRefArray *
+ */
+nvRefArray *nvSpace_query_point(
+    nvSpace *space,
+    nvVector2 point,
+    nvCollisionFilter filter,
+    nv_bool cheap
+);
+
+/**
+ * @brief Query an AABB in space and collect overlapping bodies.
+ * 
+ * It is caller's responsibility to free the returned array (not the contents).
+ * 
+ * Use @ref nvRefArray_valid to see if query was sucessful. If failed,
+ * use @ref nv_get_error to get more information.
+ * 
+ * @param space Space.
+ * @param aabb AABB to query.
+ * @param filter Collision filter.
+ * @param cheap Whether to stop testing for overlaps at coarse scale, or continue
+ *              with more expensive narrowphase geometry tests.
+ *              (Cheap query doesn't care about shapes itself, only tests for
+ *              their AABBs.)
+ * @return nvRefArray *
+ */
+nvRefArray *nvSpace_query_aabb(
+    nvSpace *space,
+    nvAABB aabb,
+    nvCollisionFilter filter,
+    nv_bool cheap
+);
+
+/**
+ * @brief Get the total amount of memory used by this space instance in bytes.
+ * 
+ * @param space Space
+ * @return size_t 
+ */
+size_t nvSpace_total_memory_used(nvSpace *space);
+
+/**
+ * @brief Calculate current simulation state hash.
+ * 
+ * @param space Space.
+ * @return Simulation state hash.
+ */
+nv_uint128 nvSpace_get_state_hash(const nvSpace *space);
+
+
+#endif

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T02:00:37Z",
+ "category": "physics",
+ "commit": "6481e59931c4",
+ "delivery": "vendored",
+ "description": "juhl/physicsRus \u2014 2D rigid body physics engine & integrated WYSIWYG editor written in Javascript.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "readme.md",
+ "license_verdict": "clean",
+ "name": "physicsRus",
+ "size_bytes": 381265,
+ "slug": "juhl-physicsrus",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 106,
+ "system": "2D rigid body physics engine & integrated WYSIWYG editor written in Javascript.",
+ "upstream": "https://github.com/juhl/physicsRus",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

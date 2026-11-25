@@ -1,0 +1,49 @@
+/*
+
+  This file is a part of the Nova Physics Engine
+  project and distributed under the MIT license.
+
+  Copyright © Kadir Aksoy
+  https://github.com/kadir014/nova-physics
+
+*/
+
+#ifndef NOVAPHYSICS_H
+#define NOVAPHYSICS_H
+
+
+/**
+ * @file novaphysics.h
+ * 
+ * @brief Main Nova Physics API.
+ * 
+ * Included standard library headers:
+ * - stdlib.h
+ * - stdio.h (For sprintf in core/error)
+ * - stdint.h (For nv_uint and nv_int types)
+ * - math.h
+ * - float.h
+ * - string.h (For memory functions)
+ */
+
+
+#include "novaphysics/version.h"
+#include "novaphysics/core/error.h"
+#include "novaphysics/vector.h"
+#include "novaphysics/math.h"
+#include "novaphysics/aabb.h"
+#include "novaphysics/constants.h"
+#include "novaphysics/material.h"
+#include "novaphysics/broadphase.h"
+#include "novaphysics/space.h"
+#include "novaphysics/body.h"
+#include "novaphysics/collision.h"
+#include "novaphysics/contact.h"
+#include "novaphysics/constraints/constraint.h"
+#include "novaphysics/constraints/contact_constraint.h"
+#include "novaphysics/constraints/distance_constraint.h"
+#include "novaphysics/constraints/hinge_constraint.h"
+#include "novaphysics/constraints/spline_constraint.h"
+
+
+#endif

@@ -1,0 +1,102 @@
+/*
+
+  This file is a part of the Nova Physics Engine
+  project and distributed under the MIT license.
+
+  Copyright © Kadir Aksoy
+  https://github.com/kadir014/nova-physics
+
+*/
+
+#ifndef NOVAPHYSICS_TYPES_H
+#define NOVAPHYSICS_TYPES_H
+
+#include <stdint.h>
+#include <math.h>
+
+
+/**
+ * @file types.h
+ * 
+ * @brief Nova Physics type definitions.
+ */
+
+
+/*
+    Nova Physics boolean type.
+*/
+
+typedef int nv_bool;
+#define true 1
+#define false 0
+
+
+/*
+    Nova Physics floating-point type.
+
+    Double-precision mode can be used for bigger worlds and higher accuracy.
+    But it might be slower depending on the arch since all operations will
+    be done with doubles.
+
+    See build instructions on how to enable double precision and other options.
+*/
+
+#ifdef NV_USE_DOUBLE_PRECISION
+
+    typedef double nv_float;
+
+    #define nv_fabs fabs
+    #define nv_pow pow
+    #define nv_exp exp
+    #define nv_sqrt sqrt
+    #define nv_sin sin
+    #define nv_cos cos
+    #define nv_tan tan
+    #define nv_atan2 atan2
+    #define nv_floor floor
+    #define nv_ceil ceil
+
+#else
+
+    typedef float nv_float;
+
+    #define nv_fabs fabsf
+    #define nv_pow powf
+    #define nv_exp expf
+    #define nv_sqrt sqrtf
+    #define nv_sin sinf
+    #define nv_cos cosf
+    #define nv_tan tanf
+    #define nv_atan2 atan2f
+    #define nv_floor floorf
+    #define nv_ceil ceilf
+
+#endif
+
+
+/*
+    Nova Physics integer types.
+*/
+
+typedef int8_t nv_int8;
+typedef int16_t nv_int16;
+typedef int32_t nv_int32;
+typedef int64_t nv_int64;
+typedef uint8_t nv_uint8;
+typedef uint16_t nv_uint16;
+typedef uint32_t nv_uint32;
+typedef uint64_t nv_uint64;
+
+typedef struct {
+    nv_uint64 low;
+    nv_uint64 high;
+} nv_uint128;
+
+static const nv_uint128 nv_uint128_zero = {0, 0};
+
+static inline nv_bool nv_uint128_equals(nv_uint128 a, nv_uint128 b) {
+    return a.low == b.low && a.high == b.high;
+}
+
+
+#endif

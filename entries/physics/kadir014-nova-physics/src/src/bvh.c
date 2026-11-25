@@ -1,0 +1,322 @@
+/*
+
+  This file is a part of the Nova Physics Engine
+  project and distributed under the MIT license.
+
+  Copyright © Kadir Aksoy
+  https://github.com/kadir014/nova-physics
+
+*/
+
+#include "novaphysics/internal.h"
+#include "novaphysics/bvh.h"
+#include "novaphysics/math.h"
+#include "novaphysics/body.h"
+#include "novaphysics/collision.h"
+
+
+/**
+ * @file bvh.c
+ * 
+ * @brief Bounding Volume Hierarchy Tree implementation.
+ */
+
+
+size_t nvBVHNode_new(
+    nvBVHContext *context,
+    nv_bool is_leaf,
+    size_t start_i,
+    size_t n_children
+){
+    NV_TRACY_ZONE_START;
+
+    size_t node_index = context->node_count++;
+
+    if (context->node_count >= context->node_max) {
+        context->node_max *= 2;
+
+        nvBVHNode *new_nodes = NV_REALLOC(context->nodes, sizeof(nvBVHNode) * context->node_max);
+        
+        if (!new_nodes) {
+            nv_set_error("Failed to allocate memory.");
+            NV_TRACY_ZONE_END;
+            return NV_INVALID_INDEX_Z;
+        }
+
+        context->nodes = new_nodes;
+    }
+
+    nvBVHNode *node = &context->nodes[node_index];
+
+    node->is_leaf = is_leaf;
+    node->left = NV_INVALID_INDEX_Z;
+    node->right = NV_INVALID_INDEX_Z;
+
+    node->start_i = start_i;
+    node->n_children = n_children;
+
+    NV_TRACY_ZONE_END;
+    return node_index;
+}
+
+void nvBVHNode_build_aabb(size_t node_index, nvBVHContext *context) {
+    NV_TRACY_ZONE_START
+
+    nvBVHNode *node = &context->nodes[node_index];
+
+    if (node->n_children > 0) {
+        node->aabb = (nvAABB){NV_INF, NV_INF, -NV_INF, -NV_INF};
+
+        for (size_t i = node->start_i; i < node->start_i + node->n_children; i++) {
+            nvBVHProxy *proxy = NV_ARRAY_PTR_AT(context->proxies, context->children[i], nvBVHProxy);
+            nvAABB aabb = proxy->aabb;
+
+            node->aabb.min_x = NV_MIN(node->aabb.min_x, aabb.min_x);
+            node->aabb.min_y = NV_MIN(node->aabb.min_y, aabb.min_y);
+            node->aabb.max_x = NV_MAX(node->aabb.max_x, aabb.max_x);
+            node->aabb.max_y = NV_MAX(node->aabb.max_y, aabb.max_y);
+        }
+    }
+
+    NV_TRACY_ZONE_END;
+}
+
+int nvBVHNode_subdivide(size_t node_index, nvBVHContext *context) {
+    NV_TRACY_ZONE_START;
+
+    nvBVHNode *node = &context->nodes[node_index];
+    if (node->is_leaf) {
+        NV_TRACY_ZONE_END;
+        return 0;
+    }
+
+    nv_float width = node->aabb.max_x - node->aabb.min_x;
+    nv_float height = node->aabb.max_y - node->aabb.min_y;
+
+    size_t mid = 0;
+
+    nvAABB left_aabb = {
+        NV_INF, NV_INF, -NV_INF, -NV_INF
+    };
+    nvAABB right_aabb = {
+        NV_INF, NV_INF, -NV_INF, -NV_INF
+    };
+
+    // Current splitting method is arithmetic mean of proxy AABB centroids
+
+    if (width > height) {
+        nv_float split = 0.0f;
+        for (size_t i = node->start_i; i < node->start_i + node->n_children; i++) {
+            nvBVHProxy *proxy = NV_ARRAY_PTR_AT(context->proxies, context->children[i], nvBVHProxy);
+            split += proxy->centroid.x;
+        }
+        split /= (nv_float)node->n_children;
+
+        size_t i = node->start_i;
+        size_t j = node->start_i + node->n_children - 1;
+
+        /*
+            REMEMBER:
+            (c < split) leads to a segfault later on if two completely same size
+            objects overlap on the same position. Probably because j variable
+            overflows to unsigned limit. I need to make sure this is EXACTLY why
+            though...
+
+            (c <= split) fixes this.
+
+            isnan checks for c should not exist in an ideal scenario, but instead
+            of segfaulting because of NaNs, just treat as left node.
+        */
+
+        // TODO: Should skip if node->n_children > 0 ...
+
+        while (i <= j) {
+            nvBVHProxy *proxy = NV_ARRAY_PTR_AT(context->proxies, context->children[i], nvBVHProxy);
+            nv_float c = proxy->centroid.x;
+
+            if (isnan(c) || c <= split) {
+                i++;
+
+                left_aabb = nvAABB_merge(left_aabb, proxy->aabb);
+            }
+            else {
+                right_aabb = nvAABB_merge(right_aabb, proxy->aabb);
+
+                size_t k = j;
+                j--;
+
+                size_t temp = context->children[i];
+                context->children[i] = context->children[k];
+                context->children[k] = temp; 
+            }
+        }
+
+        mid = i;
+    }
+    else {
+        nv_float split = 0.0;
+        for (size_t i = node->start_i; i < node->start_i + node->n_children; i++) {
+            nvBVHProxy *proxy = NV_ARRAY_PTR_AT(context->proxies, context->children[i], nvBVHProxy);
+            split += proxy->centroid.y;
+        }
+        split /= (nv_float)node->n_children;
+
+        size_t i = node->start_i;
+        size_t j = node->start_i + node->n_children - 1;
+
+        while (i <= j) {
+            nvBVHProxy *proxy = NV_ARRAY_PTR_AT(context->proxies, context->children[i], nvBVHProxy);
+            nv_float c = proxy->centroid.y;
+
+            if (isnan(c) || c <= split) {
+                i++;
+
+                left_aabb = nvAABB_merge(left_aabb, proxy->aabb);
+            }
+            else {
+                right_aabb = nvAABB_merge(right_aabb, proxy->aabb);
+
+                size_t k = j;
+                j--;
+
+                size_t temp = context->children[i];
+                context->children[i] = context->children[k];
+                context->children[k] = temp; 
+            }
+        }
+
+        mid = i;
+    }
+
+    // Do not split if one of the sides is empty
+    size_t left_n = mid - node->start_i;
+    if (left_n == 0 || left_n == node->n_children) {
+        node->is_leaf = true;
+        NV_TRACY_ZONE_END
+        return 0;
+    }
+
+    size_t right_n = node->n_children - left_n;
+
+    nv_bool left_leaf = left_n <= NV_BVH_LEAF_THRESHOLD;
+    nv_bool right_leaf = right_n <= NV_BVH_LEAF_THRESHOLD;
+
+    size_t left_index = nvBVHNode_new(context, left_leaf, node->start_i, left_n);
+    if (left_index == NV_INVALID_INDEX_Z) {
+        NV_TRACY_ZONE_END;
+        return 1;
+    }
+
+    size_t right_index = nvBVHNode_new(context, right_leaf, mid, right_n);
+    if (right_index == NV_INVALID_INDEX_Z) {
+        NV_TRACY_ZONE_END;
+        return 1;
+    }
+
+    // Reassigning node because realloc may make the pointer invalid.
+    node = &context->nodes[node_index];
+
+    node->left = left_index;
+    node->right = right_index;
+
+    // AABBs are accumulated while split is calculated
+    context->nodes[node->left].aabb = left_aabb;
+    context->nodes[node->right].aabb = right_aabb;
+
+    int left_subdivide = nvBVHNode_subdivide(node->left, context);
+
+    // Recursive subdivide call may realloc again and make the pointer invalid!
+    node = &context->nodes[node_index];
+
+    int right_subdivide = nvBVHNode_subdivide(node->right, context);
+
+    if (left_subdivide || right_subdivide) {
+        NV_TRACY_ZONE_END;
+        return 1;
+    }
+
+    NV_TRACY_ZONE_END;
+    return 0;
+}
+
+void nvBVHNode_collide_aabb(
+    nvBVHContext *context,
+    nvBVHNode *node,
+    nvAABB aabb,
+    nvRefArray *collided
+) {
+    NV_TRACY_ZONE_START;
+
+    if (!node) {
+        NV_TRACY_ZONE_END;
+        return;
+    }
+
+    if (!nv_collide_aabb_x_aabb(node->aabb, aabb)) {
+        NV_TRACY_ZONE_END;
+        return;
+    }
+
+    if (node->is_leaf) {
+        for (size_t i = node->start_i; i < node->start_i + node->n_children; i++) {
+            nvRefArray_add(collided, NV_ARRAY_PTR_AT(context->proxies, context->children[i], nvBVHProxy));
+        }
+    }
+    else {
+        nvBVHNode *left_node = &context->nodes[node->left];
+        nvBVHNode *right_node = &context->nodes[node->right];
+        nvBVHNode_collide_aabb(context, left_node, aabb, collided);
+        nvBVHNode_collide_aabb(context, right_node, aabb, collided);
+    }
+
+    NV_TRACY_ZONE_END;
+}
+
+void nvBVHNode_collide_ray(
+    nvBVHContext *context,
+    nvBVHNode *node,
+    nvVector2 origin,
+    nvVector2 inv_dir,
+    nvRefArray *collided
+) {
+    if (!node) return;
+
+    if (!nv_collide_aabb_x_ray(node->aabb, origin, inv_dir)) return;
+
+    if (node->is_leaf) {
+        for (size_t i = node->start_i; i < node->start_i + node->n_children; i++) {
+            nvRefArray_add(collided, NV_ARRAY_PTR_AT(context->proxies, context->children[i], nvBVHProxy));
+        }
+    }
+    else {
+        nvBVHNode *left_node = &context->nodes[node->left];
+        nvBVHNode *right_node = &context->nodes[node->right];
+        nvBVHNode_collide_ray(context, left_node, origin, inv_dir, collided);
+        nvBVHNode_collide_ray(context, right_node, origin, inv_dir, collided);
+    }
+}
+
+size_t nvBVHNode_size(nvBVHContext *context, nvBVHNode *node) {
+    if (!node) return 0;
+
+    if (node->is_leaf) return 1;
+
+    else {
+        nvBVHNode *left_node = &context->nodes[node->left];
+        nvBVHNode *right_node = &context->nodes[node->right];
+        size_t a = nvBVHNode_size(context, left_node);
+        size_t b = nvBVHNode_size(context, right_node);
+        return 1 + a + b;
+    }
+}
+
+nvBVHNode *nvBVHTree_new(nvBVHContext *context) {
+    size_t root_index = nvBVHNode_new(context, false, 0, context->proxies->size);
+    if (root_index == NV_INVALID_INDEX_Z) return NULL;
+
+    nvBVHNode_build_aabb(root_index, context);
+    
+    if (nvBVHNode_subdivide(root_index, context)) return NULL;
+
+    return &context->nodes[root_index];
+}

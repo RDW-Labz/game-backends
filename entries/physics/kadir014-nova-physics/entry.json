@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T02:00:35Z",
+ "category": "physics",
+ "commit": "90d9ced93fac",
+ "delivery": "vendored",
+ "description": "kadir014/nova-physics \u2014 Lightweight 2D rigid-body physics engine",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "nova-physics",
+ "size_bytes": 2267106,
+ "slug": "kadir014-nova-physics",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 110,
+ "system": "Lightweight 2D rigid-body physics engine",
+ "upstream": "https://github.com/kadir014/nova-physics",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,179 @@
+/*
+
+  This file is a part of the Nova Physics Engine
+  project and distributed under the MIT license.
+
+  Copyright © Kadir Aksoy
+  https://github.com/kadir014/nova-physics
+
+*/
+
+#ifndef NOVAPHYSICS_PROFILER_H
+#define NOVAPHYSICS_PROFILER_H
+
+#include "novaphysics/internal.h"
+
+
+/**
+ * @file profiler.h
+ * 
+ * @brief Built-in performance profiler & precision timers.
+ */
+
+
+/**
+ * @brief Timings for parts of single space simulation step in seconds.
+ */
+typedef struct {
+    double step; /**< Time spent in one simulation step. */
+    double broadphase; /**< Time spent for broadphase. */
+    double broadphase_finalize; /**< Time spent finalizing broadphase. */
+    double bvh_build; /**< Time spent building BVH-tree. */
+    double bvh_traverse; /**< Time spent traversing BVH-tree. */
+    double narrowphase; /**< Time spent for narrowphase. */
+    double contact_sort;
+    double integrate_accelerations; /**< Time spent integrating accelerations. */
+    double presolve; /**< Time spent preparing constraints for solving. */
+    double warmstart; /**< Time spent warmstarting constraints. */
+    double solve_velocities; /**< Time spent solving velocity constraints. */
+    double solve_positions; /**< Time spent for NGS. */
+    double integrate_velocities; /**< Time spent integrating velocities. */
+    double casts; /**< Total amount of time spent for casts. */
+    double queries; /**< Total amount of time spent for spatial queries. */
+} nvProfiler;
+
+
+static inline void nvProfiler_reset(nvProfiler *profiler) {
+    profiler->step = 0.0;
+    profiler->broadphase = 0.0;
+    profiler->broadphase_finalize = 0.0;
+    profiler->bvh_build = 0.0;
+    profiler->bvh_traverse = 0.0;
+    profiler->narrowphase = 0.0;
+    profiler->contact_sort = 0.0;
+    profiler->integrate_accelerations = 0.0;
+    profiler->presolve = 0.0;
+    profiler->warmstart = 0.0;
+    profiler->solve_velocities = 0.0;
+    profiler->solve_positions = 0.0;
+    profiler->integrate_velocities = 0.0;
+    profiler->casts = 0.0;
+    profiler->queries = 0.0;
+}
+
+
+/**
+ * @brief Simple high-precision stopwatch.
+ * 
+ * Backed by `QueryPerformanceCounter` on Windows and `clock_gettime()
+ * (CLOCK_REALTIME)` on POSIX platforms. Resolution should be sub-microsecond on
+ * both, though actual achievable precision depends on the OS scheduler.
+ * 
+ * `elapsed` is also cached on the struct after each stop() call, in case
+ * you need to re-read the last measured duration without calling stop()
+ * again.
+ */
+typedef struct _nvPrecisionTimer nvPrecisionTimer;
+
+/**
+ * @brief Starts (or restarts) the timer.
+ * 
+ * @param timer Pointer to nvPrecisionTimer.
+ */
+static inline void nvPrecisionTimer_start(nvPrecisionTimer *timer);
+
+/**
+ * @brief Measures the time elapsed since the last call to @ref nvPrecisionTimer_start.
+ * 
+ * Can be called multiple times after a single start() to get successively
+ * larger elapsed values. Because this function doesn't reset or invalidate
+ * the state of the timer, it only recomputes `now - start`.
+ * 
+ * @param timer Pointer to nvPrecisionTimer.
+ * @return Elapsed time in seconds.
+ */
+static inline double nvPrecisionTimer_stop(nvPrecisionTimer *timer);
+
+
+#ifndef NV_ENABLE_PROFILER
+
+    struct _nvPrecisionTimer {
+        double elapsed;
+    };
+
+    static inline void nvPrecisionTimer_start(nvPrecisionTimer *timer) {
+        (void)timer;
+    }
+
+    static inline double nvPrecisionTimer_stop(nvPrecisionTimer *timer) {
+        (void)timer;
+        return 0.0;
+    }
+
+#elif defined(NV_WINDOWS)
+
+    #define WIN32_LEAN_AND_MEAN
+    #include <windows.h>
+
+    struct _nvPrecisionTimer {
+        double elapsed;
+        LARGE_INTEGER _start;
+        LARGE_INTEGER _end;
+    };
+
+    static inline void nvPrecisionTimer_start(nvPrecisionTimer *timer) {
+        QueryPerformanceCounter(&timer->_start);
+    }
+
+    static inline double nvPrecisionTimer_stop(nvPrecisionTimer *timer ) {
+        QueryPerformanceCounter(&timer->_end);
+
+        LARGE_INTEGER frequency;
+        QueryPerformanceFrequency(&frequency);
+
+        timer->elapsed = (double)(timer->_end.QuadPart - timer->_start.QuadPart) / (double)frequency.QuadPart;
+        return timer->elapsed;
+    }
+
+#else
+
+    #include <time.h>
+    #include <unistd.h>
+
+    // TODO: On OSX, frequency can be milliseconds instead of nanoseconds? Needs researching
+    #define NV_PRECISION_TIMER_NS_PER_SECOND 1e9
+
+    struct _nvPrecisionTimer {
+        double elapsed;
+        struct timespec _start;
+        struct timespec _end;
+        struct timespec _delta;
+    };
+
+    static inline void nvPrecisionTimer_start(nvPrecisionTimer *timer) {
+        clock_gettime(CLOCK_REALTIME, &timer->_start);
+    }
+
+    static inline double nvPrecisionTimer_stop(nvPrecisionTimer *timer) {
+        clock_gettime(CLOCK_REALTIME, &timer->_end);
+
+        timer->_delta.tv_nsec = timer->_end.tv_nsec - timer->_start.tv_nsec;
+        timer->_delta.tv_sec = timer->_end.tv_sec - timer->_start.tv_sec;
+
+        if (timer->_delta.tv_sec > 0 && timer->_delta.tv_nsec < 0) {
+            timer->_delta.tv_nsec += NV_PRECISION_TIMER_NS_PER_SECOND;
+            timer->_delta.tv_sec--;
+        }
+        else if (timer->_delta.tv_sec < 0 && timer->_delta.tv_nsec > 0) {
+            timer->_delta.tv_nsec -= NV_PRECISION_TIMER_NS_PER_SECOND;
+            timer->_delta.tv_sec++;
+        }
+
+        timer->elapsed = (double)timer->_delta.tv_sec + (double)timer->_delta.tv_nsec / NV_PRECISION_TIMER_NS_PER_SECOND;
+        return timer->elapsed;
+    }
+
+#endif
+
+
+#endif

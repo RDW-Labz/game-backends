@@ -1,0 +1,103 @@
+# VSCode stuff
+.vscode/
+nova-physics-ws.code-workspace
+
+# Meson
+subprojects/
+reconfigure/
+
+# Project testing & debugging
+cache/
+.cache/
+test.c
+pytest/
+SDL2/
+dev/
+examples/include
+examples/sdl
+examples/bench_*.c
+examples/bench_*.py
+examples/debug_*
+examples/test_*
+*.mp4
+benchmarks/*.txt
+benchmarks/h_*
+simple.c
+pi.c
+build/
+build_*/
+deps/
+*.pyd
+test.py
+graph.py
+lines_of_code.py
+*.prof
+recording/
+docs/html/
+docs/xml/
+docs/latex/
+tracy/
+debug.bat
+run.bat
+todoer.py
+benchmarks/*.py
+stats.py
+
+# Building
+*.zip
+*.tar.gz
+
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+lib
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+.DS_Store
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf

@@ -1,0 +1,81 @@
+<p align="center"><img src="https://raw.githubusercontent.com/kadir014/kadir014.github.io/master/assets/novaphysics.png" width=340></p>
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg">
+  <img src="https://img.shields.io/badge/version-1.3.3-yellow">
+  <a href="https://app.codacy.com/gh/kadir014/nova-physics/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/9556f3db17d54b288557d3b2e9dbf366">
+  <a href="https://github.com/kadir014/nova-physics/releases"><img src="https://img.shields.io/github/downloads/kadir014/nova-physics/total"></a>
+  <a href="https://github.com/kadir014/nova-physics/issues"><img src="https://img.shields.io/github/issues/kadir014/nova-physics"></a>
+</p>
+<p align="center">
+Nova Physics is a lightweight and easy to use 2D physics engine designed with game development in mind.
+<br>
+<img src="https://raw.githubusercontent.com/kadir014/nova-physics/main/examples/assets/introgif.gif" width=400>
+</p>
+
+
+
+# Features
+- Simple, user-friendly API
+- Portable codebase with no dependencies
+- Rigid body dynamics
+- Discrete collision detection
+  - Circle shape
+  - Convex polygon shape
+  - Ray casting
+  - Spatial queries
+- Multiple shapes per body
+- **BVH-accelerated** collision detection
+- Material properties (friction, restitution and density)
+- Collision filtering with masks and grouping
+- Constraints between bodies
+  - Distance constraint - *can also behave like spring*
+  - Hinge constraint
+  - Spline path constraint
+- **PGS Baumgarte** solver algorithm
+- Great stacking stability
+- Built-in profiler
+- Optional double-precision mode
+- Various interactive demos using *SDL2 & OpenGL*
+
+
+# Building
+The library uses C99 standard and depends only on the C standard library.
+
+For further instructions see [here](BUILDING.md).
+
+
+
+# Examples
+
+<img src="https://raw.githubusercontent.com/kadir014/nova-physics/main/examples/assets/demogif.gif" width=400>
+
+Example demos are in [examples](https://github.com/kadir014/nova-physics/blob/main/examples/) directory, enable building demos option in the build system (if not already enabled).
+
+
+
+# Documentation
+You can access the documentation including the API reference [here](https://nova-physics.rtfd.io).
+
+If you are just getting started, you can use the [introduction page](https://nova-physics.readthedocs.io/en/latest/getting_started/index.html).
+
+
+
+# Resources & References
+Nova is a passion and learning project for me, and following are some of the many great resources that helped me along the way.
+- **Erin Catto**, [GDC Presentations](https://box2d.org/publications/), [Box2D](https://github.com/erincatto/box2d) and [Solver2D](https://github.com/erincatto/solver2d)
+- **Chris Hecker**, [Rigid Body Dynamics](https://chrishecker.com/Rigid_Body_Dynamics)
+- **Ian Millington**, [Game Physics Engine Development](https://www.r-5.org/files/books/computers/algo-list/realtime-3d/Ian_Millington-Game_Physics_Engine_Development-EN.pdf)
+- **Christer Ericson**, [Real-Time Collision Detection](https://www.r-5.org/files/books/computers/algo-list/realtime-3d/Christer_Ericson-Real-Time_Collision_Detection-EN.pdf)
+- **Dirk Gregorius**, [Robust Contact Creation for Physics Simulations](http://media.steampowered.com/apps/valve/2015/DirkGregorius_Contacts.pdf)
+- **Randy Gaul**, [Game Physics Articles](https://tutsplus.com/authors/randy-gaul)
+- **Allen Chou**, [Physics Blogs](https://allenchou.net/category/physics/)
+- **Jacco Bikker**, [How to build a BVH](https://jacco.ompf2.com/2022/04/13/how-to-build-a-bvh-part-1-basics/)
+- **Marjin Tamis** & **Giuseppe Maggiore**, [Constraint Based Physics Solver](http://mft-spirit.nl/files/MTamis_ConstraintBasedPhysicsSolver.pdf)
+- **Micheal Manzke**, [Multiple Contact Resolution](https://www.scss.tcd.ie/~manzkem/CS7057/cs7057-1516-10-MultipleContacts-mm.pdf)
+
+
+
+# License
+[MIT](LICENSE) © Kadir Aksoy
+
+Nova Physics is, and always will be, free and open-source. Although I would greatly appreciate [sponsorships!](https://github.com/sponsors/kadir014)

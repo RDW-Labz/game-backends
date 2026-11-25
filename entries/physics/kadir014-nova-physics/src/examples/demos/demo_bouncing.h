@@ -1,0 +1,63 @@
+/*
+
+  This file is a part of the Nova Physics Engine
+  project and distributed under the MIT license.
+
+  Copyright © Kadir Aksoy
+  https://github.com/kadir014/nova-physics
+
+*/
+
+#include "../common.h"
+
+
+nv_float bounce_start_y = 0.0f;
+
+void Bouncing_setup(ExampleContext *example) {
+    nvRigidBody *ground;
+    nvRigidBodyInitializer ground_init = nvRigidBodyInitializer_default;
+    ground_init.position = NV_VECTOR2(64.0f, 72.0f - 2.5f);
+    ground_init.material = (nvMaterial){.density=1.0f, .restitution=1.0f, .friction=0.5f};
+    ground = nvRigidBody_new(ground_init);
+
+    nvShape *ground_shape = nvBoxShape_new(102.0f, 5.0f, nvVector2_zero);
+    nvRigidBody_add_shape(ground, ground_shape);
+
+    nvSpace_add_rigidbody(example->space, ground);
+
+
+    for (size_t x = 0; x < 100; x++) {
+        nv_float e = (nv_float)x / 100.0f;
+
+        nvRigidBody *ball;
+        nvRigidBodyInitializer ball_init = nvRigidBodyInitializer_default;
+        ball_init.type = nvRigidBodyType_DYNAMIC;
+        ball_init.position = NV_VECTOR2(
+            (nv_float)x + 14.0f,
+            bounce_start_y
+        );
+        ball_init.material = (nvMaterial){.density=1.0f, .restitution=e, .friction=0.5f};
+        ball = nvRigidBody_new(ball_init);
+
+        // Radius just under 0.5 so balls don't collide horizontally
+        nvShape *shape = nvCircleShape_new(nvVector2_zero, 0.49f);
+        nvRigidBody_add_shape(ball, shape);
+
+        nvSpace_add_rigidbody(example->space, ball);
+    }
+}
+
+void Bouncing_update(ExampleContext *example) {
+    // Draw the line to indicate where the balls start in the air
+
+    nvVector2 p0 = NV_VECTOR2(-500.0f, bounce_start_y);
+    nvVector2 p1 = NV_VECTOR2(500.0f, bounce_start_y);
+    p0 = world_to_screen(example, p0);
+    p0 = normalize_coords(example, p0);
+    p1 = world_to_screen(example, p1);
+    p1 = normalize_coords(example, p1);
+    ADD_LINE_(p0.x, p0.y, 1.0f, 0.0f, 0.0f, 0.0f);
+    ADD_LINE_(p0.x, p0.y, 1.0f, 0.0f, 0.0f, 0.6f);
+    ADD_LINE_(p1.x, p1.y, 1.0f, 0.0f, 0.0f, 0.6f);
+    ADD_LINE_(p1.x, p1.y, 1.0f, 0.0f, 0.0f, 0.0f);
+}

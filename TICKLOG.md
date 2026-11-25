@@ -2964,3 +2964,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/alattanzio-box3dunreal
   - reference physics/dojo-sim-dojo-jl
   - reference physics/yuki-koyama-elasty
+
+- **2026-11-25 02:00 UTC** — tick 826: +2 screened, +4 reference, 29 skipped, catalogue=1475
+  - added physics/kadir014-nova-physics (MIT, vendored)
+  - added physics/juhl-physicsrus (MIT, vendored)
+  - reference physics/openfl-box2d
+  - reference physics/stevenzhang543-velophi
+  - reference physics/yuanming-hu-flat
+  - reference physics/newkrok-nape-js

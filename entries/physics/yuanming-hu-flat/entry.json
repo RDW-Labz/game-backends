@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:00:38Z",
+ "category": "physics",
+ "commit": "2017-05-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "yuanming-hu/FLAT \u2014 A 2D rigid body physics engine.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "FLAT",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "yuanming-hu-flat",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 97,
+ "system": "A 2D rigid body physics engine.",
+ "upstream": "https://github.com/yuanming-hu/FLAT",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
