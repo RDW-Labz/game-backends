@@ -3190,3 +3190,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/replaysmike-binner
   - reference gameplay/fajarghifar-inventory-management-system
   - reference gameplay/ronknight-inventorysystem
+
+- **2026-11-25 11:04 UTC** — tick 857: +2 screened, +4 reference, 49 skipped, catalogue=1639
+  - added gameplay/leihs-leihs (GPL-3.0, reference)
+  - added gameplay/asjadiqbal-inventorymanagementsystem (none, reference)
+  - reference gameplay/angelhodar-openrpg-inventory
+  - reference gameplay/hugech39-dims
+  - reference gameplay/tr7zw-itemswapper
+  - reference gameplay/ahmedali5530-restaurant-pos

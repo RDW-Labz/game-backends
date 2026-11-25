@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T11:04:46Z",
+ "category": "gameplay",
+ "commit": "2021-03-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "angelhodar/OpenRPG_Inventory \u2014 Generic and fully featured multipurpose inventory container and equipment system for Unreal Engine 4",
+ "language": "n/a",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "OpenRPG_Inventory",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "angelhodar-openrpg-inventory",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 226,
+ "system": "Generic and fully featured multipurpose inventory container and equipment system for Unreal Engine 4",
+ "upstream": "https://github.com/angelhodar/OpenRPG_Inventory",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

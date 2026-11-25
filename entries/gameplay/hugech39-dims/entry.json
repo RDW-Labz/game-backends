@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T11:04:46Z",
+ "category": "gameplay",
+ "commit": "2021-03-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "HugeCH39/DIMS \u2014 \ud83d\udc1f \u6570\u636e\u5e93\u7cfb\u7edf\u539f\u7406\u8bfe\u7a0b\u8bbe\u8ba1\uff0cDrug Inventory Management System\uff0c\u57fa\u4e8e SSM \u6846\u67b6\u7684\u533b\u9662\u836f\u54c1\u5e93\u5b58\u7ba1\u7406\u7cfb\u7edf\u3002",
+ "language": "java",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "DIMS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "hugech39-dims",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 225,
+ "system": "\ud83d\udc1f \u6570\u636e\u5e93\u7cfb\u7edf\u539f\u7406\u8bfe\u7a0b\u8bbe\u8ba1\uff0cDrug Inventory Management System\uff0c\u57fa\u4e8e SSM \u6846\u67b6\u7684\u533b\u9662\u836f\u54c1\u5e93\u5b58\u7ba1\u7406\u7cfb\u7edf\u3002",
+ "upstream": "https://github.com/HugeCH39/DIMS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

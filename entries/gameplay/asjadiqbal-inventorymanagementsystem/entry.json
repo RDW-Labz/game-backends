@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T11:04:45Z",
+ "category": "gameplay",
+ "commit": "fa42a6b59265",
+ "delivery": "reference",
+ "description": "AsjadIqbal/InventoryManagementSystem \u2014 This is an inventory management software built in Java using MySQL database that can be used at any Point of Sale of a small to mid-sized store.",
+ "language": "java",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "InventoryManagementSystem",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 233959,
+ "slug": "asjadiqbal-inventorymanagementsystem",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 235,
+ "system": "This is an inventory management software built in Java using MySQL database that can be used at any Point of Sale of a small to mid-sized store.",
+ "upstream": "https://github.com/AsjadIqbal/InventoryManagementSystem",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

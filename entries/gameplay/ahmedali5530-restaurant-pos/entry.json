@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T11:04:46Z",
+ "category": "gameplay",
+ "commit": "2026-11-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ahmedali5530/restaurant-pos \u2014 A complete Open Source Restaurant POS System (React + SurrealDB) built for real-world caf\u00e9s, restaurants, food trucks and food chains.  Designed to handle everything from ordering \u2192 kitchen \u2192 delivery \u2192 staff \u2192 reporting \u2192 inventory \u2192 auth in one unified system.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "restaurant-pos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ahmedali5530-restaurant-pos",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 88,
+ "system": "A complete Open Source Restaurant POS System (React + SurrealDB) built for real-world caf\u00e9s, restaurants, food trucks and food chains.  Designed to handle every",
+ "upstream": "https://github.com/ahmedali5530/restaurant-pos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

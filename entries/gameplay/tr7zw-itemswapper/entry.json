@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T11:04:46Z",
+ "category": "gameplay",
+ "commit": "2026-09-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tr7zw/ItemSwapper \u2014 Tweaks to the inventory system based on Xisumavoid's video.",
+ "language": "java",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "ItemSwapper",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "tr7zw-itemswapper",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 115,
+ "system": "Tweaks to the inventory system based on Xisumavoid's video.",
+ "upstream": "https://github.com/tr7zw/ItemSwapper",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

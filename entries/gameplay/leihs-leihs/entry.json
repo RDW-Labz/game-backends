@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T11:04:43Z",
+ "category": "gameplay",
+ "commit": "0924a7289c96",
+ "delivery": "reference",
+ "description": "leihs/leihs \u2014 leihs is an inventory management, procurement and lending system",
+ "language": "shell",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "leihs",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 0,
+ "slug": "leihs-leihs",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 245,
+ "system": "leihs is an inventory management, procurement and lending system",
+ "upstream": "https://github.com/leihs/leihs",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
