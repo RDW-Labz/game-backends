@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:48:56Z",
+ "category": "math",
+ "commit": "2018-12-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ElectricRCAircraftGuy/fixed_point_math \u2014 Fixed point math practice & test code",
+ "language": "c++",
+ "license": "BSD-3-Clause",
+ "license_verdict": "clean",
+ "name": "fixed_point_math",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-3-Clause)",
+ "slug": "electricrcaircraftguy-fixed-point-math",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 31,
+ "system": "Fixed point math practice & test code",
+ "upstream": "https://github.com/ElectricRCAircraftGuy/fixed_point_math",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

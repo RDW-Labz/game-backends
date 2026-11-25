@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:48:56Z",
+ "category": "math",
+ "commit": "2020-09-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "alcueca/DecimalMath \u2014 Smart contract implementing fixed point math operations using structs for type checking.",
+ "language": "solidity",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "DecimalMath",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "alcueca-decimalmath",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 31,
+ "system": "Smart contract implementing fixed point math operations using structs for type checking.",
+ "upstream": "https://github.com/alcueca/DecimalMath",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

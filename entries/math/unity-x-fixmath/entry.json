@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T05:48:54Z",
+ "category": "math",
+ "commit": "ef27101c592d",
+ "delivery": "vendored",
+ "description": "Unity-X/FixMath \u2014 A fixed-point math library similar to unity.mathematics",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "FixMath",
+ "size_bytes": 6442650,
+ "slug": "unity-x-fixmath",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 35,
+ "system": "A fixed-point math library similar to unity.mathematics",
+ "upstream": "https://github.com/Unity-X/FixMath",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

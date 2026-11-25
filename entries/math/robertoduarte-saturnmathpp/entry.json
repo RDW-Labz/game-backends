@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:48:56Z",
+ "category": "math",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "robertoduarte/SaturnMathPP \u2014 SaturnMath++ is a C++23 library dedicated to Sega Saturn hardware, offering essential mathematical operations tailored for fixed-point arithmetic and geometric calculations.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SaturnMathPP",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "robertoduarte-saturnmathpp",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 30,
+ "system": "SaturnMath++ is a C++23 library dedicated to Sega Saturn hardware, offering essential mathematical operations tailored for fixed-point arithmetic and geometric ",
+ "upstream": "https://github.com/robertoduarte/SaturnMathPP",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

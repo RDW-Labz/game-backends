@@ -3065,3 +3065,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/kmilo17pet-qlibs
   - reference math/arturbac-fixed-math
   - reference math/mrdav30-fixedmathsharp
+
+- **2026-11-25 05:48 UTC** — tick 839: +2 screened, +4 reference, 7 skipped, catalogue=1550
+  - added math/encointer-substrate-fixed (Apache-2.0, vendored)
+  - added math/unity-x-fixmath (MIT, vendored)
+  - reference math/electricrcaircraftguy-fixed-point-math
+  - reference math/alcueca-decimalmath
+  - reference math/robertoduarte-saturnmathpp
+  - reference math/hvhdl-hvhdl-example-project

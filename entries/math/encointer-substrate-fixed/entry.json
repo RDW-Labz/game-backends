@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T05:48:49Z",
+ "category": "math",
+ "commit": "d5f70362f2e0",
+ "delivery": "vendored",
+ "description": "encointer/substrate-fixed \u2014 a fixed point library for substrate based on `fixed`, providing transcendent math functions",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "substrate-fixed",
+ "size_bytes": 712548,
+ "slug": "encointer-substrate-fixed",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 36,
+ "system": "a fixed point library for substrate based on `fixed`, providing transcendent math functions",
+ "upstream": "https://github.com/encointer/substrate-fixed",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
