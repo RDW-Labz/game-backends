@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:54:37Z",
+ "category": "engines",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ProwlEngine/Prowl \u2014 An Open Source C# 3D Game Engine under MIT license, inspired by Unity and featuring a complete editor",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Prowl",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "prowlengine-prowl",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 1322,
+ "system": "An Open Source C# 3D Game Engine under MIT license, inspired by Unity and featuring a complete editor",
+ "upstream": "https://github.com/ProwlEngine/Prowl",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

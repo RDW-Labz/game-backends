@@ -3331,3 +3331,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/harbdog-raycaster-go
   - reference engines/opendiablo2-hellspawner
   - reference engines/goplus-spx
+
+- **2026-11-25 17:54 UTC** — tick 882: +2 screened, +4 reference, 12 skipped, catalogue=1730
+  - added engines/davidarayan-ezy-slice (MIT, vendored)
+  - added engines/capcom-td-oss-redox (Apache-2.0, vendored)
+  - reference engines/opensage-opensage
+  - reference engines/prowlengine-prowl
+  - reference engines/armour-multiplayer-fps
+  - reference engines/ricardojmendez-unitysteer

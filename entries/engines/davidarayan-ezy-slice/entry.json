@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T17:54:33Z",
+ "category": "engines",
+ "commit": "073efdcaf595",
+ "delivery": "vendored",
+ "description": "DavidArayan/ezy-slice \u2014 An open source mesh slicer framework for Unity3D Game Engine. Written in C#.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ezy-slice",
+ "size_bytes": 83052,
+ "slug": "davidarayan-ezy-slice",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 2279,
+ "system": "An open source mesh slicer framework for Unity3D Game Engine. Written in C#.",
+ "upstream": "https://github.com/DavidArayan/ezy-slice",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

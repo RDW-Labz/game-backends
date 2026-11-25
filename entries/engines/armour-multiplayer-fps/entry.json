@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:54:37Z",
+ "category": "engines",
+ "commit": "2024-12-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Armour/Multiplayer-FPS \u2014 :video_game: A multiplayer first person shooter game based on Unity Game Engine",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Multiplayer-FPS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "armour-multiplayer-fps",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 1268,
+ "system": ":video_game: A multiplayer first person shooter game based on Unity Game Engine",
+ "upstream": "https://github.com/Armour/Multiplayer-FPS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T17:54:35Z",
+ "category": "engines",
+ "commit": "98fc0062bed2",
+ "delivery": "vendored",
+ "description": "CAPCOM-TD-OSS/REDox \u2014 High-performance, token-based structured data engine for .NET. A core component of REX, the technology behind CAPCOM's next-generation game engine.",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "REDox",
+ "size_bytes": 3303161,
+ "slug": "capcom-td-oss-redox",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 1788,
+ "system": "High-performance, token-based structured data engine for .NET. A core component of REX, the technology behind CAPCOM's next-generation game engine.",
+ "upstream": "https://github.com/CAPCOM-TD-OSS/REDox",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

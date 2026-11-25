@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 17:38 UTC · 1724 entries · 434 vendored, 1290 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 17:54 UTC · 1730 entries · 436 vendored, 1294 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 678 | 161 | 517 |
+| [engines](#engines) — Game engines and engine subsystems | 684 | 163 | 521 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 17:38 UTC · 1724 entries · 434 vendored, 1290 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 678 entries
+**Game engines and engine subsystems** — 684 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -229,6 +229,7 @@ _Generated 2026-11-25 17:38 UTC · 1724 entries · 434 vendored, 1290 reference-
 | [evolved.lua](entries/engines/blackmatov-evolved-lua/README.md) | Evolved ECS (Entity-Component-System) for Lua | lua | MIT | vendored | [BlackMATov/evolved.lua](https://github.com/BlackMATov/evolved.lua) @ `f8eb1f4cadc3` |
 | [Excalibur](entries/engines/excaliburjs-excalibur/README.md) | 🎮 Your friendly TypeScript 2D game engine for the web 🗡️ | typescript | BSD-2-Clause | vendored | [excaliburjs/Excalibur](https://github.com/excaliburjs/Excalibur) @ `0c5a49cb596a` |
 | [ezEngine](entries/engines/ezengine-ezengine/README.md) | An open source C++ game engine. | c++ | MIT | reference | [ezEngine/ezEngine](https://github.com/ezEngine/ezEngine) @ `2026-11-22 (branch tip at catalogue time)` |
+| [ezy-slice](entries/engines/davidarayan-ezy-slice/README.md) | An open source mesh slicer framework for Unity3D Game Engine. Written in C#. | c# | MIT | vendored | [DavidArayan/ezy-slice](https://github.com/DavidArayan/ezy-slice) @ `073efdcaf595` |
 | [F8Framework](entries/engines/tippinggame-f8framework/README.md) | F8 Framework是一个优雅，轻量，符合直觉的基于Unity引擎的游戏框架，组件围绕F8一键启动，框架整体遵循以极少的使用成本开发游戏。F8 Framework is an elegant, lightweight, and intuitive game framework based on the Unity  | c# | MIT | reference | [TippingGame/F8Framework](https://github.com/TippingGame/F8Framework) @ `2026-09-15 (branch tip at catalogue time)` |
 | [fake-bge-module](entries/engines/nutti-fake-bge-module/README.md) | Fake BGE API module collection for the code completion.  | python | MIT | reference | [nutti/fake-bge-module](https://github.com/nutti/fake-bge-module) @ `2026-07-31 (branch tip at catalogue time)` |
 | [falltergeist](entries/engines/falltergeist-falltergeist/README.md) | Opensource crossplatform Fallout 2™ game engine writen in C++ and SDL. | c++ | GPL-3.0 | reference | [falltergeist/falltergeist](https://github.com/falltergeist/falltergeist) @ `2023-01-05 (branch tip at catalogue time)` |
@@ -420,6 +421,7 @@ _Generated 2026-11-25 17:38 UTC · 1724 entries · 434 vendored, 1290 reference-
 | [msdf-gdx](entries/engines/maltaisn-msdf-gdx/README.md) | Provides lightweight utilities to draw MSDF text on LibGDX | kotlin | Apache-2.0 | reference | [maltaisn/msdf-gdx](https://github.com/maltaisn/msdf-gdx) @ `2023-12-21 (branch tip at catalogue time)` |
 | [mtasa-blue](entries/engines/multitheftauto-mtasa-blue/README.md) | Multi Theft Auto is a game engine that turns Grand Theft Auto: San Andreas into networked multiplayer. | c++ | GPL-3.0 | reference | [multitheftauto/mtasa-blue](https://github.com/multitheftauto/mtasa-blue) @ `2026-11-24 (branch tip at catalogue time)` |
 | [MTX](entries/engines/moribitotech-mtx/README.md) | Compact Mtx Framework over LibGDX Game Library | java | Apache-2.0 | vendored | [moribitotech/MTX](https://github.com/moribitotech/MTX) @ `9472d98c3960` |
+| [Multiplayer-FPS](entries/engines/armour-multiplayer-fps/README.md) | :video_game: A multiplayer first person shooter game based on Unity Game Engine | c# | MIT | reference | [Armour/Multiplayer-FPS](https://github.com/Armour/Multiplayer-FPS) @ `2024-12-30 (branch tip at catalogue time)` |
 | [multiplayer-voxel-browser-game-engine](entries/engines/kevzettler-multiplayer-voxel-browser-game-engine/README.md) | A multiplayer voxel browser game engine | typescript | unknown | reference | [kevzettler/multiplayer-voxel-browser-game-engine](https://github.com/kevzettler/multiplayer-voxel-browser-game-engine) @ `2023-04-24 (branch tip at catalogue time)` |
 | [murder](entries/engines/isadorasophia-murder/README.md) | Murder is a pixel art ECS game engine. | c# | MIT | vendored | [isadorasophia/murder](https://github.com/isadorasophia/murder) @ `19d789580c35` |
 | [MusicEngine](entries/engines/geekdrums-musicengine/README.md) | make music synced game with Unity / ADX2 / Wwise | c# | unknown | reference | [geekdrums/MusicEngine](https://github.com/geekdrums/MusicEngine) @ `2023-01-09 (branch tip at catalogue time)` |
@@ -462,6 +464,7 @@ _Generated 2026-11-25 17:38 UTC · 1724 entries · 434 vendored, 1290 reference-
 | [OpenRA](entries/engines/openra-openra/README.md) | Open Source real-time strategy game engine for early Westwood games such as Command & Conquer: Red Alert written in C# using SDL and OpenGL. Runs on Windows, Li | c# | GPL-3.0 | reference | [OpenRA/OpenRA](https://github.com/OpenRA/OpenRA) @ `2026-11-22 (branch tip at catalogue time)` |
 | [openrct2 — core](entries/engines/openrct2-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | GPL-3.0 | reference | [OpenRCT2/OpenRCT2.git](https://github.com/OpenRCT2/OpenRCT2.git) @ `3b7114c` |
 | [openreliant](entries/engines/openreliant-openreliant/README.md) | An open-source reimplementation of StarLancer's engine, in Zig on SDL3. Needs your own copy of the game. | zig | GPL-3.0 | reference | [OpenReliant/openreliant](https://github.com/OpenReliant/openreliant) @ `6f7aed3d7f6f` |
+| [OpenSAGE](entries/engines/opensage-opensage/README.md) | OpenSAGE is a free, open source re-implementation of SAGE, the 3D real time strategy (RTS) engine used in Command & Conquer: Generals and other RTS titles from  | c# | unknown | reference | [OpenSAGE/OpenSAGE](https://github.com/OpenSAGE/OpenSAGE) @ `2026-03-30 (branch tip at catalogue time)` |
 | [OpenSurge — core](entries/engines/opensurge-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [opentk](entries/engines/opentk-opentk/README.md) | The Open Toolkit library is a fast, low-level C# wrapper for OpenGL, OpenAL & OpenCL. It also includes windowing, mouse, keyboard and joystick input and a robus | c# | MIT | vendored | [opentk/opentk](https://github.com/opentk/opentk) @ `21a53d478fd9` |
 | [OpenUniverse](entries/engines/matinafzal-openuniverse/README.md) | 3D Infinite Computer Universe | python | MIT | vendored | [MatinAfzal/OpenUniverse](https://github.com/MatinAfzal/OpenUniverse) @ `520b1022ef95` |
@@ -507,6 +510,7 @@ _Generated 2026-11-25 17:38 UTC · 1724 entries · 434 vendored, 1290 reference-
 | [Pose](entries/engines/sarisabban-pose/README.md) | A bare-metal Python library for building and manipulating the molecular structures of proteins, nucleic acids, and small organic molecules | python | Apache-2.0 | reference | [sarisabban/Pose](https://github.com/sarisabban/Pose) @ `ed2d3f723c59` |
 | [Principia — core](entries/engines/principia-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cc | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b` |
 | [prototype](entries/engines/gonutz-prototype/README.md) | Simple 2D game prototyping framework targetting Windows, Mac, Linux, WASM. | c | MIT | vendored | [gonutz/prototype](https://github.com/gonutz/prototype) @ `d3732ae42e68` |
+| [Prowl](entries/engines/prowlengine-prowl/README.md) | An Open Source C# 3D Game Engine under MIT license, inspired by Unity and featuring a complete editor | c# | MIT | reference | [ProwlEngine/Prowl](https://github.com/ProwlEngine/Prowl) @ `2026-11-25 (branch tip at catalogue time)` |
 | [Pulsar-Native](entries/engines/far-beyond-pulsar-pulsar-native/README.md) | The next-generation game engine that you deserve implemented in rust https://pulsarnative.com/ Developer_Blogs: https://pulsarnative.com/blog/ Research: https:/ | rust | MPL-2.0 | reference | [Far-Beyond-Pulsar/Pulsar-Native](https://github.com/Far-Beyond-Pulsar/Pulsar-Native) @ `2026-11-25 (branch tip at catalogue time)` |
 | [py-draughts](entries/engines/miskibin-py-draughts/README.md) | Fastest Python draughts/checkers library — bitboards, 8 variants, alpha-beta engine, web UI. ~200x faster than pydraughts. | python | GPL-3.0 | reference | [miskibin/py-draughts](https://github.com/miskibin/py-draughts) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Py3ODE](entries/engines/filipeabperes-py3ode/README.md) | Port of PyODE for Python 3 | python | LGPL-2.1 | reference | [filipeabperes/Py3ODE](https://github.com/filipeabperes/Py3ODE) @ `50675f543d35` |
@@ -536,6 +540,7 @@ _Generated 2026-11-25 17:38 UTC · 1724 entries · 434 vendored, 1290 reference-
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redalert2-recomp](entries/engines/sp00nznet-redalert2-recomp/README.md) | Static recompilation of Command & Conquer: Red Alert 2 / Yuri's Revenge (Westwood, 2000-01) to native C, with the remaster the engine never got: a D3D11 present | c | MIT | reference | [sp00nznet/redalert2-recomp](https://github.com/sp00nznet/redalert2-recomp) @ `2026-11-21 (branch tip at catalogue time)` |
 | [redot-engine](entries/engines/redot-engine-redot-engine/README.md) | Redot Engine – Multi-platform 2D and 3D game engine | c++ | MIT | reference | [Redot-Engine/redot-engine](https://github.com/Redot-Engine/redot-engine) @ `2026-11-14 (branch tip at catalogue time)` |
+| [REDox](entries/engines/capcom-td-oss-redox/README.md) | High-performance, token-based structured data engine for .NET. A core component of REX, the technology behind CAPCOM's next-generation game engine. | c# | Apache-2.0 | vendored | [CAPCOM-TD-OSS/REDox](https://github.com/CAPCOM-TD-OSS/REDox) @ `98fc0062bed2` |
 | [ReksioEngine](entries/engines/reksioengine-reksioengine/README.md) | Reimplementation of BlooMoo and Piklib game engines for "Przygody Reksia" PC games series | typescript | none | reference | [ReksioEngine/ReksioEngine](https://github.com/ReksioEngine/ReksioEngine) @ `57871e8368b7` |
 | [renpy](entries/engines/renpy-renpy/README.md) | The Ren'Py Visual Novel Engine | ren'py | unknown | reference | [renpy/renpy](https://github.com/renpy/renpy) @ `2026-11-23 (branch tip at catalogue time)` |
 | [replay](entries/engines/edbentley-replay/README.md) | A cross-platform JS game engine inspired by React | typescript | MIT | vendored | [edbentley/replay](https://github.com/edbentley/replay) @ `d10084041f8a` |
@@ -628,6 +633,7 @@ _Generated 2026-11-25 17:38 UTC · 1724 entries · 434 vendored, 1290 reference-
 | [unity-raw-input](entries/engines/elringus-unity-raw-input/README.md) | Windows Raw Input wrapper for Unity game engine | c# | MIT | reference | [elringus/unity-raw-input](https://github.com/elringus/unity-raw-input) @ `2025-10-15 (branch tip at catalogue time)` |
 | [UnityGameFramework](entries/engines/ellanjiang-unitygameframework/README.md) | This is literally a game framework, based on Unity game engine. It encapsulates commonly used game modules during development, and, to a large degree, standardi | c# | MIT | reference | [EllanJiang/UnityGameFramework](https://github.com/EllanJiang/UnityGameFramework) @ `2023-05-21 (branch tip at catalogue time)` |
 | [UnityHexagonLibrary2d](entries/engines/ycarowr-unityhexagonlibrary2d/README.md) | A library to manage 2D hexagonal tiles in Unity. | c# | MIT | reference | [ycarowr/UnityHexagonLibrary2d](https://github.com/ycarowr/UnityHexagonLibrary2d) @ `2021-04-17 (branch tip at catalogue time)` |
+| [UnitySteer](entries/engines/ricardojmendez-unitysteer/README.md) | Steering, obstacle avoidance and path following behaviors for the Unity Game Engine | c# | unknown | reference | [ricardojmendez/UnitySteer](https://github.com/ricardojmendez/UnitySteer) @ `2019-10-01 (branch tip at catalogue time)` |
 | [UnityTileMap](entries/engines/alexanderfast-unitytilemap/README.md) | A TileMap library for Unity written in C#. | c# | MIT | reference | [alexanderfast/UnityTileMap](https://github.com/alexanderfast/UnityTileMap) @ `2015-04-21 (branch tip at catalogue time)` |
 | [UnityTutorials-RTS](entries/engines/minapecheux-unitytutorials-rts/README.md) | The code for my series of tutorials on how to make a real-time stategy (RTS) game in the well-know Unity game engine (with C# scripting)!  | c# | MIT | vendored | [MinaPecheux/UnityTutorials-RTS](https://github.com/MinaPecheux/UnityTutorials-RTS) @ `152128b8dde0` |
 | [universal-game-mod-manager](entries/engines/indigo-0167-universal-game-mod-manager/README.md) | Free Windows game mod manager to discover, install, update and manage universal Unity and Unreal Engine mods. | rust | MIT | vendored | [Indigo-0167/universal-game-mod-manager](https://github.com/Indigo-0167/universal-game-mod-manager) @ `ea301370dfaa` |

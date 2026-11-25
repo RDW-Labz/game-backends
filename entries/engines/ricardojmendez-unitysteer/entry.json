@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:54:37Z",
+ "category": "engines",
+ "commit": "2019-10-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ricardojmendez/UnitySteer \u2014 Steering, obstacle avoidance and path following behaviors for the Unity Game Engine",
+ "language": "c#",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "UnitySteer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ricardojmendez-unitysteer",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 1254,
+ "system": "Steering, obstacle avoidance and path following behaviors for the Unity Game Engine",
+ "upstream": "https://github.com/ricardojmendez/UnitySteer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
