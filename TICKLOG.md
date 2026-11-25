@@ -3104,3 +3104,7 @@ One line per 15-minute extension tick, newest last.
   - reference loot-economy/liareth-bg3loottablegenerator
 
 - **2026-11-25 07:17 UTC** — tick 844: +0 screened, +0 reference, 10 skipped, catalogue=1571
+
+- **2026-11-25 07:37 UTC** — tick 845: +2 screened, +0 reference, 7 skipped, catalogue=1573
+  - added loot-economy/thefeastcoin-feedn (none, reference)
+  - added loot-economy/kenmcneill-cortex (none, reference)

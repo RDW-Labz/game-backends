@@ -1,13 +1,13 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 07:17 UTC · 1571 entries · 402 vendored, 1169 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 07:37 UTC · 1573 entries · 402 vendored, 1171 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
-| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 36 | 9 | 27 |
+| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
@@ -1010,7 +1010,7 @@ _Generated 2026-11-25 07:17 UTC · 1571 entries · 402 vendored, 1169 reference-
 
 ## loot-economy
 
-**Loot / drop and economy rolls** — 36 entries
+**Loot / drop and economy rolls** — 38 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1020,6 +1020,7 @@ _Generated 2026-11-25 07:17 UTC · 1571 entries · 402 vendored, 1169 reference-
 | [BlockState](entries/loot-economy/triton365-blockstate/README.md) | A very, very large loot-table that extracts the BlockState data of any block at given position | mcfunction | MIT | reference | [Triton365/BlockState](https://github.com/Triton365/BlockState) @ `2026-09-26 (branch tip at catalogue time)` |
 | [Cataclysm-DDA — itemgroups](entries/loot-economy/cataclysm-dda-data-json-itemgroups/README.md) | item group / loot tables (JSON) | json | CC-BY-SA-3.0 | reference | [CleverRaven/Cataclysm-DDA.git](https://github.com/CleverRaven/Cataclysm-DDA.git) @ `2599825ebb8c` |
 | [com.unity.game-foundation](entries/loot-economy/needle-mirror-com-unity-game-foundation/README.md) | Game Foundation core package.This package contains the following components: ▪ Inventory System ▪ Virtual Currency Wallet ▪ Properties System ▪ Transaction Syst | c# | unknown | reference | [needle-mirror/com.unity.game-foundation](https://github.com/needle-mirror/com.unity.game-foundation) @ `2021-06-11 (branch tip at catalogue time)` |
+| [Cortex](entries/loot-economy/kenmcneill-cortex/README.md) | An experimental compact system for doing game-based EEG biofeedback using an OpenBCI data stream over UDP. A control component receives and processes EEG data a | java | none | reference | [kenmcneill/Cortex](https://github.com/kenmcneill/Cortex) @ `e7d852420635` |
 | [crawl — source](entries/loot-economy/crawl-crawl-ref-source/README.md) | item generation (makeitem) and drop logic | c++ | GPL-2.0 | reference | [crawl/crawl.git](https://github.com/crawl/crawl.git) @ `cf8c9bca9065` |
 | [cyber-acid](entries/loot-economy/stateless-minds-cyber-acid/README.md) | Liquid democracy political simulator based on the automated data feed from the moneyless economy simulator Cyber Stasis. | go | MIT | reference | [stateless-minds/cyber-acid](https://github.com/stateless-minds/cyber-acid) @ `2024-12-04 (branch tip at catalogue time)` |
 | [cyber-stasis](entries/loot-economy/stateless-minds-cyber-stasis/README.md) | Post-money economy simulator in the form of a free fictional game based on gift economy that tests the hypothesis of having a market system without any exchange | go | MIT | vendored | [stateless-minds/cyber-stasis](https://github.com/stateless-minds/cyber-stasis) @ `cd2585927609` |
@@ -1028,6 +1029,7 @@ _Generated 2026-11-25 07:17 UTC · 1571 entries · 402 vendored, 1169 reference-
 | [DayZLootEditor](entries/loot-economy/packjc-dayzlooteditor/README.md) | An Electron.js App built to edit loot tables in a fast and easy manner. Win/OSX/Linux. | javascript | GPL-3.0 | reference | [PackJC/DayZLootEditor](https://github.com/PackJC/DayZLootEditor) @ `2022-04-13 (branch tip at catalogue time)` |
 | [DevilutionX — Source](entries/loot-economy/devilutionx-source/README.md) | Diablo item generation, affixes, quest drops | c++ | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996a89c5` |
 | [die-gulde](entries/loot-economy/europa1400-community-die-gulde/README.md) | A middle age economy simulation game made with Unity. Based on the classic medieval economy simulation game Europa 1400 - The Guild. | c# | MIT | reference | [europa1400-community/die-gulde](https://github.com/europa1400-community/die-gulde) @ `2025-03-26 (branch tip at catalogue time)` |
+| [FEEDN](entries/loot-economy/thefeastcoin-feedn/README.md) | Welcome to The F.E.A.S.T Token (Family Equity Assertion Stability Trust).  The F.E.A.S.T Token is the newest massive experiment within the DeFi sector of crypto | n/a | none | reference | [THEFEASTCOIN/FEEDN](https://github.com/THEFEASTCOIN/FEEDN) @ `HEAD` |
 | [konzole](entries/loot-economy/marostcs-konzole/README.md) | 09:17:02 Steam Console Client (c) Valve Corporation 09:17:02 -- type 'quit' to exit -- 09:17:02 Loading Steam API...OK. 09:17:02  09:17:03 Connecting anonymousl | n/a | unknown | reference | [marostcs/konzole](https://github.com/marostcs/konzole) @ `2021-01-15 (branch tip at catalogue time)` |
 | [loot-table (rue-williams)](entries/loot-economy/loot-table-gpl/README.md) | loot table random generator | typescript | GPL-3.0 | reference | [rue-williams/loot-table](https://github.com/rue-williams/loot-table) @ `586ff23677ae` |
 | [Loot-Tables (JS)](entries/loot-economy/loot-tables-js/README.md) | declarative weighted loot tables with nested rolls | javascript | MIT | vendored | [Mopolo/Loot-Tables](https://github.com/Mopolo/Loot-Tables) @ `8de49aeab208` |
