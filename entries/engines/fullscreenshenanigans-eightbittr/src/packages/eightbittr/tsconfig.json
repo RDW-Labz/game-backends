@@ -1,0 +1,34 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "composite": true,
+        "outDir": "./lib",
+        "rootDir": "./src"
+    },
+    "exclude": ["**/*.d.ts", "**/lib"],
+    "include": ["./src/**/*.ts", "./src/**/*.tsx"],
+    "references": [
+        { "path": "../areaspawnr" },
+        { "path": "../audioplayr" },
+        { "path": "../autofieldr" },
+        { "path": "../classcyclr" },
+        { "path": "../devicelayr" },
+        { "path": "../fpsanalyzr" },
+        { "path": "../frametickr" },
+        { "path": "../groupholdr" },
+        { "path": "../inputwritr" },
+        { "path": "../itemsholdr" },
+        { "path": "../mapscreatr" },
+        { "path": "../mapscreenr" },
+        { "path": "../modattachr" },
+        { "path": "../numbermakr" },
+        { "path": "../objectmakr" },
+        { "path": "../pixeldrawr" },
+        { "path": "../pixelrendr" },
+        { "path": "../quadskeepr" },
+        { "path": "../sceneplayr" },
+        { "path": "../actorhittr" },
+        { "path": "../timehandlr" },
+        { "path": "../userwrappr" }
+    ]
+}

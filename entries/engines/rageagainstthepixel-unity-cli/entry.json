@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:58:39Z",
+ "category": "engines",
+ "commit": "2026-11-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "RageAgainstThePixel/unity-cli \u2014 An all-in-one command line utility for the Unity Game Engine",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "unity-cli",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rageagainstthepixel-unity-cli",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 77,
+ "system": "An all-in-one command line utility for the Unity Game Engine",
+ "upstream": "https://github.com/RageAgainstThePixel/unity-cli",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

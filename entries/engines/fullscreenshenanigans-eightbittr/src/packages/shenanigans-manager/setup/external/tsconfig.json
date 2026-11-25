@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "declaration": true,
+        "declarationMap": true,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "jsx": "react-jsx",
+        "jsxImportSource": "preact",
+        "module": "amd",
+        "moduleResolution": "node",
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outDir": "./lib",
+        "pretty": true,
+        "rootDir": "./src",
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "strictFunctionTypes": false,
+        "strictPropertyInitialization": false,
+        "target": "ES2021"
+    },
+    "exclude": ["**/*.d.ts", "**/lib"],
+    "include": ["./src/**/*.ts", "./src/**/*.tsx"]
+}

@@ -1,0 +1,13 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "composite": true,
+        "esModuleInterop": true,
+        "module": "ESNext",
+        "outDir": "./lib",
+        "rootDir": "./src",
+        "target": "ES2021"
+    },
+    "exclude": ["**/*.d.ts", "**/lib", "./setup/**/*"],
+    "include": ["./src/**/*.ts", "./src/**/*.tsx"]
+}

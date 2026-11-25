@@ -1,0 +1,10 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "composite": true,
+        "outDir": "./lib",
+        "rootDir": "./src"
+    },
+    "include": ["./src/**/*.ts", "./src/**/*.tsx"],
+    "references": [{ "path": "../itemsholdr" }, { "path": "../objectmakr" }]
+}

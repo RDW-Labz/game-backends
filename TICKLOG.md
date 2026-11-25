@@ -3363,3 +3363,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/worldql-dreamlab-engine
   - reference engines/load1n9-caviar
   - reference engines/josefjadrny-js-chess-engine
+
+- **2026-11-25 18:58 UTC** — tick 886: +2 screened, +4 reference, 27 skipped, catalogue=1754
+  - added engines/techbot-jigs-rpg-engine (GPL-3.0, reference)
+  - added engines/fullscreenshenanigans-eightbittr (MIT, vendored)
+  - reference engines/rageagainstthepixel-unity-cli
+  - reference engines/hikkywannafly-steam-workshop-download
+  - reference engines/m11m-houseki
+  - reference engines/dasannikov-defoldtypescript

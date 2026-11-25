@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:58:39Z",
+ "category": "engines",
+ "commit": "2023-11-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "m11m/houseki \u2014 \ud83d\udc8e A modular 3D game engine built for the web.",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "houseki",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "m11m-houseki",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 69,
+ "system": "\ud83d\udc8e A modular 3D game engine built for the web.",
+ "upstream": "https://github.com/m11m/houseki",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

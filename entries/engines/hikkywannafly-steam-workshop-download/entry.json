@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T18:58:39Z",
+ "category": "engines",
+ "commit": "2026-06-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Hikkywannafly/steam-workshop-download \u2014 Download Steam Workshop items directly without owning the game. Supports Wallpaper Engine and many other games.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "steam-workshop-download",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "hikkywannafly-steam-workshop-download",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 74,
+ "system": "Download Steam Workshop items directly without owning the game. Supports Wallpaper Engine and many other games.",
+ "upstream": "https://github.com/Hikkywannafly/steam-workshop-download",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

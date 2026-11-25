@@ -1,0 +1,92 @@
+{
+    "author": {
+        "email": "git@joshuakgoldberg.com",
+        "name": "Josh Goldberg"
+    },
+    "browser": "./lib/index.js",
+    "bugs": {
+        "url": "https://github.com/FullScreenShenanigans/EightBittr/issues"
+    },
+    "dependencies": {
+        "preact": "^10.10.2",
+        "requirejs": "^2.3.6"
+    },
+    "description": "Creates configurable HTML displays over flexible-sized contents.",
+    "devDependencies": {
+        "@types/chai": "^4.3.3",
+        "@types/mocha": "^9.1.1",
+        "@types/sinon": "^10.0.13",
+        "@types/sinon-chai": "^3.2.8",
+        "chai": "^4.3.6",
+        "mocha": "^10.0.0",
+        "mocha-headless-chrome": "^4.0.0",
+        "requirejs": "^2.3.6",
+        "shenanigans-manager": "^0.8.14",
+        "sinon": "^14.0.0",
+        "sinon-chai": "^3.7.0",
+        "webpack": "^5.74.0",
+        "webpack-cli": "^4.10.0"
+    },
+    "license": "MIT",
+    "name": "userwrappr",
+    "repository": {
+        "type": "git"
+    },
+    "scripts": {
+        "clean": "rm -rf dist lib *.tsbuildinfo",
+        "compile": "tsc -b",
+        "dist": "webpack",
+        "hydrate": "yarn shenanigans-manager hydrate",
+        "link": "yarn link",
+        "publish:ci": "yarn shenanigans-manager publish-if-updated",
+        "test": "yarn run test:setup && yarn run test:run",
+        "test:run": "yarn mocha-headless-chrome --file test/index.html --polling 1000",
+        "test:setup": "yarn shenanigans-manager generate-tests"
+    },
+    "shenanigans": {
+        "dist": true,
+        "loading": {
+            "entries": [
+                {
+                    "entry": "./src/UserWrappr.ts",
+                    "name": "UserWrappr",
+                    "sources": [
+                        "./src/**/*.ts",
+                        "!./src/Delayed/**/*.ts"
+                    ]
+                },
+                {
+                    "entry": "./src/Delayed/UserWrappr-Delayed.tsx",
+                    "name": "UserWrappr-Delayed",
+                    "sources": [
+                        "./src/Delayed/**/*.ts"
+                    ]
+                }
+            ],
+            "externals": [
+                {
+                    "js": {
+                        "dev": "../../../node_modules/preact/dist/preact.umd"
+                    },
+                    "name": "preact"
+                },
+                {
+                    "js": {
+                        "dev": "../../../node_modules/preact/hooks/dist/hooks.umd"
+                    },
+                    "name": "preact/hooks"
+                },
+                {
+                    "js": {
+                        "dev": "../../../node_modules/preact/jsx-runtime/dist/jsxRuntime.umd"
+                    },
+                    "name": "preact/jsx-runtime"
+                }
+            ]
+        },
+        "name": "UserWrappr"
+    },
+    "types": "./lib/index.d.ts",
+    "url": "https://github.com/FullScreenShenanigans/EightBittr",
+    "version": "0.8.14"
+}

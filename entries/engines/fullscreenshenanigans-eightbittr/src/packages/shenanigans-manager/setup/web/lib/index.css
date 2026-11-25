@@ -1,0 +1,83 @@
+/* General elements */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: black;
+  color: #fafafa;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+header {
+  font-family: "Press Start";
+  padding: 0.5rem;
+  overflow: hidden;
+  user-select: none;
+}
+
+section {
+  clear: both;
+}
+
+a {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+h1 {
+  margin: 0;
+  padding-bottom: 3px;
+  text-align: center;
+}
+
+/* Focus/Hover animations */
+
+.hoverable:focus::before,
+.hoverable:hover::before {
+  content: "> ";
+}
+
+.hoverable:focus::after,
+.hoverable:hover::after {
+  content: "< ";
+}
+
+/* Game section */
+
+section#game {
+  min-height: 210px;
+  margin-bottom: 35px;
+}
+
+/* Text sections */
+
+section.section-text {
+  margin: auto;
+  padding: 21px 70px;
+  max-width: 910px;
+  font-size: 1.4em;
+  text-align: center;
+}
+
+.link-github {
+  color: #cfc;
+}
+
+@media (max-width: 350px) {
+  section.section-text {
+    padding: 14px 7px;
+  }
+}
+
+@font-face {
+  font-family: "Press Start";
+  src: url("theme/fonts/pressstart2p-webfont.woff2") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}

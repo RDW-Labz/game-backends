@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 18:42 UTC · 1748 entries · 440 vendored, 1308 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 18:58 UTC · 1754 entries · 441 vendored, 1313 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 702 | 167 | 535 |
+| [engines](#engines) — Game engines and engine subsystems | 708 | 168 | 540 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 18:42 UTC · 1748 entries · 440 vendored, 1308 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 702 entries
+**Game engines and engine subsystems** — 708 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -166,6 +166,7 @@ _Generated 2026-11-25 18:42 UTC · 1748 entries · 440 vendored, 1308 reference-
 | [cyclopsLevelBuilder](entries/engines/blackears-cyclopslevelbuilder/README.md) | A Godot plugin to let you block in levels inside the Godot editor. | gdscript | MIT | vendored | [blackears/cyclopsLevelBuilder](https://github.com/blackears/cyclopsLevelBuilder) @ `ea41feaab5dd` |
 | [DefaultEcs](entries/engines/doraku-defaultecs/README.md) | Entity Component System framework aiming for syntax and usage simplicity with maximum performance for game development. | c# | MIT | vendored | [Doraku/DefaultEcs](https://github.com/Doraku/DefaultEcs) @ `508033cfa22d` |
 | [defold](entries/engines/defold-defold/README.md) | Defold is a completely free to use game engine for development of desktop, console, mobile and web games. | c++ | unknown | reference | [defold/defold](https://github.com/defold/defold) @ `2026-11-15 (branch tip at catalogue time)` |
+| [DefoldTypeScript](entries/engines/dasannikov-defoldtypescript/README.md) | TypeScript support for Defold game engine | typescript | unknown | reference | [dasannikov/DefoldTypeScript](https://github.com/dasannikov/DefoldTypeScript) @ `2020-10-17 (branch tip at catalogue time)` |
 | [Descent3](entries/engines/descentdevelopers-descent3/README.md) | Descent 3 by Outrage Entertainment | c++ | GPL-3.0 | reference | [DescentDevelopers/Descent3](https://github.com/DescentDevelopers/Descent3) @ `de4bebf5f2d2` |
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
 | [dialogic](entries/engines/dialogic-godot-dialogic/README.md) | 💬 Create Dialogs, Visual Novels, RPGs, and manage Characters with Godot to create your Game! | gdscript | MIT | reference | [dialogic-godot/dialogic](https://github.com/dialogic-godot/dialogic) @ `2026-11-19 (branch tip at catalogue time)` |
@@ -202,6 +203,7 @@ _Generated 2026-11-25 18:42 UTC · 1748 entries · 440 vendored, 1308 reference-
 | [ecst](entries/engines/vittorioromeo-ecst/README.md) | [WIP] Experimental C++14 multithreaded compile-time entity-component-system library. | c++ | unknown | reference | [vittorioromeo/ecst](https://github.com/vittorioromeo/ecst) @ `2019-09-03 (branch tip at catalogue time)` |
 | [egret-core](entries/engines/egret-labs-egret-core/README.md) | Egret is a brand new open mobile game and application engine which allows you to quickly build mobile games and apps on Android,iOS and Windows. | javascript | unknown | reference | [egret-labs/egret-core](https://github.com/egret-labs/egret-core) @ `2022-07-20 (branch tip at catalogue time)` |
 | [EgretGameEngine](entries/engines/yicaoyimuys-egretgameengine/README.md) | A game client engine in Egret | typescript | none | reference | [yicaoyimuys/EgretGameEngine](https://github.com/yicaoyimuys/EgretGameEngine) @ `d60a02cfaee2` |
+| [EightBittr](entries/engines/fullscreenshenanigans-eightbittr/README.md) | Bare-bones, highly modular game engine for 2D 8-bit games. | typescript | MIT | vendored | [FullScreenShenanigans/EightBittr](https://github.com/FullScreenShenanigans/EightBittr) @ `2d17b647233b` |
 | [EIRTeam.FFmpeg](entries/engines/eirteam-eirteam-ffmpeg/README.md) | Plugin for godot that adds an FFmpeg-based decoder. | c++ | MIT | reference | [EIRTeam/EIRTeam.FFmpeg](https://github.com/EIRTeam/EIRTeam.FFmpeg) @ `2026-11-20 (branch tip at catalogue time)` |
 | [element-behaviors](entries/engines/lume-element-behaviors/README.md) | An entity-component system for HTML elements. | typescript | LGPL-3.0 | reference | [lume/element-behaviors](https://github.com/lume/element-behaviors) @ `2024-10-02 (branch tip at catalogue time)` |
 | [enari-engine](entries/engines/iercann-enari-engine/README.md) | ThreeJS First Person Shooter Playground | typescript | MIT | vendored | [iErcann/enari-engine](https://github.com/iErcann/enari-engine) @ `b2e17ff75e66` |
@@ -349,6 +351,7 @@ _Generated 2026-11-25 18:42 UTC · 1748 entries · 440 vendored, 1308 reference-
 | [HIDDevices](entries/engines/devdecoder-hiddevices/README.md) | Cross-platform .NET Standard library for asynchronous controller input reading (e.g. gamepads, joysticks, etc.) | c# | Apache-2.0 | vendored | [DevDecoder/HIDDevices](https://github.com/DevDecoder/HIDDevices) @ `e2147a3e835f` |
 | [hoodie-legacy](entries/engines/greencrowdev-hoodie-legacy/README.md) | Hoodie is a plugin for Godot Engine 4 that offers a visual scripting interface for generating procedural geometry. | c++ | MIT | vendored | [GreenCrowDev/hoodie-legacy](https://github.com/GreenCrowDev/hoodie-legacy) @ `f860d4ce2afe` |
 | [horizon](entries/engines/horizon-rust-horizon/README.md) | Minecraft 26.3 rewritten in Rust. | rust | LGPL-3.0 | reference | [horizon-rust/horizon](https://github.com/horizon-rust/horizon) @ `20f0212386b0` |
+| [houseki](entries/engines/m11m-houseki/README.md) | 💎 A modular 3D game engine built for the web. | typescript | GPL-3.0 | reference | [m11m/houseki](https://github.com/m11m/houseki) @ `2023-11-17 (branch tip at catalogue time)` |
 | [hyperion](entries/engines/hyperion-mc-hyperion/README.md) | Minecraft game engine for massive custom events | rust | Apache-2.0 | reference | [hyperion-mc/hyperion](https://github.com/hyperion-mc/hyperion) @ `2026-10-29 (branch tip at catalogue time)` |
 | [IDKEngine](entries/engines/boybaykiller-idkengine/README.md) | OpenGL Toy-"Engine" with Wavefront Path Tracer and Rasterizer with Voxel Cone Tracing/Global Illumination | c# | unknown | reference | [BoyBaykiller/IDKEngine](https://github.com/BoyBaykiller/IDKEngine) @ `2026-10-07 (branch tip at catalogue time)` |
 | [Ikemen-GO](entries/engines/ikemen-engine-ikemen-go/README.md) | An open-source fighting game engine that supports MUGEN resources. | go | unknown | reference | [ikemen-engine/Ikemen-GO](https://github.com/ikemen-engine/Ikemen-GO) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -363,6 +366,7 @@ _Generated 2026-11-25 18:42 UTC · 1748 entries · 440 vendored, 1308 reference-
 | [iyes_progress](entries/engines/iyesgames-iyes-progress/README.md) | Bevy plugin to help track progress and perform state transitions | rust | unknown | reference | [IyesGames/iyes_progress](https://github.com/IyesGames/iyes_progress) @ `2026-10-09 (branch tip at catalogue time)` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
+| [JiGS-RPG-engine](entries/engines/techbot-jigs-rpg-engine/README.md) | Open Source Php/NodeJs Online RPG and Trading Game Engine | typescript | GPL-3.0 | reference | [Techbot/JiGS-RPG-engine](https://github.com/Techbot/JiGS-RPG-engine) @ `8dd7697c1118` |
 | [Jin](entries/engines/chaifix-jin/README.md) | A 2D game framework for simplifying game making process in Lua.  | c++ | MIT | reference | [chaifix/Jin](https://github.com/chaifix/Jin) @ `2017-08-09 (branch tip at catalogue time)` |
 | [js-chess-engine](entries/engines/josefjadrny-js-chess-engine/README.md) | Complete TypeScript chess engine with zero dependencies for Node.js >=24 and browsers. Features configurable AI (5 predefined difficulty levels), stateful/state | typescript | MIT | reference | [josefjadrny/js-chess-engine](https://github.com/josefjadrny/js-chess-engine) @ `2026-02-22 (branch tip at catalogue time)` |
 | [js13k-ecs](entries/engines/kutuluk-js13k-ecs/README.md) | A <700b entity component system, designed for Js13kGames | javascript | MIT | reference | [kutuluk/js13k-ecs](https://github.com/kutuluk/js13k-ecs) @ `2026-04-25 (branch tip at catalogue time)` |
@@ -607,6 +611,7 @@ _Generated 2026-11-25 18:42 UTC · 1748 entries · 440 vendored, 1308 reference-
 | [spx](entries/engines/goplus-spx/README.md) | spx - A Scratch Compatible Go/XGo 2D Game Engine for STEM education | go | Apache-2.0 | reference | [goplus/spx](https://github.com/goplus/spx) @ `2026-11-25 (branch tip at catalogue time)` |
 | [stage.js](entries/engines/piqnt-stage-js/README.md) | 2D HTML5 rendering and layout engine for game development | typescript | MIT | vendored | [piqnt/stage.js](https://github.com/piqnt/stage.js) @ `2535352e89cd` |
 | [Starling-Framework](entries/engines/gamua-starling-framework/README.md) | The Cross Platform Game Engine | actionscript | BSD-2-Clause | vendored | [Gamua/Starling-Framework](https://github.com/Gamua/Starling-Framework) @ `ffde39a2d459` |
+| [steam-workshop-download](entries/engines/hikkywannafly-steam-workshop-download/README.md) | Download Steam Workshop items directly without owning the game. Supports Wallpaper Engine and many other games. | typescript | unknown | reference | [Hikkywannafly/steam-workshop-download](https://github.com/Hikkywannafly/steam-workshop-download) @ `2026-06-04 (branch tip at catalogue time)` |
 | [stride](entries/engines/stride3d-stride/README.md) | Stride (formerly Xenko), a free and open-source cross-platform C# game engine. | c# | MIT | reference | [stride3d/stride](https://github.com/stride3d/stride) @ `852da2345e76` |
 | [strife](entries/engines/felixangell-strife/README.md) | a simple 2d game framework | go | MIT | reference | [felixangell/strife](https://github.com/felixangell/strife) @ `2022-07-07 (branch tip at catalogue time)` |
 | [sucle](entries/engines/gregcman-sucle/README.md) | Common Lisp Voxel Game Engine | common lisp | MIT | reference | [gregcman/sucle](https://github.com/gregcman/sucle) @ `2022-07-31 (branch tip at catalogue time)` |
@@ -642,6 +647,7 @@ _Generated 2026-11-25 18:42 UTC · 1748 entries · 440 vendored, 1308 reference-
 | [UECS](entries/engines/ubpa-uecs/README.md) | Ubpa Entity-Component-System (U ECS) in Unity3D-style | c++ | MIT | vendored | [Ubpa/UECS](https://github.com/Ubpa/UECS) @ `98feb3939e66` |
 | [umodel_tools](entries/engines/skarndev-umodel-tools/README.md) | A Blender add-on featuring import of Unreal Engine games static meshes and maps. It provides basic support for many UE games, while some have dedicated improved | python | GPL-3.0 | reference | [skarndev/umodel_tools](https://github.com/skarndev/umodel_tools) @ `c76ebf73bf17` |
 | [Unity-Beat-Detection](entries/engines/allanpichardo-unity-beat-detection/README.md) | Musical beat detection and audio spectrum analysis for use with the Unity game engine. | c# | Apache-2.0 | vendored | [allanpichardo/Unity-Beat-Detection](https://github.com/allanpichardo/Unity-Beat-Detection) @ `cfd33b7282e5` |
+| [unity-cli](entries/engines/rageagainstthepixel-unity-cli/README.md) | An all-in-one command line utility for the Unity Game Engine | typescript | MIT | reference | [RageAgainstThePixel/unity-cli](https://github.com/RageAgainstThePixel/unity-cli) @ `2026-11-21 (branch tip at catalogue time)` |
 | [unity-ecs-navmesh](entries/engines/zulfajuniadi-unity-ecs-navmesh/README.md) | A demo implementation of Unity Entity Component System with NavMesh | c# | MIT | vendored | [zulfajuniadi/unity-ecs-navmesh](https://github.com/zulfajuniadi/unity-ecs-navmesh) @ `bb4fe6ed2f84` |
 | [unity-google-drive](entries/engines/elringus-unity-google-drive/README.md) | Google Drive SDK for the Unity game engine | c# | MIT | vendored | [elringus/unity-google-drive](https://github.com/elringus/unity-google-drive) @ `ac3f7da2013c` |
 | [unity-raw-input](entries/engines/elringus-unity-raw-input/README.md) | Windows Raw Input wrapper for Unity game engine | c# | MIT | reference | [elringus/unity-raw-input](https://github.com/elringus/unity-raw-input) @ `2025-10-15 (branch tip at catalogue time)` |

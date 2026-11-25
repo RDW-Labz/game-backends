@@ -1,0 +1,38 @@
+{
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:@typescript-eslint/strict",
+        "prettier"
+    ],
+    "overrides": [
+        {
+            "files": "*.test.ts",
+            "rules": {
+                "@typescript-eslint/unbound-method": "off"
+            }
+        }
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": ["./examples/*/tsconfig.json", "./packages/*/tsconfig.json"]
+    },
+    "plugins": ["@typescript-eslint", "simple-import-sort"],
+    "rules": {
+        // Overrides for default rules
+        "@typescript-eslint/no-invalid-void-type": [
+            "error",
+            {
+                "allowInGenericTypeArguments": true
+            }
+        ],
+
+        // Off-by-default rules we want on
+        "simple-import-sort/imports": "error",
+
+        // On-by-default rules we want off
+        "no-case-declarations": "off"
+    },
+    "root": true
+}

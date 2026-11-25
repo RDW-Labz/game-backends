@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T18:58:37Z",
+ "category": "engines",
+ "commit": "2d17b647233b",
+ "delivery": "vendored",
+ "description": "FullScreenShenanigans/EightBittr \u2014 Bare-bones, highly modular game engine for 2D 8-bit games.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "EightBittr",
+ "size_bytes": 1300146,
+ "slug": "fullscreenshenanigans-eightbittr",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 80,
+ "system": "Bare-bones, highly modular game engine for 2D 8-bit games.",
+ "upstream": "https://github.com/FullScreenShenanigans/EightBittr",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

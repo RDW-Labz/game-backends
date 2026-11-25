@@ -1,0 +1,44 @@
+{
+    "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+        "composite": true
+    },
+    "include": [],
+    "references": [
+        { "path": "./packages/shenanigans-manager" },
+
+        { "path": "./packages/autofieldr" },
+
+        { "path": "./packages/actorhittr" },
+        { "path": "./packages/areaspawnr" },
+        { "path": "./packages/audioplayr" },
+        { "path": "./packages/battlemovr" },
+        { "path": "./packages/classcyclr" },
+        { "path": "./packages/devicelayr" },
+        { "path": "./packages/eightbittr" },
+        { "path": "./packages/flagswappr" },
+        { "path": "./packages/fpsanalyzr" },
+        { "path": "./packages/frametickr" },
+        { "path": "./packages/groupholdr" },
+        { "path": "./packages/inputwritr" },
+        { "path": "./packages/itemsholdr" },
+        { "path": "./packages/mapscreatr" },
+        { "path": "./packages/mapscreenr" },
+        { "path": "./packages/menugraphr" },
+        { "path": "./packages/modattachr" },
+        { "path": "./packages/numbermakr" },
+        { "path": "./packages/objectmakr" },
+        { "path": "./packages/pixeldrawr" },
+        { "path": "./packages/pixelrendr" },
+        { "path": "./packages/quadskeepr" },
+        { "path": "./packages/sceneplayr" },
+        { "path": "./packages/stateholdr" },
+        { "path": "./packages/stringfilr" },
+        { "path": "./packages/timehandlr" },
+        { "path": "./packages/userwrappr" },
+        { "path": "./packages/worldseedr" },
+
+        { "path": "./examples/FullScreenSaver" },
+        { "path": "./examples/InfiniteContributionsCalendar" }
+    ]
+}
