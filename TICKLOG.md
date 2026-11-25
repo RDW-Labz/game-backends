@@ -3274,3 +3274,5 @@ One line per 15-minute extension tick, newest last.
   - reference procgen/mirrorfishmedia-endlessrunnerunity
   - reference procgen/aiekick-sdffontdesigner
   - reference procgen/giraffekey-tatami
+
+- **2026-11-25 15:09 UTC** — tick 872: +0 screened, +0 reference, 21 skipped, catalogue=1687
