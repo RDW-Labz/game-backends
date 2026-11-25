@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T13:15:56Z",
+ "category": "save-state",
+ "commit": "2026-08-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rust-bakery/cookie-factory \u2014 Rust serializer library",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "cookie-factory",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "rust-bakery-cookie-factory",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 92,
+ "system": "Rust serializer library",
+ "upstream": "https://github.com/rust-bakery/cookie-factory",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

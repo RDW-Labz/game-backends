@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T13:15:56Z",
+ "category": "save-state",
+ "commit": "2026-11-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rust-syndication/atom \u2014 Library for serializing the Atom web content syndication format https://crates.io/crates/atom_syndication",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "atom",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rust-syndication-atom",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 101,
+ "system": "Library for serializing the Atom web content syndication format https://crates.io/crates/atom_syndication",
+ "upstream": "https://github.com/rust-syndication/atom",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

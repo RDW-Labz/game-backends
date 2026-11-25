@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 12:59 UTC · 1650 entries · 420 vendored, 1230 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 13:15 UTC · 1656 entries · 422 vendored, 1234 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-25 12:59 UTC · 1650 entries · 420 vendored, 1230 reference-
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
-| [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
+| [save-state](#save-state) — Save / state systems | 97 | 29 | 68 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
 
 
@@ -1494,13 +1494,14 @@ _Generated 2026-11-25 12:59 UTC · 1650 entries · 420 vendored, 1230 reference-
 
 ## save-state
 
-**Save / state systems** — 91 entries
+**Save / state systems** — 97 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [abomonation](entries/save-state/timelydataflow-abomonation/README.md) | A mortifying serialization library for Rust | rust | MIT | vendored | [TimelyDataflow/abomonation](https://github.com/TimelyDataflow/abomonation) @ `c2b23534549a` |
 | [alkahest](entries/save-state/zakarumych-alkahest/README.md) | Fantastic serialization library | rust | unknown | reference | [zakarumych/alkahest](https://github.com/zakarumych/alkahest) @ `2026-10-28 (branch tip at catalogue time)` |
 | [alpaca](entries/save-state/p-ranav-alpaca/README.md) | Serialization library written in C++17 - Pack C++ structs into a compact byte-array without any macros or boilerplate code | c++ | MIT | vendored | [p-ranav/alpaca](https://github.com/p-ranav/alpaca) @ `8f022bdb5106` |
+| [atom](entries/save-state/rust-syndication-atom/README.md) | Library for serializing the Atom web content syndication format https://crates.io/crates/atom_syndication | rust | Apache-2.0 | reference | [rust-syndication/atom](https://github.com/rust-syndication/atom) @ `2026-11-16 (branch tip at catalogue time)` |
 | [bcache](entries/save-state/iwanbk-bcache/README.md) | Eventually consistent distributed in-memory  cache Go library | go | MIT | vendored | [iwanbk/bcache](https://github.com/iwanbk/bcache) @ `92331d3ef6d8` |
 | [bevy-prefabs](entries/save-state/zylkowski-bevy-prefabs/README.md) | Entity prefabs serialization plugin for Bevy game engine | rust | MIT | reference | [zylkowski/bevy-prefabs](https://github.com/zylkowski/bevy-prefabs) @ `2021-05-25 (branch tip at catalogue time)` |
 | [biomes-game — storage](entries/save-state/biomes-game-storage/README.md) | persistence: save/load, snapshot or state serialisation | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
@@ -1513,9 +1514,11 @@ _Generated 2026-11-25 12:59 UTC · 1650 entries · 420 vendored, 1230 reference-
 | [cista](entries/save-state/felixguendling-cista/README.md) | Cista is a simple, high-performance, zero-copy C++ serialization & reflection library. | c++ | MIT | reference | [felixguendling/cista](https://github.com/felixguendling/cista) @ `2026-11-06 (branch tip at catalogue time)` |
 | [cJSON](entries/save-state/cjson/README.md) | ultralight JSON parser/writer | c | MIT | vendored | [DaveGamble/cJSON](https://github.com/DaveGamble/cJSON) @ `6d9f2443ab07` |
 | [COFFI](entries/save-state/serge1-coffi/README.md) | A header-only C++ library for accessing files in COFF binary format. (Including Windows PE/PE+ formats) | c++ | MIT | reference | [serge1/COFFI](https://github.com/serge1/COFFI) @ `2026-04-19 (branch tip at catalogue time)` |
+| [cookie-factory](entries/save-state/rust-bakery-cookie-factory/README.md) | Rust serializer library | rust | unknown | reference | [rust-bakery/cookie-factory](https://github.com/rust-bakery/cookie-factory) @ `2026-08-16 (branch tip at catalogue time)` |
 | [cornflakes](entries/save-state/deeptir18-cornflakes/README.md) | A zero-copy serialization library and networking stack. | rust | unknown | reference | [deeptir18/cornflakes](https://github.com/deeptir18/cornflakes) @ `2024-01-19 (branch tip at catalogue time)` |
 | [cpp-serializers](entries/save-state/thekvs-cpp-serializers/README.md) | Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++ | c++ | unknown | reference | [thekvs/cpp-serializers](https://github.com/thekvs/cpp-serializers) @ `2020-01-28 (branch tip at catalogue time)` |
 | [Daedalus](entries/save-state/auties00-daedalus/README.md) | Daedalus is a general-purpose library for working with text and binary data formats. Its ambition is to bring exceptional performance and a natural Java API to  | java | none | reference | [Auties00/Daedalus](https://github.com/Auties00/Daedalus) @ `6bded314bae9` |
+| [dash-mpd-rs](entries/save-state/emarsden-dash-mpd-rs/README.md) | Rust library for parsing, serializing and downloading media content from a DASH MPD manifest. | rust | MIT | reference | [emarsden/dash-mpd-rs](https://github.com/emarsden/dash-mpd-rs) @ `2026-11-23 (branch tip at catalogue time)` |
 | [DataKit](entries/save-state/quickbirdeng-datakit/README.md) | A Swift library to easily read and write binary formatted data using a modern, declarative interface. | swift | MIT | vendored | [QuickBirdEng/DataKit](https://github.com/QuickBirdEng/DataKit) @ `37d845d584c3` |
 | [DecryptTruck](entries/save-state/coffesiberian-decrypttruck/README.md) | Fast library to decrypt game saves on ETS2 and ATS | rust | MIT | reference | [CoffeSiberian/DecryptTruck](https://github.com/CoffeSiberian/DecryptTruck) @ `2026-02-01 (branch tip at catalogue time)` |
 | [deser](entries/save-state/mitsuhiko-deser/README.md) | Experimental rust serialization library | rust | Apache-2.0 | reference | [mitsuhiko/deser](https://github.com/mitsuhiko/deser) @ `2026-10-26 (branch tip at catalogue time)` |
@@ -1542,6 +1545,7 @@ _Generated 2026-11-25 12:59 UTC · 1650 entries · 420 vendored, 1230 reference-
 | [json](entries/save-state/boostorg-json/README.md) | A C++11 library for parsing and serializing JSON to and from a DOM container in memory. | c++ | BSL-1.0 | reference | [boostorg/json](https://github.com/boostorg/json) @ `2026-11-11 (branch tip at catalogue time)` |
 | [json-joy](entries/save-state/streamich-json-joy/README.md) | json-joy is a library that implements cutting-edge real-time and collaborative editing algorithms and utilities for JSON data models, with a focus on developing | typescript | unknown | reference | [streamich/json-joy](https://github.com/streamich/json-joy) @ `2026-09-08 (branch tip at catalogue time)` |
 | [json_struct](entries/save-state/jorgen-json-struct/README.md) | json_struct is a single header only C++ library for parsing JSON directly to C++ structs and vice versa | c++ | unknown | reference | [jorgen/json_struct](https://github.com/jorgen/json_struct) @ `2026-08-29 (branch tip at catalogue time)` |
+| [jsonapi-rust](entries/save-state/michiel-jsonapi-rust/README.md) | Rust library for serialization, deserialization and working with JSON-API data | rust | MIT | vendored | [michiel/jsonapi-rust](https://github.com/michiel/jsonapi-rust) @ `e2bd2ef8c600` |
 | [kaitai_struct_formats](entries/save-state/kaitai-io-kaitai-struct-formats/README.md) | Kaitai Struct: library of binary file formats (.ksy) | kaitai struct | none | reference | [kaitai-io/kaitai_struct_formats](https://github.com/kaitai-io/kaitai_struct_formats) @ `8d8353c5059e` |
 | [kura](entries/save-state/nookieai-kura/README.md) | Scan, identify, organize, and transfer your PS1-PS5 & Vita game library (Windows, macOS, Linux), with a bundled PS5 payload for installs, cheats, saves, and fan | n/a | unknown | reference | [NookieAI/kura](https://github.com/NookieAI/kura) @ `2026-11-22 (branch tip at catalogue time)` |
 | [libNOM.io](entries/save-state/zencq-libnom-io/README.md) | A .NET class library to read and write save files from the game No Man's Sky for all possible platforms as well as related actions. | c# | GPL-3.0 | reference | [zencq/libNOM.io](https://github.com/zencq/libNOM.io) @ `2026-02-02 (branch tip at catalogue time)` |
@@ -1565,9 +1569,11 @@ _Generated 2026-11-25 12:59 UTC · 1650 entries · 420 vendored, 1230 reference-
 | [reflect-cpp](entries/save-state/munich-data-engineering-reflect-cpp/README.md) | A C++20 library for fast serialization, deserialization and validation using reflection. Supports JSON, Avro, Boost Serialization, BSON, Cap'n Proto, CBOR, Cere | c++ | MIT | reference | [munich-data-engineering/reflect-cpp](https://github.com/munich-data-engineering/reflect-cpp) @ `2026-11-12 (branch tip at catalogue time)` |
 | [retro-go-tab5](entries/save-state/andjiang0083-retro-go-tab5/README.md) | A full-speed GBA emulator for the M5Stack Tab5 (ESP32-P4): a solid 60 FPS on the 720x1280 display, 11 classic consoles in one device, touch virtual gamepad, GBA | c | GPL-2.0 | reference | [andjiang0083/retro-go-tab5](https://github.com/andjiang0083/retro-go-tab5) @ `2026-10-22 (branch tip at catalogue time)` |
 | [revision](entries/save-state/surrealdb-revision/README.md) | A Rust library for revision-tolerant serialisation and deserialisation, with support for schema evolution over time | rust | Apache-2.0 | vendored | [surrealdb/revision](https://github.com/surrealdb/revision) @ `4671d9343099` |
+| [Roblox-File-Format](entries/save-state/maximumadhd-roblox-file-format/README.md) | A C# library designed to make it easy to create and manipulate files in Roblox's serialized DOM. | c# | MIT | vendored | [MaximumADHD/Roblox-File-Format](https://github.com/MaximumADHD/Roblox-File-Format) @ `b7c566e3bef8` |
 | [ROROROblox](entries/save-state/estevanhernandez-stack-ed-rororoblox/README.md) | RoRoRo: run several Roblox clients side by side on Windows, each signed in as a different saved account. Account manager, game Library, Squad Launch, FPS caps,  | c# | MIT | vendored | [estevanhernandez-stack-ed/ROROROblox](https://github.com/estevanhernandez-stack-ed/ROROROblox) @ `93298eb64690` |
 | [rss](entries/save-state/rust-syndication-rss/README.md) | Library for serializing the RSS web content syndication format | rust | Apache-2.0 | reference | [rust-syndication/rss](https://github.com/rust-syndication/rss) @ `2026-11-10 (branch tip at catalogue time)` |
 | [rttr](entries/save-state/rttrorg-rttr/README.md) | C++ Reflection Library | c++ | MIT | reference | [rttrorg/rttr](https://github.com/rttrorg/rttr) @ `2024-04-25 (branch tip at catalogue time)` |
+| [savefile](entries/save-state/avl-savefile/README.md) | An easy to use library to save arbitrary rust data-structures to disk (or serialize to any other stream) | rust | MIT | reference | [avl/savefile](https://github.com/avl/savefile) @ `2026-11-22 (branch tip at catalogue time)` |
 | [SaveState](entries/save-state/matteo842-savestate/README.md) | Free open-source game save backup manager for Windows & Linux. Drag & drop a launcher shortcut to set up a game; auto-finds saves for Steam, Epic, GOG and 28+ e | python | GPL-3.0 | reference | [Matteo842/SaveState](https://github.com/Matteo842/SaveState) @ `7557b3c5a788` |
 | [serde](entries/save-state/serdedotnet-serde/README.md) | Serde.NET is a C# port of the popular Serde serialization library for Rust | c# | BSD-3-Clause | reference | [serdedotnet/serde](https://github.com/serdedotnet/serde) @ `2026-11-15 (branch tip at catalogue time)` |
 | [serde-reflection](entries/save-state/serde-tools-serde-reflection/README.md) | Rust libraries and tools to help with interoperability and testing of serialization formats based on Serde. | rust | Apache-2.0 | reference | [serde-tools/serde-reflection](https://github.com/serde-tools/serde-reflection) @ `2026-11-18 (branch tip at catalogue time)` |

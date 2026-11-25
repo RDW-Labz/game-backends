@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CF50C0E2-23A7-4DC1-B4B2-E60CDE716253}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RobloxFiles</RootNamespace>
+    <AssemblyName>RobloxFileFormat</AssemblyName>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="K4os.Compression.LZ4" Version="1.3.8" />
+    <Compile Include="BinaryFormat\BinaryFileChunk.cs" />
+    <PackageReference Include="Konscious.Security.Cryptography.Blake2" Version="1.0.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="ZstdSharp.Port" Version="0.6.5" />
+    <Compile Include="BinaryFormat\BinaryRobloxFile.cs" />
+    <Compile Include="BinaryFormat\Chunks\INST.cs" />
+    <Compile Include="BinaryFormat\Chunks\META.cs" />
+    <Compile Include="BinaryFormat\Chunks\PRNT.cs" />
+    <Compile Include="BinaryFormat\Chunks\PROP.cs" />
+    <Compile Include="BinaryFormat\Chunks\SIGN.cs" />
+    <Compile Include="BinaryFormat\Chunks\SSTR.cs" />
+    <Compile Include="BinaryFormat\BinaryFileReader.cs" />
+    <Compile Include="BinaryFormat\BinaryFileWriter.cs" />
+    <Compile Include="DataTypes\Axes.cs" />
+    <Compile Include="DataTypes\BrickColor.cs" />
+    <Compile Include="DataTypes\CFrame.cs" />
+    <Compile Include="DataTypes\Color3.cs" />
+    <Compile Include="DataTypes\Color3uint8.cs" />
+    <Compile Include="DataTypes\ColorSequence.cs" />
+    <Compile Include="DataTypes\ColorSequenceKeypoint.cs" />
+    <Compile Include="DataTypes\Content.cs" />
+    <Compile Include="DataTypes\ContentId.cs" />
+    <Compile Include="DataTypes\EulerAngles.cs" />
+    <Compile Include="DataTypes\Faces.cs" />
+    <Compile Include="DataTypes\FontFace.cs" />
+    <Compile Include="DataTypes\NumberRange.cs" />
+    <Compile Include="DataTypes\NumberSequence.cs" />
+    <Compile Include="DataTypes\NumberSequenceKeypoint.cs" />
+    <Compile Include="DataTypes\Optional.cs" />
+    <Compile Include="DataTypes\PhysicalProperties.cs" />
+    <Compile Include="DataTypes\ProtectedString.cs" />
+    <Compile Include="DataTypes\Quaternion.cs" />
+    <Compile Include="DataTypes\Ray.cs" />
+    <Compile Include="DataTypes\Rect.cs" />
+    <Compile Include="DataTypes\Region3.cs" />
+    <Compile Include="DataTypes\Region3int16.cs" />
+    <Compile Include="DataTypes\SharedString.cs" />
+    <Compile Include="DataTypes\UDim.cs" />
+    <Compile Include="DataTypes\UDim2.cs" />
+    <Compile Include="DataTypes\UniqueId.cs" />
+    <Compile Include="DataTypes\Vector2.cs" />
+    <Compile Include="DataTypes\Vector2int16.cs" />
+    <Compile Include="DataTypes\Vector3.cs" />
+    <Compile Include="DataTypes\Vector3int16.cs" />
+    <Compile Include="Generated\Classes.cs" />
+    <Compile Include="Generated\Enums.cs" />
+    <Compile Include="Interfaces\IAttributeToken.cs" />
+    <Compile Include="Interfaces\IBinaryFileChunk.cs" />
+    <Compile Include="Interfaces\IXmlPropertyToken.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RobloxFile.cs" />
+    <Compile Include="Tokens\Axes.cs" />
+    <Compile Include="Tokens\BinaryString.cs" />
+    <Compile Include="Tokens\Boolean.cs" />
+    <Compile Include="Tokens\BrickColor.cs" />
+    <Compile Include="Tokens\CFrame.cs" />
+    <Compile Include="Tokens\Color3.cs" />
+    <Compile Include="Tokens\Color3uint8.cs" />
+    <Compile Include="Tokens\ColorSequence.cs" />
+    <Compile Include="Tokens\Content.cs" />
+    <Compile Include="Tokens\ContentId.cs" />
+    <Compile Include="Tokens\Double.cs" />
+    <Compile Include="Tokens\Enum.cs" />
+    <Compile Include="Tokens\Faces.cs" />
+    <Compile Include="Tokens\Float.cs" />
+    <Compile Include="Tokens\Font.cs" />
+    <Compile Include="Tokens\Int.cs" />
+    <Compile Include="Tokens\Int64.cs" />
+    <Compile Include="Tokens\NumberRange.cs" />
+    <Compile Include="Tokens\NumberSequence.cs" />
+    <Compile Include="Tokens\OptionalCFrame.cs" />
+    <Compile Include="Tokens\PhysicalProperties.cs" />
+    <Compile Include="Tokens\ProtectedString.cs" />
+    <Compile Include="Tokens\Ray.cs" />
+    <Compile Include="Tokens\Rect.cs" />
+    <Compile Include="Tokens\Ref.cs" />
+    <Compile Include="Tokens\SecurityCapabilities.cs" />
+    <Compile Include="Tokens\SharedString.cs" />
+    <Compile Include="Tokens\String.cs" />
+    <Compile Include="Tokens\UDim.cs" />
+    <Compile Include="Tokens\UDim2.cs" />
+    <Compile Include="Tokens\UniqueId.cs" />
+    <Compile Include="Tokens\Vector2.cs" />
+    <Compile Include="Tokens\Vector3.cs" />
+    <Compile Include="Tokens\Vector3int16.cs" />
+    <Compile Include="Tree\Attributes.cs" />
+    <Compile Include="Tree\Instance.cs" />
+    <Compile Include="Tree\RbxObject.cs" />
+    <Compile Include="Tree\Property.cs" />
+    <Compile Include="Tree\Service.cs" />
+    <Compile Include="Utility\BrickColors.cs" />
+    <Compile Include="Utility\DefaultProperty.cs" />
+    <Compile Include="Utility\LostEnumValue.cs" />
+    <Compile Include="Utility\FontUtility.cs" />
+    <Compile Include="Utility\Formatting.cs" />
+    <Compile Include="Utility\ImplicitMember.cs" />
+    <Compile Include="Utility\MaterialInfo.cs" />
+    <Compile Include="Utility\Specials.cs" />
+    <Compile Include="XmlFormat\XmlFileReader.cs" />
+    <Compile Include="XmlFormat\XmlFileWriter.cs" />
+    <Compile Include="XmlFormat\XmlPropertyTokens.cs" />
+    <Compile Include="XmlFormat\XmlRobloxFile.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="SourceGenerators\RobloxFileFormat.SourceGenerators.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+</Project>

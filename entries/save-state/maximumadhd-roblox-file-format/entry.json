@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T13:15:52Z",
+ "category": "save-state",
+ "commit": "b7c566e3bef8",
+ "delivery": "vendored",
+ "description": "MaximumADHD/Roblox-File-Format \u2014 A C# library designed to make it easy to create and manipulate files in Roblox's serialized DOM.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Roblox-File-Format",
+ "size_bytes": 695992,
+ "slug": "maximumadhd-roblox-file-format",
+ "source": "github-search:serialization library c++ stars:>150",
+ "stars": 156,
+ "system": "A C# library designed to make it easy to create and manipulate files in Roblox's serialized DOM.",
+ "upstream": "https://github.com/MaximumADHD/Roblox-File-Format",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

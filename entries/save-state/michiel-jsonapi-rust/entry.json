@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T13:15:54Z",
+ "category": "save-state",
+ "commit": "e2bd2ef8c600",
+ "delivery": "vendored",
+ "description": "michiel/jsonapi-rust \u2014 Rust library for serialization, deserialization and working with JSON-API data",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "jsonapi-rust",
+ "size_bytes": 95806,
+ "slug": "michiel-jsonapi-rust",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 115,
+ "system": "Rust library for serialization, deserialization and working with JSON-API data",
+ "upstream": "https://github.com/michiel/jsonapi-rust",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

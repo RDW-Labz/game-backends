@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T13:15:56Z",
+ "category": "save-state",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "avl/savefile \u2014 An easy to use library to save arbitrary rust data-structures to disk (or serialize to any other stream)",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "savefile",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "avl-savefile",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 112,
+ "system": "An easy to use library to save arbitrary rust data-structures to disk (or serialize to any other stream)",
+ "upstream": "https://github.com/avl/savefile",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

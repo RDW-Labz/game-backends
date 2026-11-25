@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T13:15:56Z",
+ "category": "save-state",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "emarsden/dash-mpd-rs \u2014 Rust library for parsing, serializing and downloading media content from a DASH MPD manifest.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "dash-mpd-rs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "emarsden-dash-mpd-rs",
+ "source": "github-search:serialization library language:rust stars:>50",
+ "stars": 113,
+ "system": "Rust library for parsing, serializing and downloading media content from a DASH MPD manifest.",
+ "upstream": "https://github.com/emarsden/dash-mpd-rs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

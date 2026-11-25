@@ -3223,3 +3223,11 @@ One line per 15-minute extension tick, newest last.
   - added netcode/timriker-bzo (AGPL-3.0, reference)
 
 - **2026-11-25 12:59 UTC** — tick 864: +0 screened, +0 reference, 30 skipped, catalogue=1650
+
+- **2026-11-25 13:15 UTC** — tick 865: +2 screened, +4 reference, 24 skipped, catalogue=1656
+  - added save-state/maximumadhd-roblox-file-format (MIT, vendored)
+  - added save-state/michiel-jsonapi-rust (MIT, vendored)
+  - reference save-state/emarsden-dash-mpd-rs
+  - reference save-state/avl-savefile
+  - reference save-state/rust-syndication-atom
+  - reference save-state/rust-bakery-cookie-factory
