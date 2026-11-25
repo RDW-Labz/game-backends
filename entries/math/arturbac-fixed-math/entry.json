@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:32:16Z",
+ "category": "math",
+ "commit": "2025-06-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "arturbac/fixed_math \u2014 FixedMath: A High-Performance C++23, C++17 Library for Fixed-Point 48.16 Arithmetic",
+ "language": "c++",
+ "license": "BSL-1.0",
+ "license_verdict": "gated-reference",
+ "name": "fixed_math",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSL-1.0)",
+ "slug": "arturbac-fixed-math",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 101,
+ "system": "FixedMath: A High-Performance C++23, C++17 Library for Fixed-Point 48.16 Arithmetic",
+ "upstream": "https://github.com/arturbac/fixed_math",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

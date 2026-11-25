@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:32:16Z",
+ "category": "math",
+ "commit": "2026-03-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kmilo17pet/qlibs \u2014 A collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more...",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "qlibs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kmilo17pet-qlibs",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 104,
+ "system": "A collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more...",
+ "upstream": "https://github.com/kmilo17pet/qlibs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

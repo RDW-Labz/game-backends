@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:32:16Z",
+ "category": "math",
+ "commit": "2025-10-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LMP88959/PAL-CRT \u2014 PAL encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time applications.",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "PAL-CRT",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "lmp88959-pal-crt",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 115,
+ "system": "PAL encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time applications",
+ "upstream": "https://github.com/LMP88959/PAL-CRT",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

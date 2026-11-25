@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T05:32:16Z",
+ "category": "math",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mrdav30/FixedMathSharp \u2014 A deterministic fixed-point math library for .NET",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "FixedMathSharp",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mrdav30-fixedmathsharp",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 97,
+ "system": "A deterministic fixed-point math library for .NET",
+ "upstream": "https://github.com/mrdav30/FixedMathSharp",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

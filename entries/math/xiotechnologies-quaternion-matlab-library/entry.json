@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-25T05:32:12Z",
+ "category": "math",
+ "commit": "a2c20b81e0a7",
+ "delivery": "reference",
+ "description": "xioTechnologies/Quaternion-MATLAB-Library",
+ "language": "matlab",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "Quaternion-MATLAB-Library",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 0,
+ "slug": "xiotechnologies-quaternion-matlab-library",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 21,
+ "system": "see upstream",
+ "upstream": "https://github.com/xioTechnologies/Quaternion-MATLAB-Library",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

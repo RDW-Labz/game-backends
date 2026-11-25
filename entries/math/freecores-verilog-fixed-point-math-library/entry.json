@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T05:32:15Z",
+ "category": "math",
+ "commit": "a94eb0b2b1e4",
+ "delivery": "reference",
+ "description": "freecores/verilog_fixed_point_math_library \u2014 Fixed Point Math Library for Verilog",
+ "language": "verilog",
+ "license": "LGPL-2.1",
+ "license_file": "License.txt",
+ "license_verdict": "copyleft-reference",
+ "name": "verilog_fixed_point_math_library",
+ "reference_reason": "licence: LGPL-2.1 (copyleft-reference)",
+ "size_bytes": 0,
+ "slug": "freecores-verilog-fixed-point-math-library",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 149,
+ "system": "Fixed Point Math Library for Verilog",
+ "upstream": "https://github.com/freecores/verilog_fixed_point_math_library",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

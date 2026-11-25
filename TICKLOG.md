@@ -3057,3 +3057,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/mauricegit-quaternion-library
   - reference math/chaotic-society-theoretica
   - reference math/rcmags-imufilter
+
+- **2026-11-25 05:32 UTC** — tick 838: +2 screened, +4 reference, 16 skipped, catalogue=1544
+  - added math/xiotechnologies-quaternion-matlab-library (none, reference)
+  - added math/freecores-verilog-fixed-point-math-library (LGPL-2.1, reference)
+  - reference math/lmp88959-pal-crt
+  - reference math/kmilo17pet-qlibs
+  - reference math/arturbac-fixed-math
+  - reference math/mrdav30-fixedmathsharp

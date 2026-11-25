@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 05:15 UTC · 1538 entries · 392 vendored, 1146 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 05:32 UTC · 1544 entries · 392 vendored, 1152 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 643 | 155 | 488 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
-| [math](#math) — Math libraries | 108 | 35 | 73 |
+| [math](#math) — Math libraries | 114 | 35 | 79 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 30 | 7 | 23 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
@@ -868,7 +868,7 @@ _Generated 2026-11-25 05:15 UTC · 1538 entries · 392 vendored, 1146 reference-
 
 ## math
 
-**Math libraries** — 108 entries
+**Math libraries** — 114 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -895,6 +895,8 @@ _Generated 2026-11-25 05:15 UTC · 1538 entries · 392 vendored, 1146 reference-
 | [eigen](entries/math/px4-eigen/README.md) | Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms. | c++ | unknown | reference | [PX4/eigen](https://github.com/PX4/eigen) @ `2023-10-18 (branch tip at catalogue time)` |
 | [en_cl_fix](entries/math/enclustra-en-cl-fix/README.md) | Fixed-point math library with VHDL, Python and MATLAB support | vhdl | MIT | reference | [enclustra/en_cl_fix](https://github.com/enclustra/en_cl_fix) @ `2026-08-12 (branch tip at catalogue time)` |
 | [fixed-point](entries/math/nilpunch-fixed-point/README.md) | Configurable 32-bit and 64-bit fixed point math library. | c# | MIT | vendored | [nilpunch/fixed-point](https://github.com/nilpunch/fixed-point) @ `e88d23b07774` |
+| [fixed_math](entries/math/arturbac-fixed-math/README.md) | FixedMath: A High-Performance C++23, C++17 Library for Fixed-Point 48.16 Arithmetic | c++ | BSL-1.0 | reference | [arturbac/fixed_math](https://github.com/arturbac/fixed_math) @ `2025-06-14 (branch tip at catalogue time)` |
+| [FixedMathSharp](entries/math/mrdav30-fixedmathsharp/README.md) | A deterministic fixed-point math library for .NET | c# | MIT | reference | [mrdav30/FixedMathSharp](https://github.com/mrdav30/FixedMathSharp) @ `2026-11-23 (branch tip at catalogue time)` |
 | [FixedPoint-Sharp](entries/math/romanzhu-fixedpoint-sharp/README.md) | Fixed point math with 48.16 precision (based on lib by https://github.com/fholm) | c# | MIT | reference | [RomanZhu/FixedPoint-Sharp](https://github.com/RomanZhu/FixedPoint-Sharp) @ `2021-11-15 (branch tip at catalogue time)` |
 | [fplib](entries/math/skyworkssolutionsinc-fplib/README.md) | Fixed point math library for SystemVerilog | systemverilog | Apache-2.0 | reference | [SkyworksSolutionsInc/fplib](https://github.com/SkyworksSolutionsInc/fplib) @ `2024-11-14 (branch tip at catalogue time)` |
 | [fpm](entries/math/mikelankamp-fpm/README.md) | C++ header-only fixed-point math library | c++ | MIT | vendored | [MikeLankamp/fpm](https://github.com/MikeLankamp/fpm) @ `b46537fe9697` |
@@ -942,12 +944,15 @@ _Generated 2026-11-25 05:15 UTC · 1538 entries · 392 vendored, 1146 reference-
 | [NWaves](entries/math/ar1st0crat-nwaves/README.md) | .NET DSP library with a lot of audio processing functions | c# | MIT | reference | [ar1st0crat/NWaves](https://github.com/ar1st0crat/NWaves) @ `2022-09-27 (branch tip at catalogue time)` |
 | [openMVG](entries/math/openmvg-openmvg/README.md) | open Multiple View Geometry library. Basis for 3D computer vision and Structure from Motion. | c++ | MPL-2.0 | reference | [openMVG/openMVG](https://github.com/openMVG/openMVG) @ `2026-11-07 (branch tip at catalogue time)` |
 | [optick — simd](entries/math/optick-simd/README.md) | vector/matrix/quaternion math substrate | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
+| [PAL-CRT](entries/math/lmp88959-pal-crt/README.md) | PAL encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time applications | c | unknown | reference | [LMP88959/PAL-CRT](https://github.com/LMP88959/PAL-CRT) @ `2025-10-15 (branch tip at catalogue time)` |
 | [PL3D-KC](entries/math/lmp88959-pl3d-kc/README.md) | A very fast and simple software renderer using only integers and fixed point math. PiSHi LE (PL) is a subset of the 3D software graphics library used in King's  | c | unknown | reference | [LMP88959/PL3D-KC](https://github.com/LMP88959/PL3D-KC) @ `2024-05-30 (branch tip at catalogue time)` |
 | [prb-math](entries/math/paulrberg-prb-math/README.md) | Solidity library for advanced fixed-point math | solidity | MIT | vendored | [PaulRBerg/prb-math](https://github.com/PaulRBerg/prb-math) @ `3fbfb3e399b2` |
 | [PyGLM](entries/math/zuzu-typ-pyglm/README.md) | Fast OpenGL Mathematics (GLM) for Python | python | Zlib | reference | [Zuzu-Typ/PyGLM](https://github.com/Zuzu-Typ/PyGLM) @ `2026-11-19 (branch tip at catalogue time)` |
 | [PyMesh](entries/math/pymesh-pymesh/README.md) | Geometry Processing Library for Python | c++ | unknown | reference | [PyMesh/PyMesh](https://github.com/PyMesh/PyMesh) @ `2024-08-08 (branch tip at catalogue time)` |
 | [pyquaternion](entries/math/kieranwynn-pyquaternion/README.md) | A fully featured, pythonic library for representing and using quaternions | python | MIT | vendored | [KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion) @ `99025c17bab1` |
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
+| [qlibs](entries/math/kmilo17pet-qlibs/README.md) | A collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more... | c | MIT | reference | [kmilo17pet/qlibs](https://github.com/kmilo17pet/qlibs) @ `2026-03-17 (branch tip at catalogue time)` |
+| [Quaternion-MATLAB-Library](entries/math/xiotechnologies-quaternion-matlab-library/README.md) | see upstream | matlab | none | reference | [xioTechnologies/Quaternion-MATLAB-Library](https://github.com/xioTechnologies/Quaternion-MATLAB-Library) @ `a2c20b81e0a7` |
 | [Quaternion.js](entries/math/rawify-quaternion-js/README.md) | The RAW JavaScript Quaternion library | javascript | MIT | reference | [rawify/Quaternion.js](https://github.com/rawify/Quaternion.js) @ `2025-09-17 (branch tip at catalogue time)` |
 | [Quaternion_Library](entries/math/mauricegit-quaternion-library/README.md) | A small library that capsulates most commonly used operations on Quaternions. Also a small sample implementation, that rotates an object around an axis, using Q | c | ISC | reference | [MauriceGit/Quaternion_Library](https://github.com/MauriceGit/Quaternion_Library) @ `2016-09-07 (branch tip at catalogue time)` |
 | [RandBLAS](entries/math/ballisticla-randblas/README.md) | A header-only C++ library for sketching in randomized linear algebra | c++ | unknown | reference | [BallisticLA/RandBLAS](https://github.com/BallisticLA/RandBLAS) @ `2026-11-24 (branch tip at catalogue time)` |
@@ -977,6 +982,7 @@ _Generated 2026-11-25 05:15 UTC · 1538 entries · 392 vendored, 1146 reference-
 | [Unity.Mathematics.FixedPoint](entries/math/danielmansson-unity-mathematics-fixedpoint/README.md) | Fixed-point extension of Unity's C# math library based on FixedMath.Net and Unity.Mathematics. | c# | MIT | reference | [danielmansson/Unity.Mathematics.FixedPoint](https://github.com/danielmansson/Unity.Mathematics.FixedPoint) @ `2021-04-22 (branch tip at catalogue time)` |
 | [universal-java-matrix-package](entries/math/ujmp-universal-java-matrix-package/README.md) | A Java Library for sparse and dense matrices, linear algebra, visualization and big data | java | LGPL-3.0 | reference | [ujmp/universal-java-matrix-package](https://github.com/ujmp/universal-java-matrix-package) @ `2022-07-07 (branch tip at catalogue time)` |
 | [vec-mat-comp-quat](entries/math/mrmcsoftware-vec-mat-comp-quat/README.md) | C++ 2d/3d/4d Vector, 2x2/3x3/4x4 Matrix, Complex Number, Quaternion, and 3d Transformation Classes / Functions (Header Only libraries) | c++ | LGPL-3.0 | reference | [mrmcsoftware/vec-mat-comp-quat](https://github.com/mrmcsoftware/vec-mat-comp-quat) @ `2024-06-23 (branch tip at catalogue time)` |
+| [verilog_fixed_point_math_library](entries/math/freecores-verilog-fixed-point-math-library/README.md) | Fixed Point Math Library for Verilog | verilog | LGPL-2.1 | reference | [freecores/verilog_fixed_point_math_library](https://github.com/freecores/verilog_fixed_point_math_library) @ `a94eb0b2b1e4` |
 | [vgMath](entries/math/brutpitt-vgmath/README.md) | vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ... | c++ | BSD-2-Clause | reference | [BrutPitt/vgMath](https://github.com/BrutPitt/vgMath) @ `2025-03-16 (branch tip at catalogue time)` |
 | [zalgebra](entries/math/kooparse-zalgebra/README.md) | Linear algebra library for games and real-time graphics. | zig | MIT | reference | [kooparse/zalgebra](https://github.com/kooparse/zalgebra) @ `2026-10-14 (branch tip at catalogue time)` |
 | [zmath](entries/math/zig-gamedev-zmath/README.md) | SIMD math library for Zig game developers | zig | MIT | vendored | [zig-gamedev/zmath](https://github.com/zig-gamedev/zmath) @ `43250209495c` |
