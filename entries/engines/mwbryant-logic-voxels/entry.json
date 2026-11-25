@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:54:50Z",
+ "category": "engines",
+ "commit": "2023-04-02 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mwbryant/logic_voxels \u2014 A personal multiplayer voxel game created with the Bevy game engine",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "logic_voxels",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "mwbryant-logic-voxels",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 61,
+ "system": "A personal multiplayer voxel game created with the Bevy game engine",
+ "upstream": "https://github.com/mwbryant/logic_voxels",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

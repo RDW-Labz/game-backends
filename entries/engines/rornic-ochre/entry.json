@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:54:50Z",
+ "category": "engines",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rornic/ochre \u2014 A procedural voxel wilderness engine built with Rust and Bevy.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "ochre",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "rornic-ochre",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 60,
+ "system": "A procedural voxel wilderness engine built with Rust and Bevy.",
+ "upstream": "https://github.com/rornic/ochre",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

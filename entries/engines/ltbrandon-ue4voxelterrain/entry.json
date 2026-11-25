@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T21:54:50Z",
+ "category": "engines",
+ "commit": "2019-03-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "LtBrandon/UE4VoxelTerrain \u2014 Repository for my Unreal Engine 4 Voxel Terrain Tutorial.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "UE4VoxelTerrain",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ltbrandon-ue4voxelterrain",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 62,
+ "system": "Repository for my Unreal Engine 4 Voxel Terrain Tutorial.",
+ "upstream": "https://github.com/LtBrandon/UE4VoxelTerrain",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

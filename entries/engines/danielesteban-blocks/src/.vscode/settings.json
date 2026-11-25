@@ -1,0 +1,22 @@
+{
+  "editor.tabSize": 2,
+  "files.eol": "\n",
+  "search.exclude": {
+    ".eslintcache": true,
+    ".github/": true,
+    ".vscode/": true,
+    "data/": true,
+    "**/dist/": true,
+    "**/node_modules/": true,
+    "**/package-lock.json": true
+  },
+  "files.exclude": {
+    ".eslintcache": true,
+    ".github/": true,
+    ".vscode/": true,
+    "data/": true,
+    "**/dist/": true,
+    "**/node_modules/": true,
+    "**/package-lock.json": true
+  }
+}

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 21:38 UTC · 1806 entries · 451 vendored, 1355 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 21:54 UTC · 1811 entries · 453 vendored, 1358 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 760 | 178 | 582 |
+| [engines](#engines) — Game engines and engine subsystems | 765 | 180 | 585 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 21:38 UTC · 1806 entries · 451 vendored, 1355 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 760 entries
+**Game engines and engine subsystems** — 765 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -130,6 +130,7 @@ _Generated 2026-11-25 21:38 UTC · 1806 entries · 451 vendored, 1355 reference-
 | [blender_bevy_toolkit](entries/engines/sdfgeoff-blender-bevy-toolkit/README.md) | A blender addon and bevy plugin to use Blender as an editor for Bevy | python | unknown | reference | [sdfgeoff/blender_bevy_toolkit](https://github.com/sdfgeoff/blender_bevy_toolkit) @ `2022-05-18 (branch tip at catalogue time)` |
 | [blendyard](entries/engines/ossls-blendyard/README.md) | A collection of tools for working with Blender and O3DE | python | MIT | reference | [ossls/blendyard](https://github.com/ossls/blendyard) @ `2021-08-20 (branch tip at catalogue time)` |
 | [blip](entries/engines/bliporg-blip/README.md) | Blip is a cross-platform fully scriptable game engine and distribution platform. | go | Apache-2.0 | reference | [bliporg/blip](https://github.com/bliporg/blip) @ `905aacdb0344` |
+| [blocks](entries/engines/danielesteban-blocks/README.md) | webxr multiplayer voxels engine | javascript | MIT | vendored | [danielesteban/blocks](https://github.com/danielesteban/blocks) @ `3bda59180fc6` |
 | [BlocksJS](entries/engines/williammalone-blocksjs/README.md) | A lightweight 2D HTML5 canvas game framework | javascript | MIT | reference | [williammalone/BlocksJS](https://github.com/williammalone/BlocksJS) @ `2016-06-30 (branch tip at catalogue time)` |
 | [boardgame.io](entries/engines/boardgameio-boardgame-io/README.md) | State Management and Multiplayer Networking for Turn-Based Games | typescript | MIT | vendored | [boardgameio/boardgame.io](https://github.com/boardgameio/boardgame.io) @ `47adef2b46e3` |
 | [bones](entries/engines/fishfolk-bones/README.md) | An easy-to-use game engine for making real games. | rust | Apache-2.0 | vendored | [fishfolk/bones](https://github.com/fishfolk/bones) @ `cd62a2f1ccdb` |
@@ -417,6 +418,7 @@ _Generated 2026-11-25 21:38 UTC · 1806 entries · 451 vendored, 1355 reference-
 | [Lisien](entries/engines/tacticalmetaphysics-lisien/README.md) | Rules-based engine for life sims, with time travel | python | AGPL-3.0 | reference | [TacticalMetaphysics/Lisien](https://github.com/TacticalMetaphysics/Lisien) @ `2026-03-01 (branch tip at catalogue time)` |
 | [LittleJS](entries/engines/killedbyapixel-littlejs/README.md) | Tiny fast 2D/3D HTML5 game engine with many features and no dependencies. | javascript | MIT | reference | [KilledByAPixel/LittleJS](https://github.com/KilledByAPixel/LittleJS) @ `47bdb56e2b96` |
 | [littlekt](entries/engines/littlektframework-littlekt/README.md) | A multiplatform WebGPU 2D game framework written in Kotlin. Build your own game engine on top. | kotlin | Apache-2.0 | reference | [littlektframework/littlekt](https://github.com/littlektframework/littlekt) @ `2026-11-24 (branch tip at catalogue time)` |
+| [logic_voxels](entries/engines/mwbryant-logic-voxels/README.md) | A personal multiplayer voxel game created with the Bevy game engine | rust | unknown | reference | [mwbryant/logic_voxels](https://github.com/mwbryant/logic_voxels) @ `2023-04-02 (branch tip at catalogue time)` |
 | [love](entries/engines/love2d-love/README.md) | LÖVE is an awesome 2D game framework for Lua. | c++ | Zlib | reference | [love2d/love](https://github.com/love2d/love) @ `def245102c67` |
 | [love2d](entries/engines/luacats-love2d/README.md) | Definitions for the LÖVE 2D game framework | lua | unknown | reference | [LuaCATS/love2d](https://github.com/LuaCATS/love2d) @ `2026-07-20 (branch tip at catalogue time)` |
 | [Love2dCS](entries/engines/endlesstravel-love2dcs/README.md) | C# Wrapper for LÖVE, a 2d game engine | c# | MIT | reference | [endlesstravel/Love2dCS](https://github.com/endlesstravel/Love2dCS) @ `2024-03-23 (branch tip at catalogue time)` |
@@ -486,6 +488,7 @@ _Generated 2026-11-25 21:38 UTC · 1806 entries · 451 vendored, 1355 reference-
 | [o3de-mcp](entries/engines/nickschuetz-o3de-mcp/README.md) | Automate Open 3D Engine with AI — an MCP server for editor control, project & build management | python | Apache-2.0 | vendored | [nickschuetz/o3de-mcp](https://github.com/nickschuetz/o3de-mcp) @ `f572fe4e0fbc` |
 | [oak](entries/engines/oakmound-oak/README.md) | A pure Go game engine | go | Apache-2.0 | vendored | [oakmound/oak](https://github.com/oakmound/oak) @ `ae327857d9b9` |
 | [ObEngine](entries/engines/obengine-obengine/README.md) | 2D Game Engine with Lua Scripting made on top of SFML ! | c++ | MIT | vendored | [ObEngine/ObEngine](https://github.com/ObEngine/ObEngine) @ `932ad92df724` |
+| [ochre](entries/engines/rornic-ochre/README.md) | A procedural voxel wilderness engine built with Rust and Bevy. | rust | Apache-2.0 | reference | [rornic/ochre](https://github.com/rornic/ochre) @ `2026-11-25 (branch tip at catalogue time)` |
 | [olcPixelGameEngine](entries/engines/onelonecoder-olcpixelgameengine/README.md) | The official distribution of olcPixelGameEngine, a tool used in javidx9's YouTube videos and projects | c++ | BSD-3-Clause | vendored | [OneLoneCoder/olcPixelGameEngine](https://github.com/OneLoneCoder/olcPixelGameEngine) @ `257469ce0ed7` |
 | [omath](entries/engines/orange-cpp-omath/README.md) | Cross-platform modern general purpose game/mods/cheats development framework written in C++23. | c++ | Zlib | reference | [orange-cpp/omath](https://github.com/orange-cpp/omath) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Open 3D Engine (O3DE)](entries/engines/o3de/README.md) | AAA engine: ECS, gems, asset processor, multiplayer | c++ | Apache-2.0 | reference | [o3de/o3de](https://github.com/o3de/o3de) @ `32d6eddc51f9` |
@@ -686,6 +689,8 @@ _Generated 2026-11-25 21:38 UTC · 1806 entries · 451 vendored, 1355 reference-
 | [turbulenz_engine](entries/engines/turbulenz-turbulenz-engine/README.md) | Turbulenz is a modular 3D and 2D game framework for making HTML5 powered games for browsers, desktops and mobile devices. | typescript | MIT | reference | [turbulenz/turbulenz_engine](https://github.com/turbulenz/turbulenz_engine) @ `2023-05-28 (branch tip at catalogue time)` |
 | [Typhon](entries/engines/log2n-io-typhon/README.md) | A microsecond-latency ACID database engine with a native Entity-Component-System data model, built for real-time systems. | c# | unknown | reference | [Log2n-io/Typhon](https://github.com/Log2n-io/Typhon) @ `2026-11-23 (branch tip at catalogue time)` |
 | [UE4VoxelTerrain](entries/engines/bw2012-ue4voxelterrain/README.md) | Unreal Engine 4: Smooth voxel terrian example | c++ | GPL-3.0 | reference | [bw2012/UE4VoxelTerrain](https://github.com/bw2012/UE4VoxelTerrain) @ `2025-02-17 (branch tip at catalogue time)` |
+| [UE4VoxelTerrain](entries/engines/ltbrandon-ue4voxelterrain/README.md) | Repository for my Unreal Engine 4 Voxel Terrain Tutorial. | c++ | MIT | reference | [LtBrandon/UE4VoxelTerrain](https://github.com/LtBrandon/UE4VoxelTerrain) @ `2019-03-08 (branch tip at catalogue time)` |
+| [UE4VoxelTerrainEditor](entries/engines/rdegroot1996-ue4voxelterraineditor/README.md) | A voxel terrain editor plugin for Unreal Engine 4 | c++ | MIT | vendored | [rdegroot1996/UE4VoxelTerrainEditor](https://github.com/rdegroot1996/UE4VoxelTerrainEditor) @ `0665ed84f385` |
 | [UEAESKeyFinder](entries/engines/ezfndev-ueaeskeyfinder/README.md) | This tool can find the AES Key of probably any Unreal Engine game | c# | none | reference | [EZFNDEV/UEAESKeyFinder](https://github.com/EZFNDEV/UEAESKeyFinder) @ `eeacbb1f0e7d` |
 | [UeCore](entries/engines/geektcp-uecore/README.md) | UeCore(Universe Engine Core) is an Open Source MMO RPG Framework World of Warcraft Server Engine (NOT Unreal Engine) | c++ | GPL-3.0 | reference | [geektcp/UeCore](https://github.com/geektcp/UeCore) @ `da40c4ffa99c` |
 | [UECS](entries/engines/ubpa-uecs/README.md) | Ubpa Entity-Component-System (U ECS) in Unity3D-style | c++ | MIT | vendored | [Ubpa/UECS](https://github.com/Ubpa/UECS) @ `98feb3939e66` |

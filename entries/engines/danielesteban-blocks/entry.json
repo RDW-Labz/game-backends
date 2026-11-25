@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T21:54:49Z",
+ "category": "engines",
+ "commit": "3bda59180fc6",
+ "delivery": "vendored",
+ "description": "danielesteban/blocks \u2014 webxr multiplayer voxels engine",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "blocks",
+ "size_bytes": 532176,
+ "slug": "danielesteban-blocks",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 64,
+ "system": "webxr multiplayer voxels engine",
+ "upstream": "https://github.com/danielesteban/blocks",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

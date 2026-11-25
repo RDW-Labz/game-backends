@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T21:54:47Z",
+ "category": "engines",
+ "commit": "0665ed84f385",
+ "delivery": "vendored",
+ "description": "rdegroot1996/UE4VoxelTerrainEditor \u2014 A voxel terrain editor plugin for Unreal Engine 4",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "UE4VoxelTerrainEditor",
+ "size_bytes": 269552,
+ "slug": "rdegroot1996-ue4voxelterraineditor",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 66,
+ "system": "A voxel terrain editor plugin for Unreal Engine 4",
+ "upstream": "https://github.com/rdegroot1996/UE4VoxelTerrainEditor",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

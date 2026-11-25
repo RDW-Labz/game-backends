@@ -3444,3 +3444,10 @@ One line per 15-minute extension tick, newest last.
   - reference engines/gamedevtecnico-cubos
   - reference engines/mt-ctf-capturetheflag
   - reference engines/chippington-quixel
+
+- **2026-11-25 21:54 UTC** — tick 897: +2 screened, +3 reference, 27 skipped, catalogue=1811
+  - added engines/rdegroot1996-ue4voxelterraineditor (MIT, vendored)
+  - added engines/danielesteban-blocks (MIT, vendored)
+  - reference engines/ltbrandon-ue4voxelterrain
+  - reference engines/mwbryant-logic-voxels
+  - reference engines/rornic-ochre
