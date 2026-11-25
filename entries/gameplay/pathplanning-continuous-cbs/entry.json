@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:34:05Z",
+ "category": "gameplay",
+ "commit": "2025-05-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "PathPlanning/Continuous-CBS \u2014 Continuous CBS - a modification of conflict based search algorithm, that allows to perform actions (move, wait) of arbitrary duration. Timeline is not discretized, i.e. is continuous.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Continuous-CBS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "pathplanning-continuous-cbs",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 273,
+ "system": "Continuous CBS - a modification of conflict based search algorithm, that allows to perform actions (move, wait) of arbitrary duration. Timeline is not discretiz",
+ "upstream": "https://github.com/PathPlanning/Continuous-CBS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

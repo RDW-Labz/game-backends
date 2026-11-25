@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T08:34:04Z",
+ "category": "gameplay",
+ "commit": "f4543183c700",
+ "delivery": "vendored",
+ "description": "recast4j/recast4j \u2014 Java Port of Recast & Detour navigation mesh toolset",
+ "language": "java",
+ "license": "Zlib",
+ "license_file": "License.txt",
+ "license_verdict": "clean",
+ "name": "recast4j",
+ "size_bytes": 2036273,
+ "slug": "recast4j-recast4j",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 294,
+ "system": "Java Port of Recast & Detour navigation mesh toolset",
+ "upstream": "https://github.com/recast4j/recast4j",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

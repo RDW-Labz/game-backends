@@ -3124,3 +3124,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/habrador-self-driving-vehicle
   - reference gameplay/gsartoretti-primal
   - reference gameplay/honzaap-pathfinding
+
+- **2026-11-25 08:34 UTC** — tick 848: +2 screened, +4 reference, 10 skipped, catalogue=1591
+  - added gameplay/devoncrawford-a-pathfinding-visualization (MIT, vendored)
+  - added gameplay/recast4j-recast4j (Zlib, vendored)
+  - reference gameplay/pathplanning-continuous-cbs
+  - reference gameplay/vszue-donainavigation
+  - reference gameplay/brunomikoski-simple-optimized-a-pathfinder
+  - reference gameplay/jrialland-python-astar

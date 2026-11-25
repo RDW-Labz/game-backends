@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T08:34:01Z",
+ "category": "gameplay",
+ "commit": "78ea534858a1",
+ "delivery": "vendored",
+ "description": "DevonCrawford/A-Pathfinding-Visualization \u2014 First attempt at an efficient pathfinding algorithm in Java. I made this visualization to show the beauty of pathfinding. You can modify all major features of my algorithm through the graphics interface.",
+ "language": "java",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "A-Pathfinding-Visualization",
+ "size_bytes": 40962,
+ "slug": "devoncrawford-a-pathfinding-visualization",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 299,
+ "system": "First attempt at an efficient pathfinding algorithm in Java. I made this visualization to show the beauty of pathfinding. You can modify all major features of m",
+ "upstream": "https://github.com/DevonCrawford/A-Pathfinding-Visualization",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

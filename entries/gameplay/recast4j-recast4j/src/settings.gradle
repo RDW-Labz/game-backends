@@ -1,0 +1,9 @@
+rootProject.name = 'recast4j'
+
+include 'recast'
+include 'detour'
+include 'detour-crowd'
+include 'detour-tile-cache'
+include 'detour-extras'
+include 'detour-dynamic'
+include 'recast-demo'

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:34:05Z",
+ "category": "gameplay",
+ "commit": "2026-10-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jrialland/python-astar \u2014 Simple implementation of the a-star algorithm in Python \ud83c\udf1f",
+ "language": "python",
+ "license": "BSD-3-Clause",
+ "license_verdict": "clean",
+ "name": "python-astar",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (BSD-3-Clause)",
+ "slug": "jrialland-python-astar",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 250,
+ "system": "Simple implementation of the a-star algorithm in Python \ud83c\udf1f",
+ "upstream": "https://github.com/jrialland/python-astar",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

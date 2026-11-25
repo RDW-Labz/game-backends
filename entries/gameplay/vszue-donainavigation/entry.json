@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:34:05Z",
+ "category": "gameplay",
+ "commit": "2023-01-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "VSZue/DonAINavigation \u2014 This plugin provides a 3D dynamic pathfinding system for use with Unreal Engine 4. It's primarly designed for Flying AI creatures based in dynamic or procedural worlds that need to solve complex pathfinding tasks.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "DonAINavigation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "vszue-donainavigation",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 272,
+ "system": "This plugin provides a 3D dynamic pathfinding system for use with Unreal Engine 4. It's primarly designed for Flying AI creatures based in dynamic or procedural",
+ "upstream": "https://github.com/VSZue/DonAINavigation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

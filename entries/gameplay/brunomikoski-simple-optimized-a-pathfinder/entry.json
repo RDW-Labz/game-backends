@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T08:34:05Z",
+ "category": "gameplay",
+ "commit": "2022-11-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "brunomikoski/Simple-optimized-A-Pathfinder \u2014 An simple and optimized grid pathfinding",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Simple-optimized-A-Pathfinder",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "brunomikoski-simple-optimized-a-pathfinder",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 259,
+ "system": "An simple and optimized grid pathfinding",
+ "upstream": "https://github.com/brunomikoski/Simple-optimized-A-Pathfinder",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
