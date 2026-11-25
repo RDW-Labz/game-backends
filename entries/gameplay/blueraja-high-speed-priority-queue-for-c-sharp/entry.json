@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T07:56:21Z",
+ "category": "gameplay",
+ "commit": "33f4fd3fcc69",
+ "delivery": "vendored",
+ "description": "BlueRaja/High-Speed-Priority-Queue-for-C-Sharp \u2014 A C# priority queue optimized for pathfinding applications",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "High-Speed-Priority-Queue-for-C-Sharp",
+ "size_bytes": 157386,
+ "slug": "blueraja-high-speed-priority-queue-for-c-sharp",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 1231,
+ "system": "A C# priority queue optimized for pathfinding applications",
+ "upstream": "https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

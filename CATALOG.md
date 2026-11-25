@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 07:37 UTC · 1573 entries · 402 vendored, 1171 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 07:56 UTC · 1579 entries · 404 vendored, 1175 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-25 07:37 UTC · 1573 entries · 402 vendored, 1171 reference-
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 191 | 49 | 142 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 197 | 51 | 146 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
@@ -1055,7 +1055,7 @@ _Generated 2026-11-25 07:37 UTC · 1573 entries · 402 vendored, 1171 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 191 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 197 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1086,9 +1086,11 @@ _Generated 2026-11-25 07:37 UTC · 1573 entries · 402 vendored, 1171 reference-
 | [cocos-pathfinding](entries/gameplay/goldest-star-cocos-pathfinding/README.md) | Pathfinding 2D in Cocos Creator in cocos creator 3.6 | typescript | none | reference | [goldest-star/cocos-pathfinding](https://github.com/goldest-star/cocos-pathfinding) @ `825183bdc477` |
 | [conan-procedural-quest-generation](entries/gameplay/science-of-imagination-conan-procedural-quest-generation/README.md) | Let CONAN tell you a story: Procedural quest generation | sas | MIT | vendored | [science-of-imagination/conan-procedural-quest-generation](https://github.com/science-of-imagination/conan-procedural-quest-generation) @ `8751d05c8ac8` |
 | [ContextSteering](entries/gameplay/friedforfun-contextsteering/README.md) | Unity package to add context steering behaviours to your GameObjects | c# | GPL-3.0 | reference | [friedforfun/ContextSteering](https://github.com/friedforfun/ContextSteering) @ `1478f88a1cf2` |
+| [cupoch](entries/gameplay/neka-nat-cupoch/README.md) | Robotics with GPU computing | c++ | MIT | reference | [neka-nat/cupoch](https://github.com/neka-nat/cupoch) @ `2026-06-25 (branch tip at catalogue time)` |
 | [Django-Inventory-Management-System](entries/gameplay/kenbrotech-django-inventory-management-system/README.md) | This is a Django Inventory Management System Web Application. This course contains the basics of Django to intermediary and advanced concepts in Django, Web Dev | javascript | none | reference | [KenBroTech/Django-Inventory-Management-System](https://github.com/KenBroTech/Django-Inventory-Management-System) @ `f43bfb6439fa` |
 | [DODBT](entries/gameplay/vadimburym-dodbt/README.md) | High-performance Behaviour Tree system inspired by Data-Oriented Design. Zero MonoBehaviour, zero runtime allocations, graph-to-runtime compilation, clean debug | c# | unknown | reference | [vadimburym/DODBT](https://github.com/vadimburym/DODBT) @ `2026-10-21 (branch tip at catalogue time)` |
 | [doryen-rs](entries/gameplay/jice-nospam-doryen-rs/README.md) | ascii roguelike library in rust with native and wasm support | rust | MIT | reference | [jice-nospam/doryen-rs](https://github.com/jice-nospam/doryen-rs) @ `2023-10-12 (branch tip at catalogue time)` |
+| [DotRecast](entries/gameplay/ikpil-dotrecast/README.md) | DotRecast - a C# port of Recast & Detour, Industry-standard navigation mesh toolset for .NET, Unity3D, games, servers | c# | Zlib | reference | [ikpil/DotRecast](https://github.com/ikpil/DotRecast) @ `2026-10-03 (branch tip at catalogue time)` |
 | [DSA-Study-Hub](entries/gameplay/toxicbishop-dsa-study-hub/README.md) | DSA Study Hub is an interactive educational web application designed to streamline the learning process for Data Structures and Algorithms (DSA). Built with a m | typescript | GPL-3.0 | reference | [toxicbishop/DSA-Study-Hub](https://github.com/toxicbishop/DSA-Study-Hub) @ `2026-11-23 (branch tip at catalogue time)` |
 | [easystarjs](entries/gameplay/prettymuchbryce-easystarjs/README.md) | An asynchronous A* pathfinding API written in Javascript. | javascript | MIT | reference | [prettymuchbryce/easystarjs](https://github.com/prettymuchbryce/easystarjs) @ `2024-01-23 (branch tip at catalogue time)` |
 | [ecs](entries/gameplay/chromealex-ecs/README.md) | ECS for Unity with full game state automatic rollbacks | n/a | MIT | reference | [chromealex/ecs](https://github.com/chromealex/ecs) @ `2023-06-01 (branch tip at catalogue time)` |
@@ -1096,17 +1098,21 @@ _Generated 2026-11-25 07:37 UTC · 1573 entries · 402 vendored, 1171 reference-
 | [EvolutionAquerium](entries/gameplay/anuraghazra-evolutionaquerium/README.md) | :fish: :bug: Small Inteli Creatures Based On Steering Behaviours | javascript | MIT | reference | [anuraghazra/EvolutionAquerium](https://github.com/anuraghazra/EvolutionAquerium) @ `2022-02-12 (branch tip at catalogue time)` |
 | [foundryvtt-forien-quest-log](entries/gameplay/forien-foundryvtt-forien-quest-log/README.md) | This module provides comprehensive Quest Log system for players and Game Masters to use with Foundry Virtual Tabletop | javascript | MIT | reference | [Forien/foundryvtt-forien-quest-log](https://github.com/Forien/foundryvtt-forien-quest-log) @ `2025-05-02 (branch tip at catalogue time)` |
 | [FyWorld](entries/gameplay/fy-fyworld/README.md) | FyWorld - Base-Building / Simulation Game & Tutorial in Unity | c# | GPL-3.0 | reference | [Fy-/FyWorld](https://github.com/Fy-/FyWorld) @ `2022-12-28 (branch tip at catalogue time)` |
+| [game-server](entries/gameplay/jzyong-game-server/README.md) | Distributed Java game server, including cluster management server, gateway server, hall server, game logic server, background monitoring server and a running we | java | MIT | reference | [jzyong/game-server](https://github.com/jzyong/game-server) @ `2025-12-19 (branch tip at catalogue time)` |
+| [gdx-ai](entries/gameplay/libgdx-gdx-ai/README.md) | Artificial Intelligence framework for games based on libGDX or not. Features: Steering Behaviors, Formation Motion, Pathfinding, Behavior Trees and Finite State | java | Apache-2.0 | vendored | [libgdx/gdx-ai](https://github.com/libgdx/gdx-ai) @ `6726e345248d` |
 | [geotic](entries/gameplay/ddmills-geotic/README.md) | Entity Component System library for javascript | javascript | MIT | reference | [ddmills/geotic](https://github.com/ddmills/geotic) @ `2025-03-05 (branch tip at catalogue time)` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
 | [godot-behaviour-tree](entries/gameplay/andrew-wilkes-godot-behaviour-tree/README.md) | Behaviour Tree framework for Godot coded in GDScript. | gdscript | MIT | reference | [andrew-wilkes/godot-behaviour-tree](https://github.com/andrew-wilkes/godot-behaviour-tree) @ `2023-12-13 (branch tip at catalogue time)` |
 | [godot-rgmap](entries/gameplay/alex-karev-godot-rgmap/README.md) | A library for managing maps for roguelike games in Godot Engine | c++ | MIT | reference | [alex-karev/godot-rgmap](https://github.com/alex-karev/godot-rgmap) @ `2022-11-28 (branch tip at catalogue time)` |
+| [godot-tactical-rpg](entries/gameplay/ramaureirac-godot-tactical-rpg/README.md) | A tactical role-playing game demo for the Godot Engine | gdscript | MIT | reference | [ramaureirac/godot-tactical-rpg](https://github.com/ramaureirac/godot-tactical-rpg) @ `2026-02-21 (branch tip at catalogue time)` |
 | [godot-wyvernbox-inventory](entries/gameplay/don-tnowe-godot-wyvernbox-inventory/README.md) | Action RPG-focused inventory system for Godot 3 and 4 | gdscript | MIT | reference | [don-tnowe/godot-wyvernbox-inventory](https://github.com/don-tnowe/godot-wyvernbox-inventory) @ `2026-01-27 (branch tip at catalogue time)` |
 | [GoRogue](entries/gameplay/chris3606-gorogue/README.md) | .NET Standard roguelike library in C#.  Features many algorithms and data structures pertinent to roguelike/2D game developers, specifically designed to be mini | c# | MIT | reference | [Chris3606/GoRogue](https://github.com/Chris3606/GoRogue) @ `2026-09-13 (branch tip at catalogue time)` |
 | [graphhopper](entries/gameplay/graphhopper-graphhopper/README.md) | Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server. | java | Apache-2.0 | vendored | [graphhopper/graphhopper](https://github.com/graphhopper/graphhopper) @ `9df847473a5e` |
 | [GreaterWMS](entries/gameplay/greaterwms-greaterwms/README.md) | This Inventory management system is the currently Ford Asia Pacific after-sales logistics warehousing supply chain process . After I leave Ford , I start this p | python | Apache-2.0 | vendored | [GreaterWMS/GreaterWMS](https://github.com/GreaterWMS/GreaterWMS) @ `8344f3872155` |
 | [HALE](entries/gameplay/andres6936-hale/README.md) | Hale is a turn based RPG with deep tactical combat and character customization. Included is a lengthy and varied campaign with many quests, items and monsters,  | java | GPL-2.0 | reference | [Andres6936/HALE](https://github.com/Andres6936/HALE) @ `2020-08-04 (branch tip at catalogue time)` |
 | [hierarchical-pathfinding](entries/gameplay/hugoscurti-hierarchical-pathfinding/README.md) | Implementation of Near-Optimal Hierarchical Pathfinding (HPA*) algorithm in Unity, tested with maps from Dragon Age: Origins | c# | MIT | reference | [hugoscurti/hierarchical-pathfinding](https://github.com/hugoscurti/hierarchical-pathfinding) @ `2022-12-26 (branch tip at catalogue time)` |
+| [High-Speed-Priority-Queue-for-C-Sharp](entries/gameplay/blueraja-high-speed-priority-queue-for-c-sharp/README.md) | A C# priority queue optimized for pathfinding applications | c# | MIT | vendored | [BlueRaja/High-Speed-Priority-Queue-for-C-Sharp](https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp) @ `33f4fd3fcc69` |
 | [homebox](entries/gameplay/sysadminsmedia-homebox/README.md) | A continuation of HomeBox the inventory and organization system built for the Home User | go | AGPL-3.0 | reference | [sysadminsmedia/homebox](https://github.com/sysadminsmedia/homebox) @ `2026-11-21 (branch tip at catalogue time)` |
 | [horror-game-enemy-demo](entries/gameplay/bypell-horror-game-enemy-demo/README.md) | Demo project for a horror game enemy that tries to find and catch the player using 3D navigation and a node-based finite state machine. | gdscript | MIT | reference | [bypell/horror-game-enemy-demo](https://github.com/bypell/horror-game-enemy-demo) @ `2024-12-23 (branch tip at catalogue time)` |
 | [hypersomnia — inventory](entries/gameplay/hypersomnia-inventory/README.md) | combat, AI, pathing, quest or inventory logic | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |

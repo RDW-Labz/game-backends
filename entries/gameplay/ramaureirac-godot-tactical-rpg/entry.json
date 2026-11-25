@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T07:56:22Z",
+ "category": "gameplay",
+ "commit": "2026-02-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ramaureirac/godot-tactical-rpg \u2014 A tactical role-playing game demo for the Godot Engine",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "godot-tactical-rpg",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "ramaureirac-godot-tactical-rpg",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 982,
+ "system": "A tactical role-playing game demo for the Godot Engine",
+ "upstream": "https://github.com/ramaureirac/godot-tactical-rpg",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T07:56:22Z",
+ "category": "gameplay",
+ "commit": "2026-06-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "neka-nat/cupoch \u2014 Robotics with GPU computing",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "cupoch",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "neka-nat-cupoch",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 1065,
+ "system": "Robotics with GPU computing",
+ "upstream": "https://github.com/neka-nat/cupoch",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

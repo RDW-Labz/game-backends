@@ -3108,3 +3108,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-25 07:37 UTC** — tick 845: +2 screened, +0 reference, 7 skipped, catalogue=1573
   - added loot-economy/thefeastcoin-feedn (none, reference)
   - added loot-economy/kenmcneill-cortex (none, reference)
+
+- **2026-11-25 07:56 UTC** — tick 846: +2 screened, +4 reference, 13 skipped, catalogue=1579
+  - added gameplay/libgdx-gdx-ai (Apache-2.0, vendored)
+  - added gameplay/blueraja-high-speed-priority-queue-for-c-sharp (MIT, vendored)
+  - reference gameplay/jzyong-game-server
+  - reference gameplay/neka-nat-cupoch
+  - reference gameplay/ramaureirac-godot-tactical-rpg
+  - reference gameplay/ikpil-dotrecast

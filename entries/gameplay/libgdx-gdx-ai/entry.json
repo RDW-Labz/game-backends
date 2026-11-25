@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T07:56:16Z",
+ "category": "gameplay",
+ "commit": "6726e345248d",
+ "delivery": "vendored",
+ "description": "libgdx/gdx-ai \u2014 Artificial Intelligence framework for games based on libGDX or not. Features: Steering Behaviors, Formation Motion, Pathfinding, Behavior Trees and Finite State Machines",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "gdx-ai",
+ "size_bytes": 1251476,
+ "slug": "libgdx-gdx-ai",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 1303,
+ "system": "Artificial Intelligence framework for games based on libGDX or not. Features: Steering Behaviors, Formation Motion, Pathfinding, Behavior Trees and Finite State",
+ "upstream": "https://github.com/libgdx/gdx-ai",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
