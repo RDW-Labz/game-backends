@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T16:32:34Z",
+ "category": "engines",
+ "commit": "a679d0834e37",
+ "delivery": "reference",
+ "description": "TheCherno/Sparky \u2014 Cross-Platform High Performance 2D/3D game engine for people like me who like to write code.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Sparky",
+ "reference_reason": "size gate: 46 MB",
+ "size_bytes": 49011072,
+ "slug": "thecherno-sparky",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1197,
+ "system": "Cross-Platform High Performance 2D/3D game engine for people like me who like to write code.",
+ "upstream": "https://github.com/TheCherno/Sparky",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

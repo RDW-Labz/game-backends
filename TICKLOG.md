@@ -3292,3 +3292,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/bobbyanguelov-esoterica
   - reference engines/upbge-upbge
   - reference engines/netwarm007-gameenginefromscratch
+
+- **2026-11-25 16:32 UTC** — tick 877: +2 screened, +4 reference, 13 skipped, catalogue=1701
+  - added engines/xoreos-xoreos (GPL-3.0, reference)
+  - added engines/thecherno-sparky (Apache-2.0, reference)
+  - reference engines/unvanquished-unvanquished
+  - reference engines/gscept-nebula
+  - reference engines/rbfx-rbfx
+  - reference engines/begla-intrinsic

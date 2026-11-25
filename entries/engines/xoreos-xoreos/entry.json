@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T16:32:24Z",
+ "category": "engines",
+ "commit": "6774724d5c05",
+ "delivery": "reference",
+ "description": "xoreos/xoreos \u2014 A reimplementation of BioWare's Aurora engine (and derivatives). Pre-pre-alpha :P",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "COPYING",
+ "license_verdict": "copyleft-reference",
+ "name": "xoreos",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 25180615,
+ "slug": "xoreos-xoreos",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1199,
+ "system": "A reimplementation of BioWare's Aurora engine (and derivatives). Pre-pre-alpha :P",
+ "upstream": "https://github.com/xoreos/xoreos",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:32:35Z",
+ "category": "engines",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gscept/nebula \u2014 Nebula is an open-source and free-to-use modern C++ game engine.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "nebula",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "gscept-nebula",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1107,
+ "system": "Nebula is an open-source and free-to-use modern C++ game engine.",
+ "upstream": "https://github.com/gscept/nebula",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:32:35Z",
+ "category": "engines",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Unvanquished/Unvanquished \u2014 Unvanquished is a free and open source FPS/RTS hybrid game powered by the Daemon game engine. Historically based on Tremulous as a continuation with decades of work over it.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Unvanquished",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "unvanquished-unvanquished",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1131,
+ "system": "Unvanquished is a free and open source FPS/RTS hybrid game powered by the Daemon game engine. Historically based on Tremulous as a continuation with decades of ",
+ "upstream": "https://github.com/Unvanquished/Unvanquished",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 16:15 UTC · 1695 entries · 429 vendored, 1266 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 16:32 UTC · 1701 entries · 429 vendored, 1272 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 649 | 156 | 493 |
+| [engines](#engines) — Game engines and engine subsystems | 655 | 156 | 499 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 16:15 UTC · 1695 entries · 429 vendored, 1266 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 649 entries
+**Game engines and engine subsystems** — 655 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -344,6 +344,7 @@ _Generated 2026-11-25 16:15 UTC · 1695 entries · 429 vendored, 1266 reference-
 | [Infernux](entries/engines/chenlizheme-infernux/README.md) | Building a Neural Network-Native Engine (3N). Python authoring, C++ runtime, Vulkan/WebGPU. Windows, Linux, Android and Web. | python | MIT | reference | [ChenlizheMe/Infernux](https://github.com/ChenlizheMe/Infernux) @ `b5eba5c42ea0` |
 | [inks2d](entries/engines/nicklessone-inks2d/README.md) | A free no-dependency Typescript game engine designed for developing 2D games | typescript | MIT | reference | [NicklessOne/inks2d](https://github.com/NicklessOne/inks2d) @ `2023-08-23 (branch tip at catalogue time)` |
 | [input.js](entries/engines/jbuck-input-js/README.md) | Input.js is a JavaScript library to map controller and OS-specific USB enumerations provided by the Gamepad API in Mozilla Firefox to an ideal virtual gamepad. | javascript | MIT | vendored | [jbuck/input.js](https://github.com/jbuck/input.js) @ `1edf2a435417` |
+| [Intrinsic](entries/engines/begla-intrinsic/README.md) | Intrinsic is a Vulkan based cross-platform game and rendering engine. The project is currently in an early stage of development. | c++ | Apache-2.0 | reference | [begla/Intrinsic](https://github.com/begla/Intrinsic) @ `2023-04-21 (branch tip at catalogue time)` |
 | [iyes_progress](entries/engines/iyesgames-iyes-progress/README.md) | Bevy plugin to help track progress and perform state transitions | rust | unknown | reference | [IyesGames/iyes_progress](https://github.com/IyesGames/iyes_progress) @ `2026-10-09 (branch tip at catalogue time)` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
@@ -419,6 +420,7 @@ _Generated 2026-11-25 16:15 UTC · 1695 entries · 429 vendored, 1266 reference-
 | [NasNas](entries/engines/madour-nasnas/README.md) | An intuitive and beginner friendly 2D game framework for C++ | c++ | unknown | reference | [Madour/NasNas](https://github.com/Madour/NasNas) @ `2024-02-25 (branch tip at catalogue time)` |
 | [Nav3D](entries/engines/darbycostello-nav3d/README.md) | 3D Pathfinding system plugin for Unreal Engine 5.6, using Sparse Voxel Octrees. Now overhauled for UE5 with optimisations and tactical reasoning | c++ | MIT | reference | [darbycostello/Nav3D](https://github.com/darbycostello/Nav3D) @ `2026-01-12 (branch tip at catalogue time)` |
 | [nCine](entries/engines/ncine-ncine/README.md) | A cross-platform 2D game engine | c++ | MIT | reference | [nCine/nCine](https://github.com/nCine/nCine) @ `2026-11-13 (branch tip at catalogue time)` |
+| [nebula](entries/engines/gscept-nebula/README.md) | Nebula is an open-source and free-to-use modern C++ game engine. | c++ | unknown | reference | [gscept/nebula](https://github.com/gscept/nebula) @ `2026-11-25 (branch tip at catalogue time)` |
 | [NeonWood](entries/engines/peterino2-neonwood/README.md) | A game engine written in zig (development is concluded) | zig | MIT | reference | [peterino2/NeonWood](https://github.com/peterino2/NeonWood) @ `2025-11-06 (branch tip at catalogue time)` |
 | [netthreads-libgdx](entries/engines/alistairrutherford-netthreads-libgdx/README.md) | Extension library for LibGDX. Implements Cocos2d-like Director, Layer, Scenes etc | java | unknown | reference | [alistairrutherford/netthreads-libgdx](https://github.com/alistairrutherford/netthreads-libgdx) @ `2016-11-27 (branch tip at catalogue time)` |
 | [neuro-bge](entries/engines/underpig1-neuro-bge/README.md) | Node-based Blender game engine and logic editor addon for Blender | python | GPL-3.0 | reference | [underpig1/neuro-bge](https://github.com/underpig1/neuro-bge) @ `2021-06-19 (branch tip at catalogue time)` |
@@ -515,6 +517,7 @@ _Generated 2026-11-25 16:15 UTC · 1695 entries · 429 vendored, 1266 reference-
 | [Rain-Meadow](entries/engines/henpemaz-rain-meadow/README.md) | Rain World multiplayer engine and custom game mode | c# | unknown | reference | [henpemaz/Rain-Meadow](https://github.com/henpemaz/Rain-Meadow) @ `2026-11-18 (branch tip at catalogue time)` |
 | [raylib](entries/engines/raylib/README.md) | minimal game programming framework (platform, gfx, audio) | c | Zlib | reference | [raysan5/raylib](https://github.com/raysan5/raylib) @ `38d0eded78d3` |
 | [raytilemap](entries/engines/raylib-extras-raytilemap/README.md) | A simple library to read and draw tilemaps from common tile editors, such as Tiled | c++ | Zlib | vendored | [raylib-extras/raytilemap](https://github.com/raylib-extras/raytilemap) @ `2ffb6480c955` |
+| [rbfx](entries/engines/rbfx-rbfx/README.md) | Lightweight Game Engine/Framework in C++17 with WYSIWYG Editor. Experimental C# bindings. | c++ | MIT | reference | [rbfx/rbfx](https://github.com/rbfx/rbfx) @ `2026-11-22 (branch tip at catalogue time)` |
 | [react-native-game-engine](entries/engines/bberak-react-native-game-engine/README.md) | A lightweight Game Engine for React Native 🕹⚡🎮 | javascript | MIT | reference | [bberak/react-native-game-engine](https://github.com/bberak/react-native-game-engine) @ `2024-12-31 (branch tip at catalogue time)` |
 | [Red-Eclipse — engine](entries/engines/red-eclipse-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | h | CC-BY-SA-4.0 | reference | [redeclipse/base.git](https://github.com/redeclipse/base.git) @ `65d4132` |
 | [redalert2-recomp](entries/engines/sp00nznet-redalert2-recomp/README.md) | Static recompilation of Command & Conquer: Red Alert 2 / Yuri's Revenge (Westwood, 2000-01) to native C, with the remaster the engine never got: a D3D11 present | c | MIT | reference | [sp00nznet/redalert2-recomp](https://github.com/sp00nznet/redalert2-recomp) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -561,6 +564,7 @@ _Generated 2026-11-25 16:15 UTC · 1695 entries · 429 vendored, 1266 reference-
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
 | [space-engineers-coop-merralia](entries/engines/talhanadeem4321-space-engineers-coop-merralia/README.md) | Build and share cooperative space engineering projects together in Merralia. | typescript | MIT | reference | [TalhaNadeem4321/space-engineers-coop-merralia](https://github.com/TalhaNadeem4321/space-engineers-coop-merralia) @ `2026-11-23 (branch tip at catalogue time)` |
 | [space-menace](entries/engines/amethyst-space-menace/README.md) | An action 2D platformer made with Amethyst game engine | rust | MIT | vendored | [amethyst/space-menace](https://github.com/amethyst/space-menace) @ `8be706d2e993` |
+| [Sparky](entries/engines/thecherno-sparky/README.md) | Cross-Platform High Performance 2D/3D game engine for people like me who like to write code. | c++ | Apache-2.0 | reference | [TheCherno/Sparky](https://github.com/TheCherno/Sparky) @ `a679d0834e37` |
 | [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [specs-physics](entries/engines/amethyst-specs-physics/README.md) | nphysics integration for the Specs entity component system | rust | MIT | reference | [amethyst/specs-physics](https://github.com/amethyst/specs-physics) @ `2020-05-04 (branch tip at catalogue time)` |
 | [spider-engine](entries/engines/aminere-spider-engine/README.md) | WebGL game engine | typescript | GPL-3.0 | reference | [aminere/spider-engine](https://github.com/aminere/spider-engine) @ `2024-09-02 (branch tip at catalogue time)` |
@@ -606,6 +610,7 @@ _Generated 2026-11-25 16:15 UTC · 1695 entries · 429 vendored, 1266 reference-
 | [UnityHexagonLibrary2d](entries/engines/ycarowr-unityhexagonlibrary2d/README.md) | A library to manage 2D hexagonal tiles in Unity. | c# | MIT | reference | [ycarowr/UnityHexagonLibrary2d](https://github.com/ycarowr/UnityHexagonLibrary2d) @ `2021-04-17 (branch tip at catalogue time)` |
 | [UnityTileMap](entries/engines/alexanderfast-unitytilemap/README.md) | A TileMap library for Unity written in C#. | c# | MIT | reference | [alexanderfast/UnityTileMap](https://github.com/alexanderfast/UnityTileMap) @ `2015-04-21 (branch tip at catalogue time)` |
 | [UnityTutorials-RTS](entries/engines/minapecheux-unitytutorials-rts/README.md) | The code for my series of tutorials on how to make a real-time stategy (RTS) game in the well-know Unity game engine (with C# scripting)!  | c# | MIT | vendored | [MinaPecheux/UnityTutorials-RTS](https://github.com/MinaPecheux/UnityTutorials-RTS) @ `152128b8dde0` |
+| [Unvanquished](entries/engines/unvanquished-unvanquished/README.md) | Unvanquished is a free and open source FPS/RTS hybrid game powered by the Daemon game engine. Historically based on Tremulous as a continuation with decades of  | c++ | unknown | reference | [Unvanquished/Unvanquished](https://github.com/Unvanquished/Unvanquished) @ `2026-11-25 (branch tip at catalogue time)` |
 | [upbge](entries/engines/upbge-upbge/README.md) | UPBGE, the best integrated game engine in Blender | c++ | unknown | reference | [UPBGE/upbge](https://github.com/UPBGE/upbge) @ `2026-11-25 (branch tip at catalogue time)` |
 | [Urho3D](entries/engines/urho3d/README.md) | compact 3D engine: scene graph, renderer, physics, net | c++ | MIT | reference | [urho3d/urho3d](https://github.com/urho3d/urho3d) @ `e0ce107356b2` |
 | [ursina](entries/engines/pokepetter-ursina/README.md) | A 3D and 2D game engine for Python | python | MIT | vendored | [pokepetter/ursina](https://github.com/pokepetter/ursina) @ `11ac1f7bab99` |
@@ -660,6 +665,7 @@ _Generated 2026-11-25 16:15 UTC · 1695 entries · 429 vendored, 1266 reference-
 | [xash3d-fwgs](entries/engines/fwgs-xash3d-fwgs/README.md) | Xash3D FWGS engine | c | GPL-3.0 | reference | [FWGS/xash3d-fwgs](https://github.com/FWGS/xash3d-fwgs) @ `bc1b4515e1f6` |
 | [Xelmish](entries/engines/chrispritchard-xelmish/README.md) | XNA + Elmish - 2D game development framework with F# | f# | MIT | vendored | [ChrisPritchard/Xelmish](https://github.com/ChrisPritchard/Xelmish) @ `ada01cf32ad4` |
 | [XNAGameStudio](entries/engines/simondarksidej-xnagamestudio/README.md) | The Education library from the Xbox Live Indie games repository, valuable for MonoGame Developers for advanced samples | n/a | MIT | reference | [SimonDarksideJ/XNAGameStudio](https://github.com/SimonDarksideJ/XNAGameStudio) @ `2025-11-14 (branch tip at catalogue time)` |
+| [xoreos](entries/engines/xoreos-xoreos/README.md) | A reimplementation of BioWare's Aurora engine (and derivatives). Pre-pre-alpha :P | c++ | GPL-3.0 | reference | [xoreos/xoreos](https://github.com/xoreos/xoreos) @ `6774724d5c05` |
 | [xray-16](entries/engines/openxray-xray-16/README.md) | Improved version of the X-Ray Engine, the game engine used in the world-famous S.T.A.L.K.E.R. game series by GSC Game World. Join OpenXRay! ;) | c++ | MIT | reference | [OpenXRay/xray-16](https://github.com/OpenXRay/xray-16) @ `22226b7ff225` |
 | [yard-godot](entries/engines/elliotfontaine-yard-godot/README.md) | YARD is an editor plugin for Godot to manage resources and query them at runtime, with a table view in the editor as the cherry on top. | gdscript | unknown | reference | [elliotfontaine/yard-godot](https://github.com/elliotfontaine/yard-godot) @ `2026-11-14 (branch tip at catalogue time)` |
 | [YarnSpinner](entries/engines/yarnspinnertool-yarnspinner/README.md) | The core compiler and engine-agnostic components for Yarn Spinner, the friendly dialogue tool. | c# | MIT | reference | [YarnSpinnerTool/YarnSpinner](https://github.com/YarnSpinnerTool/YarnSpinner) @ `2026-11-20 (branch tip at catalogue time)` |

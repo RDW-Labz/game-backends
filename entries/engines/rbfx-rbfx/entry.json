@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T16:32:35Z",
+ "category": "engines",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "rbfx/rbfx \u2014 Lightweight Game Engine/Framework in C++17 with WYSIWYG Editor. Experimental C# bindings.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "rbfx",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "rbfx-rbfx",
+ "source": "github-search:game engine language:c++ stars:>80",
+ "stars": 1055,
+ "system": "Lightweight Game Engine/Framework in C++17 with WYSIWYG Editor. Experimental C# bindings.",
+ "upstream": "https://github.com/rbfx/rbfx",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
