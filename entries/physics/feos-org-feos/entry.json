@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:19:23Z",
+ "category": "physics",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "feos-org/feos \u2014 FeOs - A Framework for Equations of State and Classical Density Functional Theory",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "feos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "feos-org-feos",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 205,
+ "system": "FeOs - A Framework for Equations of State and Classical Density Functional Theory",
+ "upstream": "https://github.com/feos-org/feos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

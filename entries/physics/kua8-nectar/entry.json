@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:19:23Z",
+ "category": "physics",
+ "commit": "2026-11-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kua8/Nectar \u2014 A notch and a dock for Windows: physics-animated, reactive, and built to replace your taskbar.",
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Nectar",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "kua8-nectar",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 216,
+ "system": "A notch and a dock for Windows: physics-animated, reactive, and built to replace your taskbar.",
+ "upstream": "https://github.com/kua8/Nectar",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

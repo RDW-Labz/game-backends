@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:19:23Z",
+ "category": "physics",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "PVCPC/delirium-physics \u2014 Reverse-engineered Rust port of Euphoria as it runs in GTA IV (ragdoll and character physics), with an SDK and a playroom. Needs your own GTA IV. Not affiliated with Rockstar, Take-Two or NaturalMotion.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "delirium-physics",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "pvcpc-delirium-physics",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 103,
+ "system": "Reverse-engineered Rust port of Euphoria as it runs in GTA IV (ragdoll and character physics), with an SDK and a playroom. Needs your own GTA IV. Not affiliated",
+ "upstream": "https://github.com/PVCPC/delirium-physics",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

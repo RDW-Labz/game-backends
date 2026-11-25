@@ -2972,3 +2972,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/stevenzhang543-velophi
   - reference physics/yuanming-hu-flat
   - reference physics/newkrok-nape-js
+
+- **2026-11-25 02:19 UTC** — tick 827: +2 screened, +4 reference, 30 skipped, catalogue=1481
+  - added physics/runmat-org-runmat (Apache-2.0, reference)
+  - added physics/timschmidt-csgrs (MIT, reference)
+  - reference physics/kua8-nectar
+  - reference physics/feos-org-feos
+  - reference physics/canleskis-particular
+  - reference physics/pvcpc-delirium-physics

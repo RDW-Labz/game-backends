@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T02:19:21Z",
+ "category": "physics",
+ "commit": "939eee5e17c6",
+ "delivery": "reference",
+ "description": "timschmidt/csgrs \u2014 Multi-modal exact geometric computation CAD/CAM kernel in Rust",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "csgrs",
+ "reference_reason": "size gate: 84 MB",
+ "size_bytes": 88626889,
+ "slug": "timschmidt-csgrs",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 268,
+ "system": "Multi-modal exact geometric computation CAD/CAM kernel in Rust",
+ "upstream": "https://github.com/timschmidt/csgrs",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T02:19:23Z",
+ "category": "physics",
+ "commit": "2026-03-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Canleskis/particular \u2014 N-body simulation library written in Rust featuring BarnesHut and GPU accelerated algorithms.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "particular",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "canleskis-particular",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 172,
+ "system": "N-body simulation library written in Rust featuring BarnesHut and GPU accelerated algorithms.",
+ "upstream": "https://github.com/Canleskis/particular",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
