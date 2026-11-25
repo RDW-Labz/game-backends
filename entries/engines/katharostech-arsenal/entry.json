@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:22:10Z",
+ "category": "engines",
+ "commit": "2023-01-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "katharostech/arsenal \u2014 Blender game engine prototype written in Rust.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "arsenal",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "katharostech-arsenal",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 269,
+ "system": "Blender game engine prototype written in Rust.",
+ "upstream": "https://github.com/katharostech/arsenal",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 17:04 UTC · 1713 entries · 432 vendored, 1281 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 17:22 UTC · 1719 entries · 433 vendored, 1286 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 667 | 159 | 508 |
+| [engines](#engines) — Game engines and engine subsystems | 673 | 160 | 513 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 17:04 UTC · 1713 entries · 432 vendored, 1281 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 667 entries
+**Game engines and engine subsystems** — 673 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -48,6 +48,7 @@ _Generated 2026-11-25 17:04 UTC · 1713 entries · 432 vendored, 1281 reference-
 | [Arduino-JoyCon-Library-for-Nintendo-Switch](entries/engines/squirelo-arduino-joycon-library-for-nintendo-switch/README.md) | Transform your ATmega32u4 based Arduino boards into Nintendo Switch-compatible gamepads! This library enables the Arduino Leonardo, Micro, or compatible clones  | c++ | LGPL-3.0 | reference | [squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch](https://github.com/squirelo/Arduino-JoyCon-Library-for-Nintendo-Switch) @ `459b332cf47e` |
 | [ark](entries/engines/mlange-42-ark/README.md) | Ark -- Archetype-based Entity Component System (ECS) for Go. | go | Apache-2.0 | reference | [mlange-42/ark](https://github.com/mlange-42/ark) @ `2026-11-17 (branch tip at catalogue time)` |
 | [armory](entries/engines/armory3d-armory/README.md) | 3D Engine with Blender Integration | c++ | Zlib | reference | [armory3d/armory](https://github.com/armory3d/armory) @ `7f7f588b5a50` |
+| [arsenal](entries/engines/katharostech-arsenal/README.md) | Blender game engine prototype written in Rust. | rust | unknown | reference | [katharostech/arsenal](https://github.com/katharostech/arsenal) @ `2023-01-18 (branch tip at catalogue time)` |
 | [awesome-decomp-games](entries/engines/submitgame-awesome-decomp-games/README.md) | Rated, auto-refreshed list of decompiled, recompiled & reverse-engineered games: decomps, static recomps, source ports, engine remakes, browser ports. | python | CC0-1.0 | vendored | [SubmitGame/awesome-decomp-games](https://github.com/SubmitGame/awesome-decomp-games) @ `c3d938df47b2` |
 | [awesome-entity-component-system](entries/engines/jslee02-awesome-entity-component-system/README.md) | :sunglasses: A curated list of Entity-Component-System (ECS) libraries and resources | python | Unlicense | reference | [jslee02/awesome-entity-component-system](https://github.com/jslee02/awesome-entity-component-system) @ `2026-11-09 (branch tip at catalogue time)` |
 | [Awesome-Game-Analysis](entries/engines/otfcg-awesome-game-analysis/README.md) | a comprehensive collection of video game tech analysis resources | python | CC0-1.0 | reference | [OTFCG/Awesome-Game-Analysis](https://github.com/OTFCG/Awesome-Game-Analysis) @ `2026-04-19 (branch tip at catalogue time)` |
@@ -98,6 +99,7 @@ _Generated 2026-11-25 17:04 UTC · 1713 entries · 432 vendored, 1281 reference-
 | [bevy_mod_inverse_kinematics](entries/engines/kurble-bevy-mod-inverse-kinematics/README.md) | An inverse kinematics plugin for the Bevy engine | rust | Apache-2.0 | vendored | [Kurble/bevy_mod_inverse_kinematics](https://github.com/Kurble/bevy_mod_inverse_kinematics) @ `e2405629c544` |
 | [bevy_mod_scripting](entries/engines/makspll-bevy-mod-scripting/README.md) | Bevy Scripting Plugin | rust | Apache-2.0 | reference | [makspll/bevy_mod_scripting](https://github.com/makspll/bevy_mod_scripting) @ `2026-11-23 (branch tip at catalogue time)` |
 | [bevy_pancam](entries/engines/johanhelsing-bevy-pancam/README.md) | A  bevy plugin for panning orthographic cameras  | rust | Apache-2.0 | vendored | [johanhelsing/bevy_pancam](https://github.com/johanhelsing/bevy_pancam) @ `c9e527a85e72` |
+| [bevy_panorbit_camera](entries/engines/plonq-bevy-panorbit-camera/README.md) | A simple pan and orbit camera for the Bevy game engine | rust | Apache-2.0 | vendored | [Plonq/bevy_panorbit_camera](https://github.com/Plonq/bevy_panorbit_camera) @ `09f2cdf7df77` |
 | [bevy_pixel_camera](entries/engines/drakmaniso-bevy-pixel-camera/README.md) | A simple pixel-perfect camera plugin for Bevy, suitable for pixel-art. | rust | Apache-2.0 | reference | [drakmaniso/bevy_pixel_camera](https://github.com/drakmaniso/bevy_pixel_camera) @ `2024-07-05 (branch tip at catalogue time)` |
 | [bevy_pixels](entries/engines/dtcristo-bevy-pixels/README.md) | Bevy plugin that uses Pixels (a tiny pixel buffer) for rendering | rust | Apache-2.0 | reference | [dtcristo/bevy_pixels](https://github.com/dtcristo/bevy_pixels) @ `2026-08-11 (branch tip at catalogue time)` |
 | [bevy_pkv](entries/engines/johanhelsing-bevy-pkv/README.md) | Cross-platform (including wasm) persistent key value store plugin for rust games/apps | rust | unknown | reference | [johanhelsing/bevy_pkv](https://github.com/johanhelsing/bevy_pkv) @ `2026-10-23 (branch tip at catalogue time)` |
@@ -107,6 +109,7 @@ _Generated 2026-11-25 17:04 UTC · 1713 entries · 432 vendored, 1281 reference-
 | [bevy_retrograde](entries/engines/katharostech-bevy-retrograde/README.md) | Plugin pack for making 2D games with Bevy | rust | unknown | reference | [katharostech/bevy_retrograde](https://github.com/katharostech/bevy_retrograde) @ `2023-10-19 (branch tip at catalogue time)` |
 | [bevy_rts_camera](entries/engines/plonq-bevy-rts-camera/README.md) | RTS-style camera controls plugin for Bevy Engine | rust | Apache-2.0 | vendored | [Plonq/bevy_rts_camera](https://github.com/Plonq/bevy_rts_camera) @ `0256ed415f03` |
 | [bevy_scriptum](entries/engines/jarkonik-bevy-scriptum/README.md) | 📜 A plugin for Bevy that allows you to write some of your game or application logic in a scripting language. | rust | Apache-2.0 | reference | [jarkonik/bevy_scriptum](https://github.com/jarkonik/bevy_scriptum) @ `2026-04-15 (branch tip at catalogue time)` |
+| [bevy_shadertoy_wgsl](entries/engines/eliotbo-bevy-shadertoy-wgsl/README.md) | A Shadertoy clone for the Bevy game engine. The glsl language is replaced by wgsl. | rust | unknown | reference | [eliotbo/bevy_shadertoy_wgsl](https://github.com/eliotbo/bevy_shadertoy_wgsl) @ `2024-12-01 (branch tip at catalogue time)` |
 | [bevy_steamworks](entries/engines/houraiteahouse-bevy-steamworks/README.md) | A Bevy plugin for integrating with the Steamworks SDK  | rust | Apache-2.0 | reference | [HouraiTeahouse/bevy_steamworks](https://github.com/HouraiTeahouse/bevy_steamworks) @ `2026-10-13 (branch tip at catalogue time)` |
 | [bevy_terrain](entries/engines/kurtkuehnert-bevy-terrain/README.md) | A terrain rendering plugin for the bevy game engine. | rust | Apache-2.0 | vendored | [kurtkuehnert/bevy_terrain](https://github.com/kurtkuehnert/bevy_terrain) @ `5a88daf4a419` |
 | [bevy_tiled](entries/engines/stararawn-bevy-tiled/README.md) | A plugin for rendering tiled maps. | rust | MIT | reference | [StarArawn/bevy_tiled](https://github.com/StarArawn/bevy_tiled) @ `2022-01-25 (branch tip at catalogue time)` |
@@ -115,6 +118,7 @@ _Generated 2026-11-25 17:04 UTC · 1713 entries · 432 vendored, 1281 reference-
 | [bevy_vector_shapes](entries/engines/james-j-obrien-bevy-vector-shapes/README.md) | A library for rendering vector shapes using the Bevy game engine | rust | unknown | reference | [james-j-obrien/bevy_vector_shapes](https://github.com/james-j-obrien/bevy_vector_shapes) @ `2026-10-12 (branch tip at catalogue time)` |
 | [bevy_vello](entries/engines/linebender-bevy-vello/README.md) | An integration to render vector graphics with Vello in the Bevy game engine. | rust | Apache-2.0 | reference | [linebender/bevy_vello](https://github.com/linebender/bevy_vello) @ `2026-11-23 (branch tip at catalogue time)` |
 | [bevy_webgl2](entries/engines/mrk-its-bevy-webgl2/README.md) | WebGL2 renderer plugin for Bevy game engine | rust | MIT | reference | [mrk-its/bevy_webgl2](https://github.com/mrk-its/bevy_webgl2) @ `2021-10-10 (branch tip at catalogue time)` |
+| [BevyRoguelike](entries/engines/thephet-bevyroguelike/README.md) | Roguelike game using Rust and the Bevy engine | rust | unknown | reference | [thephet/BevyRoguelike](https://github.com/thephet/BevyRoguelike) @ `2026-01-17 (branch tip at catalogue time)` |
 | [BinaryMeshFitting](entries/engines/lin20-binarymeshfitting/README.md) | Yet another attempt at making a fast massive level-of-detail voxel engine, but this time with usable results! | c++ | MIT | reference | [Lin20/BinaryMeshFitting](https://github.com/Lin20/BinaryMeshFitting) @ `2021-08-06 (branch tip at catalogue time)` |
 | [biomes-game — ecs](entries/engines/biomes-game-ecs/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [blah](entries/engines/noelfb-blah/README.md) | A small 2d c++ game framework | c++ | MIT | reference | [NoelFB/blah](https://github.com/NoelFB/blah) @ `2023-04-27 (branch tip at catalogue time)` |
@@ -541,6 +545,7 @@ _Generated 2026-11-25 17:04 UTC · 1713 entries · 432 vendored, 1281 reference-
 | [RPG-Core](entries/engines/delmarle-rpg-core/README.md) | UNITY engine RPG framework | c# | unknown | reference | [delmarle/RPG-Core](https://github.com/delmarle/RPG-Core) @ `2026-04-14 (branch tip at catalogue time)` |
 | [ruby2d-games](entries/engines/mariovisic-ruby2d-games/README.md) | A collection of games and demos written in ruby using the Ruby 2D framework, complete with free video tutorials | ruby | unknown | reference | [mariovisic/ruby2d-games](https://github.com/mariovisic/ruby2d-games) @ `2023-02-22 (branch tip at catalogue time)` |
 | [RuntimeUnityEditor](entries/engines/manlymarco-runtimeunityeditor/README.md) | In-game inspector and debugging tools for applications made with Unity3D game engine | c# | GPL-3.0 | reference | [ManlyMarco/RuntimeUnityEditor](https://github.com/ManlyMarco/RuntimeUnityEditor) @ `1ce168c7acfd` |
+| [rust-2048](entries/engines/coeuvre-rust-2048/README.md) | A 2048 clone with Piston game engine | rust | MIT | reference | [coeuvre/rust-2048](https://github.com/coeuvre/rust-2048) @ `2024-07-19 (branch tip at catalogue time)` |
 | [rust-invaders](entries/engines/jeremychone-channel-rust-invaders/README.md) | Simple RUST game with the Bevy Engine | rust | Apache-2.0 | vendored | [jeremychone-channel/rust-invaders](https://github.com/jeremychone-channel/rust-invaders) @ `af246691ea08` |
 | [rusty_engine](entries/engines/cleancut-rusty-engine/README.md) | 2D game engine for learning Rust | rust | unknown | reference | [CleanCut/rusty_engine](https://github.com/CleanCut/rusty_engine) @ `2026-02-09 (branch tip at catalogue time)` |
 | [Sakuga-Engine](entries/engines/noisychain-sakuga-engine/README.md) | A fighting game engine made for Godot 4 written in C# | c# | MIT | vendored | [NoisyChain/Sakuga-Engine](https://github.com/NoisyChain/Sakuga-Engine) @ `866ce24da7c2` |
@@ -604,6 +609,7 @@ _Generated 2026-11-25 17:04 UTC · 1713 entries · 432 vendored, 1281 reference-
 | [tocenter](entries/engines/silentsokolov-tocenter/README.md) | ToCenter is a video game written in Rust using the ggez engine and the ECS library. | rust | unknown | reference | [silentsokolov/tocenter](https://github.com/silentsokolov/tocenter) @ `2022-11-14 (branch tip at catalogue time)` |
 | [Torque2D](entries/engines/garagegames-torque2d/README.md) | MIT Licensed Open Source version of Torque 2D game engine from GarageGames | c++ | MIT | reference | [GarageGames/Torque2D](https://github.com/GarageGames/Torque2D) @ `72c8891f192b` |
 | [totk-pc-recomp — runtime](entries/engines/totk-pc-recomp-runtime/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | c | MIT | reference | [valentderah/totk-pc-recomp](https://github.com/valentderah/totk-pc-recomp) @ `ae30a61` |
+| [toxoid](entries/engines/toxoidengine-toxoid/README.md) | A modern, cross-platform, highly modular / decoupled, data-driven, ECS-based game engine written in Rust with scripting support for C#, JavaScript and Rust to R | rust | none | reference | [toxoidengine/toxoid](https://github.com/toxoidengine/toxoid) @ `6de3d3cc562a` |
 | [toy](entries/engines/hugoam-toy/README.md) | the thin c++ game engine | c++ | GPL-3.0 | reference | [hugoam/toy](https://github.com/hugoam/toy) @ `2021-04-25 (branch tip at catalogue time)` |
 | [traviso.js](entries/engines/axaq-traviso-js/README.md) | Traviso is an open source JS engine that makes it easy to build isometric applications that run in a web browser. | typescript | MIT | reference | [axaq/traviso.js](https://github.com/axaq/traviso.js) @ `2026-06-17 (branch tip at catalogue time)` |
 | [trivial-gamekit](entries/engines/borodust-trivial-gamekit/README.md) | Simple framework for making 2D games | common lisp | MIT | vendored | [borodust/trivial-gamekit](https://github.com/borodust/trivial-gamekit) @ `541ad83af7e8` |

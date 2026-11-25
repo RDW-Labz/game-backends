@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:22:10Z",
+ "category": "engines",
+ "commit": "2024-12-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "eliotbo/bevy_shadertoy_wgsl \u2014 A Shadertoy clone for the Bevy game engine. The glsl language is replaced by wgsl.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "bevy_shadertoy_wgsl",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "eliotbo-bevy-shadertoy-wgsl",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 240,
+ "system": "A Shadertoy clone for the Bevy game engine. The glsl language is replaced by wgsl.",
+ "upstream": "https://github.com/eliotbo/bevy_shadertoy_wgsl",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

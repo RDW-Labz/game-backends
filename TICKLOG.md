@@ -3316,3 +3316,11 @@ One line per 15-minute extension tick, newest last.
   - reference engines/far-beyond-pulsar-pulsar-native
   - reference engines/cleancut-rusty-engine
   - reference engines/rerun-io-revy
+
+- **2026-11-25 17:22 UTC** — tick 880: +2 screened, +4 reference, 15 skipped, catalogue=1719
+  - added engines/toxoidengine-toxoid (none, reference)
+  - added engines/plonq-bevy-panorbit-camera (Apache-2.0, vendored)
+  - reference engines/katharostech-arsenal
+  - reference engines/thephet-bevyroguelike
+  - reference engines/eliotbo-bevy-shadertoy-wgsl
+  - reference engines/coeuvre-rust-2048

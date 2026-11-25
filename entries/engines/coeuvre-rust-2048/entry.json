@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:22:10Z",
+ "category": "engines",
+ "commit": "2024-07-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "coeuvre/rust-2048 \u2014 A 2048 clone with Piston game engine",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "rust-2048",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "coeuvre-rust-2048",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 238,
+ "system": "A 2048 clone with Piston game engine",
+ "upstream": "https://github.com/coeuvre/rust-2048",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

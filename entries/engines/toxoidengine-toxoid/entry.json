@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T17:22:05Z",
+ "category": "engines",
+ "commit": "6de3d3cc562a",
+ "delivery": "reference",
+ "description": "toxoidengine/toxoid \u2014 A modern, cross-platform, highly modular / decoupled, data-driven, ECS-based game engine written in Rust with scripting support for C#, JavaScript and Rust to Rust (WASM), hot-reloading, WebGPU rendering, and web target support.",
+ "language": "rust",
+ "license": "none",
+ "license_file": "LICENSE",
+ "license_verdict": "unlicensed-reference",
+ "name": "toxoid",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 8544371,
+ "slug": "toxoidengine-toxoid",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 301,
+ "system": "A modern, cross-platform, highly modular / decoupled, data-driven, ECS-based game engine written in Rust with scripting support for C#, JavaScript and Rust to R",
+ "upstream": "https://github.com/toxoidengine/toxoid",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

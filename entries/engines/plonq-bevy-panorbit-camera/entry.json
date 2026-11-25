@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T17:22:08Z",
+ "category": "engines",
+ "commit": "09f2cdf7df77",
+ "delivery": "vendored",
+ "description": "Plonq/bevy_panorbit_camera \u2014 A simple pan and orbit camera for the Bevy game engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "bevy_panorbit_camera",
+ "size_bytes": 103629,
+ "slug": "plonq-bevy-panorbit-camera",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 299,
+ "system": "A simple pan and orbit camera for the Bevy game engine",
+ "upstream": "https://github.com/Plonq/bevy_panorbit_camera",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

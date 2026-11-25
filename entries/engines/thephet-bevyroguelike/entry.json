@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T17:22:10Z",
+ "category": "engines",
+ "commit": "2026-01-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "thephet/BevyRoguelike \u2014 Roguelike game using Rust and the Bevy engine",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "BevyRoguelike",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "thephet-bevyroguelike",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 256,
+ "system": "Roguelike game using Rust and the Bevy engine",
+ "upstream": "https://github.com/thephet/BevyRoguelike",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
