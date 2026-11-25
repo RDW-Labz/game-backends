@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T20:50:40Z",
+ "category": "engines",
+ "commit": "894c93f3e4e2",
+ "delivery": "reference",
+ "description": "ippa/jaws \u2014 Jaws - HTML5 canvas javascript 2D Game Framework",
+ "language": "javascript",
+ "license": "LGPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "jaws",
+ "reference_reason": "licence: LGPL-3.0 (copyleft-reference)",
+ "size_bytes": 520424,
+ "slug": "ippa-jaws",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 363,
+ "system": "Jaws - HTML5 canvas javascript 2D Game Framework",
+ "upstream": "https://github.com/ippa/jaws",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

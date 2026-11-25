@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:50:41Z",
+ "category": "engines",
+ "commit": "2017-04-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "asaia/StarlingPunk \u2014 StarlingPunk is a framework built on top the Starling library designed to add structure and organization to your 2D game projects. It\u2019s perfect for rapidly prototyping ideas and promotes code reuse between projects.  As you may have been able to tell from the name, StarlingPunk is heavily inspired by the popular FlashPunk framework, although its not a direct port.",
+ "language": "actionscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "StarlingPunk",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "asaia-starlingpunk",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 138,
+ "system": "StarlingPunk is a framework built on top the Starling library designed to add structure and organization to your 2D game projects. It\u2019s perfect for rapidly prot",
+ "upstream": "https://github.com/asaia/StarlingPunk",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

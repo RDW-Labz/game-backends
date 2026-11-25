@@ -1,0 +1,101 @@
+---
+import Menubar from '../Menubar.astro'
+
+interface ExampleItem {
+  id: string
+  title: string
+  entry: string
+  source: string
+  gameSettings: string
+  runtimeFiles: Array<{
+    path: string
+    source: string
+  }>
+}
+
+interface Props {
+  example: ExampleItem
+  examples: ExampleItem[]
+}
+
+const { example, examples } = Astro.props
+const basePath = import.meta.env.BASE_URL
+const sourceJson = JSON.stringify(example.source).replace(/</g, '\\u003c')
+const gameSettingsJson = JSON.stringify(example.gameSettings).replace(/</g, '\\u003c')
+const runtimeFilesJson = JSON.stringify(example.runtimeFiles).replace(/</g, '\\u003c')
+---
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <h1 class="section-title">{example.title}</h1>
+      <p class="section-subtitle">Entry: {example.entry}</p>
+    </div>
+  </div>
+</section>
+
+<Menubar>
+  <a href={`${basePath}examples/`}>gallery</a>
+</Menubar>
+
+<div class="play-shell">
+  <nav class="play-tabs" aria-label="Example list">
+    {examples.map(item => (
+      <a class:list={['play-tab', item.id === example.id && 'active']} href={`${basePath}examples/${item.id}/`}>{item.title}</a>
+    ))}
+  </nav>
+
+  <section class="runtime-panel">
+    <div class="panel-header">
+      <div>
+        <div class="panel-title">Runtime Viewport</div>
+        <div class="panel-meta">{example.entry}</div>
+      </div>
+    </div>
+    <div class="play-stage">
+      <div id="soluna-stage-host"></div>
+      <div class="overlay" id="play-overlay">
+        <div class="overlay-card">
+          <div class="overlay-title">Preparing Runtime</div>
+          <p class="overlay-status" id="play-status">Loading assets...</p>
+          <div class="note" id="play-note"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="inspector-grid">
+    <section class="console-panel inspector-panel">
+      <div class="panel-header">
+        <div class="panel-title">Console</div>
+      </div>
+      <pre class="console-body" id="console-output"></pre>
+    </section>
+
+    <section class="code-panel inspector-panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">Example Source</div>
+          <div class="panel-meta">main.lua</div>
+        </div>
+      </div>
+      <pre class="code-block"><code id="code-content">{example.source}</code></pre>
+    </section>
+  </div>
+</div>
+
+<script type="application/json" id="soluna-example-source" set:html={sourceJson}></script>
+<script type="application/json" id="soluna-example-game-settings" set:html={gameSettingsJson}></script>
+<script type="application/json" id="soluna-example-runtime-files" set:html={runtimeFilesJson}></script>
+<script>
+import initPlay from 'astro-theme-soluna/client/play'
+
+const sourceNode = document.querySelector('#soluna-example-source')
+const gameSettingsNode = document.querySelector('#soluna-example-game-settings')
+const runtimeFilesNode = document.querySelector('#soluna-example-runtime-files')
+const exampleSource = sourceNode ? JSON.parse(sourceNode.textContent ?? '""') : ''
+const exampleGameSettings = gameSettingsNode ? JSON.parse(gameSettingsNode.textContent ?? '""') : ''
+const exampleRuntimeFiles = runtimeFilesNode ? JSON.parse(runtimeFilesNode.textContent ?? '[]') : []
+
+initPlay({ exampleSource, exampleGameSettings, exampleRuntimeFiles })
+</script>

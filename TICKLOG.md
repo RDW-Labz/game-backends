@@ -3413,3 +3413,10 @@ One line per 15-minute extension tick, newest last.
   - reference engines/gornhoth-unity-smoothed-particle-hydrodynamics
   - reference engines/ark-ecs-ark-jl
   - reference engines/jaimegensler-thyseus
+
+- **2026-11-25 20:50 UTC** — tick 893: +2 screened, +3 reference, 43 skipped, catalogue=1789
+  - added engines/cloudwu-soluna (MIT, vendored)
+  - added engines/ippa-jaws (LGPL-3.0, reference)
+  - reference engines/asaia-starlingpunk
+  - reference engines/williammalone-blocksjs
+  - reference engines/snoringcatgames-surfacer

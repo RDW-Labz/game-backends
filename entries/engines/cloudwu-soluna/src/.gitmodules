@@ -1,0 +1,33 @@
+[submodule "3rd/ltask"]
+	path = 3rd/ltask
+	url = https://github.com/cloudwu/ltask.git
+[submodule "3rd/sokol"]
+	path = 3rd/sokol
+	url = https://github.com/floooh/sokol.git
+[submodule "3rd/lua"]
+	path = 3rd/lua
+	url = https://github.com/lua/lua.git
+[submodule "3rd/stb"]
+	path = 3rd/stb
+	url = https://github.com/nothings/stb.git
+[submodule "3rd/datalist"]
+	path = 3rd/datalist
+	url = https://github.com/cloudwu/datalist.git
+[submodule "3rd/yoga"]
+	path = 3rd/yoga
+	url = https://github.com/facebook/yoga.git
+[submodule "3rd/zlib"]
+	path = 3rd/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "bin/sokol-tools-bin"]
+	path = bin/sokol-tools-bin
+	url = https://github.com/floooh/sokol-tools-bin.git
+[submodule "3rd/miniaudio"]
+	path = 3rd/miniaudio
+	url = https://github.com/mackron/miniaudio.git
+[submodule "bin/luamake-bin"]
+	path = bin/luamake-bin
+	url = https://github.com/yuchanns/luamake-bin.git
+[submodule "3rd/stb_image_resize"]
+	path = 3rd/stb_image_resize
+	url = https://github.com/nothings/stb_image_resize.git

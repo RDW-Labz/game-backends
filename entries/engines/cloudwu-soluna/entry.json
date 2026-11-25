@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T20:50:37Z",
+ "category": "engines",
+ "commit": "6722911e0ac7",
+ "delivery": "vendored",
+ "description": "cloudwu/soluna \u2014 A simple 2d game framework",
+ "language": "c",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "soluna",
+ "size_bytes": 662548,
+ "slug": "cloudwu-soluna",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 384,
+ "system": "A simple 2d game framework",
+ "upstream": "https://github.com/cloudwu/soluna",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

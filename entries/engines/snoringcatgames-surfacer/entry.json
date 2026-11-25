@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:50:41Z",
+ "category": "engines",
+ "commit": "2026-10-13 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SnoringCatGames/surfacer \u2014 AI and pathfinding for 2D-platformers in Godot 3.",
+ "language": "n/a",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "surfacer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "snoringcatgames-surfacer",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 118,
+ "system": "AI and pathfinding for 2D-platformers in Godot 3.",
+ "upstream": "https://github.com/SnoringCatGames/surfacer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

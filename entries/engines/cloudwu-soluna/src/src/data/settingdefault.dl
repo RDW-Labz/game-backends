@@ -1,0 +1,20 @@
+sprite_max : 0x40000
+texture_size : 2048
+srbuffer_size : 0x10000
+batch_size : 65536
+draw_instance : 65536
+pass_max : 1024
+entry : main.lua
+project : soluna
+service_path : "./?.lua"
+width : 1024
+height : 768
+high_dpi : false
+window_title : soluna
+background : 0x4080c0
+tmpbuffer_size : 0x20000
+transient_buffer : 0x1000000
+text_sampler :
+	max_anisotropy : 16
+sprite_sampler :
+	max_anisotropy : 16

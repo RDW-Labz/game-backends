@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 20:34 UTC · 1784 entries · 448 vendored, 1336 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 20:50 UTC · 1789 entries · 449 vendored, 1340 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 738 | 175 | 563 |
+| [engines](#engines) — Game engines and engine subsystems | 743 | 176 | 567 |
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
@@ -16,7 +16,7 @@ _Generated 2026-11-25 20:34 UTC · 1784 entries · 448 vendored, 1336 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 738 entries
+**Game engines and engine subsystems** — 743 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -128,6 +128,7 @@ _Generated 2026-11-25 20:34 UTC · 1784 entries · 448 vendored, 1336 reference-
 | [blender_bevy_toolkit](entries/engines/sdfgeoff-blender-bevy-toolkit/README.md) | A blender addon and bevy plugin to use Blender as an editor for Bevy | python | unknown | reference | [sdfgeoff/blender_bevy_toolkit](https://github.com/sdfgeoff/blender_bevy_toolkit) @ `2022-05-18 (branch tip at catalogue time)` |
 | [blendyard](entries/engines/ossls-blendyard/README.md) | A collection of tools for working with Blender and O3DE | python | MIT | reference | [ossls/blendyard](https://github.com/ossls/blendyard) @ `2021-08-20 (branch tip at catalogue time)` |
 | [blip](entries/engines/bliporg-blip/README.md) | Blip is a cross-platform fully scriptable game engine and distribution platform. | go | Apache-2.0 | reference | [bliporg/blip](https://github.com/bliporg/blip) @ `905aacdb0344` |
+| [BlocksJS](entries/engines/williammalone-blocksjs/README.md) | A lightweight 2D HTML5 canvas game framework | javascript | MIT | reference | [williammalone/BlocksJS](https://github.com/williammalone/BlocksJS) @ `2016-06-30 (branch tip at catalogue time)` |
 | [boardgame.io](entries/engines/boardgameio-boardgame-io/README.md) | State Management and Multiplayer Networking for Turn-Based Games | typescript | MIT | vendored | [boardgameio/boardgame.io](https://github.com/boardgameio/boardgame.io) @ `47adef2b46e3` |
 | [bones](entries/engines/fishfolk-bones/README.md) | An easy-to-use game engine for making real games. | rust | Apache-2.0 | vendored | [fishfolk/bones](https://github.com/fishfolk/bones) @ `cd62a2f1ccdb` |
 | [bonsai](entries/engines/scallyw4g-bonsai/README.md) | The procedural generation voxel engine | c | WTFPL | reference | [scallyw4g/bonsai](https://github.com/scallyw4g/bonsai) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -377,6 +378,7 @@ _Generated 2026-11-25 20:34 UTC · 1784 entries · 448 vendored, 1336 reference-
 | [Intrinsic](entries/engines/begla-intrinsic/README.md) | Intrinsic is a Vulkan based cross-platform game and rendering engine. The project is currently in an early stage of development. | c++ | Apache-2.0 | reference | [begla/Intrinsic](https://github.com/begla/Intrinsic) @ `2023-04-21 (branch tip at catalogue time)` |
 | [iyes_progress](entries/engines/iyesgames-iyes-progress/README.md) | Bevy plugin to help track progress and perform state transitions | rust | unknown | reference | [IyesGames/iyes_progress](https://github.com/IyesGames/iyes_progress) @ `2026-10-09 (branch tip at catalogue time)` |
 | [javascript-entity-component-system](entries/engines/stuhl-javascript-entity-component-system/README.md) | A simple and small sized Entity Component System for HTML5 games | javascript | MIT | reference | [Stuhl/javascript-entity-component-system](https://github.com/Stuhl/javascript-entity-component-system) @ `2024-07-11 (branch tip at catalogue time)` |
+| [jaws](entries/engines/ippa-jaws/README.md) | Jaws - HTML5 canvas javascript 2D Game Framework | javascript | LGPL-3.0 | reference | [ippa/jaws](https://github.com/ippa/jaws) @ `894c93f3e4e2` |
 | [jecs](entries/engines/ukendio-jecs/README.md) | A fast, portable Entity Component System for Luau | luau | MIT | reference | [Ukendio/jecs](https://github.com/Ukendio/jecs) @ `2026-10-22 (branch tip at catalogue time)` |
 | [JiGS-RPG-engine](entries/engines/techbot-jigs-rpg-engine/README.md) | Open Source Php/NodeJs Online RPG and Trading Game Engine | typescript | GPL-3.0 | reference | [Techbot/JiGS-RPG-engine](https://github.com/Techbot/JiGS-RPG-engine) @ `8dd7697c1118` |
 | [Jin](entries/engines/chaifix-jin/README.md) | A 2D game framework for simplifying game making process in Lua.  | c++ | MIT | reference | [chaifix/Jin](https://github.com/chaifix/Jin) @ `2017-08-09 (branch tip at catalogue time)` |
@@ -624,6 +626,7 @@ _Generated 2026-11-25 20:34 UTC · 1784 entries · 448 vendored, 1336 reference-
 | [SmartShape2D](entries/engines/sirramesq-smartshape2d/README.md) | A 2D Terrain Tool for Godot | gdscript | MIT | vendored | [SirRamEsq/SmartShape2D](https://github.com/SirRamEsq/SmartShape2D) @ `9617190250d0` |
 | [sokol](entries/engines/sokol/README.md) | single-header platform/gfx/audio/app layer | c | Zlib | vendored | [floooh/sokol](https://github.com/floooh/sokol) @ `93aa187b5d38` |
 | [SolarWM](entries/engines/junchao-cs-solarwm/README.md) | Open data and scalable training for long-horizon video world models. | python | Apache-2.0 | reference | [Junchao-cs/SolarWM](https://github.com/Junchao-cs/SolarWM) @ `2026-11-20 (branch tip at catalogue time)` |
+| [soluna](entries/engines/cloudwu-soluna/README.md) | A simple 2d game framework | c | MIT | vendored | [cloudwu/soluna](https://github.com/cloudwu/soluna) @ `6722911e0ac7` |
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
 | [space-engineers-coop-merralia](entries/engines/talhanadeem4321-space-engineers-coop-merralia/README.md) | Build and share cooperative space engineering projects together in Merralia. | typescript | MIT | reference | [TalhaNadeem4321/space-engineers-coop-merralia](https://github.com/TalhaNadeem4321/space-engineers-coop-merralia) @ `2026-11-23 (branch tip at catalogue time)` |
 | [space-menace](entries/engines/amethyst-space-menace/README.md) | An action 2D platformer made with Amethyst game engine | rust | MIT | vendored | [amethyst/space-menace](https://github.com/amethyst/space-menace) @ `8be706d2e993` |
@@ -635,11 +638,13 @@ _Generated 2026-11-25 20:34 UTC · 1784 entries · 448 vendored, 1336 reference-
 | [spx](entries/engines/goplus-spx/README.md) | spx - A Scratch Compatible Go/XGo 2D Game Engine for STEM education | go | Apache-2.0 | reference | [goplus/spx](https://github.com/goplus/spx) @ `2026-11-25 (branch tip at catalogue time)` |
 | [stage.js](entries/engines/piqnt-stage-js/README.md) | 2D HTML5 rendering and layout engine for game development | typescript | MIT | vendored | [piqnt/stage.js](https://github.com/piqnt/stage.js) @ `2535352e89cd` |
 | [Starling-Framework](entries/engines/gamua-starling-framework/README.md) | The Cross Platform Game Engine | actionscript | BSD-2-Clause | vendored | [Gamua/Starling-Framework](https://github.com/Gamua/Starling-Framework) @ `ffde39a2d459` |
+| [StarlingPunk](entries/engines/asaia-starlingpunk/README.md) | StarlingPunk is a framework built on top the Starling library designed to add structure and organization to your 2D game projects. It’s perfect for rapidly prot | actionscript | MIT | reference | [asaia/StarlingPunk](https://github.com/asaia/StarlingPunk) @ `2017-04-17 (branch tip at catalogue time)` |
 | [steam-workshop-download](entries/engines/hikkywannafly-steam-workshop-download/README.md) | Download Steam Workshop items directly without owning the game. Supports Wallpaper Engine and many other games. | typescript | unknown | reference | [Hikkywannafly/steam-workshop-download](https://github.com/Hikkywannafly/steam-workshop-download) @ `2026-06-04 (branch tip at catalogue time)` |
 | [stride](entries/engines/stride3d-stride/README.md) | Stride (formerly Xenko), a free and open-source cross-platform C# game engine. | c# | MIT | reference | [stride3d/stride](https://github.com/stride3d/stride) @ `852da2345e76` |
 | [strife](entries/engines/felixangell-strife/README.md) | a simple 2d game framework | go | MIT | reference | [felixangell/strife](https://github.com/felixangell/strife) @ `2022-07-07 (branch tip at catalogue time)` |
 | [sucle](entries/engines/gregcman-sucle/README.md) | Common Lisp Voxel Game Engine | common lisp | MIT | reference | [gregcman/sucle](https://github.com/gregcman/sucle) @ `2022-07-31 (branch tip at catalogue time)` |
 | [SuperFamiconv](entries/engines/optiroc-superfamiconv/README.md) | Flexible and composable tile graphics converter supporting Super Nintendo, Game Boy, Game Boy Color, Game Boy Advance, Mega Drive, Master System, Game Gear, PC  | rust | MIT | reference | [Optiroc/SuperFamiconv](https://github.com/Optiroc/SuperFamiconv) @ `2026-11-16 (branch tip at catalogue time)` |
+| [surfacer](entries/engines/snoringcatgames-surfacer/README.md) | AI and pathfinding for 2D-platformers in Godot 3. | n/a | MIT | reference | [SnoringCatGames/surfacer](https://github.com/SnoringCatGames/surfacer) @ `2026-10-13 (branch tip at catalogue time)` |
 | [Sustenet](entries/engines/quaint-studios-sustenet/README.md) | Sustenet is a networking solution built with Rust and Zig, formerly C#, for game engines like Unity3D, Godot, and Unreal Engine. The primary focus is on scaling | zig | MIT | reference | [Quaint-Studios/Sustenet](https://github.com/Quaint-Studios/Sustenet) @ `2025-08-09 (branch tip at catalogue time)` |
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
 | [sylphis3d](entries/engines/harkal-sylphis3d/README.md) | The source code to the Sylphis3D game engine | python | BSD-2-Clause | vendored | [harkal/sylphis3d](https://github.com/harkal/sylphis3d) @ `9462a9569de1` |

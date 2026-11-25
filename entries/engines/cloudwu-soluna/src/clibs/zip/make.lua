@@ -1,0 +1,37 @@
+local lm = require "luamake"
+
+lm.rootdir = lm.basedir / "3rd/zlib"
+
+lm:source_set "minizip" {
+	sources = {
+		"contrib/minizip/ioapi.c",
+		"contrib/minizip/unzip.c",
+		"contrib/minizip/zip.c",
+	},
+	windows = {
+		sources = lm.compiler ~= "emcc" and {
+			"contrib/minizip/iowin32.c",
+		},
+		includes = {
+			"contrib/minizip",
+		},
+	},
+	includes = {
+		lm.rootdir,
+	},
+
+}
+
+lm:source_set "zlib" {
+	sources = {
+		"*.c",
+		"!gz*.c",
+	},
+}
+
+lm:source_set "zip_src" {
+	deps = {
+		"minizip",
+		"zlib",
+	}
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T20:50:41Z",
+ "category": "engines",
+ "commit": "2016-06-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "williammalone/BlocksJS \u2014 A lightweight 2D HTML5 canvas game framework",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "BlocksJS",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "williammalone-blocksjs",
+ "source": "github-search:2d game framework stars:>40",
+ "stars": 134,
+ "system": "A lightweight 2D HTML5 canvas game framework",
+ "upstream": "https://github.com/williammalone/BlocksJS",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
