@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-25 08:50 UTC · 1597 entries · 408 vendored, 1189 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-25 09:07 UTC · 1603 entries · 410 vendored, 1193 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-25 08:50 UTC · 1597 entries · 408 vendored, 1189 reference-
 | [physics](#physics) — Physics | 195 | 44 | 151 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 215 | 55 | 160 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 221 | 57 | 164 |
 | [netcode](#netcode) — Networking / netcode | 157 | 44 | 113 |
 | [save-state](#save-state) — Save / state systems | 91 | 27 | 64 |
 | [procgen](#procgen) — Procedural generation | 123 | 31 | 92 |
@@ -1055,7 +1055,7 @@ _Generated 2026-11-25 08:50 UTC · 1597 entries · 408 vendored, 1189 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 215 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 221 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1186,18 +1186,22 @@ _Generated 2026-11-25 08:50 UTC · 1597 entries · 408 vendored, 1189 reference-
 | [Pathfinding](entries/gameplay/matthew-j-spencer-pathfinding/README.md) | Related to this video: https://www.youtube.com/watch?v=i0x5fj4PqP4 | c# | none | reference | [Matthew-J-Spencer/Pathfinding](https://github.com/Matthew-J-Spencer/Pathfinding) @ `4f7c9a1f3c0e` |
 | [pathfinding](entries/gameplay/npretto-pathfinding/README.md) | Visual explanation of pathfinding algorithms and how a*, Dijkstra and BFS can be seen as the same algorithm with different parameter/data structures used under  | javascript | unknown | reference | [npretto/pathfinding](https://github.com/npretto/pathfinding) @ `2022-01-09 (branch tip at catalogue time)` |
 | [Pathfinding](entries/gameplay/seblague-pathfinding/README.md) | see upstream | c# | MIT | vendored | [SebLague/Pathfinding](https://github.com/SebLague/Pathfinding) @ `b938872d12bb` |
+| [pathfinding-lab](entries/gameplay/rvhuang-pathfinding-lab/README.md) | Run, test and compare all algorithms and heuristic functions | typescript | MIT | vendored | [rvhuang/pathfinding-lab](https://github.com/rvhuang/pathfinding-lab) @ `3bbe6bc31d66` |
 | [Pathfinding-Visualizer](entries/gameplay/clementmihailescu-pathfinding-visualizer/README.md) | A visualization tool for various pathfinding algorithms. | css | unknown | reference | [clementmihailescu/Pathfinding-Visualizer](https://github.com/clementmihailescu/Pathfinding-Visualizer) @ `2023-09-23 (branch tip at catalogue time)` |
+| [pathfinding-visualizer](entries/gameplay/techprep-gh-pathfinding-visualizer/README.md) | see upstream | typescript | MIT | reference | [techprep-gh/pathfinding-visualizer](https://github.com/techprep-gh/pathfinding-visualizer) @ `2024-06-18 (branch tip at catalogue time)` |
 | [Pathfinding-Visualizer-ThreeJS](entries/gameplay/dhruvmisra-pathfinding-visualizer-threejs/README.md) | A visualizer for pathfinding algorithms in 3D with maze generation, first-person view and device camera input. | vue | none | reference | [dhruvmisra/Pathfinding-Visualizer-ThreeJS](https://github.com/dhruvmisra/Pathfinding-Visualizer-ThreeJS) @ `7dc1b69df7f4` |
 | [Pathfinding-Visualizer-Tutorial](entries/gameplay/clementmihailescu-pathfinding-visualizer-tutorial/README.md) | Tutorial for my original Pathfinding Visualizer project. | javascript | unknown | reference | [clementmihailescu/Pathfinding-Visualizer-Tutorial](https://github.com/clementmihailescu/Pathfinding-Visualizer-Tutorial) @ `2023-03-03 (branch tip at catalogue time)` |
 | [pathfinding.cloud](entries/gameplay/datadog-pathfinding-cloud/README.md) | An AWS IAM Privilege Escalation Path Library | python | Apache-2.0 | reference | [DataDog/pathfinding.cloud](https://github.com/DataDog/pathfinding.cloud) @ `2026-11-16 (branch tip at catalogue time)` |
 | [PathFinding.js](entries/gameplay/pathfinding-js/README.md) | A*, IDA*, JPS, Dijkstra, BiA* on grids | javascript | MIT | vendored | [qiao/PathFinding.js](https://github.com/qiao/PathFinding.js) @ `2904a9afba48` |
 | [Pathfinding_Visualization](entries/gameplay/ngquhuanbl-pathfinding-visualization/README.md) | A ReactJS project visualizes the path-finding algorithms with additional cool features like speed adjustment, maze generation, mobile support, etc. | typescript | unknown | reference | [ngquhuanbl/Pathfinding_Visualization](https://github.com/ngquhuanbl/Pathfinding_Visualization) @ `2021-10-21 (branch tip at catalogue time)` |
+| [phaser-web-workers](entries/gameplay/azerion-phaser-web-workers/README.md) | A simple Phaser plugin that allows you to easily integrate Web Workers in your game | typescript | MIT | vendored | [azerion/phaser-web-workers](https://github.com/azerion/phaser-web-workers) @ `a7d4ebfde338` |
 | [php-inventory-management-system](entries/gameplay/stemword-php-inventory-management-system/README.md) | Open source inventory management system with php and mysql Invoice generation and easy to download invoice in PDF format Lightweight and easy to use Order manag | php | MIT | vendored | [stemword/php-inventory-management-system](https://github.com/stemword/php-inventory-management-system) @ `862705a9724a` |
 | [pogema](entries/gameplay/cognitive-ai-systems-pogema/README.md) | [ICLR-2025] POGEMA stands for Partially-Observable Grid Environment for Multiple Agents. This is a grid-based environment that was specifically designed to be f | python | MIT | reference | [Cognitive-AI-Systems/pogema](https://github.com/Cognitive-AI-Systems/pogema) @ `2026-09-14 (branch tip at catalogue time)` |
 | [Point-of-Sales](entries/gameplay/sadatrafsanjani-point-of-sales/README.md) | Point of Sales with inventory management system  | java | MIT | reference | [sadatrafsanjani/Point-of-Sales](https://github.com/sadatrafsanjani/Point-of-Sales) @ `2026-09-08 (branch tip at catalogue time)` |
 | [PokemonTacticalRolePlay](entries/gameplay/sinlessdevil-pokemontacticalroleplay/README.md) | Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI. | c# | none | reference | [SinlessDevil/PokemonTacticalRolePlay](https://github.com/SinlessDevil/PokemonTacticalRolePlay) @ `764123cd5354` |
 | [polyanya](entries/gameplay/vleue-polyanya/README.md) | Pathfinding using Polyanya | rust | Apache-2.0 | reference | [vleue/polyanya](https://github.com/vleue/polyanya) @ `2026-11-09 (branch tip at catalogue time)` |
 | [PonyBehaviourTrees](entries/gameplay/ands-ponybehaviourtrees/README.md) | A set of C# libraries for runtime behaviour tree editing, scripting and inspection | c# | unknown | reference | [ands/PonyBehaviourTrees](https://github.com/ands/PonyBehaviourTrees) @ `2015-12-02 (branch tip at catalogue time)` |
+| [posthoc-app](entries/gameplay/shortestpathlab-posthoc-app/README.md) | Posthoc is a way to build simple and effective visualisations ✨ for sequential decision-making algorithms, such as search. | typescript | unknown | reference | [ShortestPathLab/posthoc-app](https://github.com/ShortestPathLab/posthoc-app) @ `2026-07-12 (branch tip at catalogue time)` |
 | [PRIMAL](entries/gameplay/gsartoretti-primal/README.md) | PRIMAL: Pathfinding via Reinforcement and Imitation Multi-Agent Learning  --  Distributed RL/IL code for Multi-Agent Path Finding (MAPF) | python | MIT | reference | [gsartoretti/PRIMAL](https://github.com/gsartoretti/PRIMAL) @ `2024-04-09 (branch tip at catalogue time)` |
 | [procedural-generation-2](entries/gameplay/kimgoetzke-procedural-generation-2/README.md) | A small Bevy project that procedurally generates a 2D pixel art landscape. | rust | MIT | reference | [kimgoetzke/procedural-generation-2](https://github.com/kimgoetzke/procedural-generation-2) @ `2026-10-11 (branch tip at catalogue time)` |
 | [Procedural_Planet_Generation](entries/gameplay/dennisboon-procedural-planet-generation/README.md) | Procedural planet generation application made in Unity for the Oculus Quest. | c# | none | reference | [DennisBoon/Procedural_Planet_Generation](https://github.com/DennisBoon/Procedural_Planet_Generation) @ `863b32640d48` |
@@ -1262,8 +1266,10 @@ _Generated 2026-11-25 08:50 UTC · 1597 entries · 408 vendored, 1189 reference-
 | [UnitySteeringBehaviours](entries/gameplay/skooter500-unitysteeringbehaviours/README.md) | Steering behaviours for autonomous agents implemented in Unity | c# | MIT | vendored | [skooter500/UnitySteeringBehaviours](https://github.com/skooter500/UnitySteeringBehaviours) @ `d1c09ce837fd` |
 | [UniversalInventorySystem](entries/gameplay/heymity-universalinventorysystem/README.md) | A Unity Package for creating easy to use and highly customizable inventories and inventory`s UI | c# | Apache-2.0 | reference | [Heymity/UniversalInventorySystem](https://github.com/Heymity/UniversalInventorySystem) @ `2024-03-14 (branch tip at catalogue time)` |
 | [VCMI — spells](entries/gameplay/vcmi-spells/README.md) | combat, AI, pathing, quest or inventory logic | h | GPL-2.0 | reference | [vcmi/vcmi](https://github.com/vcmi/vcmi) @ `0e44409` |
+| [vector-field-pathfinding](entries/gameplay/solasxer-vector-field-pathfinding/README.md) | Vector field pathfinding demo implementation, using Cocos Creator 3.8.7 | typescript | MIT | reference | [SolasXer/vector-field-pathfinding](https://github.com/SolasXer/vector-field-pathfinding) @ `2025-12-06 (branch tip at catalogue time)` |
 | [veloren — comp](entries/gameplay/veloren-common-src-comp/README.md) | ECS gameplay components (combat, inventory, stats, buffs) | rust | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076cf157` |
 | [veloren — inventory](entries/gameplay/veloren-inventory/README.md) | combat, AI, pathing, quest or inventory logic | rs | GPL-3.0 | reference | [veloren/veloren.git](https://github.com/veloren/veloren.git) @ `cd75076` |
+| [visual-maze-solver](entries/gameplay/hasssanezzz-visual-maze-solver/README.md) | A minimal visual maze solver using various algorithms. | typescript | unknown | reference | [hasssanezzz/visual-maze-solver](https://github.com/hasssanezzz/visual-maze-solver) @ `2024-04-26 (branch tip at catalogue time)` |
 | [visual_astar_python](entries/gameplay/dicklesworthstone-visual-astar-python/README.md) | Generate Cool-Looking Mazes and Animations Illustrating the A* Pathfinding Algorithm | python | unknown | reference | [Dicklesworthstone/visual_astar_python](https://github.com/Dicklesworthstone/visual_astar_python) @ `2025-02-27 (branch tip at catalogue time)` |
 | [Visualizer](entries/gameplay/jasonfenggit-visualizer/README.md) | A single-page website aiming to provide innovative and intuitive visualizations of common and AI algorithms. | javascript | MIT | vendored | [JasonFengGit/Visualizer](https://github.com/JasonFengGit/Visualizer) @ `80ed0fa487c9` |
 | [vite-plugin-entry-shaking](entries/gameplay/dschungelabenteuer-vite-plugin-entry-shaking/README.md) | Mimic tree-shaking behaviour when importing code from an entry file in development mode. | typescript | MIT | reference | [Dschungelabenteuer/vite-plugin-entry-shaking](https://github.com/Dschungelabenteuer/vite-plugin-entry-shaking) @ `2026-09-08 (branch tip at catalogue time)` |

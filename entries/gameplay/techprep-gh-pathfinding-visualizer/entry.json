@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:07:16Z",
+ "category": "gameplay",
+ "commit": "2024-06-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "techprep-gh/pathfinding-visualizer",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pathfinding-visualizer",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "techprep-gh-pathfinding-visualizer",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 37,
+ "system": "see upstream",
+ "upstream": "https://github.com/techprep-gh/pathfinding-visualizer",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

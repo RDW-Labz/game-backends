@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T09:07:12Z",
+ "category": "gameplay",
+ "commit": "a7d4ebfde338",
+ "delivery": "vendored",
+ "description": "azerion/phaser-web-workers \u2014 A simple Phaser plugin that allows you to easily integrate Web Workers in your game",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "phaser-web-workers",
+ "size_bytes": 166039,
+ "slug": "azerion-phaser-web-workers",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 57,
+ "system": "A simple Phaser plugin that allows you to easily integrate Web Workers in your game",
+ "upstream": "https://github.com/azerion/phaser-web-workers",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

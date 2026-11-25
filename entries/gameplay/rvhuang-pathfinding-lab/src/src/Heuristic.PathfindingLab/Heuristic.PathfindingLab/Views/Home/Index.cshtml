@@ -1,0 +1,194 @@
+﻿@using Heuristic.Linq
+@using Heuristic.PathfindingLab.Controllers
+@using Heuristic.PathfindingLab.Models
+@model MapSettings
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" />
+    <environment include="Development">
+        <link rel="stylesheet" href="/css/site.css" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="/css/site.min.css" asp-append-version="true" />
+    </environment>
+}
+<div class="row">
+    <div class="col-lg-12">
+        <div>@await Html.PartialAsync("_Map", Model)</div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <form id="options" role="form" class="form-inline">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Start over" id="btnClear">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Undo the last pathfinding result" id="btnUndo">
+                    <span class="glyphicon glyphicon-triangle-left"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="tooltip" title="Remove all obstacles" id="btnDelObstacles">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalEmbed">
+                    <span class="glyphicon glyphicon-share"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#modalInfo">
+                    <span class="glyphicon glyphicon-info-sign"></span>
+                </button>
+            </div>
+            @await Html.PartialAsync("_Algorithm")
+            @if (Model.IsSmartDevice)
+            {
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="button" id="btnFindPath">
+                    <span class="glyphicon glyphicon-search"></span>
+                </button>
+            } 
+            else
+            {        
+                <span class="small">Left click to place obstacles, right click on two positions to get a path.</span>
+            }
+        </form>
+    </div>
+</div>
+<div class="row" style="margin-top: 8px">
+    <div class="col-lg-2">
+        <label>Open List Analysis</label>
+        <a href="javascript:void(0)" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="The chart shows the retrospective analysis of open list. A stale node is the node that has not expanded because of low priority estimated by heuristic functions.">
+            <span class="glyphicon glyphicon-question-sign"></span>
+        </a>
+        <p class="small" id="description">
+            Current node:&nbsp;<b class="number"></b><br/>
+            Is a part of final solution?&nbsp;<b class="number"></b><br/>
+            Number of nodes on open list:&nbsp;<b class="number"></b><br/>
+            Number of stale nodes on open list:&nbsp;<b class="number"></b><br/>
+            <span></span><br/>
+            <span></span><br/>
+        </p>
+        <p class="small">
+            Tip: you can change the map size by attaching <b>w</b> and <b>h</b> parameters to the query string. The default size is @(MapSettings.DefaultMapWidth)x@(MapSettings.DefaultMapHeight) and the minimum size is @(MapSettings.MinMapWidth)x@(MapSettings.MinMapHeight).
+        </p>
+    </div>
+    <div class="col-lg-5">
+        <div class="btn-group" role="group" id="histories"></div>
+        <div id="chart"></div>
+    </div>
+    <div class="col-lg-5">
+        <label>LINQ Expression</label>
+        <a href="javascript:void(0)" role="button" class="btn btn-link" data-toggle="popover" data-trigger="focus" data-placement="right" data-container="body" data-content="A code snippet using LINQ to A* to set conditions and fetch the path will be displayed here.">
+            <span class="glyphicon glyphicon-question-sign"></span>
+        </a>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist" style="margin-top: 10px">
+            <li role="presentation" class="active"><a href="#exampleSelectMany" aria-controls="exampleSelectMany" role="tab" data-toggle="tab">SelectMany</a></li>
+            <li role="presentation"><a href="#exampleExcept" aria-controls="exampleExcept" role="tab" data-toggle="tab">Except</a></li>
+            <li role="presentation"><a href="#exampleWhere" aria-controls="exampleWhere" role="tab" data-toggle="tab">Where only</a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="exampleSelectMany">
+                <pre><code class="cs">// Equivalent LINQ expression using SelectMany() will be shown here.
+
+
+
+
+
+                                    </code></pre>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="exampleExcept">
+                <pre><code class="cs">// Equivalent LINQ expression using Except() will be shown here.
+
+
+
+
+
+                                    </code></pre>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="exampleWhere">
+                <pre><code class="cs">// Equivalent LINQ expression using Where() clause will be shown here.
+
+
+
+
+
+                                </code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="modalEmbed" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Embed the map to your website</h4>
+            </div>
+            <div class="modal-body">
+                <form role="form">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input id="embeddedUrl" type="url" class="form-control input-sm" value="@Url.Action("Index", nameof(EmbedController).Replace("Controller", string.Empty).ToLower(), new { w = Model.Width, h = Model.Height}, Context.Request.Scheme)" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-sm" type="button" onclick="document.getElementById('embeddedUrl').select(); document.execCommand('copy');"><span class="glyphicon glyphicon-copy"></span></button>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+                <p class="small">
+                    You can change the map size by modifying <b>w</b> and <b>h</b> parameters. The default size is @(MapSettings.DefaultMapWidth)x@(MapSettings.DefaultMapHeight) and the minimum size is @(MapSettings.MinMapWidth)x@(MapSettings.MinMapHeight).
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div id="modalInfo" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">About</h4>
+            </div>
+            <div class="modal-body">
+                <p>Copyright © <a href="https://rvhuang.github.io/" target="_blank">Robert Vandenberg Huang</a></p>
+                <p>Copyright © <a href="https://kenney.nl/" target="_blank">Kenney Vleugels</a> (asset design)</p>
+                <p>The project is licensed under the MIT license. Feel free to copy, modify and use in your computer science homework (grades not guaranteed).</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="historyTemplate" style="display: none">
+    <button type="button" class="btn btn-default btn-sm" data-toggle="button">
+        <span data-field="PathColor" class="glyphicon glyphicon-stop"></span>
+        <span data-field="AlgorithmShortName"></span>
+        <span data-field="Path"></span>
+    </button>
+</div>
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>
+        var mapSettings = @Json.Serialize(Model);
+    </script>
+    <environment include="Development">
+        <script src="https://d3js.org/d3.v5.js"></script>
+        <script src="js/tile.js"></script>
+        <script src="js/layer.js"></script>
+        <script src="js/core.js"></script>
+        <script src="js/chart.js"></script>
+        <script src="js/site.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://d3js.org/d3.v5.min.js" defer></script>
+        <script src="js/core.min.js" asp-append-version="true" defer></script>
+        <script src="js/site.min.js" asp-append-version="true" defer></script>
+    </environment>
+    <script>hljs.initHighlightingOnLoad();</script>
+}

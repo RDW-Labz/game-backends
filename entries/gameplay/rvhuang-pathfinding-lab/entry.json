@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T09:07:15Z",
+ "category": "gameplay",
+ "commit": "3bbe6bc31d66",
+ "delivery": "vendored",
+ "description": "rvhuang/pathfinding-lab \u2014 Run, test and compare all algorithms and heuristic functions",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "pathfinding-lab",
+ "size_bytes": 98957,
+ "slug": "rvhuang-pathfinding-lab",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 57,
+ "system": "Run, test and compare all algorithms and heuristic functions",
+ "upstream": "https://github.com/rvhuang/pathfinding-lab",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

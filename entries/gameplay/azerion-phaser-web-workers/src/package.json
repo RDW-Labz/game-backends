@@ -1,0 +1,42 @@
+{
+  "name": "@azerion/phaser-web-workers",
+  "author": "Azerion",
+  "version": "0.2.1",
+  "description": "A simple Phaser plugin that allows you to easily integrate Web Workers in your game",
+  "contributors": [
+    {
+      "name": "Ale Bles",
+      "email": "a.bles@azerion.com"
+    }
+  ],
+  "scripts": {
+    "build": "grunt dist",
+    "start": "grunt dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:azerion/phaser-web-workers.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/azerion/phaser-web-workers/raw/master/LICENSE"
+    }
+  ],
+  "config": {
+    "name": "phaser-web-workers"
+  },
+  "devDependencies": {
+    "@azerion/phaser": "^2.6.13",
+    "grunt": "^1.0.4",
+    "grunt-banner": "^0.6.0",
+    "grunt-contrib-clean": "0.6.0",
+    "grunt-contrib-connect": "^0.11.2",
+    "grunt-contrib-uglify": "^0.11.0",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-ts": "^6.0.0-beta.3",
+    "grunt-tslint": "^3.3.0",
+    "tslint": "^3.15.1",
+    "typescript": "2.1.x"
+  }
+}

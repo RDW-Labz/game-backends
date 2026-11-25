@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:07:16Z",
+ "category": "gameplay",
+ "commit": "2026-07-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ShortestPathLab/posthoc-app \u2014 Posthoc is a way to build simple and effective visualisations \u2728 for sequential decision-making algorithms, such as search.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "posthoc-app",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "shortestpathlab-posthoc-app",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 40,
+ "system": "Posthoc is a way to build simple and effective visualisations \u2728 for sequential decision-making algorithms, such as search.",
+ "upstream": "https://github.com/ShortestPathLab/posthoc-app",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T09:07:16Z",
+ "category": "gameplay",
+ "commit": "2024-04-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hasssanezzz/visual-maze-solver \u2014 A minimal visual maze solver using various algorithms.",
+ "language": "typescript",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "visual-maze-solver",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "hasssanezzz-visual-maze-solver",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 41,
+ "system": "A minimal visual maze solver using various algorithms.",
+ "upstream": "https://github.com/hasssanezzz/visual-maze-solver",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -3140,3 +3140,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/bigzaphod-astar
   - reference gameplay/ohohcakester-any-angle-pathfinding
   - reference gameplay/datadog-pathfinding-cloud
+
+- **2026-11-25 09:07 UTC** — tick 850: +2 screened, +4 reference, 7 skipped, catalogue=1603
+  - added gameplay/azerion-phaser-web-workers (MIT, vendored)
+  - added gameplay/rvhuang-pathfinding-lab (MIT, vendored)
+  - reference gameplay/solasxer-vector-field-pathfinding
+  - reference gameplay/hasssanezzz-visual-maze-solver
+  - reference gameplay/shortestpathlab-posthoc-app
+  - reference gameplay/techprep-gh-pathfinding-visualizer
