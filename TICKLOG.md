@@ -3250,3 +3250,11 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/2tvenom-cbor
   - reference save-state/moralrecordings-mrcrowbar
   - reference save-state/jonathanbeck-libplist
+
+- **2026-11-25 14:19 UTC** — tick 869: +2 screened, +4 reference, 20 skipped, catalogue=1675
+  - added procgen/friggog-tree-gen (GPL-3.0, reference)
+  - added procgen/xandergos-terrain-diffusion-mc (MIT, vendored)
+  - reference procgen/josauder-procedural-city-generation
+  - reference procgen/runevision-layerprocgen
+  - reference procgen/seblague-procedural-cave-generation
+  - reference procgen/weigert-territory

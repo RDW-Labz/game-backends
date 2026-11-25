@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T14:19:52Z",
+ "category": "procgen",
+ "commit": "01e872182a0f",
+ "delivery": "reference",
+ "description": "friggog/tree-gen \u2014 Procedural generation of tree models in blender",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "tree-gen",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 145072,
+ "slug": "friggog-tree-gen",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 965,
+ "system": "Procedural generation of tree models in blender",
+ "upstream": "https://github.com/friggog/tree-gen",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

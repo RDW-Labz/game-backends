@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:19:56Z",
+ "category": "procgen",
+ "commit": "2022-11-08 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "weigert/territory \u2014 3D rendered proc-gen world test. C++ homebrew voxel engine for agent-driven prodedural generation / world simulation",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "territory",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "weigert-territory",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 397,
+ "system": "3D rendered proc-gen world test. C++ homebrew voxel engine for agent-driven prodedural generation / world simulation",
+ "upstream": "https://github.com/weigert/territory",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

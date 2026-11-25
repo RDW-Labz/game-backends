@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:19:56Z",
+ "category": "procgen",
+ "commit": "2017-01-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "SebLague/Procedural-Cave-Generation",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "Procedural-Cave-Generation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "seblague-procedural-cave-generation",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 461,
+ "system": "see upstream",
+ "upstream": "https://github.com/SebLague/Procedural-Cave-Generation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

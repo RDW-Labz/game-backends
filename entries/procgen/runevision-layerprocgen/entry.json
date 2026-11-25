@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:19:56Z",
+ "category": "procgen",
+ "commit": "2026-10-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "runevision/LayerProcGen \u2014 Layer-based infinite procedural generation",
+ "language": "c#",
+ "license": "MPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "LayerProcGen",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MPL-2.0)",
+ "slug": "runevision-layerprocgen",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 520,
+ "system": "Layer-based infinite procedural generation",
+ "upstream": "https://github.com/runevision/LayerProcGen",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

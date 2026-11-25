@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-25T14:19:54Z",
+ "category": "procgen",
+ "commit": "23d3f50e5108",
+ "delivery": "vendored",
+ "description": "xandergos/terrain-diffusion-mc \u2014 Procedural terrain generation with diffusion models (in Minecraft)",
+ "language": "java",
+ "license": "MIT",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "terrain-diffusion-mc",
+ "size_bytes": 432164,
+ "slug": "xandergos-terrain-diffusion-mc",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 887,
+ "system": "Procedural terrain generation with diffusion models (in Minecraft)",
+ "upstream": "https://github.com/xandergos/terrain-diffusion-mc",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

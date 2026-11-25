@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-25T14:19:56Z",
+ "category": "procgen",
+ "commit": "2023-01-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "josauder/procedural_city_generation \u2014 Procedural City Generation program implemented in Python and Visualized with Blender.",
+ "language": "python",
+ "license": "MPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "procedural_city_generation",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MPL-2.0)",
+ "slug": "josauder-procedural-city-generation",
+ "source": "github-search:procedural generation stars:>80",
+ "stars": 597,
+ "system": "Procedural City Generation program implemented in Python and Visualized with Blender.",
+ "upstream": "https://github.com/josauder/procedural_city_generation",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
