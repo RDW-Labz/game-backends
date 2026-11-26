@@ -3550,3 +3550,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/foadsf-cmathtuts
   - reference math/scalala-scalala
   - reference math/athemathmo-rulinalg
+
+- **2026-11-26 02:10 UTC** — tick 913: +2 screened, +4 reference, 13 skipped, catalogue=1886
+  - added math/quix-linalg (MIT, vendored)
+  - added math/bertrandbev-eigen-js (none, reference)
+  - reference math/linbox-team-linbox
+  - reference math/ballisticla-randlapack
+  - reference math/juliaparallel-elemental-jl
+  - reference math/lauerfab-mlweb

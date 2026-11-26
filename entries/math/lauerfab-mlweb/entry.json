@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:10:38Z",
+ "category": "math",
+ "commit": "2021-12-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "lauerfab/MLweb \u2014 Machine learning and scientific computing (linear algebra, statistics, optimization) javascript libraries, with an online lab.",
+ "language": "javascript",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "MLweb",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-2.0)",
+ "slug": "lauerfab-mlweb",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 86,
+ "system": "Machine learning and scientific computing (linear algebra, statistics, optimization) javascript libraries, with an online lab.",
+ "upstream": "https://github.com/lauerfab/MLweb",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

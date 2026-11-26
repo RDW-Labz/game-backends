@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:10:38Z",
+ "category": "math",
+ "commit": "2026-06-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JuliaParallel/Elemental.jl \u2014 Julia interface to the Elemental linear algebra library.",
+ "language": "julia",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Elemental.jl",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "juliaparallel-elemental-jl",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 86,
+ "system": "Julia interface to the Elemental linear algebra library.",
+ "upstream": "https://github.com/JuliaParallel/Elemental.jl",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

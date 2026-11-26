@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:10:38Z",
+ "category": "math",
+ "commit": "2026-10-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "linbox-team/linbox \u2014 LinBox - C++ library for exact, high-performance linear algebra",
+ "language": "c++",
+ "license": "LGPL-2.1",
+ "license_verdict": "copyleft-reference",
+ "name": "linbox",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-2.1)",
+ "slug": "linbox-team-linbox",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 102,
+ "system": "LinBox - C++ library for exact, high-performance linear algebra ",
+ "upstream": "https://github.com/linbox-team/linbox",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

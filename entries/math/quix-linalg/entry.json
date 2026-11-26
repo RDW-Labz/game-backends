@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T02:10:34Z",
+ "category": "math",
+ "commit": "3d9856fbf220",
+ "delivery": "vendored",
+ "description": "quix/linalg \u2014 Ruby Linear Algebra Library",
+ "language": "ruby",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "linalg",
+ "size_bytes": 267907,
+ "slug": "quix-linalg",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 108,
+ "system": "Ruby Linear Algebra Library",
+ "upstream": "https://github.com/quix/linalg",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

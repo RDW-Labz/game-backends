@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 01:54 UTC · 1880 entries · 469 vendored, 1411 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 02:10 UTC · 1886 entries · 470 vendored, 1416 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
-| [math](#math) — Math libraries | 141 | 44 | 97 |
+| [math](#math) — Math libraries | 147 | 45 | 102 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
@@ -1053,7 +1053,7 @@ _Generated 2026-11-26 01:54 UTC · 1880 entries · 469 vendored, 1411 reference-
 
 ## math
 
-**Math libraries** — 141 entries
+**Math libraries** — 147 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1083,7 +1083,9 @@ _Generated 2026-11-26 01:54 UTC · 1880 entries · 469 vendored, 1411 reference-
 | [earcut](entries/math/georust-earcut/README.md) | A Rust port of the Earcut polygon triangulation library | rust | Apache-2.0 | reference | [georust/earcut](https://github.com/georust/earcut) @ `2026-11-02 (branch tip at catalogue time)` |
 | [Eigen](entries/math/eigen/README.md) | dense/sparse linear algebra (MPL-2.0) | c++ | GPL-3.0 | reference | [eigenteam/eigen-git-mirror](https://github.com/eigenteam/eigen-git-mirror) @ `36b95962756c` |
 | [eigen](entries/math/px4-eigen/README.md) | Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms. | c++ | unknown | reference | [PX4/eigen](https://github.com/PX4/eigen) @ `2023-10-18 (branch tip at catalogue time)` |
+| [eigen-js](entries/math/bertrandbev-eigen-js/README.md) | ⚡ Eigen-js is a port of the Eigen C++ linear algebra library | c++ | none | reference | [BertrandBev/eigen-js](https://github.com/BertrandBev/eigen-js) @ `5ef085cbe230` |
 | [ejml](entries/math/lessthanoptimal-ejml/README.md) | A fast and easy to use linear algebra library written in Java for dense, sparse, real, and complex matrices. | java | Apache-2.0 | vendored | [lessthanoptimal/ejml](https://github.com/lessthanoptimal/ejml) @ `4ed833407f8b` |
+| [Elemental.jl](entries/math/juliaparallel-elemental-jl/README.md) | Julia interface to the Elemental linear algebra library. | julia | unknown | reference | [JuliaParallel/Elemental.jl](https://github.com/JuliaParallel/Elemental.jl) @ `2026-06-22 (branch tip at catalogue time)` |
 | [en_cl_fix](entries/math/enclustra-en-cl-fix/README.md) | Fixed-point math library with VHDL, Python and MATLAB support | vhdl | MIT | reference | [enclustra/en_cl_fix](https://github.com/enclustra/en_cl_fix) @ `2026-08-12 (branch tip at catalogue time)` |
 | [Euclid](entries/math/nicklockwood-euclid/README.md) | A Swift library for creating and manipulating 3D geometry | swift | MIT | reference | [nicklockwood/Euclid](https://github.com/nicklockwood/Euclid) @ `2026-11-23 (branch tip at catalogue time)` |
 | [fixed-point](entries/math/nilpunch-fixed-point/README.md) | Configurable 32-bit and 64-bit fixed point math library. | c# | MIT | vendored | [nilpunch/fixed-point](https://github.com/nilpunch/fixed-point) @ `e88d23b07774` |
@@ -1122,6 +1124,8 @@ _Generated 2026-11-26 01:54 UTC · 1880 entries · 469 vendored, 1411 reference-
 | [libfixmath](entries/math/libfixmath/README.md) | fixed-point math for deterministic simulation | c | MIT | vendored | [PetteriAimonen/libfixmath](https://github.com/PetteriAimonen/libfixmath) @ `46e89b748b1f` |
 | [libfixmatrix](entries/math/petteriaimonen-libfixmatrix/README.md) | C library for fixed point matrix, quaternion and vector calculations | c | MIT | vendored | [PetteriAimonen/libfixmatrix](https://github.com/PetteriAimonen/libfixmatrix) @ `a8d583e4fe1f` |
 | [libraryofbabel.info-algo](entries/math/librarianofbabel-libraryofbabel-info-algo/README.md) | Invertible multi-precision pseudo random number generator example | c++ | none | reference | [librarianofbabel/libraryofbabel.info-algo](https://github.com/librarianofbabel/libraryofbabel.info-algo) @ `81b5786db9d9` |
+| [linalg](entries/math/quix-linalg/README.md) | Ruby Linear Algebra Library | ruby | MIT | vendored | [quix/linalg](https://github.com/quix/linalg) @ `3d9856fbf220` |
+| [linbox](entries/math/linbox-team-linbox/README.md) | LinBox - C++ library for exact, high-performance linear algebra  | c++ | LGPL-2.1 | reference | [linbox-team/linbox](https://github.com/linbox-team/linbox) @ `2026-10-30 (branch tip at catalogue time)` |
 | [LinearAlgebra](entries/math/mcordingley-linearalgebra/README.md) | Stand-alone Linear Algebra Library for PHP | php | MIT | reference | [mcordingley/LinearAlgebra](https://github.com/mcordingley/LinearAlgebra) @ `2022-08-27 (branch tip at catalogue time)` |
 | [linmath.h](entries/math/datenwolf-linmath-h/README.md) | a lean linear math library, aimed at graphics programming. Supports vec3, vec4, mat4x4 and quaternions | c | WTFPL | reference | [datenwolf/linmath.h](https://github.com/datenwolf/linmath.h) @ `2023-05-31 (branch tip at catalogue time)` |
 | [manif](entries/math/artivis-manif/README.md) | A small C++11 header-only library for Lie theory. | c++ | MIT | vendored | [artivis/manif](https://github.com/artivis/manif) @ `65166b3bfd15` |
@@ -1137,6 +1141,7 @@ _Generated 2026-11-26 01:54 UTC · 1880 entries · 469 vendored, 1411 reference-
 | [MaxMath](entries/math/mrunbelievable92-maxmath/README.md) | A successor to the SIMD math library Unity.Mathematics, extending it to all C# numeric types while adding many new types and functions. Written entirely with ha | c# | Apache-2.0 | reference | [MrUnbelievable92/MaxMath](https://github.com/MrUnbelievable92/MaxMath) @ `bfeaf2875e07` |
 | [MeshLib](entries/math/meshinspector-meshlib/README.md) | 3D geometry processing SDK: fast mesh boolean, mesh repair, decimation, remeshing, offset, point cloud triangulation and ICP registration. C++ with Python, C#,  | c++ | unknown | reference | [MeshInspector/MeshLib](https://github.com/MeshInspector/MeshLib) @ `2026-11-25 (branch tip at catalogue time)` |
 | [miniply](entries/math/vilya-miniply/README.md) | A fast and easy-to-use PLY parsing library in a single c++11 header and cpp file | c++ | MIT | reference | [vilya/miniply](https://github.com/vilya/miniply) @ `2023-03-14 (branch tip at catalogue time)` |
+| [MLweb](entries/math/lauerfab-mlweb/README.md) | Machine learning and scientific computing (linear algebra, statistics, optimization) javascript libraries, with an online lab. | javascript | GPL-2.0 | reference | [lauerfab/MLweb](https://github.com/lauerfab/MLweb) @ `2021-12-16 (branch tip at catalogue time)` |
 | [nalgebra](entries/math/dimforge-nalgebra/README.md) | Linear algebra library for Rust. | rust | Apache-2.0 | vendored | [dimforge/nalgebra](https://github.com/dimforge/nalgebra) @ `b2466e6c4070` |
 | [NoiseTools](entries/math/keijiro-noisetools/README.md) | A small library of noise functions | c# | unknown | reference | [keijiro/NoiseTools](https://github.com/keijiro/NoiseTools) @ `2016-05-13 (branch tip at catalogue time)` |
 | [NTSC-CRT](entries/math/lmp88959-ntsc-crt/README.md) | NTSC encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time application | c | unknown | reference | [LMP88959/NTSC-CRT](https://github.com/LMP88959/NTSC-CRT) @ `2026-07-19 (branch tip at catalogue time)` |
@@ -1162,6 +1167,7 @@ _Generated 2026-11-26 01:54 UTC · 1880 entries · 469 vendored, 1411 reference-
 | [Quaternion.js](entries/math/rawify-quaternion-js/README.md) | The RAW JavaScript Quaternion library | javascript | MIT | reference | [rawify/Quaternion.js](https://github.com/rawify/Quaternion.js) @ `2025-09-17 (branch tip at catalogue time)` |
 | [Quaternion_Library](entries/math/mauricegit-quaternion-library/README.md) | A small library that capsulates most commonly used operations on Quaternions. Also a small sample implementation, that rotates an object around an axis, using Q | c | ISC | reference | [MauriceGit/Quaternion_Library](https://github.com/MauriceGit/Quaternion_Library) @ `2016-09-07 (branch tip at catalogue time)` |
 | [RandBLAS](entries/math/ballisticla-randblas/README.md) | A header-only C++ library for sketching in randomized linear algebra | c++ | unknown | reference | [BallisticLA/RandBLAS](https://github.com/BallisticLA/RandBLAS) @ `2026-11-24 (branch tip at catalogue time)` |
+| [RandLAPACK](entries/math/ballisticla-randlapack/README.md) | A high-performance C++ library for randomized numerical linear algebra | c++ | unknown | reference | [BallisticLA/RandLAPACK](https://github.com/BallisticLA/RandLAPACK) @ `2026-11-23 (branch tip at catalogue time)` |
 | [random-js](entries/math/ckknight-random-js/README.md) | A mathematically correct random number generator library for JavaScript. | typescript | MIT | vendored | [ckknight/random-js](https://github.com/ckknight/random-js) @ `f000fd5c286b` |
 | [RcppEigen](entries/math/rcppcore-rcppeigen/README.md) | Rcpp integration for the Eigen templated linear algebra library | c++ | none | reference | [RcppCore/RcppEigen](https://github.com/RcppCore/RcppEigen) @ `c6a32a22da4f` |
 | [rulinalg](entries/math/athemathmo-rulinalg/README.md) | A linear algebra library written in Rust | rust | MIT | reference | [AtheMathmo/rulinalg](https://github.com/AtheMathmo/rulinalg) @ `2022-05-18 (branch tip at catalogue time)` |

@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T02:10:36Z",
+ "category": "math",
+ "commit": "5ef085cbe230",
+ "delivery": "reference",
+ "description": "BertrandBev/eigen-js \u2014 \u26a1 Eigen-js is a port of the Eigen C++ linear algebra library",
+ "language": "c++",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "eigen-js",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 2087474,
+ "slug": "bertrandbev-eigen-js",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 108,
+ "system": "\u26a1 Eigen-js is a port of the Eigen C++ linear algebra library",
+ "upstream": "https://github.com/BertrandBev/eigen-js",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

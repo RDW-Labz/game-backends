@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:10:38Z",
+ "category": "math",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BallisticLA/RandLAPACK \u2014 A high-performance C++ library for randomized numerical linear algebra",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "RandLAPACK",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "ballisticla-randlapack",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 96,
+ "system": "A high-performance C++ library for randomized numerical linear algebra",
+ "upstream": "https://github.com/BallisticLA/RandLAPACK",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
