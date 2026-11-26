@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T16:42:40Z",
+ "category": "physics",
+ "commit": "03ce82842a5d",
+ "delivery": "vendored",
+ "description": "lambdaclass/mirra_backend \u2014 Multiplayer 2D physics engine, matchmaking, market and leaderboard for 2D and 3D Games",
+ "language": "elixir",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "mirra_backend",
+ "size_bytes": 1844551,
+ "slug": "lambdaclass-mirra-backend",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 77,
+ "system": "Multiplayer 2D physics engine, matchmaking, market and leaderboard for 2D and 3D Games",
+ "upstream": "https://github.com/lambdaclass/mirra_backend",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,54 @@
+<.header>
+  Game configuration <%= @game_configuration.id %>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
+  <:actions>
+    <.link href={~p"/versions/#{@version}/game_configurations/#{@game_configuration}/edit"}>
+      <.button>Edit game_configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Tick rate ms"><%= @game_configuration.tick_rate_ms %></:item>
+  <:item title="Bounty pick time ms"><%= @game_configuration.bounty_pick_time_ms %></:item>
+  <:item title="Start game time ms"><%= @game_configuration.start_game_time_ms %></:item>
+  <:item title="End game interval ms"><%= @game_configuration.end_game_interval_ms %></:item>
+  <:item title="Shutdown game wait ms"><%= @game_configuration.shutdown_game_wait_ms %></:item>
+  <:item title="Natural healing interval ms"><%= @game_configuration.natural_healing_interval_ms %></:item>
+  <:item title="Zone shrink start ms"><%= @game_configuration.zone_shrink_start_ms %></:item>
+  <:item title="Zone shrink radius by"><%= @game_configuration.zone_shrink_radius_by %></:item>
+  <:item title="Zone shrink interval"><%= @game_configuration.zone_shrink_interval %></:item>
+  <:item title="Zone stop interval ms"><%= @game_configuration.zone_stop_interval_ms %></:item>
+  <:item title="Zone start interval ms"><%= @game_configuration.zone_start_interval_ms %></:item>
+  <:item title="Zone damage interval ms"><%= @game_configuration.zone_damage_interval_ms %></:item>
+  <:item title="Zone damage"><%= @game_configuration.zone_damage %></:item>
+  <:item title="Item spawn interval ms"><%= @game_configuration.item_spawn_interval_ms %></:item>
+  <:item title="Bots enabled"><%= @game_configuration.bots_enabled %></:item>
+  <:item title="Zone enabled"><%= @game_configuration.zone_enabled %></:item>
+  <:item title="Bounties options amount"><%= @game_configuration.bounties_options_amount %></:item>
+  <:item title="Match timeout ms"><%= @game_configuration.match_timeout_ms %></:item>
+  <:item title="Field of view inside bush"><%= @game_configuration.field_of_view_inside_bush %></:item>
+  <:item title="Time Visible After performing skill inside of bush">
+    <%= @game_configuration.time_visible_in_bush_after_skill %>
+  </:item>
+  <:item title="Power Up spawn range"><%= @game_configuration.distance_to_power_up %></:item>
+  <:item title="Power Up damage modifier"><%= @game_configuration.power_up_damage_modifier %></:item>
+  <:item title="Power Up health modifier"><%= @game_configuration.power_up_health_modifier %></:item>
+  <:item title="Power Up radius"><%= @game_configuration.power_up_radius %></:item>
+  <:item title="Power Up activation delay"><%= @game_configuration.power_up_activation_delay_ms %></:item>
+</.list>
+<.button type="button" phx-click={show_modal("show_power_ups_per_kill_config")}>Power up per kill config</.button>
+
+<.modal id="show_power_ups_per_kill_config">
+  <.header>
+    Power Up per kill config
+  </.header>
+  <%= for power_ups_per_kill <- @game_configuration.power_ups_per_kill do %>
+    <.list>
+      <:item title="Minimum amount of power ups"><%= power_ups_per_kill.minimum_amount_of_power_ups %></:item>
+      <:item title="Power ups to drop"><%= power_ups_per_kill.amount_of_power_ups_to_drop %></:item>
+    </.list>
+  <% end %>
+</.modal>
+
+<.back navigate={~p"/versions/#{@version}/game_configurations"}>Back to game_configurations</.back>

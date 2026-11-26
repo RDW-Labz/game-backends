@@ -1,0 +1,225 @@
+[
+    {
+        "config_id": 1,
+        "description": "Win a match with Kenzu",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 1,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "kenzu",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 200
+        }
+    },
+    {
+        "config_id": 2,
+        "description": "Get 5 kills",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "kills",
+            "value": 5,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 200
+        }
+    },
+    {
+        "config_id": 3,
+        "description": "Win a match with H4ck",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 1,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "h4ck",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 200
+        }
+    },
+    {
+        "config_id": 4,
+        "description": "Get 3 kills",
+        "type": "bounty",
+        "objective": {
+            "type": "kills",
+            "match_tracking_field": "kills",
+            "value": 3,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 10
+        }
+    },
+    {
+        "config_id": 5,
+        "description": "Deal 300 damage",
+        "type": "bounty",
+        "objective": {
+            "type": "damage",
+            "match_tracking_field": "damage_done",
+            "value": 300,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 10
+        }
+    },
+    {
+        "config_id": 6,
+        "description": "Heal more than 200 hp",
+        "type": "bounty",
+        "objective": {
+            "type": "damage",
+            "match_tracking_field": "health_healed",
+            "value": 200,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 10
+        }
+    },
+    {
+        "config_id": 7,
+        "description": "Win 30 matches with Uma",
+        "type": "weekly",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 30,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "uma",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 5000
+        }
+    },
+    {
+        "config_id": 8,
+        "description": "Get 100 kills",
+        "type": "weekly",
+        "objective": {
+            "match_tracking_field": "kills",
+            "value": 100,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 3000
+        }
+    },
+    {
+        "config_id": 9,
+        "description": "Deal 10.000 damage",
+        "type": "weekly",
+        "objective": {
+            "match_tracking_field": "damage_done",
+            "value": 10000,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 10000
+        }
+    },
+    {
+        "config_id": 12,
+        "description": "Win a match with Valtimer",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 1,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "valtimer",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 200
+        }
+    },
+    {
+        "config_id": 13,
+        "description": "Complete all Daily Quests",
+        "type": "milestone",
+        "objective": {
+            "match_tracking_field": "quest",
+            "value": 3,
+            "comparison": "equal",
+            "scope": "match"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 1000
+        }
+    }
+]

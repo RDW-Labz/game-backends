@@ -1,0 +1,56 @@
+<.header>
+  Skill mechanic
+  <:subtitle>Manage the mechanic for the skill</:subtitle>
+</.header>
+
+<.inputs_for :let={fp} field={@skill_form[:mechanics]}>
+  <.input
+    field={fp[:type]}
+    type="select"
+    label="Type"
+    prompt="Choose a value"
+    required
+    options={Ecto.Enum.values(GameBackend.Units.Skills.Mechanic, :type)}
+  />
+  <.input field={fp[:name]} type="text" label="Name" />
+  <.input field={fp[:amount]} type="number" step="any" label="Amount" />
+  <.input field={fp[:angle_between]} type="number" step="any" label="Angle between" />
+  <.input field={fp[:damage]} type="number" step="any" label="Damage" />
+  <.input field={fp[:duration_ms]} type="number" step="any" label="Duration (ms)" />
+  <.input field={fp[:interval_ms]} type="number" step="any" label="Interval (ms)" />
+  <.input field={fp[:move_by]} type="number" step="any" label="Move by" />
+  <.input field={fp[:offset]} type="number" step="any" label="Offset" />
+  <.input field={fp[:projectile_offset]} type="number" step="any" label="Projectile offset" />
+  <.input field={fp[:radius]} type="number" step="any" label="Radius" />
+  <.input field={fp[:range]} type="number" step="any" label="Range" />
+  <.input field={fp[:remove_on_collision]} type="checkbox" label="Remove on collision" />
+  <.input field={fp[:speed]} type="number" step="any" label="speed" />
+  <.input field={fp[:activation_delay]} type="number" step="any" label="Pool activation delay" />
+  <.input field={fp[:activation_delay_ms]} type="number" step="any" label="Activation delay ms" />
+  <.input field={fp[:preparation_delay_ms]} type="number" step="any" label="Preparation delay ms" />
+  <.input field={fp[:activate_on_proximity]} type="checkbox" label="Activate on proximity" />
+  <%= if fp.data.effect do %>
+    <.effect_form form={fp} field={:effect} />
+  <% end %>
+  <.input field={fp[:shape]} type="select" label="Shape of entity to spawn" options={["circle", "polygon"]} />
+
+  <.input field={fp[:vertices]} type="text" label="Vertices" />
+
+  <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Edit on arrival mechanic</.button>
+  <.modal id="on-arrival-mechanic-modal">
+    <.header>
+      On arrival mechanic
+      <:subtitle>Details to use on mechanic when arriving</:subtitle>
+    </.header>
+    <.nested_mechanic_inputs parent_form={fp} parent_field={:on_arrival_mechanic} />
+  </.modal>
+
+  <.button type="button" phx-click={show_modal("on-explode-mechanics-modal")}>Edit on explode mechanics</.button>
+  <.modal id="on-explode-mechanics-modal">
+    <.header>
+      On explode mechanics
+      <:subtitle>Details to use on mechanic when exploding</:subtitle>
+    </.header>
+    <.nested_mechanic_inputs parent_form={fp} parent_field={:on_explode_mechanics} />
+  </.modal>
+</.inputs_for>

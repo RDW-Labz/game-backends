@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T16:42:37Z",
+ "category": "physics",
+ "commit": "80d175234dcf",
+ "delivery": "reference",
+ "description": "finscn/PoorPhy \u2014 A very very simple 2D Physics Engine in JS",
+ "language": "javascript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "PoorPhy",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 136304,
+ "slug": "finscn-poorphy",
+ "source": "github-search:physics engine 2d stars:>60",
+ "stars": 81,
+ "system": "A very very simple 2D Physics Engine in JS",
+ "upstream": "https://github.com/finscn/PoorPhy",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

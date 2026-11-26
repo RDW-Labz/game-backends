@@ -1,0 +1,37 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name, e.g. Europe" />
+  <.input field={f[:url]} type="text" label="Url, e.g. arena-europe-testing.championsofmirra.com" />
+  <.input
+    field={f[:gateway_url]}
+    type="select"
+    label="Gateway Url"
+    prompt="Choose a value"
+    options={[
+      "https://central-europe-testing.championsofmirra.com",
+      "https://central-europe-staging.championsofmirra.com"
+    ]}
+    value="https://central-europe-testing.championsofmirra.com"
+  />
+  <.input
+    field={f[:status]}
+    type="select"
+    label="Status"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(GameBackend.ArenaServers.ArenaServer, :status)}
+    value={:active}
+  />
+  <.input
+    field={f[:environment]}
+    type="select"
+    label="Environment"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(GameBackend.ArenaServers.ArenaServer, :environment)}
+    value={:development}
+  />
+  <:actions>
+    <.button>Save Arena server</.button>
+  </:actions>
+</.simple_form>

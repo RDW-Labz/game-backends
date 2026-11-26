@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 16:26 UTC · 2001 entries · 508 vendored, 1493 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 16:42 UTC · 2003 entries · 509 vendored, 1494 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
-| [physics](#physics) — Physics | 236 | 53 | 183 |
+| [physics](#physics) — Physics | 238 | 54 | 184 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
@@ -852,7 +852,7 @@ _Generated 2026-11-26 16:26 UTC · 2001 entries · 508 vendored, 1493 reference-
 
 ## physics
 
-**Physics** — 236 entries
+**Physics** — 238 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -977,6 +977,7 @@ _Generated 2026-11-26 16:26 UTC · 2001 entries · 508 vendored, 1493 reference-
 | [lookas](entries/physics/rccyx-lookas/README.md) | Psychoacoustic terminal spectrum visualizer (mel-scale FFT, A-weighted energy, adaptive range tracking & spring physics) | rust | MIT | reference | [rccyx/lookas](https://github.com/rccyx/lookas) @ `2026-11-25 (branch tip at catalogue time)` |
 | [matter-js](entries/physics/liabru-matter-js/README.md) | a 2D rigid body physics engine for the web ▲● ■ | javascript | MIT | vendored | [liabru/matter-js](https://github.com/liabru/matter-js) @ `b8ee71cd7f9b` |
 | [melonJS](entries/physics/melonjs-melonjs/README.md) | A modern & fully featured HTML5 game engine (2D & 3D) for JavaScript/TypeScript, with WebGL/WebGPU rendering, built-in physics, Tiled map & glTF support and Web | javascript | MIT | reference | [melonjs/melonJS](https://github.com/melonjs/melonJS) @ `91f4396452e0` |
+| [mirra_backend](entries/physics/lambdaclass-mirra-backend/README.md) | Multiplayer 2D physics engine, matchmaking, market and leaderboard for 2D and 3D Games | elixir | Apache-2.0 | vendored | [lambdaclass/mirra_backend](https://github.com/lambdaclass/mirra_backend) @ `03ce82842a5d` |
 | [motion](entries/physics/juanperias-motion/README.md) | Motion is a bare metal physics engine | rust | Apache-2.0 | vendored | [Juanperias/motion](https://github.com/Juanperias/motion) @ `d563540112c3` |
 | [mujoco-rs](entries/physics/davidhozic-mujoco-rs/README.md) | MuJoCo bindings and high-level wrappers for the Rust programming language. Includes the viewer. | rust | Apache-2.0 | vendored | [davidhozic/mujoco-rs](https://github.com/davidhozic/mujoco-rs) @ `f10b47f29a5f` |
 | [mujoco_menagerie](entries/physics/google-deepmind-mujoco-menagerie/README.md) | A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind. | python | unknown | reference | [google-deepmind/mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie) @ `2026-11-10 (branch tip at catalogue time)` |
@@ -1021,6 +1022,7 @@ _Generated 2026-11-26 16:26 UTC · 2001 entries · 508 vendored, 1493 reference-
 | [phyz](entries/physics/muni-works-phyz/README.md) | differentiable physics engine for rust | rust | MIT | reference | [muni-works/phyz](https://github.com/muni-works/phyz) @ `2026-11-10 (branch tip at catalogue time)` |
 | [PixelFlow](entries/physics/diwi-pixelflow/README.md) | A Processing/Java library for high performance GPU-Computing (GLSL). Fluid Simulation + SoftBody Dynamics + Optical Flow + Rendering + Image Processing + Partic | java | MIT | reference | [diwi/PixelFlow](https://github.com/diwi/PixelFlow) @ `2018-01-10 (branch tip at catalogue time)` |
 | [planck.js](entries/physics/piqnt-planck-js/README.md) | 2D JavaScript Physics Engine | typescript | MIT | reference | [piqnt/planck.js](https://github.com/piqnt/planck.js) @ `2026-11-14 (branch tip at catalogue time)` |
+| [PoorPhy](entries/physics/finscn-poorphy/README.md) | A very very simple 2D Physics Engine in JS | javascript | none | reference | [finscn/PoorPhy](https://github.com/finscn/PoorPhy) @ `80d175234dcf` |
 | [PositionBasedDynamics](entries/physics/interactivecomputergraphics-positionbaseddynamics/README.md) | PositionBasedDynamics is a library for the physically-based simulation of rigid bodies, deformable solids and fluids. | c++ | MIT | reference | [InteractiveComputerGraphics/PositionBasedDynamics](https://github.com/InteractiveComputerGraphics/PositionBasedDynamics) @ `10a70bc146a9` |
 | [Principia — lib](entries/physics/principia-lib/README.md) | Box2D-derived 2D physics with custom collision handling | c++ | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b127c2` |
 | [profile](entries/physics/jungledesh-profile/README.md) | A physics-grounded, cost-aware optimization loop for vLLM | rust | unknown | reference | [jungledesh/profile](https://github.com/jungledesh/profile) @ `2026-08-22 (branch tip at catalogue time)` |

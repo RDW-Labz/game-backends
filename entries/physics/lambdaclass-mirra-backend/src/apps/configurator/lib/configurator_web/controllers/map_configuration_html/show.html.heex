@@ -1,0 +1,123 @@
+<.header>
+  Map configuration <%= @map_configuration.name %>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
+  <:actions>
+    <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit"}>
+      <.button>Edit Map Configuration</.button>
+    </.link>
+    <%= unless Enum.empty?(@map_configuration.obstacles) do %>
+      <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit_obstacles"}>
+        <.button>Edit Map Obstacles</.button>
+      </.link>
+    <% end %>
+    <%= unless Enum.empty?(@map_configuration.pools) do %>
+      <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit_pools"}>
+        <.button>Edit Map Pools</.button>
+      </.link>
+    <% end %>
+    <%= unless Enum.empty?(@map_configuration.crates) do %>
+      <.link href={~p"/versions/#{@version}/map_configurations/#{@map_configuration}/edit_crates"}>
+        <.button>Edit Map Crates</.button>
+      </.link>
+    <% end %>
+  </:actions>
+</.header>
+
+<div class="flex flex-col gap-5">
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Map name</dt>
+    <dd><%= @map_configuration.name %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Active</dt>
+    <dd><%= @map_configuration.active %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Map Radius</dt>
+    <dd><%= @map_configuration.radius %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Initial positions</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.initial_positions)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("initial-positions-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"initial-positions-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.initial_positions) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Obstacles</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.obstacles)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("obstacles-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"obstacles-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.obstacles) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Bushes</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.bushes)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("bushes-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"bushes-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.bushes) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Pools</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.pools)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("pools-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"pools-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.pools) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Crates</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.crates)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("crates-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"crates-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(@map_configuration.crates) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Square Wall</dt>
+    <dd>
+      <%= if is_nil(@map_configuration.square_wall) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("square-wall-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"square-wall-#{@map_configuration.id}"}>
+          <p class="whitespace-pre">
+            <%= Configurator.Utils.embed_to_string(@map_configuration.square_wall)
+            |> Jason.encode!()
+            |> Jason.Formatter.pretty_print() %>
+          </p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+</div>
+
+<.back navigate={~p"/versions/#{@version}/map_configurations"}>Back to Map Configurations</.back>

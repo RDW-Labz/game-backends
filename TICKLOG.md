@@ -3779,3 +3779,7 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-26 16:26 UTC** — tick 966: +1 screened, +0 reference, 59 skipped, catalogue=2001
   - added physics/deltaluca-nape (BSD-2-Clause, vendored)
+
+- **2026-11-26 16:42 UTC** — tick 967: +2 screened, +0 reference, 46 skipped, catalogue=2003
+  - added physics/finscn-poorphy (none, reference)
+  - added physics/lambdaclass-mirra-backend (Apache-2.0, vendored)

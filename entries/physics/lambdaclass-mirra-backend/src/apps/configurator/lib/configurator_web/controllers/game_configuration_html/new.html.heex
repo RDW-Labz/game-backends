@@ -1,0 +1,12 @@
+<.header>
+  New Game configuration
+  <:subtitle>Use this form to manage game_configuration records in your database.</:subtitle>
+</.header>
+
+<.game_configuration_form
+  changeset={@changeset}
+  action={~p"/versions/#{@version}/game_configurations"}
+  version={@version}
+/>
+
+<.back navigate={~p"/versions/#{@version}/game_configurations"}>Back to game_configurations</.back>

@@ -1,0 +1,38 @@
+<.header>
+  Game Mode configuration <%= @game_mode_configuration.id %>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
+  <:actions>
+    <.link href={~p"/versions/#{@version}/game_mode_configurations/#{@game_mode_configuration}/edit"}>
+      <.button>Edit Game Mode Configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<div class="mb-9">
+  <.list>
+    <:item title="Type"><%= @game_mode_configuration.type %></:item>
+    <:item title="Zone enabled"><%= @game_mode_configuration.zone_enabled %></:item>
+    <:item title="Bots enabled"><%= @game_mode_configuration.bots_enabled %></:item>
+    <:item title="Match duration ms"><%= @game_mode_configuration.match_duration_ms %></:item>
+    <:item title="Respawn time ms"><%= @game_mode_configuration.respawn_time_ms %></:item>
+    <:item title="Team size"><%= @game_mode_configuration.team_size %></:item>
+  </.list>
+</div>
+
+<.button type="button" phx-click={show_modal("show-map-params-#{@game_mode_configuration.id}")}>
+  Map specific params
+</.button>
+<.modal id={"show-map-params-#{@game_mode_configuration.id}"}>
+  <.header>
+    Map params for the game mode
+  </.header>
+  <%= for params <- GameBackend.Configuration.get_map_params_for_game_mode(@game_mode_configuration.id) do %>
+    <.list>
+      <:item title="Amount of players"><%= params.amount_of_players %></:item>
+      <:item title="Map"><%= params.map.name %></:item>
+      <:item title="Initial Positions"><%= Jason.encode!(params.initial_positions) %></:item>
+    </.list>
+  <% end %>
+</.modal>
+
+<.back navigate={~p"/versions/#{@version}/game_mode_configurations"}>Back to Game Mode Configurations</.back>

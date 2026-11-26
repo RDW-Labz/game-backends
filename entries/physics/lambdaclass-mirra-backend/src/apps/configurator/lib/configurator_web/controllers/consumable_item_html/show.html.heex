@@ -1,0 +1,27 @@
+<.header>
+  Consumable item <%= @consumable_item.name %>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
+  <:actions>
+    <.link href={~p"/versions/#{@version}/consumable_items/#{@consumable_item}/edit"}>
+      <.button>Edit Consumable item</.button>
+    </.link>
+    <.effect_show effect={@consumable_item.effect} />
+  </:actions>
+</.header>
+
+<div class="flex flex-col gap-5">
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Active</dt>
+    <dd><%= @consumable_item.active %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Name</dt>
+    <dd><%= @consumable_item.name %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Radius</dt>
+    <dd><%= @consumable_item.radius %></dd>
+  </div>
+</div>
+
+<.back navigate={~p"/versions/#{@version}/consumable_items"}>Back to Consumable Items</.back>

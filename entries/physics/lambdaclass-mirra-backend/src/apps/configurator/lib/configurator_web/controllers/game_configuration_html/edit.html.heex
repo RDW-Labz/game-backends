@@ -1,0 +1,12 @@
+<.header>
+  Edit Game configuration <%= @game_configuration.id %>
+  <:subtitle>Use this form to manage game_configuration records in your database.</:subtitle>
+</.header>
+
+<.game_configuration_form
+  changeset={@changeset}
+  action={~p"/versions/#{@version}/game_configurations/#{@game_configuration}"}
+  version={@version}
+/>
+
+<.back navigate={~p"/versions/#{@version}/game_configurations"}>Back to game_configurations</.back>

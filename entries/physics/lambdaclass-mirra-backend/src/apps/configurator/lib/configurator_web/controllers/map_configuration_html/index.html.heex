@@ -1,0 +1,93 @@
+<.header>
+  Listing Map configurations
+  <:actions>
+    <.link href={~p"/versions/#{@version_id}/map_configurations/new"}>
+      <.button>New Map configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="map_configurations" rows={@map_configurations}>
+  <:col :let={map_configuration} label="Name"><%= map_configuration.name %></:col>
+  <:col :let={map_configuration} label="Active"><%= map_configuration.active %></:col>
+  <:col :let={map_configuration} label="Radius"><%= map_configuration.radius %></:col>
+  <:col :let={map_configuration} label="Initial positions">
+    <%= if (Enum.empty?(map_configuration.initial_positions)) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("initial-positions-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"initial-positions-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(map_configuration.initial_positions) %></p>
+      </.modal>
+    <% end %>
+  </:col>
+  <:col :let={map_configuration} label="Obstacles">
+    <%= if (Enum.empty?(map_configuration.obstacles)) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("obstacles-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"obstacles-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(map_configuration.obstacles) %></p>
+      </.modal>
+    <% end %>
+  </:col>
+  <:col :let={map_configuration} label="Bushes">
+    <%= if (Enum.empty?(map_configuration.bushes)) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("bushes-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"bushes-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(map_configuration.bushes) %></p>
+      </.modal>
+    <% end %>
+  </:col>
+  <:col :let={map_configuration} label="Pools">
+    <%= if (Enum.empty?(map_configuration.pools)) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("pools-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"pools-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(map_configuration.pools) %></p>
+      </.modal>
+    <% end %>
+  </:col>
+  <:col :let={map_configuration} label="Crates">
+    <%= if (Enum.empty?(map_configuration.crates)) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("crates-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"crates-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= Configurator.Utils.embed_to_string(map_configuration.crates) %></p>
+      </.modal>
+    <% end %>
+  </:col>
+  <:col :let={map_configuration} label="Square Wall">
+    <%= if is_nil(map_configuration.square_wall) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("square-wall-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"square-wall-#{map_configuration.id}"}>
+        <p class="whitespace-pre">
+          <%= Configurator.Utils.embed_to_string(map_configuration.square_wall)
+          |> Jason.encode!()
+          |> Jason.Formatter.pretty_print() %>
+        </p>
+      </.modal>
+    <% end %>
+  </:col>
+  <:action :let={map_configuration}>
+    <.link navigate={~p"/versions/#{@version_id}/map_configurations/#{map_configuration}"}>View</.link>
+  </:action>
+  <:action :let={map_configuration}>
+    <.link navigate={~p"/versions/#{@version_id}/map_configurations/#{map_configuration}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={map_configuration}>
+    <.link
+      href={~p"/versions/#{@version_id}/map_configurations/#{map_configuration}"}
+      method="delete"
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
