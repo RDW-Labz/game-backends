@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 05:14 UTC · 1928 entries · 480 vendored, 1448 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 05:30 UTC · 1934 entries · 480 vendored, 1454 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 05:14 UTC · 1928 entries · 480 vendored, 1448 reference-
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 271 | 67 | 204 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 277 | 67 | 210 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
@@ -1280,7 +1280,7 @@ _Generated 2026-11-26 05:14 UTC · 1928 entries · 480 vendored, 1448 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 271 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 277 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1293,6 +1293,7 @@ _Generated 2026-11-26 05:14 UTC · 1928 entries · 480 vendored, 1448 reference-
 | [Aim-IK](entries/gameplay/ehsan-mohammadi-aim-ik/README.md) | A Unity package, to procedurally orientate the character's head (and spine) in a direction without using any animation data. | c# | MIT | reference | [ehsan-mohammadi/Aim-IK](https://github.com/ehsan-mohammadi/Aim-IK) @ `2022-08-16 (branch tip at catalogue time)` |
 | [algorithms-visualizer](entries/gameplay/sonngdev-algorithms-visualizer/README.md) | Visualization of common pathfinding algorithms 🧭 🗺️ | typescript | none | reference | [sonngdev/algorithms-visualizer](https://github.com/sonngdev/algorithms-visualizer) @ `23a20d434f93` |
 | [Algorust](entries/gameplay/jondolf-algorust/README.md) | Various algorithms visualized interactively on the web, entirely with Rust 🦀 | rust | unknown | reference | [Jondolf/Algorust](https://github.com/Jondolf/Algorust) @ `2024-07-17 (branch tip at catalogue time)` |
+| [algoviz](entries/gameplay/ssaric-algoviz/README.md) | Codebase for educational tool on algorithms | typescript | none | reference | [ssaric/algoviz](https://github.com/ssaric/algoviz) @ `3742459b5a42` |
 | [amazing-pathfinding-visualizer](entries/gameplay/cinatitbr-amazing-pathfinding-visualizer/README.md) | A real-time visualizer for graph algorithms! | typescript | unknown | reference | [CinatitBR/amazing-pathfinding-visualizer](https://github.com/CinatitBR/amazing-pathfinding-visualizer) @ `2023-05-20 (branch tip at catalogue time)` |
 | [ancientbeast — abilities](entries/gameplay/ancientbeast-abilities/README.md) | combat, AI, pathing, quest or inventory logic | ts | AGPL-3.0 | reference | [FreezingMoon/AncientBeast](https://github.com/FreezingMoon/AncientBeast) @ `1b45dc2` |
 | [Any-Angle-Pathfinding](entries/gameplay/ohohcakester-any-angle-pathfinding/README.md) | A collection of algorithms used for any-angle pathfinding with visualisations. | java | Unlicense | reference | [Ohohcakester/Any-Angle-Pathfinding](https://github.com/Ohohcakester/Any-Angle-Pathfinding) @ `2022-12-21 (branch tip at catalogue time)` |
@@ -1349,6 +1350,7 @@ _Generated 2026-11-26 05:14 UTC · 1928 entries · 480 vendored, 1448 reference-
 | [GameDevRepo](entries/gameplay/wesleywh-gamedevrepo/README.md) | Free Unity C# Script library used to make a full Unity3d game. | c# | MIT | reference | [wesleywh/GameDevRepo](https://github.com/wesleywh/GameDevRepo) @ `2019-11-22 (branch tip at catalogue time)` |
 | [gdx-ai](entries/gameplay/libgdx-gdx-ai/README.md) | Artificial Intelligence framework for games based on libGDX or not. Features: Steering Behaviors, Formation Motion, Pathfinding, Behavior Trees and Finite State | java | Apache-2.0 | vendored | [libgdx/gdx-ai](https://github.com/libgdx/gdx-ai) @ `6726e345248d` |
 | [geotic](entries/gameplay/ddmills-geotic/README.md) | Entity Component System library for javascript | javascript | MIT | reference | [ddmills/geotic](https://github.com/ddmills/geotic) @ `2025-03-05 (branch tip at catalogue time)` |
+| [gitcloser](entries/gameplay/jckli-gitcloser/README.md) | 🔎 Find how close you are to another GitHub user in less than 20 seconds | typescript | GPL-3.0 | reference | [jckli/gitcloser](https://github.com/jckli/gitcloser) @ `c8dd1c8dc9a2` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
 | [goal-based-vector-field-pathfinding](entries/gameplay/gonuit-goal-based-vector-field-pathfinding/README.md) | Multi-thread TypeScript goal based vector field pathfinding implementation using pixi.js | typescript | unknown | reference | [gonuit/goal-based-vector-field-pathfinding](https://github.com/gonuit/goal-based-vector-field-pathfinding) @ `2024-08-28 (branch tip at catalogue time)` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
@@ -1361,8 +1363,10 @@ _Generated 2026-11-26 05:14 UTC · 1928 entries · 480 vendored, 1448 reference-
 | [GoRogue](entries/gameplay/chris3606-gorogue/README.md) | .NET Standard roguelike library in C#.  Features many algorithms and data structures pertinent to roguelike/2D game developers, specifically designed to be mini | c# | MIT | reference | [Chris3606/GoRogue](https://github.com/Chris3606/GoRogue) @ `2026-09-13 (branch tip at catalogue time)` |
 | [graphhopper](entries/gameplay/graphhopper-graphhopper/README.md) | Open source routing engine for OpenStreetMap. Use it as Java library or standalone web server. | java | Apache-2.0 | vendored | [graphhopper/graphhopper](https://github.com/graphhopper/graphhopper) @ `9df847473a5e` |
 | [GreaterWMS](entries/gameplay/greaterwms-greaterwms/README.md) | This Inventory management system is the currently Ford Asia Pacific after-sales logistics warehousing supply chain process . After I leave Ford , I start this p | python | Apache-2.0 | vendored | [GreaterWMS/GreaterWMS](https://github.com/GreaterWMS/GreaterWMS) @ `8344f3872155` |
+| [grid_pathfinding](entries/gameplay/tbvanderwoude-grid-pathfinding/README.md) | Pathfinding on grids using jump point search and connected components. | rust | MIT | reference | [tbvanderwoude/grid_pathfinding](https://github.com/tbvanderwoude/grid_pathfinding) @ `2026-08-16 (branch tip at catalogue time)` |
 | [gtsa](entries/gameplay/adamstelmaszczyk-gtsa/README.md) | Game Tree Search Algorithms - C++ library for AI bot programming | c++ | GPL-3.0 | reference | [AdamStelmaszczyk/gtsa](https://github.com/AdamStelmaszczyk/gtsa) @ `2025-04-27 (branch tip at catalogue time)` |
 | [HALE](entries/gameplay/andres6936-hale/README.md) | Hale is a turn based RPG with deep tactical combat and character customization. Included is a lengthy and varied campaign with many quests, items and monsters,  | java | GPL-2.0 | reference | [Andres6936/HALE](https://github.com/Andres6936/HALE) @ `2020-08-04 (branch tip at catalogue time)` |
+| [hexagonal_pathfinding_astar](entries/gameplay/blondeburrito-hexagonal-pathfinding-astar/README.md) | An implementation of the A-Star pathfinding algorithm tailored for traversing a bespoke collection of weighted hexagons. It's intended to calculate the most opt | rust | unknown | reference | [BlondeBurrito/hexagonal_pathfinding_astar](https://github.com/BlondeBurrito/hexagonal_pathfinding_astar) @ `2023-01-31 (branch tip at catalogue time)` |
 | [hierarchical-pathfinding](entries/gameplay/hugoscurti-hierarchical-pathfinding/README.md) | Implementation of Near-Optimal Hierarchical Pathfinding (HPA*) algorithm in Unity, tested with maps from Dragon Age: Origins | c# | MIT | reference | [hugoscurti/hierarchical-pathfinding](https://github.com/hugoscurti/hierarchical-pathfinding) @ `2022-12-26 (branch tip at catalogue time)` |
 | [hierarchical_pathfinding](entries/gameplay/mich101mich-hierarchical-pathfinding/README.md) | A Rust crate to find Paths on a Grid using HPA* (Hierarchical Pathfinding A*) and Hierarchical Dijkstra | rust | MIT | reference | [mich101mich/hierarchical_pathfinding](https://github.com/mich101mich/hierarchical_pathfinding) @ `2026-09-16 (branch tip at catalogue time)` |
 | [High-Speed-Priority-Queue-for-C-Sharp](entries/gameplay/blueraja-high-speed-priority-queue-for-c-sharp/README.md) | A C# priority queue optimized for pathfinding applications | c# | MIT | vendored | [BlueRaja/High-Speed-Priority-Queue-for-C-Sharp](https://github.com/BlueRaja/High-Speed-Priority-Queue-for-C-Sharp) @ `33f4fd3fcc69` |
@@ -1421,6 +1425,7 @@ _Generated 2026-11-26 05:14 UTC · 1928 entries · 480 vendored, 1448 reference-
 | [MonoBehaviourTree](entries/gameplay/qriva-monobehaviourtree/README.md) | Simple event driven Behaviour tree for Unity projects | c# | MIT | reference | [Qriva/MonoBehaviourTree](https://github.com/Qriva/MonoBehaviourTree) @ `2024-09-25 (branch tip at catalogue time)` |
 | [mountain-goap](entries/gameplay/caesuric-mountain-goap/README.md) | A GOAP (Goal Oriented Action Planning) AI library, written in C#. | c# | unknown | reference | [caesuric/mountain-goap](https://github.com/caesuric/mountain-goap) @ `2025-03-18 (branch tip at catalogue time)` |
 | [moveet](entries/gameplay/ivannovazzi-moveet/README.md) | see upstream | typescript | MIT | reference | [ivannovazzi/moveet](https://github.com/ivannovazzi/moveet) @ `2026-11-23 (branch tip at catalogue time)` |
+| [mpee](entries/gameplay/punnerud-mpee/README.md) | Offline routing, multi-vehicle VRP & street geocoding for one downloaded area — Rust engine, driven from Python or a CLI | rust | unknown | reference | [punnerud/mpee](https://github.com/punnerud/mpee) @ `2026-10-19 (branch tip at catalogue time)` |
 | [MultiTree-Behavior](entries/gameplay/thomheymann-multitree-behavior/README.md) | MultiTree is a drop-in behaviour to CakePHP's Core Tree Behavior allowing for more advanced operations and better performance on large data sets | php | unknown | reference | [thomheymann/MultiTree-Behavior](https://github.com/thomheymann/MultiTree-Behavior) @ `2013-09-21 (branch tip at catalogue time)` |
 | [naev — ai](entries/gameplay/naev-ai/README.md) | combat, AI, pathing, quest or inventory logic | lua | BSD-2-Clause | vendored | [naev/naev.git](https://github.com/naev/naev.git) @ `7f58510` |
 | [navmesh](entries/gameplay/mikewesthad-navmesh/README.md) | A plugin for path-finding in JS using navmeshes, with wrappers for Phaser 3 and Phaser 2 | javascript | MIT | vendored | [mikewesthad/navmesh](https://github.com/mikewesthad/navmesh) @ `b264bc3c145b` |
@@ -1501,6 +1506,7 @@ _Generated 2026-11-26 05:14 UTC · 1928 entries · 480 vendored, 1448 reference-
 | [rot.js](entries/gameplay/ondras-rot-js/README.md) | ROguelike Toolkit in JavaScript. Cool dungeon-related stuff, interactive manual, documentation, tests! | javascript | BSD-3-Clause | vendored | [ondras/rot.js](https://github.com/ondras/rot.js) @ `46782e248c2d` |
 | [rrt](entries/gameplay/openrr-rrt/README.md) | RRT (Rapidly-exploring Random Tree) library in Rust | rust | Apache-2.0 | reference | [openrr/rrt](https://github.com/openrr/rrt) @ `2025-12-23 (branch tip at catalogue time)` |
 | [SAE-based-representation-engineering](entries/gameplay/yuzhaouoe-sae-based-representation-engineering/README.md) | [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering | python | MIT | reference | [yuzhaouoe/SAE-based-representation-engineering](https://github.com/yuzhaouoe/SAE-based-representation-engineering) @ `2026-06-20 (branch tip at catalogue time)` |
+| [sc2-pathlib](entries/gameplay/drinfy-sc2-pathlib/README.md) | Pathfinding and terrain analysis library for Starcraft 2 bot api in Rust | rust | MIT | reference | [DrInfy/sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) @ `2024-11-24 (branch tip at catalogue time)` |
 | [Scriptable-Object-Inventory](entries/gameplay/sniffle6-scriptable-object-inventory/README.md) | A scriptable object based inventory system for Unity3D | shaderlab | unknown | reference | [sniffle6/Scriptable-Object-Inventory](https://github.com/sniffle6/Scriptable-Object-Inventory) @ `2020-02-19 (branch tip at catalogue time)` |
 | [seldom_map_nav](entries/gameplay/seldom-se-seldom-map-nav/README.md) | Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency. | rust | Apache-2.0 | vendored | [Seldom-SE/seldom_map_nav](https://github.com/Seldom-SE/seldom_map_nav) @ `5586a0e6ad1f` |
 | [Self-driving-vehicle](entries/gameplay/habrador-self-driving-vehicle/README.md) | Simulation of path planning for self-driving vehicles in Unity. This is also an implementation of the Hybrid A* pathfinding algorithm which is useful if you are | c# | MIT | reference | [Habrador/Self-driving-vehicle](https://github.com/Habrador/Self-driving-vehicle) @ `2023-09-06 (branch tip at catalogue time)` |

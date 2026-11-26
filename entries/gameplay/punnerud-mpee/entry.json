@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T05:30:40Z",
+ "category": "gameplay",
+ "commit": "2026-10-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "punnerud/mpee \u2014 Offline routing, multi-vehicle VRP & street geocoding for one downloaded area \u2014 Rust engine, driven from Python or a CLI",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "mpee",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "punnerud-mpee",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 22,
+ "system": "Offline routing, multi-vehicle VRP & street geocoding for one downloaded area \u2014 Rust engine, driven from Python or a CLI",
+ "upstream": "https://github.com/punnerud/mpee",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

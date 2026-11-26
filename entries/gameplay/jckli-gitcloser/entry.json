@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T05:30:38Z",
+ "category": "gameplay",
+ "commit": "c8dd1c8dc9a2",
+ "delivery": "reference",
+ "description": "jckli/gitcloser \u2014 \ud83d\udd0e Find how close you are to another GitHub user in less than 20 seconds",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "gitcloser",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 31981,
+ "slug": "jckli-gitcloser",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 11,
+ "system": "\ud83d\udd0e Find how close you are to another GitHub user in less than 20 seconds",
+ "upstream": "https://github.com/jckli/gitcloser",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

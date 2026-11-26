@@ -3622,3 +3622,11 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/maciejb2k-pathfinding-app
   - reference gameplay/trinhminhtriet-a-star-search
   - reference gameplay/anseyuyin-astar-process
+
+- **2026-11-26 05:30 UTC** — tick 925: +2 screened, +4 reference, 27 skipped, catalogue=1934
+  - added gameplay/ssaric-algoviz (none, reference)
+  - added gameplay/jckli-gitcloser (GPL-3.0, reference)
+  - reference gameplay/tbvanderwoude-grid-pathfinding
+  - reference gameplay/blondeburrito-hexagonal-pathfinding-astar
+  - reference gameplay/punnerud-mpee
+  - reference gameplay/drinfy-sc2-pathlib

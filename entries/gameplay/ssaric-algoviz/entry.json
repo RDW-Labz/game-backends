@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T05:30:36Z",
+ "category": "gameplay",
+ "commit": "3742459b5a42",
+ "delivery": "reference",
+ "description": "ssaric/algoviz \u2014 Codebase for educational tool on algorithms",
+ "language": "typescript",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "algoviz",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 404503,
+ "slug": "ssaric-algoviz",
+ "source": "github-search:pathfinding language:typescript stars:>10",
+ "stars": 20,
+ "system": "Codebase for educational tool on algorithms",
+ "upstream": "https://github.com/ssaric/algoviz",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

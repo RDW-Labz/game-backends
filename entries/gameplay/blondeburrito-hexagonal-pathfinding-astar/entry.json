@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T05:30:40Z",
+ "category": "gameplay",
+ "commit": "2023-01-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "BlondeBurrito/hexagonal_pathfinding_astar \u2014 An implementation of the A-Star pathfinding algorithm tailored for traversing a bespoke collection of weighted hexagons. It's intended to calculate the most optimal path to a target hexagon where you are traversing from the centre of one hexagon to the next along a line orthogonal to a hexagon edge",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "hexagonal_pathfinding_astar",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "blondeburrito-hexagonal-pathfinding-astar",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 22,
+ "system": "An implementation of the A-Star pathfinding algorithm tailored for traversing a bespoke collection of weighted hexagons. It's intended to calculate the most opt",
+ "upstream": "https://github.com/BlondeBurrito/hexagonal_pathfinding_astar",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T05:30:40Z",
+ "category": "gameplay",
+ "commit": "2024-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "DrInfy/sc2-pathlib \u2014 Pathfinding and terrain analysis library for Starcraft 2 bot api in Rust",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "sc2-pathlib",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "drinfy-sc2-pathlib",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 19,
+ "system": "Pathfinding and terrain analysis library for Starcraft 2 bot api in Rust",
+ "upstream": "https://github.com/DrInfy/sc2-pathlib",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

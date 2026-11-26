@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T05:30:40Z",
+ "category": "gameplay",
+ "commit": "2026-08-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "tbvanderwoude/grid_pathfinding \u2014 Pathfinding on grids using jump point search and connected components.",
+ "language": "rust",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "grid_pathfinding",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "tbvanderwoude-grid-pathfinding",
+ "source": "github-search:pathfinding language:rust stars:>15",
+ "stars": 27,
+ "system": "Pathfinding on grids using jump point search and connected components.",
+ "upstream": "https://github.com/tbvanderwoude/grid_pathfinding",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
