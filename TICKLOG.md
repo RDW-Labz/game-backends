@@ -3840,3 +3840,5 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/uysalibov-gezgin
   - reference gameplay/arl-go-detour
   - reference gameplay/unitypatterns-tileeditor
+
+- **2026-11-26 20:42 UTC** — tick 982: +0 screened, +0 reference, 36 skipped, catalogue=2032
