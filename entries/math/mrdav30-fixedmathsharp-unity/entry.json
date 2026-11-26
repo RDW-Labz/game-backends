@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T18:34:36Z",
+ "category": "math",
+ "commit": "6b9b0730e67a",
+ "delivery": "vendored",
+ "description": "mrdav30/FixedMathSharp-Unity \u2014 A deterministic fixed-point math library for Unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "FixedMathSharp-Unity",
+ "size_bytes": 459966,
+ "slug": "mrdav30-fixedmathsharp-unity",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 70,
+ "system": "A deterministic fixed-point math library for Unity",
+ "upstream": "https://github.com/mrdav30/FixedMathSharp-Unity",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

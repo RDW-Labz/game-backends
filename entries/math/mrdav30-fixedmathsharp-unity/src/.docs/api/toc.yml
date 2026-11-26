@@ -1,0 +1,26 @@
+items:
+  - name: Home
+    href: index.md
+  - name: Guides
+    items:
+      - name: Getting started
+        href: guides/getting-started.md
+      - name: Serialization
+        href: guides/serialization.md
+      - name: Chronicler integration
+        href: guides/chronicler.md
+      - name: Unity Package Migration
+        href: ../../MIGRATION.md
+  - name: Unity Adapter API
+    href: obj/api/
+    homepage: obj/api/FixedMathSharp.yml
+  - name: Resources
+    items:
+      - name: FixedMathSharp Core API
+        href: https://mrdav30.github.io/FixedMathSharp/
+      - name: FixedMathSharp Guides
+        href: https://mrdav30.github.io/FixedMathSharp/guides/index.html
+      - name: Unity Package Source
+        href: https://github.com/mrdav30/FixedMathSharp-Unity
+      - name: FixedMathSharp Migration Guide
+        href: https://github.com/mrdav30/FixedMathSharp/blob/main/docs/MIGRATION.md

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T18:34:40Z",
+ "category": "math",
+ "commit": "2015-09-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jgaeddert/liquid-fpm \u2014 fixed-point math library for embedded signal processing",
+ "language": "c",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "liquid-fpm",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "jgaeddert-liquid-fpm",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 66,
+ "system": "fixed-point math library for embedded signal processing",
+ "upstream": "https://github.com/jgaeddert/liquid-fpm",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

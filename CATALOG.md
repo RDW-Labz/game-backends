@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 18:18 UTC · 2020 entries · 516 vendored, 1504 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 18:34 UTC · 2024 entries · 518 vendored, 1506 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
 | [physics](#physics) — Physics | 249 | 57 | 192 |
-| [math](#math) — Math libraries | 177 | 55 | 122 |
+| [math](#math) — Math libraries | 181 | 57 | 124 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
@@ -1108,11 +1108,12 @@ _Generated 2026-11-26 18:18 UTC · 2020 entries · 516 vendored, 1504 reference-
 
 ## math
 
-**Math libraries** — 177 entries
+**Math libraries** — 181 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [abacus](entries/math/sungiant-abacus/README.md) | :triangular_ruler: C# cross precision 3D maths library. | c# | MIT | reference | [sungiant/abacus](https://github.com/sungiant/abacus) @ `2026-02-06 (branch tip at catalogue time)` |
+| [alpacadecimal](entries/math/alpacahq-alpacadecimal/README.md) | Arbitrary-precision fixed-point decimal numbers in go. Similar and compatible with shopspring's decimal.Decimal, but optimized for Alpaca's data sets. | go | MIT | vendored | [alpacahq/alpacadecimal](https://github.com/alpacahq/alpacadecimal) @ `7ce95bc0f8b0` |
 | [amgcl](entries/math/ddemidov-amgcl/README.md) | C++ library for solving large sparse linear systems with algebraic multigrid method | c++ | MIT | reference | [ddemidov/amgcl](https://github.com/ddemidov/amgcl) @ `2026-11-18 (branch tip at catalogue time)` |
 | [armadillo-code](entries/math/conradsnicta-armadillo-code/README.md) | Armadillo: fast C++ library for linear algebra (matrix maths) & scientific computing | n/a | unknown | reference | [conradsnicta/armadillo-code](https://github.com/conradsnicta/armadillo-code) @ `2026-10-21 (branch tip at catalogue time)` |
 | [AudioTool](entries/math/lincollincol-audiotool/README.md) | Android library that provides audio manipulation functions like increase/decrease speed, pitch, volume, bass, etc. Library also provides cut, noise remover, and | java | Apache-2.0 | vendored | [lincollincol/AudioTool](https://github.com/lincollincol/AudioTool) @ `b0f508159176` |
@@ -1122,6 +1123,7 @@ _Generated 2026-11-26 18:18 UTC · 2020 entries · 516 vendored, 1504 reference-
 | [brine-fp](entries/math/zfedoran-brine-fp/README.md) | Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications. | rust | Apache-2.0 | vendored | [zfedoran/brine-fp](https://github.com/zfedoran/brine-fp) @ `377beff01dfe` |
 | [C-Linear-Algebra](entries/math/jcchurch-c-linear-algebra/README.md) | My personal set of C libraries for linear algebra computation based on The Matrix Cookbook and Numerical Recipes in C. | c | unknown | reference | [jcchurch/C-Linear-Algebra](https://github.com/jcchurch/C-Linear-Algebra) @ `2019-10-31 (branch tip at catalogue time)` |
 | [cairo-math](entries/math/pedrobeirao-cairo-math/README.md) | Smart contract Cairo library for advanced fixed-point math | python | AGPL-3.0 | reference | [pedrobeirao/cairo-math](https://github.com/pedrobeirao/cairo-math) @ `ef7a60d0b419` |
+| [cairo-math-64x61](entries/math/influenceth-cairo-math-64x61/README.md) | Fixed point 64.61 math library for Cairo / Starknet | python | MIT | reference | [influenceth/cairo-math-64x61](https://github.com/influenceth/cairo-math-64x61) @ `2023-03-08 (branch tip at catalogue time)` |
 | [ccVector](entries/math/jobtalle-ccvector/README.md) | A vector and matrix math library | c | Public-Domain | vendored | [jobtalle/ccVector](https://github.com/jobtalle/ccVector) @ `ffefafe5a0b9` |
 | [cfmm-math-libraries](entries/math/0xosiris-cfmm-math-libraries/README.md) | CFMM Fixed Point Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. | solidity | unknown | reference | [0xOsiris/cfmm-math-libraries](https://github.com/0xOsiris/cfmm-math-libraries) @ `2023-01-21 (branch tip at catalogue time)` |
 | [cga.js](entries/math/yszhao91-cga-js/README.md) |  CGA   3D 计算几何算法库 / 3D Compute Geometry Algorithm Library  webgl three.js babylon.js等任何库都可以使用 | javascript | MIT | vendored | [yszhao91/cga.js](https://github.com/yszhao91/cga.js) @ `cae56f54866c` |
@@ -1155,6 +1157,7 @@ _Generated 2026-11-26 18:18 UTC · 2020 entries · 516 vendored, 1504 reference-
 | [fixed_math](entries/math/arturbac-fixed-math/README.md) | FixedMath: A High-Performance C++23, C++17 Library for Fixed-Point 48.16 Arithmetic | c++ | BSL-1.0 | reference | [arturbac/fixed_math](https://github.com/arturbac/fixed_math) @ `2025-06-14 (branch tip at catalogue time)` |
 | [fixed_point_math](entries/math/electricrcaircraftguy-fixed-point-math/README.md) | Fixed point math practice & test code | c++ | BSD-3-Clause | reference | [ElectricRCAircraftGuy/fixed_point_math](https://github.com/ElectricRCAircraftGuy/fixed_point_math) @ `2018-12-26 (branch tip at catalogue time)` |
 | [FixedMathSharp](entries/math/mrdav30-fixedmathsharp/README.md) | A deterministic fixed-point math library for .NET | c# | MIT | reference | [mrdav30/FixedMathSharp](https://github.com/mrdav30/FixedMathSharp) @ `2026-11-23 (branch tip at catalogue time)` |
+| [FixedMathSharp-Unity](entries/math/mrdav30-fixedmathsharp-unity/README.md) | A deterministic fixed-point math library for Unity | c# | MIT | vendored | [mrdav30/FixedMathSharp-Unity](https://github.com/mrdav30/FixedMathSharp-Unity) @ `6b9b0730e67a` |
 | [FixedPoint-Sharp](entries/math/romanzhu-fixedpoint-sharp/README.md) | Fixed point math with 48.16 precision (based on lib by https://github.com/fholm) | c# | MIT | reference | [RomanZhu/FixedPoint-Sharp](https://github.com/RomanZhu/FixedPoint-Sharp) @ `2021-11-15 (branch tip at catalogue time)` |
 | [fixie](entries/math/raroni-fixie/README.md) | Fixed point math library for C++ | c++ | unknown | reference | [raroni/fixie](https://github.com/raroni/fixie) @ `2015-04-13 (branch tip at catalogue time)` |
 | [FixMath](entries/math/unity-x-fixmath/README.md) | A fixed-point math library similar to unity.mathematics | c# | MIT | vendored | [Unity-X/FixMath](https://github.com/Unity-X/FixMath) @ `ef27101c592d` |
@@ -1195,6 +1198,7 @@ _Generated 2026-11-26 18:18 UTC · 2020 entries · 516 vendored, 1504 reference-
 | [linbox](entries/math/linbox-team-linbox/README.md) | LinBox - C++ library for exact, high-performance linear algebra  | c++ | LGPL-2.1 | reference | [linbox-team/linbox](https://github.com/linbox-team/linbox) @ `2026-10-30 (branch tip at catalogue time)` |
 | [LinearAlgebra](entries/math/mcordingley-linearalgebra/README.md) | Stand-alone Linear Algebra Library for PHP | php | MIT | reference | [mcordingley/LinearAlgebra](https://github.com/mcordingley/LinearAlgebra) @ `2022-08-27 (branch tip at catalogue time)` |
 | [linmath.h](entries/math/datenwolf-linmath-h/README.md) | a lean linear math library, aimed at graphics programming. Supports vec3, vec4, mat4x4 and quaternions | c | WTFPL | reference | [datenwolf/linmath.h](https://github.com/datenwolf/linmath.h) @ `2023-05-31 (branch tip at catalogue time)` |
+| [liquid-fpm](entries/math/jgaeddert-liquid-fpm/README.md) | fixed-point math library for embedded signal processing | c | GPL-3.0 | reference | [jgaeddert/liquid-fpm](https://github.com/jgaeddert/liquid-fpm) @ `2015-09-01 (branch tip at catalogue time)` |
 | [manif](entries/math/artivis-manif/README.md) | A small C++11 header-only library for Lie theory. | c++ | MIT | vendored | [artivis/manif](https://github.com/artivis/manif) @ `65166b3bfd15` |
 | [math](entries/math/fireblade-engine-math/README.md) | A dependency free, lightweight, fast math library for 2D and 3D vectors, quaternions and matrices in Swift with (optional) SIMD support. | swift | MIT | reference | [fireblade-engine/math](https://github.com/fireblade-engine/math) @ `2026-11-14 (branch tip at catalogue time)` |
 | [math](entries/math/spongepowered-math/README.md) | Immutable math library for Java that offers easy conversion between math types, fast trigonometric functions, vectors, matrices, complex numbers, quaternions, a | java | MIT | reference | [SpongePowered/math](https://github.com/SpongePowered/math) @ `2026-11-21 (branch tip at catalogue time)` |

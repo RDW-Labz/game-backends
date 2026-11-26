@@ -1,0 +1,77 @@
+# FixedMathSharp for Unity — Standard
+
+Deterministic Q32.32 math, Unity adapters, editor tooling, and the MemoryPack
+serializer/runtime in one package for Unity 6.3 LTS (6000.3) or newer.
+
+[Getting started](https://mrdav30.github.io/FixedMathSharp-Unity/guides/getting-started.html) ·
+[API reference](https://mrdav30.github.io/FixedMathSharp-Unity/) ·
+[Serialization](https://mrdav30.github.io/FixedMathSharp-Unity/guides/serialization.html) ·
+[Changelog](CHANGELOG.md)
+
+> [!IMPORTANT]
+> Install either Standard or Lean, never both. They contain the same
+> `FixedMathSharp` core assembly and will conflict if installed together.
+
+## Install
+
+In **Window → Package Manager**, choose **Install package from git URL…**:
+
+```text
+https://github.com/mrdav30/FixedMathSharp-Unity.git?path=/com.mrdav30.fixedmathsharp#v8.0.0
+```
+
+Code in a custom asmdef should reference `FixedMathSharp.Runtime`.
+
+Choose [Lean](https://github.com/mrdav30/FixedMathSharp-Unity/tree/main/com.mrdav30.fixedmathsharp.lean)
+instead when you do not want the MemoryPack runtime dependency. To switch,
+remove Standard, let Unity finish compiling, install Lean, and change custom
+asmdef references to `FixedMathSharp.Lean.Runtime`.
+
+## Quick start
+
+```csharp
+using FixedMathSharp;
+using FixedMathSharp.Geometry;
+using UnityEngine;
+
+Vector3 unityPosition = new(10f, 0f, 4f);
+Vector3d fixedPosition = unityPosition.ToVector3d();
+
+Fixed64 tick = Fixed64.FromDouble(1.0 / 60.0);
+fixedPosition += Vector3d.FromDouble(6.0, 0.0, 2.0) * tick;
+
+Vector3 renderPosition = fixedPosition.ToVector3();
+
+Bounds unityBounds = new(unityPosition, new Vector3(2f, 2f, 2f));
+FixedBoundBox simulationBounds = unityBounds.ToFixedBoundBox();
+```
+
+Convert Unity inputs at the boundary, keep deterministic state in
+FixedMathSharp types, and convert back for rendering.
+
+## Included
+
+- FixedMathSharp core library with MemoryPack serializer/runtime support
+- `Chronicler.Diagnostics`, bundled for the core's shared diagnostics
+- Vector, quaternion, matrix, ray, plane, bounds, frustum, curve, and transform
+  adapters
+- Fixed-point inspector drawers and authoring attributes
+- **Demo Scene** sample for bounds and transform interop
+
+Import the sample from this package's **Samples** tab in Package Manager. Unity
+copies it into the project's `Assets/Samples` folder.
+
+For hashes, exact time conversions, and Chronicler recording/restore APIs, add
+`com.mrdav30.fixedmathsharp.chronicler` after this math base. See the
+[Chronicler integration guide](https://mrdav30.github.io/FixedMathSharp-Unity/guides/chronicler.html).
+
+### Curves and matrices are explicit boundaries
+
+`TryToFixedCurve` accepts only exactly representable Unity curves.
+`BakeToFixedCurve` samples an approximation; bake once during authoring or
+loading, then persist the fixed keys. Matrix adapters transpose between Unity's
+column-vector convention and FixedMathSharp's row-vector convention.
+
+Upgrading an existing project? See the
+[Unity package migration guide](https://github.com/mrdav30/FixedMathSharp-Unity/blob/main/MIGRATION.md) and the
+[FixedMathSharp core migration guide](https://github.com/mrdav30/FixedMathSharp/blob/main/docs/MIGRATION.md).

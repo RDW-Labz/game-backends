@@ -3812,3 +3812,9 @@ One line per 15-minute extension tick, newest last.
   - added math/ferd36-quaternions (MIT, vendored)
   - reference math/upc-virvig-pymotion
   - reference math/spongepowered-math
+
+- **2026-11-26 18:34 UTC** — tick 974: +2 screened, +2 reference, 43 skipped, catalogue=2024
+  - added math/mrdav30-fixedmathsharp-unity (MIT, vendored)
+  - added math/alpacahq-alpacadecimal (MIT, vendored)
+  - reference math/jgaeddert-liquid-fpm
+  - reference math/influenceth-cairo-math-64x61

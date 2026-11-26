@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T18:34:39Z",
+ "category": "math",
+ "commit": "7ce95bc0f8b0",
+ "delivery": "vendored",
+ "description": "alpacahq/alpacadecimal \u2014 Arbitrary-precision fixed-point decimal numbers in go. Similar and compatible with shopspring's decimal.Decimal, but optimized for Alpaca's data sets.",
+ "language": "go",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "alpacadecimal",
+ "size_bytes": 89738,
+ "slug": "alpacahq-alpacadecimal",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 68,
+ "system": "Arbitrary-precision fixed-point decimal numbers in go. Similar and compatible with shopspring's decimal.Decimal, but optimized for Alpaca's data sets.",
+ "upstream": "https://github.com/alpacahq/alpacadecimal",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

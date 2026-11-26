@@ -1,0 +1,24 @@
+{
+    "name": "FixedMathSharp.Unity.Tests.EditMode",
+    "references": [
+        "__RUNTIME_ASSEMBLY__",
+        "FixedMathSharp.Unity.Tests.Runtime",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "FixedMathSharp.dll"__COMPANION_REFERENCES__
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": []
+}
