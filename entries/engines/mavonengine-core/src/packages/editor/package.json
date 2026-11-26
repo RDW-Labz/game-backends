@@ -1,0 +1,72 @@
+{
+  "name": "@mavonengine/editor",
+  "version": "0.0.12",
+  "description": "",
+  "author": "",
+  "license": "MIT",
+  "keywords": [
+    "game-engine",
+    "editor",
+    "3d",
+    "three",
+    "threejs",
+    "webgl",
+    "typescript",
+    "react",
+    "vite",
+    "tweakpane"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/Editor.d.ts",
+      "import": "./dist/Editor.mjs"
+    },
+    "./dist/Editor.css": "./dist/Editor.css"
+  },
+  "main": "./dist/Editor.mjs",
+  "types": "./dist/Editor.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest",
+    "test:ui": "vitest --ui --coverage.enabled true --coverage.reporter html",
+    "test:coverage": "vitest --coverage.enabled true --coverage.reporter json-summary",
+    "test:dev": "vitest"
+  },
+  "peerDependencies": {
+    "@mavonengine/core": "*",
+    "three": "0.187.0"
+  },
+  "dependencies": {
+    "@tweakpane/core": "^2.0.5",
+    "@tweakpane/plugin-essentials": "^0.2.1",
+    "@wavesurfer/react": "^1.0.12",
+    "react-resizable-panels": "^4.6.4",
+    "react-rnd": "^10.5.2",
+    "three-perf": "^1.0.11",
+    "wavesurfer.js": "^8.1.0"
+  },
+  "devDependencies": {
+    "@dimforge/rapier3d-compat": "0.21.0",
+    "@mavonengine/core": "*",
+    "@testing-library/jest-dom": "^8.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@types/three": "0.187.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "@vitest/coverage-v8": "^5.1.0",
+    "@vitest/ui": "^5.1.0",
+    "glob": "^14.0.6",
+    "jsdom": "^31.0.1",
+    "three": "0.187.0",
+    "typescript": "7.0.2",
+    "vite": "^8.3.5",
+    "vite-plugin-glsl": "^1.6.3",
+    "vitest": "^5.1.1"
+  }
+}

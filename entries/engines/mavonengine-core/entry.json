@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T12:42:44Z",
+ "category": "engines",
+ "commit": "2d057fefc892",
+ "delivery": "vendored",
+ "description": "MavonEngine/Core \u2014 A multi / single player typescript threejs game engine for browser based games",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Core",
+ "size_bytes": 5007589,
+ "slug": "mavonengine-core",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 47,
+ "system": "A multi / single player typescript threejs game engine for browser based games",
+ "upstream": "https://github.com/MavonEngine/Core",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

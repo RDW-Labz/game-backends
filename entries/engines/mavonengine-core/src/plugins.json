@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "plugins": [
+    {
+      "package": "@mavonengine/http-monitoring",
+      "name": "HTTP Monitoring",
+      "description": "The game server dashboard in the browser, behind HTTP Basic auth",
+      "target": "server",
+      "engine": ">=0.0.22",
+      "homepage": "https://github.com/MavonEngine/Core/tree/main/packages/plugins/http-monitoring",
+      "readme": "https://raw.githubusercontent.com/MavonEngine/Core/main/packages/plugins/http-monitoring/README.md"
+    },
+    {
+      "package": "@mavonengine/chat",
+      "name": "Chat",
+      "description": "In-game text chat with rate limiting, mutes, proximity chat and an admin API",
+      "target": "both",
+      "engine": ">=0.0.22",
+      "homepage": "https://github.com/MavonEngine/Core/tree/main/packages/plugins/chat",
+      "readme": "https://raw.githubusercontent.com/MavonEngine/Core/main/packages/plugins/chat/README.md"
+    },
+    {
+      "package": "@mavonengine/sqlite",
+      "name": "SQLite",
+      "description": "A SQLite database for the game server and its plugins, on Node's built-in node:sqlite",
+      "target": "server",
+      "engine": ">=0.0.24",
+      "homepage": "https://github.com/MavonEngine/Core/tree/main/packages/plugins/sqlite",
+      "readme": "https://raw.githubusercontent.com/MavonEngine/Core/main/packages/plugins/sqlite/README.md"
+    },
+    {
+      "package": "@mavonengine/auth",
+      "name": "Auth",
+      "description": "Player accounts with logins and sessions, so the game server knows who connects",
+      "target": "both",
+      "engine": ">=0.0.25",
+      "homepage": "https://github.com/MavonEngine/Core/tree/main/packages/plugins/auth",
+      "readme": "https://raw.githubusercontent.com/MavonEngine/Core/main/packages/plugins/auth/README.md"
+    },
+    {
+      "package": "@mavonengine/mail",
+      "name": "Mail",
+      "description": "Send mail from the game server, queued and retried, over SMTP or any nodemailer transport",
+      "target": "server",
+      "engine": ">=0.0.25",
+      "homepage": "https://github.com/MavonEngine/Core/tree/main/packages/plugins/mail",
+      "readme": "https://raw.githubusercontent.com/MavonEngine/Core/main/packages/plugins/mail/README.md"
+    },
+    {
+      "package": "@mavonengine/notifications",
+      "name": "Notifications",
+      "description": "Notify players and anything else notifiable, in the game, by mail and kept to read later: player.notify(new LevelUp())",
+      "target": "both",
+      "engine": ">=0.0.25",
+      "homepage": "https://github.com/MavonEngine/Core/tree/main/packages/plugins/notifications",
+      "readme": "https://raw.githubusercontent.com/MavonEngine/Core/main/packages/plugins/notifications/README.md"
+    }
+  ]
+}

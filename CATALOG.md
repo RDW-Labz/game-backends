@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 12:26 UTC · 1967 entries · 496 vendored, 1471 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 12:42 UTC · 1972 entries · 497 vendored, 1475 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 796 | 191 | 605 |
+| [engines](#engines) — Game engines and engine subsystems | 801 | 192 | 609 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 12:26 UTC · 1967 entries · 496 vendored, 1471 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 796 entries
+**Game engines and engine subsystems** — 801 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -171,6 +171,7 @@ _Generated 2026-11-26 12:26 UTC · 1967 entries · 496 vendored, 1471 reference-
 | [com.unity.entities](entries/engines/needle-mirror-com-unity-entities/README.md) | The Entities package provides a modern Entity Component System (ECS) implementation with a basic set of systems and components made for Unity. 📦 [Mirrored from  | c# | unknown | reference | [needle-mirror/com.unity.entities](https://github.com/needle-mirror/com.unity.entities) @ `2026-09-30 (branch tip at catalogue time)` |
 | [comfy](entries/engines/darthdeus-comfy/README.md) | Comfy is a fun 2D game engine built in Rust. It's designed to be opinionated, productive, and easy to use. | rust | Apache-2.0 | vendored | [darthdeus/comfy](https://github.com/darthdeus/comfy) @ `31aa6efce135` |
 | [ConsoleGameEngine](entries/engines/ollelogdahl-consolegameengine/README.md) | .NET Console Graphics Engine | c# | Unlicense | reference | [ollelogdahl/ConsoleGameEngine](https://github.com/ollelogdahl/ConsoleGameEngine) @ `2021-06-14 (branch tip at catalogue time)` |
+| [Core](entries/engines/mavonengine-core/README.md) | A multi / single player typescript threejs game engine for browser based games | typescript | MIT | vendored | [MavonEngine/Core](https://github.com/MavonEngine/Core) @ `2d057fefc892` |
 | [core](entries/engines/soonfx-engine-core/README.md) | 🎮 TypeScript game numeric engine for RPG & strategy games. Zero dependencies, type-safe formula parsing, battle system simulation, and expression evaluation.  基 | typescript | Apache-2.0 | reference | [soonfx-engine/core](https://github.com/soonfx-engine/core) @ `2025-12-30 (branch tip at catalogue time)` |
 | [corona](entries/engines/coronalabs-corona/README.md) | Solar2D Game Engine main repository (ex Corona SDK) | c++ | MIT | reference | [coronalabs/corona](https://github.com/coronalabs/corona) @ `22368dfc1209` |
 | [cpp-game-engine-book](entries/engines/thisisgame-cpp-game-engine-book/README.md) | 从零编写游戏引擎教程 Writing a game engine tutorial from scratch | c++ | GPL-3.0 | reference | [ThisisGame/cpp-game-engine-book](https://github.com/ThisisGame/cpp-game-engine-book) @ `c7f9f8095274` |
@@ -307,6 +308,7 @@ _Generated 2026-11-26 12:26 UTC · 1967 entries · 496 vendored, 1471 reference-
 | [GamePlus-Editor](entries/engines/individualcoder-gameplus-editor/README.md) | A gui editor for making 3d games in python | python | MIT | reference | [IndividualCoder/GamePlus-Editor](https://github.com/IndividualCoder/GamePlus-Editor) @ `2024-09-29 (branch tip at catalogue time)` |
 | [GameStringer](entries/engines/rouges78-gamestringer/README.md) | Desktop app that auto-detects a game's engine, extracts the text, translates it with local or cloud AI, and re-applies the patch. 20+ engines, 20+ AI providers, | typescript | unknown | reference | [rouges78/GameStringer](https://github.com/rouges78/GameStringer) @ `2026-11-23 (branch tip at catalogue time)` |
 | [gamezone — core](entries/engines/gamezone-core/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | js | Apache-2.0 | vendored | [kunjgit/GameZone](https://github.com/kunjgit/GameZone) @ `ac4ce20` |
+| [gami.fied](entries/engines/gami-fied-gami-fied/README.md) | Gami.Fied is a gamification engine that is built to be self-hosted. Turn any app into a game while having a complete control of your data! | typescript | AGPL-3.0 | reference | [gami-fied/gami.fied](https://github.com/gami-fied/gami.fied) @ `2026-11-23 (branch tip at catalogue time)` |
 | [GBM2K-Framework](entries/engines/oplexitie-gbm2k-framework/README.md) | A 2D Grid Based Movement framework made for the Godot game engine. | gdscript | MIT | reference | [Oplexitie/GBM2K-Framework](https://github.com/Oplexitie/GBM2K-Framework) @ `2026-10-09 (branch tip at catalogue time)` |
 | [gd-plug](entries/engines/imjp94-gd-plug/README.md) | Minimal plugin manager for Godot | gap | MIT | vendored | [imjp94/gd-plug](https://github.com/imjp94/gd-plug) @ `209276d1f00d` |
 | [gdcef](entries/engines/lecrapouille-gdcef/README.md) | [Godot Plugin][Version 0.21.0][Functional] Chromium Embedded Framework Webview for Godot 4 | c++ | MIT | reference | [Lecrapouille/gdcef](https://github.com/Lecrapouille/gdcef) @ `2026-11-05 (branch tip at catalogue time)` |
@@ -421,6 +423,7 @@ _Generated 2026-11-26 12:26 UTC · 1967 entries · 496 vendored, 1471 reference-
 | [Korok](entries/engines/korokengine-korok/README.md) | korok.io - golang game engine | go | Zlib | reference | [KorokEngine/Korok](https://github.com/KorokEngine/Korok) @ `2021-10-23 (branch tip at catalogue time)` |
 | [kotlin-phaser](entries/engines/hiperbou-kotlin-phaser/README.md) | Use Kotlin and Phaser 2D game framework for making HTML5 games. | kotlin | MIT | reference | [hiperbou/kotlin-phaser](https://github.com/hiperbou/kotlin-phaser) @ `2023-11-08 (branch tip at catalogue time)` |
 | [kotlin-voxel](entries/engines/jrenner-kotlin-voxel/README.md) | A voxel engine (like Minecraft) written in Kotlin | kotlin | Apache-2.0 | reference | [jrenner/kotlin-voxel](https://github.com/jrenner/kotlin-voxel) @ `2025-11-21 (branch tip at catalogue time)` |
+| [KotOR.js](entries/engines/kobaltblu-kotor-js/README.md) | A remake of the Odyssey Game Engine that powered KotOR I & II written in JavaScript | typescript | GPL-3.0 | reference | [KobaltBlu/KotOR.js](https://github.com/KobaltBlu/KotOR.js) @ `002dfe03b9a5` |
 | [krkrz](entries/engines/krkrz-krkrz/README.md) | Kirikiri Z Project | c++ | unknown | reference | [krkrz/krkrz](https://github.com/krkrz/krkrz) @ `2024-03-24 (branch tip at catalogue time)` |
 | [LanternEngine](entries/engines/awakenchan-lanternengine/README.md) | Lantern Engine: run your own copy of Bloodborne on Windows. A launcher and engine where the game's code runs natively; bring your own game dump. | c++ | GPL-3.0 | reference | [Awakenchan/LanternEngine](https://github.com/Awakenchan/LanternEngine) @ `5b00f48c20ef` |
 | [leafwing-input-manager](entries/engines/leafwing-studios-leafwing-input-manager/README.md) | A straightforward stateful input manager for the Bevy game engine. | rust | Apache-2.0 | vendored | [Leafwing-Studios/leafwing-input-manager](https://github.com/Leafwing-Studios/leafwing-input-manager) @ `ae5dc59809cc` |
@@ -456,6 +459,7 @@ _Generated 2026-11-26 12:26 UTC · 1967 entries · 496 vendored, 1471 reference-
 | [magictools](entries/engines/ellisonleao-magictools/README.md) | :video_game: :pencil: A list of Game Development resources to make magic happen. | markdown | MIT | vendored | [ellisonleao/magictools](https://github.com/ellisonleao/magictools) @ `7ea0640f128c` |
 | [magnum](entries/engines/mosra-magnum/README.md) | Lightweight and modular C++11 graphics middleware for games and data visualization | c++ | MIT | reference | [mosra/magnum](https://github.com/mosra/magnum) @ `f0907f1c1d12` |
 | [Marching-cubes-on-Unity-3D](entries/engines/javier-garzo-marching-cubes-on-unity-3d/README.md) | Terrain voxel engine with the use of Marching Cubes implemented in Unity 2020.3.17f1 (LTS). | c# | MIT | vendored | [Javier-Garzo/Marching-cubes-on-Unity-3D](https://github.com/Javier-Garzo/Marching-cubes-on-Unity-3D) @ `6c134ba410b9` |
+| [marvel-champions-digital-game](entries/engines/quincarter-marvel-champions-digital-game/README.md) | A digital, fan made, rules-accurate implementation of Marvel Champions: The Card Game, driven by a deterministic rules engine. | typescript | AGPL-3.0 | reference | [quincarter/marvel-champions-digital-game](https://github.com/quincarter/marvel-champions-digital-game) @ `2026-11-26 (branch tip at catalogue time)` |
 | [matchimals.fun](entries/engines/chrisheninger-matchimals-fun/README.md) | 🦁 🃏 📱 An animal matching puzzle card game– built with turn-based game engine boardgame.io and React-Native + React-Native-Web | typescript | MIT | reference | [chrisheninger/matchimals.fun](https://github.com/chrisheninger/matchimals.fun) @ `2026-09-11 (branch tip at catalogue time)` |
 | [material-maker](entries/engines/rodzill4-material-maker/README.md) | A procedural textures authoring and 3D model painting tool based on the Godot game engine | gdscript | MIT | reference | [RodZill4/material-maker](https://github.com/RodZill4/material-maker) @ `2026-11-11 (branch tip at catalogue time)` |
 | [Meridian](entries/engines/naxela-meridian/README.md) | Bridging Godot and Blender | python | unknown | reference | [Naxela/Meridian](https://github.com/Naxela/Meridian) @ `2026-06-08 (branch tip at catalogue time)` |
@@ -554,6 +558,7 @@ _Generated 2026-11-26 12:26 UTC · 1967 entries · 496 vendored, 1471 reference-
 | [phaser](entries/engines/phaserjs-phaser/README.md) | Phaser is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser](https://github.com/phaserjs/phaser) @ `02d8931b626d` |
 | [phaser-candy-crush](entries/engines/anjmao-phaser-candy-crush/README.md) | Candy crush like game made with Phaser HTML5 game engine | typescript | MIT | reference | [anjmao/phaser-candy-crush](https://github.com/anjmao/phaser-candy-crush) @ `2022-09-27 (branch tip at catalogue time)` |
 | [phaser-ce](entries/engines/phaserjs-phaser-ce/README.md) | Phaser CE is a fun, free and fast 2D game framework for making HTML5 games for desktop and mobile web browsers, supporting Canvas and WebGL rendering. | javascript | MIT | reference | [phaserjs/phaser-ce](https://github.com/phaserjs/phaser-ce) @ `2026-11-19 (branch tip at catalogue time)` |
+| [phaser-pixui](entries/engines/skhoroshavin-phaser-pixui/README.md) | A UI library for the Phaser game engine that provides responsive and customizable UI components, tailored specifically for pixel art games. | typescript | MIT | reference | [skhoroshavin/phaser-pixui](https://github.com/skhoroshavin/phaser-pixui) @ `2026-08-16 (branch tip at catalogue time)` |
 | [phd-game](entries/engines/morriswmz-phd-game/README.md) | A random event driven text-based game engine. | typescript | MIT | reference | [morriswmz/phd-game](https://github.com/morriswmz/phd-game) @ `2024-08-19 (branch tip at catalogue time)` |
 | [phoria.js](entries/engines/kevinroast-phoria-js/README.md) | JavaScript library for simple 3D graphics and visualisation on a HTML5 canvas 2D renderer. It does not use WebGL. Works on all HTML5 browsers, including desktop | javascript | BSD-3-Clause | reference | [kevinroast/phoria.js](https://github.com/kevinroast/phoria.js) @ `2026-11-05 (branch tip at catalogue time)` |
 | [php-game-framework](entries/engines/mario-deluna-php-game-framework/README.md) | A 3D / 2D PHP Game Engine, a collection of helpers and wrappers around Glfw. | php | none | reference | [mario-deluna/php-game-framework](https://github.com/mario-deluna/php-game-framework) @ `4017e7578d21` |

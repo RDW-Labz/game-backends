@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T12:42:45Z",
+ "category": "engines",
+ "commit": "2026-08-16 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "skhoroshavin/phaser-pixui \u2014 A UI library for the Phaser game engine that provides responsive and customizable UI components, tailored specifically for pixel art games.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "phaser-pixui",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "skhoroshavin-phaser-pixui",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 44,
+ "system": "A UI library for the Phaser game engine that provides responsive and customizable UI components, tailored specifically for pixel art games.",
+ "upstream": "https://github.com/skhoroshavin/phaser-pixui",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

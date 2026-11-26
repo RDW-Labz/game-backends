@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T12:42:45Z",
+ "category": "engines",
+ "commit": "2026-11-23 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gami-fied/gami.fied \u2014 Gami.Fied is a gamification engine that is built to be self-hosted. Turn any app into a game while having a complete control of your data!",
+ "language": "typescript",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "gami.fied",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "gami-fied-gami-fied",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 41,
+ "system": "Gami.Fied is a gamification engine that is built to be self-hosted. Turn any app into a game while having a complete control of your data!",
+ "upstream": "https://github.com/gami-fied/gami.fied",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

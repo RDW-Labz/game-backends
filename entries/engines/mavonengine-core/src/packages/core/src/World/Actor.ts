@@ -1,0 +1,29 @@
+import EntityState from './Entity/State'
+import GameObject from './GameObject'
+
+/**
+ * An actor can have states associated with
+ */
+export default abstract class Actor extends GameObject {
+  /**
+   * TODO rename to states and then have a get state() that will get the last entry
+   */
+  state: EntityState[] = []
+
+  update(delta: number): void {
+    if (this.state.length) {
+      const res = this.state.at(-1)!.update(delta)
+
+      if (res instanceof EntityState) {
+        this.state.push(res)
+      }
+    }
+  }
+
+  /**
+   * Everything `serialize()` returns as one string, to tell whether the actor changed since it was last looked at
+   */
+  get stateHash() {
+    return JSON.stringify(this.serialize())
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "target": "es2020",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@mavonengine/core/*": ["./src/*"]
+    },
+    "allowUmdGlobalAccess": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src", "Global.d.ts", "package.json"]
+}

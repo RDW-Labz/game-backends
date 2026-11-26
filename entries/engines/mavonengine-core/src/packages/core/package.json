@@ -1,0 +1,90 @@
+{
+  "name": "@mavonengine/core",
+  "type": "module",
+  "version": "0.0.26",
+  "description": "",
+  "author": "",
+  "license": "MIT",
+  "keywords": [
+    "game-engine",
+    "3d",
+    "three",
+    "threejs",
+    "webgl",
+    "typescript",
+    "vite",
+    "rapier",
+    "physics",
+    "multiplayer"
+  ],
+  "exports": {
+    "./vite.config": "./vite.config.js",
+    "./*.glsl": "./dist/*.glsl",
+    "./*.css": "./dist/*.css",
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "README.md",
+    "dist",
+    "vite",
+    "vite.config.js"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "prepare": "node scripts/generate-version.js",
+    "build": "node scripts/generate-version.js && node scripts/clean-buildinfo.js && tsc -p tsconfig.build.json && node scripts/copy-assets.js",
+    "dev": "node scripts/generate-version.js && node scripts/clean-buildinfo.js && tsc -p tsconfig.build.json --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "bench": "vitest bench",
+    "test": "vitest",
+    "test:ui": "vitest --ui --coverage.enabled true --coverage.reporter html",
+    "test:coverage": "vitest --coverage.enabled true --coverage.reporter json-summary",
+    "test:dev": "vitest"
+  },
+  "peerDependencies": {
+    "@dimforge/rapier3d-compat": "0.21.0",
+    "@geckos.io/client": "^3.0.2",
+    "@geckos.io/server": "^3.0.0",
+    "@tweakpane/plugin-essentials": "^0.2.1",
+    "express": "^5.3.0",
+    "kysely": "^0.29.8",
+    "three": "0.187.0",
+    "three-perf": "^1.0.11",
+    "tweakpane": "^4.0.5",
+    "vite": "^8.3.5",
+    "winston": "^3.19.0"
+  },
+  "peerDependenciesMeta": {
+    "kysely": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@dimforge/rapier3d-compat": "0.21.0",
+    "@geckos.io/server": "^3.0.0",
+    "@testing-library/jest-dom": "^8.0.0",
+    "@tweakpane/plugin-essentials": "^0.2.1",
+    "@types/express": "^5.0.3",
+    "@types/three": "0.187.0",
+    "@vitejs/plugin-react": "^6.2.1",
+    "@vitest/coverage-v8": "^5.1.0",
+    "@vitest/ui": "^5.1.0",
+    "jsdom": "^31.0.1",
+    "kysely": "0.29.8",
+    "three": "0.187.0",
+    "three-perf": "^1.0.11",
+    "tweakpane": "^4.0.5",
+    "typescript": "7.0.2",
+    "vite": "^8.3.5",
+    "vite-plugin-glsl": "^1.6.3",
+    "vitest": "^5.1.1"
+  }
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T12:42:41Z",
+ "category": "engines",
+ "commit": "002dfe03b9a5",
+ "delivery": "reference",
+ "description": "KobaltBlu/KotOR.js \u2014 A remake of the Odyssey Game Engine that powered KotOR I & II written in JavaScript",
+ "language": "typescript",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "copyleft-reference",
+ "name": "KotOR.js",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 8575337,
+ "slug": "kobaltblu-kotor-js",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 159,
+ "system": "A remake of the Odyssey Game Engine that powered KotOR I & II written in JavaScript",
+ "upstream": "https://github.com/KobaltBlu/KotOR.js",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

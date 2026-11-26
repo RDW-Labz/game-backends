@@ -1,0 +1,33 @@
+{
+  "name": "@mavonengine/create-bootstrap",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Deprecated: use 'npx @mavonengine/cli create'. Forwards to it.",
+  "license": "MIT",
+  "bin": {
+    "create-bootstrap": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc -p tsconfig.check.json",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@mavonengine/cli": ">=0.0.1 <1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^5.1.0",
+    "tsup": "^9.0.0",
+    "typescript": "7.0.2",
+    "vitest": "^5.1.1"
+  }
+}

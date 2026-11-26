@@ -3715,3 +3715,10 @@ One line per 15-minute extension tick, newest last.
   - added engines/ascensiongamedev-intersect-engine (GPL-3.0, reference)
   - reference engines/kermalis-pokemongameengine
   - reference engines/neoaxis-neoaxisengine
+
+- **2026-11-26 12:42 UTC** — tick 952: +2 screened, +3 reference, 52 skipped, catalogue=1972
+  - added engines/kobaltblu-kotor-js (GPL-3.0, reference)
+  - added engines/mavonengine-core (MIT, vendored)
+  - reference engines/skhoroshavin-phaser-pixui
+  - reference engines/quincarter-marvel-champions-digital-game
+  - reference engines/gami-fied-gami-fied

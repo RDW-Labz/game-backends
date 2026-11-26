@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T12:42:45Z",
+ "category": "engines",
+ "commit": "2026-11-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "quincarter/marvel-champions-digital-game \u2014 A digital, fan made, rules-accurate implementation of Marvel Champions: The Card Game, driven by a deterministic rules engine.",
+ "language": "typescript",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "marvel-champions-digital-game",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "quincarter-marvel-champions-digital-game",
+ "source": "github-search:game engine language:typescript stars:>40",
+ "stars": 43,
+ "system": "A digital, fan made, rules-accurate implementation of Marvel Champions: The Card Game, driven by a deterministic rules engine.",
+ "upstream": "https://github.com/quincarter/marvel-champions-digital-game",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
