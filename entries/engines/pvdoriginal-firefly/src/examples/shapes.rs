@@ -1,0 +1,288 @@
+use bevy::{
+    camera::Hdr, color::palettes::css::RED, input::mouse::MouseWheel, prelude::*,
+    window::PrimaryWindow,
+};
+use bevy_firefly::prelude::*;
+
+// A simple example showcasing the different occluder shapes.
+// You can click around the screen to reposition the light.
+
+fn main() {
+    let mut app = App::new();
+
+    app.add_plugins((
+        DefaultPlugins
+            .set(AssetPlugin {
+                watch_for_changes_override: Some(true),
+                ..default()
+            })
+            .set(ImagePlugin::default_nearest()),
+        FireflyPlugin,
+        FireflyGizmosPlugin,
+    ));
+
+    app.insert_resource(FireflyGizmoStyle {
+        light_inner_color: Color::NONE,
+        ..default()
+    });
+
+    app.add_systems(Startup, setup);
+    app.add_systems(Update, (move_light, move_camera));
+
+    app.run();
+}
+
+fn setup(mut commands: Commands) {
+    let mut projection = OrthographicProjection::default_2d();
+    projection.scale = 0.7;
+
+    // camera
+    commands.spawn((
+        Camera2d,
+        Projection::Orthographic(projection),
+        Hdr,
+        FireflyConfig {
+            ambient_brightness: 0.3,
+            ..default()
+        },
+        Transform::from_translation(vec3(-230., 75., 0.)),
+    ));
+
+    // light
+    commands.spawn((
+        PointLight2d {
+            color: Color::srgb(1.0, 0.5, 1.0),
+            intensity: 10.0,
+            radius: 450.0,
+            core: LightCore {
+                radius: 30.0,
+                boost: 50.0,
+                ..default()
+            },
+            ..default()
+        },
+        Transform::from_translation(vec3(-150., 120.0, 0.0)),
+    ));
+
+    commands.spawn((
+        Occluder2d::polygon(vec![
+            vec2(0.0, 0.0),
+            vec2(0.0, 20.0),
+            vec2(20.0, 20.0),
+            vec2(20.0, 0.0),
+        ])
+        .unwrap(),
+        Transform::from_translation(vec3(-250., 164., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::capsule(30.0, 10.0),
+        Transform::from_translation(vec3(-420., 230., 0.))
+            .with_rotation(Quat::from_rotation_z(0.9)),
+    ));
+
+    commands.spawn((
+        Occluder2d::rectangle(10., 10.),
+        Transform::from_translation(vec3(-166., 56., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::rectangle(10., 10.),
+        Transform::from_translation(vec3(-417., 106., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::polygon(vec![
+            vec2(-302., 6.),
+            vec2(-358., 45.),
+            vec2(-329., 81.),
+            vec2(-289., 99.),
+            vec2(-255., 91.),
+            vec2(-237., 33.),
+        ])
+        .unwrap(),
+        Transform::default(),
+    ));
+
+    commands.spawn((
+        Occluder2d::polygon(vec![vec2(50., 100.), vec2(47., 130.), vec2(55., 125.)]).unwrap(),
+        Transform::default(),
+    ));
+
+    commands.spawn((
+        Occluder2d::polygon(vec![vec2(55., 135.), vec2(47., 140.), vec2(55., 155.)]).unwrap(),
+    ));
+
+    commands.spawn((
+        Occluder2d::polyline(vec![
+            vec2(-97., 108.),
+            vec2(-58., 163.),
+            vec2(-25., 105.),
+            vec2(-109., 53.),
+            vec2(-97., 100.),
+        ])
+        .unwrap(),
+        Transform::default(),
+    ));
+
+    commands.spawn((
+        Occluder2d::polygon(
+            vec![
+                vec2(-428., 135.),
+                vec2(-482., 158.),
+                vec2(-475., 231.),
+                vec2(-438., 290.),
+                vec2(-388., 299.),
+                vec2(-380., 278.),
+                vec2(-358., 276.),
+                vec2(-342., 208.),
+                vec2(-429., 172.),
+            ]
+            .iter()
+            .rev()
+            .cloned()
+            .collect::<Vec<_>>(),
+        )
+        .unwrap(),
+        Transform::default(),
+    ));
+
+    commands.spawn((
+        Occluder2d::circle(23.),
+        Transform::from_translation(vec3(-216., -33., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::rectangle(69., 10.),
+        Transform::from_translation(vec3(-387., 81., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::polygon(vec![
+            vec2(-249., 243.),
+            vec2(-262., 163.),
+            vec2(-161., 147.),
+            vec2(-135., 237.),
+            vec2(-216., 261.),
+        ])
+        .unwrap(),
+        Transform::default(),
+    ));
+
+    commands.spawn((
+        Occluder2d::round_rectangle(53., 38., 23.),
+        Transform::from_translation(vec3(-58., -1., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::rectangle(16., 76.),
+        Transform::from_translation(vec3(-18., 211., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::rectangle(10., 20.),
+        Transform::from_translation(vec3(-335., 133., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::rectangle(15., 40.),
+        Transform::from_translation(vec3(-258., 278., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::rectangle(10., 10.),
+        Transform::from_translation(vec3(-203., 91., 0.)),
+    ));
+
+    commands.spawn((
+        Occluder2d::capsule(65., 11.),
+        Transform::from_translation(vec3(-127., -102., 0.))
+            .with_rotation(Quat::from_rotation_z(0.5)),
+    ));
+
+    commands.spawn((
+        Occluder2d::rectangle(10., 10.),
+        Transform::from_translation(vec3(-109., 210., 0.)),
+    ));
+
+    let spline = CubicCardinalSpline::new_catmull_rom(vec![
+        vec2(0., 0.),
+        vec2(100., 0.),
+        vec2(120., 150.),
+        vec2(54., 120.),
+        vec2(0., 170.),
+    ])
+    .to_curve()
+    .unwrap();
+
+    let samples = 10 * spline.segments().len();
+
+    commands.spawn((
+        Occluder2d::polyline(spline.iter_positions(samples).collect::<Vec<_>>()).unwrap(),
+        Transform::from_translation(vec3(-510., -100., 0.)),
+    ));
+}
+
+fn move_light(
+    mut light: Single<(&mut Transform, &mut PointLight2d)>,
+    window: Single<&Window, With<PrimaryWindow>>,
+    camera: Single<(&Camera, &GlobalTransform)>,
+    buttons: Res<ButtonInput<MouseButton>>,
+    mut scroll: MessageReader<MouseWheel>,
+    mut gizmos: Gizmos,
+) {
+    for scroll_event in scroll.read() {
+        light.1.core.radius += scroll_event.y * 5.0;
+        light.1.core.radius = light.1.core.radius.max(0.0);
+    }
+
+    if !buttons.pressed(MouseButton::Left) {
+        return;
+    }
+
+    let Some(cursor_position) = window
+        .cursor_position()
+        .and_then(|cursor| camera.0.viewport_to_world_2d(&camera.1, cursor).ok())
+    else {
+        return;
+    };
+
+    gizmos.circle_2d(Isometry2d::from_translation(cursor_position), 5., RED);
+
+    light.0.translation = cursor_position.extend(0.);
+}
+
+const CAMERA_SPEED: f32 = 60.0;
+fn move_camera(
+    mut camera: Single<(&mut Transform, &mut FireflyConfig, &mut Projection)>,
+    keys: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+) {
+    if keys.just_pressed(KeyCode::Space) {
+        camera.1.lightmap_filtering = !camera.1.lightmap_filtering;
+    }
+
+    if keys.pressed(KeyCode::KeyA) {
+        camera.0.translation.x -= time.delta_secs() * CAMERA_SPEED;
+    }
+    if keys.pressed(KeyCode::KeyD) {
+        camera.0.translation.x += time.delta_secs() * CAMERA_SPEED;
+    }
+    if keys.pressed(KeyCode::KeyS) {
+        camera.0.translation.y -= time.delta_secs() * CAMERA_SPEED;
+    }
+    if keys.pressed(KeyCode::KeyW) {
+        camera.0.translation.y += time.delta_secs() * CAMERA_SPEED;
+    }
+
+    let Projection::Orthographic(ref mut projection) = *camera.2 else {
+        return;
+    };
+
+    if keys.pressed(KeyCode::ArrowLeft) {
+        projection.scale += time.delta_secs();
+    }
+    if keys.pressed(KeyCode::ArrowRight) {
+        projection.scale = (projection.scale - time.delta_secs()).max(0.01);
+    }
+}

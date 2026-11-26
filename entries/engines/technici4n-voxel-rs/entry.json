@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T11:54:40Z",
+ "category": "engines",
+ "commit": "fc4c18f5b837",
+ "delivery": "vendored",
+ "description": "Technici4n/voxel-rs \u2014 Voxel-rs is a multiplayer Minecraft-like game engine written in Rust. The game is currently under heavy development and it's not yet playable. We are still looking for a better name...",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "voxel-rs",
+ "size_bytes": 382364,
+ "slug": "technici4n-voxel-rs",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 156,
+ "system": "Voxel-rs is a multiplayer Minecraft-like game engine written in Rust. The game is currently under heavy development and it's not yet playable. We are still look",
+ "upstream": "https://github.com/Technici4n/voxel-rs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

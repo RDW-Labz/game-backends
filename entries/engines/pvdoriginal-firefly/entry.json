@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T11:54:37Z",
+ "category": "engines",
+ "commit": "6cf3557b8e5b",
+ "delivery": "vendored",
+ "description": "PVDoriginal/firefly \u2014 2D Lighting for the Bevy Game Engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-APACHE",
+ "license_verdict": "clean",
+ "name": "firefly",
+ "size_bytes": 280764,
+ "slug": "pvdoriginal-firefly",
+ "source": "github-search:game engine language:rust stars:>40",
+ "stars": 158,
+ "system": "2D Lighting for the Bevy Game Engine ",
+ "upstream": "https://github.com/PVDoriginal/firefly",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

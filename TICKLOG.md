@@ -3701,3 +3701,7 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 11:22 UTC** — tick 947: +0 screened, +0 reference, 60 skipped, catalogue=1959
 
 - **2026-11-26 11:38 UTC** — tick 948: +0 screened, +0 reference, 60 skipped, catalogue=1959
+
+- **2026-11-26 11:54 UTC** — tick 949: +2 screened, +0 reference, 48 skipped, catalogue=1961
+  - added engines/pvdoriginal-firefly (Apache-2.0, vendored)
+  - added engines/technici4n-voxel-rs (MIT, vendored)

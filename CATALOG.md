@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 11:38 UTC · 1959 entries · 492 vendored, 1467 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 11:54 UTC · 1961 entries · 494 vendored, 1467 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
+| [engines](#engines) — Game engines and engine subsystems | 790 | 189 | 601 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 11:38 UTC · 1959 entries · 492 vendored, 1467 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 788 entries
+**Game engines and engine subsystems** — 790 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -264,6 +264,7 @@ _Generated 2026-11-26 11:38 UTC · 1959 entries · 492 vendored, 1467 reference-
 | [Faster.Map](entries/engines/wsm2110-faster-map/README.md) | Faster.Map — A high-performance SIMD-accelerated .NET dictionary and hashmap designed for extreme speed, scalability, and low memory overhead. Ideal for real-ti | c# | MIT | reference | [Wsm2110/Faster.Map](https://github.com/Wsm2110/Faster.Map) @ `2026-07-26 (branch tip at catalogue time)` |
 | [feldspar](entries/engines/bonsairobo-feldspar/README.md) | Procedural voxel worlds for Bevy Engine. | rust | MIT | reference | [bonsairobo/feldspar](https://github.com/bonsairobo/feldspar) @ `2022-08-13 (branch tip at catalogue time)` |
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
+| [firefly](entries/engines/pvdoriginal-firefly/README.md) | 2D Lighting for the Bevy Game Engine  | rust | Apache-2.0 | vendored | [PVDoriginal/firefly](https://github.com/PVDoriginal/firefly) @ `6cf3557b8e5b` |
 | [flame](entries/engines/flame-engine-flame/README.md) | A Flutter based game engine. | dart | MIT | vendored | [flame-engine/flame](https://github.com/flame-engine/flame) @ `c4c6b3f163d5` |
 | [flappyphpant](entries/engines/phpgl-flappyphpant/README.md) | A very simple Flappy Bird-like game written in PHP, built on PHP-GLFW and the VISU framework. | php | MIT | vendored | [phpgl/flappyphpant](https://github.com/phpgl/flappyphpant) @ `764e716a1080` |
 | [FlashPunk](entries/engines/useflashpunk-flashpunk/README.md) | A free ActionScript 3 library designed for developing 2D Flash games. It provides you with a fast, clean framework to prototype and develop your games in. This  | actionscript | MIT | reference | [useflashpunk/FlashPunk](https://github.com/useflashpunk/FlashPunk) @ `2016-03-31 (branch tip at catalogue time)` |
@@ -758,6 +759,7 @@ _Generated 2026-11-26 11:38 UTC · 1959 entries · 492 vendored, 1467 reference-
 | [voxel-engine](entries/engines/sjoerdev-voxel-engine/README.md) | This is a 3d graphics engine that focusses on rendering voxels as fast as possible without sacrificing dynamic geometry. | c# | MIT | reference | [sjoerdev/voxel-engine](https://github.com/sjoerdev/voxel-engine) @ `2026-08-16 (branch tip at catalogue time)` |
 | [voxel-mesh-generation](entries/engines/vercidium-voxel-mesh-generation/README.md) | Optimised voxel mesh generation, written in C# and open sourced from the Vercidium Engine. | c# | Apache-2.0 | reference | [Vercidium/voxel-mesh-generation](https://github.com/Vercidium/voxel-mesh-generation) @ `2024-03-27 (branch tip at catalogue time)` |
 | [voxel-physics-engine](entries/engines/fenomas-voxel-physics-engine/README.md) | Simple but physical engine for voxels. Demo:  | javascript | MIT | reference | [fenomas/voxel-physics-engine](https://github.com/fenomas/voxel-physics-engine) @ `2024-03-15 (branch tip at catalogue time)` |
+| [voxel-rs](entries/engines/technici4n-voxel-rs/README.md) | Voxel-rs is a multiplayer Minecraft-like game engine written in Rust. The game is currently under heavy development and it's not yet playable. We are still look | rust | MIT | vendored | [Technici4n/voxel-rs](https://github.com/Technici4n/voxel-rs) @ `fc4c18f5b837` |
 | [voxel-server](entries/engines/max-mapper-voxel-server/README.md) | multiplayer server for voxel-engine | javascript | none | reference | [max-mapper/voxel-server](https://github.com/max-mapper/voxel-server) @ `4bb3ee21f312` |
 | [voxelcore](entries/engines/mihailris-voxelcore/README.md) | VoxelCore – voxel game engine in C++ | c++ | MPL-2.0 | reference | [MihailRis/voxelcore](https://github.com/MihailRis/voxelcore) @ `2026-11-22 (branch tip at catalogue time)` |
 | [VoxelEngine](entries/engines/seannikkel-voxelengine/README.md) | Custom voxel engine written in C++ and OpenGL | c++ | MIT | vendored | [SeanNikkel/VoxelEngine](https://github.com/SeanNikkel/VoxelEngine) @ `31949ccd1836` |
