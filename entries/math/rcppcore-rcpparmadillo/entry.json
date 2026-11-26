@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T18:02:38Z",
+ "category": "math",
+ "commit": "2d8b12ba9480",
+ "delivery": "vendored",
+ "description": "RcppCore/RcppArmadillo \u2014 Rcpp integration for the Armadillo templated linear algebra library",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "COPYRIGHTS",
+ "license_verdict": "clean",
+ "name": "RcppArmadillo",
+ "size_bytes": 5821693,
+ "slug": "rcppcore-rcpparmadillo",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 210,
+ "system": "Rcpp integration for the Armadillo templated linear algebra library",
+ "upstream": "https://github.com/RcppCore/RcppArmadillo",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

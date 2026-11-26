@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 17:46 UTC · 2014 entries · 512 vendored, 1502 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 18:02 UTC · 2016 entries · 514 vendored, 1502 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
 | [physics](#physics) — Physics | 249 | 57 | 192 |
-| [math](#math) — Math libraries | 171 | 51 | 120 |
+| [math](#math) — Math libraries | 173 | 53 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
@@ -1108,7 +1108,7 @@ _Generated 2026-11-26 17:46 UTC · 2014 entries · 512 vendored, 1502 reference-
 
 ## math
 
-**Math libraries** — 171 entries
+**Math libraries** — 173 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1116,6 +1116,7 @@ _Generated 2026-11-26 17:46 UTC · 2014 entries · 512 vendored, 1502 reference-
 | [amgcl](entries/math/ddemidov-amgcl/README.md) | C++ library for solving large sparse linear systems with algebraic multigrid method | c++ | MIT | reference | [ddemidov/amgcl](https://github.com/ddemidov/amgcl) @ `2026-11-18 (branch tip at catalogue time)` |
 | [armadillo-code](entries/math/conradsnicta-armadillo-code/README.md) | Armadillo: fast C++ library for linear algebra (matrix maths) & scientific computing | n/a | unknown | reference | [conradsnicta/armadillo-code](https://github.com/conradsnicta/armadillo-code) @ `2026-10-21 (branch tip at catalogue time)` |
 | [AudioTool](entries/math/lincollincol-audiotool/README.md) | Android library that provides audio manipulation functions like increase/decrease speed, pitch, volume, bass, etc. Library also provides cut, noise remover, and | java | Apache-2.0 | vendored | [lincollincol/AudioTool](https://github.com/lincollincol/AudioTool) @ `b0f508159176` |
+| [BasicLinearAlgebra](entries/math/tomstewart89-basiclinearalgebra/README.md) | A library for using matrices and linear algebra on Arduino | c++ | MIT | vendored | [tomstewart89/BasicLinearAlgebra](https://github.com/tomstewart89/BasicLinearAlgebra) @ `a87a7fe310f5` |
 | [biomes-game — math](entries/math/biomes-game-math/README.md) | vector/matrix/quaternion math substrate | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [BlueprintRotationLibrary](entries/math/craftedcart-blueprintrotationlibrary/README.md) | UE4 blueprint nodes to work with Quaternions | c++ | Unlicense | reference | [CraftedCart/BlueprintRotationLibrary](https://github.com/CraftedCart/BlueprintRotationLibrary) @ `2021-12-04 (branch tip at catalogue time)` |
 | [brine-fp](entries/math/zfedoran-brine-fp/README.md) | Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications. | rust | Apache-2.0 | vendored | [zfedoran/brine-fp](https://github.com/zfedoran/brine-fp) @ `377beff01dfe` |
@@ -1243,6 +1244,7 @@ _Generated 2026-11-26 17:46 UTC · 2014 entries · 512 vendored, 1502 reference-
 | [RandBLAS](entries/math/ballisticla-randblas/README.md) | A header-only C++ library for sketching in randomized linear algebra | c++ | unknown | reference | [BallisticLA/RandBLAS](https://github.com/BallisticLA/RandBLAS) @ `2026-11-24 (branch tip at catalogue time)` |
 | [RandLAPACK](entries/math/ballisticla-randlapack/README.md) | A high-performance C++ library for randomized numerical linear algebra | c++ | unknown | reference | [BallisticLA/RandLAPACK](https://github.com/BallisticLA/RandLAPACK) @ `2026-11-23 (branch tip at catalogue time)` |
 | [random-js](entries/math/ckknight-random-js/README.md) | A mathematically correct random number generator library for JavaScript. | typescript | MIT | vendored | [ckknight/random-js](https://github.com/ckknight/random-js) @ `f000fd5c286b` |
+| [RcppArmadillo](entries/math/rcppcore-rcpparmadillo/README.md) | Rcpp integration for the Armadillo templated linear algebra library | c++ | Apache-2.0 | vendored | [RcppCore/RcppArmadillo](https://github.com/RcppCore/RcppArmadillo) @ `2d8b12ba9480` |
 | [RcppEigen](entries/math/rcppcore-rcppeigen/README.md) | Rcpp integration for the Eigen templated linear algebra library | c++ | none | reference | [RcppCore/RcppEigen](https://github.com/RcppCore/RcppEigen) @ `c6a32a22da4f` |
 | [roma](entries/math/naver-roma/README.md) | RoMa: A lightweight library to deal with 3D rotations in PyTorch. | python | BSD-3-Clause | vendored | [naver/roma](https://github.com/naver/roma) @ `2d7484bfc54d` |
 | [rulinalg](entries/math/athemathmo-rulinalg/README.md) | A linear algebra library written in Rust | rust | MIT | reference | [AtheMathmo/rulinalg](https://github.com/AtheMathmo/rulinalg) @ `2022-05-18 (branch tip at catalogue time)` |

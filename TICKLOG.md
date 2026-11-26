@@ -3802,3 +3802,7 @@ One line per 15-minute extension tick, newest last.
   - added physics/diwi-diewald-fluid (GPL-2.0, reference)
   - reference physics/evensol-neqsim-colab
   - reference physics/fluidize-inc-fluidize-python
+
+- **2026-11-26 18:02 UTC** — tick 972: +2 screened, +0 reference, 31 skipped, catalogue=2016
+  - added math/tomstewart89-basiclinearalgebra (MIT, vendored)
+  - added math/rcppcore-rcpparmadillo (Apache-2.0, vendored)

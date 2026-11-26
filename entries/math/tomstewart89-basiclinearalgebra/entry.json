@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T18:02:36Z",
+ "category": "math",
+ "commit": "a87a7fe310f5",
+ "delivery": "vendored",
+ "description": "tomstewart89/BasicLinearAlgebra \u2014 A library for using matrices and linear algebra on Arduino",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "BasicLinearAlgebra",
+ "size_bytes": 61041,
+ "slug": "tomstewart89-basiclinearalgebra",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 224,
+ "system": "A library for using matrices and linear algebra on Arduino",
+ "upstream": "https://github.com/tomstewart89/BasicLinearAlgebra",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
