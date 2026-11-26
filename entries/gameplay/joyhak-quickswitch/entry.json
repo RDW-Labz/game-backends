@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T04:58:43Z",
+ "category": "gameplay",
+ "commit": "2026-11-05 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JoyHak/QuickSwitch \u2014 Quickly Switch to the folder from any file manager.",
+ "language": "autohotkey",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "QuickSwitch",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "joyhak-quickswitch",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 163,
+ "system": "Quickly Switch to the folder from any file manager.",
+ "upstream": "https://github.com/JoyHak/QuickSwitch",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

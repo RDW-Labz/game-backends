@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T04:58:41Z",
+ "category": "gameplay",
+ "commit": "9925c51d0e07",
+ "delivery": "vendored",
+ "description": "itausi/Pathfinding-Visualizer \u2014 Pathfinding visualizations with Python and Pygame",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Pathfinding-Visualizer",
+ "size_bytes": 106054,
+ "slug": "itausi-pathfinding-visualizer",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 229,
+ "system": "Pathfinding visualizations with Python and Pygame",
+ "upstream": "https://github.com/itausi/Pathfinding-Visualizer",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

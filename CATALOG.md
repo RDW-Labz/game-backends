@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 04:42 UTC · 1916 entries · 479 vendored, 1437 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 04:58 UTC · 1922 entries · 480 vendored, 1442 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 04:42 UTC · 1916 entries · 479 vendored, 1437 reference-
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 259 | 66 | 193 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 265 | 67 | 198 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
@@ -1280,10 +1280,11 @@ _Generated 2026-11-26 04:42 UTC · 1916 entries · 479 vendored, 1437 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 259 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 265 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
+| [04_BattleTank](entries/gameplay/unrealcourse-04-battletank/README.md) | An open-world head-to-head tank fight with simple AI, terrain, and advanced control system in Unreal 4. (ref: BT_URC) http://gdev.tv/urcgithub | c++ | MIT | reference | [UnrealCourse/04_BattleTank](https://github.com/UnrealCourse/04_BattleTank) @ `2020-10-01 (branch tip at catalogue time)` |
 | [A-Pathfinding-Visualization](entries/gameplay/devoncrawford-a-pathfinding-visualization/README.md) | First attempt at an efficient pathfinding algorithm in Java. I made this visualization to show the beauty of pathfinding. You can modify all major features of m | java | MIT | vendored | [DevonCrawford/A-Pathfinding-Visualization](https://github.com/DevonCrawford/A-Pathfinding-Visualization) @ `78ea534858a1` |
 | [A-Star-Pathfinding-for-Platformers](entries/gameplay/tutsplus-a-star-pathfinding-for-platformers/README.md) | How to Adapt A* Pathfinding to a 2D Grid-Based Platformer | c# | BSD-2-Clause | reference | [tutsplus/A-Star-Pathfinding-for-Platformers](https://github.com/tutsplus/A-Star-Pathfinding-for-Platformers) @ `2015-12-29 (branch tip at catalogue time)` |
 | [abstreet — pathfind](entries/gameplay/abstreet-pathfind/README.md) | combat, AI, pathing, quest or inventory logic | rs | Apache-2.0 | vendored | [a-b-street/abstreet](https://github.com/a-b-street/abstreet) @ `0964f29` |
@@ -1423,6 +1424,7 @@ _Generated 2026-11-26 04:42 UTC · 1916 entries · 479 vendored, 1437 reference-
 | [navmesh](entries/gameplay/sunxvming-navmesh/README.md) | 导航网格寻路C++实现版(入门版) | c | GPL-3.0 | reference | [sunxvming/navmesh](https://github.com/sunxvming/navmesh) @ `38741fcee3be` |
 | [NavMeshPlus](entries/gameplay/h8man-navmeshplus/README.md) | Unity NavMesh 2D Pathfinding | c# | MIT | vendored | [h8man/NavMeshPlus](https://github.com/h8man/NavMeshPlus) @ `d615919ce2d1` |
 | [NexoPOS](entries/gameplay/blair2004-nexopos/README.md) | Laravel-based web POS system with Vue.js, Tailwind CSS, inventory management, sales processing, customer records, reports, and modular extension support. | php | GPL-3.0 | reference | [Blair2004/NexoPOS](https://github.com/Blair2004/NexoPOS) @ `2026-11-22 (branch tip at catalogue time)` |
+| [NoiseModelling](entries/gameplay/universite-gustave-eiffel-noisemodelling/README.md) | An open-source model for calculating noise maps.  | java | GPL-3.0 | reference | [Universite-Gustave-Eiffel/NoiseModelling](https://github.com/Universite-Gustave-Eiffel/NoiseModelling) @ `75ebbe9442ea` |
 | [NQTR-System](entries/gameplay/drincs-productions-nqtr-system/README.md) | A complete system introducing the concepts of location, time and event, producing the framework of a not-quite-point-and-click adventure game. | ren'py | MIT | vendored | [DRincs-Productions/NQTR-System](https://github.com/DRincs-Productions/NQTR-System) @ `06582259881f` |
 | [omt-router](entries/gameplay/abelvm-omt-router/README.md) | Client-side routing library for OpenMapTiles vector tiles. Computes optimal routes for pedestrian, car, and bicycle travel entirely client-side — no routing bac | javascript | AGPL-3.0 | reference | [AbelVM/omt-router](https://github.com/AbelVM/omt-router) @ `2026-11-19 (branch tip at catalogue time)` |
 | [Open-Aimbot](entries/gameplay/zackanimates08-open-aimbot/README.md) | Open Aimbot is a universal open source framework. It offers a wide selection of extensive functionality. We develop various utilities for Roblox, security syste | n/a | MIT | reference | [Zackanimates08/Open-Aimbot](https://github.com/Zackanimates08/Open-Aimbot) @ `2026-03-01 (branch tip at catalogue time)` |
@@ -1442,6 +1444,7 @@ _Generated 2026-11-26 04:42 UTC · 1916 entries · 479 vendored, 1437 reference-
 | [Pathfinding](entries/gameplay/seblague-pathfinding/README.md) | see upstream | c# | MIT | vendored | [SebLague/Pathfinding](https://github.com/SebLague/Pathfinding) @ `b938872d12bb` |
 | [pathfinding-lab](entries/gameplay/rvhuang-pathfinding-lab/README.md) | Run, test and compare all algorithms and heuristic functions | typescript | MIT | vendored | [rvhuang/pathfinding-lab](https://github.com/rvhuang/pathfinding-lab) @ `3bbe6bc31d66` |
 | [Pathfinding-Visualizer](entries/gameplay/clementmihailescu-pathfinding-visualizer/README.md) | A visualization tool for various pathfinding algorithms. | css | unknown | reference | [clementmihailescu/Pathfinding-Visualizer](https://github.com/clementmihailescu/Pathfinding-Visualizer) @ `2023-09-23 (branch tip at catalogue time)` |
+| [Pathfinding-Visualizer](entries/gameplay/itausi-pathfinding-visualizer/README.md) | Pathfinding visualizations with Python and Pygame | python | MIT | vendored | [itausi/Pathfinding-Visualizer](https://github.com/itausi/Pathfinding-Visualizer) @ `9925c51d0e07` |
 | [pathfinding-visualizer](entries/gameplay/princhcanal-pathfinding-visualizer/README.md) | see upstream | typescript | none | reference | [princhcanal/pathfinding-visualizer](https://github.com/princhcanal/pathfinding-visualizer) @ `eaf2556eeb8f` |
 | [pathfinding-visualizer](entries/gameplay/techprep-gh-pathfinding-visualizer/README.md) | see upstream | typescript | MIT | reference | [techprep-gh/pathfinding-visualizer](https://github.com/techprep-gh/pathfinding-visualizer) @ `2024-06-18 (branch tip at catalogue time)` |
 | [pathfinding-visualizer](entries/gameplay/tylermommsen-pathfinding-visualizer/README.md) | Pathfinding and Maze Visualization Tool | typescript | unknown | reference | [TylerMommsen/pathfinding-visualizer](https://github.com/TylerMommsen/pathfinding-visualizer) @ `2024-09-18 (branch tip at catalogue time)` |
@@ -1463,11 +1466,13 @@ _Generated 2026-11-26 04:42 UTC · 1916 entries · 479 vendored, 1437 reference-
 | [Procedural_Planet_Generation](entries/gameplay/dennisboon-procedural-planet-generation/README.md) | Procedural planet generation application made in Unity for the Oculus Quest. | c# | none | reference | [DennisBoon/Procedural_Planet_Generation](https://github.com/DennisBoon/Procedural_Planet_Generation) @ `863b32640d48` |
 | [py_trees](entries/gameplay/splintered-reality-py-trees/README.md) | Python implementation of behaviour trees. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees](https://github.com/splintered-reality/py_trees) @ `49bcffd069af` |
 | [py_trees_ros_viewer](entries/gameplay/splintered-reality-py-trees-ros-viewer/README.md) | A Qt-Js hybrid application for visualisation of executing or log-replayed behaviour trees in a ROS2 ecosystem. | python | BSD-3-Clause | vendored | [splintered-reality/py_trees_ros_viewer](https://github.com/splintered-reality/py_trees_ros_viewer) @ `2e3e8bfd72c2` |
+| [pyastar2d](entries/gameplay/hjweide-pyastar2d/README.md) | A very simple A* implementation in C++ callable from Python for pathfinding on a two-dimensional grid. | python | MIT | reference | [hjweide/pyastar2d](https://github.com/hjweide/pyastar2d) @ `2026-02-22 (branch tip at catalogue time)` |
 | [python-astar](entries/gameplay/jrialland-python-astar/README.md) | Simple implementation of the a-star algorithm in Python 🌟 | python | BSD-3-Clause | reference | [jrialland/python-astar](https://github.com/jrialland/python-astar) @ `2026-10-27 (branch tip at catalogue time)` |
 | [python-pathfinding](entries/gameplay/brean-python-pathfinding/README.md) | Implementation of common pathfinding algorithms | python | MIT | vendored | [brean/python-pathfinding](https://github.com/brean/python-pathfinding) @ `e271d46f53b3` |
 | [python-tcod](entries/gameplay/libtcod-python-tcod/README.md) | A high-performance Python port of libtcod.  Includes the libtcodpy module for backwards compatibility with older projects. | python | BSD-2-Clause | reference | [libtcod/python-tcod](https://github.com/libtcod/python-tcod) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Quest-Game-Tuner](entries/gameplay/threethan-quest-game-tuner/README.md) | Unlock the full power of Meta Quest headsets by modifying system parameters | n/a | none | reference | [threethan/Quest-Game-Tuner](https://github.com/threethan/Quest-Game-Tuner) @ `6ee00366cf64` |
 | [quest-manager](entries/gameplay/rubonnek-quest-manager/README.md) | A powerful and flexible quest management system for the Godot Game Engine | gdscript | MIT | reference | [Rubonnek/quest-manager](https://github.com/Rubonnek/quest-manager) @ `2026-06-07 (branch tip at catalogue time)` |
+| [QuickSwitch](entries/gameplay/joyhak-quickswitch/README.md) | Quickly Switch to the folder from any file manager. | autohotkey | GPL-3.0 | reference | [JoyHak/QuickSwitch](https://github.com/JoyHak/QuickSwitch) @ `2026-11-05 (branch tip at catalogue time)` |
 | [Rakugo-Dialogue-System](entries/gameplay/rakugoteam-rakugo-dialogue-system/README.md) | Inspired by Ren'Py, Rakugo is a project aiming to provide a way to make narrative-based games on Godot easily. Simplify your project, if it is a visual novel, p | gdscript | MIT | vendored | [rakugoteam/Rakugo-Dialogue-System](https://github.com/rakugoteam/Rakugo-Dialogue-System) @ `8cb205634c3c` |
 | [ram-cleaner-ai](entries/gameplay/bastiaankang-ram-cleaner-ai/README.md) | Smart RAM cleanup: AI decides what to compress or unload — games stay protected. / ram cleaner ram ai gaming optimization / Portable x64 prebuilt for Windows | c++ | MIT | vendored | [BastiaanKang/ram-cleaner-ai](https://github.com/BastiaanKang/ram-cleaner-ai) @ `a8d39728ec2f` |
 | [ram-optimizer-ai](entries/gameplay/srivera3321-ram-optimizer-ai/README.md) | Smart RAM cleanup: AI decides what to compress or unload — games stay protected. / ram cleaner ram ai gaming optimization / Portable x64 prebuilt for Windows | c++ | MIT | vendored | [sRivera3321/ram-optimizer-ai](https://github.com/sRivera3321/ram-optimizer-ai) @ `5998b3e17923` |
@@ -1511,6 +1516,7 @@ _Generated 2026-11-26 04:42 UTC · 1916 entries · 479 vendored, 1437 reference-
 | [suroi — items](entries/gameplay/suroi-items/README.md) | combat, AI, pathing, quest or inventory logic | ts | GPL-3.0 | reference | [HasangerGames/suroi.git](https://github.com/HasangerGames/suroi.git) @ `85df506` |
 | [tdme2](entries/gameplay/andreasdr-tdme2/README.md) | TDME2 - ThreeDeeMiniEngine2 is a lightweight, multi-platform 3D engine including tools suited for 3D game/application development using C++, Mini(t)Script, GLSL | c++ | unknown | reference | [andreasdr/tdme2](https://github.com/andreasdr/tdme2) @ `2025-11-08 (branch tip at catalogue time)` |
 | [three-pathfinding](entries/gameplay/donmccurdy-three-pathfinding/README.md) | Navigation mesh utilities for three.js, based on PatrolJS. | javascript | MIT | reference | [donmccurdy/three-pathfinding](https://github.com/donmccurdy/three-pathfinding) @ `2026-10-06 (branch tip at catalogue time)` |
+| [tile](entries/gameplay/kelindar-tile/README.md) | Tile is a 2D grid engine, built with data and cache friendly ways, includes pathfinding and observers. | go | MIT | reference | [kelindar/tile](https://github.com/kelindar/tile) @ `2025-08-17 (branch tip at catalogue time)` |
 | [traktor](entries/gameplay/apistol78-traktor/README.md) | Traktor Game Engine | c++ | GPL-3.0 | reference | [apistol78/traktor](https://github.com/apistol78/traktor) @ `29b0bf723568` |
 | [triangle-pos](entries/gameplay/fahimanzamdip-triangle-pos/README.md) | Triangle POS is an open source Inventory Management with POS System. Developed with Laravel 10, Bootstrap 4 & Livewire 3. It's completely free to use. | blade | unknown | reference | [FahimAnzamDip/triangle-pos](https://github.com/FahimAnzamDip/triangle-pos) @ `2024-10-16 (branch tip at catalogue time)` |
 | [ue4-orders-abilities](entries/gameplay/daedalicentertainment-ue4-orders-abilities/README.md) | Sample code of the talk "Hero AI: Gameplay Abilities Meet Behaviour Trees" at Unreal Fest Europe 2019. | c++ | MIT | reference | [DaedalicEntertainment/ue4-orders-abilities](https://github.com/DaedalicEntertainment/ue4-orders-abilities) @ `2020-10-09 (branch tip at catalogue time)` |

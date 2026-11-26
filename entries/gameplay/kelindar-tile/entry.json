@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T04:58:43Z",
+ "category": "gameplay",
+ "commit": "2025-08-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "kelindar/tile \u2014 Tile is a 2D grid engine, built with data and cache friendly ways, includes pathfinding and observers.",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "tile",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "kelindar-tile",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 227,
+ "system": "Tile is a 2D grid engine, built with data and cache friendly ways, includes pathfinding and observers.",
+ "upstream": "https://github.com/kelindar/tile",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

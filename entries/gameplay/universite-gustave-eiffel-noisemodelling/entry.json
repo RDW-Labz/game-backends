@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T04:58:39Z",
+ "category": "gameplay",
+ "commit": "75ebbe9442ea",
+ "delivery": "reference",
+ "description": "Universite-Gustave-Eiffel/NoiseModelling \u2014 An open-source model for calculating noise maps.",
+ "language": "java",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "NoiseModelling",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 5780105,
+ "slug": "universite-gustave-eiffel-noisemodelling",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 247,
+ "system": "An open-source model for calculating noise maps. ",
+ "upstream": "https://github.com/Universite-Gustave-Eiffel/NoiseModelling",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T04:58:43Z",
+ "category": "gameplay",
+ "commit": "2020-10-01 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "UnrealCourse/04_BattleTank \u2014 An open-world head-to-head tank fight with simple AI, terrain, and advanced control system in Unreal 4. (ref: BT_URC) http://gdev.tv/urcgithub",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "04_BattleTank",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "unrealcourse-04-battletank",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 221,
+ "system": "An open-world head-to-head tank fight with simple AI, terrain, and advanced control system in Unreal 4. (ref: BT_URC) http://gdev.tv/urcgithub",
+ "upstream": "https://github.com/UnrealCourse/04_BattleTank",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

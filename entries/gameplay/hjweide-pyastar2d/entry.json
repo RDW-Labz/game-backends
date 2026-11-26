@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T04:58:43Z",
+ "category": "gameplay",
+ "commit": "2026-02-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "hjweide/pyastar2d \u2014 A very simple A* implementation in C++ callable from Python for pathfinding on a two-dimensional grid.",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "pyastar2d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "hjweide-pyastar2d",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 163,
+ "system": "A very simple A* implementation in C++ callable from Python for pathfinding on a two-dimensional grid.",
+ "upstream": "https://github.com/hjweide/pyastar2d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
