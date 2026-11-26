@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T01:54:39Z",
+ "category": "math",
+ "commit": "15ee1791b810",
+ "delivery": "reference",
+ "description": "PyLops/pylops \u2014 PyLops \u2013 A Linear-Operator Library for Python",
+ "language": "python",
+ "license": "LGPL-3.0",
+ "license_file": "LICENSE.md",
+ "license_verdict": "copyleft-reference",
+ "name": "pylops",
+ "reference_reason": "licence: LGPL-3.0 (copyleft-reference)",
+ "size_bytes": 2665471,
+ "slug": "pylops-pylops",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 544,
+ "system": "PyLops \u2013 A Linear-Operator Library for Python",
+ "upstream": "https://github.com/PyLops/pylops",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

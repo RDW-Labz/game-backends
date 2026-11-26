@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 01:38 UTC · 1874 entries · 468 vendored, 1406 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 01:54 UTC · 1880 entries · 469 vendored, 1411 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
-| [math](#math) — Math libraries | 135 | 43 | 92 |
+| [math](#math) — Math libraries | 141 | 44 | 97 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
@@ -1053,12 +1053,13 @@ _Generated 2026-11-26 01:38 UTC · 1874 entries · 468 vendored, 1406 reference-
 
 ## math
 
-**Math libraries** — 135 entries
+**Math libraries** — 141 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
 | [abacus](entries/math/sungiant-abacus/README.md) | :triangular_ruler: C# cross precision 3D maths library. | c# | MIT | reference | [sungiant/abacus](https://github.com/sungiant/abacus) @ `2026-02-06 (branch tip at catalogue time)` |
 | [amgcl](entries/math/ddemidov-amgcl/README.md) | C++ library for solving large sparse linear systems with algebraic multigrid method | c++ | MIT | reference | [ddemidov/amgcl](https://github.com/ddemidov/amgcl) @ `2026-11-18 (branch tip at catalogue time)` |
+| [armadillo-code](entries/math/conradsnicta-armadillo-code/README.md) | Armadillo: fast C++ library for linear algebra (matrix maths) & scientific computing | n/a | unknown | reference | [conradsnicta/armadillo-code](https://github.com/conradsnicta/armadillo-code) @ `2026-10-21 (branch tip at catalogue time)` |
 | [AudioTool](entries/math/lincollincol-audiotool/README.md) | Android library that provides audio manipulation functions like increase/decrease speed, pitch, volume, bass, etc. Library also provides cut, noise remover, and | java | Apache-2.0 | vendored | [lincollincol/AudioTool](https://github.com/lincollincol/AudioTool) @ `b0f508159176` |
 | [biomes-game — math](entries/math/biomes-game-math/README.md) | vector/matrix/quaternion math substrate | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
 | [brine-fp](entries/math/zfedoran-brine-fp/README.md) | Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications. | rust | Apache-2.0 | vendored | [zfedoran/brine-fp](https://github.com/zfedoran/brine-fp) @ `377beff01dfe` |
@@ -1069,6 +1070,7 @@ _Generated 2026-11-26 01:38 UTC · 1874 entries · 468 vendored, 1406 reference-
 | [cgmath](entries/math/rustgd-cgmath/README.md) | A linear algebra and mathematics library for computer graphics. | rust | Apache-2.0 | reference | [rustgd/cgmath](https://github.com/rustgd/cgmath) @ `2024-12-07 (branch tip at catalogue time)` |
 | [Clover](entries/math/astojanov-clover/README.md) | Clover: Quantized 4-bit Linear Algebra Library | c++ | Apache-2.0 | reference | [astojanov/Clover](https://github.com/astojanov/Clover) @ `2018-05-29 (branch tip at catalogue time)` |
 | [cmath3d](entries/math/jpreiss-cmath3d/README.md) | 3d math library for C. Vectors, 3x3 matrices, quaternions, polytopes. | c | MIT | vendored | [jpreiss/cmath3d](https://github.com/jpreiss/cmath3d) @ `39f4fcdc8ec4` |
+| [Cmathtuts](entries/math/foadsf-cmathtuts/README.md) | trying to collect all useful tutorials for famous C math and linear algebra libraries such as CBLAS, CLAPACK, GSL... | fortran | GPL-3.0 | reference | [Foadsf/Cmathtuts](https://github.com/Foadsf/Cmathtuts) @ `2026-02-19 (branch tip at catalogue time)` |
 | [CombBLAS](entries/math/passionlab-combblas/README.md) | The Combinatorial BLAS (CombBLAS) is an extensible distributed-memory parallel graph library offering a small but powerful set of linear algebra primitives spec | c++ | BSD-3-Clause | vendored | [PASSIONLab/CombBLAS](https://github.com/PASSIONLab/CombBLAS) @ `2381a1f7a028` |
 | [crystaledge](entries/math/unn4m3d-crystaledge/README.md) | A pure Crystal Vector Math library | crystal | MIT | vendored | [unn4m3d/crystaledge](https://github.com/unn4m3d/crystaledge) @ `0f5e82952b95` |
 | [Cub3d-Advanced-Raycasting](entries/math/ael-bekk-cub3d-advanced-raycasting/README.md) | #Cub3D: This project is a 3D game created from scratch written in C using an old graphic library mini-libx, presented with an old technology raycasting to make  | c | MIT | vendored | [ael-bekk/Cub3d-Advanced-Raycasting](https://github.com/ael-bekk/Cub3d-Advanced-Raycasting) @ `53371ce9c1ba` |
@@ -1081,6 +1083,7 @@ _Generated 2026-11-26 01:38 UTC · 1874 entries · 468 vendored, 1406 reference-
 | [earcut](entries/math/georust-earcut/README.md) | A Rust port of the Earcut polygon triangulation library | rust | Apache-2.0 | reference | [georust/earcut](https://github.com/georust/earcut) @ `2026-11-02 (branch tip at catalogue time)` |
 | [Eigen](entries/math/eigen/README.md) | dense/sparse linear algebra (MPL-2.0) | c++ | GPL-3.0 | reference | [eigenteam/eigen-git-mirror](https://github.com/eigenteam/eigen-git-mirror) @ `36b95962756c` |
 | [eigen](entries/math/px4-eigen/README.md) | Eigen is a C++ template library for linear algebra: matrices, vectors, numerical solvers, and related algorithms. | c++ | unknown | reference | [PX4/eigen](https://github.com/PX4/eigen) @ `2023-10-18 (branch tip at catalogue time)` |
+| [ejml](entries/math/lessthanoptimal-ejml/README.md) | A fast and easy to use linear algebra library written in Java for dense, sparse, real, and complex matrices. | java | Apache-2.0 | vendored | [lessthanoptimal/ejml](https://github.com/lessthanoptimal/ejml) @ `4ed833407f8b` |
 | [en_cl_fix](entries/math/enclustra-en-cl-fix/README.md) | Fixed-point math library with VHDL, Python and MATLAB support | vhdl | MIT | reference | [enclustra/en_cl_fix](https://github.com/enclustra/en_cl_fix) @ `2026-08-12 (branch tip at catalogue time)` |
 | [Euclid](entries/math/nicklockwood-euclid/README.md) | A Swift library for creating and manipulating 3D geometry | swift | MIT | reference | [nicklockwood/Euclid](https://github.com/nicklockwood/Euclid) @ `2026-11-23 (branch tip at catalogue time)` |
 | [fixed-point](entries/math/nilpunch-fixed-point/README.md) | Configurable 32-bit and 64-bit fixed point math library. | c# | MIT | vendored | [nilpunch/fixed-point](https://github.com/nilpunch/fixed-point) @ `e88d23b07774` |
@@ -1148,6 +1151,7 @@ _Generated 2026-11-26 01:38 UTC · 1874 entries · 468 vendored, 1406 reference-
 | [point-cloud-utils](entries/math/fwilliams-point-cloud-utils/README.md) | An easy-to-use Python library for processing and manipulating 3D point clouds and meshes. | c++ | MIT | vendored | [fwilliams/point-cloud-utils](https://github.com/fwilliams/point-cloud-utils) @ `a5ce154b32b9` |
 | [prb-math](entries/math/paulrberg-prb-math/README.md) | Solidity library for advanced fixed-point math | solidity | MIT | vendored | [PaulRBerg/prb-math](https://github.com/PaulRBerg/prb-math) @ `3fbfb3e399b2` |
 | [PyGLM](entries/math/zuzu-typ-pyglm/README.md) | Fast OpenGL Mathematics (GLM) for Python | python | Zlib | reference | [Zuzu-Typ/PyGLM](https://github.com/Zuzu-Typ/PyGLM) @ `2026-11-19 (branch tip at catalogue time)` |
+| [pylops](entries/math/pylops-pylops/README.md) | PyLops – A Linear-Operator Library for Python | python | LGPL-3.0 | reference | [PyLops/pylops](https://github.com/PyLops/pylops) @ `15ee1791b810` |
 | [PyMesh](entries/math/pymesh-pymesh/README.md) | Geometry Processing Library for Python | c++ | unknown | reference | [PyMesh/PyMesh](https://github.com/PyMesh/PyMesh) @ `2024-08-08 (branch tip at catalogue time)` |
 | [pyquaternion](entries/math/kieranwynn-pyquaternion/README.md) | A fully featured, pythonic library for representing and using quaternions | python | MIT | vendored | [KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion) @ `99025c17bab1` |
 | [pyRANSAC-3D](entries/math/leomariga-pyransac-3d/README.md) | Python library for fitting 3D primitive shapes to point clouds with RANSAC. Detect planes, spheres, cylinders, cuboids, circles, and lines. | python | Apache-2.0 | reference | [leomariga/pyRANSAC-3D](https://github.com/leomariga/pyRANSAC-3D) @ `2026-08-28 (branch tip at catalogue time)` |
@@ -1160,8 +1164,10 @@ _Generated 2026-11-26 01:38 UTC · 1874 entries · 468 vendored, 1406 reference-
 | [RandBLAS](entries/math/ballisticla-randblas/README.md) | A header-only C++ library for sketching in randomized linear algebra | c++ | unknown | reference | [BallisticLA/RandBLAS](https://github.com/BallisticLA/RandBLAS) @ `2026-11-24 (branch tip at catalogue time)` |
 | [random-js](entries/math/ckknight-random-js/README.md) | A mathematically correct random number generator library for JavaScript. | typescript | MIT | vendored | [ckknight/random-js](https://github.com/ckknight/random-js) @ `f000fd5c286b` |
 | [RcppEigen](entries/math/rcppcore-rcppeigen/README.md) | Rcpp integration for the Eigen templated linear algebra library | c++ | none | reference | [RcppCore/RcppEigen](https://github.com/RcppCore/RcppEigen) @ `c6a32a22da4f` |
+| [rulinalg](entries/math/athemathmo-rulinalg/README.md) | A linear algebra library written in Rust | rust | MIT | reference | [AtheMathmo/rulinalg](https://github.com/AtheMathmo/rulinalg) @ `2022-05-18 (branch tip at catalogue time)` |
 | [russell](entries/math/cpmech-russell/README.md) | Rust Scientific Library. ODE, DAE, and PDE solvers. Special functions (Bessel, Elliptic, Beta, Gamma, Erf). Linear algebra. Sparse solvers. Probability distribu | rust | MIT | vendored | [cpmech/russell](https://github.com/cpmech/russell) @ `261fc91f7592` |
 | [SaturnMathPP](entries/math/robertoduarte-saturnmathpp/README.md) | SaturnMath++ is a C++23 library dedicated to Sega Saturn hardware, offering essential mathematical operations tailored for fixed-point arithmetic and geometric  | c++ | MIT | reference | [robertoduarte/SaturnMathPP](https://github.com/robertoduarte/SaturnMathPP) @ `2026-11-22 (branch tip at catalogue time)` |
+| [Scalala](entries/math/scalala-scalala/README.md) | Scalala has been superseded by dlwh/breeze. Scalala is a high performance numeric linear algebra library for Scala, with rich Matlab-like operators on vectors a | scala | LGPL-2.1 | reference | [scalala/Scalala](https://github.com/scalala/Scalala) @ `2012-06-06 (branch tip at catalogue time)` |
 | [sh4zam](entries/math/gyrovorbis-sh4zam/README.md) | Fast linear algebra and math library for the Hitachi SuperH4 Processor (used by the Sega Dreamcast). | c | MIT | vendored | [gyrovorbis/sh4zam](https://github.com/gyrovorbis/sh4zam) @ `5b7dfc22a91f` |
 | [SIFT3D](entries/math/bbrister-sift3d/README.md) | Analogue of the scale-invariant feature transform (SIFT) for three-dimensional images. Includes an image processing and linear algebra library with feature matc | c | MIT | reference | [bbrister/SIFT3D](https://github.com/bbrister/SIFT3D) @ `2020-08-28 (branch tip at catalogue time)` |
 | [SimpleSIMD](entries/math/giladfrid009-simplesimd/README.md) | Easy to use SIMD accelerated Array and Span methods | c# | MIT | reference | [giladfrid009/SimpleSIMD](https://github.com/giladfrid009/SimpleSIMD) @ `2022-11-19 (branch tip at catalogue time)` |

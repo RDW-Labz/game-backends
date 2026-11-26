@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T01:54:35Z",
+ "category": "math",
+ "commit": "4ed833407f8b",
+ "delivery": "vendored",
+ "description": "lessthanoptimal/ejml \u2014 A fast and easy to use linear algebra library written in Java for dense, sparse, real, and complex matrices.",
+ "language": "java",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE-2.0.txt",
+ "license_verdict": "clean",
+ "name": "ejml",
+ "size_bytes": 5529222,
+ "slug": "lessthanoptimal-ejml",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 617,
+ "system": "A fast and easy to use linear algebra library written in Java for dense, sparse, real, and complex matrices.",
+ "upstream": "https://github.com/lessthanoptimal/ejml",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

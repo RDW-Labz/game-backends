@@ -1,0 +1,32 @@
+- Update change.txt
+- Update version in build.gradle
+- Update version in readme.md (maven central)
+- Update example code on website
+  git diff --name-status TAG_NAME examples
+- clean and generate code:
+  git clean -fd main && ./gradlew autogenerate
+
+- Rebuild and run unit tests
+- Commit and tag release
+- Create zip of source and library directory
+  * From a fresh checkout
+  VERSION=v0.37
+  cd ejml&&git checkout $VERSION&&./gradlew autogenerate&&rm -rf .git&&cd ..&&zip -r ejml-$VERSION-src.zip ejml
+  cd ejml&&./gradlew createLibraryDirectory&&mv libraries ..&&cd ..&&mv libraries ejml-$VERSION-libs&&zip -r ejml-$VERSION-libs.zip ejml-$VERSION-libs
+- Update javadoc on website
+  cd ejml&&rm -rf build/docs/javadoc&&./gradlew alljavadoc&&cd build/docs/&&zip -r javadoc.zip javadoc
+
+-----
+Push SNAPSHOT to central:
+
+./gradlew publish
+
+Push stable release to Central:
+
+git clean -fd main && ./gradlew autogenerate && ./gradlew assemble
+./gradlew publishToSonatype -Dorg.gradle.parallel=false && ./gradlew findSonatypeStagingRepository closeSonatypeStagingRepository && ./gradlew findSonatypeStagingRepository releaseSonatypeStagingRepository
+
+---------
+Once a year:
+- Update copyright
+- update year on docs/bottom.txt

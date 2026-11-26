@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T01:54:40Z",
+ "category": "math",
+ "commit": "2026-02-19 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Foadsf/Cmathtuts \u2014 trying to collect all useful tutorials for famous C math and linear algebra libraries such as CBLAS, CLAPACK, GSL...",
+ "language": "fortran",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Cmathtuts",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "foadsf-cmathtuts",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 443,
+ "system": "trying to collect all useful tutorials for famous C math and linear algebra libraries such as CBLAS, CLAPACK, GSL...",
+ "upstream": "https://github.com/Foadsf/Cmathtuts",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

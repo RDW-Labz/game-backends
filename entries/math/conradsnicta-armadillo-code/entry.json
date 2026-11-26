@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T01:54:40Z",
+ "category": "math",
+ "commit": "2026-10-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "conradsnicta/armadillo-code \u2014 Armadillo: fast C++ library for linear algebra (matrix maths) & scientific computing",
+ "language": "n/a",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "armadillo-code",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "conradsnicta-armadillo-code",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 523,
+ "system": "Armadillo: fast C++ library for linear algebra (matrix maths) & scientific computing",
+ "upstream": "https://github.com/conradsnicta/armadillo-code",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

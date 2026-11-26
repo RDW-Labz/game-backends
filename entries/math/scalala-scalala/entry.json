@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T01:54:40Z",
+ "category": "math",
+ "commit": "2012-06-06 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "scalala/Scalala \u2014 Scalala has been superseded by dlwh/breeze. Scalala is a high performance numeric linear algebra library for Scala, with rich Matlab-like operators on vectors and matrices; a library of numerical routines; support for plotting.",
+ "language": "scala",
+ "license": "LGPL-2.1",
+ "license_verdict": "copyleft-reference",
+ "name": "Scalala",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-2.1)",
+ "slug": "scalala-scalala",
+ "source": "github-search:linear algebra library stars:>80",
+ "stars": 303,
+ "system": "Scalala has been superseded by dlwh/breeze. Scalala is a high performance numeric linear algebra library for Scala, with rich Matlab-like operators on vectors a",
+ "upstream": "https://github.com/scalala/Scalala",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

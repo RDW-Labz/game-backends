@@ -3542,3 +3542,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/libclsph-libclsph
 
 - **2026-11-26 01:38 UTC** — tick 911: +0 screened, +0 reference, 22 skipped, catalogue=1874
+
+- **2026-11-26 01:54 UTC** — tick 912: +2 screened, +4 reference, 19 skipped, catalogue=1880
+  - added math/lessthanoptimal-ejml (Apache-2.0, vendored)
+  - added math/pylops-pylops (LGPL-3.0, reference)
+  - reference math/conradsnicta-armadillo-code
+  - reference math/foadsf-cmathtuts
+  - reference math/scalala-scalala
+  - reference math/athemathmo-rulinalg
