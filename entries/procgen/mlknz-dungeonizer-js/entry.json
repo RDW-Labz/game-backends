@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T10:02:38Z",
+ "category": "procgen",
+ "commit": "fcf2fe663433",
+ "delivery": "vendored",
+ "description": "mlknz/Dungeonizer.js \u2014 Dungeon generation + visualization.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Dungeonizer.js",
+ "size_bytes": 802385,
+ "slug": "mlknz-dungeonizer-js",
+ "source": "github-search:dungeon generation stars:>30",
+ "stars": 34,
+ "system": "Dungeon generation + visualization.",
+ "upstream": "https://github.com/mlknz/Dungeonizer.js",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

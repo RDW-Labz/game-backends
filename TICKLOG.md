@@ -3686,3 +3686,6 @@ One line per 15-minute extension tick, newest last.
   - added procgen/skyeshark-seedthree (MIT, vendored)
   - added procgen/fullike-arteries (none, reference)
   - reference procgen/erkaman-gl-rock
+
+- **2026-11-26 10:02 UTC** — tick 942: +1 screened, +0 reference, 52 skipped, catalogue=1959
+  - added procgen/mlknz-dungeonizer-js (MIT, vendored)

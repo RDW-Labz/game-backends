@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 09:47 UTC · 1958 entries · 491 vendored, 1467 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 10:02 UTC · 1959 entries · 492 vendored, 1467 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -11,7 +11,7 @@ _Generated 2026-11-26 09:47 UTC · 1958 entries · 491 vendored, 1467 reference-
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
 | [save-state](#save-state) — Save / state systems | 117 | 36 | 81 |
-| [procgen](#procgen) — Procedural generation | 146 | 36 | 110 |
+| [procgen](#procgen) — Procedural generation | 147 | 37 | 110 |
 
 
 ## engines
@@ -1877,7 +1877,7 @@ _Generated 2026-11-26 09:47 UTC · 1958 entries · 491 vendored, 1467 reference-
 
 ## procgen
 
-**Procedural generation** — 146 entries
+**Procedural generation** — 147 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1913,6 +1913,7 @@ _Generated 2026-11-26 09:47 UTC · 1958 entries · 491 vendored, 1467 reference-
 | [dungeon-generation](entries/procgen/atthematinee-dungeon-generation/README.md) | A simple demonstration of various roguelike dungeon generation algorithms. | python | MIT | reference | [AtTheMatinee/dungeon-generation](https://github.com/AtTheMatinee/dungeon-generation) @ `2021-08-23 (branch tip at catalogue time)` |
 | [Dungeon-Generator (BSP)](entries/procgen/dungeon-generator-bsp/README.md) | BSP dungeon generation (C#/Unity) | c# | MIT | vendored | [Adrian104/Dungeon-Generator](https://github.com/Adrian104/Dungeon-Generator) @ `8dfa5d23f848` |
 | [DungeonGenerator](entries/procgen/jnyjny-dungeongenerator/README.md) | Procedural Dungeon Generation with Python and Pygame | python | MIT | reference | [JnyJny/DungeonGenerator](https://github.com/JnyJny/DungeonGenerator) @ `2015-09-17 (branch tip at catalogue time)` |
+| [Dungeonizer.js](entries/procgen/mlknz-dungeonizer-js/README.md) | Dungeon generation + visualization. | javascript | MIT | vendored | [mlknz/Dungeonizer.js](https://github.com/mlknz/Dungeonizer.js) @ `fcf2fe663433` |
 | [DungeonTemplateLibrary](entries/procgen/aspjt-dungeontemplatelibrary/README.md) | 🌏: Dungeon free resources (terrain & roguelike generation) | c++ | MIT | vendored | [AsPJT/DungeonTemplateLibrary](https://github.com/AsPJT/DungeonTemplateLibrary) @ `7819dcd58dc2` |
 | [DungeonTemplateLibrary-Godot](entries/procgen/krazyjakee-dungeontemplatelibrary-godot/README.md) | 🌏: Godot Dungeon free resources (terrain & roguelike generation) | c++ | MIT | reference | [krazyjakee/DungeonTemplateLibrary-Godot](https://github.com/krazyjakee/DungeonTemplateLibrary-Godot) @ `2026-06-11 (branch tip at catalogue time)` |
 | [DungeonTemplateLibraryUnity](entries/procgen/sitryo-dungeontemplatelibraryunity/README.md) | 🌏: Dungeon free resources (terrain & roguelike generation) | c# | BSL-1.0 | reference | [sitRyo/DungeonTemplateLibraryUnity](https://github.com/sitRyo/DungeonTemplateLibraryUnity) @ `2021-01-28 (branch tip at catalogue time)` |
