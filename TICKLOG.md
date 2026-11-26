@@ -3823,3 +3823,5 @@ One line per 15-minute extension tick, newest last.
   - added math/pissang-geometry-extrude (MIT, vendored)
   - added math/danny02-openctm (Zlib, vendored)
   - reference math/patriciogonzalezvivo-hilma
+
+- **2026-11-26 19:06 UTC** — tick 976: +0 screened, +0 reference, 17 skipped, catalogue=2027
