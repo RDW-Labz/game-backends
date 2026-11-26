@@ -1,0 +1,19 @@
+{
+ "added_at": "2026-11-26T14:18:37Z",
+ "category": "engines",
+ "commit": "f3b832ad2e2f",
+ "delivery": "reference",
+ "description": "mini3d/mini3d \u2014 Minimalistic, cross platform, open source 3d game engine framework",
+ "language": "c",
+ "license": "none",
+ "license_verdict": "unlicensed-reference",
+ "name": "mini3d",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 1545587,
+ "slug": "mini3d-mini3d",
+ "source": "github-search:3d game framework stars:>60",
+ "stars": 61,
+ "system": "Minimalistic, cross platform, open source 3d game engine framework",
+ "upstream": "https://github.com/mini3d/mini3d",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

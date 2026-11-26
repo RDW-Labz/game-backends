@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 14:02 UTC · 1981 entries · 500 vendored, 1481 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 14:18 UTC · 1982 entries · 500 vendored, 1482 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 810 | 195 | 615 |
+| [engines](#engines) — Game engines and engine subsystems | 811 | 195 | 616 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 14:02 UTC · 1981 entries · 500 vendored, 1481 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 810 entries
+**Game engines and engine subsystems** — 811 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -470,6 +470,7 @@ _Generated 2026-11-26 14:02 UTC · 1981 entries · 500 vendored, 1481 reference-
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
 | [mineblox](entries/engines/real2nix-mineblox/README.md) | A highly extensible voxel engine written in Luau for Roblox. | luau | MIT | reference | [real2nix/mineblox](https://github.com/real2nix/mineblox) @ `2025-07-06 (branch tip at catalogue time)` |
 | [Minecraft](entries/engines/stanislavpetrovv-minecraft/README.md) | Voxel Engine (like Minecraft) in Python and OpenGL  | python | MIT | reference | [StanislavPetrovV/Minecraft](https://github.com/StanislavPetrovV/Minecraft) @ `2023-06-30 (branch tip at catalogue time)` |
+| [mini3d](entries/engines/mini3d-mini3d/README.md) | Minimalistic, cross platform, open source 3d game engine framework | c | none | reference | [mini3d/mini3d](https://github.com/mini3d/mini3d) @ `f3b832ad2e2f` |
 | [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
 | [minimalist-game-framework](entries/engines/zachbarth-minimalist-game-framework/README.md) | A minimalist game framework in the style of the "game engine" we use at Zachtronics. | c# | MIT | vendored | [zachbarth/minimalist-game-framework](https://github.com/zachbarth/minimalist-game-framework) @ `c9a7c1ee2392` |
 | [miniscript](entries/engines/mini2dx-miniscript/README.md) | A scripting library for Java-based games | java | MIT | reference | [mini2Dx/miniscript](https://github.com/mini2Dx/miniscript) @ `2022-08-28 (branch tip at catalogue time)` |

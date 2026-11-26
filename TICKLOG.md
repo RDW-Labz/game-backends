@@ -3741,3 +3741,6 @@ One line per 15-minute extension tick, newest last.
   - added engines/iacobson-ecspanse (Apache-2.0, vendored)
 
 - **2026-11-26 14:02 UTC** — tick 957: +0 screened, +0 reference, 48 skipped, catalogue=1981
+
+- **2026-11-26 14:18 UTC** — tick 958: +1 screened, +0 reference, 51 skipped, catalogue=1982
+  - added engines/mini3d-mini3d (none, reference)
