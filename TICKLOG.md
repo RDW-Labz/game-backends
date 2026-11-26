@@ -3818,3 +3818,8 @@ One line per 15-minute extension tick, newest last.
   - added math/alpacahq-alpacadecimal (MIT, vendored)
   - reference math/jgaeddert-liquid-fpm
   - reference math/influenceth-cairo-math-64x61
+
+- **2026-11-26 18:50 UTC** — tick 975: +2 screened, +1 reference, 41 skipped, catalogue=2027
+  - added math/pissang-geometry-extrude (MIT, vendored)
+  - added math/danny02-openctm (Zlib, vendored)
+  - reference math/patriciogonzalezvivo-hilma

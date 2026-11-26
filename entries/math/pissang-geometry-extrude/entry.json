@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T18:50:37Z",
+ "category": "math",
+ "commit": "b658c3d3f06b",
+ "delivery": "vendored",
+ "description": "pissang/geometry-extrude \u2014 A small and fast library for extruding 2D polygons and polylines to 3D meshes",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "geometry-extrude",
+ "size_bytes": 1381365,
+ "slug": "pissang-geometry-extrude",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 189,
+ "system": "A small and fast library for extruding 2D polygons and polylines to 3D meshes",
+ "upstream": "https://github.com/pissang/geometry-extrude",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

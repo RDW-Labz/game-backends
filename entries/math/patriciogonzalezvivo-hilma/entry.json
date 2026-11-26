@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T18:50:41Z",
+ "category": "math",
+ "commit": "2023-02-09 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "patriciogonzalezvivo/hilma \u2014 library to generate 2D/3D geometries",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "hilma",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "patriciogonzalezvivo-hilma",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 103,
+ "system": "library to generate 2D/3D geometries",
+ "upstream": "https://github.com/patriciogonzalezvivo/hilma",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

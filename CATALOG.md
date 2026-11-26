@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 18:34 UTC · 2024 entries · 518 vendored, 1506 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 18:50 UTC · 2027 entries · 520 vendored, 1507 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
 | [physics](#physics) — Physics | 249 | 57 | 192 |
-| [math](#math) — Math libraries | 181 | 57 | 124 |
+| [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
@@ -1108,7 +1108,7 @@ _Generated 2026-11-26 18:34 UTC · 2024 entries · 518 vendored, 1506 reference-
 
 ## math
 
-**Math libraries** — 181 entries
+**Math libraries** — 184 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1168,6 +1168,7 @@ _Generated 2026-11-26 18:34 UTC · 2024 entries · 518 vendored, 1506 reference-
 | [game-math](entries/math/npruehs-game-math/README.md) | Free open-source math library for games. | c# | MIT | reference | [npruehs/game-math](https://github.com/npruehs/game-math) @ `2016-07-17 (branch tip at catalogue time)` |
 | [GeometronLib](entries/math/lukasbanana-geometronlib/README.md) | A basic geometry C++ library for 2D and 3D applications | c++ | BSD-3-Clause | vendored | [LukasBanana/GeometronLib](https://github.com/LukasBanana/GeometronLib) @ `844c8f5aae9c` |
 | [Geometry](entries/math/tomstewart89-geometry/README.md) | An Arduino library for representing where things are in relation to other things in 3D space | c++ | MIT | reference | [tomstewart89/Geometry](https://github.com/tomstewart89/Geometry) @ `2022-02-19 (branch tip at catalogue time)` |
+| [geometry-extrude](entries/math/pissang-geometry-extrude/README.md) | A small and fast library for extruding 2D polygons and polylines to 3D meshes | javascript | MIT | vendored | [pissang/geometry-extrude](https://github.com/pissang/geometry-extrude) @ `b658c3d3f06b` |
 | [Geometry3D](entries/math/gouminghao-geometry3d/README.md) | Geometry3D: 3D Computational Geometrics Library | python | GPL-3.0 | reference | [GouMinghao/Geometry3D](https://github.com/GouMinghao/Geometry3D) @ `b2b907e054d8` |
 | [geometry3Sharp](entries/math/gradientspace-geometry3sharp/README.md) | C# library for 2D/3D geometric computation, mesh algorithms, and so on. Boost license. | c# | BSL-1.0 | reference | [gradientspace/geometry3Sharp](https://github.com/gradientspace/geometry3Sharp) @ `2026-01-09 (branch tip at catalogue time)` |
 | [glam-rs](entries/math/bitshifter-glam-rs/README.md) | A simple and fast linear algebra library for games and graphics | rust | Apache-2.0 | reference | [bitshifter/glam-rs](https://github.com/bitshifter/glam-rs) @ `2026-11-08 (branch tip at catalogue time)` |
@@ -1176,6 +1177,7 @@ _Generated 2026-11-26 18:34 UTC · 2024 entries · 518 vendored, 1506 reference-
 | [gmath](entries/math/yclepticstudios-gmath/README.md) | Lightweight C++ geometry math library (Vectors, Quaternions and Matrices) | c++ | MIT | vendored | [YclepticStudios/gmath](https://github.com/YclepticStudios/gmath) @ `151591f7d9d4` |
 | [gml](entries/math/ilmola-gml/README.md) | GLSL like minimalist vector, matrix and quaternion math library for C++11 | c++ | BSL-1.0 | reference | [ilmola/gml](https://github.com/ilmola/gml) @ `2021-03-01 (branch tip at catalogue time)` |
 | [Handmade Math](entries/math/handmademath/README.md) | single-header 3D math for games | c | CC0-1.0 | vendored | [HandmadeMath/HandmadeMath](https://github.com/HandmadeMath/HandmadeMath) @ `661fef0893bc` |
+| [hilma](entries/math/patriciogonzalezvivo-hilma/README.md) | library to generate 2D/3D geometries | c++ | unknown | reference | [patriciogonzalezvivo/hilma](https://github.com/patriciogonzalezvivo/hilma) @ `2023-02-09 (branch tip at catalogue time)` |
 | [hlml](entries/math/fmutant-hlml/README.md) | vectorized high-level math library | c++ | WTFPL | reference | [fmutant/hlml](https://github.com/fmutant/hlml) @ `2019-06-24 (branch tip at catalogue time)` |
 | [hlslpp](entries/math/redorav-hlslpp/README.md) | Math library using HLSL syntax with multiplatform SIMD support | c++ | MIT | vendored | [redorav/hlslpp](https://github.com/redorav/hlslpp) @ `3d9af2e77a89` |
 | [hVHDL_example_project](entries/math/hvhdl-hvhdl-example-project/README.md) | An example project which uses many of the ideas and features of the hVHDL libraries like fixed and floating point math modules and has build scripts for most co | vhdl | MIT | reference | [hVHDL/hVHDL_example_project](https://github.com/hVHDL/hVHDL_example_project) @ `2025-01-13 (branch tip at catalogue time)` |
@@ -1223,6 +1225,7 @@ _Generated 2026-11-26 18:34 UTC · 2024 entries · 518 vendored, 1506 reference-
 | [nurbspy](entries/math/turbo-sim-nurbspy/README.md) | Python library for B-Spline and NURBS curves and surfaces, with analytical derivatives, geometric analysis and support for shape optimization. | python | MIT | reference | [turbo-sim/nurbspy](https://github.com/turbo-sim/nurbspy) @ `2026-11-12 (branch tip at catalogue time)` |
 | [NWaves](entries/math/ar1st0crat-nwaves/README.md) | .NET DSP library with a lot of audio processing functions | c# | MIT | reference | [ar1st0crat/NWaves](https://github.com/ar1st0crat/NWaves) @ `2022-09-27 (branch tip at catalogue time)` |
 | [opencascade.js](entries/math/donalffons-opencascade-js/README.md) | Port of the OpenCascade CAD library to JavaScript and WebAssembly via Emscripten. | python | LGPL-2.1 | reference | [donalffons/opencascade.js](https://github.com/donalffons/opencascade.js) @ `2023-08-15 (branch tip at catalogue time)` |
+| [OpenCTM](entries/math/danny02-openctm/README.md) | OpenCTM is a file format, a software library and a tool set for compression of 3D triangle meshes. The geometry is compressed to a fraction of comparable file f | c | Zlib | vendored | [Danny02/OpenCTM](https://github.com/Danny02/OpenCTM) @ `9021bc220f47` |
 | [openMVG](entries/math/openmvg-openmvg/README.md) | open Multiple View Geometry library. Basis for 3D computer vision and Structure from Motion. | c++ | MPL-2.0 | reference | [openMVG/openMVG](https://github.com/openMVG/openMVG) @ `2026-11-07 (branch tip at catalogue time)` |
 | [optick — simd](entries/math/optick-simd/README.md) | vector/matrix/quaternion math substrate | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
 | [Orientation](entries/math/peregrine-developments-orientation/README.md) | Library for tracking orientation through quaternion rotation utilizing gyro rates & other measures | c++ | AGPL-3.0 | reference | [peregrine-developments/Orientation](https://github.com/peregrine-developments/Orientation) @ `a1d4062e8f8b` |

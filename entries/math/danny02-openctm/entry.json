@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T18:50:39Z",
+ "category": "math",
+ "commit": "9021bc220f47",
+ "delivery": "vendored",
+ "description": "Danny02/OpenCTM \u2014 OpenCTM is a file format, a software library and a tool set for compression of 3D triangle meshes. The geometry is compressed to a fraction of comparable file formats (3DS, STL, COLLADA...), and the format is accessible through a simple, portable API",
+ "language": "c",
+ "license": "Zlib",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "clean",
+ "name": "OpenCTM",
+ "size_bytes": 4308312,
+ "slug": "danny02-openctm",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 107,
+ "system": "OpenCTM is a file format, a software library and a tool set for compression of 3D triangle meshes. The geometry is compressed to a fraction of comparable file f",
+ "upstream": "https://github.com/Danny02/OpenCTM",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
