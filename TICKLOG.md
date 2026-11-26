@@ -3751,3 +3751,5 @@ One line per 15-minute extension tick, newest last.
   - reference engines/charged-miners
 
 - **2026-11-26 14:50 UTC** — tick 960: +0 screened, +0 reference, 32 skipped, catalogue=1985
+
+- **2026-11-26 15:06 UTC** — tick 961: +0 screened, +0 reference, 20 skipped, catalogue=1985
