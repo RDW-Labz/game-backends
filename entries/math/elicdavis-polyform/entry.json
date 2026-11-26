@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T03:20:39Z",
+ "category": "math",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "EliCDavis/polyform \u2014 Immutable mesh processing library",
+ "language": "go",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "polyform",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "elicdavis-polyform",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 242,
+ "system": "Immutable mesh processing library",
+ "upstream": "https://github.com/EliCDavis/polyform",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

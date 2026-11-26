@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T03:20:39Z",
+ "category": "math",
+ "commit": "2023-08-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Forceflow/trimesh2 \u2014 C++ library and set of utilities for input, output, and basic manipulation of 3D triangle meshes",
+ "language": "c",
+ "license": "GPL-2.0",
+ "license_verdict": "copyleft-reference",
+ "name": "trimesh2",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-2.0)",
+ "slug": "forceflow-trimesh2",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 349,
+ "system": "C++ library and set of utilities for input, output, and basic manipulation of 3D triangle meshes",
+ "upstream": "https://github.com/Forceflow/trimesh2",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

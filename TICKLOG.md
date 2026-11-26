@@ -3582,3 +3582,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/raroni-fixie
   - reference math/max-gulda-cordic-math
   - reference math/aemileski-math-sll
+
+- **2026-11-26 03:20 UTC** — tick 917: +2 screened, +4 reference, 14 skipped, catalogue=1910
+  - added math/naver-roma (BSD-3-Clause, vendored)
+  - added math/yszhao91-cga-js (MIT, vendored)
+  - reference math/forceflow-trimesh2
+  - reference math/xbimteam-xbimgeometry
+  - reference math/jimy-byerley-pymadcad
+  - reference math/elicdavis-polyform

@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.vscode
+docsource/build
+docs/
+dist/
+roma.egg-info/
+docs/.buildinfo
+htmlcov/
+.coverage
+build/
+.venv/
+uv.lock
+.claude/

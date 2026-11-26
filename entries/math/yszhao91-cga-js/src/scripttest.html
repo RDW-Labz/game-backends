@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CGA</title>
+    <!-- <link rel="stylesheet" href="./src/ui/codiconLabel/codicon/codicon.css"> -->
+    <script src="./build/cga.js"></script>
+</head>
+
+<body>
+    <script>
+        var point = new CGA.Point(1, 2, 3);
+        var line = new CGA.Line(
+            new CGA.Vector3(10, 10, 20),
+            new CGA.Vector3(20, 15, 10)
+        );
+        var result = point.distanceLine(line);
+        console.log(result);
+    </script>
+</body>
+
+</html>

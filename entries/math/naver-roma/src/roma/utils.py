@@ -1,0 +1,622 @@
+# RoMa
+# Copyright (c) 2020 NAVER Corp.
+# 3-Clause BSD License.
+r"""
+Various utility functions related to rotation representations.
+"""
+
+import torch
+import math
+import warnings
+import roma.internal
+import roma.mappings
+
+
+def is_orthonormal_matrix(R, epsilon=1e-7):
+    r"""
+    Test if matrices are orthonormal.
+
+    Args:
+        R (...xDxD tensor): batch of square matrices.
+        epsilon: tolerance threshold.
+    Returns:
+        boolean tensor (shape ...).
+
+    """
+    R, batch_shape = roma.internal.flatten_batch_dims(R, end_dim=-3)
+    assert R.dim() == 3, "Input should be a BxDxD batch of matrices."
+    B, D, D1 = R.shape
+    assert D == D1, "Input should be a BxDxD batch of matrices."
+    errors = torch.norm(R @ R.transpose(-1, -2) - torch.eye(D, device=R.device, dtype=R.dtype), dim=[-2, -1])
+    return torch.all(errors < epsilon)
+
+
+def is_rotation_matrix(R, epsilon=1e-7):
+    r"""
+    Test if matrices are rotation matrices.
+
+    Args:
+        R (...xDxD tensor): batch of square matrices.
+        epsilon: tolerance threshold.
+    Returns:
+        boolean tensor (shape ...).
+    """
+    if not is_orthonormal_matrix(R, epsilon):
+        return False
+    return torch.all(torch.det(R) > 0)
+
+
+def random_unitquat(size=tuple(), dtype=torch.float, device=None, generator=None):
+    r"""
+    Generates a batch of random unit quaternions, uniformly sampled according to the usual quaternion metric.
+
+    Args:
+        size (tuple or int): batch size. Use for example ``tuple()`` to generate a single element, and ``(5,2)`` to generate a 5x2 batch.
+        dtype (torch.dtype): data type of the returned tensor.
+        device: device of the returned tensor.
+        generator: random number generator for sampling. Use for example ``torch.Generator(device='cuda')``.
+    Returns:
+        batch of unit quaternions (size x 4 tensor).
+
+    Reference:
+        K. Shoemake, “Uniform Random Rotations”, in Graphics Gems III (IBM Version), Elsevier, 1992, pp. 124–132. doi: 10.1016/B978-0-08-050755-2.50036-1.
+
+    """
+    if type(size) is int:
+        size = (size,)
+
+    x0 = torch.rand(size, dtype=dtype, device=device, generator=generator)
+    theta1 = (2.0 * math.pi) * torch.rand(size, dtype=dtype, device=device, generator=generator)
+    theta2 = (2.0 * math.pi) * torch.rand(size, dtype=dtype, device=device, generator=generator)
+    r1 = torch.sqrt(1.0 - x0)
+    r2 = torch.sqrt(x0)
+    return torch.stack(
+        (r1 * torch.sin(theta1), r1 * torch.cos(theta1), r2 * torch.sin(theta2), r2 * torch.cos(theta2)), dim=-1
+    )
+
+
+def random_rotmat(size=tuple(), dtype=torch.float, device=None, generator=None):
+    r"""
+    Generates a batch of random 3x3 rotation matrices, uniformly sampled according to the usual rotation metric.
+
+    Args:
+        size (tuple or int): batch size. Use for example ``tuple()`` to generate a single element, and ``(5,2)`` to generate a 5x2 batch.
+        dtype (torch.dtype): data type of the returned tensor.
+        device: device of the returned tensor.
+        generator: random number generator for sampling. Use for example ``torch.Generator(device='cuda
+    Returns:
+        batch of rotation matrices (size x 3x3 tensor).
+    """
+    quat = random_unitquat(size, dtype=dtype, device=device, generator=generator)
+    R = roma.mappings.unitquat_to_rotmat(quat)
+    return R
+
+
+def random_rotvec(size=tuple(), dtype=torch.float, device=None, generator=None):
+    r"""
+    Generates a batch of random rotation vectors, uniformly sampled according to the usual rotation metric.
+
+    Args:
+        size (tuple or int): batch size. Use for example ``tuple()`` to generate a single element, and ``(5,2)`` to generate a 5x2 batch.
+    Returns:
+        batch of rotation vectors (size x 3 tensor).
+    """
+    quat = random_unitquat(size, dtype=dtype, device=device, generator=generator)
+    return roma.mappings.unitquat_to_rotvec(quat)
+
+
+def identity_quat(size=tuple(), dtype=torch.float, device=None):
+    r"""
+    Return a batch of identity unit quaternions.
+
+    Args:
+        size (tuple or int): batch size. Use for example ``tuple()`` to generate a single element, and ``(5,2)`` to generate a 5x2 batch.
+    Returns:
+        batch of identity quaternions (size x 4 tensor, XYZW convention).
+    Note:
+        All returned batch quaternions refer to the same memory location.
+        Consider cloning the output tensor prior performing any in-place operations.
+    """
+    if type(size) is int:
+        size = (size,)
+    quat = torch.zeros(4, dtype=dtype, device=device)
+    quat[..., -1] = 1.0
+    quat = quat.expand(list(size) + [-1])
+    return quat
+
+
+def rotmat_cosine_angle(R):
+    r"""
+    Returns the cosine angle of the input 3x3 rotation matrix R.
+    Based on the equality :math:`Trace(R) = 1 + 2 cos(alpha)`.
+
+    Args:
+        R (...x3x3 tensor): batch of 3w3 rotation matrices.
+    Returns:
+        batch of cosine angles (... tensor).
+    """
+    assert R.shape[-2:] == (3, 3), "Expecting a ...x3x3 batch of rotation matrices"
+    return 0.5 * (R[..., 0, 0] + R[..., 1, 1] + R[..., 2, 2] - 1.0)
+
+
+_ONE_OVER_2SQRT2 = 1.0 / (2 * math.sqrt(2))
+
+
+def rotmat_geodesic_distance(R1, R2, clamping=1.0):
+    r"""
+    Returns the angular distance alpha between a pair of rotation matrices.
+    Based on the equality :math:`|R_2 - R_1|_F = 2 \sqrt{2} sin(alpha/2)`.
+
+    Args:
+        R1, R2 (...x3x3 tensor): batch of 3x3 rotation matrices.
+        clamping: clamping value applied to the input of :func:`torch.asin()`.
+                Use 1.0 to ensure valid angular distances.
+                Use a value strictly smaller than 1.0 to ensure finite gradients.
+    Returns:
+        batch of angles in radians (... tensor).
+    """
+    return 2.0 * torch.asin(torch.clamp_max(torch.norm(R2 - R1, dim=[-1, -2]) * _ONE_OVER_2SQRT2, clamping))
+
+
+def rotmat_geodesic_distance_naive(R1, R2):
+    r"""
+    Returns the angular distance between a pair of rotation matrices.
+    Based on :func:`~rotmat_cosine_angle` and less precise than :func:`~roma.utils.rotmat_geodesic_distance` for nearby rotations.
+
+    Args:
+        R1, R2 (...x3x3 tensor): batch of 3x3 rotation matrices.
+    Returns:
+        batch of angles in radians (... tensor).
+    """
+    R = R1.transpose(-1, -2) @ R2
+    cos = rotmat_cosine_angle(R)
+    return torch.acos(torch.clamp(cos, -1.0, 1.0))
+
+
+def unitquat_geodesic_distance(q1, q2):
+    r"""
+    Returns the angular distance alpha between rotations represented by **unit** quaternions.
+    Based on the equality :math:`min |q_2 \pm q_1| = 2 |sin(alpha/4)|`.
+
+    Args:
+        q1, q2 (...x4 tensor, XYZW convention): batch of unit quaternions.
+    Returns:
+        batch of angles in radians (... tensor).
+    """
+    return 4.0 * torch.asin(0.5 * torch.min(torch.linalg.norm(q2 - q1, dim=-1), torch.linalg.norm(q2 + q1, dim=-1)))
+
+
+def rotvec_geodesic_distance(vec1, vec2):
+    r"""
+    Returns the angular distance between rotations represented by rotation vectors.
+    (use a conversion to unit quaternions internally).
+
+    Args:
+        vec1, vec2 (...x3 tensors): batch of rotation vectors.
+    Returns:
+        batch of angles in radians (... tensor).
+    """
+    return unitquat_geodesic_distance(roma.mappings.rotvec_to_unitquat(vec1), roma.mappings.rotvec_to_unitquat(vec2))
+
+
+def quat_conjugation(quat):
+    r"""
+    Returns the conjugation of input batch of quaternions.
+
+    Args:
+        quat (...x4 tensor, XYZW convention): batch of quaternions.
+    Returns:
+        batch of quaternions (...x4 tensor, XYZW convention).
+    Note:
+        Conjugation of a unit quaternion is equal to its inverse.
+    """
+    inv = quat.clone()
+    inv[..., :3] *= -1
+    return inv
+
+
+def quat_inverse(quat):
+    r"""
+    Returns the inverse of a batch of quaternions.
+
+    Args:
+        quat (...x4 tensor, XYZW convention): batch of quaternions.
+    Returns:
+        batch of quaternions (...x4 tensor, XYZW convention).
+    Note:
+        - Inverse of null quaternion is undefined.
+        - For unit quaternions, consider using conjugation instead.
+    """
+    return quat_conjugation(quat) / torch.sum(quat**2, dim=-1, keepdim=True)
+
+
+def quat_normalize(quat):
+    r"""
+    Returns a normalized, unit norm, copy of a batch of quaternions.
+
+    Args:
+        quat (...x4 tensor, XYZW convention): batch of quaternions.
+    Returns:
+        batch of quaternions (...x4 tensor, XYZW convention).
+    """
+    return quat / torch.linalg.norm(quat, dim=-1, keepdim=True)
+
+
+def quat_product(p, q):
+    r"""
+    Returns the product of two quaternions.
+
+    Args:
+        p, q (...x4 tensor, XYZW convention): batch of quaternions.
+    Returns:
+        batch of quaternions (...x4 tensor, XYZW convention).
+    """
+    # Adapted from SciPy:
+    # https://github.com/scipy/scipy/blob/adc4f4f7bab120ccfab9383aba272954a0a12fb0/scipy/spatial/transform/rotation.py#L153
+
+    # torch.cross requires equal tensor ranks, unlike elementwise products.
+    p, q = torch.broadcast_tensors(p, q)
+    vector = p[..., None, 3] * q[..., :3] + q[..., None, 3] * p[..., :3] + torch.cross(p[..., :3], q[..., :3], dim=-1)
+    last = p[..., 3] * q[..., 3] - torch.sum(p[..., :3] * q[..., :3], axis=-1)
+    return torch.cat((vector, last[..., None]), dim=-1)
+
+
+def quat_composition(sequence, normalize=False):
+    r"""
+    Returns the product of a sequence of quaternions.
+
+    Args:
+        sequence (sequence of ...x4 tensors, XYZW convention): sequence of batches of quaternions.
+        normalize (bool): it True, normalize the returned quaternion.
+    Returns:
+        batch of quaternions (...x4 tensor, XYZW convention).
+    """
+    assert len(sequence) > 1, "Requiring at least two inputs."
+    res = sequence[0]
+    for q in sequence[1:]:
+        res = quat_product(res, q)
+    if normalize:
+        res = quat_normalize(res)
+    return res
+
+
+def quat_action(q, v, is_normalized=False):
+    r"""
+    Rotate a 3D vector :math:`v=(x,y,z)` by a rotation represented by a quaternion `q`.
+
+    Based on the action by conjugation :math:`q,v : q v q^{-1}`, considering the pure quaternion :math:`v=xi + yj +zk` by abuse of notation.
+
+    Args:
+        q (...x4 tensor, XYZW convention): batch of quaternions.
+        v (...x3 tensor): batch of 3D vectors.
+        is_normalized: use True if the input quaternions are already normalized, to avoid unnecessary computations.
+    Returns:
+        batch of rotated 3D vectors (...x3 tensor).
+    Note:
+        One should favor rotation matrix representation to rotate multiple vectors by the same rotation efficiently.
+
+    """
+    batch_shape = v.shape[:-1]
+    iquat = quat_conjugation(q) if is_normalized else quat_inverse(q)
+    pure = torch.cat((v, torch.zeros(batch_shape + (1,), dtype=q.dtype, device=q.device)), dim=-1)
+    res = quat_product(q, quat_product(pure, iquat))
+    return res[..., :3]
+
+
+def rotvec_inverse(rotvec):
+    r"""
+    Returns the inverse of the input rotation expressed using rotation vector representation.
+
+    Args:
+        rotvec (...x3 tensor): batch of rotation vectors.
+    Returns:
+        batch of rotation vectors (...x3 tensor).
+    """
+    return -rotvec
+
+
+def rotvec_composition(sequence, normalize=False):
+    r"""
+    Returns a rotation vector corresponding to the composition of a sequence of rotations represented by rotation vectors.
+    Composition is performed using an intermediary quaternion representation.
+
+    Args:
+        sequence (sequence of ...x3 tensors): sequence of batches of rotation vectors.
+        normalize (bool): if True, normalize intermediary representation to compensate for numerical errors.
+    """
+    assert len(sequence) > 1, "Requiring at least two inputs."
+    quats = [roma.rotvec_to_unitquat(rotvec) for rotvec in sequence]
+    q = quat_composition(quats, normalize=normalize)
+    return roma.unitquat_to_rotvec(q)
+
+
+def rotmat_inverse(R):
+    r"""
+    Returns the inverse of a rotation matrix.
+
+    Args:
+        R (...xNxN tensor): batch of rotation matrices.
+    Returns:
+        batch of inverted rotation matrices (...xNxN tensor).
+    Warning:
+        The function returns a transposed view of the input, therefore one should be careful with in-place operations.
+    """
+    return R.transpose(-1, -2)
+
+
+def rotmat_composition(sequence, normalize=False):
+    r"""
+    Returns the product of a sequence of rotation matrices.
+
+    Args:
+        sequence (sequence of ...xNxN tensors): sequence of batches of rotation matrices.
+        normalize: if True, apply special Procrustes orthonormalization to compensate for numerical errors.
+    Returns:
+        batch of rotation matrices (...xNxN tensor).
+    """
+    assert len(sequence) > 1, "Requiring at least two inputs."
+    result = sequence[0]
+    for R in sequence[1:]:
+        result = result @ R
+    if normalize:
+        result = roma.mappings.special_procrustes(result)
+    return result
+
+
+def unitquat_slerp(q0, q1, steps, shortest_arc=True):
+    r"""
+    Spherical linear interpolation between two unit quaternions.
+
+    Args:
+        q0, q1 (Ax4 tensor): batch of unit quaternions (A may contain multiple dimensions).
+        steps (tensor of shape B): interpolation steps, 0.0 corresponding to q0 and 1.0 to q1 (B may contain multiple dimensions).
+            Values outside [0,1] result in extrapolation.
+        shortest_arc (boolean): if True, interpolation will be performed along the shortest arc on SO(3) from `q0` to `q1` or `-q1`.
+    Returns:
+        batch of interpolated unit quaternions (BxAx4 tensor).
+    Note:
+        When considering quaternions as rotation representations,
+        one should keep in mind that spherical interpolation is not necessarily performed along the shortest arc,
+        depending on the sign of ``torch.sum(q0*q1,dim=-1)``.
+
+        With ``shortest_arc=False``, the interpolation arc is not uniquely defined for antipodal quaternions (``q1 = -q0``),
+        and the output is undefined in that case.
+        For nearly antipodal quaternions, the arc is uniquely defined but highly sensitive to the inputs.
+
+        First and second order derivatives are well-defined for all inputs, including identical quaternions.
+    """
+    q0, batch_shape = roma.internal.flatten_batch_dims(q0, end_dim=-2)
+    q1, batch_shape1 = roma.internal.flatten_batch_dims(q1, end_dim=-2)
+    assert batch_shape == batch_shape1
+    # omega is the 'angle' between both quaternions
+    cos_omega = torch.sum(q0 * q1, dim=-1)
+    if shortest_arc:
+        # Flip some quaternions to perform shortest arc interpolation.
+        q1 = q1.clone()
+        q1[cos_omega < 0, :] *= -1
+        cos_omega = torch.abs(cos_omega)
+    # sin(omega) is computed as the norm of the component of q1 orthogonal to q0,
+    # so that omega = atan2(sin, cos) remains accurate for small angles (unlike acos(cos_omega)).
+    rejection = q1 - cos_omega[..., None] * q0
+    # The norm is not differentiable at 0, i.e. for identical quaternions, where linear interpolation is used instead.
+    # Below this threshold, linear interpolation is indistinguishable from spherical interpolation at machine precision.
+    threshold = math.sqrt(torch.finfo(q0.dtype).eps)
+    # (Only for nearby quaternions, and not for nearly antipodal ones when shortest_arc=False.)
+    nearby_quaternions = torch.logical_and(torch.sum(rejection**2, dim=-1) < threshold**2, cos_omega > 0)
+    # Evaluate the discarded branch at a safe point to avoid NaN gradients.
+    rejection = torch.where(nearby_quaternions[..., None], torch.ones_like(rejection), rejection)
+    sin_omega = torch.linalg.norm(rejection, dim=-1)
+    omega = torch.atan2(sin_omega, cos_omega)
+
+    shape = (1,) * steps.dim() + (-1, 1)
+    omega = omega.reshape(shape)
+    sin_omega = sin_omega.reshape(shape)
+    nearby_quaternions = nearby_quaternions.reshape(shape)
+    s = steps.reshape(steps.shape + (1, 1))
+    # Slerp coefficients sin((1-s) omega) / sin(omega) and sin(s omega) / sin(omega).
+    # Division is safe: sin_omega is 1 for nearby quaternions and larger than the threshold otherwise.
+    alpha = torch.where(nearby_quaternions, 1.0 - s, torch.sin((1.0 - s) * omega) / sin_omega)
+    beta = torch.where(nearby_quaternions, s, torch.sin(s * omega) / sin_omega)
+    # Interpolation
+    q = alpha * q0.reshape((1,) * steps.dim() + q0.shape) + beta * q1.reshape((1,) * steps.dim() + q1.shape)
+    # Normalization of the output
+    q = quat_normalize(q)
+    return q.reshape(steps.shape + batch_shape + (4,))
+
+
+def unitquat_slerp_fast(q0, q1, steps, shortest_arc=True):
+    r"""
+    Deprecated alias of :func:`~roma.utils.unitquat_slerp`, which now uses the same implementation.
+    """
+    warnings.warn(
+        "unitquat_slerp_fast is deprecated and will be removed in a future release. Use unitquat_slerp instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return unitquat_slerp(q0, q1, steps, shortest_arc=shortest_arc)
+
+
+def rotvec_slerp(rotvec0, rotvec1, steps):
+    r"""
+    Spherical linear interpolation between two rotation vector representations.
+
+    Args:
+        rotvec0, rotvec1 (Ax3 tensor): batch of rotation vectors (A may contain multiple dimensions).
+        steps (tensor of shape B):  interpolation steps, 0.0 corresponding to rotvec0 and 1.0 to rotvec1 (B may contain multiple dimensions).
+    Returns:
+        batch of interpolated rotation vectors (BxAx3 tensor).
+    """
+    q0 = roma.mappings.rotvec_to_unitquat(rotvec0)
+    q1 = roma.mappings.rotvec_to_unitquat(rotvec1)
+    interpolated_q = unitquat_slerp(q0, q1, steps, shortest_arc=True)
+    return roma.mappings.unitquat_to_rotvec(interpolated_q)
+
+
+def rotmat_slerp(R0, R1, steps):
+    r"""
+    Spherical linear interpolation between two rotation matrices.
+
+    Args:
+        R0, R1 (Ax3x3 tensor): batch of rotation matrices (A may contain multiple dimensions).
+        steps (tensor of shape B):  interpolation steps, 0.0 corresponding to R0 and 1.0 to R1 (B may contain multiple dimensions).
+    Returns:
+        batch of interpolated rotation matrices (BxAx3x3 tensor).
+    """
+    q0 = roma.mappings.rotmat_to_unitquat(R0)
+    q1 = roma.mappings.rotmat_to_unitquat(R1)
+    interpolated_q = unitquat_slerp(q0, q1, steps, shortest_arc=True)
+    return roma.mappings.unitquat_to_rotmat(interpolated_q)
+
+
+def _normalized_weights(x, weights):
+    r"""
+    :meta private:
+    Weights (...xN tensor) normalized to sum to 1, uniform if weights is None, for a list of N vectors x (...xNxD tensor).
+    """
+    if weights is None:
+        n = x.shape[-2]
+        return torch.full((1,), 1 / n, dtype=x.dtype, device=x.device).expand(x.shape[:-1])
+    return weights / torch.sum(weights, dim=-1, keepdim=True)
+
+
+def _rigid_vectors_registration(x, y, weights, compute_scaling, unitquat):
+    r"""
+    :meta private:
+    Shared implementation of :func:`rigid_vectors_registration` and :func:`rigid_vectors_registration_unitquat`,
+    for normalized weights (see :func:`_normalized_weights`).
+    Returns the rotation (matrix, or unit quaternion if unitquat=True) and the scaling (None if compute_scaling=False).
+    """
+    if unitquat and x.shape[-1] != 3:
+        raise ValueError("Unit quaternion registration is only applicable to 3D data.")
+    M = torch.einsum("...k, ...ki, ...kj -> ...ij", weights, y, x)
+    if unitquat:
+        rotation = roma.mappings.special_procrustes_unitquat(M)
+    else:
+        rotation = roma.mappings.special_procrustes(M)
+    if not compute_scaling:
+        return rotation, None
+    R = roma.mappings.unitquat_to_rotmat(rotation) if unitquat else rotation
+    # Optimal scaling s = tr(DS) / sigma2_x (Umeyama, IEEE TPAMI 1991, eq. 42), where M = U D V^T is the SVD of M,
+    # S = diag(1, ..., 1, det(U V^T)) the sign correction, and sigma2_x the weighted mean squared norm of x.
+    # Since R = U S V^T, tr(DS) = tr(R^T M): the scaling does not require the singular values,
+    # and therefore works with any solver (in particular Horn's method in 3D, which does not compute them).
+    DS_trace = torch.sum(R * M, dim=(-2, -1))
+    sigma2_x = torch.einsum("...k, ...ki, ...ki -> ...", weights, x, x)
+    return rotation, DS_trace / sigma2_x
+
+
+def _rigid_points_registration(x, y, weights, compute_scaling, unitquat):
+    r"""
+    :meta private:
+    Shared implementation of :func:`rigid_points_registration` and :func:`rigid_points_registration_unitquat`.
+    Returns the rotation (matrix, or unit quaternion if unitquat=True), the translation and the scaling (None if compute_scaling=False).
+    """
+    weights = _normalized_weights(x, weights)
+    # Center data
+    xmean = torch.einsum("...k, ...ki -> ...i", weights, x)
+    ymean = torch.einsum("...k, ...ki -> ...i", weights, y)
+    rotation, scale = _rigid_vectors_registration(
+        x - xmean[..., None, :], y - ymean[..., None, :], weights, compute_scaling, unitquat
+    )
+    # Translation t = ymean - s R xmean.
+    if unitquat:
+        rotated_xmean = quat_action(rotation, xmean, is_normalized=True)
+    else:
+        rotated_xmean = torch.einsum("...ij, ...j -> ...i", rotation, xmean)
+    if compute_scaling:
+        rotated_xmean = scale[..., None] * rotated_xmean
+    return rotation, ymean - rotated_xmean, scale
+
+
+def rigid_vectors_registration(x, y, weights=None, compute_scaling=False):
+    r"""
+    Returns the rotation matrix :math:`R` and the optional scaling :math:`s` that best align an input list of vectors :math:`(x_i)_{i=1...n}` to a target list of vectors :math:`(y_i)_{i=1...n}`
+    by minimizing the sum of square distance :math:`\sum_i w_i \|s R x_i - y_i\|^2`, where :math:`(w_i)_{i=1...n}` denotes optional positive weights.
+    See :func:`~roma.utils.rigid_points_registration` for details.
+
+    Args:
+        x (...xNxD tensor): list of N vectors of dimension D.
+        y (...xNxD tensor): list of corresponding target vectors.
+        weights (None or ...xN tensor): optional list of weights associated to each vector.
+    Returns:
+        A tuple :math:`(R, s)` consisting of the rotation matrix :math:`R` (...xDxD tensor) and the scaling :math:`s` (... tensor)
+        if :code:`compute_scaling=True`.
+        Returns the rotation matrix :math:`R` otherwise.
+    """
+    R, scale = _rigid_vectors_registration(x, y, _normalized_weights(x, weights), compute_scaling, unitquat=False)
+    return (R, scale) if compute_scaling else R
+
+
+def rigid_vectors_registration_unitquat(x, y, weights=None, compute_scaling=False):
+    r"""
+    Same as :func:`~roma.utils.rigid_vectors_registration` for 3D vectors, returning the rotation as a unit quaternion :math:`q`.
+
+    The quaternion is computed with :func:`~roma.mappings.special_procrustes_unitquat` (Horn's closed-form method).
+
+    Args:
+        x (...xNx3 tensor): list of N 3D vectors.
+        y (...xNx3 tensor): list of corresponding target vectors.
+        weights (None or ...xN tensor): optional list of weights associated to each vector.
+    Returns:
+        A tuple :math:`(q, s)` consisting of the unit quaternion :math:`q` (...x4 tensor, XYZW convention)
+        and the scaling :math:`s` (... tensor) if :code:`compute_scaling=True`.
+        Returns the unit quaternion :math:`q` otherwise.
+        The sign of :math:`q` is arbitrary.
+
+    Raises:
+        ValueError: if the vectors are not 3D.
+    """
+    q, scale = _rigid_vectors_registration(x, y, _normalized_weights(x, weights), compute_scaling, unitquat=True)
+    return (q, scale) if compute_scaling else q
+
+
+def rigid_points_registration(x, y, weights=None, compute_scaling=False):
+    r"""
+    Returns the rigid transformation :math:`(R,t)` and the optional scaling :math:`s` that best align an input list of points :math:`(x_i)_{i=1...n}` to a target list of points :math:`(y_i)_{i=1...n}`,
+    by minimizing the sum of square distance :math:`\sum_i w_i \|s R x_i + t - y_i\|^2`, where :math:`(w_i)_{i=1...n}` denotes optional positive weights.
+    This is sometimes referred to as the Kabsch/Umeyama algorithm.
+
+    Args:
+        x (...xNxD tensor): list of N points of dimension D.
+        y (...xNxD tensor): list of corresponding target points.
+        weights (None or ...xN tensor): optional list of weights associated to each point.
+    Returns:
+        a triplet :math:`(R, t, s)` consisting of a rotation matrix :math:`R` (...xDxD tensor),
+        a translation vector :math:`t` (...xD tensor),
+        and a scaling :math:`s` (... tensor) if :code:`compute_scaling=True`.
+        Returns :math:`(R, t)` otherwise.
+
+    References:
+        S. Umeyama, “Least-squares estimation of transformation parameters between two point patterns,” IEEE Transactions on pattern analysis and machine intelligence, vol. 13, no. 4, Art. no. 4, 1991.
+
+        W. Kabsch, "A solution for the best rotation to relate two sets of vectors". Acta Crystallographica, A32, 1976.
+    """
+    R, t, scale = _rigid_points_registration(x, y, weights, compute_scaling, unitquat=False)
+    return (R, t, scale) if compute_scaling else (R, t)
+
+
+def rigid_points_registration_unitquat(x, y, weights=None, compute_scaling=False):
+    r"""
+    Same as :func:`~roma.utils.rigid_points_registration` for 3D points, returning the rotation as a unit quaternion :math:`q`.
+
+    The quaternion is computed with :func:`~roma.mappings.special_procrustes_unitquat` (Horn's closed-form method).
+
+    Args:
+        x (...xNx3 tensor): list of N 3D points.
+        y (...xNx3 tensor): list of corresponding target points.
+        weights (None or ...xN tensor): optional list of weights associated to each point.
+    Returns:
+        a triplet :math:`(q, t, s)` consisting of a unit quaternion :math:`q` (...x4 tensor, XYZW convention),
+        a translation vector :math:`t` (...x3 tensor),
+        and a scaling :math:`s` (... tensor) if :code:`compute_scaling=True`.
+        Returns :math:`(q, t)` otherwise.
+        The sign of :math:`q` is arbitrary.
+
+    Raises:
+        ValueError: if the points are not 3D.
+
+    Reference:
+        B.K.P. Horn, “Closed-form solution of absolute orientation using unit quaternions,” Journal of the Optical Society of America A, 4(4), 1987, doi: 10.1364/JOSAA.4.000629.
+    """
+    q, t, scale = _rigid_points_registration(x, y, weights, compute_scaling, unitquat=True)
+    return (q, t, scale) if compute_scaling else (q, t)

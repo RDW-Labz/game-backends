@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 03:02 UTC · 1904 entries · 474 vendored, 1430 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 03:20 UTC · 1910 entries · 476 vendored, 1434 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
-| [math](#math) — Math libraries | 165 | 49 | 116 |
+| [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
@@ -1053,7 +1053,7 @@ _Generated 2026-11-26 03:02 UTC · 1904 entries · 474 vendored, 1430 reference-
 
 ## math
 
-**Math libraries** — 165 entries
+**Math libraries** — 171 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1068,6 +1068,7 @@ _Generated 2026-11-26 03:02 UTC · 1904 entries · 474 vendored, 1430 reference-
 | [cairo-math](entries/math/pedrobeirao-cairo-math/README.md) | Smart contract Cairo library for advanced fixed-point math | python | AGPL-3.0 | reference | [pedrobeirao/cairo-math](https://github.com/pedrobeirao/cairo-math) @ `ef7a60d0b419` |
 | [ccVector](entries/math/jobtalle-ccvector/README.md) | A vector and matrix math library | c | Public-Domain | vendored | [jobtalle/ccVector](https://github.com/jobtalle/ccVector) @ `ffefafe5a0b9` |
 | [cfmm-math-libraries](entries/math/0xosiris-cfmm-math-libraries/README.md) | CFMM Fixed Point Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. | solidity | unknown | reference | [0xOsiris/cfmm-math-libraries](https://github.com/0xOsiris/cfmm-math-libraries) @ `2023-01-21 (branch tip at catalogue time)` |
+| [cga.js](entries/math/yszhao91-cga-js/README.md) |  CGA   3D 计算几何算法库 / 3D Compute Geometry Algorithm Library  webgl three.js babylon.js等任何库都可以使用 | javascript | MIT | vendored | [yszhao91/cga.js](https://github.com/yszhao91/cga.js) @ `cae56f54866c` |
 | [cglm](entries/math/cglm/README.md) | SIMD-accelerated C math (vec/mat/quat/affine/euler) | c | MIT | vendored | [recp/cglm](https://github.com/recp/cglm) @ `b9b570b78d58` |
 | [cgmath](entries/math/rustgd-cgmath/README.md) | A linear algebra and mathematics library for computer graphics. | rust | Apache-2.0 | reference | [rustgd/cgmath](https://github.com/rustgd/cgmath) @ `2024-12-07 (branch tip at catalogue time)` |
 | [Clover](entries/math/astojanov-clover/README.md) | Clover: Quantized 4-bit Linear Algebra Library | c++ | Apache-2.0 | reference | [astojanov/Clover](https://github.com/astojanov/Clover) @ `2018-05-29 (branch tip at catalogue time)` |
@@ -1166,9 +1167,11 @@ _Generated 2026-11-26 03:02 UTC · 1904 entries · 474 vendored, 1430 reference-
 | [PAL-CRT](entries/math/lmp88959-pal-crt/README.md) | PAL encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time applications | c | unknown | reference | [LMP88959/PAL-CRT](https://github.com/LMP88959/PAL-CRT) @ `2025-10-15 (branch tip at catalogue time)` |
 | [PL3D-KC](entries/math/lmp88959-pl3d-kc/README.md) | A very fast and simple software renderer using only integers and fixed point math. PiSHi LE (PL) is a subset of the 3D software graphics library used in King's  | c | unknown | reference | [LMP88959/PL3D-KC](https://github.com/LMP88959/PL3D-KC) @ `2024-05-30 (branch tip at catalogue time)` |
 | [point-cloud-utils](entries/math/fwilliams-point-cloud-utils/README.md) | An easy-to-use Python library for processing and manipulating 3D point clouds and meshes. | c++ | MIT | vendored | [fwilliams/point-cloud-utils](https://github.com/fwilliams/point-cloud-utils) @ `a5ce154b32b9` |
+| [polyform](entries/math/elicdavis-polyform/README.md) | Immutable mesh processing library | go | MIT | reference | [EliCDavis/polyform](https://github.com/EliCDavis/polyform) @ `2026-11-25 (branch tip at catalogue time)` |
 | [prb-math](entries/math/paulrberg-prb-math/README.md) | Solidity library for advanced fixed-point math | solidity | MIT | vendored | [PaulRBerg/prb-math](https://github.com/PaulRBerg/prb-math) @ `3fbfb3e399b2` |
 | [PyGLM](entries/math/zuzu-typ-pyglm/README.md) | Fast OpenGL Mathematics (GLM) for Python | python | Zlib | reference | [Zuzu-Typ/PyGLM](https://github.com/Zuzu-Typ/PyGLM) @ `2026-11-19 (branch tip at catalogue time)` |
 | [pylops](entries/math/pylops-pylops/README.md) | PyLops – A Linear-Operator Library for Python | python | LGPL-3.0 | reference | [PyLops/pylops](https://github.com/PyLops/pylops) @ `15ee1791b810` |
+| [pymadcad](entries/math/jimy-byerley-pymadcad/README.md) |  Simple yet powerful CAD (Computer Aided Design) library, written with Python. | python | LGPL-3.0 | reference | [jimy-byerley/pymadcad](https://github.com/jimy-byerley/pymadcad) @ `2026-10-25 (branch tip at catalogue time)` |
 | [PyMesh](entries/math/pymesh-pymesh/README.md) | Geometry Processing Library for Python | c++ | unknown | reference | [PyMesh/PyMesh](https://github.com/PyMesh/PyMesh) @ `2024-08-08 (branch tip at catalogue time)` |
 | [pyquaternion](entries/math/kieranwynn-pyquaternion/README.md) | A fully featured, pythonic library for representing and using quaternions | python | MIT | vendored | [KieranWynn/pyquaternion](https://github.com/KieranWynn/pyquaternion) @ `99025c17bab1` |
 | [pyRANSAC-3D](entries/math/leomariga-pyransac-3d/README.md) | Python library for fitting 3D primitive shapes to point clouds with RANSAC. Detect planes, spheres, cylinders, cuboids, circles, and lines. | python | Apache-2.0 | reference | [leomariga/pyRANSAC-3D](https://github.com/leomariga/pyRANSAC-3D) @ `2026-08-28 (branch tip at catalogue time)` |
@@ -1186,6 +1189,7 @@ _Generated 2026-11-26 03:02 UTC · 1904 entries · 474 vendored, 1430 reference-
 | [RandLAPACK](entries/math/ballisticla-randlapack/README.md) | A high-performance C++ library for randomized numerical linear algebra | c++ | unknown | reference | [BallisticLA/RandLAPACK](https://github.com/BallisticLA/RandLAPACK) @ `2026-11-23 (branch tip at catalogue time)` |
 | [random-js](entries/math/ckknight-random-js/README.md) | A mathematically correct random number generator library for JavaScript. | typescript | MIT | vendored | [ckknight/random-js](https://github.com/ckknight/random-js) @ `f000fd5c286b` |
 | [RcppEigen](entries/math/rcppcore-rcppeigen/README.md) | Rcpp integration for the Eigen templated linear algebra library | c++ | none | reference | [RcppCore/RcppEigen](https://github.com/RcppCore/RcppEigen) @ `c6a32a22da4f` |
+| [roma](entries/math/naver-roma/README.md) | RoMa: A lightweight library to deal with 3D rotations in PyTorch. | python | BSD-3-Clause | vendored | [naver/roma](https://github.com/naver/roma) @ `2d7484bfc54d` |
 | [rulinalg](entries/math/athemathmo-rulinalg/README.md) | A linear algebra library written in Rust | rust | MIT | reference | [AtheMathmo/rulinalg](https://github.com/AtheMathmo/rulinalg) @ `2022-05-18 (branch tip at catalogue time)` |
 | [russell](entries/math/cpmech-russell/README.md) | Rust Scientific Library. ODE, DAE, and PDE solvers. Special functions (Bessel, Elliptic, Beta, Gamma, Erf). Linear algebra. Sparse solvers. Probability distribu | rust | MIT | vendored | [cpmech/russell](https://github.com/cpmech/russell) @ `261fc91f7592` |
 | [SaturnMathPP](entries/math/robertoduarte-saturnmathpp/README.md) | SaturnMath++ is a C++23 library dedicated to Sega Saturn hardware, offering essential mathematical operations tailored for fixed-point arithmetic and geometric  | c++ | MIT | reference | [robertoduarte/SaturnMathPP](https://github.com/robertoduarte/SaturnMathPP) @ `2026-11-22 (branch tip at catalogue time)` |
@@ -1211,6 +1215,7 @@ _Generated 2026-11-26 03:02 UTC · 1904 entries · 474 vendored, 1430 reference-
 | [tinyspline](entries/math/msteinbeck-tinyspline/README.md) | ANSI C library for NURBS, B-Splines, and Bézier curves with interfaces for C++, C#, D, Go, Java, Javascript, Lua, Octave, PHP, Python, R, and Ruby. | c | MIT | reference | [msteinbeck/tinyspline](https://github.com/msteinbeck/tinyspline) @ `2024-09-03 (branch tip at catalogue time)` |
 | [tpp-mlir](entries/math/libxsmm-tpp-mlir/README.md) | TPP experimentation on MLIR for linear algebra | mlir | Apache-2.0 | vendored | [libxsmm/tpp-mlir](https://github.com/libxsmm/tpp-mlir) @ `14368326a83f` |
 | [Trackball.js](entries/math/rawify-trackball-js/README.md) | The RAW library to add a virtual Trackball to your DOM | javascript | MIT | reference | [rawify/Trackball.js](https://github.com/rawify/Trackball.js) @ `2025-09-12 (branch tip at catalogue time)` |
+| [trimesh2](entries/math/forceflow-trimesh2/README.md) | C++ library and set of utilities for input, output, and basic manipulation of 3D triangle meshes | c | GPL-2.0 | reference | [Forceflow/trimesh2](https://github.com/Forceflow/trimesh2) @ `2023-08-26 (branch tip at catalogue time)` |
 | [trng4](entries/math/rabauke-trng4/README.md) | state-of-the-art C++ pseudo-random number generator library for sequential and parallel Monte Carlo simulations | c++ | BSD-3-Clause | reference | [rabauke/trng4](https://github.com/rabauke/trng4) @ `2026-11-21 (branch tip at catalogue time)` |
 | [tue](entries/math/cincinesh-tue/README.md) | The Tuesday C++ Vector Math and SIMD Library | c++ | BSL-1.0 | reference | [Cincinesh/tue](https://github.com/Cincinesh/tue) @ `2017-04-17 (branch tip at catalogue time)` |
 | [Unity-Raymarching-Framework](entries/math/jiepengtan-unity-raymarching-framework/README.md) | A framework to easy implement raymarching in unity. Include lots of hash,noise,fbm,SDF,rotate functions | hlsl | MIT | reference | [JiepengTan/Unity-Raymarching-Framework](https://github.com/JiepengTan/Unity-Raymarching-Framework) @ `2018-04-27 (branch tip at catalogue time)` |
@@ -1220,6 +1225,7 @@ _Generated 2026-11-26 03:02 UTC · 1904 entries · 474 vendored, 1430 reference-
 | [verilog_fixed_point_math_library](entries/math/freecores-verilog-fixed-point-math-library/README.md) | Fixed Point Math Library for Verilog | verilog | LGPL-2.1 | reference | [freecores/verilog_fixed_point_math_library](https://github.com/freecores/verilog_fixed_point_math_library) @ `a94eb0b2b1e4` |
 | [vgMath](entries/math/brutpitt-vgmath/README.md) | vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ... | c++ | BSD-2-Clause | reference | [BrutPitt/vgMath](https://github.com/BrutPitt/vgMath) @ `2025-03-16 (branch tip at catalogue time)` |
 | [vxl](entries/math/user1095108-vxl/README.md) | a lightweight SIMD vector, matrix and quaternion library | c++ | Unlicense | vendored | [user1095108/vxl](https://github.com/user1095108/vxl) @ `4d5dcad14bc1` |
+| [XbimGeometry](entries/math/xbimteam-xbimgeometry/README.md) | XbimGeometry contains the CLR interop libraries and the c++ engine used to compute the 3D geometry of models. | c++ | unknown | reference | [xBimTeam/XbimGeometry](https://github.com/xBimTeam/XbimGeometry) @ `2026-10-26 (branch tip at catalogue time)` |
 | [zalgebra](entries/math/kooparse-zalgebra/README.md) | Linear algebra library for games and real-time graphics. | zig | MIT | reference | [kooparse/zalgebra](https://github.com/kooparse/zalgebra) @ `2026-10-14 (branch tip at catalogue time)` |
 | [zmath](entries/math/zig-gamedev-zmath/README.md) | SIMD math library for Zig game developers | zig | MIT | vendored | [zig-gamedev/zmath](https://github.com/zig-gamedev/zmath) @ `43250209495c` |
 

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T03:20:39Z",
+ "category": "math",
+ "commit": "2026-10-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jimy-byerley/pymadcad \u2014  Simple yet powerful CAD (Computer Aided Design) library, written with Python.",
+ "language": "python",
+ "license": "LGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "pymadcad",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-3.0)",
+ "slug": "jimy-byerley-pymadcad",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 294,
+ "system": " Simple yet powerful CAD (Computer Aided Design) library, written with Python.",
+ "upstream": "https://github.com/jimy-byerley/pymadcad",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

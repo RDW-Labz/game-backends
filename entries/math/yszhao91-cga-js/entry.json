@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T03:20:37Z",
+ "category": "math",
+ "commit": "cae56f54866c",
+ "delivery": "vendored",
+ "description": "yszhao91/cga.js \u2014  CGA   3D \u8ba1\u7b97\u51e0\u4f55\u7b97\u6cd5\u5e93 | 3D Compute Geometry Algorithm Library  webgl three.js babylon.js\u7b49\u4efb\u4f55\u5e93\u90fd\u53ef\u4ee5\u4f7f\u7528",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "cga.js",
+ "size_bytes": 1715148,
+ "slug": "yszhao91-cga-js",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 475,
+ "system": " CGA   3D \u8ba1\u7b97\u51e0\u4f55\u7b97\u6cd5\u5e93 | 3D Compute Geometry Algorithm Library  webgl three.js babylon.js\u7b49\u4efb\u4f55\u5e93\u90fd\u53ef\u4ee5\u4f7f\u7528",
+ "upstream": "https://github.com/yszhao91/cga.js",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T03:20:39Z",
+ "category": "math",
+ "commit": "2026-10-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "xBimTeam/XbimGeometry \u2014 XbimGeometry contains the CLR interop libraries and the c++ engine used to compute the 3D geometry of models.",
+ "language": "c++",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "XbimGeometry",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "xbimteam-xbimgeometry",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 295,
+ "system": "XbimGeometry contains the CLR interop libraries and the c++ engine used to compute the 3D geometry of models.",
+ "upstream": "https://github.com/xBimTeam/XbimGeometry",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

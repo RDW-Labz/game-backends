@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T03:20:35Z",
+ "category": "math",
+ "commit": "2d7484bfc54d",
+ "delivery": "vendored",
+ "description": "naver/roma \u2014 RoMa: A lightweight library to deal with 3D rotations in PyTorch.",
+ "language": "python",
+ "license": "BSD-3-Clause",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "roma",
+ "size_bytes": 245246,
+ "slug": "naver-roma",
+ "source": "github-search:geometry library 3d stars:>60",
+ "stars": 649,
+ "system": "RoMa: A lightweight library to deal with 3D rotations in PyTorch.",
+ "upstream": "https://github.com/naver/roma",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
