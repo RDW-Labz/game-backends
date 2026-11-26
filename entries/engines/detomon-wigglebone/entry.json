@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T15:22:40Z",
+ "category": "engines",
+ "commit": "2026-05-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "detomon/wigglebone \u2014 Adds jiggle physics to a Skeleton3D bone using SkeletonModifier3D nodes",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "wigglebone",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "detomon-wigglebone",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 538,
+ "system": "Adds jiggle physics to a Skeleton3D bone using SkeletonModifier3D nodes",
+ "upstream": "https://github.com/detomon/wigglebone",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

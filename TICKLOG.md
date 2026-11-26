@@ -3753,3 +3753,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 14:50 UTC** — tick 960: +0 screened, +0 reference, 32 skipped, catalogue=1985
 
 - **2026-11-26 15:06 UTC** — tick 961: +0 screened, +0 reference, 20 skipped, catalogue=1985
+
+- **2026-11-26 15:22 UTC** — tick 962: +2 screened, +4 reference, 33 skipped, catalogue=1991
+  - added engines/shin-nil-godot-android-admob-plugin (MIT, vendored)
+  - added engines/nagidev-dialoguenodes (MIT, vendored)
+  - reference engines/detomon-wigglebone
+  - reference engines/zijcht-godot-game-settings
+  - reference engines/origamidev-pete-todo-manager
+  - reference engines/jetbrains-godot-support

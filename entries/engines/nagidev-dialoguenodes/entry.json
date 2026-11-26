@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T15:22:38Z",
+ "category": "engines",
+ "commit": "742486baa9ad",
+ "delivery": "vendored",
+ "description": "nagidev/DialogueNodes \u2014 A plugin for creating, editing and using branching dialogues in Godot",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "DialogueNodes",
+ "size_bytes": 135035,
+ "slug": "nagidev-dialoguenodes",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 544,
+ "system": "A plugin for creating, editing and using branching dialogues in Godot",
+ "upstream": "https://github.com/nagidev/DialogueNodes",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

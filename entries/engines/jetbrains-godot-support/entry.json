@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T15:22:40Z",
+ "category": "engines",
+ "commit": "2026-11-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "JetBrains/godot-support \u2014 Plugins for Rider/JetBrains IDEs, Addon for Godot",
+ "language": "kotlin",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "godot-support",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "jetbrains-godot-support",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 508,
+ "system": "Plugins for Rider/JetBrains IDEs, Addon for Godot",
+ "upstream": "https://github.com/JetBrains/godot-support",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

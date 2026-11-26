@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T15:22:36Z",
+ "category": "engines",
+ "commit": "459293ea8be1",
+ "delivery": "vendored",
+ "description": "Shin-NiL/Godot-Android-Admob-Plugin \u2014 Android AdMob plugin for Godot Game Engine 3.2 or higher",
+ "language": "java",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Godot-Android-Admob-Plugin",
+ "size_bytes": 80542,
+ "slug": "shin-nil-godot-android-admob-plugin",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 548,
+ "system": "Android AdMob plugin for Godot Game Engine 3.2 or higher",
+ "upstream": "https://github.com/Shin-NiL/Godot-Android-Admob-Plugin",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

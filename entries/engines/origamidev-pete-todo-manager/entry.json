@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T15:22:40Z",
+ "category": "engines",
+ "commit": "2026-04-03 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "OrigamiDev-Pete/TODO_Manager \u2014 Godot plugin that adds a TODO list to the editor dock.",
+ "language": "gdscript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "TODO_Manager",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "origamidev-pete-todo-manager",
+ "source": "github-search:godot plugin stars:>100",
+ "stars": 515,
+ "system": "Godot plugin that adds a TODO list to the editor dock.",
+ "upstream": "https://github.com/OrigamiDev-Pete/TODO_Manager",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
