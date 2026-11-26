@@ -3602,3 +3602,7 @@ One line per 15-minute extension tick, newest last.
   - reference loot-economy/gibbsly-ltos
 
 - **2026-11-26 04:26 UTC** — tick 921: +0 screened, +0 reference, 7 skipped, catalogue=1914
+
+- **2026-11-26 04:42 UTC** — tick 922: +2 screened, +0 reference, 44 skipped, catalogue=1916
+  - added gameplay/leth4-instantpipes (MIT, vendored)
+  - added gameplay/dbrizov-unity-pathfindingalgorithms (MIT, vendored)

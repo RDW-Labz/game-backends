@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 04:26 UTC · 1914 entries · 477 vendored, 1437 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 04:42 UTC · 1916 entries · 479 vendored, 1437 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 04:26 UTC · 1914 entries · 477 vendored, 1437 reference-
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 259 | 66 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
@@ -1280,7 +1280,7 @@ _Generated 2026-11-26 04:26 UTC · 1914 entries · 477 vendored, 1437 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 257 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 259 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1368,6 +1368,7 @@ _Generated 2026-11-26 04:26 UTC · 1914 entries · 477 vendored, 1437 reference-
 | [human-essentials](entries/gameplay/rubyforgood-human-essentials/README.md) | Human Essentials is an inventory management system for diaper, incontinence, and period-supply banks. It supports them in distributing to partners, tracking inv | ruby | MIT | vendored | [rubyforgood/human-essentials](https://github.com/rubyforgood/human-essentials) @ `b41d699c2aad` |
 | [hypersomnia — inventory](entries/gameplay/hypersomnia-inventory/README.md) | combat, AI, pathing, quest or inventory logic | h | AGPL-3.0 | reference | [TeamHypersomnia/Hypersomnia](https://github.com/TeamHypersomnia/Hypersomnia) @ `0049839` |
 | [Illarion-Content](entries/gameplay/illarion-ev-illarion-content/README.md) | Illarion game content, including NPCs, quests, fighting system, etc. | lua | AGPL-3.0 | reference | [Illarion-eV/Illarion-Content](https://github.com/Illarion-eV/Illarion-Content) @ `2026-11-21 (branch tip at catalogue time)` |
+| [InstantPipes](entries/gameplay/leth4-instantpipes/README.md) | Unity editor tool for quickly generating pipes—with pathfinding | c# | MIT | vendored | [leth4/InstantPipes](https://github.com/leth4/InstantPipes) @ `2f12853123ea` |
 | [Inventory](entries/gameplay/farrokhgames-inventory/README.md) | A Diablo 2-style inventory system for Unity3D | c# | MIT | vendored | [FarrokhGames/Inventory](https://github.com/FarrokhGames/Inventory) @ `174f55d1d03c` |
 | [inventory](entries/gameplay/imran300-inventory/README.md) | Inventory Management System | php | MIT | reference | [imran300/inventory](https://github.com/imran300/inventory) @ `2026-11-21 (branch tip at catalogue time)` |
 | [inventory-management](entries/gameplay/akashroshan135-inventory-management/README.md) | A simple inventory management system built with Django | html | unknown | reference | [akashroshan135/inventory-management](https://github.com/akashroshan135/inventory-management) @ `2023-07-28 (branch tip at catalogue time)` |
@@ -1520,6 +1521,7 @@ _Generated 2026-11-26 04:26 UTC · 1914 entries · 477 vendored, 1437 reference-
 | [Unity-Inventory-System](entries/gameplay/adammyhre-unity-inventory-system/README.md) | Unity Inventory System with UI Toolkit | c# | unknown | reference | [adammyhre/Unity-Inventory-System](https://github.com/adammyhre/Unity-Inventory-System) @ `2024-06-27 (branch tip at catalogue time)` |
 | [Unity-Modular-Game-Architecture](entries/gameplay/aniskaram-unity-modular-game-architecture/README.md) | A modular Game Architecture framework in Unity 6. Features a Scalable Inventory (MVP), a Physics-based Character Controller (FSM), Dependency Injection (VContai | c# | none | reference | [AnisKaram/Unity-Modular-Game-Architecture](https://github.com/AnisKaram/Unity-Modular-Game-Architecture) @ `c9d56b38b3ef` |
 | [unity-navgen](entries/gameplay/idbrii-unity-navgen/README.md) | Tools for working with Unity's NavMeshComponents and generating navmesh: link generation, mesh cleanup, etc | c# | MIT | vendored | [idbrii/unity-navgen](https://github.com/idbrii/unity-navgen) @ `e6ebbb180615` |
+| [Unity-PathFindingAlgorithms](entries/gameplay/dbrizov-unity-pathfindingalgorithms/README.md) | BFS, Greedy Best-First Search, Dijkstra and A* path finding algorithms | c# | MIT | vendored | [dbrizov/Unity-PathFindingAlgorithms](https://github.com/dbrizov/Unity-PathFindingAlgorithms) @ `b85fcd5f40b2` |
 | [Unity-Script-Collection](entries/gameplay/michidk-unity-script-collection/README.md) | A maintained collection of useful & free unity scripts / library's / plugins and extensions | css | GPL-3.0 | reference | [michidk/Unity-Script-Collection](https://github.com/michidk/Unity-Script-Collection) @ `479da93a9da3` |
 | [UnityBehaviourTree](entries/gameplay/grymmyd-unitybehaviourtree/README.md) | A simple behaviour tree implementation for Unity | c# | Apache-2.0 | vendored | [GrymmyD/UnityBehaviourTree](https://github.com/GrymmyD/UnityBehaviourTree) @ `eae4a24ea5bd` |
 | [UnityBehaviourTreeEditor](entries/gameplay/thekiwicoder0-unitybehaviourtreeeditor/README.md) | Behaviour Tree Editor for Unity built with UIToolkit | c# | MIT | reference | [thekiwicoder0/UnityBehaviourTreeEditor](https://github.com/thekiwicoder0/UnityBehaviourTreeEditor) @ `2026-05-14 (branch tip at catalogue time)` |

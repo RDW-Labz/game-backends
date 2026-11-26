@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T04:42:38Z",
+ "category": "gameplay",
+ "commit": "b85fcd5f40b2",
+ "delivery": "vendored",
+ "description": "dbrizov/Unity-PathFindingAlgorithms \u2014 BFS, Greedy Best-First Search, Dijkstra and A* path finding algorithms",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Unity-PathFindingAlgorithms",
+ "size_bytes": 24566,
+ "slug": "dbrizov-unity-pathfindingalgorithms",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 394,
+ "system": "BFS, Greedy Best-First Search, Dijkstra and A* path finding algorithms",
+ "upstream": "https://github.com/dbrizov/Unity-PathFindingAlgorithms",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T04:42:36Z",
+ "category": "gameplay",
+ "commit": "2f12853123ea",
+ "delivery": "vendored",
+ "description": "leth4/InstantPipes \u2014 Unity editor tool for quickly generating pipes\u2014with pathfinding",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "InstantPipes",
+ "size_bytes": 48965,
+ "slug": "leth4-instantpipes",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 395,
+ "system": "Unity editor tool for quickly generating pipes\u2014with pathfinding",
+ "upstream": "https://github.com/leth4/InstantPipes",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
