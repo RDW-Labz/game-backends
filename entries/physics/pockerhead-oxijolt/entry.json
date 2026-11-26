@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T01:06:43Z",
+ "category": "physics",
+ "commit": "2026-11-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "pockerhead/oxijolt \u2014 Safe Rust bindings to Jolt Physics 5.6: rigid bodies, character controller, vehicles, ragdolls, soft bodies, constraints, contact events and deterministic simulation",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "oxijolt",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "pockerhead-oxijolt",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 23,
+ "system": "Safe Rust bindings to Jolt Physics 5.6: rigid bodies, character controller, vehicles, ragdolls, soft bodies, constraints, contact events and deterministic simul",
+ "upstream": "https://github.com/pockerhead/oxijolt",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -3526,3 +3526,9 @@ One line per 15-minute extension tick, newest last.
   - reference physics/violetspace-ionsolver
   - reference physics/tarliton-collision2d
   - reference physics/continuous-collision-detection-ccd-wrapper
+
+- **2026-11-26 01:06 UTC** — tick 909: +2 screened, +2 reference, 26 skipped, catalogue=1868
+  - added physics/embyrdev-charactercontroller2d (Unlicense, vendored)
+  - added physics/icurtis1-third-person-controller-splat (MIT, vendored)
+  - reference physics/icurtis1-gaussian-splat-character-controller
+  - reference physics/pockerhead-oxijolt

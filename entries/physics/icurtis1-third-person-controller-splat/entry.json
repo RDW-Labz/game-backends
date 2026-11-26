@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T01:06:41Z",
+ "category": "physics",
+ "commit": "a47742aafb00",
+ "delivery": "vendored",
+ "description": "icurtis1/third-person-controller-splat \u2014 3rd-person character controller with Gaussian splats, Rapier physics, and Three.js.",
+ "language": "typescript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "third-person-controller-splat",
+ "size_bytes": 87881,
+ "slug": "icurtis1-third-person-controller-splat",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 30,
+ "system": "3rd-person character controller with Gaussian splats, Rapier physics, and Three.js.",
+ "upstream": "https://github.com/icurtis1/third-person-controller-splat",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

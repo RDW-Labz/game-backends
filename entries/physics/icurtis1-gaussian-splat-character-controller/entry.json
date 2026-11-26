@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T01:06:43Z",
+ "category": "physics",
+ "commit": "2026-04-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "icurtis1/gaussian-splat-character-controller \u2014 A physics-based character controller navigating a Gaussian splat scene using SparkJS, Three.js, and Rapier.",
+ "language": "javascript",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "gaussian-splat-character-controller",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "icurtis1-gaussian-splat-character-controller",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 24,
+ "system": "A physics-based character controller navigating a Gaussian splat scene using SparkJS, Three.js, and Rapier.",
+ "upstream": "https://github.com/icurtis1/gaussian-splat-character-controller",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

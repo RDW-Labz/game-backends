@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T01:06:36Z",
+ "category": "physics",
+ "commit": "3e2d35bfd62d",
+ "delivery": "vendored",
+ "description": "EMBYRDEV/CharacterController2D \u2014 Reimplementation of Unity's CharacterController class using the 2D physics engine.",
+ "language": "c#",
+ "license": "Unlicense",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "CharacterController2D",
+ "size_bytes": 3377,
+ "slug": "embyrdev-charactercontroller2d",
+ "source": "github-search:character controller physics stars:>15",
+ "stars": 31,
+ "system": "Reimplementation of Unity's CharacterController class using the 2D physics engine.",
+ "upstream": "https://github.com/EMBYRDEV/CharacterController2D",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 00:50 UTC · 1864 entries · 466 vendored, 1398 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 01:06 UTC · 1868 entries · 468 vendored, 1400 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
-| [physics](#physics) — Physics | 225 | 50 | 175 |
+| [physics](#physics) — Physics | 229 | 52 | 177 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
@@ -811,7 +811,7 @@ _Generated 2026-11-26 00:50 UTC · 1864 entries · 466 vendored, 1398 reference-
 
 ## physics
 
-**Physics** — 225 entries
+**Physics** — 229 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -858,6 +858,7 @@ _Generated 2026-11-26 00:50 UTC · 1864 entries · 466 vendored, 1398 reference-
 | [cannon.js](entries/physics/schteppe-cannon-js/README.md) | A lightweight 3D physics engine written in JavaScript. | javascript | MIT | reference | [schteppe/cannon.js](https://github.com/schteppe/cannon.js) @ `2023-08-04 (branch tip at catalogue time)` |
 | [CCD-Wrapper](entries/physics/continuous-collision-detection-ccd-wrapper/README.md) | A library for various continuous collision detection algorithms. | c++ | MIT | reference | [Continuous-Collision-Detection/CCD-Wrapper](https://github.com/Continuous-Collision-Detection/CCD-Wrapper) @ `2023-03-25 (branch tip at catalogue time)` |
 | [character-controller-sample-project](entries/physics/icurtis1-character-controller-sample-project/README.md) | A 3D character controller built with React Three Fiber, Rapier physics. | typescript | unknown | reference | [icurtis1/character-controller-sample-project](https://github.com/icurtis1/character-controller-sample-project) @ `2025-05-14 (branch tip at catalogue time)` |
+| [CharacterController2D](entries/physics/embyrdev-charactercontroller2d/README.md) | Reimplementation of Unity's CharacterController class using the 2D physics engine. | c# | Unlicense | vendored | [EMBYRDEV/CharacterController2D](https://github.com/EMBYRDEV/CharacterController2D) @ `3e2d35bfd62d` |
 | [CharacterMovementFundamentals](entries/physics/jan-ott-charactermovementfundamentals/README.md) | A physics-based character controller system for Unity | c# | MIT | reference | [Jan-Ott/CharacterMovementFundamentals](https://github.com/Jan-Ott/CharacterMovementFundamentals) @ `2025-02-09 (branch tip at catalogue time)` |
 | [Chipmunk2D](entries/physics/chipmunk2d/README.md) | 2D rigid bodies, constraints, spatial index | c | MIT | vendored | [slembcke/Chipmunk2D](https://github.com/slembcke/Chipmunk2D) @ `f2f3d66220b8` |
 | [cirobb](entries/physics/joncodeofficial-cirobb/README.md) | A small, readable 2D rigid body physics engine in C++, built around one state-of-the-art solver. | c++ | MIT | reference | [joncodeofficial/cirobb](https://github.com/joncodeofficial/cirobb) @ `2026-10-27 (branch tip at catalogue time)` |
@@ -897,6 +898,7 @@ _Generated 2026-11-26 00:50 UTC · 1864 entries · 466 vendored, 1398 reference-
 | [galaxy](entries/physics/reworks-org-galaxy/README.md) | C++23 Game Engine. Built on data-driven design principles and agile software engineering. | c | Apache-2.0 | reference | [reworks-org/galaxy](https://github.com/reworks-org/galaxy) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Galaxy-Engine](entries/physics/narciscalin-galaxy-engine/README.md) | Galaxy Engine is a fully interactive particle physics engine. Play with tens or hundreds of thousands of particles in real time | c++ | MIT | reference | [NarcisCalin/Galaxy-Engine](https://github.com/NarcisCalin/Galaxy-Engine) @ `2026-09-25 (branch tip at catalogue time)` |
 | [games201](entries/physics/taichi-dev-games201/README.md) | Advanced Physics Engines 2020: A Hands-on Tutorial | python | unknown | reference | [taichi-dev/games201](https://github.com/taichi-dev/games201) @ `2020-11-23 (branch tip at catalogue time)` |
+| [gaussian-splat-character-controller](entries/physics/icurtis1-gaussian-splat-character-controller/README.md) | A physics-based character controller navigating a Gaussian splat scene using SparkJS, Three.js, and Rapier. | javascript | MIT | reference | [icurtis1/gaussian-splat-character-controller](https://github.com/icurtis1/gaussian-splat-character-controller) @ `2026-04-24 (branch tip at catalogue time)` |
 | [GDCustomRaycastVehicle](entries/physics/tobalation-gdcustomraycastvehicle/README.md) | A simple custom raycast vehicle implementation | gdscript | MIT | vendored | [Tobalation/GDCustomRaycastVehicle](https://github.com/Tobalation/GDCustomRaycastVehicle) @ `8d608d28b5f5` |
 | [Gepe3D](entries/physics/gonkee-gepe3d/README.md) | Gonkee's Epic Physics Engine 3D (Gepe3D) | c# | MIT | reference | [Gonkee/Gepe3D](https://github.com/Gonkee/Gepe3D) @ `2026-11-04 (branch tip at catalogue time)` |
 | [godot-basic-fps-controller](entries/physics/garbajyt-godot-basic-fps-controller/README.md) | A simple first person character controller for the Godot game engine. In the project settings, under General/Physics/Common, be sure to set Physics FPS to 240 | gdscript | MIT | reference | [GarbajYT/godot-basic-fps-controller](https://github.com/GarbajYT/godot-basic-fps-controller) @ `2021-04-26 (branch tip at catalogue time)` |
@@ -954,6 +956,7 @@ _Generated 2026-11-26 00:50 UTC · 1864 entries · 466 vendored, 1398 reference-
 | [OpenBSE](entries/physics/bbrannon4-openbse/README.md) | Open-source building energy simulation engine — modern architecture, validated physics, built for programmatic and AI-assisted workflows. | rust | AGPL-3.0 | reference | [bbrannon4/OpenBSE](https://github.com/bbrannon4/OpenBSE) @ `2026-11-20 (branch tip at catalogue time)` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
 | [optics-lab](entries/physics/alexcri5an-optics-lab/README.md) | Modern, open-source optical design & ray-tracing workstation built in Rust and WebGPU. | rust | Apache-2.0 | reference | [AlexCri5an/optics-lab](https://github.com/AlexCri5an/optics-lab) @ `2026-10-28 (branch tip at catalogue time)` |
+| [oxijolt](entries/physics/pockerhead-oxijolt/README.md) | Safe Rust bindings to Jolt Physics 5.6: rigid bodies, character controller, vehicles, ragdolls, soft bodies, constraints, contact events and deterministic simul | rust | Apache-2.0 | reference | [pockerhead/oxijolt](https://github.com/pockerhead/oxijolt) @ `2026-11-18 (branch tip at catalogue time)` |
 | [p5.collide2D](entries/physics/bmoren-p5-collide2d/README.md) | A collision detection library for 2D geometry in p5.js | javascript | none | reference | [bmoren/p5.collide2D](https://github.com/bmoren/p5.collide2D) @ `0988172c15ae` |
 | [p5play](entries/physics/quinton-ashley-p5play/README.md) | JavaScript game engine that uses q5.js/p5.js for graphics and Box2D for physics. | javascript | none | reference | [quinton-ashley/p5play](https://github.com/quinton-ashley/p5play) @ `f904d169af3d` |
 | [panda-gym](entries/physics/qgallouedec-panda-gym/README.md) | Set of robotic environments based on PyBullet physics engine and gymnasium. | python | MIT | reference | [qgallouedec/panda-gym](https://github.com/qgallouedec/panda-gym) @ `2024-07-23 (branch tip at catalogue time)` |
@@ -1020,6 +1023,7 @@ _Generated 2026-11-26 00:50 UTC · 1864 entries · 466 vendored, 1398 reference-
 | [ten-minute-physics-rs](entries/physics/lucas-schuermann-ten-minute-physics-rs/README.md) | Reimplementation of Matthias Müller's "Ten Minute Physics" demos in Rust with WASM + WebGL | rust | MIT | vendored | [lucas-schuermann/ten-minute-physics-rs](https://github.com/lucas-schuermann/ten-minute-physics-rs) @ `e5c448022c80` |
 | [Ten-Minute-Physics-Unity](entries/physics/habrador-ten-minute-physics-unity/README.md) | Implementations in Unity of the Ten Minute Physics YouTube channel. Instead of using Unity's built-in physics engine, you will learn how to make your own XPBD b | c# | MIT | vendored | [Habrador/Ten-Minute-Physics-Unity](https://github.com/Habrador/Ten-Minute-Physics-Unity) @ `da888302b962` |
 | [thetawave](entries/physics/thetawavegame-thetawave/README.md) | A physics based, space shooter game made with Rust and the Bevy engine. | rust | MIT | vendored | [thetawavegame/thetawave](https://github.com/thetawavegame/thetawave) @ `94fad04fb913` |
+| [third-person-controller-splat](entries/physics/icurtis1-third-person-controller-splat/README.md) | 3rd-person character controller with Gaussian splats, Rapier physics, and Three.js. | typescript | MIT | vendored | [icurtis1/third-person-controller-splat](https://github.com/icurtis1/third-person-controller-splat) @ `a47742aafb00` |
 | [three-gpu-particle-system](entries/physics/fazeaction-three-gpu-particle-system/README.md) | GPU based particle system for three.js. Heavily based on tdl library (https://github.com/greggman/tdl) | javascript | unknown | reference | [fazeaction/three-gpu-particle-system](https://github.com/fazeaction/three-gpu-particle-system) @ `2023-03-06 (branch tip at catalogue time)` |
 | [thrive — physics](entries/physics/thrive-physics/README.md) | rigid-body collision and dynamics | cs | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f` |
 | [thrive — physics](entries/physics/thrive-src-native-physics/README.md) | custom rigid-body physics for a sim game | c++ | GPL-3.0 | reference | [Revolutionary-Games/Thrive](https://github.com/Revolutionary-Games/Thrive) @ `bb9189f4f2e0` |
