@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T12:10:38Z",
+ "category": "engines",
+ "commit": "9e42ef257228",
+ "delivery": "vendored",
+ "description": "mofr/Diablerie \u2014 Diablo 2 reimplementation on unity",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Diablerie",
+ "size_bytes": 897451,
+ "slug": "mofr-diablerie",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 1247,
+ "system": "Diablo 2 reimplementation on unity",
+ "upstream": "https://github.com/mofr/Diablerie",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

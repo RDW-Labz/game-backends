@@ -3705,3 +3705,7 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 11:54 UTC** — tick 949: +2 screened, +0 reference, 48 skipped, catalogue=1961
   - added engines/pvdoriginal-firefly (Apache-2.0, vendored)
   - added engines/technici4n-voxel-rs (MIT, vendored)
+
+- **2026-11-26 12:10 UTC** — tick 950: +2 screened, +0 reference, 51 skipped, catalogue=1963
+  - added engines/mofr-diablerie (MIT, vendored)
+  - added engines/gdquest-demos-godot-3d-mannequin (MIT, vendored)

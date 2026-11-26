@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T12:10:41Z",
+ "category": "engines",
+ "commit": "d48a4fdb49a3",
+ "delivery": "vendored",
+ "description": "gdquest-demos/godot-3d-mannequin \u2014 An Open Source 3d character and character controller for the Godot game engine",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "godot-3d-mannequin",
+ "size_bytes": 44817,
+ "slug": "gdquest-demos-godot-3d-mannequin",
+ "source": "github-search:game engine language:csharp stars:>40",
+ "stars": 1168,
+ "system": "An Open Source 3d character and character controller for the Godot game engine",
+ "upstream": "https://github.com/gdquest-demos/godot-3d-mannequin",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

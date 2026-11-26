@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 11:54 UTC · 1961 entries · 494 vendored, 1467 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 12:10 UTC · 1963 entries · 496 vendored, 1467 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 790 | 189 | 601 |
+| [engines](#engines) — Game engines and engine subsystems | 792 | 191 | 601 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 11:54 UTC · 1961 entries · 494 vendored, 1467 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 790 entries
+**Game engines and engine subsystems** — 792 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -187,6 +187,7 @@ _Generated 2026-11-26 11:54 UTC · 1961 entries · 494 vendored, 1467 reference-
 | [DefoldTypeScript](entries/engines/dasannikov-defoldtypescript/README.md) | TypeScript support for Defold game engine | typescript | unknown | reference | [dasannikov/DefoldTypeScript](https://github.com/dasannikov/DefoldTypeScript) @ `2020-10-17 (branch tip at catalogue time)` |
 | [Descent3](entries/engines/descentdevelopers-descent3/README.md) | Descent 3 by Outrage Entertainment | c++ | GPL-3.0 | reference | [DescentDevelopers/Descent3](https://github.com/DescentDevelopers/Descent3) @ `de4bebf5f2d2` |
 | [DevilutionX — engine](entries/engines/devilutionx-engine/README.md) | engine core / runtime shell (main loop, scene or ECS plumbing) | cpp | Sustainable-Use-1.0 | reference | [diasurgical/devilutionX.git](https://github.com/diasurgical/devilutionX.git) @ `b325996` |
+| [Diablerie](entries/engines/mofr-diablerie/README.md) | Diablo 2 reimplementation on unity | c# | MIT | vendored | [mofr/Diablerie](https://github.com/mofr/Diablerie) @ `9e42ef257228` |
 | [dialogic](entries/engines/dialogic-godot-dialogic/README.md) | 💬 Create Dialogs, Visual Novels, RPGs, and manage Characters with Godot to create your Game! | gdscript | MIT | reference | [dialogic-godot/dialogic](https://github.com/dialogic-godot/dialogic) @ `2026-11-19 (branch tip at catalogue time)` |
 | [DigitalRune](entries/engines/digitalrune-digitalrune/README.md) | DigitalRune Engine - .NET libraries for developing 3D games with XNA and MonoGame | c# | unknown | reference | [DigitalRune/DigitalRune](https://github.com/DigitalRune/DigitalRune) @ `2016-06-05 (branch tip at catalogue time)` |
 | [dip](entries/engines/diptools-dip/README.md) | Rust application framework focuses on composability, ECS and Web3.  Powered by Bevy game engine, Tauri, and Dioxus. From desktop apps to the Metaverse. | rust | unknown | reference | [diptools/dip](https://github.com/diptools/dip) @ `2026-04-13 (branch tip at catalogue time)` |
@@ -326,6 +327,7 @@ _Generated 2026-11-26 11:54 UTC · 1961 entries · 494 vendored, 1467 reference-
 | [godogen](entries/engines/htdt-godogen/README.md) | Skills for Claude Code, Codex and Antigravity to build games, and anything else a game engine renders well | python | MIT | vendored | [htdt/godogen](https://github.com/htdt/godogen) @ `07eaa1d11e82` |
 | [Godot Engine](entries/engines/godot/README.md) | full 2D/3D engine: scene tree, physics, net, script VMs | c++ | MIT | reference | [godotengine/godot](https://github.com/godotengine/godot) @ `4d0d43b77dd2` |
 | [godot-2d-space-game](entries/engines/gdquest-demos-godot-2d-space-game/README.md) | A 2D space exploration and mining game made with Godot and our AI framework | gdscript | unknown | reference | [gdquest-demos/godot-2d-space-game](https://github.com/gdquest-demos/godot-2d-space-game) @ `2026-05-16 (branch tip at catalogue time)` |
+| [godot-3d-mannequin](entries/engines/gdquest-demos-godot-3d-mannequin/README.md) | An Open Source 3d character and character controller for the Godot game engine | c# | MIT | vendored | [gdquest-demos/godot-3d-mannequin](https://github.com/gdquest-demos/godot-3d-mannequin) @ `d48a4fdb49a3` |
 | [godot-admob-plugin](entries/engines/poingstudios-godot-admob-plugin/README.md) | Complete AdMob (Google Mobile Ads SDK) plugin for Godot. Supports GDScript and C#. | gdscript | MIT | reference | [poingstudios/godot-admob-plugin](https://github.com/poingstudios/godot-admob-plugin) @ `2026-10-21 (branch tip at catalogue time)` |
 | [godot-awesome-splash](entries/engines/duongvituan-godot-awesome-splash/README.md) | Collection of splash screens in Godot | gdscript | MIT | reference | [duongvituan/godot-awesome-splash](https://github.com/duongvituan/godot-awesome-splash) @ `2023-07-09 (branch tip at catalogue time)` |
 | [godot-block-coding](entries/engines/endlessm-godot-block-coding/README.md) | Block-based visual programming plugin for Godot | gdscript | MIT | vendored | [endlessm/godot-block-coding](https://github.com/endlessm/godot-block-coding) @ `006e31ebe795` |
