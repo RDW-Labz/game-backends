@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T04:10:39Z",
+ "category": "loot-economy",
+ "commit": "2024-02-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "possibleo/possible_treasure_maps \u2014 A basic treasure map system for your server. It allows you to add Treasure maps items to your loot tables and players can then embark on a journey of going to find the loot area and potentially get rewarding items.",
+ "language": "lua",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "possible_treasure_maps",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "possibleo-possible-treasure-maps",
+ "source": "github-search:loot table stars:>10",
+ "stars": 12,
+ "system": "A basic treasure map system for your server. It allows you to add Treasure maps items to your loot tables and players can then embark on a journey of going to f",
+ "upstream": "https://github.com/possibleo/possible_treasure_maps",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

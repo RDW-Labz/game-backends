@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T04:10:39Z",
+ "category": "loot-economy",
+ "commit": "2026-05-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "gibbsly/ltos \u2014 loot table output specification utility",
+ "language": "mcfunction",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "ltos",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "gibbsly-ltos",
+ "source": "github-search:loot table stars:>10",
+ "stars": 11,
+ "system": "loot table output specification utility",
+ "upstream": "https://github.com/gibbsly/ltos",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

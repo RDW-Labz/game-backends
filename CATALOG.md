@@ -1,13 +1,13 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 03:54 UTC · 1910 entries · 476 vendored, 1434 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 04:10 UTC · 1914 entries · 477 vendored, 1437 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
-| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
+| [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
@@ -1231,7 +1231,7 @@ _Generated 2026-11-26 03:54 UTC · 1910 entries · 476 vendored, 1434 reference-
 
 ## loot-economy
 
-**Loot / drop and economy rolls** — 38 entries
+**Loot / drop and economy rolls** — 42 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1257,9 +1257,12 @@ _Generated 2026-11-26 03:54 UTC · 1910 entries · 476 vendored, 1434 reference-
 | [Lootie](entries/loot-economy/sempitern0-lootie/README.md) | Portable loot table for Godot class that facilitates generating random loot based on specified items and their associated probabilities. | gdscript | MIT | vendored | [sempitern0/Lootie](https://github.com/sempitern0/Lootie) @ `ab2b6065789b` |
 | [LootTable.js](entries/loot-economy/jotson-loottable-js/README.md) | A loot drop table implementation in JavaScript | javascript | MIT | reference | [jotson/LootTable.js](https://github.com/jotson/LootTable.js) @ `2023-10-11 (branch tip at catalogue time)` |
 | [LootTweaker](entries/loot-economy/daomephsta-loottweaker/README.md) | A CraftTweaker addon that adds the ability to tweak loot tables | java | MIT | reference | [Daomephsta/LootTweaker](https://github.com/Daomephsta/LootTweaker) @ `2026-10-21 (branch tip at catalogue time)` |
+| [ltos](entries/loot-economy/gibbsly-ltos/README.md) | loot table output specification utility | mcfunction | Unlicense | reference | [gibbsly/ltos](https://github.com/gibbsly/ltos) @ `2026-05-25 (branch tip at catalogue time)` |
+| [mad-loot](entries/loot-economy/thatmadcap-mad-loot/README.md) | A FiveM customisable loot generation system for randomised rewards with adjustable tiers and chances, inspired by RuneScape drop tables. | lua | none | reference | [ThatMadCap/mad-loot](https://github.com/ThatMadCap/mad-loot) @ `428477eff43f` |
 | [Major-project-list](entries/loot-economy/manojkumarpatnaik-major-project-list/README.md) | A list of practical projects that anyone can solve in any programming language (See solutions). These projects are divided into multiple categories, and each ca | n/a | MIT | vendored | [ManojKumarPatnaik/Major-project-list](https://github.com/ManojKumarPatnaik/Major-project-list) @ `1bc6f5724b21` |
 | [Moonmission-NFT-Game](entries/loot-economy/chakra377-moonmission-nft-game/README.md) | Bulls & Bears is an on-chain token generation and staking ecosystem inspired by The Whales Game, built to explore asymmetric reward mechanics and market-driven  | solidity | unknown | reference | [chakra377/Moonmission-NFT-Game](https://github.com/chakra377/Moonmission-NFT-Game) @ `2025-10-23 (branch tip at catalogue time)` |
 | [openmu — Trade](entries/loot-economy/openmu-src-gamelogic-views-trade/README.md) | player trade/market views and pricing | c# | MIT | vendored | [MUnique/OpenMU](https://github.com/MUnique/OpenMU) @ `00f737374d07` |
+| [possible_treasure_maps](entries/loot-economy/possibleo-possible-treasure-maps/README.md) | A basic treasure map system for your server. It allows you to add Treasure maps items to your loot tables and players can then embark on a journey of going to f | lua | unknown | reference | [possibleo/possible_treasure_maps](https://github.com/possibleo/possible_treasure_maps) @ `2024-02-07 (branch tip at catalogue time)` |
 | [Prosperity-Wars](entries/loot-economy/nashet-prosperity-wars/README.md) | Game-like agent based economy simulator | c# | GPL-3.0 | reference | [Nashet/Prosperity-Wars](https://github.com/Nashet/Prosperity-Wars) @ `6c521ec46378` |
 | [Race-Car-Unity-3D](entries/loot-economy/montalabidi-race-car-unity-3d/README.md) | 3D Race Car game with a simple reward system to unlock more powerful cars and enjoy the speed :car: | c# | unknown | reference | [MontaLabidi/Race-Car-Unity-3D](https://github.com/MontaLabidi/Race-Car-Unity-3D) @ `2021-05-12 (branch tip at catalogue time)` |
 | [StewBeet](entries/loot-economy/stoupy51-stewbeet/README.md) | A beet framework for generating Minecraft datapacks: declare an item once, and its models, recipes, loot tables, translations and in-game manual page are writte | python | unknown | reference | [Stoupy51/StewBeet](https://github.com/Stoupy51/StewBeet) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -1269,6 +1272,7 @@ _Generated 2026-11-26 03:54 UTC · 1910 entries · 476 vendored, 1434 reference-
 | [trove](entries/loot-economy/goldenstack-trove/README.md) | Loot table parser and evaluator for Minestom. | java | MIT | vendored | [GoldenStack/trove](https://github.com/GoldenStack/trove) @ `799ea5758ea7` |
 | [ultraloot](entries/loot-economy/manticorp-ultraloot/README.md) | Highly functional loot table implementation in Javascript. Extendable, inheritance based tables with multiple pools and a flexible workflow. | typescript | MIT | reference | [manticorp/ultraloot](https://github.com/manticorp/ultraloot) @ `2026-11-22 (branch tip at catalogue time)` |
 | [unity-blockventure](entries/loot-economy/thirdweb-example-unity-blockventure/README.md) | Unity SDK Starter Template - Lite RPG Gathering, Shopping and Trading Systems. | javascript | none | reference | [thirdweb-example/unity-blockventure](https://github.com/thirdweb-example/unity-blockventure) @ `6cb410de03ba` |
+| [Unity-Simple-Loot-Table](entries/loot-economy/kellojo-unity-simple-loot-table/README.md) | A simple loot table for Unity. It's easily customizable and allows you to bring your own item classes and types. | c# | MIT | vendored | [Kellojo/Unity-Simple-Loot-Table](https://github.com/Kellojo/Unity-Simple-Loot-Table) @ `b99f42947f2a` |
 | [valhallarpg](entries/loot-economy/bartoszsdr-valhallarpg/README.md) | Discord Bot RPG game inspired by many RPGs and cRPGs featuring adventures, quests, character development, PvP, riddles to solve, loot, inventory, training syste | javascript | unknown | reference | [bartoszsdr/valhallarpg](https://github.com/bartoszsdr/valhallarpg) @ `2022-11-17 (branch tip at catalogue time)` |
 | [widelands — economy](entries/loot-economy/widelands-economy/README.md) | loot, drop-rate, trade or economy simulation | lua | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `2975377` |
 | [widelands — economy](entries/loot-economy/widelands-src-economy/README.md) | economy simulation: production chains, ware routing, markets | c++ | GPL-2.0 | reference | [widelands/widelands.git](https://github.com/widelands/widelands.git) @ `29753773d9c1` |

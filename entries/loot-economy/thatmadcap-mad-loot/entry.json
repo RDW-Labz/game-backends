@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T04:10:38Z",
+ "category": "loot-economy",
+ "commit": "428477eff43f",
+ "delivery": "reference",
+ "description": "ThatMadCap/mad-loot \u2014 A FiveM customisable loot generation system for randomised rewards with adjustable tiers and chances, inspired by RuneScape drop tables.",
+ "language": "lua",
+ "license": "none",
+ "license_file": "LICENSE.md",
+ "license_verdict": "unlicensed-reference",
+ "name": "mad-loot",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 8675,
+ "slug": "thatmadcap-mad-loot",
+ "source": "github-search:loot table stars:>10",
+ "stars": 13,
+ "system": "A FiveM customisable loot generation system for randomised rewards with adjustable tiers and chances, inspired by RuneScape drop tables.",
+ "upstream": "https://github.com/ThatMadCap/mad-loot",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

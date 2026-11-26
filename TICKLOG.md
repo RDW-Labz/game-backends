@@ -3594,3 +3594,9 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 03:38 UTC** — tick 918: +0 screened, +0 reference, 17 skipped, catalogue=1910
 
 - **2026-11-26 03:54 UTC** — tick 919: +0 screened, +0 reference, 15 skipped, catalogue=1910
+
+- **2026-11-26 04:10 UTC** — tick 920: +2 screened, +2 reference, 20 skipped, catalogue=1914
+  - added loot-economy/kellojo-unity-simple-loot-table (MIT, vendored)
+  - added loot-economy/thatmadcap-mad-loot (none, reference)
+  - reference loot-economy/possibleo-possible-treasure-maps
+  - reference loot-economy/gibbsly-ltos

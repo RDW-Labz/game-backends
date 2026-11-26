@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T04:10:36Z",
+ "category": "loot-economy",
+ "commit": "b99f42947f2a",
+ "delivery": "vendored",
+ "description": "Kellojo/Unity-Simple-Loot-Table \u2014 A simple loot table for Unity. It's easily customizable and allows you to bring your own item classes and types.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Unity-Simple-Loot-Table",
+ "size_bytes": 16727,
+ "slug": "kellojo-unity-simple-loot-table",
+ "source": "github-search:loot table stars:>10",
+ "stars": 15,
+ "system": "A simple loot table for Unity. It's easily customizable and allows you to bring your own item classes and types.",
+ "upstream": "https://github.com/Kellojo/Unity-Simple-Loot-Table",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
