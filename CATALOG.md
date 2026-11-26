@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 17:30 UTC · 2010 entries · 511 vendored, 1499 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 17:46 UTC · 2014 entries · 512 vendored, 1502 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
-| [physics](#physics) — Physics | 245 | 56 | 189 |
+| [physics](#physics) — Physics | 249 | 57 | 192 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
@@ -852,7 +852,7 @@ _Generated 2026-11-26 17:30 UTC · 2010 entries · 511 vendored, 1499 reference-
 
 ## physics
 
-**Physics** — 245 entries
+**Physics** — 249 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -920,6 +920,7 @@ _Generated 2026-11-26 17:30 UTC · 2010 entries · 511 vendored, 1499 reference-
 | [cyclone-physics](entries/physics/idmillington-cyclone-physics/README.md) | The Physics engine that accompanies the book "Game Physics Engine Design" | c++ | MIT | reference | [idmillington/cyclone-physics](https://github.com/idmillington/cyclone-physics) @ `2023-09-25 (branch tip at catalogue time)` |
 | [defold-box2d](entries/physics/d954mas-defold-box2d/README.md) | defold-box2d bindings | c++ | MIT | reference | [d954mas/defold-box2d](https://github.com/d954mas/defold-box2d) @ `2025-08-28 (branch tip at catalogue time)` |
 | [delirium-physics](entries/physics/pvcpc-delirium-physics/README.md) | Reverse-engineered Rust port of Euphoria as it runs in GTA IV (ragdoll and character physics), with an SDK and a playroom. Needs your own GTA IV. Not affiliated | rust | unknown | reference | [PVCPC/delirium-physics](https://github.com/PVCPC/delirium-physics) @ `2026-11-23 (branch tip at catalogue time)` |
+| [diewald_fluid](entries/physics/diwi-diewald-fluid/README.md) | processing library - fluid-simulation | html | GPL-2.0 | reference | [diwi/diewald_fluid](https://github.com/diwi/diewald_fluid) @ `337da79619af` |
 | [Dojo.jl](entries/physics/dojo-sim-dojo-jl/README.md) | A differentiable physics engine for robotics | julia | MIT | reference | [dojo-sim/Dojo.jl](https://github.com/dojo-sim/Dojo.jl) @ `2024-09-23 (branch tip at catalogue time)` |
 | [DroidParticle](entries/physics/sunty2016-droidparticle/README.md) | A Particle System Library for Android Application | java | Apache-2.0 | reference | [sunty2016/DroidParticle](https://github.com/sunty2016/DroidParticle) @ `2016-06-25 (branch tip at catalogue time)` |
 | [dyn4j](entries/physics/dyn4j-dyn4j/README.md) | Java Collision Detection and Physics Engine | java | BSD-3-Clause | vendored | [dyn4j/dyn4j](https://github.com/dyn4j/dyn4j) @ `bcf942adaa9b` |
@@ -936,6 +937,7 @@ _Generated 2026-11-26 17:30 UTC · 2010 entries · 511 vendored, 1499 reference-
 | [FlatPhysics](entries/physics/twobitcoder101-flatphysics/README.md) | Basic 2D rigid body physics engine. | c# | MIT | reference | [twobitcoder101/FlatPhysics](https://github.com/twobitcoder101/FlatPhysics) @ `2021-08-18 (branch tip at catalogue time)` |
 | [Flow](entries/physics/nvidiagameworks-flow/README.md) | Flow is a sparse grid-based fluid simulation library for real-time applications.  | c | unknown | reference | [NVIDIAGameWorks/Flow](https://github.com/NVIDIAGameWorks/Flow) @ `2025-03-31 (branch tip at catalogue time)` |
 | [Fluid-JS](entries/physics/malik-tillman-fluid-js/README.md) | A JavaScript library that allows for easy deployment of WebGL rendered fluid simulations. | javascript | none | reference | [malik-tillman/Fluid-JS](https://github.com/malik-tillman/Fluid-JS) @ `6759bfa272d0` |
+| [fluidize-python](entries/physics/fluidize-inc-fluidize-python/README.md) | A Python library for building modular, reproducible simulation pipelines in minutes | python | MIT | reference | [Fluidize-Inc/fluidize-python](https://github.com/Fluidize-Inc/fluidize-python) @ `2025-08-22 (branch tip at catalogue time)` |
 | [frankensim](entries/physics/dicklesworthstone-frankensim/README.md) | Plan-first Rust continuum for certified geometry, physics simulation, optimization, and rendering. | rust | unknown | reference | [Dicklesworthstone/frankensim](https://github.com/Dicklesworthstone/frankensim) @ `2026-11-26 (branch tip at catalogue time)` |
 | [Gaia](entries/physics/ankachan-gaia/README.md) | Gaia Physics Engine | raku | Apache-2.0 | reference | [AnkaChan/Gaia](https://github.com/AnkaChan/Gaia) @ `c22969204546` |
 | [galaxy](entries/physics/reworks-org-galaxy/README.md) | C++23 Game Engine. Built on data-driven design principles and agile software engineering. | c | Apache-2.0 | reference | [reworks-org/galaxy](https://github.com/reworks-org/galaxy) @ `2026-11-21 (branch tip at catalogue time)` |
@@ -990,6 +992,7 @@ _Generated 2026-11-26 17:30 UTC · 2010 entries · 511 vendored, 1499 reference-
 | [ncollide](entries/physics/dimforge-ncollide/README.md) | 2 and 3-dimensional collision detection library in Rust. | rust | Apache-2.0 | reference | [dimforge/ncollide](https://github.com/dimforge/ncollide) @ `2023-01-31 (branch tip at catalogue time)` |
 | [Nectar](entries/physics/kua8-nectar/README.md) | A notch and a dock for Windows: physics-animated, reactive, and built to replace your taskbar. | rust | GPL-3.0 | reference | [kua8/Nectar](https://github.com/kua8/Nectar) @ `2026-11-22 (branch tip at catalogue time)` |
 | [neqsim](entries/physics/equinor-neqsim/README.md) | NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation | java | Apache-2.0 | reference | [equinor/neqsim](https://github.com/equinor/neqsim) @ `99fa305f69da` |
+| [NeqSim-Colab](entries/physics/evensol-neqsim-colab/README.md) | Examples of use of NeqSim in Python/Colab. NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation. | jupyter notebook | Apache-2.0 | reference | [EvenSol/NeqSim-Colab](https://github.com/EvenSol/NeqSim-Colab) @ `2026-11-26 (branch tip at catalogue time)` |
 | [neqsim-python](entries/physics/equinor-neqsim-python/README.md) | NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation. This project is a Python interface to NeqSim. | python | Apache-2.0 | reference | [equinor/neqsim-python](https://github.com/equinor/neqsim-python) @ `2026-11-13 (branch tip at catalogue time)` |
 | [newton](entries/physics/hunterloftis-newton/README.md) | A playful, particle-based physics engine designed from the ground up for JavaScript. | javascript | none | reference | [hunterloftis/newton](https://github.com/hunterloftis/newton) @ `fc2c5f383fa4` |
 | [newton](entries/physics/newton-physics-newton/README.md) | An open-source, GPU-accelerated physics simulation engine built upon NVIDIA Warp, specifically targeting roboticists and simulation researchers. | python | Apache-2.0 | reference | [newton-physics/newton](https://github.com/newton-physics/newton) @ `f27aea83286e` |
@@ -1026,6 +1029,7 @@ _Generated 2026-11-26 17:30 UTC · 2010 entries · 511 vendored, 1499 reference-
 | [phyz](entries/physics/muni-works-phyz/README.md) | differentiable physics engine for rust | rust | MIT | reference | [muni-works/phyz](https://github.com/muni-works/phyz) @ `2026-11-10 (branch tip at catalogue time)` |
 | [PixelFlow](entries/physics/diwi-pixelflow/README.md) | A Processing/Java library for high performance GPU-Computing (GLSL). Fluid Simulation + SoftBody Dynamics + Optical Flow + Rendering + Image Processing + Partic | java | MIT | reference | [diwi/PixelFlow](https://github.com/diwi/PixelFlow) @ `2018-01-10 (branch tip at catalogue time)` |
 | [planck.js](entries/physics/piqnt-planck-js/README.md) | 2D JavaScript Physics Engine | typescript | MIT | reference | [piqnt/planck.js](https://github.com/piqnt/planck.js) @ `2026-11-14 (branch tip at catalogue time)` |
+| [playdate-fluid](entries/physics/mierau-playdate-fluid/README.md) | A simple fluid simulation library for Playdate written in Lua. | lua | MIT | vendored | [mierau/playdate-fluid](https://github.com/mierau/playdate-fluid) @ `e665aafe293a` |
 | [PoorPhy](entries/physics/finscn-poorphy/README.md) | A very very simple 2D Physics Engine in JS | javascript | none | reference | [finscn/PoorPhy](https://github.com/finscn/PoorPhy) @ `80d175234dcf` |
 | [PositionBasedDynamics](entries/physics/interactivecomputergraphics-positionbaseddynamics/README.md) | PositionBasedDynamics is a library for the physically-based simulation of rigid bodies, deformable solids and fluids. | c++ | MIT | reference | [InteractiveComputerGraphics/PositionBasedDynamics](https://github.com/InteractiveComputerGraphics/PositionBasedDynamics) @ `10a70bc146a9` |
 | [Principia — lib](entries/physics/principia-lib/README.md) | Box2D-derived 2D physics with custom collision handling | c++ | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b127c2` |

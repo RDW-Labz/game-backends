@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T17:46:36Z",
+ "category": "physics",
+ "commit": "e665aafe293a",
+ "delivery": "vendored",
+ "description": "mierau/playdate-fluid \u2014 A simple fluid simulation library for Playdate written in Lua.",
+ "language": "lua",
+ "license": "MIT",
+ "license_file": "LICENSE.md",
+ "license_verdict": "clean",
+ "name": "playdate-fluid",
+ "size_bytes": 9824,
+ "slug": "mierau-playdate-fluid",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 53,
+ "system": "A simple fluid simulation library for Playdate written in Lua.",
+ "upstream": "https://github.com/mierau/playdate-fluid",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T17:46:39Z",
+ "category": "physics",
+ "commit": "2026-11-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "EvenSol/NeqSim-Colab \u2014 Examples of use of NeqSim in Python/Colab. NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation.",
+ "language": "jupyter notebook",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "NeqSim-Colab",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "evensol-neqsim-colab",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 34,
+ "system": "Examples of use of NeqSim in Python/Colab. NeqSim is a library for calculation of fluid behavior, phase equilibrium and process simulation.",
+ "upstream": "https://github.com/EvenSol/NeqSim-Colab",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T17:46:39Z",
+ "category": "physics",
+ "commit": "2025-08-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Fluidize-Inc/fluidize-python \u2014 A Python library for building modular, reproducible simulation pipelines in minutes",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "fluidize-python",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "fluidize-inc-fluidize-python",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 32,
+ "system": "A Python library for building modular, reproducible simulation pipelines in minutes",
+ "upstream": "https://github.com/Fluidize-Inc/fluidize-python",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

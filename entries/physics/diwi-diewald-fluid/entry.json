@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T17:46:38Z",
+ "category": "physics",
+ "commit": "337da79619af",
+ "delivery": "reference",
+ "description": "diwi/diewald_fluid \u2014 processing library - fluid-simulation",
+ "language": "html",
+ "license": "GPL-2.0",
+ "license_file": "Fluid2D.java",
+ "license_verdict": "copyleft-reference",
+ "name": "diewald_fluid",
+ "reference_reason": "licence: GPL-2.0 (copyleft-reference)",
+ "size_bytes": 130366,
+ "slug": "diwi-diewald-fluid",
+ "source": "github-search:fluid simulation library stars:>30",
+ "stars": 41,
+ "system": "processing library - fluid-simulation",
+ "upstream": "https://github.com/diwi/diewald_fluid",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

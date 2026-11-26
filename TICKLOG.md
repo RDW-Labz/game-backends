@@ -3796,3 +3796,9 @@ One line per 15-minute extension tick, newest last.
   - added physics/ssz990220-rtcollisiondetection (MIT, vendored)
 
 - **2026-11-26 17:30 UTC** — tick 970: +0 screened, +0 reference, 30 skipped, catalogue=2010
+
+- **2026-11-26 17:46 UTC** — tick 971: +2 screened, +2 reference, 30 skipped, catalogue=2014
+  - added physics/mierau-playdate-fluid (MIT, vendored)
+  - added physics/diwi-diewald-fluid (GPL-2.0, reference)
+  - reference physics/evensol-neqsim-colab
+  - reference physics/fluidize-inc-fluidize-python
