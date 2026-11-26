@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T13:46:43Z",
+ "category": "engines",
+ "commit": "6249eb3bba30",
+ "delivery": "vendored",
+ "description": "iacobson/ecspanse \u2014 Entity Component System (ECS) library for Elixir, offering a suite of features including: flexible queries with multiple filters, dynamic bidirectional relationships, versatile tagging capabilities, system event subscriptions, or asynchronous system execution.",
+ "language": "elixir",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "ecspanse",
+ "size_bytes": 0,
+ "slug": "iacobson-ecspanse",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 83,
+ "system": "Entity Component System (ECS) library for Elixir, offering a suite of features including: flexible queries with multiple filters, dynamic bidirectional relation",
+ "upstream": "https://github.com/iacobson/ecspanse",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 13:30 UTC · 1979 entries · 498 vendored, 1481 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 13:46 UTC · 1981 entries · 500 vendored, 1481 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 808 | 193 | 615 |
+| [engines](#engines) — Game engines and engine subsystems | 810 | 195 | 615 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 13:30 UTC · 1979 entries · 498 vendored, 1481 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 808 entries
+**Game engines and engine subsystems** — 810 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -222,6 +222,7 @@ _Generated 2026-11-26 13:30 UTC · 1979 entries · 498 vendored, 1481 reference-
 | [ECS_101](entries/engines/arturonereu-ecs-101/README.md) | This repository contains an introduction to Unity's Entity Component System. The purpose of this is to help developers understand this paradigm, and why it is i | c# | MIT | vendored | [ArturoNereu/ECS_101](https://github.com/ArturoNereu/ECS_101) @ `1063c46fb6f5` |
 | [ecs_benchmark](entries/engines/abeimler-ecs-benchmark/README.md) | Benchmarks of common ECS (Entity-Component-System)-Frameworks in C++ (or C) | c++ | MIT | reference | [abeimler/ecs_benchmark](https://github.com/abeimler/ecs_benchmark) @ `2024-08-16 (branch tip at catalogue time)` |
 | [ECSLight](entries/engines/robert-wallis-ecslight/README.md) | A lightweight Entity Component System in a portable library. | c# | MIT | reference | [robert-wallis/ECSLight](https://github.com/robert-wallis/ECSLight) @ `2017-11-24 (branch tip at catalogue time)` |
+| [ecspanse](entries/engines/iacobson-ecspanse/README.md) | Entity Component System (ECS) library for Elixir, offering a suite of features including: flexible queries with multiple filters, dynamic bidirectional relation | elixir | Apache-2.0 | vendored | [iacobson/ecspanse](https://github.com/iacobson/ecspanse) @ `6249eb3bba30` |
 | [ecst](entries/engines/vittorioromeo-ecst/README.md) | [WIP] Experimental C++14 multithreaded compile-time entity-component-system library. | c++ | unknown | reference | [vittorioromeo/ecst](https://github.com/vittorioromeo/ecst) @ `2019-09-03 (branch tip at catalogue time)` |
 | [ECSx](entries/engines/ecsx-framework-ecsx/README.md) | An Entity-Component-System framework for Elixir | elixir | GPL-3.0 | reference | [ecsx-framework/ECSx](https://github.com/ecsx-framework/ECSx) @ `ed1f4891a714` |
 | [EdenLive](entries/engines/vast-ai-research-edenlive/README.md) | Real-time generative rendering for interactive worlds, from any visual reference. | python | Apache-2.0 | vendored | [VAST-AI-Research/EdenLive](https://github.com/VAST-AI-Research/EdenLive) @ `2ea01626e6ea` |
@@ -699,6 +700,7 @@ _Generated 2026-11-26 13:30 UTC · 1979 entries · 498 vendored, 1481 reference-
 | [sucle](entries/engines/gregcman-sucle/README.md) | Common Lisp Voxel Game Engine | common lisp | MIT | reference | [gregcman/sucle](https://github.com/gregcman/sucle) @ `2022-07-31 (branch tip at catalogue time)` |
 | [SuperFamiconv](entries/engines/optiroc-superfamiconv/README.md) | Flexible and composable tile graphics converter supporting Super Nintendo, Game Boy, Game Boy Color, Game Boy Advance, Mega Drive, Master System, Game Gear, PC  | rust | MIT | reference | [Optiroc/SuperFamiconv](https://github.com/Optiroc/SuperFamiconv) @ `2026-11-16 (branch tip at catalogue time)` |
 | [surfacer](entries/engines/snoringcatgames-surfacer/README.md) | AI and pathfinding for 2D-platformers in Godot 3. | n/a | MIT | reference | [SnoringCatGames/surfacer](https://github.com/SnoringCatGames/surfacer) @ `2026-10-13 (branch tip at catalogue time)` |
+| [SurvivalShooterECS](entries/engines/davidpol-survivalshooterecs/README.md) | A port of Unity's official Survival Shooter tutorial to the Entity Component System. | c# | MIT | vendored | [davidpol/SurvivalShooterECS](https://github.com/davidpol/SurvivalShooterECS) @ `d541069f2460` |
 | [Sustenet](entries/engines/quaint-studios-sustenet/README.md) | Sustenet is a networking solution built with Rust and Zig, formerly C#, for game engines like Unity3D, Godot, and Unreal Engine. The primary focus is on scaling | zig | MIT | reference | [Quaint-Studios/Sustenet](https://github.com/Quaint-Studios/Sustenet) @ `2025-08-09 (branch tip at catalogue time)` |
 | [Svelto.ECS](entries/engines/sebas77-svelto-ecs/README.md) | Svelto ECS C# Entity Component System | c# | MIT | reference | [sebas77/Svelto.ECS](https://github.com/sebas77/Svelto.ECS) @ `2025-05-01 (branch tip at catalogue time)` |
 | [sylphis3d](entries/engines/harkal-sylphis3d/README.md) | The source code to the Sylphis3D game engine | python | BSD-2-Clause | vendored | [harkal/sylphis3d](https://github.com/harkal/sylphis3d) @ `9462a9569de1` |

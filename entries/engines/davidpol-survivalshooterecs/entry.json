@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T13:46:40Z",
+ "category": "engines",
+ "commit": "d541069f2460",
+ "delivery": "vendored",
+ "description": "davidpol/SurvivalShooterECS \u2014 A port of Unity's official Survival Shooter tutorial to the Entity Component System.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "SurvivalShooterECS",
+ "size_bytes": 113729,
+ "slug": "davidpol-survivalshooterecs",
+ "source": "github-search:ecs entity component system stars:>80",
+ "stars": 229,
+ "system": "A port of Unity's official Survival Shooter tutorial to the Entity Component System.",
+ "upstream": "https://github.com/davidpol/SurvivalShooterECS",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
