@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T20:26:41Z",
+ "category": "gameplay",
+ "commit": "2025-04-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "arl/go-detour \u2014 :space_invader: Navigation mesh pathfinding and spatial reasoning library",
+ "language": "go",
+ "license": "Zlib",
+ "license_verdict": "clean",
+ "name": "go-detour",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Zlib)",
+ "slug": "arl-go-detour",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 152,
+ "system": ":space_invader: Navigation mesh pathfinding and spatial reasoning library",
+ "upstream": "https://github.com/arl/go-detour",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

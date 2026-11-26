@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 20:10 UTC · 2027 entries · 520 vendored, 1507 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 20:26 UTC · 2032 entries · 522 vendored, 1510 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 20:10 UTC · 2027 entries · 520 vendored, 1507 reference-
 | [physics](#physics) — Physics | 249 | 57 | 192 |
 | [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 295 | 74 | 221 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
 | [save-state](#save-state) — Save / state systems | 117 | 36 | 81 |
 | [procgen](#procgen) — Procedural generation | 147 | 37 | 110 |
@@ -1348,7 +1348,7 @@ _Generated 2026-11-26 20:10 UTC · 2027 entries · 520 vendored, 1507 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 290 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 295 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1370,6 +1370,7 @@ _Generated 2026-11-26 20:10 UTC · 2027 entries · 520 vendored, 1507 reference-
 | [AStar](entries/gameplay/bigzaphod-astar/README.md) | C Implementation of the A* Pathfinding Algorithm | c | unknown | reference | [BigZaphod/AStar](https://github.com/BigZaphod/AStar) @ `2017-04-16 (branch tip at catalogue time)` |
 | [astar](entries/gameplay/devlsh-astar/README.md) | A* pathfinding for 2D grids with elevation support. | typescript | MIT | vendored | [devlsh/astar](https://github.com/devlsh/astar) @ `a762ddacd958` |
 | [AStar](entries/gameplay/roy-t-astar/README.md) | A fast 2D path finding library based on the A* algorithm. Works with both grids and graphs. Supports any .NET variant that supports .NETStandard 2.0 or higher.  | c# | MIT | vendored | [roy-t/AStar](https://github.com/roy-t/AStar) @ `3d57efaa83c8` |
+| [AStar](entries/gameplay/valantonini-astar/README.md) | A 2D A Star (A*) pathfinding implementation in C# focused on ease of use and extension. | c# | MIT | vendored | [valantonini/AStar](https://github.com/valantonini/AStar) @ `ac5f2ee82ce9` |
 | [AStar-Process](entries/gameplay/anseyuyin-astar-process/README.md) | A* Pathfinding Algorithm process demo | typescript | MIT | reference | [anseyuyin/AStar-Process](https://github.com/anseyuyin/AStar-Process) @ `2019-11-27 (branch tip at catalogue time)` |
 | [astar-typescript](entries/gameplay/digitsensitive-astar-typescript/README.md) | A* search algorithm in TypeScript | typescript | MIT | reference | [digitsensitive/astar-typescript](https://github.com/digitsensitive/astar-typescript) @ `2023-04-26 (branch tip at catalogue time)` |
 | [asw](entries/gameplay/auto-sea-way-asw/README.md) | Open source sea routing between any two coordinates. Global routing graph built from OpenStreetMap coastlines with H3 hexagons. Rust, HTTP API, self-hosted. | rust | Apache-2.0 | vendored | [auto-sea-way/asw](https://github.com/auto-sea-way/asw) @ `72a3e891d1b1` |
@@ -1424,8 +1425,10 @@ _Generated 2026-11-26 20:10 UTC · 2027 entries · 520 vendored, 1507 reference-
 | [GameDevRepo](entries/gameplay/wesleywh-gamedevrepo/README.md) | Free Unity C# Script library used to make a full Unity3d game. | c# | MIT | reference | [wesleywh/GameDevRepo](https://github.com/wesleywh/GameDevRepo) @ `2019-11-22 (branch tip at catalogue time)` |
 | [gdx-ai](entries/gameplay/libgdx-gdx-ai/README.md) | Artificial Intelligence framework for games based on libGDX or not. Features: Steering Behaviors, Formation Motion, Pathfinding, Behavior Trees and Finite State | java | Apache-2.0 | vendored | [libgdx/gdx-ai](https://github.com/libgdx/gdx-ai) @ `6726e345248d` |
 | [geotic](entries/gameplay/ddmills-geotic/README.md) | Entity Component System library for javascript | javascript | MIT | reference | [ddmills/geotic](https://github.com/ddmills/geotic) @ `2025-03-05 (branch tip at catalogue time)` |
+| [gezgin](entries/gameplay/uysalibov-gezgin/README.md) | Modern Pathfinding Using OpenStreetMap Data with Raylib | c++ | WTFPL | reference | [uysalibov/gezgin](https://github.com/uysalibov/gezgin) @ `2024-05-14 (branch tip at catalogue time)` |
 | [gitcloser](entries/gameplay/jckli-gitcloser/README.md) | 🔎 Find how close you are to another GitHub user in less than 20 seconds | typescript | GPL-3.0 | reference | [jckli/gitcloser](https://github.com/jckli/gitcloser) @ `c8dd1c8dc9a2` |
 | [gloot](entries/gameplay/peter-kish-gloot/README.md) | A universal inventory system for the Godot game engine. | gdscript | MIT | vendored | [peter-kish/gloot](https://github.com/peter-kish/gloot) @ `6b09b87ac07a` |
+| [go-detour](entries/gameplay/arl-go-detour/README.md) | :space_invader: Navigation mesh pathfinding and spatial reasoning library | go | Zlib | reference | [arl/go-detour](https://github.com/arl/go-detour) @ `2025-04-25 (branch tip at catalogue time)` |
 | [goal-based-vector-field-pathfinding](entries/gameplay/gonuit-goal-based-vector-field-pathfinding/README.md) | Multi-thread TypeScript goal based vector field pathfinding implementation using pixi.js | typescript | unknown | reference | [gonuit/goal-based-vector-field-pathfinding](https://github.com/gonuit/goal-based-vector-field-pathfinding) @ `2024-08-28 (branch tip at catalogue time)` |
 | [GOAP (crashkonijn)](entries/gameplay/goap-crashkonijn/README.md) | goal-oriented action planning for game AI (Unity/C#) | c# | Apache-2.0 | vendored | [crashkonijn/GOAP](https://github.com/crashkonijn/GOAP) @ `7fb29cfe59dc` |
 | [godot-behaviour-tree](entries/gameplay/andrew-wilkes-godot-behaviour-tree/README.md) | Behaviour Tree framework for Godot coded in GDScript. | gdscript | MIT | reference | [andrew-wilkes/godot-behaviour-tree](https://github.com/andrew-wilkes/godot-behaviour-tree) @ `2023-12-13 (branch tip at catalogue time)` |
@@ -1540,6 +1543,7 @@ _Generated 2026-11-26 20:10 UTC · 2027 entries · 520 vendored, 1507 reference-
 | [Pathfinding_Visualization](entries/gameplay/ngquhuanbl-pathfinding-visualization/README.md) | A ReactJS project visualizes the path-finding algorithms with additional cool features like speed adjustment, maze generation, mobile support, etc. | typescript | unknown | reference | [ngquhuanbl/Pathfinding_Visualization](https://github.com/ngquhuanbl/Pathfinding_Visualization) @ `2021-10-21 (branch tip at catalogue time)` |
 | [phaser-web-workers](entries/gameplay/azerion-phaser-web-workers/README.md) | A simple Phaser plugin that allows you to easily integrate Web Workers in your game | typescript | MIT | vendored | [azerion/phaser-web-workers](https://github.com/azerion/phaser-web-workers) @ `a7d4ebfde338` |
 | [php-inventory-management-system](entries/gameplay/stemword-php-inventory-management-system/README.md) | Open source inventory management system with php and mysql Invoice generation and easy to download invoice in PDF format Lightweight and easy to use Order manag | php | MIT | vendored | [stemword/php-inventory-management-system](https://github.com/stemword/php-inventory-management-system) @ `862705a9724a` |
+| [picking-route](entries/gameplay/samirsaci-picking-route/README.md) | Improve Warehouse Productivity using Order Batching | python | MIT | vendored | [samirsaci/picking-route](https://github.com/samirsaci/picking-route) @ `d6fffd21edd4` |
 | [pogema](entries/gameplay/cognitive-ai-systems-pogema/README.md) | [ICLR-2025] POGEMA stands for Partially-Observable Grid Environment for Multiple Agents. This is a grid-based environment that was specifically designed to be f | python | MIT | reference | [Cognitive-AI-Systems/pogema](https://github.com/Cognitive-AI-Systems/pogema) @ `2026-09-14 (branch tip at catalogue time)` |
 | [Point-of-Sales](entries/gameplay/sadatrafsanjani-point-of-sales/README.md) | Point of Sales with inventory management system  | java | MIT | reference | [sadatrafsanjani/Point-of-Sales](https://github.com/sadatrafsanjani/Point-of-Sales) @ `2026-09-08 (branch tip at catalogue time)` |
 | [PokemonTacticalRolePlay](entries/gameplay/sinlessdevil-pokemontacticalroleplay/README.md) | Pokemon Tactical Role Play is a 3D auto-battler and decision-making powered by Utility AI. | c# | none | reference | [SinlessDevil/PokemonTacticalRolePlay](https://github.com/SinlessDevil/PokemonTacticalRolePlay) @ `764123cd5354` |
@@ -1607,6 +1611,7 @@ _Generated 2026-11-26 20:10 UTC · 2027 entries · 520 vendored, 1507 reference-
 | [three-pathfinding](entries/gameplay/donmccurdy-three-pathfinding/README.md) | Navigation mesh utilities for three.js, based on PatrolJS. | javascript | MIT | reference | [donmccurdy/three-pathfinding](https://github.com/donmccurdy/three-pathfinding) @ `2026-10-06 (branch tip at catalogue time)` |
 | [three-pathfinding-3d](entries/gameplay/mryang614-three-pathfinding-3d/README.md) | pathfinding-algorithm fork from three-pathfinding and support 3d | typescript | none | reference | [MrYang614/three-pathfinding-3d](https://github.com/MrYang614/three-pathfinding-3d) @ `b31338351074` |
 | [tile](entries/gameplay/kelindar-tile/README.md) | Tile is a 2D grid engine, built with data and cache friendly ways, includes pathfinding and observers. | go | MIT | reference | [kelindar/tile](https://github.com/kelindar/tile) @ `2025-08-17 (branch tip at catalogue time)` |
+| [TileEditor](entries/gameplay/unitypatterns-tileeditor/README.md) | Creating tile-based levels in Unity is much faster and easier with this tile editing extension, which allows you to place and delete tile prefabs on a grid with | c# | MIT | reference | [UnityPatterns/TileEditor](https://github.com/UnityPatterns/TileEditor) @ `2013-09-30 (branch tip at catalogue time)` |
 | [traktor](entries/gameplay/apistol78-traktor/README.md) | Traktor Game Engine | c++ | GPL-3.0 | reference | [apistol78/traktor](https://github.com/apistol78/traktor) @ `29b0bf723568` |
 | [triangle-pos](entries/gameplay/fahimanzamdip-triangle-pos/README.md) | Triangle POS is an open source Inventory Management with POS System. Developed with Laravel 10, Bootstrap 4 & Livewire 3. It's completely free to use. | blade | unknown | reference | [FahimAnzamDip/triangle-pos](https://github.com/FahimAnzamDip/triangle-pos) @ `2024-10-16 (branch tip at catalogue time)` |
 | [ue4-orders-abilities](entries/gameplay/daedalicentertainment-ue4-orders-abilities/README.md) | Sample code of the talk "Hero AI: Gameplay Abilities Meet Behaviour Trees" at Unreal Fest Europe 2019. | c++ | MIT | reference | [DaedalicEntertainment/ue4-orders-abilities](https://github.com/DaedalicEntertainment/ue4-orders-abilities) @ `2020-10-09 (branch tip at catalogue time)` |

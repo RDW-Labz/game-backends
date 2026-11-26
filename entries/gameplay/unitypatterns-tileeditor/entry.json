@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T20:26:41Z",
+ "category": "gameplay",
+ "commit": "2013-09-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "UnityPatterns/TileEditor \u2014 Creating tile-based levels in Unity is much faster and easier with this tile editing extension, which allows you to place and delete tile prefabs on a grid with ease. When you want to find your way through your maze, the built-in pathfinding functionality will handle the navigation for you!",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "TileEditor",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "unitypatterns-tileeditor",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 149,
+ "system": "Creating tile-based levels in Unity is much faster and easier with this tile editing extension, which allows you to place and delete tile prefabs on a grid with",
+ "upstream": "https://github.com/UnityPatterns/TileEditor",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

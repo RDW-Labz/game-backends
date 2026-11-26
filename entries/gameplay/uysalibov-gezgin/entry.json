@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T20:26:41Z",
+ "category": "gameplay",
+ "commit": "2024-05-14 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "uysalibov/gezgin \u2014 Modern Pathfinding Using OpenStreetMap Data with Raylib",
+ "language": "c++",
+ "license": "WTFPL",
+ "license_verdict": "gated-reference",
+ "name": "gezgin",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (WTFPL)",
+ "slug": "uysalibov-gezgin",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 155,
+ "system": "Modern Pathfinding Using OpenStreetMap Data with Raylib",
+ "upstream": "https://github.com/uysalibov/gezgin",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

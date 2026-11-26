@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T20:26:38Z",
+ "category": "gameplay",
+ "commit": "d6fffd21edd4",
+ "delivery": "vendored",
+ "description": "samirsaci/picking-route \u2014 Improve Warehouse Productivity using Order Batching",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "picking-route",
+ "size_bytes": 33090,
+ "slug": "samirsaci-picking-route",
+ "source": "github-search:pathfinding stars:>100",
+ "stars": 159,
+ "system": "Improve Warehouse Productivity using Order Batching",
+ "upstream": "https://github.com/samirsaci/picking-route",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
