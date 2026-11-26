@@ -1,0 +1,957 @@
+use std::{
+    fmt::{self, Debug, Display, Formatter, LowerExp},
+    hash::Hash,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
+};
+
+use num_traits::FromPrimitive;
+use rand::Rng;
+use simba::scalar::{ComplexField, RealField};
+use xprec::{CompensatedArithmetic, Df64};
+
+use super::{
+    Constructible, FixedPrecision, Float, FloatLike, Magnitude, Real, RealLike, SingleFloat,
+};
+use crate::domains::{InternalOrdering, integer::Integer, rational::Rational};
+
+/// A 106-bit precision floating point number represented by the compensated sum of two `f64` values.
+///
+/// This float has much faster arithmetic operations than `f128` (>3x) and a 106-bit precision `Float`.
+/// Make sure to compile with AVX2 on X64 architectures to make use of
+/// faster fused multiply-addition.
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone)]
+pub struct DoubleFloat(pub(crate) Df64);
+
+impl Default for DoubleFloat {
+    fn default() -> Self {
+        Self(Df64::new(0.))
+    }
+}
+
+#[cfg(feature = "serde")]
+impl serde::Serialize for DoubleFloat {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        [self.0.hi(), self.0.lo()].serialize(serializer)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for DoubleFloat {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let [hi, lo] = <[f64; 2]>::deserialize(deserializer)?;
+        if hi + lo == hi || !hi.is_finite() {
+            Ok(DoubleFloat(unsafe { Df64::new_full(hi, lo) }))
+        } else {
+            Err(serde::de::Error::custom("invalid Df64 hi/lo pair"))
+        }
+    }
+}
+
+#[cfg(feature = "bincode")]
+impl bincode::Encode for DoubleFloat {
+    fn encode<E: bincode::enc::Encoder>(
+        &self,
+        encoder: &mut E,
+    ) -> Result<(), bincode::error::EncodeError> {
+        [self.0.hi(), self.0.lo()].encode(encoder)
+    }
+}
+
+#[cfg(feature = "bincode")]
+bincode::impl_borrow_decode!(DoubleFloat);
+#[cfg(feature = "bincode")]
+impl<Context> bincode::Decode<Context> for DoubleFloat {
+    fn decode<D: bincode::de::Decoder<Context = Context>>(
+        decoder: &mut D,
+    ) -> Result<Self, bincode::error::DecodeError> {
+        let [hi, lo] = <[f64; 2]>::decode(decoder)?;
+
+        if hi + lo == hi || !hi.is_finite() {
+            return Ok(DoubleFloat(unsafe { Df64::new_full(hi, lo) }));
+        }
+
+        Err(bincode::error::DecodeError::Other(
+            "Failed to decode DoubleFloat",
+        ))
+    }
+}
+
+impl DoubleFloat {
+    pub fn into_inner(self) -> Df64 {
+        self.0
+    }
+
+    /// Returns the sum of `a` and `b`, with compensation for rounding errors.
+    pub fn from_compensated_sum(a: f64, b: f64) -> Self {
+        Df64::compensated_sum(a, b).into()
+    }
+
+    #[inline(always)]
+    fn is_nan(&self) -> bool {
+        self.0.hi().is_nan() || self.0.lo().is_nan()
+    }
+
+    #[inline]
+    fn binary_exp(mut base: Df64, mut exp: u64) -> Df64 {
+        let mut result = Df64::ONE;
+
+        while exp != 0 {
+            if exp & 1 == 1 {
+                result *= base;
+            }
+            exp >>= 1;
+            if exp != 0 {
+                base *= base;
+            }
+        }
+
+        result
+    }
+
+    #[inline]
+    fn powi(base: Df64, exp: i64) -> Df64 {
+        if exp >= 0 {
+            Self::binary_exp(base, exp as u64)
+        } else {
+            Self::binary_exp(ComplexField::recip(base), exp.unsigned_abs())
+        }
+    }
+
+    #[inline]
+    fn get_integer_exponent(exp: Df64) -> Option<i64> {
+        if !exp.hi().is_finite() {
+            return None;
+        }
+
+        let truncated = exp.trunc();
+        if exp != truncated {
+            return None;
+        }
+
+        let hi = truncated.hi();
+        if !(i64::MIN as f64..=i64::MAX as f64).contains(&hi) {
+            return None;
+        }
+
+        Some(hi as i64)
+    }
+}
+
+impl FloatLike for DoubleFloat {
+    fn nan(&self) -> Option<Self> {
+        Some(f64::NAN.into())
+    }
+
+    #[inline(always)]
+    fn real_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.partial_cmp(other)
+    }
+
+    #[inline(always)]
+    fn real_classify(&self) -> Option<std::num::FpCategory> {
+        Some(if self.is_nan() {
+            std::num::FpCategory::Nan
+        } else {
+            self.0.hi().classify()
+        })
+    }
+
+    #[inline(always)]
+    fn needs_rescaling(&self) -> bool {
+        !self.0.hi().is_normal()
+    }
+
+    #[inline(always)]
+    fn set_from(&mut self, other: &Self) {
+        *self = *other;
+    }
+
+    #[inline(always)]
+    fn mul_add(&self, a: &Self, b: &Self) -> Self {
+        (self.0 * a.0 + b.0).into()
+    }
+
+    #[inline(always)]
+    fn neg(&self) -> Self {
+        (-self.0).into()
+    }
+
+    #[inline(always)]
+    fn zero(&self) -> Self {
+        0f64.into()
+    }
+
+    #[inline(always)]
+    fn new_zero() -> Self {
+        0f64.into()
+    }
+
+    #[inline(always)]
+    fn one(&self) -> Self {
+        1f64.into()
+    }
+
+    #[inline]
+    fn pow(&self, e: u64) -> Self {
+        // `Df64::powi` is implemented as `exp(e * log(self))` and does not handle base <= 0
+        if e == 0 {
+            return 1f64.into();
+        }
+
+        if self.is_nan() {
+            return f64::NAN.into();
+        }
+        // Preserve the full exponent's parity and signed-zero conventions;
+        // narrowing to i32 changes large positive exponents into negative ones.
+        if self.0.hi().is_infinite() || self.is_fully_zero() {
+            let magnitude = self.0.hi().abs();
+            return if self.0.hi().is_sign_negative() && e & 1 != 0 {
+                -magnitude
+            } else {
+                magnitude
+            }
+            .into();
+        }
+
+        Self::binary_exp(self.0, e).into()
+    }
+
+    #[inline(always)]
+    fn inv(&self) -> Self {
+        self.0.recip().into()
+    }
+
+    #[inline(always)]
+    fn from_usize(&self, a: usize) -> Self {
+        Df64::from_usize(a).unwrap().into()
+    }
+
+    #[inline(always)]
+    fn from_i64(&self, a: i64) -> Self {
+        Df64::from_i64(a).unwrap().into()
+    }
+
+    #[inline(always)]
+    fn get_precision(&self) -> u32 {
+        106
+    }
+
+    #[inline(always)]
+    fn set_precision(&mut self, _precision: u32) {}
+
+    #[inline(always)]
+    fn get_epsilon(&self) -> f64 {
+        f64::EPSILON * f64::EPSILON / 2.0
+    }
+
+    #[inline(always)]
+    fn fixed_precision(&self) -> bool {
+        true
+    }
+
+    #[inline(always)]
+    fn sample_unit<R: Rng + ?Sized>(&self, rng: &mut R) -> Self {
+        rng.random::<f64>().into()
+    }
+
+    #[inline(always)]
+    fn is_fully_zero(&self) -> bool {
+        self.0.hi() == 0. && self.0.lo() == 0.
+    }
+}
+
+impl Neg for DoubleFloat {
+    type Output = Self;
+
+    #[inline]
+    fn neg(self) -> Self::Output {
+        (-self.0).into()
+    }
+}
+
+impl Add<&DoubleFloat> for DoubleFloat {
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: &Self) -> Self::Output {
+        (self.0 + rhs.0).into()
+    }
+}
+
+impl Add<DoubleFloat> for DoubleFloat {
+    type Output = Self;
+
+    #[inline]
+    fn add(self, rhs: Self) -> Self::Output {
+        (self.0 + rhs.0).into()
+    }
+}
+
+impl Sub<&DoubleFloat> for DoubleFloat {
+    type Output = Self;
+
+    #[inline]
+    fn sub(self, rhs: &Self) -> Self::Output {
+        (self.0 - rhs.0).into()
+    }
+}
+
+impl Sub<DoubleFloat> for DoubleFloat {
+    type Output = Self;
+
+    #[inline]
+    fn sub(self, rhs: Self) -> Self::Output {
+        (self.0 - rhs.0).into()
+    }
+}
+
+impl Mul<&DoubleFloat> for DoubleFloat {
+    type Output = Self;
+
+    #[inline]
+    fn mul(self, rhs: &Self) -> Self::Output {
+        (self.0 * rhs.0).into()
+    }
+}
+
+impl Mul<DoubleFloat> for DoubleFloat {
+    type Output = Self;
+
+    #[inline]
+    fn mul(self, rhs: Self) -> Self::Output {
+        (self.0 * rhs.0).into()
+    }
+}
+
+impl Div<&DoubleFloat> for DoubleFloat {
+    type Output = Self;
+
+    #[inline]
+    fn div(self, rhs: &Self) -> Self::Output {
+        (self.0 / rhs.0).into()
+    }
+}
+
+impl Div<DoubleFloat> for DoubleFloat {
+    type Output = Self;
+
+    #[inline]
+    fn div(self, rhs: Self) -> Self::Output {
+        (self.0 / rhs.0).into()
+    }
+}
+
+impl AddAssign<&DoubleFloat> for DoubleFloat {
+    #[inline]
+    fn add_assign(&mut self, rhs: &DoubleFloat) {
+        self.0 += rhs.0;
+    }
+}
+
+impl AddAssign<DoubleFloat> for DoubleFloat {
+    #[inline]
+    fn add_assign(&mut self, rhs: DoubleFloat) {
+        self.0 += rhs.0;
+    }
+}
+
+impl SubAssign<&DoubleFloat> for DoubleFloat {
+    #[inline]
+    fn sub_assign(&mut self, rhs: &DoubleFloat) {
+        self.0 -= rhs.0;
+    }
+}
+
+impl SubAssign<DoubleFloat> for DoubleFloat {
+    #[inline]
+    fn sub_assign(&mut self, rhs: DoubleFloat) {
+        self.0 -= rhs.0;
+    }
+}
+
+impl MulAssign<&DoubleFloat> for DoubleFloat {
+    #[inline]
+    fn mul_assign(&mut self, rhs: &DoubleFloat) {
+        self.0 *= rhs.0;
+    }
+}
+
+impl MulAssign<DoubleFloat> for DoubleFloat {
+    #[inline]
+    fn mul_assign(&mut self, rhs: DoubleFloat) {
+        self.0 *= rhs.0;
+    }
+}
+
+impl DivAssign<&DoubleFloat> for DoubleFloat {
+    #[inline]
+    fn div_assign(&mut self, rhs: &DoubleFloat) {
+        self.0 /= rhs.0;
+    }
+}
+
+impl DivAssign<DoubleFloat> for DoubleFloat {
+    #[inline]
+    fn div_assign(&mut self, rhs: DoubleFloat) {
+        self.0 /= rhs.0;
+    }
+}
+
+impl SingleFloat for DoubleFloat {
+    #[inline(always)]
+    fn is_zero(&self) -> bool {
+        self.0 == Df64::ZERO
+    }
+
+    #[inline(always)]
+    fn is_one(&self) -> bool {
+        self.0 == Df64::ONE
+    }
+
+    #[inline(always)]
+    fn is_finite(&self) -> bool {
+        self.0.is_finite()
+    }
+
+    #[inline(always)]
+    fn from_rational(&self, rat: &Rational) -> Self {
+        rat.into()
+    }
+}
+
+impl RealLike for DoubleFloat {
+    #[inline]
+    fn minimum_roundoff(&self) -> super::Magnitude {
+        super::Magnitude::from_f64(f64::from_bits(1)).scale_pow2(-1)
+    }
+
+    fn absolute_magnitude(&self) -> Magnitude {
+        let hi = self.0.hi();
+        let lo = self.0.lo();
+        if !hi.is_finite() || !lo.is_finite() {
+            return Magnitude::from_f64(hi + lo);
+        }
+        if hi == 0. {
+            return Magnitude::from_f64(lo);
+        }
+
+        let upper = Magnitude::from_f64(hi);
+        // A normalized low limb is at most half an ulp of the high limb.
+        // Therefore the 32-bit upward rounding of |hi| already covers it,
+        // except when |hi| itself lies exactly on a magnitude boundary.
+        // Retaining the low limb's sign makes the predecessor a lower bound.
+        let outward_low = if hi.is_sign_negative() { -lo } else { lo };
+        if outward_low > 0. && upper.to_f64() == Some(hi.abs()) {
+            upper + Magnitude::ONE.scale_pow2(upper.exponent() as i64 - 31)
+        } else {
+            upper
+        }
+    }
+
+    fn to_usize_clamped(&self) -> usize {
+        if !self.0.is_finite() {
+            return if self.0.hi().is_sign_negative() {
+                0
+            } else {
+                usize::MAX
+            };
+        }
+
+        if self.0.hi().is_sign_negative() {
+            0
+        } else {
+            let truncated = self.0.trunc().hi();
+            if truncated >= usize::MAX as f64 {
+                usize::MAX
+            } else {
+                truncated as usize
+            }
+        }
+    }
+
+    fn to_f64(&self) -> f64 {
+        self.0.hi() + self.0.lo()
+    }
+
+    #[inline(always)]
+    fn round_to_nearest_integer(&self) -> Integer {
+        // TODO: change API to Result<Integer, _>
+        if !self.0.is_finite() {
+            return if self.0.hi().is_sign_negative() {
+                i64::MIN.into()
+            } else {
+                i64::MAX.into()
+            };
+        }
+
+        Integer::from_f64((self.0.round()).hi())
+    }
+}
+
+impl Constructible for DoubleFloat {
+    #[inline(always)]
+    fn new_one() -> Self {
+        1f64.into()
+    }
+
+    #[inline(always)]
+    fn new_from_usize(a: usize) -> Self {
+        Df64::from_usize(a).unwrap().into()
+    }
+
+    #[inline(always)]
+    fn new_from_i64(a: i64) -> Self {
+        Df64::from_i64(a).unwrap().into()
+    }
+
+    #[inline(always)]
+    fn new_sample_unit<R: Rng + ?Sized>(rng: &mut R) -> Self {
+        rng.random::<f64>().into()
+    }
+}
+
+impl Real for DoubleFloat {
+    #[inline(always)]
+    fn log1p(&self) -> Self {
+        self.0.ln_1p().into()
+    }
+
+    #[inline(always)]
+    fn copy_sign(&self, sign: &Self) -> Self {
+        if sign.0.hi().is_sign_negative() {
+            -self.norm()
+        } else {
+            self.norm()
+        }
+    }
+
+    #[inline(always)]
+    fn pi(&self) -> Self {
+        Df64::pi().into()
+    }
+
+    #[inline(always)]
+    fn e(&self) -> Self {
+        Df64::e().into()
+    }
+
+    #[inline(always)]
+    fn euler(&self) -> Self {
+        Df64::compensated_sum(0.577_215_664_901_532_9, -4.942_915_152_430_647e-18).into()
+    }
+
+    #[inline(always)]
+    fn phi(&self) -> Self {
+        Df64::compensated_sum(1.618_033_988_749_895, -5.432_115_203_682_505_5e-17).into()
+    }
+
+    #[inline(always)]
+    fn i(&self) -> Option<Self> {
+        None
+    }
+
+    #[inline(always)]
+    fn conj(&self) -> Self {
+        *self
+    }
+
+    #[inline(always)]
+    fn norm(&self) -> Self {
+        self.0.abs().into()
+    }
+
+    #[inline(always)]
+    fn sqrt(&self) -> Self {
+        let hi = self.0.hi();
+        if hi == 0. {
+            // avoid relying on subnormals inside the compensated sqrt path,
+            // as DAZ (Denormals Are Zero) may be enabled
+            return hi.into();
+        }
+        if hi < 0.0 || !hi.is_finite() {
+            return hi.sqrt().into();
+        }
+
+        self.0.sqrt().into()
+    }
+
+    #[inline(always)]
+    fn log(&self) -> Self {
+        if !self.0.hi().is_finite() {
+            return self.0.hi().ln().into();
+        }
+
+        self.0.ln().into()
+    }
+
+    #[inline(always)]
+    fn exp(&self) -> Self {
+        self.0.exp().into()
+    }
+
+    #[inline(always)]
+    fn sin(&self) -> Self {
+        if !self.0.hi().is_finite() {
+            return self.0.hi().sin().into();
+        }
+
+        self.0.sin().into()
+    }
+
+    #[inline(always)]
+    fn cos(&self) -> Self {
+        if !self.0.hi().is_finite() {
+            return self.0.hi().cos().into();
+        }
+
+        self.0.cos().into()
+    }
+
+    #[inline(always)]
+    fn tan(&self) -> Self {
+        if !self.0.hi().is_finite() {
+            return self.0.hi().tan().into();
+        }
+
+        self.0.tan().into()
+    }
+
+    #[inline(always)]
+    fn asin(&self) -> Self {
+        self.0.asin().into()
+    }
+
+    #[inline(always)]
+    fn acos(&self) -> Self {
+        self.0.acos().into()
+    }
+
+    #[inline(always)]
+    fn atan2(&self, x: &Self) -> Self {
+        self.0.atan2(x.0).into()
+    }
+
+    #[inline(always)]
+    fn sinh(&self) -> Self {
+        self.0.sinh().into()
+    }
+
+    #[inline(always)]
+    fn cosh(&self) -> Self {
+        self.0.cosh().into()
+    }
+
+    #[inline(always)]
+    fn tanh(&self) -> Self {
+        self.0.tanh().into()
+    }
+
+    #[inline(always)]
+    fn asinh(&self) -> Self {
+        self.0.asinh().into()
+    }
+
+    #[inline(always)]
+    fn acosh(&self) -> Self {
+        self.0.acosh().into()
+    }
+
+    #[inline(always)]
+    fn atanh(&self) -> Self {
+        self.0.atanh().into()
+    }
+
+    #[inline(always)]
+    fn powf(&self, e: &Self) -> Self {
+        if e.0 == Df64::ZERO || self.0 == Df64::ONE {
+            return 1f64.into();
+        }
+
+        if self.0 == Df64::from(-1.0) && e.0.hi().is_infinite() {
+            return 1f64.into();
+        }
+
+        if self.is_nan() || e.is_nan() {
+            return Df64::NAN.into();
+        }
+
+        if self.0.hi() == 0.0 {
+            return self.0.hi().powf(e.0.hi()).into();
+        }
+
+        if let Some(integer_exponent) = Self::get_integer_exponent(e.0) {
+            return Self::powi(self.0, integer_exponent).into();
+        }
+
+        if self.0.hi().is_sign_negative() || !self.0.hi().is_finite() || !e.0.hi().is_finite() {
+            return self.0.hi().powf(e.0.hi()).into();
+        }
+
+        self.0.powf(e.0).into()
+    }
+}
+
+impl FixedPrecision for DoubleFloat {
+    const BINARY_PRECISION: usize = 106;
+}
+
+impl From<f64> for DoubleFloat {
+    #[inline(always)]
+    fn from(value: f64) -> Self {
+        DoubleFloat(value.into())
+    }
+}
+
+impl From<Df64> for DoubleFloat {
+    #[inline(always)]
+    fn from(value: Df64) -> Self {
+        DoubleFloat(value)
+    }
+}
+
+impl From<DoubleFloat> for Df64 {
+    #[inline(always)]
+    fn from(value: DoubleFloat) -> Self {
+        value.0
+    }
+}
+
+impl From<&Rational> for DoubleFloat {
+    fn from(value: &Rational) -> Self {
+        value.to_multi_prec_float(106).to_double_float()
+    }
+}
+
+impl From<Rational> for DoubleFloat {
+    fn from(value: Rational) -> Self {
+        (&value).into()
+    }
+}
+
+impl PartialEq for DoubleFloat {
+    fn eq(&self, other: &Self) -> bool {
+        if self.is_nan() && other.is_nan() {
+            true
+        } else if self.is_nan() || other.is_nan() {
+            false
+        } else {
+            self.0.partial_cmp(&other.0) == Some(std::cmp::Ordering::Equal)
+        }
+    }
+}
+
+impl PartialOrd for DoubleFloat {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        if self.is_nan() || other.is_nan() {
+            None
+        } else {
+            self.0.partial_cmp(&other.0)
+        }
+    }
+}
+
+impl InternalOrdering for DoubleFloat {
+    fn internal_cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.partial_cmp(other)
+            .unwrap_or_else(|| self.is_nan().cmp(&other.is_nan()))
+    }
+}
+
+impl Display for DoubleFloat {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        Display::fmt(&Float::from(*self), f)
+    }
+}
+
+impl LowerExp for DoubleFloat {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        LowerExp::fmt(&Float::from(*self), f)
+    }
+}
+
+impl Eq for DoubleFloat {}
+
+impl Hash for DoubleFloat {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        if self.is_nan() {
+            state.write_u64(0x7ff8000000000000);
+            return;
+        }
+
+        if !self.0.is_finite() {
+            state.write_u64(0x7ff0000000000000);
+            return;
+        }
+
+        if self.0.hi() == 0. {
+            state.write_u64(0);
+            return;
+        }
+
+        state.write_u64(self.0.hi().to_bits());
+        state.write_u64(if self.0.lo() == 0. {
+            0
+        } else {
+            self.0.lo().to_bits()
+        });
+    }
+}
+
+#[cfg(test)]
+mod pow_tests {
+    use super::*;
+
+    #[test]
+    fn integer_powf_inverts_before_forming_an_overflowing_positive_power() {
+        for (base, expected) in [
+            (2.0f64.powi(500), 2.0f64.powi(-1000)),
+            (2.0f64.powi(520), f64::from_bits(1u64 << 34)),
+        ] {
+            let actual = DoubleFloat::from(base).powf(&DoubleFloat::from(-2.));
+            assert_eq!(actual, DoubleFloat::from(expected));
+            assert!(actual > DoubleFloat::from(0.));
+        }
+        for exponent in -8..=8 {
+            assert_eq!(
+                DoubleFloat::from(-2.).powf(&DoubleFloat::from(exponent as f64)),
+                DoubleFloat::from((-2.0f64).powi(exponent))
+            );
+        }
+        assert_eq!(
+            DoubleFloat::from(-1.).powf(&DoubleFloat::from(i64::MIN as f64)),
+            DoubleFloat::from(1.)
+        );
+    }
+
+    #[test]
+    fn unsigned_powers_preserve_full_width_parity_and_special_values() {
+        for base in [
+            0.0f64,
+            -0.0,
+            1.,
+            -1.,
+            f64::NAN,
+            f64::INFINITY,
+            f64::NEG_INFINITY,
+        ] {
+            for exponent in [
+                0,
+                1,
+                2,
+                i32::MAX as u64 + 1,
+                u32::MAX as u64 + 1,
+                1u64 << 63,
+                u64::MAX,
+            ] {
+                let result = DoubleFloat::from(base).pow(exponent);
+                let expected = if exponent == 0 {
+                    1.
+                } else if base.is_nan() {
+                    f64::NAN
+                } else if base.is_sign_negative() && exponent & 1 != 0 {
+                    -base.abs()
+                } else {
+                    base.abs()
+                };
+                if expected.is_nan() {
+                    assert!(result.is_nan());
+                } else {
+                    assert_eq!(
+                        result.into_inner().hi().to_bits(),
+                        expected.to_bits(),
+                        "{base}^{exponent}"
+                    );
+                    assert_eq!(result.into_inner().lo(), 0.);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn unsigned_powers_keep_finite_negative_bases_and_compensated_parts() {
+        for exponent in 0..=16 {
+            assert_eq!(
+                DoubleFloat::from(-2.).pow(exponent),
+                DoubleFloat::from((-2.0f64).powi(exponent as i32))
+            );
+        }
+        let delta = DoubleFloat::from(2.0f64.powi(-40));
+        let x = DoubleFloat::from_compensated_sum(-1., 2.0f64.powi(-40));
+        let square = x.pow(2);
+        assert_eq!(square, x * x);
+        assert_ne!(square, 1.0.into());
+        assert_eq!(
+            (square - DoubleFloat::from(1.)) / delta,
+            DoubleFloat::from(-2.) + delta
+        );
+    }
+}
+
+#[cfg(test)]
+mod magnitude_tests {
+    use super::*;
+
+    fn as_float(magnitude: Magnitude) -> Float {
+        let significand = Float::with_val(160, magnitude.significand());
+        let exponent = magnitude.exponent() as i64 - 31;
+        let scale = Float::with_val(160, 2).pow(exponent.unsigned_abs());
+        if exponent >= 0 {
+            significand * scale
+        } else {
+            significand / scale
+        }
+    }
+
+    #[test]
+    fn absolute_magnitude_is_tight_for_signed_low_limbs() {
+        let tiny = 2f64.powi(-54);
+        for (hi, lo) in [
+            (1., tiny),
+            (1., -tiny),
+            (-1., tiny),
+            (-1., -tiny),
+            (1. + 2f64.powi(-31), tiny),
+            (1. + 2f64.powi(-31), -tiny),
+            (1. + 2f64.powi(-32), tiny),
+            (1. + 2f64.powi(-32), -tiny),
+            (f64::MAX, 2f64.powi(969)),
+            (f64::MAX, -2f64.powi(969)),
+            (-f64::MAX, 2f64.powi(969)),
+            (-f64::MAX, -2f64.powi(969)),
+            (f64::MIN_POSITIVE, f64::from_bits(1)),
+            (f64::from_bits(1), 0.),
+            (-f64::from_bits(1), 0.),
+        ] {
+            let value = DoubleFloat::from_compensated_sum(hi, lo);
+            let exact = Float::from(value).norm();
+            let upper = value.absolute_magnitude();
+            assert!(upper.is_finite(), "{hi:?}, {lo:?}");
+            assert!(as_float(upper) >= exact, "upper: {hi:?}, {lo:?}");
+            assert!(as_float(upper.next_down()) < exact, "lower: {hi:?}, {lo:?}");
+        }
+        let below = DoubleFloat::from_compensated_sum(1., -tiny);
+        assert_eq!(below.absolute_magnitude(), Magnitude::ONE);
+    }
+
+    #[test]
+    fn absolute_magnitude_handles_zero_and_nonfinite_components() {
+        for zero in [0., -0.] {
+            assert!(DoubleFloat::from(zero).absolute_magnitude().is_zero());
+        }
+        for infinite in [f64::INFINITY, f64::NEG_INFINITY] {
+            assert!(
+                DoubleFloat::from(infinite)
+                    .absolute_magnitude()
+                    .is_infinite()
+            );
+        }
+        assert!(DoubleFloat::from(f64::NAN).absolute_magnitude().is_nan());
+    }
+}

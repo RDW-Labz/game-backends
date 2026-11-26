@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T16:58:37Z",
+ "category": "physics",
+ "commit": "c05403b9b60f",
+ "delivery": "reference",
+ "description": "hal0zer0/openwurli \u2014 An audio plugin attempting to recreate the Wurlitzer 200A sound with circuit & physics modeling",
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "openwurli",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 1950999,
+ "slug": "hal0zer0-openwurli",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 59,
+ "system": "An audio plugin attempting to recreate the Wurlitzer 200A sound with circuit & physics modeling",
+ "upstream": "https://github.com/hal0zer0/openwurli",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -3783,3 +3783,11 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 16:42 UTC** — tick 967: +2 screened, +0 reference, 46 skipped, catalogue=2003
   - added physics/finscn-poorphy (none, reference)
   - added physics/lambdaclass-mirra-backend (Apache-2.0, vendored)
+
+- **2026-11-26 16:58 UTC** — tick 968: +2 screened, +4 reference, 54 skipped, catalogue=2009
+  - added physics/hal0zer0-openwurli (GPL-3.0, reference)
+  - added physics/symbolica-dev-numerica (MIT, vendored)
+  - reference physics/systemaccounting-mxfactorial
+  - reference physics/descrout-rust-multiplayer-physics
+  - reference physics/dimforge-slosh
+  - reference physics/darthdeus-blobs

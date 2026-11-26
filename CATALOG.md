@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 16:42 UTC · 2003 entries · 509 vendored, 1494 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 16:58 UTC · 2009 entries · 510 vendored, 1499 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
-| [physics](#physics) — Physics | 238 | 54 | 184 |
+| [physics](#physics) — Physics | 244 | 55 | 189 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
@@ -852,7 +852,7 @@ _Generated 2026-11-26 16:42 UTC · 2003 entries · 509 vendored, 1494 reference-
 
 ## physics
 
-**Physics** — 238 entries
+**Physics** — 244 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -877,6 +877,7 @@ _Generated 2026-11-26 16:42 UTC · 2003 entries · 509 vendored, 1494 reference-
 | [bevy_urdf](entries/physics/stillonearth-bevy-urdf/README.md) | Import robots from URDF descriptors to bevy and simulate them with Rapier physics | rust | unknown | reference | [stillonearth/bevy_urdf](https://github.com/stillonearth/bevy_urdf) @ `2025-12-02 (branch tip at catalogue time)` |
 | [bevy_verlet](entries/physics/manevillef-bevy-verlet/README.md) | Verlet physics plugin for bevy. | rust | MIT | reference | [ManevilleF/bevy_verlet](https://github.com/ManevilleF/bevy_verlet) @ `2026-05-04 (branch tip at catalogue time)` |
 | [Blinc](entries/physics/project-blinc-blinc/README.md) | A declarative, reactive UI system with first-class state machines, spring physics animations, and GPU-accelerated rendering | rust | Apache-2.0 | reference | [project-blinc/Blinc](https://github.com/project-blinc/Blinc) @ `2026-11-23 (branch tip at catalogue time)` |
+| [blobs](entries/physics/darthdeus-blobs/README.md) | 2D rigid body physics in Rust | rust | Apache-2.0 | reference | [darthdeus/blobs](https://github.com/darthdeus/blobs) @ `2026-10-30 (branch tip at catalogue time)` |
 | [boks2d](entries/physics/joaomcl-boks2d/README.md) | Kotlin Multiplatform bindings for the Box2D physics engine. | kotlin | MIT | reference | [joaomcl/boks2d](https://github.com/joaomcl/boks2d) @ `2026-03-23 (branch tip at catalogue time)` |
 | [bootloops](entries/physics/bootloops-ai-bootloops/README.md) | BootLoops 1.0: certified computational tools and house engines for exact and high-precision physics and quantitative science, built to be driven by LLM agents.  | python | MIT | reference | [BootLoops-ai/bootloops](https://github.com/BootLoops-ai/bootloops) @ `95dfb7251f00` |
 | [box2cpp](entries/physics/holyblackcat-box2cpp/README.md) | C++ bindings for box2d 3.x physics engine (aka box2c) | c++ | Zlib | vendored | [HolyBlackCat/box2cpp](https://github.com/HolyBlackCat/box2cpp) @ `a912a4e0ff5e` |
@@ -981,6 +982,7 @@ _Generated 2026-11-26 16:42 UTC · 2003 entries · 509 vendored, 1494 reference-
 | [motion](entries/physics/juanperias-motion/README.md) | Motion is a bare metal physics engine | rust | Apache-2.0 | vendored | [Juanperias/motion](https://github.com/Juanperias/motion) @ `d563540112c3` |
 | [mujoco-rs](entries/physics/davidhozic-mujoco-rs/README.md) | MuJoCo bindings and high-level wrappers for the Rust programming language. Includes the viewer. | rust | Apache-2.0 | vendored | [davidhozic/mujoco-rs](https://github.com/davidhozic/mujoco-rs) @ `f10b47f29a5f` |
 | [mujoco_menagerie](entries/physics/google-deepmind-mujoco-menagerie/README.md) | A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind. | python | unknown | reference | [google-deepmind/mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie) @ `2026-11-10 (branch tip at catalogue time)` |
+| [mxfactorial](entries/physics/systemaccounting-mxfactorial/README.md) | a payment application intended for deployment by the united states treasury that replaces banking with accounting | rust | unknown | reference | [systemaccounting/mxfactorial](https://github.com/systemaccounting/mxfactorial) @ `2026-10-31 (branch tip at catalogue time)` |
 | [myosuite](entries/physics/myohub-myosuite/README.md) | MyoSuite is a collection of environments/tasks to be solved by musculoskeletal models simulated with the MuJoCo physics engine and wrapped in the OpenAI gym API | python | Apache-2.0 | vendored | [MyoHub/myosuite](https://github.com/MyoHub/myosuite) @ `d914c4aa1eea` |
 | [nape](entries/physics/deltaluca-nape/README.md) | Haxe/AS3 Physics Engine | haxe | BSD-2-Clause | vendored | [deltaluca/nape](https://github.com/deltaluca/nape) @ `a4d43daa8a8a` |
 | [nape-js](entries/physics/newkrok-nape-js/README.md) | A fully typed TypeScript 2D physics engine — modernized rewrite of the original Haxe engine. | typescript | unknown | reference | [NewKrok/nape-js](https://github.com/NewKrok/nape-js) @ `2026-11-24 (branch tip at catalogue time)` |
@@ -997,11 +999,13 @@ _Generated 2026-11-26 16:42 UTC · 2003 entries · 509 vendored, 1494 reference-
 | [nphysics](entries/physics/dimforge-nphysics/README.md) | 2 and 3-dimensional rigid body physics engine for Rust. | rust | Apache-2.0 | vendored | [dimforge/nphysics](https://github.com/dimforge/nphysics) @ `65aa85c5470a` |
 | [nudge](entries/physics/rasmusbarr-nudge/README.md) | A small data-oriented and SIMD-optimized 3D rigid body physics library. | c | MIT | vendored | [rasmusbarr/nudge](https://github.com/rasmusbarr/nudge) @ `bb00cb2985aa` |
 | [numbat](entries/physics/sharkdp-numbat/README.md) | A statically typed programming language for scientific computations with first class support for physical dimensions and units | rust | Apache-2.0 | vendored | [sharkdp/numbat](https://github.com/sharkdp/numbat) @ `e8abf32b975f` |
+| [numerica](entries/physics/symbolica-dev-numerica/README.md) | Numerica is an open-source mathematics library for Rust, that provides high-performance number types, such as error-tracking floats and finite field elements. | rust | MIT | vendored | [symbolica-dev/numerica](https://github.com/symbolica-dev/numerica) @ `0b7b2b8991a3` |
 | [NVIDIA PhysX](entries/physics/physx/README.md) | GPU/CPU 3D rigid body, cloth, particles, vehicles | c++ | BSD-3-Clause | reference | [NVIDIA-Omniverse/PhysX](https://github.com/NVIDIA-Omniverse/PhysX) @ `7d6f6ac8b83e` |
 | [Oimo.js](entries/physics/lo-th-oimo-js/README.md) | Lightweight 3d physics engine for javascript | javascript | MIT | reference | [lo-th/Oimo.js](https://github.com/lo-th/Oimo.js) @ `2021-07-08 (branch tip at catalogue time)` |
 | [OimoPhysics](entries/physics/saharan-oimophysics/README.md) | A cross-platform 3D physics engine | javascript | MIT | reference | [saharan/OimoPhysics](https://github.com/saharan/OimoPhysics) @ `2025-05-18 (branch tip at catalogue time)` |
 | [OpenBSE](entries/physics/bbrannon4-openbse/README.md) | Open-source building energy simulation engine — modern architecture, validated physics, built for programmatic and AI-assisted workflows. | rust | AGPL-3.0 | reference | [bbrannon4/OpenBSE](https://github.com/bbrannon4/OpenBSE) @ `2026-11-20 (branch tip at catalogue time)` |
 | [OpenSurge — physics](entries/physics/opensurge-physics/README.md) | rigid-body collision and dynamics | c | GPL-3.0 | reference | [alemart/opensurge.git](https://github.com/alemart/opensurge.git) @ `61975c2` |
+| [openwurli](entries/physics/hal0zer0-openwurli/README.md) | An audio plugin attempting to recreate the Wurlitzer 200A sound with circuit & physics modeling | rust | GPL-3.0 | reference | [hal0zer0/openwurli](https://github.com/hal0zer0/openwurli) @ `c05403b9b60f` |
 | [optics-lab](entries/physics/alexcri5an-optics-lab/README.md) | Modern, open-source optical design & ray-tracing workstation built in Rust and WebGPU. | rust | Apache-2.0 | reference | [AlexCri5an/optics-lab](https://github.com/AlexCri5an/optics-lab) @ `2026-10-28 (branch tip at catalogue time)` |
 | [oxijolt](entries/physics/pockerhead-oxijolt/README.md) | Safe Rust bindings to Jolt Physics 5.6: rigid bodies, character controller, vehicles, ragdolls, soft bodies, constraints, contact events and deterministic simul | rust | Apache-2.0 | reference | [pockerhead/oxijolt](https://github.com/pockerhead/oxijolt) @ `2026-11-18 (branch tip at catalogue time)` |
 | [p5.collide2D](entries/physics/bmoren-p5-collide2d/README.md) | A collision detection library for 2D geometry in p5.js | javascript | none | reference | [bmoren/p5.collide2D](https://github.com/bmoren/p5.collide2D) @ `0988172c15ae` |
@@ -1049,6 +1053,7 @@ _Generated 2026-11-26 16:42 UTC · 2003 entries · 509 vendored, 1494 reference-
 | [rssn](entries/physics/apich-organization-rssn/README.md) | rssn is an open-source scientific computing library for Rust: a computer algebra system, numerical kernels and physics simulations behind one small API. | rust | Apache-2.0 | reference | [Apich-Organization/rssn](https://github.com/Apich-Organization/rssn) @ `2026-11-24 (branch tip at catalogue time)` |
 | [rumoca](entries/physics/cognipilot-rumoca/README.md) | a rust-native Modelica compiler for fast, composable, scientific computing | rust | Apache-2.0 | reference | [CogniPilot/rumoca](https://github.com/CogniPilot/rumoca) @ `488d6d5f239f` |
 | [runmat](entries/physics/runmat-org-runmat/README.md) | A high-performance engine for matrix math, physics simulation, and MCAD and ECAD as code. RunMat checks types, sizes and units before anything runs, executes on | rust | Apache-2.0 | reference | [runmat-org/runmat](https://github.com/runmat-org/runmat) @ `0359e282f5d0` |
+| [rust-multiplayer-physics](entries/physics/descrout-rust-multiplayer-physics/README.md) | A multiplayer physics playground, written in rust. | rust | unknown | reference | [Descrout/rust-multiplayer-physics](https://github.com/Descrout/rust-multiplayer-physics) @ `2021-09-14 (branch tip at catalogue time)` |
 | [rust_box2d](entries/physics/bastacyclop-rust-box2d/README.md) | Rust binding for Box2D | rust | Zlib | vendored | [Bastacyclop/rust_box2d](https://github.com/Bastacyclop/rust_box2d) @ `4f2b01aebac4` |
 | [Rythe-Engine](entries/physics/rythe-interactive-rythe-engine/README.md) | Rythe is a data-oriented C++20 game engine built to make optimal use of modern hardware. | c++ | MIT | vendored | [Rythe-Interactive/Rythe-Engine](https://github.com/Rythe-Interactive/Rythe-Engine) @ `0bcddef74693` |
 | [salva](entries/physics/dimforge-salva/README.md) | 2 and 3-dimensional fluid simulation library in Rust. | rust | Apache-2.0 | reference | [dimforge/salva](https://github.com/dimforge/salva) @ `2026-11-01 (branch tip at catalogue time)` |
@@ -1058,6 +1063,7 @@ _Generated 2026-11-26 16:42 UTC · 2003 entries · 509 vendored, 1494 reference-
 | [SIMple-Gravity](entries/physics/mkhan45-simple-gravity/README.md) | Gravity simulator using Newton's Law of Universal Gravitation, made to help teach physics | rust | GPL-3.0 | reference | [mkhan45/SIMple-Gravity](https://github.com/mkhan45/SIMple-Gravity) @ `a0c4a9a14ac9` |
 | [SIMple-Mechanics](entries/physics/mkhan45-simple-mechanics/README.md) | An educational physics sim for high school physics, part of the SIMple Physics project | rust | GPL-3.0 | reference | [mkhan45/SIMple-Mechanics](https://github.com/mkhan45/SIMple-Mechanics) @ `b5b2b8ed6ba1` |
 | [slice-4d-shooter](entries/physics/maffi44-slice-4d-shooter/README.md) | Slice: 4D Shooter - the first multiplayer action shooter set in four-dimensional space | rust | MIT | reference | [maffi44/slice-4d-shooter](https://github.com/maffi44/slice-4d-shooter) @ `2026-11-23 (branch tip at catalogue time)` |
+| [slosh](entries/physics/dimforge-slosh/README.md) | Cross-platform MPM physics simulation in Rust and Slang | rust | Apache-2.0 | reference | [dimforge/slosh](https://github.com/dimforge/slosh) @ `2026-11-02 (branch tip at catalogue time)` |
 | [sofa](entries/physics/sofa-framework-sofa/README.md) | Real-time multi-physics simulation with an emphasis on medical simulation. | c++ | LGPL-2.1 | reference | [sofa-framework/sofa](https://github.com/sofa-framework/sofa) @ `7b976d788ad7` |
 | [SpaceHuggers](entries/physics/killedbyapixel-spacehuggers/README.md) | A roguelike platformer with destructible environments in 13KB of JavaScript | javascript | GPL-3.0 | reference | [KilledByAPixel/SpaceHuggers](https://github.com/KilledByAPixel/SpaceHuggers) @ `c31a5aaa1168` |
 | [sparkl](entries/physics/dimforge-sparkl/README.md) | MPM physics simulation in Rust | rust | Apache-2.0 | vendored | [dimforge/sparkl](https://github.com/dimforge/sparkl) @ `29cebe6e29ba` |

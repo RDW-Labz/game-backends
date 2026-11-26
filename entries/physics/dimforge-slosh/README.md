@@ -1,0 +1,14 @@
+# slosh
+
+- **Category:** physics — Cross-platform MPM physics simulation in Rust and Slang
+- **Language:** rust
+- **Licence:** `Apache-2.0` (clean)
+- **Delivery:** reference
+- **Upstream:** https://github.com/dimforge/slosh @ `2026-11-02 (branch tip at catalogue time)`
+- **Discovered via:** github-search:physics language:rust stars:>25
+
+dimforge/slosh — Cross-platform MPM physics simulation in Rust and Slang
+
+**Why it qualifies:** Discovered by the 15-minute library tick (API metadata only, not deep-screened).
+
+> REFERENCE ONLY — the code is not copied into this repository. Fetch it from the upstream URL at the pinned commit. Reason: metadata-only row; licence per GitHub metadata (Apache-2.0).

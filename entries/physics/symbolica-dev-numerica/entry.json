@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T16:58:39Z",
+ "category": "physics",
+ "commit": "0b7b2b8991a3",
+ "delivery": "vendored",
+ "description": "symbolica-dev/numerica \u2014 Numerica is an open-source mathematics library for Rust, that provides high-performance number types, such as error-tracking floats and finite field elements.",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "License.md",
+ "license_verdict": "clean",
+ "name": "numerica",
+ "size_bytes": 1820281,
+ "slug": "symbolica-dev-numerica",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 57,
+ "system": "Numerica is an open-source mathematics library for Rust, that provides high-performance number types, such as error-tracking floats and finite field elements.",
+ "upstream": "https://github.com/symbolica-dev/numerica",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

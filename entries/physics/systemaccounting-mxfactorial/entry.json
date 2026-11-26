@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T16:58:41Z",
+ "category": "physics",
+ "commit": "2026-10-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "systemaccounting/mxfactorial \u2014 a payment application intended for deployment by the united states treasury that replaces banking with accounting",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "mxfactorial",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "systemaccounting-mxfactorial",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 56,
+ "system": "a payment application intended for deployment by the united states treasury that replaces banking with accounting",
+ "upstream": "https://github.com/systemaccounting/mxfactorial",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}
