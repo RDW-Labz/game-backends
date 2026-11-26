@@ -3502,3 +3502,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/thephysicsguys-physics3d
   - reference physics/reworks-org-galaxy
   - reference physics/jordicorbilla-thundax-delphi-physics-engine
+
+- **2026-11-26 00:18 UTC** — tick 906: +2 screened, +4 reference, 38 skipped, catalogue=1852
+  - added physics/pastiijay-klbf-lab (GPL-3.0, reference)
+  - added physics/davidhozic-mujoco-rs (Apache-2.0, vendored)
+  - reference physics/extrawurst-godot-vs-rapier
+  - reference physics/dicklesworthstone-frankensim
+  - reference physics/jungledesh-profile
+  - reference physics/teamatomecs-atomecs

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:18:40Z",
+ "category": "physics",
+ "commit": "2021-08-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "extrawurst/godot-vs-rapier \u2014 compare gdnative rust based physics against Godot built-in physics",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "godot-vs-rapier",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "extrawurst-godot-vs-rapier",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 88,
+ "system": "compare gdnative rust based physics against Godot built-in physics",
+ "upstream": "https://github.com/extrawurst/godot-vs-rapier",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

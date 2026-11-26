@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T00:18:39Z",
+ "category": "physics",
+ "commit": "f10b47f29a5f",
+ "delivery": "vendored",
+ "description": "davidhozic/mujoco-rs \u2014 MuJoCo bindings and high-level wrappers for the Rust programming language. Includes the viewer.",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "mujoco-rs",
+ "size_bytes": 1814088,
+ "slug": "davidhozic-mujoco-rs",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 91,
+ "system": "MuJoCo bindings and high-level wrappers for the Rust programming language. Includes the viewer.",
+ "upstream": "https://github.com/davidhozic/mujoco-rs",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

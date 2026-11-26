@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 00:02 UTC · 1846 entries · 463 vendored, 1383 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 00:18 UTC · 1852 entries · 464 vendored, 1388 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
-| [physics](#physics) — Physics | 207 | 47 | 160 |
+| [physics](#physics) — Physics | 213 | 48 | 165 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
@@ -811,7 +811,7 @@ _Generated 2026-11-26 00:02 UTC · 1846 entries · 463 vendored, 1383 reference-
 
 ## physics
 
-**Physics** — 207 entries
+**Physics** — 213 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -822,6 +822,7 @@ _Generated 2026-11-26 00:02 UTC · 1846 entries · 463 vendored, 1383 reference-
 | [anki-3d-engine](entries/physics/godlikepanos-anki-3d-engine/README.md) | AnKi 3D Engine - Vulkan and D3D12, modern renderer, scripting, physics and more | c++ | unknown | reference | [godlikepanos/anki-3d-engine](https://github.com/godlikepanos/anki-3d-engine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [apollonia](entries/physics/wgtdkp-apollonia/README.md) | Tiny 2D physics engine | c++ | MIT | reference | [wgtdkp/apollonia](https://github.com/wgtdkp/apollonia) @ `2022-01-28 (branch tip at catalogue time)` |
 | [arduino-particle-sys](entries/physics/giladaya-arduino-particle-sys/README.md) | A particle system library for arduino | c++ | unknown | reference | [giladaya/arduino-particle-sys](https://github.com/giladaya/arduino-particle-sys) @ `2013-05-18 (branch tip at catalogue time)` |
+| [AtomECS](entries/physics/teamatomecs-atomecs/README.md) | Cold atom simulation code | rust | GPL-3.0 | reference | [TeamAtomECS/AtomECS](https://github.com/TeamAtomECS/AtomECS) @ `2026-07-16 (branch tip at catalogue time)` |
 | [avian](entries/physics/avianphysics-avian/README.md) | ECS-driven 2D and 3D physics engine for the Bevy game engine. | rust | Apache-2.0 | reference | [avianphysics/avian](https://github.com/avianphysics/avian) @ `2026-11-04 (branch tip at catalogue time)` |
 | [avian_fdm](entries/physics/viccuad-avian-fdm/README.md) | 6-DoF Flight Dynamics Model plugin for Bevy and Avian | rust | unknown | reference | [viccuad/avian_fdm](https://github.com/viccuad/avian_fdm) @ `2026-11-23 (branch tip at catalogue time)` |
 | [avian_pickup](entries/physics/janhohenheim-avian-pickup/README.md) | A plugin for implementing picking up dynamic rigid bodies in Avian physics for the Bevy engine. Modeled after Half Life 2's gravity gun. | rust | Apache-2.0 | vendored | [janhohenheim/avian_pickup](https://github.com/janhohenheim/avian_pickup) @ `4fbfdaa751de` |
@@ -887,6 +888,7 @@ _Generated 2026-11-26 00:02 UTC · 1846 entries · 463 vendored, 1383 reference-
 | [FLAT](entries/physics/yuanming-hu-flat/README.md) | A 2D rigid body physics engine. | c++ | unknown | reference | [yuanming-hu/FLAT](https://github.com/yuanming-hu/FLAT) @ `2017-05-07 (branch tip at catalogue time)` |
 | [FlatPhysics](entries/physics/twobitcoder101-flatphysics/README.md) | Basic 2D rigid body physics engine. | c# | MIT | reference | [twobitcoder101/FlatPhysics](https://github.com/twobitcoder101/FlatPhysics) @ `2021-08-18 (branch tip at catalogue time)` |
 | [Flow](entries/physics/nvidiagameworks-flow/README.md) | Flow is a sparse grid-based fluid simulation library for real-time applications.  | c | unknown | reference | [NVIDIAGameWorks/Flow](https://github.com/NVIDIAGameWorks/Flow) @ `2025-03-31 (branch tip at catalogue time)` |
+| [frankensim](entries/physics/dicklesworthstone-frankensim/README.md) | Plan-first Rust continuum for certified geometry, physics simulation, optimization, and rendering. | rust | unknown | reference | [Dicklesworthstone/frankensim](https://github.com/Dicklesworthstone/frankensim) @ `2026-11-26 (branch tip at catalogue time)` |
 | [Gaia](entries/physics/ankachan-gaia/README.md) | Gaia Physics Engine | raku | Apache-2.0 | reference | [AnkaChan/Gaia](https://github.com/AnkaChan/Gaia) @ `c22969204546` |
 | [galaxy](entries/physics/reworks-org-galaxy/README.md) | C++23 Game Engine. Built on data-driven design principles and agile software engineering. | c | Apache-2.0 | reference | [reworks-org/galaxy](https://github.com/reworks-org/galaxy) @ `2026-11-21 (branch tip at catalogue time)` |
 | [Galaxy-Engine](entries/physics/narciscalin-galaxy-engine/README.md) | Galaxy Engine is a fully interactive particle physics engine. Play with tens or hundreds of thousands of particles in real time | c++ | MIT | reference | [NarcisCalin/Galaxy-Engine](https://github.com/NarcisCalin/Galaxy-Engine) @ `2026-09-25 (branch tip at catalogue time)` |
@@ -897,6 +899,7 @@ _Generated 2026-11-26 00:02 UTC · 1846 entries · 463 vendored, 1383 reference-
 | [godot-jolt](entries/physics/godot-jolt-godot-jolt/README.md) | Godot Jolt is a Godot extension that integrates the Jolt physics engine | c++ | MIT | vendored | [godot-jolt/godot-jolt](https://github.com/godot-jolt/godot-jolt) @ `7f225894706b` |
 | [godot-rapier-physics](entries/physics/appsinacup-godot-rapier-physics/README.md) | Godot Rapier Physics – 2D and 3D physics engine for the Godot game engine. with better stability, performance, liquids, determinism, state serialization and no  | rust | MIT | reference | [appsinacup/godot-rapier-physics](https://github.com/appsinacup/godot-rapier-physics) @ `2026-11-08 (branch tip at catalogue time)` |
 | [godot-vehicle](entries/physics/seerban-godot-vehicle/README.md) | WIP Racing Game and 3d vehicle physics implementation in Godot Engine. | gdscript | MIT | reference | [Seerban/godot-vehicle](https://github.com/Seerban/godot-vehicle) @ `2026-08-03 (branch tip at catalogue time)` |
+| [godot-vs-rapier](entries/physics/extrawurst-godot-vs-rapier/README.md) | compare gdnative rust based physics against Godot built-in physics | rust | unknown | reference | [extrawurst/godot-vs-rapier](https://github.com/extrawurst/godot-vs-rapier) @ `2021-08-04 (branch tip at catalogue time)` |
 | [godot_rapier3d](entries/physics/demindiro-godot-rapier3d/README.md) | Godot bindings for the Rapier3D physics engine | rust | MIT | reference | [Demindiro/godot_rapier3d](https://github.com/Demindiro/godot_rapier3d) @ `2021-07-23 (branch tip at catalogue time)` |
 | [gpu-physics-engine](entries/physics/marcvivas-gpu-physics-engine/README.md) | Experimenting with a gpu physics engine from scratch | rust | Apache-2.0 | vendored | [MarcVivas/gpu-physics-engine](https://github.com/MarcVivas/gpu-physics-engine) @ `d1131288b34f` |
 | [gpu-voxels](entries/physics/fzi-forschungszentrum-informatik-gpu-voxels/README.md) | GPU-Voxels is a CUDA based library which allows high resolution volumetric collision detection between animated 3D models and live pointclouds from 3D sensors o | c++ | unknown | reference | [fzi-forschungszentrum-informatik/gpu-voxels](https://github.com/fzi-forschungszentrum-informatik/gpu-voxels) @ `2023-08-05 (branch tip at catalogue time)` |
@@ -913,6 +916,7 @@ _Generated 2026-11-26 00:02 UTC · 1846 entries · 463 vendored, 1383 reference-
 | [Jolt Physics](entries/physics/joltphysics/README.md) | 3D rigid bodies, constraints, character controller, vehicles | c++ | MIT | vendored | [jrouwe/JoltPhysics](https://github.com/jrouwe/JoltPhysics) @ `cf16769bb0ed` |
 | [jolt-rust](entries/physics/secondhalfgames-jolt-rust/README.md) | Rust bindings to Jolt Physics | rust | Apache-2.0 | reference | [SecondHalfGames/jolt-rust](https://github.com/SecondHalfGames/jolt-rust) @ `2026-11-09 (branch tip at catalogue time)` |
 | [JS-Cloth-Simulation](entries/physics/agorkem-js-cloth-simulation/README.md) | A Cloth simulation with Verlet Integration. | javascript | unknown | reference | [agorkem/JS-Cloth-Simulation](https://github.com/agorkem/JS-Cloth-Simulation) @ `2024-05-10 (branch tip at catalogue time)` |
+| [klbf-lab](entries/physics/pastiijay-klbf-lab/README.md) | Xbox Series X/S (Scarlett) GDK compatibility layer for Windows: runs the Xbox Series build of the game natively on PC from your own files. AMD Radeon fixes, wat | rust | GPL-3.0 | reference | [PastiiJay/klbf-lab](https://github.com/PastiiJay/klbf-lab) @ `420e1e12485f` |
 | [kool](entries/physics/kool-engine-kool/README.md) | A Vulkan /  WebGPU / OpenGL engine for Desktop JVM, Android and Javascript written in Kotlin | kotlin | Apache-2.0 | reference | [kool-engine/kool](https://github.com/kool-engine/kool) @ `2026-11-23 (branch tip at catalogue time)` |
 | [LayaAir](entries/physics/layabox-layaair/README.md) | LayaAir is a fully platform rendering engine with rich 2D/3D rendering capabilities and a mature integrated development platform | typescript | MIT | reference | [layabox/LayaAir](https://github.com/layabox/LayaAir) @ `2026-11-13 (branch tip at catalogue time)` |
 | [libccd](entries/physics/libccd/README.md) | convex collision detection (GJK/EPA) library | c | BSD-3-Clause | vendored | [danfis/libccd](https://github.com/danfis/libccd) @ `7931e764a19e` |
@@ -920,6 +924,7 @@ _Generated 2026-11-26 00:02 UTC · 1846 entries · 463 vendored, 1383 reference-
 | [limonEngine](entries/physics/enginmanap-limonengine/README.md) | 3D FPS game engine with full dynamic lighting and shadows | c++ | LGPL-3.0 | reference | [enginmanap/limonEngine](https://github.com/enginmanap/limonEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [matter-js](entries/physics/liabru-matter-js/README.md) | a 2D rigid body physics engine for the web ▲● ■ | javascript | MIT | vendored | [liabru/matter-js](https://github.com/liabru/matter-js) @ `b8ee71cd7f9b` |
 | [melonJS](entries/physics/melonjs-melonjs/README.md) | A modern & fully featured HTML5 game engine (2D & 3D) for JavaScript/TypeScript, with WebGL/WebGPU rendering, built-in physics, Tiled map & glTF support and Web | javascript | MIT | reference | [melonjs/melonJS](https://github.com/melonjs/melonJS) @ `91f4396452e0` |
+| [mujoco-rs](entries/physics/davidhozic-mujoco-rs/README.md) | MuJoCo bindings and high-level wrappers for the Rust programming language. Includes the viewer. | rust | Apache-2.0 | vendored | [davidhozic/mujoco-rs](https://github.com/davidhozic/mujoco-rs) @ `f10b47f29a5f` |
 | [mujoco_menagerie](entries/physics/google-deepmind-mujoco-menagerie/README.md) | A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind. | python | unknown | reference | [google-deepmind/mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie) @ `2026-11-10 (branch tip at catalogue time)` |
 | [myosuite](entries/physics/myohub-myosuite/README.md) | MyoSuite is a collection of environments/tasks to be solved by musculoskeletal models simulated with the MuJoCo physics engine and wrapped in the OpenAI gym API | python | Apache-2.0 | vendored | [MyoHub/myosuite](https://github.com/MyoHub/myosuite) @ `d914c4aa1eea` |
 | [nape-js](entries/physics/newkrok-nape-js/README.md) | A fully typed TypeScript 2D physics engine — modernized rewrite of the original Haxe engine. | typescript | unknown | reference | [NewKrok/nape-js](https://github.com/NewKrok/nape-js) @ `2026-11-24 (branch tip at catalogue time)` |
@@ -960,6 +965,7 @@ _Generated 2026-11-26 00:02 UTC · 1846 entries · 463 vendored, 1383 reference-
 | [planck.js](entries/physics/piqnt-planck-js/README.md) | 2D JavaScript Physics Engine | typescript | MIT | reference | [piqnt/planck.js](https://github.com/piqnt/planck.js) @ `2026-11-14 (branch tip at catalogue time)` |
 | [PositionBasedDynamics](entries/physics/interactivecomputergraphics-positionbaseddynamics/README.md) | PositionBasedDynamics is a library for the physically-based simulation of rigid bodies, deformable solids and fluids. | c++ | MIT | reference | [InteractiveComputerGraphics/PositionBasedDynamics](https://github.com/InteractiveComputerGraphics/PositionBasedDynamics) @ `10a70bc146a9` |
 | [Principia — lib](entries/physics/principia-lib/README.md) | Box2D-derived 2D physics with custom collision handling | c++ | BSD-2-Clause | vendored | [Bithack/principia](https://github.com/Bithack/principia) @ `a1af28b127c2` |
+| [profile](entries/physics/jungledesh-profile/README.md) | A physics-grounded, cost-aware optimization loop for vLLM | rust | unknown | reference | [jungledesh/profile](https://github.com/jungledesh/profile) @ `2026-08-22 (branch tip at catalogue time)` |
 | [project_superdex](entries/physics/facebookresearch-project-superdex/README.md) | SuperDex brings together a purpose-built physics engine, robotics authoring tools, and a scalable reinforcement learning interface in a unified simulation platf | c++ | Apache-2.0 | reference | [facebookresearch/project_superdex](https://github.com/facebookresearch/project_superdex) @ `2026-11-23 (branch tip at catalogue time)` |
 | [pygame-physics](entries/physics/idgmatrix-pygame-physics/README.md) | Simple Physics Simulation with Pygame | python | none | reference | [idgmatrix/pygame-physics](https://github.com/idgmatrix/pygame-physics) @ `d3fff95306b9` |
 | [pymunk](entries/physics/viblo-pymunk/README.md) | Pymunk is a easy-to-use pythonic 2d physics library that can be used whenever  you need 2d rigid body physics from Python | python | MIT | vendored | [viblo/pymunk](https://github.com/viblo/pymunk) @ `b993f9b3ef2d` |

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:18:40Z",
+ "category": "physics",
+ "commit": "2026-11-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Dicklesworthstone/frankensim \u2014 Plan-first Rust continuum for certified geometry, physics simulation, optimization, and rendering.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "frankensim",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "dicklesworthstone-frankensim",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 85,
+ "system": "Plan-first Rust continuum for certified geometry, physics simulation, optimization, and rendering.",
+ "upstream": "https://github.com/Dicklesworthstone/frankensim",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T00:18:36Z",
+ "category": "physics",
+ "commit": "420e1e12485f",
+ "delivery": "reference",
+ "description": "PastiiJay/klbf-lab \u2014 Xbox Series X|S (Scarlett) GDK compatibility layer for Windows: runs the Xbox Series build of the game natively on PC from your own files. AMD Radeon fixes, water physics, optional AMD FSR frame generation. No game files.",
+ "language": "rust",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "klbf-lab",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 4540934,
+ "slug": "pastiijay-klbf-lab",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 126,
+ "system": "Xbox Series X|S (Scarlett) GDK compatibility layer for Windows: runs the Xbox Series build of the game natively on PC from your own files. AMD Radeon fixes, wat",
+ "upstream": "https://github.com/PastiiJay/klbf-lab",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

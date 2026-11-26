@@ -1,0 +1,36 @@
+//! Helpers for the generated sanitizer probes, and fixtures for the in-crate tests.
+
+use std::hint::black_box;
+
+/// A 1x1 RGB PNG image.
+pub(crate) const PNG_1X1: &[u8] = &[
+    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D,
+    0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01,
+    0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xDE, 0x00, 0x00, 0x00,
+    0x0C, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x60, 0x60, 0x60, 0x00,
+    0x00, 0x00, 0x04, 0x00, 0x01, 0xF6, 0x17, 0x38, 0x55, 0x00, 0x00, 0x00,
+    0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82,
+];
+
+/// Reads the first and last element of `slice`.
+pub(crate) fn touch_slice_ends<T: Clone>(slice: &[T]) {
+    let (Some(first), Some(last)) = (slice.first(), slice.last()) else {
+        return;
+    };
+    black_box(first.clone());
+    black_box(last.clone());
+}
+
+/// Rewrites the first and last element of `slice` with the value it read.
+///
+/// The counterpart of [`touch_slice_ends`] for the write path. Each write restores the value it
+/// read, so no field changes and every C-side invariant holds.
+pub(crate) fn touch_slice_ends_mut<T: Clone>(slice: &mut [T]) {
+    if slice.is_empty() {
+        return;
+    }
+    let last = slice.len() - 1;
+    for index in [0, last] {
+        slice[index] = black_box(slice[index].clone());
+    }
+}

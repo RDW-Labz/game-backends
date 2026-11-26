@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:18:40Z",
+ "category": "physics",
+ "commit": "2026-08-22 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "jungledesh/profile \u2014 A physics-grounded, cost-aware optimization loop for vLLM",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "profile",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "jungledesh-profile",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 67,
+ "system": "A physics-grounded, cost-aware optimization loop for vLLM",
+ "upstream": "https://github.com/jungledesh/profile",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

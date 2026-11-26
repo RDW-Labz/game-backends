@@ -1,0 +1,217 @@
+.. _mj_renderer:
+
+3D renderer
+============
+
+.. note::
+
+    The renderer requires the ``renderer`` Cargo feature (not enabled by default).
+    Enable it with: ``cargo add mujoco-rs --features renderer``
+    (add ``renderer-winit-fallback`` on Windows/macOS or when offscreen rendering is unavailable).
+
+Unlike the :ref:`mj_rust_viewer`, which displays the simulation's 3D scene in a window,
+the renderer exists to provide users with the ability to render offscreen. This includes
+rendering RGB and depth images to either an array or to a file.
+
+The renderer can be constructed by its builder (:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>builder`)
+or directly with :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>new`; however, the latter offers less control.
+By default, RGB rendering is enabled, while depth rendering is disabled.
+
+.. code-block:: rust
+
+    /* Build the renderer */
+    let mut renderer = MjRenderer::builder()
+        .width(0).height(0)  // set to width(0) and height(0) to set automatically based on <global offwidth="1920" offheight="1080"/>
+        .num_visual_user_geom(5)  // maximum number of visual-only geoms as a result of the user
+        .num_visual_internal_geom(100)  // headroom for MuJoCo's own decor geoms
+        .font_scale(MjtFontScale::mjFONTSCALE_100)  // scale of the font drawn by OpenGL
+        .rgb(true)  // rgb rendering
+        .depth(true)  // depth rendering
+        .camera(MjvCamera::default())  // default free camera
+        .build(&model).expect("failed to initialize the renderer");
+
+
+.. attention::
+
+    The renderer's *width* and *height* must be equal to or less than the offscreen buffer size,
+    configured during MuJoCo's model definition:
+
+    .. code-block:: xml
+
+        <mujoco>
+            <visual>
+                <global offwidth="1920" offheight="1080"/>
+            </visual>
+            ...
+        </mujoco>
+
+
+Much like the viewer, the renderer must also be synced with the simulation state
+using :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>sync_data`,
+followed by a call to
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>render`.
+
+.. code-block:: rust
+    :emphasize-lines: 3-4
+
+    ...
+    data.step();  // data is an instance of MjData.
+    renderer.sync_data(&mut data).unwrap();
+    renderer.render().unwrap();
+    ...
+
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>sync_data` updates
+the internal scene from ``data`` without rendering.
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>render` performs the
+actual offscreen render pass. Splitting the two steps lets you insert custom
+logic (e.g. adding user-scene geoms) between sync and render.
+
+
+.. note::
+
+    :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>sync_data` is similar to the MuJoCo
+    Python ``Renderer.update_scene`` method.
+
+After rendering, :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>try_rgb` and
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>try_depth` can be used to obtain
+a reference to the rendered image in the correct 2D shape. The shape must be specified via
+the method's const generic parameters (``WIDTH`` and ``HEIGHT``), and the methods return
+``Result<_, RendererError>`` --- an error is returned if ``WIDTH * HEIGHT`` differs from the
+renderer's pixel count, or when the corresponding rendering mode (RGB/depth) is currently
+disabled. Only the total pixel count is checked, so a swapped pair such as ``<HEIGHT, WIDTH>``
+passes the check and gives a sheared image. The panicking variants
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>rgb` and
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>depth` are also available for
+convenience when the dimensions are known at compile time.
+
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>rgb_flat` and
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>depth_flat` can be used to obtain
+a flat 1-D slice of the rendered data instead, returning ``Option<&[u8]>`` and ``Option<&[f32]>``
+respectively. These return ``None`` when the corresponding rendering mode (``rgb`` or ``depth``)
+is currently disabled (either disabled at construction time or toggled off later).
+
+To save rendered images to a file, :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>save_rgb`
+and :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>save_depth` can be used.
+These encode the image as a PNG, where the RGB image is 8 bits per channel and
+the depth image is 16 bits. These are meant **for visualization**.
+
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>save_depth` accepts a ``normalize: bool``
+argument. When ``true``, depth values are linearly normalized using per-frame min-max
+normalization to the full 16-bit range (0-65535) before saving. When ``false``, depth values are
+linearly mapped using the model's camera near/far clip planes as a fixed range, providing a
+frame-independent mapping to 0-65535. In both cases, the method returns the ``(min, max)`` pair
+used for normalization, allowing depth values to be approximately reconstructed
+(subject to 16-bit quantization and clamping).
+
+To save depth data as raw 32-bit float values representing **actual metric distances** from the
+camera, :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>save_depth_raw` can be used.
+
+The PNG compression level used by ``save_rgb`` and ``save_depth`` can be controlled via
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>set_png_compression` or the
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRendererBuilder::<method>png_compression`
+builder setter. The default is ``png::Compression::NoCompression`` (fastest encoding, largest files).
+Use ``png::Compression::Balanced`` or ``png::Compression::High`` to trade encoding time for
+smaller files. The ``png`` crate is re-exported from ``mujoco_rs::renderer::png``, so no extra
+dependency is needed.
+
+
+End-to-end example
+------------------
+The following is a complete example that loads a model, runs 150 steps, renders the result,
+and saves both an RGB and a depth image:
+
+.. code-block:: rust
+
+    use mujoco_rs::prelude::*;
+    use mujoco_rs::renderer::MjRenderer;
+
+    const MODEL: &str = r#"
+    <mujoco>
+    <visual>
+        <global offwidth="1920" offheight="1080"/>
+    </visual>
+    <worldbody>
+        <light pos="0 0 3"/>
+        <body name="ball" pos="0 0 1">
+            <geom type="sphere" size=".1" rgba="0 1 0 1"/>
+            <joint type="free"/>
+        </body>
+        <geom name="floor" type="plane" size="5 5 1"/>
+    </worldbody>
+    </mujoco>
+    "#;
+
+    fn main() {
+        let model = MjModel::from_xml_string(MODEL).expect("could not load model");
+        let mut data = MjData::new(&model);
+
+        let mut renderer = MjRenderer::builder()
+            .width(0).height(0)          // automatically sized from <global offwidth/offheight>
+            .rgb(true)
+            .depth(true)
+            .camera(MjvCamera::default())
+            .build(&model).expect("failed to initialize renderer");
+
+        for _ in 0..150 {
+            data.step();
+        }
+
+        renderer.sync_data(&mut data).unwrap();
+        renderer.render().unwrap();
+
+        renderer.save_rgb("frame.png").expect("failed to save RGB");
+        renderer.save_depth("depth.png", true).expect("failed to save depth");  // true = normalize to 0-65535 range.
+    }
+
+
+.. _renderer_asset_reupload:
+
+Asset re-upload
+---------------
+
+When textures, meshes, or heightfields in the simulation model are mutated at runtime,
+the GPU copies held by the renderer must be refreshed explicitly.
+
+:docs-rs:`~mujoco_rs::renderer::<struct>MjRenderer` exposes two sets of methods for this:
+
+- **Singular** -- upload one asset by its zero-based index:
+  :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>update_texture_from`,
+  :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>update_mesh_from`,
+  :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>update_hfield_from`.
+  These copy only the data for the specified asset ID and are efficient when only a small
+  number of assets change per frame.
+
+- **Plural** -- upload all assets of a type by iterating over every index:
+  :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>update_textures_from`,
+  :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>update_meshes_from`,
+  :docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>update_hfields_from`.
+  The plural methods are more convenient when the majority of assets of a given type
+  are modified, avoiding repeated compatibility and context checks.
+
+Unlike the viewer, the renderer uploads asset data **immediately** --- there is no staging or
+dirty-flag mechanism. The upload takes effect before the next call to
+:docs-rs:`~~mujoco_rs::renderer::<struct>MjRenderer::<method>render`.
+All methods return ``Result<(), RendererError>`` ---
+:docs-rs:`~~mujoco_rs::renderer::<enum>RendererError::<variant>IncompatibleModel` is returned
+when the mesh, heightfield and texture layout of the model differs from that of the rendering context
+(:docs-rs:`~~mujoco_rs::wrappers::mj_rendering::<struct>MjrContext::<method>is_asset_compatible_with_model`),
+:docs-rs:`~~mujoco_rs::renderer::<enum>RendererError::<variant>ContextError` when the asset
+ID is out of range (singular methods only), and
+:docs-rs:`~~mujoco_rs::renderer::<enum>RendererError::<variant>GlutinError` if the OpenGL context
+cannot be made current.
+
+.. code-block:: rust
+
+    /* Mutate texture 0 in the model, then re-upload just that texture. */
+    // SAFETY: only asset data is changed; the layout (address and count) fields are untouched.
+    unsafe { data.model_mut() }.tex_data_mut()[..256].fill(128);
+    renderer.update_texture_from(data.model(), 0).unwrap();
+
+    /* Or re-upload all textures at once (loops over each texture) */
+    renderer.update_textures_from(data.model()).unwrap();
+
+    renderer.sync_data(&mut data).unwrap();
+    renderer.render().unwrap();
+
+The :gh-example:`example <visualization/renderer/renderer_asset_reupload.rs>` animates a heightfield,
+a texture and a mesh, and saves every frame as a PNG.
