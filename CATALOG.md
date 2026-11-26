@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 05:30 UTC · 1934 entries · 480 vendored, 1454 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 05:46 UTC · 1936 entries · 481 vendored, 1455 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 05:30 UTC · 1934 entries · 480 vendored, 1454 reference-
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 277 | 67 | 210 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 279 | 68 | 211 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
@@ -1280,7 +1280,7 @@ _Generated 2026-11-26 05:30 UTC · 1934 entries · 480 vendored, 1454 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 277 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 279 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1323,6 +1323,7 @@ _Generated 2026-11-26 05:30 UTC · 1934 entries · 480 vendored, 1454 reference-
 | [Brainiac](entries/gameplay/daemon3000-brainiac/README.md) | Behaviour tree editor for Unity3D | c# | unknown | reference | [daemon3000/Brainiac](https://github.com/daemon3000/Brainiac) @ `2020-03-14 (branch tip at catalogue time)` |
 | [BTEditor](entries/gameplay/bartoleo-bteditor/README.md) | Behaviour Tree Editor made with Löve | lua | none | reference | [bartoleo/BTEditor](https://github.com/bartoleo/BTEditor) @ `259d1c81930c` |
 | [c-basic-programs](entries/gameplay/sanusanth-c-basic-programs/README.md) | What is C#? C# is pronounced "C-Sharp".  It is an object-oriented programming language created by Microsoft that runs on the .NET Framework.  C# has roots from  | n/a | unknown | reference | [sanusanth/c-basic-programs](https://github.com/sanusanth/c-basic-programs) @ `2021-07-24 (branch tip at catalogue time)` |
+| [calltree](entries/gameplay/jjacobsson-calltree/README.md) | A slim Behaviour Tree implementation. | c++ | none | reference | [jjacobsson/calltree](https://github.com/jjacobsson/calltree) @ `46a9225d8cda` |
 | [check_redfish](entries/gameplay/bb-ricardo-check-redfish/README.md) | A monitoring/inventory plugin to check components and health status of systems which support Redfish. It will also create an inventory of all components of a sy | python | MIT | reference | [bb-Ricardo/check_redfish](https://github.com/bb-Ricardo/check_redfish) @ `2026-11-16 (branch tip at catalogue time)` |
 | [chess-engine](entries/gameplay/adam-mcdaniel-chess-engine/README.md) | A dependency-free chess engine♟️ library built to run anywhere. | rust | MIT | reference | [adam-mcdaniel/chess-engine](https://github.com/adam-mcdaniel/chess-engine) @ `2024-04-18 (branch tip at catalogue time)` |
 | [cocos-pathfinding](entries/gameplay/goldest-star-cocos-pathfinding/README.md) | Pathfinding 2D in Cocos Creator in cocos creator 3.6 | typescript | none | reference | [goldest-star/cocos-pathfinding](https://github.com/goldest-star/cocos-pathfinding) @ `825183bdc477` |
@@ -1535,6 +1536,7 @@ _Generated 2026-11-26 05:30 UTC · 1934 entries · 480 vendored, 1454 reference-
 | [UE5Inventory](entries/gameplay/synock-ue5inventory/README.md) | Replicated inventory system for unreal engine 5 | c++ | MIT | vendored | [Synock/UE5Inventory](https://github.com/Synock/UE5Inventory) @ `63273f096e7c` |
 | [uesvon](entries/gameplay/midgen-uesvon/README.md) | 3D navmesh generation and pathfinding plugin for UnrealEngine | c++ | MIT | vendored | [midgen/uesvon](https://github.com/midgen/uesvon) @ `ca9f9ebf7b14` |
 | [Unity-2D-Context-steering-AI](entries/gameplay/sunnyvalleystudio-unity-2d-context-steering-ai/README.md) | How to implement context steering behaviours for a 2D top down Unity game | c# | MIT | reference | [SunnyValleyStudio/Unity-2D-Context-steering-AI](https://github.com/SunnyValleyStudio/Unity-2D-Context-steering-AI) @ `2023-10-06 (branch tip at catalogue time)` |
+| [Unity-Behaviour-Trees](entries/gameplay/adammyhre-unity-behaviour-trees/README.md) | Unity Behaviour Trees and Blackboard | c# | Unlicense | vendored | [adammyhre/Unity-Behaviour-Trees](https://github.com/adammyhre/Unity-Behaviour-Trees) @ `72101a8282ea` |
 | [Unity-Crafting-System](entries/gameplay/raulmrsouza-unity-crafting-system/README.md) | Crafting System and Building placement for unity3D | c# | MIT | reference | [RaulMrSouza/Unity-Crafting-System](https://github.com/RaulMrSouza/Unity-Crafting-System) @ `2018-10-05 (branch tip at catalogue time)` |
 | [Unity-Inventory-System](entries/gameplay/adammyhre-unity-inventory-system/README.md) | Unity Inventory System with UI Toolkit | c# | unknown | reference | [adammyhre/Unity-Inventory-System](https://github.com/adammyhre/Unity-Inventory-System) @ `2024-06-27 (branch tip at catalogue time)` |
 | [Unity-Modular-Game-Architecture](entries/gameplay/aniskaram-unity-modular-game-architecture/README.md) | A modular Game Architecture framework in Unity 6. Features a Scalable Inventory (MVP), a Physics-based Character Controller (FSM), Dependency Injection (VContai | c# | none | reference | [AnisKaram/Unity-Modular-Game-Architecture](https://github.com/AnisKaram/Unity-Modular-Game-Architecture) @ `c9d56b38b3ef` |

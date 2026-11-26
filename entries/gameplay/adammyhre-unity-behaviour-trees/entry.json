@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T05:46:36Z",
+ "category": "gameplay",
+ "commit": "72101a8282ea",
+ "delivery": "vendored",
+ "description": "adammyhre/Unity-Behaviour-Trees \u2014 Unity Behaviour Trees and Blackboard",
+ "language": "c#",
+ "license": "Unlicense",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Unity-Behaviour-Trees",
+ "size_bytes": 91587,
+ "slug": "adammyhre-unity-behaviour-trees",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 97,
+ "system": "Unity Behaviour Trees and Blackboard",
+ "upstream": "https://github.com/adammyhre/Unity-Behaviour-Trees",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

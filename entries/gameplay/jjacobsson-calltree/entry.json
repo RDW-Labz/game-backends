@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T05:46:38Z",
+ "category": "gameplay",
+ "commit": "46a9225d8cda",
+ "delivery": "reference",
+ "description": "jjacobsson/calltree \u2014 A slim Behaviour Tree implementation.",
+ "language": "c++",
+ "license": "none",
+ "license_file": "LICENSE",
+ "license_verdict": "unlicensed-reference",
+ "name": "calltree",
+ "reference_reason": "licence: none (unlicensed-reference)",
+ "size_bytes": 504633,
+ "slug": "jjacobsson-calltree",
+ "source": "github-search:behaviour tree stars:>40",
+ "stars": 58,
+ "system": "A slim Behaviour Tree implementation.",
+ "upstream": "https://github.com/jjacobsson/calltree",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

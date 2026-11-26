@@ -3630,3 +3630,7 @@ One line per 15-minute extension tick, newest last.
   - reference gameplay/blondeburrito-hexagonal-pathfinding-astar
   - reference gameplay/punnerud-mpee
   - reference gameplay/drinfy-sc2-pathlib
+
+- **2026-11-26 05:46 UTC** — tick 926: +2 screened, +0 reference, 22 skipped, catalogue=1936
+  - added gameplay/adammyhre-unity-behaviour-trees (Unlicense, vendored)
+  - added gameplay/jjacobsson-calltree (none, reference)
