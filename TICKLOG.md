@@ -3749,3 +3749,5 @@ One line per 15-minute extension tick, newest last.
   - added engines/bw2012-ue5voxelterraindemo (GPL-3.0, reference)
   - added engines/tantandev-first-voxel-engine (MIT, vendored)
   - reference engines/charged-miners
+
+- **2026-11-26 14:50 UTC** — tick 960: +0 screened, +0 reference, 32 skipped, catalogue=1985
