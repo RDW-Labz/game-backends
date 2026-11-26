@@ -3566,3 +3566,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/martinweigel-quaternion
   - reference math/boostorg-qvm
   - reference math/achllle-dual-quaternions
+
+- **2026-11-26 02:44 UTC** — tick 915: +2 screened, +4 reference, 37 skipped, catalogue=1898
+  - added math/user1095108-vxl (Unlicense, vendored)
+  - added math/peregrine-developments-orientation (AGPL-3.0, reference)
+  - reference math/ramakarl-invk
+  - reference math/hamagure-quaternion-core
+  - reference math/craftedcart-blueprintrotationlibrary
+  - reference math/xpturn-klotho

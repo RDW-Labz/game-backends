@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:44:39Z",
+ "category": "math",
+ "commit": "2026-10-31 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "xpTURN/Klotho \u2014 Deterministic Unity & Godot framework for rollback, lockstep & server-authoritative multiplayer. Engine-agnostic pure C# core, FP64 fixed-point math, ECS, physics, navigation, and replays \u2014 frame-perfect, cross-platform reproducible.",
+ "language": "c#",
+ "license": "Apache-2.0",
+ "license_verdict": "clean",
+ "name": "Klotho",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Apache-2.0)",
+ "slug": "xpturn-klotho",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 88,
+ "system": "Deterministic Unity & Godot framework for rollback, lockstep & server-authoritative multiplayer. Engine-agnostic pure C# core, FP64 fixed-point math, ECS, physi",
+ "upstream": "https://github.com/xpTURN/Klotho",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

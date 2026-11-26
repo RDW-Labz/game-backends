@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:44:39Z",
+ "category": "math",
+ "commit": "2026-10-26 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "HamaguRe/quaternion-core \u2014 Quaternion library written in Rust. It's published on crates.io",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "quaternion-core",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "hamagure-quaternion-core",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 28,
+ "system": "Quaternion library written in Rust. It's published on crates.io",
+ "upstream": "https://github.com/HamaguRe/quaternion-core",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

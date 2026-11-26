@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:44:39Z",
+ "category": "math",
+ "commit": "2021-12-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "CraftedCart/BlueprintRotationLibrary \u2014 UE4 blueprint nodes to work with Quaternions",
+ "language": "c++",
+ "license": "Unlicense",
+ "license_verdict": "clean",
+ "name": "BlueprintRotationLibrary",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (Unlicense)",
+ "slug": "craftedcart-blueprintrotationlibrary",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 27,
+ "system": "UE4 blueprint nodes to work with Quaternions",
+ "upstream": "https://github.com/CraftedCart/BlueprintRotationLibrary",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

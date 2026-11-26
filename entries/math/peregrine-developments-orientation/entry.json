@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T02:44:38Z",
+ "category": "math",
+ "commit": "a1d4062e8f8b",
+ "delivery": "reference",
+ "description": "peregrine-developments/Orientation \u2014 Library for tracking orientation through quaternion rotation utilizing gyro rates & other measures",
+ "language": "c++",
+ "license": "AGPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "Orientation",
+ "reference_reason": "licence: AGPL-3.0 (copyleft-reference)",
+ "size_bytes": 14371,
+ "slug": "peregrine-developments-orientation",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 31,
+ "system": "Library for tracking orientation through quaternion rotation utilizing gyro rates & other measures",
+ "upstream": "https://github.com/peregrine-developments/Orientation",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

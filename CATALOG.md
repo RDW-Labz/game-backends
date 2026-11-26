@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 02:26 UTC · 1892 entries · 472 vendored, 1420 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 02:44 UTC · 1898 entries · 473 vendored, 1425 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
-| [math](#math) — Math libraries | 153 | 47 | 106 |
+| [math](#math) — Math libraries | 159 | 48 | 111 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
@@ -1053,7 +1053,7 @@ _Generated 2026-11-26 02:26 UTC · 1892 entries · 472 vendored, 1420 reference-
 
 ## math
 
-**Math libraries** — 153 entries
+**Math libraries** — 159 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1062,6 +1062,7 @@ _Generated 2026-11-26 02:26 UTC · 1892 entries · 472 vendored, 1420 reference-
 | [armadillo-code](entries/math/conradsnicta-armadillo-code/README.md) | Armadillo: fast C++ library for linear algebra (matrix maths) & scientific computing | n/a | unknown | reference | [conradsnicta/armadillo-code](https://github.com/conradsnicta/armadillo-code) @ `2026-10-21 (branch tip at catalogue time)` |
 | [AudioTool](entries/math/lincollincol-audiotool/README.md) | Android library that provides audio manipulation functions like increase/decrease speed, pitch, volume, bass, etc. Library also provides cut, noise remover, and | java | Apache-2.0 | vendored | [lincollincol/AudioTool](https://github.com/lincollincol/AudioTool) @ `b0f508159176` |
 | [biomes-game — math](entries/math/biomes-game-math/README.md) | vector/matrix/quaternion math substrate | ts | MIT | vendored | [ill-inc/biomes-game](https://github.com/ill-inc/biomes-game) @ `669da23` |
+| [BlueprintRotationLibrary](entries/math/craftedcart-blueprintrotationlibrary/README.md) | UE4 blueprint nodes to work with Quaternions | c++ | Unlicense | reference | [CraftedCart/BlueprintRotationLibrary](https://github.com/CraftedCart/BlueprintRotationLibrary) @ `2021-12-04 (branch tip at catalogue time)` |
 | [brine-fp](entries/math/zfedoran-brine-fp/README.md) | Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications. | rust | Apache-2.0 | vendored | [zfedoran/brine-fp](https://github.com/zfedoran/brine-fp) @ `377beff01dfe` |
 | [C-Linear-Algebra](entries/math/jcchurch-c-linear-algebra/README.md) | My personal set of C libraries for linear algebra computation based on The Matrix Cookbook and Numerical Recipes in C. | c | unknown | reference | [jcchurch/C-Linear-Algebra](https://github.com/jcchurch/C-Linear-Algebra) @ `2019-10-31 (branch tip at catalogue time)` |
 | [ccVector](entries/math/jobtalle-ccvector/README.md) | A vector and matrix math library | c | Public-Domain | vendored | [jobtalle/ccVector](https://github.com/jobtalle/ccVector) @ `ffefafe5a0b9` |
@@ -1119,8 +1120,10 @@ _Generated 2026-11-26 02:26 UTC · 1892 entries · 472 vendored, 1420 reference-
 | [Icaria-Noise](entries/math/krubbles-icaria-noise/README.md) | A highly-optimized C# noise-function library.  | c# | MIT | vendored | [krubbles/Icaria-Noise](https://github.com/krubbles/Icaria-Noise) @ `28112e32671f` |
 | [imuFilter](entries/math/rcmags-imufilter/README.md) | Arduino library for an IMU filter based on a quaternion  | c++ | MIT | reference | [RCmags/imuFilter](https://github.com/RCmags/imuFilter) @ `2024-01-04 (branch tip at catalogue time)` |
 | [InterpolatePy](entries/math/giorgiomedico-interpolatepy/README.md) | 🚀 InterpolatePy: A fast and precise Python library for production-ready trajectory planning, offering 20+ algorithms for C² continuous splines, jerk-limited S-c | python | MIT | reference | [GiorgioMedico/InterpolatePy](https://github.com/GiorgioMedico/InterpolatePy) @ `2026-11-19 (branch tip at catalogue time)` |
+| [invk](entries/math/ramakarl-invk/README.md) | Invk - Inverse Kinematics Library with Quaternions | c++ | LGPL-3.0 | reference | [ramakarl/invk](https://github.com/ramakarl/invk) @ `2025-11-24 (branch tip at catalogue time)` |
 | [JavaCode](entries/math/rick2785-javacode/README.md) | I specifically cover the following topics: Java primitive data types, declaration statements, expression statements, importing class libraries, excepting user i | java | none | reference | [rick2785/JavaCode](https://github.com/rick2785/JavaCode) @ `746587dd0dd1` |
 | [Kalman](entries/math/francoiscarouge-kalman/README.md) | Kalman filter for C++26 that turns dimension and unit mistakes into compile errors. You describe the filter with named arguments and the library deduces a lean, | c++ | Unlicense | vendored | [FrancoisCarouge/Kalman](https://github.com/FrancoisCarouge/Kalman) @ `cdd8a9387943` |
+| [Klotho](entries/math/xpturn-klotho/README.md) | Deterministic Unity & Godot framework for rollback, lockstep & server-authoritative multiplayer. Engine-agnostic pure C# core, FP64 fixed-point math, ECS, physi | c# | Apache-2.0 | reference | [xpTURN/Klotho](https://github.com/xpTURN/Klotho) @ `2026-10-31 (branch tip at catalogue time)` |
 | [lacaml](entries/math/mmottl-lacaml/README.md) | OCaml bindings for BLAS/LAPACK (high-performance linear algebra Fortran libraries) | ocaml | LGPL-2.1 | reference | [mmottl/lacaml](https://github.com/mmottl/lacaml) @ `b1bdee6f40ef` |
 | [LASwift](entries/math/alexandertar-laswift/README.md) | Fast linear algebra for Swift on Apple platforms, powered by Accelerate (BLAS, LAPACK, vDSP) | swift | BSD-3-Clause | reference | [AlexanderTar/LASwift](https://github.com/AlexanderTar/LASwift) @ `2026-11-19 (branch tip at catalogue time)` |
 | [libfixmath](entries/math/libfixmath/README.md) | fixed-point math for deterministic simulation | c | MIT | vendored | [PetteriAimonen/libfixmath](https://github.com/PetteriAimonen/libfixmath) @ `46e89b748b1f` |
@@ -1154,6 +1157,7 @@ _Generated 2026-11-26 02:26 UTC · 1892 entries · 472 vendored, 1420 reference-
 | [opencascade.js](entries/math/donalffons-opencascade-js/README.md) | Port of the OpenCascade CAD library to JavaScript and WebAssembly via Emscripten. | python | LGPL-2.1 | reference | [donalffons/opencascade.js](https://github.com/donalffons/opencascade.js) @ `2023-08-15 (branch tip at catalogue time)` |
 | [openMVG](entries/math/openmvg-openmvg/README.md) | open Multiple View Geometry library. Basis for 3D computer vision and Structure from Motion. | c++ | MPL-2.0 | reference | [openMVG/openMVG](https://github.com/openMVG/openMVG) @ `2026-11-07 (branch tip at catalogue time)` |
 | [optick — simd](entries/math/optick-simd/README.md) | vector/matrix/quaternion math substrate | hpp | MIT | vendored | [bombomby/optick](https://github.com/bombomby/optick) @ `8abd28d` |
+| [Orientation](entries/math/peregrine-developments-orientation/README.md) | Library for tracking orientation through quaternion rotation utilizing gyro rates & other measures | c++ | AGPL-3.0 | reference | [peregrine-developments/Orientation](https://github.com/peregrine-developments/Orientation) @ `a1d4062e8f8b` |
 | [PAL-CRT](entries/math/lmp88959-pal-crt/README.md) | PAL encoding/decoding in C89 using only integers and fixed point math. Supports NES decoding. Can be used as an image filter for games or real-time applications | c | unknown | reference | [LMP88959/PAL-CRT](https://github.com/LMP88959/PAL-CRT) @ `2025-10-15 (branch tip at catalogue time)` |
 | [PL3D-KC](entries/math/lmp88959-pl3d-kc/README.md) | A very fast and simple software renderer using only integers and fixed point math. PiSHi LE (PL) is a subset of the 3D software graphics library used in King's  | c | unknown | reference | [LMP88959/PL3D-KC](https://github.com/LMP88959/PL3D-KC) @ `2024-05-30 (branch tip at catalogue time)` |
 | [point-cloud-utils](entries/math/fwilliams-point-cloud-utils/README.md) | An easy-to-use Python library for processing and manipulating 3D point clouds and meshes. | c++ | MIT | vendored | [fwilliams/point-cloud-utils](https://github.com/fwilliams/point-cloud-utils) @ `a5ce154b32b9` |
@@ -1167,6 +1171,7 @@ _Generated 2026-11-26 02:26 UTC · 1892 entries · 472 vendored, 1420 reference-
 | [qaws](entries/math/soufianekhiat-qaws/README.md) | A dependency-free C11 library for creating, evaluating, sampling, traversing, and inspecting parametric curves and surfaces in 2D and 3D.  One source, four back | c | MIT | reference | [soufianekhiat/qaws](https://github.com/soufianekhiat/qaws) @ `2026-11-22 (branch tip at catalogue time)` |
 | [qlibs](entries/math/kmilo17pet-qlibs/README.md) | A collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more... | c | MIT | reference | [kmilo17pet/qlibs](https://github.com/kmilo17pet/qlibs) @ `2026-03-17 (branch tip at catalogue time)` |
 | [Quaternion](entries/math/martinweigel-quaternion/README.md) | A basic quaternion library written in C | c | ISC | reference | [MartinWeigel/Quaternion](https://github.com/MartinWeigel/Quaternion) @ `2022-05-16 (branch tip at catalogue time)` |
+| [quaternion-core](entries/math/hamagure-quaternion-core/README.md) | Quaternion library written in Rust. It's published on crates.io | rust | unknown | reference | [HamaguRe/quaternion-core](https://github.com/HamaguRe/quaternion-core) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Quaternion-MATLAB-Library](entries/math/xiotechnologies-quaternion-matlab-library/README.md) | see upstream | matlab | none | reference | [xioTechnologies/Quaternion-MATLAB-Library](https://github.com/xioTechnologies/Quaternion-MATLAB-Library) @ `a2c20b81e0a7` |
 | [Quaternion.js](entries/math/rawify-quaternion-js/README.md) | The RAW JavaScript Quaternion library | javascript | MIT | reference | [rawify/Quaternion.js](https://github.com/rawify/Quaternion.js) @ `2025-09-17 (branch tip at catalogue time)` |
 | [Quaternion_Library](entries/math/mauricegit-quaternion-library/README.md) | A small library that capsulates most commonly used operations on Quaternions. Also a small sample implementation, that rotates an object around an axis, using Q | c | ISC | reference | [MauriceGit/Quaternion_Library](https://github.com/MauriceGit/Quaternion_Library) @ `2016-09-07 (branch tip at catalogue time)` |
@@ -1208,6 +1213,7 @@ _Generated 2026-11-26 02:26 UTC · 1892 entries · 472 vendored, 1420 reference-
 | [vec-mat-comp-quat](entries/math/mrmcsoftware-vec-mat-comp-quat/README.md) | C++ 2d/3d/4d Vector, 2x2/3x3/4x4 Matrix, Complex Number, Quaternion, and 3d Transformation Classes / Functions (Header Only libraries) | c++ | LGPL-3.0 | reference | [mrmcsoftware/vec-mat-comp-quat](https://github.com/mrmcsoftware/vec-mat-comp-quat) @ `2024-06-23 (branch tip at catalogue time)` |
 | [verilog_fixed_point_math_library](entries/math/freecores-verilog-fixed-point-math-library/README.md) | Fixed Point Math Library for Verilog | verilog | LGPL-2.1 | reference | [freecores/verilog_fixed_point_math_library](https://github.com/freecores/verilog_fixed_point_math_library) @ `a94eb0b2b1e4` |
 | [vgMath](entries/math/brutpitt-vgmath/README.md) | vgMath - light, complete and ultra compact math library: quaternions, vectors and square Matrix for 3D graphichs backend: OpenGL / Vulkan / WebGPU / ... | c++ | BSD-2-Clause | reference | [BrutPitt/vgMath](https://github.com/BrutPitt/vgMath) @ `2025-03-16 (branch tip at catalogue time)` |
+| [vxl](entries/math/user1095108-vxl/README.md) | a lightweight SIMD vector, matrix and quaternion library | c++ | Unlicense | vendored | [user1095108/vxl](https://github.com/user1095108/vxl) @ `4d5dcad14bc1` |
 | [zalgebra](entries/math/kooparse-zalgebra/README.md) | Linear algebra library for games and real-time graphics. | zig | MIT | reference | [kooparse/zalgebra](https://github.com/kooparse/zalgebra) @ `2026-10-14 (branch tip at catalogue time)` |
 | [zmath](entries/math/zig-gamedev-zmath/README.md) | SIMD math library for Zig game developers | zig | MIT | vendored | [zig-gamedev/zmath](https://github.com/zig-gamedev/zmath) @ `43250209495c` |
 

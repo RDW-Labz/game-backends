@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T02:44:39Z",
+ "category": "math",
+ "commit": "2025-11-24 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "ramakarl/invk \u2014 Invk - Inverse Kinematics Library with Quaternions",
+ "language": "c++",
+ "license": "LGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "invk",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (LGPL-3.0)",
+ "slug": "ramakarl-invk",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 30,
+ "system": "Invk - Inverse Kinematics Library with Quaternions",
+ "upstream": "https://github.com/ramakarl/invk",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

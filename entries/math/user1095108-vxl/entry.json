@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T02:44:36Z",
+ "category": "math",
+ "commit": "4d5dcad14bc1",
+ "delivery": "vendored",
+ "description": "user1095108/vxl \u2014 a lightweight SIMD vector, matrix and quaternion library",
+ "language": "c++",
+ "license": "Unlicense",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "vxl",
+ "size_bytes": 92659,
+ "slug": "user1095108-vxl",
+ "source": "github-search:quaternion library stars:>20",
+ "stars": 32,
+ "system": "a lightweight SIMD vector, matrix and quaternion library",
+ "upstream": "https://github.com/user1095108/vxl",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
