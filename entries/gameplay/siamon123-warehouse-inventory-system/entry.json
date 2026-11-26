@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T06:34:37Z",
+ "category": "gameplay",
+ "commit": "69fdd1ca1364",
+ "delivery": "vendored",
+ "description": "siamon123/warehouse-inventory-system \u2014 Open source inventory management system with php and mysql",
+ "language": "php",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "warehouse-inventory-system",
+ "size_bytes": 2515,
+ "slug": "siamon123-warehouse-inventory-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 469,
+ "system": "Open source inventory management system with php and mysql",
+ "upstream": "https://github.com/siamon123/warehouse-inventory-system",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

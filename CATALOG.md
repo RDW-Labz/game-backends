@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 06:18 UTC · 1942 entries · 483 vendored, 1459 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 06:34 UTC · 1943 entries · 484 vendored, 1459 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 06:18 UTC · 1942 entries · 483 vendored, 1459 reference-
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 285 | 70 | 215 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 286 | 71 | 215 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
 | [save-state](#save-state) — Save / state systems | 110 | 31 | 79 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
@@ -1280,7 +1280,7 @@ _Generated 2026-11-26 06:18 UTC · 1942 entries · 483 vendored, 1459 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 285 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 286 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1563,6 +1563,7 @@ _Generated 2026-11-26 06:18 UTC · 1942 entries · 483 vendored, 1459 reference-
 | [Visualizer](entries/gameplay/jasonfenggit-visualizer/README.md) | A single-page website aiming to provide innovative and intuitive visualizations of common and AI algorithms. | javascript | MIT | vendored | [JasonFengGit/Visualizer](https://github.com/JasonFengGit/Visualizer) @ `80ed0fa487c9` |
 | [vite-plugin-entry-shaking](entries/gameplay/dschungelabenteuer-vite-plugin-entry-shaking/README.md) | Mimic tree-shaking behaviour when importing code from an entry file in development mode. | typescript | MIT | reference | [Dschungelabenteuer/vite-plugin-entry-shaking](https://github.com/Dschungelabenteuer/vite-plugin-entry-shaking) @ `2026-09-08 (branch tip at catalogue time)` |
 | [vleue_navigator](entries/gameplay/vleue-vleue-navigator/README.md) | Pathfinding on NavMeshes for Bevy | rust | MIT | vendored | [vleue/vleue_navigator](https://github.com/vleue/vleue_navigator) @ `1fc3f54a7169` |
+| [warehouse-inventory-system](entries/gameplay/siamon123-warehouse-inventory-system/README.md) | Open source inventory management system with php and mysql | php | MIT | vendored | [siamon123/warehouse-inventory-system](https://github.com/siamon123/warehouse-inventory-system) @ `69fdd1ca1364` |
 | [Warehouse-Stock-Inventory-Management-System--NextJS-FullStack](entries/gameplay/arnobt78-warehouse-stock-inventory-management-system-nextjs-fullstack/README.md) | A full-stack warehouse and stock inventory management system built with Next.js, React, Prisma, and MongoDB. It helps store owners, suppliers, and clients manag | typescript | unknown | reference | [arnobt78/Warehouse-Stock-Inventory-Management-System--NextJS-FullStack](https://github.com/arnobt78/Warehouse-Stock-Inventory-Management-System--NextJS-FullStack) @ `2026-09-09 (branch tip at catalogue time)` |
 | [wargus — ai](entries/gameplay/wargus-ai/README.md) | combat, AI, pathing, quest or inventory logic | c | GPL-2.0 | reference | [Wargus/wargus.git](https://github.com/Wargus/wargus.git) @ `57f9d4d` |
 | [wasm-astar](entries/gameplay/jacobdeichert-wasm-astar/README.md) | 👾 Rust WebAssembly A* Pathfinding Demo | rust | MIT | vendored | [jacobdeichert/wasm-astar](https://github.com/jacobdeichert/wasm-astar) @ `035d8ef2848b` |
