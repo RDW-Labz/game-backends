@@ -1,0 +1,23 @@
+[package]
+name = "motion"
+version = "0.1.6"
+edition = "2021"
+authors = ["Juanperias"]
+description = "A bare metal physics engine."
+license = "Apache-2.0"
+repository = "https://github.com/juanperias/motion"
+homepage = "https://github.com/juanperias/motion"
+documentation = "https://docs.rs/motion"
+readme = "README.md"
+
+[features]
+vec = []
+formulas = []
+obj = ["forces", "vec"]
+forces = []
+event_loop = []
+collision = ["obj"]
+default = ["vec", "formulas", "obj", "forces", "event_loop", "collision"]
+
+
+[dependencies]

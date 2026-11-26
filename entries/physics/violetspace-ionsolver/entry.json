@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:50:39Z",
+ "category": "physics",
+ "commit": "2026-05-12 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "VioletSpace/IonSolver \u2014 IonSolver is a magnetohydrodynamic simulation software featuring an extended Lattice Boltzmann method and GPU acceleration",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "IonSolver",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "violetspace-ionsolver",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 27,
+ "system": "IonSolver is a magnetohydrodynamic simulation software featuring an extended Lattice Boltzmann method and GPU acceleration",
+ "upstream": "https://github.com/VioletSpace/IonSolver",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

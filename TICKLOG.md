@@ -3518,3 +3518,11 @@ One line per 15-minute extension tick, newest last.
   - reference physics/gale93-sbixel
   - reference physics/apich-organization-rssn
   - reference physics/bitshifter-bevy-physics-weekend
+
+- **2026-11-26 00:50 UTC** — tick 908: +2 screened, +4 reference, 31 skipped, catalogue=1864
+  - added physics/juanperias-motion (Apache-2.0, vendored)
+  - added physics/larsbrubaker-box3d-rust (MIT, vendored)
+  - reference physics/douglasdwyer-rigid-pixels
+  - reference physics/violetspace-ionsolver
+  - reference physics/tarliton-collision2d
+  - reference physics/continuous-collision-detection-ccd-wrapper

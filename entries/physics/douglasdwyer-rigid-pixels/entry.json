@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:50:39Z",
+ "category": "physics",
+ "commit": "2026-08-18 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "DouglasDwyer/rigid_pixels \u2014 Toy 2D physics engine with Teardown-like collision detection and iterative resolution.",
+ "language": "rust",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "rigid_pixels",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "douglasdwyer-rigid-pixels",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 27,
+ "system": "Toy 2D physics engine with Teardown-like collision detection and iterative resolution.",
+ "upstream": "https://github.com/DouglasDwyer/rigid_pixels",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

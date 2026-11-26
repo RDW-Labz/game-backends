@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 00:34 UTC · 1858 entries · 464 vendored, 1394 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 00:50 UTC · 1864 entries · 466 vendored, 1398 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
-| [physics](#physics) — Physics | 219 | 48 | 171 |
+| [physics](#physics) — Physics | 225 | 50 | 175 |
 | [math](#math) — Math libraries | 135 | 43 | 92 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
@@ -811,7 +811,7 @@ _Generated 2026-11-26 00:34 UTC · 1858 entries · 464 vendored, 1394 reference-
 
 ## physics
 
-**Physics** — 219 entries
+**Physics** — 225 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -847,6 +847,7 @@ _Generated 2026-11-26 00:34 UTC · 1858 entries · 464 vendored, 1394 reference-
 | [box2d-netstandard](entries/physics/codingben-box2d-netstandard/README.md) | C# port of Box2D - Erin Catto's 2D Physics Engine | c# | MIT | vendored | [codingben/box2d-netstandard](https://github.com/codingben/box2d-netstandard) @ `b34d6238011a` |
 | [Box2D.NET](entries/physics/beancheeseburrito-box2d-net/README.md) | Auto-generated C# bindings for Box2D 3.0 | c# | MIT | reference | [BeanCheeseBurrito/Box2D.NET](https://github.com/BeanCheeseBurrito/Box2D.NET) @ `2025-05-23 (branch tip at catalogue time)` |
 | [box3d](entries/physics/erincatto-box3d/README.md) | Box3D is a 3D physics engine for games | c | MIT | vendored | [erincatto/box3d](https://github.com/erincatto/box3d) @ `e48b902fee41` |
+| [box3d-rust](entries/physics/larsbrubaker-box3d-rust/README.md) | Pure Rust port of the Box3D 3D physics engine | rust | MIT | vendored | [larsbrubaker/box3d-rust](https://github.com/larsbrubaker/box3d-rust) @ `cd767cdca16e` |
 | [Box3DUnreal](entries/physics/alattanzio-box3dunreal/README.md) | Box3DUnreal: Box3D Physics for Unreal Engine | c++ | MIT | reference | [alattanzio/Box3DUnreal](https://github.com/alattanzio/Box3DUnreal) @ `2026-10-05 (branch tip at catalogue time)` |
 | [breeze](entries/physics/holtsetio-breeze/README.md) | A realtime verlet-based cloth simulation, running in the browser using the three.js WebGPURenderer. | javascript | MIT | vendored | [holtsetio/breeze](https://github.com/holtsetio/breeze) @ `0ab82342f916` |
 | [Bullet Physics](entries/physics/bullet3/README.md) | 3D collision/dynamics + soft body + ML | c++ | Zlib | reference | [bulletphysics/bullet3](https://github.com/bulletphysics/bullet3) @ `d3afe76132fc` |
@@ -855,6 +856,7 @@ _Generated 2026-11-26 00:34 UTC · 1858 entries · 464 vendored, 1394 reference-
 | [bump.lua](entries/physics/kikito-bump-lua/README.md) | A collision detection library for Lua | lua | MIT | vendored | [kikito/bump.lua](https://github.com/kikito/bump.lua) @ `95d9e40b8aee` |
 | [CadetEngine-as](entries/physics/cadeteditor-cadetengine-as/README.md) | CadetEngine is a component-based AS3 Scene Engine supporting 2D and 3D GPU accelerated rendering, physics, custom behaviours and 3rd party library integration.  | actionscript | unknown | reference | [CadetEditor/CadetEngine-as](https://github.com/CadetEditor/CadetEngine-as) @ `2014-07-10 (branch tip at catalogue time)` |
 | [cannon.js](entries/physics/schteppe-cannon-js/README.md) | A lightweight 3D physics engine written in JavaScript. | javascript | MIT | reference | [schteppe/cannon.js](https://github.com/schteppe/cannon.js) @ `2023-08-04 (branch tip at catalogue time)` |
+| [CCD-Wrapper](entries/physics/continuous-collision-detection-ccd-wrapper/README.md) | A library for various continuous collision detection algorithms. | c++ | MIT | reference | [Continuous-Collision-Detection/CCD-Wrapper](https://github.com/Continuous-Collision-Detection/CCD-Wrapper) @ `2023-03-25 (branch tip at catalogue time)` |
 | [character-controller-sample-project](entries/physics/icurtis1-character-controller-sample-project/README.md) | A 3D character controller built with React Three Fiber, Rapier physics. | typescript | unknown | reference | [icurtis1/character-controller-sample-project](https://github.com/icurtis1/character-controller-sample-project) @ `2025-05-14 (branch tip at catalogue time)` |
 | [CharacterMovementFundamentals](entries/physics/jan-ott-charactermovementfundamentals/README.md) | A physics-based character controller system for Unity | c# | MIT | reference | [Jan-Ott/CharacterMovementFundamentals](https://github.com/Jan-Ott/CharacterMovementFundamentals) @ `2025-02-09 (branch tip at catalogue time)` |
 | [Chipmunk2D](entries/physics/chipmunk2d/README.md) | 2D rigid bodies, constraints, spatial index | c | MIT | vendored | [slembcke/Chipmunk2D](https://github.com/slembcke/Chipmunk2D) @ `f2f3d66220b8` |
@@ -866,6 +868,7 @@ _Generated 2026-11-26 00:34 UTC · 1858 entries · 464 vendored, 1394 reference-
 | [Coffee-Physics](entries/physics/soulwire-coffee-physics/README.md) | A simple, lightweight physics engine written in CoffeeScript | coffeescript | MIT | reference | [soulwire/Coffee-Physics](https://github.com/soulwire/Coffee-Physics) @ `2016-12-12 (branch tip at catalogue time)` |
 | [collider-rs](entries/physics/sergiusiw-collider-rs/README.md) | Rust library for continuous 2-D collision detection. | rust | Apache-2.0 | reference | [SergiusIW/collider-rs](https://github.com/SergiusIW/collider-rs) @ `2023-07-13 (branch tip at catalogue time)` |
 | [collision](entries/physics/qwertyquerty-collision/README.md) | Collision is a python library meant for collision detection between convex and concave polygons, circles, and points. | python | MIT | reference | [qwertyquerty/collision](https://github.com/qwertyquerty/collision) @ `2023-02-22 (branch tip at catalogue time)` |
+| [collision2d](entries/physics/tarliton-collision2d/README.md) | A simple Go library for performing 2D collision detection based on sat-js | go | MIT | reference | [Tarliton/collision2d](https://github.com/Tarliton/collision2d) @ `2023-04-16 (branch tip at catalogue time)` |
 | [CompactNSearch](entries/physics/interactivecomputergraphics-compactnsearch/README.md) | A C++ library to compute neighborhood information for point clouds within a fixed radius. Suitable for many applications, e.g. neighborhood search for SPH fluid | c++ | MIT | reference | [InteractiveComputerGraphics/CompactNSearch](https://github.com/InteractiveComputerGraphics/CompactNSearch) @ `2026-09-01 (branch tip at catalogue time)` |
 | [ComposePhysicsLayout](entries/physics/klassenkonstantin-composephysicslayout/README.md) | A custom Compose layout backed by a physics engine | kotlin | unknown | reference | [KlassenKonstantin/ComposePhysicsLayout](https://github.com/KlassenKonstantin/ComposePhysicsLayout) @ `2023-05-14 (branch tip at catalogue time)` |
 | [confetti](entries/physics/jinatonic-confetti/README.md) | An Android particle system library for displaying confetti! | java | Apache-2.0 | vendored | [jinatonic/confetti](https://github.com/jinatonic/confetti) @ `db8a475f7716` |
@@ -912,6 +915,7 @@ _Generated 2026-11-26 00:34 UTC · 1858 entries · 464 vendored, 1394 reference-
 | [Illuminant](entries/physics/sq-illuminant/README.md) | Realtime 2D lighting and particle system library | c# | none | reference | [sq/Illuminant](https://github.com/sq/Illuminant) @ `3ef6d14e4383` |
 | [ImpulseEngine](entries/physics/randygaul-impulseengine/README.md) | Simple, open source, 2D impulse based physics engine for educational use. | c++ | Zlib | reference | [RandyGaul/ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) @ `2019-10-28 (branch tip at catalogue time)` |
 | [inertia](entries/physics/aclfe-inertia/README.md) | A physics sandbox that runs in your terminal: rigid bodies, n-body gravity, cloth, and fluid, projected in 3D onto braille with no GPU. | rust | Apache-2.0 | reference | [aclfe/inertia](https://github.com/aclfe/inertia) @ `2026-07-19 (branch tip at catalogue time)` |
+| [IonSolver](entries/physics/violetspace-ionsolver/README.md) | IonSolver is a magnetohydrodynamic simulation software featuring an extended Lattice Boltzmann method and GPU acceleration | rust | unknown | reference | [VioletSpace/IonSolver](https://github.com/VioletSpace/IonSolver) @ `2026-05-12 (branch tip at catalogue time)` |
 | [Jax2D](entries/physics/michaeltmatthews-jax2d/README.md) | Highly scalable 2D JAX physics engine. | python | MIT | vendored | [MichaelTMatthews/Jax2D](https://github.com/MichaelTMatthews/Jax2D) @ `3c902a2b8e78` |
 | [jbox2d](entries/physics/jbox2d-jbox2d/README.md) | a 2d Java physics engine, native java port of the C++ physics engines Box2D and LiquidFun  | java | BSD-2-Clause | vendored | [jbox2d/jbox2d](https://github.com/jbox2d/jbox2d) @ `2f56e93d99a6` |
 | [jitterphysics](entries/physics/notgiven688-jitterphysics/README.md) | A cross-platform, realtime physics engine for all .NET apps. | c# | MIT | reference | [notgiven688/jitterphysics](https://github.com/notgiven688/jitterphysics) @ `2023-10-12 (branch tip at catalogue time)` |
@@ -928,6 +932,7 @@ _Generated 2026-11-26 00:34 UTC · 1858 entries · 464 vendored, 1394 reference-
 | [lookas](entries/physics/rccyx-lookas/README.md) | Psychoacoustic terminal spectrum visualizer (mel-scale FFT, A-weighted energy, adaptive range tracking & spring physics) | rust | MIT | reference | [rccyx/lookas](https://github.com/rccyx/lookas) @ `2026-11-25 (branch tip at catalogue time)` |
 | [matter-js](entries/physics/liabru-matter-js/README.md) | a 2D rigid body physics engine for the web ▲● ■ | javascript | MIT | vendored | [liabru/matter-js](https://github.com/liabru/matter-js) @ `b8ee71cd7f9b` |
 | [melonJS](entries/physics/melonjs-melonjs/README.md) | A modern & fully featured HTML5 game engine (2D & 3D) for JavaScript/TypeScript, with WebGL/WebGPU rendering, built-in physics, Tiled map & glTF support and Web | javascript | MIT | reference | [melonjs/melonJS](https://github.com/melonjs/melonJS) @ `91f4396452e0` |
+| [motion](entries/physics/juanperias-motion/README.md) | Motion is a bare metal physics engine | rust | Apache-2.0 | vendored | [Juanperias/motion](https://github.com/Juanperias/motion) @ `d563540112c3` |
 | [mujoco-rs](entries/physics/davidhozic-mujoco-rs/README.md) | MuJoCo bindings and high-level wrappers for the Rust programming language. Includes the viewer. | rust | Apache-2.0 | vendored | [davidhozic/mujoco-rs](https://github.com/davidhozic/mujoco-rs) @ `f10b47f29a5f` |
 | [mujoco_menagerie](entries/physics/google-deepmind-mujoco-menagerie/README.md) | A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind. | python | unknown | reference | [google-deepmind/mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie) @ `2026-11-10 (branch tip at catalogue time)` |
 | [myosuite](entries/physics/myohub-myosuite/README.md) | MyoSuite is a collection of environments/tasks to be solved by musculoskeletal models simulated with the MuJoCo physics engine and wrapped in the OpenAI gym API | python | Apache-2.0 | vendored | [MyoHub/myosuite](https://github.com/MyoHub/myosuite) @ `d914c4aa1eea` |
@@ -982,6 +987,7 @@ _Generated 2026-11-26 00:34 UTC · 1858 entries · 464 vendored, 1394 reference-
 | [react-native-reanimated-dnd](entries/physics/entropyconquers-react-native-reanimated-dnd/README.md) | A powerful, performant drag-and-drop library for React Native built on Reanimated 4 and Gesture Handler. Smooth 60fps animations, sortable lists & grids, collis | typescript | MIT | vendored | [entropyconquers/react-native-reanimated-dnd](https://github.com/entropyconquers/react-native-reanimated-dnd) @ `86fb5ab21cc3` |
 | [ReactPhysics3D](entries/physics/reactphysics3d/README.md) | 3D physics: broadphase, constraints, raycast | c++ | Zlib | vendored | [DanielChappuis/reactphysics3d](https://github.com/DanielChappuis/reactphysics3d) @ `7000610a244e` |
 | [resolv](entries/physics/solarlune-resolv/README.md) | A Simple 2D Golang collision detection and resolution library for games | go | MIT | vendored | [SolarLune/resolv](https://github.com/SolarLune/resolv) @ `8b4e8c15ba3b` |
+| [rigid_pixels](entries/physics/douglasdwyer-rigid-pixels/README.md) | Toy 2D physics engine with Teardown-like collision detection and iterative resolution. | rust | unknown | reference | [DouglasDwyer/rigid_pixels](https://github.com/DouglasDwyer/rigid_pixels) @ `2026-08-18 (branch tip at catalogue time)` |
 | [RigidBodyController](entries/physics/freeflyfall-rigidbodycontroller/README.md) | Physics based first person character controller in Godot | gdscript | MIT | reference | [FreeFlyFall/RigidBodyController](https://github.com/FreeFlyFall/RigidBodyController) @ `2024-11-08 (branch tip at catalogue time)` |
 | [rigs-of-rods — physics](entries/physics/rigs-of-rods-physics/README.md) | rigid-body collision and dynamics | h | GPL-3.0 | reference | [RigsOfRods/rigs-of-rods](https://github.com/RigsOfRods/rigs-of-rods) @ `ebf31a2` |
 | [ripit](entries/physics/javeke-ripit/README.md) | An interactive, tearable cloth simulation in the browser ; a modern rebuild of the classic [Tearable Cloth](https://pushmatrix.github.io/tearable/) demo by Dani | typescript | MIT | reference | [javeke/ripit](https://github.com/javeke/ripit) @ `2026-05-07 (branch tip at catalogue time)` |

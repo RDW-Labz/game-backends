@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T00:50:39Z",
+ "category": "physics",
+ "commit": "2023-03-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Continuous-Collision-Detection/CCD-Wrapper \u2014 A library for various continuous collision detection algorithms.",
+ "language": "c++",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "CCD-Wrapper",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "continuous-collision-detection-ccd-wrapper",
+ "source": "github-search:collision detection library stars:>40",
+ "stars": 61,
+ "system": "A library for various continuous collision detection algorithms.",
+ "upstream": "https://github.com/Continuous-Collision-Detection/CCD-Wrapper",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

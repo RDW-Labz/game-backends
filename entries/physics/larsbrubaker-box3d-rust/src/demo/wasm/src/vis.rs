@@ -1,0 +1,453 @@
+//! Shared visualization pose packing for wasm dynamics demos.
+//!
+//! Each body is 16 floats:
+//! `[px, py, pz, qx, qy, qz, qw, a0..a6, kind, color]`
+//! - kind 0 (box): `a0..a2` = half extents
+//! - kind 1 (sphere): `a0` = radius
+//! - kind 2 (capsule): `a0..a2` = local center1, `a3..a5` = local center2, `a6` = radius
+//! - kind 3 (cylinder): `a0` = radius, `a1` = half-length (Three.js Y-axis; use `local` to reorient)
+//! - kind 4 (icosahedron): `a0` = radius (low-poly rock stand-in)
+//! - color: `0xRRGGBB` as `color as f32` (exact for 24-bit RGB); `0` = default materials
+
+#![allow(dead_code)]
+
+use box3d_rust::body::get_body_transform;
+use box3d_rust::geometry::{Capsule, Sphere};
+use box3d_rust::height_field::{
+    get_height_field_material_indices, get_height_field_triangle, get_height_field_triangle_count,
+    HeightFieldData, HEIGHT_FIELD_HOLE,
+};
+use box3d_rust::hull::{get_hull_edges, get_hull_faces, get_hull_points, HullData};
+use box3d_rust::math_functions::{
+    mul_transforms, transform_point, Pos, Quat, Transform, Vec3, QUAT_IDENTITY,
+};
+use box3d_rust::mesh::{get_mesh_triangles, get_mesh_vertices, MeshData};
+use box3d_rust::world::World;
+
+pub const POSE_STRIDE: usize = 16;
+pub const KIND_BOX: u8 = 0;
+pub const KIND_SPHERE: u8 = 1;
+pub const KIND_CAPSULE: u8 = 2;
+pub const KIND_CYLINDER: u8 = 3;
+pub const KIND_ICOSAHEDRON: u8 = 4;
+
+pub struct VisBody {
+    pub body_index: i32,
+    pub kind: u8,
+    /// Box half-extents, sphere radius in [0], capsule centers + radius, or cylinder radius/half-len.
+    pub params: [f32; 7],
+    /// Optional local transform for compound children (world = body × local).
+    pub local: Option<Transform>,
+    /// 0xRRGGBB custom color; 0 = default material path in the JS mesh sync.
+    pub color: u32,
+}
+
+impl VisBody {
+    pub fn box_body(body_index: i32, hx: f32, hy: f32, hz: f32) -> Self {
+        Self {
+            body_index,
+            kind: KIND_BOX,
+            params: [hx, hy, hz, 0.0, 0.0, 0.0, 0.0],
+            local: None,
+            color: 0,
+        }
+    }
+
+    pub fn box_colored(body_index: i32, hx: f32, hy: f32, hz: f32, color: u32) -> Self {
+        let mut b = Self::box_body(body_index, hx, hy, hz);
+        b.color = color;
+        b
+    }
+
+    pub fn box_local(body_index: i32, hx: f32, hy: f32, hz: f32, local: Transform) -> Self {
+        Self {
+            body_index,
+            kind: KIND_BOX,
+            params: [hx, hy, hz, 0.0, 0.0, 0.0, 0.0],
+            local: Some(local),
+            color: 0,
+        }
+    }
+
+    pub fn box_local_colored(
+        body_index: i32,
+        hx: f32,
+        hy: f32,
+        hz: f32,
+        local: Transform,
+        color: u32,
+    ) -> Self {
+        let mut b = Self::box_local(body_index, hx, hy, hz, local);
+        b.color = color;
+        b
+    }
+
+    pub fn sphere_body(body_index: i32, radius: f32) -> Self {
+        Self {
+            body_index,
+            kind: KIND_SPHERE,
+            params: [radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            local: None,
+            color: 0,
+        }
+    }
+
+    pub fn sphere_colored(body_index: i32, radius: f32, color: u32) -> Self {
+        let mut b = Self::sphere_body(body_index, radius);
+        b.color = color;
+        b
+    }
+
+    pub fn icosahedron_colored(body_index: i32, radius: f32, color: u32) -> Self {
+        Self {
+            body_index,
+            kind: KIND_ICOSAHEDRON,
+            params: [radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            local: None,
+            color,
+        }
+    }
+
+    pub fn sphere_local(body_index: i32, radius: f32, local: Transform) -> Self {
+        Self {
+            body_index,
+            kind: KIND_SPHERE,
+            params: [radius, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            local: Some(local),
+            color: 0,
+        }
+    }
+
+    pub fn capsule_body(body_index: i32, capsule: &Capsule) -> Self {
+        Self {
+            body_index,
+            kind: KIND_CAPSULE,
+            params: [
+                capsule.center1.x,
+                capsule.center1.y,
+                capsule.center1.z,
+                capsule.center2.x,
+                capsule.center2.y,
+                capsule.center2.z,
+                capsule.radius,
+            ],
+            local: None,
+            color: 0,
+        }
+    }
+
+    pub fn capsule_colored(body_index: i32, capsule: &Capsule, color: u32) -> Self {
+        let mut b = Self::capsule_body(body_index, capsule);
+        b.color = color;
+        b
+    }
+
+    /// Cylinder along local Y (Three.js default). Rotate `local.q` to align with world axes.
+    pub fn cylinder_local(
+        body_index: i32,
+        radius: f32,
+        half_length: f32,
+        local: Transform,
+        color: u32,
+    ) -> Self {
+        Self {
+            body_index,
+            kind: KIND_CYLINDER,
+            params: [radius, half_length, 0.0, 0.0, 0.0, 0.0, 0.0],
+            local: Some(local),
+            color,
+        }
+    }
+}
+
+pub fn push_poses(world: &World, bodies: &[VisBody], out: &mut Vec<f32>) {
+    out.clear();
+    out.reserve(bodies.len() * POSE_STRIDE);
+    for b in bodies {
+        let xf = get_body_transform(world, b.body_index);
+        let (px, py, pz, qx, qy, qz, qw) = if let Some(local) = b.local {
+            let parent = Transform {
+                p: Vec3 {
+                    x: xf.p.x as f32,
+                    y: xf.p.y as f32,
+                    z: xf.p.z as f32,
+                },
+                q: xf.q,
+            };
+            let world_xf = mul_transforms(parent, local);
+            (
+                world_xf.p.x,
+                world_xf.p.y,
+                world_xf.p.z,
+                world_xf.q.v.x,
+                world_xf.q.v.y,
+                world_xf.q.v.z,
+                world_xf.q.s,
+            )
+        } else {
+            (
+                xf.p.x as f32,
+                xf.p.y as f32,
+                xf.p.z as f32,
+                xf.q.v.x,
+                xf.q.v.y,
+                xf.q.v.z,
+                xf.q.s,
+            )
+        };
+        out.push(px);
+        out.push(py);
+        out.push(pz);
+        out.push(qx);
+        out.push(qy);
+        out.push(qz);
+        out.push(qw);
+        out.extend_from_slice(&b.params);
+        out.push(b.kind as f32);
+        // 24-bit RGB fits exactly in f32 integer range (< 2^24).
+        out.push(b.color as f32);
+    }
+}
+
+pub fn pos(x: f32, y: f32, z: f32) -> Pos {
+    Pos {
+        x: x as _,
+        y: y as _,
+        z: z as _,
+    }
+}
+
+/// Promote an `f32` to the scalar type of `_like`, a world-position (`Pos`) coordinate: `f32`
+/// normally, `f64` when box3d-rust is built with `double-precision` (large world mode). Mirrors
+/// C's implicit float-to-double promotion in `b3Pos` arithmetic (e.g. `position.y + length`), so
+/// demo code compiles in both precision modes. `_like` only selects the type.
+pub fn pos_scalar<T: From<f32>>(value: f32, _like: T) -> T {
+    T::from(value)
+}
+
+pub fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
+    Vec3 { x, y, z }
+}
+
+pub fn sphere(radius: f32) -> Sphere {
+    Sphere {
+        center: Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        },
+        radius,
+    }
+}
+
+/// Height-field triangle edges as interleaved endpoints `[x0,y0,z0, x1,y1,z1, ...]`.
+/// Each triangle contributes its 3 edges (shared edges are duplicated). `origin` is added
+/// to every vertex; pass `VEC3_ZERO` for local-space output.
+///
+/// Hole cells (`HEIGHT_FIELD_HOLE` material) are skipped, matching C
+/// `DrawHeightField` — which omits holes — and, crucially, avoiding the
+/// [`get_height_field_triangle`] debug-assert that fires on a hole triangle
+/// (`height_field/triangle.rs`). Fields with no holes are unaffected.
+pub fn hf_triangle_edges(hf: &HeightFieldData, origin: Vec3) -> Vec<f32> {
+    let count = get_height_field_triangle_count(hf);
+    let materials = get_height_field_material_indices(hf);
+    let mut edges = Vec::new();
+    for i in 0..count {
+        // triangle_index >> 1 == cell index (`height_field/triangle.rs`).
+        let cell = (i >> 1) as usize;
+        if materials.get(cell).copied() == Some(HEIGHT_FIELD_HOLE) {
+            continue;
+        }
+        let tri = get_height_field_triangle(hf, i);
+        let verts = tri.vertices;
+        for e in 0..3 {
+            let a = verts[e];
+            let b = verts[(e + 1) % 3];
+            edges.extend_from_slice(&[
+                a.x + origin.x,
+                a.y + origin.y,
+                a.z + origin.z,
+                b.x + origin.x,
+                b.y + origin.y,
+                b.z + origin.z,
+            ]);
+        }
+    }
+    edges
+}
+
+/// Mesh triangle edges as interleaved endpoints `[x0,y0,z0, x1,y1,z1, ...]`.
+/// Each triangle contributes its 3 edges (shared edges are duplicated). `scale`
+/// multiplies every vertex component; pass `VEC3_ONE` for unscaled output.
+pub fn mesh_triangle_edges(mesh: &MeshData, scale: Vec3) -> Vec<f32> {
+    mesh_triangle_edges_offset(
+        mesh,
+        scale,
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        },
+    )
+}
+
+/// Like [`mesh_triangle_edges`] but adds `offset` to every vertex *after* scaling
+/// (`vert * scale + offset`), for placing a mesh wireframe at a tile position or
+/// under a large-world base frame. The far-world and determinism ground grids use
+/// this; the near-origin call sites pass a zero offset via [`mesh_triangle_edges`].
+///
+/// This is the identity-rotation special case of [`mesh_triangle_edges_transform`]
+/// and delegates to it: a translation-only `Transform` (`QUAT_IDENTITY`) maps
+/// `vert * scale` to `vert * scale + offset` bit-for-bit — `rotate_vector` by the
+/// identity quaternion returns its argument for the finite, non-negative-zero
+/// vertices these grids produce.
+pub fn mesh_triangle_edges_offset(mesh: &MeshData, scale: Vec3, offset: Vec3) -> Vec<f32> {
+    mesh_triangle_edges_transform(
+        mesh,
+        scale,
+        Transform {
+            p: offset,
+            q: QUAT_IDENTITY,
+        },
+    )
+}
+
+/// Mesh triangle edges as interleaved endpoints `[x0,y0,z0, x1,y1,z1, ...]`, each
+/// vertex first scaled by `scale` then mapped through the full `transform`
+/// (`transform_point(transform, vert * scale)`). Handles rotated *and* scaled
+/// static grounds — e.g. the Ragdoll Incline's tilted grid meshes — where a plain
+/// translation offset is not enough. [`mesh_triangle_edges_offset`] is the
+/// translation-only special case and delegates here.
+pub fn mesh_triangle_edges_transform(
+    mesh: &MeshData,
+    scale: Vec3,
+    transform: Transform,
+) -> Vec<f32> {
+    let verts = get_mesh_vertices(mesh);
+    let tris = get_mesh_triangles(mesh);
+    let mut edges = Vec::with_capacity(tris.len() * 18);
+    for tri in tris {
+        let scaled = |i: i32| {
+            let v = verts[i as usize];
+            transform_point(
+                transform,
+                Vec3 {
+                    x: v.x * scale.x,
+                    y: v.y * scale.y,
+                    z: v.z * scale.z,
+                },
+            )
+        };
+        let pts = [scaled(tri.index1), scaled(tri.index2), scaled(tri.index3)];
+        for e in 0..3 {
+            let a = pts[e];
+            let b = pts[(e + 1) % 3];
+            edges.extend_from_slice(&[a.x, a.y, a.z, b.x, b.y, b.z]);
+        }
+    }
+    edges
+}
+
+/// Fan-triangulate a convex hull's faces into a flat, non-indexed
+/// `[x,y,z, x,y,z, ...]` triangle-vertex list in hull-local space. Each face ring
+/// is fanned from its first vertex; the CCW half-edge winding yields
+/// outward-facing triangles (JS `computeVertexNormals` then flat-shades them),
+/// matching C `DrawHull` (draw.c:100). Shared by the stacking hull render path and
+/// the geometry viewers.
+pub fn hull_triangles(hull: &HullData) -> Vec<f32> {
+    let points = get_hull_points(hull);
+    let edges = get_hull_edges(hull);
+    let faces = get_hull_faces(hull);
+    let mut out = Vec::new();
+    for face in faces {
+        let start = face.edge;
+        // Collect the ordered vertex indices around this face.
+        let mut ring: Vec<usize> = Vec::new();
+        let mut e = start;
+        loop {
+            ring.push(edges[e as usize].origin as usize);
+            e = edges[e as usize].next;
+            if e == start {
+                break;
+            }
+        }
+        if ring.len() < 3 {
+            continue;
+        }
+        let v0 = points[ring[0]];
+        for i in 1..ring.len() - 1 {
+            let vi = points[ring[i]];
+            let vj = points[ring[i + 1]];
+            out.extend_from_slice(&[v0.x, v0.y, v0.z, vi.x, vi.y, vi.z, vj.x, vj.y, vj.z]);
+        }
+    }
+    out
+}
+
+/// Wireframe edges of a convex hull as interleaved endpoints
+/// `[x0,y0,z0, x1,y1,z1, ...]` in hull-local space. Half-edges come in twin pairs,
+/// so each undirected edge is emitted once (when its index is below its twin's),
+/// matching C `DrawHull` (draw.c:107). Callers that need a placement offset add it
+/// to the returned vertices.
+pub fn hull_edges(hull: &HullData) -> Vec<f32> {
+    let points = get_hull_points(hull);
+    let edges = get_hull_edges(hull);
+    let mut out = Vec::with_capacity(edges.len() * 3);
+    for i in 0..edges.len() {
+        let twin = edges[i].twin as usize;
+        if i >= twin {
+            continue;
+        }
+        let p1 = points[edges[i].origin as usize];
+        let p2 = points[edges[twin].origin as usize];
+        out.extend_from_slice(&[p1.x, p1.y, p1.z, p2.x, p2.y, p2.z]);
+    }
+    out
+}
+
+/// The first capsule shape on a body, used to build a capsule `VisBody` for a
+/// human bone (shared by the Ragdoll, Determinism, and Far Ragdolls scenes).
+pub fn capsule_from_body(world: &World, body_index: i32) -> Option<Capsule> {
+    let mut sid = world.bodies[body_index as usize].head_shape_id;
+    while sid != box3d_rust::core::NULL_INDEX {
+        let shape = &world.shapes[sid as usize];
+        if let box3d_rust::shape::ShapeGeometry::Capsule(c) = &shape.geometry {
+            return Some(*c);
+        }
+        sid = shape.next_shape_id;
+    }
+    None
+}
+
+/// Uniform random quaternion, ported bit-for-bit from the C samples' `RandomQuat`
+/// (`utils.h`:113, Shoemake "Uniform Random Rotations", Graphics Gems III 1992). Callers
+/// supply the three uniform samples (`u1` in `[0,1]`, `u2`/`u3` in `[0, 2π)`) from their
+/// own RNG stream.
+pub fn random_quat_from(u1: f32, u2: f32, u3: f32) -> Quat {
+    let sqrt1_minus_u1 = (1.0 - u1).sqrt();
+    let sqrt_u1 = u1.sqrt();
+    Quat {
+        v: Vec3 {
+            x: sqrt1_minus_u1 * u2.sin(),
+            y: sqrt1_minus_u1 * u2.cos(),
+            z: sqrt_u1 * u3.sin(),
+        },
+        s: sqrt_u1 * u3.cos(),
+    }
+}
+
+pub fn capsule_x(extent: f32, radius: f32) -> Capsule {
+    Capsule {
+        center1: Vec3 {
+            x: -extent,
+            y: 0.0,
+            z: 0.0,
+        },
+        center2: Vec3 {
+            x: extent,
+            y: 0.0,
+            z: 0.0,
+        },
+        radius,
+    }
+}

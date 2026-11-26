@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T00:50:35Z",
+ "category": "physics",
+ "commit": "d563540112c3",
+ "delivery": "vendored",
+ "description": "Juanperias/motion \u2014 Motion is a bare metal physics engine",
+ "language": "rust",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "motion",
+ "size_bytes": 34802,
+ "slug": "juanperias-motion",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 34,
+ "system": "Motion is a bare metal physics engine",
+ "upstream": "https://github.com/Juanperias/motion",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T00:50:38Z",
+ "category": "physics",
+ "commit": "cd767cdca16e",
+ "delivery": "vendored",
+ "description": "larsbrubaker/box3d-rust \u2014 Pure Rust port of the Box3D 3D physics engine",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "box3d-rust",
+ "size_bytes": 5869802,
+ "slug": "larsbrubaker-box3d-rust",
+ "source": "github-search:physics language:rust stars:>25",
+ "stars": 27,
+ "system": "Pure Rust port of the Box3D 3D physics engine",
+ "upstream": "https://github.com/larsbrubaker/box3d-rust",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
