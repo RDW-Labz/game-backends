@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T03:02:37Z",
+ "category": "math",
+ "commit": "878007e8a27c",
+ "delivery": "vendored",
+ "description": "kmilo17pet/qlibs-cpp \u2014 C++ version of qlibs, a collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more...",
+ "language": "c++",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "qlibs-cpp",
+ "size_bytes": 579240,
+ "slug": "kmilo17pet-qlibs-cpp",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 27,
+ "system": "C++ version of qlibs, a collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more...",
+ "upstream": "https://github.com/kmilo17pet/qlibs-cpp",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T03:02:35Z",
+ "category": "math",
+ "commit": "ef7a60d0b419",
+ "delivery": "reference",
+ "description": "pedrobeirao/cairo-math \u2014 Smart contract Cairo library for advanced fixed-point math",
+ "language": "python",
+ "license": "AGPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "cairo-math",
+ "reference_reason": "licence: AGPL-3.0 (copyleft-reference)",
+ "size_bytes": 3706324,
+ "slug": "pedrobeirao-cairo-math",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 27,
+ "system": "Smart contract Cairo library for advanced fixed-point math",
+ "upstream": "https://github.com/pedrobeirao/cairo-math",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

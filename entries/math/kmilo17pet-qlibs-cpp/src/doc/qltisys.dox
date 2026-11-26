@@ -1,0 +1,311 @@
+/*! @page qltisys_desc Recursive LTI Systems Evaluation by transfer functions.
+* @tableofcontents
+* \ref qlibs::ltisys  is a class that evaluates single-input, single-output (SISO)
+* transfer function models in real-valued systems.
+* A transfer function is a model that describes the frequency-dependent response
+* of a linear time-invariant system, and this class can handle both continuous-time
+* and discrete-time systems. \ref qlibs::ltisys can be used for simulating dynamic
+* systems and implementing filters, compensators, or controllers.
+*
+* @section qltisys_cont Continous-time transfer functions
+*
+* Here, the transfer function \f$ G(s) \f$ is the linear mapping of the Laplace
+* transform of the input, \f$ U(s)= \mathcal{L}[u(t)]\f$, to the Laplace transform
+* of the output  \f$ Y(s)= \mathcal{L}[y(t)]\f$.
+*
+*
+* <center>
+* \f$ G(s) = \frac{N(s)}{D(s)} = \frac{ b_{0}s^{n} + b_{1}s^{n-1} + b_{2}s^{n-2} + ... +  b_{n} }{ s^{n} + a_{1}s^{n-1} + a_{2}s^{n-2} + ... +  a_{n} } \f$
+* </center>
+*
+* \f$ N(s) \f$ and \f$ D(s) \f$ are the numerator and denominator polynomials in
+* descending powers of \f$s\f$, respectively.
+*
+* To instantiate a continuous transfer function, you should define a variable
+* of type qlibs::continuousSystem, two arrays of @c N+1 elements with the coefficients of the
+* polynomials for both, the numerator and denominator, and finally, an array of type
+* \ref qlibs::continuousStates to hold the @c N states of the system.
+* Then, you can call \ref qlibs::continuousSystem::setup() to construct the system and set initial
+* conditions. Subsequently, you can evaluate the system with a given input-signal
+* by just calling \ref qlibs::continuousSystem::excite() .
+*
+* @attention
+* The user must ensure that the
+* evaluation of the system is executed periodically at the required time step.
+*
+* @subsection qltisys_ex1 Example: Evaluate the given continuous transfer function
+*
+* <center>
+*  \f$ G(s) = \frac{ 2s^{2} + 3s + 6 }{ s^{3} + 6s^{2} + 11s + 16 } \f$
+* </center>
+*
+*  @code{.c}
+*  #include <iostream>
+*  #include <chrono>
+*  #include <thread>
+*  #include <qlibs.h>
+*
+*  using namespace qlibs;
+*
+*  void xTaskSystemSimulate( void )
+*  {
+*      const real_t dt = 0.05f; // Time step
+*      std::chrono::milliseconds delay(static_cast<long long>( dt*1000 ) );
+*      real_t num[] = { 0.0f, 2.0f, 3.0f, 6.0f };
+*      real_t den[] = { 1.0f, 6.0f, 11.0f, 16.0f };
+*      continuousStates<3> x = { 0.0f, 0.0f, 0.0f }; // n = 3
+*      continuousSystem gc( num, den, xC, dt );
+*      real_t ut, yt;
+*
+*      for( ;; ) {
+*          ut = BSP_InputGet();
+*          yt = gc.excite( ut );
+*
+*          std::this_thread::sleep_for(delay);
+*          std::cout << "u(t) = " << ut << " y(t) = " << yt << std::endl;
+*      }
+*  }
+*  @endcode
+*
+* Alternatively, you can also use a simpler definition by employing the
+* \ref qlibs::continuousTF structure as follows:
+*
+*  @code{.c}
+*  #include <iostream>
+*  #include <chrono>
+*  #include <thread>
+*  #include <qlibs.h>
+*
+*  using namespace qlibs;
+*
+*  void xTaskSystemSimulate( void )
+*  {
+*      const real_t dt = 0.05f; // Time step
+*      std::chrono::milliseconds delay(static_cast<long long>( dt*1000 ) );
+*      continuousTF<3> ctf= {
+*          { 0.0f, 2.0f, 3.0f, 6.0f },
+*          { 1.0f, 6.0f, 11.0f, 16.0f },
+*      };
+*
+*      continuousSystem gc( ctf, dt );
+*      real_t ut, yt;
+*      for( ;; ) {
+*          ut = BSP_InputGet();
+*          yt = gc.excite( ut );
+*
+*          std::this_thread::sleep_for(delay);
+*          std::cout << "u(t) = " << ut << " y(t) = " << yt << std::endl;
+*      }
+*  }
+*  @endcode
+*
+*
+* @section qltisys_disc Discrete-time transfer functions
+*
+* The z-transform is used in discrete-time systems to deal with the relationship
+* between an input signal \f$ u(t) \f$ and an output signal \f$ y(t) \f$ , so the
+* transfer function is similarly written as \f$ G(z^{-1}) \f$  and is often
+* referred to as the pulse-transfer function.
+*
+* <center>
+*  \f$ G(z^{-1}) = \frac{N(z^{-1})}{D(z^{-1})} = \frac{ b_{0} + b_{1}z^{-1} + b_{2}z^{-2} + ... +  b_{m}z^{-m} }{ 1 + a_{1}z^{-1} + a_{2}z^{-2} + ... +  a_{n}z^{-n} } \f$
+* </center>
+*
+* Discrete systems are instantiated in a similar way to continuous systems,
+* but there are some differences. States should be stored in an array of type
+* \ref qlibs::discreteStates. The size of polynomials can vary according to
+* their order.
+* Please take a look at the following example:
+*
+* @subsection qltisys_ex2 Example: Evaluate the given discrete transfer function
+*
+* <center>
+*  \f$ G(z^{-1}) = \frac{ 0.1 + 0.2z^{-1} + 0.3z^{-2} }{ 1 - 0.85z^{-1} + 0.02z^{-2} } \f$
+* </center>
+*
+*  @code{.c}
+*  #include <iostream>
+*  #include <chrono>
+*  #include <thread>
+*  #include <qlibs.h>
+*
+*  using namespace qlibs;
+*
+*  void xTaskSystemSimulate( void )
+*  {
+*      real_t num[] = { 0.1f 0.2f, 0.3f };
+*      real_t den[] = { 1.0f, -0.85f, 0.02f };
+*      discreteStates<3> xd = { 0.0f, 0.0f, 0.0f };
+*      discreteSystem gc( num, den, xd );
+*      real_t uk, yk;
+*
+*      for( ;; ) {
+*          uk = BSP_InputGet();
+*          yk = gc.exite( uk );
+*          std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) ); /*100mS sample time*/
+*          std::cout << "u(k) = " << uk << " y(k) = " << yk << std::endl;
+*      }
+*  }
+*  @endcode
+*
+* Alternatively, you can also use a simpler definition by employing the
+* \ref qlibs::discreteTF structure as follows:
+*
+*  @code{.c}
+*  #include <iostream>
+*  #include <chrono>
+*  #include <thread>
+*  #include <qlibs.h>
+*
+*  using namespace qlibs;
+*
+*  void xTaskSystemSimulate( void )
+*  {
+*      discreteTF<3,3> dtf= {
+*          { 0.1f, 0.2f, 0.3f },
+*          { 1.0f, -0.85f, 0.02f },
+*      };
+*      discreteSystem gc( dtf );
+*      real_t uk, yk;
+*
+*      for( ;; ) {
+*          uk = BSP_InputGet();
+*          yk = gc.excite( ut );
+*          std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) ); /*100mS sample time*/
+*          std::cout << "u(k) = " << uk << " y(k) = " << yk << std::endl;
+*      }
+*  }
+*  @endcode
+*
+* @section qltisys_transportdelay Transport-Delay
+*
+* The  qlibs::transportDelay class models a "pure time delay" in a discrete-time
+* system.
+* It holds incoming samples in a buffer and outputs a sample from the past after
+* a fixed number of discrete steps.
+*
+* Mathematically, a transport delay can be expressed as:
+* <center>
+* \f$ y[k] = x[k - N] \f$
+* </center>
+*
+* where:
+* - \f$ y[k] \f$ is the current output sample,
+* - \f$ x[k] \f$ is the current input sample,
+* - \f$ N \f$ is the number of discrete delay steps (@a numberOfDelays).
+*
+* This is useful for:
+* - Simulating signal propagation delays.
+* - Implementing dead-time elements in control systems.
+* - Testing systems where data arrival is intentionally delayed.
+*
+* The delay amount is determined in discrete steps, not directly in seconds.
+* To convert a time delay in seconds to discrete steps, you can use:
+* - The  qlibs::delayFromTime() helper function, or
+* - The qlibs::timeDelay literal facility @c _td .
+*
+* In simulation or discrete-time signal processing, a pure delay shifts the
+* input signal in time without altering its shape or magnitude.
+* In continuous-time systems, a pure time delay is represented by:
+*
+* <center>
+* \f$ G(s) = e^{-sT_d} \f$
+* </center>
+*
+* where \f$ T_d \f$ is the delay time.
+* When discretized for simulation (with a time step \f$ \Delta t \f$), the delay
+* becomes a **FIFO buffer** of length:
+*
+* <center>
+* \f$ N = \frac{T_d}{\Delta t} \f$
+* </center>
+*
+* The qlibs::transportDelay class implements this buffer with:
+* - @b Insertion of the newest sample at each step.
+* - @b Extraction of the oldest stored sample as the delayed output.
+*
+* This is especially important in control system simulations where transport
+* delays affect stability and performance.
+*
+* @subsection td_basic Basic Example
+*
+* @code{.c}
+* #include <qlibs.h>
+*
+* using namespace qlibs;
+*
+* constexpr real_t dt = 0.1_re; // 100 ms simulation step
+* transportDelay<3> myDelay;    // Delay by 3 discrete steps (0.3 seconds)
+*
+* void simulate() {
+*     real_t inputSignal = 1.0_re;
+*     real_t outputSignal = myDelay.delay(inputSignal);
+*     // outputSignal contains the value of inputSignal from 0.3 seconds ago
+* }
+* @endcode
+*
+* @subsection td_timeconv Using Time Conversion
+*
+* If you want a delay in seconds but only know the simulation step (dt),
+* use qlibs::delayFromTime() or @c _td:
+*
+* @code{.c}
+* constexpr real_t dt = 0.1_re;
+*
+* // Delay by 2.5 seconds
+* transportDelay<delayFromTime(2.5, dt)> myDelay1;
+*
+* // Using the _td literal:
+* transportDelay<2.5_td(dt)> myDelay2;
+*
+* // Using operator[] form:
+* transportDelay<4.3_td[dt]> myDelay3;
+* @endcode
+*
+* @subsection td_continuous Example: Continuous System with Delay
+*
+* This example simulates a first-order system with a pure transport delay.
+* The system is:
+*
+* <center>
+* \f$ G(s) = \frac{1}{\tau s + 1} \cdot e^{-sT_d} \f$
+* </center>
+*
+* The delay is implemented with qlibs::transportDelay after the continuous system
+* output.
+*
+* @code{.c}
+* #include <iostream>
+* #include <chrono>
+* #include <thread>
+* #include <qlibs.h>
+*
+* using namespace qlibs;
+*
+* void xTaskSystemSimulate( void )
+* {
+*     // Continuous system parameters
+*     constexpr real_t tau = 1.0_re; // Time constant
+*     constexpr real_t dt  = 0.01_re; // Simulation step
+*     constexpr real_t Td  = 0.5_re; // Transport delay in seconds
+*     std::chrono::milliseconds delay(static_cast<long long>( dt*1000 ) );
+*
+*     continuousTF<1> ctf= {
+*         { 0.0f, 1.0f, },
+*         { tau, 1.0f, },
+*     };
+*     continuousSystem gc( ctf, dt );
+*     transportDelay<delayFromTime(Td, dt)> delayBlock;
+*     real_t ut, yt;
+*
+*     for( ;; ) {
+*         ut = BSP_InputGet();
+*         yt = delayBlock( gc.excite( ut ) );
+*
+*         std::this_thread::sleep_for(delay);
+*         std::cout << "u(t) = " << ut << " y(t) = " << yt << std::endl;
+*     }
+* }
+* @endcode
+*
+*/

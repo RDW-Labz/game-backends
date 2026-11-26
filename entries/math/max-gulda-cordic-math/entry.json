@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T03:02:38Z",
+ "category": "math",
+ "commit": "2024-07-17 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Max-Gulda/Cordic-Math \u2014 Cordic fixed point math",
+ "language": "c",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Cordic-Math",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "max-gulda-cordic-math",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 22,
+ "system": "Cordic fixed point math",
+ "upstream": "https://github.com/Max-Gulda/Cordic-Math",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

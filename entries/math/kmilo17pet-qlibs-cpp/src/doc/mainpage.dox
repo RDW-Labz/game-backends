@@ -1,0 +1,87 @@
+/** @mainpage Overview
+* @image html https://github.com/kmilo17pet/qlibs-cpp/assets/11412210/39608408-78ea-4d88-a854-f61befd845a5
+* A collection of useful libraries written in C++ for embedded systems.
+*
+* @remark
+* qLibs++ complies with most of the Motor Industry Software Reliability
+* Association (MISRA) MISRA-C++:2008 and the SEI CERT C coding standards in
+* order to provide a safe, reliable, and secure foundation for embedded applications.
+*
+* qLibs++ includes the following modules:
+*
+* - @subpage qssmoother_desc "SMoother : Filters for signal smoothing"
+*        -# 1st and 2nd order Low-Pass filters
+*        -# Moving Average filters
+*        -# Outlier Removal filters
+*        -# Gaussian filter
+*        -# Exponential weighting filter
+*        -# Scalar Kalman filter
+* - @subpage qfis_desc "FIS : Fuzzy Inference System Engine"
+*        -# Mamdani
+*        -# Sugeno
+*        -# Tsukamoto
+* - @subpage qpid_desc "PID : PID Controller"
+*        -# Derivative filter
+*        -# Anti-windup
+*        -# Tracking mode
+*        -# Auto-tunning
+*        -# Additive MRAC
+* - @subpage qltisys_desc "LTISys : Recursive LTI systems evaluation by transfer functions"
+*        -# Continuos
+*        -# Discrete
+* - @subpage qfp16_desc "FP16 : Fixed-Point Q16.16 math library"
+*        -# Basic operations
+*        -# Trigonometric functions
+*        -# Exponential functions
+* - @subpage qbitfield_desc "BitField : Bit-Field manipulation library"
+* - @subpage qrms_desc "RMS : Recursive Root Mean Square (RMS) calculation"
+* - @subpage qcrc_desc "CRC : Generic Cyclic Redundancy Check (CRC) calculator"
+* - @subpage qtdl_desc "TDL : Tapped Delay Line in O(1)"
+* - @subpage qffmath_desc "Fast floating-point math library and extensions"
+* - @subpage qinterp1_desc "1D Interpolation class"
+*/
+
+/**
+*  @defgroup qfp16 Fixed-Point Q16.16 math
+* For a brief description of this module, please read \ref qfp16_desc
+*/
+
+/**
+*  @defgroup qssmoother Smoothing filters
+* For a brief description of this module, please read \ref qssmoother_desc
+*/
+
+/**
+*  @defgroup qpid PID Controller
+*  For a brief description of this module, please read \ref qpid_desc
+*/
+
+/**
+*  @defgroup qltisys LTI Systems
+*  For a brief description of this module, please read \ref qltisys_desc
+*/
+
+/**
+*  @defgroup qfis FIS - Fuzzy Inference System
+*  For a brief description of this module, please read \ref qfis_desc
+*/
+
+/**
+*  @defgroup qbitfield Bit-Field
+*  For a brief description of this module, please read \ref qbitfield_desc
+*/
+
+/**
+*  @defgroup qrms RMS estimator
+*  For a brief description of this module, please read \ref qrms_desc
+*/
+
+/**
+*  @defgroup qcrc CRC
+*  For a brief description of this module, please read \ref qcrc_desc
+*/
+
+/**
+*  @defgroup qtdl Tapped Delay Line
+*  For a brief description of this module, please read \ref qtdl_desc
+*/

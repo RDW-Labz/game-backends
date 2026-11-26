@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T03:02:38Z",
+ "category": "math",
+ "commit": "2026-11-07 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "mas-bandwidth/fixed3d \u2014 Box3D physics engine converted to Q48.16 fixed-point math: uniform 1/65536 resolution across a \u00b11.4e14 meter world with stable equilibrium platform independent determinism",
+ "language": "c",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "fixed3d",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "mas-bandwidth-fixed3d",
+ "source": "github-search:fixed point math stars:>15",
+ "stars": 24,
+ "system": "Box3D physics engine converted to Q48.16 fixed-point math: uniform 1/65536 resolution across a \u00b11.4e14 meter world with stable equilibrium platform independent ",
+ "upstream": "https://github.com/mas-bandwidth/fixed3d",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

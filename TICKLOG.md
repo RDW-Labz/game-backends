@@ -3574,3 +3574,11 @@ One line per 15-minute extension tick, newest last.
   - reference math/hamagure-quaternion-core
   - reference math/craftedcart-blueprintrotationlibrary
   - reference math/xpturn-klotho
+
+- **2026-11-26 03:02 UTC** — tick 916: +2 screened, +4 reference, 14 skipped, catalogue=1904
+  - added math/pedrobeirao-cairo-math (AGPL-3.0, reference)
+  - added math/kmilo17pet-qlibs-cpp (MIT, vendored)
+  - reference math/mas-bandwidth-fixed3d
+  - reference math/raroni-fixie
+  - reference math/max-gulda-cordic-math
+  - reference math/aemileski-math-sll

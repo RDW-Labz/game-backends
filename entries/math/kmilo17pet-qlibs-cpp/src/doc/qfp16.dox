@@ -1,0 +1,110 @@
+/*! @page qfp16_desc Fixed-Point Q16.16 library
+* @tableofcontents
+* FP16 is a compact fixed-point number library intended for use in embedded
+* systems. It includes a variety of transcendental functions and essential
+* operators, carefully chosen for optimal performance.
+*
+* The format is a signed @c Q16.16, which is good enough for most purposes.
+*
+* @section qfp16_datatype_limits Datatype limits
+*
+* The maximum representable value is @c 32767.999985. The minimum value is @c -32768.0
+*
+* The minimum value is also used to represent @c overflow for overflow detection,
+* so for some operations it cannot be determined whether it overflowed or the 
+* result was the smallest possible value. In practice, this does not matter much.
+*
+* The smallest unit (machine precision) of the datatype is @c 1/65536=0.000015259.
+*
+* @section qfp16_functions Fixed-point functions
+*
+* All the provided functions operate on 32-bit numbers, \ref qlibs::fp16, which have 
+* 16-bit integer part and 16-bit fractional part.
+*
+* @subsection qfp16_conv_functions Conversion functions
+*
+* Conversion from integers and floating-point values. These conversions retain 
+* the numeric value and perform rounding where necessary.
+*
+* - \ref qlibs::fp16 "from()" Convert @c int , @c float or @c double to the qlibs::fp16 type. For constants use the fixed-point literal
+* - \ref qlibs::fp16 "toInt()" Convert qlibs::fp16 to integer.
+* - \ref qlibs::fp16 "toFloat()" Convert qlibs::fp16 to float.
+* - \ref qlibs::fp16 "toDouble()" Convert qlibs::fp16 to double.
+* - \ref qlibs::fp16 "toASCII()"  Convert from qlibs::fp16 to raw c-string.
+*
+* @subsection  qfp16_basic_arithmetic Basic arithmetic
+*
+* Basic operator overloading also perform rounding and detect overflows. When 
+* overflow is detected, they return @c overflow as a marker value.
+*
+* - @c + Addition
+* - @c - Subtraction
+* - @c * Multiplication
+* - @c / Division
+*
+* @subsection qfp16_exp_functions Exponential and transcendental functions
+*
+* Roots, exponents & similar.
+*
+* - \ref qlibs::fp16 "sqrt()"  Square root. Performs rounding and is accurate to fp16 limits.
+* - \ref qlibs::fp16 "exp()"   Exponential function using power series approximation.
+* Accuracy depends on range, worst case \c +-40 absolute for negative inputs and
+* @c +-0.003% for positive inputs. Average error is @c +-1 for neg and @c +-0.0003% for pos.
+* - \ref qlibs::fp16 "log()"  Natural logarithm using Newton approximation and \ref qlibs::fp16 "exp()".
+* Worst case error \c +-3 absolute, average error less than 1 unit.
+* - \ref qlibs::fp16 "log2()"  Logarithm base 2.
+* - \ref qlibs::fp16 "pow()"  Computes the power of a qlibs::fp16 number
+*
+*
+* @subsection qfp16_trig_functions Trigonometric functions and helpers
+*
+* - \ref qlibs::fp16 "sin()"  Sine for angle in radians
+* - \ref qlibs::fp16 "cos()"  Cosine for angle in radians
+* - \ref qlibs::fp16 "tan()"  Tangent for angle in radians
+* - \ref qlibs::fp16 "asin()"  Inverse of sine, output in radians
+* - \ref qlibs::fp16 "acos()"  Inverse of cosine, output in radians
+* - \ref qlibs::fp16 "atan()"  Inverse of tangent, output in radians
+* - \ref qlibs::fp16 "atan2()"  Arc tangent in radians x,y
+* - \ref qlibs::fp16 "sinh()"  Hyperbolic sine
+* - \ref qlibs::fp16 "cosh()"  Hyperbolic cosine
+* - \ref qlibs::fp16 "tanh()"  Hyperbolic tangent
+* - \ref qlibs::fp16 "radToDeg()"  Converts angle units from radians to degrees.
+* - \ref qlibs::fp16 "degToRad()"  Converts angle units from degrees to radians
+* - \ref qlibs::fp16 "wrapToPi()"  Wrap the fixed-point angle in radians to [−pi pi]
+* - \ref qlibs::fp16 "wrapTo180()"  Wrap the fixed-point angle in degrees  to [−180 180]
+*
+* @subsection qfp16_literal Fixed-Point literals
+*
+* Fixed-point literal defines a compile-time constant whose value is specified 
+* in the source file.
+* The suffix @c _fp indicates a type of \ref qlibs::fp16.
+*
+* A plus (+) or minus (-) symbol can precede a fixed-point literal. However, 
+* it is not part of the literal; it is interpreted as a unary operator.
+*
+* @section qfp16_example Example: Solution of the quadratic equation
+* 
+* This draft example computes one solution of the quadratic equation
+* by using the fixed point format. Equation is given by:
+*
+* \f$ x = \frac{ -b + \sqrt{ b^{2} - 4ac} }{ 2a } \f$
+*
+*  @code{.c}
+*  #include <iostream>
+*  #include <qlibs.h>
+*  
+*  using namespace qlibs;
+*  
+*  int main( int argc, char *argv[] ) 
+*  {
+*      fp16 a = 1.5_fp;
+*      fp16 b = 5.2_fp;
+*      fp16 c = 4.0_fp;
+*      fp16 result;
+*      result = ( -b + fp16::sqrt( ( b*b )  - ( 4_fp*a*c ) ) )/( 2_fp*a );
+*
+*      std::cout << " result = " << result << std::endl;
+*      return EXIT_SUCCESS;
+*  }
+*  @endcode
+*/

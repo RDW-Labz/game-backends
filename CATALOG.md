@@ -1,12 +1,12 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 02:44 UTC · 1898 entries · 473 vendored, 1425 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 03:02 UTC · 1904 entries · 474 vendored, 1430 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 788 | 187 | 601 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
-| [math](#math) — Math libraries | 159 | 48 | 111 |
+| [math](#math) — Math libraries | 165 | 49 | 116 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 38 | 9 | 29 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 257 | 64 | 193 |
 | [netcode](#netcode) — Networking / netcode | 168 | 47 | 121 |
@@ -1053,7 +1053,7 @@ _Generated 2026-11-26 02:44 UTC · 1898 entries · 473 vendored, 1425 reference-
 
 ## math
 
-**Math libraries** — 159 entries
+**Math libraries** — 165 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1065,6 +1065,7 @@ _Generated 2026-11-26 02:44 UTC · 1898 entries · 473 vendored, 1425 reference-
 | [BlueprintRotationLibrary](entries/math/craftedcart-blueprintrotationlibrary/README.md) | UE4 blueprint nodes to work with Quaternions | c++ | Unlicense | reference | [CraftedCart/BlueprintRotationLibrary](https://github.com/CraftedCart/BlueprintRotationLibrary) @ `2021-12-04 (branch tip at catalogue time)` |
 | [brine-fp](entries/math/zfedoran-brine-fp/README.md) | Fixed-point math library with logarithmic and exponential functions. Designed for blockchain applications. | rust | Apache-2.0 | vendored | [zfedoran/brine-fp](https://github.com/zfedoran/brine-fp) @ `377beff01dfe` |
 | [C-Linear-Algebra](entries/math/jcchurch-c-linear-algebra/README.md) | My personal set of C libraries for linear algebra computation based on The Matrix Cookbook and Numerical Recipes in C. | c | unknown | reference | [jcchurch/C-Linear-Algebra](https://github.com/jcchurch/C-Linear-Algebra) @ `2019-10-31 (branch tip at catalogue time)` |
+| [cairo-math](entries/math/pedrobeirao-cairo-math/README.md) | Smart contract Cairo library for advanced fixed-point math | python | AGPL-3.0 | reference | [pedrobeirao/cairo-math](https://github.com/pedrobeirao/cairo-math) @ `ef7a60d0b419` |
 | [ccVector](entries/math/jobtalle-ccvector/README.md) | A vector and matrix math library | c | Public-Domain | vendored | [jobtalle/ccVector](https://github.com/jobtalle/ccVector) @ `ffefafe5a0b9` |
 | [cfmm-math-libraries](entries/math/0xosiris-cfmm-math-libraries/README.md) | CFMM Fixed Point Math libraries for price simulation, fixed point conversion, and swap simulation on v2/v3 pools. | solidity | unknown | reference | [0xOsiris/cfmm-math-libraries](https://github.com/0xOsiris/cfmm-math-libraries) @ `2023-01-21 (branch tip at catalogue time)` |
 | [cglm](entries/math/cglm/README.md) | SIMD-accelerated C math (vec/mat/quat/affine/euler) | c | MIT | vendored | [recp/cglm](https://github.com/recp/cglm) @ `b9b570b78d58` |
@@ -1073,6 +1074,7 @@ _Generated 2026-11-26 02:44 UTC · 1898 entries · 473 vendored, 1425 reference-
 | [cmath3d](entries/math/jpreiss-cmath3d/README.md) | 3d math library for C. Vectors, 3x3 matrices, quaternions, polytopes. | c | MIT | vendored | [jpreiss/cmath3d](https://github.com/jpreiss/cmath3d) @ `39f4fcdc8ec4` |
 | [Cmathtuts](entries/math/foadsf-cmathtuts/README.md) | trying to collect all useful tutorials for famous C math and linear algebra libraries such as CBLAS, CLAPACK, GSL... | fortran | GPL-3.0 | reference | [Foadsf/Cmathtuts](https://github.com/Foadsf/Cmathtuts) @ `2026-02-19 (branch tip at catalogue time)` |
 | [CombBLAS](entries/math/passionlab-combblas/README.md) | The Combinatorial BLAS (CombBLAS) is an extensible distributed-memory parallel graph library offering a small but powerful set of linear algebra primitives spec | c++ | BSD-3-Clause | vendored | [PASSIONLab/CombBLAS](https://github.com/PASSIONLab/CombBLAS) @ `2381a1f7a028` |
+| [Cordic-Math](entries/math/max-gulda-cordic-math/README.md) | Cordic fixed point math | c | unknown | reference | [Max-Gulda/Cordic-Math](https://github.com/Max-Gulda/Cordic-Math) @ `2024-07-17 (branch tip at catalogue time)` |
 | [crystaledge](entries/math/unn4m3d-crystaledge/README.md) | A pure Crystal Vector Math library | crystal | MIT | vendored | [unn4m3d/crystaledge](https://github.com/unn4m3d/crystaledge) @ `0f5e82952b95` |
 | [Cub3d-Advanced-Raycasting](entries/math/ael-bekk-cub3d-advanced-raycasting/README.md) | #Cub3D: This project is a 3D game created from scratch written in C using an old graphic library mini-libx, presented with an old technology raycasting to make  | c | MIT | vendored | [ael-bekk/Cub3d-Advanced-Raycasting](https://github.com/ael-bekk/Cub3d-Advanced-Raycasting) @ `53371ce9c1ba` |
 | [cuda-noise](entries/math/covexp-cuda-noise/README.md) | Library of common noise functions for CUDA kernels | cuda | MIT | reference | [covexp/cuda-noise](https://github.com/covexp/cuda-noise) @ `2025-08-17 (branch tip at catalogue time)` |
@@ -1091,10 +1093,12 @@ _Generated 2026-11-26 02:44 UTC · 1898 entries · 473 vendored, 1425 reference-
 | [en_cl_fix](entries/math/enclustra-en-cl-fix/README.md) | Fixed-point math library with VHDL, Python and MATLAB support | vhdl | MIT | reference | [enclustra/en_cl_fix](https://github.com/enclustra/en_cl_fix) @ `2026-08-12 (branch tip at catalogue time)` |
 | [Euclid](entries/math/nicklockwood-euclid/README.md) | A Swift library for creating and manipulating 3D geometry | swift | MIT | reference | [nicklockwood/Euclid](https://github.com/nicklockwood/Euclid) @ `2026-11-23 (branch tip at catalogue time)` |
 | [fixed-point](entries/math/nilpunch-fixed-point/README.md) | Configurable 32-bit and 64-bit fixed point math library. | c# | MIT | vendored | [nilpunch/fixed-point](https://github.com/nilpunch/fixed-point) @ `e88d23b07774` |
+| [fixed3d](entries/math/mas-bandwidth-fixed3d/README.md) | Box3D physics engine converted to Q48.16 fixed-point math: uniform 1/65536 resolution across a ±1.4e14 meter world with stable equilibrium platform independent  | c | MIT | reference | [mas-bandwidth/fixed3d](https://github.com/mas-bandwidth/fixed3d) @ `2026-11-07 (branch tip at catalogue time)` |
 | [fixed_math](entries/math/arturbac-fixed-math/README.md) | FixedMath: A High-Performance C++23, C++17 Library for Fixed-Point 48.16 Arithmetic | c++ | BSL-1.0 | reference | [arturbac/fixed_math](https://github.com/arturbac/fixed_math) @ `2025-06-14 (branch tip at catalogue time)` |
 | [fixed_point_math](entries/math/electricrcaircraftguy-fixed-point-math/README.md) | Fixed point math practice & test code | c++ | BSD-3-Clause | reference | [ElectricRCAircraftGuy/fixed_point_math](https://github.com/ElectricRCAircraftGuy/fixed_point_math) @ `2018-12-26 (branch tip at catalogue time)` |
 | [FixedMathSharp](entries/math/mrdav30-fixedmathsharp/README.md) | A deterministic fixed-point math library for .NET | c# | MIT | reference | [mrdav30/FixedMathSharp](https://github.com/mrdav30/FixedMathSharp) @ `2026-11-23 (branch tip at catalogue time)` |
 | [FixedPoint-Sharp](entries/math/romanzhu-fixedpoint-sharp/README.md) | Fixed point math with 48.16 precision (based on lib by https://github.com/fholm) | c# | MIT | reference | [RomanZhu/FixedPoint-Sharp](https://github.com/RomanZhu/FixedPoint-Sharp) @ `2021-11-15 (branch tip at catalogue time)` |
+| [fixie](entries/math/raroni-fixie/README.md) | Fixed point math library for C++ | c++ | unknown | reference | [raroni/fixie](https://github.com/raroni/fixie) @ `2015-04-13 (branch tip at catalogue time)` |
 | [FixMath](entries/math/unity-x-fixmath/README.md) | A fixed-point math library similar to unity.mathematics | c# | MIT | vendored | [Unity-X/FixMath](https://github.com/Unity-X/FixMath) @ `ef27101c592d` |
 | [fplib](entries/math/skyworkssolutionsinc-fplib/README.md) | Fixed point math library for SystemVerilog | systemverilog | Apache-2.0 | reference | [SkyworksSolutionsInc/fplib](https://github.com/SkyworksSolutionsInc/fplib) @ `2024-11-14 (branch tip at catalogue time)` |
 | [fpm](entries/math/mikelankamp-fpm/README.md) | C++ header-only fixed-point math library | c++ | MIT | vendored | [MikeLankamp/fpm](https://github.com/MikeLankamp/fpm) @ `b46537fe9697` |
@@ -1138,6 +1142,7 @@ _Generated 2026-11-26 02:44 UTC · 1898 entries · 473 vendored, 1425 reference-
 | [math](entries/math/stan-dev-math/README.md) | The Stan Math Library is a C++ template library for automatic differentiation of any order using forward, reverse, and mixed modes.  It includes a range of buil | c++ | BSD-3-Clause | reference | [stan-dev/math](https://github.com/stan-dev/math) @ `2026-11-20 (branch tip at catalogue time)` |
 | [math](entries/math/zmij-math/README.md) | Small C++17 library for vector and matrix computations | c++ | Apache-2.0 | reference | [zmij/math](https://github.com/zmij/math) @ `2022-02-14 (branch tip at catalogue time)` |
 | [math-php](entries/math/markrogoyski-math-php/README.md) | Powerful modern math library for PHP: Features descriptive statistics and regressions; Continuous and discrete probability distributions; Linear algebra with ma | php | MIT | vendored | [markrogoyski/math-php](https://github.com/markrogoyski/math-php) @ `1b53720fca6d` |
+| [math-sll](entries/math/aemileski-math-sll/README.md) | A fixed point (32.32 bit) math library. | c | unknown | reference | [aemileski/math-sll](https://github.com/aemileski/math-sll) @ `2022-03-19 (branch tip at catalogue time)` |
 | [mathbench-rs](entries/math/bitshifter-mathbench-rs/README.md) | Comparing performance of Rust math libraries for common 3D game and graphics tasks | rust | unknown | reference | [bitshifter/mathbench-rs](https://github.com/bitshifter/mathbench-rs) @ `2026-10-13 (branch tip at catalogue time)` |
 | [MathFu](entries/math/mathfu/README.md) | vector/matrix/quaternion math with SIMD backends | c++ | Apache-2.0 | vendored | [google/mathfu](https://github.com/google/mathfu) @ `da23a1227bb6` |
 | [MathGeoLib](entries/math/juj-mathgeolib/README.md) | A C++ library for linear algebra and geometry manipulation for computer graphics. | c++ | unknown | reference | [juj/MathGeoLib](https://github.com/juj/MathGeoLib) @ `2026-04-01 (branch tip at catalogue time)` |
@@ -1170,6 +1175,7 @@ _Generated 2026-11-26 02:44 UTC · 1898 entries · 473 vendored, 1425 reference-
 | [python-graphblas](entries/math/python-graphblas-python-graphblas/README.md) | Python library for GraphBLAS: high-performance sparse linear algebra for scalable graph analytics | jupyter notebook | Apache-2.0 | reference | [python-graphblas/python-graphblas](https://github.com/python-graphblas/python-graphblas) @ `2026-11-23 (branch tip at catalogue time)` |
 | [qaws](entries/math/soufianekhiat-qaws/README.md) | A dependency-free C11 library for creating, evaluating, sampling, traversing, and inspecting parametric curves and surfaces in 2D and 3D.  One source, four back | c | MIT | reference | [soufianekhiat/qaws](https://github.com/soufianekhiat/qaws) @ `2026-11-22 (branch tip at catalogue time)` |
 | [qlibs](entries/math/kmilo17pet-qlibs/README.md) | A collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more... | c | MIT | reference | [kmilo17pet/qlibs](https://github.com/kmilo17pet/qlibs) @ `2026-03-17 (branch tip at catalogue time)` |
+| [qlibs-cpp](entries/math/kmilo17pet-qlibs-cpp/README.md) | C++ version of qlibs, a collection of useful libraries for embedded systems : signal smoothing, PID control, Fuzzy Logic, fixed-point math and more... | c++ | MIT | vendored | [kmilo17pet/qlibs-cpp](https://github.com/kmilo17pet/qlibs-cpp) @ `878007e8a27c` |
 | [Quaternion](entries/math/martinweigel-quaternion/README.md) | A basic quaternion library written in C | c | ISC | reference | [MartinWeigel/Quaternion](https://github.com/MartinWeigel/Quaternion) @ `2022-05-16 (branch tip at catalogue time)` |
 | [quaternion-core](entries/math/hamagure-quaternion-core/README.md) | Quaternion library written in Rust. It's published on crates.io | rust | unknown | reference | [HamaguRe/quaternion-core](https://github.com/HamaguRe/quaternion-core) @ `2026-10-26 (branch tip at catalogue time)` |
 | [Quaternion-MATLAB-Library](entries/math/xiotechnologies-quaternion-matlab-library/README.md) | see upstream | matlab | none | reference | [xioTechnologies/Quaternion-MATLAB-Library](https://github.com/xioTechnologies/Quaternion-MATLAB-Library) @ `a2c20b81e0a7` |
