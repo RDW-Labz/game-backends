@@ -3776,3 +3776,6 @@ One line per 15-minute extension tick, newest last.
   - reference engines/apostolique-monogamelibraries
 
 - **2026-11-26 16:10 UTC** — tick 965: +0 screened, +0 reference, 39 skipped, catalogue=2000
+
+- **2026-11-26 16:26 UTC** — tick 966: +1 screened, +0 reference, 59 skipped, catalogue=2001
+  - added physics/deltaluca-nape (BSD-2-Clause, vendored)

@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 16:10 UTC · 2000 entries · 507 vendored, 1493 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 16:26 UTC · 2001 entries · 508 vendored, 1493 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
-| [physics](#physics) — Physics | 235 | 52 | 183 |
+| [physics](#physics) — Physics | 236 | 53 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
@@ -852,7 +852,7 @@ _Generated 2026-11-26 16:10 UTC · 2000 entries · 507 vendored, 1493 reference-
 
 ## physics
 
-**Physics** — 235 entries
+**Physics** — 236 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -981,6 +981,7 @@ _Generated 2026-11-26 16:10 UTC · 2000 entries · 507 vendored, 1493 reference-
 | [mujoco-rs](entries/physics/davidhozic-mujoco-rs/README.md) | MuJoCo bindings and high-level wrappers for the Rust programming language. Includes the viewer. | rust | Apache-2.0 | vendored | [davidhozic/mujoco-rs](https://github.com/davidhozic/mujoco-rs) @ `f10b47f29a5f` |
 | [mujoco_menagerie](entries/physics/google-deepmind-mujoco-menagerie/README.md) | A collection of high-quality models for the MuJoCo physics engine, curated by Google DeepMind. | python | unknown | reference | [google-deepmind/mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie) @ `2026-11-10 (branch tip at catalogue time)` |
 | [myosuite](entries/physics/myohub-myosuite/README.md) | MyoSuite is a collection of environments/tasks to be solved by musculoskeletal models simulated with the MuJoCo physics engine and wrapped in the OpenAI gym API | python | Apache-2.0 | vendored | [MyoHub/myosuite](https://github.com/MyoHub/myosuite) @ `d914c4aa1eea` |
+| [nape](entries/physics/deltaluca-nape/README.md) | Haxe/AS3 Physics Engine | haxe | BSD-2-Clause | vendored | [deltaluca/nape](https://github.com/deltaluca/nape) @ `a4d43daa8a8a` |
 | [nape-js](entries/physics/newkrok-nape-js/README.md) | A fully typed TypeScript 2D physics engine — modernized rewrite of the original Haxe engine. | typescript | unknown | reference | [NewKrok/nape-js](https://github.com/NewKrok/nape-js) @ `2026-11-24 (branch tip at catalogue time)` |
 | [Nature2D](entries/physics/jaipack17-nature2d/README.md) | A 2D physics engine for Roblox. Create versatile physics simulations and mechanics with GUIs! | lua | MIT | reference | [jaipack17/Nature2D](https://github.com/jaipack17/Nature2D) @ `2025-12-11 (branch tip at catalogue time)` |
 | [ncollide](entries/physics/dimforge-ncollide/README.md) | 2 and 3-dimensional collision detection library in Rust. | rust | Apache-2.0 | reference | [dimforge/ncollide](https://github.com/dimforge/ncollide) @ `2023-01-31 (branch tip at catalogue time)` |

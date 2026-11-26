@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T16:26:37Z",
+ "category": "physics",
+ "commit": "a4d43daa8a8a",
+ "delivery": "vendored",
+ "description": "deltaluca/nape \u2014 Haxe/AS3 Physics Engine",
+ "language": "haxe",
+ "license": "BSD-2-Clause",
+ "license_file": "LICENCE.txt",
+ "license_verdict": "clean",
+ "name": "nape",
+ "size_bytes": 31379,
+ "slug": "deltaluca-nape",
+ "source": "github-search:physics engine stars:>200",
+ "stars": 552,
+ "system": "Haxe/AS3 Physics Engine",
+ "upstream": "https://github.com/deltaluca/nape",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
