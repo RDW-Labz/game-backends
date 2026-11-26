@@ -1,11 +1,11 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 16:58 UTC · 2009 entries · 510 vendored, 1499 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 17:14 UTC · 2010 entries · 511 vendored, 1499 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
 | [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
-| [physics](#physics) — Physics | 244 | 55 | 189 |
+| [physics](#physics) — Physics | 245 | 56 | 189 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
@@ -852,7 +852,7 @@ _Generated 2026-11-26 16:58 UTC · 2009 entries · 510 vendored, 1499 reference-
 
 ## physics
 
-**Physics** — 244 entries
+**Physics** — 245 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1051,6 +1051,7 @@ _Generated 2026-11-26 16:58 UTC · 2009 entries · 510 vendored, 1499 reference-
 | [roblox-sphere-motion-lab](entries/physics/mehedimaruf4t2-roblox-sphere-motion-lab/README.md) | Roblox Ball Movement System 2026: Open-Source Physics Controller Guide | html | none | reference | [mehedimaruf4t2/roblox-sphere-motion-lab](https://github.com/mehedimaruf4t2/roblox-sphere-motion-lab) @ `00304c8708c8` |
 | [RobotNativeEngine](entries/physics/rsasaki0109-robotnativeengine/README.md) | Robot Native Engine — robot-native Rust simulation core with physics, sensors, Python bindings, and optional ROS 2 adapters. | rust | Apache-2.0 | reference | [rsasaki0109/RobotNativeEngine](https://github.com/rsasaki0109/RobotNativeEngine) @ `2026-11-23 (branch tip at catalogue time)` |
 | [rssn](entries/physics/apich-organization-rssn/README.md) | rssn is an open-source scientific computing library for Rust: a computer algebra system, numerical kernels and physics simulations behind one small API. | rust | Apache-2.0 | reference | [Apich-Organization/rssn](https://github.com/Apich-Organization/rssn) @ `2026-11-24 (branch tip at catalogue time)` |
+| [RTCollisionDetection](entries/physics/ssz990220-rtcollisiondetection/README.md) | Ray-tracing collision detection library | c++ | MIT | vendored | [Ssz990220/RTCollisionDetection](https://github.com/Ssz990220/RTCollisionDetection) @ `bacbf77a612b` |
 | [rumoca](entries/physics/cognipilot-rumoca/README.md) | a rust-native Modelica compiler for fast, composable, scientific computing | rust | Apache-2.0 | reference | [CogniPilot/rumoca](https://github.com/CogniPilot/rumoca) @ `488d6d5f239f` |
 | [runmat](entries/physics/runmat-org-runmat/README.md) | A high-performance engine for matrix math, physics simulation, and MCAD and ECAD as code. RunMat checks types, sizes and units before anything runs, executes on | rust | Apache-2.0 | reference | [runmat-org/runmat](https://github.com/runmat-org/runmat) @ `0359e282f5d0` |
 | [rust-multiplayer-physics](entries/physics/descrout-rust-multiplayer-physics/README.md) | A multiplayer physics playground, written in rust. | rust | unknown | reference | [Descrout/rust-multiplayer-physics](https://github.com/Descrout/rust-multiplayer-physics) @ `2021-09-14 (branch tip at catalogue time)` |

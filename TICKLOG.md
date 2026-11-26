@@ -3791,3 +3791,6 @@ One line per 15-minute extension tick, newest last.
   - reference physics/descrout-rust-multiplayer-physics
   - reference physics/dimforge-slosh
   - reference physics/darthdeus-blobs
+
+- **2026-11-26 17:14 UTC** — tick 969: +1 screened, +0 reference, 40 skipped, catalogue=2010
+  - added physics/ssz990220-rtcollisiondetection (MIT, vendored)
