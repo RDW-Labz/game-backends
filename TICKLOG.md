@@ -3728,3 +3728,10 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 13:14 UTC** — tick 954: +2 screened, +0 reference, 58 skipped, catalogue=1974
   - added engines/halfrost-threes-ai (GPL-3.0, reference)
   - added engines/vicioussquid-fio (MIT, reference)
+
+- **2026-11-26 13:30 UTC** — tick 955: +2 screened, +3 reference, 55 skipped, catalogue=1979
+  - added engines/scoppio-ragnarokengine3 (LGPL-3.0, reference)
+  - added engines/ducandu-spygame (MIT, vendored)
+  - reference engines/menitoon-oz-engine
+  - reference engines/buxx-rolling
+  - reference engines/yuan-manx-sparklabs

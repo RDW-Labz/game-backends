@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T13:30:38Z",
+ "category": "engines",
+ "commit": "4395d419ccd6",
+ "delivery": "reference",
+ "description": "Scoppio/RagnarokEngine3 \u2014 PyGame Engine for 2D games",
+ "language": "python",
+ "license": "LGPL-3.0",
+ "license_file": "LICENSE.txt",
+ "license_verdict": "copyleft-reference",
+ "name": "RagnarokEngine3",
+ "reference_reason": "licence: LGPL-3.0 (copyleft-reference)",
+ "size_bytes": 258349,
+ "slug": "scoppio-ragnarokengine3",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 16,
+ "system": "PyGame Engine for 2D games",
+ "upstream": "https://github.com/Scoppio/RagnarokEngine3",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

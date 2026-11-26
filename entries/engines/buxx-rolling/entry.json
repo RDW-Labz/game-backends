@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T13:30:42Z",
+ "category": "engines",
+ "commit": "2023-02-04 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "buxx/rolling \u2014 Adventure, survival and cooperation role-game engine.",
+ "language": "python",
+ "license": "AGPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "rolling",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (AGPL-3.0)",
+ "slug": "buxx-rolling",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 16,
+ "system": "Adventure, survival and cooperation role-game engine.",
+ "upstream": "https://github.com/buxx/rolling",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T13:30:42Z",
+ "category": "engines",
+ "commit": "2026-08-15 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Yuan-ManX/SparkLabs \u2014 SparkLabs - The First AI-Native Game Engine. Ignite Your Infinite Play! \ud83d\udca5 \ud83c\udfae",
+ "language": "python",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "SparkLabs",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "yuan-manx-sparklabs",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 15,
+ "system": "SparkLabs - The First AI-Native Game Engine. Ignite Your Infinite Play! \ud83d\udca5 \ud83c\udfae",
+ "upstream": "https://github.com/Yuan-ManX/SparkLabs",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

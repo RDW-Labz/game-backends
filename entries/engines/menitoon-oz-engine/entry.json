@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T13:30:42Z",
+ "category": "engines",
+ "commit": "2023-08-30 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "menitoon/Oz-Engine \u2014 A Text-Based Game Engine Made for Python",
+ "language": "python",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "Oz-Engine",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "menitoon-oz-engine",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 16,
+ "system": "A Text-Based Game Engine Made for Python",
+ "upstream": "https://github.com/menitoon/Oz-Engine",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

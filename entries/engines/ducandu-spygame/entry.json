@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T13:30:40Z",
+ "category": "engines",
+ "commit": "5caac137e718",
+ "delivery": "vendored",
+ "description": "ducandu/spygame \u2014 2D Game Engine based on Pygame and Level-TMX Files",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "spygame",
+ "size_bytes": 769635,
+ "slug": "ducandu-spygame",
+ "source": "github-search:topic:game-engine language:python stars:>10",
+ "stars": 16,
+ "system": "2D Game Engine based on Pygame and Level-TMX Files",
+ "upstream": "https://github.com/ducandu/spygame",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

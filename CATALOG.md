@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 13:14 UTC · 1974 entries · 497 vendored, 1477 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 13:30 UTC · 1979 entries · 498 vendored, 1481 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 803 | 192 | 611 |
+| [engines](#engines) — Game engines and engine subsystems | 808 | 193 | 615 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 13:14 UTC · 1974 entries · 497 vendored, 1477 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 803 entries
+**Game engines and engine subsystems** — 808 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -547,6 +547,7 @@ _Generated 2026-11-26 13:14 UTC · 1974 entries · 497 vendored, 1477 reference-
 | [oxidator](entries/engines/ruddle-oxidator/README.md) | RTS game/engine in Rust and WebGPU  | rust | MIT | vendored | [Ruddle/oxidator](https://github.com/Ruddle/oxidator) @ `ba77b3419a1c` |
 | [oxygen](entries/engines/flame-engine-oxygen/README.md) | A lightweight Entity Component System written in Dart. | dart | MIT | reference | [flame-engine/oxygen](https://github.com/flame-engine/oxygen) @ `2024-03-19 (branch tip at catalogue time)` |
 | [Oxygengine](entries/engines/psichix-oxygengine/README.md) | Rust implementation of Oxygen Core HTML5 game engine | rust | Apache-2.0 | vendored | [PsichiX/Oxygengine](https://github.com/PsichiX/Oxygengine) @ `f241e27cad47` |
+| [Oz-Engine](entries/engines/menitoon-oz-engine/README.md) | A Text-Based Game Engine Made for Python | python | GPL-3.0 | reference | [menitoon/Oz-Engine](https://github.com/menitoon/Oz-Engine) @ `2023-08-30 (branch tip at catalogue time)` |
 | [PainterEngine](entries/engines/matrixcascade-painterengine/README.md) | PainterEngine is a application/game engine with software renderer,PainterEngine can be transplanted to any platform that supports C | c | MIT | reference | [matrixcascade/PainterEngine](https://github.com/matrixcascade/PainterEngine) @ `2026-10-29 (branch tip at catalogue time)` |
 | [Panda3D](entries/engines/panda3d/README.md) | engine with scene graph, panda3d net (distributed objects) | c++ | BSD-3-Clause | reference | [panda3d/panda3d](https://github.com/panda3d/panda3d) @ `ec9ea0a93a7d` |
 | [panic-panda](entries/engines/gabdube-panic-panda/README.md) | A 3D rendering demo powered by Python and Vulkan | python | MIT | vendored | [gabdube/panic-panda](https://github.com/gabdube/panic-panda) @ `ecbda506eeaf` |
@@ -613,6 +614,7 @@ _Generated 2026-11-26 13:14 UTC · 1974 entries · 497 vendored, 1477 reference-
 | [Quixel](entries/engines/chippington-quixel/README.md) | Quick Voxel Terrain Engine for Unity | c# | MIT | reference | [Chippington/Quixel](https://github.com/Chippington/Quixel) @ `2017-02-18 (branch tip at catalogue time)` |
 | [ra2](entries/engines/openra-ra2/README.md) | A Red Alert 2 mod for the OpenRA game engine | c# | GPL-3.0 | reference | [OpenRA/ra2](https://github.com/OpenRA/ra2) @ `61e24e3c1d7b` |
 | [raea](entries/engines/shinyobjectz-raea/README.md) | Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS,  | typescript | unknown | reference | [shinyobjectz/raea](https://github.com/shinyobjectz/raea) @ `2026-11-24 (branch tip at catalogue time)` |
+| [RagnarokEngine3](entries/engines/scoppio-ragnarokengine3/README.md) | PyGame Engine for 2D games | python | LGPL-3.0 | reference | [Scoppio/RagnarokEngine3](https://github.com/Scoppio/RagnarokEngine3) @ `4395d419ccd6` |
 | [Rain-Meadow](entries/engines/henpemaz-rain-meadow/README.md) | Rain World multiplayer engine and custom game mode | c# | unknown | reference | [henpemaz/Rain-Meadow](https://github.com/henpemaz/Rain-Meadow) @ `2026-11-18 (branch tip at catalogue time)` |
 | [RavEngine](entries/engines/ravengine-ravengine/README.md) | A fast C++23 3D game engine for modern devices, with wide platform support | c++ | Apache-2.0 | reference | [RavEngine/RavEngine](https://github.com/RavEngine/RavEngine) @ `2025-07-29 (branch tip at catalogue time)` |
 | [raycaster-go](entries/engines/harbdog-raycaster-go/README.md) | Golang raycaster engine using the Ebitengine 2D Game Library | go | Apache-2.0 | reference | [harbdog/raycaster-go](https://github.com/harbdog/raycaster-go) @ `2026-10-30 (branch tip at catalogue time)` |
@@ -637,6 +639,7 @@ _Generated 2026-11-26 13:14 UTC · 1974 entries · 497 vendored, 1477 reference-
 | [RightMouseNavigation](entries/engines/spectralvectors-rightmousenavigation/README.md) | Game Engine-style Right Mouse Viewport Navigation | python | GPL-3.0 | reference | [SpectralVectors/RightMouseNavigation](https://github.com/SpectralVectors/RightMouseNavigation) @ `2026-04-02 (branch tip at catalogue time)` |
 | [RobustToolbox](entries/engines/space-wizards-robusttoolbox/README.md) | Robust multiplayer game engine, used by Space Station 14 | c# | GPL-3.0 | reference | [space-wizards/RobustToolbox](https://github.com/space-wizards/RobustToolbox) @ `ec12ca54db27` |
 | [rockgo](entries/engines/zllangct-rockgo/README.md) | A developing game server framework,based on Entity Component System(ECS). | go | Apache-2.0 | reference | [zllangct/rockgo](https://github.com/zllangct/rockgo) @ `2022-09-07 (branch tip at catalogue time)` |
+| [rolling](entries/engines/buxx-rolling/README.md) | Adventure, survival and cooperation role-game engine. | python | AGPL-3.0 | reference | [buxx/rolling](https://github.com/buxx/rolling) @ `2023-02-04 (branch tip at catalogue time)` |
 | [Root-Motion-Batch-Transfer-Blender](entries/engines/nguyennp-24-root-motion-batch-transfer-blender/README.md) | A easy-to-use Blender addon for batch transferring root motion from any rig controller. Supports multiple actions, with root motion either staying static at wor | python | GPL-3.0 | reference | [NguyenNP-24/Root-Motion-Batch-Transfer-Blender](https://github.com/NguyenNP-24/Root-Motion-Batch-Transfer-Blender) @ `2026-04-02 (branch tip at catalogue time)` |
 | [RPG-Core](entries/engines/delmarle-rpg-core/README.md) | UNITY engine RPG framework | c# | unknown | reference | [delmarle/RPG-Core](https://github.com/delmarle/RPG-Core) @ `2026-04-14 (branch tip at catalogue time)` |
 | [rubato](entries/engines/rubatopy-rubato/README.md) | A lightweight, developer-first game engine built for Python | python | GPL-3.0 | reference | [rubatopy/rubato](https://github.com/rubatopy/rubato) @ `2023-03-22 (branch tip at catalogue time)` |
@@ -678,6 +681,7 @@ _Generated 2026-11-26 13:14 UTC · 1974 entries · 497 vendored, 1477 reference-
 | [Some-Many-Books](entries/engines/dujltqzv-some-many-books/README.md) | 个人收藏书籍列表　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　 | n/a | unknown | reference | [Dujltqzv/Some-Many-Books](https://github.com/Dujltqzv/Some-Many-Books) @ `2026-06-18 (branch tip at catalogue time)` |
 | [space-engineers-coop-merralia](entries/engines/talhanadeem4321-space-engineers-coop-merralia/README.md) | Build and share cooperative space engineering projects together in Merralia. | typescript | MIT | reference | [TalhaNadeem4321/space-engineers-coop-merralia](https://github.com/TalhaNadeem4321/space-engineers-coop-merralia) @ `2026-11-23 (branch tip at catalogue time)` |
 | [space-menace](entries/engines/amethyst-space-menace/README.md) | An action 2D platformer made with Amethyst game engine | rust | MIT | vendored | [amethyst/space-menace](https://github.com/amethyst/space-menace) @ `8be706d2e993` |
+| [SparkLabs](entries/engines/yuan-manx-sparklabs/README.md) | SparkLabs - The First AI-Native Game Engine. Ignite Your Infinite Play! 💥 🎮 | python | MIT | reference | [Yuan-ManX/SparkLabs](https://github.com/Yuan-ManX/SparkLabs) @ `2026-08-15 (branch tip at catalogue time)` |
 | [Sparky](entries/engines/thecherno-sparky/README.md) | Cross-Platform High Performance 2D/3D game engine for people like me who like to write code. | c++ | Apache-2.0 | reference | [TheCherno/Sparky](https://github.com/TheCherno/Sparky) @ `a679d0834e37` |
 | [SpartanEngine](entries/engines/panosk92-spartanengine/README.md) | A game engine with a fully bindless, GPU-driven renderer featuring real-time path-traced global illumination, hardware ray tracing, and a physics simulation run | c++ | unknown | reference | [PanosK92/SpartanEngine](https://github.com/PanosK92/SpartanEngine) @ `2026-11-22 (branch tip at catalogue time)` |
 | [specs-physics](entries/engines/amethyst-specs-physics/README.md) | nphysics integration for the Specs entity component system | rust | MIT | reference | [amethyst/specs-physics](https://github.com/amethyst/specs-physics) @ `2020-05-04 (branch tip at catalogue time)` |
@@ -685,6 +689,7 @@ _Generated 2026-11-26 13:14 UTC · 1974 entries · 497 vendored, 1477 reference-
 | [Spout](entries/engines/spoutdev-spout/README.md) | Open source, multithreaded, voxel game engine and platform, written in Java. | java | unknown | reference | [spoutdev/Spout](https://github.com/spoutdev/Spout) @ `2021-11-12 (branch tip at catalogue time)` |
 | [spring](entries/engines/spring-spring/README.md) | A powerful free cross-platform RTS game engine. - Report issues at https://springrts.com/mantis/ | c++ | unknown | reference | [spring/spring](https://github.com/spring/spring) @ `2024-03-31 (branch tip at catalogue time)` |
 | [spx](entries/engines/goplus-spx/README.md) | spx - A Scratch Compatible Go/XGo 2D Game Engine for STEM education | go | Apache-2.0 | reference | [goplus/spx](https://github.com/goplus/spx) @ `2026-11-25 (branch tip at catalogue time)` |
+| [spygame](entries/engines/ducandu-spygame/README.md) | 2D Game Engine based on Pygame and Level-TMX Files | python | MIT | vendored | [ducandu/spygame](https://github.com/ducandu/spygame) @ `5caac137e718` |
 | [stage.js](entries/engines/piqnt-stage-js/README.md) | 2D HTML5 rendering and layout engine for game development | typescript | MIT | vendored | [piqnt/stage.js](https://github.com/piqnt/stage.js) @ `2535352e89cd` |
 | [Starling-Framework](entries/engines/gamua-starling-framework/README.md) | The Cross Platform Game Engine | actionscript | BSD-2-Clause | vendored | [Gamua/Starling-Framework](https://github.com/Gamua/Starling-Framework) @ `ffde39a2d459` |
 | [StarlingPunk](entries/engines/asaia-starlingpunk/README.md) | StarlingPunk is a framework built on top the Starling library designed to add structure and organization to your 2D game projects. It’s perfect for rapidly prot | actionscript | MIT | reference | [asaia/StarlingPunk](https://github.com/asaia/StarlingPunk) @ `2017-04-17 (branch tip at catalogue time)` |
