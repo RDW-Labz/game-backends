@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T15:54:40Z",
+ "category": "engines",
+ "commit": "2026-03-21 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Apostolique/MonoGameLibraries \u2014 Libraries for the #libraries channel in https://discord.gg/monogame.",
+ "language": "n/a",
+ "license": "CC0-1.0",
+ "license_verdict": "clean",
+ "name": "MonoGameLibraries",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (CC0-1.0)",
+ "slug": "apostolique-monogamelibraries",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 49,
+ "system": "Libraries for the #libraries channel in https://discord.gg/monogame.",
+ "upstream": "https://github.com/Apostolique/MonoGameLibraries",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

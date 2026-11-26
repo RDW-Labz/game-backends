@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T15:54:37Z",
+ "category": "engines",
+ "commit": "a77675c443c9",
+ "delivery": "vendored",
+ "description": "twobitcoder101/Flat \u2014 2D game extension library for Monogame.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Flat",
+ "size_bytes": 145684,
+ "slug": "twobitcoder101-flat",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 55,
+ "system": "2D game extension library for Monogame.",
+ "upstream": "https://github.com/twobitcoder101/Flat",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

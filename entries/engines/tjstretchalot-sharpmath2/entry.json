@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T15:54:39Z",
+ "category": "engines",
+ "commit": "954a9a3fef54",
+ "delivery": "vendored",
+ "description": "Tjstretchalot/SharpMath2 \u2014 2D math / geometry collision library for C#, compatable with monogame.",
+ "language": "c#",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "SharpMath2",
+ "size_bytes": 195146,
+ "slug": "tjstretchalot-sharpmath2",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 55,
+ "system": "2D math / geometry collision library for C#, compatable with monogame.",
+ "upstream": "https://github.com/Tjstretchalot/SharpMath2",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

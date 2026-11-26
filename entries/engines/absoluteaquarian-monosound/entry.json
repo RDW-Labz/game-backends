@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T15:54:40Z",
+ "category": "engines",
+ "commit": "2026-06-10 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "absoluteAquarian/MonoSound \u2014 A library for MonoGame projects which provides an alternative to SoundEffect instance creation, among other useful features.",
+ "language": "c#",
+ "license": "MIT",
+ "license_verdict": "clean",
+ "name": "MonoSound",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (MIT)",
+ "slug": "absoluteaquarian-monosound",
+ "source": "github-search:monogame library stars:>20",
+ "stars": 51,
+ "system": "A library for MonoGame projects which provides an alternative to SoundEffect instance creation, among other useful features.",
+ "upstream": "https://github.com/absoluteAquarian/MonoSound",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

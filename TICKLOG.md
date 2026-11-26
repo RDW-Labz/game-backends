@@ -3768,3 +3768,9 @@ One line per 15-minute extension tick, newest last.
   - reference engines/dragonboon-terrainy
   - reference engines/spyrexde-smoothscroll
   - reference engines/rayxuln-hastur-operation-plugin
+
+- **2026-11-26 15:54 UTC** — tick 964: +2 screened, +2 reference, 52 skipped, catalogue=2000
+  - added engines/twobitcoder101-flat (MIT, vendored)
+  - added engines/tjstretchalot-sharpmath2 (MIT, vendored)
+  - reference engines/absoluteaquarian-monosound
+  - reference engines/apostolique-monogamelibraries

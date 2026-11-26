@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 15:38 UTC · 1996 entries · 505 vendored, 1491 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 15:54 UTC · 2000 entries · 507 vendored, 1493 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 825 | 200 | 625 |
+| [engines](#engines) — Game engines and engine subsystems | 829 | 202 | 627 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 15:38 UTC · 1996 entries · 505 vendored, 1491 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 825 entries
+**Game engines and engine subsystems** — 829 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -275,6 +275,7 @@ _Generated 2026-11-26 15:38 UTC · 1996 entries · 505 vendored, 1491 reference-
 | [flame](entries/engines/flame-engine-flame/README.md) | A Flutter based game engine. | dart | MIT | vendored | [flame-engine/flame](https://github.com/flame-engine/flame) @ `c4c6b3f163d5` |
 | [flappyphpant](entries/engines/phpgl-flappyphpant/README.md) | A very simple Flappy Bird-like game written in PHP, built on PHP-GLFW and the VISU framework. | php | MIT | vendored | [phpgl/flappyphpant](https://github.com/phpgl/flappyphpant) @ `764e716a1080` |
 | [FlashPunk](entries/engines/useflashpunk-flashpunk/README.md) | A free ActionScript 3 library designed for developing 2D Flash games. It provides you with a fast, clean framework to prototype and develop your games in. This  | actionscript | MIT | reference | [useflashpunk/FlashPunk](https://github.com/useflashpunk/FlashPunk) @ `2016-03-31 (branch tip at catalogue time)` |
+| [Flat](entries/engines/twobitcoder101-flat/README.md) | 2D game extension library for Monogame. | c# | MIT | vendored | [twobitcoder101/Flat](https://github.com/twobitcoder101/Flat) @ `a77675c443c9` |
 | [FlatRedBall](entries/engines/vchelaru-flatredball/README.md) | Cross-platform 2D game engine focused on ultimate productivity built in .NET | c# | MIT | reference | [vchelaru/FlatRedBall](https://github.com/vchelaru/FlatRedBall) @ `2026-11-24 (branch tip at catalogue time)` |
 | [flax](entries/engines/ten3roberts-flax/README.md) | Batteries included ECS library for rust with entity relations and much more | rust | unknown | reference | [ten3roberts/flax](https://github.com/ten3roberts/flax) @ `2026-11-02 (branch tip at catalogue time)` |
 | [Flax Engine](entries/engines/flaxengine/README.md) | full C++/C# engine with editor | c++ | Flax-EULA | reference | [FlaxEngine/FlaxEngine](https://github.com/FlaxEngine/FlaxEngine) @ `533d9332f34a` |
@@ -492,6 +493,8 @@ _Generated 2026-11-26 15:38 UTC · 1996 entries · 505 vendored, 1491 reference-
 | [monogame-aseprite](entries/engines/aristurtledev-monogame-aseprite/README.md) | A Cross Platform C# Library That Adds Support For Aseprite Files in MonoGame Projects.  | c# | MIT | reference | [AristurtleDev/monogame-aseprite](https://github.com/AristurtleDev/monogame-aseprite) @ `2026-10-08 (branch tip at catalogue time)` |
 | [MonoGame.Forms](entries/engines/blizzcrafter-monogame-forms/README.md) | MonoGame.Forms is the easiest way of integrating a MonoGame render window into your Windows Forms project. It should make your life much easier, when you want t | c# | MS-PL | reference | [BlizzCrafter/MonoGame.Forms](https://github.com/BlizzCrafter/MonoGame.Forms) @ `9fbfa57c8ea9` |
 | [MonoGameFramework.Net8](entries/engines/catfortman-monogameframework-net8/README.md) | Modular MonoGame 3.8 framework with ECS + OOP architecture support and reusable engine systems for 2D game development. | c# | MIT | reference | [CatFortman/MonoGameFramework.Net8](https://github.com/CatFortman/MonoGameFramework.Net8) @ `2026-07-17 (branch tip at catalogue time)` |
+| [MonoGameLibraries](entries/engines/apostolique-monogamelibraries/README.md) | Libraries for the #libraries channel in https://discord.gg/monogame. | n/a | CC0-1.0 | reference | [Apostolique/MonoGameLibraries](https://github.com/Apostolique/MonoGameLibraries) @ `2026-03-21 (branch tip at catalogue time)` |
+| [MonoSound](entries/engines/absoluteaquarian-monosound/README.md) | A library for MonoGame projects which provides an alternative to SoundEffect instance creation, among other useful features. | c# | MIT | reference | [absoluteAquarian/MonoSound](https://github.com/absoluteAquarian/MonoSound) @ `2026-06-10 (branch tip at catalogue time)` |
 | [MoravaEngine](entries/engines/dtrajko-moravaengine/README.md) | C++ 2D/3D graphics engine and scene editor for Vulkan 1.4, OpenGL and DirectX 11, on Windows and Linux. Physically based rendering, global illumination, ray-tra | c++ | Apache-2.0 | reference | [dtrajko/MoravaEngine](https://github.com/dtrajko/MoravaEngine) @ `535e8fb78cad` |
 | [morpeh](entries/engines/scellecs-morpeh/README.md) | 🎲 ECS Framework for Unity Game Engine and .Net Platform | c# | MIT | reference | [scellecs/morpeh](https://github.com/scellecs/morpeh) @ `2026-11-17 (branch tip at catalogue time)` |
 | [motif](entries/engines/b1rdmania-motif/README.md) | Wario.Style. Game Boy Midi Synthesis Engine. Search any song. Get the 8-bit Game Boy version. | typescript | unknown | reference | [b1rdmania/motif](https://github.com/b1rdmania/motif) @ `2026-11-25 (branch tip at catalogue time)` |
@@ -674,6 +677,7 @@ _Generated 2026-11-26 15:38 UTC · 1996 entries · 505 vendored, 1491 reference-
 | [Shamisen](entries/engines/minecake147e-shamisen/README.md) | Cross-Platform Audio Library for modern .NET. | c# | MIT | vendored | [MineCake147E/Shamisen](https://github.com/MineCake147E/Shamisen) @ `2f1adeec434d` |
 | [shapedrawer](entries/engines/earlygrey-shapedrawer/README.md) | A library for libGDX that draws simple shapes using a batch. | java | MIT | vendored | [earlygrey/shapedrawer](https://github.com/earlygrey/shapedrawer) @ `9e4b689f63b7` |
 | [SharpLibHid](entries/engines/slion-sharplibhid/README.md) | C# HID Library using Windows Raw Input. | c# | unknown | reference | [Slion/SharpLibHid](https://github.com/Slion/SharpLibHid) @ `2022-06-22 (branch tip at catalogue time)` |
+| [SharpMath2](entries/engines/tjstretchalot-sharpmath2/README.md) | 2D math / geometry collision library for C#, compatable with monogame. | c# | MIT | vendored | [Tjstretchalot/SharpMath2](https://github.com/Tjstretchalot/SharpMath2) @ `954a9a3fef54` |
 | [shipyard](entries/engines/leudz-shipyard/README.md) | Entity Component System focused on usability and flexibility. | rust | Apache-2.0 | vendored | [leudz/shipyard](https://github.com/leudz/shipyard) @ `340caeac8e7f` |
 | [shura](entries/engines/andribaal-shura/README.md) | A safe, fast and cross-platform 2D component-based game framework written in rust | rust | Apache-2.0 | reference | [AndriBaal/shura](https://github.com/AndriBaal/shura) @ `2024-09-05 (branch tip at catalogue time)` |
 | [Signal-Lens](entries/engines/yannlemos-signal-lens/README.md) | A visual debugger for Godot's signals. Plugin for Godot 4.3+ | gdscript | MIT | reference | [yannlemos/Signal-Lens](https://github.com/yannlemos/Signal-Lens) @ `2026-07-25 (branch tip at catalogue time)` |
