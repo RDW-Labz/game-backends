@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T08:58:38Z",
+ "category": "save-state",
+ "commit": "5f2fd157019e",
+ "delivery": "vendored",
+ "description": "passive-radio/pigframe \u2014 A minimum Python-based ECS library packed with scene management and save/load game features.",
+ "language": "python",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "pigframe",
+ "size_bytes": 86490,
+ "slug": "passive-radio-pigframe",
+ "source": "github-search:save game library stars:>10",
+ "stars": 14,
+ "system": "A minimum Python-based ECS library packed with scene management and save/load game features.",
+ "upstream": "https://github.com/passive-radio/pigframe",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

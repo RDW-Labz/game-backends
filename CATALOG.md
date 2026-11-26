@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 08:42 UTC · 1950 entries · 487 vendored, 1463 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 08:58 UTC · 1954 entries · 489 vendored, 1465 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-26 08:42 UTC · 1950 entries · 487 vendored, 1463 reference-
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
-| [save-state](#save-state) — Save / state systems | 112 | 33 | 79 |
+| [save-state](#save-state) — Save / state systems | 116 | 35 | 81 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
 
 
@@ -1753,7 +1753,7 @@ _Generated 2026-11-26 08:42 UTC · 1950 entries · 487 vendored, 1463 reference-
 
 ## save-state
 
-**Save / state systems** — 112 entries
+**Save / state systems** — 116 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1777,6 +1777,7 @@ _Generated 2026-11-26 08:42 UTC · 1950 entries · 487 vendored, 1463 reference-
 | [COFFI](entries/save-state/serge1-coffi/README.md) | A header-only C++ library for accessing files in COFF binary format. (Including Windows PE/PE+ formats) | c++ | MIT | reference | [serge1/COFFI](https://github.com/serge1/COFFI) @ `2026-04-19 (branch tip at catalogue time)` |
 | [cookie-factory](entries/save-state/rust-bakery-cookie-factory/README.md) | Rust serializer library | rust | unknown | reference | [rust-bakery/cookie-factory](https://github.com/rust-bakery/cookie-factory) @ `2026-08-16 (branch tip at catalogue time)` |
 | [cornflakes](entries/save-state/deeptir18-cornflakes/README.md) | A zero-copy serialization library and networking stack. | rust | unknown | reference | [deeptir18/cornflakes](https://github.com/deeptir18/cornflakes) @ `2024-01-19 (branch tip at catalogue time)` |
+| [Cosmic-Reach-Save-Library](entries/save-state/finalforeach-cosmic-reach-save-library/README.md) | Saving and Loading utilities for the game Cosmic Reach | java | MIT | vendored | [FinalForEach/Cosmic-Reach-Save-Library](https://github.com/FinalForEach/Cosmic-Reach-Save-Library) @ `4c3a9a199e36` |
 | [cpp-serializers](entries/save-state/thekvs-cpp-serializers/README.md) | Benchmark comparing various data serialization libraries (thrift, protobuf etc.) for C++ | c++ | unknown | reference | [thekvs/cpp-serializers](https://github.com/thekvs/cpp-serializers) @ `2020-01-28 (branch tip at catalogue time)` |
 | [Daedalus](entries/save-state/auties00-daedalus/README.md) | Daedalus is a general-purpose library for working with text and binary data formats. Its ambition is to bring exceptional performance and a natural Java API to  | java | none | reference | [Auties00/Daedalus](https://github.com/Auties00/Daedalus) @ `6bded314bae9` |
 | [dash-mpd-rs](entries/save-state/emarsden-dash-mpd-rs/README.md) | Rust library for parsing, serializing and downloading media content from a DASH MPD manifest. | rust | MIT | reference | [emarsden/dash-mpd-rs](https://github.com/emarsden/dash-mpd-rs) @ `2026-11-23 (branch tip at catalogue time)` |
@@ -1819,6 +1820,7 @@ _Generated 2026-11-26 08:42 UTC · 1950 entries · 487 vendored, 1463 reference-
 | [libplist](entries/save-state/libimobiledevice-libplist/README.md) | A library to handle Apple Property List format in binary or XML | c | LGPL-2.1 | reference | [libimobiledevice/libplist](https://github.com/libimobiledevice/libplist) @ `2026-11-16 (branch tip at catalogue time)` |
 | [lisp-binary](entries/save-state/j3pic-lisp-binary/README.md) | A library to easily read and write complex binary formats. | common lisp | GPL-3.0 | reference | [j3pic/lisp-binary](https://github.com/j3pic/lisp-binary) @ `2026-07-09 (branch tip at catalogue time)` |
 | [loom](entries/save-state/asonge-loom/README.md) | A CRDT library with δ-CRDT support. | elixir | unknown | reference | [asonge/loom](https://github.com/asonge/loom) @ `2017-05-30 (branch tip at catalogue time)` |
+| [magic-trick](entries/save-state/agentichunter-blip-magic-trick/README.md) | Magic Trick: a free, open-source game library mod for the ModRetro Chromatic, built on CursedToast's ChroMagic. Game Boy, Game Boy Color and Game Gear, cover ar | f# | GPL-3.0 | reference | [agentichunter-blip/magic-trick](https://github.com/agentichunter-blip/magic-trick) @ `2026-11-25 (branch tip at catalogue time)` |
 | [miniserde](entries/save-state/dtolnay-miniserde/README.md) | Data structure serialization library with several opposite design goals from Serde | rust | Apache-2.0 | vendored | [dtolnay/miniserde](https://github.com/dtolnay/miniserde) @ `6dfa4fa395f3` |
 | [mrcrowbar](entries/save-state/moralrecordings-mrcrowbar/README.md) | A library and model framework for reverse engineering binary file formats | python | BSD-3-Clause | reference | [moralrecordings/mrcrowbar](https://github.com/moralrecordings/mrcrowbar) @ `2026-01-22 (branch tip at catalogue time)` |
 | [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
@@ -1830,6 +1832,8 @@ _Generated 2026-11-26 08:42 UTC · 1950 entries · 487 vendored, 1463 reference-
 | [pbf](entries/save-state/mapbox-pbf/README.md) | A low-level, lightweight protocol buffers implementation in JavaScript. | javascript | BSD-3-Clause | vendored | [mapbox/pbf](https://github.com/mapbox/pbf) @ `c5f57ace5bba` |
 | [PenguinBurner](entries/save-state/jpietek-penguinburner/README.md) | Automatic NVIDIA GPU undervolting, overclocking and per-game tuning for Linux. One Auto-UV scan saves three verified tiers that switch adaptively while you play | python | GPL-3.0 | reference | [jpietek/PenguinBurner](https://github.com/jpietek/PenguinBurner) @ `2026-11-17 (branch tip at catalogue time)` |
 | [phigros-save-manager](entries/save-state/lamadaemon-phigros-save-manager/README.md) | A Typescript library for parse and modify the save file of game Phigros | typescript | unknown | reference | [lamadaemon/phigros-save-manager](https://github.com/lamadaemon/phigros-save-manager) @ `2024-11-19 (branch tip at catalogue time)` |
+| [PiesFive](entries/save-state/pasttelstudios-piesfive/README.md) | A console-style game launcher for PC, powered by the KytyPS5 emulator. Your game library, profiles, saves and trophies with a real console feel. Freeware by Pas | n/a | unknown | reference | [pasttelstudios/PiesFive](https://github.com/pasttelstudios/PiesFive) @ `2026-10-27 (branch tip at catalogue time)` |
+| [pigframe](entries/save-state/passive-radio-pigframe/README.md) | A minimum Python-based ECS library packed with scene management and save/load game features. | python | MIT | vendored | [passive-radio/pigframe](https://github.com/passive-radio/pigframe) @ `5f2fd157019e` |
 | [prost-reflect](entries/save-state/andrewhickman-prost-reflect/README.md) | A protobuf library extending prost with reflection support and dynamic messages. | rust | Apache-2.0 | reference | [andrewhickman/prost-reflect](https://github.com/andrewhickman/prost-reflect) @ `2026-07-09 (branch tip at catalogue time)` |
 | [protobuf-net-data](entries/save-state/dotarj-protobuf-net-data/README.md) | A library for serializing ADO.NET DataTables and DataReaders into a portable binary format. | c# | Apache-2.0 | vendored | [dotarj/protobuf-net-data](https://github.com/dotarj/protobuf-net-data) @ `45d28b5388de` |
 | [protopuf](entries/save-state/pragmatwice-protopuf/README.md) | Protocol Puffers: A little, highly templated, and protobuf-compatible serialization/deserialization header-only library written in C++20 | c++ | Apache-2.0 | reference | [PragmaTwice/protopuf](https://github.com/PragmaTwice/protopuf) @ `2026-10-02 (branch tip at catalogue time)` |

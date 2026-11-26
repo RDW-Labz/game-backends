@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T08:58:36Z",
+ "category": "save-state",
+ "commit": "4c3a9a199e36",
+ "delivery": "vendored",
+ "description": "FinalForEach/Cosmic-Reach-Save-Library \u2014 Saving and Loading utilities for the game Cosmic Reach",
+ "language": "java",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Cosmic-Reach-Save-Library",
+ "size_bytes": 152063,
+ "slug": "finalforeach-cosmic-reach-save-library",
+ "source": "github-search:save game library stars:>10",
+ "stars": 16,
+ "system": "Saving and Loading utilities for the game Cosmic Reach",
+ "upstream": "https://github.com/FinalForEach/Cosmic-Reach-Save-Library",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

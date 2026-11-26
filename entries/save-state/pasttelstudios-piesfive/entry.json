@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T08:58:39Z",
+ "category": "save-state",
+ "commit": "2026-10-27 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "pasttelstudios/PiesFive \u2014 A console-style game launcher for PC, powered by the KytyPS5 emulator. Your game library, profiles, saves and trophies with a real console feel. Freeware by PasttelStudios.",
+ "language": "n/a",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "PiesFive",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "pasttelstudios-piesfive",
+ "source": "github-search:save game library stars:>10",
+ "stars": 14,
+ "system": "A console-style game launcher for PC, powered by the KytyPS5 emulator. Your game library, profiles, saves and trophies with a real console feel. Freeware by Pas",
+ "upstream": "https://github.com/pasttelstudios/PiesFive",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

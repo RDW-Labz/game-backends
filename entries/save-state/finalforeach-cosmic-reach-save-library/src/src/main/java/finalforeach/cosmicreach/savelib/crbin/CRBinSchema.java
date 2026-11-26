@@ -1,0 +1,179 @@
+package finalforeach.cosmicreach.savelib.crbin;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+
+import finalforeach.cosmicreach.savelib.utils.DynamicArrays;
+import finalforeach.cosmicreach.savelib.utils.IDynamicArray;
+import finalforeach.cosmicreach.savelib.utils.RawByteArrayUtils;
+
+public class CRBinSchema
+{
+	public static final class SchemaItem
+	{
+		public final String name;
+		public final SchemaType type;
+
+		public SchemaItem(String name, SchemaType type)
+		{
+			this.name = name;
+			this.type = type;
+		}
+
+		public String name()
+		{
+			return name;
+		}
+
+		public SchemaType type()
+		{
+			return type;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj) return true;
+			if (obj == null || getClass() != obj.getClass()) return false;
+			SchemaItem other = (SchemaItem) obj;
+			return Objects.equals(name, other.name) && Objects.equals(type, other.type);
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return Objects.hash(name, type);
+		}
+
+		@Override
+		public String toString()
+		{
+			return "SchemaItem[name=" + name + ", type=" + type + "]";
+		}
+	}
+
+	private IDynamicArray<SchemaItem> schema = DynamicArrays.getNew(SchemaItem.class);
+
+	public void clear()
+	{
+		schema.clear();
+	}
+
+	public void add(String name, SchemaType type)
+	{
+		if (name == null)
+		{
+			return;
+		}
+
+		for (int i = 0; i < schema.size(); i++)
+		{
+			var s = schema.get(i);
+			if (s.name.equalsIgnoreCase(name))
+			{
+				throw new RuntimeException("Duplicate name in schema: " + name);
+			}
+		}
+		var item = new SchemaItem(name, type);
+		schema.add(item);
+	}
+
+	public Iterable<SchemaItem> getSchema()
+	{
+		return schema;
+	}
+
+	public byte[] getBytes()
+	{
+		int byteCount = 0;
+
+		for (var item : schema)
+		{
+			byteCount++; // For the schema item type
+			byteCount += Integer.BYTES; // For the string length or null specifier
+			if (item.name != null)
+			{
+				byteCount += item.name.getBytes(StandardCharsets.UTF_8).length; // the string's bytes
+			}
+		}
+		byteCount++; // For schema end
+
+		byte[] bytes = new byte[byteCount];
+		int byteIdx = 0;
+		for (var item : schema)
+		{
+			// Write the schema item type byte
+			byteIdx = RawByteArrayUtils.writeByte(byteIdx, bytes, item.type.byteId);
+
+			// Write the name of the schema item
+			byteIdx = RawByteArrayUtils.writeString(byteIdx, bytes, item.name);
+		}
+
+		// Write the ending byte, the schema is done after this!
+		byteIdx = RawByteArrayUtils.writeByte(byteIdx, bytes, SchemaType.SCHEMA_END.byteId);
+
+		return bytes;
+	}
+
+	public byte[] getBytes(IDynamicArray<String> strings)
+	{
+		int byteCount = 0;
+		for (var item : schema)
+		{
+			byteCount++; // For the schema item type
+			int stringId = strings.indexOf(item.name, false);
+			int zz = (stringId << 1) ^ (stringId >> 31);
+			int sz = 1;
+			while ((zz & ~0x7F) != 0)
+			{
+				sz++;
+				zz >>>= 7;
+			}
+			byteCount += sz;
+		}
+		byteCount++; // SCHEMA_END
+
+		byte[] bytes = new byte[byteCount];
+		int byteIdx = 0;
+		for (var item : schema)
+		{
+			byteIdx = RawByteArrayUtils.writeByte(byteIdx, bytes, item.type.byteId);
+			int stringId = strings.indexOf(item.name, false);
+			byteIdx = RawByteArrayUtils.writeVarInt(byteIdx, bytes, stringId);
+		}
+		byteIdx = RawByteArrayUtils.writeByte(byteIdx, bytes, SchemaType.SCHEMA_END.byteId);
+		return bytes;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(schema);
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+			return true;
+		if ((obj == null) || (getClass() != obj.getClass()))
+			return false;
+		CRBinSchema other = (CRBinSchema) obj;
+		return Objects.equals(schema, other.schema);
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder("[");
+		for (var s : schema)
+		{
+			sb.append(s.name);
+			sb.append(":");
+			sb.append(s.type);
+			sb.append(",");
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+}

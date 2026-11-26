@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T08:58:39Z",
+ "category": "save-state",
+ "commit": "2026-11-25 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "agentichunter-blip/magic-trick \u2014 Magic Trick: a free, open-source game library mod for the ModRetro Chromatic, built on CursedToast's ChroMagic. Game Boy, Game Boy Color and Game Gear, cover art, previews, Game Genie, save states.",
+ "language": "f#",
+ "license": "GPL-3.0",
+ "license_verdict": "copyleft-reference",
+ "name": "magic-trick",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (GPL-3.0)",
+ "slug": "agentichunter-blip-magic-trick",
+ "source": "github-search:save game library stars:>10",
+ "stars": 12,
+ "system": "Magic Trick: a free, open-source game library mod for the ModRetro Chromatic, built on CursedToast's ChroMagic. Game Boy, Game Boy Color and Game Gear, cover ar",
+ "upstream": "https://github.com/agentichunter-blip/magic-trick",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

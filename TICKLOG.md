@@ -3670,3 +3670,9 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 08:42 UTC** — tick 937: +2 screened, +0 reference, 50 skipped, catalogue=1950
   - added save-state/toby-serde-bencode (MIT, vendored)
   - added save-state/mandrean-har-rs (MIT, vendored)
+
+- **2026-11-26 08:58 UTC** — tick 938: +2 screened, +2 reference, 22 skipped, catalogue=1954
+  - added save-state/finalforeach-cosmic-reach-save-library (MIT, vendored)
+  - added save-state/passive-radio-pigframe (MIT, vendored)
+  - reference save-state/pasttelstudios-piesfive
+  - reference save-state/agentichunter-blip-magic-trick
