@@ -1,10 +1,10 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 14:18 UTC · 1982 entries · 500 vendored, 1482 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 14:34 UTC · 1985 entries · 501 vendored, 1484 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
-| [engines](#engines) — Game engines and engine subsystems | 811 | 195 | 616 |
+| [engines](#engines) — Game engines and engine subsystems | 814 | 196 | 618 |
 | [physics](#physics) — Physics | 235 | 52 | 183 |
 | [math](#math) — Math libraries | 171 | 51 | 120 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
@@ -16,7 +16,7 @@ _Generated 2026-11-26 14:18 UTC · 1982 entries · 500 vendored, 1482 reference-
 
 ## engines
 
-**Game engines and engine subsystems** — 811 entries
+**Game engines and engine subsystems** — 814 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -269,6 +269,7 @@ _Generated 2026-11-26 14:18 UTC · 1982 entries · 500 vendored, 1482 reference-
 | [fheroes2](entries/engines/ihhub-fheroes2/README.md) | fheroes2 is a recreation of Heroes of Might and Magic II game engine | c++ | GPL-2.0 | reference | [ihhub/fheroes2](https://github.com/ihhub/fheroes2) @ `2026-11-15 (branch tip at catalogue time)` |
 | [Fio](entries/engines/vicioussquid-fio/README.md) | Unified Liminal World Editor, Procedural Engine & Game Creation Toolkit inspired by Radiant and Hammer. Optimised for low-power CPUs. | python | MIT | reference | [ViciousSquid/Fio](https://github.com/ViciousSquid/Fio) @ `f5a4bd0ca9a3` |
 | [firefly](entries/engines/pvdoriginal-firefly/README.md) | 2D Lighting for the Bevy Game Engine  | rust | Apache-2.0 | vendored | [PVDoriginal/firefly](https://github.com/PVDoriginal/firefly) @ `6cf3557b8e5b` |
+| [first_voxel_engine](entries/engines/tantandev-first-voxel-engine/README.md) | see upstream | rust | MIT | vendored | [TanTanDev/first_voxel_engine](https://github.com/TanTanDev/first_voxel_engine) @ `1cb19a85fdba` |
 | [flame](entries/engines/flame-engine-flame/README.md) | A Flutter based game engine. | dart | MIT | vendored | [flame-engine/flame](https://github.com/flame-engine/flame) @ `c4c6b3f163d5` |
 | [flappyphpant](entries/engines/phpgl-flappyphpant/README.md) | A very simple Flappy Bird-like game written in PHP, built on PHP-GLFW and the VISU framework. | php | MIT | vendored | [phpgl/flappyphpant](https://github.com/phpgl/flappyphpant) @ `764e716a1080` |
 | [FlashPunk](entries/engines/useflashpunk-flashpunk/README.md) | A free ActionScript 3 library designed for developing 2D Flash games. It provides you with a fast, clean framework to prototype and develop your games in. This  | actionscript | MIT | reference | [useflashpunk/FlashPunk](https://github.com/useflashpunk/FlashPunk) @ `2016-03-31 (branch tip at catalogue time)` |
@@ -470,6 +471,7 @@ _Generated 2026-11-26 14:18 UTC · 1982 entries · 500 vendored, 1482 reference-
 | [mine.js](entries/engines/shaoruu-mine-js/README.md) | :mount_fuji: A voxel world built with JS/TS/RS. (formerly mc.js) (maybe mine.ts? or even mine.rs?) | rust | MIT | reference | [shaoruu/mine.js](https://github.com/shaoruu/mine.js) @ `2024-03-23 (branch tip at catalogue time)` |
 | [mineblox](entries/engines/real2nix-mineblox/README.md) | A highly extensible voxel engine written in Luau for Roblox. | luau | MIT | reference | [real2nix/mineblox](https://github.com/real2nix/mineblox) @ `2025-07-06 (branch tip at catalogue time)` |
 | [Minecraft](entries/engines/stanislavpetrovv-minecraft/README.md) | Voxel Engine (like Minecraft) in Python and OpenGL  | python | MIT | reference | [StanislavPetrovV/Minecraft](https://github.com/StanislavPetrovV/Minecraft) @ `2023-06-30 (branch tip at catalogue time)` |
+| [Miners](entries/engines/charged-miners/README.md) | An Game Engine and Minecraft Classic Client | d | unknown | reference | [Charged/Miners](https://github.com/Charged/Miners) @ `2017-08-20 (branch tip at catalogue time)` |
 | [mini3d](entries/engines/mini3d-mini3d/README.md) | Minimalistic, cross platform, open source 3d game engine framework | c | none | reference | [mini3d/mini3d](https://github.com/mini3d/mini3d) @ `f3b832ad2e2f` |
 | [minigamepad](entries/engines/colleagueriley-minigamepad/README.md) | A simple, cross platform lightweight single-header gamepad library for handling controller input. With C89 support. | c | Zlib | reference | [ColleagueRiley/minigamepad](https://github.com/ColleagueRiley/minigamepad) @ `2026-06-13 (branch tip at catalogue time)` |
 | [minimalist-game-framework](entries/engines/zachbarth-minimalist-game-framework/README.md) | A minimalist game framework in the style of the "game engine" we use at Zachtronics. | c# | MIT | vendored | [zachbarth/minimalist-game-framework](https://github.com/zachbarth/minimalist-game-framework) @ `c9a7c1ee2392` |
@@ -734,6 +736,7 @@ _Generated 2026-11-26 14:18 UTC · 1982 entries · 500 vendored, 1482 reference-
 | [UE4VoxelTerrain](entries/engines/bw2012-ue4voxelterrain/README.md) | Unreal Engine 4: Smooth voxel terrian example | c++ | GPL-3.0 | reference | [bw2012/UE4VoxelTerrain](https://github.com/bw2012/UE4VoxelTerrain) @ `2025-02-17 (branch tip at catalogue time)` |
 | [UE4VoxelTerrain](entries/engines/ltbrandon-ue4voxelterrain/README.md) | Repository for my Unreal Engine 4 Voxel Terrain Tutorial. | c++ | MIT | reference | [LtBrandon/UE4VoxelTerrain](https://github.com/LtBrandon/UE4VoxelTerrain) @ `2019-03-08 (branch tip at catalogue time)` |
 | [UE4VoxelTerrainEditor](entries/engines/rdegroot1996-ue4voxelterraineditor/README.md) | A voxel terrain editor plugin for Unreal Engine 4 | c++ | MIT | vendored | [rdegroot1996/UE4VoxelTerrainEditor](https://github.com/rdegroot1996/UE4VoxelTerrainEditor) @ `0665ed84f385` |
+| [UE5VoxelTerrainDemo](entries/engines/bw2012-ue5voxelterraindemo/README.md) | Unreal Engine 5: Smooth voxel terrian example | c++ | GPL-3.0 | reference | [bw2012/UE5VoxelTerrainDemo](https://github.com/bw2012/UE5VoxelTerrainDemo) @ `1401b2f71aa3` |
 | [UEAESKeyFinder](entries/engines/ezfndev-ueaeskeyfinder/README.md) | This tool can find the AES Key of probably any Unreal Engine game | c# | none | reference | [EZFNDEV/UEAESKeyFinder](https://github.com/EZFNDEV/UEAESKeyFinder) @ `eeacbb1f0e7d` |
 | [UeCore](entries/engines/geektcp-uecore/README.md) | UeCore(Universe Engine Core) is an Open Source MMO RPG Framework World of Warcraft Server Engine (NOT Unreal Engine) | c++ | GPL-3.0 | reference | [geektcp/UeCore](https://github.com/geektcp/UeCore) @ `da40c4ffa99c` |
 | [UECS](entries/engines/ubpa-uecs/README.md) | Ubpa Entity-Component-System (U ECS) in Unity3D-style | c++ | MIT | vendored | [Ubpa/UECS](https://github.com/Ubpa/UECS) @ `98feb3939e66` |

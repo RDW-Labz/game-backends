@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T14:34:40Z",
+ "category": "engines",
+ "commit": "1cb19a85fdba",
+ "delivery": "vendored",
+ "description": "TanTanDev/first_voxel_engine",
+ "language": "rust",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "first_voxel_engine",
+ "size_bytes": 94560,
+ "slug": "tantandev-first-voxel-engine",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 154,
+ "system": "see upstream",
+ "upstream": "https://github.com/TanTanDev/first_voxel_engine",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

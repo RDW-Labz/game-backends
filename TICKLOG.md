@@ -3744,3 +3744,8 @@ One line per 15-minute extension tick, newest last.
 
 - **2026-11-26 14:18 UTC** — tick 958: +1 screened, +0 reference, 51 skipped, catalogue=1982
   - added engines/mini3d-mini3d (none, reference)
+
+- **2026-11-26 14:34 UTC** — tick 959: +2 screened, +1 reference, 57 skipped, catalogue=1985
+  - added engines/bw2012-ue5voxelterraindemo (GPL-3.0, reference)
+  - added engines/tantandev-first-voxel-engine (MIT, vendored)
+  - reference engines/charged-miners

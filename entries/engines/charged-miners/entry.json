@@ -1,0 +1,18 @@
+{
+ "added_at": "2026-11-26T14:34:41Z",
+ "category": "engines",
+ "commit": "2017-08-20 (branch tip at catalogue time)",
+ "delivery": "reference",
+ "description": "Charged/Miners \u2014 An Game Engine and Minecraft Classic Client",
+ "language": "d",
+ "license": "unknown",
+ "license_verdict": "unlicensed-reference",
+ "name": "Miners",
+ "reference_reason": "metadata-only row; licence per GitHub metadata (unknown)",
+ "slug": "charged-miners",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 94,
+ "system": "An Game Engine and Minecraft Classic Client",
+ "upstream": "https://github.com/Charged/Miners",
+ "why": "Discovered by the 15-minute library tick (API metadata only, not deep-screened)."
+}

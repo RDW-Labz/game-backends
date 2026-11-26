@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T14:34:38Z",
+ "category": "engines",
+ "commit": "1401b2f71aa3",
+ "delivery": "reference",
+ "description": "bw2012/UE5VoxelTerrainDemo \u2014 Unreal Engine 5: Smooth voxel terrian example",
+ "language": "c++",
+ "license": "GPL-3.0",
+ "license_file": "LICENSE",
+ "license_verdict": "copyleft-reference",
+ "name": "UE5VoxelTerrainDemo",
+ "reference_reason": "licence: GPL-3.0 (copyleft-reference)",
+ "size_bytes": 471448,
+ "slug": "bw2012-ue5voxelterraindemo",
+ "source": "github-search:voxel engine stars:>30",
+ "stars": 178,
+ "system": "Unreal Engine 5: Smooth voxel terrian example",
+ "upstream": "https://github.com/bw2012/UE5VoxelTerrainDemo",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
