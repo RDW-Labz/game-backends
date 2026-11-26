@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 21:30 UTC · 2032 entries · 522 vendored, 1510 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 21:46 UTC · 2033 entries · 523 vendored, 1510 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -8,7 +8,7 @@ _Generated 2026-11-26 21:30 UTC · 2032 entries · 522 vendored, 1510 reference-
 | [physics](#physics) — Physics | 249 | 57 | 192 |
 | [math](#math) — Math libraries | 184 | 59 | 125 |
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
-| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 295 | 74 | 221 |
+| [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 296 | 75 | 221 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
 | [save-state](#save-state) — Save / state systems | 117 | 36 | 81 |
 | [procgen](#procgen) — Procedural generation | 147 | 37 | 110 |
@@ -1348,7 +1348,7 @@ _Generated 2026-11-26 21:30 UTC · 2032 entries · 522 vendored, 1510 reference-
 
 ## gameplay
 
-**Gameplay systems (combat, AI, pathing, quests, inventories)** — 295 entries
+**Gameplay systems (combat, AI, pathing, quests, inventories)** — 296 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1587,6 +1587,7 @@ _Generated 2026-11-26 21:30 UTC · 2032 entries · 522 vendored, 1510 reference-
 | [SAE-based-representation-engineering](entries/gameplay/yuzhaouoe-sae-based-representation-engineering/README.md) | [NAACL'25 Oral] Steering Knowledge Selection Behaviours in LLMs via SAE-Based Representation Engineering | python | MIT | reference | [yuzhaouoe/SAE-based-representation-engineering](https://github.com/yuzhaouoe/SAE-based-representation-engineering) @ `2026-06-20 (branch tip at catalogue time)` |
 | [sales-and-inventory-management](entries/gameplay/munuhee-sales-and-inventory-management/README.md) | Open-source sales and inventory management system in Python/Django: point of sale (POS), stock control, purchase orders, PDF invoices and receipts, billing, loy | python | MIT | vendored | [munuhee/sales-and-inventory-management](https://github.com/munuhee/sales-and-inventory-management) @ `0733e7216e88` |
 | [Sales-and-Inventory-Management-System](entries/gameplay/pj28105-sales-and-inventory-management-system/README.md) | Tkinter(Python Module) based GUI application | python | none | reference | [pj28105/Sales-and-Inventory-Management-System](https://github.com/pj28105/Sales-and-Inventory-Management-System) @ `4a9744633cc5` |
+| [Sales-Forecasting-System](entries/gameplay/aasimansari1-sales-forecasting-system/README.md) | AI-powered sales forecasting platform with 5 ML models (XGBoost, ARIMA, Prophet, LSTM), interactive dashboard, anomaly detection, RFM customer segmentation & in | javascript | MIT | vendored | [aasimansari1/Sales-Forecasting-System](https://github.com/aasimansari1/Sales-Forecasting-System) @ `9b083ed1c4e4` |
 | [sc2-pathlib](entries/gameplay/drinfy-sc2-pathlib/README.md) | Pathfinding and terrain analysis library for Starcraft 2 bot api in Rust | rust | MIT | reference | [DrInfy/sc2-pathlib](https://github.com/DrInfy/sc2-pathlib) @ `2024-11-24 (branch tip at catalogue time)` |
 | [Scriptable-Object-Inventory](entries/gameplay/sniffle6-scriptable-object-inventory/README.md) | A scriptable object based inventory system for Unity3D | shaderlab | unknown | reference | [sniffle6/Scriptable-Object-Inventory](https://github.com/sniffle6/Scriptable-Object-Inventory) @ `2020-02-19 (branch tip at catalogue time)` |
 | [seldom_map_nav](entries/gameplay/seldom-se-seldom-map-nav/README.md) | Bevy plugin that does navmesh generation, pathfinding, and navigation for tilemaps. Navmesh generation is available without Bevy dependency. | rust | Apache-2.0 | vendored | [Seldom-SE/seldom_map_nav](https://github.com/Seldom-SE/seldom_map_nav) @ `5586a0e6ad1f` |

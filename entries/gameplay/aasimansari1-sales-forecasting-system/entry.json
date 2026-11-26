@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T21:46:37Z",
+ "category": "gameplay",
+ "commit": "9b083ed1c4e4",
+ "delivery": "vendored",
+ "description": "aasimansari1/Sales-Forecasting-System \u2014 AI-powered sales forecasting platform with 5 ML models (XGBoost, ARIMA, Prophet, LSTM), interactive dashboard, anomaly detection, RFM customer segmentation & inventory management",
+ "language": "javascript",
+ "license": "MIT",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "Sales-Forecasting-System",
+ "size_bytes": 1056523,
+ "slug": "aasimansari1-sales-forecasting-system",
+ "source": "github-search:inventory system stars:>40",
+ "stars": 80,
+ "system": "AI-powered sales forecasting platform with 5 ML models (XGBoost, ARIMA, Prophet, LSTM), interactive dashboard, anomaly detection, RFM customer segmentation & in",
+ "upstream": "https://github.com/aasimansari1/Sales-Forecasting-System",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}
