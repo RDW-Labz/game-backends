@@ -3600,3 +3600,5 @@ One line per 15-minute extension tick, newest last.
   - added loot-economy/thatmadcap-mad-loot (none, reference)
   - reference loot-economy/possibleo-possible-treasure-maps
   - reference loot-economy/gibbsly-ltos
+
+- **2026-11-26 04:26 UTC** — tick 921: +0 screened, +0 reference, 7 skipped, catalogue=1914
