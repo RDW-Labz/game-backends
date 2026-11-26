@@ -3739,3 +3739,5 @@ One line per 15-minute extension tick, newest last.
 - **2026-11-26 13:46 UTC** — tick 956: +2 screened, +0 reference, 54 skipped, catalogue=1981
   - added engines/davidpol-survivalshooterecs (MIT, vendored)
   - added engines/iacobson-ecspanse (Apache-2.0, vendored)
+
+- **2026-11-26 14:02 UTC** — tick 957: +0 screened, +0 reference, 48 skipped, catalogue=1981
