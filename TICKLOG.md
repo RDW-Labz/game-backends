@@ -3678,3 +3678,6 @@ One line per 15-minute extension tick, newest last.
   - reference save-state/agentichunter-blip-magic-trick
 
 - **2026-11-26 09:14 UTC** — tick 939: +0 screened, +0 reference, 20 skipped, catalogue=1954
+
+- **2026-11-26 09:30 UTC** — tick 940: +1 screened, +0 reference, 25 skipped, catalogue=1955
+  - added save-state/qnzhou-mshio (Apache-2.0, vendored)

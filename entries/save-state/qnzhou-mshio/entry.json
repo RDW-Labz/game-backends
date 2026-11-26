@@ -1,0 +1,20 @@
+{
+ "added_at": "2026-11-26T09:30:36Z",
+ "category": "save-state",
+ "commit": "529457fc3f64",
+ "delivery": "vendored",
+ "description": "qnzhou/MshIO \u2014 A tiny C++ library to read/write ASCII/binary MSH format files.",
+ "language": "c++",
+ "license": "Apache-2.0",
+ "license_file": "LICENSE",
+ "license_verdict": "clean",
+ "name": "MshIO",
+ "size_bytes": 359172,
+ "slug": "qnzhou-mshio",
+ "source": "github-search:binary format library stars:>40",
+ "stars": 49,
+ "system": "A tiny C++ library to read/write ASCII/binary MSH format files.",
+ "upstream": "https://github.com/qnzhou/MshIO",
+ "vendored_path": "src/",
+ "why": "Discovered by the 15-minute library tick; passed the category and licence gate."
+}

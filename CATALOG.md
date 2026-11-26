@@ -1,6 +1,6 @@
 # game-backends — catalogue
 
-_Generated 2026-11-26 09:14 UTC · 1954 entries · 489 vendored, 1465 reference-only · see POLICY.md for the licence gate._
+_Generated 2026-11-26 09:30 UTC · 1955 entries · 490 vendored, 1465 reference-only · see POLICY.md for the licence gate._
 
 | category | entries | vendored | reference |
 |---|---|---|---|
@@ -10,7 +10,7 @@ _Generated 2026-11-26 09:14 UTC · 1954 entries · 489 vendored, 1465 reference-
 | [loot-economy](#loot-economy) — Loot / drop and economy rolls | 42 | 10 | 32 |
 | [gameplay](#gameplay) — Gameplay systems (combat, AI, pathing, quests, inventories) | 290 | 72 | 218 |
 | [netcode](#netcode) — Networking / netcode | 169 | 47 | 122 |
-| [save-state](#save-state) — Save / state systems | 116 | 35 | 81 |
+| [save-state](#save-state) — Save / state systems | 117 | 36 | 81 |
 | [procgen](#procgen) — Procedural generation | 143 | 35 | 108 |
 
 
@@ -1753,7 +1753,7 @@ _Generated 2026-11-26 09:14 UTC · 1954 entries · 489 vendored, 1465 reference-
 
 ## save-state
 
-**Save / state systems** — 116 entries
+**Save / state systems** — 117 entries
 
 | name | what it provides | lang | licence | delivery | upstream |
 |---|---|---|---|---|---|
@@ -1823,6 +1823,7 @@ _Generated 2026-11-26 09:14 UTC · 1954 entries · 489 vendored, 1465 reference-
 | [magic-trick](entries/save-state/agentichunter-blip-magic-trick/README.md) | Magic Trick: a free, open-source game library mod for the ModRetro Chromatic, built on CursedToast's ChroMagic. Game Boy, Game Boy Color and Game Gear, cover ar | f# | GPL-3.0 | reference | [agentichunter-blip/magic-trick](https://github.com/agentichunter-blip/magic-trick) @ `2026-11-25 (branch tip at catalogue time)` |
 | [miniserde](entries/save-state/dtolnay-miniserde/README.md) | Data structure serialization library with several opposite design goals from Serde | rust | Apache-2.0 | vendored | [dtolnay/miniserde](https://github.com/dtolnay/miniserde) @ `6dfa4fa395f3` |
 | [mrcrowbar](entries/save-state/moralrecordings-mrcrowbar/README.md) | A library and model framework for reverse engineering binary file formats | python | BSD-3-Clause | reference | [moralrecordings/mrcrowbar](https://github.com/moralrecordings/mrcrowbar) @ `2026-01-22 (branch tip at catalogue time)` |
+| [MshIO](entries/save-state/qnzhou-mshio/README.md) | A tiny C++ library to read/write ASCII/binary MSH format files. | c++ | Apache-2.0 | vendored | [qnzhou/MshIO](https://github.com/qnzhou/MshIO) @ `529457fc3f64` |
 | [nanoserde](entries/save-state/not-fl3-nanoserde/README.md) | Serialization library with zero dependencies | rust | Apache-2.0 | vendored | [not-fl3/nanoserde](https://github.com/not-fl3/nanoserde) @ `80a9b45690c1` |
 | [Nerdbank.MessagePack](entries/save-state/aarnott-nerdbank-messagepack/README.md) | A feature-packed .NET MessagePack serialization library with great performance and simplicity. msgpack.io[C#] | c# | MIT | reference | [AArnott/Nerdbank.MessagePack](https://github.com/AArnott/Nerdbank.MessagePack) @ `2026-11-24 (branch tip at catalogue time)` |
 | [nes-emulator](entries/save-state/nicolfo-nes-emulator/README.md) | Cycle-accurate NES emulator in Rust - CPU/PPU/APU, 43 mappers with expansion audio (incl. VRC7 FM), NTSC/PAL auto-detect, gamepad + savestates. | rust | GPL-3.0 | reference | [Nicolfo/nes-emulator](https://github.com/Nicolfo/nes-emulator) @ `2026-11-13 (branch tip at catalogue time)` |
